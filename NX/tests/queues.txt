@@ -1,0 +1,17 @@
+>>> from NX.queues import *
+>>> a = [1, 4, 2, 5, 6, 8, -100, 10, 7, 3, 0]
+>>> def qtest(q): return [q.extend(a), [q.pop() for i in range(len(q))]][1]
+>>> def ptest(q): return [q.extend(a), [q.smallest() for i in range(len(q))]][1]
+>>> qtest(LIFO())
+[0, 3, 7, 10, -100, 8, 6, 5, 2, 4, 1]
+>>> qtest(FIFO())
+[1, 4, 2, 5, 6, 8, -100, 10, 7, 3, 0]
+>>> qtest(Priority(abs))
+[-100, 10, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+>>> ptest(Priority(abs))
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 10, -100]
+
+qtest(Random()) # not tested
+
+
+

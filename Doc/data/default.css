@@ -1,0 +1,101 @@
+body {
+	margin:0px;
+	padding:0px;
+	font-family:verdana, arial, helvetica, sans-serif;
+	color:#333;
+	background-color:white;
+	}
+h1 {
+	margin:0px 0px 15px 0px;
+	padding:0px;
+	font-size:20px;
+	line-height:28px;
+	font-weight:900;
+	color:#09c;
+	}
+
+h2 {
+	font-size:16px;
+	}
+
+h2 {
+	font-size:14px;
+	}
+
+
+p {
+	font:verdana, arial, helvetica, sans-serif;
+	margin:0px 0px 16px 0px;
+	padding:0px;
+	}
+#Content>p {margin:0px;}
+#Content>p+p {text-indent:30px;}
+
+a {
+	color:#09c;
+	font-weight:600;
+	font-family:verdana, arial, helvetica, sans-serif;
+	}
+a:link {color:#09c;}
+a:visited {color:#07a;}
+a:hover {background-color:#eee;}
+
+.title {
+	margin:30px 0px 10px 0px;
+	padding:17px 0px 5px 20px;
+	/* For IE5/Win's benefit height = [correct height] + [top padding] + [top and bottom border widths] */
+	height:39px; /* 14px + 17px + 2px = 33px */
+	border-style:solid;
+	border-color:black;
+	border-width:1px 0px; /* top and bottom borders: 1px; left and right borders: 0px */
+	font-size:38px;
+	line-height:11px;
+	background-color:#eee;
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	height:20px; /* the correct height */
+	}
+body>#Header {height:14px;}
+
+.document {
+	margin:0px 50px 50px 200px;
+	padding:10px;
+	}
+
+
+.warning {
+#	margin:0px 50px 50px 200px;
+	padding:10px;
+	background-color:red;
+	}
+
+
+.doctest-block {
+	font:verdana, arial, helvetica, sans-serif;
+	}
+
+.literal-block {
+#       	font:verdana, arial, helvetica, sans-serif;
+#	font-family:      "Courier New",Courier, monospace;
+	font-size: 100%;
+	background-color:white;
+	}
+
+
+.menu {
+	position:absolute;
+	top:100px;
+	left:20px;
+	padding:10px;
+	background-color:#eee;
+	border:1px solid #999;
+	line-height:17px;
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	width:100px;
+	}
+/* Again, "be nice to Opera 5". */
+body>#Menu {width:150px;}
+
+
+

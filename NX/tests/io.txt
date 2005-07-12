@@ -1,0 +1,62 @@
+IO
+==
+
+>>> from NX.base import Graph
+>>> from NX.io import *
+>>> import os,tempfile
+>>> G =Graph(name="test")
+>>> e=[('a','b'),('b','c'),('c','d'),('d','e'),('e','f'),('a','f')]
+>>> G.add_edges_from(e)
+>>> G.add_node('g')
+
+Pickled
+-------
+
+>>> fname=tempfile.mktemp()
+>>> write_gpickle(G,fname);  
+>>> Gin=read_gpickle(fname);
+>>> os.unlink(fname)
+>>> sorted(G.nodes())==sorted(Gin.nodes())
+True
+>>> sorted(G.edges())==sorted(Gin.edges())
+True
+
+
+ASCII Adjacency List
+--------------------
+
+>>> fname=tempfile.mktemp()
+>>> write_adjlist(G,fname);  
+>>> Gin=read_adjlist(fname);
+>>> os.unlink(fname)
+>>> sorted(Gin.nodes())==sorted(G.nodes())
+True
+>>> sorted(Gin.edges())==sorted(G.edges())
+True
+
+ASCII Multiline Adjacency List
+------------------------------
+
+>>> fname=tempfile.mktemp()
+>>> write_multiline_adjlist(G,fname);  
+>>> Gin=read_multiline_adjlist(fname);
+>>> os.unlink(fname)
+>>> sorted(Gin.nodes())==sorted(G.nodes())
+True
+>>> sorted(Gin.edges())==sorted(G.edges())
+True
+
+
+ASCII Edge List
+--------------------
+
+>>> fname=tempfile.mktemp()
+>>> write_edgelist(G,fname);  
+>>> Gin=read_edgelist(fname);
+>>> G.delete_node('g') # isolated nodes are not written in edgelist
+>>> os.unlink(fname)
+>>> sorted(Gin.nodes())==sorted(G.nodes())
+True
+>>> sorted(Gin.edges())==sorted(G.edges())
+True
+

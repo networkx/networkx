@@ -1,0 +1,773 @@
+Graph
+=====
+
+Unit tests for Graph Class in base.py
+-------------------------------------
+
+
+>>> from NX import *
+>>> from NX.isomorph import graph_could_be_isomorphic
+>>> is_isomorphic=graph_could_be_isomorphic
+
+Some small graphs
+-----------------
+
+>>> null=null_graph()
+>>> P1=path_graph(1)
+>>> P3=path_graph(3)
+>>> P10=path_graph(10)
+>>> K1=complete_graph(1)
+>>> K3=complete_graph(3)
+>>> K4=complete_graph(4)
+>>> K5=complete_graph(5)
+>>> K10=complete_graph(10)
+
+Name
+----
+
+>>> G = Graph(name="test")
+>>> print G    # test of __str__
+test
+>>> print G.name
+test
+>>> G.print_dna()
+datastructure  : vdict_of_dicts
+
+>>> H=Graph()
+>>> print H.name
+No Name
+
+Nodes
+-----
+
+>>> G.add_node('A')
+>>> G.has_node('A')
+True
+
+Test if a non-hashable object is in the Graph.  A python dict will
+raise a TypeError, but for a Graph class a simple  False should be
+returned (see Graph __contains__). If it cannot be a node then it is
+not a node.
+
+>>> G.has_node(['A'])
+False
+
+>>> G.has_node({'A':1})
+False
+
+>>> G.delete_node('A')
+>>> G.has_node('A')
+False
+>>> G.add_nodes_from(list("ABCDEFGHIJKL"))
+>>> G.has_node("L")
+True
+>>> G.delete_nodes_from(['H','I','J','K','L'])
+>>> G.add_nodes_from([1,2,3,4])
+>>> sorted(G.nodes())
+[1, 2, 3, 4, 'A', 'B', 'C', 'D', 'E', 'F', 'G']
+>>> sorted(G)   # test __iter__
+[1, 2, 3, 4, 'A', 'B', 'C', 'D', 'E', 'F', 'G']
+
+
+test __contains__
+
+>>> 'A' in G   
+True
+>>> [] in G  # never raise a Key or TypeError in this test
+False
+>>> {1:1} in G
+False
+
+
+test __len__
+
+>>> len(G) 
+11
+
+test node portion of clear()
+
+>>> G.clear()   
+>>> G.nodes()
+[]
+
+Test add_node and delete_node acting for various nbunch
+
+>>> G.add_node('m')
+>>> G.has_node('m')
+True
+>>> G.add_node('m')   # no complaints
+>>> G.delete_node('j') # NetworkXError
+Traceback (most recent call last):
+...
+NetworkXError: node j not in graph
+>>> G.delete_node('m')
+>>> G.nodes()
+[]
+
+nbunch is a list.
+
+>>> G.add_nodes_from(list("ABCD")) 
+>>> G.add_nodes_from(P3) # add nbunch of nodes (nbunch=Graph)
+>>> sorted(G.nodes())
+[1, 2, 3, 'A', 'B', 'C', 'D']
+>>> G.delete_nodes_from(P3) # delete nbunch of nodes (nbunch=Graph)
+>>> sorted(G.nodes())
+['A', 'B', 'C', 'D']
+
+nbunch is a set
+
+>>> nbunch=set("ABCDEFGHIJKL")
+>>> G.add_nodes_from(nbunch)
+>>> G.has_node("L")
+True
+
+nbunch is a dict with nodes as keys
+
+>>> nbunch={'I':"foo",'J':2,'K':True,'L':"spam"}
+>>> G.delete_nodes_from(nbunch)
+>>> sorted(G.nodes())
+['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
+nbunch is an iterator
+
+>>> n_iter=P3.nodes_iter()
+>>> G.add_nodes_from(n_iter)
+>>> sorted(G.nodes())
+[1, 2, 3, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+>>> n_iter=P3.nodes_iter() # rebuild same iterator
+>>> G.delete_nodes_from(n_iter) # delete nbunch of nodes (nbunch=iterator)
+>>> sorted(G.nodes())
+['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
+nbunch is a graph
+
+>>> nbunch=K3
+>>> G.add_nodes_from(nbunch)
+>>> sorted(G.nodes())
+[1, 2, 3, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
+
+Edges
+-----
+
+>>> G.add_edge('A')
+Traceback (most recent call last):
+...
+ValueError: need more than 1 value to unpack
+
+>>> G.add_edge('A','B')     # testing add_edge()
+>>> G.add_edge('A','B') # should fail silently
+>>> G.has_edge('A','B')     # testing has_edge()
+True
+>>> G.has_edge('A','C')
+False
+>>> G.has_edge( ('A','B') )
+True
+>>> G.has_edge('B','A') # G is undirected, so B->A is an edge
+True
+>>> G.has_neighbor('A','C')  # same as has_edge
+False
+>>> G.has_neighbor('A','B')  
+True
+
+>>> G.add_edge('A','C')  # test directedness
+>>> G.add_edge('C','A')
+>>> G.delete_edge('C','A')
+>>> G.has_edge('A','C') # G is undirected
+False
+>>> G.has_edge('C','A') 
+False
+
+>>> G.add_edge('A','A') # test self loops
+>>> G.has_edge('A','A')
+False
+
+>>> G.add_edge('A','Z') # should add the node silently
+>>> G.has_node('Z')
+True
+
+>>> G.add_edges_from([('B','C')])   # test add_edges_from()
+>>> G.has_edge('B','C')
+True
+>>> G.has_edge('C','B')  # undirected
+True
+>>> G.add_edges_from([('D','F'),('B','D')])
+>>> G.has_edge('D','F')
+True
+>>> G.has_edge('B','D')
+True
+>>> G.has_edge('D','B')  # undirected
+True
+>>> G.add_edges_from([tuple('IJ'),list('KK'),tuple('JK')])  # after failing silently, should add 2nd edge
+>>> G.has_edge(('I','J'))
+True
+>>> G.has_edge(('K','K'))
+False
+>>> G.has_edge(('J','K'))
+True
+>>> G.has_edge(('K','J'))  # undirected
+True
+
+>>> G.add_path(list('ACDE'))      # test add_path() and add_cycle()
+>>> G.has_edge('D','E')
+True
+>>> G.has_edge('E','C')
+False
+>>> G.add_cycle(list('MNOP'))
+>>> G.has_edge('O','P')
+True
+>>> G.has_edge('P','M')
+True
+>>> G.delete_node('P')    # tests delete_node()'s handling of edges.
+>>> G.has_edge('P','M')
+False
+
+
+>>> G.delete_edge('M')       # test delete_edge()
+Traceback (most recent call last):
+...
+ValueError: need more than 1 value to unpack
+
+>>> G.add_edge('N','M')  
+>>> G.has_edge('M','N')
+True
+>>> G.delete_edge('M','N')
+>>> G.has_edge('M','N')
+False
+>>> G.has_edge('N','M')  # undirected
+False
+>>> G.delete_edges_from([list('HI'),list('DF'),tuple('KK'),tuple('JK')]) # self loop fails silently
+>>> G.has_edge('H','I')
+False
+>>> G.has_edge('J','K')
+False
+>>> G.delete_edges_from([list('IJ'),list('KK'),list('JK')])
+>>> G.has_edge('I','J')
+False
+>>> G.delete_nodes_from(set('ZEFHIMNO'))
+>>> sorted(G.nodes())
+[1, 2, 3, 'A', 'B', 'C', 'D', 'G', 'J', 'K']
+>>> G.delete_nodes_from([1,2,3])
+>>> sorted(G.nodes())
+['A', 'B', 'C', 'D', 'G', 'J', 'K']
+>>> sorted(G.edges())
+[('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')]
+
+Test G.edges(nbunch) with various forms of nbunch
+
+node not in nbunch should be quietly ignored
+
+>>> sorted(G.edges(6))    # non-iterable non-node
+[]
+
+>>> sorted(G.edges('Z'))  # iterable non-node
+[]
+
+nbunch can be an empty list
+
+>>> sorted(G.edges([])) 
+[]
+
+nbunch can be a list
+
+>>> sorted(G.edges(['A','B']))
+[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
+
+nbunch can be a set
+
+>>> sorted(G.edges(set(['A','B'])))
+[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
+
+nbunch can be a graph
+
+>>> G1=Graph()
+>>> G1.add_nodes_from('AB')
+>>> sorted(G.edges(G1)) # nbunch is a graph
+[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
+
+nbunch can be a dict with nodes as keys
+
+>>> ndict={'A': "thing1", 'B': "thing2"}
+>>> sorted(G.edges(ndict))
+[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
+
+nbunch can be a single node
+
+>>> sorted(G.edges('A'))
+[('A', 'B'), ('A', 'C')]
+
+G.edges() does not support with_labels=True option
+
+>>> sorted(G.edges(with_labels=True))
+Traceback (most recent call last):
+...
+NetworkXError: with_labels=True option not supported. Rather use neighbors()
+
+
+Test G.edges_iter(nbunch) with various forms of nbunch
+
+node not in nbunch should be quietly ignored
+
+>>> sorted(G.edges_iter('Z'))
+[]
+
+nbunch can be an empty list
+
+>>> sorted(G.edges_iter([])) 
+[]
+
+nbunch can be a list
+
+>>> sorted(G.edges_iter(['A','B']))
+[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
+
+nbunch can be a set
+
+>>> sorted(G.edges_iter(set(['A','B'])))
+[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
+
+nbunch can be a graph
+
+>>> G1=Graph()
+>>> G1.add_nodes_from(['A','B'])
+>>> sorted(G.edges_iter(G1)) # nbunch is a graph
+[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
+
+nbunch can be a dict with nodes as keys
+
+>>> ndict={'A': "thing1", 'B': "thing2"}
+>>> sorted(G.edges_iter(ndict))
+[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
+
+nbunch can be a single node
+
+>>> sorted(G.edges_iter('A'))
+[('A', 'B'), ('A', 'C')]
+
+G.edges_iter() does not support with_labels=True option
+
+>>> sorted(G.edges_iter(with_labels=True))
+Traceback (most recent call last):
+...
+NetworkXError: with_labels=True option not supported. Rather use neighbors()
+
+nbunch can be nothing (whole graph)
+
+>>> sorted(G.edges_iter())
+[('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')]
+>>> sorted(G.nodes_iter())
+['A', 'B', 'C', 'D', 'G', 'J', 'K']
+
+
+Node and Edge Boundaries
+------------------------
+
+null graph has empty boundaries
+
+>>> null.node_boundary([])
+[]
+>>> null.node_boundary([],[])
+[]
+>>> null.node_boundary([1,2,3])
+[]
+>>> null.node_boundary([1,2,3],[4,5,6])
+[]
+>>> null.node_boundary([1,2,3],[3,4,5])
+[]
+
+
+>>> null.edge_boundary([])
+[]
+>>> null.edge_boundary([],[])
+[]
+>>> null.edge_boundary([1,2,3])
+[]
+>>> null.edge_boundary([1,2,3],[4,5,6])
+[]
+>>> null.edge_boundary([1,2,3],[3,4,5])
+[]
+
+Check boundaries in path graph.
+
+>>> P10.node_boundary([])
+[]
+>>> P10.node_boundary([],[])
+[]
+>>> P10.node_boundary([1,2,3])
+[4]
+>>> sorted(P10.node_boundary([4,5,6]))
+[3, 7]
+>>> sorted(P10.node_boundary([3,4,5,6,7]))
+[2, 8]
+>>> P10.node_boundary([8,9,10])
+[7]
+>>> sorted(P10.node_boundary([4,5,6],[9,10]))
+[]
+>>> P10.node_boundary([1,2,3],[3,4,5]) 
+Traceback (most recent call last):
+...
+NetworkXError: nbunch1 and nbunch2 are not disjoint
+
+
+>>> P10.edge_boundary([])
+[]
+>>> P10.edge_boundary([],[])
+[]
+>>> P10.edge_boundary([1,2,3])
+[(3, 4)]
+>>> sorted(P10.edge_boundary([4,5,6]))
+[(4, 3), (6, 7)]
+>>> sorted(P10.edge_boundary([3,4,5,6,7]))
+[(3, 2), (7, 8)]
+>>> P10.edge_boundary([8,9,10])
+[(8, 7)]
+>>> sorted(P10.edge_boundary([4,5,6],[9,10]))
+[]
+>>> P10.edge_boundary([1,2,3],[3,4,5]) 
+Traceback (most recent call last):
+...
+NetworkXError: nbunch1 and nbunch2 are not disjoint
+
+Check boundaries in a complete graph
+
+>>> K10.node_boundary([])
+[]
+>>> K10.node_boundary([],[])
+[]
+>>> sorted(K10.node_boundary([1,2,3]))
+[4, 5, 6, 7, 8, 9, 10]
+>>> sorted(K10.node_boundary([4,5,6]))
+[1, 2, 3, 7, 8, 9, 10]
+>>> sorted(K10.node_boundary([3,4,5,6,7]))
+[1, 2, 8, 9, 10]
+>>> sorted(K10.node_boundary([4,5,6],[]))
+[]
+>>> K10.node_boundary(K10)
+[]
+>>> K10.node_boundary([1,2,3],[3,4,5]) 
+Traceback (most recent call last):
+...
+NetworkXError: nbunch1 and nbunch2 are not disjoint
+
+
+>>> K10.edge_boundary([])
+[]
+>>> K10.edge_boundary([],[])
+[]
+>>> len(K10.edge_boundary([1,2,3]))
+21
+>>> len(K10.edge_boundary([4,5,6,7]))
+24
+>>> len(K10.edge_boundary([3,4,5,6,7]))
+25
+>>> len(K10.edge_boundary([8,9,10]))
+21
+>>> sorted(K10.edge_boundary([4,5,6],[9,10]))
+[(4, 9), (4, 10), (5, 9), (5, 10), (6, 9), (6, 10)]
+>>> K10.edge_boundary([1,2,3],[3,4,5]) 
+Traceback (most recent call last):
+...
+NetworkXError: nbunch1 and nbunch2 are not disjoint
+
+
+Check boundaries in the petersen graph
+
+  cheeger(G,k)=min(|bdy(S)|/|S| for |S|=k, 0<k<=|V(G)|/2)
+
+>>> from random import sample
+>>> P=petersen_graph()
+>>> def cheeger(G,k):
+...    return  min([float(len(G.node_boundary(sample(G.nodes(),k))))/k for n in xrange(100)])
+>>> print "%4.2f"%cheeger(P,1)
+3.00
+>>> print "%4.2f"%cheeger(P,2)
+2.00
+>>> print "%4.2f"%cheeger(P,3)
+1.67
+>>> print "%4.2f"%cheeger(P,4)
+1.00
+>>> print "%4.2f"%cheeger(P,5)
+0.80
+>>> print "%4.2f"%cheeger(P,6)
+0.50
+>>> print "%4.2f"%cheeger(P,7)
+0.43
+>>> print "%4.2f"%cheeger(P,8)
+0.25
+>>> print "%4.2f"%cheeger(P,9)
+0.11
+>>> print "%4.2f"%cheeger(P,10)
+0.00
+
+Properties
+----------
+
+degree of single node must return single int
+
+>>> G.degree('A')
+2
+
+degree of single node in iterable container must return list
+
+>>> G.degree(['A'])
+[2]
+
+with_labels=True always return a dict
+
+>>> G.degree('A',with_labels=True)
+{'A': 2}
+
+>>> G.degree(['A','B'])
+[2, 3]
+>>> G.degree(['A','B'],with_labels=True)
+{'A': 2, 'B': 3}
+
+>>> sorted(G.degree())
+[0, 0, 0, 2, 2, 3, 3]
+>>> sorted(list(G.degree_iter()))
+[0, 0, 0, 2, 2, 3, 3]
+
+>>> P3=path_graph(3)
+>>> P5=path_graph(5)
+>>> P3.degree(['A','B']) # silently ignore nodes not in P3
+[]
+>>> sorted(P5.degree(P3)) # nbunch can be a graph
+[1, 2, 2]
+>>> sorted(P3.degree(P5)) # nbunch can be a graph thats way to big
+[1, 1, 2]
+>>> P5.degree([])
+[]
+>>> list(P5.degree_iter([]))
+[]
+>>> dict( P5.degree_iter([],with_labels=True) )
+{}
+>>> dict(P5.degree_iter([],with_labels=True))
+{}
+
+>>> null=null_graph()
+>>> null.degree()
+[]
+>>> null.degree(with_labels=True)
+{}
+>>> list(null.degree_iter())
+[]
+>>> dict(null.degree_iter(with_labels=True))
+{}
+
+>>> G.order()
+7
+>>> G.size()
+5
+
+
+Operations
+-----------
+
+copy
+~~~~
+
+>>> H=G.copy()      # copy
+>>> H.adj==G.adj
+True
+>>> H.dna==G.dna
+True
+>>> H.name==G.name
+True
+>>> H==G
+False
+
+subgraph
+
+>>> SG=G.subgraph(['A','B','D']) 
+>>> sorted(SG.nodes())
+['A', 'B', 'D']
+>>> sorted(SG.edges())
+[('A', 'B'), ('B', 'D')]
+
+to_directed
+
+>>> DG=G.to_directed()
+>>> DG==G
+False
+>>> DG.is_directed()
+True
+>>> G.is_directed()
+False
+>>> DG.dna==G.dna
+True
+>>> DG.name==G.name
+True
+>>> DG.adj==G.adj
+True
+>>> sorted(DG.edges(list('AB')))
+[('A', 'B'), ('A', 'C'), ('B', 'A'), ('B', 'C'), ('B', 'D')]
+>>> DG.delete_edge('A','B')
+>>> DG.has_edge('B','A') # this deletes B-A but not  A-B
+True
+>>> DG.has_edge('A','B')
+False
+
+  # to_undirected
+
+
+Neighbors
+---------
+
+>>> sorted(G['A'])
+['B', 'C']
+>>> sorted(G.neighbors('A'))
+['B', 'C']
+>>> sorted(G.neighbors_iter('A'))
+['B', 'C']
+>>> G.neighbors('A',with_labels=True)
+{'C': 1, 'B': 1}
+>>> sorted(G.neighbors_iter('A',with_labels=True))
+[('B', 1), ('C', 1)]
+
+>>> sorted(G.neighbors('G'))
+[]
+>>> sorted(G.neighbors('j'))
+Traceback (most recent call last):
+...
+NetworkXError: node j not in graph
+
+
+Functional interface
+--------------------
+
+>>> sorted(nodes(G))
+['A', 'B', 'C', 'D', 'G', 'J', 'K']
+>>> sorted(nodes_iter(G))
+['A', 'B', 'C', 'D', 'G', 'J', 'K']
+>>> sorted(edges(G))
+[('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')]
+>>> sorted(edges_iter(G))
+[('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')]
+>>> sorted(degree(G))
+[0, 0, 0, 2, 2, 3, 3]
+>>> sorted(neighbors(G,'A'))
+['B', 'C']
+>>> neighbors(G,'A',with_labels=True)
+{'C': 1, 'B': 1}
+>>> number_of_nodes(G)
+7
+>>> number_of_edges(G)
+5
+>>> density(G)==5/(7*(7-1)*0.5)
+True
+>>> degree_histogram(G)
+[3, 0, 2, 2]
+
+Iterators
+---------
+
+>>> sorted(G.nodes_iter())
+['A', 'B', 'C', 'D', 'G', 'J', 'K']
+>>> sorted(G.edges_iter())
+[('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')]
+>>> sorted(G.degree_iter())
+[0, 0, 0, 2, 2, 3, 3]
+>>> sorted(G.degree_iter(with_labels=True))
+[('A', 2), ('B', 3), ('C', 3), ('D', 2), ('G', 0), ('J', 0), ('K', 0)]
+>>> sorted(G.neighbors_iter('A'))
+['B', 'C']
+>>> sorted(G.neighbors_iter('X'))
+Traceback (most recent call last):
+...
+NetworkXError: node X not in graph
+
+>>> G.clear()
+>>> number_of_nodes(G)
+0
+>>> number_of_edges(G)
+0
+
+
+Subgraph
+--------
+
+Subgraph of a null graph is a null graph
+
+>>> nullgraph=null_graph()
+>>> G=null_graph()
+>>> H=G.subgraph([])
+>>> is_isomorphic(H,nullgraph)
+True
+
+Subgraph of an empty graph is an empty graph. test 1 
+
+>>> E5=empty_graph(5)
+>>> E10=empty_graph(10)
+>>> H=E10.subgraph([])
+>>> is_isomorphic(H,nullgraph)
+True
+
+Subgraph of an  empty graph is an empty graph. test 2
+
+>>> H=E10.subgraph([1,2,3,4,5])
+>>> is_isomorphic(H,E5)
+True
+
+Subgraph of a complete graph is a complete graph
+
+>>> K1=complete_graph(1)
+>>> K3=complete_graph(3)
+>>> K5=complete_graph(5)
+>>> H=K5.subgraph([1,2,3])
+>>> is_isomorphic(H,K3)
+True
+
+Test G.subgraph(nbunch), where nbunch is a single node
+
+>>> H=K5.subgraph(1)
+>>> is_isomorphic(H,K1)
+True
+>>> J5=K5.copy()
+>>> H=J5.subgraph(1,inplace=True)
+>>> is_isomorphic(H,K1)
+True
+>>> is_isomorphic(J5,K1)
+True
+
+Test G.subgraph(nbunch), where nbunch is a set
+
+>>> H=K5.subgraph(set([1]))
+>>> is_isomorphic(H,K1)
+True
+>>> J5=K5.copy()
+>>> H=J5.subgraph(set([1]),inplace=True)
+>>> is_isomorphic(H,K1)
+True
+>>> is_isomorphic(J5,K1)
+True
+
+Test G.subgraph(nbunch), where nbunch is an iterator
+
+>>> H=K5.subgraph(iter(K3))
+>>> is_isomorphic(H,K3)
+True
+>>> J5=K5.copy()
+>>> H=J5.subgraph(iter(K3),inplace=True)
+>>> is_isomorphic(H,K3)
+True
+>>> is_isomorphic(J5,K3)
+True
+
+Test G.subgraph(nbunch), where nbunch is another graph
+
+>>> H=K5.subgraph(K3)
+>>> is_isomorphic(H,K3)
+True
+>>> J5=K5.copy()
+>>> H=J5.subgraph(K3,inplace=True)
+>>> is_isomorphic(H,K3)
+True
+>>> is_isomorphic(J5,K3)
+True
+
+
+Test for no error when nbunch has node not in G.nodes()
+
+>>> H=K5.subgraph([9])
+>>> is_isomorphic(H,null_graph())
+True

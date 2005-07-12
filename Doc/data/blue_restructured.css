@@ -1,0 +1,104 @@
+
+/* Body color */
+body               { background: #b0c8d0; color: #000000; } 
+ 
+/* Tables */ 
+table.summary, table.details, table.index
+                   { background: #c8e0e8; color: #000000; } 
+tr.summary         { background: #dcf4fc; color: #000000;
+                     text-align: left; font-size: 120%; } 
+tr.details, tr.index
+                   { background: #dcf4fc; color: #000000;
+                     text-align: center; font-size: 120%; }
+tr.group           { background: #bad8e0; color: #000000;
+                     text-align: left; font-size: 120%; } 
+
+/* Documentation page titles */
+h2.module          { margin-top: 0.2em; }
+h2.class           { margin-top: 0.2em ; }
+ 
+/* Headings */
+h1.heading         { font-size: +140%; font-style: italic;
+                     font-weight: bold; color: #002060; }
+h2.heading         { font-size: +125%; font-style: italic;
+                     font-weight: bold; color: #002060; }
+h3.heading         { font-size: +110%; font-style: italic;
+                     font-weight: normal; color: #002060; }
+
+/* Base tree */
+pre.base-tree      { font-size: 80%; margin: 0; }
+
+/* Details Sections */
+table.func-details { background: #c8e0e8; color: #000000;
+                     border: 2px groove #c0d0d0;
+                     padding: 0 1em 0 1em; margin: 0.4em 0 0 0; }
+h3.func-detail     { background: transparent; color: #000000;
+                     margin: 0 0 1em 0; }
+
+table.var-details  { background: #c8e0e8; color: #000000;
+                     border: 2px groove #ffffff;
+                     padding: 0 1em 0 1em; margin: 0.4em 0 0 0; }
+h3.var-details     { background: transparent; color: #000000;
+                     margin: 0 0 1em 0; }
+
+/* Function signatures */
+.sig               { background: transparent; color: #000000;
+                     font-weight: bold; }  
+.sig-name          { background: transparent; color: #006080; }  
+.sig-arg, .sig-kwarg, .sig-vararg
+                   { background: transparent; color: #008060; }  
+.sig-default       { background: transparent; color: #602000; }  
+.summary-sig       { background: transparent; color: #000000; }  
+.summary-sig-name  { background: transparent; color: #082840; }
+.summary-sig-arg, .summary-sig-kwarg, .summary-sig-vararg
+                   { background: transparent; color: #008060; }  
+
+/* Doctest blocks */
+.py-src            { background: transparent; color: #000000; }
+.py-prompt         { background: transparent; color: #006070;
+                     font-weight: bold;}
+.py-string         { background: transparent; color: #007050; }
+.py-comment        { background: transparent; color: #004080; }
+.py-keyword        { background: transparent; color: #800000; }
+.py-output         { background: transparent; color: #484848; }
+pre.doctestblock   { background: #c8e0e8; color: #000000; 
+                     padding: .5em; margin: 1em;
+                     border: 1px solid #708890; }
+/*table pre.doctestblock*/
+.doctest-block
+                   { background: #c0d8e0; color: #000000; 
+                     padding: .5em; margin: 1em;
+                     border: 1px solid #708890; }
+ 
+/* Variable values */
+pre.variable       { background: #c0d8e0; color: #000000; 
+                     padding: .5em; margin: 0;
+                     border: 1px solid #708890; }
+.variable-linewrap { background: transparent; color: #705000; }
+.variable-ellipsis { background: transparent; color: #705000; }
+.variable-quote    { background: transparent; color: #705000; }
+.re                { background: transparent; color: #000000; }
+.re-char           { background: transparent; color: #007050; }
+.re-op             { background: transparent; color: #800000; }
+.re-group          { background: transparent; color: #004080; }
+.re-ref            { background: transparent; color: #484848; }
+ 
+/* Navigation bar */ 
+table.navbar       { background: #688088; color: #d8f0f0;
+                     border: 2px groove #c0d0d0; }
+th.navbar          { background: #688088; color: #d8f0f0;
+                     font-weight: normal; } 
+th.navselect       { background: #88a0a8; color: #000000;
+                     font-weight: normal; } 
+.nomargin          { margin: 0; }
+ 
+/* Links */ 
+a:link             { background: transparent; color: #104060; }  
+a:visited          { background: transparent; color: #082840; }  
+a.navbar:link      { background: transparent; color: #d8f0f0;
+                     text-decoration: none; }  
+a.navbar:visited   { background: transparent; color: #d8f0f0;
+                     text-decoration: none; }
+
+/* Lists */
+ul { margin-top: 0; }

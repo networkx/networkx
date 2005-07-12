@@ -1,0 +1,148 @@
+Threshold Graphs
+================
+
+>>> import NX
+>>> from NX.threshold import *
+>>> from NX.isomorph import graph_could_be_isomorphic
+>>> import string
+
+Threshold Sequence and Graph Test
+---------------------------------
+
+>>> G=NX.star_graph(10)
+>>> is_threshold_graph(G)
+True
+>>> is_threshold_sequence(G.degree())
+True
+
+>>> G=NX.complete_graph(10)
+>>> is_threshold_graph(G)
+True
+>>> is_threshold_sequence(G.degree())
+True
+
+>>> deg=[3,2,2,1]
+>>> is_threshold_sequence(deg)
+True
+
+>>> G=NX.generators.havel_hakimi_graph(deg)
+>>> is_threshold_graph(G)
+True
+
+Creation Sequences
+------------------
+
+>>> cs0=creation_sequence(deg)
+>>> H0=threshold_graph(cs0)
+>>> string.join(cs0,'')
+'ddid'
+
+
+>>> cs1=creation_sequence(deg, with_labels=True)
+>>> H1=threshold_graph(cs1)
+>>> cs1
+[(2, 'd'), (3, 'd'), (4, 'i'), (1, 'd')]
+
+>>> cs2=creation_sequence(deg, compact=True)
+>>> H2=threshold_graph(cs2)
+>>> cs2
+[2, 1, 1]
+
+
+>>> string.join(uncompact(cs2),'')
+'ddid'
+
+>>> graph_could_be_isomorphic(H0,G)
+True
+>>> graph_could_be_isomorphic(H0,H1)
+True
+>>> graph_could_be_isomorphic(H0,H2)
+True
+    
+Shortest Path
+-------------
+
+>>> shortest_path(cs1,4,1)==NX.shortest_path(G, 4, 1)
+True
+>>> shortest_path(cs1,1,4)==NX.shortest_path(G, 1, 4)
+True
+>>> shortest_path(cs1,1,3)==NX.shortest_path(G, 1, 3)
+True
+>>> shortest_path(cs1,1,2)==NX.shortest_path(G, 1, 2)
+True
+>>> shortest_path(cs1,2,4)==NX.shortest_path(G, 2, 4)
+True
+>>> shortest_path(cs1,4,2)==NX.shortest_path(G, 4, 2)
+True
+>>> shortest_path(cs1,2,3)==NX.shortest_path(G, 2, 3)
+True
+>>> shortest_path(cs1,3,4)==NX.shortest_path(G, 3, 4)
+True
+
+Test finding routines
+---------------------
+
+>>> G=NX.Graph()
+>>> G.add_cycle([1,2,3,4,5,6])
+>>> G.add_edge(2,4)
+>>> G.add_edge(2,5)
+>>> G.add_edge(2,7)
+>>> G.add_edge(3,6)
+>>> G.add_edge(4,6)
+
+Alternating 4 cycle
+
+>>> find_alternating_4_cycle(G)
+[1, 2, 3, 6]
+
+Threshold graph
+
+>>> TG=find_threshold_graph(G)
+>>> is_threshold_graph(TG)
+True
+>>> sorted(TG.nodes())
+[1, 2, 3, 4, 5, 7]
+>>> sorted(TG.nodes())
+[1, 2, 3, 4, 5, 7]
+
+>>> cs=creation_sequence(TG.degree(with_labels=True),with_labels=True)
+>>> find_creation_sequence(G)==cs
+True
+
+
+Fast versions of properties for threshold graphs
+------------------------------------------------
+
+>>> cs=list('ddiiddid')
+>>> G=threshold_graph(cs)
+
+>>> sorted(degree_sequence(cs))==sorted(G.degree())
+True
+
+>>> ts=triangle_sequence(cs)
+>>> ts==NX.cluster.triangles(G)
+True
+
+>>> sum(ts)/3==triangles(cs)
+True
+
+>>> c1=cluster_sequence(cs)
+>>> c2=NX.clustering(G)
+>>> sum([c-d for c,d in zip(c1,c2)])<1e-14
+True
+
+>>> b1=NX.betweenness_centrality(G).values()
+>>> b2=betweenness_sequence(cs)
+>>> sum([c-d for c,d in zip(b1,b2)])<1e-14
+True
+
+>>> eigenvalues(cs)
+[8, 7, 7, 5, 3, 3, 1, 0]
+
+TG creation routines
+--------------------
+
+>>> s=left_d_threshold_sequence(5,7)
+>>> s=right_d_threshold_sequence(5,7)
+>>> s1=swap_d(s,1.0,1.0)
+

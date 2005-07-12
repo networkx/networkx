@@ -1,0 +1,13 @@
+Layout
+======
+
+>>> from NX import *
+>>> from NX.generators.classic import *
+>>> from NX.drawing.layout import *
+>>> G=grid_2d_graph(5,5)
+
+>>> vpos=random_layout(G)
+>>> vpos=circular_layout(G)
+>>> vpos=spring_layout(G)
+>>> vpos=spectral_layout(G)
+

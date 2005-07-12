@@ -1,0 +1,78 @@
+Drawing
+========
+
+.. include:: Menu.txt
+
+NX provides interfaces to two packages for graph drawing.
+
+Matplotlib
+----------
+
+To use the NX matplotlib interface you need: 
+
+   - Matplotlib version 0.73.1 or later  http://matplotlib.sourceforge.net/
+
+Follow the instructions at
+http://matplotlib.sourceforge.net/installing.html
+to install the software.
+
+Graphviz
+--------
+
+NX provides an interface to pydot to write graphs in the dot language.
+The resulting "dot" files can be processed using the graphviz
+tool kit to make graph drawings in many different styles and output formats.
+
+To use the graphviz interface you need:
+
+   - Graphviz, version 2.0 or later  http://graphviz.org/
+   - Pydot, version 0.9.10 or later  http://www.dkbza.org/pydot.html
+   - Pyparsing, version 1.3 or later http://pyparsing.sourceforge.net/	
+
+Pydot has a known bug in parsing double quoted strings and in
+representing the special graphviz null symbol '\\N'.  In order
+for it to work properly with NX you must apply this 
+patch_ (or make the changes yourself in dot_parser.py).
+
+.. _patch: pydot-quote.patch
+
+
+
+Using 
+-----
+
+>>> from NX import *
+>>> G=tetrahedral_graph()
+
+Draw with matplotlib
+
+>>> draw(G)
+>>> savefig("tetrahedral.png")
+>>> show()
+
+.. class:: doctest-block
+.. image:: tetrahedral-s.png
+
+
+Write a dot language file:
+
+>>> write_dot(G,"tetrahedral.dot")
+
+
+::
+
+        graph G {
+	node [label="\N"];
+	graph [bb="0,0,138,252"];
+	1 [pos="73,234", width="0.75", height="0.50"];
+	2 [pos="73,162", width="0.75", height="0.50"];
+	3 [pos="27,90", width="0.75", height="0.50"];
+	4 [pos="82,18", width="0.75", height="0.50"];
+	1 -- 2 [pos="73,216 73,205 73,191 73,180"];
+	1 -- 3 [pos="59,218 51,208 42,194 37,180 28,156 27,127 26,108"];
+	1 -- 4 [pos="87,218 95,208 104,194 109,180 124,129 103,65 90,35"];
+	2 -- 3 [pos="62,145 55,134 45,118 38,107"];
+	2 -- 4 [pos="74,144 76,116 79,64 81,36"];
+	3 -- 4 [pos="39,74 48,62 61,46 70,34"];
+        }
+

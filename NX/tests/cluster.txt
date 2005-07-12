@@ -1,0 +1,90 @@
+Cluster
+=======
+
+>>> from NX import *
+>>> G = Graph()
+
+>>> triangles(G)
+[]
+>>> triangles(G,with_labels=True)
+{}
+
+>>> clustering(G)
+[]
+>>> clustering(G,with_labels=True)
+{}
+
+>>> G = path_graph(10)
+
+>>> triangles(G)
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+>>> triangles(G,with_labels=True)
+{1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0}
+
+>>> clustering(G)
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+>>> clustering(G,with_labels=True)
+{1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0}
+
+
+>>> G = cubical_graph()
+
+>>> triangles(G)
+[0, 0, 0, 0, 0, 0, 0, 0]
+
+>>> triangles(G,1)
+0
+
+>>> triangles(G,[1,2])
+[0, 0]
+
+>>> triangles(G,1,with_labels=True)
+{1: 0}
+
+>>> triangles(G,[1,2],with_labels=True)
+{1: 0, 2: 0}
+
+>>> clustering(G)
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+>>> clustering(G,1)
+0.0
+
+>>> clustering(G,[1,2])
+[0.0, 0.0]
+
+>>> clustering(G,1,with_labels=True)
+{1: 0.0}
+
+>>> clustering(G,[1,2],with_labels=True)
+{1: 0.0, 2: 0.0}
+
+
+>>> G = complete_graph(5)
+
+>>> triangles(G)
+[6, 6, 6, 6, 6]
+>>> sum(triangles(G))/3
+10
+>>> triangles(G,1)
+6
+>>> clustering(G)
+[1.0, 1.0, 1.0, 1.0, 1.0]
+>>> average_clustering(G)
+1.0
+
+Transitivity is weighted average of clustering
+----------------------------------------------
+
+>>> t1=transitivity(G)
+>>> print t1
+1.0
+>>> (cluster_d2,weights)=clustering(G,with_labels=True,weights=True)
+>>> trans=[]
+>>> for v in G.nodes():
+...   trans.append(cluster_d2[v]*weights[v])
+>>> t2=sum(trans)
+>>> abs(t1-t2)<1e-15 
+True
+
+

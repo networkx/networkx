@@ -1,0 +1,16 @@
+include README
+include setup.cfg
+include setup.py
+include setupext.py
+recursive-include NX *.py 
+recursive-include Tools *.py 
+recursive-include NX/tests/ *.py *.txt
+include Doc/Makefile
+recursive-include Doc *.txt
+recursive-include Doc/html *.html
+recursive-include Doc/pdf *.pdf
+recursive-include Doc/data/ *.css *.png *.patch
+recursive-include Examples *.py *.dat *.edges
+recursive-include NX/tests *.txt
+
+

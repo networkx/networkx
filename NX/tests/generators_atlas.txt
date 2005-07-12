@@ -1,0 +1,12 @@
+Generators - Atlas
+==================
+
+>>> from NX import *
+>>> from NX.generators.atlas import *
+    
+>>> GAG=graph_atlas_g()
+>>> G=GAG[7]
+>>> number_of_nodes(G)
+3
+>>> number_of_edges(G)
+3

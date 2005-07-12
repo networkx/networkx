@@ -1,0 +1,48 @@
+NetworkX Examples
+=================
+
+.. include:: Menu.txt
+
+Basic
+-----
+
+>>> from NX import *
+>>> G=Graph()
+>>> G.add_edge(1,2)
+>>> G.add_edge(2,3)
+>>> G.add_edge(2,4)
+>>> G.add_edge(2,5)
+>>> G.add_edge(2,6)
+>>> G.add_edge(4,6)
+
+Print the nodes of the graph
+
+>>> print G.nodes()
+[1, 2, 3, 4, 5, 6]
+
+Print the degree of each node
+
+>>> for v in G.nodes():
+...     print v,G.degree(v)
+... 
+1 1
+2 5
+3 1
+4 2
+5 1
+6 2
+
+Draw with matplotlib
+
+>>> draw(G)
+
+.. image:: basic-s.png
+
+More elaborate drawings are also possible
+
+.. image:: as.png
+
+
+
+
+

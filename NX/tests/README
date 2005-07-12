@@ -1,0 +1,13 @@
+These files are for testing the methods and functions in NX.
+The tests use Python's docutils format and may be executed 
+using the Python doctest and unittest framework (you need python2.4
+for this) to verify the functionality of the package.
+
+The tests also demonstrate the usage of many of the features of NX.
+
+You can run all of the tests by just typing "make".
+
+To produce formatted output of all of the tests run
+"make doc" and html format will be produced in the directory html/
+You must have rst2html installed to do this (part of the python
+docutils package).

@@ -1,0 +1,21 @@
+Credits
+========
+
+.. include:: Menu.txt
+
+Thanks to Guido van Rossum for the idea of using Python for
+implementing a graph data structure  
+http://www.python.org/doc/essays/graphs.html
+
+
+Thanks to the following people who have made contributions to NX:
+
+ - Katy Bold contributed the Karate Club graph 
+
+ - Hernan Rozenfeld enhanced the graph generators and did stress testing
+
+ - Brendt Wohlberg added examples from the Stanford GraphBase
+
+ - Jim Bagrow reported bugs in the search methods.
+
+ 

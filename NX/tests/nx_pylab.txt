@@ -1,0 +1,38 @@
+nx_pylab
+========
+
+Drawing NX graphs with matplotlib and graphviz.
+
+
+>>> from NX import *
+>>> from NX.drawing import *
+
+
+>>> N=barbell_graph(5,10)
+
+>>> hold(False)
+>>> draw_spring(N)
+>>> savefig("test.png")
+>>> draw_random(N)
+>>> savefig("test.ps")
+>>> draw_circular(N)
+>>> savefig("test.png")
+>>> draw_spectral(N)
+>>> savefig("test.png")
+>>> draw_nxpydot(N)
+>>> savefig("test.png")
+>>> draw_nxpydot(N,prog="neato")
+>>> savefig("test.png")
+>>> draw_nxpydot(N,prog="twopi")
+>>> savefig("test.ps")
+>>> draw_nxpydot(N,prog="circo")
+>>> savefig("test.ps")
+>>> draw_nxpydot(N,prog="dot")
+>>> savefig("test.png")
+>>> draw_nxpydot(N,prog="fdp")
+>>> savefig("test.ps")
+>>> d=N.degree(with_labels=True)
+>>> draw_nxpydot_nolabels(N,node_color=d,cmap=cm.pink)
+>>> savefig("test.png")
+
+

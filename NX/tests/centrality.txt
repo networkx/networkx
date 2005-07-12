@@ -1,0 +1,63 @@
+Centrality
+==========
+
+>>> from NX import *
+>>> G=krackhardt_kite_graph()
+
+Betweenness
+-----------
+
+>>> b=betweenness_centrality(G)
+>>> for v in G.nodes():
+...     print "%0.2d %5.3f"%(v,b[v])
+01 0.023
+02 0.023
+03 0.000
+04 0.102
+05 0.000
+06 0.231
+07 0.231
+08 0.389
+09 0.222
+10 0.000
+
+
+Degree Centrality
+------------------
+
+>>> d=degree_centrality(G)
+>>> for v in G.nodes():
+...     print "%0.2d %5.3f"%(v,d[v])
+01 0.444
+02 0.444
+03 0.333
+04 0.667
+05 0.333
+06 0.556
+07 0.556
+08 0.333
+09 0.222
+10 0.111
+
+Closeness Centrality
+--------------------
+
+>>> c=closeness_centrality(G)
+>>> for v in G.nodes():
+...     print "%0.2d %5.3f"%(v,c[v])
+01 0.529
+02 0.529
+03 0.500
+04 0.600
+05 0.500
+06 0.643
+07 0.643
+08 0.600
+09 0.429
+10 0.310
+
+
+Edge Betweenness
+----------------
+
+FIXME: untested

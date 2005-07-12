@@ -1,0 +1,146 @@
+Paths
+=====
+
+>>> import NX
+>>> G=NX.grid_2d_graph(4,4)
+
+    .. image:: paths_G.png
+
+Paths and path lengths
+----------------------
+
+>>> NX.shortest_path_length(G,1,16)
+6
+>>> sp=NX.shortest_path_length(G,1)
+>>> sp[16]
+6
+>>> NX.shortest_path(G,1,12)
+[1, 2, 3, 4, 8, 12]
+>>> sp=NX.shortest_path(G,1)
+>>> sp[12] 
+[1, 2, 3, 4, 8, 12]
+
+
+Eccentricity, diameter, etc.
+----------------------------
+
+>>> NX.eccentricity(G,1)
+6
+>>> e=NX.eccentricity(G,with_labels=True)
+>>> e[1]
+6
+>>> NX.diameter(G)
+6
+>>> NX.radius(G)
+4
+>>> NX.periphery(G)
+[1, 4, 13, 16]
+>>> NX.center(G)
+[6, 7, 10, 11]
+
+
+Dijkstra
+--------
+
+>>> XG=NX.XDiGraph()
+>>> XG.add_edges_from([('s','u',10) ,('s','x',5) ,('u','v',1) ,('u','x',2) ,('v','y',1) ,('x','u',3) ,('x','v',5) ,('x','y',2) ,('y','s',7) ,('y','v',6)])
+>>> (D,P)= NX.dijkstra(XG,'s','v')
+>>> P['v'] 
+['s', 'x', 'u', 'v']
+>>> D['v'] 
+9
+>>> NX.dijkstra_path(XG,'s','v')
+['s', 'x', 'u', 'v']
+>>> NX.dijkstra_path_length(XG,'s','v')
+9
+
+>>> NX.dijkstra(XG,'s')[1]['v'] 
+['s', 'x', 'u', 'v']
+
+>>> GG=XG.to_undirected()
+>>> (D,P)= NX.dijkstra(GG,'s','v')
+>>> P['v'] 
+['s', 'y', 'v']
+>>> D['v'] 
+8
+>>> NX.dijkstra(GG,'s')[1]['v'] 
+['s', 'y', 'v']
+
+>>> NX.dijkstra_path(GG,'s','v')
+['s', 'y', 'v']
+>>> NX.dijkstra_path_length(GG,'s','v')
+8
+
+>>> G=NX.DiGraph()
+>>> G.add_edges_from([('s','u'), ('s','x'), ('u','v'), ('u','x'), ('v','y'), ('x','u'), ('x','v'), ('x','y'), ('y','s'), ('y','v')])
+>>> NX.dijkstra(G,'s','v')[1]['v'] 
+['s', 'x', 'v']
+>>> NX.dijkstra(G,'s')[1]['v'] 
+['s', 'x', 'v']
+
+>>> NX.dijkstra_path(G,'s','v')
+['s', 'x', 'v']
+>>> NX.dijkstra_path_length(G,'s','v')
+2
+
+>>> GG=G.to_undirected()
+>>> NX.dijkstra(GG,'s','v')[1]['v'] 
+['s', 'y', 'v']
+
+
+>>> NX.dijkstra_path(G,'s','moon')
+Traceback (most recent call last):
+...
+NetworkXError: node s not reachable from moon
+
+
+>>> NX.dijkstra_path_length(G,'s','moon')
+Traceback (most recent call last):
+...
+NetworkXError: node s not reachable from moon
+
+
+
+Topological Sort
+----------------
+
+>>> DG=NX.DiGraph()
+>>> DG.add_cycle([1,2,3,4,5])
+>>> DG.add_path([11,12,13,14,15])
+>>> NX.topological_sort(DG) is None
+True
+>>> NX.topological_sort_recursive(DG) is None
+True
+>>> NX.is_directed_acyclic_graph(DG)
+False
+>>> DG.delete_edge(1,2)
+>>> NX.topological_sort_recursive(DG)
+[11, 12, 13, 14, 15, 2, 3, 4, 5, 1]
+>>> NX.topological_sort(DG)
+[11, 12, 13, 14, 15, 2, 3, 4, 5, 1]
+>>> NX.is_directed_acyclic_graph(DG)
+True
+
+>>> DG=NX.DiGraph()
+>>> DG.add_edges_from([(1,i) for i in range(2,5)])
+>>> DG.add_edges_from([(2,i) for i in range(5,9)])
+>>> DG.add_edges_from([(6,i) for i in range(9,12)])
+>>> DG.add_edges_from([(4,i) for i in range(12,15)])
+>>> NX.topological_sort_recursive(DG)
+[1, 4, 14, 13, 12, 3, 2, 7, 6, 11, 10, 9, 5, 8]
+>>> NX.topological_sort(DG)
+[1, 4, 14, 13, 12, 3, 2, 7, 6, 11, 10, 9, 5, 8]
+>>> DG.add_edge(14,1)
+>>> NX.topological_sort(DG) is None
+True
+>>> NX.topological_sort_recursive(DG) is None
+True
+
+>>> G=NX.Graph()
+>>> G.add_edge(1,2)
+>>> NX.topological_sort(G) is None
+True
+>>> NX.topological_sort_recursive(G) is None
+True
+
+

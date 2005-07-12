@@ -1,0 +1,54 @@
+Search 
+======
+
+>>> from NX import *
+>>> G=grid_2d_graph(4,4)
+
+    .. image:: paths_G.png
+
+
+>>> sp=bfs_length(G,source=1)
+>>> print sp[16]
+6
+
+>>> sp=bfs_path(G,source=1)
+>>> print sp[16]
+[1, 2, 3, 4, 8, 12, 16]
+
+>>> dfs_preorder(G,v=1)
+[[1, 2, 5, 6, 9, 10, 13, 14, 15, 16, 11, 12, 7, 8, 3, 4]]
+
+>>> dfs_postorder(G,v=1)
+[[1, 5, 9, 13, 14, 15, 11, 7, 6, 10, 2, 3, 4, 8, 12, 16]]
+
+>>> d=dfs_successor(G,v=1)
+>>> print d[2]
+[6]
+
+>>> d=dfs_predecessor(G,v=1)
+>>> print d[6]
+[7]
+
+>>> d=dfs_forest(G,v=1)
+>>> G=d[0]
+>>> print sorted(G.nodes())
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+>>> number_connected_components(G)
+1
+
+>>> sorted(connected_components(G)[0])
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+>>> sorted(node_connected_component(G,1))
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+>>> H=connected_component_subgraphs(G)[0]
+>>> sorted(H.nodes())
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+>>> is_connected(G)
+True
+>>> G.add_edge('A','B')
+>>> is_connected(G)
+False
