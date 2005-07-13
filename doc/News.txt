@@ -1,0 +1,90 @@
+NetworkX News
+=============
+.. include:: Menu.txt
+
+
+What's new in NX-0.23?
+----------------------
+
+Release date: 14 July 2005
+
+The NetworkX web locations have changed:
+
+https://networkx.lanl.gov/     - main documentation site
+https://networkx.lanl.gov/svn  - subversion source code repository
+https://networkx.lanl.gov/wiki - bug tracking and info
+
+
+Important Change
+~~~~~~~~~~~~~~~~
+The naming conventions in NetworkX have changed.
+The package name "NX" is now "networkx".
+
+The suggested ways to import the NetworkX package are
+
+ - import networkx
+ - import networkx as NX
+ - from networkx import *
+
+New features
+~~~~~~~~~~~~
+  - DiGraph reverse
+
+Examples
+~~~~~~~~
+Documentation
+~~~~~~~~~~~~~
+  - Changed to reflect NX-networkx change
+  - main site is now https://networkx.lanl.gov/
+
+Bug fixes
+~~~~~~~~~
+   - Fixed logic in io.py for reading DiGraphs.  
+   - Path based centrality measures (betweenness, closeness)
+     modified so they work on graphs that are not connected and
+     produce the same result as if each connected component were
+     considered separately.
+
+What's new in NX-0.22?
+----------------------
+
+Release date: 17 June 2005
+
+New features
+~~~~~~~~~~~~
+  - Topological sort, testing for directed acyclic graphs (DAGs)
+  - Dikjstra's algorithm for shortest paths in weighted graphs
+  - Multidimensional layout with dim=n for drawing
+  - 3d rendering demonstration with vtk
+  - Graph generators
+     + random_powerlaw_tree
+     + dorogovtsev_goltsev_mendes_graph
+
+
+Examples
+~~~~~~~~
+  - Kevin Bacon movie actor graph: Examples/kevin_bacon.py
+  - Compute eigenvalues of graph Laplacian: Examples/eigenvalues.py
+  - Atlas of small graphs: Examples/atlas.py
+  
+Documentation
+~~~~~~~~~~~~~
+  - Rewrite of setup scripts to install documentation and
+    tests in documentation directory specified 
+
+
+
+Bug fixes
+~~~~~~~~~
+   - Handle calls to edges() with non-node, non-iterable items.
+   - truncated_tetrahedral_graph was just plain wrong
+   - Speedup of betweenness_centrality code
+   - bfs_path_length now returns correct lengths 
+   - Catch error if target of search not in connected component of source
+   - Code cleanup to label internal functions with _name
+   - Changed import statement lines to always use "import NX" to
+     protect name-spaces   
+   - Other minor bug-fixes and testing added
+
+
+
