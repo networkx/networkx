@@ -25,7 +25,7 @@ __revision__ = "$Revision: 998 $"
 #    http://www.gnu.org/copyleft/lesser.html
 
 import string
-import NX
+import networkx as NX
 
 def davis_club_graph(create_using=None, **kwds):
     nwomen=14

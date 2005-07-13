@@ -14,8 +14,8 @@ __revision__ = "$Revision: 504 $"
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from NX import *
-from NX.generators.degree_seq import *
+from networkx import *
+from networkx.generators.degree_seq import *
 import sys
 
 

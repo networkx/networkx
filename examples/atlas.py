@@ -14,9 +14,9 @@ __revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from NX import *
-from NX.generators.atlas import *
-from NX.isomorph import graph_could_be_isomorphic as isomorphic
+from networkx import *
+from networkx.generators.atlas import *
+from networkx.isomorph import graph_could_be_isomorphic as isomorphic
 import random
 
 def atlas6():
@@ -56,7 +56,7 @@ def iso(G1, glist):
 
 if __name__ == '__main__':
 
-    from NX import *
+    from networkx import *
 
     G=atlas6()
 

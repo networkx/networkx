@@ -9,7 +9,7 @@ Section 1.2 in Knuth's book [1,2].
 
 Note that one of the 5075 cross references is a self loop and
 thus is not included in the graph built here because 
-the standard NX Graph class doesn't include self loops
+the standard networkx Graph class doesn't include self loops
 (cf. 400pungency:400 401 403 405).
 
 References.
@@ -33,7 +33,7 @@ __revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from NX import *
+from networkx import *
 import re
 import sys
 
@@ -74,7 +74,7 @@ def roget_graph():
     return G            
 
 if __name__ == '__main__':
-    from NX import *
+    from networkx import *
     G=roget_graph()
     print "Loaded Donald Knuth's roget.dat containing 1022 categories."
     print "digraph has %d nodes with %d edges"\

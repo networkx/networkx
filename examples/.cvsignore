@@ -1,4 +1,7 @@
 *.pyc
 *.pyo
 *.png
+*.edgelist
+*.dot
+*.ps
 

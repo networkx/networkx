@@ -20,7 +20,7 @@ __revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from NX import *
+from networkx import *
 
 def kevin_bacon_graph():
     """Return the graph of actors connected by a movie.
@@ -43,7 +43,7 @@ def kevin_bacon_graph():
     return G
 
 if __name__ == '__main__':
-    from NX import *
+    from networkx import *
 
     G=kevin_bacon_graph()
     print "Loaded the kevin_bacon_graph from kevin_bacon.dat"

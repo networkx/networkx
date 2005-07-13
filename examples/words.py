@@ -27,7 +27,7 @@ __revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from NX import *
+from networkx import *
 import re
 import sys
 
@@ -79,7 +79,7 @@ def words_graph():
 
 
 if __name__ == '__main__':
-    from NX import *
+    from networkx import *
     print "Loading words.dat"
     G=words_graph()
     print "Loaded Donald Knuth's words.dat containing 5757 five-letter English words."

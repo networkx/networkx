@@ -15,7 +15,7 @@ __revision__ = "$Revision: 831 $"
 #    http://www.gnu.org/copyleft/lesser.html
 
 from pylab import *
-from NX import *
+from networkx import *
 
 
 G=grid_2d_graph(4,4)  #4x4 grid

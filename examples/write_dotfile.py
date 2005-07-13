@@ -14,11 +14,11 @@ __revision__ = "$Revision: 882 $"
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from NX import *
-from NX.drawing.nx_pydot import *
+from networkx import *
+#from NX.drawing.nx_pydot import *
 
 G=grid_2d_graph(5,5)  # 5x5 grid
-P=pydot_from_NX(G)
+P=pydot_from_networkx(G)
 for n in P.node_list:
     if int(n.name)>10:
         n.color="red"

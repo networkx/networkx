@@ -14,7 +14,7 @@ __revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from NX import *
+from networkx import *
 import re
 import sys
 
@@ -46,7 +46,7 @@ def lanl_graph():
 
 if __name__ == '__main__':
 
-    from NX import *
+    from networkx import *
 
     G=lanl_graph()
 

@@ -17,8 +17,8 @@ __revision__ = "$Revision: 778 $"
 
 from matplotlib.pylab import *
 import matplotlib.mlab as mlab
-from NX import *
-from NX.generators.degree_seq import *
+from networkx import *
+from networkx.generators.degree_seq import *
 
 
 z=create_degree_sequence(1000,powerlaw_sequence)

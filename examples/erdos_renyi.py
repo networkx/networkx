@@ -13,7 +13,7 @@ __revision__ = "$Revision: 503 $"
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from NX import *
+from networkx import *
 
 n=10 # 10 nodes
 m=20 # 20 edges
