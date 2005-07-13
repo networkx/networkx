@@ -37,11 +37,11 @@ pdfdoc: directory
 pdfdocreal: Readme.tex Legal.tex Tutorial.tex Examples.tex Quick_ref.tex Drawing.tex Credits.tex News.tex
 
 htmlreference:  FORCE
-	(cd ../;epydoc -o ./Doc/html/Reference/ --ignore-param-mismatch --docformat restructuredtext --css Doc/data/blue_restructured.css --no-private -v --inheritance listed -n NX NX)
+	(cd ../;epydoc -o ./doc/html/Reference/ --ignore-param-mismatch --docformat restructuredtext --css doc/data/blue_restructured.css --no-private -v --inheritance listed -n networkx networkx)
 
 pdfreference:  FORCE
-	(cd ../;epydoc --pdf -o ./Doc/pdf/Reference/ --ignore-param-mismatch --docformat restructuredtext -v --inheritance listed -n NX NX)
-	mv pdf/Reference/api.pdf pdf/NX.pdf
+	(cd ../;epydoc --pdf -o ./doc/pdf/Reference/ --ignore-param-mismatch --docformat restructuredtext -v --inheritance listed -n networkx networkx)
+	mv pdf/Reference/api.pdf pdf/networkx_api.pdf
 	/bin/rm -r pdf/Reference
 
 directory:
