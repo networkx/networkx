@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Setup script for NX.
+Setup script for networkx.
 
 """
 # Lots of good ideas borrowed from the IPython setup script
@@ -31,7 +31,7 @@ if sys.version_info[:2] < (2, 3):
           sys.version_info[:2]
     sys.exit(-1)
 
-execfile(os.path.join('NX','release.py'))
+execfile(os.path.join('networkx','release.py'))
 
 
 # A little utility we'll need below, since glob() does NOT allow you to do
@@ -47,15 +47,15 @@ def file_doesnt_endwith(test,endings):
     return True
 
 
-docdirbase  = 'share/doc/NX-%s' % version
-docfiles = filter(isfile, glob('Doc/*'))
-examples = filter(isfile, glob('Examples/*.py')) + \
-           filter(isfile, glob('Examples/*.dat')) + \
-           filter(isfile, glob('Examples/*.edges'))
-html     = filter(isfile, glob('Doc/html/*'))
-ref      = filter(isfile, glob('Doc/html/Reference/*'))
-pdf      = filter(isfile, glob('Doc/pdf/*.pdf')) 
-tests    = filter(isfile, glob('NX/tests/*')) 
+docdirbase  = 'share/doc/networkx-%s' % version
+docfiles = filter(isfile, glob('doc/*'))
+examples = filter(isfile, glob('examples/*.py')) + \
+           filter(isfile, glob('examples/*.dat')) + \
+           filter(isfile, glob('examples/*.edges'))
+html     = filter(isfile, glob('doc/html/*'))
+ref      = filter(isfile, glob('doc/html/Reference/*'))
+pdf      = filter(isfile, glob('doc/pdf/*.pdf')) 
+tests    = filter(isfile, glob('networkx/tests/*')) 
 
 data = [('data', docdirbase, docfiles),
         ('data', os.path.join(docdirbase, 'examples'), examples),
@@ -65,7 +65,7 @@ data = [('data', docdirbase, docfiles),
         ('data', os.path.join(docdirbase, 'tests'), tests)
         ]
 
-packages=["NX","NX.generators","NX.drawing"]
+packages=["networkx","networkx.generators","networkx.drawing"]
 
 setup(name             = name,
       version          = version,
