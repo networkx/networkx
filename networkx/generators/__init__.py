@@ -38,6 +38,7 @@ from degree_seq import  configuration_model,\
 from geometric import  random_geometric_graph
 from random_graphs import  binomial_graph,\
                erdos_renyi_graph,\
+               newman_watts_strogatz_graph,\
                watts_strogatz_graph,\
                random_regular_graph,\
                barabasi_albert_graph,\

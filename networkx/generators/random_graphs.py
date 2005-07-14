@@ -74,14 +74,55 @@ def erdos_renyi_graph(n,m,seed=None):
             edge_count=edge_count+1
     return G
 
-def watts_strogatz_graph(n,k,p,seed=None):
+def newman_watts_strogatz_graph(n,k,p,seed=None):
     """
-    Return a Watts-Strogatz small world graph.
+    Return a Newman-Watts-Strogatz small world graph.
+
+    The graph is a ring with k neighbors with new edges (shortcuts)
+    *added* randomly with probability p for each edge.  No edges
+    are removed.
 
     :Parameters:
       - `n`: the number of nodes
       - `k`: each vertex is connected to k neighbors in the circular topology
-      - `p`: the probability of rewiring
+      - `p`: the probability of adding a new edge for each edge
+      - `seed`: seed for random number generator (default=None)
+      
+    """
+    if not seed is None:
+        random.seed(seed)
+    G=empty_graph(n)
+    G.name="Newmann-Watts-Strogatz Graph"
+    nlist = G.nodes()
+    fromv = nlist
+    # connect the k/2 neighbors
+    for n in range(1, k/2+1):
+        tov = fromv[n:] + fromv[0:n] # the first n are now last
+        for i in range(len(fromv)):
+            G.add_edge(fromv[i], tov[i])
+    # randomly connect nodes with probability p
+    e = G.edges()
+    for (u, v) in e:
+        if random.random() < p:
+            v = random.choice(nlist)
+            # no G loops and we want a new edge
+            # is that the correct NWS model?
+            while v == u or G.has_edge(u, v): 
+                v = random.choice(nlist)
+            G.add_edge(u,v)
+    return G            
+
+def watts_strogatz_graph(n,k,p,seed=None):
+    """
+    Return a Watts-Strogatz small world graph.
+
+    The graph is a ring with k neighbors with
+    edges rewired randomly with probability p.
+
+    :Parameters:
+      - `n`: the number of nodes
+      - `k`: each vertex is connected to k neighbors in the circular topology
+      - `p`: the probability of rewiring an edge
       - `seed`: seed for random number generator (default=None)
       
     """
@@ -96,17 +137,19 @@ def watts_strogatz_graph(n,k,p,seed=None):
         tov = fromv[n:] + fromv[0:n] # the first n are now last
         for i in range(len(fromv)):
             G.add_edge(fromv[i], tov[i])
-    # randomly connect nodes with probability p
+    # randomly rewire nodes with probability p
     e = G.edges()
     for (u, v) in e:
         if random.random() < p:
-            v = random.choice(nlist)
+            newv = random.choice(nlist)
             # no G loops and we want a new edge
             # is that the correct WS model?
-            while v == u or G.has_edge(u, v): 
-                v = random.choice(nlist)
-            G.add_edge(u,v)
+            while newv == u or G.has_edge(u, newv): 
+                newv = random.choice(nlist)
+            G.delete_edge(u,v)
+            G.add_edge(u,newv)
     return G            
+
 
 
 def random_regular_graph(d,n,seed=None):
