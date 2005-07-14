@@ -1,7 +1,7 @@
 Centrality
 ==========
 
->>> from NX import *
+>>> from networkx import *
 >>> G=krackhardt_kite_graph()
 
 Betweenness

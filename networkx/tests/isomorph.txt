@@ -1,8 +1,8 @@
 Isomorph
 ========
 
->>> import NX
->>> from NX.isomorph import graph_could_be_isomorphic,fast_graph_could_be_isomorphic, faster_graph_could_be_isomorphic
+>>> import networkx as NX
+>>> from networkx.isomorph import graph_could_be_isomorphic,fast_graph_could_be_isomorphic, faster_graph_could_be_isomorphic
     
 
 >>> G1=NX.Graph()

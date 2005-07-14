@@ -1,9 +1,9 @@
 Threshold Graphs
 ================
 
->>> import NX
->>> from NX.threshold import *
->>> from NX.isomorph import graph_could_be_isomorphic
+>>> import networkx as NX
+>>> from networkx.threshold import *
+>>> from networkx.isomorph import graph_could_be_isomorphic
 >>> import string
 
 Threshold Sequence and Graph Test

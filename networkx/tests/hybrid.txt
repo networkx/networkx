@@ -1,9 +1,9 @@
 Hybrid
 ======
 
->>> from NX import *
->>> from NX.generators.classic import periodic_grid_2d_graph
->>> from NX.hybrid import *
+>>> from networkx import *
+>>> from networkx.generators.classic import periodic_grid_2d_graph
+>>> from networkx.hybrid import *
 
 FC article claims 2d grid graph of size n is (3,3)-connected 
 and (5,9)-connected, but I don't think it is (5,9)-connected

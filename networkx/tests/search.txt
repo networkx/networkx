@@ -1,7 +1,7 @@
 Search 
 ======
 
->>> from NX import *
+>>> from networkx import *
 >>> G=grid_2d_graph(4,4)
 
     .. image:: paths_G.png

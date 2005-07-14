@@ -1,8 +1,8 @@
 IO
 ==
 
->>> from NX.base import Graph
->>> from NX.io import *
+>>> from networkx.base import Graph
+>>> from networkx.io import *
 >>> import os,tempfile
 >>> G =Graph(name="test")
 >>> e=[('a','b'),('b','c'),('c','d'),('d','e'),('e','f'),('a','f')]

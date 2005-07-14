@@ -1,7 +1,7 @@
 Utils
 ======
 
->>> from NX.utils import *
+>>> from networkx.utils import *
 
 is_string_like
 --------------
@@ -26,7 +26,7 @@ True
 True
 >>> iterable("ABC")
 True
->>> from NX import *
+>>> from networkx import *
 >>> K=complete_graph(10)
 >>> iterable(K)
 True

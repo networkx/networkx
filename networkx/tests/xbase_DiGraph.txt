@@ -1,7 +1,7 @@
 DiGraph
 =======
 
-from NX import *
+from networkx import *
 
 Unit tests for XDiGraph class in xbase.py
 -----------------------------------------
@@ -66,8 +66,8 @@ K1, K2, null, etc.)  we also use: P1di, P2di, etc. where Xdi=to_directed(X)
 
 ----------------------------------------------------- 
  
->>> from NX import *
->>> from NX.isomorph import graph_could_be_isomorphic
+>>> from networkx import *
+>>> from networkx.isomorph import graph_could_be_isomorphic
 >>> is_isomorphic=graph_could_be_isomorphic
 
 

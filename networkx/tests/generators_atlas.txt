@@ -1,8 +1,8 @@
 Generators - Atlas
 ==================
 
->>> from NX import *
->>> from NX.generators.atlas import *
+>>> from networkx import *
+>>> from networkx.generators.atlas import *
     
 >>> GAG=graph_atlas_g()
 >>> G=GAG[7]

@@ -1,7 +1,7 @@
 Generators - Geometric
 ======================
 
->>> from NX import *
->>> from NX.generators.geometric import *
+>>> from networkx import *
+>>> from networkx.generators.geometric import *
     
 >>> G=random_geometric_graph(50,0.25)

@@ -1,10 +1,10 @@
 Search Class
 ============
 
->>> from NX import *
->>> from NX.queues import *
->>> from NX.search_class import *
->>> from NX.generators.classic import *
+>>> from networkx import *
+>>> from networkx.queues import *
+>>> from networkx.search_class import *
+>>> from networkx.generators.classic import *
 >>> G=grid_2d_graph(4,4)
 
 >>> V=Preorder(G)

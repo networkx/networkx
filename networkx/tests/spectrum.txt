@@ -2,8 +2,8 @@ Spectrum
 ========
 
 >>> import LinearAlgebra as LA
->>> from NX.generators.degree_seq import *
->>> from NX.spectrum import *
+>>> from networkx.generators.degree_seq import *
+>>> from networkx.spectrum import *
 >>> import sys
 >>> deg=[3,2,2,1]
 >>> G=havel_hakimi_graph(deg)
@@ -49,7 +49,7 @@ Eigenvalues
 >>> e=LA.eigenvalues(FCL)
 >>> for ev in sorted(e):
 ...    print "%5.2f"%ev
--0.00
+ 0.00
  0.77
  1.50
  1.73

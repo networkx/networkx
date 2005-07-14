@@ -1,14 +1,15 @@
 Generators - Random Graphs
 ----------------------------
 
->>> from NX import *
->>> from NX.generators.random_graphs import *
+>>> from networkx import *
+>>> from networkx.generators.random_graphs import *
 
 
 
 >>> G=binomial_graph(100,0.25)
 >>> G=erdos_renyi_graph(10,20)
 >>> G=watts_strogatz_graph(10,2,0.25)
+>>> G=newman_watts_strogatz_graph(10,2,0.25)
 >>> G=barabasi_albert_graph(100,1)
 >>> G=powerlaw_cluster_graph(100,1,1.0)
 

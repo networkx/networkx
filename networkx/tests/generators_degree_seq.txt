@@ -4,9 +4,9 @@ Generators - Degree Sequence
 
 
 
->>> from NX import *
->>> from NX.generators.degree_seq import *
->>> from NX.isomorph import graph_could_be_isomorphic
+>>> from networkx import *
+>>> from networkx.generators.degree_seq import *
+>>> from networkx.isomorph import graph_could_be_isomorphic
 >>> is_isomorphic=graph_could_be_isomorphic # use fast but weak isomorphism checker
 
 configuration_model
@@ -103,7 +103,7 @@ NetworkXError: Degree sequence not a tree
 Degree Sequences
 ----------------
 
->>> from NX.utils import *
+>>> from networkx.utils import *
 >>> seq=create_degree_sequence(10,uniform_sequence)
 >>> len(seq)
 10

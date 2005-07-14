@@ -1,4 +1,4 @@
->>> from NX.queues import *
+>>> from networkx.queues import *
 >>> a = [1, 4, 2, 5, 6, 8, -100, 10, 7, 3, 0]
 >>> def qtest(q): return [q.extend(a), [q.pop() for i in range(len(q))]][1]
 >>> def ptest(q): return [q.extend(a), [q.smallest() for i in range(len(q))]][1]

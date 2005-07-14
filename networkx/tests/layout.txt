@@ -1,9 +1,9 @@
 Layout
 ======
 
->>> from NX import *
->>> from NX.generators.classic import *
->>> from NX.drawing.layout import *
+>>> from networkx import *
+>>> from networkx.generators.classic import *
+>>> from networkx.drawing.layout import *
 >>> G=grid_2d_graph(5,5)
 
 >>> vpos=random_layout(G)

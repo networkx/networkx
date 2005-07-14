@@ -4,9 +4,9 @@ Cores
 Unit tests for cores decomposition in cores.py
 ----------------------------------------------
 
->>> from NX import *
->>> from NX.cores import *
->>> from NX.generators.degree_seq import *
+>>> from networkx import *
+>>> from networkx.cores import *
+>>> from networkx.generators.degree_seq import *
 
 
 Below, graph G is the example graph in Figure 1 from Batagelj and

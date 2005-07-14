@@ -1,10 +1,10 @@
 Cliques
 =======
 
->>> import NX
->>> from NX.generators.degree_seq import *
->>> from NX.generators.random_graphs import *
->>> from NX.cliques import *
+>>> import networkx as NX
+>>> from networkx.generators.degree_seq import *
+>>> from networkx.generators.random_graphs import *
+>>> from networkx.cliques import *
 
 >>> z=[3,4,3,4,2,4,2,1,1,1,1]
 >>> G=NX.generators.havel_hakimi_graph(z)

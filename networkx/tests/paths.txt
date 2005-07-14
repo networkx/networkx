@@ -1,7 +1,7 @@
 Paths
 =====
 
->>> import NX
+>>> import networkx as NX
 >>> G=NX.grid_2d_graph(4,4)
 
     .. image:: paths_G.png

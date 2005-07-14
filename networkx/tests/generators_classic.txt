@@ -4,8 +4,8 @@ Generators - Classic
 Unit tests for various classic graph generators in generators/classic.py
 ------------------------------------------------------------------------
 
->>> from NX import *
->>> from NX.isomorph import graph_could_be_isomorphic
+>>> from networkx import *
+>>> from networkx.isomorph import graph_could_be_isomorphic
 >>> is_isomorphic=graph_could_be_isomorphic
 
 

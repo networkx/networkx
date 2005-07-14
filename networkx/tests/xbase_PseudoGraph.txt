@@ -34,8 +34,8 @@ we perform unit tests with the following three PseudoGraphs:
 
 >>> from pprint import *
 
->>> from NX import *
->>> from NX.isomorph import graph_could_be_isomorphic
+>>> from networkx import *
+>>> from networkx.isomorph import graph_could_be_isomorphic
 >>> is_isomorphic=graph_could_be_isomorphic
 
 Some small graphs

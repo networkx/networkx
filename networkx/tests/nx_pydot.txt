@@ -1,8 +1,8 @@
 nx_pydot
 ========
 
->>> from NX import *
->>> from NX.drawing import *
+>>> from networkx import *
+>>> from networkx.drawing import *
 >>> import os
 
 Undirected

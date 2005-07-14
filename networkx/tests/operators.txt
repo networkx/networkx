@@ -3,8 +3,8 @@ Operators
 
 Unit tests for graph operations in operators.py
 
->>> from NX import *
->>> from NX.isomorph import graph_could_be_isomorphic
+>>> from networkx import *
+>>> from networkx.isomorph import graph_could_be_isomorphic
 >>> is_isomorphic=graph_could_be_isomorphic # fast but weak isomorphism checker
 
 

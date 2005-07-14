@@ -1,7 +1,7 @@
 Cluster
 =======
 
->>> from NX import *
+>>> from networkx import *
 >>> G = Graph()
 
 >>> triangles(G)
