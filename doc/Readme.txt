@@ -56,7 +56,7 @@ Using
 
    Just write in Python
 
-   >>> import NX
+   >>> import networkx as NX
    >>> G=NX.Graph()
    >>> G.add_edge(1,2)
    >>> G.add_node("spam")

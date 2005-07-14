@@ -29,6 +29,9 @@ The suggested ways to import the NetworkX package are
 New features
 ~~~~~~~~~~~~
   - DiGraph reverse
+  - Graph generators
+     + watts_strogatz_graph now does rewiring method
+     + old watts_strogatz_graph->newman_watts_strogatz_graph
 
 Examples
 ~~~~~~~~
