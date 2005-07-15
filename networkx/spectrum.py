@@ -71,8 +71,8 @@ def generalized_laplacian(G):
     D=I*Numeric.sum(A)
     L=D-A
     d=sum(A)
-    T=I*(Numeric.sqrt(1./d))
-    L=I-Numeric.dot(T,Numeric.dot(A,T))
+    T=I*(Numeric.where(d,Numeric.sqrt(1./d),0))
+    L=Numeric.dot(T,Numeric.dot(L,T))
     return L
 
 def _test_suite():
