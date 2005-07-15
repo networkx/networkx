@@ -276,7 +276,7 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/generators_degree_seq.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/generators_degree_seq.txt',package='networkx')
     return suite
 
 

@@ -372,7 +372,7 @@ def tutte_graph():
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/generators_small.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/generators_small.txt',package='networkx')
     return suite
 
 if __name__ == "__main__":

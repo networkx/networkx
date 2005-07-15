@@ -637,8 +637,7 @@ def swap_d(cs,p_split=1.0,p_combine=1.0,seed=None):
         
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/threshold.txt',
-                                 package='networkx')
+    suite = doctest.DocFileSuite('../tests/threshold.txt', package='networkx')
     return suite
 
 

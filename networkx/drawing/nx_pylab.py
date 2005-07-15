@@ -453,7 +453,7 @@ def mpl_network(ax, node_pos, edge_pos,\
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/nx_pylab.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/nx_pylab.txt',package='networkx')
     return suite
 
 if __name__ == "__main__":

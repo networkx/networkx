@@ -111,7 +111,7 @@ def is_kl_connected(G,k,l,**kwds):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/hybrid.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/hybrid.txt',package='networkx')
     return suite
 
 

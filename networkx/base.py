@@ -1532,8 +1532,8 @@ class DiGraph(Graph):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/base_Graph.txt',
-                                 'tests/base_DiGraph.txt',
+    suite = doctest.DocFileSuite('../tests/base_Graph.txt',
+                                 '../tests/base_DiGraph.txt',
                                  package='networkx')
     return suite
 

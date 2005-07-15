@@ -54,7 +54,7 @@ def find_cores(G,with_labels=True):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/cores.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/cores.txt',package='networkx')
     return suite
 
 if __name__ == "__main__":
@@ -66,3 +66,4 @@ if __name__ == "__main__":
     unittest.TextTestRunner().run(_test_suite())
     
 
+p

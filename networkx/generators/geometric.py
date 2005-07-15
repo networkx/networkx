@@ -81,7 +81,7 @@ def random_geometric_graph(n, radius, result=False, **kwds):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/generators_geometric.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/generators_geometric.txt',package='networkx')
     return suite
 
 if __name__ == "__main__":

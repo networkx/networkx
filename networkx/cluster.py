@@ -134,7 +134,7 @@ def transitivity(G):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/cluster.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/cluster.txt',package='networkx')
     return suite
 
 if __name__ == "__main__":

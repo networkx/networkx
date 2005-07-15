@@ -376,7 +376,7 @@ def cliques_containing_node(G,nodes=None,cliques=None,with_labels=False):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/cliques.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/cliques.txt',package='networkx')
     return suite
 
 

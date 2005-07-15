@@ -216,7 +216,7 @@ def closeness_centrality(G,v=False):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/centrality.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/centrality.txt',package='networkx')
     return suite
 
 

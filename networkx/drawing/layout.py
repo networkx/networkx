@@ -261,7 +261,7 @@ def _graph_gershgorin_dot_v(gg_data,v):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/layout.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/layout.txt',package='networkx')
     return suite
 
 if __name__ == "__main__":

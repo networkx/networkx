@@ -361,7 +361,7 @@ def convert_node_labels_to_integers(G,first_label=1,ordering="default",discard_o
     
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/operators.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/operators.txt',package='networkx')
     return suite
 
 if __name__ == "__main__":

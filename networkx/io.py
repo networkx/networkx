@@ -302,7 +302,7 @@ def read_gpickle(path=False):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/io.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/io.txt',package='networkx')
     return suite
 
 

@@ -76,7 +76,7 @@ def generalized_laplacian(G):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/spectrum.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/spectrum.txt',package='networkx')
     return suite
 
 

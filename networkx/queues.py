@@ -113,7 +113,7 @@ class RFS(Random):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/queues.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/queues.txt',package='networkx')
     return suite
 
 

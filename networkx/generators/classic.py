@@ -412,7 +412,7 @@ def wheel_graph(n):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/generators_classic.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/generators_classic.txt',package='networkx')
     return suite
 
 

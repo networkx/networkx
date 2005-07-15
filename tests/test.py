@@ -19,7 +19,7 @@ if sys.version_info[:2] < (2, 4):
     print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
     sys.exit(-1)
 
-nxbase=sys.path[0]+"/../.."  # directory of networkx package (relative to this)
+nxbase=sys.path[0]+"/.."  # directory of networkx package (relative to this)
 sys.path.insert(0,nxbase)    # prepend to search path
 
 try:
@@ -57,6 +57,9 @@ mlist= ['networkx.base',
         'networkx.utils',
         'networkx.xbase'
         ]
+
+
+
 
 print ('Testing networkx %s with Python %s on %s at %s'
        % (networkx.__version__, sys.version.split()[0],

@@ -145,7 +145,7 @@ def pydot_layout(G,**kwds):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/nx_pydot.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/nx_pydot.txt',package='networkx')
     return suite
 
 

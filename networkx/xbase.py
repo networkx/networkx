@@ -1838,9 +1838,9 @@ class XDiGraph(DiGraph):
 def _test_suite():
     import doctest
     suite = doctest.DocFileSuite(
-                                'tests/xbase_Graph.txt',
-                                'tests/xbase_PseudoGraph.txt',
-                                'tests/xbase_DiGraph.txt',
+                                '../tests/xbase_Graph.txt',
+                                '../tests/xbase_PseudoGraph.txt',
+                                '../tests/xbase_DiGraph.txt',
                                  package='networkx')
     return suite
 

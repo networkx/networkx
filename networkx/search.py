@@ -180,7 +180,7 @@ def node_connected_component(G,v):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/search.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/search.txt',package='networkx')
     return suite
 
 
@@ -192,4 +192,3 @@ if __name__ == "__main__":
         sys.exit(-1)
     unittest.TextTestRunner().run(_test_suite())
     
-

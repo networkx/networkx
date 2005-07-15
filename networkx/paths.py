@@ -344,7 +344,7 @@ def topological_sort_recursive(G):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/paths.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/paths.txt',package='networkx')
     return suite
 
 

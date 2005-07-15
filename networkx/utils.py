@@ -288,7 +288,7 @@ def discrete_sequence(n,**kwds):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/utils.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/utils.txt',package='networkx')
     return suite
 
 if __name__ == "__main__":

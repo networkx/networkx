@@ -321,7 +321,7 @@ class Forest(Search):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/search_class.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/search_class.txt',package='networkx')
     return suite
 
 

@@ -519,7 +519,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/generators_random_graphs.txt',package='networkx')
+    suite = doctest.DocFileSuite('../tests/generators_random_graphs.txt',package='networkx')
     return suite
 
 if __name__ == "__main__":
