@@ -12,10 +12,17 @@ Thanks to the following people who have made contributions to NX:
 
  - Katy Bold contributed the Karate Club graph 
 
- - Hernan Rozenfeld enhanced the graph generators and did stress testing
+ - Hernan Rozenfeld added dorogovtsev_goltsev_mendes_graph and did 
+   stress testing
 
  - Brendt Wohlberg added examples from the Stanford GraphBase
 
- - Jim Bagrow reported bugs in the search methods.
+ - Jim Bagrow reported bugs in the search methods and contributed
+   the modularity and edge_betweenness code
 
- 
+ - Holly Johnsen helped fix the path based centrality measures 
+
+ - Arnar Flatberg fixed the graph laplacian routines
+
+
+

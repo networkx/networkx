@@ -1,15 +1,27 @@
 These files are for testing the methods and functions in NX.
+
 The tests use Python's docutils format and may be executed 
 using the Python doctest and unittest framework (you need python2.4
 for this) to verify the functionality of the package.
 
 The tests also demonstrate the usage of many of the features of NX.
 
-You can run all of the tests by just typing "make".
+To run the tests for an individual module run: 
 
-Or you can run: python test_all.py
+python test_single.py file.txt
 
-To run the tests for an individual module run: python test_single.py file.txt
+The Makefile has targets to test the core, generators, and drawing
+components of NetworkX
+
+make core # test the core
+make generators # test the generators
+make drawing # test the drawing, some might fail if you don't have 
+             # all the supporting packages
+
+If you are running the tests after unpacking the source
+the paths will be set up correctly to test everytying with
+
+python test_all.py
 
 To produce formatted output of all of the tests run
 "make doc" and html format will be produced in the directory html/

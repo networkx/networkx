@@ -29,8 +29,8 @@ Laplacian
  [-1,-1, 2, 0,]
  [-1, 0, 0, 1,]]
 
->>> FCL=generalized_laplacian(G)
->>> for row in FCL:
+>>> GL=generalized_laplacian(G)
+>>> for row in GL:
 ...    for entry in row:
 ...        sys.stdout.write("%5.2f "%entry)
 ...    print 
@@ -46,9 +46,9 @@ Eigenvalues
 >>> print map(int,map(round,sorted(e)))
 [0, 1, 3, 4]
 
->>> e=LA.eigenvalues(FCL)
+>>> e=LA.eigenvalues(GL)
 >>> for ev in sorted(e):
-...    print "%5.2f"%ev
+...    print "%5.2f"%abs(ev)
  0.00
  0.77
  1.50

@@ -16,8 +16,8 @@ Undirected
 >>> H.add_node('E')
 
 
->>> P=pydot_from_NX(H)
->>> N=NX_from_pydot(P)
+>>> P=pydot_from_networkx(H)
+>>> N=networkx_from_pydot(P)
 >>> sorted(N.nodes())==sorted(H.nodes())
 True
 >>> sorted(N.edges())==sorted(H.edges())
@@ -53,8 +53,8 @@ Directed
 >>> H.add_node('E')
 
 
->>> P=pydot_from_NX(H)
->>> N=NX_from_pydot(P)
+>>> P=pydot_from_networkx(H)
+>>> N=networkx_from_pydot(P)
 
 >>> sorted(N.nodes())==sorted(H.nodes())
 True

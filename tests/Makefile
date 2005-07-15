@@ -5,15 +5,67 @@ VPATH=html
 .txt.html:
 	rst2html.py --stylesheet-path=nx_doctest.css < $< > html/$*.html
 
+# test loading module by module
+
+CORE=	base_DiGraph.txt \
+	base_Graph.txt \
+	centrality.txt \
+	cliques.txt \
+	cluster.txt \
+	cores.txt \
+	hybrid.txt \
+	io.txt \
+	isomorph.txt \
+	operators.txt \
+	paths.txt \
+	queues.txt \
+	search_class.txt \
+	search.txt \
+	spectrum.txt \
+	threshold.txt \
+	utils.txt \
+	xbase_DiGraph.txt \
+	xbase_Graph.txt \
+	xbase_PseudoGraph.txt
+
+
+GENERATORS=	\
+	generators_atlas.txt \
+	generators_classic.txt \
+	generators_atlas.txt \
+	generators_classic.txt \
+	generators_degree_seq.txt \
+	generators_geometric.txt \
+	generators_random_graphs.txt \
+	generators_small.txt 
+
+DRAWING= \
+	layout.txt \
+	nx_pydot.txt \
+	nx_pylab.txt 
+
+
+core:
+	@echo "Testing NetworkX core modules"
+	./test_single.py ${CORE}
+
+generators:
+	@echo "Testing graph generators"
+	./test_single.py ${GENERATORS}
+
+drawing:
+	@echo "Testing drawing"
+	./test_single.py ${DRAWING}
+
+
+all: core generators drawing	
+
+
 # primary test, all modules loaded first
 
-test:
+sourcetest:
 	./test_all.py
 
-# an alternate way to test, loading module by module
-
-test2:
-	./test_single.py *.txt
 
 HTML=$(patsubst %.txt,%.html,$(wildcard *.txt))
 
