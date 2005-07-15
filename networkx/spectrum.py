@@ -50,11 +50,13 @@ def adj_matrix(G,u=None):
 
 def laplacian(G):
     """Return standard Laplacian of graph"""
+    # this isn't the most efficient way to do this...
     n=G.order()
     I=Numeric.identity(n)
-    d=Numeric.array(G.degree())
-    l=I*d-adj_matrix(G)
-    return l            
+    A=adj_matrix(G)
+    D=I*Numeric.sum(A)
+    L=D-A
+    return L
 
 def generalized_laplacian(G):
     """Return generalized Laplacian of graph
@@ -62,17 +64,16 @@ def generalized_laplacian(G):
     See Spectral Graph Theory by Fan Chung-Graham.
 
     """
-    l=laplacian(G) # standard laplacian
-    # build S=1/sqrt(T) matrix
+    # this isn't the most efficient way to do this...
     n=G.order()
     I=Numeric.identity(n)
-    d=Numeric.array(G.degree())
-    tmhalf=Numeric.where(d, 1/Numeric.sqrt(d),0)
-    S=I*tmhalf
-    # multiply L = S l S
-    L=Numeric.matrixmultiply(Numeric.matrixmultiply(S,l),S)
-    return L 
-
+    A=adj_matrix(G)
+    D=I*Numeric.sum(A)
+    L=D-A
+    d=sum(A)
+    T=I*(Numeric.sqrt(1./d))
+    L=I-Numeric.dot(T,Numeric.dot(A,T))
+    return L
 
 def _test_suite():
     import doctest
