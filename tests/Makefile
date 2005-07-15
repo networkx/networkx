@@ -5,13 +5,20 @@ VPATH=html
 .txt.html:
 	rst2html.py --stylesheet-path=nx_doctest.css < $< > html/$*.html
 
+# primary test, all modules loaded first
+
 test:
-	./test.py
+	./test_all.py
+
+# an alternate way to test, loading module by module
 
 test2:
-	./test2.py *.txt
+	./test_single.py *.txt
 
 HTML=$(patsubst %.txt,%.html,$(wildcard *.txt))
+
+# you can make html out of all of these tests with rst2html
+# make doc
 
 doc:	directory html
 
