@@ -4,13 +4,12 @@ include setup.py
 include setupext.py
 recursive-include networkx *.py 
 recursive-include tools *.py 
-recursive-include networkx/tests/ *.py *.txt
+recursive-include tests *.py *.txt README
 include doc/Makefile
 recursive-include doc *.txt
 recursive-include doc/html *.html
 recursive-include doc/pdf *.pdf
 recursive-include doc/data/ *.css *.png *.patch
 recursive-include examples *.py *.dat *.edges
-recursive-include networkx/tests *.txt
 
 

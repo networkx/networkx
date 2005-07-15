@@ -55,7 +55,7 @@ examples = filter(isfile, glob('examples/*.py')) + \
 html     = filter(isfile, glob('doc/html/*'))
 ref      = filter(isfile, glob('doc/html/Reference/*'))
 pdf      = filter(isfile, glob('doc/pdf/*.pdf')) 
-tests    = filter(isfile, glob('networkx/tests/*')) 
+tests    = filter(isfile, glob('tests/*')) 
 
 data = [('data', docdirbase, docfiles),
         ('data', os.path.join(docdirbase, 'examples'), examples),

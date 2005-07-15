@@ -7,6 +7,10 @@ The tests also demonstrate the usage of many of the features of NX.
 
 You can run all of the tests by just typing "make".
 
+Or you can run: python test_all.py
+
+To run the tests for an individual module run: python test_single.py file.txt
+
 To produce formatted output of all of the tests run
 "make doc" and html format will be produced in the directory html/
 You must have rst2html installed to do this (part of the python
