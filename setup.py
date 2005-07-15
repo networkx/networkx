@@ -86,7 +86,7 @@ setup(name             = name,
 try:
     import Numeric 
 except:
-    print "Import Error: not able to import Numeric."
+    print "Warning: not able to import Numeric."
     print "Some functionality may be unavailable."
     print "See http://numpy.sf.net/ for this package."
     print
@@ -95,7 +95,7 @@ except:
 try:
     import matplotlib
 except:
-    print "Import Error: not able to import matplotlib."
+    print "Warning: not able to import matplotlib."
     print "Some functionality may be unavailable."
     print "See http://matplotlib.sourceforge.net/ for this package."
     print
@@ -104,7 +104,7 @@ except:
 try:
     import pydot
 except:
-    print "Import Error: not able to import pydot."
+    print "Warning: not able to import pydot."
     print "Some functionality may be unavailable."
     print "See http://dkbza.org/pydot.html for this package."
     print
