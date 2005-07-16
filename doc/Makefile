@@ -4,11 +4,11 @@ VPATH=html
 .SUFFIXES: .txt .html 
 
 .txt.html:
-	rst2html.py --stylesheet-path=nx_doc.css < $< > html/$*.html
+	rst2html --stylesheet-path=nx_doc.css < $< > html/$*.html
 #	rst2html.py < $< > html/$*.html
 
 .txt.tex:
-	rst2latex.py < $< > pdf/$*.tex
+	rst2latex < $< > pdf/$*.tex
 	(cd pdf; pdflatex  $*.tex)
 
 all:  html pdf

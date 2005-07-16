@@ -60,7 +60,7 @@ Obtaining and Installing NetworkX
 
 You need Python. We recommend the latest stable release available
 from http://www.python.org/. The latest version can be found at
-http://networkx.sourceforge.net/. 
+http://networkx.lanl.net/. 
 NX will work on multiple platforms.
 
 On Linux platforms, download the current tarball numbered, say,

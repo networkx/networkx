@@ -75,9 +75,5 @@ Using
     src="http://sourceforge.net/sflogo.php?group_id=122233&amp;type=1"
     width="88" /></a></div>
 
-    <div align="right" class="image align-right image-reference"><a
-    class="reference" href="http://networkx.sourceforge.net/"><img
-    align="right" alt="NetworkX Logo" height="80"
-    src="http://networkx.lanl.gov/networkx.png" width="341" /></a></div>
 
 
