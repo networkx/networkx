@@ -1523,7 +1523,7 @@ class DiGraph(Graph):
         # H.dna=self.dna.copy()  # do not copy dna to reverse
 
         H.add_nodes_from(self)
-        H.add_edges_from((v,u) for (u,v) in self.edges_iter())
+        H.add_edges_from([(v,u) for (u,v) in self.edges_iter()])
         return H
 
     def foo(self):
