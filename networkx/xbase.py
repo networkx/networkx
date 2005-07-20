@@ -1103,19 +1103,21 @@ class XDiGraph(DiGraph):
                 # add_edge was called as add_edge(n1,n2)
                 # interpret this as add_edge(n1,n2,1)
                 x=1
-        
-        # if edge is a self-loop, quietly return if not allowed
-        if not self.selfloops and n1==n2: 
-            return
 
         # if edge exists, quietly return if multiple edges are not allowed
         if not self.multiedges and self.has_edge(n1,n2,x):
             return
+
         # add nodes if they do not exist
         self.succ.setdefault(n1,{})
         self.succ.setdefault(n2,{})
         self.pred.setdefault(n1,{})
         self.pred.setdefault(n2,{})
+        
+        # if edge is a self-loop, quietly return if not allowed
+        if not self.selfloops and n1==n2: 
+            return
+
         if self.multiedges: # append x to the end of the list of objects
                             # that defines the edges between n1 and n2
             self.succ[n1][n2]=self.succ[n1].get(n2,[])+ [x]

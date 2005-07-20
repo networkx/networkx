@@ -456,11 +456,12 @@ class Graph(object):
         """
         if v is None:
             (u,v)=u  # no v given, assume u is an edge tuple
-        # don't create self loops, fail silently
-        if u==v: 
-            return  
+        # add nodes            
         self.adj.setdefault(v,{})
         self.adj.setdefault(u,{})
+        # don't create self loops, fail silently, nodes are still added
+        if u==v: 
+            return  
         self.adj[u][v]=1
         self.adj[v][u]=1
 
@@ -474,11 +475,12 @@ class Graph(object):
         """
         for e in ebunch:
             (u,v)=e
-            # don't create self loops, fail silently
-            if u==v:
-                continue  
+            # add nodes
             self.adj.setdefault(v,{})
             self.adj.setdefault(u,{})
+            # don't create self loops, fail silently, nodes are still added
+            if u==v:
+                continue  
             self.adj[u][v]=1
             self.adj[v][u]=1 # add both u-v and v-u
 
@@ -1085,13 +1087,14 @@ class DiGraph(Graph):
         """
         if v is None:
             (u,v)=u  # no v given, assume u is an edge tuple
-        # don't create self loops, fail silently
-        if u==v: 
-            return  
+        # add nodes            
         self.succ.setdefault(v,{})
         self.succ.setdefault(u,{})
         self.pred.setdefault(v,{})
         self.pred.setdefault(u,{})
+        # don't create self loops, fail silently, nodes are still added
+        if u==v: 
+            return  
         self.succ[u][v]=1
         self.pred[v][u]=1
 
@@ -1107,13 +1110,14 @@ class DiGraph(Graph):
         """
         for e in ebunch:
             (u,v)=e
-            # don't create self loops, fail silently
-            if u==v:
-                continue
+            # add nodes
             self.succ.setdefault(v,{})
             self.succ.setdefault(u,{})
             self.pred.setdefault(v,{})
             self.pred.setdefault(u,{})
+            # don't create self loops, fail silently, nodes are still added
+            if u==v:
+                continue
             self.succ[u][v]=1
             self.pred[v][u]=1
 
