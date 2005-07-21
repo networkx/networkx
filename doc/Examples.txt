@@ -3,6 +3,9 @@ NetworkX Examples
 
 .. include:: Menu.txt
 
+See the examples at
+https://networkx.lanl.gov/wiki/browser/networkx/trunk/examples/
+
 Basic
 -----
 
