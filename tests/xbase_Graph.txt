@@ -209,6 +209,12 @@ False
 >>> G.has_edge('A','A')
 False
 
+>>> G.add_edge('X','X')
+>>> G.has_node('X')  # added node but not self loop
+True
+>>> G.delete_node('X')
+
+
 >>> G.add_edge('A','Z') # test that missing node 'Z' is added silently
 >>> G.has_node('Z')
 True

@@ -202,6 +202,7 @@ True
 >>> G.has_node('Z')
 True
 
+
 >>> G.add_edges_from([('B','C')])   # test add_edges_from()
 >>> G.has_edge('B','C')
 True

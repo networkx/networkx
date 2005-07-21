@@ -309,11 +309,6 @@ class XGraph(Graph):
                 # add_edge was called as add_edge(n1,n2)
                 # interpret this as add_edge(n1,n2,1)
                 x=1
-        
-        # don't create self loops, quietly return if not allowed
-        if not self.selfloops and n1==n2: 
-            return
-
         # if edge exists, quietly return if multiple edges are not allowed
         if not self.multiedges and self.has_edge(n1,n2,x):
             return
@@ -321,6 +316,11 @@ class XGraph(Graph):
         # add nodes 
         self.adj.setdefault(n1,{})
         self.adj.setdefault(n2,{})
+        
+        # don't create self loops, quietly return if not allowed
+        if not self.selfloops and n1==n2: 
+            return
+
         if self.multiedges: # add x to the end of the list of objects
                             # that defines the edges between n1 and n2
             self.adj[n1][n2]=self.adj[n1].get(n2,[])+ [x]
