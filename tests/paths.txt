@@ -42,59 +42,54 @@ Eccentricity, diameter, etc.
 Dijkstra
 --------
 
-<<< XG=NX.XDiGraph()
-<<< XG.add_edges_from([('s','u',10) ,('s','x',5) ,('u','v',1) ,('u','x',2) ,('v','y',1) ,('x','u',3) ,('x','v',5) ,('x','y',2) ,('y','s',7) ,('y','v',6)])
-<<< (D,P)= NX.dijkstra(XG,'s','v')
-<<< P['v'] 
+>>> XG=NX.XDiGraph()
+>>> XG.add_edges_from([('s','u',10) ,('s','x',5) ,('u','v',1) ,('u','x',2) ,('v','y',1) ,('x','u',3) ,('x','v',5) ,('x','y',2) ,('y','s',7) ,('y','v',6)])
+>>> (D,P)= NX.dijkstra(XG,'s','v')
+>>> P['v'] 
 ['s', 'x', 'u', 'v']
-<<< D['v'] 
-9
-<<< NX.dijkstra_path(XG,'s','v')
-['s', 'x', 'u', 'v']
-<<< NX.dijkstra_path_length(XG,'s','v')
+>>> D['v'] 
 9
 
-<<< NX.dijkstra(XG,'s')[1]['v'] 
+>>> NX.dijkstra_path(XG,'s','v')
+['s', 'x', 'u', 'v']
+>>> NX.dijkstra_path_length(XG,'s','v')
+9
+
+>>> NX.dijkstra(XG,'s')[1]['v'] 
 ['s', 'x', 'u', 'v']
 
-<<< GG=XG.to_undirected()
-<<< (D,P)= NX.dijkstra(GG,'s','v')
-<<< P['v'] 
- ['s', 'y', 'v']
-<<< D['v'] 
-8
-<<< NX.dijkstra(GG,'s')[1]['v'] 
-['s', 'y', 'v']
-
-<<< NX.dijkstra_path(GG,'s','v')
-['s', 'y', 'v']
-<<< NX.dijkstra_path_length(GG,'s','v')
+>>> GG=XG.to_undirected()
+>>> (D,P)= NX.dijkstra(GG,'s','v')
+>>> P['v'] 
+['s', 'x', 'u', 'v']
+>>> D['v']   # uses lower weight of 2 on u<->x edge
 8
 
-<<< G=NX.DiGraph()
-<<< G.add_edges_from([('s','u'), ('s','x'), ('u','v'), ('u','x'), ('v','y'), ('x','u'), ('x','v'), ('x','y'), ('y','s'), ('y','v')])
-<<< NX.dijkstra(G,'s','v')[1]['v'] 
-['s', 'x', 'v']
-<<< NX.dijkstra(G,'s')[1]['v'] 
- ['s', 'x', 'v']
+>>> NX.dijkstra_path(GG,'s','v')
+['s', 'x', 'u', 'v']
+>>> NX.dijkstra_path_length(GG,'s','v')
+8
 
-<<< NX.dijkstra_path(G,'s','v')
-['s', 'x', 'v']
-<<< NX.dijkstra_path_length(G,'s','v')
+>>> G=NX.DiGraph()  # no weights
+>>> G.add_edges_from([('s','u'), ('s','x'), ('u','v'), ('u','x'), ('v','y'), ('x','u'), ('x','v'), ('x','y'), ('y','s'), ('y','v')])
+>>> NX.dijkstra(G,'s','v')[1]['v'] 
+['s', 'u', 'v']
+>>> NX.dijkstra(G,'s')[1]['v'] 
+['s', 'u', 'v']
+
+>>> NX.dijkstra_path(G,'s','v')
+['s', 'u', 'v']
+>>> NX.dijkstra_path_length(G,'s','v')
 2
 
-<<< GG=G.to_undirected()
-<<< NX.dijkstra(GG,'s','v')[1]['v'] 
-['s', 'y', 'v']
 
-
-<<< NX.dijkstra_path(G,'s','moon')
+>>> NX.dijkstra_path(G,'s','moon')
 Traceback (most recent call last):
 ...
 NetworkXError: node s not reachable from moon
 
 
-<<< NX.dijkstra_path_length(G,'s','moon')
+>>> NX.dijkstra_path_length(G,'s','moon')
 Traceback (most recent call last):
 ...
 NetworkXError: node s not reachable from moon
