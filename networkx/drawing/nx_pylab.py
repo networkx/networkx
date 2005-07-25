@@ -280,29 +280,31 @@ def mpl_network(ax, node_pos, edge_pos,\
         raise networkx.NetworkXError('Unknown node marker symbol')
     numsides, rotation = syms[node_marker]
 
+
+    # no nodes!        
+    if len(node_pos)<1:
+        return
+
+    # list of node positions
+    npk=node_pos.keys()
+    npk.sort()
+    npos=[tuple(node_pos[v]) for v in npk],
+
     if not cb.iterable(node_size):
         scales = (node_size,)
     else:
         scales=[]
-        npk=node_pos.keys()
-        npk.sort()
         for n in npk:
             if node_size.has_key(n):
                 scales.append(node_size[n])
             else:
                 scales.append(300)
 
-    # no nodes!        
-    if len(node_pos)<1:
-        return
-
     if not cb.is_string_like(node_color) \
            and cb.iterable(node_color) \
            and len(node_color)==len(node_pos):
         node_colors = None
         node_color_floats=[]
-        npk=node_pos.keys()
-        npk.sort()
         for n in npk:
             if node_color.has_key(n):
                 node_color_floats.append(float(node_color[n]))
@@ -312,10 +314,6 @@ def mpl_network(ax, node_pos, edge_pos,\
     else:
         node_colors = ( colorConverter.to_rgba(node_color, alpha), )
 
-        
-    npk=node_pos.keys()
-    npk.sort()
-    npos=[tuple(node_pos[v]) for v in npk],
     node_collection = RegularPolyCollection(
         ax.figure.dpi,
         numsides, rotation, scales,
