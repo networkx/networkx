@@ -272,28 +272,27 @@ def barabasi_albert_graph(n,m,seed=None):
 
 
     """
-    if not isinstance(m,int) or m <1:
-        raise TypeError, "argument z must be a positive integer"
-        return False 
         
+    if m < 1 or n < m:
+        raise networkx.NetworkXError,\
+              "NetworkXError must have m>1 and m<n, m=%d,n=%d"%(m,n)
+
     if not seed is None:
         random.seed(seed)    
 
     G=empty_graph(0)
-    
-    # add m initial nodes (m0 in barabasi-speak)
-    m0=m
-    G.add_nodes_from(range(0,m0))
-    count=m0
-    # initialize
-    lookupstub=range(0,m0)
-    # Now add the other n-1 nodes
-    while count<n:
-        for mm in xrange(m):
-            pick=random.choice(lookupstub)
-            lookupstub.extend([pick,count])
-            G.add_edge(count,pick)
-        count += 1
+    edge_targets=range(0,m)  
+    G.add_nodes_from(edge_targets) # add m initial nodes (m0 in barabasi-speak)
+    # list of existing nodes, with nodes repeated once for each adjacent edge 
+    existing_nodes=[]
+    source=m            # next node is m
+    while source<n:     # Now add the other n-1 nodes
+        G.add_edges_from(zip([source]*m,edge_targets))
+        existing_nodes.extend(edge_targets) 
+        existing_nodes.extend([source]*m)
+        # choose m nodes randomly from existing nodes
+        edge_targets=random.sample(existing_nodes,m) 
+        source += 1
     return G
 
 def powerlaw_cluster_graph(n,m,p,seed=None):
