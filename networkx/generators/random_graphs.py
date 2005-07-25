@@ -253,9 +253,7 @@ def barabasi_albert_graph(n,m,seed=None):
       - `m`: average degree and must be an positive integer
       - `seed`: seed for random number generator (default=None)
 
-    Note: The initialization of the B-A model is not specified
-    and we use a single node.  This node is special in that it
-    gets a chance of attachment prop to k+1 instead of k.
+    The initialization is a graph with with m nodes.
 
     Reference::
 
