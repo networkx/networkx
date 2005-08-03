@@ -139,6 +139,13 @@ True
 >>> eigenvalues(cs)
 [8, 7, 7, 5, 3, 3, 1, 0]
 
+>>> abs(degree_correlation(cs)+0.593038821954)<1e-12
+True
+
+>>> print degree_correlation('diiiddi')
+-0.8
+
+
 TG creation routines
 --------------------
 

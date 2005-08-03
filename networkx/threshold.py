@@ -332,23 +332,25 @@ def triangle_sequence(creation_sequence):
     """
     cs=creation_sequence
     seq=[]
-    cs[0]="i"            # the first node is always isolated
     rd=cs.count("d")     # number of d's to the right of the current pos
-    dcur=(rd-1)*(rd-2)/2 # number of traingles through a node of clique rd
+    dcur=(rd-1)*(rd-2)/2 # number of triangles through a node of clique rd
     irun=0               # number of i's in the last run
-    for i in range(0,len(cs)):
-        if cs[i]=="d":
+    drun=0               # number of d's in the last run
+    for i,sym in enumerate(cs):
+        if sym=="d":
+            drun+=1
             tri=dcur+(rd-1)*irun    # new triangles at this d
         else: # cs[i]="i":
-            if cs[i-1]=="d":        # new string of i's
+            if prevsym=="d":        # new string of i's
                 dcur+=(rd-1)*irun   # accumulate shared shortest paths
                 irun=0              # reset i run counter
+                rd-=drun            # reduce number of d's to right
+                drun=0              # reset d run counter
             irun+=1
-            rd=cs[i:].count("d") # number of d's to the right of current pos
             tri=rd*(rd-1)/2      # new triangles at this i
         seq.append(tri)
+        prevsym=sym
     return seq
-
 
 def cluster_sequence(creation_sequence):
     """
@@ -357,9 +359,8 @@ def cluster_sequence(creation_sequence):
     triseq=triangle_sequence(creation_sequence)
     degseq=degree_sequence(creation_sequence)
     cseq=[]
-    for i in range(0,len(creation_sequence)):
+    for i,deg in enumerate(degseq):
         tri=triseq[i]
-        deg=degseq[i]
         if deg <= 1:    # isolated vertex or single pair gets cc 0
             cseq.append(0)
             continue
@@ -375,13 +376,42 @@ def degree_sequence(creation_sequence):
     """
     cs=creation_sequence  # alias
     seq=[]
-    for i in range(0,len(cs)):
-        r=cs[i:].count("d")
-        if cs[i]=="i":
-            seq.append(r)
+    rd=cs.count("d") # number of d to the right
+    for i,sym in enumerate(cs):
+        if sym=="d":
+            rd-=1
+            seq.append(rd+i)
         else:
-            seq.append(r+i-1)
+            seq.append(rd)
     return seq            
+
+def degree_correlation(creation_sequence):
+    """
+    Find the degree-degree correlation over all edges.
+    """
+    cs=creation_sequence
+    s1=0  # deg_i*deg_j
+    s2=0  # deg_i^2+deg_j^2
+    s3=0  # deg_i+deg_j
+    m=0   # number of edges
+    rd=cs.count("d") # number of d nodes to the right
+    rdi=[ i for i,sym in enumerate(cs) if sym=="d"] # index of "d"s
+    ds=degree_sequence(cs)
+    for i,sym in enumerate(cs):
+        if sym=="d": 
+            if i!=rdi[0]:
+                print "Logic error in degree_correlation",i,rdi
+                raise ValueError
+            rdi.pop(0)
+        degi=ds[i]
+        for dj in rdi:
+            degj=ds[dj]
+            s1+=degj*degi
+            s2+=degi**2+degj**2
+            s3+=degi+degj
+            m+=1
+    cor=(4*m*s1-s3*s3)/float(2*m*s2-s3*s3)
+    return cor
 
 def shortest_path_length(creation_sequence,i):
     """
