@@ -20,7 +20,7 @@ __revision__ = "$Revision: 591 $"
 import string
 
 def karate_graph(create_using=None, **kwds):
-    from NX.generators.classic import empty_graph
+    from networkx.generators.classic import empty_graph
 
     G=empty_graph(34,create_using=create_using,**kwds)
     G.name="Zachary's Karate Club"

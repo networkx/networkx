@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-An example using NX.XGraph(multiedges=True).
+An example using networkx.XGraph(multiedges=True).
 
 Calculate the Kevin Bacon numbers of some actors.  The data in
 kevin_bacon.dat is a subset from all movies with Kevin Bacon in
