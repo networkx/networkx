@@ -21,9 +21,11 @@ Search
 >>> dfs_postorder(G,v=1)
 [[1, 5, 9, 13, 14, 15, 11, 7, 6, 10, 2, 3, 4, 8, 12, 16]]
 
+>>> print dfs_successor(G,v=1)
+
 >>> d=dfs_successor(G,v=1)
 >>> print d[2]
-[6]
+[3]
 
 >>> d=dfs_predecessor(G,v=1)
 >>> print d[6]

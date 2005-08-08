@@ -81,7 +81,7 @@ def dfs_successor(G,v=None):
     nodes in depth first search (DFS) order.
     Optional v=v limits search to component of graph containing v.
     """
-    V=SC.Predecessor(G,queue=networkx.queues.DFS)
+    V=SC.Successor(G,queue=networkx.queues.DFS)
     V.search(v)
     return V.data
 
