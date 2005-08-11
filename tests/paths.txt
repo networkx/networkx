@@ -70,6 +70,12 @@ Dijkstra
 >>> NX.dijkstra_path_length(GG,'s','v')
 8
 
+>>> XG2=NX.XDiGraph()
+>>> XG2.add_edges_from([[1,4,1],[4,5,1],[5,6,1],[6,3,1],[1,3,50],[1,2,100],[2,3,100]])
+>>> NX.dijkstra_path(XG2,1,3)
+[1, 4, 5, 6, 3]
+
+
 >>> G=NX.DiGraph()  # no weights
 >>> G.add_edges_from([('s','u'), ('s','x'), ('u','v'), ('u','x'), ('v','y'), ('x','u'), ('x','v'), ('x','y'), ('y','s'), ('y','v')])
 >>> NX.dijkstra(G,'s','v')[1]['v'] 

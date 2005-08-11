@@ -224,8 +224,8 @@ def dijkstra(G,source,target=None):
     Dist = {}  # dictionary of final distances
     Paths = {source:[source]}  # dictionary of paths
     seen = {source:0} 
-    fringe=networkx.queues.Priority(lambda x: x[1])
-    fringe.append([source,0])
+    fringe=networkx.queues.Priority(lambda x: seen[x])
+    fringe.append(source)
     
     if not G.is_directed():  G.successors=G.neighbors
     # if unweighted graph, set the weights to 1 on edges by
@@ -235,7 +235,7 @@ def dijkstra(G,source,target=None):
     if not hasattr(G,"get_edge"): G.get_edge=lambda x,y:1
 
     while fringe:
-        v,weight=fringe.smallest()
+        v=fringe.smallest()
         Dist[v] = seen[v]
         if v == target: break
             
@@ -247,7 +247,7 @@ def dijkstra(G,source,target=None):
                           "Contradictory paths found: negative weights?"
             elif w not in seen or vwLength < seen[w]:
                 seen[w] = vwLength
-                fringe.append([w,vwLength]) # breadth first search
+                fringe.append(w) # breadth first search
                 Paths[w] = Paths[v]+[w]
     return (Dist,Paths)
 
