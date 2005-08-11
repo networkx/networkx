@@ -147,7 +147,110 @@ def uncompact(compact_creation_sequence):
             cs.extend(ccscopy.pop(0)*['i'])
     return cs
 
+def creation_sequence_to_weights(creation_sequence):
+    """
+    Returns a list of node weights which create the threshold
+    graph designated by the creation sequence.  The weights
+    are scaled so that the threshold is 1.0.  The order of the
+    nodes is the same as that in the creation sequence.
+    """
+    # Turn input sequence into a labeled creation sequence
+    first=creation_sequence[0]
+    if isinstance(first,str):    # creation sequence
+        if isinstance(creation_sequence,list):
+            wseq = creation_sequence[:]
+        else:
+            wseq = list(creation_sequence) # string like 'ddidid'
+    elif isinstance(first,tuple):   # labeled creation sequence
+        wseq = [ v[1] for v in creation_sequence]
+    elif isinstance(first,int):  # compact creation sequence
+        wseq = uncompact(creation_sequence)
+    else:
+        raise TypeError, "Not a valid creation sequence type"
+    # pass through twice--first backwards
+    wseq.reverse()
+    w=0
+    prev='i'
+    for j,s in enumerate(wseq):
+        if s=='i':
+            wseq[j]=w
+            prev=s
+        elif prev=='i':
+            prev=s
+            w+=1
+    wseq.reverse()  # now pass through forwards
+    for j,s in enumerate(wseq):
+        if s=='d':
+            wseq[j]=w
+            prev=s
+        elif prev=='d':
+            prev=s
+            w+=1
+    # Now scale weights
+    if prev=='d': w+=1
+    wscale=1./float(w)
+    return [ ww*wscale for ww in wseq]
+    #return wseq
 
+def weights_to_creation_sequence(weights,threshold=1,with_labels=False,compact=False):
+    """
+    Returns a creation sequence for a threshold graph 
+    determined by the weights and threshold given as input.
+    If the sum of two node weights is greater than the
+    threshold value, an edge is created between these nodes.
+
+    The creation sequence is a list of single characters 'd'
+    or 'i': 'd' for dominating or 'i' for isolated vertices.
+    Dominating vertices are connected to all vertices present 
+    when it is added.  The first node added is by convention 'd'.
+
+    If with_labels==True:
+    Returns a list of 2-tuples containing the vertex number 
+    and a character 'd' or 'i' which describes the type of vertex.
+
+    If compact==True:
+    Returns the creation sequence in a compact form that is the number
+    of 'i's and 'd's alternating.
+    Examples:
+    [1,2,2,3] represents d,i,i,d,d,i,i,i
+    [3,1,2] represents d,d,d,i,d,d
+
+    Notice that the first number is the first vertex to be used for
+    construction and so is always 'd'.
+
+    with_labels and compact cannot both be True.
+    """
+    if with_labels and compact:
+        raise ValueError,"compact sequences cannot be labeled"
+
+    # make an indexed copy
+    if isinstance(weights,dict):   # labeled weights
+        wseq = [ [w,label] for (label,w) in weights.items() ]
+    else:
+        wseq = [ [w,i] for i,w in enumerate(weights) ] 
+    wseq.sort()
+    cs=[]  # creation sequence
+    cutoff=threshold-wseq[-1][0]
+    while wseq:
+        if wseq[0][0]<cutoff:     # isolated node
+            (w,label)=wseq.pop(0)
+            cs.append((label,'i'))
+        else:
+            (w,label)=wseq.pop()
+            cs.append((label,'d'))
+            cutoff=threshold-wseq[-1][0]
+        if len(wseq)==1:     # make sure we start with a d
+            (w,label)=wseq.pop()
+            cs.append((label,'d'))
+    # put in correct order
+    cs.reverse()
+
+    if with_labels: return cs
+    if compact: return make_compact(cs)
+    return [ v[1] for v in cs ]   # not labeled
+
+
+# Manipulating NetworkX.Graphs in context of threshold graphs
 def threshold_graph(creation_sequence):
     """
     Create a threshold graph from the creation sequence or compact
@@ -190,58 +293,6 @@ def threshold_graph(creation_sequence):
             for u in G.nodes(): 
                 G.add_edge(v,u) # will silently ignore self loop
     return G
-
-
-def shortest_path(creation_sequence,u,v):
-    """
-    Find the shortest path between u and v in a 
-    threshold graph G with the given creation_sequence.
-
-    For an unlabeled creation_sequence, the vertices 
-    u and v must be integers in (0,len(sequence)) refering 
-    to the position of the desired vertices in the sequence.
-
-    For a labeled creation_sequence, u and v are labels of veritices.
-
-    Use cs=creation_sequence(degree_sequence,with_labels=True) 
-    to convert a degree sequence to a creation sequence.
-
-    Returns a list of vertices from u to v.
-    Example: if they are neighbors, it returns [u,v]
-    """
-    # Turn input sequence into a labeled creation sequence
-    first=creation_sequence[0]
-    if isinstance(first,str):    # creation sequence
-        cs = [(i,creation_sequence[i]) for i in xrange(len(creation_sequence))]
-    elif isinstance(first,tuple):   # labeled creation sequence
-        cs = creation_sequence[:]
-    elif isinstance(first,int):  # compact creation sequence
-        ci = uncompact(creation_sequence)
-        cs = [(i,ci[i]) for i in xrange(len(ci))]
-    else:
-        raise TypeError, "Not a valid creation sequence type"
-        
-    verts=[ s[0] for s in cs ]
-    if v not in verts:
-        raise ValueError,"Vertex %s not in graph from creation_sequence"%v
-    if u not in verts:
-        raise ValueError,"Vertex %s not in graph from creation_sequence"%u
-    # Done checking
-    if u==v: return [u]
-
-    uindex=verts.index(u)
-    vindex=verts.index(v)
-    bigind=max(uindex,vindex)
-    if cs[bigind][1]=='d':
-        return [u,v]
-    # must be that cs[bigind][1]=='i'
-    cs=cs[bigind:]
-    while cs:
-        vert=cs.pop()
-        if vert[1]=='d':
-            return [u,vert[0],v]
-    # All after u are type 'i' so no connection
-    return -1
 
 
 
@@ -327,7 +378,7 @@ def triangles(creation_sequence):
 
 def triangle_sequence(creation_sequence):
     """
-    Build triangle sequence for the given threshold graph creation sequence.
+    Return triangle sequence for the given threshold graph creation sequence.
 
     """
     cs=creation_sequence
@@ -354,7 +405,7 @@ def triangle_sequence(creation_sequence):
 
 def cluster_sequence(creation_sequence):
     """
-    Build cluster sequence from the given threshold graph creation sequence.
+    Return cluster sequence for the given threshold graph creation sequence.
     """
     triseq=triangle_sequence(creation_sequence)
     degseq=degree_sequence(creation_sequence)
@@ -385,9 +436,20 @@ def degree_sequence(creation_sequence):
             seq.append(rd)
     return seq            
 
+def density(creation_sequence):
+    """
+    Return the density of the graph with this creation_sequence.
+    The density is the fraction of possible edges present.
+    """
+    N=len(creation_sequence)
+    two_size=sum(degree_sequence(creation_sequence))
+    two_possible=N*(N-1)
+    den=two_size/float(two_possible)
+    return den
+
 def degree_correlation(creation_sequence):
     """
-    Find the degree-degree correlation over all edges.
+    Return the degree-degree correlation over all edges.
     """
     cs=creation_sequence
     s1=0  # deg_i*deg_j
@@ -413,27 +475,98 @@ def degree_correlation(creation_sequence):
     cor=(4*m*s1-s3*s3)/float(2*m*s2-s3*s3)
     return cor
 
+
+def shortest_path(creation_sequence,u,v):
+    """
+    Find the shortest path between u and v in a 
+    threshold graph G with the given creation_sequence.
+
+    For an unlabeled creation_sequence, the vertices 
+    u and v must be integers in (0,len(sequence)) refering 
+    to the position of the desired vertices in the sequence.
+
+    For a labeled creation_sequence, u and v are labels of veritices.
+
+    Use cs=creation_sequence(degree_sequence,with_labels=True) 
+    to convert a degree sequence to a creation sequence.
+
+    Returns a list of vertices from u to v.
+    Example: if they are neighbors, it returns [u,v]
+    """
+    # Turn input sequence into a labeled creation sequence
+    first=creation_sequence[0]
+    if isinstance(first,str):    # creation sequence
+        cs = [(i,creation_sequence[i]) for i in xrange(len(creation_sequence))]
+    elif isinstance(first,tuple):   # labeled creation sequence
+        cs = creation_sequence[:]
+    elif isinstance(first,int):  # compact creation sequence
+        ci = uncompact(creation_sequence)
+        cs = [(i,ci[i]) for i in xrange(len(ci))]
+    else:
+        raise TypeError, "Not a valid creation sequence type"
+        
+    verts=[ s[0] for s in cs ]
+    if v not in verts:
+        raise ValueError,"Vertex %s not in graph from creation_sequence"%v
+    if u not in verts:
+        raise ValueError,"Vertex %s not in graph from creation_sequence"%u
+    # Done checking
+    if u==v: return [u]
+
+    uindex=verts.index(u)
+    vindex=verts.index(v)
+    bigind=max(uindex,vindex)
+    if cs[bigind][1]=='d':
+        return [u,v]
+    # must be that cs[bigind][1]=='i'
+    cs=cs[bigind:]
+    while cs:
+        vert=cs.pop()
+        if vert[1]=='d':
+            return [u,vert[0],v]
+    # All after u are type 'i' so no connection
+    return -1
+
 def shortest_path_length(creation_sequence,i):
     """
-    Return the shortest path length from the node at index i to
+    Return the shortest path length from indicated node to
     every other node for the threshold graph with the given
     creation sequence.
+    Node is indicated by index i in creation_sequence unless
+    creation_sequence is labeled in which case, i is taken to
+    be the label of the node.
 
-    Paths lengths in threshold graphs are either:
-    0 - from self to self
-    1 - from d to d
-    1 - from i to d or d to i
-    2 - from i to i
+    Paths lengths in threshold graphs are at most 2.
+    Length to unreachable nodes is set to -1.
     """
-    cs=creation_sequence
-    spl=[2]*len(cs) # length 2 to every node
+    # Turn input sequence into a labeled creation sequence
+    first=creation_sequence[0]
+    if isinstance(first,str):    # creation sequence
+        if isinstance(creation_sequence,list):
+            cs = creation_sequence[:]
+        else:
+            cs = list(creation_sequence)
+    elif isinstance(first,tuple):   # labeled creation sequence
+        cs = [ v[1] for v in creation_sequence]
+        i = [v[0] for v in creation_sequence].index(i)
+    elif isinstance(first,int):  # compact creation sequence
+        cs = uncompact(creation_sequence)
+    else:
+        raise TypeError, "Not a valid creation sequence type"
+    
+    # Compute
+    N=len(cs)
+    spl=[2]*N       # length 2 to every node
     spl[i]=0        # except self which is 0
-    # and 1 for all d's to the right
-    for j in range(i,len(spl)):   
+    # 1 for all d's to the right
+    for j in range(i+1,N):   
         if cs[j]=="d":
             spl[j]=1
+    if cs[i]=='d': # 1 for all nodes to the left
+        for j in range(i):
+            spl[j]=1
     # and -1 for any trailing i to indicate unreachable
-    for j in range(len(spl)-1,0,-1):
+    for j in range(N-1,0,-1):
         if cs[j]=="d":
             break
         spl[j]=-1

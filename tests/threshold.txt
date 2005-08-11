@@ -21,6 +21,10 @@ True
 >>> is_threshold_sequence(G.degree())
 True
 
+>>> deg=[3,2,2,1,1,1]
+>>> is_threshold_sequence(deg)
+False
+
 >>> deg=[3,2,2,1]
 >>> is_threshold_sequence(deg)
 True
@@ -79,6 +83,48 @@ True
 >>> shortest_path(cs1,3,4)==NX.shortest_path(G, 3, 4)
 True
 
+>>> spl=shortest_path_length(cs1,4)
+>>> spl2=shortest_path_length([ v[1] for v in cs1],2)
+>>> spl==spl2
+True
+
+>>> spld={}
+>>> for j,pl in enumerate(spl):
+...     n=cs1[j][0]
+...     spld[n]=pl
+>>> spld==NX.shortest_path_length(G, 4)
+True
+
+Weights and thresholds
+----------------------
+>>> wseq=[3,4,3,3,5,6,5,4,5,6]
+>>> cs=weights_to_creation_sequence(wseq,threshold=10)
+>>> wseq=creation_sequence_to_weights(cs)
+>>> cs2=weights_to_creation_sequence(wseq)
+>>> cs==cs2
+True
+
+>>> wseq=creation_sequence_to_weights(uncompact([3,1,2,3,3,2,3]))
+>>> wseq==[s*0.125 for s in [4,4,4,3,5,5,2,2,2,6,6,6,1,1,7,7,7]]
+True
+
+>>> wseq=creation_sequence_to_weights([3,1,2,3,3,2,3])
+>>> wseq==[s*0.125 for s in [4,4,4,3,5,5,2,2,2,6,6,6,1,1,7,7,7]]
+True
+
+>>> wseq=creation_sequence_to_weights(list(enumerate('ddidiiidididi')))
+>>> wseq==[s*0.1 for s in [5,5,4,6,3,3,3,7,2,8,1,9,0]]
+True
+
+>>> wseq=creation_sequence_to_weights('ddidiiidididi')
+>>> wseq==[s*0.1 for s in [5,5,4,6,3,3,3,7,2,8,1,9,0]]
+True
+
+>>> wseq=creation_sequence_to_weights('ddidiiidididid')
+>>> ws=[s/float(12) for s in [6,6,5,7,4,4,4,8,3,9,2,10,1,11]]
+>>> sum([c-d for c,d in zip(wseq,ws)])<1e-14
+True
+
 Test finding routines
 ---------------------
 
@@ -102,8 +148,6 @@ Threshold graph
 True
 >>> sorted(TG.nodes())
 [1, 2, 3, 4, 5, 7]
->>> sorted(TG.nodes())
-[1, 2, 3, 4, 5, 7]
 
 >>> cs=creation_sequence(TG.degree(with_labels=True),with_labels=True)
 >>> find_creation_sequence(G)==cs
@@ -115,6 +159,9 @@ Fast versions of properties for threshold graphs
 
 >>> cs=list('ddiiddid')
 >>> G=threshold_graph(cs)
+
+>>> density('ddiiddid')==NX.density(G)
+True
 
 >>> sorted(degree_sequence(cs))==sorted(G.degree())
 True
