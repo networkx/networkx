@@ -64,11 +64,13 @@ if __name__ == '__main__':
     for n in G:
         nsize[n]=50*G.degree(n)
     
-    draw_nxpydot(G,prog='fdp',
+    try:
+        draw_nxpydot(G,prog='fdp',
                  node_labels=False,
                  node_size=nsize,
                  node_color=bacon_no, cmap=cm.gray
                  )
-    savefig("kevin_bacon.png")
-    print "created kevin_bacon.png"
-    
+        savefig("kevin_bacon.png")
+        print "created kevin_bacon.png"
+    except:
+        pass

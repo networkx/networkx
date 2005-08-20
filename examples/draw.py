@@ -14,7 +14,14 @@ __revision__ = "$Revision: 831 $"
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from pylab import *
+try:
+    from pylab import *
+except:
+    print
+    print "pylab not found: see https://networkx.lanl.gov/Drawing.html for info"
+    print
+    raise 
+    
 from networkx import *
 
 
@@ -22,8 +29,14 @@ G=grid_2d_graph(4,4)  #4x4 grid
 draw_circular(G)  # circular layout 
 savefig("grid_circular.png") # save as png
 hold(False) # clear axes
-draw_nxpydot(G) # neato (graphviz) layout
-savefig("grid_nxpydot.ps") # save as postscript
+try:
+    draw_nxpydot(G) # neato (graphviz) layout
+    savefig("grid_nxpydot.ps") # save as postscript
+except:
+    print
+    print "pydot not found: skipping graphviz layout with pydot"
+    print
+    raise "see https://networkx.lanl.gov/Drawing.html for info"
 
 pos=spring_layout(G)
 subplot(221)

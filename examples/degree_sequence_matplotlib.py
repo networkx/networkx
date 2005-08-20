@@ -15,8 +15,15 @@ __revision__ = "$Revision: 778 $"
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from matplotlib.pylab import *
-import matplotlib.mlab as mlab
+try:
+    from matplotlib.pylab import *
+    import matplotlib.mlab as mlab
+except:
+    print
+    print "pylab not found: see https://networkx.lanl.gov/Drawing.html for info"
+    print
+    raise 
+
 from networkx import *
 from networkx.generators.degree_seq import *
 

@@ -90,15 +90,17 @@ if __name__ == '__main__':
 
     # draw with matplotlib/pylab            
 
+    try:
     # with nodes colored by population, no labels
     # draw_nx(H,G.position,node_labels=False,node_size=80,node_color=G.population,cmap=cm.jet)
     # with nodes sized py population
     # draw_nx(H,G.position,node_labels=False,node_size=G.population,cmap=cm.jet)
-    draw_nx(H,G.position,node_labels=False,node_size=G.population,node_color=H.degree(with_labels=True),cmap=cm.jet)
-    savefig("miles.png")
+        draw_nx(H,G.position,node_labels=False,node_size=G.population,node_color=H.degree(with_labels=True),cmap=cm.jet)
+        savefig("miles.png")
     # with nodes colored by degree
     #draw_nx(H,G.position,node_labels=False,node_size=50,node_color=H.degree(with_labels=True),cmap=cm.jet)
- 
+    except:
+        pass
 
 
 

@@ -15,7 +15,16 @@ __revision__ = "$Revision: 882 $"
 #    http://www.gnu.org/copyleft/lesser.html
 
 from networkx import *
-#from NX.drawing.nx_pydot import *
+try:
+    from NX.drawing.nx_pydot import *
+except:
+    print
+    print "pydot not found see https://networkx.lanl.gov/Drawing.html for info"
+    print
+    raise
+
+
+
 
 G=grid_2d_graph(5,5)  # 5x5 grid
 P=pydot_from_networkx(G)
