@@ -2,6 +2,20 @@ NetworkX News
 =============
 .. include:: Menu.txt
 
+What's new in NX-0.24?
+----------------------
+
+Release date: 20 August 2005
+
+Bug fixes
+~~~~~~~~~
+   - Update of dijstra algorithm code
+   - dfs_successor now calls proper search method
+   - Changed to list compehension in DiGraph.reverse() for python2.3
+     compatibility
+   - Barabasi-Albert graph generator fixed
+   - Attempt to add self loop should add node even if parallel edges not 
+     allowed
 
 What's new in NX-0.23?
 ----------------------

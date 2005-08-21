@@ -10,8 +10,7 @@ Examples_
 Drawing_
 Screenshots_
 MailingList_
-Wiki_
-SVN_
+Developers_
 Credits_
 Legal_
 
@@ -28,6 +27,5 @@ Legal_
 .. _Credits: Credits.html
 .. _Screenshots: http://sourceforge.net/project/screenshots.php?group_id=122233
 .. _MailingList: http://sourceforge.net/mail/?group_id=122233
-.. _Downloads: http://sourceforge.net/projects/networkx/
-.. _SVN: https://networkx.lanl.gov/svn/networkx/trunk/
-.. _Wiki: https://networkx.lanl.gov/wiki/
+.. _Developers: https://networkx.lanl.gov/wiki/
+.. _Downloads: https://networkx.lanl.gov/wiki/

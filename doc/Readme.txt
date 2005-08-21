@@ -2,6 +2,8 @@ NetworkX
 ========
 .. include:: Menu.txt
 
+Latest version: 20 August 2005:  networkx-0.24: http://sourceforge.net/projects/networkx/
+
 
 About
 -----

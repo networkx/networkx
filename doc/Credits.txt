@@ -17,8 +17,7 @@ Thanks to the following people who have made contributions to NX:
 
  - Brendt Wohlberg added examples from the Stanford GraphBase
 
- - Jim Bagrow reported bugs in the search methods and contributed
-   the modularity and edge_betweenness code
+ - Jim Bagrow reported bugs in the search methods 
 
  - Holly Johnsen helped fix the path based centrality measures 
 
