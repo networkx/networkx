@@ -1,6 +1,17 @@
 """
 Import and export networkx networks to dot format using pydot.
 
+Provides:
+
+ - write_dot()
+ - read_dot()
+ - graphviz_layout()
+
+ - pydot_from_networkx()
+ - networkx_from_pydot()
+
+Either this module or nx_pygraphviz can be used to interface with graphviz.  
+
 References:
  - pydot Homepage: http://www.dkbza.org/pydot.html
  - Graphviz:	   http://www.research.att.com/sw/tools/graphviz/
@@ -18,7 +29,6 @@ __revision__ = "$Revision: 1034 $"
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 import sys
-from string import split
 try:
     import pydot
 except ImportError:
@@ -76,18 +86,18 @@ def pydot_from_networkx(N):
         # a nice feature would be to add node positions to pydot graph.
         return graph
 
-def networkx_from_pydot(D, result=False):
+def networkx_from_pydot(D, create_using=None):
 	"""Creates an networkx graph from an pydot graph D"""
         import networkx
 
-        if result:
-            N=result
-        else:
+        if create_using is None:
             if D.get_type()=="digraph":
-                N=networkx.DiGraph()
+                create_using=networkx.DiGraph()
             else:
-                N=networkx.Graph()
-                
+                create_using=networkx.Graph()
+
+        N=networkx.empty_graph(0,create_using)
+
         N.name="%s"%(D.graph_name)
 
         for p in D.node_list:
@@ -104,6 +114,10 @@ def networkx_from_pydot(D, result=False):
 	return N
 
 def pydot_layout(G,**kwds):
+    return graphviz_layout(G,**kwds)
+
+
+def graphviz_layout(G,**kwds):
     """
     Create layout using pydot and graphviz.
     Returns a dictionary of positions keyed by node.
@@ -139,7 +153,7 @@ def pydot_layout(G,**kwds):
     for n in G.nodes():
         node=Q.get_node(str(n))
         if node.pos != None:
-            xx,yy=split(node.pos,",")
+            xx,yy=node.pos.split(",")
             node_pos[n]=(float(xx),float(yy))
     return node_pos
 
