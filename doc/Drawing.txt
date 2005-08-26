@@ -19,13 +19,21 @@ to install the software.
 Graphviz
 --------
 
-NetworkX provides an interface to pydot to write graphs in the dot language.
+NetworkX provides an interface to graphviz to write graphs in the dot language.
 The resulting "dot" files can be processed using the graphviz
 tool kit to make graph drawings in many different styles and output formats.
 
 To use the graphviz interface you need:
 
    - Graphviz, version 2.0 or later  http://graphviz.org/
+
+and one of either pydot or pygraphviz.
+
+Pydot
+-----
+
+Pydot is a pure Python interface to graphviz.  	
+
    - Pydot, version 0.9.10 or later  http://www.dkbza.org/pydot.html
    - Pyparsing, version 1.3 or later http://pyparsing.sourceforge.net/	
 
@@ -36,7 +44,13 @@ patch_ (or make the changes yourself in dot_parser.py).
 
 .. _patch: pydot-quote.patch
 
+Pygraphviz
+----------
 
+Pygraphviz is a Python wrapper to the graphviz Agraph data structure.
+The C code in the graphviz library is wrapped using SWIG.
+
+   - Pygraphviz, version 0.1 or later  http://networkx.lanl.gov/pygraphviz
 
 Using 
 -----
