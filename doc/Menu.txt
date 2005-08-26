@@ -5,11 +5,9 @@ News_
 Screenshots_
 Examples_ 
 Downloads_
-
 Tutorial_
 Reference_
 QuickRef_
-
 Drawing_
 MailingList_
 Credits_

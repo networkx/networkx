@@ -3,7 +3,8 @@ Drawing
 
 .. include:: Menu.txt
 
-NetworkX provides interfaces to two packages for graph drawing.
+NetworkX provides interfaces to two packages for graph drawing,
+matplotlib and graphviz.
 
 Matplotlib
 ----------
@@ -30,12 +31,11 @@ To use the graphviz interface you need:
 and one of either pydot or pygraphviz.
 
 Pydot
------
-
+~~~~~
 Pydot is a pure Python interface to graphviz.  	
 
    - Pydot, version 0.9.10 or later  http://www.dkbza.org/pydot.html
-   - Pyparsing, version 1.3 or later http://pyparsing.sourceforge.net/	
+   - Pyparsing, version 1.3 or later http://pyparsing.sourceforge.net/
 
 Pydot has a known bug in parsing double quoted strings and in
 representing the special graphviz null symbol '\\N'.  In order
@@ -45,7 +45,7 @@ patch_ (or make the changes yourself in dot_parser.py).
 .. _patch: pydot-quote.patch
 
 Pygraphviz
-----------
+~~~~~~~~~~
 
 Pygraphviz is a Python wrapper to the graphviz Agraph data structure.
 The C code in the graphviz library is wrapped using SWIG.

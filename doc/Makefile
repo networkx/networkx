@@ -18,7 +18,7 @@ html: directory htmldoc htmlreference
 htmldoc:	Readme.html Legal.html Tutorial.html Quick_ref.html Examples.html Drawing.html Credits.html News.html
 	cp -f data/nx_doc.css html
 	cp -f data/pydot-quote.patch html
-#	cp -f default.css html
+	cp -f data/default.css html/nx_doc.css
 	cp -f data/basic-s.png html
 	cp -f data/as.png html
 	cp -f data/tetrahedral-s.png html
