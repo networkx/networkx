@@ -98,6 +98,7 @@ def clustering(G,nbunch=None,**kwds):
         deg=G.degree(v)
         if deg <= 1:    # isolated vertex or single pair gets cc 0
             clusterc[v]=0.0
+            weight[v]=0
             continue
         max_n=(deg*(deg-1))/2
         contriples += max_n
