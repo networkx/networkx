@@ -42,12 +42,13 @@ del os
 del sys
 # Release data
 import release  # do it explicitly so pydoc can see it - pydoc bug
-__version__ = release.version
-__date__    = release.date
-__author__  = '%s <%s>\n%s <%s>\n%s <%s>' % \
+__version__  = release.version
+__revision__ = release.revision
+__date__     = release.date
+__author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
               ( release.authors['Hagberg'] + release.authors['Schult'] + \
                 release.authors['Swart'] )
-__license__ = release.license
+__license__  = release.license
 
 
 
