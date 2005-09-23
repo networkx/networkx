@@ -4,7 +4,7 @@ VPATH=html
 .SUFFIXES: .txt .html 
 
 .txt.html:
-	rst2html.py --stylesheet-path=data/nx_doc.css < $< > html/$*.html
+	rst2html.py --link-stylesheet --stylesheet=nx_doc.css < $< > html/$*.html
 #	rst2html.py < $< > html/$*.html
 
 .txt.tex:
