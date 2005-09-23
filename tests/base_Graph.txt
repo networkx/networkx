@@ -663,6 +663,8 @@ Functional interface
 True
 >>> degree_histogram(G)
 [3, 0, 2, 2]
+>>> is_directed(G)
+False
 
 Iterators
 ---------

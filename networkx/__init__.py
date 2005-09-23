@@ -58,7 +58,7 @@ __license__  = release.license
 from base import Graph, DiGraph, NetworkXException, NetworkXError,\
                  nodes, edges, degree, degree_histogram, neighbors,\
                  number_of_nodes, number_of_edges, density,\
-                 nodes_iter, edges_iter
+                 nodes_iter, edges_iter, is_directed
 from xbase import XGraph, XDiGraph
 from paths import shortest_path, shortest_path_length, eccentricity,\
                   diameter, radius, periphery, center,\

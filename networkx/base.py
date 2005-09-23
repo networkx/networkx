@@ -258,6 +258,10 @@ def degree_histogram(G):
         freq[d] += 1
     return freq
 
+def is_directed(G):
+    """ Return True if graph is directed."""
+    return G.is_directed()
+
 
 class Graph(object):
     """Graph is a simple graph without any multiple (parallel) edges
