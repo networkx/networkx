@@ -293,13 +293,17 @@ def topological_sort(G):
         seen[v]=1
         while fringe:
             w=fringe[-1][0]  # depth first search
+            if w in explored:  # if we've explored this one, remove it and skip
+                fringe[-1].pop(0)
+                if fringe[-1]==[]: fringe.pop()
+                continue
             newfringe=G.successors(w) # get list of new branches
+            seen[w]=1
             nf=[]
             for n in newfringe:  # check for cycles
                 if n not in explored:
                     if n in seen: return # cycle
                     nf.append(n)
-                seen[n]=1
             if nf: # update fringe
                 fringe.append(nf)
             else: # if leaf, go back up tree
