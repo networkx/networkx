@@ -472,8 +472,13 @@ def degree_correlation(creation_sequence):
             s2+=degi**2+degj**2
             s3+=degi+degj
             m+=1
-    cor=(4*m*s1-s3*s3)/float(2*m*s2-s3*s3)
-    return cor
+    denom=(2*m*s2-s3*s3)
+    numer=(4*m*s1-s3*s3)
+    if denom==0:
+        if numer==0: 
+            return 1
+        raise ValueError,"Zero Denominator but Numerator is %s"%numer
+    return numer/float(denom)
 
 
 def shortest_path(creation_sequence,u,v):
