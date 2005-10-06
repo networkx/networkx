@@ -293,6 +293,9 @@ def topological_sort(G):
         fringe=[v]   # nodes yet to look at
         while fringe:
             w=fringe[-1]  # depth first search
+            if w in explored: # already looked down this branch
+                fringe.pop()
+                continue
             seen[w]=1     # mark as seen
             # Check successors for cycles and for new nodes
             new_nodes=[]

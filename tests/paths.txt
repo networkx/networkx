@@ -111,6 +111,16 @@ Topological Sort
 [1, 2, 3]
 >>> NX.topological_sort_recursive(DG)
 [1, 2, 3]
+>>> DG.add_edge(3,2)
+>>> NX.topological_sort(DG) is None
+True
+>>> NX.topological_sort_recursive(DG) is None
+True
+>>> DG.delete_edge(2,3)
+>>> NX.topological_sort(DG)
+[1, 3, 2]
+>>> NX.topological_sort_recursive(DG)
+[1, 3, 2]
 
 >>> DG=NX.DiGraph()
 >>> DG.add_cycle([1,2,3,4,5])
