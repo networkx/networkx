@@ -137,7 +137,7 @@ True
 >>> NX.topological_sort_recursive(DG)
 [1, 4, 14, 13, 12, 3, 2, 7, 6, 11, 10, 9, 5, 8]
 >>> NX.topological_sort(DG)
-[1, 4, 14, 13, 12, 3, 2, 7, 6, 11, 10, 9, 5, 8]
+[1, 2, 8, 5, 6, 9, 10, 11, 7, 3, 4, 12, 13, 14]
 >>> DG.add_edge(14,1)
 >>> NX.topological_sort(DG) is None
 True

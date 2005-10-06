@@ -285,35 +285,27 @@ def topological_sort(G):
     order_explored=[] # provide order and 
     explored={}       # fast search without more general priorityDictionary
                      
-    if not G.is_directed():  G.successors=G.neighbors
-    
+    if not G.is_directed():  G.successors_iter=G.neighbors_iter
+
     for v in G.nodes_iter():     # process all vertices in G
         if v in explored: continue
-        fringe=[[v]]
-        seen[v]=1
+
+        fringe=[v]   # nodes yet to look at
         while fringe:
-            w=fringe[-1][0]  # depth first search
-            if w in explored:  # if we've explored this one, remove it and skip
-                fringe[-1].pop(0)
-                if fringe[-1]==[]: fringe.pop()
-                continue
-            newfringe=G.successors(w) # get list of new branches
-            seen[w]=1
-            nf=[]
-            for n in newfringe:  # check for cycles
+            w=fringe[-1]  # depth first search
+            seen[w]=1     # mark as seen
+            # Check successors for cycles and for new nodes
+            new_nodes=[]
+            for n in G.successors_iter(w):  
                 if n not in explored:
-                    if n in seen: return # cycle
-                    nf.append(n)
-            if nf: # update fringe
-                fringe.append(nf)
-            else: # if leaf, go back up tree
-                while fringe !=[]:
-                    newfringe=fringe[-1]
-                    w=newfringe.pop(0)
-                    explored[w]=1
-                    order_explored.insert(0,w) #reverse order explored
-                    if newfringe!=[]: break
-                    fringe.pop()
+                    if n in seen: return #CYCLE !!
+                    new_nodes.append(n)
+            if new_nodes:   # Add new_nodes to fringe
+                fringe.extend(new_nodes)
+            else:           # No new nodes so w is fully explored
+                explored[w]=1
+                order_explored.insert(0,w) # reverse order explored
+                fringe.pop()    # done considering this node
     return order_explored
 
 def topological_sort_recursive(G):
