@@ -192,6 +192,11 @@ True
 >>> print degree_correlation('diiiddi')
 -0.8
 
+>>> degree_correlation('did')==-1.0
+True
+
+>>> degree_correlation('ddd')==1.0
+True
 
 TG creation routines
 --------------------
