@@ -236,6 +236,7 @@ def dijkstra(G,source,target=None):
 
     while fringe:
         v=fringe.smallest()
+        if v in Dist: continue # already searched this node.
         Dist[v] = seen[v]
         if v == target: break
             
