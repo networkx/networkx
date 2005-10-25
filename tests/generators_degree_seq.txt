@@ -20,11 +20,10 @@ empty graph has empty degree sequence
 
 >>> deg_seq=[5,3,3,3,3,2,2,2,1,1,1]
 >>> G=configuration_model(deg_seq,seed=12345678)
->>> sorted(G.degree())
-[1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 5]
+>>> sorted(G.degree(),reverse=True)
+[5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
 >>> G.degree(range(1,len(deg_seq)+1))
-[5, 1, 3, 3, 1, 2, 2, 2, 1, 1, 1]
-
+[5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
 
 test that fixed seed delivers the same graph
 

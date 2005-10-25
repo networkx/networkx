@@ -22,7 +22,7 @@ import networkx.utils
 #---------------------------------------------------------------------------
 
 def configuration_model(deg_sequence,seed=None):
-    """Return a pseudograph with given degree sequence.
+    """Return a random pseudograph with the given degree sequence.
 
       - `deg_sequence`: degree sequence, a list of integers with each entry
                         corresponding to the degree of a node (need not be
@@ -31,21 +31,36 @@ def configuration_model(deg_sequence,seed=None):
                         Exception.
       - `seed`: seed for random number generator (default=None)
 
-    Steps:
-     - Check if deg_sequence is a valid degree sequence.
-     - Create N nodes with stubs of given degree.
-     - Randomly select two available stubs and connect them with an edge.
 
+    >> z=create_degree_sequence(100,powerlaw_sequence)
+    >> G=configuration_model(z)
+
+    The pseudograph G is a networkx.XGraph that allows multiple (parallel) edges
+    between nodes and edges that connect nodes to themseves (self loops).
+
+    To remove self-loops:
+
+    >> G.ban_selfloops()
+    
+    To remove parallel edges:
+
+    >> G.ban_multiedges()
+
+    Steps:
+
+     - Check if deg_sequence is a valid degree sequence.
+     - Create N nodes with stubs for attaching edges
+     - Randomly select two available stubs and connect them with an edge.
     As described by Newman [newman-2003-structure].
     
     Nodes are labeled 1,.., len(deg_sequence),
     corresponding to their position in deg_sequence.
 
     This process can lead to duplicate edges and loops, and therefore
-    returns a pseudograph type.  You can call remove_parallel() and
-    remove_selfloops() to get a simple graph (but likely without
-    the exact specified degree sequence). This "finite-size effect"
-    decreases as the size of the graph increases.
+    returns a pseudograph type.  You can remove the self-loops and
+    parallel edges (see above) with the likely result of
+    not getting the exat degree sequence specified.
+    This "finite-size effect" decreases as the size of the graph increases.
 
     References:
     
@@ -61,8 +76,10 @@ def configuration_model(deg_sequence,seed=None):
 
     # start with empty N-node graph
     N=len(deg_sequence)
-    G=networkx.empty_graph(N,create_using=networkx.Graph()) # no multiedges or selfloops
-    #G=empty_graph(N,create_using=XGraph(multiedges=True, selfloops=True))
+#    G=networkx.empty_graph(N,create_using=networkx.Graph()) # no multiedges or selfloops
+
+    # allow multiedges and selfloops
+    G=networkx.empty_graph(N,create_using=networkx.XGraph(multiedges=True, selfloops=True))
 
     if N==0 or max(deg_sequence)==0: # done if no edges
         return G 
@@ -70,7 +87,7 @@ def configuration_model(deg_sequence,seed=None):
     # build stublist, a list of available degree-repeated stubs
     # e.g. for deg_sequence=[3,2,1,1,1]
     # initially, stublist=[1,1,1,2,2,3,4,5]
-    #     i.e., node 1 has degree=3 and is repeated 3 times, etc.
+    # i.e., node 1 has degree=3 and is repeated 3 times, etc.
     stublist=[]
     for n in G:
         for i in range(deg_sequence[n-1]):
