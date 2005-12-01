@@ -1,4 +1,4 @@
- """
+"""
 Import and export networkx networks to dot format using pydot.
 
 Provides:
