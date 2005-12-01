@@ -4,6 +4,7 @@ nx_pydot
 >>> from networkx import *
 >>> from networkx.drawing import *
 >>> import os
+>>> import sys
 
 Undirected
 ----------
@@ -24,7 +25,7 @@ True
 True
 
 
->>> import tempfile
+>>> import tempfiletry import
 >>> fname=tempfile.mktemp()
 >>> P.write_raw(fname)
 True
