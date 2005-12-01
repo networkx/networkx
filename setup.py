@@ -1,26 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Setup script for networkx.
+Setup script for networkx
 
 """
-# Lots of good ideas borrowed from the IPython setup script
-# http://ipython.scipy.org/
-# Thanks to Fernando Perez
+#FIXME: add drawing as optional packages
+#FIXME: add documentation files to package
 
 from glob import glob
 import os
-import string
 import sys
-import time
-isfile = os.path.isfile
 
-# BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
-# update it when the contents of directories change
-if os.path.exists('MANIFEST'): os.remove('MANIFEST')
-
-from distutils.core import setup
-import setupext
+import ez_setup
+ez_setup.use_setuptools()
+from setuptools import setup, find_packages, Extension
 
 if sys.argv[-1] == 'setup.py':
     print "To install, run 'python setup.py install'"
@@ -33,39 +26,21 @@ if sys.version_info[:2] < (2, 3):
 
 execfile(os.path.join('networkx','release.py'))
 
-
-# A little utility we'll need below, since glob() does NOT allow you to do
-# exclusion on multiple endings!
-def file_doesnt_endwith(test,endings):
-    """Return true if test is a file and its name does NOT end with any
-    of the strings listed in endings."""
-    if not isfile(test):
-        return False
-    for e in endings:
-        if test.endswith(e):
-            return False
-    return True
-
+packages=["networkx",
+          "networkx.generators",
+          "networkx.drawing",
+          "networkx.tests",
+          "networkx.tests.generators",
+          "networkx.tests.drawing",
+          ]
 
 docdirbase  = 'share/doc/networkx-%s' % version
-docfiles = filter(isfile, glob('doc/*'))
-examples = filter(isfile, glob('examples/*.py')) + \
-           filter(isfile, glob('examples/*.dat')) + \
-           filter(isfile, glob('examples/*.edges'))
-html     = filter(isfile, glob('doc/html/*'))
-ref      = filter(isfile, glob('doc/html/Reference/*'))
-pdf      = filter(isfile, glob('doc/pdf/*.pdf')) 
-tests    = filter(isfile, glob('tests/*')) 
-
-data = [('data', docdirbase, docfiles),
-        ('data', os.path.join(docdirbase, 'examples'), examples),
-        ('data', os.path.join(docdirbase, 'html'), html),
-        ('data', os.path.join(docdirbase, 'html/Reference'), ref),
-        ('data', os.path.join(docdirbase, 'pdf'), pdf),
-        ('data', os.path.join(docdirbase, 'tests'), tests)
+data = [(docdirbase, glob("doc/*.txt")),
+        (os.path.join(docdirbase, 'examples'),glob("doc/examples/*.py")),
+        (os.path.join(docdirbase, 'examples'),glob("doc/examples/*.dat")),
+        (os.path.join(docdirbase, 'examples'),glob("doc/examples/*.edges")),
+        (os.path.join(docdirbase, 'data'),glob("doc/data/*ls")),
         ]
-
-packages=["networkx","networkx.generators","networkx.drawing"]
 
 setup(name             = name,
       version          = version,
@@ -77,35 +52,20 @@ setup(name             = name,
       license          = license,
       platforms        = platforms,
       url              = url,      
+      download_url     = download_url,
       packages         = packages,
-      cmdclass         = {'install_data': setupext.install_data_ext},
-      data_files       = data
+      data_files      =  data,
+      package_data     = {'': ['*.txt'],}, 
+      test_suite = "networkx.tests.test.all",
+      classifiers = [
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: LGPL License',
+        'Programming Language :: Python',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Scientific/Engineering :: Information Analysis',
+        'Topic :: Scientific/Engineering :: Mathematics',
+        ]
       )
 
-
-try:
-    import Numeric 
-except:
-    print "Warning: not able to import Numeric."
-    print "Some functionality may be unavailable."
-    print "See http://numpy.sf.net/ for this package."
-    print
-    pass
-
-try:
-    import matplotlib
-except:
-    print "Warning: not able to import matplotlib."
-    print "Some functionality may be unavailable."
-    print "See http://matplotlib.sourceforge.net/ for this package."
-    print
-    pass
-
-try:
-    import pydot
-except:
-    print "Warning: not able to import pydot."
-    print "Some functionality may be unavailable."
-    print "See http://dkbza.org/pydot.html for this package."
-    print
-    pass
