@@ -2,15 +2,11 @@ NetworkX
 ========
 .. include:: Menu.txt
 
-Latest version: 20 August 2005:  networkx-0.24: http://sourceforge.net/projects/networkx/
-
-
 About
 -----
 
    NetworkX (NX) is a Python package for the creation, manipulation, and
-   study of the structure, dynamics, and functions of complex
-   networks.  
+   study of the structure, dynamics, and functions of complex networks.  
 
 
 Requirements
@@ -20,20 +16,30 @@ Requirements
 
       - Python version 2.3 or later http://www.python.org/
 
+   Optional packages to enable drawing networks:      
+
+      - Matplotlib       http://matplotlib.sourceforge.net/
+      - Pygraphviz	 http://networkx.lanl.gov/pygraphviz/
+      - Graphviz         http://graphviz.org/
+      - Pydot            http://www.dkbza.org/pydot.html
+
    Optional useful packages:
 
       - Numerical Python http://numeric.scipy.org/
       - PyGSL            http://pygsl.sourceforge.net/
       - Ipython          http://ipython.scipy.org/
-      - Matplotlib       http://matplotlib.sourceforge.net/
-      - Pydot            http://www.dkbza.org/pydot.html
-      - Graphviz         http://graphviz.org/
-
 
 Downloading
 -----------
 
    You can download NetworkX from http://sourceforge.net/projects/networkx/
+
+
+   You can browse the source at https://networkx.lanl.gov/wiki/browser/networkx/trunk
+
+   To access the source repository using subversion, you will need a subversion client (e.g. svn for Linux). Then check out the code using
+
+    svn co https://networkx.lanl.gov/svn/networkx/trunk networkx
 
 
 Quick Install
@@ -43,7 +49,8 @@ Quick Install
 
    **Linux and OSX** (install from source)
 
-      Download the source tarball, unpack, and run "python setup.py install". 
+      Download the source tar file or zip file, unpack, and run 
+      "python setup.py install". 
 
    **Windows** (binary installer)
  
@@ -51,6 +58,11 @@ Quick Install
       Please note that we are not Windows users and have only verified
       that the Windows installer passes the "smoke test".  If you
       have problems we suggest installing from the source distribution.
+
+
+   NetworkX also may be installed using EasyInstall http://peak.telecommunity.com/DevCenter/EasyInstall
+
+   easy_install networkx
 
 
 Using 
