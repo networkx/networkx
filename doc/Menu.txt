@@ -27,5 +27,5 @@ Legal_
 .. _Credits: Credits.html
 .. _Screenshots: http://sourceforge.net/project/screenshots.php?group_id=122233
 .. _MailingList: http://sourceforge.net/mail/?group_id=122233
-.. _Downloads: https://networkx.lanl.gov/wiki/
+.. _Downloads: 
 .. _Wiki: https://networkx.lanl.gov/wiki/

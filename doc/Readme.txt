@@ -8,6 +8,8 @@ About
    NetworkX (NX) is a Python package for the creation, manipulation, and
    study of the structure, dynamics, and functions of complex networks.  
 
+   See the trac Wiki_ for code development information, bug tracking,
+   and source code browsing.
 
 Requirements
 -------------
@@ -32,14 +34,15 @@ Requirements
 Downloading
 -----------
 
-   You can download NetworkX from http://sourceforge.net/projects/networkx/
-
+   You can download NetworkX from 
+   http://sourceforge.net/project/showfiles.php?group_id=122233
 
    You can browse the source at https://networkx.lanl.gov/wiki/browser/networkx/trunk
 
    To access the source repository using subversion, you will need a subversion client (e.g. svn for Linux). Then check out the code using
 
     svn co https://networkx.lanl.gov/svn/networkx/trunk networkx
+
 
 
 Quick Install
