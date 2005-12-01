@@ -1840,18 +1840,22 @@ class XDiGraph(DiGraph):
 def _test_suite():
     import doctest
     suite = doctest.DocFileSuite(
-                                '../tests/xbase_Graph.txt',
-                                '../tests/xbase_PseudoGraph.txt',
-                                '../tests/xbase_DiGraph.txt',
+                                'tests/xbase_Graph.txt',
+                                'tests/xbase_PseudoGraph.txt',
+                                'tests/xbase_DiGraph.txt',
                                  package='networkx')
     return suite
 
 
 if __name__ == "__main__":
+    import os
     import sys
     import unittest
     if sys.version_info[:2] < (2, 4):
         print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
         sys.exit(-1)
+    # directory of networkx package (relative to this)
+    nxbase=sys.path[0]+os.sep+os.pardir
+    sys.path.insert(0,nxbase) # prepend to search path
     unittest.TextTestRunner().run(_test_suite())
     
