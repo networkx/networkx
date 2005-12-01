@@ -4,8 +4,7 @@
 Setup script for networkx
 
 """
-#FIXME: add drawing as optional packages
-#FIXME: add documentation files to package
+#FIXME: add drawing as optional package with dependencies
 
 from glob import glob
 import os
@@ -61,11 +60,14 @@ setup(name             = name,
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: LGPL License',
+        'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
+        'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Scientific/Engineering :: Mathematics',
+        'Topic :: Scientific/Engineering :: Physics',
         ]
       )
 

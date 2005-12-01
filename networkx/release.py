@@ -19,8 +19,9 @@ authors = {'Hagberg' : ('Aric Hagberg','hagberg@lanl.gov'),
 url = 'http://networkx.lanl.gov/'
 download_url="http://sourceforge.net/project/showfiles.php?group_id=122233",
 platforms = ['Linux','Mac OSX','Windows XP/2000/NT']
-keywords = ['Networks','Graph Theory','Mathematics']
+keywords = ['Networks', 'Graph Theory', 'Mathematics', 'network', 'graph', 'discrete mathematics', 'math']
 # Get date dynamically
 import time
 date = time.asctime()
 del time
+
