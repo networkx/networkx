@@ -1,29 +1,30 @@
 These files are for testing the methods and functions in NX.
 
 The tests use Python's docutils format and may be executed 
-using the Python doctest and unittest framework (you need python2.4
-for this) to verify the functionality of the package.
+using the Python doctest and unittest framework
+to verify the functionality of the package.
+You will need Python 2.4 or a later version.
 
 The tests also demonstrate the usage of many of the features of NX.
 
-To run the tests for an individual module run: 
+There are three ways to run the entire test suite:
 
-python test_single.py file.txt
+  - from the source package directory root
+    python setup.py test
 
-The Makefile has targets to test the core, generators, and drawing
-components of NetworkX
+  - from the test directory in the source package
+    python test.py
 
-make core # test the core
-make generators # test the generators
-make drawing # test the drawing, some might fail if you don't have 
-             # all the supporting packages
+  - from anywhere (also works with an installed version)
+    >>> import networkx.tests
+    >>> networkx.tests.run()
 
-If you are running the tests after unpacking the source
-the paths will be set up correctly to test everytying with
+To run the tests for an individual module execute the module file
+directly.  E.g. to test the base.py module run (in the directory with base.py)
 
-python test_all.py
+python base.py
 
 To produce formatted output of all of the tests run
 "make doc" and html format will be produced in the directory html/
-You must have rst2html installed to do this (part of the python
+You must have rst2html.py installed to do this (rst2html is part of the python
 docutils package).
