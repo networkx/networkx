@@ -51,6 +51,7 @@ def configuration_model(deg_sequence,seed=None):
      - Check if deg_sequence is a valid degree sequence.
      - Create N nodes with stubs for attaching edges
      - Randomly select two available stubs and connect them with an edge.
+
     As described by Newman [newman-2003-structure].
     
     Nodes are labeled 1,.., len(deg_sequence),
