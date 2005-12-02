@@ -9,12 +9,20 @@ import networkx
 
 
 def all():
-    from pkg_resources import resource_filename
+    try:
+#        import ez_setup
+#        ez_setup.use_setuptools()
+        from pkg_resources import resource_filename, resource_listdir
+        tests=[resource_filename(__name__, t)
+               for t in resource_listdir(__name__,'.') if t.endswith("txt")]
+    except:
+#        import networkx
+#        testdir=networkx.__path__[0]+os.sep+"tests"
+#        tests=glob.glob(testdir+os.sep+"*.txt")
+        tests=glob.glob("*.txt") # this will only work from test directory
     suite = unittest.TestSuite()
-    testdir=networkx.__path__[0]+os.sep+"tests"
-    for testfile in glob.glob1(testdir,"*.txt"):
-        doctst = resource_filename(__name__, testfile)
-        s = doctest.DocFileSuite(doctst,module_relative=False)
+    for t in tests:
+        s = doctest.DocFileSuite(t,module_relative=False)
         suite.addTest(s)
     return suite
 
