@@ -33,12 +33,13 @@ See networkx.base for the details of the API.
 #
 # Add platform dependent shared library path to sys.path
 #
-import os, sys
-sys.path.append(os.path.join(os.path.split(__file__)[0], sys.platform))
+import sys
+#import os, sys
+#sys.path.append(os.path.join(os.path.split(__file__)[0], sys.platform))
 if sys.version_info[:2] < (2, 3):
     print "Python version 2.3 or later is required for NetworkX (%d.%d detected)." %  sys.version_info[:2]
     sys.exit(-1)
-del os
+#del os
 del sys
 # Release data
 import release  # do it explicitly so pydoc can see it - pydoc bug
