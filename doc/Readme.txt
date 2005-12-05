@@ -4,8 +4,9 @@ NetworkX
 
 *High productivity software for complex networks*
 -------------------------------------------------
-.. image:: as2.png
+.. image:: art.png
    :align: right
+
 
 
 About
@@ -13,7 +14,7 @@ About
 
    NetworkX (NX) is a Python package for the creation, manipulation, and
    study of the structure, dynamics, and functions of complex networks.  
-
+ 
       - 1M+ nodes, 10M+ edges
       - Includes standard graph-theoretic and statistical physics functions
       - Nodes and edges can be "anything" (e.g. time-series, text, images, XML records)
