@@ -1534,10 +1534,6 @@ class DiGraph(Graph):
         H.add_edges_from([(v,u) for (u,v) in self.edges_iter()])
         return H
 
-    def foo(self):
-        pass
-
-
 def _test_suite():
     import doctest
     suite = doctest.DocFileSuite('tests/base_Graph.txt',
