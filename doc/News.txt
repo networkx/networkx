@@ -2,6 +2,42 @@ NetworkX News
 =============
 .. include:: Menu.txt
 
+
+What's new in NX-0.25?
+----------------------
+
+Release date: 5 December 2005
+
+
+New features
+~~~~~~~~~~~~
+  - Uses setuptools for installation http://peak.telecommunity.com/DevCenter/setuptools
+  - Improved testing infrastructure, can now run python setup.py test
+  - Added interface to draw graphs with pygraphviz
+    https://networkx.lanl.gov/pygraphviz/
+  - is_directed() function call
+
+Examples
+~~~~~~~~
+  - Email example shows how to use XDiGraph with Python objects as
+    edge data
+    https://networkx.lanl.gov/wiki/file/networkx/trunk/examples/unixemail.py
+
+
+Documentation
+~~~~~~~~~~~~~
+  - Reformat menu, minor changes to Readme, better stylesheet
+
+Bug fixes
+~~~~~~~~~
+   - use create_using= instead of result= keywords for graph types
+     in all cases
+   - missing weights for degree 0 and 1 nodes in clustering     
+   - configuration model now uses XGraph, returns graph with identical
+     degree sequence as input sequence	   
+   - fixed dijstra priority queue
+   - fixed non-recursive toposort and is_directed_acyclic graph
+
 What's new in NX-0.24?
 ----------------------
 

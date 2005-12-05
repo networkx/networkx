@@ -21,6 +21,7 @@ htmldoc:	Readme.html Legal.html Tutorial.html Quick_ref.html Examples.html Drawi
 	cp -f data/default.css html/nx_doc.css
 	cp -f data/basic-s.png html
 	cp -f data/as.png html
+	cp -f data/as2.png html
 	cp -f data/tetrahedral-s.png html
 	(cd html; ln -sf Readme.html index.html)
 
