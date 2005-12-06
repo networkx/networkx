@@ -1,7 +1,7 @@
 """Release data for NetworkX."""
 
 name = 'networkx'
-version = '0.25'
+version = '0.26.svn'
 
 description = "A package for creating and manipulating graphs and networks."
 
