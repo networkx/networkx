@@ -17,7 +17,7 @@ authors = {'Hagberg' : ('Aric Hagberg','hagberg@lanl.gov'),
            'Swart' : ('Pieter Swart','swart@lanl.gov')
            }
 url = 'http://networkx.lanl.gov/'
-download_url="http://sourceforge.net/project/showfiles.php?group_id=122233",
+download_url="http://sourceforge.net/project/showfiles.php?group_id=122233"
 platforms = ['Linux','Mac OSX','Windows XP/2000/NT']
 keywords = ['Networks', 'Graph Theory', 'Mathematics', 'network', 'graph', 'discrete mathematics', 'math']
 # Get date dynamically
