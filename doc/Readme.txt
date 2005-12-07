@@ -15,17 +15,28 @@ About
    NetworkX (NX) is a Python package for the creation, manipulation, and
    study of the structure, dynamics, and functions of complex networks.  
  
-      - 1M+ nodes, 10M+ edges
+   Features:
+
+      - Allows for 1M+ nodes, 10M+ edges
       - Includes standard graph-theoretic and statistical physics functions
-      - Nodes and edges can be "anything" (e.g. time-series, text, images, XML records)
-      - Open Source, multiplatform, unit-tested
-      - Exploits existing code from high-quality legacy software in
-        C, C++, Fortran, etc.
-      - Allows easy access to almost any database
-      - Exchange network algorithms between applications, disciplines, and platforms
-      - Allows fast prototyping of new algorithms
-      - Easy to teach (Python language)
+      - Easy exchange of network algorithms between applications, 
+      	disciplines, and platforms
       - Includes many classic graphs and synthetic networks
+      - Nodes and edges can be "anything" 
+      	(e.g. time-series, text, images, XML records)
+      - Exploits existing code from high-quality legacy software in
+      	 C, C++, Fortran, etc.
+      - Open source (encourages community input)
+      - Unit-tested
+
+   Additional benefits due to Python:              
+    
+
+      - Allows fast prototyping of new algorithms
+      - Easy to teach 
+      - Multiplatform
+      - Allows easy access to almost any database
+
 
    See the trac Wiki_ for code development information, bug tracking,
    and source code browsing.

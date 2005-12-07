@@ -31,6 +31,7 @@ pdfdoc: directory
 	VPATH=pdf
 	cp -f data/basic-s.png pdf
 	cp -f data/as.png pdf
+	cp -f data/art.png pdf
 	cp -f data/tetrahedral-s.png pdf
 	$(MAKE) pdfdocreal
 	/bin/rm pdf/*.aux pdf/*.log pdf/*.out pdf/*.tex
