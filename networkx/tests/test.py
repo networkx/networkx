@@ -5,21 +5,17 @@ import os
 import sys
 import doctest
 import unittest
-import networkx
-
 
 def all():
     try:
-#        import ez_setup
-#        ez_setup.use_setuptools()
+        # import ez_setup # force use of setuptools
+        # ez_setup.use_setuptools()
         from pkg_resources import resource_filename, resource_listdir
         tests=[resource_filename(__name__, t)
                for t in resource_listdir(__name__,'.') if t.endswith("txt")]
     except:
-#        import networkx
-#        testdir=networkx.__path__[0]+os.sep+"tests"
-#        tests=glob.glob(testdir+os.sep+"*.txt")
-        tests=glob.glob("*.txt") # this will only work from test directory
+        tests=glob.glob("*.txt") # this will only work from test directory   
+
     suite = unittest.TestSuite()
     for t in tests:
         s = doctest.DocFileSuite(t,module_relative=False)
