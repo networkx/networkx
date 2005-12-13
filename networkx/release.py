@@ -3,11 +3,11 @@
 name = 'networkx'
 version = '0.26.svn'
 
-description = "A package for creating and manipulating graphs and networks."
+description = "Python package for creating and manipulating graphs and networks"
 
 long_description = \
 """
-NetworkX is a python package for the creation, manipulation, and
+NetworkX is a Python package for the creation, manipulation, and
 study of the structure, dynamics, and functions of complex networks.  
 
 """

@@ -12,9 +12,10 @@ def all():
         # ez_setup.use_setuptools()
         from pkg_resources import resource_filename, resource_listdir
         tests=[resource_filename(__name__, t)
-               for t in resource_listdir(__name__,'.') if t.endswith("txt")]
+              for t in resource_listdir("networkx",'tests') if t.endswith("txt")]
     except:
         tests=glob.glob("*.txt") # this will only work from test directory   
+
 
     suite = unittest.TestSuite()
     for t in tests:
