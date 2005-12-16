@@ -626,9 +626,9 @@ Neighbors
 >>> sorted(G.neighbors_iter('A'))
 ['B', 'C']
 >>> G.neighbors('A',with_labels=True)
-{'C': 1, 'B': 1}
+{'C': None, 'B': None}
 >>> sorted(G.neighbors_iter('A',with_labels=True))
-[('B', 1), ('C', 1)]
+[('B', None), ('C', None)]
 
 >>> sorted(G.neighbors('G'))
 []
@@ -654,7 +654,7 @@ Functional interface
 >>> sorted(neighbors(G,'A'))
 ['B', 'C']
 >>> neighbors(G,'A',with_labels=True)
-{'C': 1, 'B': 1}
+{'C': None, 'B': None}
 >>> number_of_nodes(G)
 7
 >>> number_of_edges(G)

@@ -3,21 +3,21 @@ allowing self-loops, multiple edges, arbitrary (hashable) objects as
 nodes and arbitrary objects associated with edges.
 
 The XGraph and XDiGraph classes are extensions of the Graph and
-DiGraph classes in base.py. The key difference
-is that an XGraph edge is a 3-tuple e=(n1,n2,x), representing an
-undirected edge between nodes n1 and n2 that is decorated with the
-object x. Here n1 and n2 are (hashable) node objects and x is a (not
-necessarily hashable) edge object. Since the edge is undirected,
-edge (n1,n2,x) is equivalent to edge (n2,n1,x).
+DiGraph classes in base.py. The key difference is that an XGraph edge
+is a 3-tuple e=(n1,n2,x), representing an undirected edge between
+nodes n1 and n2 that is decorated with the object x. Here n1 and n2
+are (hashable) node objects and x is a (not necessarily hashable) edge
+object. Since the edge is undirected, edge (n1,n2,x) is equivalent to
+edge (n2,n1,x).
 
 An XDiGraph edge is a similar 3-tuple e=(n1,n2,x), with the additional
 property of directedness. I.e. e=(n1,n2,x) is a directed edge from n1 to
 n2 decorated with the object x, and is not equivalent to the edge (n2,n1,x).
 
 Whether a graph or digraph allow self-loops or multiple edges is
-determined at the time of object instantiation via
-specifying the parameters selfloops=True/False and
-multiedges=True/False. For example,
+determined at the time of object instantiation via specifying the
+parameters selfloops=True/False and multiedges=True/False. For
+example,
 
 an empty XGraph is created with:
 
@@ -38,15 +38,15 @@ allow the addition of selfloops but do allow for multiple edges.
 XGraph and XDiGraph are implemented using a data structure based on an
 adjacency list implemented as a dictionary of dictionaries. The outer
 dictionary is keyed by node to an inner dictionary keyed by
-neighboring nodes to the edge data/labels/objects (which default to 1
+neighboring nodes to the edge data/labels/objects (which default to None
 to correspond the datastructure used in classes Graph and DiGraph).
 If multiedges=True, a list of edge data/labels/objects is stored as
-the value of the inner dictionary.  This double dict structure
-mimics a sparse matrix and allows fast addition, deletion and lookup
-of nodes and neighbors in large graphs.  The underlying datastructure
-should only be visible in this module. In all other modules,
-graph-like objects are manipulated solely via the methods defined here
-and not by acting directly on the datastructure.
+the value of the inner dictionary.  This double dict structure mimics
+a sparse matrix and allows fast addition, deletion and lookup of nodes
+and neighbors in large graphs.  The underlying datastructure should
+only be visible in this module. In all other modules, graph-like
+objects are manipulated solely via the methods defined here and not by
+acting directly on the datastructure.
 
 Similarities between XGraph and Graph
 
@@ -57,27 +57,28 @@ Graph class, and XDiGraph from the DiGraph class.
 They do share important similarities.
 
 1. Edgeless graphs are the same in XGraph and Graph.
-For an edgeless graph, represented by G (member of the Graph class)
-and XG (member of XGraph class), there is no difference between
-the datastructures G.adj and XG.adj, other than in the ordering of the
-keys in the adj dict.
+   For an edgeless graph, represented by G (member of the Graph class)
+   and XG (member of XGraph class), there is no difference between
+   the datastructures G.adj and XG.adj, other than in the ordering of the
+   keys in the adj dict.
 
-2. Basic graph construction code for G=Graph() will also work for G=XGraph().
-In the Graph class, the simplest graph construction consists of a graph
-creation command G=Graph() followed by a list of graph construction commands,
-consisting of successive calls to the methods:
+2. Basic graph construction code for G=Graph() will also work for
+   G=XGraph().  In the Graph class, the simplest graph construction
+   consists of a graph creation command G=Graph() followed by a list
+   of graph construction commands, consisting of successive calls to
+   the methods:
 
-G.add_node, G.add_nodes_from, G.add_edge, G.add_edges, G.add_path,
-G.add_cycle G.delete_node, G.delete_nodes_from, G.delete_edge,
-G.delete_edges_from
+   G.add_node, G.add_nodes_from, G.add_edge, G.add_edges, G.add_path,
+   G.add_cycle G.delete_node, G.delete_nodes_from, G.delete_edge,
+   G.delete_edges_from
 
-with all edges specified as 2-tuples,  
+   with all edges specified as 2-tuples,  
 
-If one replaces the graph creation command with G=XGraph(), and then
-apply the identical list of construction commands, the resulting XGraph
-object will be a simple graph G with identical datastructure G.adj. This
-property ensures reuse of code developed for graph generation in the
-Graph class.
+   If one replaces the graph creation command with G=XGraph(), and then
+   apply the identical list of construction commands, the resulting XGraph
+   object will be a simple graph G with identical datastructure G.adj. This
+   property ensures reuse of code developed for graph generation in the
+   Graph class.
 
 
 Notation
@@ -121,8 +122,8 @@ ebunch:
    (similar to nbunch, also see add_edge).
 
 Warning:
-  - The ordering of objects within an arbitrary nbunch/ebunch
-    can be machine-dependent.
+  - The ordering of objects within an arbitrary nbunch/ebunch can be
+    machine-dependent.
   - Algorithms should treat an arbitrary nbunch/ebunch as
     once-through-and-exhausted iterable containers.
   - len(nbunch) and len(ebunch) need not be defined.
@@ -263,16 +264,16 @@ class XGraph(Graph):
     def add_edge(self, n1, n2=None, x=None):  
         """Add a single edge to the graph.
 
-        Can be called as G.add_edge(n1,n2,x)
-        or as G.add_edge(e), where e=(n1,n2,x).
+        Can be called as G.add_edge(n1,n2,x) or as
+        G.add_edge(e), where e=(n1,n2,x).
 
-        n1,n2 are (hashable) node objects, and are added silently to
+        n1,n2 are (hashable) node objects, and are added to
         the Graph if not already present.
 
         x is an arbitrary (not necessarily hashable) object associated
         with this edge. It can be used to associate one or more:
         labels, data records, weights or any arbirary objects to
-        edges. 
+        edges.  The default is the Python None.
 
         For example, if the graph G was created with
 
@@ -297,18 +298,12 @@ class XGraph(Graph):
         edge_iter(), or get_edge().
 
         """
-        if n2 is None:
-            # add_edge was called as add_edge(e), with  e=(n1,n2,x)
-            if len(n1)==3: #case e=(n1,n2,x)
+        if n2 is None: # add_edge was called as add_edge(e), with  e=(n1,n2,x)
+            if len(n1)==3: # case e=(n1,n2,x)
                 n1,n2,x=n1
             else:          # assume e=(n1,n2)
-                n1,n2=n1
-                x=1
-        else:
-            if x is None:
-                # add_edge was called as add_edge(n1,n2)
-                # interpret this as add_edge(n1,n2,1)
-                x=1
+                n1,n2=n1   # x=None
+
         # if edge exists, quietly return if multiple edges are not allowed
         if not self.multiedges and self.has_edge(n1,n2,x):
             return
@@ -317,7 +312,7 @@ class XGraph(Graph):
         self.adj.setdefault(n1,{})
         self.adj.setdefault(n2,{})
         
-        # don't create self loops, quietly return if not allowed
+        # self loop? quietly return if not allowed
         if not self.selfloops and n1==n2: 
             return
 
@@ -326,13 +321,12 @@ class XGraph(Graph):
             self.adj[n1][n2]=self.adj[n1].get(n2,[])+ [x]
             if n1!=n2:
                 self.adj[n2][n1]=self.adj[n2].get(n1,[])+ [x]
-        else:               # x becomes the new object associated with the
-            #edge=x          # single edge between n1 and n2
+        else:  # x is the new object assigned to single edge between n1 and n2
             self.adj[n1][n2]=x
             if n1!=n2:
-                self.adj[n2][n1]=x # a copy is required to avoid
-                                        # modifying both at the same time
-                                     # when doing a delete_edge
+                self.adj[n2][n1]=x # a copy would be required to avoid
+                                   # modifying both at the same time
+                                   # when doing a delete_edge
 
     def add_edges_from(self, ebunch):  
         """Add multiple edges to the graph.
@@ -528,52 +522,56 @@ class XGraph(Graph):
             except KeyError: 
                 raise NetworkXError, "node %s not in graph"%n
 
+    def delete_multiedges(self, n1, n2):
+        """ Delete all edges between nodes n1 and n2.
+
+        When there is only a single edge allowed between
+        nodes (multiedges=False), this just calls
+        delete_edge(n1,n2) otherwise (multiedges=True)
+        all edges between n1 and n2 are deleted.
+        """
+        if self.multiedges:
+            elist=[(n1,n2,x) for x in self.get_edge(n1,n2)]
+            self.delete_edges_from(elist)
+        else:
+            self.delete_edge(n1, n2)
+        return
+
+
     def delete_edge(self, n1, n2=None, x=None): 
         """Delete the edge (n1,n2,x) from the graph.
 
         Can be called either as G.delete_edge(n1,n2,x)
         or as G.delete_edge(e), where e=(n1,n2,x).
 
-        If x is unspecified, i.e. if called with an edge e=(n1,n2),
-        or as G.delete_edge(n1,n2), then delete all edges between n1 and n2.
-        
+        The default edge data is x=None
+        If called with an edge e=(n1,n2), or as G.delete_edge(n1,n2)
+        then the edge (n1,n2,None) will be deleted.
+
         If the edge does not exist, do nothing.
 
+        To delete *all* edges between n1 and n2 use
+        G.delete_edge(n1,n2,all=True) 
+        
         """
-        if n2 is None:
-            # delete_edge was called as delete_edge(e)
-            if len(n1)==3:  #case e=(n1,n2,x)
+        if n2 is None:      # was called as delete_edge(e)
+            if len(n1)==3:  # case e=(n1,n2,x)
                 n1,n2,x=n1
-            else:          # assume e=(n1,n2), x unspecified
-                n1,n2=n1
-                x=None
-        if x is None:
-                # delete all edges between n1 and n2.
-                if not self.has_neighbor(n1,n2):
-                    return
-                if self.multiedges:
-                    elist=[(n1,n2,x) for x in self.get_edge(n1,n2)]
-                    self.delete_edges_from(elist)
-                    return
-                else:
-                    x=self.get_edge(n1,n2)
-                    
-        elif not self.has_edge(n1,n2,x):
-            return
-        # (n1,n2,x) is an edge; now remove
+            else:           # assume e=(n1,n2), x unspecified, set to None
+                n1,n2=n1    # x=None
+
         if self.multiedges:
-            self.adj[n1][n2].remove(x)
-            if n1!=n2:
-                self.adj[n2][n1].remove(x)
-            if len(self.adj[n1][n2])==0: # if last edge between n1 and n2
-                del self.adj[n1][n2]     # was deleted
-                if n1!=n2:
-                    del self.adj[n2][n1]
-        else:        
-            # delete single edge
+            if self.has_edge(n1,n2,x):        # (n1,n2,x) is an edge; now remove
+                self.adj[n1][n2].remove(x)      # remove the edge item from list
+                if n1!=n2:                      # and if not self loop
+                    self.adj[n2][n1].remove(x)  # remove n2->n1 entry
+                if len(self.adj[n1][n2])==0:    # if last edge between n1 and n2
+                    del self.adj[n1][n2]        # was deleted, remove all trace
+                    if n1!=n2:                  # and if not self loop
+                        del self.adj[n2][n1]    # remove n2->n1 entry
+        else:  # delete single edge       
             del self.adj[n1][n2]
-            if n1!=n2:
-                del self.adj[n2][n1]
+            if n1!=n2: del self.adj[n2][n1]
         return
 
     def delete_edges_from(self, ebunch): 
@@ -1066,7 +1064,7 @@ class XDiGraph(DiGraph):
         x is an arbitrary (not necessarily hashable) object associated
         with this edge. It can be used to associate one or more,
         labels, data records, weights or any arbirary objects to
-        edges. 
+        edges. The default is the Python None.
 
         For example, if the graph G was created with
 
@@ -1090,19 +1088,12 @@ class XDiGraph(DiGraph):
         edge_iter(n1) to return all edges attached to n1.
 
         """
-        # parse args
-        if n2 is None:
-            # add_edge was called as add_edge(e), with e a tuple
+
+        if n2 is None: # add_edge was called as add_edge(e), with e a tuple
             if len(n1)==3: #case e=(n1,n2,x)
                 n1,n2,x=n1
             else:          # assume e=(n1,n2)
-                n1,n2=n1
-                x=1
-        else:
-            if x is None:
-                # add_edge was called as add_edge(n1,n2)
-                # interpret this as add_edge(n1,n2,1)
-                x=1
+                n1,n2=n1   # x=None
 
         # if edge exists, quietly return if multiple edges are not allowed
         if not self.multiedges and self.has_edge(n1,n2,x):
@@ -1114,7 +1105,7 @@ class XDiGraph(DiGraph):
         self.pred.setdefault(n1,{})
         self.pred.setdefault(n2,{})
         
-        # if edge is a self-loop, quietly return if not allowed
+        # self loop? quietly return if not allowed
         if not self.selfloops and n1==n2: 
             return
 
@@ -1122,8 +1113,7 @@ class XDiGraph(DiGraph):
                             # that defines the edges between n1 and n2
             self.succ[n1][n2]=self.succ[n1].get(n2,[])+ [x]
             self.pred[n2][n1]=self.pred[n2].get(n1,[])+ [x]
-        else:               # x becomes the new object associated with the
-           # edge=x          # single edge from n1 to n2
+        else:  # x is the new object assigned to single edge between n1 and n2
             self.succ[n1][n2]=x
             self.pred[n2][n1]=x # note that the same object is referred to
                                 # from both succ and pred
@@ -1222,48 +1212,52 @@ class XDiGraph(DiGraph):
             raise NetworkXError, "no edge (%s,%s) in graph"%(n1,n2)
 
 
-    def delete_edge(self, n1, n2=None, x=None): 
+    def delete_multiedges(self, n1, n2):
+        """ Delete all edges between nodes n1 and n2.
+
+        When there is only a single edge allowed between
+        nodes (multiedges=False), this just calls
+        delete_edge(n1,n2) otherwise (multiedges=True)
+        all edges between n1 and n2 are deleted.
+        """
+        if self.multiedges:
+            elist=[(n1,n2,x) for x in self.get_edge(n1,n2)]
+            self.delete_edges_from(elist)
+        else:
+            self.delete_edge(n1, n2)
+        return
+
+
+    def delete_edge(self, n1, n2=None, x=None, all=False): 
         """Delete the directed edge (n1,n2,x) from the graph.
 
         Can be called either as G.delete_edge(n1,n2,x)
         or as G.delete_edge(e), where e=(n1,n2,x).
 
-        If x is unspecified, i.e. if called with an edge e=(n1,n2),
-        or as G.delete_edge(n1,n2), then delete all edges between n1 and n2.
-        
+        The default data is x=None
+        If called with an edge e=(n1,n2), or as G.delete_edge(n1,n2)
+        then the edge (n1,n2,None) will be deleted.
+
         If the edge does not exist, do nothing.
 
+        To delete *all* edges between n1 and n2 use
+        G.delete_edge(n1,n2,all=True) 
+
         """
-        # parse arguments
-        if n2 is None:
-            # delete_edge was called as delete_edge(e)
+        if n2 is None: #  was called as delete_edge(e)
             if len(n1)==3:  #case e=(n1,n2,x)
                 n1,n2,x=n1
-            else:          # assume e=(n1,n2), x unspecified
-                n1,n2=n1
-                x=None
-        if x is None:
-                # delete all edges between n1 and n2.
-                if not self.has_neighbor(n1,n2):
-                    return
-                if self.multiedges:
-                    elist=[(n1,n2,x) for x in self.get_edge(n1,n2)]
-                    self.delete_edges_from(elist)
-                    return
-                else:
-                    x=self.get_edge(n1,n2)
-                    
-        elif not self.has_edge(n1,n2,x):
-            return
-        # (n1,n2,x) is an edge; now remove
-        if self.multiedges:
-            self.succ[n1][n2].remove(x)
-            self.pred[n2][n1].remove(x)
-            if len(self.succ[n1][n2])==0: # if last edge between n1 and n2
-                del self.succ[n1][n2]     # was deleted
-                del self.pred[n2][n1]
-        else:        
-            # delete single edge
+            else:          # assume e=(n1,n2)
+                n1,n2=n1   # x=None
+
+        if self.multiedges:              # multiedges are stored as a list
+            if self.has_edge(n1,n2,x):    # (n1,n2,x) is an edge; now remove
+                self.succ[n1][n2].remove(x)  # remove the edge item from list
+                self.pred[n2][n1].remove(x)
+                if len(self.succ[n1][n2])==0: # if last edge between n1 and n2
+                    del self.succ[n1][n2]     # was deleted, remove all trace
+                    del self.pred[n2][n1]
+        else:  # delete single edge
             del self.succ[n1][n2]
             del self.pred[n2][n1]
         return
@@ -1415,7 +1409,7 @@ class XDiGraph(DiGraph):
         else:
             nbrs=self.pred[n].copy()   # nbrs starts as pred dict
             for v in self.succ[n]:
-                nbrs[v]=1
+                nbrs[v]=None
             return nbrs.keys()
 
     def neighbors_iter(self,n,with_labels=False):

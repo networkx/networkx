@@ -187,12 +187,27 @@ True
 >>> G.add_edge('A','C')  # test directedness
 >>> G.add_edge('C','A')  # There should now be two undirected edges
 >>> G.get_edge('A','C')
-[1, 1]
->>> G.delete_edge('C','A')
+[None, None]
+>>> G.delete_edge('C','A') # delete one of the two edges added 
+>>> G.get_edge('A','C') 
+[None]
+>>> G.delete_edge('C','A') # delete second
 >>> G.has_edge('A','C') # G is undirected
 False
 >>> G.has_edge('C','A') 
 False
+
+
+>>> G.add_edge('A','C')  # test directedness
+>>> G.add_edge('C','A')  # There should now be two undirected edges
+>>> G.get_edge('A','C')
+[None, None]
+>>> G.delete_multiedges('C','A') # delete all edges
+>>> G.has_edge('A','C') # G is undirected
+False
+>>> G.has_edge('C','A') 
+False
+
 
 >>> G.add_edge('A','A') # test self loops
 >>> G.has_edge('A','A')
@@ -250,8 +265,8 @@ ValueError: need more than 1 value to unpack
 False
 >>> G.add_edge('N','M')  
 >>> G.get_edge('M','N')
-[1, 1]
->>> G.delete_edge('M','N')  # delete all parallel edges if none specified
+[None, None]
+>>> G.delete_multiedges('M','N')  # delete all parallel edges 
 >>> G.has_edge('M','N')
 False
 >>> G.has_edge('N','M')  # undirected
@@ -274,13 +289,13 @@ False
 pprint(sorted(G.edges()))
 
 >>> pprint(sorted(G.edges()))
-[('A', 'A', 1),
- ('A', 'B', 1),
- ('A', 'B', 1),
- ('A', 'C', 1),
- ('B', 'D', 1),
- ('C', 'B', 1),
- ('C', 'D', 1)]
+[('A', 'A', None),
+ ('A', 'B', None),
+ ('A', 'B', None),
+ ('A', 'C', None),
+ ('B', 'D', None),
+ ('C', 'B', None),
+ ('C', 'D', None)]
 
 Test G.edges(nbunch) with various forms of nbunch
 
@@ -300,30 +315,30 @@ nbunch can be an empty list
 nbunch can be a list
 
 >>> sorted(G.edges(['A','B']))
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a set
 
 >>> sorted(G.edges(set(['A','B'])))
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a graph
 
 >>> G1=Graph()
 >>> G1.add_nodes_from('AB')
 >>> sorted(G.edges(G1)) # nbunch is a graph
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a dict with nodes as keys
 
 >>> ndict={'A': "thing1", 'B': "thing2"}
 >>> sorted(G.edges(ndict))
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a single node
 
 >>> sorted(G.edges('A'))
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None)]
 
 G.edges() does not support with_labels=True option
 
@@ -348,40 +363,40 @@ nbunch can be an empty list
 nbunch can be a list
 
 >>> sorted(G.edges_iter(['A','B']))
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a set
 
 >>> sorted(G.edges_iter(set(['A','B'])))
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a graph
 
 >>> G1=Graph()
 >>> G1.add_nodes_from(['A','B'])
 >>> sorted(G.edges_iter(G1)) # nbunch is a graph
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a dict with nodes as keys
 
 >>> ndict={'A': "thing1", 'B': "thing2"}
 >>> sorted(G.edges_iter(ndict))
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a single node
 
 >>> sorted(G.edges_iter('A'))
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None)]
 
 G.edges_iter() does not support with_labels=True option
 
 >>> sorted(G.edges_iter())
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'D', 1), ('C', 'B', 1), ('C', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
 
 nbunch can be nothing (whole graph)
 
 >>> sorted(G.edges_iter())
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'D', 1), ('C', 'B', 1), ('C', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
 >>> sorted(G.nodes_iter())
 ['A', 'B', 'C', 'D', 'G', 'J', 'K']
 
@@ -396,7 +411,7 @@ At this stage G should be the following PseudoGraph:
 >>> H=G.copy()
 >>> H.delete_nodes_from( ['G', 'J', 'K'])
 >>> sorted(H.edges())  # test copy
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'D', 1), ('C', 'B', 1), ('C', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
 
 Now grow and shrink H using various forms of nbunch
  
@@ -459,10 +474,10 @@ Build graph L: 3 self-loops + 4-skein
 >>> L.add_edges_from([(1,1),(1,1),(1,1)]) # 3 self-loops at node 1
 >>> L.add_edges_from([(1,2),(1,2),(1,2),(1,2)]) # 4 parallel edges
 >>> sorted(L.edges())
-[(1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 2, 1), (1, 2, 1), (1, 2, 1), (1, 2, 1)]
+[(1, 1, None), (1, 1, None), (1, 1, None), (1, 2, None), (1, 2, None), (1, 2, None), (1, 2, None)]
 
 >>> sorted(L.edges([1,2]))
-[(1, 1, 1), (1, 1, 1), (1, 1, 1), (1, 2, 1), (1, 2, 1), (1, 2, 1), (1, 2, 1)]
+[(1, 1, None), (1, 1, None), (1, 1, None), (1, 2, None), (1, 2, None), (1, 2, None), (1, 2, None)]
 
 
 
@@ -496,20 +511,20 @@ Extracting objects imbedded into edges.
 >>> H.delete_edge(1,1,'loop')   
 >>> sorted(H.edges(1))
 [(1, 2, 'hi'), (1, 2, 'there'), (1, 3, 'oof')]
->>> H.delete_edge(1,2) # should delete both edges between 1 and 2 
+>>> H.delete_multiedges(1,2) # should delete both edges between 1 and 2 
 >>> sorted(H.edges(1))
 [(1, 3, 'oof')]
 >>> H.add_edges_from([(4,5),(4,6),(3,4)])
 >>> sorted(H.edges(4))
-[(4, 3, 1), (4, 5, 1), (4, 6, 1)]
+[(4, 3, None), (4, 5, None), (4, 6, None)]
 >>> H.add_edge(5,6)
 >>> sorted(H.edges(6))
-[(6, 4, 1), (6, 5, 1)]
+[(6, 4, None), (6, 5, None)]
 >>> H.add_edges_from([(4,5),(1,1)])
 >>> sorted(H.edges(4))
-[(4, 3, 1), (4, 5, 1), (4, 5, 1), (4, 6, 1)]
+[(4, 3, None), (4, 5, None), (4, 5, None), (4, 6, None)]
 >>> sorted(H.edges(1))
-[(1, 1, 1), (1, 3, 'oof')]
+[(1, 1, None), (1, 3, 'oof')]
 >>> sorted(H.nodes())
 [1, 2, 3, 4, 5, 6]
 >>> H.delete_nodes_from([1,2,3,4,5,6])
@@ -579,7 +594,7 @@ False
 >>> sorted(Gsub.nodes())
 ['A', 'B', 'D']
 >>> sorted(Gsub.edges())
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('B', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('B', 'D', None)]
 
   # to_directed
 
@@ -588,7 +603,7 @@ False
 
 >>> Ksub=K.subgraph(['A','B'])
 >>> sorted( Ksub.edges() )
-[('A', 'B', 1), ('A', 'B', 1)]
+[('A', 'B', None), ('A', 'B', None)]
 
 Neighbors
 ---------
@@ -600,9 +615,9 @@ Neighbors
 >>> sorted(G.neighbors_iter('A'))
 ['A', 'B', 'C']
 >>> G.neighbors('A',with_labels=True)
-{'A': [1], 'C': [1], 'B': [1, 1]}
+{'A': [None], 'C': [None], 'B': [None, None]}
 >>> sorted(G.neighbors_iter('A',with_labels=True))
-[('A', [1]), ('B', [1, 1]), ('C', [1])]
+[('A', [None]), ('B', [None, None]), ('C', [None])]
 
 
 Functional interface
@@ -611,14 +626,14 @@ Functional interface
 >>> sorted(nodes(G))
 ['A', 'B', 'C', 'D', 'G', 'J', 'K']
 >>> sorted(edges(G))
-[('A', 'A', 1), ('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'D', 1), ('C', 'B', 1), ('C', 'D', 1)]
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
 
 >>> sorted(degree(G))
 [0, 0, 0, 2, 3, 4, 5]
 >>> sorted(neighbors(G,'A'))
 ['A', 'B', 'C']
 >>> neighbors(G,'A',with_labels=True)
-{'A': [1], 'C': [1], 'B': [1, 1]}
+{'A': [None], 'C': [None], 'B': [None, None]}
 
 >>> number_of_nodes(G)
 7
@@ -631,13 +646,13 @@ Functional interface
 >>> sorted(nodes(K))
 ['A', 'B', 'C', 'D']
 >>> pprint(sorted(edges(K)))
-[('A', 'B', 1),
- ('A', 'B', 1),
- ('A', 'C', 1),
- ('A', 'C', 1),
- ('A', 'D', 1),
- ('B', 'D', 1),
- ('C', 'D', 1)]
+[('A', 'B', None),
+ ('A', 'B', None),
+ ('A', 'C', None),
+ ('A', 'C', None),
+ ('A', 'D', None),
+ ('B', 'D', None),
+ ('C', 'D', None)]
 
 >>> pprint(sorted(edges(Km)))
 [('A', 'B', "Blacksmith's"),
@@ -666,13 +681,13 @@ Iterators
 >>> sorted(G.nodes_iter())
 ['A', 'B', 'C', 'D', 'G', 'J', 'K']
 >>> pprint(sorted(G.edges_iter()))
-[('A', 'A', 1),
- ('A', 'B', 1),
- ('A', 'B', 1),
- ('A', 'C', 1),
- ('B', 'D', 1),
- ('C', 'B', 1),
- ('C', 'D', 1)]
+[('A', 'A', None),
+ ('A', 'B', None),
+ ('A', 'B', None),
+ ('A', 'C', None),
+ ('B', 'D', None),
+ ('C', 'B', None),
+ ('C', 'D', None)]
 
 >>> sorted(G.degree())
 [0, 0, 0, 2, 3, 4, 5]
@@ -689,7 +704,7 @@ Iterators
 >>> sorted(K.nodes_iter())
 ['A', 'B', 'C', 'D']
 >>> sorted(K.edges_iter())
-[('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('A', 'C', 1), ('A', 'D', 1), ('B', 'D', 1), ('C', 'D', 1)]
+[('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('A', 'C', None), ('A', 'D', None), ('B', 'D', None), ('C', 'D', None)]
 
 >>> sorted(K.degree_iter())
 [3, 3, 3, 5]
@@ -717,7 +732,7 @@ ban_selfloops, clear
 
 >>> G.ban_selfloops()
 >>> sorted(G.edges())
-[('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('B', 'D', 1), ('C', 'B', 1), ('C', 'D', 1)]
+[('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
 >>> G.clear()
 >>> number_of_nodes(G)
 0
@@ -726,7 +741,7 @@ ban_selfloops, clear
 
 >>> K.ban_selfloops() # no selfloops, so should be unchanged
 >>> sorted(K.edges())
-[('A', 'B', 1), ('A', 'B', 1), ('A', 'C', 1), ('A', 'C', 1), ('A', 'D', 1), ('B', 'D', 1), ('C', 'D', 1)]
+[('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('A', 'C', None), ('A', 'D', None), ('B', 'D', None), ('C', 'D', None)]
 >>> K.clear()
 >>> number_of_nodes(K)
 0

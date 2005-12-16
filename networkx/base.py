@@ -23,11 +23,12 @@ This module implements graphs using data structures based on an
 adjacency list implemented as a node-centric dictionary of
 dictionaries. The dictionary contains keys corresponding to the nodes
 and the values are dictionaries of neighboring node keys with the
-value 1.  This allows fast addition, deletion and lookup of nodes and
-neighbors in large graphs.  The underlying datastructure should only
-be visible in this module. In all other modules, instances of
-graph-like objects are manipulated solely via the methods defined here
-and not by acting directly on the datastructure.
+value None (the Python None type).  This allows fast addition,
+deletion and lookup of nodes and neighbors in large graphs.  The
+underlying datastructure should only be visible in this module. In all
+other modules, instances of graph-like objects are manipulated solely
+via the methods defined here and not by acting directly on the
+datastructure.
 
 The following notation is used throughout NetworkX documentation and
 code: (we use mathematical notation n,v,w,... to indicate a node,
@@ -466,8 +467,8 @@ class Graph(object):
         # don't create self loops, fail silently, nodes are still added
         if u==v: 
             return  
-        self.adj[u][v]=1
-        self.adj[v][u]=1
+        self.adj[u][v]=None
+        self.adj[v][u]=None
 
     def add_edges_from(self, ebunch):  
         """Add all the edges in ebunch to the graph.
@@ -485,8 +486,8 @@ class Graph(object):
             # don't create self loops, fail silently, nodes are still added
             if u==v:
                 continue  
-            self.adj[u][v]=1
-            self.adj[v][u]=1 # add both u-v and v-u
+            self.adj[u][v]=None
+            self.adj[v][u]=None # add both u-v and v-u
 
 
     def delete_edge(self, u, v=None): 
@@ -587,7 +588,7 @@ class Graph(object):
             n1=nbunch
             for n2 in self.adj[n1]:
                 if not e.has_key((n1,n2)):
-                    e[(n2,n1)]=1
+                    e[(n2,n1)]=None
                     yield (n1,n2)
         else: # treat nbunch as a container of nodes
             try:
@@ -1099,8 +1100,8 @@ class DiGraph(Graph):
         # don't create self loops, fail silently, nodes are still added
         if u==v: 
             return  
-        self.succ[u][v]=1
-        self.pred[v][u]=1
+        self.succ[u][v]=None
+        self.pred[v][u]=None
 
     def add_edges_from(self, ebunch):  
         """Add all the edges in ebunch to the graph.
@@ -1122,8 +1123,8 @@ class DiGraph(Graph):
             # don't create self loops, fail silently, nodes are still added
             if u==v:
                 continue
-            self.succ[u][v]=1
-            self.pred[v][u]=1
+            self.succ[u][v]=None
+            self.pred[v][u]=None
 
             
 
@@ -1243,7 +1244,7 @@ class DiGraph(Graph):
             # merge 
             for v in self.succ[n]:
                 if v not in nbrs:
-                     nbrs[v]=1
+                     nbrs[v]=None
             if with_labels:
                 return nbrs
             else:
@@ -1509,7 +1510,7 @@ class DiGraph(Graph):
         for u in H.adj:
             H.adj[u]=self.succ[u].copy()  # copy successors
             for v in self.pred[u]:        # now add predecessors to adj too
-                H.adj[u][v]=1
+                H.adj[u][v]=None
         return H
 
     def to_directed(self):

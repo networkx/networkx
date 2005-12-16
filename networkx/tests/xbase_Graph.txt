@@ -284,7 +284,7 @@ False
 >>> sorted(G.nodes())
 ['A', 'B', 'C', 'D', 'G', 'J', 'K']
 >>> sorted(G.edges())
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'D', 1), ('C', 'B', 1), ('C', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
 
 Test G.edges(nbunch) with various forms of nbunch
 
@@ -304,38 +304,38 @@ nbunch can be an empty list
 nbunch can be a list
 
 >>> sorted(G.edges(['A','B']))
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a set
 
 >>> sorted(G.edges(set(['A','B'])))
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a graph
 
 >>> G1=Graph()
 >>> G1.add_nodes_from('AB')
 >>> sorted(G.edges(G1)) # nbunch is a graph
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be an XGraph
 
 >>> G1=XGraph()
 >>> G1.add_nodes_from('AB')
 >>> sorted(G.edges(G1)) # nbunch is an XGraph
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 
 nbunch can be a dict with nodes as keys
 
 >>> ndict={'A': "thing1", 'B': "thing2"}
 >>> sorted(G.edges(ndict))
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a single node
 
 >>> sorted(G.edges('A'))
-[('A', 'B', 1), ('A', 'C', 1)]
+[('A', 'B', None), ('A', 'C', None)]
 
 G.edges() does not support with_labels=True option
 
@@ -360,38 +360,38 @@ nbunch can be an empty list
 nbunch can be a list
 
 >>> sorted(G.edges_iter(['A','B']))
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a set
 
 >>> sorted(G.edges_iter(set(['A','B'])))
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a graph
 
 >>> G1=Graph()
 >>> G1.add_nodes_from(['A','B'])
 >>> sorted(G.edges_iter(G1)) # nbunch is a graph
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be an XGraph
 
 >>> G1=XGraph()
 >>> G1.add_nodes_from(['A','B'])
 >>> sorted(G.edges_iter(G1)) # nbunch is a graph
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 
 nbunch can be a dict with nodes as keys
 
 >>> ndict={'A': "thing1", 'B': "thing2"}
 >>> sorted(G.edges_iter(ndict))
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'C', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'C', None), ('B', 'D', None)]
 
 nbunch can be a single node
 
 >>> sorted(G.edges_iter('A'))
-[('A', 'B', 1), ('A', 'C', 1)]
+[('A', 'B', None), ('A', 'C', None)]
 
 G.edges_iter() does not support with_labels=True option
 
@@ -403,7 +403,7 @@ NetworkXError: with_labels=True option not supported. Rather use neighbors()
 nbunch can be nothing (whole graph)
 
 >>> sorted(G.edges_iter())
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'D', 1), ('C', 'B', 1), ('C', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
 >>> sorted(G.nodes_iter())
 ['A', 'B', 'C', 'D', 'G', 'J', 'K']
 
@@ -493,7 +493,7 @@ False
 >>> sorted(SG.nodes())
 ['A', 'B', 'D']
 >>> sorted(SG.edges())
-[('A', 'B', 1), ('B', 'D', 1)]
+[('A', 'B', None), ('B', 'D', None)]
 
 >>> DG=G.to_directed()
 >>> DG.is_directed()
@@ -505,7 +505,7 @@ True
 >>> DG.adj==G.adj
 True
 >>> sorted(DG.edges(list('A')))
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'A', 1), ('C', 'A', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'A', None), ('C', 'A', None)]
 >>> DG.delete_edge('A','B')
 >>> DG.has_edge('B','A') # this deletes B-A but not  A-B
 True
@@ -525,9 +525,9 @@ Neighbors
 >>> sorted(G.neighbors_iter('A'))
 ['B', 'C']
 >>> G.neighbors('A',with_labels=True)
-{'C': 1, 'B': 1}
+{'C': None, 'B': None}
 >>> sorted(G.neighbors_iter('A',with_labels=True))
-[('B', 1), ('C', 1)]
+[('B', None), ('C', None)]
 
 >>> sorted(G.neighbors('G'))
 []
@@ -545,15 +545,15 @@ Functional interface
 >>> sorted(nodes_iter(G))
 ['A', 'B', 'C', 'D', 'G', 'J', 'K']
 >>> sorted(edges(G))
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'D', 1), ('C', 'B', 1), ('C', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
 >>> sorted(edges_iter(G))
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'D', 1), ('C', 'B', 1), ('C', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
 >>> sorted(degree(G))
 [0, 0, 0, 2, 2, 3, 3]
 >>> sorted(neighbors(G,'A'))
 ['B', 'C']
 >>> neighbors(G,'A',with_labels=True)
-{'C': 1, 'B': 1}
+{'C': None, 'B': None}
 >>> number_of_nodes(G)
 7
 >>> number_of_edges(G)
@@ -569,7 +569,7 @@ Iterators
 >>> sorted(G.nodes_iter())
 ['A', 'B', 'C', 'D', 'G', 'J', 'K']
 >>> sorted(G.edges_iter())
-[('A', 'B', 1), ('A', 'C', 1), ('B', 'D', 1), ('C', 'B', 1), ('C', 'D', 1)]
+[('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
 >>> sorted(G.degree_iter())
 [0, 0, 0, 2, 2, 3, 3]
 >>> sorted(G.degree_iter(with_labels=True))
