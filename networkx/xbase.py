@@ -143,16 +143,17 @@ Mutating Graph methods
     - G.add_edges_from(ebunch)
     - G.delete_edge(n1,n2), G.delete_edge(n1,n2,x), G.delete_edge(e), 
     - G.delete_edges_from(ebunch)
+    - G.delete_multiedges(n1,n2)
     - G.add_path(nlist)
     - G.add_cycle(nlist)
 
     - G.to_directed()
     - G.ban_multiedges()
     - G.allow_multiedges()
-    - G.delete_multiedges()
+    - G.remove_all_multiedges() 
     - G.ban_selfloops()
     - G.allow_selfloops()
-    - G.delete_selfloops()
+    - G.remove_all_selfloops()
     - G.clear()
     - G.subgraph(nbunch, inplace=True)
 
@@ -524,12 +525,12 @@ class XGraph(Graph):
 
     def delete_multiedges(self, n1, n2):
         """ Delete all edges between nodes n1 and n2.
-
-        When there is only a single edge allowed between
-        nodes (multiedges=False), this just calls
-        delete_edge(n1,n2) otherwise (multiedges=True)
-        all edges between n1 and n2 are deleted.
-        """
+     
+         When there is only a single edge allowed between
+         nodes (multiedges=False), this just calls
+         delete_edge(n1,n2) otherwise (multiedges=True)
+         all edges between n1 and n2 are deleted.
+         """
         if self.multiedges:
             elist=[(n1,n2,x) for x in self.get_edge(n1,n2)]
             self.delete_edges_from(elist)
@@ -570,8 +571,9 @@ class XGraph(Graph):
                     if n1!=n2:                  # and if not self loop
                         del self.adj[n2][n1]    # remove n2->n1 entry
         else:  # delete single edge       
-            del self.adj[n1][n2]
-            if n1!=n2: del self.adj[n2][n1]
+            if self.has_edge(n1,n2):
+                del self.adj[n1][n2]
+                if n1!=n2: del self.adj[n2][n1]
         return
 
     def delete_edges_from(self, ebunch): 
@@ -788,7 +790,7 @@ class XGraph(Graph):
         """
         self.selfloops=True
 
-    def delete_selfloops(self):
+    def remove_all_selfloops(self):
         """Remove self-loops from the graph (edges from a node to itself)."""
         if not self.selfloops:
             # nothing to do
@@ -801,7 +803,7 @@ class XGraph(Graph):
         """Remove self-loops from the graph and henceforth do not allow
         their creation.
         """
-        self.delete_selfloops()
+        self.remove_all_selfloops()
         self.selfloops=False
 
 
@@ -817,7 +819,8 @@ class XGraph(Graph):
             for (u,edgedata) in self.adj[v].iteritems():
                 self.adj[v][u]=[edgedata]
 
-    def delete_multiedges(self):
+    def remove_all_multiedges(self):
+        # FIXME, write tests
         """Remove multiedges retaining the data from the first edge"""
         if not self.multiedges: # nothing to do
             return
@@ -980,6 +983,7 @@ class XDiGraph(DiGraph):
     - add_edges_from
     - delete_edge
     - delete_edges_from
+    - delete_multiedges
     - has_edge
     - edges_iter
     - degree_iter
@@ -993,11 +997,11 @@ class XDiGraph(DiGraph):
     XDiGraph also adds the following methods to those of DiGraph:
 
     - allow_selfloops
-    - remove_selfloops
+    - remove_all_selfloops
     - ban_selfloops
     - allow_multiedges
-    - remove_multiedges
     - ban_multiedges
+    - remove_all_multiedges
 
     XDigraph adds the following methods to those of XGraph:
 
@@ -1258,8 +1262,9 @@ class XDiGraph(DiGraph):
                     del self.succ[n1][n2]     # was deleted, remove all trace
                     del self.pred[n2][n1]
         else:  # delete single edge
-            del self.succ[n1][n2]
-            del self.pred[n2][n1]
+            if self.has_edge(n1,n2):
+                del self.succ[n1][n2]
+                del self.pred[n2][n1]
         return
 
     def delete_edges_from(self, ebunch, data=None): 
@@ -1623,7 +1628,7 @@ class XDiGraph(DiGraph):
         """
         self.selfloops=True
 
-    def delete_selfloops(self):
+    def remove_all_selfloops(self):
         """Remove self-loops from the graph (edges from a node to itself)."""
         for n in self.succ:
             if self.succ[n].has_key(n):
@@ -1634,7 +1639,7 @@ class XDiGraph(DiGraph):
         """Remove self-loops from the graph and henceforth do not allow
         their creation.
         """
-        self.delete_selfloops()
+        self.remove_all_selfloops()
         self.selfloops=False
 
 
@@ -1651,7 +1656,8 @@ class XDiGraph(DiGraph):
                 self.succ[v][u]=[edgedata]
                 self.pred[u][v]=[edgedata]
 
-    def delete_multiedges(self):
+    def remove_all_multiedges(self):
+        # FIXME, write tests
         """Remove multiedges retaining the data from the first edge"""
         if not self.multiedges: # nothing to do
             return
