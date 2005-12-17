@@ -143,7 +143,7 @@ Mutating Graph methods
     - G.add_edges_from(ebunch)
     - G.delete_edge(n1,n2), G.delete_edge(n1,n2,x), G.delete_edge(e), 
     - G.delete_edges_from(ebunch)
-    - G.delete_multiedges(n1,n2)
+    - G.delete_multiedge(n1,n2)
     - G.add_path(nlist)
     - G.add_cycle(nlist)
 
@@ -523,7 +523,7 @@ class XGraph(Graph):
             except KeyError: 
                 raise NetworkXError, "node %s not in graph"%n
 
-    def delete_multiedges(self, n1, n2):
+    def delete_multiedge(self, n1, n2):
         """ Delete all edges between nodes n1 and n2.
      
          When there is only a single edge allowed between
@@ -983,7 +983,7 @@ class XDiGraph(DiGraph):
     - add_edges_from
     - delete_edge
     - delete_edges_from
-    - delete_multiedges
+    - delete_multiedge
     - has_edge
     - edges_iter
     - degree_iter
@@ -1216,7 +1216,7 @@ class XDiGraph(DiGraph):
             raise NetworkXError, "no edge (%s,%s) in graph"%(n1,n2)
 
 
-    def delete_multiedges(self, n1, n2):
+    def delete_multiedge(self, n1, n2):
         """ Delete all edges between nodes n1 and n2.
 
         When there is only a single edge allowed between
