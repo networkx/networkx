@@ -223,7 +223,7 @@ True
 12
 >>> E=disjoint_union(G1,G2)
 >>> sorted(E.nodes())
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
 convert_data_structure
 ----------------------
@@ -281,13 +281,13 @@ True
 >>> degG=G.degree()
 >>> print degH.sort()==degG.sort()
 True
->>> degree(H,1)==1
+>>> degree(H,0)==1
+True
+>>> degree(H,1)==2
 True
 >>> degree(H,2)==2
 True
->>> degree(H,3)==2
-True
->>> degree(H,4)==3
+>>> degree(H,3)==3
 True
 
 >>> H=convert_node_labels_to_integers(G,ordering="decreasing degree")
@@ -295,13 +295,13 @@ True
 >>> degG=G.degree()
 >>> print degH.sort()==degG.sort()
 True
->>> degree(H,1)==3
+>>> degree(H,0)==3
+True
+>>> degree(H,1)==2
 True
 >>> degree(H,2)==2
 True
->>> degree(H,3)==2
-True
->>> degree(H,4)==1
+>>> degree(H,3)==1
 True
 
 >>> H=convert_node_labels_to_integers(G,ordering="increasing degree",discard_old_labels=False)
@@ -309,24 +309,24 @@ True
 >>> degG=G.degree()
 >>> print degH.sort()==degG.sort()
 True
->>> degree(H,1)==1
+>>> degree(H,0)==1
+True
+>>> degree(H,1)==2
 True
 >>> degree(H,2)==2
 True
->>> degree(H,3)==2
-True
->>> degree(H,4)==3
+>>> degree(H,3)==3
 True
 >>> H.dna['has_node_labels']
 True
 >>> mapping=H.dna['node_labels']
->>> mapping['C']==4
+>>> mapping['C']==3
 True
->>> mapping['D']==1
+>>> mapping['D']==0
 True
->>> mapping['A']==2 or mapping['A']==3
+>>> mapping['A']==1 or mapping['A']==2
 True
->>> mapping['B']==2 or mapping['B']==3
+>>> mapping['B']==1 or mapping['B']==2
 True
 
 >>> H=convert_node_labels_to_integers(G,ordering="increasing age")

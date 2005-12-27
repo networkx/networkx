@@ -2,7 +2,7 @@
 Various small and named graphs, together with some compact generators.
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
+__author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
 __date__ = "$Date: 2005-06-15 12:53:08 -0600 (Wed, 15 Jun 2005) $"
 __credits__ = """"""
 __revision__ = "$Revision: 1040 $"
@@ -17,17 +17,17 @@ import networkx
 #------------------------------------------------------------------------------
 #   Tools for creating small graphs
 #------------------------------------------------------------------------------
-def make_small_graph(graph_description,create_using=None,**kwds):
+def make_small_graph(graph_description, create_using=None):
     """
     Return the small graph described by graph_description and kwds.
 
-    graph_description is a list of the form [type,name,n,xlist]
+    graph_description is a list of the form [ltype,name,n,xlist]
 
-    Here type is one of "adjacencylist" or "edgelist",
+    Here ltype is one of "adjacencylist" or "edgelist",
     name is the name of the graph and n the number of nodes.
     This constructs a graph of  n nodes with integer labels 1,..,n.
     
-    If type="adjacencylist"  then xlist is an adjacency list
+    If ltype="adjacencylist"  then xlist is an adjacency list
     with exactly n entries, in with the j'th entry (which can be empty)
     specifies the nodes connected to vertex j.
     e.g. the "square" graph C_4 can be obtained by
@@ -38,7 +38,7 @@ def make_small_graph(graph_description,create_using=None,**kwds):
     
     >>> G=make_small_graph(["adjacencylist","C_4",4,[[2,4],[3],[4],[]]])
     
-    If type="edgelist" then xlist is an edge list 
+    If ltype="edgelist" then xlist is an edge list 
     written as [[v1,w2],[v2,w2],...,[vk,wk]],
     where vj and wj integers in the range 1,..,n
     e.g. the "square" graph C_4 can be obtained by
@@ -47,27 +47,28 @@ def make_small_graph(graph_description,create_using=None,**kwds):
 
     Other graph descriptors can be passed to Graph() using kwds
     """
-    type=graph_description[0]
+    ltype=graph_description[0]
     name=graph_description[1]
     n=graph_description[2]
 
-    G=networkx.empty_graph(n,create_using,**kwds)
+    G=networkx.empty_graph(n, create_using)
     nodes=G.nodes()
 
-    if type=="adjacencylist":
+    if ltype=="adjacencylist":
         adjlist=graph_description[3]
         if len(adjlist) != n:
             raise networkx.NetworkXError,"invalid graph_description"
-        G.add_edges_from([(u,v) for v in nodes for u in adjlist[v-1]])
-    elif type=="edgelist":
+        G.add_edges_from([(u-1,v) for v in nodes for u in adjlist[v]])
+    elif ltype=="edgelist":
         edgelist=graph_description[3]
         for e in edgelist:
-            v1=e[0]
-            v2=e[1]
-            if v1<1 or v1>n or v2<1 or v2>n:
+            v1=e[0]-1
+            v2=e[1]-1
+            if v1<0 or v1>n-1 or v2<0 or v2>n-1:
                 raise networkx.NetworkXError,"invalid graph_description"
             else:
                 G.add_edge(v1,v2)
+    G.name=name
     return G
 
 
@@ -118,13 +119,14 @@ def LCF_graph(n,shift_list,repeats):
     n_extra_edges=repeats*len(shift_list)    
     # edges are added n_extra_edges times
     # (not all of these need be new)
-    if n_extra_edges < 1: return G
+    if n_extra_edges < 1:
+        return G
 
     for i in range(n_extra_edges):
         shift=shift_list[i%len(shift_list)] #cycle through shift_list
-        v1=nodes[i%n]                       # cycle repeatedly through nodes
+        v1=nodes[i%n]                    # cycle repeatedly through nodes
         v2=nodes[(i + shift)%n]
-        G.add_edge(v1,v2)
+        G.add_edge(v1, v2)
     return G
 
 
@@ -199,8 +201,9 @@ def frucht_graph():
 
     """
     G=networkx.cycle_graph(7)
-    G.add_edges_from([[1,8],[2,8],[3,9],[4,10],[5,10],[6,11],[7,11],
-                [8,12],[9,12],[9,10],[11,12]])
+    G.add_edges_from([[0,7],[1,7],[2,8],[3,9],[4,9],[5,10],[6,10],
+                [7,11],[8,11],[8,9],[10,11]])
+
     G.name="Frucht Graph"
     return G
 
@@ -322,7 +325,7 @@ def sedgewick_maze_graph():
 
 def tetrahedral_graph():
     """ Return the 3-regular Platonic Tetrahedral graph."""
-    from classic import complete_graph
+    from networkx.generators.classic import complete_graph
     G=complete_graph(4)
     G.name="Platonic Tetrahedral graph"
     return G
@@ -346,7 +349,8 @@ def truncated_cube_graph():
 def truncated_tetrahedron_graph():
     """Return the skeleton of the truncated Platonic tetrahedron."""
     G=networkx.path_graph(12)
-    G.add_edges_from([(1,3),(1,10),(2,7),(4,12),(5,12),(6,8),(9,11)])
+#    G.add_edges_from([(1,3),(1,10),(2,7),(4,12),(5,12),(6,8),(9,11)])
+    G.add_edges_from([(0,2),(0,9),(1,6),(3,11),(4,11),(5,7),(8,10)])
     G.name="Truncated Tetrahedron Graph"
     return G
 
@@ -371,8 +375,10 @@ def tutte_graph():
 
 
 def _test_suite():
+    """test hook"""
     import doctest
-    suite = doctest.DocFileSuite('tests/generators/small.txt',package='networkx')
+    suite = doctest.DocFileSuite('tests/generators/small.txt',\
+                                 package='networkx')
     return suite
 
 if __name__ == "__main__":
@@ -380,7 +386,8 @@ if __name__ == "__main__":
     import sys
     import unittest
     if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
+        print "Python version 2.4 or later required for tests (%d.%d detected)"\
+              %  sys.version_info[:2]
         sys.exit(-1)
     # directory of networkx package (relative to this)
     nxbase=sys.path[0]+os.sep+os.pardir

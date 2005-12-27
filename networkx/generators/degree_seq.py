@@ -17,6 +17,7 @@ __revision__ = "$Revision: 1037 $"
 import random
 import networkx
 import networkx.utils
+from networkx.generators.classic import empty_graph
 #---------------------------------------------------------------------------
 #  Generating Graphs with a given degree sequence
 #---------------------------------------------------------------------------
@@ -80,7 +81,8 @@ def configuration_model(deg_sequence,seed=None):
 #    G=networkx.empty_graph(N,create_using=networkx.Graph()) # no multiedges or selfloops
 
     # allow multiedges and selfloops
-    G=networkx.empty_graph(N,create_using=networkx.XGraph(multiedges=True, selfloops=True))
+    G=networkx.empty_graph(N,create_using=networkx.XGraph(multiedges=True, \
+                                                          selfloops=True))
 
     if N==0 or max(deg_sequence)==0: # done if no edges
         return G 
@@ -97,11 +99,11 @@ def configuration_model(deg_sequence,seed=None):
     # while there are stubs in the sublist, randomly select two stubs,
     # connect them to make an edge, then pop them from the stublist    
     while stublist:
-       source=random.choice(stublist)
-       stublist.remove(source)
-       target=random.choice(stublist)
-       stublist.remove(target)
-       G.add_edge(source,target)
+        source=random.choice(stublist)
+        stublist.remove(source)
+        target=random.choice(stublist)
+        stublist.remove(target)
+        G.add_edge(source,target)
 
     G.name="configuration_model %d nodes %d edges"%(G.order(),G.size())
     return G
@@ -179,22 +181,20 @@ def degree_sequence_tree(deg_sequence):
     if not len(deg_sequence)-sum(deg_sequence)/2.0 == 1.0:
         raise networkx.NetworkXError,"Degree sequence not a tree"
 
-    G=networkx.Graph()
+    G=empty_graph(0)
     # single node tree
     if len(deg_sequence)==1:
-        G.add_node(1)
         return G
-
     deg=[s for s in deg_sequence if s>1] # all degrees greater than 1
     deg.sort(reverse=True)
 
     # make path graph as backbone
     n=len(deg)+2
     G=networkx.path_graph(n)
-    last=n
+    last=n-1
 
     # add the leaves
-    for source in range(2,n):
+    for source in range(1,n-1):
         nedges=deg.pop()-1
         for target in range(1,nedges):
             G.add_edge(source, last+target)
@@ -289,12 +289,14 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
         if is_valid_degree_sequence(seq):
             return seq
         tries+=1
-    raise networkx.NetworkXError, "Exceeded max (%d) attempts at a valid sequence."%max_tries
+    raise networkx.NetworkXError, \
+          "Exceeded max (%d) attempts at a valid sequence."%max_tries
 
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/generators/degree_seq.txt',package='networkx')
+    suite = doctest.DocFileSuite('tests/generators/degree_seq.txt',
+                                 package='networkx')
     return suite
 
 
@@ -303,7 +305,8 @@ if __name__ == "__main__":
     import sys
     import unittest
     if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
+        print "Python version 2.4 or later required (%d.%d detected)." \
+              %  sys.version_info[:2]
         sys.exit(-1)
     # directory of networkx package (relative to this)
     nxbase=sys.path[0]+os.sep+os.pardir

@@ -138,7 +138,7 @@ def disjoint_union(G,H):
     """
 
     R1=convert_node_labels_to_integers(G)
-    R2=convert_node_labels_to_integers(H,first_label=networkx.number_of_nodes(R1)+1)
+    R2=convert_node_labels_to_integers(H,first_label=networkx.number_of_nodes(R1))
     R=union(R1,R2)
     R.name="disjoint_union( %s, %s )"%(G.name,H.name)
     return R
@@ -263,7 +263,7 @@ def convert_to_directed(G):
     """
     return G.to_directed()
 
-def convert_node_labels_to_integers(G,first_label=1,ordering="default",discard_old_labels=True):
+def convert_node_labels_to_integers(G,first_label=0,ordering="default",discard_old_labels=True):
     """
     Return a copy of G, with n node labels replaced with integers,
     starting at first_label.
@@ -346,9 +346,9 @@ def convert_node_labels_to_integers(G,first_label=1,ordering="default",discard_o
         w_int=v_to_int_map[e[1]]
 #       print "edge ",v,"--",w, " mapped to ", v_int,"--",w_int
         if len(e)==2:
-           H.add_edge(v_int,w_int)
+            H.add_edge(v_int,w_int)
         else:
-           H.add_edge(v_int,w_int,e[2])
+            H.add_edge(v_int,w_int,e[2])
 
     if discard_old_labels:
         H.dna["has_node_labels"]=False

@@ -36,9 +36,10 @@ def binomial_graph(n,p,seed=None):
     if not seed is None:
         random.seed(seed)
 
-    for u in xrange(1,n+1):
-        for v in xrange(u+1,n+1):
-            if random.random() < p: G.add_edge(u,v)
+    for u in xrange(n):
+        for v in xrange(u+1,n):
+            if random.random() < p:
+                G.add_edge(u,v)
     return G
 
 def erdos_renyi_graph(n,m,seed=None):
@@ -57,9 +58,11 @@ def erdos_renyi_graph(n,m,seed=None):
     if not seed is None:
         random.seed(seed)
 
-    if n==1: return G
+    if n==1:
+        return G
 
-    if m>=n*(n-1)/2: return complete_graph(n)
+    if m>=n*(n-1)/2:
+        return complete_graph(n)
 
     nlist=G.nodes()
     edge_count=0
@@ -205,37 +208,29 @@ def random_regular_graph(d,n,seed=None):
     if not seed is None:
         random.seed(seed)    
 
-    G=empty_graph(0)
-
-    nlist=range(0,n)
-    G.add_nodes_from(nlist)
-
+        
+    G=empty_graph(n)
     # keep track of the edges we have seen
     seen_edges={}
-    [seen_edges.setdefault(v,{}) for v in nlist]
+    [seen_edges.setdefault(v,{}) for v in range(n)]
 
-    vv=[ [v]*d for v in nlist ]   # List of degree-repeated vertex numbers
+    vv=[ [v]*d for v in range(n)]   # List of degree-repeated vertex numbers
     stubs=reduce(lambda x,y: x+y ,vv)  # flatten the list of lists to a list
 
     while len(stubs) > 0:
-       source=random.choice(stubs)
-       target=random.choice(stubs)
-       if source!=target and not seen_edges[source].has_key(target):
-           stubs.remove(source)
-           stubs.remove(target)
-           seen_edges[source][target]=1
-           seen_edges[target][source]=1
-           G.add_edge(source,target)
-       else:
-           # further check to see if suitable 
-           s=_suitable(stubs)
-           if not s:                   
-#               print "Warning: not a regular graph"
-#               print "unsuitable stubs left",stubs," with existing edges:"
-#               for s in stubs:
-#                   print s,G.edges(s)
-               return False
-               
+        source=random.choice(stubs)
+        target=random.choice(stubs)
+        if source!=target and not seen_edges[source].has_key(target):
+            stubs.remove(source)
+            stubs.remove(target)
+            seen_edges[source][target]=1
+            seen_edges[target][source]=1
+            G.add_edge(source,target)
+        else:
+            # further check to see if suitable 
+            s=_suitable(stubs)
+            if not s:                   
+                return False
        
     return G
 
@@ -250,10 +245,10 @@ def barabasi_albert_graph(n,m,seed=None):
     
     :Parameters:
       - `n`: the number of nodes
-      - `m`: average degree and must be an positive integer
+      - `m`: average degree;  must be a positive integer
       - `seed`: seed for random number generator (default=None)
 
-    The initialization is a graph with with m nodes.
+    The initialization is a graph with with m nodes and no edges.
 
     Reference::
 
@@ -278,18 +273,20 @@ def barabasi_albert_graph(n,m,seed=None):
     if not seed is None:
         random.seed(seed)    
 
-    G=empty_graph(0)
-    edge_targets=range(0,m)  
-    G.add_nodes_from(edge_targets) # add m initial nodes (m0 in barabasi-speak)
-    # list of existing nodes, with nodes repeated once for each adjacent edge 
-    existing_nodes=[]
-    source=m            # next node is m
-    while source<n:     # Now add the other n-1 nodes
-        G.add_edges_from(zip([source]*m,edge_targets))
-        existing_nodes.extend(edge_targets) 
-        existing_nodes.extend([source]*m)
+    G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
+    edge_targets=range(m)  # possible targets for new edges
+    repeated_nodes=[]      # list of existing nodes,
+                           # with nodes repeated once for each adjacent edge 
+    source=m               # next node is m
+    while source<n:        # Now add the other n-1 nodes
+        G.add_edges_from(zip([source]*m,edge_targets)) # add links to m nodes
+        repeated_nodes.extend(edge_targets) # add one node for each new link
+        repeated_nodes.extend([source]*m) # and new node "source" has m links
         # choose m nodes randomly from existing nodes
-        edge_targets=random.sample(existing_nodes,m) 
+        # N.B. during each step of adding a new node the probabilities
+        # are fixed, is this correct? or should they be updated.
+        # Also, random sampling prevents some parallel edges. 
+        edge_targets=random.sample(repeated_nodes,m) 
         source += 1
     return G
 
@@ -318,51 +315,73 @@ def powerlaw_cluster_graph(n,m,p,seed=None):
 
     The average clustering has a hard time getting above 
     a certain cutoff that depends on m.  This cutoff is often quite low.
+    Note that the transitivity (fraction of triangles to possible
+    triangles) seems to go down with network size. 
 
     It is essentially the Barabasi-Albert growth model with an
     extra step that each random edge is followed by a chance of
     making an edge to one of its neighbors too (and thus a triangle).
     
     This algorithm improves on B-A in the sense that it enables a
-    higher average clustering to be attained if desired. The largest
-    average clustering seems to be independent of n and attained with
-    m=1 and p=1 (cc=0.74 or so).
+    higher average clustering to be attained if desired. 
+
+    It seems possible to have a disconnected graph with this algorithm
+    since the initial m nodes may not be all linked to a new node
+    on the first iteration like the BA model.
 
     """
+
+    if m < 1 or n < m:
+        raise networkx.NetworkXError,\
+              "NetworkXError must have m>1 and m<n, m=%d,n=%d"%(m,n)
+
+    if p > 1 or p < 0:
+        raise networkx.NetworkXError,\
+              "NetworkXError p must be in [0,1], p=%f"%(p)
+
+
     if not seed is None:
         random.seed(seed)    
 
-    G=empty_graph(0)
+    G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
+    repeated_nodes=G.nodes()  # list of existing nodes to sample from
+                           # with nodes repeated once for each adjacent edge 
+    source=m               # next node is m
+    while source<n:        # Now add the other n-1 nodes
+        possible_targets=random.sample(repeated_nodes,m)
+        # do one preferential attachment for new node
+        target=possible_targets.pop()
+        G.add_edge(source,target)  
+        repeated_nodes.append(target) # add one node to list for each new link
+        count=1
+        while count<m:  # add m-1 more new links
+            if random.random()<p: # clustering step: add triangle 
+                neighborhood=[nbr for nbr in G.neighbors(target) \
+                               if not G.has_edge(source,nbr) \
+                               and not nbr==source]
+                if neighborhood: # if there is a neighbor without a link
+                    nbr=random.choice(neighborhood)
+                    G.add_edge(source,nbr) # add triangle
+                    repeated_nodes.append(nbr) 
+                    count=count+1
+                    continue # go to top of while loop
+            # else do preferential attachment step if above fails
+            target=possible_targets.pop()
+            G.add_edge(source,target) 
+            repeated_nodes.append(target) 
+            count=count+1
 
-    # initialize
-    lookupstub=[0]
-    # add m initial nodes (m0 in barabasi-speak)
-    m0=m
-    G.add_nodes_from(range(0,m0))
-    count=m0
-    # initialize
-    lookupstub=range(0,m0)
-    # Now add the other n-1 nodes
-    while count<n:
-        for mm in xrange(m):
-            pick=random.choice(lookupstub)
-            lookupstub.extend([pick,count])
-            if random.random()<p:
-                nbrs=G.neighbors(pick)
-                if nbrs:   # any neighbors?
-                    pickpick=random.choice(G.neighbors(pick))
-                    lookupstub.extend([pickpick,count])
-                    G.add_edge(count,pickpick)
-            G.add_edge(count,pick)
-        count += 1
+        repeated_nodes.extend([source]*m)  # add source node to list m times
+        source += 1
     return G
 
 def random_lobster(n,p1,p2,seed=None):
     """Return a random lobster.
 
      A caterpillar is a tree that reduces to a path graph when pruning
-     all leave nodes. A lobster is a tree that reduces to a caterpillar
-     when pruning all leave nodes.
+     all leaf nodes (p2=0).
+     A lobster is a tree that reduces to a caterpillar when pruning all
+     leaf nodes.
      
     :Parameters:
       - `n`: the expected number of nodes in the backbone
@@ -373,22 +392,18 @@ def random_lobster(n,p1,p2,seed=None):
 """
     if not seed is None:
         random.seed(seed)
-    L=networkx.Graph()
-    len=int(2*random.random()*n + 0.5)
-    L=path_graph(len)
+    llen=int(2*random.random()*n + 0.5)
+    L=path_graph(llen)
     L.name="random_lobster(%d, %5.3f, %5.3f)"%(n,p1,p2)
     # build caterpillar: add edges to path graph with probability p1
-    current_node=len
-    for n in xrange(1,len+1):
-        if random.random()<p1:
+    current_node=llen-1
+    for n in xrange(llen):
+        if random.random()<p1: # add fuzzy caterpillar parts
             current_node+=1
             L.add_edge(n,current_node)
-    # build lobster
-    len2=current_node
-    for n in xrange(len,len2+1):
-        if random.random()<p2:
-            current_node+=1
-            L.add_edge(n,current_node)
+            if random.random()<p2: # add crunchy lobster bits
+                current_node+=1
+                L.add_edge(current_node-1,current_node)
     return L # voila, un lobster!
 
 def random_shell_graph(constructor,seed=None):
@@ -507,7 +522,8 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
         index=random.randint(0,n-1)
         zseq[index]=swap.pop()
         
-    raise networkx.NetworkXError, "Exceeded max (%d) attempts for a valid tree sequence."%tries
+    raise networkx.NetworkXError, \
+          "Exceeded max (%d) attempts for a valid tree sequence."%tries
     return False
 
 

@@ -16,7 +16,7 @@ a Graph class (i.e. a simple undirected graph).
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
+__author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
 __date__ = "$Date: 2005-06-17 14:06:03 -0600 (Fri, 17 Jun 2005) $"
 __credits__ = """"""
 __revision__ = "$Revision: 1056 $"
@@ -39,13 +39,15 @@ def balanced_tree(r,h):
 
     Graph order=1+r+r**2+...+r**h=(r**(h+1)-1)/(r-1), graph size=order-1.
 
-    Node labels are integers numbered 1 (the root) up to order.
+    Node labels are integers numbered 0 (the root) up to order-1.
     
     """
     if r<2:
-        raise networkx.NetworkXError, "Invalid graph description, r should be >=2"
+        raise networkx.NetworkXError, \
+              "Invalid graph description, r should be >=2"
     if h<1:
-        raise networkx.NetworkXError, "Invalid graph description, h should be >=1"
+        raise networkx.NetworkXError, \
+              "Invalid graph description, h should be >=1"
     
     G=empty_graph(0)
     G.name="balanced_tree"
@@ -54,21 +56,23 @@ def balanced_tree(r,h):
     # of new leaves to current leaves
     
     # first create root of degree r
-    root=1
+    root=0
     v=root
     G.add_node(v)
     newleavelist=[]
-    for i in xrange(1,r+1):
+    i=0
+    while i < r:
         v=v+1
         G.add_edge(root,v)
         newleavelist.append(v)
+        i=i+1
     #   all other  internal nodes have degree r+1
     height=1
     while height<h:
         leavelist=newleavelist[:]
         newleavelist=[]
         for leave in leavelist:
-            for i in xrange(1,r+1):
+            for i in xrange(r):
                 v=v+1
                 G.add_edge(leave,v)
                 newleavelist.append(v)
@@ -81,46 +85,52 @@ def barbell_graph(m1,m2):
     For m1>1 and m2>=0.
 
     Two complete graphs K_{m1} form the left and right bells,
-    and are connected by a path P_{m2}.  The 2*m1+m2
-    nodes are numbered 1,...,m1 for the left barbell,
-    m1+1,...,m1+m2 for the path, and m1+m2+1,...,2*m1+m2 for the right
-    barbell. The 3 subgraphs are joined via the edges (m1,m1+1)
-    and (m1+m2,m1+m2+1). If m2=0, this is merely two complete graphs
-    joined together.
+    and are connected by a path P_{m2}.
+
+    The 2*m1+m2  nodes are numbered
+        0,...,m1-1 for the left barbell,
+        m1,...,m1+m2-1 for the path,
+        and m1+m2,...,2*m1+m2-1 for the right barbell.
+
+    The 3 subgraphs are joined via the edges (m1-1,m1) and (m1+m2-1,m1+m2).
+    If m2=0, this is merely two complete graphs joined together.
 
     This graph is an extremal example in David Aldous
     and Jim Fill's etext on Random Walks on Graphs.
 
     """
     if m1<2:
-        raise networkx.NetworkXError, "Invalid graph description, m1 should be >=2"
+        raise networkx.NetworkXError, \
+              "Invalid graph description, m1 should be >=2"
     if m2<0:
-        raise networkx.NetworkXError, "Invalid graph description, m2 should be >=0"
-    
+        raise networkx.NetworkXError, \
+              "Invalid graph description, m2 should be >=0"
+
     # left barbell
     G=complete_graph(m1)
     G.name="barbell_graph(%d,%d)"%(m1,m2)
     
     # connecting path
-    G.add_nodes_from([v for v in range(m1+1,m1+m2+1)])
+    G.add_nodes_from([v for v in range(m1,m1+m2-1)])
     if m2>1:
-        G.add_edges_from([(v,v+1) for v in range(m1+1,m1+m2)])
+        G.add_edges_from([(v,v+1) for v in range(m1,m1+m2-1)])
     # right barbell
-    G.add_nodes_from([v for v in range(m1+m2+1,2*m1+m2+1)])
-    for u in range(m1+m2+1,2*m1+m2+1):
-        for v in range(u+1,2*m1+m2+1):
+#    G.add_nodes_from([v for v in range(m1+m2,2*m1+m2)])
+    for u in range(m1+m2,2*m1+m2):
+        for v in range(u,2*m1+m2):
             G.add_edge(u,v)
     # connect it up
-    G.add_edge(m1,m1+1)
-    if m2>0: G.add_edge(m1+m2,m1+m2+1)
+    G.add_edge(m1-1,m1)
+    if m2>0:
+        G.add_edge(m1+m2-1,m1+m2)
     return G
 
 def complete_graph(n):
     """ Return the Complete graph K_n with n nodes. """
     G=empty_graph(n)
     G.name="Complete Graph K_%d"%n
-    for u in xrange(1,n+1):
-        for v in xrange(u+1,n+1):
+    for u in xrange(n):
+        for v in xrange(u,n):
             G.add_edge(u,v)
     return G
 
@@ -133,8 +143,8 @@ def complete_bipartite_graph(n1,n2):
     """
     G=empty_graph(n1+n2)
     G.name="Complete Bipartite Graph"
-    for v1 in xrange(1,n1+1):
-        for v2 in xrange(1,n2+1):
+    for v1 in xrange(n1):
+        for v2 in xrange(n2):
             G.add_edge(v1,n1+v2)
     return G
 
@@ -147,12 +157,8 @@ def circular_ladder_graph(n):
     """
     G=ladder_graph(n)
     G.name="Circular Ladder Graph"
-    if n>1:
-        for v in xrange(1,n):
-            G.add_edge(v,v+1)
-            G.add_edge(v+n,v+n+1)
-        G.add_edge(1,n)
-        G.add_edge(n+1,2*n)
+    G.add_edge(0,n-1)
+    G.add_edge(n,2*n-1)
     return G
 
 def cycle_graph(n):
@@ -163,7 +169,7 @@ def cycle_graph(n):
     """
     G=path_graph(n)
     G.name="cycle_graph(%d)"%n
-    if n>1: G.add_edge(1,n)
+    if n>1: G.add_edge(0,n-1)
     return G
 
 def dorogovtsev_goltsev_mendes_graph(n):
@@ -176,8 +182,9 @@ def dorogovtsev_goltsev_mendes_graph(n):
     G=networkx.Graph()
     G.name="Dorogovtsev-Goltsev-Mendes Graph"
     G.add_edge(0,1)
-    if n==0: return G
-    new_node = 2 #Next node that is going to be added to the net.
+    if n==0:
+        return G
+    new_node = 2         # next node to be added
     for i in range(1,n+1): #iterate over number of generations.
         last_generation_edges = G.edges()
         number_of_edges_in_last_generation = len(last_generation_edges)
@@ -190,7 +197,7 @@ def dorogovtsev_goltsev_mendes_graph(n):
 def empty_graph(n=0,create_using=None,**kwds):
     """
     Return the empty graph with n nodes
-    (with integer labels 1,...,n) and zero edges.
+    (with integer labels 0,...,n-1) and zero edges.
 
     >>> G=empty_graph(n) 
 
@@ -230,7 +237,7 @@ def empty_graph(n=0,create_using=None,**kwds):
         G=create_using
         G.clear()
 
-    G.add_nodes_from(xrange(1,n+1))
+    G.add_nodes_from(xrange(n))
     return G
 
 def grid_2d_graph(m,n):
@@ -239,19 +246,19 @@ def grid_2d_graph(m,n):
     """
     G=empty_graph(0)
     G.name="2D-Grid Graph"
-    rows=range(1,m+1)
-    columns=range(1,n+1)
+    rows=range(m)
+    columns=range(n)
     def _label(i,j):
-        return (i-1)*n+j
+        return i*n+j
     for i in rows:
         for j in columns:
             G.add_node( _label(i,j) )
     for i in rows:
         for j in columns:
-            if i>1: G.add_edge( _label(i,j), _label(i-1,j) )
-            if i<m: G.add_edge( _label(i,j), _label(i+1,j) )
-            if j>1: G.add_edge( _label(i,j), _label(i,j-1) )
-            if j<n: G.add_edge( _label(i,j), _label(i,j+1) )
+            if i>0: G.add_edge( _label(i,j), _label(i-1,j) )
+            if i<m-1: G.add_edge( _label(i,j), _label(i+1,j) )
+            if j>0: G.add_edge( _label(i,j), _label(i,j-1) )
+            if j<n-1: G.add_edge( _label(i,j), _label(i,j+1) )
     return G
 
 
@@ -275,7 +282,8 @@ def grid_graph(dim,periodic=False):
     if not is_list_of_ints(dim):
         raise networkx.NetworkXError,"dim is not a list of integers"
     if min(dim)<=0:
-        raise networkx.NetworkXError,"dim is not a list of strictly positive integers"       
+        raise networkx.NetworkXError,\
+              "dim is not a list of strictly positive integers"       
     if periodic:
         func=cycle_graph
     else:
@@ -284,10 +292,10 @@ def grid_graph(dim,periodic=False):
     current_dim=dim.pop()
     G=func(current_dim)
     while len(dim)>0:
-       current_dim=dim.pop() 
-       Gnew=func(current_dim)
-       Gold=G.copy()
-       G=networkx.operators.cartesian_product(Gnew,Gold)
+        current_dim=dim.pop() 
+        Gnew=func(current_dim)
+        Gold=G.copy()
+        G=networkx.operators.cartesian_product(Gnew,Gold)
     # graph G is done but has labels of the form (1,(2,(3,1)))
     # so relabel
     # this works but loses the info from each dimension
@@ -311,9 +319,9 @@ def ladder_graph(n):
     """
     G=empty_graph(2*n)
     G.name="Ladder Graph"
-    G.add_edges_from([(v,v+1) for v in xrange(1,n)])
-    G.add_edges_from([(v,v+1) for v in xrange(n+1,2*n)])
-    G.add_edges_from([(v,v+n) for v in xrange(1,n+1)])
+    G.add_edges_from([(v,v+1) for v in xrange(n-1)])
+    G.add_edges_from([(v,v+1) for v in xrange(n,2*n-1)])
+    G.add_edges_from([(v,v+n) for v in xrange(n)])
     return G
 
 def lollipop_graph(m,n):
@@ -332,18 +340,20 @@ def lollipop_graph(m,n):
     
     """
     if m<2:
-        raise networkx.NetworkXError, "Invalid graph description, m should be >=2"
+        raise networkx.NetworkXError, \
+              "Invalid graph description, m should be >=2"
     if n<0:
-        raise networkx.NetworkXError, "Invalid graph description, n should be >=0"
+        raise networkx.NetworkXError, \
+              "Invalid graph description, n should be >=0"
     # complete graph
     G=complete_graph(m)
     G.name="lollipop_graph(%d,%d)"%(m,n)
     # the stick
-    G.add_nodes_from([v for v in xrange(m+1,m+n+1)])
+    G.add_nodes_from([v for v in xrange(m,m+n)])
     if n>1:
-        G.add_edges_from([(v,v+1) for v in xrange(m+1,m+n)])
+        G.add_edges_from([(v,v+1) for v in xrange(m,m+n-1)])
     # connect ball to stick
-    if m>0: G.add_edge(m,m+1)
+    if m>0: G.add_edge(m-1,m)
     return G
 
 def null_graph(create_using=None,**kwds):
@@ -358,7 +368,7 @@ def path_graph(n):
     """
     G=empty_graph(n)
     G.name="path_graph(%d)"%n
-    G.add_edges_from([(v,v+1) for v in xrange(1,n)])
+    G.add_edges_from([(v,v+1) for v in xrange(n-1)])
     return G
 
 def periodic_grid_2d_graph(m,n):
@@ -371,14 +381,14 @@ def periodic_grid_2d_graph(m,n):
     """
     G=grid_2d_graph(m,n)  # plain grid graph
     def _label(i,j):
-        return (i-1)*n+j
+        return i*n+j
     # make it periodic
-    rows=range(1,m+1)
-    columns=range(1,n+1)
+    rows=range(m)
+    columns=range(n)
     for i in rows:
-        G.add_edge(_label(i,1), _label(i,n))
+        G.add_edge(_label(i,0), _label(i,n-1))
     for j in columns:
-        G.add_edge(_label(1,j), _label(m,j))
+        G.add_edge(_label(0,j), _label(m-1,j))
     return G        
 
 
@@ -404,15 +414,16 @@ def wheel_graph(n):
     """
     G=star_graph(n-1)
     G.name="wheel_graph(%d)"%n
-    G.add_edges_from([(v,v+1) for v in xrange(2,n)])
+    G.add_edges_from([(v,v+1) for v in xrange(1,n-1)])
     if n>1:
-        G.add_edge(2,n)
+        G.add_edge(1,n-1)
     return G
                         
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/generators/classic.txt',package='networkx')
+    suite = doctest.DocFileSuite('tests/generators/classic.txt',
+                                 package='networkx')
     return suite
 
 
@@ -421,7 +432,8 @@ if __name__ == "__main__":
     import sys
     import unittest
     if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
+        print "Python version 2.4 or later required (%d.%d detected)."\
+              %  sys.version_info[:2]
         sys.exit(-1)
     # directory of networkx package (relative to this)
     nxbase=sys.path[0]+os.sep+os.pardir

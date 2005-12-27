@@ -12333,8 +12333,10 @@ def graph_atlas_g():
 
 
 def _test_suite():
+    """test hook"""
     import doctest
-    suite = doctest.DocFileSuite('tests/generators/atlas.txt',package='networkx')
+    suite = doctest.DocFileSuite('tests/generators/atlas.txt',
+                                 package='networkx')
     return suite
 
 if __name__ == "__main__":
@@ -12342,7 +12344,8 @@ if __name__ == "__main__":
     import sys
     import unittest
     if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
+        print "Python version 2.4 or later required (%d.%d detected)." \
+              %  sys.version_info[:2]
         sys.exit(-1)
     # directory of networkx package (relative to this)
     nxbase=sys.path[0]+os.sep+os.pardir
