@@ -93,25 +93,25 @@ E14"""
 
     # women names
     w={}
-    n=1
+    n=0
     for name in string.split(women,'\n'):
         w[n]=name
         n+=1
 
     # club names        
     c={}
-    n=1
+    n=0
     for name in string.split(clubs,'\n'):
         c[n]=name
         n+=1
 
     # parse matrix         
-    row=1
+    row=0
     for line in string.split(davisdat,'\n'):
         thisrow=map(int,string.split(line,' '))
         for col in range(0,len(thisrow)):
             if thisrow[col]==1:
-                G.add_edge(w[row],c[col+1]) # col goes from 0,33
+                G.add_edge(w[row],c[col])
         row+=1
     return (G,w.values(),c.values())
 

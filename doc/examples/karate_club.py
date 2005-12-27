@@ -62,12 +62,12 @@ def karate_graph(create_using=None, **kwds):
 0 0 0 0 0 0 0 0 1 1 0 0 0 1 1 1 0 0 1 1 1 0 1 1 0 0 1 1 1 1 1 1 1 0"""
 
 
-    row=1
+    row=0
     for line in string.split(zacharydat,'\n'):
         thisrow=map(int,string.split(line,' '))
         for col in range(0,len(thisrow)):
             if thisrow[col]==1:
-                G.add_edge(row,col+1) # col goes from 0,33
+                G.add_edge(row,col) # col goes from 0,33
         row+=1
     return G
 
