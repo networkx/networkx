@@ -357,8 +357,8 @@ class Graph(object):
         >>> G.nodes()
         [1, 'Hello', <networkx.base.Graph object at 0x5f7430>]
         """
-        self.adj.setdefault(n,{})
-
+        if n not in self.adj:
+            self.adj[n]={}
 
     def add_nodes_from(self, nbunch):
         """Add multiple nodes to the graph.
@@ -380,7 +380,8 @@ class Graph(object):
         ['H', 'e', 'l', 'l', 'o', 1, 2, 3]
         """
         for n in nbunch:
-            self.adj[n]={}
+            if n not in self.adj:
+                self.adj[n]={}
 
     def delete_node(self,n):
         """Delete node n from graph.  
@@ -408,7 +409,8 @@ class Graph(object):
         for n in nbunch: 
              try:
                 for u in self.adj[n].keys():  
-                    self.delete_edge(n,u)# remove all edges n-u in graph
+                    del self.adj[u][n]  # (faster) remove all edges n-u in graph
+#                    self.delete_edge(n,u)# remove all edges n-u in graph
                 del self.adj[n]          # now remove node
              except KeyError: # NetworkXError if n not in self
                  raise NetworkXError, "node %s not in graph"%n
@@ -462,8 +464,10 @@ class Graph(object):
         if v is None:
             (u,v)=u  # no v given, assume u is an edge tuple
         # add nodes            
-        self.adj.setdefault(v,{})
-        self.adj.setdefault(u,{})
+        if u not in self.adj:
+            self.adj[u]={}
+        if v not in self.adj:
+            self.adj[v]={}
         # don't create self loops, fail silently, nodes are still added
         if u==v: 
             return  
@@ -481,8 +485,10 @@ class Graph(object):
         for e in ebunch:
             (u,v)=e
             # add nodes
-            self.adj.setdefault(v,{})
-            self.adj.setdefault(u,{})
+            if u not in self.adj:
+                self.adj[u]={}
+            if v not in self.adj:
+                self.adj[v]={}
             # don't create self loops, fail silently, nodes are still added
             if u==v:
                 continue  
@@ -502,10 +508,9 @@ class Graph(object):
         """
         if v is None:
             (u,v)=u
-        if self.has_edge(u,v):
+        if self.adj.has_key(u) and self.adj[u].has_key(v):
             del self.adj[u][v]   
             del self.adj[v][u]   
-
 
     def delete_edges_from(self, ebunch): 
         """Delete the edges in ebunch from the graph.
@@ -514,11 +519,10 @@ class Graph(object):
 
         Edges that are not in the graph are ignored.
         """
-        for e in ebunch:
-            (u,v)=e
-            if self.has_edge(u,v):
+        for (u,v) in ebunch:
+            if self.adj.has_key(u) and self.adj[u].has_key(v):
                 del self.adj[u][v]   
-                del self.adj[v][u]
+                del self.adj[v][u]   
 
     def has_edge(self, u, v=None):
         """Return True if graph contains edge u-v. """
@@ -1016,9 +1020,10 @@ class DiGraph(Graph):
         1
 
         """
-        self.succ.setdefault(n,{})
-        self.pred.setdefault(n,{})
-        
+        if n not in self.succ:
+            self.succ[n]={}
+        if n not in self.pred:
+            self.pred[n]={}
 
     def add_nodes_from(self, nbunch):
         """Add multiple nodes to the digraph.
@@ -1030,9 +1035,10 @@ class DiGraph(Graph):
 
         """
         for n in nbunch:
-            self.succ.setdefault(n,{})
-            self.pred.setdefault(n,{})
-
+            if n not in self.succ:
+                self.succ[n]={}
+            if n not in self.pred:
+                self.pred[n]={}
 
     def delete_node(self,n):
         """Delete node n from the digraph.  
@@ -1063,10 +1069,12 @@ class DiGraph(Graph):
         for n in nbunch: 
             try:
                 for u in self.succ[n].keys():  
-                    self.delete_edge(n,u)# remove all edges n-u in graph
+#                    self.delete_edge(n,u)# remove all edges n-u in graph
+                    del self.pred[u][n] # remove all edges n-u in graph
                 del self.succ[n]          # now remove node
                 for u in self.pred[n].keys():  
-                    self.delete_edge(u,n)# remove all edges u-n in graph
+#                    self.delete_edge(u,n)# remove all edges u-n in graph
+                    del self.succ[u][n] # remove all edges n-u in graph
                 del self.pred[n]          # now remove node
             except KeyError: # NetworkXError if n not in self
                 raise NetworkXError, "node %s not in graph"%n
@@ -1093,10 +1101,15 @@ class DiGraph(Graph):
         if v is None:
             (u,v)=u  # no v given, assume u is an edge tuple
         # add nodes            
-        self.succ.setdefault(v,{})
-        self.succ.setdefault(u,{})
-        self.pred.setdefault(v,{})
-        self.pred.setdefault(u,{})
+        if u not in self.succ:
+            self.succ[u]={}
+        if u not in self.pred:
+            self.pred[u]={}
+        if v not in self.succ:
+            self.succ[v]={}
+        if v not in self.pred:
+            self.pred[v]={}
+
         # don't create self loops, fail silently, nodes are still added
         if u==v: 
             return  
@@ -1116,17 +1129,21 @@ class DiGraph(Graph):
         for e in ebunch:
             (u,v)=e
             # add nodes
-            self.succ.setdefault(v,{})
-            self.succ.setdefault(u,{})
-            self.pred.setdefault(v,{})
-            self.pred.setdefault(u,{})
+            if u not in self.succ:
+                self.succ[u]={}
+            if u not in self.pred:
+                self.pred[u]={}
+            if v not in self.succ:
+                self.succ[v]={}
+            if v not in self.pred:
+                self.pred[v]={}
+
             # don't create self loops, fail silently, nodes are still added
             if u==v:
                 continue
             self.succ[u][v]=None
             self.pred[v][u]=None
 
-            
 
     def delete_edge(self, u, v=None): 
         """Delete the single directed edge (u,v) from the digraph.
@@ -1137,8 +1154,9 @@ class DiGraph(Graph):
         without complaining.
 
         """
-        if v is None:  (u,v)=u
-        if self.has_edge(u,v):
+        if v is None:
+            (u,v)=u
+        if u in self.pred[v] and v in self.succ[u]:
             del self.succ[u][v]   
             del self.pred[v][u]               
 
@@ -1150,12 +1168,10 @@ class DiGraph(Graph):
         that are not in the digraph are ignored.
         
         """
-        for e in ebunch:
-            (u,v)=e
-            if self.has_edge(u,v):
+        for (u,v) in ebunch:
+            if u in self.pred[v] and v in self.succ[u]:
                 del self.succ[u][v]   
                 del self.pred[v][u]        
-
 
     def edges_iter(self, nbunch=None,with_labels=False):
         """Return iterator that iterates once over each edge adjacent

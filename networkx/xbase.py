@@ -309,9 +309,11 @@ class XGraph(Graph):
         if not self.multiedges and self.has_edge(n1,n2,x):
             return
 
-        # add nodes 
-        self.adj.setdefault(n1,{})
-        self.adj.setdefault(n2,{})
+        # add nodes            
+        if n1 not in self.adj:
+            self.adj[n1]={}
+        if n2 not in self.adj:
+            self.adj[n2]={}
         
         # self loop? quietly return if not allowed
         if not self.selfloops and n1==n2: 
@@ -492,37 +494,6 @@ class XGraph(Graph):
         """
         return list(self.edges_iter(nbunch, with_labels))
 
-    def delete_node(self,n):
-        """Delete node n from graph.  
-
-        Attempting to delete a non-existent node will raise an exception.
-
-        """
-        try:
-            for n1 in self.adj[n].keys():  
-                del self.adj[n1][n]  # remove all edges n1-n in graph
-            del self.adj[n]          # now remove node and edges n-n1
-        except KeyError: 
-            raise NetworkXError, "node %s not in graph"%n
-
-    def delete_nodes_from(self,nbunch):
-        """Remove nodes in nbunch from graph.
-
-        nbunch: an iterable or iterator containing valid(hashable) node names.
-
-        Attempting to delete a non-existent node will raise an exception.
-        This could result in a partial deletion of those nodes both in
-        nbunch and in the graph.
-
-        """
-        for n in nbunch: 
-            try:
-                for n1 in self.adj[n].keys():  
-                    del self.adj[n1][n]  # remove all edges n-n1 in graph
-                del self.adj[n]          # now remove node
-            except KeyError: 
-                raise NetworkXError, "node %s not in graph"%n
-
     def delete_multiedge(self, n1, n2):
         """ Delete all edges between nodes n1 and n2.
      
@@ -573,7 +544,8 @@ class XGraph(Graph):
         else:  # delete single edge       
             if self.has_edge(n1,n2):
                 del self.adj[n1][n2]
-                if n1!=n2: del self.adj[n2][n1]
+                if n1!=n2:
+                    del self.adj[n2][n1]
         return
 
     def delete_edges_from(self, ebunch): 
@@ -720,9 +692,9 @@ class XGraph(Graph):
         """Return number of edges"""
         return sum(self.degree_iter())/2
 
-    def size(self):
-        """Return the size of a graph = number of edges. """
-        return self.number_of_edges()
+#    def size(self):
+#        """Return the size of a graph = number of edges. """
+#        return self.number_of_edges()
     
     def copy(self):
         """Return a (shallow) copy of the graph.
@@ -1103,11 +1075,16 @@ class XDiGraph(DiGraph):
         if not self.multiedges and self.has_edge(n1,n2,x):
             return
 
-        # add nodes if they do not exist
-        self.succ.setdefault(n1,{})
-        self.succ.setdefault(n2,{})
-        self.pred.setdefault(n1,{})
-        self.pred.setdefault(n2,{})
+        # add nodes            
+        if n1 not in self.succ:
+            self.succ[n1]={}
+        if n1 not in self.pred:
+            self.pred[n1]={}
+        if n2 not in self.succ:
+            self.succ[n2]={}
+        if n2 not in self.pred:
+            self.pred[n2]={}
+
         
         # self loop? quietly return if not allowed
         if not self.selfloops and n1==n2: 
@@ -1267,7 +1244,7 @@ class XDiGraph(DiGraph):
                 del self.pred[n2][n1]
         return
 
-    def delete_edges_from(self, ebunch, data=None): 
+    def delete_edges_from(self, ebunch): 
         """Delete edges in ebunch from the graph.
 
         ebunch: Container of edges. Each edge must be a 3-tuple
@@ -1276,7 +1253,6 @@ class XDiGraph(DiGraph):
         that are not in the graph are ignored.
 
         """
-        # FIXME - handle data?
         for e in ebunch:
             self.delete_edge(e)
 
