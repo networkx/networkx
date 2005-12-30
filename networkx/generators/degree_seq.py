@@ -149,7 +149,7 @@ def havel_hakimi_graph(deg_sequence,seed=None):
         return G 
  
     # form list of [stubs,name] for each node.
-    stublist=[ [deg_sequence[n-1],n] for n in G]
+    stublist=[ [deg_sequence[n],n] for n in G]
     #  Now connect the stubs
     while stublist:
         stublist.sort()
