@@ -50,7 +50,7 @@ def balanced_tree(r,h):
               "Invalid graph description, h should be >=1"
     
     G=empty_graph(0)
-    G.name="balanced_tree"
+    G.name="balanced tree"
 
     # grow tree of increasing height by repeatedly adding a layer
     # of new leaves to current leaves
@@ -108,7 +108,7 @@ def barbell_graph(m1,m2):
 
     # left barbell
     G=complete_graph(m1)
-    G.name="barbell_graph(%d,%d)"%(m1,m2)
+    G.name="barbell graph (%d,%d)"%(m1,m2)
     
     # connecting path
     G.add_nodes_from([v for v in range(m1,m1+m2-1)])
@@ -128,7 +128,7 @@ def barbell_graph(m1,m2):
 def complete_graph(n):
     """ Return the Complete graph K_n with n nodes. """
     G=empty_graph(n)
-    G.name="Complete Graph K_%d"%n
+    G.name="complete graph K_%d"%n
     for u in xrange(n):
         for v in xrange(u,n):
             G.add_edge(u,v)
@@ -142,7 +142,7 @@ def complete_bipartite_graph(n1,n2):
     
     """
     G=empty_graph(n1+n2)
-    G.name="Complete Bipartite Graph"
+    G.name="complete bipartite graph"
     for v1 in xrange(n1):
         for v2 in xrange(n2):
             G.add_edge(v1,n1+v2)
@@ -168,7 +168,7 @@ def cycle_graph(n):
     
     """
     G=path_graph(n)
-    G.name="cycle_graph(%d)"%n
+    G.name="cycle graph (%d)"%n
     if n>1: G.add_edge(0,n-1)
     return G
 
@@ -238,6 +238,7 @@ def empty_graph(n=0,create_using=None,**kwds):
         G.clear()
 
     G.add_nodes_from(xrange(n))
+    G.name="empty graph" 
     return G
 
 def grid_2d_graph(m,n):
@@ -245,7 +246,7 @@ def grid_2d_graph(m,n):
         each connected to its nearest neighbors.
     """
     G=empty_graph(0)
-    G.name="2D-Grid Graph"
+    G.name="grid 2d graph"
     rows=range(m)
     columns=range(n)
     def _label(i,j):
@@ -277,7 +278,7 @@ def grid_graph(dim,periodic=False):
         raise TypeError,"dim is not a list"
     if dim==[]:
         G=networkx.Graph()
-        G.name="Grid Graph"
+        G.name="grid graph"
         return G
     if not is_list_of_ints(dim):
         raise networkx.NetworkXError,"dim is not a list of integers"
@@ -307,7 +308,7 @@ def hypercube_graph(n):
     """return the n-dimensional hypercube."""
     dim=n*[2]
     G=grid_graph(dim)
-    G.name="Hypercube Graph(%d)"%n
+    G.name="hypercube graph (%d)"%n
     return G
 
 def ladder_graph(n):
@@ -318,7 +319,7 @@ def ladder_graph(n):
     
     """
     G=empty_graph(2*n)
-    G.name="Ladder Graph"
+    G.name="ladder graph (%d)"%n 
     G.add_edges_from([(v,v+1) for v in xrange(n-1)])
     G.add_edges_from([(v,v+1) for v in xrange(n,2*n-1)])
     G.add_edges_from([(v,v+n) for v in xrange(n)])
@@ -347,7 +348,7 @@ def lollipop_graph(m,n):
               "Invalid graph description, n should be >=0"
     # complete graph
     G=complete_graph(m)
-    G.name="lollipop_graph(%d,%d)"%(m,n)
+    G.name="lollipop graph (%d,%d)"%(m,n)
     # the stick
     G.add_nodes_from([v for v in xrange(m,m+n)])
     if n>1:
@@ -359,7 +360,7 @@ def lollipop_graph(m,n):
 def null_graph(create_using=None,**kwds):
     """ Return the Null graph with no nodes or edges. """
     G=empty_graph(0,create_using,**kwds)
-    G.name="Null Graph"
+    G.name="null graph"
     return G
 
 def path_graph(n):
@@ -367,7 +368,7 @@ def path_graph(n):
     by n-1 edges.
     """
     G=empty_graph(n)
-    G.name="path_graph(%d)"%n
+    G.name="path graph (%d)"%n
     G.add_edges_from([(v,v+1) for v in xrange(n-1)])
     return G
 
@@ -389,6 +390,7 @@ def periodic_grid_2d_graph(m,n):
         G.add_edge(_label(i,0), _label(i,n-1))
     for j in columns:
         G.add_edge(_label(0,j), _label(m-1,j))
+    G.name="periodic grid 2d graph"
     return G        
 
 
@@ -397,7 +399,7 @@ def star_graph(n):
         one center node, connected to n outer nodes.
     """
     G=complete_bipartite_graph(1,n)
-    G.name="star_graph(%d)"%n
+    G.name="star graph (%d)"%n
     return G
 
 def trivial_graph():
@@ -405,7 +407,7 @@ def trivial_graph():
     and no edges.
     """
     G=empty_graph(1)
-    G.name="Trivial Graph"
+    G.name="trivial graph"
     return G
 
 def wheel_graph(n):
@@ -413,7 +415,7 @@ def wheel_graph(n):
     to each node of the (n-1)-node cycle graph. 
     """
     G=star_graph(n-1)
-    G.name="wheel_graph(%d)"%n
+    G.name="wheel graph (%d)"%n
     G.add_edges_from([(v,v+1) for v in xrange(1,n-1)])
     if n>1:
         G.add_edge(1,n-1)

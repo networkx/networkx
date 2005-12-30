@@ -210,6 +210,8 @@ def random_regular_graph(d,n,seed=None):
 
         
     G=empty_graph(n)
+    G.name="Random Regular Graph (%d)"%d
+
     # keep track of the edges we have seen
     seen_edges={}
     [seen_edges.setdefault(v,{}) for v in range(n)]
@@ -274,6 +276,7 @@ def barabasi_albert_graph(n,m,seed=None):
         random.seed(seed)    
 
     G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
+    G.name="Barabasi-Albert Graph"
     edge_targets=range(m)  # possible targets for new edges
     repeated_nodes=[]      # list of existing nodes,
                            # with nodes repeated once for each adjacent edge 
@@ -344,6 +347,7 @@ def powerlaw_cluster_graph(n,m,p,seed=None):
         random.seed(seed)    
 
     G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
+    G.name="Powerlaw-Cluster Graph"
     repeated_nodes=G.nodes()  # list of existing nodes to sample from
                            # with nodes repeated once for each adjacent edge 
     source=m               # next node is m
@@ -394,7 +398,7 @@ def random_lobster(n,p1,p2,seed=None):
         random.seed(seed)
     llen=int(2*random.random()*n + 0.5)
     L=path_graph(llen)
-    L.name="random_lobster(%d, %5.3f, %5.3f)"%(n,p1,p2)
+    L.name="Random Lobster (%d, %5.3f, %5.3f)"%(n,p1,p2)
     # build caterpillar: add edges to path graph with probability p1
     current_node=llen-1
     for n in xrange(llen):
@@ -424,7 +428,7 @@ def random_shell_graph(constructor,seed=None):
 
     """
     G=empty_graph(0)
-    G.name="random_shell_graph"
+    G.name="Random Shell Graph"
 
     if not seed is None:
         random.seed(seed)
@@ -484,8 +488,9 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
     except:
         raise networkx.NetworkXError,\
               "Exceeded max (%d) attempts for a valid tree sequence."%tries
-
-    return degree_sequence_tree(s)
+    G=degree_sequence_tree(s)
+    G.name="Random Powerlaw Tree"
+    return G
 
 
 def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
