@@ -338,6 +338,51 @@ class Graph(object):
             print "%-15s: %s"%(key,self.dna[key])
 
 
+
+    def info(self, n=None):	
+	"""Print short info for graph G or node n.
+        """
+        import textwrap
+	width_left = 18
+
+	if n is None:
+            print ("Name:").ljust(width_left), self.name
+            type_name = [type(self).__name__]
+            try:
+                if self.selfloops:
+                    type_name.append("self-loops") 
+            except:
+                pass
+            try:
+                if self.multiedges:
+                    type_name.append("multi-edges") 
+            except:
+                pass
+			
+            print ("Type:").ljust(width_left), ",".join(type_name)
+ 	    print ("Number of nodes:").ljust(width_left), self.number_of_nodes()
+            print ("Number of edges:").ljust(width_left), self.number_of_edges()
+	    if self.order() > 0:
+		print ("Average Degree:").ljust(width_left), \
+                      round( self.size()/float(self.order()) ,4)
+	else:
+            try:
+                list_neighbors = self.neighbors(n)
+                print "\nNode", n, "has the following properties:"
+                print ("Degree:").ljust(width_left), self.degree(n)
+                str_neighbors = str(list_neighbors)
+                str_neighbors = str_neighbors[1:len(str_neighbors)-1]
+                wrapped_neighbors = textwrap.wrap(str_neighbors, 50)
+                num_line = 0
+                for i in wrapped_neighbors:
+                    if num_line == 0:
+                        print ("Neighbors:").ljust(width_left), i
+		    else:
+                        print "".ljust(width_left), i
+                    num_line += 1
+            except:
+                print "Node", n, "is not the graph"
+
     def add_node(self, n):
         """
         Add a single node n to the graph.
