@@ -25,7 +25,7 @@ True
 True
 
 
->>> import tempfiletry import
+>>> import tempfile
 >>> fname=tempfile.mktemp()
 >>> P.write_raw(fname)
 True

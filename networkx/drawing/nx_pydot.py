@@ -6,6 +6,7 @@ Provides:
  - write_dot()
  - read_dot()
  - graphviz_layout()
+ - pydot_layout()
 
  - pydot_from_networkx()
  - networkx_from_pydot()
@@ -113,17 +114,26 @@ def networkx_from_pydot(D, create_using=None):
         # FIXME - add properties from pydot to networkx?
 	return N
 
-def pydot_layout(G,**kwds):
-    return graphviz_layout(G,**kwds)
+def graphviz_layout(G,prog='neato',root=None, **kwds):
+    """Create layout using pydot and graphviz.
+    Returns a dictionary of positions keyed by node.
+
+    >>> pos=graphviz_layout(G)
+    >>> pos=graphviz_layout(G,prog='dot')
+
+    This is a wrapper for pydot_layout.
+
+    """
+    return pydot_layout(G=G,prog=prog,root=root,**kwds)
 
 
-def graphviz_layout(G,**kwds):
+def pydot_layout(G,prog='neato',root=None, **kwds):
     """
     Create layout using pydot and graphviz.
     Returns a dictionary of positions keyed by node.
 
     >>> pos=pydot_layout(G)
-    >>> pos=pydot_layout(G,prog="twopi")
+    >>> pos=pydot_layout(G,prog='dot')
     
     """
     from networkx.drawing.nx_pydot import pydot_from_networkx
@@ -132,12 +142,12 @@ def graphviz_layout(G,**kwds):
     except:
         print "Import Error: not able to import pydot."
         raise
-    prog = kwds.get('prog', "neato")
     P=pydot_from_networkx(G)
-    root = kwds.get('root', None)
-    if root!=None :
+    if root is not None :
         P.set("root",str(root))
+
     D=P.create_dot(prog=prog)
+
     if D=="":  # no data returned
         print "Graphviz layout with %s failed"%(prog)
         print

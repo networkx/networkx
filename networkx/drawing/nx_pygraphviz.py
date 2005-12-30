@@ -6,6 +6,7 @@ Provides:
  - write_dot()
  - read_dot()
  - graphviz_layout()
+ - pygraphviz_layout()
 
  - pygraphviz_from_networkx()
  - networkx_from_pygraphviz()
@@ -118,13 +119,26 @@ def networkx_from_pygraphviz(A, create_using=None):
         # FIXME - add properties from pygraphviz to networkx?
 	return N
 
-def graphviz_layout(G,**kwds):
+def graphviz_layout(G,prog='neato',root=None, args=''):
+    """
+    Create layout using graphviz.
+    Returns a dictionary of positions keyed by node.
+
+    >>> pos=graphviz_layout(G)
+    >>> pos=graphviz_layout(G,prog='dot')
+    
+    This is a wrapper for pygraphviz_layout.
+
+    """
+    return pygraphviz_layout(G,prog=prog,root=root,args=args)
+
+def pygraphviz_layout(G,prog='neato',root=None, args=''):
     """
     Create layout using pygraphviz and graphviz.
     Returns a dictionary of positions keyed by node.
 
     >>> pos=pygraphviz_layout(G)
-    >>> pos=pygraphviz_layout(G,prog="twopi")
+    >>> pos=pygraphviz_layout(G,prog='dot')
     
     """
     import tempfile
@@ -133,11 +147,8 @@ def graphviz_layout(G,**kwds):
     except:
         print "Import Error: not able to import pygraphviz."
         raise
-    prog = kwds.get('prog', 'neato')
-    root = kwds.get('root', None)
-    args = kwds.get("args", '')
 
-    if root!=None :
+    if root is not None :
         args+=" -Groot=%s"%str(root)
 
     gprogs=dict.fromkeys(['neato','dot','twopi','circo','fdp','circa'],True)

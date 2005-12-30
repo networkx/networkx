@@ -4,9 +4,9 @@ nx_pylab
 Drawing networkx graphs with matplotlib and graphviz.
 
 
+>>> from pylab import *
 >>> from networkx import *
 >>> from networkx.drawing import *
-
 
 >>> N=barbell_graph(5,10)
 
@@ -19,24 +19,5 @@ Drawing networkx graphs with matplotlib and graphviz.
 >>> savefig("test.png")
 >>> draw_spectral(N)
 >>> savefig("test.png")
->>> try:
-...    import pydot
-...    draw_nxpydot(N)
-...    savefig("test.png")
-...    draw_nxpydot(N,prog="neato")
-...    savefig("test.png")
-...    draw_nxpydot(N,prog="twopi")
-...    savefig("test.ps")
-...    draw_nxpydot(N,prog="circo")
-...    savefig("test.ps")
-...    draw_nxpydot(N,prog="dot")
-...    savefig("test.png")
-...    draw_nxpydot(N,prog="fdp")
-...    savefig("test.ps")
-...    d=N.degree(with_labels=True)
-...    draw_nxpydot_nolabels(N,node_color=d,cmap=cm.pink)
-...    savefig("test.png")
-... except:
-...    pass
 
 

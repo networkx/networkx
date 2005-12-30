@@ -1,8 +1,9 @@
 """
-Draw networks with matplotlib/pylab.
+Draw networks with matplotlib (pylab).
 
 References:
  - matplotlib:     http://matplotlib.sourceforge.net/
+ - pygraphviz:     http://networkx.lanl.gov/pygraphviz/
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
@@ -16,331 +17,224 @@ __revision__ = "$Revision: 1035 $"
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 import networkx
-import math
-import sys
-from string import split
+
 try:
-    from matplotlib.axes import Subplot
     import matplotlib.cbook as cb
-    from matplotlib.colors import colorConverter, normalize, Colormap
-    import matplotlib.cm as cm
-    from matplotlib.collections import PatchCollection,\
-                                       RegularPolyCollection,\
-                                       LineCollection
-    from matplotlib.numerix import sin, cos, pi, asarray, sqrt, arctan2
-    from matplotlib.numerix import arange as narange
-    from matplotlib.pylab import gca, gci, hold, text, \
-             draw_if_interactive, show, savefig,\
-             figure, clf, ion, ioff
-    # matplotlib.pylab draw conflicts with draw in this module
-    from matplotlib.pylab import draw as redraw
+    from matplotlib.colors import colorConverter
+    from matplotlib.collections import LineCollection
+    from matplotlib.numerix import sin, cos, pi, sqrt, \
+         arctan2, arccos, arcsin
+    from matplotlib.numerix.mlab import amin, amax
+    from matplotlib.pylab import gca, hold, draw_if_interactive 
 except ImportError:
-#    print "Import Error: not able to import matplotlib."
+    print "Import Error: not able to import matplotlib."
     raise
 
-def draw_circular(G, **kwargs):
-    """Draw networkx graph in circular layout"""
-    from networkx.drawing.layout import circular_layout
-    draw_nx(G,circular_layout(G),**kwargs)
-    
-def draw_random(G, **kwargs):
-    """Draw networkx graph with random layout."""
-    from networkx.drawing.layout import random_layout
-    draw_nx(G,random_layout(G),**kwargs)
+def draw(G, pos=None, with_labels=True, **kwds):
+    """Draw the graph G with matplotlib (pylab).
 
-def draw_spectral(G, **kwargs):
-    """Draw networkx graph with spectral layout."""
-    from networkx.drawing.layout import spectral_layout
-    draw_nx(G,spectral_layout(G),**kwargs)
+    This is a pylab friendly function that will use the
+    current pylab figure axes (e.g. subplot).
 
-def draw_spring(G, **kwargs):
-    """Draw networkx graph with spring layout"""
-    from networkx.drawing.layout import spring_layout
-    draw_nx(G,spring_layout(G),**kwargs)
-
-    
-def draw_shell(G, **kwargs):
-    """Draw networkx graph with shell layout"""
-    from networkx.drawing.layout import shell_layout
-    nlist = kwargs.get('nlist', None)
-    if nlist != None:        
-        del(kwargs['nlist'])
-    draw_nx(G,shell_layout(G,nlist=nlist),**kwargs)
-
-def drawg(G, **kwargs):
-    """Draw networkx graph using spring layout"""
-    draw_spring(G,**kwargs)
-
-def draw(G, **kwargs):
-    """Draw networkx graph using spring layout.
-    NB:
-    pylab.draw() has been renamed to pylab.redraw()
-    so use redraw() from pylab interface.
-    """
-    draw_spring(G,**kwargs)
-
-
-def draw_nx(G, node_pos, **kwargs):
-    """ Draw networkx graph with nodes at node_pos.
-    See layout.py for functions that compute node positions.
-
-    node_pos is a dictionary keyed by vertex with a two-tuple
+    pos is a dictionary keyed by vertex with a two-tuple
     of x-y positions as the value.
+    See networkx.layout for functions that compute node positions.
 
-    Use kwarg of node_color with a dictionary keyed by vertex with a 
-    floating point number as a value.
+    Usage:
 
-    Use kwarg of node_size with a dictionary keyed by vertex with a 
-    floating point number as a value.
+    >>> draw(G)
+
+    >>> pos=graphviz_layout(G)
+    >>> draw(G,pos)
+
+    >>> draw(G,pos=spring_layout(G))
+
+    Also see doc/examples/draw_*
+
+    :Parameters:
+      - `nodelist`: list of nodes to be drawn (default=G.nodes())
+      - `edgelist`: list of edges to be drawn (default=G.edges())
+
+      - `node_size`: scalar or array of the same length as nodelist (default=300)
+      - `node_color`: single color string or numeric/numarray array of floats (default='r')
+      - `node_shape`: node shape (default='o'), or 'so^>v<dph8' see pylab.scatter
+      - `alpha`: transparency (default=1.0) 
+      - `cmap`: colormap for mapping intensities (default=None)
+      - `vmin,vmax`: min and max for colormap scaling (default=None)
+      - `width`: line width of edges (default =1.0)
+      - `edge_color`: scalar or array (default='k')
+      - `style`: edge linestyle (default='solid') (solid|dashed|dotted,dashdot)
+      - `labels`: dictionary keyed by node of text labels (default=None)
+      - `font_size`: size for text labels (default=12)
+      - `font_color`: (default='k')
+      - `font_weight`: (default='normal')
+      - `font_family`: (default='sans-serif')
+      - `ax`: matplotlib axes instance
+
+      for more see pylab.scatter
+
+    NB: this has the same name as pylab.draw so beware when using
+
+    >>> from networkx import *
+
+    since you will overwrite the pylab.draw function.
+
+    A good alternative is to use
+
+    >>> import pylab as P
+    >>> import networkx as NX
+
+    and then use
+
+    >>> NX.draw(G)  # networkx draw()
+    and
+    >>> P.draw()    # pylab draw()
 
     """
-    # set node positions
-    np={}
-    for n in G.nodes():
-        try:
-            np[n]=node_pos[n]
-        except KeyError:
-            raise networkx.NetworkXError, "node %s doesn't have position"%n
+    if pos is None:
+        pos=networkx.drawing.spring_layout(G) # default to spring layout
+
+    ax=gca()
+    # allow callers to override the hold state by passing hold=True|False
+    b = ax.ishold()
+    h = kwds.get('hold', None)
+    if h is not None:
+        hold(h)
+    try:
+        draw_networkx(G, pos, ax=ax, with_labels=with_labels, **kwds)
+        draw_if_interactive()
+        # turn of axes ticks and labels
+        ax.set_xticks([])
+        ax.set_yticks([])
+
+    except:
+        hold(b)
+        raise
+    hold(b)
+
+def draw_networkx(G, pos, with_labels=True, ax=None, **kwds):
+    """Draw the graph G with given node positions pos
+
+    Usage:
+
+    >>> import pylab as P
+    >>> ax=P.subplot(111)
+    >>> pos=spring_layout(G)
+    >>> draw_networkx(G,pos,ax=ax)
+
+    This is same as 'draw' but the node positions *must* be
+    specified in the variable pos.
+    pos is a dictionary keyed by vertex with a two-tuple
+    of x-y positions as the value.
+    See networkx.layout for functions that compute node positions.
+
+    An optional matplotlib axis can be provided through the
+    optional keyword ax.
+
+    with_labels contols text labeling of the nodes
+
+    Also see:
+
+    draw_networkx_nodes()
+    draw_networkx_edges()
+    draw_networkx_labels()
+    """
+    if ax is None:
+        ax=gca()
+    node_collection=draw_networkx_nodes(G, pos, ax=ax, **kwds)
+    edge_collection=draw_networkx_edges(G, pos, ax=ax, **kwds) 
+    if with_labels:
+        draw_networkx_labels(G, pos, ax=ax, **kwds)
+    draw_if_interactive()
+
+def draw_networkx_nodes(G, pos,
+                        nodelist=None,
+                        node_size=300,
+                        node_color='r',
+                        node_shape='o',
+                        alpha=1.0,
+                        cmap=None,
+                        vmin=None,
+                        vmax=None, 
+                        ax=None,
+                        **kwds):
+    """Draw nodes of graph G
+
+    This draws only the nodes of the graph G.
+
+    pos is a dictionary keyed by vertex with a two-tuple
+    of x-y positions as the value.
+    See networkx.layout for functions that compute node positions.
+
+    nodelist is an optional list of nodes in G to be drawn.
+    If provided only the nodes in nodelist will be drawn.
+    
+    see draw_networkx for the list of other optional parameters.
+    """
+    if ax is None:
+        ax=gca()
+
+    if nodelist is None:
+        nodelist=G.nodes()
+
+    x=[pos[v][0] for v in nodelist]
+    y=[pos[v][1] for v in nodelist]
+
+    node_collection=ax.scatter(x, y,
+                               s=node_size,
+                               c=node_color,
+                               marker=node_shape,
+                               cmap=cmap, 
+                               vmin=vmin,
+                               vmax=vmax,
+                               alpha=alpha)
+                               
+    node_collection.set_zorder(2)            
+    return node_collection
+
+
+def draw_networkx_edges(G, pos,
+                        edgelist=None,
+                        width=1.0,
+                        edge_color='k',
+                        style='solid',
+                        alpha=1.0,
+                        ax=None,
+                        **kwds):
+    """Draw the edges of the graph G
+
+    This draws only the edges of the graph G.
+
+    pos is a dictionary keyed by vertex with a two-tuple
+    of x-y positions as the value.
+    See networkx.layout for functions that compute node positions.
+
+    edgelist is an optional list of the edges in G to be drawn.
+    If provided only the edges in edgelist will be drawn. 
+    
+    see draw_networkx for the list of other optional parameters.
+    """
+    if ax is None:
+        ax=gca()
+
+    if edgelist is None:
+        edgelist=G.edges()
 
     # set edge positions
-    edge_pos=[]
-    for e in G.edges_iter():
-        # The edge e can be a 2-tuple (Graph) or a 3-tuple (Xgraph)
+    head=[]
+    tail=[]
+    for e in edgelist:
+        # edge e can be a 2-tuple (Graph) or a 3-tuple (Xgraph)
         u=e[0]
         v=e[1]
-        if v in node_pos and u in node_pos:
-            edge_pos.append((tuple(node_pos[u]),tuple(node_pos[v])))
-    digraph=G.is_directed()
-    ax=gca()
- # allow callers to override the hold state by passing hold=True|False
-    b = gca().ishold()
-    h = kwargs.get('hold', None)
-    if h is not None:
-        hold(h)
-    try:
-        ret =  mpl_network(ax, np, edge_pos, digraph=digraph, **kwargs)
-        draw_if_interactive()
-    except:
-        hold(b)
-        raise
-    hold(b)
-    return ret
+        head.append(pos[u])
+        tail.append(pos[v])
+    edge_pos=zip(head,tail)
 
-
-def draw_nxpydot(G,**kwds):
-    """Draw networkx graph using pydot and graphviz layout.
-
-    >>> G=barbell_graph(5,10)
-    >>> d=G.degree(with_labels=True)
-    >>> draw_nxpydot(G)
-    >>> draw_nxpydot(G,node_color=d,cmap=cm.pink)
-    >>> draw_nxpydot(G,prog='neato')
-    
-    Can use prog= "neato", "dot", "circo", "twopi", or "fdp"
-
-    """
-    from networkx.drawing.nx_pydot import pydot_from_networkx
-    try:
-        from pydot import graph_from_dot_data
-    except:
-        print "Import Error: not able to import pydot."
-        raise
-    prog = kwds.get('prog', "neato")
-    P=pydot_from_networkx(G)
-    D=P.create_dot(prog=prog)
-    if D=="":  # no data returned
-        print "Graphviz layout with %s failed"%(prog)
-        print
-        print "To debug what happened try:"
-        print "P=pydot_from_networkx(G)"
-        print "P.write_dot(\"file.dot\")"
-        print "And then run %s on file.dot"%(prog)
-        return
-
-    Q=graph_from_dot_data(D)
-
-    if kwds.has_key('prog'):
-        del(kwds['prog'])
-    draw_pydot(Q,**kwds)
-
-
-def draw_nxpydot_nolabels(G,**kwargs):
-    """Draw networkx graph without labels in textbook style.
-
-    node_color is black, unless specified in kwargs
-    (with node_color= a dictionary that maps each key=node to  a 
-    floating point number.)
-    e.g.
-    >>> G=star_graph(10)
-    >>> d=G.degree(with_labels=True)
-    >>> draw_nxpydot_nolabels(G)
-    >>> draw_nxpydot_nolabels(G,node_color=d,cmap=cm.pink)
-    >>> draw_nxpydot_nolabels(G,prog='neato')
-
-    Can use prog= "neato", "dot", "circo", "twopi", or "fdp"
-    
-    """
-    ncolor= kwargs.get('node_color', None)
-    if ncolor is None:
-        draw_nxpydot(G,node_size=50,node_labels=False,node_color='k',
-                     **kwargs)
+    if not cb.iterable(width):
+        lw = (width,)
     else:
-        draw_nxpydot(G,node_size=50,node_labels=False,**kwargs)
-    return
-
-
-def draw_pydot(P, **kwargs):
-    """Draw pydot graph P with matplotlib.
-    The pydot graph must have position information in graphviz dot format.
-    """
-    # create from pydot
-    notnode={"graph":1,"node":1,"edge":1}        
-    node_pos={}
-    for node in P.get_node_list():
-        if node.name in notnode:
-            continue
-        if node.pos != None:
-            xx,yy=split(node.pos,",")
-            node_pos[node.name]=(float(xx),float(yy))
-    edge_pos=[]
-    for edge in P.get_edge_list():
-        edge_pos.append((node_pos[edge.src],node_pos[edge.dst]))
-    if P.graph_type=='digraph':
-        digraph=True
-    else:
-        digraph=False
-    ax=gca()
-    # test and convert color dict to be keyed by string, nasty hack 4sure
-    c=kwargs.get("node_color")
-    if cb.iterable(c) and not cb.is_string_like(c):
-        test=c.keys().pop()
-        if not cb.is_string_like(test):
-            node_color_new={}
-            for node in c:
-                node_color_new[str(node)]=c[node]
-            kwargs["node_color"]=node_color_new
-
- # allow callers to override the hold state by passing hold=True|False
-    b = gca().ishold()
-    h = kwargs.get('hold', None)
-    if h is not None:
-        hold(h)
-    try:
-        ret =  mpl_network(ax, node_pos, edge_pos, digraph=digraph, **kwargs)
-        draw_if_interactive()
-    except:
-        hold(b)
-        raise
-    hold(b)
-    return ret
-
-def draw_pydot_subgraph(ax,P,**kwds):
-    """
-    Draw a pydot network P that has nested subgraphs.
-    """
-    draw_pydot(P,**kwds)
-    subgraphs=P.get_subgraph_list()
-    while subgraphs:
-        S=subgraphs.pop()
-        draw_pydot(S,**kwds)
-        
-
-def mpl_network(ax, node_pos, edge_pos,\
-                node_size=300, node_color ='r', node_marker = 'o', \
-                node_labels = True,\
-                fonts = {}, \
-                edge_color ='k', edge_width = 1.0,\
-                cmap = None, norm = None, vmin = None, vmax = None,\
-                alpha=1.0, digraph=False):
-
-    """
-    Draw network with matplotlib using node positions=node_pos
-    and edge positions=edge_pos. 
-
-    Steals heavily from matplotlib.axes.scatter.
-
-    """
-    if not ax._hold: ax.cla()
-
-    syms =  { # a dict from symbol to (numsides, angle)           
-        's' : (4, math.pi/4.0),  # square
-        'o' : (20, 0),           # circle
-        '^' : (3,0),             # triangle up
-        '>' : (3,math.pi/2.0),   # triangle right
-        'v' : (3,math.pi),       # triangle down
-        '<' : (3,3*math.pi/2.0), # triangle left
-        'd' : (4,0),             # diamond
-        'p' : (5,0),             # pentagram
-        'h' : (6,0),             # hexagon
-        '8' : (8,0),             # octogon
-        }
-
-    # same marker for all nodes
-    if not syms.has_key(node_marker):
-        raise networkx.NetworkXError('Unknown node marker symbol')
-    numsides, rotation = syms[node_marker]
-
-
-    # no nodes!        
-    if len(node_pos)<1:
-        return
-
-    # list of node positions
-    npk=node_pos.keys()
-    npk.sort()
-    npos=[tuple(node_pos[v]) for v in npk],
-
-    if not cb.iterable(node_size):
-        scales = (node_size,)
-    else:
-        scales=[]
-        for n in npk:
-            if node_size.has_key(n):
-                scales.append(node_size[n])
-            else:
-                scales.append(300)
-
-    if not cb.is_string_like(node_color) \
-           and cb.iterable(node_color) \
-           and len(node_color)==len(node_pos):
-        node_colors = None
-        node_color_floats=[]
-        for n in npk:
-            if node_color.has_key(n):
-                node_color_floats.append(float(node_color[n]))
-            else:
-                node_color_floats.append(0.0)
-        node_color_floats=asarray(node_color_floats)                
-    else:
-        node_colors = ( colorConverter.to_rgba(node_color, alpha), )
-
-    node_collection = RegularPolyCollection(
-        ax.figure.dpi,
-        numsides, rotation, scales,
-        facecolors = node_colors,
-        offsets = npos[0],
-        transOffset = ax.transData,             
-        )
-
-    node_collection.set_alpha(alpha)
-
-    if node_colors is None:
-        if norm is not None: assert(isinstance(norm, normalize))
-        if cmap is not None: assert(isinstance(cmap, Colormap))        
-        
-        node_collection.set_array(node_color_floats)
-        node_collection.set_cmap(cmap)
-        node_collection.set_norm(norm)            
-
-        if norm is None:
-            node_collection.set_clim(vmin, vmax)
-
-    node_collection.set_zorder(2)            
-
-    if not cb.iterable(edge_width):
-        lw = (edge_width,)
-    else:
-        lw = edge_width
+        lw = width
 
     # edge colors specified with floats won't work here
     # since LineCollection doesn't use ScalarMappable.
@@ -356,24 +250,13 @@ def mpl_network(ax, node_pos, edge_pos,\
                                 colors       = edge_colors,
                                 linewidths   = lw,
                                 antialiaseds = (1,),
+                                linestyle    = style,     
                                 transOffset = ax.transData,             
                                 )
+    arrow_collection=None
 
+    if G.is_directed():
 
-    if edge_colors is None:
-        if norm is not None: assert(isinstance(norm, normalize))
-        if cmap is not None: assert(isinstance(cmap, Colormap))        
-
-        #edge_collection.set_array(edge_color)
-        #edge_collection.set_cmap(cmap)
-        #edge_collection.set_norm(norm)            
-
-        #if norm is None:
-            #edge_collection.set_clim(vmin, vmax)
-
-    edge_collection.set_zorder(1)            
-
-    if digraph:
         # a directed graph hack
         # draw thick line segments at head end of edge
         # waiting for someone else to implement arrows that will work 
@@ -393,65 +276,128 @@ def mpl_network(ax, node_pos, edge_pos,\
                 ya=y2
                 xa=(x2-x1)*(1-p)+x1
             else:
-                theta=math.acos((x2-x1)/d)
-                xa=math.cos(theta)*d*(1-p)+x1
-                theta=math.asin((y2-y1)/d)
-                ya=math.sin(theta)*d*(1-p)+y1
+                theta=arccos((x2-x1)/d)
+                xa=cos(theta)*d*(1-p)+x1
+                theta=arcsin((y2-y1)/d)
+                ya=sin(theta)*d*(1-p)+y1
                 
             a_pos.append(((xa,ya),(x2,y2)))
+
         arrow_collection = LineCollection(a_pos,
                                 colors       = arrow_colors,
                                 linewidths   = (4,),
                                 antialiaseds = (1,),
                                 transOffset = ax.transData,             
                                 )
-        arrow_collection.set_zorder(1)            
-        ax.add_collection(arrow_collection)
-
-    # ignore any dot file bounding box and set limits
-    x=[xx for xx,yy in node_pos.values()]
-    y=[yy for xx,yy in node_pos.values()]
-    minx = min(x)
-    maxx = max(x)
-    miny = min(y)
-    maxy = max(y)
+        
+    # update view        
+    xx= [x for (x,y) in head+tail]        
+    yy= [y for (x,y) in head+tail]        
+    minx = amin(xx)
+    maxx = amax(xx)
+    miny = amin(yy)
+    maxy = amax(yy)
     w = maxx-minx
     h = maxy-miny
-    # the pad is a little hack to deal with the fact that we don't
-    # want to transform all the symbols whose scales are in points
-    # to data coords to get the exact bounding box for efficiency
-    # reasons.  It can be done right if this is deemed important
     padx, pady = 0.05*w, 0.05*h
-    corners = (minx-padx, miny-pady), (maxx+padx, maxy+pady) 
-    ax.update_datalim(corners)
+    corners = (minx-padx, miny-pady), (maxx+padx, maxy+pady)
+    ax.update_datalim( corners)
     ax.autoscale_view()
 
-    # turn of axes ticks and labels
-    ax.set_xticks([])
-    ax.set_yticks([])
-
-    # add edges and nodes
+    edge_collection.set_zorder(1) # edges go behind nodes            
     ax.add_collection(edge_collection)
-    ax.add_collection(node_collection)
-
-    if node_labels:
-        # add text in a very pylaby way
-        for n in node_pos:
-            (x,y)=node_pos[n]
-            text(x, y, str(n), fonts, 
-                 horizontalalignment='center',
-                 verticalalignment='center',
-                 transform = ax.transData,
-                 )
+    if arrow_collection:
+        arrow_collection.set_zorder(1) # edges go behind nodes            
+        ax.add_collection(arrow_collection)
 
 
+    return edge_collection
 
-    return node_collection
+
+def draw_networkx_labels(G, pos,
+                         labels=None,
+                         font_size=12,
+                         font_color='k',
+                         font_family='sans-serif',
+                         font_weight='normal',
+                         alpha=1.0,
+                         ax=None,
+                         **kwds):
+    """Draw node labels on the graph G
+
+    pos is a dictionary keyed by vertex with a two-tuple
+    of x-y positions as the value.
+    See networkx.layout for functions that compute node positions.
+
+    labels is an optional dictionary keyed by vertex with node labels
+    as the values.  If provided only labels for the keys in the dictionary
+    are drawn.
+    
+    see draw_networkx for the list of other optional parameters.
+    """
+    if ax is None:
+        ax=gca()
+
+    if labels is None:
+        labels=dict(zip(G.nodes(),G.nodes()))
+
+    for n in labels:
+        (x,y)=pos[n]
+        ax.text(x, y,
+                str(labels[n]),
+                size=font_size,
+                color=font_color,
+                family=font_family,
+                weight=font_weight,
+                horizontalalignment='center',
+                verticalalignment='center',
+                transform = ax.transData,
+                )
+
+
+def draw_circular(G, **kwargs):
+    """Draw the graph G with a circular layout"""
+    from networkx.drawing.layout import circular_layout
+    draw(G,circular_layout(G),**kwargs)
+    
+def draw_random(G, **kwargs):
+    """Draw the graph G with a random layout."""
+    from networkx.drawing.layout import random_layout
+    draw(G,random_layout(G),**kwargs)
+
+def draw_spectral(G, **kwargs):
+    """Draw the graph G with a spectral layout."""
+    from networkx.drawing.layout import spectral_layout
+    draw(G,spectral_layout(G),**kwargs)
+
+def draw_spring(G, **kwargs):
+    """Draw the graph G with a spring layout"""
+    from networkx.drawing.layout import spring_layout
+    draw(G,spring_layout(G),**kwargs)
+
+def draw_shell(G, **kwargs):
+    """Draw networkx graph with shell layout"""
+    from networkx.drawing.layout import shell_layout
+    nlist = kwargs.get('nlist', None)
+    if nlist != None:        
+        del(kwargs['nlist'])
+    draw(G,shell_layout(G,nlist=nlist),**kwargs)
+
+def draw_graphviz(G, prog="neato", **kwargs):
+    """Draw networkx graph with graphviz layout"""
+    pos=networkx.drawing.graphviz_layout(G,prog)
+    draw(G,pos,**kwargs)
+
+def draw_nx(G,pos,**kwds):
+    """For backward compatibility; use draw or draw_networkx"""
+    draw(G,pos,**kwds)
+
 
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/drawing/nx_pylab.txt',package='networkx')
+    suite = doctest.DocFileSuite('tests/drawing/nx_pylab.txt',\
+                                 package='networkx')
     return suite
 
 if __name__ == "__main__":
@@ -460,7 +406,8 @@ if __name__ == "__main__":
     import unittest
 
     if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
+        print "Python version 2.4 or later required (%d.%d detected)." \
+              %  sys.version_info[:2]
         sys.exit(-1)
     # directory of networkx package (relative to this)
     nxbase=sys.path[0]+os.sep+os.pardir
