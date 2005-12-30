@@ -5,7 +5,8 @@ Search Class
 >>> from networkx.queues import *
 >>> from networkx.search_class import *
 >>> from networkx.generators.classic import *
->>> G=grid_2d_graph(4,4)
+>>> from networkx.operators import convert_node_labels_to_integers as cnlti
+>>> G=cnlti(grid_2d_graph(4,4),first_label=1)
 
 >>> V=Preorder(G)
 >>> V.search(v=1)

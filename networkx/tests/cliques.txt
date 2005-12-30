@@ -5,9 +5,10 @@ Cliques
 >>> from networkx.generators.degree_seq import *
 >>> from networkx.generators.random_graphs import *
 >>> from networkx.cliques import *
+>>> from networkx.operators import convert_node_labels_to_integers as cnlti
 
 >>> z=[3,4,3,4,2,4,2,1,1,1,1]
->>> G=NX.generators.havel_hakimi_graph(z)
+>>> G=cnlti(NX.generators.havel_hakimi_graph(z),first_label=1)
 
 >>> cl=find_cliques(G)
 >>> cl

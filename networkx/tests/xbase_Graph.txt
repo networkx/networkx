@@ -4,22 +4,23 @@ XGraph
 Unit tests for XGraph Class in xbase.py
 ---------------------------------------
 
-
 >>> from networkx import *
 >>> from networkx.isomorph import graph_could_be_isomorphic
 >>> is_isomorphic=graph_could_be_isomorphic
+>>> from networkx.operators import convert_node_labels_to_integers as cnlti
 
 Some small graphs
 -----------------
 
 >>> null=null_graph()
->>> P1=path_graph(1)
->>> P3=path_graph(3)
->>> P10=path_graph(10)
->>> K1=complete_graph(1)
->>> K3=complete_graph(3)
->>> K4=complete_graph(4)
->>> K5=complete_graph(5)
+>>> P1=cnlti(path_graph(1),first_label=1)
+>>> P3=cnlti(path_graph(3),first_label=1)
+>>> P10=cnlti(path_graph(10),first_label=1)
+>>> K1=cnlti(complete_graph(1),first_label=1)
+>>> K3=cnlti(complete_graph(3),first_label=1)
+>>> K4=cnlti(complete_graph(4),first_label=1)
+>>> K5=cnlti(complete_graph(5),first_label=1)
+>>> K10=cnlti(complete_graph(10),first_label=1)
 
 Same small graphs but as XGraphs
 --------------------------------

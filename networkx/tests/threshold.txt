@@ -5,17 +5,18 @@ Threshold Graphs
 >>> from networkx.threshold import *
 >>> from networkx.isomorph import graph_could_be_isomorphic
 >>> import string
+>>> from networkx.operators import convert_node_labels_to_integers as cnlti
 
 Threshold Sequence and Graph Test
 ---------------------------------
 
->>> G=NX.star_graph(10)
+>>> G=cnlti(NX.star_graph(10),first_label=1)
 >>> is_threshold_graph(G)
 True
 >>> is_threshold_sequence(G.degree())
 True
 
->>> G=NX.complete_graph(10)
+>>> G=cnlti(NX.complete_graph(10),first_label=1)
 >>> is_threshold_graph(G)
 True
 >>> is_threshold_sequence(G.degree())
@@ -29,7 +30,7 @@ False
 >>> is_threshold_sequence(deg)
 True
 
->>> G=NX.generators.havel_hakimi_graph(deg)
+>>> G=cnlti(NX.generators.havel_hakimi_graph(deg),first_label=1)
 >>> is_threshold_graph(G)
 True
 
