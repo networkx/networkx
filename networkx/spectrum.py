@@ -23,29 +23,26 @@ except ImportError:
     raise
 
 
-def adj_matrix(G,u=None):
+def adj_matrix(G,nodelist=None):
     """Return adjacency matrix of graph
-    If u is defined return row of adjacency matrix at row u.
+
+    If nodelist is defined return adjacency matrix with nodes in nodelist
+    in the order specified.
+
+    The value of the entry in the adjacency matrix is zero or one.
+    E.g. self-loops, multi-edges, or weighted graphs are not handled.
+
     """
-    n=G.order()
-    # make an dictionary that maps vertex name to position
-    index={}
-    count=0
-    for a in G.nodes():
-        index[a]=count
-        count = count+1
-    # the entire adjacency matrix
-    if u == None:
-        a = Numeric.zeros((n,n))
-        for x in G.nodes():
-            for y in G.neighbors(x):
-                a[index[x],index[y]]=1
-                a[index[y],index[x]]=1
-    # one row of the adjacency matrix
-    else:
-        a = Numeric.zeros((n))
-        for y in G.neighbors(u): 
-            a[index[y]]=1
+    if nodelist is None:
+        nodelist=G.nodes()
+    nlen=len(nodelist)    
+    index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
+    a = Numeric.zeros((nlen,nlen))
+    for n1 in nodelist:
+        nbrs=[n for n in G.neighbors(n1) if n in nodelist]
+        for n2 in nbrs:
+            a[index[n1],index[n2]]=1
+            a[index[n2],index[n1]]=1
     return a            
 
 def laplacian(G):

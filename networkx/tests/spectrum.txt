@@ -18,8 +18,9 @@ Adjacency Matrix
  [1,0,0,0,0,]
  [0,0,0,0,0,]]
 
->>> print adj_matrix(G,1)
-[1,0,1,0,0,]
+>>> print adj_matrix(G,nodelist=[0,1])
+[[0,1,]
+ [1,0,]]
 
 Laplacian
 ---------
