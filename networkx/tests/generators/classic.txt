@@ -105,7 +105,7 @@ True
 >>> number_of_edges(b)==m1*(m1-1) + m2 + 1
 True
 >>> b.name
-'barbell_graph(3,5)'
+'barbell graph (3,5)'
 
 >>> m1=4; m2=10 
 >>> b=barbell_graph(m1,m2) 
@@ -114,7 +114,7 @@ True
 >>> number_of_edges(b)==m1*(m1-1) + m2 + 1
 True
 >>> b.name
-'barbell_graph(4,10)'
+'barbell graph (4,10)'
 
 >>> m1=3; m2=20 
 >>> b=barbell_graph(m1,m2) 
@@ -123,7 +123,7 @@ True
 >>> number_of_edges(b)==m1*(m1-1) + m2 + 1
 True
 >>> b.name
-'barbell_graph(3,20)'
+'barbell graph (3,20)'
 
 Raise NetworkXError if m1<2
 
@@ -293,7 +293,7 @@ empty_graph
 >>> number_of_edges(G)
 0
 >>> print G.name
-No Name
+empty graph
 
 
 create empty digraph
@@ -304,7 +304,7 @@ create empty digraph
 >>> number_of_edges(G)
 0
 >>> G.name # name was cleared, so nothing
-''
+'empty graph'
 >>> isinstance(G,DiGraph)
 True
 
@@ -318,7 +318,7 @@ create empty graph from another
 >>> number_of_edges(G)
 0
 >>> G.name # name was cleared, so nothing
-''
+'empty graph'
 >>> isinstance(G,Graph)
 True
 
@@ -442,7 +442,7 @@ True
 >>> number_of_edges(b)==m1*(m1-1)/2 + m2
 True
 >>> b.name
-'lollipop_graph(3,5)'
+'lollipop graph (3,5)'
 
 >>> m1=4; m2=10 
 >>> b=lollipop_graph(m1,m2) 
@@ -451,7 +451,7 @@ True
 >>> number_of_edges(b)==m1*(m1-1)/2 + m2
 True
 >>> b.name
-'lollipop_graph(4,10)'
+'lollipop graph (4,10)'
 
 >>> m1=3; m2=20 
 >>> b=lollipop_graph(m1,m2) 
@@ -460,7 +460,7 @@ True
 >>> number_of_edges(b)==m1*(m1-1)/2 + m2 
 True
 >>> b.name
-'lollipop_graph(3,20)'
+'lollipop graph (3,20)'
 
 Raise NetworkXError if m<2
 
@@ -511,13 +511,13 @@ path_graph
 >>> is_isomorphic(p, null_graph())
 True
 >>> p.name
-'path_graph(0)'
+'path graph (0)'
 
 >>> p=path_graph(1)
 >>> is_isomorphic( p, empty_graph(1))
 True
 >>> p.name
-'path_graph(1)'
+'path graph (1)'
 
 >>> p=path_graph(10)
 >>> is_connected(p)
@@ -606,7 +606,7 @@ True
 >>> is_isomorphic( g, complete_graph(4))
 True
 >>> g.name
-'wheel_graph(4)'
+'wheel graph (4)'
 
 >>> g=wheel_graph(10)
 >>> sorted(g.degree())
