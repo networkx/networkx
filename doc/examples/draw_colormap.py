@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Draw a graph with matplotlib.
+Draw a graph with matplotlib, color by degree.
 You must have matplotlib for this to work.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
@@ -23,16 +23,7 @@ except:
 from networkx import *
 
 G=grid_2d_graph(4,4)  #4x4 grid
-
 pos=spring_layout(G)
-subplot(221)
-draw(G,pos) 
-subplot(222)
-draw(G,pos,node_color='k',node_size=20,with_labels=False) 
-subplot(223)
-draw(G,pos,node_color='g',node_size=20,with_labels=False) 
-subplot(224)
-H=G.to_directed()
-draw(H,pos,node_color='b',node_size=20,with_labels=False) 
-
-show()
+draw(G,pos,node_color=array([G.degree(v) for v in G]))
+savefig("grid.png") # save as png
+show() # display

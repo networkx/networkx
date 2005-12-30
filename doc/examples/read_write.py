@@ -19,8 +19,3 @@ write_adjlist(G) # write adjacency list to screen
 write_edgelist(G,path="grid.edgelist") # write edgelist to grid.edgelist
 H=read_edgelist(path="grid.edgelist") # read edgelist from grid.edgelist
 
-try:
-    from networkx.drawing.nxpydot import *
-    write_dot(G,path="grid.dot") # write dotfile
-except:
-    pass # skipping write_dot since pydot,pyparsing, or graphviz not available 

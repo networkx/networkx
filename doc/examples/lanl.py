@@ -48,6 +48,7 @@ if __name__ == '__main__':
 
     from networkx import *
 
+
     G=lanl_graph()
 
 
@@ -55,8 +56,17 @@ if __name__ == '__main__':
           %(number_of_nodes(G),number_of_edges(G))
     print number_connected_components(G),"connected components"
 
-    # draw in radial layout with graphviz
-    #pos=pydot_layout(G,prog="twopi",root=0)
-    # draw_nx(G,pos,node_labels=False,node_size=10)
-    # colored by rtt ping time
-    #draw_nx(G,pos,node_color=G.rtt,node_labels=False,node_size=10)
+    try: # drawing
+        import pylab as P
+        # draw in radial layout with graphviz
+        P.figure(1,figsize=(10,10))    
+        pos=graphviz_layout(G,prog="twopi",root=0)
+        #draw(G,pos,with_labels=False,node_size=10)
+        # colored by rtt ping time
+        draw(G,pos,
+             node_color=array([G.rtt[v] for v in G]),
+             with_labels=False,
+             node_size=20)
+        P.savefig("lanl.png")
+    except:
+        pass

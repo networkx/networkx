@@ -57,20 +57,18 @@ if __name__ == '__main__':
     for a in G:
         print "%s's bacon number is %d" %(a,bacon_no[a])
 
-    # draw using pydot + pygraphviz
-    # node size = 50*degree
-    # node color correspond to bacon number
-    nsize={}
-    for n in G:
-        nsize[n]=50*G.degree(n)
-    
     try:
-        draw_nxpydot(G,prog='fdp',
-                 node_labels=False,
-                 node_size=nsize,
-                 node_color=bacon_no, cmap=cm.gray
-                 )
-        savefig("kevin_bacon.png")
+        # draw using graphviz interface
+        # node size = 50*degree
+        # node color corresponds to bacon number
+        import pylab as P
+        draw_graphviz(G,prog='fdp',
+                      with_labels=False,
+                      node_size=[50*G.degree(n) for n in G],
+                      node_color=P.array([bacon_no[n] for n in G]),
+                      cmap=P.cm.gray
+                      )
+        P.savefig("kevin_bacon.png")
         print "created kevin_bacon.png"
     except:
         pass

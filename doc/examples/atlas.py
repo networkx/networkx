@@ -64,19 +64,23 @@ if __name__ == '__main__':
           %(number_of_nodes(G),number_of_edges(G))
     print number_connected_components(G),"connected components"
 
-    # layout graphs with positions using graphviz neato
-    pos=pydot_layout(G,prog="neato")
-
-    # color nodes
-    C=connected_component_subgraphs(G)
-    c={}
-    for g in C:
-#        o=g.order()
-        o=random.random() # random color...
-        for n in g:
-            c[n]=o
-            
-    figure(1,figsize=(10,10))
-    draw_nx(G,pos,node_size=40,node_labels=False,node_color=c)
-
-
+    try:  #drawing
+        import pylab as P
+        P.figure(1,figsize=(10,10))
+        # layout graphs with positions using graphviz neato
+        pos=graphviz_layout(G,prog="neato")
+        # color nodes the same in each connected subgraph
+        C=connected_component_subgraphs(G)
+        for g in C:
+            c=P.array([random.random()]*number_of_nodes(g)) # random color...
+            draw(g,
+                 pos,
+                 node_size=40,
+                 node_color=c,
+                 vmin=0.0,
+                 vmax=1.0,
+                 with_labels=False
+                 )
+        P.savefig("atlas.png")   
+    except:
+        pass

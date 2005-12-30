@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     try: # draw
         pos=NX.spring_layout(G,iterations=10)
-        NX.draw_nx(G,pos,node_size=2000,alpha=0.5)
+        NX.draw(G,pos,node_size=2000,alpha=0.5)
         P.show()
     except: # matplotlib not available
         pass

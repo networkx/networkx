@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 """
-Draw a graph with neato layout using pydot to create dot graph object
-with node colors.
+Write a dot file from a networkx graph for further processing with graphviz.
+
+You need to have either pygraphviz or pydot for this example.
+
+See https://networkx.lanl.gov/drawing.html for more info.
+
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __date__ = "$Date: 2005-03-28 13:05:55 -0700 (Mon, 28 Mar 2005) $"
@@ -14,28 +18,23 @@ __revision__ = "$Revision: 882 $"
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from networkx import *
+import networkx as NX
+
+# and the following code block is not needed
+# but we want to see which module is used and
+# if and why it fails
 try:
-    from NX.drawing.nx_pydot import *
+    m=NX.drawing.write_dot.__module__
 except:
     print
-    print "pydot not found see https://networkx.lanl.gov/Drawing.html for info"
+    print "pygraphviz or pydot were not found "
+    print "see https://networkx.lanl.gov/Drawing.html for info"
     print
     raise
 
+print "using module", m
 
 
-
-G=grid_2d_graph(5,5)  # 5x5 grid
-P=pydot_from_networkx(G)
-for n in P.node_list:
-    if int(n.name)>10:
-        n.color="red"
-        n.style="filled"
-    if int(n.name)>20:
-        n.shape="circle"
-        n.style="filled"
-        n.color="blue"
-
-P.write("grid.dot")
+G=NX.grid_2d_graph(5,5)  # 5x5 grid
+NX.write_dot(G,"grid.dot")
 print "Now run: neato -Tps grid.dot >grid.ps"

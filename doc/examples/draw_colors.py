@@ -23,16 +23,8 @@ except:
 from networkx import *
 
 G=grid_2d_graph(4,4)  #4x4 grid
-
 pos=spring_layout(G)
-subplot(221)
-draw(G,pos) 
-subplot(222)
-draw(G,pos,node_color='k',node_size=20,with_labels=False) 
-subplot(223)
-draw(G,pos,node_color='g',node_size=20,with_labels=False) 
-subplot(224)
-H=G.to_directed()
-draw(H,pos,node_color='b',node_size=20,with_labels=False) 
-
-show()
+draw(G,pos,alpha=0.5,with_labels=False)
+draw(G,pos,nodelist=[1,2,3,4],node_color='b') # blue
+savefig("grid.png") # save as png
+show() # display

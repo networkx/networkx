@@ -29,6 +29,9 @@ __revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
+import networkx as NX
+
+
 def miles_graph():
     """ Return the cites example graph in miles.dat
         from the Stanford GraphBase.
@@ -39,7 +42,7 @@ def miles_graph():
         print "miles.dat not found"
         raise
 
-    G=XGraph()
+    G=NX.XGraph()
     G.position={}
     G.population={}
 
@@ -69,7 +72,7 @@ def miles_graph():
     return G            
 
 if __name__ == '__main__':
-    from networkx import *
+    import networkx as NX
     import re
     import sys
 
@@ -77,11 +80,11 @@ if __name__ == '__main__':
 
     print "Loaded Donald Knuth's miles.dat containing 128 cities."
     print "digraph has %d nodes with %d edges"\
-          %(number_of_nodes(G),number_of_edges(G))
+          %(NX.number_of_nodes(G),NX.number_of_edges(G))
 
 
     # make new graph of cites, edge if less then 300 miles between them
-    H=Graph()
+    H=NX.Graph()
     for v in G:
         H.add_node(v)
     for (u,v,d) in G.edges():
@@ -91,14 +94,18 @@ if __name__ == '__main__':
     # draw with matplotlib/pylab            
 
     try:
-    # with nodes colored by population, no labels
-    # draw_nx(H,G.position,node_labels=False,node_size=80,node_color=G.population,cmap=cm.jet)
-    # with nodes sized py population
-    # draw_nx(H,G.position,node_labels=False,node_size=G.population,cmap=cm.jet)
-        draw_nx(H,G.position,node_labels=False,node_size=G.population,node_color=H.degree(with_labels=True),cmap=cm.jet)
-        savefig("miles.png")
-    # with nodes colored by degree
-    #draw_nx(H,G.position,node_labels=False,node_size=50,node_color=H.degree(with_labels=True),cmap=cm.jet)
+        import pylab as P
+        # with nodes sized py population
+#        draw(H,G.position,
+#             node_size=[G.population[v] for v in H],
+#             with_labels=False)
+        # with nodes colored by degree sized by population
+        node_color=P.array([float(H.degree(v)) for v in H])
+        draw(H,G.position,
+             node_size=[G.population[v] for v in H],
+             node_color=node_color,
+             with_labels=False)
+        P.savefig("miles.png")
     except:
         pass
 

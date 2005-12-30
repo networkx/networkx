@@ -20,19 +20,9 @@ except:
     print "pylab not found: see https://networkx.lanl.gov/Drawing.html for info"
     raise 
     
-from networkx import *
+from networkx import *  # import networkx after pylab 
 
 G=grid_2d_graph(4,4)  #4x4 grid
-
-pos=spring_layout(G)
-subplot(221)
-draw(G,pos) 
-subplot(222)
-draw(G,pos,node_color='k',node_size=20,with_labels=False) 
-subplot(223)
-draw(G,pos,node_color='g',node_size=20,with_labels=False) 
-subplot(224)
-H=G.to_directed()
-draw(H,pos,node_color='b',node_size=20,with_labels=False) 
-
-show()
+draw(G)
+savefig("grid.png") # save as png
+show() # display
