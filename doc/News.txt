@@ -3,6 +3,34 @@ NetworkX News
 .. include:: Menu.txt
 
 
+What's new in NX-0.26?
+----------------------
+
+Release date: 6 Jan 2006
+
+New features
+~~~~~~~~~~~~
+  - Simpler interface to drawing with pylab
+  - G.info(node=None) function returns short information about graph
+    or node
+  - adj_matrix now takes optional nodelist to force ordering of
+    rows/columns in matrix
+  - optional pygraphviz and pydot interface to graphviz is now callable as
+    "graphviz" with pygraphviz preferred.  Use draw_graphviz(G).
+   
+Examples
+~~~~~~~~
+  - Several new examples showing how draw to graphs with various
+    properties of nodes, edges, and labels
+    https://networkx.lanl.gov/wiki/file/networkx/trunk/examples/
+
+Bug fixes
+~~~~~~~~~
+   - Default data type for all graphs is now None (was the integer 1)
+   - add_nodes_from now won't delete edges if nodes added already exist
+   - Added missing names to generated graphs
+   - Indexes for nodes in graphs start at zero by default (was 1)
+
 What's new in NX-0.25?
 ----------------------
 
