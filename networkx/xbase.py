@@ -424,9 +424,12 @@ class XGraph(Graph):
 
         """
         try:
-            return self.adj[n1][n2]    # raises KeyError if edge not found
+            result = self.adj[n1][n2]    # raises KeyError if edge not found
         except KeyError:
             raise NetworkXError, "no edge (%s,%s) in graph"%(n1,n2)
+        if self.multiedges:
+            return result[:]   # return a copy so user can't mess up list
+        return result
             
     def edges_iter(self, nbunch=None, with_labels=False):
         """Return iterator that iterates once over each edge adjacent
@@ -1188,9 +1191,12 @@ class XDiGraph(DiGraph):
 
         """
         try:
-            return self.adj[n1][n2]    # raises KeyError if edge not found
+            result = self.adj[n1][n2]    # raises KeyError if edge not found
         except KeyError:
             raise NetworkXError, "no edge (%s,%s) in graph"%(n1,n2)
+        if self.multiedges:
+            return result[:]   # return a copy so user can't mess up list
+        return result
 
 
     def delete_multiedge(self, n1, n2):
