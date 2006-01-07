@@ -165,7 +165,7 @@ Non-mutating Graph methods
     - G.nodes_iter()
     - G.order()
     - G.neighbors(n), G.neighbors_iter(n) 
-    - G.has_edge(n1,n2), G.has_neighbor(n1,n2)
+    - G.has_edge(n1,n2,x), G.has_neighbor(n1,n2)
     - G.edges(), G.edges(nbunch)
       G.edges_iter(), G.edges_iter(nbunch,
     - G.size()
@@ -350,7 +350,7 @@ class XGraph(Graph):
         Can be called as G.has_edge(n1,n2,x)
         or as G.has_edge(e), where e=(n1,n2,x).
 
-        If x is unspecified, i.e. if called with an edge of the form
+        If x is unspecified or None, i.e. if called with an edge of the form
         e=(n1,n2), then return True if there exists ANY edge between
         n1 and n2 (equivalent to has_neighbor(n1,n2))
 
@@ -506,8 +506,8 @@ class XGraph(Graph):
          all edges between n1 and n2 are deleted.
          """
         if self.multiedges:
-            elist=[(n1,n2,x) for x in self.get_edge(n1,n2)]
-            self.delete_edges_from(elist)
+            for x in self.get_edge(n1, n2):
+                self.delete_edge(n1, n2, x)
         else:
             self.delete_edge(n1, n2)
         return
@@ -545,7 +545,7 @@ class XGraph(Graph):
                     if n1!=n2:                  # and if not self loop
                         del self.adj[n2][n1]    # remove n2->n1 entry
         else:  # delete single edge       
-            if self.has_edge(n1,n2):
+            if self.has_neighbor(n1,n2):
                 del self.adj[n1][n2]
                 if n1!=n2:
                     del self.adj[n2][n1]
@@ -607,7 +607,7 @@ class XGraph(Graph):
                 else: # case without multiedges
                     deg=len(self.adj[n])
                     # self loops
-                    deg+= self.has_edge(n,n)  # self loops double count
+                    deg+= self.adj[n].has_key(n)  # double count self-loop 
                     if with_labels:
                         return {n:deg} # useless but self-consistent?
                     else:
@@ -659,7 +659,7 @@ class XGraph(Graph):
                 else: # case without multiedges
                     deg=len(self.adj[n])
                     # self loops
-                    deg+= self.has_edge(n,n)  # self loops double count
+                    deg+= self.adj[n].has_key(n)  # double count self-loop
                     if with_labels:
                         yield (n,deg) # useless but self-consistent? 
                     else:
@@ -672,7 +672,7 @@ class XGraph(Graph):
             for n in nbunch:
                 if n in self:
                     deg = sum([len(e) for e in self.adj[n].itervalues()])
-                    if self.adj[n].has_key(n) and self.selfloops:
+                    if self.selfloops and self.adj[n].has_key(n):
                         deg+= len(self.adj[n][n])  # double count self-loops 
                     if with_labels:
                         yield (n,deg) # tuple (n,degree)
@@ -1208,8 +1208,8 @@ class XDiGraph(DiGraph):
         all edges between n1 and n2 are deleted.
         """
         if self.multiedges:
-            elist=[(n1,n2,x) for x in self.get_edge(n1,n2)]
-            self.delete_edges_from(elist)
+            for x in self.get_edge(n1,n2):
+                self.delete_edge(n1,n2,x)
         else:
             self.delete_edge(n1, n2)
         return
@@ -1245,7 +1245,7 @@ class XDiGraph(DiGraph):
                     del self.succ[n1][n2]     # was deleted, remove all trace
                     del self.pred[n2][n1]
         else:  # delete single edge
-            if self.has_edge(n1,n2):
+            if self.has_successor(n1,n2):
                 del self.succ[n1][n2]
                 del self.pred[n2][n1]
         return
