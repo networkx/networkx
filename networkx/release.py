@@ -1,7 +1,7 @@
 """Release data for NetworkX."""
 
 name = 'networkx'
-version = '0.26'
+version = '0.27-svn'
 
 description = "Python package for creating and manipulating graphs and networks"
 

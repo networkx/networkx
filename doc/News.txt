@@ -1,7 +1,7 @@
 NetworkX News
 =============
-.. include:: Menu.txt
 
+.. include:: Menu.txt
 
 What's new in NX-0.26?
 ----------------------
@@ -30,6 +30,7 @@ Bug fixes
    - add_nodes_from now won't delete edges if nodes added already exist
    - Added missing names to generated graphs
    - Indexes for nodes in graphs start at zero by default (was 1)
+
 
 What's new in NX-0.25?
 ----------------------
