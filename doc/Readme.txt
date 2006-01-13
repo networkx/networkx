@@ -48,7 +48,7 @@ Requirements
 
       - Python version 2.3 or later http://www.python.org/
 
-   Optional packages to enable drawing networks:      
+   Optional packages to enable drawing networks (see Drawing_):      
 
       - Matplotlib       http://matplotlib.sourceforge.net/
       - Pygraphviz	 http://networkx.lanl.gov/pygraphviz/
