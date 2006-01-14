@@ -6,6 +6,7 @@ Generators - Random Graphs
 
 
 
+>>> G=sparse_binomial_graph(100,0.25)
 >>> G=binomial_graph(100,0.25)
 >>> G=erdos_renyi_graph(10,20)
 >>> G=watts_strogatz_graph(10,2,0.25)

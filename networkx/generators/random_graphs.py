@@ -13,12 +13,55 @@ __date__ = "$Date: 2005-06-17 08:06:22 -0600 (Fri, 17 Jun 2005) $"
 __credits__ = """"""
 __revision__ = "$Revision: 1049 $"
 import random
+import math
 import networkx
 from networkx.generators.classic import empty_graph, path_graph, complete_graph
 
 #-------------------------------------------------------------------------
 #  Some Famous Random Graphs
 #-------------------------------------------------------------------------
+
+def sparse_binomial_graph(n,p,seed=None):
+    """
+    Return a binomial random graph G_{n,p}.
+
+    :Parameters:
+      - `n`: the number of nodes
+      - `p`: probability that any given edge exist
+      - `seed`: seed for random number generator (default=None)
+      
+    This alggorithm is O(n+m) where m is the expected number of
+    edges m=p*n*(n-1)/2.
+
+    It should be faster than binomial_graph when p is small and
+    the expected number of edges is small (sparse graph).
+
+    See:
+
+    Batagelj and Brandes, "Efficient generation of large random networks",
+    Phys. Rev. E, 71, 036113, 2005.
+
+    """
+    G=empty_graph(n)
+    G.name="Binomial Graph"
+
+    if not seed is None:
+        random.seed(seed)
+
+    v=1  # nodes in graph are from 0,n-1.  this is the second node 
+    w=-1
+    lp=math.log(1.0-p)  
+
+    while v<n:
+        lr=math.log(1.0-random.random())
+        w=w+1+int(lr/lp)
+        while w>=v and v<n:
+            w=w-v
+            v=v+1
+        if v<n:
+            G.add_edge(v,w)
+    return G
+
 
 def binomial_graph(n,p,seed=None):
     """
@@ -29,6 +72,9 @@ def binomial_graph(n,p,seed=None):
       - `p`: probability that any given edge exist
       - `seed`: seed for random number generator (default=None)
       
+    This is an O(n^2) algorithm.  For sparse graphs (small p) see
+    sparse_binomial_graph. 
+
     """
     G=empty_graph(n)
     G.name="Binomial Graph"
@@ -67,17 +113,21 @@ def erdos_renyi_graph(n,m,seed=None):
     nlist=G.nodes()
     edge_count=0
     while edge_count < m:
-        # generate random edge
+        # generate random edge,u,v
         u = random.choice(nlist)
         v = random.choice(nlist)
         if u==v or G.has_edge(u,v):
             continue
+        # is this faster?
+        # (u,v)=random.sample(nlist,2)
+        #  if G.has_edge(u,v):
+        #      continue
         else:
             G.add_edge(u,v)
             edge_count=edge_count+1
     return G
 
-def newman_watts_strogatz_graph(n,k,p,seed=None):
+def newman_watts_strogatz_graph(n,k,p,sgrapeed=None):
     """
     Return a Newman-Watts-Strogatz small world graph.
 
