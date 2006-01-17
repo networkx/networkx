@@ -127,7 +127,7 @@ def erdos_renyi_graph(n,m,seed=None):
             edge_count=edge_count+1
     return G
 
-def newman_watts_strogatz_graph(n,k,p,sgrapeed=None):
+def newman_watts_strogatz_graph(n,k,p,seed=None):
     """
     Return a Newman-Watts-Strogatz small world graph.
 

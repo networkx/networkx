@@ -19,7 +19,7 @@ import string
 import sys
 import time
 
-def write_multiline_adjlist(G,path=False):
+def write_multiline_adjlist(G,path=None):
     """
     Write graph in multiline adjacency list format.
 
@@ -36,14 +36,16 @@ def write_multiline_adjlist(G,path=False):
 
     """
     # FIXME, this won't work with parallel edges
-    if path:
+    if path is None:
+        fh=sys.stdout  # no path, write to stdout
+    elif hasattr(path,"write"):
+        fh=path
+    else:
         try: 
             fh=open(path,'w')
         except IOError:                     
             print "The file %s cannot be created."%path
             raise
-    else:
-        fh=sys.stdout  # no path, write to stdout
 
     pargs="# "+string.join(sys.argv,' ')
     fh.write("%s\n" % (pargs))
@@ -56,7 +58,7 @@ def write_multiline_adjlist(G,path=False):
             fh.write("%s\n" %(n))
 
 
-def read_multiline_adjlist(path=False, create_using=None):
+def read_multiline_adjlist(path=None, create_using=None):
     """
     Read graph in multiline adjacency list format.
 
@@ -84,14 +86,16 @@ def read_multiline_adjlist(path=False, create_using=None):
             print "Input graph is not in networkx graph format"
             raise
 
-    if path:
+    if path is None:
+        fh=sys.stdin  # no path, read from stdin
+    elif hasattr(path,"readlines"):
+        fh=path
+    else:
         try: 
             fh=open(path,'r')
         except IOError:                     
             print "The file %s does not exist"%path
             raise
-    else:
-        fh=sys.stdin  # no path, read from stdin
 
     for line in fh.readlines():
         if line.startswith("#"):
@@ -107,10 +111,10 @@ def read_multiline_adjlist(path=False, create_using=None):
     return G
 
 
-def write_adjlist(G,path=False):
+def write_adjlist(G,path=None):
     """
     Write graph in single line adjacency list format in file path.
-
+    path can be a filehandle or a string with the name of the file.
     If no file is given, write to standard output. 
 
     Example adjacency list file format:: 
@@ -123,14 +127,16 @@ def write_adjlist(G,path=False):
     """
     # FIXME, this won't work with parallel edges hack (PseudoGraph)
     # FIXME will use strings no matter what
-    if path:
+    if path is None:
+        fh=sys.stdout  # no path, write to stdout
+    elif hasattr(path,"write"):
+        fh=path
+    else:
         try: 
             fh=open(path,'w')
         except IOError:                     
             print "The file %s cannot be created."%path
             raise
-    else:
-        fh=sys.stdout  # no path, write to stdout
 
     pargs="# "+string.join(sys.argv,' ')
     fh.write("%s\n" % (pargs))
@@ -142,9 +148,10 @@ def write_adjlist(G,path=False):
             fh.write("%s " %(n))
         fh.write("\n")            
 
-def read_adjlist(path=False, create_using=None):
+def read_adjlist(path=None, create_using=None):
     """
     Read graph in single line adjacency list format from path.
+    path can be a filehandle or a string with the name of the file.
     The default is to create a simple graph from the adjacency list.
     The optional create_using argument allows other types of graphs.
 
@@ -172,14 +179,16 @@ def read_adjlist(path=False, create_using=None):
             print "Input graph is not in networkx graph format"
             raise
 
-    if path:
+    if path is None:
+        fh=sys.stdin  # no path, read from stdin
+    elif hasattr(path,"readlines"):
+        fh=path
+    else:
         try: 
             fh=open(path,'r')
         except IOError:                     
             print "The file %s does not exist"%path
             raise
-    else:
-        fh=sys.stdin  # no path, read from stdin
 
     for line in fh.readlines():
         if line.startswith("#"):
@@ -194,10 +203,10 @@ def read_adjlist(path=False, create_using=None):
     return G
 
 
-def write_edgelist(G,path=False):
+def write_edgelist(G,path=None):
     """
     Write graph G in edgelist format on file path.
-
+    path can be a filehandle or a string with the name of the file.
     If no file is given write to standard output.
 
     Example adjacency list file format:: 
@@ -207,15 +216,16 @@ def write_edgelist(G,path=False):
      a c
 
     """
-    if path:
+    if path is None:
+        fh=sys.stdout  # no path, write to stdout
+    elif hasattr(path,"write"):
+        fh=path
+    else:
         try: 
             fh=open(path,'w')
         except IOError:                     
             print "The file %s cannot be created."%path
             raise
-    else:
-        fh=sys.stdout  # no path, write to stdout
-
 
     pargs="# "+string.join(sys.argv,' ')
     fh.write("%s\n" % (pargs))
@@ -224,7 +234,7 @@ def write_edgelist(G,path=False):
     for (u,v) in G.edges():
         fh.write("%s %s\n" %(u,v))
 
-def read_edgelist(path=False, create_using=None):
+def read_edgelist(path=None, create_using=None):
     """
     Read graph in edgelist format
 
@@ -247,14 +257,16 @@ def read_edgelist(path=False, create_using=None):
             print "Input graph is not in networkx graph format"
             raise
 
-    if path:
+    if path is None:
+        fh=sys.stdin  # no path, read from stdin
+    elif hasattr(path,"readlines"):
+        fh=path
+    else:
         try: 
             fh=open(path,'r')
         except IOError:                     
             print "The file %s does not exist"%path
             raise
-    else:
-        fh=sys.stdin  # no path, read from stdin
 
     for line in fh.readlines():
         if line.startswith("#"):
@@ -265,37 +277,41 @@ def read_edgelist(path=False, create_using=None):
         G.add_edge(u,v)
     return G
 
-def write_gpickle(G,path=False):
+def write_gpickle(G,path=None):
     """
     Write graph object in python pickle format
     See cPickle.
     
     """
-    if path:
+    if path is None:
+        fh=sys.stdout  # no path, write to stdout
+    elif hasattr(path,"write"):
+        fh=path
+    else:
         try: 
             fh=open(path,'w')
         except IOError:                     
             print "The file %s cannot be created."%path
             raise
-    else:
-        fh=sys.stdout  # no path, read from stdin
 
     cPickle.dump(G,fh,cPickle.HIGHEST_PROTOCOL)
 
-def read_gpickle(path=False):
+def read_gpickle(path=None):
     """
     Read graph object in python pickle format
     See cPickle.
     
     """
-    if path:
+    if path is None:
+        fh=sys.stdin  # no path, read from stdin
+    elif hasattr(path,"readlines"):
+        fh=path
+    else:
         try: 
             fh=open(path,'r')
         except IOError:                     
             print "The file %s does not exist"%path
             raise
-    else:
-        fh=sys.stdin  # no path, read from stdin
 
     return cPickle.load(fh)
 
