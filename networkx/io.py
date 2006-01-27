@@ -34,7 +34,6 @@ read_gpickle(path):
 
 Useful for graphs with non ASCII representable data.
 
-
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
 __date__ = "$Date: 2005-07-06 07:58:26 -0600 (Wed, 06 Jul 2005) $"
@@ -75,11 +74,15 @@ def write_multiline_adjlist(G,path):
         xgraph=True
     else:
         xgraph=False
+        
+    # directed
+    directed=G.is_directed()
 
     for s in G.nodes():
         neighbors=[t for t in G.neighbors(s) if (t,s) not in e]
         # seen these edges
-        e.update(dict.fromkeys([(s,t) for t in neighbors],1)) 
+        if not directed:
+            e.update(dict.fromkeys([(s,t) for t in neighbors],1)) 
         nlist=[]
         for t in neighbors:
             if xgraph:
@@ -221,12 +224,16 @@ def write_adjlist(G,path):
     except:
         multiedges=False
 
+    # directed
+    directed=G.is_directed()
+
     for s in G.nodes():
         fh.write("%s " %(s))
         for t in G.neighbors(s):
-            if e.has_key((t,s)):
-                continue
-            e.setdefault((s,t),1)
+            if not directed:
+                if e.has_key((t,s)):
+                    continue
+                e.setdefault((s,t),1)
             if multiedges:
                 for d in G.get_edge(s,t):
                     fh.write("%s " %(t))

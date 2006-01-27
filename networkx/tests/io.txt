@@ -95,9 +95,9 @@ digraph
 
 >>> write_adjlist(DG,fname);  
 >>> H=read_adjlist(fname,create_using=DiGraph());
->>> sorted(H.nodes())==sorted(G.nodes())
+>>> sorted(H.nodes())==sorted(DG.nodes())
 True
->>> sorted(H.edges())==sorted(G.edges())
+>>> sorted(H.edges())==sorted(DG.edges())
 True
 
 integers
@@ -140,9 +140,9 @@ digraph
 
 >>> write_multiline_adjlist(DG,fname);  
 >>> H=read_multiline_adjlist(fname,create_using=DiGraph());
->>> sorted(H.nodes())==sorted(G.nodes())
+>>> sorted(H.nodes())==sorted(DG.nodes())
 True
->>> sorted(H.edges())==sorted(G.edges())
+>>> sorted(H.edges())==sorted(DG.edges())
 True
 
 integers
