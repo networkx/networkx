@@ -71,28 +71,25 @@ def write_multiline_adjlist(G,path):
 
     # is this a XGraph or XDiGraph?
     if hasattr(G,'allow_multiedges')==True:
-        xgraph=True
+        multiedges=G.multiedges
     else:
-        xgraph=False
+        multiedges=False
         
     # directed
     directed=G.is_directed()
 
     for s in G.nodes():
-        neighbors=[t for t in G.neighbors(s) if (t,s) not in e]
+        neighbors=[(t,d) for (t,d) in G.neighbors(s,with_labels=True) \
+                   if (t,s) not in e]
         # seen these edges
         if not directed:
-            e.update(dict.fromkeys([(s,t) for t in neighbors],1)) 
+            e.update(dict.fromkeys([(s,t) for (t,d) in neighbors],1)) 
         nlist=[]
-        for t in neighbors:
-            if xgraph:
-                for d in G.get_edge(s,t):
-                    if d is None:
-                        nlist.append("%s\n" %(t))
-                    else:
-                        nlist.append("%s %s\n" %(t,d))
-            else:
+        for (t,d) in neighbors:
+            if d is None:
                 nlist.append("%s\n" %(t))
+            else:
+                nlist.append("%s %s\n" %(t,d))
         fh.write("%s %i\n" %(s,len(nlist)))
         for n in nlist:
             fh.write(n)
