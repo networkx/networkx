@@ -610,15 +610,15 @@ Neighbors
 ---------
 
 >>> sorted(G['A'])   # test __getitem__
-['A', 'B', 'C']
+['A', 'B', 'B', 'C']
 >>> sorted(G.neighbors('A'))
-['A', 'B', 'C']
+['A', 'B', 'B', 'C']
 >>> sorted(G.neighbors_iter('A'))
-['A', 'B', 'C']
+['A', 'B', 'B', 'C']
 >>> G.neighbors('A',with_labels=True)
-{'A': [None], 'C': [None], 'B': [None, None]}
+[('A', None), ('B', None), ('B', None), ('C', None)]
 >>> sorted(G.neighbors_iter('A',with_labels=True))
-[('A', [None]), ('B', [None, None]), ('C', [None])]
+[('A', None), ('B', None), ('B', None), ('C', None)]
 
 
 Functional interface
@@ -632,10 +632,9 @@ Functional interface
 >>> sorted(degree(G))
 [0, 0, 0, 2, 3, 4, 5]
 >>> sorted(neighbors(G,'A'))
-['A', 'B', 'C']
+['A', 'B', 'B', 'C']
 >>> neighbors(G,'A',with_labels=True)
-{'A': [None], 'C': [None], 'B': [None, None]}
-
+[('A', None), ('B', None), ('B', None), ('C', None)]
 >>> number_of_nodes(G)
 7
 >>> number_of_edges(G)
@@ -697,7 +696,7 @@ Iterators
 [0, 0, 0, 2, 3, 4, 5]
 
 >>> sorted(G.neighbors_iter('A'))
-['A', 'B', 'C']
+['A', 'B', 'B', 'C']
 
 
 *Back in Konigsberg*
@@ -711,13 +710,13 @@ Iterators
 [3, 3, 3, 5]
 
 >>> sorted(K.neighbors_iter('A'))
-['B', 'C', 'D']
+['B', 'B', 'C', 'C', 'D']
 
 >>> sorted(K.neighbors_iter('B'))
-['A', 'D']
+['A', 'A', 'D']
 
 >>> sorted(K.neighbors_iter('C'))
-['A', 'D']
+['A', 'A', 'D']
 
 >>> sorted(K.neighbors_iter('D'))
 ['A', 'B', 'C']

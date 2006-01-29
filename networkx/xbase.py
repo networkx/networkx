@@ -262,6 +262,19 @@ class XGraph(Graph):
         
         self.adj={}      # adjacency list
 
+    def __getitem__(self,n):
+        """Return the neighbors of node n as a list.
+
+        This provides graph G the natural property that G[n] returns
+        the neighbors of G. 
+
+        """
+        try:
+            return self.neighbors(n)
+        except (KeyError, TypeError):
+            raise NetworkXError, "node %s not in graph"%n
+
+
     def add_edge(self, n1, n2=None, x=None):  
         """Add a single edge to the graph.
 
@@ -390,30 +403,35 @@ class XGraph(Graph):
                 self.adj[n1].has_key(n2))
     
 
-    def neighbors_iter(self,n,with_labels=False):
-        """Return an iterator for neighbors of n."""
-        try:
-            if with_labels:
-                return self.adj[n].iteritems()
-            else:
-                return self.adj[n].iterkeys()
-        except KeyError:
+    def neighbors_iter(self, n, with_labels=False):
+        """Return an iterator of nodes connected to node n. 
+
+        If with_labels=True, return an iterator  of tuples (v,d)
+        where v is a neighbor of n with corresponding data d.
+
+        This returns the same data as edges(n) but in a different
+        format.
+        """
+        if n not in self:
             raise NetworkXError, "node %s not in graph"%n
+
+        if with_labels:
+            for (u,v,d) in self.edges_iter(n):
+                yield (v,d)
+        else:
+            for (u,v,d) in self.edges_iter(n):
+                yield v
 
     def neighbors(self, n, with_labels=False):
         """Return a list of nodes connected to node n. 
 
-        If with_labels=True, return a dict keyed by neighbors to 
-        edge data for that edge. 
+        If with_labels=True, return a list of tuples (v,d)
+        where v is a neighbor of n with corresponding data d.
 
+        This returns the same data as edges(n) but in a different
+        format.
         """
-        try:
-            if with_labels:
-                return self.adj[n].copy()
-            else:
-                return self.adj[n].keys()
-        except KeyError:
-            raise NetworkXError, "node %s not in graph"%n
+        return list(self.neighbors_iter(n,with_labels=with_labels))
 
     def get_edge(self, n1, n2):
         """Return the objects associated with each edge between n1 and n2.
@@ -638,7 +656,7 @@ class XGraph(Graph):
             return d.values()
 
     def degree_iter(self,nbunch=None,with_labels=False):
-        """This is the degree() method returned in interator form.
+        """This is the degree() method returned in iterator form.
         If with_labels=True, iterator yields 2-tuples of form (n,degree(n))
         (like iteritems() on a dict.)
         """
@@ -1074,6 +1092,7 @@ class XDiGraph(DiGraph):
             else:          # assume e=(n1,n2)
                 n1,n2=n1   # x=None
 
+
         # if edge exists, quietly return if multiple edges are not allowed
         if not self.multiedges and self.has_edge(n1,n2,x):
             return
@@ -1103,19 +1122,16 @@ class XDiGraph(DiGraph):
                                 # from both succ and pred
 
     def add_edges_from(self, ebunch):  
-        """Add multiple directed edges to the digraph.
-
-        ebunch: Container of edges. Each edge e in container will be added
-        using add_edge(e). See add_edge documentation.
-
-        The container must be iterable or an iterator.
-        It is iterated over once.
-
-        """
-        for e in ebunch:
-            # the function-call-in-a-loop cost can be avoided by pasting
-            # in the code from add_edge, do we have a good reason ?
-            self.add_edge(e)
+         """Add multiple directed edges to the digraph.
+         ebunch: Container of edges. Each edge e in container will be added
+         using add_edge(e). See add_edge documentation.
+         The container must be iterable or an iterator.
+         It is iterated over once.
+         """
+         for e in ebunch:
+             # the function-call-in-a-loop cost can be avoided by pasting
+             # in the code from add_edge, do we have a good reason ?
+             self.add_edge(e)
         
     def has_edge(self, n1, n2=None, x=None):
         """Return True if digraph contains directed edge (n1,n2,x).
@@ -1169,18 +1185,6 @@ class XDiGraph(DiGraph):
         return (self.pred.has_key(n1) and
                 self.pred[n1].has_key(n2))    
     
-    def has_neighbor(self, n1, n2):
-        """Return True if node n1 and n2 are connected.
-
-        True if there exists ANY edge (n1,n2,x) or (n2,n1,x)
-        for some x.
-
-        """
-        return ((self.succ.has_key(n1) and
-                 self.succ[n1].has_key(n2))
-                 or
-                (self.pred.has_key(n1) and
-                 self.pred[n1].has_key(n2))) 
 
     def get_edge(self, n1, n2):
         """Return the objects associated with each edge between n1 and n2.
@@ -1262,9 +1266,9 @@ class XDiGraph(DiGraph):
         for e in ebunch:
             self.delete_edge(e)
 
-    def edges_iter(self, nbunch=None,with_labels=False):
-        """Return iterator that iterates once over each edge adjacent
-        to nodes in nbunch, or over all edges in digraph if no
+    def out_edges_iter(self, nbunch=None,with_labels=False):
+        """Return iterator that iterates once over each edge pointing
+        out of nodes in nbunch, or over all edges in digraph if no
         nodes are specified.
 
         See add_node for definition of nbunch.
@@ -1296,141 +1300,149 @@ class XDiGraph(DiGraph):
                     for n2 in self.succ[n1]:
                         for x in self.succ[n1][n2]:
                                 yield (n1,n2,x)
+                else:
+                    for n2 in self.succ[n1]:
+                        yield (n1,n2,self.succ[n1][n2])
+                raise StopIteration
+            except (KeyError,TypeError), e:  # n is not a node of self
+                pass                         # treat as iterable    
+        # this part reached only if nbunch is a container of (possible) nodes
+        try:
+            for n1 in nbunch:
+                if n1 in self.succ:
+                    for n2 in self.succ[n1]:
+                        if self.multiedges:
+                            for x in self.succ[n1][n2]:
+                                yield (n1,n2,x)
+                        else:
+                            yield (n1,n2,self.succ[n1][n2])
+        except TypeError:
+            pass
+
+    def in_edges_iter(self, nbunch=None,with_labels=False):
+        """Return iterator that iterates once over each edge pointing in
+        to nodes in nbunch, or over all edges in digraph if no
+        nodes are specified.
+
+        See add_node for definition of nbunch.
+        
+        Those nodes in nbunch that are not in the graph will be
+        (quietly) ignored.
+        
+        with_labels=True is not supported. (In that case
+        you should probably use neighbors().)           
+
+        """
+
+        if with_labels:
+            # node labels not supported
+            # rather use neighbors() method 
+            raise NetworkXError, "with_labels=True option not supported. Rather use neighbors()"
+
+
+        if nbunch is None: # include all nodes via iterator
+            nbunch=self.nodes_iter()
+        # try nbunch as a single node
+        else: # try nbunch as a single node
+              # note that nbunch can be anything, and testing for
+              # nbunch in self can raise a TypeError if nbunch is unhashable,
+              # e.g. if nbunch is a list
+            n1=nbunch
+            try:
+                if self.multiedges:
                     for n2 in self.pred[n1]:
                         for x in self.pred[n1][n2]:
                                 yield (n2,n1,x)                
                 else:
-                    for n2 in self.succ[n1]:
-                        yield (n1,n2,self.succ[n1][n2])
                     for n2 in self.pred[n1]:
                         yield (n2,n1,self.pred[n1][n2])
                 raise StopIteration
             except (KeyError,TypeError), e:  # n is not a node of self
                 pass                         # treat as iterable    
         # this part reached only if nbunch is a container of (possible) nodes
-        e={}  # helper dict used to avoid duplicate edges
         try:
             for n1 in nbunch:
-                if n1 in self.succ:
-                    for n2 in self.succ[n1]:
-                        if not e.has_key((n1,n2)):
-                            e.setdefault((n2,n1),1)
-                            if self.multiedges:
-                                for x in self.succ[n1][n2]:
-                                    yield (n1,n2,x)
-                            else:
-                                yield (n1,n2,self.succ[n1][n2])
                 if n1 in self.pred:
                     for n2 in self.pred[n1]:
-                        if not e.has_key((n1,n2)):
-                            e.setdefault((n2,n1),1)
-                            if self.multiedges:
-                                for x in self.pred[n1][n2]:
-                                   yield (n2,n1,x)
-                            else:
-                                yield (n2,n1,self.pred[n1][n2])
+                        if self.multiedges:
+                            for x in self.pred[n1][n2]:
+                                yield (n2,n1,x)
+                        else:
+                            yield (n2,n1,self.pred[n1][n2])
         except TypeError:
             pass
-        del(e) # clear copy of temp dictionary
-               # iterators can remain after they finish returning values.
 
-    def successors(self, n, with_labels=False):
-        """Return a list of all successor nodes of node n. 
+    def out_edges(self, nbunch=None, with_labels=False):
+        """Return a list of all edges that point out of nodes in nbunch,
+        or a list of all edges if nbunch=None.
 
-        If with_labels=True, return a dict keyed by successors to 
-        edge data for that edge. 
+        See add_node for definition of nbunch.
 
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
+        
+        with_labels=True option is not supported because in that case
+        you should probably use neighbors().
+        
         """
-        try:
-            if with_labels:
-                return self.succ[n].copy()
-            else:
-                return self.succ[n].keys()
-        except KeyError:
+        return list(self.out_edges_iter(nbunch, with_labels))
+
+
+    def in_edges(self, nbunch=None, with_labels=False):
+        """Return a list of all edges that point in to nodes in nbunch,
+        or a list of all edges if nbunch=None.
+
+        See add_node for definition of nbunch.
+
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
+        
+        with_labels=True option is not supported because in that case
+        you should probably use neighbors().
+        
+        """
+        return list(self.in_edges_iter(nbunch, with_labels))
+
+
+    edges_iter=out_edges_iter
+    edges=out_edges
+
+
+    def succeessors_iter(self, n, with_labels=False):
+        """Return an iterator of nodes pointing out of node n. 
+
+        If with_labels=True, return an iterator  of tuples (v,d)
+        where v is a neighbor of n with corresponding data d.
+
+        This returns the same data as out_edges(n) but in a different
+        format.
+        """
+        if n not in self:
             raise NetworkXError, "node %s not in graph"%n
 
-    def successors_iter(self, n, with_labels=False):
-        """Return an iterator for all successor nodes of node n. 
-
-        If with_labels=True, the iterator returns (neighbor, edge_data) tuples
-        for each edge.  
-
-        """
-        try:
-            if with_labels:
-                return self.succ[n].iteritems()
-            else:
-                return self.succ[n].iterkeys()
-        except KeyError:
-            raise NetworkXError, "node %s not in graph"%n
-
-
-
-    def predecessors(self, n, with_labels=False):
-
-        """Return a list of predecessor nodes of node n. 
-
-        If with_labels=True, return a dict keyed by predecessors to 
-        edge data for that edge. 
-
-        """
-        try:
-            if with_labels:
-                return self.pred[n].copy()
-            else:
-                return self.pred[n].keys()
-        except KeyError:
-            raise NetworkXError, "node %s not in graph"%n
-
+        if with_labels:
+            for (u,v,d) in self.out_edges_iter(n):
+                yield (v,d)
+        else:
+            for (u,v,d) in self.out_edges_iter(n):
+                yield v
 
     def predecessors_iter(self, n, with_labels=False):
-        """Return an iterator for all predecessor nodes of node n. 
+        """Return an iterator of nodes pointing in to node n. 
 
-        If with_labels=True, the iterator returns (neighbor, edge_data) tuples
-        for each edge.  
+        If with_labels=True, return an iterator  of tuples (v,d)
+        where v is a neighbor of n with corresponding data d.
 
-        """
-        try:
-            if with_labels:
-                return self.pred[n].iteritems()
-            else:
-                return self.pred[n].iterkeys()
-        except KeyError:
-            raise NetworkXError, "node %s not in graph"%n
-
-
-    def neighbors(self, n, with_labels=False):
-
-        """Return a list of successor nodes of n. 
-
-        If with_labels=True, return a dict keyed by neighbors to 
-        edge data for that edge. 
-
-        The node n will be a neighbor of itself if a selfloop exists.
-
-        This is the same as successors().
-
+        This returns the same data as in_edges(n) but in a different
+        format.
         """
         if n not in self:
             raise NetworkXError, "node %s not in graph"%n
 
-        return self.successors(n,with_labels=with_labels)
-
-
-    def neighbors_iter(self,n,with_labels=False):
-        """Return an iterator for all successor nodes of node n. 
-
-        If with_labels=True, the iterator returns (neighbor, edge_data) tuples
-        for each edge.  
-
-        The node n will be a neighbor of itself if a selfloop exists.
-        This is the same as successors_iter().
-        """
-        if n not in self:
-            raise NetworkXError, "node %s not in graph"%n
-
-        return self.successors_iter(n,with_labels=with_labels)
-
+        if with_labels:
+            for (u,v,d) in self.in_edges_iter(n):
+                yield (u,d)
+        else:
+            for (u,v,d) in self.in_edges_iter(n):
+                yield u
 
     def in_degree(self, nbunch=None, with_labels=False):
         """Return the in-degree of single node or of nbunch of nodes.

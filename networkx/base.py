@@ -582,18 +582,17 @@ class Graph(object):
 
 
     def neighbors_iter(self,n,with_labels=False):
-        """Return an iterator over all neighbors of node n.
-
-        If with_labels=True, return an iterator of (neighbor, 1) tuples.
-        
-        """
-        try:
-            if with_labels:
-                return self.adj[n].iteritems()
-            else:
-                return self.adj[n].iterkeys()
-        except KeyError:
-            raise NetworkXError, "node %s not in graph"%n
+         """Return an iterator over all neighbors of node n.
+          If with_labels=True, return an iterator of (neighbor, 1) tuples.
+       
+         """
+         try:
+             if with_labels:
+                 return self.adj[n].iteritems()
+             else:
+                 return self.adj[n].iterkeys()
+         except KeyError:
+             raise NetworkXError, "node %s not in graph"%n
 
     def neighbors(self, n, with_labels=False):
         """Return a list of nodes connected to node n. 
@@ -601,14 +600,8 @@ class Graph(object):
         If with_labels=True, return a dict keyed by neighbors.
         
         """
-        try:
-            if with_labels:
-                return self.adj[n].copy()
-            else:
-                return self.adj[n].keys()
-        except KeyError:
-            raise NetworkXError, "node %s not in graph"%n
-
+        # return lists now, was dictionary for with_labels=True
+        return list(self.neighbors_iter(n,with_labels=with_labels))
 
     def edges_iter(self, nbunch=None,with_labels=False):
         """Return iterator that iterates once over each edge adjacent
@@ -1218,9 +1211,9 @@ class DiGraph(Graph):
                 del self.succ[u][v]   
                 del self.pred[v][u]        
 
-    def edges_iter(self, nbunch=None,with_labels=False):
-        """Return iterator that iterates once over each edge adjacent
-        to nodes in nbunch, or over all edges in digraph if no
+    def out_edges_iter(self, nbunch=None,with_labels=False):
+        """Return iterator that iterates once over each edge pointing out
+        of nodes in nbunch, or over all edges in digraph if no
         nodes are specified.
 
         See add_node for definition of nbunch.
@@ -1234,7 +1227,8 @@ class DiGraph(Graph):
         """
         if with_labels:
             # not supported rather use neighbors() method 
-            raise NetworkXError, "with_labels=True option not supported. Rather use neighbors()"                    
+            raise NetworkXError,\
+                "with_labels=True option not supported. Rather use neighbors()"
         # prepare nbunch
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
@@ -1251,15 +1245,84 @@ class DiGraph(Graph):
             except TypeError:
                 pass
 
+    def in_edges_iter(self, nbunch=None,with_labels=False):
+        """Return iterator that iterates once over each edge adjacent
+        to nodes in nbunch, or over all edges in digraph if no
+        nodes are specified.
+
+        See add_node for definition of nbunch.
+        
+        Those nodes in nbunch that are not in the graph will be
+        (quietly) ignored.
+        
+        with_labels=True is not supported (in that case
+        you should probably use neighbors())           
+
+        """
+        if with_labels:
+            # not supported rather use neighbors() method 
+            raise NetworkXError, \
+               "with_labels=True option not supported. Rather use neighbors()"
+        # prepare nbunch
+        if nbunch is None: # include all nodes via iterator
+            nbunch=self.nodes_iter()
+        if nbunch in self:
+            v=nbunch
+            for u in self.pred[v]:
+                yield (u,v)
+        else: # treat nbunch as a container of nodes
+            try:
+                for v in nbunch:
+                    if v in self.pred:
+                        for u in self.pred[v]:
+                            yield (u,v)
+            except TypeError:
+                pass
+
+
+    # define             
+    edges_iter=out_edges_iter
+            
+    def out_edges(self, nbunch=None, with_labels=False):
+        """Return list of all edges that point out of nodes in nbunch,
+        or a list of all edges in graph if no nodes are specified.
+
+        See add_node for definition of nbunch.
+
+        Those nodes in nbunch that are not in the graph will be
+        (quietly) ignored.
+        
+        with_labels=True option is not supported because in that case
+        you should probably use neighbors().
+        
+        """
+        return list(self.out_edges_iter(nbunch,with_labels=with_labels))
+
+    def in_edges(self, nbunch=None, with_labels=False):
+        """Return list of all edges that point in to nodes in nbunch,
+        or a list of all edges in graph if no nodes are specified.
+
+        See add_node for definition of nbunch.
+
+        Those nodes in nbunch that are not in the graph will be
+        (quietly) ignored.
+        
+        with_labels=True option is not supported because in that case
+        you should probably use neighbors().
+        
+        """
+        return list(self.in_edges_iter(nbunch,with_labels=with_labels))
+
+
     def successors_iter(self,v, with_labels=False):
-        """Return an iterator for successor nodes of v."""
-        try:
-            if with_labels:
-                return self.succ[v].iteritems()
-            else:
-                return self.succ[v].iterkeys()
-        except KeyError:
-            raise NetworkXError, "node %s not in graph"%v
+         """Return an iterator for successor nodes of v."""
+         try:
+             if with_labels:
+                 return self.succ[v].iteritems()
+             else:
+                 return self.succ[v].iterkeys()
+         except KeyError:
+             raise NetworkXError, "node %s not in graph"%v
 
 
     def predecessors_iter(self,v, with_labels=False):
@@ -1275,49 +1338,18 @@ class DiGraph(Graph):
 
     def successors(self, v, with_labels=False):
         """Return sucessor nodes of v."""
-        if with_labels:
-            try:
-                return self.succ[v].copy()
-            except KeyError:
-                raise NetworkXError, "node %s not in graph"%v
-        else:
-            return list(self.successors_iter(v))
+        return list(self.successors_iter(v,with_labels=with_labels))
 
 
     def predecessors(self, v, with_labels=False):
         """Return predecessor nodes of v."""
-        if with_labels:
-            try:
-                return self.pred[v].copy()
-            except KeyError:
-                raise NetworkXError, "node %s not in graph"%v
-        else:
-            return list(self.predecessors_iter(v))
+        return list(self.predecessors_iter(v,with_labels=with_labels))
 
-    def neighbors(self, n, with_labels=False):
-        """Return a list of sucessor nodes of v.
-
-        For DiGraphs this just calls successors().
-
-        If with_labels=True, return a dict keyed by neighbors.
-
-        """
-        return self.successors(n,with_labels=with_labels)
-
-    def neighbors_iter(self,n,with_labels=False):
-        """Return an iterator for neighbors of n.
-
-        If with_labels=True, return an iterator of (neighbor, None) tuples.
-
-        """
-        try:
-            if with_labels:
-                return self.adj[n].iteritems()
-            else:
-                return self.adj[n].iterkeys()
-        except KeyError:
-            raise NetworkXError, "node %s not in graph"%n
-
+    # digraph definintions 
+    out_neighbors=successors
+    in_neighbors=predecessors
+    neighbors=successors
+    neighbors_iter=successors_iter
 
     def degree_iter(self,nbunch=None,with_labels=False):
         """Return iterator that return degree(n) or (n,degree(n))

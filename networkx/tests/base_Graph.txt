@@ -606,7 +606,7 @@ True
 True
 >>> DG.adj==G.adj
 True
->>> sorted(DG.edges(list('AB')))
+>>> sorted(DG.out_edges(list('AB')))
 [('A', 'B'), ('A', 'C'), ('B', 'A'), ('B', 'C'), ('B', 'D')]
 >>> DG.delete_edge('A','B')
 >>> DG.has_edge('B','A') # this deletes B-A but not  A-B
@@ -626,7 +626,7 @@ Neighbors
 ['B', 'C']
 >>> sorted(G.neighbors_iter('A'))
 ['B', 'C']
->>> G.neighbors('A',with_labels=True)
+>>> dict(G.neighbors('A',with_labels=True))
 {'C': None, 'B': None}
 >>> sorted(G.neighbors_iter('A',with_labels=True))
 [('B', None), ('C', None)]
@@ -654,7 +654,7 @@ Functional interface
 [0, 0, 0, 2, 2, 3, 3]
 >>> sorted(neighbors(G,'A'))
 ['B', 'C']
->>> neighbors(G,'A',with_labels=True)
+>>> dict(neighbors(G,'A',with_labels=True))
 {'C': None, 'B': None}
 >>> number_of_nodes(G)
 7

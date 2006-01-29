@@ -276,30 +276,30 @@ nbunch can be an empty list
 
 nbunch can be a list
 
->>> sorted(G.edges(['A','B']))
+>>> sorted(G.out_edges(['A','B']))
 [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
 
 nbunch can be a set
 
->>> sorted(G.edges(set(['A','B'])))
+>>> sorted(G.out_edges(set(['A','B'])))
 [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
 
 nbunch can be a graph
 
 >>> G1=Graph()
 >>> G1.add_nodes_from('AB')
->>> sorted(G.edges(G1)) 
+>>> sorted(G.out_edges(G1)) 
 [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
 
 nbunch can be a dict with nodes as keys
 
 >>> ndict={'A': "thing1", 'B': "thing2"}
->>> sorted(G.edges(ndict))
+>>> sorted(G.out_edges(ndict))
 [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
 
 nbunch can be a single node
 
->>> sorted(G.edges('A'))
+>>> sorted(G.out_edges('A'))
 [('A', 'B'), ('A', 'C')]
 
 G.edges() does not support with_labels=True option
@@ -324,30 +324,30 @@ nbunch can be an empty list
 
 nbunch can be a list
 
->>> sorted(G.edges_iter(['A','B']))
+>>> sorted(G.out_edges_iter(['A','B']))
 [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
 
 nbunch can be a set
 
->>> sorted(G.edges_iter(set(['A','B'])))
+>>> sorted(G.out_edges_iter(set(['A','B'])))
 [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
 
 nbunch can be a graph
 
 >>> G1=Graph()
 >>> G1.add_nodes_from(['A','B'])
->>> sorted(G.edges_iter(G1)) # nbunch is a graph
+>>> sorted(G.out_edges_iter(G1)) # nbunch is a graph
 [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
 
 nbunch can be a dict with nodes as keys
 
 >>> ndict={'A': "thing1", 'B': "thing2"}
->>> sorted(G.edges_iter(ndict))
+>>> sorted(G.out_edges_iter(ndict))
 [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
 
 nbunch can be a single node
 
->>> sorted(G.edges_iter('A'))
+>>> sorted(G.out_edges_iter('A'))
 [('A', 'B'), ('A', 'C')]
 
 G.edges_iter() does not support with_labels=True option
@@ -501,9 +501,7 @@ Neighbors, Predecessors and Successors
 >>> sorted(G.neighbors('A'))
 ['B', 'C']
 >>> sorted(G.neighbors('A',with_labels=True))
-['B', 'C']
->>> G.neighbors('A',with_labels=True).values()
-[None, None]
+[('B', None), ('C', None)]
 >>> sorted(G.neighbors_iter('A',with_labels=True))
 [('B', None), ('C', None)]
 >>> sorted(G.neighbors_iter('A'))
@@ -515,17 +513,21 @@ Neighbors, Predecessors and Successors
 
 >>> sorted(G.successors('A'))
 ['B', 'C']
+>>> sorted(G.out_neighbors('A'))
+['B', 'C']
 >>> sorted(G.successors_iter('A'))
 ['B', 'C']
->>> G.successors('A',with_labels=True)
+>>> dict(G.successors('A',with_labels=True))
 {'C': None, 'B': None}
 >>> sorted(G.successors_iter('A',with_labels=True))
 [('B', None), ('C', None)]
 >>> sorted(G.predecessors('C'))
 ['A', 'B']
+>>> sorted(G.in_neighbors('C'))
+['A', 'B']
 >>> sorted(G.predecessors_iter('C'))
 ['A', 'B']
->>> G.predecessors('C',with_labels=True)
+>>> dict(G.predecessors('C',with_labels=True))
 {'A': None, 'B': None}
 >>> sorted(G.predecessors_iter('C',with_labels=True))
 [('A', None), ('B', None)]
@@ -587,7 +589,7 @@ Functional interface
 [0, 0, 0, 2, 2, 3, 3]
 >>> sorted(neighbors(G,'A'))
 ['B', 'C']
->>> neighbors(G,'A',with_labels=True)
+>>> dict(neighbors(G,'A',with_labels=True))
 {'C': None, 'B': None}
 >>> number_of_nodes(G)
 7
