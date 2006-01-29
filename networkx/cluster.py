@@ -42,7 +42,7 @@ def triangles(G,nbunch=None,**kwds):
         ntriangles=0
         v_nbrs=G.neighbors(nbunch)
         for u in v_nbrs:
-            u_nbrs=G.neighbors(u,with_labels=True)
+            u_nbrs=dict(G.neighbors(u,with_labels=True))
             triangles=[w for w in v_nbrs if w in u_nbrs]
             ntriangles+=len(triangles)
         if with_labels:
@@ -56,7 +56,7 @@ def triangles(G,nbunch=None,**kwds):
         ntriangles=0
         for u in v_nbrs:   # u is neighbor of v
             # count all edges in subgraph consisting of neighbors of v
-            u_nbrs=G.neighbors(u,with_labels=True)
+            u_nbrs=dict(G.neighbors(u,with_labels=True))
 #            triangles=[w for w in v_nbrs if w in u_nbrs]
 # the following is a moderate speed-up for above line but less clear...
             triangles = filter(u_nbrs.has_key, v_nbrs)
@@ -127,7 +127,7 @@ def transitivity(G):
         deg=len(v_nbrs)
         contri += deg*(deg-1)
         for u in v_nbrs:
-            u_nbrs=G.neighbors(u, with_labels=True)
+            u_nbrs=dict(G.neighbors(u, with_labels=True))
             u_triangles=[w for w in v_nbrs if w in u_nbrs]
             triangles += len(u_triangles)
     return float(triangles)/float(contri)
