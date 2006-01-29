@@ -11,26 +11,17 @@ Spectrum
 Adjacency Matrix
 ----------------
 
->>> print adj_matrix(G)
-[[0,1,1,1,0,]
- [1,0,1,0,0,]
- [1,1,0,0,0,]
- [1,0,0,0,0,]
- [0,0,0,0,0,]]
+>>> print adj_matrix(G).tolist()
+[[0, 1, 1, 1, 0], [1, 0, 1, 0, 0], [1, 1, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
->>> print adj_matrix(G,nodelist=[0,1])
-[[0,1,]
- [1,0,]]
+>>> print adj_matrix(G,nodelist=[0,1]).tolist()
+[[0, 1], [1, 0]]
 
 Laplacian
 ---------
 >>> L= laplacian(G)
->>> print L 
-[[ 3,-1,-1,-1, 0,]
- [-1, 2,-1, 0, 0,]
- [-1,-1, 2, 0, 0,]
- [-1, 0, 0, 1, 0,]
- [ 0, 0, 0, 0, 0,]]
+>>> print L.tolist()
+[[3, -1, -1, -1, 0], [-1, 2, -1, 0, 0], [-1, -1, 2, 0, 0], [-1, 0, 0, 1, 0], [0, 0, 0, 0, 0]]
 
 >>> GL=generalized_laplacian(G)
 >>> for row in GL:
