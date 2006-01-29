@@ -628,21 +628,29 @@ Neighbors, Predecessors and Successors
 --------------------------------------
 
 >>> sorted(G.neighbors('C'))
-['A', 'B', 'D']
+['D']
+>>> sorted(G.successors('C'))
+['D']
 >>> sorted(G['C'])
-['A', 'B', 'D']
+['D']
 >>> sorted(G.neighbors('A'))
 ['B', 'C']
 >>> G.neighbors('A',with_labels=True)
 {'C': None, 'B': None}
+>>> G.successors('A',with_labels=True)
+{'C': None, 'B': None}
 >>> sorted(G.neighbors_iter('A',with_labels=True))
+[('B', None), ('C', None)]
+>>> sorted(G.successors_iter('A',with_labels=True))
 [('B', None), ('C', None)]
 >>> sorted(G.neighbors_iter('A'))
 ['B', 'C']
+>>> sorted(G.successors_iter('A'))
+['B', 'C']
 >>> sorted(G.neighbors_iter('C',with_labels=True))
-[('A', None), ('B', None), ('D', None)]
+[('D', None)]
 >>> sorted(G.neighbors_iter('C'))
-['A', 'B', 'D']
+['D']
 
 >>> sorted(G.successors('A'))
 ['B', 'C']

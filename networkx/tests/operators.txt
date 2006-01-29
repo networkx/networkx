@@ -208,7 +208,7 @@ True
 ['1', '2', '3', '4', 'copy1', 'copy2', 'copy3', 'copy4']
 
 >>> G2.neighbors('copy4')
-['copy1']
+[]
 >>> sorted(G2.neighbors('copy1'))
 ['copy2', 'copy3', 'copy4']
 

@@ -1295,46 +1295,29 @@ class DiGraph(Graph):
             return list(self.predecessors_iter(v))
 
     def neighbors(self, n, with_labels=False):
-        """Return a list of all nodes connected to node n. 
+        """Return a list of sucessor nodes of v.
+
+        For DiGraphs this just calls successors().
 
         If with_labels=True, return a dict keyed by neighbors.
 
         """
-        try: # n is both in pred and succ
-            nbrs=self.pred[n].copy()
-            # merge 
-            for v in self.succ[n]:
-                if v not in nbrs:
-                     nbrs[v]=None
-            if with_labels:
-                return nbrs
-            else:
-                return nbrs.keys()
-        except (KeyError, TypeError):
-            raise NetworkXError, "node %s not in graph"%n
+        return self.successors(n,with_labels=with_labels)
 
     def neighbors_iter(self,n,with_labels=False):
-        """Return an iterator over all nodes connected to node n.
+        """Return an iterator for neighbors of n.
 
-        If with_labels=True, return an iterator of (neighbor, 1) tuples.
+        If with_labels=True, return an iterator of (neighbor, None) tuples.
 
         """
         try:
-            nbrs=self.pred[n]
             if with_labels:
-                for v in nbrs:
-                    yield (v,1)
-                for v in self.succ[n]:
-                    if v not in nbrs:
-                        yield (v,1)
+                return self.adj[n].iteritems()
             else:
-                for v in nbrs:
-                    yield v
-                for v in self.succ[n]:
-                    if v not in nbrs:
-                        yield v
-        except (KeyError, TypeError):
+                return self.adj[n].iterkeys()
+        except KeyError:
             raise NetworkXError, "node %s not in graph"%n
+
 
     def degree_iter(self,nbunch=None,with_labels=False):
         """Return iterator that return degree(n) or (n,degree(n))

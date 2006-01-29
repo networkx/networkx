@@ -1349,8 +1349,25 @@ class XDiGraph(DiGraph):
         except KeyError:
             raise NetworkXError, "node %s not in graph"%n
 
+    def successors_iter(self, n, with_labels=False):
+        """Return an iterator for all successor nodes of node n. 
+
+        If with_labels=True, the iterator returns (neighbor, edge_data) tuples
+        for each edge.  
+
+        """
+        try:
+            if with_labels:
+                return self.succ[n].iteritems()
+            else:
+                return self.succ[n].iterkeys()
+        except KeyError:
+            raise NetworkXError, "node %s not in graph"%n
+
+
 
     def predecessors(self, n, with_labels=False):
+
         """Return a list of predecessor nodes of node n. 
 
         If with_labels=True, return a dict keyed by predecessors to 
@@ -1366,80 +1383,54 @@ class XDiGraph(DiGraph):
             raise NetworkXError, "node %s not in graph"%n
 
 
+    def predecessors_iter(self, n, with_labels=False):
+        """Return an iterator for all predecessor nodes of node n. 
+
+        If with_labels=True, the iterator returns (neighbor, edge_data) tuples
+        for each edge.  
+
+        """
+        try:
+            if with_labels:
+                return self.pred[n].iteritems()
+            else:
+                return self.pred[n].iterkeys()
+        except KeyError:
+            raise NetworkXError, "node %s not in graph"%n
+
+
     def neighbors(self, n, with_labels=False):
-        """Return a list of all nodes connected to node n. 
+
+        """Return a list of successor nodes of n. 
 
         If with_labels=True, return a dict keyed by neighbors to 
-        edge data for that edge.  If neighbor has both in and out
-        edge, the edge data is returned as the list [indata, outdata] 
+        edge data for that edge. 
 
         The node n will be a neighbor of itself if a selfloop exists.
+
+        This is the same as successors().
+
         """
         if n not in self:
             raise NetworkXError, "node %s not in graph"%n
 
-        # n is both in pred and succ
-        if with_labels:
-            nbrs=self.pred[n].copy()   # nbrs starts as pred dict
-            # succs=self.succ[n]
-            if self.multiedges:
-                # add lists from succs
-                for (v,data) in self.succ[n].iteritems():
-                    nbrs[v]=nbrs.get(v,[])+data
-            else:
-                for (v,data) in self.succ[n].iteritems():
-                    if v in nbrs:
-                        nbrs[v]=[nbrs[v],data]
-                    else:
-                        nbrs[v]=data
-            return nbrs
-        else:
-            nbrs=self.pred[n].copy()   # nbrs starts as pred dict
-            for v in self.succ[n]:
-                nbrs[v]=None
-            return nbrs.keys()
+        return self.successors(n,with_labels=with_labels)
+
 
     def neighbors_iter(self,n,with_labels=False):
-        """Return an iterator for neighbors of n.
+        """Return an iterator for all successor nodes of node n. 
 
         If with_labels=True, the iterator returns (neighbor, edge_data) tuples
-        for each edge.  If neighbor has both in and out edges, the edge data 
-        is either:
-        1) concatenated as lists if multiedges==True,   or
-        2) returned as the list [indata, outdata]  if multiedges==False.
+        for each edge.  
 
         The node n will be a neighbor of itself if a selfloop exists.
+        This is the same as successors_iter().
         """
-        try:
-            succs=self.succ[n]
-            preds=self.pred[n]
-            if with_labels:
-                if self.multiedges:
-                    for (v,pd) in preds.iteritems():
-                        if v in succs:
-                            yield (v,pd+succs[v])
-                        else:
-                            yield (v,pd)
-                    for (v,sd) in succs.iteritems():
-                        if v not in preds:
-                            yield (v,sd)
-                else:
-                    for (v,pd) in preds.iteritems():
-                        if v in succs:
-                            yield (v,[pd,succs[v]])
-                        else:
-                            yield (v,pd)
-                    for (v,sd) in succs.iteritems():
-                        if v not in preds:
-                            yield (v,sd)
-            else:
-                for v in preds:
-                    yield v
-                for v in succs:
-                    if v not in preds:
-                        yield v
-        except KeyError:
+        if n not in self:
             raise NetworkXError, "node %s not in graph"%n
+
+        return self.successors_iter(n,with_labels=with_labels)
+
 
     def in_degree(self, nbunch=None, with_labels=False):
         """Return the in-degree of single node or of nbunch of nodes.
