@@ -1406,7 +1406,7 @@ class XDiGraph(DiGraph):
     edges=out_edges
 
 
-    def succeessors_iter(self, n, with_labels=False):
+    def successors_iter(self, n, with_labels=False):
         """Return an iterator of nodes pointing out of node n. 
 
         If with_labels=True, return an iterator  of tuples (v,d)
