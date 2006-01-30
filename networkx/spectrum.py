@@ -46,7 +46,7 @@ def adj_matrix(G,nodelist=None):
     return a            
 
 def laplacian(G):
-    """Return standard Laplacian of graph"""
+    """Return standard cobinatorial Laplacian of G"""
     # this isn't the most efficient way to do this...
     n=G.order()
     I=Numeric.identity(n)
@@ -55,8 +55,9 @@ def laplacian(G):
     L=D-A
     return L
 
-def generalized_laplacian(G):
-    """Return generalized Laplacian of graph
+
+def normalized_laplacian(G):
+    """Return normalized Laplacian of G
 
     See Spectral Graph Theory by Fan Chung-Graham.
 
@@ -71,6 +72,10 @@ def generalized_laplacian(G):
     T=I*(Numeric.where(d,Numeric.sqrt(1./d),0))
     L=Numeric.dot(T,Numeric.dot(L,T))
     return L
+
+combinatorial_laplacian=laplacian
+generalized_laplacian=normalized_laplacian
+
 
 def _test_suite():
     import doctest
