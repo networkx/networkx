@@ -84,7 +84,10 @@ def pygraphviz_from_networkx(N):
                 e=A.add_edge(str(u),str(v),str(u)+str(v))
             elif len(e)==3:
                 (u,v,x)=e
-                e=A.add_edge(str(u),str(v),str(x))
+                if x is not None:
+                    x=str(x)
+                e=A.add_edge(str(u),str(v),x)
+
 
         # FIXME - add properties from networkx to pydot graph?
         # a nice feature would be to add node positions to pydot graph.
