@@ -3,7 +3,42 @@ NetworkX News
 
 .. include:: Menu.txt
 
-What's new in NX-0.26?
+What's new in NX-0.27?
+----------------------
+
+Release date: 5 Feb 2006
+
+See: https://networkx.lanl.gov/wiki/timeline
+
+New features
+~~~~~~~~~~~~
+  - sparse_binomial_graph: faster graph generator for sparse random graphs
+  - read/write routines in io.py now handle XGraph() type and
+    gzip and bzip2 files
+  - optional mapping of type for read/write routine to allow
+    on-the-fly conversion of node and edge datatype on read
+  - Substantial changes related to digraphs and definitions of
+    neighbors() and edges().  For digraphs edges=out_edges.
+    Neighbors now returns a list of neighboring nodes with
+    possible duplicates for graphs with parallel edges
+    See https://networkx.lanl.gov/wiki/ticket/24
+  - Addition of out_edges, in_edges and corresponding out_neighbors
+    and in_neighbors for digraphs.  For digraphs edges=out_edges.
+   
+Examples
+~~~~~~~~
+  - Minard's data for Napoleon's Russian campaign
+    https://networkx.lanl.gov/wiki/file/networkx/trunk/examples/minard.py
+
+Bug fixes
+~~~~~~~~~
+   - XGraph(multiedges=True) returns a copy of the list of edges
+     for get_edge() 
+
+
+
+
+What's new in NX-0.26
 ----------------------
 
 Release date: 6 Jan 2006
