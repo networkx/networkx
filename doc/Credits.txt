@@ -23,5 +23,8 @@ Thanks to the following people who have made contributions to NX:
 
  - Arnar Flatberg fixed the graph laplacian routines
 
+ - Chris Myers suggested using None as a default datatype and	
+   reported bugs
+
 
 

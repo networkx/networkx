@@ -57,14 +57,15 @@ patch_ (or make the changes yourself in dot_parser.py).
 Using 
 -----
 
->>> from networkx import *
->>> G=tetrahedral_graph()
+>>> import networkx as NX
+>>> G=NX.tetrahedral_graph()
 
 Draw with matplotlib:
 
->>> draw(G)
->>> savefig("tetrahedral.png")
->>> show()
+>>> import pylab as P
+>>> NX.draw(G)
+>>> P.savefig("tetrahedral.png")
+>>> P.show()
 
 .. class:: doctest-block
 .. image:: tetrahedral-s.png
@@ -72,7 +73,7 @@ Draw with matplotlib:
 
 Write a dot language file:
 
->>> write_dot(G,"tetrahedral.dot")
+>>> NX.write_dot(G,"tetrahedral.dot")
 
 
 ::

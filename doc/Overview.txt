@@ -134,11 +134,11 @@ Example usage:
 
 >>> G=networkx.complete_graph(4)	
 >>> print G.nodes()
-[1, 2, 3, 4]
+[0, 1, 2, 3]
 >>> print networkx.triangles(G)                 
 [3, 3, 3, 3]
 >>> print networkx.triangles(G,with_labels=True)    
-{1: 3, 2: 3, 3: 3, 4: 3}
+{0: 3, 1: 3, 2: 3, 3: 3}
 
 Properties for specific nodes
 =============================
@@ -165,10 +165,10 @@ Maybe you need a polynomial on t?
 
 Get triangles for a subset of all nodes.
 
->>> vlist=range(1,5)
+>>> vlist=range(0,4)
 >>> for (v,t) in networkx.triangles(G,vlist,with_labels=True).items():
 ...     print "Node %s is part of %s triangles."%(v,t)
+Node 0 is part of 3 triangles.
 Node 1 is part of 3 triangles.
 Node 2 is part of 3 triangles.
 Node 3 is part of 3 triangles.
-Node 4 is part of 3 triangles.

@@ -184,7 +184,7 @@ This package implements graphs using data structures based on an
 adjacency list implemented as a node_centric dictionary of
 dictionaries. The dictionary contains keys corresponding to the nodes
 and the values are dictionaries of neighboring node keys with the
-value 1 (or edge data for XGraph(), or a list of edge data for
+value None (or edge data for XGraph(), or a list of edge data for
 XGraph(multiedges=True)).  This allows fast addition, deletion and
 lookup of nodes and neighbors in large graphs.  The underlying
 datastructure should only be visible in the modules base.py and
@@ -386,6 +386,7 @@ do provide elementary drawing tools as well as an interface to use the
 open source Graphviz software package.  These reside in networkx.drawing,
 and will be imported if possible. See the Drawing_ section for details.
 
+>>> from pylab import *
 >>> from networkx.drawing import *
 
 To test if this import was successful 
@@ -397,11 +398,11 @@ draw G using one of:
 >>> draw_spectral(G)
 
 when drawing to an interactive display. 
-Note that you may need to issue a 
+Note that you may need to issue a pylab 
 
->>> show()
+>>> show() 
 
-if you are not using matplotlib in interactive mode (http://matplotlib.sourceforge.net/faq.html#SHOW).
+command if you are not using matplotlib in interactive mode (http://matplotlib.sourceforge.net/faq.html#SHOW).
 
 Or use
 
@@ -409,9 +410,9 @@ Or use
 >>> savefig("path.ps")
 
 to write to the file "path.ps" in the local directory. If graphviz
-and pydot are available on your system, you can also use:
+and pygraphviz or pydot are available on your system, you can also use:
 
->>> draw_nxpydot(G)
+>>> draw_graphviz(G)
 >>> write_dot(G)
 graph G {
 "1";
@@ -571,10 +572,14 @@ The DiGraph class provides operations common to digraphs (graphs with
 directed edges). A subclass of Graph, Digraph adds the following
 methods to those of Graph:
 
-    - successors
-    - successors_iter
-    - predecessors
-    - predecessors_iter
+    - out_edges
+    - out_edges_iter
+    - in_edges
+    - in_edges_iter
+    - successors=in_neighbors=neighbors
+    - successors_iter=in_neighbors_iter=neighbors_iter
+    - predecessors=out_neighbors
+    - predecessors_iter=out_neighbors_iter
     - out_degree
     - out_degree_iter
     - in_degree
@@ -664,8 +669,8 @@ Unit tests
 
 For most modules, say base.py, the command "python base.py" will run
 several unit tests in the networkx/tests subdirectory. This requires the use
-of Python 2.4 or later. To run all the unit tests, run "python test.py"
-in the networkx/tests subdirectory.
+of Python 2.4 or later. To run all the unit tests, run "python setup.py test"
+in the base directory or  run "python test.py" in the networkx/tests subdirectory.
 
 
 Not everything is an object
@@ -743,4 +748,4 @@ References
 
 
 .. [West01] D. B. West, "Introduction to Graph Theory", Prentice Hall,
-   2nd ed., 2001.  
+    2nd ed., 2001.  

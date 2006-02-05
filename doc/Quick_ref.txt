@@ -143,6 +143,8 @@ Directed Graphs Only
 --------------------
 ::
 
+  G.out_edges()	        - like edges but only outward pointing edges
+  G.in_edges()		- like edges but only inward pointing edges
   G.in_degree()         - like degree but only inward edges count
   G.out_degree()        - like degree but only outward edges count
   G.predecessors()      - like neighbors but only inward edges count
