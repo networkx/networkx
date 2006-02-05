@@ -204,13 +204,20 @@ def nodes_iter(G):
 
 def edges(G,nbunch=None,with_labels=False):
     """Return list of  edges adjacent to nodes in nbunch.
+
     Return all edges if nbunch is unspecified or nbunch=None.
+
+    For digraphs, edges=out_edges
+
     """
     return G.edges(nbunch,with_labels)
 
 def edges_iter(G,nbunch=None,with_labels=False):
     """Return iterator over  edges adjacent to nodes in nbunch.
+
     Return all edges if nbunch is unspecified or nbunch=None.
+
+    For digraphs, edges=out_edges
     """
     return G.edges_iter(nbunch,with_labels)
 
@@ -652,12 +659,14 @@ class Graph(object):
 
         See add_node for definition of nbunch.
 
+
         Those nodes in nbunch that are not in the graph will be
         (quietly) ignored.
         
+        For digraphs, edges=out_edges
+
         with_labels=True option is not supported because in that case
         you should probably use neighbors().
-        
         """
         if with_labels:
             # not supported
@@ -1023,8 +1032,6 @@ class DiGraph(Graph):
 # we store two adjacency lists:
 #    the  predecessors of node n are stored in the dict self.pred
 #    the successors of node n are stored in the dict self.succ=self.adj
-
-
     def __init__(self,**kwds):
         super(DiGraph,self).__init__(**kwds)
         self.pred={}        # predecessor
@@ -1280,7 +1287,7 @@ class DiGraph(Graph):
                 pass
 
 
-    # define             
+    # define edges to be out_edges implicitly since edges uses edges_iter
     edges_iter=out_edges_iter
             
     def out_edges(self, nbunch=None, with_labels=False):
@@ -1392,9 +1399,10 @@ class DiGraph(Graph):
 
 
     def in_degree_iter(self,nbunch=None,with_labels=False):
-        """Return iterator that return in_degree(n) or (n,in_degree(n))
-        for all n in nbunch. If nbunch is ommitted, then iterate
-        over *all* nodes.
+        """Return iterator for in_degree(n) or (n,in_degree(n))
+        for all n in nbunch.
+
+        If nbunch is ommitted, then iterate over *all* nodes.
  
         See degree_iter method for Digraph Class for more details. 
         """
@@ -1421,9 +1429,10 @@ class DiGraph(Graph):
                         yield len(self.pred[n]) 
 
     def out_degree_iter(self,nbunch=None,with_labels=False):
-        """Return iterator that return out_degree(n) or (n,out_degree(n))
-        for all n in nbunch. If nbunch is ommitted, then iterate
-        over *all* nodes.
+        """Return iterator for out_degree(n) or (n,out_degree(n))
+        for all n in nbunch.
+
+        If nbunch is ommitted, then iterate over *all* nodes.
  
         See degree_iter method for Digraph Class for more details. 
         """
@@ -1452,6 +1461,7 @@ class DiGraph(Graph):
 
     def degree(self,nbunch=None,with_labels=False):
         """Return degree of single node or of nbunch of nodes.
+
         If nbunch is omitted or nbunch=None, then return
         degrees of *all* nodes.
 
@@ -1492,6 +1502,7 @@ class DiGraph(Graph):
 
     def out_degree(self,nbunch=None, with_labels=False):
         """Return out-degree of single node or of nbunch of nodes.
+
         If nbunch is omitted or nbunch=None, then return
         out-degrees of *all* nodes.
         
@@ -1519,6 +1530,7 @@ class DiGraph(Graph):
         
     def in_degree(self,nbunch=None, with_labels=False):
         """Return in-degree of single node or of nbunch of nodes.
+
         If nbunch is omitted or nbunch=None, then return
         in-degrees of *all* nodes.
 

@@ -52,9 +52,9 @@ def draw(G, pos=None, with_labels=True, **kwds):
     Also see doc/examples/draw_*
 
     :Parameters:
+
       - `nodelist`: list of nodes to be drawn (default=G.nodes())
       - `edgelist`: list of edges to be drawn (default=G.edges())
-
       - `node_size`: scalar or array of the same length as nodelist (default=300)
       - `node_color`: single color string or numeric/numarray array of floats (default='r')
       - `node_shape`: node shape (default='o'), or 'so^>v<dph8' see pylab.scatter
@@ -71,7 +71,7 @@ def draw(G, pos=None, with_labels=True, **kwds):
       - `font_family`: (default='sans-serif')
       - `ax`: matplotlib axes instance
 
-      for more see pylab.scatter
+    for more see pylab.scatter
 
     NB: this has the same name as pylab.draw so beware when using
 

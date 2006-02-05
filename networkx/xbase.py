@@ -509,6 +509,8 @@ class XGraph(Graph):
 
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
+        For digraphs, edges=out_edges
+
         with_labels=True option is not supported because in that case
         you should probably use neighbors().
         
