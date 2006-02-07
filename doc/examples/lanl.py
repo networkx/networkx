@@ -58,15 +58,24 @@ if __name__ == '__main__':
 
     try: # drawing
         import pylab as P
-        # draw in radial layout with graphviz
-        P.figure(1,figsize=(10,10))    
+
+	# specify pylab plot layout & background 
+	ax=P.subplot(111,axisbg='lightgrey')
+	# turn off x and y axes labels in pylab
+	P.xticks([])
+	P.yticks([])
+
+        # use graphviz to find radial layout
         pos=graphviz_layout(G,prog="twopi",root=0)
-        #draw(G,pos,with_labels=False,node_size=10)
-        # colored by rtt ping time
-        draw(G,pos,
-             node_color=array([G.rtt[v] for v in G]),
+        # draw nodes, coloring by rtt ping time
+        draw_networkx_nodes(G,pos,
+             node_color=P.array([G.rtt[v] for v in G]),
              with_labels=False,
+             alpha=0.4,
              node_size=20)
+        draw_networkx_edges(G,pos,alpha=0.4)
         P.savefig("lanl.png")
+        print "Wrote lanl.png"
     except:
+        print "This example could not find pylab or graphviz for drawing."
         pass
