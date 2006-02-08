@@ -16,6 +16,7 @@ __revision__ = "$Revision: 1035 $"
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
+
 import networkx
 
 try:
@@ -27,8 +28,7 @@ try:
     from matplotlib.numerix.mlab import amin, amax
     from matplotlib.pylab import gca, hold, draw_if_interactive 
 except ImportError:
-    print "Import Error: not able to import matplotlib."
-    raise
+    raise  "Import Error: not able to import matplotlib."
 
 def draw(G, pos=None, with_labels=True, **kwds):
     """Draw the graph G with matplotlib (pylab).
