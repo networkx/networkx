@@ -14,8 +14,6 @@ __revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from networkx import *
-import re
 import sys
 
 def lanl_graph():
@@ -27,7 +25,7 @@ def lanl_graph():
         print "lanl.edges not found"
         raise
 
-    G=Graph()
+    G=NX.Graph()
 
     time={}
     time[0]=0 # assign 0 to center node
@@ -37,7 +35,7 @@ def lanl_graph():
         time[int(head)]=float(rtt)
 
     # get largest component and assign ping times to G0time dictionary        
-    G0=connected_component_subgraphs(G)[0]   
+    G0=NX.connected_component_subgraphs(G)[0]   
     G0.rtt={}
     for n in G0:
         G0.rtt[n]=time[n]
@@ -46,34 +44,28 @@ def lanl_graph():
 
 if __name__ == '__main__':
 
-    from networkx import *
-
+    import networkx as NX
+    import math
 
     G=lanl_graph()
 
 
     print "graph has %d nodes with %d edges"\
-          %(number_of_nodes(G),number_of_edges(G))
-    print number_connected_components(G),"connected components"
+          %(NX.number_of_nodes(G),NX.number_of_edges(G))
+    print NX.number_connected_components(G),"connected components"
 
     try: # drawing
         import pylab as P
 
-	# specify pylab plot layout & background 
-	ax=P.subplot(111,axisbg='lightgrey')
-	# turn off x and y axes labels in pylab
-	P.xticks([])
-	P.yticks([])
-
+        P.figure(figsize=(8,8))
         # use graphviz to find radial layout
-        pos=graphviz_layout(G,prog="twopi",root=0)
+        pos=NX.graphviz_layout(G,prog="twopi",root=0)
         # draw nodes, coloring by rtt ping time
-        draw_networkx_nodes(G,pos,
-             node_color=P.array([G.rtt[v] for v in G]),
-             with_labels=False,
-             alpha=0.4,
-             node_size=20)
-        draw_networkx_edges(G,pos,alpha=0.4)
+        NX.draw(G,pos,
+                node_color=P.array([G.rtt[v] for v in G]),
+                with_labels=False,
+                alpha=0.5,
+                node_size=15)
         P.savefig("lanl.png")
         print "Wrote lanl.png"
     except:
