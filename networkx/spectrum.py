@@ -45,18 +45,18 @@ def adj_matrix(G,nodelist=None):
             a[index[n2],index[n1]]=1
     return a            
 
-def laplacian(G):
+def laplacian(G,nodelist=None):
     """Return standard cobinatorial Laplacian of G"""
     # this isn't the most efficient way to do this...
     n=G.order()
     I=Numeric.identity(n)
-    A=adj_matrix(G)
+    A=adj_matrix(G,nodelist=nodelist)
     D=I*Numeric.sum(A)
     L=D-A
     return L
 
 
-def normalized_laplacian(G):
+def normalized_laplacian(G,nodelist=None):
     """Return normalized Laplacian of G
 
     See Spectral Graph Theory by Fan Chung-Graham.
@@ -65,7 +65,7 @@ def normalized_laplacian(G):
     # this isn't the most efficient way to do this...
     n=G.order()
     I=Numeric.identity(n)
-    A=adj_matrix(G)
+    A=adj_matrix(G,nodelist=nodelist)
     D=I*Numeric.sum(A)
     L=D-A
     d=sum(A)
