@@ -31,7 +31,7 @@ def fast_gnp_graph(n,p,seed=None):
     The G_{n,p} graph choses each of the possible [n(n-1)]/2 edges
     with probability p.
 
-    Sometimes called Erd≈ës-R√©nyi graph, or binomial graph.
+    Sometimes called ErdÅ≈ës-RÅ√Å©nyi graph, or binomial graph.
 
     :Parameters:
       - `n`: the number of nodes
@@ -77,7 +77,7 @@ def gnp_graph(n,p,seed=None):
 
     Choses each of the possible [n(n-1)]/2 edges with probability p.
 
-    Sometimes called Erd≈ës-R√©nyi graph, or binomial graph.
+    Sometimes called ErdÅ≈ës-RÅ√Å©nyi graph, or binomial graph.
 
     :Parameters:
       - `n`: the number of nodes
@@ -87,7 +87,7 @@ def gnp_graph(n,p,seed=None):
     This is an O(n^2) algorithm.  For sparse graphs (small p) see
     fast_gnp_graph. 
 
-    P. Erd≈ës and A. R√©nyi, On Random Graphs, Publ. Math. 6, 290 (1959).
+    P. ErdÅ≈ës and A. RÅ√Å©nyi, On Random Graphs, Publ. Math. 6, 290 (1959).
     E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
 
     """
@@ -105,7 +105,7 @@ def gnp_graph(n,p,seed=None):
 
 # add some aliases to common names
 binomial_graph=gnp_graph
-erdos_enyi_graph=gnp_graph
+erdos_renyi_graph=gnp_graph
 
 def gnm_graph(n,m,seed=None):
     """
@@ -310,7 +310,7 @@ def random_regular_graph(d,n,seed=None):
 
 
 def barabasi_albert_graph(n,m,seed=None):
-    """Return random graph using Barab√°si-Albert preferential attachment model.
+    """Return random graph using BarabÅ√Å°si-Albert preferential attachment model.
     
     A graph of n nodes is grown by attaching new nodes
     each with m edges that are preferentially attached
@@ -327,7 +327,7 @@ def barabasi_albert_graph(n,m,seed=None):
 
       @ARTICLE{barabasi-1999-emergence,
       TITLE = {Emergence of scaling in random networks},
-      AUTHOR = {A. L. Barab√°si and R. Albert},
+      AUTHOR = {A. L. BarabÅ√Å°si and R. Albert},
       JOURNAL = {SCIENCE},
       VOLUME = {286},
       NUMBER = {5439},
@@ -347,7 +347,7 @@ def barabasi_albert_graph(n,m,seed=None):
         random.seed(seed)    
 
     G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
-    G.name="Barab√°si-Albert Graph"
+    G.name="BarabÅ√Å°si-Albert Graph"
     edge_targets=range(m)  # possible targets for new edges
     repeated_nodes=[]      # list of existing nodes,
                            # with nodes repeated once for each adjacent edge 
@@ -392,7 +392,7 @@ def powerlaw_cluster_graph(n,m,p,seed=None):
     Note that the transitivity (fraction of triangles to possible
     triangles) seems to go down with network size. 
 
-    It is essentially the Barab√°si-Albert growth model with an
+    It is essentially the BarabÅ√Å°si-Albert growth model with an
     extra step that each random edge is followed by a chance of
     making an edge to one of its neighbors too (and thus a triangle).
     
