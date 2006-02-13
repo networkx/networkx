@@ -5,10 +5,11 @@ Generators - Random Graphs
 >>> from networkx.generators.random_graphs import *
 
 
-
->>> G=sparse_binomial_graph(100,0.25)
+>>> G=gnp_graph(100,0.25)
 >>> G=binomial_graph(100,0.25)
->>> G=erdos_renyi_graph(10,20)
+>>> G=erdos_renyi_graph(100,0.25)
+>>> G=fast_gnp_graph(100,0.25)
+>>> G=gnm_graph(100,20)
 >>> G=watts_strogatz_graph(10,2,0.25)
 >>> G=newman_watts_strogatz_graph(10,2,0.25)
 >>> G=barabasi_albert_graph(100,1)
