@@ -40,6 +40,8 @@ from random_graphs import \
                fast_gnp_graph,\
                gnp_graph,\
                gnm_graph,\
+               erdos_renyi_graph,\
+               binomial_graph,\
                newman_watts_strogatz_graph,\
                watts_strogatz_graph,\
                random_regular_graph,\

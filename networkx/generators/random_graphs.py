@@ -29,7 +29,7 @@ def fast_gnp_graph(n,p,seed=None):
     Return a random graph G_{n,p}.
 
     The G_{n,p} graph choses each of the possible [n(n-1)]/2 edges
-    with probability p.
+    with probability p.  
 
     Sometimes called ErdÅ≈ës-RÅ√Å©nyi graph, or binomial graph.
 
@@ -76,6 +76,7 @@ def gnp_graph(n,p,seed=None):
     Return a random graph G_{n,p}.
 
     Choses each of the possible [n(n-1)]/2 edges with probability p.
+    This is the same as binomial_graph and erdos_renyi_graph. 
 
     Sometimes called ErdÅ≈ës-RÅ√Å©nyi graph, or binomial graph.
 
