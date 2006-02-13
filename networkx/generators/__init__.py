@@ -36,8 +36,10 @@ from degree_seq import  configuration_model,\
                is_valid_degree_sequence,\
                create_degree_sequence
 from geometric import  random_geometric_graph
-from random_graphs import  binomial_graph,\
-               erdos_renyi_graph,\
+from random_graphs import \
+               fast_gnp_graph,\
+               gnp_graph,\
+               gnm_graph,\
                newman_watts_strogatz_graph,\
                watts_strogatz_graph,\
                random_regular_graph,\

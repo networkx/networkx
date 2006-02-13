@@ -1,3 +1,5 @@
+..  -*- coding: utf-8 -*-
+
 ~~~~~~~~~~~~~~~~~
 NetworkX Tutorial
 ~~~~~~~~~~~~~~~~~
@@ -704,13 +706,13 @@ datastructure  : vdict_of_dicts
 References
 ==========
 
-.. [BA02] R. Albert and A.-L. Barabasi, "Statistical mechanics of complex
+.. [BA02] R. Albert and A.-L. Barabási, "Statistical mechanics of complex
    networks", Reviews of Modern Physics, 74, pp. 47-97, 2002.
    (Preprint available online at http://citeseer.ist.psu.edu/442178.html
    or http://arxiv.org/abs/cond-mat/0106096)
 
 
-.. [Bollobas01] B. Bollobas, "Random Graphs", Second Edition,
+.. [Bollobas01] B. Bollobás, "Random Graphs", Second Edition,
    Cambridge University Press, 2001.
 
 

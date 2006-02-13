@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Generators for random graphs
 
@@ -21,19 +22,24 @@ from networkx.generators.classic import empty_graph, path_graph, complete_graph
 #  Some Famous Random Graphs
 #-------------------------------------------------------------------------
 
-def sparse_binomial_graph(n,p,seed=None):
+def fast_gnp_graph(n,p,seed=None):
     """
-    Return a binomial random graph G_{n,p}.
+    Return a random graph G_{n,p}.
+
+    The G_{n,p} graph choses each of the possible [n(n-1)]/2 edges
+    with probability p.
+
+    Sometimes called Erdős-Rényi graph, or binomial graph.
 
     :Parameters:
       - `n`: the number of nodes
-      - `p`: probability that any given edge exist
+      - `p`: probability for edge creation
       - `seed`: seed for random number generator (default=None)
       
-    This alggorithm is O(n+m) where m is the expected number of
+    This algorithm is O(n+m) where m is the expected number of
     edges m=p*n*(n-1)/2.
-
-    It should be faster than binomial_graph when p is small and
+    
+    It should be faster than gnp_graph when p is small and
     the expected number of edges is small (sparse graph).
 
     See:
@@ -43,7 +49,7 @@ def sparse_binomial_graph(n,p,seed=None):
 
     """
     G=empty_graph(n)
-    G.name="Binomial Graph"
+    G.name="G_{n,p} Graph"
 
     if not seed is None:
         random.seed(seed)
@@ -63,21 +69,28 @@ def sparse_binomial_graph(n,p,seed=None):
     return G
 
 
-def binomial_graph(n,p,seed=None):
+def gnp_graph(n,p,seed=None):
     """
-    Return a binomial random graph G_{n,p}.
+    Return a random graph G_{n,p}.
+
+    Choses each of the possible [n(n-1)]/2 edges with probability p.
+
+    Sometimes called Erdős-Rényi graph, or binomial graph.
 
     :Parameters:
       - `n`: the number of nodes
-      - `p`: probability that any given edge exist
+      - `p`: probability for edge creation
       - `seed`: seed for random number generator (default=None)
       
     This is an O(n^2) algorithm.  For sparse graphs (small p) see
-    sparse_binomial_graph. 
+    fast_gnp_graph. 
+
+    P. Erdős and A. Rényi, On Random Graphs, Publ. Math. 6, 290 (1959).
+    E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
 
     """
     G=empty_graph(n)
-    G.name="Binomial Graph"
+    G.name="G_{n,p} Graph"
 
     if not seed is None:
         random.seed(seed)
@@ -88,18 +101,21 @@ def binomial_graph(n,p,seed=None):
                 G.add_edge(u,v)
     return G
 
-def erdos_renyi_graph(n,m,seed=None):
+#def erdos_renyi_graph(n,m,seed=None):
+def gnm_graph(n,m,seed=None):
     """
-    Return the Erdos-Renyi random graph  G_{n,m}.
+    Return the random graph G_{n,m}.
+
+    Gives a graph picked randomly out of the set of all graphs
+    with n nodes and m edges.
 
     :Parameters:
-      - `n`: the number of nodes
-      - `m`: the number of edges
-      - `seed`: seed for random number generator (default=None)
-      
+        - `n`: the number of nodes
+        - `m`: the number of edges
+        - `seed`: seed for random number generator (default=None)
     """
     G=empty_graph(n)
-    G.name="Erdos-Renyi Graph"
+    G.name="G_{n,m} Graph"
 
     if not seed is None:
         random.seed(seed)
@@ -289,7 +305,7 @@ def random_regular_graph(d,n,seed=None):
 
 
 def barabasi_albert_graph(n,m,seed=None):
-    """Return random graph using Barabasi-Albert preferential attachment model.
+    """Return random graph using Barabási-Albert preferential attachment model.
     
     A graph of n nodes is grown by attaching new nodes
     each with m edges that are preferentially attached
@@ -306,7 +322,7 @@ def barabasi_albert_graph(n,m,seed=None):
 
       @ARTICLE{barabasi-1999-emergence,
       TITLE = {Emergence of scaling in random networks},
-      AUTHOR = {A. L. Barabasi and R. Albert},
+      AUTHOR = {A. L. Barabási and R. Albert},
       JOURNAL = {SCIENCE},
       VOLUME = {286},
       NUMBER = {5439},
@@ -326,7 +342,7 @@ def barabasi_albert_graph(n,m,seed=None):
         random.seed(seed)    
 
     G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
-    G.name="Barabasi-Albert Graph"
+    G.name="Barabási-Albert Graph"
     edge_targets=range(m)  # possible targets for new edges
     repeated_nodes=[]      # list of existing nodes,
                            # with nodes repeated once for each adjacent edge 
@@ -371,7 +387,7 @@ def powerlaw_cluster_graph(n,m,p,seed=None):
     Note that the transitivity (fraction of triangles to possible
     triangles) seems to go down with network size. 
 
-    It is essentially the Barabasi-Albert growth model with an
+    It is essentially the Barabási-Albert growth model with an
     extra step that each random edge is followed by a chance of
     making an edge to one of its neighbors too (and thus a triangle).
     
@@ -486,12 +502,12 @@ def random_shell_graph(constructor,seed=None):
     glist=[]        
     intra_edges=[]
     nnodes=0
-    # create erdos-renyi graphs for each shell
+    # create gnm graphs for each shell
     for (n,m,d) in constructor:
         inter_edges=int(m*d)
         intra_edges.append(m-inter_edges)
         g=networkx.operators.convert_node_labels_to_integers(
-                     erdos_renyi_graph(n,inter_edges),
+                     gnm_graph(n,inter_edges),
                      first_label=nnodes)
         glist.append(g)
         nnodes+=n                     
