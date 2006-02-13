@@ -22,6 +22,8 @@ from networkx.generators.classic import empty_graph, path_graph, complete_graph
 #  Some Famous Random Graphs
 #-------------------------------------------------------------------------
 
+
+
 def fast_gnp_graph(n,p,seed=None):
     """
     Return a random graph G_{n,p}.
@@ -101,7 +103,10 @@ def gnp_graph(n,p,seed=None):
                 G.add_edge(u,v)
     return G
 
-#def erdos_renyi_graph(n,m,seed=None):
+# add some aliases to common names
+binomial_graph=gnp_graph
+erdos_enyi_graph=gnp_graph
+
 def gnm_graph(n,m,seed=None):
     """
     Return the random graph G_{n,m}.
