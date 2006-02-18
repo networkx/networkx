@@ -261,7 +261,9 @@ Random graphs
 
    barabasi_albert_graph(n,m,seed=None)
    binomial_graph(n,p,seed=None) 
-   erdos_renyi_graph(n,m,seed=None)
+   erdos_renyi_graph(n,p,seed=None)
+   gnm_random_graph(n,m,seed=None)
+   gnp_random_graph(n,p,seed=None)
    powerlaw_cluster_graph(n,m,p,seed=None)
    random_regular_graph(d,n,seed=None)
    random_lobster(n,p1,p2,seed=None)
@@ -283,15 +285,14 @@ Graphs from degree sequences
 IO:
 ===
 ::
-
-  read_adjlist(path=False, create_using=False)
-  write_adjlist(G,path=False)
-  read_edgelist(path=False, create_using=False)
-  write_edgelist(G,path=False)
-  read_multiline_adjlist(path=False, create_using=False)
-  write_multiline_adjlist(G,path=False)
-  read_gpickle(path=False)
-  write_gpickle(G,path=False)
+  read_adjlist(path, create_using=False)
+  write_adjlist(G,path)
+  read_edgelist(path, create_using=False)
+  write_edgelist(G,path)
+  read_multiline_adjlist(path, create_using=False)
+  write_multiline_adjlist(G,path)
+  read_gpickle(path)
+  write_gpickle(G,path)
 
 
 .. _html documentation: Reference/index.html

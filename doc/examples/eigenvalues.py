@@ -28,7 +28,7 @@ except:
 n=1000 # 1000 nodes
 m=5000 # 5000 edges
 
-G=erdos_renyi_graph(n,m)
+G=gnm_random_graph(n,m)
 
 L=generalized_laplacian(G) 
 e=LA.eigenvalues(L)
