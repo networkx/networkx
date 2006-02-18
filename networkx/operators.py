@@ -273,8 +273,12 @@ def convert_node_labels_to_integers(G,first_label=0,ordering="default",discard_o
        The n new integer labels are numbered first_label, ..., n+first_label.
     
     ordering: (optional, default="default")
-       specifies how nodes are ordered. Possible values: "default"
-       (inherit from G), "increasing degree", or "decreasing degree"
+       A string specifying how new node labels are ordered. 
+       Possible values are: 
+          "default" : inherit node ordering from G.nodes() 
+          "sorted"  : inherit node ordering from sorted(G.nodes())
+          "increasing degree" : nodes are sorted by increasing degree
+          "decreasing degree" : nodes are sorted by decreasing degree
 
     *discard_old_labels*
        if True (default) discard old labels
@@ -296,7 +300,7 @@ def convert_node_labels_to_integers(G,first_label=0,ordering="default",discard_o
 #    algorithms it is often convenient to strip off the original node
 #    and edge information and appropriately relabel the n nodes with
 #    the integer values 1,..,n. This is the purpose of this function,
-#    and it provides option (see discard_old_labels variable) to either
+#    and it provides the option (see discard_old_labels variable) to either
 #    preserve the original labels in separate dicts (these are not
 #    returned but inserted into the dna of the new graph, or to discard that
 #    information if it is superfluous.
@@ -310,6 +314,12 @@ def convert_node_labels_to_integers(G,first_label=0,ordering="default",discard_o
 
     if ordering=="default":
         for v in nodes:
+            v_to_int_map[v]=v_int
+#           print v_int, "-->", v
+            H.add_node(v_int)
+            v_int+=1
+    elif ordering=="sorted":
+        for v in sorted(G.nodes()):
             v_to_int_map[v]=v_int
 #           print v_int, "-->", v
             H.add_node(v_int)
