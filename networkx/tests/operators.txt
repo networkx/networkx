@@ -245,21 +245,59 @@ True
 >>> number_of_edges(UG)
 2
 
-#>>> PG=convert_to_pseudograph(G1)
-#>>> PG.edges()
 
 
 convert_node_labels_to_integers
 -------------------------------
 
->>> G=Graph()
+test that empty graph converts fine for all options
+ 
+>>> G=empty_graph()
 >>> H=convert_node_labels_to_integers(G,100)
 >>> print H.name
-(No Name)_with_int_labels
+(empty graph)_with_int_labels
 >>> H.nodes()
 []
 >>> H.edges()
 []
+
+>>> G=empty_graph()
+>>> H=convert_node_labels_to_integers(G,100,ordering="sorted")
+>>> print H.name
+(empty graph)_with_int_labels
+>>> H.nodes()
+[]
+>>> H.edges()
+[]
+
+>>> G=empty_graph()
+>>> H=convert_node_labels_to_integers(G,100,ordering="default")
+>>> print H.name
+(empty graph)_with_int_labels
+>>> H.nodes()
+[]
+>>> H.edges()
+[]
+
+>>> G=empty_graph()
+>>> H=convert_node_labels_to_integers(G,100,ordering="increasing degree")
+>>> print H.name
+(empty graph)_with_int_labels
+>>> H.nodes()
+[]
+>>> H.edges()
+[]
+
+>>> G=empty_graph()
+>>> H=convert_node_labels_to_integers(G,100,ordering="decreasing degree")
+>>> print H.name
+(empty graph)_with_int_labels
+>>> H.nodes()
+[]
+>>> H.edges()
+[]
+
+>>> G=empty_graph()
 >>> G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
 >>> G.name="paw"
 >>> H=convert_node_labels_to_integers(G)
@@ -327,6 +365,28 @@ True
 >>> mapping['A']==1 or mapping['A']==2
 True
 >>> mapping['B']==1 or mapping['B']==2
+True
+
+>>> G=empty_graph()
+>>> G.add_edges_from([('C','D'),('A','B'),('A','C'),('B','C')])
+>>> G.name="paw"
+>>> H=convert_node_labels_to_integers(G,ordering="sorted")
+>>> degH=H.degree()
+>>> degG=G.degree()
+>>> print degH.sort()==degG.sort()
+True
+
+>>> H=convert_node_labels_to_integers(G,ordering="sorted",discard_old_labels=False)
+>>> H.dna['has_node_labels']
+True
+>>> mapping=H.dna['node_labels']
+>>> mapping['A']==0
+True
+>>> mapping['B']==1
+True
+>>> mapping['C']==2
+True
+>>> mapping['D']==3
 True
 
 >>> H=convert_node_labels_to_integers(G,ordering="increasing age")
