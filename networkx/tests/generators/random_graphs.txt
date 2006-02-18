@@ -5,11 +5,14 @@ Generators - Random Graphs
 >>> from networkx.generators.random_graphs import *
 
 
->>> G=gnp_graph(100,0.25)
+Smoke test the random graphs
+----------------------------
+
+>>> G=gnp_random_graph(100,0.25)
 >>> G=binomial_graph(100,0.25)
 >>> G=erdos_renyi_graph(100,0.25)
->>> G=fast_gnp_graph(100,0.25)
->>> G=gnm_graph(100,20)
+>>> G=fast_gnp_random_graph(100,0.25)
+>>> G=gnm_random_graph(100,20)
 >>> G=watts_strogatz_graph(10,2,0.25)
 >>> G=newman_watts_strogatz_graph(10,2,0.25)
 >>> G=barabasi_albert_graph(100,1)

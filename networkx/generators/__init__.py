@@ -37,9 +37,9 @@ from degree_seq import  configuration_model,\
                create_degree_sequence
 from geometric import  random_geometric_graph
 from random_graphs import \
-               fast_gnp_graph,\
-               gnp_graph,\
-               gnm_graph,\
+               fast_gnp_random_graph,\
+               gnp_random_graph,\
+               gnm_random_graph,\
                erdos_renyi_graph,\
                binomial_graph,\
                newman_watts_strogatz_graph,\

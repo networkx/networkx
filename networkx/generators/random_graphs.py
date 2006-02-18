@@ -24,7 +24,7 @@ from networkx.generators.classic import empty_graph, path_graph, complete_graph
 
 
 
-def fast_gnp_graph(n,p,seed=None):
+def fast_gnp_random_graph(n,p,seed=None):
     """
     Return a random graph G_{n,p}.
 
@@ -41,8 +41,8 @@ def fast_gnp_graph(n,p,seed=None):
     This algorithm is O(n+m) where m is the expected number of
     edges m=p*n*(n-1)/2.
     
-    It should be faster than gnp_graph when p is small and
-    the expected number of edges is small (sparse graph).
+    It should be faster than gnp_random_graph when p is small, and
+    the expected number of edges is small, (sparse graph).
 
     See:
 
@@ -51,12 +51,12 @@ def fast_gnp_graph(n,p,seed=None):
 
     """
     G=empty_graph(n)
-    G.name="G_{n,p} Graph"
+    G.name="fast_gnp_random_graph(%s,%s)"%(n,p)
 
     if not seed is None:
         random.seed(seed)
 
-    v=1  # nodes in graph are from 0,n-1.  this is the second node 
+    v=1  # Nodes in graph are from 0,n-1 (this is the second node index).
     w=-1
     lp=math.log(1.0-p)  
 
@@ -71,7 +71,7 @@ def fast_gnp_graph(n,p,seed=None):
     return G
 
 
-def gnp_graph(n,p,seed=None):
+def gnp_random_graph(n,p,seed=None):
     """
     Return a random graph G_{n,p}.
 
@@ -87,14 +87,14 @@ def gnp_graph(n,p,seed=None):
       - `seed`: seed for random number generator (default=None)
       
     This is an O(n^2) algorithm.  For sparse graphs (small p) see
-    fast_gnp_graph. 
+    fast_gnp_random_graph. 
 
     P. Erdős and A. Rényi, On Random Graphs, Publ. Math. 6, 290 (1959).
     E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
 
     """
     G=empty_graph(n)
-    G.name="G_{n,p} Graph"
+    G.name="gnp_random_graph(%s,%s)"%(n,p)
 
     if not seed is None:
         random.seed(seed)
@@ -106,10 +106,10 @@ def gnp_graph(n,p,seed=None):
     return G
 
 # add some aliases to common names
-binomial_graph=gnp_graph
-erdos_renyi_graph=gnp_graph
+binomial_graph=gnp_random_graph
+erdos_renyi_graph=gnp_random_graph
 
-def gnm_graph(n,m,seed=None):
+def gnm_random_graph(n,m,seed=None):
     """
     Return the random graph G_{n,m}.
 
@@ -122,7 +122,7 @@ def gnm_graph(n,m,seed=None):
         - `seed`: seed for random number generator (default=None)
     """
     G=empty_graph(n)
-    G.name="G_{n,m} Graph"
+    G.name="gnm_random_graph(%s,%s)"%(n,m)
 
     if not seed is None:
         random.seed(seed)
@@ -168,7 +168,7 @@ def newman_watts_strogatz_graph(n,k,p,seed=None):
     if not seed is None:
         random.seed(seed)
     G=empty_graph(n)
-    G.name="Newmann-Watts-Strogatz Graph"
+    G.name="newman_watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
     nlist = G.nodes()
     fromv = nlist
     # connect the k/2 neighbors
@@ -205,7 +205,7 @@ def watts_strogatz_graph(n,k,p,seed=None):
     if not seed is None:
         random.seed(seed)
     G=empty_graph(n)
-    G.name="Watts-Strogatz Graph"
+    G.name="watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
     nlist = G.nodes()
     fromv = nlist
     # connect the k/2 neighbors
@@ -283,7 +283,7 @@ def random_regular_graph(d,n,seed=None):
 
         
     G=empty_graph(n)
-    G.name="Random Regular Graph (%d)"%d
+    G.name="random_regular_graph(%s,%s)"%(d,n)
 
     # keep track of the edges we have seen
     seen_edges={}
@@ -349,7 +349,7 @@ def barabasi_albert_graph(n,m,seed=None):
         random.seed(seed)    
 
     G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
-    G.name="Barabási-Albert Graph"
+    G.name="barabasi_albert_graph(%s,%s)"%(n,m)
     edge_targets=range(m)  # possible targets for new edges
     repeated_nodes=[]      # list of existing nodes,
                            # with nodes repeated once for each adjacent edge 
@@ -471,7 +471,7 @@ def random_lobster(n,p1,p2,seed=None):
         random.seed(seed)
     llen=int(2*random.random()*n + 0.5)
     L=path_graph(llen)
-    L.name="Random Lobster (%d, %5.3f, %5.3f)"%(n,p1,p2)
+    L.name="random_lobster(%d,%s,%s)"%(n,p1,p2)
     # build caterpillar: add edges to path graph with probability p1
     current_node=llen-1
     for n in xrange(llen):
@@ -501,7 +501,7 @@ def random_shell_graph(constructor,seed=None):
 
     """
     G=empty_graph(0)
-    G.name="Random Shell Graph"
+    G.name="random_shell_graph(constructor)"
 
     if not seed is None:
         random.seed(seed)
@@ -514,7 +514,7 @@ def random_shell_graph(constructor,seed=None):
         inter_edges=int(m*d)
         intra_edges.append(m-inter_edges)
         g=networkx.operators.convert_node_labels_to_integers(
-                     gnm_graph(n,inter_edges),
+                     gnm_random_graph(n,inter_edges),
                      first_label=nnodes)
         glist.append(g)
         nnodes+=n                     
@@ -562,7 +562,7 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
         raise networkx.NetworkXError,\
               "Exceeded max (%d) attempts for a valid tree sequence."%tries
     G=degree_sequence_tree(s)
-    G.name="Random Powerlaw Tree"
+    G.name="random_powerlaw_tree(%s,%s)"%(n,gamma)
     return G
 
 
