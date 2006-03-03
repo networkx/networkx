@@ -10,9 +10,13 @@ from glob import glob
 import os
 import sys
 
-import ez_setup
-ez_setup.use_setuptools()
-from setuptools import setup, find_packages, Extension
+# use setuptools if we got it, else distutils
+try: 
+#    import ez_setup
+#    ez_setup.use_setuptools()
+    from setuptools import setup
+except:
+    from distutils.core import setup
 
 if sys.argv[-1] == 'setup.py':
     print "To install, run 'python setup.py install'"
