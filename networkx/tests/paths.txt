@@ -21,7 +21,6 @@ Paths and path lengths
 >>> sp[12] 
 [1, 2, 3, 4, 8, 12]
 
-
 Eccentricity, diameter, etc.
 ----------------------------
 
@@ -163,3 +162,14 @@ True
 True
 
 
+Predecessor
+-----------
+
+>>> G=NX.path_graph(4)
+>>> NX.predecessor(G,0)
+{0: [], 1: [0], 2: [1], 3: [2]}
+>>> NX.predecessor(G,0,3)
+[2]
+>>> G=NX.grid_2d_graph(2,2)
+>>> NX.predecessor(G,0)
+{0: [], 1: [0], 2: [0], 3: [1, 2]}

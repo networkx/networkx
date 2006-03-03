@@ -342,6 +342,47 @@ def topological_sort_recursive(G):
                 return 
     return explored
 
+def predecessor(G,source,target=False,cutoff=False):
+    """ Returns dictionary of predecessors for the path from source to all
+    nodes in G.  
+
+    Optional target returns only predecessors between source and target.
+    Cutoff is a limit on the number of hops traversed.
+
+    Example for the path graph 0-1-2-3
+
+    >>> G=path_graph(4)
+    >>> print G.nodes()
+    [0, 1, 2, 3]
+    >>> predecessor(G,0)
+    {0: [], 1: [0], 2: [1], 3: [2]}
+
+    """
+    level=0                  # the current level
+    nextlevel=[source]       # list of nodes to check at next level
+    seen={source:level}      # level (number of hops) when seen in BFS
+    pred={source:[]}         # predecessor hash
+    while nextlevel:
+        level=level+1
+        thislevel=nextlevel
+        nextlevel=[]
+        for v in thislevel:
+            for w in G.neighbors(v):
+                if (not seen.has_key(w)): 
+                    pred[w]=[v]
+                    seen[w]=level
+                    nextlevel.append(w)
+                elif (seen[w]==level):# add v to predecessor list if it 
+                    pred[w].append(v) # is at the correct level
+        if (cutoff and cutoff <= level):
+            break
+
+    if target:
+        if not pred.has_key(target): return ([],-1)  # No predecessor
+        return pred[target]
+    else:
+        return pred
+
 
 def _test_suite():
     import doctest
