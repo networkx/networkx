@@ -5,7 +5,7 @@ The typical graph generator is called as follows:
 
 >>> G=complete_graph(100)
 
-returning the complete graph on n nodes labeled 1,..,100
+returning the complete graph on n nodes labeled 0,..,99
 as a simple graph. Except for empty_graph, all these generators return
 a Graph class (i.e. a simple undirected graph).
 
@@ -331,9 +331,9 @@ def lollipop_graph(m,n):
     This is the Barbell Graph without the right barbell.
 
     For m>1 and n>=0, the complete graph K_m is connected to the 
-    path P_n.  The resulting m+n nodes are labelled 1,...,m for the
-    complete graph and m+1,...,m+n for the path. The 2 subgraphs
-    are joined via the edge (m,n).  If n=0, this is merely a complete 
+    path P_n.  The resulting m+n nodes are labelled 0,...,m-1 for the
+    complete graph and m,...,m+n-1 for the path. The 2 subgraphs
+    are joined via the edge (m-1,m).  If n=0, this is merely a complete 
     graph.
 
     (This graph is an extremal example in David Aldous and Jim
@@ -403,7 +403,7 @@ def star_graph(n):
     return G
 
 def trivial_graph():
-    """ Return the Trivial graph with one node (with integer label 1)
+    """ Return the Trivial graph with one node (with integer label 0)
     and no edges.
     """
     G=empty_graph(1)
