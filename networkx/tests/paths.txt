@@ -161,6 +161,44 @@ True
 >>> NX.topological_sort_recursive(G) is None
 True
 
+Connected components
+--------------------
+
+>>> G1=NX.grid_2d_graph(2,2)
+>>> G2=cnlti(NX.lollipop_graph(3,3),first_label=4)
+>>> G3=cnlti(NX.house_graph(),first_label=10)
+>>> G=NX.union(G1,G2)
+>>> G=NX.union(G,G3)
+>>> sorted(NX.connected_components(G))
+[[0, 1, 2, 3], [4, 5, 6, 7, 8, 9], [10, 11, 12, 13, 14]]
+>>> NX.number_connected_components(G)
+3
+
+
+
+>>> G=cnlti(NX.grid_2d_graph(4,4),first_label=1)
+
+    .. image:: paths_G.png
+
+
+>>> NX.number_connected_components(G)
+1
+
+>>> sorted(NX.connected_components(G)[0])
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+>>> sorted(NX.node_connected_component(G,1))
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+>>> H=NX.connected_component_subgraphs(G)[0]
+>>> sorted(H.nodes())
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+>>> NX.is_connected(G)
+True
+>>> G.add_edge('A','B')
+>>> NX.is_connected(G)
+False
 
 Predecessor
 -----------

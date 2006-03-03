@@ -383,6 +383,52 @@ def predecessor(G,source,target=False,cutoff=False):
     else:
         return pred
 
+def connected_components(G):
+    """
+    Return a list of lists of nodes in each connected component of G.
+
+    The list is ordered from largest connected component to smallest.
+    """
+    seen={}
+    components=[]
+    for v in G:      
+        if v not in seen:
+            c=shortest_path_length(G,v)
+            components.append(c.keys())
+            seen.update(c)
+    components.sort(lambda x, y: cmp(len(y),len(x)))
+    return components            
+
+def number_connected_components(G):
+    """ Return the number of connected components in G.
+    """
+    return len(connected_components(G))
+
+def is_connected(G):
+    """True if G is connected"""
+    return number_connected_components(G)==1
+
+def connected_component_subgraphs(G):
+    """
+    Return a list of graphs of each connected component of G.
+    The list is ordered from largest connected component to smallest.
+    To get the largest connected component:
+    
+    >>> H=connected_component_subgraphs(G)[0]
+
+    """
+    cc=connected_components(G)
+    graph_list=[]
+    for c in cc:
+        graph_list.append(G.subgraph(c,inplace=False))
+    return graph_list
+
+
+def node_connected_component(G,v):
+    """
+    Return the connected component to which v belongs as a list of nodes.
+    """
+    return shortest_path_length(G,v).keys()
 
 def _test_suite():
     import doctest

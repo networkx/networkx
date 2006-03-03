@@ -119,45 +119,6 @@ def bfs_path(G,source,target=None):
         return paths
 
 
-def number_connected_components(G):
-    """
-    Return number of connected components of G.
-    """
-    V=SC.Preorder(G,queue=networkx.queues.DFS)
-    V.search(None)
-    return len(V.forest)
-
-def is_connected(G):
-    """True if G is connected"""
-    return number_connected_components(G)==1
-
-def connected_components(G):
-    """
-    Return a list of lists of nodes in each connected component of G.
-    The list is ordered from largest connected component to smallest.
-    """
-    V=SC.Preorder(G,queue=networkx.queues.DFS)
-    V.search(None)
-    cc=V.forest
-    cc.sort(lambda x, y: cmp(len(y),len(x)))
-    return cc
-
-def connected_component_subgraphs(G):
-    """
-    Return a list of graphs of each connected component of G.
-    The list is ordered from largest connected component to smallest.
-    To get the largest connected component:
-    
-    >>> H=connected_component_subgraphs(G)[0]
-
-    """
-    cc=connected_components(G)
-    graph_list=[]
-    for c in cc:
-        graph_list.append(G.subgraph(c,inplace=False))
-    return graph_list
-
-
 def dfs_forest(G,v=None):
     """
     Return a forest of trees built from depth first search (DFS).
@@ -167,16 +128,6 @@ def dfs_forest(G,v=None):
     V=SC.Forest(G,queue=networkx.queues.DFS)
     V.search(v)
     return V.forest
-
-def node_connected_component(G,v):
-    """
-    Return the connected component to which v belongs as a list of nodes.
-    """
-    component=dfs_forest(G,v)
-    return component[0].nodes()
-
-# YANGI:
-# add loop/loop length counters, will need to implement back edge for that
 
 def _test_suite():
     import doctest

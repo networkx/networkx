@@ -38,24 +38,6 @@ simple graph
 >>> print sorted(G.nodes())
 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
->>> number_connected_components(G)
-1
-
->>> sorted(connected_components(G)[0])
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-
->>> sorted(node_connected_component(G,1))
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-
->>> H=connected_component_subgraphs(G)[0]
->>> sorted(H.nodes())
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-
->>> is_connected(G)
-True
->>> G.add_edge('A','B')
->>> is_connected(G)
-False
 
 directed graph
 

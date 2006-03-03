@@ -64,11 +64,13 @@ from paths import shortest_path, shortest_path_length, eccentricity,\
                   diameter, radius, periphery, center,\
                   dijkstra, dijkstra_path, dijkstra_path_length,\
                   topological_sort, topological_sort_recursive,\
-                  is_directed_acyclic_graph
-from search import number_connected_components, connected_components,\
-            dfs_preorder, dfs_postorder, dfs_predecessor, dfs_successor,\
-            bfs_length, bfs_path, dfs_forest, node_connected_component,\
-            is_connected, connected_component_subgraphs
+                  is_directed_acyclic_graph,\
+                  number_connected_components, connected_components,\
+                  is_connected, connected_component_subgraphs,\
+                  node_connected_component,\
+                  predecessor
+from search import dfs_preorder, dfs_postorder, dfs_predecessor,\
+            dfs_successor, bfs_length, bfs_path, dfs_forest
 from cluster import triangles, average_clustering, clustering, transitivity
 from operators import union, cartesian_product, compose, complement,\
                       disjoint_union, create_empty_copy,\
