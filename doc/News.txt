@@ -1,12 +1,51 @@
+..  -*- coding: utf-8 -*-
+
 NetworkX News
 =============
 
 .. include:: Menu.txt
 
+
+What's new in NX-0.28?
+----------------------
+
+Release date: 3 March 2006
+
+See: https://networkx.lanl.gov/wiki/timeline
+
+New features
+~~~~~~~~~~~~
+  - Option to construct Laplacian with rows and columns in specified order
+  - Option in convert_node_labels_to_integers to use sorted order   
+  - predecessor(G,n) function that returns dictionary of
+    nodes with predecessors from breadth-first search of G 
+    starting at node n.
+    https://networkx.lanl.gov/wiki/ticket/26
+
+Examples
+~~~~~~~~
+  - Formation of giant component in binomial_graph
+    https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/binomial_giant.py
+  - Gallery https://networkx.lanl.gov/wiki/wiki/gallery
+  
+Bug fixes
+~~~~~~~~~
+  - Adjusted names for random graphs.
+     + erdos_renyi_graph=binomial_graph=gnp_graph: n nodes with 
+       edge probability p
+     + gnm_graph: n nodes and m edges
+     + fast_gnp_random_graph: gnp for sparse graphs (small p)   
+
+  - Documentation contains correct spelling of Barabási, Bollobás,
+    Erdős, and Rényi in UTF-8 encoding
+  - Increased speed of connected_components and related functions
+    by using faster BFS algorithm in networkx.paths
+    https://networkx.lanl.gov/wiki/ticket/27     
+
 What's new in NX-0.27?
 ----------------------
 
-Release date: 5 Feb 2006
+Release date: 5 February 2006
 
 See: https://networkx.lanl.gov/wiki/timeline
 
@@ -28,7 +67,7 @@ New features
 Examples
 ~~~~~~~~
   - Minard's data for Napoleon's Russian campaign
-    https://networkx.lanl.gov/wiki/file/networkx/trunk/examples/minard.py
+    https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/minard.py
 
 Bug fixes
 ~~~~~~~~~
@@ -41,7 +80,7 @@ Bug fixes
 What's new in NX-0.26
 ----------------------
 
-Release date: 6 Jan 2006
+Release date: 6 January 2006
 
 New features
 ~~~~~~~~~~~~

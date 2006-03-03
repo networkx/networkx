@@ -54,5 +54,5 @@ labels[13]='$\mu$'
 labels[14]='$\epsilon$'
 draw_networkx_labels(G,pos,labels,font_size=16)
 
-savefig("grid.png") # save as png
+savefig("draw_fancy.png") # save as png
 show() # display

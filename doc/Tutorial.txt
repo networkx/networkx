@@ -34,7 +34,7 @@ nodes and/or edges.
 The potential audience for NetworkX include: mathematicians,
 physicists, biologists, computer scientists, social scientists. The
 current state of the art of the (young and rapidly growing) science of
-complex networks is presented in Albert and Barabasi [BA02]_, Newman
+complex networks is presented in Albert and Barabási [BA02]_, Newman
 [Newman03]_, and Dorogovtsev and Mendes [DM03]_. See also the classic
 texts [Bollobas01]_, [Diestel97]_ and [West01_] for graph theoretic
 results and terminology. For basic graph algorithms, we recommend the

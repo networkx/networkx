@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     try:  #drawing
         import pylab as P
-        P.figure(1,figsize=(10,10))
+        P.figure(1,figsize=(8,8))
         # layout graphs with positions using graphviz neato
         pos=graphviz_layout(G,prog="neato")
         # color nodes the same in each connected subgraph
@@ -81,6 +81,6 @@ if __name__ == '__main__':
                  vmax=1.0,
                  with_labels=False
                  )
-        P.savefig("atlas.png")   
+        P.savefig("atlas.png",dpi=75)   
     except:
         pass

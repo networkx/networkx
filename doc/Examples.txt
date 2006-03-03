@@ -6,6 +6,9 @@ NetworkX Examples
 See the examples at
 https://networkx.lanl.gov/wiki/browser/networkx/trunk/doc/examples/
 
+And the gallery at
+https://networkx.lanl.gov/wiki/wiki/gallery
+
 Basic
 -----
 

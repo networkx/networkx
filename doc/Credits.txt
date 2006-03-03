@@ -23,8 +23,10 @@ Thanks to the following people who have made contributions to NX:
 
  - Arnar Flatberg fixed the graph laplacian routines
 
- - Chris Myers suggested using None as a default datatype and	
-   reported bugs
+ - Chris Myers suggested using None as a default datatype, suggested
+   improvements for the IO routines, and reported bugs
 
+ - Joel Miller tested and improved the connected components methods
 
+ - Keith Briggs sorted out naming issues for random graphs
 
