@@ -104,7 +104,31 @@ True
 >>> G.nodes()
 []
 
+>>> G=XGraph(multiedges=True)
+>>> G.add_edge(1,2,'a')
+>>> G.add_edge(1,2,'b')
+>>> G.add_edge(1,2,'c')
+>>> G.delete_node(1)
+>>> G.nodes()
+[2]
+>>> G.edges()
+[]
+
+
+>>> G=XGraph(multiedges=True)
+>>> G.add_edge(1,2,'a')
+>>> G.add_edge(1,2,'b')
+>>> G.add_edge(1,2,'c')
+>>> G.delete_nodes_from([1])
+>>> G.nodes()
+[2]
+>>> G.edges()
+[]
+
+
 Test add_node and delete_node acting for various nbunch
+
+>>> G = XGraph(name="test", multiedges=True, selfloops=True)
 
 >>> G.add_node('m')
 >>> G.has_node('m')

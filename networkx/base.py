@@ -442,7 +442,8 @@ class Graph(object):
         """
         try:
             for u in self.adj[n].keys():  
-                self.delete_edge(n,u)# remove all edges n-u in graph
+                del self.adj[u][n]  # (faster) remove all edges n-u in graph
+#                self.delete_edge(n,u)# remove all edges n-u in graph
             del self.adj[n]          # now remove node
         except KeyError: # NetworkXError if n not in self
             raise NetworkXError, "node %s not in graph"%n
