@@ -1093,10 +1093,10 @@ class DiGraph(Graph):
         """
         try:
             for u in self.succ[n].keys():  
-                self.delete_edge(n,u) # remove all edges n->u in digraph
+                del self.pred[u][n] # remove all edges n-u in graph
             del self.succ[n]          # remove node from succ
             for u in self.pred[n].keys():  
-                self.delete_edge(u,n) # remove all edges u->n in digraph
+                del self.succ[u][n] # remove all edges n-u in graph
             del self.pred[n]          # remove node from pred
         except KeyError: # NetworkXError if n not in self
             raise NetworkXError, "node %s not in graph"%n
