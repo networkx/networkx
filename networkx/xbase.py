@@ -1811,7 +1811,7 @@ class XDiGraph(DiGraph):
 
         If multiedges=False, then two directed edges (1,2,"red") and
         (2,1,"blue") can only result in one undirected edge, and there
-        is no garantee which one it is.
+        is no guarantee which one it is.
         
         """
         H=XGraph(multiedges=self.multiedges,selfloops=self.selfloops)
