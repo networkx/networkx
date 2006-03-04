@@ -1,37 +1,28 @@
 #!/usr/bin/env python
 
+"""
+An example of the XDiGraph class with multiple edges (multiedges=True)).
+
+The function chess_pgn_graph reads a collection of chess matches stored in 
+the specified PGN file (PGN ="Portable Game Notation")
+Here the (compressed) default file ---
+ chess_masters_WCC.pgn.bz2 ---
+contains all 685 World Chess matches from 1886 - 1985.
+
+(data from http://chessproblem.my-free-games.com/chess/games/Download-PGN.php)
+
+The chess_pgn_graph() function returns an XDiGraph with multiple edges
+but no self-loops where each node is a string representing a chess
+master. Each edge is directed from white to black and contains
+selected game info.
+
+"""
 #    Copyright (C) 2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
-
-"""
-This example shows the usefulness
-of the XDiGraph class (used here with 
-multiple edges (multiedges=True)).
-
-The function chess_pgn_graph reads a
-collection of chess matches stored in 
-the specified PGN file (PGN =
-"Portable Game Notation")
-Here the (compressed) default file ---
- chess_masters_WCC.png.bz2 ---
-contains all 685 World Chess matches from 
-1886 - 1985.
-
-(data from 
-http://chessproblem.my-free-games.com/chess/games/Download-PGN.php)
-
-The chess_pgn_graph() function returns an XDiGraph with 
-multiple edges but no self-loops where 
-each node is a string representing a 
-chess master. Each edge is directed from 
-white to black and contains selected game info.
-
-"""
-
 
 from networkx import *
 
@@ -88,7 +79,8 @@ if __name__ == '__main__':
     try:
 	import pylab as P
     except:
-	print "pylab not found: see https://networkx.lanl.gov/Drawing.html for info"
+	print """pylab not found: 
+               see https://networkx.lanl.gov/Drawing.html for info"""
 	raise 
 
     G=chess_pgn_graph()
@@ -121,43 +113,58 @@ if __name__ == '__main__':
            print "\n"
 
 
-
     try: # drawing
-        pos=graphviz_layout(G)	
-	# nodes
-	bluenodes=[n for n in Gcc[0]]
-	othernodes=[n for n in G if n not in bluenodes]
-	draw_networkx_nodes(G,pos,
-                         nodelist=bluenodes,
-                         node_color='b',
-                         node_shape='s',
-                         alpha=0.3,
-                         node_size=600,
+        P.figure(figsize=(8,8))
+        # make new undirected graph H without multi-edges
+        H=G.copy()
+        H.ban_multiedges()
+        H=H.to_undirected()
+
+        # edge width is proporational number of games played
+        edgewidth=[]
+        for (u,v,d) in H.edges():
+            edgewidth.append(len(G.get_edge(u,v)))
+
+        # node size is propotional to number of games won
+        wins=dict.fromkeys(G.nodes(),0.0)
+        for (u,v,d) in G.edges():
+            r=d['Result'].split('-')
+            if r[0]=='1':
+                wins[u]+=1.0
+            elif r[0]=='1/2':
+                wins[u]+=0.5
+                wins[v]+=0.5
+            else:
+                wins[v]+=1.0
+
+        pos=graphviz_layout(H)
+
+
+	draw_networkx_edges(H,pos,
+                      alpha=0.3,
+                      width=edgewidth,
+                      edge_color='m'
+                      )
+	draw_networkx_nodes(H,pos,
+                      node_size=[wins[v]*35 for v in H],
+                      node_color='r',
+                      alpha=0.95,
+                      )
+	draw_networkx_edges(H,pos,
+                         alpha=0.8,
+                         node_size=0,
+                         width=1,
+                         edge_color='k'
                          )
-	draw_networkx_nodes(G,pos,
-                         nodelist=othernodes,
-                         node_color='r',
-                         node_shape='s',
-                         alpha=0.3,
-                         node_size=600,
-                         )  
-	draw_networkx_edges(G,pos,
-                         edge_color='b',
-                         alpha=0.01,
-                         width=6.0
-                         )
-	draw_networkx_labels(G,pos,
-                         font_size='larger',
-                         font_famile='cursive',
-                         font_weight='bold'
-                         )        
- 
+        draw_networkx_labels(H,pos,
+                             font_size=10)
+        
 	P.title("World Chess Championship Games: 1886 - 1985")
 	# turn off x and y axes labels in pylab
 	P.xticks([])
 	P.yticks([])
 
-	P.savefig("chess_masters_graph.png")
+	P.savefig("chess_masters_graph.png",dpi=75)
         print "Wrote chess_masters_graph.png"
         P.show() # display
     except:

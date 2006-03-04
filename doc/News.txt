@@ -24,8 +24,10 @@ New features
 
 Examples
 ~~~~~~~~
-  - Formation of giant component in binomial_graph
+  - Formation of giant component in binomial_graph:
     https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/binomial_giant.py
+  - Chess masters matches:
+    https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/chess_masters.py
   - Gallery https://networkx.lanl.gov/wiki/wiki/gallery
   
 Bug fixes
@@ -35,12 +37,12 @@ Bug fixes
        edge probability p
      + gnm_graph: n nodes and m edges
      + fast_gnp_random_graph: gnp for sparse graphs (small p)   
-
   - Documentation contains correct spelling of Barabási, Bollobás,
     Erdős, and Rényi in UTF-8 encoding
   - Increased speed of connected_components and related functions
     by using faster BFS algorithm in networkx.paths
     https://networkx.lanl.gov/wiki/ticket/27     
+  - XGraph and XDiGraph with multiedges=True produced error on delete_edge
 
 What's new in NX-0.27?
 ----------------------
