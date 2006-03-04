@@ -126,6 +126,21 @@ True
 []
 
 
+>>> G=XDiGraph(multiedges=True)
+>>> G.add_edge(1,2,20)
+>>> G.add_edge(1,2,20)
+>>> G.add_edge(1,2,20)
+>>> G.add_edge(2,3,20)
+>>> G.add_edge(2,3,20)
+>>> G.add_edge(2,4,20)
+>>> G.add_edge(2,1,20)
+>>> G.delete_nodes_from([1])
+>>> G.nodes()
+[2, 3, 4]
+>>> G.edges()
+[(2, 3, 20), (2, 3, 20), (2, 4, 20)]
+
+
 Test add_node and delete_node acting for various nbunch
 
 >>> G = XGraph(name="test", multiedges=True, selfloops=True)
