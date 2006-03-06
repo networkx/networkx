@@ -552,11 +552,16 @@ class Graph(object):
     def delete_edge(self, u, v=None): 
         """Delete the single edge (u,v).
 
-        Can be used in two basic forms: Both G.delete_edge(u,v) and
-        G.delete_edge( (u,v) ) are equivalent forms of deleting a
-        single edge between nodes u and
-        v. Return quietly witoutt complaining if the nodes or the edge
-        do not exist.
+        Can be used in two basic forms: Both
+
+        >>> G.delete_edge(u,v)
+
+        and
+        >>> G.delete_edge( (u,v) )
+
+        are equivalent forms of deleting a single edge between nodes u and v.
+
+        Return withuot complaining if the nodes or the edge do not exist.
 
         """
         if v is None:
@@ -1194,10 +1199,17 @@ class DiGraph(Graph):
     def delete_edge(self, u, v=None): 
         """Delete the single directed edge (u,v) from the digraph.
 
-        Can be used in two basic forms: G.delete_edge(u,v) or
-        G.delete_edge( (u,v) ) are equivalent forms of deleting a
-        directed edge u->v. If the nodes do not exist; return
-        without complaining.
+        Can be used in two basic forms, either
+
+        >>> G.delete_edge(u,v)
+
+        or
+        
+        >>> G.delete_edge( (u,v) )
+
+        are equivalent forms of deleting a directed edge u->v.
+
+        If the edge does not exist return without complaining.
 
         """
         if v is None:
@@ -1210,8 +1222,9 @@ class DiGraph(Graph):
         """Delete the directed edges in ebunch from the digraph.
 
         ebunch: Container of 2-tuples (u,v). The container must be
-        iterable or an iterator.  It is iterated over once.  Edges
-        that are not in the digraph are ignored.
+        iterable or an iterator.  It is iterated over once.
+
+        Edges that are not in the digraph are ignored.
         
         """
         for (u,v) in ebunch:
