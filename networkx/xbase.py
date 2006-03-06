@@ -520,10 +520,9 @@ class XGraph(Graph):
     def delete_multiedge(self, n1, n2):
         """ Delete all edges between nodes n1 and n2.
      
-         When there is only a single edge allowed between
-         nodes (multiedges=False), this just calls
-         delete_edge(n1,n2) otherwise (multiedges=True)
-         all edges between n1 and n2 are deleted.
+         When there is only a single edge allowed between nodes
+         (multiedges=False), this just calls delete_edge(n1,n2)
+         otherwise (multiedges=True) all edges between n1 and n2 are deleted.
          """
         if self.multiedges:
             for x in self.get_edge(n1, n2):
@@ -536,17 +535,23 @@ class XGraph(Graph):
     def delete_edge(self, n1, n2=None, x=None): 
         """Delete the edge (n1,n2,x) from the graph.
 
-        Can be called either as G.delete_edge(n1,n2,x)
-        or as G.delete_edge(e), where e=(n1,n2,x).
+        Can be called either as
+
+        >>> G.delete_edge(n1,n2,x)
+        or
+        >>> G.delete_edge(e)
+
+        where e=(n1,n2,x).
 
         The default edge data is x=None
+
         If called with an edge e=(n1,n2), or as G.delete_edge(n1,n2)
         then the edge (n1,n2,None) will be deleted.
 
         If the edge does not exist, do nothing.
 
         To delete *all* edges between n1 and n2 use
-        G.delete_edge(n1,n2,all=True) 
+        >>>G.delete_multiedges(n1,n2)
         
         """
         if n2 is None:      # was called as delete_edge(e)
@@ -556,14 +561,16 @@ class XGraph(Graph):
                 n1,n2=n1    # x=None
 
         if self.multiedges:
-            if self.has_edge(n1,n2,x):        # (n1,n2,x) is an edge; now remove
-                self.adj[n1][n2].remove(x)      # remove the edge item from list
-                if n1!=n2:                      # and if not self loop
+            if (self.adj.has_key(n1)
+                and self.adj[n1].has_key(n2)
+                and x in self.adj[n1][n2]):  # if (n1,n2,x) is an edge;
+                self.adj[n1][n2].remove(x)  # remove the edge item from list
+                if n1!=n2:                   # and if not self loop
                     self.adj[n2][n1].remove(x)  # remove n2->n1 entry
-                if len(self.adj[n1][n2])==0:    # if last edge between n1 and n2
-                    del self.adj[n1][n2]        # was deleted, remove all trace
-                    if n1!=n2:                  # and if not self loop
-                        del self.adj[n2][n1]    # remove n2->n1 entry
+                if len(self.adj[n1][n2])==0: # if last edge between n1 and n2
+                    del self.adj[n1][n2]      # was deleted, remove all trace
+                    if n1!=n2:                # and if not self loop
+                        del self.adj[n2][n1]  # remove n2->n1 entry
         else:  # delete single edge       
             if self.has_neighbor(n1,n2):
                 del self.adj[n1][n2]
@@ -576,7 +583,7 @@ class XGraph(Graph):
 
         ebunch: Container of edges. Each edge must be a 3-tuple
         (n1,n2,x) or a 2-tuple (n1,n2).  In the latter case all edges
-        between n1 and n2 will be deleted. See delete_edge above.
+        between n1 and n2 will be deleted. See delete_edge.
 
         The container must be iterable or an iterator, and
         is iterated over once. Edges that are not in the graph are ignored.
@@ -1208,33 +1215,37 @@ class XDiGraph(DiGraph):
     def delete_multiedge(self, n1, n2):
         """ Delete all edges between nodes n1 and n2.
 
-        When there is only a single edge allowed between
-        nodes (multiedges=False), this just calls
-        delete_edge(n1,n2) otherwise (multiedges=True)
-        all edges between n1 and n2 are deleted.
+        When there is only a single edge allowed between nodes
+        (multiedges=False), this just calls delete_edge(n1,n2),
+        otherwise (multiedges=True) all edges between n1 and n2 are deleted.
         """
         if self.multiedges:
             for x in self.get_edge(n1,n2):
                 self.delete_edge(n1,n2,x)
         else:
-            self.delete_edge(n1, n2)
+            self.delete_edge(n1,n2)
         return
 
 
     def delete_edge(self, n1, n2=None, x=None, all=False): 
         """Delete the directed edge (n1,n2,x) from the graph.
 
-        Can be called either as G.delete_edge(n1,n2,x)
-        or as G.delete_edge(e), where e=(n1,n2,x).
+        Can be called either as
+        >>> G.delete_edge(n1,n2,x)
+        or as
+        >>> G.delete_edge(e)
+        where e=(n1,n2,x).
 
         The default data is x=None
+
         If called with an edge e=(n1,n2), or as G.delete_edge(n1,n2)
         then the edge (n1,n2,None) will be deleted.
 
         If the edge does not exist, do nothing.
 
         To delete *all* edges between n1 and n2 use
-        G.delete_edge(n1,n2,all=True) 
+
+        >>> G.delete_multiedges(n1,n2)
 
         """
         if n2 is None: #  was called as delete_edge(e)
@@ -1244,7 +1255,9 @@ class XDiGraph(DiGraph):
                 n1,n2=n1   # x=None
 
         if self.multiedges:              # multiedges are stored as a list
-            if self.has_edge(n1,n2,x):    # (n1,n2,x) is an edge; now remove
+           if (self.succ.has_key(n1)
+               and self.succ[n1].has_key(n2)
+               and x in self.succ[n1][n2]):
                 self.succ[n1][n2].remove(x)  # remove the edge item from list
                 self.pred[n2][n1].remove(x)
                 if len(self.succ[n1][n2])==0: # if last edge between n1 and n2
@@ -1261,8 +1274,9 @@ class XDiGraph(DiGraph):
 
         ebunch: Container of edges. Each edge must be a 3-tuple
         (n1,n2,x) or a 2-tuple (n1,n2).  The container must be
-        iterable or an iterator, and is iterated over once. Edges
-        that are not in the graph are ignored.
+        iterable or an iterator, and is iterated over once.
+
+        Edges that are not in the graph are ignored.
 
         """
         for e in ebunch:
