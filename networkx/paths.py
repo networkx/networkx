@@ -350,7 +350,8 @@ def predecessor(G,source,target=False,cutoff=False):
     Cutoff is a limit on the number of hops traversed.
 
     Example for the path graph 0-1-2-3
-
+    
+    >>> from networkx import *
     >>> G=path_graph(4)
     >>> print G.nodes()
     [0, 1, 2, 3]
@@ -412,8 +413,11 @@ def connected_component_subgraphs(G):
     """
     Return a list of graphs of each connected component of G.
     The list is ordered from largest connected component to smallest.
-    To get the largest connected component:
-    
+
+    For example, to only get the largest connected component:
+
+    >>> from networkx import *
+    >>> G=erdos_renyi_graph(100,0.02)    
     >>> H=connected_component_subgraphs(G)[0]
 
     """
