@@ -662,7 +662,7 @@ def random_threshold_sequence(n,p,seed=None):
 
     A "random" threshold graph can be built with
 
-    >>> G=threshold_graph(random_threshold_sequence(n,p))
+    >>> G=threshold_graph(random_threshold_sequence(10,0.5))
 
     """
     if not seed is None:
