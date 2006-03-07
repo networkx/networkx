@@ -280,7 +280,7 @@ class Graph(object):
     def __init__(self, **kwds):
         """Initialize Graph.
 
-        >>> G=Graph(name="empty") creates empty graph G with G.name="empty"
+        G=Graph(name="empty") creates empty graph G with G.name="empty"
 
         """
         self.name=kwds.get("name","No Name")
@@ -399,41 +399,45 @@ class Graph(object):
         On many platforms this includes mutables such as Graphs e.g.,
         though one should be careful the hash doesn't change on mutables.
 
-        Examples:
+        Example:
 
+        >>> from networkx import *
         >>> G=Graph()
         >>> K3=complete_graph(3)
         >>> G.add_node(1)
         >>> G.add_node('Hello')
         >>> G.add_node(K3)
-        >>> G.nodes()
-        [1, 'Hello', <networkx.base.Graph object at 0x5f7430>]
+        >>> G.number_of_nodes()
+        3
+
         """
         if n not in self.adj:
             self.adj[n]={}
+
 
     def add_nodes_from(self, nbunch):
         """Add multiple nodes to the graph.
 
         nbunch:
         A container of nodes that will be iterated through once
-        (thus it can be an iterator or an iterable)
+        (thus it should be an iterator or be iterable)
         Each element of the container should be hashable.
 
         Examples:
-
+        
+        >>> from networkx import *
         >>> G=Graph()
         >>> K3=complete_graph(3)
-        >>> G.add_nodes_from(1)
-        NetworkXError, Container 1 is not an iterator or iterable. Use add_node?
         >>> G.add_nodes_from('Hello')
         >>> G.add_nodes_from(K3)
-        >>> G.nodes()
-        ['H', 'e', 'l', 'l', 'o', 1, 2, 3]
+        >>> sorted(G.nodes())
+        [0, 1, 2, 'H', 'e', 'l', 'o']
+
         """
         for n in nbunch:
             if n not in self.adj:
                 self.adj[n]={}
+
 
     def delete_node(self,n):
         """Delete node n from graph.  
@@ -497,6 +501,7 @@ class Graph(object):
         """Return the order of a graph = number of nodes."""
         return len(self.adj)
 
+
     def add_edge(self, u, v=None):  
         """Add a single edge (u,v) to the graph.
 
@@ -553,15 +558,12 @@ class Graph(object):
         """Delete the single edge (u,v).
 
         Can be used in two basic forms: Both
-
-        >>> G.delete_edge(u,v)
-
+           G.delete_edge(u,v)
         and
-        >>> G.delete_edge( (u,v) )
-
+           G.delete_edge( (u,v) )
         are equivalent forms of deleting a single edge between nodes u and v.
 
-        Return withuot complaining if the nodes or the edge do not exist.
+        Return without complaining if the nodes or the edge do not exist.
 
         """
         if v is None:
@@ -576,6 +578,7 @@ class Graph(object):
         ebunch: an iterator or iterable of 2-tuples (u,v).
 
         Edges that are not in the graph are ignored.
+
         """
         for (u,v) in ebunch:
             if self.adj.has_key(u) and self.adj[u].has_key(v):
@@ -583,20 +586,24 @@ class Graph(object):
                 del self.adj[v][u]   
 
     def has_edge(self, u, v=None):
-        """Return True if graph contains edge u-v. """
+        """Return True if graph contains the edge u-v. """
         if  v is None:
             (u,v)=u    # split tuple in first position
         return self.adj.has_key(u) and self.adj[u].has_key(v)
 
     def has_neighbor(self, u, v=None):
-        """Return True if node u has neighbor v."""
-        # equivalent to has_edge(u,v)
+        """Return True if node u has neighbor v.
+
+        This is quivalent to has_edge(u,v).
+
+	"""
         return self.has_edge(u,v)
 
 
     def neighbors_iter(self,n,with_labels=False):
          """Return an iterator over all neighbors of node n.
-          If with_labels=True, return an iterator of (neighbor, 1) tuples.
+
+          If with_labels=True, return an iterator of (neighbor, None) tuples.
        
          """
          try:
@@ -633,7 +640,8 @@ class Graph(object):
         if with_labels:
             # not supported
             # rather use neighbors() method 
-            raise NetworkXError, "with_labels=True option not supported. Rather use neighbors()"
+            raise NetworkXError,\
+                  "with_labels=True option not supported. Rather use neighbors()"
         # prepare nbunch
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
@@ -673,11 +681,13 @@ class Graph(object):
 
         with_labels=True option is not supported because in that case
         you should probably use neighbors().
+
         """
         if with_labels:
             # not supported
             # rather use neighbors
-            raise NetworkXError, "with_labels=True option not supported. Rather use neighbors()"
+            raise NetworkXError,\
+                  "with_labels=True option not supported. Rather use neighbors()"
         return list(self.edges_iter(nbunch))
 
     def edge_boundary(self, nbunch1, nbunch2=None):
@@ -710,11 +720,13 @@ class Graph(object):
             if len1 <= len2:
                 for n in nlist1:
                     if n in nlist2:
-                        raise NetworkXError, "nbunch1 and nbunch2 are not disjoint"
+                        raise NetworkXError,\
+                        "nbunch1 and nbunch2 are not disjoint"
             else:
                 for n in nlist2:
                     if n in nlist1:
-                        raise NetworkXError, "nbunch1 and nbunch2 are not disjoint"
+                        raise NetworkXError, \
+                        "nbunch1 and nbunch2 are not disjoint"
         if len1 <= len2:
             for n1 in nlist1:
                 for n2 in self.adj[n1]:
@@ -760,11 +772,13 @@ class Graph(object):
             if len1 <= len2:
                 for n in nlist1:
                     if n in nlist2:
-                        raise NetworkXError, "nbunch1 and nbunch2 are not disjoint"
+                        raise NetworkXError,\
+                        "nbunch1 and nbunch2 are not disjoint"
             else:
                 for n in nlist2:
                     if n in nlist1:
-                        raise NetworkXError, "nbunch1 and nbunch2 are not disjoint"
+                        raise NetworkXError,\
+                        "nbunch1 and nbunch2 are not disjoint"
         # use shortest outer loop
         if len1 <= len2:
             # find external boundary of nlist1
@@ -1060,14 +1074,15 @@ class DiGraph(Graph):
         such as Graphs e.g., though one should be careful the hash
         doesn't change during the lifetime of the graph.
 
+        >>> from networkx import *
         >>> G=DiGraph()
         >>> K3=complete_graph(3)
         >>> G.add_nodes_from(K3)    # add the nodes from K3 to G
         >>> G.nodes()
-        [1,2,3]
+        [0, 1, 2]
         >>> G.clear()
         >>> G.add_node(K3)          # add the graph K3 as a node in G.
-        >>> number_of_nodes(G)
+        >>> G.number_of_nodes()
         1
 
         """
@@ -1199,13 +1214,10 @@ class DiGraph(Graph):
     def delete_edge(self, u, v=None): 
         """Delete the single directed edge (u,v) from the digraph.
 
-        Can be used in two basic forms, either
-
-        >>> G.delete_edge(u,v)
-
-        or
-        
-        >>> G.delete_edge( (u,v) )
+        Can be used in two basic forms. Both 
+        G.delete_edge(u,v)
+            or 
+        G.delete_edge( (u,v) )
 
         are equivalent forms of deleting a directed edge u->v.
 
