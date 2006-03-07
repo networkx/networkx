@@ -11,6 +11,11 @@ Provides:
  - pygraphviz_from_networkx()
  - networkx_from_pygraphviz()
 
+and the graph layout methods:
+
+ - graphviz_layout()
+ - pygraphviz_layout()
+ 
 Either this module or nx_pydot can be used to interface with graphviz.  
 
 References:
@@ -127,6 +132,8 @@ def graphviz_layout(G,prog='neato',root=None, args=''):
     Create layout using graphviz.
     Returns a dictionary of positions keyed by node.
 
+    >>> from networkx import *
+    >>> G=petersen_graph()
     >>> pos=graphviz_layout(G)
     >>> pos=graphviz_layout(G,prog='dot')
     
@@ -140,6 +147,8 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     Create layout using pygraphviz and graphviz.
     Returns a dictionary of positions keyed by node.
 
+    >>> from networkx import *
+    >>> G=petersen_graph()
     >>> pos=pygraphviz_layout(G)
     >>> pos=pygraphviz_layout(G,prog='dot')
     
