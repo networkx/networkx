@@ -14,13 +14,10 @@ __credits__ = """"""
 __revision__ = "$Revision: 1064 $"
 
 def betweenness_centrality(G,v=False,cutoff=False,normalized=True):
-    """
-    Betweenness centrality for nodes.
+    """Betweenness centrality for nodes.
     The fraction of number of shortests paths that go
     through each node.
 
-    >>> b=betweeness_centrality(G)
-    
     Returns a dictionary of betweenness values keyed by node.
     The betweenness is normalized to be between [0,1].
     The algorithm is described in [brandes-2003-faster]_.
@@ -49,14 +46,13 @@ def betweenness_centrality(G,v=False,cutoff=False,normalized=True):
         return betweenness  # all nodes
 
 def _node_betweenness(G,source,cutoff=False,normalized=True):
-    """
-    See betweenness_centrality for what you probably want.
+    """See betweenness_centrality for what you probably want.
 
     This is betweenness for a single node.
     The fraction of number of shortests paths from source that go
     through each node.
 
-    To get the betweenness for a vertex you need to do all pairs
+    To get the betweenness for a node you need to do all-pairs
     shortest paths.  
 
     """
@@ -176,7 +172,8 @@ def degree_centrality(G,v=False):
 
     Returns a dictionary of degree centrality values keyed by node.
 
-    The degree centrality is normalized to be bewtween [0,1].
+    The degree centrality is normalized to be between 0 and 1.
+
     """
     degree_centrality={}
     deg=G.degree(with_labels=True)
@@ -194,7 +191,7 @@ def closeness_centrality(G,v=False):
     Closeness centrality for nodes (1/average distance to all nodes).
 
     Returns a dictionary of closeness centrality values keyed by node.
-    The closeness centrality is normalized to be bewtween [0,1].
+    The closeness centrality is normalized to be between 0 and 1.
 
     """
     from networkx.paths import shortest_path_length
