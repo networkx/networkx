@@ -1,6 +1,20 @@
 """
 Draw networks with matplotlib (pylab).
 
+Provides:
+
+ - draw()
+ - draw_networkx()
+ - draw_networkx_nodes()
+ - draw_networkx_edges()
+ - draw_networkx_labels()
+draw_circular
+draw_random
+draw_spectral
+draw_spring
+draw_shell
+draw_graphviz
+
 References:
  - matplotlib:     http://matplotlib.sourceforge.net/
  - pygraphviz:     http://networkx.lanl.gov/pygraphviz/
@@ -42,11 +56,11 @@ def draw(G, pos=None, with_labels=True, **kwds):
 
     Usage:
 
+    >>> from networkx import *
+    >>> G=dodecahedral_graph()
     >>> draw(G)
-
     >>> pos=graphviz_layout(G)
     >>> draw(G,pos)
-
     >>> draw(G,pos=spring_layout(G))
 
     Also see doc/examples/draw_*
@@ -83,10 +97,12 @@ def draw(G, pos=None, with_labels=True, **kwds):
 
     >>> import pylab as P
     >>> import networkx as NX
+    >>> G=NX.dodecahedral_graph()
 
     and then use
 
     >>> NX.draw(G)  # networkx draw()
+
     and
     >>> P.draw()    # pylab draw()
 
@@ -117,8 +133,10 @@ def draw_networkx(G, pos, with_labels=True, ax=None, **kwds):
 
     Usage:
 
+    >>> from networkx import *
     >>> import pylab as P
     >>> ax=P.subplot(111)
+    >>> G=dodecahedral_graph()
     >>> pos=spring_layout(G)
     >>> draw_networkx(G,pos,ax=ax)
 
@@ -170,6 +188,7 @@ def draw_networkx_nodes(G, pos,
     If provided only the nodes in nodelist will be drawn.
     
     see draw_networkx for the list of other optional parameters.
+
     """
     if ax is None:
         ax=gca()
@@ -212,7 +231,8 @@ def draw_networkx_edges(G, pos,
     edgelist is an optional list of the edges in G to be drawn.
     If provided only the edges in edgelist will be drawn. 
     
-    see draw_networkx for the list of other optional parameters.
+    See draw_networkx for the list of other optional parameters.
+
     """
     if ax is None:
         ax=gca()
@@ -333,7 +353,8 @@ def draw_networkx_labels(G, pos,
     as the values.  If provided only labels for the keys in the dictionary
     are drawn.
     
-    see draw_networkx for the list of other optional parameters.
+    See draw_networkx for the list of other optional parameters.
+
     """
     if ax is None:
         ax=gca()
@@ -391,8 +412,6 @@ def draw_graphviz(G, prog="neato", **kwargs):
 def draw_nx(G,pos,**kwds):
     """For backward compatibility; use draw or draw_networkx"""
     draw(G,pos,**kwds)
-
-
 
 def _test_suite():
     import doctest
