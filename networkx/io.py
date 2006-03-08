@@ -6,29 +6,31 @@ networkx graphs:
 
 Edgelist format:
 
-write_edgelist(G,path)
-read_edgelist(path, create_using=networkx.Graph(), nodetype=str, edgetype=str)
+   write_edgelist(G,path)
+   read_edgelist(path, create_using=networkx.Graph(), 
+                 nodetype=str, edgetype=str)
 
-Useful for connected graphs with our without edge data.
+Useful for connected graphs with or without edge data.
 
 Adjacency list with single line per node:
 
-write_adjlist(G,path)
-read_adjlist(path, create_using=networkx.Graph(), nodetype=str)
+    write_adjlist(G,path)
+    read_adjlist(path, create_using=networkx.Graph(), nodetype=str)
 
 Useful for connected or unconnected graphs without edge data.
 
 Adjacency list with multiple lines per node:
 
-write_multiline_adjlist(G,path)
-read_multiline_adjlist(path, create_using=networkx.Graph(), nodetype=str, edgetype=str)
+    write_multiline_adjlist(G,path)
+    read_multiline_adjlist(path, create_using=networkx.Graph(), 
+                           nodetype=str, edgetype=str)
 
 Useful for connected or unconnected graphs with or without edge data.
 
 Python pickled format:
 
-write_gpickle(G,path)
-read_gpickle(path)
+    write_gpickle(G,path)
+    read_gpickle(path)
 
 Useful for graphs with non ASCII representable data.
 
@@ -43,10 +45,12 @@ __revision__ = "$Revision: 1063 $"
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
+
 import cPickle 
 import string
 import sys
 import time
+
 from networkx.utils import is_string_like
 import networkx
 
