@@ -6,8 +6,8 @@ The typical graph generator is called as follows:
 >>> G=complete_graph(100)
 
 returning the complete graph on n nodes labeled 0,..,99
-as a simple graph. Except for empty_graph, all these generators return
-a Graph class (i.e. a simple undirected graph).
+as a simple graph. Except for empty_graph, all the generators 
+in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
 #    Copyright (C) 2004,2005 by 
@@ -35,9 +35,11 @@ def balanced_tree(r,h):
     are at distance h from the root.
     The root has degree r and all other internal nodes have degree r+1.
 
-    Graph order=1+r+r**2+...+r**h=(r**(h+1)-1)/(r-1), graph size=order-1.
+    number_of_nodes = 1+r+r**2+...+r**h = (r**(h+1)-1)/(r-1), 
+    number_of_edges = number_of_nodes - 1.
 
-    Node labels are integers numbered 0 (the root) up to order-1.
+    Node labels are the integers 0 (the root) up to 
+    number_of_nodes - 1.
     
     """
     if r<2:
@@ -50,10 +52,10 @@ def balanced_tree(r,h):
     G=empty_graph()
     G.name="balanced tree"
 
-    # grow tree of increasing height by repeatedly adding a layer
-    # of new leaves to current leaves
+    # Grow tree of increasing height by repeatedly adding a layer
+    # of new leaves to current leaves.
     
-    # first create root of degree r
+    # First create root of degree r
     root=0
     v=root
     G.add_node(v)
@@ -64,7 +66,7 @@ def balanced_tree(r,h):
         G.add_edge(root,v)
         newleavelist.append(v)
         i=i+1
-    #   all other  internal nodes have degree r+1
+    # All other  internal nodes have degree r+1
     height=1
     while height<h:
         leavelist=newleavelist[:]
@@ -80,9 +82,9 @@ def balanced_tree(r,h):
 def barbell_graph(m1,m2):
     """Return the Barbell Graph: two complete graphs connected by a path.
 
-    For m1>1 and m2>=0.
+    For m1 > 1 and m2 >= 0.
 
-    Two complete graphs K_{m1} form the left and right bells,
+    Two identical complete graphs K_{m1} form the left and right bells,
     and are connected by a path P_{m2}.
 
     The 2*m1+m2  nodes are numbered
@@ -113,7 +115,6 @@ def barbell_graph(m1,m2):
     if m2>1:
         G.add_edges_from([(v,v+1) for v in range(m1,m1+m2-1)])
     # right barbell
-#    G.add_nodes_from([v for v in range(m1+m2,2*m1+m2)])
     for u in range(m1+m2,2*m1+m2):
         for v in range(u,2*m1+m2):
             G.add_edge(u,v)
@@ -124,7 +125,11 @@ def barbell_graph(m1,m2):
     return G
 
 def complete_graph(n):
-    """ Return the Complete graph K_n with n nodes. """
+    """ Return the Complete graph K_n with n nodes. 
+    
+    Node labels are the integers 0 to n-1.
+
+    """
     G=empty_graph(n)
     G.name="complete graph K_%d"%n
     for u in xrange(n):
@@ -135,8 +140,11 @@ def complete_graph(n):
 def complete_bipartite_graph(n1,n2):
     """Return the complete bipartite graph K_{n1_n2}.
     
-    Contains n1 nodes in the first subgraph and n2 nodes
-    in the second subgraph.
+    Composed of two partitions with n1 nodes in the first 
+    and n2 nodes in the second. Each node in the first is 
+    connected to each node in the second.
+
+    Node labels are the integers 0 to n1+n2-1
     
     """
     G=empty_graph(n1+n2)
@@ -151,6 +159,8 @@ def circular_ladder_graph(n):
 
     CL_n consists of two concentric n-cycles in which
     each of the n pairs of concentric nodes are joined by an edge.
+
+    Node labels are the integers 0 to n-1
     
     """
     G=ladder_graph(n)
@@ -162,7 +172,9 @@ def circular_ladder_graph(n):
 def cycle_graph(n):
     """Return the cycle graph C_n over n nodes.
    
-    C_n is P_n with two end-nodes connected.
+    C_n is the n-path with two end-nodes connected.
+
+    Node labels are the integers 0 to n-1
     
     """
     G=path_graph(n)
@@ -193,9 +205,11 @@ def dorogovtsev_goltsev_mendes_graph(n):
     return G
 
 def empty_graph(n=0,create_using=None,**kwds):
-    """Return the empty graph with n nodes
-    (with integer labels 0,...,n-1) and zero edges.
+    """Return the empty graph with n nodes and zero edges.
 
+    Node labels are the integers 0 to n-1
+
+    For example:
     >>> from networkx import *
     >>> G=empty_graph(10)
     >>> G.number_of_nodes()
@@ -214,10 +228,6 @@ def empty_graph(n=0,create_using=None,**kwds):
     empty digraph, network,etc.  For example,
 
     >>> n=10
-    >>> G=empty_graph(n,create_using=DiGraph())
-
-    will create an empty digraph on n nodes, and
-
     >>> G=empty_graph(n,create_using=DiGraph())
 
     will create an empty digraph on n nodes.
@@ -311,7 +321,11 @@ def grid_graph(dim,periodic=False):
     return H
 
 def hypercube_graph(n):
-    """return the n-dimensional hypercube."""
+    """Return the n-dimensional hypercube.
+
+    Node labels are the integers 0 to 2**n - 1.
+
+    """
     dim=n*[2]
     G=grid_graph(dim)
     G.name="hypercube graph (%d)"%n
@@ -320,8 +334,10 @@ def hypercube_graph(n):
 def ladder_graph(n):
     """Return the Ladder graph of length n.
 
-    This is two rows of n nodes,
+    This is two rows of n nodes, with
     each pair connected by a single edge.
+
+    Node labels are the integers 0 to 2*n - 1.
     
     """
     G=empty_graph(2*n)
@@ -342,6 +358,8 @@ def lollipop_graph(m,n):
     are joined via the edge (m-1,m).  If n=0, this is merely a complete 
     graph.
 
+    Node labels are the integers 0 to number_of_nodes - 1.
+
     (This graph is an extremal example in David Aldous and Jim
     Fill's etext on Random Walks on Graphs.)
     
@@ -352,19 +370,23 @@ def lollipop_graph(m,n):
     if n<0:
         raise networkx.NetworkXError, \
               "Invalid graph description, n should be >=0"
-    # complete graph
+    # the ball
     G=complete_graph(m)
-    G.name="lollipop graph (%d,%d)"%(m,n)
     # the stick
     G.add_nodes_from([v for v in xrange(m,m+n)])
     if n>1:
         G.add_edges_from([(v,v+1) for v in xrange(m,m+n-1)])
     # connect ball to stick
     if m>0: G.add_edge(m-1,m)
+    G.name="lollipop graph (%d,%d)"%(m,n)
     return G
 
 def null_graph(create_using=None,**kwds):
-    """ Return the Null graph with no nodes or edges. """
+    """ Return the Null graph with no nodes or edges. 
+
+    See empty_graph for the use of create_using.
+
+    """
     G=empty_graph(0,create_using,**kwds)
     G.name="null graph"
     return G
@@ -372,6 +394,8 @@ def null_graph(create_using=None,**kwds):
 def path_graph(n):
     """Return the Path graph P_n of n nodes linearly connected
     by n-1 edges.
+
+   Node labels are the integers 0 to n - 1.
 
     """
     G=empty_graph(n)
@@ -403,7 +427,9 @@ def periodic_grid_2d_graph(m,n):
 
 def star_graph(n):
     """ Return the Star graph with n+1 nodes:
-        one center node, connected to n outer nodes.
+    one center node, connected to n outer nodes.
+
+   Node labels are the integers 0 to n.
 
     """
     G=complete_bipartite_graph(1,n)
@@ -422,6 +448,8 @@ def trivial_graph():
 def wheel_graph(n):
     """ Return the wheel graph: a single hub node connected
     to each node of the (n-1)-node cycle graph. 
+
+   Node labels are the integers 0 to n - 1.
 
     """
     G=star_graph(n-1)
