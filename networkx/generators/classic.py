@@ -26,8 +26,6 @@ __revision__ = "$Revision: 1056 $"
 #   Some Classic Graphs
 #-------------------------------------------------------------------
 import networkx
-#from networkx.base import *
-#from networkx.operators import *
 
 
 def balanced_tree(r,h):
@@ -49,7 +47,7 @@ def balanced_tree(r,h):
         raise networkx.NetworkXError, \
               "Invalid graph description, h should be >=1"
     
-    G=empty_graph(0)
+    G=empty_graph()
     G.name="balanced tree"
 
     # grow tree of increasing height by repeatedly adding a layer
@@ -195,21 +193,27 @@ def dorogovtsev_goltsev_mendes_graph(n):
     return G
 
 def empty_graph(n=0,create_using=None,**kwds):
-    """
-    Return the empty graph with n nodes
+    """Return the empty graph with n nodes
     (with integer labels 0,...,n-1) and zero edges.
 
-    >>> G=empty_graph(n) 
-
+    >>> from networkx import *
+    >>> G=empty_graph(10)
+    >>> G.number_of_nodes()
+    10
+    >>> G.number_of_edges()
+    0
+ 
     The variable create_using should point to a "graph"-like object that
     will be cleaned (nodes and edges will be removed) and refitted as
     an empty "graph" with n nodes with integer labels. This capability
     is useful for specifying the class-nature of the resulting empty
     "graph" (i.e. Graph, DiGraph, MyWeirdGraphClass, etc.).
     
+    The variable create_using has two main uses:
     Firstly, the variable create_using can be used to create an
     empty digraph, network,etc.  For example,
 
+    >>> n=10
     >>> G=empty_graph(n,create_using=DiGraph())
 
     will create an empty digraph on n nodes, and
@@ -222,7 +226,7 @@ def empty_graph(n=0,create_using=None,**kwds):
     etc.) via create_using. For example, if G is an existing graph
     (resp. digraph, pseudograph, etc.), then empty_graph(n,create_using=G)
     will empty G (i.e. delete all nodes and edges using G.clear() in
-    baseNX) and then add n nodes and zero edges, and return the modified
+    base) and then add n nodes and zero edges, and return the modified
     graph (resp. digraph, pseudograph, etc.).
 
     WARNING: The graph dna is not scrubbed in this process.
@@ -244,8 +248,9 @@ def empty_graph(n=0,create_using=None,**kwds):
 def grid_2d_graph(m,n):
     """ Return the 2d grid graph of mxn nodes,
         each connected to its nearest neighbors.
+
     """
-    G=empty_graph(0)
+    G=empty_graph()
     G.name="grid 2d graph"
     rows=range(m)
     columns=range(n)
@@ -272,6 +277,7 @@ def grid_graph(dim,periodic=False):
     E.g. G=grid_graph(dim=[2,3]) produces a 2x3 grid graph.
 
     If periodic=True then join grid edges with periodic boundary conditions.
+
     """    
     from networkx.utils import is_list_of_ints
     if not isinstance(dim,list):
@@ -366,6 +372,7 @@ def null_graph(create_using=None,**kwds):
 def path_graph(n):
     """Return the Path graph P_n of n nodes linearly connected
     by n-1 edges.
+
     """
     G=empty_graph(n)
     G.name="path graph (%d)"%n
@@ -397,6 +404,7 @@ def periodic_grid_2d_graph(m,n):
 def star_graph(n):
     """ Return the Star graph with n+1 nodes:
         one center node, connected to n outer nodes.
+
     """
     G=complete_bipartite_graph(1,n)
     G.name="star graph (%d)"%n
@@ -405,6 +413,7 @@ def star_graph(n):
 def trivial_graph():
     """ Return the Trivial graph with one node (with integer label 0)
     and no edges.
+
     """
     G=empty_graph(1)
     G.name="trivial graph"
@@ -413,6 +422,7 @@ def trivial_graph():
 def wheel_graph(n):
     """ Return the wheel graph: a single hub node connected
     to each node of the (n-1)-node cycle graph. 
+
     """
     G=star_graph(n-1)
     G.name="wheel graph (%d)"%n
