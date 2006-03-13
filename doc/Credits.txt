@@ -7,6 +7,8 @@ Thanks to Guido van Rossum for the idea of using Python for
 implementing a graph data structure  
 http://www.python.org/doc/essays/graphs.html
 
+Thanks to David Eppstein for the idea of representing a graph G
+so that "for n in G" loops over the nodes and G[n] are n's neighbors.      
 
 Thanks to the following people who have made contributions to NX:
 

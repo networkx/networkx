@@ -9,7 +9,7 @@ NetworkX News
 What's new in NX-0.28?
 ----------------------
 
-Release date: 3 March 2006
+Release date: 13 March 2006
 
 See: https://networkx.lanl.gov/wiki/timeline
 
@@ -43,6 +43,10 @@ Bug fixes
     by using faster BFS algorithm in networkx.paths
     https://networkx.lanl.gov/wiki/ticket/27     
   - XGraph and XDiGraph with multiedges=True produced error on delete_edge
+  - Cleaned up docstring errors
+  - Normalize names of some graphs to produce strings that represent
+    calling sequence
+  
 
 What's new in NX-0.27?
 ----------------------
