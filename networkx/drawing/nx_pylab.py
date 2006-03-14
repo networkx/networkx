@@ -8,12 +8,12 @@ Provides:
  - draw_networkx_nodes()
  - draw_networkx_edges()
  - draw_networkx_labels()
-draw_circular
-draw_random
-draw_spectral
-draw_spring
-draw_shell
-draw_graphviz
+ - draw_circular
+ - draw_random
+ - draw_spectral
+ - draw_spring
+ - draw_shell
+ - draw_graphviz
 
 References:
  - matplotlib:     http://matplotlib.sourceforge.net/

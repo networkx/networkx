@@ -269,12 +269,15 @@ def convert_node_labels_to_integers(G,first_label=0,ordering="default",discard_o
     starting at first_label.
 
     first_label: (optional, default=1)
+
        An integer specifying the offset in numbering nodes.
        The n new integer labels are numbered first_label, ..., n+first_label.
     
     ordering: (optional, default="default")
+
        A string specifying how new node labels are ordered. 
        Possible values are: 
+
           "default" : inherit node ordering from G.nodes() 
           "sorted"  : inherit node ordering from sorted(G.nodes())
           "increasing degree" : nodes are sorted by increasing degree

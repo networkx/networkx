@@ -558,9 +558,9 @@ class Graph(object):
         """Delete the single edge (u,v).
 
         Can be used in two basic forms: Both
-           G.delete_edge(u,v)
+        G.delete_edge(u,v)
         and
-           G.delete_edge( (u,v) )
+        G.delete_edge( (u,v) )
         are equivalent forms of deleting a single edge between nodes u and v.
 
         Return without complaining if the nodes or the edge do not exist.
@@ -1215,8 +1215,7 @@ class DiGraph(Graph):
         """Delete the single directed edge (u,v) from the digraph.
 
         Can be used in two basic forms. Both 
-        G.delete_edge(u,v)
-            or 
+        G.delete_edge(u,v), or
         G.delete_edge( (u,v) )
 
         are equivalent forms of deleting a directed edge u->v.

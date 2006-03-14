@@ -8,7 +8,7 @@ VPATH=html
 #	rst2html.py < $< > html/$*.html
 
 .txt.tex:
-	rst2latex.py < $< > pdf/$*.tex
+	rst2latex.py --output-encoding-error-handler=backslashreplace < $< > pdf/$*.tex
 	(cd pdf; pdflatex  $*.tex)
 
 all:  html pdf
