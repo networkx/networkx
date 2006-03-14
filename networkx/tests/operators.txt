@@ -255,7 +255,7 @@ test that empty graph converts fine for all options
 >>> G=empty_graph()
 >>> H=convert_node_labels_to_integers(G,100)
 >>> print H.name
-(empty graph)_with_int_labels
+(empty_graph(0))_with_int_labels
 >>> H.nodes()
 []
 >>> H.edges()
@@ -264,7 +264,7 @@ test that empty graph converts fine for all options
 >>> G=empty_graph()
 >>> H=convert_node_labels_to_integers(G,100,ordering="sorted")
 >>> print H.name
-(empty graph)_with_int_labels
+(empty_graph(0))_with_int_labels
 >>> H.nodes()
 []
 >>> H.edges()
@@ -273,7 +273,7 @@ test that empty graph converts fine for all options
 >>> G=empty_graph()
 >>> H=convert_node_labels_to_integers(G,100,ordering="default")
 >>> print H.name
-(empty graph)_with_int_labels
+(empty_graph(0))_with_int_labels
 >>> H.nodes()
 []
 >>> H.edges()
@@ -282,7 +282,7 @@ test that empty graph converts fine for all options
 >>> G=empty_graph()
 >>> H=convert_node_labels_to_integers(G,100,ordering="increasing degree")
 >>> print H.name
-(empty graph)_with_int_labels
+(empty_graph(0))_with_int_labels
 >>> H.nodes()
 []
 >>> H.edges()
@@ -291,7 +291,7 @@ test that empty graph converts fine for all options
 >>> G=empty_graph()
 >>> H=convert_node_labels_to_integers(G,100,ordering="decreasing degree")
 >>> print H.name
-(empty graph)_with_int_labels
+(empty_graph(0))_with_int_labels
 >>> H.nodes()
 []
 >>> H.edges()

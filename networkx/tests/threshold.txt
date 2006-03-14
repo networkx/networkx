@@ -202,7 +202,6 @@ True
 >>> eigenvalues('dddiii')
 [0, 0, 0, 0, 3, 3]
 
->>> degree_sequence('dddiiid')
 >>> eigenvalues('dddiiid')
 [0, 1, 1, 1, 4, 4, 7]
 
