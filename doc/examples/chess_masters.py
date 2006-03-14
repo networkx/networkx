@@ -1,20 +1,27 @@
 #!/usr/bin/env python
 
 """
-An example of the XDiGraph class with multiple edges (multiedges=True)).
+An example of the XDiGraph class with multiple 
+edges (multiedges=True)).
 
-The function chess_pgn_graph reads a collection of chess matches stored in 
-the specified PGN file (PGN ="Portable Game Notation")
+The function chess_pgn_graph reads a collection of chess 
+matches stored in the specified PGN file 
+(PGN ="Portable Game Notation")
 Here the (compressed) default file ---
  chess_masters_WCC.pgn.bz2 ---
 contains all 685 World Chess matches from 1886 - 1985.
 
 (data from http://chessproblem.my-free-games.com/chess/games/Download-PGN.php)
 
-The chess_pgn_graph() function returns an XDiGraph with multiple edges
-but no self-loops where each node is a string representing a chess
-master. Each edge is directed from white to black and contains
-selected game info.
+The chess_pgn_graph() function returns an XDiGraph 
+with multiple edges but no self-loops. Each node is 
+the last name of a chess master. Each edge is directed 
+from white to black and contains selected game info.
+
+The key statement in chess_pgn_graph is
+    G.add_edge(white, black, game_info)
+where game_info is a dict describing
+each game.
 
 """
 #    Copyright (C) 2006 by 
@@ -67,8 +74,8 @@ def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
 	      game_info[tag]=value
         # empty line after tag set indicates 
         # we finished reading game info
-        elif len(line)==0: # empty line
-	     if len(game_info)>0: # assume we just read a game
+        elif len(line)==0:
+	     if len(game_info)>0: 
                  G.add_edge(white, black, game_info)
 		 game_info={}
     return G
@@ -86,10 +93,7 @@ if __name__ == '__main__':
     G=chess_pgn_graph()
     ngames=G.number_of_edges()
     nplayers=G.number_of_nodes()
-    # edge data are in e[2] for each edge e in G
-    # (in this case a dict), for example:
-    sites=set([e[2]['Site'] for e in G.edges()]) 
-    openings=set([e[2]['ECO'] for e in G.edges()])
+
     print "Loaded %d chess games between %d players\n"\
                    % (ngames,nplayers)
 
@@ -100,15 +104,16 @@ if __name__ == '__main__':
         print "Note the disconnected component consisting of:"
         print Gcc[1].nodes()    
 
-    # find all games with ECO B97 opening
-    print "\nThe following games used the Sicilian opening"
-    print "with the Najdorff 7...Qb6 variation.\n"
-    # each edge e is an arc from e[0] to e[1]
-    # with the dict of game data stored in e[2]
-    for e in G.edges():
-	if e[2]['ECO']=='B97':
-	   print e[0],"vs",e[1]
-           for k,v in e[2].items():
+    # find all games with B97 opening (as described in ECO)
+    openings=set([game_info['ECO'] for (white,black,game_info) in G.edges()])
+    print "\nFrom a total of %d different openings,"%len(openings)
+    print '\the following games used the Sicilian opening'
+    print 'with the Najdorff 7...Qb6 "Poisoned Pawn" variation.\n'
+
+    for (white,black,game_info) in G.edges():
+	if game_info['ECO']=='B97':
+	   print white,"vs",black
+           for k,v in game_info.items():
                print "   ",k,": ",v
            print "\n"
 
@@ -120,12 +125,12 @@ if __name__ == '__main__':
         H.ban_multiedges()
         H=H.to_undirected()
 
-        # edge width is proporational number of games played
+        # edge width is proportional number of games played
         edgewidth=[]
         for (u,v,d) in H.edges():
             edgewidth.append(len(G.get_edge(u,v)))
 
-        # node size is propotional to number of games won
+        # node size is proportional to number of games won
         wins=dict.fromkeys(G.nodes(),0.0)
         for (u,v,d) in G.edges():
             r=d['Result'].split('-')
@@ -158,8 +163,26 @@ if __name__ == '__main__':
                          )
         draw_networkx_labels(H,pos,
                              font_size=10)
-        
-	P.title("World Chess Championship Games: 1886 - 1985")
+        font = {'fontname'   : 'Helvetica',
+        'color'      : 'k',
+        'fontweight' : 'bold',
+        'fontsize'   : 14}
+	P.title("World Chess Championship Games: 1886 - 1985", font)
+
+        # change font and write text (using data coordinates)
+        font = {'fontname'   : 'Helvetica',
+        'color'      : 'r',
+        'fontweight' : 'bold',
+        'fontsize'   : 14}
+        xmin, xmax, ymin, ymax = P.axis()
+        dx = xmax - xmin
+        dy = ymax - ymin
+        x = 0.1*dx + xmin
+        y = 0.9*dy + ymin
+        P.text(x, y, "edge width = # games played")
+        y = 0.85*dy + ymin
+        P.text(x, y,  "node size = # games won")
+
 	# turn off x and y axes labels in pylab
 	P.xticks([])
 	P.yticks([])
@@ -168,4 +191,4 @@ if __name__ == '__main__':
         print "Wrote chess_masters_graph.png"
         P.show() # display
     except:
-	print "Unable to draw: cannot find graphviz or pylab"
+	print "Unable to draw: problem with graphviz or pylab"
