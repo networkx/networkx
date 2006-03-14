@@ -21,6 +21,19 @@ Betweenness
 08 0.222
 09 0.000
 
+>>> b=betweenness_centrality(G,normalized=False)
+>>> for v in G.nodes():
+...     print "%0.2d %5.3f"%(v,b[v])
+00 1.667
+01 1.667
+02 0.000
+03 7.333
+04 0.000
+05 16.667
+06 16.667
+07 28.000
+08 16.000
+09 0.000
 
 Degree Centrality
 ------------------
@@ -55,6 +68,21 @@ Closeness Centrality
 07 0.600
 08 0.429
 09 0.310
+
+>>> GG=path_graph(3)
+>>> b=betweenness_centrality(GG,normalized=False)
+>>> for v,bb in b.items():
+...     print "%s %s"%(v,bb)
+0 0.0
+1 2.0
+2 0.0
+
+>>> b=betweenness_centrality(GG,normalized=True)
+>>> for v,bb in b.items():
+...     print "%s %s"%(v,bb)
+0 0.0
+1 1.0
+2 0.0
 
 
 Edge Betweenness

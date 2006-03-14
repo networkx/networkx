@@ -40,9 +40,14 @@ def betweenness_centrality(G,v=False,cutoff=False,normalized=True):
     else:
         betweenness={}.fromkeys(G.nodes(),0) 
         for source in betweenness: 
-            ubetween=_node_betweenness(G,source,cutoff=cutoff,normalized=normalized)
+            ubetween=_node_betweenness(G,source,cutoff=cutoff,normalized=False)
             for vk in ubetween:
                 betweenness[vk]+=ubetween[vk]
+        if normalized:
+            order=len(betweenness)
+            scale=1.0/((order-1)*(order-2))
+            for v in betweenness:
+                betweenness[v] *= scale
         return betweenness  # all nodes
 
 def _node_betweenness(G,source,cutoff=False,normalized=True):
@@ -73,17 +78,18 @@ def _node_betweenness(G,source,cutoff=False,normalized=True):
         if (pred.has_key(v)):
             num_paths=len(pred[v])   # Discount betweenness if more than 
             for x in pred[v]:        # one shortest path.
-                if x==source:        # don't count source 
-                    break
+                if x==source:        # stop if hit source because all remaining v  
+                    break            #  also have pred[v]==[source]
                 between[x]+=between[v]/num_paths
+    for v in between:
+        between[v]-=1
     # rescale to be between 0 and 1                
-    l=len(between)
-    scale=1.0
-    if l > 2:
-        scale=scale/float((l-1)*(l-2)) # 1/the number of possible paths
     if normalized:
-        for v in between:
-            between[v]=(between[v]-1)*scale
+        l=len(between)
+        if l > 2:
+            scale=1.0/float((l-1)*(l-2)) # 1/the number of possible paths
+            for v in between:
+                between[v] *= scale
     return between
 
 def edge_betweenness(G,nodes=False,cutoff=False):
