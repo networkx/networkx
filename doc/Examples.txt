@@ -28,8 +28,8 @@ Print the nodes of the graph
 
 Print the degree of each node
 
->>> for v in G.nodes():
-...     print v,G.degree(v)
+>>> for n in G:
+...     print n,G.degree(n)
 ... 
 1 1
 2 5
