@@ -9,8 +9,8 @@ matches stored in the specified PGN file
 (PGN ="Portable Game Notation")
 Here the (compressed) default file ---
  chess_masters_WCC.pgn.bz2 ---
-contains all 685 World Chess matches from 1886 - 1985.
-
+contains all 685 World Chess Championship matches
+from 1886 - 1985.
 (data from http://chessproblem.my-free-games.com/chess/games/Download-PGN.php)
 
 The chess_pgn_graph() function returns an XDiGraph 
@@ -18,10 +18,9 @@ with multiple edges but no self-loops. Each node is
 the last name of a chess master. Each edge is directed 
 from white to black and contains selected game info.
 
-The key statement in chess_pgn_graph is
+The key statement in chess_pgn_graph below is
     G.add_edge(white, black, game_info)
-where game_info is a dict describing
-each game.
+where game_info is a dict describing each game.
 
 """
 #    Copyright (C) 2006 by 
@@ -34,7 +33,7 @@ each game.
 from networkx import *
 
 # tag names specifying what game info should be 
-# stored in the dict on digraph edge
+# stored in the dict on each digraph edge
 game_details=[
               "Event", 
               "Date", 
@@ -107,7 +106,7 @@ if __name__ == '__main__':
     # find all games with B97 opening (as described in ECO)
     openings=set([game_info['ECO'] for (white,black,game_info) in G.edges()])
     print "\nFrom a total of %d different openings,"%len(openings)
-    print '\the following games used the Sicilian opening'
+    print 'the following games used the Sicilian opening'
     print 'with the Najdorff 7...Qb6 "Poisoned Pawn" variation.\n'
 
     for (white,black,game_info) in G.edges():
@@ -153,16 +152,16 @@ if __name__ == '__main__':
 	draw_networkx_nodes(H,pos,
                       node_size=[wins[v]*35 for v in H],
                       node_color='r',
-                      alpha=0.95,
+                      alpha=0.4,
                       )
 	draw_networkx_edges(H,pos,
-                         alpha=0.8,
+                         alpha=0.4,
                          node_size=0,
                          width=1,
                          edge_color='k'
                          )
         draw_networkx_labels(H,pos,
-                             font_size=10)
+                             fontsize=14)
         font = {'fontname'   : 'Helvetica',
         'color'      : 'k',
         'fontweight' : 'bold',
