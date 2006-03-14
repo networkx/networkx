@@ -578,7 +578,7 @@ def shortest_path_length(creation_sequence,i):
     return spl
 
 
-def betweenness_sequence(creation_sequence):
+def betweenness_sequence(creation_sequence,normalized=True):
     """
     Return betweenness for the threshold graph with the given creation
     sequence.  The result is unscaled.  To scale the values
@@ -586,27 +586,35 @@ def betweenness_sequence(creation_sequence):
     """
     cs=creation_sequence
     seq=[]               # betweenness
-    cs[0]="i"            # the first node is always isolated
-    dr=float(cs.count("d"))   # total number of d's to the right of curren pos
+    lastchar='d'         # first node is always a 'd'        
+    dr=float(cs.count("d"))  # number of d's to the right of curren pos
     irun=0               # number of i's in the last run
-    pli=0                # position of last i
-    dlast=0              # betweenness of last d
-    b=0                  # betweenness of this index
-    for i in range(0,len(cs)):
-        if cs[i]=="d":
+    drun=0               # number of d's in the last run
+    dlast=0.0              # betweenness of last d
+    for i,c in enumerate(cs):
+        if c=='d':    #cs[i]=="d":
             # betweennees = amt shared with eariler d's and i's
             #             + new isolated nodes covered
             #             + new paths to all previous nodes
-            b=dlast + (irun-1)*irun/dr + 2*irun*(pli+1-irun)/dr
+            b=dlast + (irun-1)*irun/dr + 2*irun*(i-drun-irun)/dr
+            drun+=1           # update counter
         else:      # cs[i]="i":
-            if cs[i-1]=="d":  # if this is a new run of i's
-                irun=0        # reset counter
+            if lastchar=='d': # if this is a new run of i's
                 dlast=b       # accumulate betweenness
+                dr-=drun      # update number of d's to the right
+                drun=0        # reset d counter
+                irun=0        # reset i counter
             b=0      # isolated nodes have zero betweenness 
             irun+=1  # add another i to the run   
-            pli=i 
-            dr=float(cs[i:].count("d"))  # d's to the right of this position
         seq.append(float(b))
+        lastchar=c
+
+    # normalize by the number of possible shortest paths
+    if normalized:
+        order=len(cs)
+        scale=1.0/((order-1)*(order-2))
+        seq=[ s*scale for s in seq ]
+
     return seq
 
 
@@ -632,19 +640,21 @@ def eigenvalues(creation_sequence):
     """
     degseq=degree_sequence(creation_sequence)
     degseq.sort()
-    eig=[]
-    while 1:
-        nzeros=degseq.count(0)
-        degseq=degseq[nzeros:] # remove zeros at front
-        e=len(degseq)
-        if e==0:  # we have all eigenvalues except zero
-            eig.append(0)
-            return eig
-        else:     # subtract 1 from each degree and continue
-            eig.append(len(degseq))
-            degseq=[i-1 for i in degseq]
-
-    return eig
+    eiglist=[]   # zero is always one eigenvalue
+    eig=0
+    row=len(degseq)
+    bigdeg=degseq.pop()
+    while row:
+        if bigdeg<row:
+            eiglist.append(eig)
+            row-=1
+        else:
+            eig+=1
+            if degseq:
+                bigdeg=degseq.pop()
+            else:
+                bigdeg=0
+    return eiglist
 
 
 ### Threshold graph creation routines
