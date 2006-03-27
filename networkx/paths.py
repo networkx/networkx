@@ -98,7 +98,7 @@ def shortest_path_length(G,source,target=None):
                 if v==target: # shortcut if target
                     return level
                 seen[v]=level # set the level of vertex v
-                nextlevel.update(G.neighbors(v,with_labels=True)) # add neighbors of v
+                nextlevel.update(dict(G.neighbors(v,with_labels=True))) # add neighbors of v
         level=level+1
 
     if target is not None:
