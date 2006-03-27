@@ -1,7 +1,8 @@
 Spectrum 
 ========
 
->>> import LinearAlgebra as LA
+import LinearAlgebra as LA
+
 >>> from networkx.generators.degree_seq import *
 >>> from networkx.spectrum import *
 >>> import sys
@@ -36,14 +37,15 @@ Laplacian
 
 Eigenvalues
 -----------
+not tested
 
->>> e=LA.eigenvalues(L)
->>> print map(int,map(round,sorted(e)))
+e=LA.eigenvalues(L)
+print map(int,map(round,sorted(e)))
 [0, 0, 1, 3, 4]
 
->>> e=LA.eigenvalues(GL)
->>> for ev in sorted(e):
-...    print "%5.2f"%abs(ev)
+e=LA.eigenvalues(GL)
+for ev in sorted(e):
+   print "%5.2f"%abs(ev)
  0.00
  0.00
  0.77
