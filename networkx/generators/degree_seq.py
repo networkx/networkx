@@ -179,7 +179,7 @@ def degree_sequence_tree(deg_sequence):
     """
 
     if not len(deg_sequence)-sum(deg_sequence)/2.0 == 1.0:
-        raise networkx.NetworkXError,"Degree sequence not a tree"
+        raise networkx.NetworkXError,"Degree sequence invalid"
 
     G=empty_graph(0)
     # single node tree
@@ -191,18 +191,18 @@ def degree_sequence_tree(deg_sequence):
     # make path graph as backbone
     n=len(deg)+2
     G=networkx.path_graph(n)
-    last=n-1
+    last=n
 
     # add the leaves
     for source in range(1,n-1):
-        nedges=deg.pop()-1
-        for target in range(1,nedges):
-            G.add_edge(source, last+target)
+        nedges=deg.pop()-2
+        for target in range(last,last+nedges):
+            G.add_edge(source, target)
         last+=nedges
         
     # in case we added one too many 
     if len(G.degree())>len(deg_sequence): 
-        G.delete_node(1)
+        G.delete_node(0)
     return G
         
 
