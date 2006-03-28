@@ -320,22 +320,21 @@ def barabasi_albert_graph(n,m,seed=None):
     
     :Parameters:
       - `n`: the number of nodes
-      - `m`: average degree;  must be a positive integer
+      - `m`: number of edges to attach from a new node to existing nodes
       - `seed`: seed for random number generator (default=None)
 
     The initialization is a graph with with m nodes and no edges.
 
     Reference::
 
-      @ARTICLE{barabasi-1999-emergence,
-      TITLE = {Emergence of scaling in random networks},
-      AUTHOR = {A. L. Barabási and R. Albert},
-      JOURNAL = {SCIENCE},
-      VOLUME = {286},
-      NUMBER = {5439},
-      PAGES = {509 -- 512},
-      MONTH = {OCT},
-      YEAR = {1999},
+      @article{barabasi-1999-emergence,
+      title   = {Emergence of scaling in random networks},
+      author  = {A. L. Barabási and R. Albert},
+      journal = {Science},
+      volume  = {286},
+      number  = {5439},
+      pages   = {509 -- 512},
+      year = {1999},
       }
 
 
