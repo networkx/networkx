@@ -135,7 +135,7 @@ def dense_gnm_random_graph(n,m,seed=None):
       G=complete_graph(n)
   else:
       G=empty_graph(n)
-  G.name="gnm_random_graph(%s,%s)"%(n,m)
+  G.name="dense_gnm_random_graph(%s,%s)"%(n,m)
   
   if n==1 or m>=mmax:
       return G
