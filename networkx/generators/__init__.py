@@ -39,6 +39,7 @@ from geometric import  random_geometric_graph
 from random_graphs import \
                fast_gnp_random_graph,\
                gnp_random_graph,\
+               dense_gnm_random_graph,\
                gnm_random_graph,\
                erdos_renyi_graph,\
                binomial_graph,\

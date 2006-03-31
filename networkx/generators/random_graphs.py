@@ -3,7 +3,7 @@
 Generators for random graphs
 
 """
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004,2005,2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -21,7 +21,6 @@ from networkx.generators.classic import empty_graph, path_graph, complete_graph
 #-------------------------------------------------------------------------
 #  Some Famous Random Graphs
 #-------------------------------------------------------------------------
-
 
 
 def fast_gnp_random_graph(n,p,seed=None):
@@ -78,7 +77,6 @@ def gnp_random_graph(n,p,seed=None):
     Choses each of the possible [n(n-1)]/2 edges with probability p.
     This is the same as binomial_graph and erdos_renyi_graph. 
 
-
     Sometimes called Erdős-Rényi graph, or binomial graph.
 
     :Parameters:
@@ -109,6 +107,59 @@ def gnp_random_graph(n,p,seed=None):
 binomial_graph=gnp_random_graph
 erdos_renyi_graph=gnp_random_graph
 
+def dense_gnm_random_graph(n,m,seed=None):
+  """
+  Return the random graph G_{n,m}.
+
+  Gives a graph picked randomly out of the set of all graphs
+  with n nodes and m edges.  .
+
+  :Parameters:
+      - `n`: the number of nodes
+      - `m`: the number of edges
+      - `seed`: seed for random number generator (default=None)
+
+  This algorithms should be faster than gnm_random_graph
+  for dense graphs.
+
+  Algorithm by Keith M. Briggs Mar 31, 2006.
+  Inspired by Knuth's Algorithm S (Selection sampling technique),
+  in section 3.4.2
+  The Art of Computer Programming by Donald E. Knuth
+  Volume 2 / Seminumerical algorithms
+  Third Edition, Addison-Wesley, 1997.
+ 
+  """
+  mmax=n*(n-1)/2
+  if m>=mmax:
+      G=complete_graph(n)
+  else:
+      G=empty_graph(n)
+  G.name="gnm_random_graph(%s,%s)"%(n,m)
+  
+  if n==1 or m>=mmax:
+      return G
+  
+  if seed is not None:
+      random.seed(seed)
+
+  u=0
+  v=1
+  t=0
+  k=0
+  while True:
+    if random.randrange(mmax-t)<m-k:
+      G.add_edge(u,v)
+      k+=1
+      if k==m:
+          return G
+    t+=1
+    v+=1
+    if v==n: # go to next row of adjacency matrix
+      u+=1
+      v=u+1
+
+
 def gnm_random_graph(n,m,seed=None):
     """
     Return the random graph G_{n,m}.
@@ -124,7 +175,7 @@ def gnm_random_graph(n,m,seed=None):
     G=empty_graph(n)
     G.name="gnm_random_graph(%s,%s)"%(n,m)
 
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
 
     if n==1:
@@ -165,7 +216,7 @@ def newman_watts_strogatz_graph(n,k,p,seed=None):
       - `seed`: seed for random number generator (default=None)
       
     """
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
     G=empty_graph(n)
     G.name="newman_watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
@@ -202,7 +253,7 @@ def watts_strogatz_graph(n,k,p,seed=None):
       - `seed`: seed for random number generator (default=None)
       
     """
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
     G=empty_graph(n)
     G.name="watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
@@ -278,7 +329,7 @@ def random_regular_graph(d,n,seed=None):
     if not n*d%2==0:
         raise networkx.NetworkXError, "n * d must be even"
 
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)    
 
         
@@ -306,7 +357,6 @@ def random_regular_graph(d,n,seed=None):
             s=_suitable(stubs)
             if not s:                   
                 return False
-       
     return G
 
 
@@ -344,7 +394,7 @@ def barabasi_albert_graph(n,m,seed=None):
         raise networkx.NetworkXError,\
               "NetworkXError must have m>1 and m<n, m=%d,n=%d"%(m,n)
 
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)    
 
     G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
@@ -415,7 +465,7 @@ def powerlaw_cluster_graph(n,m,p,seed=None):
               "NetworkXError p must be in [0,1], p=%f"%(p)
 
 
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)    
 
     G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
@@ -466,7 +516,7 @@ def random_lobster(n,p1,p2,seed=None):
       - `seed`: seed for random number generator (default=None)
 
 """
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
     llen=int(2*random.random()*n + 0.5)
     L=path_graph(llen)
@@ -502,7 +552,7 @@ def random_shell_graph(constructor,seed=None):
     G=empty_graph(0)
     G.name="random_shell_graph(constructor)"
 
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
 
     glist=[]        
@@ -580,7 +630,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
       - `seed`: seed for random number generator (default=None)
       
     """
-    if not seed is None:
+    if seed is not None:
         random.seed(seed)
 
     # get trial sequence        
