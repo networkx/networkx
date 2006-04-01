@@ -81,7 +81,7 @@ def creation_sequence(degree_sequence,with_labels=False,compact=False):
     if isinstance(degree_sequence,dict):   # labeled degree seqeunce
         ds = [ [degree,label] for (label,degree) in degree_sequence.items() ]
     else:
-        ds=[ [degree_sequence[i],i+1] for i in xrange(len(degree_sequence)) ] 
+        ds=[ [d,i] for i,d in enumerate(degree_sequence) ] 
     ds.sort()
     cs=[]  # creation sequence
     while ds:
@@ -270,12 +270,12 @@ def threshold_graph(creation_sequence):
     # Turn input sequence into a labeled creation sequence
     first=creation_sequence[0]
     if isinstance(first,str):    # creation sequence
-        ci = [(i+1,creation_sequence[i]) for i in xrange(len(creation_sequence))]
+        ci = list(enumerate(creation_sequence))
     elif isinstance(first,tuple):   # labeled creation sequence
         ci = creation_sequence[:]
     elif isinstance(first,int):  # compact creation sequence
         cs = uncompact(creation_sequence)
-        ci = [(i+1,cs[i]) for i in xrange(len(cs))]
+        ci = list(enumerate(cs))
     else:
         print "not a valid creation sequence type"
         return None
@@ -781,7 +781,7 @@ def swap_d(cs,p_split=1.0,p_combine=1.0,seed=None):
         random.seed(seed)
 
     # preprocess the creation sequence
-    dlist= [ i+1 for (i,node_type) in enumerate(cs[1:-1]) if node_type=='d' ]
+    dlist= [ i for (i,node_type) in enumerate(cs[1:-1]) if node_type=='d' ]
     # split
     if random.random()<p_split:
         choice=random.choice(dlist)
