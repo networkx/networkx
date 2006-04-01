@@ -16,6 +16,14 @@ def all():
     except:
         tests=glob.glob("*.txt") # this will only work from test directory   
 
+    try:
+        import numpy
+    except ImportError:
+        try:
+            import Numeric
+        except ImportError:
+            tests=[t for t in tests if 'spectrum.txt' not in t \
+                    if 'threshold.txt' not in t]
 
     suite = unittest.TestSuite()
     for t in tests:

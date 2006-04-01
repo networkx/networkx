@@ -1,7 +1,16 @@
 Spectrum 
 ========
 
-import LinearAlgebra as LA
+>>> try:
+...     import numpy
+... except ImportError:
+...     try:    
+...         import Numeric as numpy
+...         import LinearAlgebra as LA
+...         numpy.linalg=LA
+...     except ImportError:
+...         raise ImportError,"Neither numpy nor Numeric can be imported."
+
 
 >>> from networkx.generators.degree_seq import *
 >>> from networkx.spectrum import *
@@ -37,15 +46,14 @@ Laplacian
 
 Eigenvalues
 -----------
-not tested
 
-e=LA.eigenvalues(L)
-print map(int,map(round,sorted(e)))
+>>> e=numpy.linalg.eigenvalues(L)
+>>> print map(int,map(round,sorted(e)))
 [0, 0, 1, 3, 4]
 
-e=LA.eigenvalues(GL)
-for ev in sorted(e):
-   print "%5.2f"%abs(ev)
+>>> e=numpy.linalg.eigenvalues(GL)
+>>> for ev in sorted(e):
+...     print "%5.2f"%abs(ev)
  0.00
  0.00
  0.77
