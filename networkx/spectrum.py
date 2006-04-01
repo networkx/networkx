@@ -1,7 +1,7 @@
 """
 Laplacian, adjacency matrix, and spectrum of graphs.
 
-Uses Numeric.
+Uses numpy or if numpy not installed, Numeric.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
@@ -17,10 +17,12 @@ __revision__ = "$Revision: 1044 $"
 
 
 try:
-    import Numeric
+    import numpy
 except ImportError:
-#    print "Import Error: Not able to import Python module Numeric"
-    raise
+    try:
+        import Numeric as numpy
+    except ImportError,e:
+        raise ImportError,"Neither Numeric nor numpy can be imported."
 
 
 def adj_matrix(G,nodelist=None):
@@ -37,7 +39,7 @@ def adj_matrix(G,nodelist=None):
         nodelist=G.nodes()
     nlen=len(nodelist)    
     index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
-    a = Numeric.zeros((nlen,nlen))
+    a = numpy.zeros((nlen,nlen))
     for n1 in nodelist:
         nbrs=[n for n in G.neighbors(n1) if n in nodelist]
         for n2 in nbrs:
@@ -49,9 +51,9 @@ def laplacian(G,nodelist=None):
     """Return standard cobinatorial Laplacian of G"""
     # this isn't the most efficient way to do this...
     n=G.order()
-    I=Numeric.identity(n)
+    I=numpy.identity(n)
     A=adj_matrix(G,nodelist=nodelist)
-    D=I*Numeric.sum(A)
+    D=I*numpy.sum(A)
     L=D-A
     return L
 
@@ -64,13 +66,13 @@ def normalized_laplacian(G,nodelist=None):
     """
     # this isn't the most efficient way to do this...
     n=G.order()
-    I=Numeric.identity(n)
+    I=numpy.identity(n)
     A=adj_matrix(G,nodelist=nodelist)
-    D=I*Numeric.sum(A)
+    D=I*numpy.sum(A)
     L=D-A
     d=sum(A)
-    T=I*(Numeric.where(d,Numeric.sqrt(1./d),0))
-    L=Numeric.dot(T,Numeric.dot(L,T))
+    T=I*(numpy.where(d,numpy.sqrt(1./d),0))
+    L=numpy.dot(T,numpy.dot(L,T))
     return L
 
 combinatorial_laplacian=laplacian
