@@ -16,6 +16,7 @@ __version__ = "$Revision: 1049 $"
 #
 
 import random  # for swap_d 
+from math import sqrt
 import networkx
 
 def is_threshold_graph(G):
@@ -616,6 +617,43 @@ def betweenness_sequence(creation_sequence,normalized=True):
         seq=[ s*scale for s in seq ]
 
     return seq
+
+
+def eigenvectors(creation_sequence):
+    """
+    Return a list of Laplacian eigenvectors for the threshold
+    network with creation_sequence.
+
+    Notice that the order of the eigenvalues returned by eigenvalues(cs)
+    may not correspond to the order of these eigenvectors.
+    """
+    ccs=make_compact(creation_sequence)
+    N=sum(ccs)
+    v=[0]*N
+
+    v[0]=[1./sqrt(N)]*N
+    i=1
+    nn=ccs[0]
+    dd=1
+    while dd<nn:
+        s=1./sqrt(dd*dd+i)
+        v[i]=i*[-s]+[dd*s]+[0]*(N-i-1)
+        i+=1
+        dd+=1
+    if N==1: return v
+    for nn in ccs[1:]:
+        s=1./sqrt(nn*i*(i+nn))
+        v[i]=i*[-nn*s]+nn*[i*s]+[0]*(N-i-nn)
+        st=i
+        i+=1
+        dd=1
+        while dd<nn:
+            s=1./sqrt(i-st+dd*dd)
+            v[i]=[0]*st+(i-st)*[-s]+[dd*s]+[0]*(N-i-1)
+            i+=1
+            dd+=1
+    return v
+
 
 
 def eigenvalues(creation_sequence):
