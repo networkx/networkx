@@ -621,38 +621,59 @@ def betweenness_sequence(creation_sequence,normalized=True):
 
 def eigenvectors(creation_sequence):
     """
-    Return a list of Laplacian eigenvectors for the threshold
-    network with creation_sequence.
+    Return a 2-tuple of Laplacian eigenvalues and eigenvectors 
+    for the threshold network with creation_sequence.
+    The first value is a list of eigenvalues.
+    The second value is a list of eigenvectors.
+    The lists are in the same order so corresponding eigenvectors
+    and eigenvalues are in the same position in the two lists.
 
     Notice that the order of the eigenvalues returned by eigenvalues(cs)
     may not correspond to the order of these eigenvectors.
     """
     ccs=make_compact(creation_sequence)
     N=sum(ccs)
-    v=[0]*N
+    vec=[0]*N
+    val=vec[:]
+    # get number of type d nodes to the right (all for first node)
+    dr=sum(ccs[::2])
 
-    v[0]=[1./sqrt(N)]*N
-    i=1
     nn=ccs[0]
+    vec[0]=[1./sqrt(N)]*N
+    val[0]=0
+    e=dr
+    dr-=nn
+    type_d=True
+    i=1
     dd=1
     while dd<nn:
-        s=1./sqrt(dd*dd+i)
-        v[i]=i*[-s]+[dd*s]+[0]*(N-i-1)
+        scale=1./sqrt(dd*dd+i)
+        vec[i]=i*[-scale]+[dd*scale]+[0]*(N-i-1)
+        val[i]=e
         i+=1
         dd+=1
-    if N==1: return v
+    if len(ccs)==1: return (val,vec)
     for nn in ccs[1:]:
-        s=1./sqrt(nn*i*(i+nn))
-        v[i]=i*[-nn*s]+nn*[i*s]+[0]*(N-i-nn)
+        scale=1./sqrt(nn*i*(i+nn))
+        vec[i]=i*[-nn*scale]+nn*[i*scale]+[0]*(N-i-nn)
+        # find eigenvalue
+        type_d=not type_d
+        if type_d:
+            e=i+dr
+            dr-=nn
+        else:
+            e=dr
+        val[i]=e
         st=i
         i+=1
         dd=1
         while dd<nn:
-            s=1./sqrt(i-st+dd*dd)
-            v[i]=[0]*st+(i-st)*[-s]+[dd*s]+[0]*(N-i-1)
+            scale=1./sqrt(i-st+dd*dd)
+            vec[i]=[0]*st+(i-st)*[-scale]+[dd*scale]+[0]*(N-i-1)
+            val[i]=e
             i+=1
             dd+=1
-    return v
+    return (val,vec)
 
 
 
@@ -861,6 +882,13 @@ if __name__ == "__main__":
     import os
     import sys
     import unittest
+    try:
+        import numpy
+    except ImportError:
+        try:
+            import Numeric as numpy
+        except ImportError,e:
+            raise ImportError,"Testing aborted\nNeither Numeric nor numpy can be imported."
     if sys.version_info[:2] < (2, 4):
         print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
         sys.exit(-1)
