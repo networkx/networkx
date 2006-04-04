@@ -255,17 +255,18 @@ def empty_graph(n=0,create_using=None,**kwds):
     G.name="empty_graph(%d)"%n 
     return G
 
-def grid_2d_graph(m,n):
+def grid_2d_graph(m,n,periodic=False):
     """ Return the 2d grid graph of mxn nodes,
         each connected to its nearest neighbors.
-
+        Optional argument periodic=True will connect
+        boundary nodes via periodic boundary conditions.
     """
     G=empty_graph()
     G.name="grid 2d graph"
     rows=range(m)
     columns=range(n)
     def _label(i,j):
-        return i*n+j
+        return (i,j)
     for i in rows:
         for j in columns:
             G.add_node( _label(i,j) )
@@ -275,6 +276,12 @@ def grid_2d_graph(m,n):
             if i<m-1: G.add_edge( _label(i,j), _label(i+1,j) )
             if j>0: G.add_edge( _label(i,j), _label(i,j-1) )
             if j<n-1: G.add_edge( _label(i,j), _label(i,j+1) )
+    if periodic:
+        for i in rows:
+            G.add_edge(_label(i,0), _label(i,n-1))
+        for j in columns:
+            G.add_edge(_label(0,j), _label(m-1,j))
+        G.name="periodic_grid_2d_graph(%d,%d)"%(m,n)
     return G
 
 
@@ -317,7 +324,7 @@ def grid_graph(dim,periodic=False):
     # graph G is done but has labels of the form (1,(2,(3,1)))
     # so relabel
     # this works but loses the info from each dimension
-    H=networkx.operators.convert_node_labels_to_integers(G)
+    H=networkx.operators.relabel_nodes_with_function(G, networkx.utils.flatten)
     H.name="grid_graph(%s)"%dlabel
     return H
 
@@ -403,28 +410,6 @@ def path_graph(n):
     G.name="path_graph(%d)"%n
     G.add_edges_from([(v,v+1) for v in xrange(n-1)])
     return G
-
-def periodic_grid_2d_graph(m,n):
-    """
-    Return the 2-D Grid Graph of mxn nodes,
-    each connected to its nearest neighbors.
-
-    Boundary nodes are identified in a periodic fashion.
-    
-    """
-    G=grid_2d_graph(m,n)  # plain grid graph
-    def _label(i,j):
-        return i*n+j
-    # make it periodic
-    rows=range(m)
-    columns=range(n)
-    for i in rows:
-        G.add_edge(_label(i,0), _label(i,n-1))
-    for j in columns:
-        G.add_edge(_label(0,j), _label(m-1,j))
-    G.name="periodic_grid_2d_graph(%d,%d)"%(m,n)
-    return G        
-
 
 def star_graph(n):
     """ Return the Star graph with n+1 nodes:

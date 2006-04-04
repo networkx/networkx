@@ -6,7 +6,7 @@ Search Class
 >>> from networkx.search_class import *
 >>> from networkx.generators.classic import *
 >>> from networkx.operators import convert_node_labels_to_integers as cnlti
->>> G=cnlti(grid_2d_graph(4,4),first_label=1)
+>>> G=cnlti(grid_2d_graph(4,4),first_label=1,ordering="sorted")
 
 >>> V=Preorder(G)
 >>> V.search(v=1)

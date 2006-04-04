@@ -3,7 +3,7 @@ Paths
 
 >>> import networkx as NX
 >>> from networkx.operators import convert_node_labels_to_integers as cnlti
->>> G=cnlti(NX.grid_2d_graph(4,4),first_label=1)
+>>> G=cnlti(NX.grid_2d_graph(4,4),first_label=1,ordering="sorted")
 
     .. image:: paths_G.png
 
@@ -164,9 +164,9 @@ True
 Connected components
 --------------------
 
->>> G1=NX.grid_2d_graph(2,2)
->>> G2=cnlti(NX.lollipop_graph(3,3),first_label=4)
->>> G3=cnlti(NX.house_graph(),first_label=10)
+>>> G1=cnlti(NX.grid_2d_graph(2,2),first_label=0,ordering="sorted")
+>>> G2=cnlti(NX.lollipop_graph(3,3),first_label=4,ordering="sorted")
+>>> G3=cnlti(NX.house_graph(),first_label=10,ordering="sorted")
 >>> G=NX.union(G1,G2)
 >>> G=NX.union(G,G3)
 >>> sorted(NX.connected_components(G))
@@ -209,5 +209,6 @@ Predecessor
 >>> NX.predecessor(G,0,3)
 [2]
 >>> G=NX.grid_2d_graph(2,2)
->>> NX.predecessor(G,0)
-{0: [], 1: [0], 2: [0], 3: [1, 2]}
+>>> sorted(NX.predecessor(G,(0,0)).items())
+[((0, 0), []), ((0, 1), [(0, 0)]), ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])]
+

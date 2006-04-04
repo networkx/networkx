@@ -40,6 +40,28 @@ def iterable(obj):
     except: return False
     return True
 
+def flatten(obj, result=None):
+    """ Return flattened version of (possibly nested) iterable obj. """
+    if not iterable(obj) or is_string_like(obj):
+        return obj
+    if result is None:
+        result = []
+    for item in obj:
+        if not iterable(item) or is_string_like(item):
+            result.append(item)
+        else:
+            flatten(item, result)
+    return obj.__class__(result)
+
+def iterable_to_string(obj, sep=''):
+    """
+    Return string obtained by concatenating the string representation
+    of each element of an iterable obj, with an optional internal string
+    separator specified.
+    """
+    if not iterable(obj):
+        return str(obj)
+    return sep.join([str(i) for i in obj])
 
 def is_list_of_ints( intlist ):
     """ Return True if list is a list of ints. """

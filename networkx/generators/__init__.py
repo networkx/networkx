@@ -27,7 +27,6 @@ from classic import  balanced_tree,\
                lollipop_graph,\
                null_graph,\
                path_graph,\
-               periodic_grid_2d_graph,\
                star_graph,\
                trivial_graph,\
                wheel_graph

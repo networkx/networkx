@@ -370,8 +370,31 @@ def convert_node_labels_to_integers(G,first_label=0,ordering="default",discard_o
         H.dna["has_node_labels"]=True
         H.dna["node_labels"]=v_to_int_map                
     return H
-
     
+def relabel_nodes_with_function(G, func):
+    """
+    Return new graph from input graph G, such that each node name is
+    relabeled by the application of the specified function func.
+    """
+    H=create_empty_copy(G)
+    H.name="(%s)" % G.name
+    nodes=G.nodes_iter()
+    for node in nodes:
+        try:
+            H.add_node(func(node))
+        except:
+            raise networkx.NetworkXError,\
+                  "relabeling function cannot be applied to node %s" % node
+    edges=G.edges_iter()    
+    for n1, n2 in edges:
+        try:
+            H.add_edge(func(n1), func(n2))
+        except:
+            raise networkx.NetworkXError,\
+                  "relabeling function cannot be applied to edge (%s, %s)" % \
+                  (n1, n2)
+    return H
+
 def _test_suite():
     import doctest
     suite = doctest.DocFileSuite('tests/operators.txt',package='networkx')

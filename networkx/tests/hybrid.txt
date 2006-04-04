@@ -2,13 +2,13 @@ Hybrid
 ======
 
 >>> from networkx import *
->>> from networkx.generators.classic import periodic_grid_2d_graph
+>>> from networkx.generators.classic import grid_2d_graph
 >>> from networkx.hybrid import *
 
 FC article claims 2d grid graph of size n is (3,3)-connected 
 and (5,9)-connected, but I don't think it is (5,9)-connected
 
->>> G=periodic_grid_2d_graph(8,8)
+>>> G=grid_2d_graph(8,8,periodic=True)
 >>> is_kl_connected(G,3,3)
 True
 >>> is_kl_connected(G,5,9)

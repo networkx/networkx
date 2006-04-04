@@ -6,7 +6,7 @@ Search
 
 simple graph
 
->>> G=cnlti(grid_2d_graph(4,4),first_label=1)
+>>> G=cnlti(grid_2d_graph(4,4),first_label=1,ordering="sorted")
 
     .. image:: paths_G.png
 
