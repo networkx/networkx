@@ -56,6 +56,7 @@ def creation_sequence(degree_sequence,with_labels=False,compact=False):
     or 'i': 'd' for dominating or 'i' for isolated vertices.
     Dominating vertices are connected to all vertices present when it
     is added.  The first node added is by convention 'd'.
+    This list can be converted to a string if desired using "".join(cs)
 
     If with_labels==True:
     Returns a list of 2-tuples containing the vertex number 
@@ -112,12 +113,17 @@ def make_compact(creation_sequence):
     [3,1,2] represents d,d,d,i,d,d.
     Notice that the first number is the first vertex
     to be used for construction and so is always 'd'.
+
+    Labeled creation sequences lose their labels in the 
+    compact representation.
     """
     first=creation_sequence[0]
     if isinstance(first,str):    # creation sequence
         cs = creation_sequence[:]
     elif isinstance(first,tuple):   # labeled creation sequence
         cs = [ s[1] for s in creation_sequence ]
+    elif isinstance(first,int):   # compact creation sequence
+        return creation_sequence   
     else:
         raise TypeError, "Not a valid creation sequence type"
 
@@ -132,16 +138,23 @@ def make_compact(creation_sequence):
     ccs.append(count) # don't forget the last one
     return ccs
     
-def uncompact(compact_creation_sequence):
+def uncompact(creation_sequence):
     """
     Converts a compact creation sequence for a threshold
     graph to a standard creation sequence (unlabeled).
+    If the creation_sequence is already standard, return it.
     See creation_sequence.
     """
-    if not isinstance(compact_creation_sequence[0],int):
+    first=creation_sequence[0]
+    if isinstance(first,str):    # creation sequence
+        return creation_sequence
+    elif isinstance(first,tuple):   # labeled creation sequence
+        return creation_sequence
+    elif isinstance(first,int):   # compact creation sequence
+        ccscopy=creation_sequence[:]
+    else:
         raise TypeError, "Not a valid creation sequence type"
     cs = []
-    ccscopy=compact_creation_sequence[:]
     while ccscopy:
         cs.extend(ccscopy.pop(0)*['d'])
         if ccscopy:
@@ -336,7 +349,7 @@ def find_creation_sequence(G):
     while H.order()>0:
         # get new degree sequence on subgraph
         dsdict=H.degree(with_labels=True)
-        ds=[ [dsdict[v],v] for v in dsdict ]
+        ds=[ [d,v] for v,d in dsdict.iteritems() ]
         ds.sort()
         # Update threshold graph nodes
         if ds[-1][0]==0: # all are isolated
@@ -366,14 +379,15 @@ def triangles(creation_sequence):
     # shortcut algoritm that doesn't require computing number
     # of triangles at each node.
     cs=creation_sequence    # alias
-    nd=cs.count("d")        # number of d's in sequence
-    ntri=nd*(nd-1)*(nd-2)/6 # number of traingles in clique of nd d's
-    # now add r choose 2 triangles for every i in sequence where
-    # r is the number of d's to the right of the current i
-    for i in range(0,len(cs)): 
-        if cs[i]=="i":
-            r=cs[i:].count("d")
-            ntri+=r*(r-1)/2
+    dr=cs.count("d")        # number of d's in sequence
+    ntri=dr*(dr-1)*(dr-2)/6 # number of triangles in clique of nd d's
+    # now add dr choose 2 triangles for every 'i' in sequence where
+    # dr is the number of d's to the right of the current i
+    for i,typ in enumerate(cs): 
+        if typ=="i":
+            ntri+=dr*(dr-1)/2
+        else:
+            dr-=1
     return ntri
 
 
@@ -384,22 +398,22 @@ def triangle_sequence(creation_sequence):
     """
     cs=creation_sequence
     seq=[]
-    rd=cs.count("d")     # number of d's to the right of the current pos
-    dcur=(rd-1)*(rd-2)/2 # number of triangles through a node of clique rd
+    dr=cs.count("d")     # number of d's to the right of the current pos
+    dcur=(dr-1)*(dr-2)/2 # number of triangles through a node of clique dr
     irun=0               # number of i's in the last run
     drun=0               # number of d's in the last run
     for i,sym in enumerate(cs):
         if sym=="d":
             drun+=1
-            tri=dcur+(rd-1)*irun    # new triangles at this d
+            tri=dcur+(dr-1)*irun    # new triangles at this d
         else: # cs[i]="i":
             if prevsym=="d":        # new string of i's
-                dcur+=(rd-1)*irun   # accumulate shared shortest paths
+                dcur+=(dr-1)*irun   # accumulate shared shortest paths
                 irun=0              # reset i run counter
-                rd-=drun            # reduce number of d's to right
+                dr-=drun            # reduce number of d's to right
                 drun=0              # reset d run counter
             irun+=1
-            tri=rd*(rd-1)/2      # new triangles at this i
+            tri=dr*(dr-1)/2      # new triangles at this i
         seq.append(tri)
         prevsym=sym
     return seq
@@ -675,6 +689,27 @@ def eigenvectors(creation_sequence):
             dd+=1
     return (val,vec)
 
+def spectral_projection(u,eigenpairs):
+    """
+    Returns the coefficients of each eigenvector
+    in a projection of the vector u onto the normalized
+    eigenvectors which are contained in eigenpairs.
+
+    eigenpairs should be a list of two objects.  The
+    first is a list of eigenvalues and the second a list
+    of eigenvectors.  The eigenvectors should be lists. 
+    FIXME--allow Numeric/numpy arrays for eigenvectors.
+
+    There's not a lot of error checking on lengths of 
+    arrays, etc. so be careful.
+    """
+    coeff=[]
+    evect=eigenpairs[1]
+    for ev in evect:
+        c=sum([ evv*uv for (evv,uv) in zip(ev,u)])
+        coeff.append(c)
+    return coeff
+        
 
 
 def eigenvalues(creation_sequence):
