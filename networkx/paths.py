@@ -141,7 +141,7 @@ def shortest_path(G,source,target=None,cutoff=None):
 def dijkstra_path(G,source,target=None):
     """
     Returns the shortest path for a weighted graph using
-    Dikjstra's algorithm.
+    Dijkstra's algorithm.
 
     The path is computed from the source to an optional target.
     If a target is specified the path is returned as a list of nodes.
@@ -167,7 +167,7 @@ def dijkstra_path(G,source,target=None):
 def dijkstra_path_length(G,source,target=None):
     """
     Returns the shortest path length for a weighted graph using
-    Dikjstra's algorithm .
+    Dijkstra's algorithm .
 
     The path length is computed from the source to an optional target.
     If a target is specified the length is returned as an integer.
@@ -254,10 +254,10 @@ def dijkstra(G,source,target=None):
 
 
 def is_directed_acyclic_graph(G):
-    """
-    Test if a graph is a directed acyclic graph (DAG).
+    """Return True if the graph G is a directed acyclic graph (DAG).
 
-    Return True if G is a DAG. False if not.
+    Otherwise return False.
+    
     """
     if topological_sort(G) is None:
         return False
@@ -279,6 +279,7 @@ def topological_sort(G):
     http://www2.toki.or.id/book/AlgDesignManual/book/book2/node70.htm
 
     See also is_directed_acyclic_graph()
+    
     """
     # nonrecursive version
 
@@ -317,6 +318,7 @@ def topological_sort_recursive(G):
     Return a list of nodes of the graph G in topological sort order.
 
     This is a recursive version of topological sort.
+    
     """
     # function for recursive dfs
     def _dfs(G,seen,explored,v):
@@ -401,12 +403,11 @@ def connected_components(G):
     return components            
 
 def number_connected_components(G):
-    """ Return the number of connected components in G.
-    """
+    """Return the number of connected components in G."""
     return len(connected_components(G))
 
 def is_connected(G):
-    """True if G is connected"""
+    """Return True if G is connected."""
     return number_connected_components(G)==1
 
 def connected_component_subgraphs(G):
@@ -428,11 +429,11 @@ def connected_component_subgraphs(G):
     return graph_list
 
 
-def node_connected_component(G,v):
+def node_connected_component(G,n):
     """
-    Return the connected component to which v belongs as a list of nodes.
+    Return the connected component to which node n belongs as a list of nodes.
     """
-    return shortest_path_length(G,v).keys()
+    return shortest_path_length(G,n).keys()
 
 def _test_suite():
     import doctest
