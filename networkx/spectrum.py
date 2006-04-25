@@ -1,7 +1,7 @@
 """
 Laplacian, adjacency matrix, and spectrum of graphs.
 
-Uses numpy or if numpy is not installed use Numeric.
+Uses numpy or, if numpy is not installed, use Numeric.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
@@ -34,6 +34,8 @@ def adj_matrix(G,nodelist=None):
     The value of the entry in the adjacency matrix is zero or one.
     E.g. self-loops, multi-edges, or weighted graphs are not handled.
 
+    The returned matrix is a numpy/numeric array. 
+
     """
     if nodelist is None:
         nodelist=G.nodes()
@@ -48,7 +50,16 @@ def adj_matrix(G,nodelist=None):
     return a            
 
 def laplacian(G,nodelist=None):
-    """Return standard cobinatorial Laplacian of G"""
+    """Return standard combinatorial Laplacian of G.
+
+    Return the matrix L = D - A, where
+       D is the diagonal matrix in which the i'th entry is
+         the degree of node i
+       A is the adjacency matrix.
+
+    The returned matrix is a numpy/numeric array. 
+
+    """
     # this isn't the most efficient way to do this...
     n=G.order()
     I=N.identity(n)
@@ -59,9 +70,11 @@ def laplacian(G,nodelist=None):
 
 
 def normalized_laplacian(G,nodelist=None):
-    """Return normalized Laplacian of G
+    """Return normalized Laplacian of G.
 
     See Spectral Graph Theory by Fan Chung-Graham.
+    CBMS Regional Conference Series in Mathematics, Number 92,
+    1997.
 
     """
     # this isn't the most efficient way to do this...
