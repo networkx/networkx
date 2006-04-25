@@ -16,14 +16,20 @@ def all():
     except:
         tests=glob.glob("*.txt") # this will only work from test directory   
 
+    # skip some tests if we don't have numpy or Numeric        
     try:
         import numpy
     except ImportError:
         try:
             import Numeric
         except ImportError:
-            tests=[t for t in tests if 'spectrum.txt' not in t \
-                    if 'threshold.txt' not in t]
+            print "Neither numpy or Numeric found."
+            print "Skipping tests of spectrum.py and threshold.py"
+            tests.remove('spectrum.txt')
+            tests.remove('threshold.txt')
+#            tests=[t for t in tests if 'spectrum.txt' not in t \
+#                    if 'threshold.txt' not in t]
+
 
     suite = unittest.TestSuite()
     for t in tests:

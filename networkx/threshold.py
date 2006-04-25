@@ -18,6 +18,14 @@ __version__ = "$Revision: 1049 $"
 import random  # for swap_d 
 from math import sqrt
 import networkx
+# try numpy first and Numeric, second. Fail if neither is available. 
+try:
+    import numpy as N
+except ImportError:
+    try:
+        import Numeric as N
+    except ImportError:
+        raise ImportError,"Neither Numeric nor numpy can be imported."
 
 def is_threshold_graph(G):
     """
@@ -917,13 +925,6 @@ if __name__ == "__main__":
     import os
     import sys
     import unittest
-    try:
-        import numpy
-    except ImportError:
-        try:
-            import Numeric as numpy
-        except ImportError,e:
-            raise ImportError,"Testing aborted\nNeither Numeric nor numpy can be imported."
     if sys.version_info[:2] < (2, 4):
         print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
         sys.exit(-1)

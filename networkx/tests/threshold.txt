@@ -6,16 +6,18 @@ Threshold Graphs
 >>> from networkx.isomorph import graph_could_be_isomorphic
 >>> import string
 >>> from networkx.operators import convert_node_labels_to_integers as cnlti
+
+
 >>> try:
-...     import numpy
+...     import numpy as N
+...	eigenval=N.linalg.eigenvalues
 ... except ImportError:
 ...     try:    
-...         import Numeric as numpy
-...         import LinearAlgebra as LA
-...         numpy.linalg=LA
+...         import Numeric as N
+...         import LinearAlgebra
+...	    eigenval=LinearAlgebra.eigenvalues
 ...     except ImportError:
 ...         raise ImportError,"Neither numpy nor Numeric can be imported."
-
 
 Threshold Sequence and Graph Test
 ---------------------------------
@@ -229,7 +231,7 @@ Eigenvectors
 Problems testing this if numpy not installed
 
 >>> (tgeval,tgevec)=eigenvectors(cs)
->>> dot=numpy.dot
+>>> dot=N.dot
 >>> [ abs(dot(lv,lv)-1.0)<1e-9 for lv in tgevec ]==[True]*8
 True
 >>> lapl=NX.laplacian(G)
@@ -237,7 +239,7 @@ True
 >>> sum([abs(c-d) for c,d in zip(tgev,tgeval)])<1e-9
 True
 >>> tgev.sort()
->>> lev=list(numpy.linalg.eigenvalues(lapl))
+>>> lev=list(eigenval(lapl))
 >>> lev.sort()
 >>> sum([abs(c-d) for c,d in zip(tgev,lev)])<1e-9
 True

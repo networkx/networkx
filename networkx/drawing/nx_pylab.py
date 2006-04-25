@@ -42,7 +42,7 @@ try:
     from matplotlib.numerix.mlab import amin, amax
     from matplotlib.pylab import gca, hold, draw_if_interactive 
 except ImportError:
-    raise  "Import Error: not able to import matplotlib."
+    raise ImportError, "Import Error: not able to import matplotlib."
 
 def draw(G, pos=None, with_labels=True, **kwds):
     """Draw the graph G with matplotlib (pylab).
