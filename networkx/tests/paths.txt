@@ -38,6 +38,24 @@ Eccentricity, diameter, etc.
 >>> NX.center(G)
 [6, 7, 10, 11]
 
+>>> G=NX.Graph()
+>>> G.add_edge(1,2)
+>>> G.add_edge(3,4)
+>>> NX.diameter(G)
+Traceback (most recent call last):
+...
+NetworkXError: Graph not connected: infinite path length
+>>> NX.radius(G)
+Traceback (most recent call last):
+...
+NetworkXError: Graph not connected: infinite path length
+>>> NX.eccentricity(G)
+Traceback (most recent call last):
+...
+NetworkXError: Graph not connected: infinite path length
+
+
+
 
 Dijkstra
 --------

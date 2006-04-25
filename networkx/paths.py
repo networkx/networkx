@@ -36,6 +36,11 @@ def eccentricity(G,v=None,sp=None, **kwds):
             length=shortest_path_length(G,v)
         else:
             length=sp[v]
+        try:
+            assert len(length)==G.number_of_nodes()
+        except:
+            raise networkx.NetworkXError, "Graph not connected: infinite path length"
+            
         e[v]=max(length.values())
 
     if with_labels:
