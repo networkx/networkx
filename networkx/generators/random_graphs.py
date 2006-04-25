@@ -108,57 +108,56 @@ binomial_graph=gnp_random_graph
 erdos_renyi_graph=gnp_random_graph
 
 def dense_gnm_random_graph(n,m,seed=None):
-  """
-  Return the random graph G_{n,m}.
+    """
+    Return the random graph G_{n,m}.
 
-  Gives a graph picked randomly out of the set of all graphs
-  with n nodes and m edges.  .
+    Gives a graph picked randomly out of the set of all graphs
+    with n nodes and m edges.
+    This algorithm should be faster than gnm_random_graph for dense graphs.
 
-  :Parameters:
+    :Parameters:
       - `n`: the number of nodes
       - `m`: the number of edges
       - `seed`: seed for random number generator (default=None)
 
-  This algorithms should be faster than gnm_random_graph
-  for dense graphs.
 
-  Algorithm by Keith M. Briggs Mar 31, 2006.
-  Inspired by Knuth's Algorithm S (Selection sampling technique),
-  in section 3.4.2
-  The Art of Computer Programming by Donald E. Knuth
-  Volume 2 / Seminumerical algorithms
-  Third Edition, Addison-Wesley, 1997.
+    Algorithm by Keith M. Briggs Mar 31, 2006.
+    Inspired by Knuth's Algorithm S (Selection sampling technique),
+    in section 3.4.2 of
+
+    The Art of Computer Programming by Donald E. Knuth
+    Volume 2 / Seminumerical algorithms
+    Third Edition, Addison-Wesley, 1997.
  
-  """
-  mmax=n*(n-1)/2
-  if m>=mmax:
-      G=complete_graph(n)
-  else:
-      G=empty_graph(n)
-  G.name="dense_gnm_random_graph(%s,%s)"%(n,m)
-  
-  if n==1 or m>=mmax:
-      return G
-  
-  if seed is not None:
-      random.seed(seed)
+    """
+    mmax=n*(n-1)/2
+    if m>=mmax:
+        G=complete_graph(n)
+    else:
+        G=empty_graph(n)
 
-  u=0
-  v=1
-  t=0
-  k=0
-  while True:
-    if random.randrange(mmax-t)<m-k:
-      G.add_edge(u,v)
-      k+=1
-      if k==m:
-          return G
-    t+=1
-    v+=1
-    if v==n: # go to next row of adjacency matrix
-      u+=1
-      v=u+1
+        G.name="dense_gnm_random_graph(%s,%s)"%(n,m)
+  
+    if n==1 or m>=mmax:
+        return G
+  
+    if seed is not None:
+        random.seed(seed)
 
+    u=0
+    v=1
+    t=0
+    k=0
+    while True:
+        if random.randrange(mmax-t)<m-k:
+            G.add_edge(u,v)
+            k+=1
+            if k==m: return G
+        t+=1
+        v+=1
+        if v==n: # go to next row of adjacency matrix
+            u+=1
+            v=u+1
 
 def gnm_random_graph(n,m,seed=None):
     """
