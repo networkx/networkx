@@ -53,8 +53,8 @@ def laplacian(G,nodelist=None):
     """Return standard combinatorial Laplacian of G.
 
     Return the matrix L = D - A, where
-       D is the diagonal matrix in which the i'th entry is
-         the degree of node i
+
+       D is the diagonal matrix in which the i'th entry is the degree of node i
        A is the adjacency matrix.
 
     The returned matrix is a numpy/numeric array. 
