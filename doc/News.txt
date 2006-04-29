@@ -6,6 +6,35 @@ NetworkX News
 .. include:: Menu.txt
 
 
+What's new in NX-0.29?
+----------------------
+
+Release date: 28 April 2006
+
+See: https://networkx.lanl.gov/wiki/timeline
+
+New features
+~~~~~~~~~~~~
+   - Algorithms for betweeenness, eigenvalues, eigenvectors, and
+     spectral projection for threshold graphs  
+   - Use numpy when available
+   - dense_gnm_random_graph generator
+   - Generators for some directed graphs: GN, GNR, and GNC by Krapivsky
+     and Redner 
+   - Grid graph generators now label by index tuples.  Helper
+     functions for manipulating labels.
+   - relabel_nodes_with_function 
+
+
+Bug fixes
+~~~~~~~~~
+    - Betweenness centrality now correctly uses Brandes definition and
+      has normalization option outside main loop
+    - Empty graph now labled as empty_graph(n)
+    - shortest_path_length used python2.4 generator feature
+    - degree_sequence_tree off by one error caused nonconsecutive labeling
+    - periodic_grid_2d_graph removed in favor of grid_2d_graph with periodic=True
+
 What's new in NX-0.28?
 ----------------------
 

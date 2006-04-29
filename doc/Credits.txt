@@ -8,9 +8,10 @@ implementing a graph data structure
 http://www.python.org/doc/essays/graphs.html
 
 Thanks to David Eppstein for the idea of representing a graph G
-so that "for n in G" loops over the nodes and G[n] are n's neighbors.      
+so that "for n in G" loops over the nodes in G and G[n] are node n's 
+neighbors.      
 
-Thanks to the following people who have made contributions to NX:
+Thanks to the following people who have made contributions to NetworkX:
 
  - Katy Bold contributed the Karate Club graph 
 
@@ -26,9 +27,15 @@ Thanks to the following people who have made contributions to NX:
  - Arnar Flatberg fixed the graph laplacian routines
 
  - Chris Myers suggested using None as a default datatype, suggested
-   improvements for the IO routines, and reported bugs
+   improvements for the IO routines, added grid generator index tuple
+   labeling and associated routines, and reported bugs
 
  - Joel Miller tested and improved the connected components methods
+   and bugs and typos in the graph generators
 
- - Keith Briggs sorted out naming issues for random graphs
+ - Keith Briggs sorted out naming issues for random graphs and
+   wrote dense_gnm_random_graph
 
+ - Ignacio Rozada provided the Krapivsky-Redner graph generator
+
+ - Phillipp Pagel helped fix eccentricity etc. for disconnected graphs 

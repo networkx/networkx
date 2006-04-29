@@ -53,12 +53,13 @@ Requirements
       - Pygraphviz	 http://networkx.lanl.gov/pygraphviz/
       - Graphviz         http://graphviz.org/
       - Pydot            http://www.dkbza.org/pydot.html
+      - numpy or Numeric http://numeric.scipy.org/
 
    Optional useful packages:
 
-      - Numerical Python http://numeric.scipy.org/
       - PyGSL            http://pygsl.sourceforge.net/
       - Ipython          http://ipython.scipy.org/
+      - pNetworkX	 http://foss.eepatents.com/pNetworkX                 
 
 Downloading
 -----------
