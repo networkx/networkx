@@ -35,9 +35,11 @@ def is_string_like(obj): # from John Hunter, types-free version
  
 def iterable(obj):
     """ Return True if obj is iterable with a well-defined len()  """
+    if hasattr(obj,"__iter__"): return True
     try:
-      len(obj)
-    except: return False
+        len(obj)
+    except:
+        return False
     return True
 
 def flatten(obj, result=None):
