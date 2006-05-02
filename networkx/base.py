@@ -953,16 +953,11 @@ class Graph(object):
         if nbunch in self:
             nbunch=[nbunch]
 
-        # check if <iterator>,
-        # iterators are exhausted after one "in" statement so make dict 
-        if iter(nbunch) is nbunch:       
-            nbunch={}.fromkeys(nbunch,0) 
-
         if inplace:
             # demolish all nodes (and attached edges) not in nbunch
             # inplace=True overrides any setting of create_using
 
-            self.delete_nodes_from([n for n in self.nodes() if not n in nbunch])
+            self.delete_nodes_from([n for n in self if not n in nbunch])
             self.name="Subgraph of (%s)"%(self.name)
             return self
 
@@ -977,7 +972,8 @@ class Graph(object):
             # H.dna=self.dna.copy()  # do not copy dna to a subgraph
 
             H.add_nodes_from([n for n in nbunch if n in self])
-            H.add_edges_from([e for e in self.edges(nbunch) if e[0] in H and e[1] in H])
+            for n in H:
+                H.add_edges_from([(n,m) for m in self[n] if m in H ])
 
             return H
 
