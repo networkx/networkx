@@ -950,13 +950,13 @@ class Graph(object):
 
         """
         # if nbunch is a single node in the graph then convert into a list
-        if nbunch in self:
-            nbunch=[nbunch]
+        # instead of iterating over it, this allows nodes to be iterable
+        if nbunch in self: nbunch=[nbunch]
 
-        if inplace:
-            # demolish all nodes (and attached edges) not in nbunch
-            # inplace=True overrides any setting of create_using
-
+        if inplace: # demolish all nodes (and attached edges) not in nbunch
+                    # override any setting of create_using
+            if hasattr(nbunch,"next"): # if we are an simple iterator
+                nbunch=dict.fromkeys(nbunch) # make a dict
             self.delete_nodes_from([n for n in self if not n in nbunch])
             self.name="Subgraph of (%s)"%(self.name)
             return self
@@ -972,10 +972,14 @@ class Graph(object):
             # H.dna=self.dna.copy()  # do not copy dna to a subgraph
 
             H.add_nodes_from([n for n in nbunch if n in self])
+            # add edges
             for n in H:
-                H.add_edges_from([(n,m) for m in self[n] if m in H ])
-
-            return H
+                gn=self.adj[n]    # store in local variables for speed
+                hn=H.adj[n]
+                for u in H:
+                    if u in gn:
+                        hn[u]=None
+        return H
 
 
 
@@ -1598,6 +1602,63 @@ class DiGraph(Graph):
         for v in H.adj:
             H.pred[v]=self.pred[v].copy()
             H.succ[v]=self.succ[v].copy()
+        return H
+
+
+    def subgraph(self, nbunch, inplace=False, create_using=None):
+        """
+        Return the subgraph induced on nodes in nbunch.
+
+        nbunch: either a singleton node, a string (which is treated
+        as a singleton node), or any iterable (non-string) container
+        of nodes for which len(nbunch) is defined. For example, a list,
+        dict, set, Graph, numeric array, or user-defined iterable object. 
+
+        Setting inplace=True will return the induced subgraph in original graph
+        by deleting nodes not in nbunch. This overrides create_using.
+        Warning: this can destroy the graph.
+
+        Unless otherwise specified, return a new graph of the same
+        type as self.  Use (optional) create_using=R to return the
+        resulting subgraph in R. R can be an existing graph-like
+        object (to be emptied) or R can be a call to a graph object,
+        e.g. create_using=DiGraph(). See documentation for empty_graph()
+        
+        Note: use subgraph(G) rather than G.subgraph() to access the more
+        general subgraph() function from the operators module.
+
+        """
+        # if nbunch is a single node in the graph then convert into a list
+        # instead of iterating over it, this allows nodes to be iterable
+        if nbunch in self: nbunch=[nbunch]
+
+        if inplace: # demolish all nodes (and attached edges) not in nbunch
+                    # override any setting of create_using
+            if hasattr(nbunch,"next"): # if we are an simple iterator
+                nbunch=dict.fromkeys(nbunch) # make a dict
+            self.delete_nodes_from([n for n in self if not n in nbunch])
+            self.name="Subgraph of (%s)"%(self.name)
+            return self
+
+        else:  # create new graph        
+            if create_using is not None:  # user specified graph
+                H=create_using
+                H.clear()
+            else:           # Graph object of the same type as current graph
+                H=self.__class__()
+
+            H.name="Subgraph of (%s)"%(self.name)
+            # H.dna=self.dna.copy()  # do not copy dna to a subgraph
+
+            H.add_nodes_from([n for n in nbunch if n in self])
+            # add edges
+            for n in H:
+                gsn=self.succ[n]    # store in local variables for speed
+                hsn=H.succ[n]
+                for u in H:
+                    if u in gsn:
+                        hsn[u]=None
+                        H.pred[u][n]=None
         return H
 
     def is_directed(self):
