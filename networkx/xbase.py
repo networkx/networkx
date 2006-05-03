@@ -874,31 +874,15 @@ class XGraph(Graph):
         except (KeyError,TypeError):
             pass
 
-# WARNING: setting inplace=True makes it easy to destroy the graph.
-        if inplace:
-            # Demolish all nodes (and attached edges) not in nbunch
-            # inplace=True overrides any setting of create_using
-            #
-            # We use a lookup table to avoid exhausting a "once-through"
-            # nbunch iterator.
-            # 
-            # check if <iterator>
-            if hasattr(nbunch,"next") and iter(nbunch) is nbunch: 
-                # replace nbunch by a dict
-                # this works OK if len(nbunch), which is undefined for
-                # say a file, is much smaller than number of nodes in graph
-                nbunch={}.fromkeys(nbunch,0) 
-                
-            # construct (possibly huge) helper list of nodes to delete,
-            # required since we cannot delete nodes while iterating over graph 
-            to_delete=[ n for n in self.adj if n not in nbunch ]
-            for n in to_delete:
-                self.delete_node(n)
+        # WARNING: setting inplace=True destroys the graph.
+        if inplace: # demolish all nodes (and attached edges) not in nbunch
+                    # override any setting of create_using
+            if hasattr(nbunch,"next"): # if we are an simple iterator
+                nbunch=dict.fromkeys(nbunch) # make a dict
+            self.delete_nodes_from([n for n in self if not n in nbunch])
             self.name="Subgraph of (%s)"%(self.name)
             return self
-
-# Create new graph   (not inplace)       
-        if create_using is None:
+        if create_using is None:  # Create new graph   
             # return a Graph object of the same type as current graph
             # subgraph inherits multiedges and selfloops settings
             H=self.__class__(multiedges=self.multiedges,
@@ -912,38 +896,22 @@ class XGraph(Graph):
             H=create_using
             H.clear()
         H.name="Subgraph of (%s)"%(self.name)
-        for n in nbunch:
-            if n in self:
-                H.adj.setdefault(n,{})  # add_node
+        H.add_nodes_from([n for n in nbunch if n in self])
 
-        no_nodes_subgraph=len(H)
-        no_nodes_graph=len(self)
         if self.multiedges:
-            for n in H: # 
-                s_adj_n=self.adj[n]    # store in local variables
-                h_adj_n=H.adj[n]
-                # loop over shorter sequence
-                if no_nodes_subgraph > no_nodes_graph:
-                    for u in s_adj_n:
-                        if u in H:
-                            h_adj_n[u]=s_adj_n[u][:]  # copy list
-                else:
-                    for u in H:
-                        if u in s_adj_n:
-                            h_adj_n[u]=s_adj_n[u][:]  # copy list
-        else: # No multiedges
-            for n in H: # 
-                s_adj_n=self.adj[n]    # store in local variables
-                h_adj_n=H.adj[n]
-                # loop over shorter sequence
-                if no_nodes_subgraph > no_nodes_graph:
-                    for u in s_adj_n:
-                        if u in H:
-                            h_adj_n[u]=s_adj_n[u]
-                else:
-                    for u in H:
-                        if u in s_adj_n:
-                            h_adj_n[u]=s_adj_n[u]
+            for n in H: 
+                gn=self.adj[n]    # store in local variables
+                hn=H.adj[n]
+                for u in H:
+                    if u in gn:
+                        hn[u]=gn[u][:]  # copy list
+        else: # no multiedges
+            for n in H: 
+                gn=self.adj[n]    # store in local variables
+                hn=H.adj[n]
+                for u in H:
+                    if u in gn:
+                        hn[u]=gn[u]
         return H
 
 
@@ -1712,27 +1680,12 @@ class XDiGraph(DiGraph):
         except (KeyError,TypeError):
             pass
 
-        # WARNING: setting inplace=True makes it easy to destroy the graph.
-
-        if inplace:
-            # Demolish all nodes (and attached edges) not in nbunch
-            # inplace=True overrides any setting of create_using
-            #
-            # We use a lookup table to avoid exhausting a "once-through"
-            # nbunch iterator.
-            # 
-            # check if <iterator>
-            if hasattr(nbunch,"next") and iter(nbunch) is nbunch: 
-                # replace nbunch by a dict
-                # this works OK if len(nbunch), which is undefined for
-                # say a file, is much smaller than number of nodes in graph
-                nbunch={}.fromkeys(nbunch,0) 
-                
-            # construct (possibly huge) helper list of nodes to delete,
-            # required since we cannot delete nodes while iterating over graph 
-            to_delete=[ n for n in self.succ if n not in nbunch ]
-            for n in to_delete:
-                self.delete_node(n)
+        # WARNING: setting inplace=True destroys the graph.
+        if inplace: # demolish all nodes (and attached edges) not in nbunch
+                    # override any setting of create_using
+            if hasattr(nbunch,"next"): # if we are an simple iterator
+                nbunch=dict.fromkeys(nbunch) # make a dict
+            self.delete_nodes_from([n for n in self if not n in nbunch])
             self.name="Subgraph of (%s)"%(self.name)
             return self
         # create new graph        
@@ -1750,48 +1703,26 @@ class XDiGraph(DiGraph):
             H=create_using
             H.clear()
         H.name="Subgraph of (%s)"%(self.name)
-        for n in nbunch:
-            if n in self:
-                H.succ.setdefault(n,{})  # add_node
-                H.pred.setdefault(n,{})  
-
-        # Copy edge data
-        no_nodes_subgraph=len(H)
-        no_nodes_graph=len(self)
+        H.add_nodes_from([n for n in nbunch if n in self])
+        # add edges
         if self.multiedges:
             for n in H: # 
-                s_succ_n=self.succ[n]    # store in local variables
-                h_succ_n=H.succ[n]
-                # loop over shorter sequence
-                if no_nodes_subgraph > no_nodes_graph:
-                    for u in s_succ_n:
-                        if u in H:
-                            edata=s_succ_n[u][:] # copy edge data
-                            h_succ_n[u]=edata
-                            H.pred[u][n]=edata
-                else:
-                    for u in H:
-                        if u in s_succ_n:
-                            edata=s_succ_n[u][:] # copy edge data
-                            h_succ_n[u]=edata
-                            H.pred[u][n]=edata
-        else: # No multiedges
+                gsn=self.succ[n]    # store in local variables
+                hsn=H.succ[n]
+                for u in H:
+                    if u in gsn:
+                        edata=s_succ_n[u][:] # copy edge data
+                        hsn[u]=edata
+                        H.pred[u][n]=edata
+        else: # no multiedges
             for n in H: # 
-                s_succ_n=self.succ[n]    # store in local variables
-                h_succ_n=H.succ[n]
-                # loop over shorter sequence
-                if no_nodes_subgraph > no_nodes_graph:
-                    for u in s_succ_n:
-                        if u in H:
-                            edata=s_succ_n[u]
-                            h_succ_n[u]=edata
-                            H.pred[u][n]=edata
-                else:
-                    for u in H:
-                        if u in s_succ_n:
-                            edata=s_succ_n[u]
-                            h_succ_n[u]=edata
-                            H.pred[u][n]=edata
+                gsn=self.succ[n]    # store in local variables
+                hsn=H.succ[n]
+                for u in H:
+                    if u in gsn:
+                        edata=gsn[u]
+                        hsn[u]=edata
+                        H.pred[u][n]=edata
         return H
 
     def copy(self):
