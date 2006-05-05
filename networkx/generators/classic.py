@@ -124,13 +124,13 @@ def barbell_graph(m1,m2):
         G.add_edge(m1+m2-1,m1+m2)
     return G
 
-def complete_graph(n):
+def complete_graph(n,**kwds):
     """ Return the Complete graph K_n with n nodes. 
     
     Node labels are the integers 0 to n-1.
 
     """
-    G=empty_graph(n)
+    G=empty_graph(n,**kwds)
     G.name="complete_graph(%d)"%n
     for u in xrange(n):
         for v in xrange(u,n):
