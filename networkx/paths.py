@@ -320,8 +320,8 @@ def dijkstra_bi(graph, source, target):
     search. 
 
     Returns a tuple where the first item stores distance from the 
-    source and the second stores the path from the source to that 
-    node.
+    source and the second stores the path from the source to the  
+    target node.
 
     Distances are calculated as sums of weighted edges traversed.
     Edges must hold numerical values for XGraph and XDiGraphs.
@@ -574,7 +574,7 @@ def number_connected_components(G):
 
 def is_connected(G):
     """Return True if G is connected."""
-    return number_connected_components(G)==1
+    return len(shortest_path(G, G.nodes_iter().next()))==len(G)
 
 def connected_component_subgraphs(G):
     """
