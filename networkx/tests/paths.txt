@@ -17,6 +17,10 @@ Paths and path lengths
 6
 >>> NX.shortest_path(G,1,12)
 [1, 2, 3, 4, 8, 12]
+
+>>> NX.shortest_path_bi(G,1,12)
+[1, 2, 3, 4, 8, 12]
+
 >>> sp=NX.shortest_path(G,1)
 >>> sp[12] 
 [1, 2, 3, 4, 8, 12]
@@ -118,6 +122,18 @@ Traceback (most recent call last):
 ...
 NetworkXError: node s not reachable from moon
 
+
+Bidirectional Dijkstra
+----------------------
+
+>>> NX.dijkstra_bi(XG, 's', 'v')
+(9, ['s', 'x', 'u', 'v'])
+
+>>> NX.dijkstra_bi(GG,'s','v')
+(8, ['s', 'y', 'v'])
+
+>>> NX.dijkstra_bi(G,'s','v')
+(2, ['s', 'x', 'v'])
 
 
 Topological Sort

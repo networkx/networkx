@@ -62,6 +62,7 @@ from base import Graph, DiGraph, NetworkXException, NetworkXError,\
 from xbase import XGraph, XDiGraph
 from paths import shortest_path, shortest_path_length, eccentricity,\
                   diameter, radius, periphery, center,\
+                  dijkstra_bi, shortest_path_bi,\
                   dijkstra, dijkstra_path, dijkstra_path_length,\
                   topological_sort, topological_sort_recursive,\
                   is_directed_acyclic_graph,\
