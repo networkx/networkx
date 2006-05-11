@@ -150,53 +150,117 @@ def shortest_path(G,source,target=None,cutoff=None):
 
 def shortest_path_bi(graph, source, target, cutoff = None):
     """
-       Returns list of nodes in a shortest path between source
-       and target.
+       Returns a list of nodes in a shortest path between source
+       and target or False if no such path is found.
        This bidirectional version of shortest_path is much faster.
        Note that it requires target node to be specified.
        
-       Cutoff is a limit on the number of hops traversed.
+       Cutoff is a limit on the number of hops in either direction.
     """
-    Path = [{},{}]
-    Q = [None,None]
     if source == None or target == None:
         raise NetworkXException("Bidirectional shortest path called with no source or target")
     if source == target:
         return [source]
     if cutoff == None:
         cutoff = 1e300000
-    Path[0][source] = [source]
-    Path[1][target] = [target]
-    Q[0] = [] # deque() #python 2.4 required
-    Q[0].append(source)
-    Q[1] = [] # deque() #python 2.4 requred
-    Q[1].append(target)
-    count = 0
-    finalpath = []
-    finallength = 1e300000
+    # Handle directed and undirected graphs.
+    if graph.is_directed():
+        graph_nbrs=[graph.successors, graph.predecessors]
+    else:
+        graph_nbrs=[graph.neighbors]*2
+    # Create two of each search tree.  One from source, on from target
+    paths_forw = {source:[source]}  # paths 
+    Q_forw = [source]               # deque([source])  # python 2.4 required
+    paths_back = {target:[target]}  # paths 
+    Q_back = [target]               # deque([target])  # python 2.4 required
+
+    bi_Q=[Q_forw, Q_back]
+    workspace=[ (paths_forw, paths_back, Q_forw, graph_nbrs[0]),
+                (paths_back, paths_forw, Q_back, graph_nbrs[1])]
+    finalpath=[]
+    finallength=1e30000
     rev = 0
-    while Q[0] or Q[1]:
-        count +=1
-        #chooes direction
+    while Q_forw or Q_back:
+        #choose direction
         dir = rev
-        if not Q[dir] : 
-            dir = (dir+1)%2 
-        rev = (dir+1)%2
-        u = Q[dir].pop(0) #Q[dir].popleft() #python 2.4 required
-        if u in Path[rev]:
+        if not bi_Q[dir]: 
+            dir = 1-dir
+        rev = 1-dir
+        # load dicts/functions
+        (paths, paths_rev, Q, nbrs) = workspace[dir]
+        u = Q.pop(0)  #Q[dir].popleft()  # python 2.4 required
+        if u in paths_rev:
             return finalpath
-        for v in graph.neighbors(u):
-            if not v in Path[dir]:
-                Path[dir][v] = Path[dir][u] + [v]
-                Q[dir].append(v)
-                if v in Path[dir] and v in Path[rev]:
-                    totaldist = len(Path[dir][v]) + len(Path[rev][v])  -2
+        for v in nbrs(u):
+            if v not in paths:
+                paths[v] = paths[u] + [v]
+                Q.append(v)
+                if v in paths_rev:
+                    totaldist = len(paths[v]) + len(paths_rev[v]) -2
                     if finallength > totaldist:
-                        revpath = Path[1][v][:]
+                        revpath=paths_rev[v][:-1]
                         revpath.reverse()
-                        finalpath = Path[0][v] + revpath[1:]
-                        finallength = len(finalpath)-1
-                if(len(Path[dir][v])>cutoff/2) : return False
+                        finalpath= paths[v] + revpath
+                        finallength=len(finalpath)-1
+                if len(paths[v]) > cutoff: return False
+    return False
+
+def shortest_path_bi2(graph, source, target, cutoff = None):
+    """
+       This version of shortest_path_bi ensures that the two
+       search "spheres" have the same radius so that the first
+       path found is also the shortest.  Cost is creation of a
+       newQ at each level.  This will be faster for graphs which
+       expand at similar rates from both target and source.  Slower
+       when expansion rates differ greatly from source and target.
+       Let's see what speed difference there is.
+
+    """
+    if source == None or target == None:
+        raise NetworkXException("Bidirectional shortest path called with no source or target")
+    if source == target:
+        return [source]
+    if cutoff == None:
+        cutoff = 1e300000
+    # Handle directed and undirected graphs.
+    if graph.is_directed():
+        graph_nbrs=[graph.successors, graph.predecessors]
+    else:
+        graph_nbrs=[graph.neighbors]*2
+    # Create two of each search tree.  One from source, on from target
+    paths_forw = {source:[source]}  # paths 
+    Q_forw = [source]               # deque([source])  # python 2.4 required
+    paths_back = {target:[target]}  # paths 
+    Q_back = [target]               # deque([target])  # python 2.4 required
+
+    bi_Q=[Q_forw, Q_back]
+    workspace=[ (paths_forw, graph_nbrs[0], paths_back),
+                (paths_back, graph_nbrs[1], paths_forw)]
+    count=0
+    rev = 0
+    while Q_forw or Q_back:
+        count+=1
+        if count>cutoff : return False
+        #choose direction
+        dir = rev
+        if not bi_Q[dir] : dir = 1-dir
+        rev = 1-dir
+        # load dicts/functions
+        (paths, nbrs, paths_rev) = workspace[dir]
+        # empty Queue and create a new one to take its place.
+        newQ = []   # deque()   # requires python 2.4
+        for u in bi_Q[dir]:
+            for v in nbrs(u):
+                if v not in paths:
+                    paths[v] = paths[u] + [v]
+                    if v in paths_rev:
+                        # We've found a path! It must be shortest.
+                        revpath=paths_rev[v][:-1]
+                        revpath.reverse()
+                        finalpath= paths[v] + revpath
+                        return finalpath
+                    newQ.append(v)
+        bi_Q[dir]=newQ
     return False
     
 def dijkstra_path(G,source,target=None):
@@ -283,8 +347,9 @@ def dijkstra(G,source,target=None):
     
     See also 'dijkstra_bi'
     """
-    Dist = {}  # dictionary of final distances
-    Paths = {source:[source]}  # dictionary of paths
+    if source==target: return (0, [source])
+    dist = {}  # dictionary of final distances
+    paths = {source:[source]}  # dictionary of paths
     seen = {source:0} 
     fringe=networkx.queues.Priority(lambda x: seen[x])
     fringe.append(source)
@@ -298,21 +363,21 @@ def dijkstra(G,source,target=None):
 
     while fringe:
         v=fringe.smallest()
-        if v in Dist: continue # already searched this node.
-        Dist[v] = seen[v]
+        if v in dist: continue # already searched this node.
+        dist[v] = seen[v]
         if v == target: break
             
         for w in G.successors(v):
-            vwLength = Dist[v] + G.get_edge(v,w)
-            if w in Dist:
-                if vwLength < Dist[w]:
+            vwLength = dist[v] + G.get_edge(v,w)
+            if w in dist:
+                if vwLength < dist[w]:
                     raise ValueError,\
                           "Contradictory paths found: negative weights?"
             elif w not in seen or vwLength < seen[w]:
                 seen[w] = vwLength
                 fringe.append(w) # breadth first search
-                Paths[w] = Paths[v]+[w]
-    return (Dist,Paths)
+                paths[w] = paths[v]+[w]
+    return (dist,paths)
 
 def dijkstra_bi(graph, source, target):
     """
@@ -349,74 +414,79 @@ def dijkstra_bi(graph, source, target):
         raise NetworkXException("Bidirectional Dijkstra called with no source or target")
     if source == target:
         return (0, [source])
-    Dist = [None, None]
-    Paths = [None, None]
-    fringe = [None, None]
-    seen = [None,None ]
-    my = 1e30000
-    mypath = []
-    Dist[0] = {}  # dictionary of final distances from source
-    Dist[1] = {}  # dictionary of final distances from target
-    Paths[0] = {source:[source]}  # dictionary of paths from source
-    Paths[1] = {target:[target]}  # dictionary of paths from target
-    seen[0] = {source:0} #dictionary of distances to nodes seen so far going from source
-    seen[1] = {target:0} #dictionary of distances to nodes seen so far going from target
-    fringe[0]= []
-    heapq.heappush(fringe[0], (0,source)) 
-    fringe[1]= []
-    heapq.heappush(fringe[1], (0, target))
+    # put module functions into local namespace
+    heappop=heapq.heappop
+    heappush=heapq.heappush
     # if unweighted graph, set the weights to 1 on edges by
     # introducing a get_edge method
     if not hasattr(graph,"get_edge"): graph.get_edge=lambda x,y:1
-    rev = 0
-    while fringe[0] or fringe[1]:
-        # choose direction
+    # The following function lists ease readability below, 
+    #     put function lookups in local namespace
+    #     and handle directed and undirected graphs.
+    if graph.is_directed():
+        graph_nbrs=[graph.successors, graph.predecessors]
+        graph_get_edge=[graph.get_edge, lambda x,y: graph.get_edge(y,x)]
+    else:
+        graph_nbrs=[graph.neighbors]*2
+        graph_get_edge=[graph.get_edge]*2
+        
+    # Create two of each dict needed.  One from source, on from target
+    dist_forw = {}            # shortest distances 
+    seen_forw = {source:0}    # shortest distance seen so far to this node
+    paths_forw = {source:[source]}  # paths 
+    fringe_forw = []          # Priority Queue (implemented via a heap)
+    heappush(fringe_forw, (0,source))  #heappush stores sorted (dist, node) tuples 
+    # Now from target
+    dist_back = {}            
+    seen_back = {target:0}    
+    paths_back = {target:[target]}  
+    fringe_back = []   
+    heappush(fringe_back, (0,target))
+    # set up easy way to go forward and backwards
+    bi_fringe=[fringe_forw, fringe_back]
+    workspace=[ (dist_forw, seen_forw, paths_forw, fringe_forw, graph_nbrs[0], graph_get_edge[0]),
+                (dist_back, seen_back, paths_back, fringe_back, graph_nbrs[1], graph_get_edge[1])]
+
+    mydist = 1e30000
+    mypath = []
+    rev=0
+    while fringe_forw or fringe_back:
+        # choose direction 
         dir = rev
-        if not fringe[dir] : dir = (dir+1)%2 
-        rev = (dir+1)%2
-        forward = dir==0
+        if not bi_fringe[dir]: dir = 1-dir
+        rev = 1-dir
+        # load dicts/functions
+        (dist, seen, paths, fringe, nbrs, get_edge) = workspace[dir] 
+        (dist_rev, seen_rev) = workspace[rev][:2]
         # extract closest
-        (dist, v )= heapq.heappop(fringe[dir])
-        if v in Dist[dir]:
-            # Shortest path to v has already been found
+        (distance, v) = heappop(fringe)
+        if v in dist:   # Shortest path to v has already been found
             continue
-        # update distance
-        Dist[dir][v] = dist
-        if v in Dist[rev]:
+        if v in dist_rev:
             # if we have scanned v in both directions we are done 
             # we have now discovered the shortest path
-            return (my, mypath)
-        # handle directed and undirected graphs.
-        if graph.is_directed():
-            if forward: 
-                iter = graph.successors(v)
-            else:
-                iter = graph.predecessors(v)
-        else:
-            iter = graph.neighbors(v)
-        for w in iter:
-            if(forward):
-                vwLength = Dist[dir][v] + graph.get_edge(v,w)
-            else:
-                vwLength = Dist[dir][v] + graph.get_edge(w,v)
-            if w in Dist[dir]:
-                if vwLength < Dist[dir][w]:
+            return (mydist, mypath)
+        # update distance
+        dist[v] = distance
+        for w in nbrs(v):
+            vwLength = dist[v] + get_edge(v,w)
+            if w in dist:
+                if vwLength < dist[w]:
                     raise ValueError,\
                         "Contradictory paths found: negative weights?"
-            elif w not in seen[dir] or vwLength < seen[dir][w]:
-                # relaxing        
-                seen[dir][w] = vwLength
-                heapq.heappush(fringe[dir], (vwLength,w)) 
-                Paths[dir][w] = Paths[dir][v]+[w]
-                if w in seen[dir] and w in seen[rev]:
-                    #see if this path is better than than the already
-                    #discovered shortest path
-                    totaldist = seen[dir][w] + seen[rev][w] 
-                    if my > totaldist:
-                        my = totaldist
-                        revpath = Paths[1][w][:]
+            elif w not in seen or vwLength < seen[w]:
+                seen[w] = vwLength
+                heappush(fringe, (vwLength,w)) 
+                paths[w] = paths[v]+[w]
+                if w in seen_rev:
+                    #see if this path is better than any already
+                    #discovered shortest path via other neighbors of v
+                    totaldist = seen[w] + seen_rev[w] 
+                    if mydist > totaldist:
+                        mydist = totaldist
+                        revpath = paths_back[w][:-1]
                         revpath.reverse()
-                        mypath = Paths[0][w] + revpath[1:]
+                        mypath = paths_forw[w] + revpath
     return False
 
 def is_directed_acyclic_graph(G):

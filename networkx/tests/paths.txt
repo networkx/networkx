@@ -7,6 +7,8 @@ Paths
 
     .. image:: paths_G.png
 
+>>> H=NX.cycle_graph(7)
+
 Paths and path lengths
 ----------------------
 
@@ -18,12 +20,24 @@ Paths and path lengths
 >>> NX.shortest_path(G,1,12)
 [1, 2, 3, 4, 8, 12]
 
->>> NX.shortest_path_bi(G,1,12)
+>>> NX.shortest_path_bi2(G,1,12)
 [1, 2, 3, 4, 8, 12]
 
 >>> sp=NX.shortest_path(G,1)
 >>> sp[12] 
 [1, 2, 3, 4, 8, 12]
+
+>>> NX.shortest_path(H,0,3)
+[0, 1, 2, 3]
+
+>>> NX.shortest_path(H,0,4)
+[0, 6, 5, 4]
+
+>>> NX.shortest_path_bi2(H,0,3)
+[0, 1, 2, 3]
+
+>>> NX.shortest_path_bi2(H,0,4)
+[0, 6, 5, 4]
 
 Eccentricity, diameter, etc.
 ----------------------------
@@ -97,6 +111,18 @@ Dijkstra
 >>> NX.dijkstra_path(XG2,1,3)
 [1, 4, 5, 6, 3]
 
+>>> XG3=NX.XGraph()
+>>> XG3.add_edges_from([ [0,1,2],[1,2,12],[2,3,1],[3,4,5],[4,5,1],[5,0,10] ])
+>>> NX.dijkstra_path(XG3,0,3)
+[0, 1, 2, 3]
+>>> NX.dijkstra_path_length(XG3,0,3)
+15
+>>> XG4=NX.XGraph()
+>>> XG4.add_edges_from([ [0,1,2],[1,2,2],[2,3,1],[3,4,1],[4,5,1],[5,6,1],[6,7,1],[7,0,1] ])
+>>> NX.dijkstra_path(XG4,0,2)
+[0, 1, 2]
+>>> NX.dijkstra_path_length(XG4,0,2)
+4
 
 >>> G=NX.DiGraph()  # no weights
 >>> G.add_edges_from([('s','u'), ('s','x'), ('u','v'), ('u','x'), ('v','y'), ('x','u'), ('x','v'), ('x','y'), ('y','s'), ('y','v')])
@@ -122,18 +148,29 @@ Traceback (most recent call last):
 ...
 NetworkXError: node s not reachable from moon
 
+>>> NX.dijkstra_path(H,0,3)
+[0, 1, 2, 3]
+
+>>> NX.dijkstra_path(H,0,4)
+[0, 6, 5, 4]
 
 Bidirectional Dijkstra
 ----------------------
 
 >>> NX.dijkstra_bi(XG, 's', 'v')
 (9, ['s', 'x', 'u', 'v'])
-
 >>> NX.dijkstra_bi(GG,'s','v')
 (8, ['s', 'y', 'v'])
-
 >>> NX.dijkstra_bi(G,'s','v')
 (2, ['s', 'x', 'v'])
+>>> NX.dijkstra_bi(H,0,3)
+(3, [0, 1, 2, 3])
+>>> NX.dijkstra_bi(H,0,4)
+(3, [0, 6, 5, 4])
+>>> NX.dijkstra_bi(XG3,0,3)
+(15, [0, 1, 2, 3])
+>>> NX.dijkstra_bi(XG4,0,2)
+(4, [0, 1, 2])
 
 
 Topological Sort
