@@ -96,7 +96,7 @@ False
 >>> G=degree_sequence_tree(z)
 Traceback (most recent call last):
 ...
-NetworkXError: Degree sequence not a tree
+NetworkXError: Degree sequence invalid
 
 
 Degree Sequences
@@ -110,4 +110,19 @@ Degree Sequences
 >>> len(seq)
 10
 
+>>> graph = barabasi_albert_graph(200,1)
 
+>>> degreeStart = sorted(degree(graph))
+
+>>> graph = random_rewire_connected(graph, 40)
+>>> is_connected(graph)
+True
+
+>>> degseq = sorted(degree(graph))
+>>> degreeStart == degseq
+True
+
+>>> graph = random_rewire(graph, 40)
+>>> degseq2 = sorted(degree(graph))
+>>> degreeStart == degseq2
+True

@@ -292,7 +292,113 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
     raise networkx.NetworkXError, \
           "Exceeded max (%d) attempts at a valid sequence."%max_tries
 
+def random_rewire_connected(graph, num_iterations):
+    """
+       Switches the edges of a connected graphs.
+       
+       Optimization proposed in:
+       @misc{ gkantsidis03markov,
+        author = "C. Gkantsidis and M. Mihail and E. Zegura",
+        title = "The markov chain simulation method for generating connected power law random
+        graphs",
+        text = "C. Gkantsidis, M. Mihail, and E. Zegura. The markov chain simulation method
+        for generating connected power law random graphs. In Proc. 5th Workshop
+        on Algorithm Engineering and Experiments (ALENEX). SIAM, January 2003.",
+        year = "2003",
+        url = "citeseer.ist.psu.edu/gkantsidis03markov.html" }
+    """
+    if not networkx.is_connected(graph):
+       raise NetworkXException()
+    import math
+    typenr = 0
+    rnd = random.Random()
+    window = 1
+    window_counter = 0
+    graph2 = graph.copy()
+    edges = graph.edges()
+    if len(edges)<2 : return
+    iters = 0
+    noupdate = 0
+    while iters < num_iterations:
+         window_counter += 1
+         iters += 1
+         counter = 0
+         edges = graph2.edges()
+         [xy, (u,v)] = rnd.sample(edges, 2) 
+     #There needs to be a (x,y) and an (u,v) edge and the endpoints must be distincts
+         (x,y) = xy
+         while (u in xy or v in xy) and counter < num_iterations*2 :
+             [(u,v)] = rnd.sample(edges,1)
+             counter += 1
+         if counter >= num_iterations*2:
+             break
+         if noupdate > num_iterations *4:
+             break
+         if graph2.has_edge(u,x) or graph2.has_edge(v,y):
+             window_counter -=1
+             iters -=1
+             noupdate += 1 
+             continue
+         
+         graph2.delete_edge(x,y)
+         graph2.delete_edge(u,v)
+         graph2.add_edge(u,x)
+         graph2.add_edge(v,y)
+         if window_counter >= window:
+            newrnd = rnd.random()
+            if networkx.is_connected(graph2):
+                graph = graph2.copy()
+                window_counter = 0
+                window += 1
+            else :
+                graph2 = graph.copy()
+                window_counter = 0
+                window = math.ceil(float(window)/2)
 
+    if networkx.is_connected(graph2):
+       return graph2
+    else:
+       return graph
+
+def random_rewire(graph, num_iterations=10):
+    """
+       Randomly rewire the edges of a graphs a set number of times.
+    """
+    rnd = random.Random()
+    window = 1
+    window_counter = 0
+    graph2 = graph.copy()
+    edges = graph.edges()
+    if len(edges)<2 : return
+    iters = 0
+    noupdate = 0
+    while iters < num_iterations:
+         window_counter += 1
+         iters += 1
+         counter = 0
+         edges = graph2.edges()
+         [xy, (u,v)] = rnd.sample(edges, 2) 
+     #There needs to be a (x,y) and an (u,v) edge and the endpoints must be distincts
+         (x,y) = xy
+         while (u in xy or v in xy) and counter < num_iterations*2 :
+             [(u,v)] = rnd.sample(edges,1)
+             counter += 1
+         if counter >= num_iterations*2:
+             break
+         if noupdate > num_iterations *4:
+             break
+         if graph2.has_edge(u,x) or graph2.has_edge(v,y):
+             window_counter -=1
+             iters -=1
+             noupdate += 1 
+             continue
+         
+         graph2.delete_edge(x,y)
+         graph2.delete_edge(u,v)
+         graph2.add_edge(u,x)
+         graph2.add_edge(v,y)
+    return graph2
+   
 def _test_suite():
     import doctest
     suite = doctest.DocFileSuite('tests/generators/degree_seq.txt',

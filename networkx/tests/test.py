@@ -13,8 +13,12 @@ def all():
         from pkg_resources import resource_filename, resource_listdir
         tests=[resource_filename(__name__, t)
               for t in resource_listdir("networkx",'tests') if t.endswith("txt")]
+        tests+=[resource_filename(__name__, 'generators/'+t)
+              for t in resource_listdir("networkx",'tests/generators') if t.endswith("txt")]
     except:
         tests=glob.glob("*.txt") # this will only work from test directory   
+        tests+=glob.glob("generators/*.txt")
+        #tests+=glob.glob("drawing/*.txt")  
 
     # skip some tests if we don't have numpy or Numeric        
     try:
