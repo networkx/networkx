@@ -164,7 +164,7 @@ def shortest_path_bi(graph, source, target, cutoff = None):
     if cutoff == None:
         cutoff = 1e300000
     #Init
-    paths = [{},{}]
+    paths = [{source:None},{target:None}]
     Q =     [[],[]] 
     if graph.is_directed():
         graph_nbrs=[graph.successors, graph.predecessors]
@@ -178,7 +178,7 @@ def shortest_path_bi(graph, source, target, cutoff = None):
         count += 1
         #chose direction
         dir = 1-dir
-        #make local variables for this direction
+        #make local variables for this direction (for speed)
         thisQ = Q[dir]
         nextQ = []
         pathforw = paths[dir]
@@ -186,24 +186,23 @@ def shortest_path_bi(graph, source, target, cutoff = None):
         neighs = graph_nbrs[dir]
         #visit all nodes on this level
         for u in thisQ:
-            #find its neighbors
+            #go through their neighbors
             for v in neighs(u):
                 if not v in pathforw:
                     #update path if found
-                    pathforw[v] = u
+                    paths[dir][v] = u 
                     if v in pathback:
-                        #We have found a shortes path.
+                        #We have found a shortest path. 
+                        #build path using traceback
                         path = []
                         temp = v
-                        while temp != source:
+                        while temp != None:
                             path.insert(0, temp)
                             temp = paths[0][temp]
-                        path.insert(0, source)
                         temp = paths[1][v]
-                        while temp != target:
+                        while temp != None:
                             path.append(temp)
                             temp = paths[1][temp]
-                        path.append(target)
                         return path
                     nextQ.append(v)
         #update que for next level
@@ -328,6 +327,102 @@ def dijkstra(G,source,target=None):
     return (dist,paths)
 
 def dijkstra_bi(graph, source, target):
+    """
+    Dijkstra's algorithm for shortest paths using bidirectional 
+    search. 
+
+    Returns a tuple where the first item stores distance from the 
+    source and the second stores the path from the source to the  
+    target node.
+
+    Distances are calculated as sums of weighted edges traversed.
+    Edges must hold numerical values for XGraph and XDiGraphs.
+    The weights are 1 for Graphs and DiGraphs.
+    
+    This algorithm will perform a lot faster than ordinary dijkstra.
+    Ordinary Dijkstra expands nodes in a sphere-like manner from the
+    source. The radius of this sphere will eventually be the length 
+    of the shortest path. Bidirectional Dijkstra will expand nodes 
+    from both the source and the target, making two spheres of half 
+    this radius. Volume of the first sphere is pi*r*r while the  
+    others are 2*pi*r/2*r/2, making up half the volume. In practice 
+    bidirectional Dijkstra is much more than twice as fast as 
+    ordinary Dijkstra.
+    
+    Note: Bidirectional Dijkstra requires both source and target to 
+    be specified.
+
+    This algorithm is not guaranteed to work if edge weights
+    are negative or are floating point numbers (
+    overflows and roundoff erros can cause problems). 
+
+    """
+    if source == None or target == None:
+        raise NetworkXException("Bidirectional Dijkstra called with no source or target")
+    if source == target:
+        return (0, [source])
+    #Init:    Forward            Backward
+    dists =   [{},                {}]# dictionary of final distances
+    paths =  [{source:[source]}, {target:[target]}] # dictionary of paths 
+    fringe = [[],                []] #heap of (distance, node) tuples for extracting next node to expand
+    seen =   [{source:0},        {target:0} ]#dictionary of distances to nodes seen 
+    #initialize fringe heap
+    heapq.heappush(fringe[0], (0,source)) 
+    heapq.heappush(fringe[1], (0, target))
+    #neighs for extracting correct neighbor information
+    if graph.is_directed():
+        neighs = [graph.successors_iter, graph.predecessors_iter]
+    else:
+        neighs = [graph.neighbors_iter, graph.neighbors_iter]
+    #variables to hold shortest discovered path
+    finaldist = 1e30000
+    finalpath = []
+    # if unweighted graph, set the weights to 1 on edges by
+    # introducing a get_edge method
+    if not hasattr(graph,"get_edge"): graph.get_edge=lambda x,y:1
+    dir = 1
+    while fringe[0] and fringe[1]:
+        # choose direction 
+        # dir == 0 is forward direction and dir == 1 is back
+        dir = 1-dir
+        # extract closest to expand
+        (dist, v )= heapq.heappop(fringe[dir]) 
+        if v in dists[dir]:
+            # Shortest path to v has already been found 
+            continue
+        # update distance
+        dists[dir][v] = dist #equal to seen[dir][v]
+        if v in dists[1-dir]:
+            # if we have scanned v in both directions we are done 
+            # we have now discovered the shortest path
+            return (finaldist,finalpath)
+        for w in neighs[dir](v):
+            if(dir==0): #forward
+                vwLength = dists[dir][v] + graph.get_edge(v,w)
+            else: #back, must remember to change v,w->w,v
+                vwLength = dists[dir][v] + graph.get_edge(w,v)
+            
+            if w in dists[dir]:
+                if vwLength < dists[dir][w]:
+                    raise ValueError,\
+                        "Contradictory paths found: negative weights?"
+            elif w not in seen[dir] or vwLength < seen[dir][w]:
+                # relaxing        
+                seen[dir][w] = vwLength
+                heapq.heappush(fringe[dir], (vwLength,w)) 
+                paths[dir][w] = paths[dir][v]+[w]
+                if w in seen[0] and w in seen[1]:
+                    #see if this path is better than than the already
+                    #discovered shortest path
+                    totaldist = seen[0][w] + seen[1][w] 
+                    if finaldist > totaldist:
+                        finaldist = totaldist
+                        revpath = paths[1][w][:]
+                        revpath.reverse()
+                        finalpath = paths[0][w] + revpath[1:]
+    return False
+
+def dijkstra_bi_old(graph, source, target):
     """
     Dijkstra's algorithm for shortest paths using bidirectional 
     search. 
