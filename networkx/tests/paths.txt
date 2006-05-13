@@ -20,7 +20,7 @@ Paths and path lengths
 >>> NX.shortest_path(G,1,12)
 [1, 2, 3, 4, 8, 12]
 
->>> NX.shortest_path_bi2(G,1,12)
+>>> NX.shortest_path_bi(G,1,12)
 [1, 2, 3, 4, 8, 12]
 
 >>> sp=NX.shortest_path(G,1)
@@ -33,10 +33,10 @@ Paths and path lengths
 >>> NX.shortest_path(H,0,4)
 [0, 6, 5, 4]
 
->>> NX.shortest_path_bi2(H,0,3)
+>>> NX.shortest_path_bi(H,0,3)
 [0, 1, 2, 3]
 
->>> NX.shortest_path_bi2(H,0,4)
+>>> NX.shortest_path_bi(H,0,4)
 [0, 6, 5, 4]
 
 Eccentricity, diameter, etc.
