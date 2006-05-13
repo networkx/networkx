@@ -150,12 +150,12 @@ def shortest_path(G,source,target=None,cutoff=None):
 
 def shortest_path_bi(graph, source, target, cutoff = None):
     """
-       Returns a list of nodes in a shortest path between source
-       and target or False if no such path is found.
+       Returns list of nodes in a shortest path between source
+       and target.
        This bidirectional version of shortest_path is much faster.
        Note that it requires target node to be specified.
        
-       Cutoff is a limit on the number of hops in either direction.
+       Cutoff is a limit on the number of hops traversed.
     """
     if source == None or target == None:
         raise NetworkXException("Bidirectional shortest path called with no source or target")
@@ -163,104 +163,52 @@ def shortest_path_bi(graph, source, target, cutoff = None):
         return [source]
     if cutoff == None:
         cutoff = 1e300000
-    # Handle directed and undirected graphs.
+    #Init
+    paths = [{},{}]
+    Q =     [[],[]] 
     if graph.is_directed():
         graph_nbrs=[graph.successors, graph.predecessors]
     else:
-        graph_nbrs=[graph.neighbors]*2
-    # Create two of each search tree.  One from source, on from target
-    paths_forw = {source:[source]}  # paths 
-    Q_forw = [source]               # deque([source])  # python 2.4 required
-    paths_back = {target:[target]}  # paths 
-    Q_back = [target]               # deque([target])  # python 2.4 required
-
-    bi_Q=[Q_forw, Q_back]
-    workspace=[ (paths_forw, paths_back, Q_forw, graph_nbrs[0]),
-                (paths_back, paths_forw, Q_back, graph_nbrs[1])]
-    finalpath=[]
-    finallength=1e30000
-    rev = 0
-    while Q_forw or Q_back:
-        #choose direction
-        dir = rev
-        if not bi_Q[dir]: 
-            dir = 1-dir
-        rev = 1-dir
-        # load dicts/functions
-        (paths, paths_rev, Q, nbrs) = workspace[dir]
-        u = Q.pop(0)  #Q[dir].popleft()  # python 2.4 required
-        if u in paths_rev:
-            return finalpath
-        for v in nbrs(u):
-            if v not in paths:
-                paths[v] = paths[u] + [v]
-                Q.append(v)
-                if v in paths_rev:
-                    totaldist = len(paths[v]) + len(paths_rev[v]) -2
-                    if finallength > totaldist:
-                        revpath=paths_rev[v][:-1]
-                        revpath.reverse()
-                        finalpath= paths[v] + revpath
-                        finallength=len(finalpath)-1
-                if len(paths[v]) > cutoff: return False
-    return False
-
-def shortest_path_bi2(graph, source, target, cutoff = None):
-    """
-       This version of shortest_path_bi ensures that the two
-       search "spheres" have the same radius so that the first
-       path found is also the shortest.  Cost is creation of a
-       newQ at each level.  This will be faster for graphs which
-       expand at similar rates from both target and source.  Slower
-       when expansion rates differ greatly from source and target.
-       Let's see what speed difference there is.
-
-    """
-    if source == None or target == None:
-        raise NetworkXException("Bidirectional shortest path called with no source or target")
-    if source == target:
-        return [source]
-    if cutoff == None:
-        cutoff = 1e300000
-    # Handle directed and undirected graphs.
-    if graph.is_directed():
-        graph_nbrs=[graph.successors, graph.predecessors]
-    else:
-        graph_nbrs=[graph.neighbors]*2
-    # Create two of each search tree.  One from source, on from target
-    paths_forw = {source:[source]}  # paths 
-    Q_forw = [source]               # deque([source])  # python 2.4 required
-    paths_back = {target:[target]}  # paths 
-    Q_back = [target]               # deque([target])  # python 2.4 required
-
-    bi_Q=[Q_forw, Q_back]
-    workspace=[ (paths_forw, graph_nbrs[0], paths_back),
-                (paths_back, graph_nbrs[1], paths_forw)]
-    count=0
-    rev = 0
-    while Q_forw or Q_back:
-        count+=1
-        if count>cutoff : return False
-        #choose direction
-        dir = rev
-        if not bi_Q[dir] : dir = 1-dir
-        rev = 1-dir
-        # load dicts/functions
-        (paths, nbrs, paths_rev) = workspace[dir]
-        # empty Queue and create a new one to take its place.
-        newQ = []   # deque()   # requires python 2.4
-        for u in bi_Q[dir]:
-            for v in nbrs(u):
-                if v not in paths:
-                    paths[v] = paths[u] + [v]
-                    if v in paths_rev:
-                        # We've found a path! It must be shortest.
-                        revpath=paths_rev[v][:-1]
-                        revpath.reverse()
-                        finalpath= paths[v] + revpath
-                        return finalpath
-                    newQ.append(v)
-        bi_Q[dir]=newQ
+        graph_nbrs=[graph.neighbors_iter]*2
+    Q[0].append(source)
+    Q[1].append(target)
+    dir = 1
+    count = 0
+    while Q[0] and Q[1]:
+        count += 1
+        #chose direction
+        dir = 1-dir
+        #make local variables for this direction
+        thisQ = Q[dir]
+        nextQ = []
+        pathforw = paths[dir]
+        pathback = paths[1-dir]
+        neighs = graph_nbrs[dir]
+        #visit all nodes on this level
+        for u in thisQ:
+            #find its neighbors
+            for v in neighs(u):
+                if not v in pathforw:
+                    #update path if found
+                    pathforw[v] = u
+                    if v in pathback:
+                        #We have found a shortes path.
+                        path = []
+                        temp = v
+                        while temp != source:
+                            path.insert(0, temp)
+                            temp = paths[0][temp]
+                        path.insert(0, source)
+                        temp = paths[1][v]
+                        while temp != target:
+                            path.append(temp)
+                            temp = paths[1][temp]
+                        path.append(target)
+                        return path
+                    nextQ.append(v)
+        #update que for next level
+        Q[dir] = nextQ
+        if(count>cutoff) : return False
     return False
     
 def dijkstra_path(G,source,target=None):
