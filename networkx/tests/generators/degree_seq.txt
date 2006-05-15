@@ -126,3 +126,55 @@ True
 >>> degseq2 = sorted(degree(graph))
 >>> degreeStart == degseq2
 True
+
+
+Contruction of s-max graph
+--------------------------
+
+>>> z=["A",3,3,3,3,2,2,2,1,1,1]
+>>> li_smax_graph(z)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid degree sequence
+
+>>> z=[5,4,3,3,3,2,2,2]
+>>> G=li_smax_graph(z)
+>>> is_connected(G)
+True
+>>> degs = degree(G)
+>>> degs.sort()
+>>> degs.reverse()
+>>> degs == z
+True
+>>> z=[6,5,4,4,2,1,1,1]
+>>> is_valid_degree_sequence(z)
+False
+>>> G=li_smax_graph(z)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid degree sequence
+
+>>> z=[10,3,3,3,3,2,2,2,2,2,2]
+>>> is_valid_degree_sequence(z)
+True
+>>> G=li_smax_graph(z)
+>>> is_connected(G)
+True
+>>> degs = degree(G)
+>>> degs.sort()
+>>> degs.reverse()
+>>> degs == z
+True
+
+
+S-metric
+--------
+
+>>> g = Graph()
+>>> g.add_edge(1,2)
+>>> g.add_edge(2,3)
+>>> g.add_edge(2,4)
+>>> g.add_edge(1,4)
+>>> s_metric(g)
+19
+

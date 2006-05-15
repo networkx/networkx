@@ -361,13 +361,13 @@ def dijkstra_bi(graph, source, target):
         raise NetworkXException("Bidirectional Dijkstra called with no source or target")
     if source == target:
         return (0, [source])
-    #Init:    Forward            Backward
-    dists =   [{},                {}]# dictionary of final distances
+    #Init:   Forward             Backward
+    dists =  [{},                {}]# dictionary of final distances
     paths =  [{source:[source]}, {target:[target]}] # dictionary of paths 
     fringe = [[],                []] #heap of (distance, node) tuples for extracting next node to expand
     seen =   [{source:0},        {target:0} ]#dictionary of distances to nodes seen 
     #initialize fringe heap
-    heapq.heappush(fringe[0], (0,source)) 
+    heapq.heappush(fringe[0], (0, source)) 
     heapq.heappush(fringe[1], (0, target))
     #neighs for extracting correct neighbor information
     if graph.is_directed():

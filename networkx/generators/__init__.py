@@ -35,7 +35,8 @@ from degree_seq import  configuration_model,\
                is_valid_degree_sequence,\
                create_degree_sequence,\
                random_rewire,\
-               random_rewire_connected
+               random_rewire_connected,\
+               li_smax_graph, s_metric
 from geometric import  random_geometric_graph
 from random_graphs import \
                fast_gnp_random_graph,\
