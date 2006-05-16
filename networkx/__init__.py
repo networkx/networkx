@@ -90,7 +90,7 @@ except ImportError:
 
 from utils import is_string_like, iterable,\
                   pareto_sequence, powerlaw_sequence, uniform_sequence,\
-                  discrete_sequence
+                  cumulative_distribution, discrete_sequence
 from io import write_gpickle, read_gpickle, \
    read_edgelist, write_edgelist, \
    read_multiline_adjlist, write_multiline_adjlist, \

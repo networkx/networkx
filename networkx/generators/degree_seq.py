@@ -402,6 +402,124 @@ def random_rewire(graph, num_iterations=10):
          graph2.add_edge(v,y)
     return graph2
 
+def double_edge_swap(G, nswap=1):
+    """Attempt nswap double-edge swaps on the graph G. Return count
+    of successful swaps.
+
+    A double-edge swap removes two randomly choseen edges u-v and x-y
+    and creates the new edges u-x and v-y:
+
+    u--v            u  v
+           becomes  |  |
+    x--y            x  y
+
+    If either the edge u-x or v-y already exist no swap is performed so
+    the actual count of swapped edges is always <= nswap
+    
+    Does not enforce any connectivity constraints.
+    """
+    # this algorithm and connected_double_edge_swap avoid choosing
+    # uniformly at random from a generated edge list by instead
+    # choosing nonuniformly from the set nodes (probability weighted by degree)
+    n=0
+    swapcount=0
+    deg=G.degree(with_labels=True)
+    dk=deg.keys() # key labels 
+    cdf=networkx.utils.cumulative_distribution(deg.values())  # cdf of degree
+    if len(cdf)<4:
+        raise networkx.NetworkXError, \
+          "Graph has less than four nodes."
+    while n < nswap:
+#        if random.random() < 0.5: continue # trick to avoid periodicities?
+        # pick two randon edges without creating edge list
+        # choose source node indices from discrete distribution
+        (ui,xi)=networkx.utils.discrete_sequence(2,cdistribution=cdf) 
+        if ui==xi: continue # same source, skip
+        u=dk[ui] # convert index to label
+        x=dk[xi] 
+        v=random.choice(G[u]) # choose target uniformly from nbrs
+        y=random.choice(G[x]) 
+        if v==y: continue # same target, skip
+        if (not G.has_edge(u,x)) and (not G.has_edge(v,y)):
+            G.add_edge(u,x)
+            G.add_edge(v,y)
+            G.delete_edge(u,v)
+            G.delete_edge(x,y)
+            swapcount+=1
+        n+=1
+    return swapcount
+
+def connected_double_edge_swap(G, nswap=1):
+    """Attempt nswap double-edge swaps on the graph G.  Return count
+    of successful swaps.  Enforce connectivity.
+
+    A double-edge swap removes two randomly choseen edges u-v and x-y
+    and creates the new edges u-x and v-y:
+
+    u--v            u  v
+           becomes  |  |
+    x--y            x  y
+
+    If either the edge u-x or v-y already exist no swap is performed so
+    the actual count of swapped edges is always <= nswap
+
+    The initial graph G must be connected and the resulting graph is connected.
+
+
+
+    """
+    if not networkx.is_connected(G):
+       raise networkx.NetworkXException("Graph not connected")
+
+    n=0
+    swapcount=0
+    deg=G.degree(with_labels=True)
+    dk=deg.keys() # key labels 
+    ideg=G.degree()
+    cdf=networkx.utils.cumulative_distribution(G.degree()) 
+    if len(cdf)<4:
+        raise networkx.NetworkXError, \
+          "Graph has less than four nodes."
+    window=1
+    while n < nswap:
+        wcount=0
+        swapped=[]
+        while wcount < window and n < nswap:
+            # pick two randon edges without creating edge list
+            # chose source nodes from discrete distribution
+            (ui,xi)=networkx.utils.discrete_sequence(2,cdistribution=cdf) 
+            if ui==xi: continue # same source, skip
+            u=dk[ui] # convert index to label
+            x=dk[xi] 
+            v=random.choice(G[u]) # choose target uniformly from nbrs
+            y=random.choice(G[x]) 
+            if v==y: continue # same target, skip
+            if (not G.has_edge(u,x)) and (not G.has_edge(v,y)):
+                G.delete_edge(u,v)
+                G.delete_edge(x,y)
+                G.add_edge(u,x)
+                G.add_edge(v,y)
+                swapped.append((u,v,x,y))
+                swapcount+=1
+            n+=1
+            wcount+=1
+#            print n,swapcount,window, networkx.is_connected(G)
+        if networkx.is_connected(G): # increase window
+            window+=1
+        else: # undo changes from previous window, decrease window
+            while swapped:
+                (u,v,x,y)=swapped.pop()
+                G.add_edge(u,v)
+                G.add_edge(x,y)
+                G.delete_edge(u,x)
+                G.delete_edge(v,y)
+                swapcount-=1
+            window = int(math.ceil(float(window)/2))
+        assert G.degree() == ideg
+    return swapcount
+
+
+
 def li_smax_graph(degree_seq):
     """
     Generates a graph based on degree sequence where maximizing the s-metric of

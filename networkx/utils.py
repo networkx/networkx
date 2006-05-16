@@ -13,6 +13,7 @@ __revision__ = "$Revision: 1029 $"
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 import random
+import networkx
 
 ### some cookbook stuff
 
@@ -285,23 +286,40 @@ def uniform_sequence(n):
     """
     return [ random.uniform(0,n) for i in xrange(n)]
 
-def discrete_sequence(n,**kwds):
-    """
-    Return sample sequence of length n from a given discrete distribution
 
-    distribution=histogram of values, will be normalized
-    """
-    import bisect
-    p=kwds.get("distribution",False)
-    if p is False:
-        return "no distribution specified"
+def cumulative_distribution(distribution):
+    """Return normalized cumulative distribution from discrete distribution."""
 
-    # make CDF out of distribution to use for sample
     cdf=[]
     cdf.append(0.0)
-    psum=float(sum(p))
-    for i in range(0,len(p)):
-        cdf.append(cdf[i]+p[i]/psum)
+    psum=float(sum(distribution))
+    for i in range(0,len(distribution)):
+        cdf.append(cdf[i]+distribution[i]/psum)
+    return cdf        
+
+
+def discrete_sequence(n, distribution=None, cdistribution=None):
+    """
+    Return sample sequence of length n from a given discrete distribution
+    or discrete cumulative distribution. 
+
+    One of the following must be specified.  
+
+    distribution = histogram of values, will be normalized
+    
+    cdistribution = normalized discrete cumulative distribution
+
+    """
+    import bisect
+
+    if cdistribution is not None:
+        cdf=cdistribution
+    elif distribution is not None:
+        cdf=cumulative_distribution(distribution)
+    else:
+        raise networkx.NetworkXError, \
+                  "discrete_sequence: distribution or cdistribution missing"
+        
 
     # get a uniform random number
     inputseq=[random.random() for i in xrange(n)]
