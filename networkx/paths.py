@@ -116,14 +116,13 @@ def shortest_path_length(G,source,target=None):
 
 def shortest_path(G,source,target=None,cutoff=None):
     """
-       Returns list of nodes in a shortest path between source
+       Return list of nodes in a shortest path between source
        and target (there might be more than one).
+
        If no target is specified, returns dict of lists of 
        paths from source to all nodes.
-       
        Cutoff is a limit on the number of hops traversed.
-       
-       See also 'shortest_path_bi' 
+       See also 'bidirectional_shortest_path'
     """
     if target==source: return []  # trivial path
     level=0                  # the current level
@@ -148,28 +147,24 @@ def shortest_path(G,source,target=None,cutoff=None):
     else:
         return False     # return False if not reachable
 
-def shortest_path_bi(graph, source, target, cutoff = None):
+def bidirectional_shortest_path(G, source, target):
     """
-       Returns list of nodes in a shortest path between source
-       and target.
+       Return list of nodes in a shortest path between source and target.
+
        This bidirectional version of shortest_path is much faster.
        Note that it requires target node to be specified.
-       
-       Cutoff is a limit on the number of hops traversed.
     """
     if source == None or target == None:
-        raise NetworkXException("Bidirectional shortest path called with no source or target")
+        raise NetworkXException(\
+            "Bidirectional shortest path called without source or target")
     if source == target:
         return [source]
-    if cutoff == None:
-        cutoff = 1e300000
-    #Init
     paths = [{source:None},{target:None}]
     Q =     [[],[]] 
-    if graph.is_directed():
-        graph_nbrs=[graph.successors, graph.predecessors]
+    if G.is_directed():
+        graph_nbrs=[G.successors, G.predecessors]
     else:
-        graph_nbrs=[graph.neighbors_iter]*2
+        graph_nbrs=[G.neighbors_iter]*2
     Q[0].append(source)
     Q[1].append(target)
     dir = 1
@@ -207,9 +202,88 @@ def shortest_path_bi(graph, source, target, cutoff = None):
                     nextQ.append(v)
         #update que for next level
         Q[dir] = nextQ
-        if(count>cutoff) : return False
     return False
     
+def bidirectional_shortest_path2(G,source,target):
+    """
+       Return list of nodes in a shortest path between source and target.
+
+       This bidirectional version of shortest_path is much faster than
+       shortest_path in most cases.
+       Note that it requires target node to be specified.
+    """
+    try:
+        # call helper to do the real work
+        pred,succ,w=bidirectional_pred_succ(G,source,target)
+    except:
+        return False
+    path=[]
+    while w is not None:
+        path.append(w)
+        w=succ[w]
+    w=path[0]
+    w=pred[path[0]]
+    while w is not None:
+        path.insert(0,w)
+        w=pred[w]
+
+
+    return path        
+
+def bidirectional_pred_succ(G, source, target):
+    """
+       Bidirectional shortest path helper.  Returns (pred,succ,w) where
+       pred is a dictionary of predecessors from w to the source, and
+       succ is a dictionary of successors from w to the target.
+    """
+    if source == None or target == None:
+        raise NetworkXException(\
+            "Bidirectional shortest path called without source or target")
+    if target == source:  return []
+
+    # handle either directed or undirected
+    if G.is_directed():
+        Gpred=G.predecessors
+        Gsucc=G.successors
+    else:
+        Gpred=G.neighbors
+        Gsucc=G.neighbors
+
+    # predecesssor and sucessors in search
+    pred={source:None}
+    succ={target:None}
+
+    # initialize fringes, start with forward
+    forward=True
+    forward_fringe={source:True}   
+    reverse_fringe={target:True}   
+
+    while forward_fringe and reverse_fringe:
+        if forward:
+            this_level=forward_fringe
+            forward_fringe={}
+            for v in this_level:
+                for w in Gsucc(v):
+                    if w not in pred:
+                        forward_fringe[w]=True
+                        pred[w]=v
+                    if w in succ:  return pred,succ,w # found path
+            forward=False                       
+        else:
+            this_level=reverse_fringe
+            reverse_fringe={}
+            for v in this_level:
+                for w in Gpred(v):
+                    if w not in succ:
+                        succ[w]=v
+                        reverse_fringe[w]=True
+                    if w in pred:  return pred,succ,w # found path
+            forward=True
+
+    return False
+
+    
+
 def dijkstra_path(G,source,target=None):
     """
     Returns the shortest path for a weighted graph using
