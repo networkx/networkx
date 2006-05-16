@@ -530,32 +530,32 @@ True
 periodic_grid_2d_graph
 ----------------------
 
->>> g=grid_2d_graph(0,0, True)
+>>> g=grid_2d_graph(0,0, periodic=True)
 >>> g.degree()==[]
 True
 
->>> g=grid_2d_graph(2,2, True)
+>>> g=grid_2d_graph(2,2, periodic=True)
 >>> is_isomorphic( g, cycle_graph(4) )
 True
 
->>> g=grid_2d_graph(1,7, True)
+>>> g=grid_2d_graph(1,7, periodic=True)
 >>> is_isomorphic( g, cycle_graph(7) )
 True
->>> g=grid_2d_graph(7,1, True)
+>>> g=grid_2d_graph(7,1, periodic=True)
 >>> is_isomorphic( g, cycle_graph(7) )
 True
 
->>> g=grid_2d_graph(2,5, True)
+>>> g=grid_2d_graph(2,5, periodic=True)
 >>> is_isomorphic( g, circular_ladder_graph(5) )
 True
->>> g=grid_2d_graph(5,2, True)
+>>> g=grid_2d_graph(5,2, periodic=True)
 >>> is_isomorphic( g, circular_ladder_graph(5) )
 True
 
->>> g=grid_2d_graph(2,4, True)
+>>> g=grid_2d_graph(2,4, periodic=True)
 >>> is_isomorphic( g, cubical_graph() )
 True
->>> g=grid_2d_graph(4,2, True)
+>>> g=grid_2d_graph(4,2, periodic=True)
 >>> is_isomorphic( g, cubical_graph() )
 True
 
