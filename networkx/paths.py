@@ -254,31 +254,26 @@ def bidirectional_pred_succ(G, source, target):
     succ={target:None}
 
     # initialize fringes, start with forward
-    forward=True
-    forward_fringe={source:True}   
-    reverse_fringe={target:True}   
+    forward_fringe=[source] 
+    reverse_fringe=[target]  
 
     while forward_fringe and reverse_fringe:
-        if forward:
-            this_level=forward_fringe
-            forward_fringe={}
-            for v in this_level:
-                for w in Gsucc(v):
-                    if w not in pred:
-                        forward_fringe[w]=True
-                        pred[w]=v
-                    if w in succ:  return pred,succ,w # found path
-            forward=False                       
-        else:
-            this_level=reverse_fringe
-            reverse_fringe={}
-            for v in this_level:
-                for w in Gpred(v):
-                    if w not in succ:
-                        succ[w]=v
-                        reverse_fringe[w]=True
-                    if w in pred:  return pred,succ,w # found path
-            forward=True
+        this_level=forward_fringe
+        forward_fringe=[]
+        for v in this_level:
+            for w in Gsucc(v):
+                if w not in pred:
+                    forward_fringe.append(w)
+                    pred[w]=v
+                if w in succ:  return pred,succ,w # found path
+        this_level=reverse_fringe
+        reverse_fringe=[]
+        for v in this_level:
+            for w in Gpred(v):
+                if w not in succ:
+                    succ[w]=v
+                    reverse_fringe.append(w)
+                if w in pred:  return pred,succ,w # found path
 
     return False
 
