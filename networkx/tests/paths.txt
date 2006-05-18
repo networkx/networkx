@@ -8,6 +8,7 @@ Paths
     .. image:: paths_G.png
 
 >>> H=NX.cycle_graph(7)
+>>> DH=NX.cycle_graph(7,create_using=NX.DiGraph())
 
 Paths and path lengths
 ----------------------
@@ -29,15 +30,21 @@ Paths and path lengths
 
 >>> NX.shortest_path(H,0,3)
 [0, 1, 2, 3]
-
 >>> NX.shortest_path(H,0,4)
 [0, 6, 5, 4]
-
 >>> NX.bidirectional_shortest_path(H,0,3)
 [0, 1, 2, 3]
-
 >>> NX.bidirectional_shortest_path(H,0,4)
 [0, 6, 5, 4]
+
+>>> NX.shortest_path(DH,0,3)
+[0, 1, 2, 3]
+>>> NX.shortest_path(DH,0,4)
+[0, 1, 2, 3, 4]
+>>> NX.bidirectional_shortest_path(DH,0,3)
+[0, 1, 2, 3]
+>>> NX.bidirectional_shortest_path(DH,0,4)
+[0, 1, 2, 3, 4]
 
 Eccentricity, diameter, etc.
 ----------------------------

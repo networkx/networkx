@@ -72,32 +72,27 @@ def write_multiline_adjlist(G,path):
     fh.write("%s\n" % (pargs))
     fh.write("# GMT %s\n" % (time.asctime(time.gmtime())))
     fh.write("# %s\n" % (G.name))
-    e={}  # helper dict used to avoid duplicate edges
 
-    # is this a XGraph or XDiGraph?
-    if hasattr(G,'allow_multiedges')==True:
-        multiedges=G.multiedges
-    else:
-        multiedges=False
-        
     # directed
     directed=G.is_directed()
 
+    seen={}  # helper dict used to avoid duplicate edges
     for s in G.nodes():
-        neighbors=[(t,d) for (t,d) in G.neighbors(s,with_labels=True) \
-                   if (t,s) not in e]
-        # seen these edges
-        if not directed:
-            e.update(dict.fromkeys([(s,t) for (t,d) in neighbors],1)) 
-        nlist=[]
-        for (t,d) in neighbors:
-            if d is None:
-                nlist.append("%s\n" %(t))
-            else:
-                nlist.append("%s %s\n" %(t,d))
-        fh.write("%s %i\n" %(s,len(nlist)))
-        for n in nlist:
-            fh.write(n)
+        edges=[ edge for edge in G.edges_iter(s) if edge[1] not in seen ]
+        deg=len(edges)
+        fh.write("%s %i\n"%(s,deg))
+        for edge in edges:
+            t=edge[1]
+            if len(edge)==2: # Graph or DiGraph
+                d=None
+            else:            # XGraph or XDiGraph
+                d=edge[2]   # Note: could still be None
+            if d is None:    
+                fh.write("%s\n"%t)
+            else:   
+                fh.write("%s %s\n"%(t,d))
+        if not directed: 
+            seen[s]=1
             
 def read_multiline_adjlist(path, create_using=networkx.Graph(), nodetype=str, edgetype=str):
     """Read graph in multi-line adjacency list format from path.

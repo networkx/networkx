@@ -16,15 +16,17 @@ import networkx
 #from collections import deque 
 import heapq
 
-def eccentricity(G,v=None,sp=None, **kwds):
-    """Eccentricity of node v.
+def eccentricity(G, v=None, sp=None, with_labels=False):
+    """Eccentricity of node v (or all nodes if v is None).
        Maximum of shortest paths to all other nodes. 
 
-       If kwds with_labels=True 
+       The optional keyword sp must be a dict of dicts of
+       shortest_path_length keyed by source and target.
+       That is, sp[v][t] is the length from v to t.
+       
+       If with_labels=True 
        return dict of eccentricities keyed by vertex.
     """
-    with_labels=kwds.get("with_labels",False)
-
     nodes=[]
     if v is None:                # none, use entire graph 
         nodes=G.nodes() 
@@ -94,6 +96,8 @@ def center(G, e=None):
 def shortest_path_length(G,source,target=None):
     """
     Shortest path length from source to target.
+    If target is None, a dict of shortest path lengths
+    from source to keyed node is returned.
     """
     seen={}                  # level (number of hops) when seen in BFS
     level=0                  # the current level
@@ -106,7 +110,8 @@ def shortest_path_length(G,source,target=None):
                 if v==target: # shortcut if target
                     return level
                 seen[v]=level # set the level of vertex v
-                nextlevel.update(dict(G.neighbors(v,with_labels=True))) # add neighbors of v
+                nbrs=dict.fromkeys(G.neighbors_iter(v),1)
+                nextlevel.update(nbrs) # add neighbors of v
         level=level+1
 
     if target is not None:

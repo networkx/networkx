@@ -122,6 +122,8 @@ set up some test networks
 >>> G.add_edges_from(e)
 >>> G.add_node('g')
 >>> DG=G.to_directed()
+>>> DG.delete_edge(('b','a'))
+>>> DG.delete_edge(('b','c'))
 >>> XG=XGraph(multiedges=True,selfloops=True)
 >>> XG.add_edges_from([(1,2,5),(1,2,5),(1,2),(3,3,42)])
 
