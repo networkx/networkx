@@ -27,14 +27,13 @@ __revision__ = "$Revision: 1012 $"
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-def triangles(G,nbunch=None,**kwds):
+def triangles(G,nbunch=None,with_labels=False):
     """ Return number of triangles for nbunch of nodes.
         If nbunch is None, then return triangles for every node.
+        If with_labels is True, return a dict keyed by node.
     
         Note: Each triangle is counted three times: once at each vertex.
     """
-    with_labels=kwds.get("with_labels",False)
-    
     if nbunch is None: # include all nodes via iterator
         nbunch=G.nodes_iter()
     # if nbunch is a node return value
@@ -79,12 +78,19 @@ def average_clustering(G):
     s=sum(clustering(G))
     return s/float(order)
 
-def clustering(G,nbunch=None,**kwds):
-    """ Clustering coefficient for each node in nbunch
+def clustering(G,nbunch=None,with_labels=False,weights=False):
+    """ 
+    Clustering coefficient for each node in nbunch.
+
+    If with_labels is True, return a dict keyed by node.
+
+    If both with_labels and weights are True, return both 
+    a clustering coefficient dict keyed by node and a
+    dict of weights based on degree.  The weights are
+    the fraction of connected triples in the graph which
+    include the keyed node.  Ths is useful in moving from
+    transitivity for clustering coefficient and back.
     """
-    with_labels=kwds.get("with_labels",False)
-    weights=kwds.get("weights",False)
-    
     if nbunch is None: # include all nodes via iterator
         nbunch=G.nodes_iter()
     # if nbunch is a node then convert into list
@@ -92,25 +98,23 @@ def clustering(G,nbunch=None,**kwds):
         nbunch=[nbunch]
 
     clusterc={}
-    weight={}
-    contriples=0     # total number of connected triples
-    for v in nbunch:
-        deg=G.degree(v)
+    for (v,deg) in G.degree_iter(nbunch, with_labels=True):
         if deg <= 1:    # isolated vertex or single pair gets cc 0
             clusterc[v]=0.0
-            weight[v]=0
-            continue
-        max_n=(deg*(deg-1))/2
-        contriples += max_n
-        ntriangles=triangles(G,v)
-        clusterc[v]=float(ntriangles)/float(max_n)
-        weight[v]=max_n
+        else:
+            ntriangles=triangles(G,v)
+            max_n=(deg*(deg-1))/2
+            clusterc[v]=float(ntriangles)/float(max_n)
 
     if with_labels:
         if weights:
-            ocontriples=1.0/float(contriples)
-            for v in weight:
-                weight[v]=weight[v]*ocontriples
+            degree=G.degree(with_labels=True)
+            # scale by one over twice the number of triples
+            scale=1./sum([ deg*(deg-1) for deg in degree.itervalues() ]) 
+            weight={}
+            for v in clusterc:
+                deg=degree[v]
+                weight[v]=deg*(deg-1)*scale   # also twice, but cancels in scaling
             return clusterc,weight
         else:
             return clusterc

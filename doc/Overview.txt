@@ -123,7 +123,8 @@ in a function name signifies that an iterator will be returned.
 In addition, an optional argument "with_labels" signifies whether the
 returned values should be identified by node or not. 
 If "with_labels=False", only property values are returned in either 
-iterator or list form.
+iterator or list form.  If "with_labels=True", a dict of property 
+values keyed by node is returned.
 
 The following examples use the "triangles" function which returns 
 the number of triangles a given node belongs to.

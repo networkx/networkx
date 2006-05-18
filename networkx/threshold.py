@@ -339,9 +339,6 @@ def find_threshold_graph(G):
     Return a threshold subgraph that is close to largest in G.
     The threshold graph will contain the largest degree node in G.
     
-    If you just want the creation sequence you can use
-    creation_sequence(find_threshold_graph(G).degree(with_labels=True),
-    labeled=True)
     """
     return threshold_graph(find_creation_sequence(G))
 
