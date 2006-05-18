@@ -252,6 +252,14 @@ cycle_graph
 -----------
 
 >>> G=cycle_graph(4)
+>>> sorted(G.edges())
+[(0, 1), (0, 3), (1, 2), (2, 3)]
+
+>>> G=cycle_graph(4, create_using=DiGraph())
+>>> G.has_edge(2,1)
+False
+>>> G.has_edge(1,2)
+True
 
 dorogovtsev_goltsev_mendes_graph 
 --------------------------------
@@ -526,6 +534,12 @@ True
 [1, 2, 2, 2, 2, 2, 2, 2, 2, 1]
 >>> p.order()-1==p.size()
 True
+
+>>> p=path_graph(3, create_using=DiGraph())
+>>> p.has_edge(0,1)
+True
+>>> p.has_edge(1,0)
+False
 
 periodic_grid_2d_graph
 ----------------------

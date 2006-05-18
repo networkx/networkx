@@ -124,13 +124,13 @@ def barbell_graph(m1,m2):
         G.add_edge(m1+m2-1,m1+m2)
     return G
 
-def complete_graph(n,**kwds):
+def complete_graph(n):
     """ Return the Complete graph K_n with n nodes. 
     
     Node labels are the integers 0 to n-1.
 
     """
-    G=empty_graph(n,**kwds)
+    G=empty_graph(n)
     G.name="complete_graph(%d)"%n
     for u in xrange(n):
         for v in xrange(u,n):
@@ -169,17 +169,18 @@ def circular_ladder_graph(n):
     G.add_edge(n,2*n-1)
     return G
 
-def cycle_graph(n):
+def cycle_graph(n,create_using=None):
     """Return the cycle graph C_n over n nodes.
    
     C_n is the n-path with two end-nodes connected.
 
     Node labels are the integers 0 to n-1
+    If create_using is a DiGraph, the direction is in increasing order.
     
     """
-    G=path_graph(n)
+    G=path_graph(n,create_using)
     G.name="cycle_graph(%d)"%n
-    if n>1: G.add_edge(0,n-1)
+    if n>1: G.add_edge(n-1,0)
     return G
 
 def dorogovtsev_goltsev_mendes_graph(n):
@@ -204,7 +205,7 @@ def dorogovtsev_goltsev_mendes_graph(n):
             new_node += 1
     return G
 
-def empty_graph(n=0,create_using=None,**kwds):
+def empty_graph(n=0,create_using=None):
     """Return the empty graph with n nodes and zero edges.
 
     Node labels are the integers 0 to n-1
@@ -246,7 +247,7 @@ def empty_graph(n=0,create_using=None,**kwds):
     """
     if create_using is None:
         # default empty graph is a simple graph
-        G=networkx.Graph(**kwds)
+        G=networkx.Graph()
     else:
         G=create_using
         G.clear()
@@ -389,24 +390,26 @@ def lollipop_graph(m,n):
     G.name="lollipop_graph(%d,%d)"%(m,n)
     return G
 
-def null_graph(create_using=None,**kwds):
+def null_graph(create_using=None):
     """ Return the Null graph with no nodes or edges. 
 
     See empty_graph for the use of create_using.
 
     """
-    G=empty_graph(0,create_using,**kwds)
+    G=empty_graph(0,create_using)
     G.name="null_graph()"
     return G
 
-def path_graph(n):
+def path_graph(n,create_using=None):
     """Return the Path graph P_n of n nodes linearly connected
     by n-1 edges.
 
-   Node labels are the integers 0 to n - 1.
+    Node labels are the integers 0 to n - 1.
+    If create_using is a DiGraph then the edges are directed in 
+    increasing order.
 
     """
-    G=empty_graph(n)
+    G=empty_graph(n,create_using)
     G.name="path_graph(%d)"%n
     G.add_edges_from([(v,v+1) for v in xrange(n-1)])
     return G
