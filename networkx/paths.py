@@ -221,12 +221,15 @@ def bidirectional_shortest_path2(G,source,target):
         # call helper to do the real work
         pred,succ,w=bidirectional_pred_succ(G,source,target)
     except:
-        return False
+        return False  # no path from source to target
+
+    # build path from pred+w+succ
     path=[]
+    # from w to target
     while w is not None:
         path.append(w)
         w=succ[w]
-    w=path[0]
+    # from source to w        
     w=pred[path[0]]
     while w is not None:
         path.insert(0,w)
@@ -241,6 +244,7 @@ def bidirectional_pred_succ(G, source, target):
        pred is a dictionary of predecessors from w to the source, and
        succ is a dictionary of successors from w to the target.
     """
+    # does BFS from both source and target and meets in the middle
     if source == None or target == None:
         raise NetworkXException(\
             "Bidirectional shortest path called without source or target")
@@ -254,7 +258,7 @@ def bidirectional_pred_succ(G, source, target):
         Gpred=G.neighbors_iter
         Gsucc=G.neighbors_iter
 
-    # predecesssor and sucessors in search
+    # predecesssor and successors in search
     pred={source:None}
     succ={target:None}
 
@@ -280,7 +284,7 @@ def bidirectional_pred_succ(G, source, target):
                     reverse_fringe.append(w)
                 if w in pred:  return pred,succ,w # found path
 
-    return False
+    return False  # no path found
 
     
 
