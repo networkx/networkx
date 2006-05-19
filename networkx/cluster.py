@@ -34,16 +34,14 @@ def triangles(G,nbunch=None,with_labels=False):
     
         Note: Each triangle is counted three times: once at each vertex.
     """
+    G_has_edge=G.has_edge # cache function
+
     if nbunch is None: # include all nodes via iterator
         nbunch=G.nodes_iter()
-    # if nbunch is a node return value
-    elif nbunch in G:
-        ntriangles=0
+    elif nbunch in G: # if nbunch is a node, return one value
         v_nbrs=G.neighbors(nbunch)
-        for u in v_nbrs:
-            u_nbrs=dict(G.neighbors(u,with_labels=True))
-            triangles=[w for w in v_nbrs if w in u_nbrs]
-            ntriangles+=len(triangles)
+        triangles= [ u for u in v_nbrs for w in v_nbrs if G_has_edge(u,w) ]
+        ntriangles=len(triangles)
         if with_labels:
             return {nbunch:ntriangles/2} # useless but consistent?
         else:
@@ -52,14 +50,8 @@ def triangles(G,nbunch=None,with_labels=False):
     tri={}
     for v in nbunch:
         v_nbrs=G.neighbors(v)
-        ntriangles=0
-        for u in v_nbrs:   # u is neighbor of v
-            # count all edges in subgraph consisting of neighbors of v
-            u_nbrs=dict(G.neighbors(u,with_labels=True))
-#            triangles=[w for w in v_nbrs if w in u_nbrs]
-# the following is a moderate speed-up for above line but less clear...
-            triangles = filter(u_nbrs.has_key, v_nbrs)
-            ntriangles+=len(triangles)
+        triangles= [ u for u in v_nbrs for w in v_nbrs if G_has_edge(u,w) ]
+        ntriangles=len(triangles)
         tri[v]=ntriangles/2
              
     if with_labels:
@@ -124,16 +116,15 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
 
 def transitivity(G):
     """ Transitivity (fraction of transitive triangles) for a graph"""
+    G_has_edge=G.has_edge # cache function
+
     triangles=0 # 6 times number of triangles
     contri=0  # 2 times number of connected triples
     for v in G.nodes_iter():
         v_nbrs=G.neighbors(v)
         deg=len(v_nbrs)
         contri += deg*(deg-1)
-        for u in v_nbrs:
-            u_nbrs=dict(G.neighbors(u, with_labels=True))
-            u_triangles=[w for w in v_nbrs if w in u_nbrs]
-            triangles += len(u_triangles)
+        triangles += len([ u for u in v_nbrs for w in v_nbrs if G_has_edge(u,w) ])
     return float(triangles)/float(contri)
 
 

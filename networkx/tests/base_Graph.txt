@@ -303,13 +303,6 @@ nbunch can be a single node
 >>> sorted(G.edges('A'))
 [('A', 'B'), ('A', 'C')]
 
-G.edges() does not support with_labels=True option
-
->>> sorted(G.edges(with_labels=True))
-Traceback (most recent call last):
-...
-NetworkXError: with_labels=True option not supported. Rather use neighbors()
-
 
 Test G.edges_iter(nbunch) with various forms of nbunch
 
@@ -350,13 +343,6 @@ nbunch can be a single node
 
 >>> sorted(G.edges_iter('A'))
 [('A', 'B'), ('A', 'C')]
-
-G.edges_iter() does not support with_labels=True option
-
->>> sorted(G.edges_iter(with_labels=True))
-Traceback (most recent call last):
-...
-NetworkXError: with_labels=True option not supported. Rather use neighbors()
 
 nbunch can be nothing (whole graph)
 
@@ -626,10 +612,6 @@ Neighbors
 ['B', 'C']
 >>> sorted(G.neighbors_iter('A'))
 ['B', 'C']
->>> dict(G.neighbors('A',with_labels=True))
-{'C': None, 'B': None}
->>> sorted(G.neighbors_iter('A',with_labels=True))
-[('B', None), ('C', None)]
 
 >>> sorted(G.neighbors('G'))
 []
@@ -654,8 +636,6 @@ Functional interface
 [0, 0, 0, 2, 2, 3, 3]
 >>> sorted(neighbors(G,'A'))
 ['B', 'C']
->>> dict(neighbors(G,'A',with_labels=True))
-{'C': None, 'B': None}
 >>> number_of_nodes(G)
 7
 >>> number_of_edges(G)

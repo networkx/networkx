@@ -380,13 +380,6 @@ nbunch can be a single node
 >>> sorted(G.edges('A'))
 [('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None)]
 
-G.edges() does not support with_labels=True option
-
->>> sorted(G.edges(with_labels=True))
-Traceback (most recent call last):
-...
-NetworkXError: with_labels=True option not supported. Rather use neighbors()
-
 
 Test G.edges_iter(nbunch) with various forms of nbunch
 
@@ -427,8 +420,6 @@ nbunch can be a single node
 
 >>> sorted(G.edges_iter('A'))
 [('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None)]
-
-G.edges_iter() does not support with_labels=True option
 
 >>> sorted(G.edges_iter())
 [('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('A', 'C', None), ('B', 'D', None), ('C', 'B', None), ('C', 'D', None)]
@@ -471,8 +462,7 @@ Now grow and shrink H using various forms of nbunch
 >>> sorted(H.nodes())
 ['A', 'B', 'C', 'D']
 
->>> nbunch=P3.degree(with_labels=True) # create dict with keys to add
->>>                                    # to H
+>>> nbunch=P3.degree(with_labels=True) # create dict with keys to add to H
 >>> H.add_nodes_from(nbunch) # add nbunch of nodes (nbunch=dict)
 >>> sorted(H.nodes())
 [1, 2, 3, 'A', 'B', 'C', 'D']
@@ -654,10 +644,6 @@ Neighbors
 ['A', 'B', 'B', 'C']
 >>> sorted(G.neighbors_iter('A'))
 ['A', 'B', 'B', 'C']
->>> G.neighbors('A',with_labels=True)
-[('A', None), ('B', None), ('B', None), ('C', None)]
->>> sorted(G.neighbors_iter('A',with_labels=True))
-[('A', None), ('B', None), ('B', None), ('C', None)]
 
 
 Functional interface
@@ -672,8 +658,6 @@ Functional interface
 [0, 0, 0, 2, 3, 4, 5]
 >>> sorted(neighbors(G,'A'))
 ['A', 'B', 'B', 'C']
->>> neighbors(G,'A',with_labels=True)
-[('A', None), ('B', None), ('B', None), ('C', None)]
 >>> number_of_nodes(G)
 7
 >>> number_of_edges(G)

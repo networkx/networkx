@@ -334,6 +334,10 @@ node not in nbunch should be quietly ignored
 
 >>> sorted(G.edges(6))    # non-iterable non-node
 []
+>>> sorted(G.in_edges(6))    # non-iterable non-node
+[]
+>>> sorted(G.out_edges(6))    # non-iterable non-node
+[]
 
 >>> sorted(G.edges('Z'))  # iterable non-node
 []
@@ -370,13 +374,6 @@ nbunch can be a single node
 
 >>> sorted(G.edges('A'))
 [('A', 'B', None), ('A', 'C', None)]
-
-G.edges() does not support with_labels=True option
-
->>> sorted(G.edges(with_labels=True))
-Traceback (most recent call last):
-...
-NetworkXError: with_labels=True option not supported. Rather use neighbors()
 
 
 Test G.edges_iter(nbunch) with various forms of nbunch
@@ -419,14 +416,6 @@ nbunch can be a single node
 >>> sorted(G.edges_iter('A'))
 [('A', 'B', None), ('A', 'C', None)]
 
-G.edges_iter() does not support with_labels=True option
-
->>> sorted(G.edges_iter(with_labels=True))
-Traceback (most recent call last): 
-...  
-NetworkXError: with_labels=True option not supported. Rather use neighbors()
-
-
 nbunch can be nothing (whole graph)
 
 >>> sorted(G.edges_iter())
@@ -448,6 +437,13 @@ degree of single node in iterable container must return list
 
 >>> G.degree(['A'])
 [2]
+
+degree of nonnode which is also noniterator
+
+>>> G.in_degree(6)    # non-iterable non-node
+[]
+>>> G.out_degree(6)    # non-iterable non-node
+[]
 
 with_labels=True always return a dict
 
@@ -658,20 +654,10 @@ Neighbors, Predecessors and Successors
 ['D']
 >>> sorted(G.neighbors('A'))
 ['B', 'C']
->>> dict(G.neighbors('A',with_labels=True))
-{'C': None, 'B': None}
->>> dict(G.successors('A',with_labels=True))
-{'C': None, 'B': None}
->>> sorted(G.neighbors_iter('A',with_labels=True))
-[('B', None), ('C', None)]
->>> sorted(G.successors_iter('A',with_labels=True))
-[('B', None), ('C', None)]
 >>> sorted(G.neighbors_iter('A'))
 ['B', 'C']
 >>> sorted(G.successors_iter('A'))
 ['B', 'C']
->>> sorted(G.neighbors_iter('C',with_labels=True))
-[('D', None)]
 >>> sorted(G.neighbors_iter('C'))
 ['D']
 
@@ -679,18 +665,10 @@ Neighbors, Predecessors and Successors
 ['B', 'C']
 >>> sorted(G.successors_iter('A'))
 ['B', 'C']
->>> dict(G.successors('A',with_labels=True))
-{'C': None, 'B': None}
->>> sorted(G.successors_iter('A',with_labels=True))
-[('B', None), ('C', None)]
 >>> sorted(G.predecessors('C'))
 ['A', 'B']
 >>> sorted(G.predecessors_iter('C'))
 ['A', 'B']
->>> dict(G.predecessors('C',with_labels=True))
-{'A': None, 'B': None}
->>> sorted(G.predecessors_iter('C',with_labels=True))
-[('A', None), ('B', None)]
 
 >>> sorted(G.successors('G'))   # no edges
 []
@@ -749,8 +727,6 @@ Functional interface
 [0, 0, 0, 2, 2, 3, 3]
 >>> sorted(neighbors(G,'A'))
 ['B', 'C']
->>> dict(neighbors(G,'A',with_labels=True))
-{'C': None, 'B': None}
 >>> number_of_nodes(G)
 7
 >>> number_of_edges(G)

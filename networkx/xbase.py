@@ -403,35 +403,24 @@ class XGraph(Graph):
                 self.adj[n1].has_key(n2))
     
 
-    def neighbors_iter(self, n, with_labels=False):
+    def neighbors_iter(self, n):
         """Return an iterator of nodes connected to node n. 
 
-        If with_labels=True, return an iterator  of tuples (v,d)
-        where v is a neighbor of n with corresponding data d.
+        Returns the same data as edges(n) but in a different format.
 
-        This returns the same data as edges(n) but in a different
-        format.
         """
         if n not in self:
             raise NetworkXError, "node %s not in graph"%n
+        for (u,v,d) in self.edges_iter(n):
+            yield v
 
-        if with_labels:
-            for (u,v,d) in self.edges_iter(n):
-                yield (v,d)
-        else:
-            for (u,v,d) in self.edges_iter(n):
-                yield v
-
-    def neighbors(self, n, with_labels=False):
+    def neighbors(self, n):
         """Return a list of nodes connected to node n. 
 
-        If with_labels=True, return a list of tuples (v,d)
-        where v is a neighbor of n with corresponding data d.
+        Returns the same data as edges(n) but in a different format.
 
-        This returns the same data as edges(n) but in a different
-        format.
         """
-        return list(self.neighbors_iter(n,with_labels=with_labels))
+        return list(self.neighbors_iter(n))
 
     def get_edge(self, n1, n2):
         """Return the objects associated with each edge between n1 and n2.
@@ -449,7 +438,7 @@ class XGraph(Graph):
             return result[:]   # return a copy so user can't mess up list
         return result
             
-    def edges_iter(self, nbunch=None, with_labels=False):
+    def edges_iter(self, nbunch=None):
         """Return iterator that iterates once over each edge adjacent
         to nodes in nbunch, or over all nodes in graph if nbunch=None.
 
@@ -457,15 +446,7 @@ class XGraph(Graph):
         
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
-        with_labels=True option is not supported (in that case
-        you should probably use neighbors()).           
-
         """
-        if with_labels:
-            # node labels not supported
-            # rather use neighbors() method 
-            raise NetworkXError, "with_labels=True option not supported. Rather use neighbors()"
-
         # prepare nbunch
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
@@ -501,7 +482,7 @@ class XGraph(Graph):
         del(e) # clear copy of temp dictionary
                # iterators can remain after they finish returning values.
 
-    def edges(self, nbunch=None, with_labels=False):
+    def edges(self, nbunch=None):
         """Return a list of all edges that originate at a node in nbunch,
         or a list of all edges if nbunch=None.
 
@@ -511,11 +492,8 @@ class XGraph(Graph):
         
         For digraphs, edges=out_edges
 
-        with_labels=True option is not supported because in that case
-        you should probably use neighbors().
-        
         """
-        return list(self.edges_iter(nbunch, with_labels))
+        return list(self.edges_iter(nbunch))
 
     def delete_multiedge(self, n1, n2):
         """ Delete all edges between nodes n1 and n2.
@@ -1204,15 +1182,12 @@ class XDiGraph(DiGraph):
         >>> G.delete_edge(e)
         where e=(n1,n2,x).
 
-        The default data is x=None
-
         If called with an edge e=(n1,n2), or as G.delete_edge(n1,n2)
         then the edge (n1,n2,None) will be deleted.
 
         If the edge does not exist, do nothing.
 
         To delete *all* edges between n1 and n2 use
-
         >>> G.delete_multiedges(n1,n2)
 
         """
@@ -1250,46 +1225,28 @@ class XDiGraph(DiGraph):
         for e in ebunch:
             self.delete_edge(e)
 
-    def out_edges_iter(self, nbunch=None,with_labels=False):
+    def out_edges_iter(self, nbunch=None):
         """Return iterator that iterates once over each edge pointing
         out of nodes in nbunch, or over all edges in digraph if no
         nodes are specified.
 
         See add_node for definition of nbunch.
         
-        Those nodes in nbunch that are not in the graph will be
-        (quietly) ignored.
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
-        with_labels=True is not supported. (In that case
-        you should probably use neighbors().)           
-
         """
-
-        if with_labels:
-            # node labels not supported
-            # rather use neighbors() method 
-            raise NetworkXError, "with_labels=True option not supported. Rather use neighbors()"
-
-
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
-        # try nbunch as a single node
-        else: # try nbunch as a single node
-              # note that nbunch can be anything, and testing for
-              # nbunch in self can raise a TypeError if nbunch is unhashable,
-              # e.g. if nbunch is a list
+        elif nbunch in self: # try nbunch as a single node
             n1=nbunch
-            try:
-                if self.multiedges:
-                    for n2 in self.succ[n1]:
-                        for x in self.succ[n1][n2]:
-                                yield (n1,n2,x)
-                else:
-                    for n2 in self.succ[n1]:
-                        yield (n1,n2,self.succ[n1][n2])
-                raise StopIteration
-            except (KeyError,TypeError), e:  # n is not a node of self
-                pass                         # treat as iterable    
+            if self.multiedges:
+                for n2 in self.succ[n1]:
+                    for x in self.succ[n1][n2]:
+                            yield (n1,n2,x)
+            else:
+                for n2 in self.succ[n1]:
+                    yield (n1,n2,self.succ[n1][n2])
+            raise StopIteration
         # this part reached only if nbunch is a container of (possible) nodes
         try:
             for n1 in nbunch:
@@ -1303,46 +1260,28 @@ class XDiGraph(DiGraph):
         except TypeError:
             pass
 
-    def in_edges_iter(self, nbunch=None,with_labels=False):
+    def in_edges_iter(self, nbunch=None):
         """Return iterator that iterates once over each edge pointing in
         to nodes in nbunch, or over all edges in digraph if no
         nodes are specified.
 
         See add_node for definition of nbunch.
         
-        Those nodes in nbunch that are not in the graph will be
-        (quietly) ignored.
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
-        with_labels=True is not supported. (In that case
-        you should probably use neighbors().)           
-
         """
-
-        if with_labels:
-            # node labels not supported
-            # rather use neighbors() method 
-            raise NetworkXError, "with_labels=True option not supported. Rather use neighbors()"
-
-
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
-        # try nbunch as a single node
-        else: # try nbunch as a single node
-              # note that nbunch can be anything, and testing for
-              # nbunch in self can raise a TypeError if nbunch is unhashable,
-              # e.g. if nbunch is a list
+        elif nbunch in self: # try nbunch as a single node
             n1=nbunch
-            try:
-                if self.multiedges:
-                    for n2 in self.pred[n1]:
-                        for x in self.pred[n1][n2]:
-                                yield (n2,n1,x)                
-                else:
-                    for n2 in self.pred[n1]:
-                        yield (n2,n1,self.pred[n1][n2])
-                raise StopIteration
-            except (KeyError,TypeError), e:  # n is not a node of self
-                pass                         # treat as iterable    
+            if self.multiedges:
+                for n2 in self.pred[n1]:
+                    for x in self.pred[n1][n2]:
+                            yield (n2,n1,x)                
+            else:
+                for n2 in self.pred[n1]:
+                    yield (n2,n1,self.pred[n1][n2])
+            raise StopIteration
         # this part reached only if nbunch is a container of (possible) nodes
         try:
             for n1 in nbunch:
@@ -1356,7 +1295,7 @@ class XDiGraph(DiGraph):
         except TypeError:
             pass
 
-    def out_edges(self, nbunch=None, with_labels=False):
+    def out_edges(self, nbunch=None):
         """Return a list of all edges that point out of nodes in nbunch,
         or a list of all edges if nbunch=None.
 
@@ -1364,14 +1303,11 @@ class XDiGraph(DiGraph):
 
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
-        with_labels=True option is not supported because in that case
-        you should probably use neighbors().
-        
         """
-        return list(self.out_edges_iter(nbunch, with_labels))
+        return list(self.out_edges_iter(nbunch))
 
 
-    def in_edges(self, nbunch=None, with_labels=False):
+    def in_edges(self, nbunch=None):
         """Return a list of all edges that point in to nodes in nbunch,
         or a list of all edges if nbunch=None.
 
@@ -1379,54 +1315,35 @@ class XDiGraph(DiGraph):
 
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
-        with_labels=True option is not supported because in that case
-        you should probably use neighbors().
-        
         """
-        return list(self.in_edges_iter(nbunch, with_labels))
+        return list(self.in_edges_iter(nbunch))
 
 
     edges_iter=out_edges_iter
     edges=out_edges
 
 
-    def successors_iter(self, n, with_labels=False):
+    def successors_iter(self, n):
         """Return an iterator of nodes pointing out of node n. 
 
-        If with_labels=True, return an iterator  of tuples (v,d)
-        where v is a neighbor of n with corresponding data d.
+        Returns the same data as out_edges(n) but in a different format.
 
-        This returns the same data as out_edges(n) but in a different
-        format.
         """
         if n not in self:
             raise NetworkXError, "node %s not in graph"%n
+        for (u,v,d) in self.out_edges_iter(n):
+            yield v
 
-        if with_labels:
-            for (u,v,d) in self.out_edges_iter(n):
-                yield (v,d)
-        else:
-            for (u,v,d) in self.out_edges_iter(n):
-                yield v
-
-    def predecessors_iter(self, n, with_labels=False):
+    def predecessors_iter(self, n):
         """Return an iterator of nodes pointing in to node n. 
 
-        If with_labels=True, return an iterator  of tuples (v,d)
-        where v is a neighbor of n with corresponding data d.
+        Returns the same data as out_edges(n) but in a different format.
 
-        This returns the same data as in_edges(n) but in a different
-        format.
         """
         if n not in self:
             raise NetworkXError, "node %s not in graph"%n
-
-        if with_labels:
-            for (u,v,d) in self.in_edges_iter(n):
-                yield (u,d)
-        else:
-            for (u,v,d) in self.in_edges_iter(n):
-                yield u
+        for (u,v,d) in self.in_edges_iter(n):
+            yield u
 
     def in_degree(self, nbunch=None, with_labels=False):
         """Return the in-degree of single node or of nbunch of nodes.

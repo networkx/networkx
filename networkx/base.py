@@ -202,7 +202,7 @@ def nodes_iter(G):
     """Return an iterator over the graph nodes."""
     return G.nodes_iter()
 
-def edges(G,nbunch=None,with_labels=False):
+def edges(G,nbunch=None):
     """Return list of  edges adjacent to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
@@ -210,26 +210,26 @@ def edges(G,nbunch=None,with_labels=False):
     For digraphs, edges=out_edges
 
     """
-    return G.edges(nbunch,with_labels)
+    return G.edges(nbunch)
 
-def edges_iter(G,nbunch=None,with_labels=False):
+def edges_iter(G,nbunch=None):
     """Return iterator over  edges adjacent to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
 
     For digraphs, edges=out_edges
     """
-    return G.edges_iter(nbunch,with_labels)
+    return G.edges_iter(nbunch)
 
-def degree(G,nbunch=None,with_labels=False):
+def degree(G,nbunch=None):
     """Return degree of single node or of nbunch of nodes.
     If nbunch is ommitted, then return degrees of *all* nodes.
     """
-    return G.degree(nbunch,with_labels)
+    return G.degree(nbunch)
 
-def neighbors(G,n,with_labels=False):
+def neighbors(G,n):
     """Return a list of nodes connected to node n. """
-    return G.neighbors(n,with_labels)
+    return G.neighbors(n)
 
 def number_of_nodes(G):
     """Return the order of a graph = number of nodes."""
@@ -346,7 +346,7 @@ class Graph(object):
 
 
 
-    def info(self, n=None):     
+    def info(self, n=None):
         """Print short info for graph G or node n."""
         import textwrap
         width_left = 18
@@ -599,30 +599,19 @@ class Graph(object):
         return self.has_edge(u,v)
 
 
-    def neighbors_iter(self,n,with_labels=False):
-         """Return an iterator over all neighbors of node n.
-
-          If with_labels=True, return an iterator of (neighbor, None) tuples.
-       
-         """
+    def neighbors_iter(self,n):
+         """Return an iterator over all neighbors of node n.  """
          try:
-             if with_labels:
-                 return self.adj[n].iteritems()
-             else:
-                 return self.adj[n].iterkeys()
+             return self.adj[n].iterkeys()
          except KeyError:
              raise NetworkXError, "node %s not in graph"%n
 
-    def neighbors(self, n, with_labels=False):
-        """Return a list of nodes connected to node n. 
-
-        If with_labels=True, return a dict keyed by neighbors.
-        
-        """
+    def neighbors(self, n):
+        """Return a list of nodes connected to node n.  """
         # return lists now, was dictionary for with_labels=True
-        return list(self.neighbors_iter(n,with_labels=with_labels))
+        return list(self.neighbors_iter(n))
 
-    def edges_iter(self, nbunch=None,with_labels=False):
+    def edges_iter(self, nbunch=None):
         """Return iterator that iterates once over each edge adjacent
         to nodes in nbunch, or over all edges in graph if no
         nodes are specified.
@@ -632,15 +621,7 @@ class Graph(object):
         Those nodes in nbunch that are not in the graph will be
         (quietly) ignored.
         
-        with_labels=True option is not supported because in that case
-        you should probably use neighbors().           
-
         """
-        if with_labels:
-            # not supported
-            # rather use neighbors() method 
-            raise NetworkXError,\
-                  "with_labels=True option not supported. Rather use neighbors()"
         # prepare nbunch
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
@@ -666,27 +647,18 @@ class Graph(object):
                # iterators can remain after they finish returning values.
 
 
-    def edges(self, nbunch=None, with_labels=False):
+    def edges(self, nbunch=None):
         """Return list of all edges that are adjacent to a node in nbunch,
         or a list of all edges in graph if no nodes are specified.
 
         See add_node for definition of nbunch.
-
 
         Those nodes in nbunch that are not in the graph will be
         (quietly) ignored.
         
         For digraphs, edges=out_edges
 
-        with_labels=True option is not supported because in that case
-        you should probably use neighbors().
-
         """
-        if with_labels:
-            # not supported
-            # rather use neighbors
-            raise NetworkXError,\
-                  "with_labels=True option not supported. Rather use neighbors()"
         return list(self.edges_iter(nbunch))
 
     def edge_boundary(self, nbunch1, nbunch2=None):
@@ -1242,7 +1214,7 @@ class DiGraph(Graph):
                 del self.succ[u][v]   
                 del self.pred[v][u]        
 
-    def out_edges_iter(self, nbunch=None,with_labels=False):
+    def out_edges_iter(self, nbunch=None):
         """Return iterator that iterates once over each edge pointing out
         of nodes in nbunch, or over all edges in digraph if no
         nodes are specified.
@@ -1252,14 +1224,7 @@ class DiGraph(Graph):
         Those nodes in nbunch that are not in the graph will be
         (quietly) ignored.
         
-        with_labels=True is not supported (in that case
-        you should probably use neighbors())           
-
         """
-        if with_labels:
-            # not supported rather use neighbors() method 
-            raise NetworkXError,\
-                "with_labels=True option not supported. Rather use neighbors()"
         # prepare nbunch
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
@@ -1276,7 +1241,7 @@ class DiGraph(Graph):
             except TypeError:
                 pass
 
-    def in_edges_iter(self, nbunch=None,with_labels=False):
+    def in_edges_iter(self, nbunch=None):
         """Return iterator that iterates once over each edge adjacent
         to nodes in nbunch, or over all edges in digraph if no
         nodes are specified.
@@ -1286,14 +1251,7 @@ class DiGraph(Graph):
         Those nodes in nbunch that are not in the graph will be
         (quietly) ignored.
         
-        with_labels=True is not supported (in that case
-        you should probably use neighbors())           
-
         """
-        if with_labels:
-            # not supported rather use neighbors() method 
-            raise NetworkXError, \
-               "with_labels=True option not supported. Rather use neighbors()"
         # prepare nbunch
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
@@ -1314,7 +1272,7 @@ class DiGraph(Graph):
     # define edges to be out_edges implicitly since edges uses edges_iter
     edges_iter=out_edges_iter
             
-    def out_edges(self, nbunch=None, with_labels=False):
+    def out_edges(self, nbunch=None):
         """Return list of all edges that point out of nodes in nbunch,
         or a list of all edges in graph if no nodes are specified.
 
@@ -1323,13 +1281,10 @@ class DiGraph(Graph):
         Those nodes in nbunch that are not in the graph will be
         (quietly) ignored.
         
-        with_labels=True option is not supported because in that case
-        you should probably use neighbors().
-        
         """
-        return list(self.out_edges_iter(nbunch,with_labels=with_labels))
+        return list(self.out_edges_iter(nbunch))
 
-    def in_edges(self, nbunch=None, with_labels=False):
+    def in_edges(self, nbunch=None):
         """Return list of all edges that point in to nodes in nbunch,
         or a list of all edges in graph if no nodes are specified.
 
@@ -1338,43 +1293,34 @@ class DiGraph(Graph):
         Those nodes in nbunch that are not in the graph will be
         (quietly) ignored.
         
-        with_labels=True option is not supported because in that case
-        you should probably use neighbors().
-        
         """
-        return list(self.in_edges_iter(nbunch,with_labels=with_labels))
+        return list(self.in_edges_iter(nbunch))
 
 
-    def successors_iter(self,v, with_labels=False):
+    def successors_iter(self,v):
          """Return an iterator for successor nodes of v."""
          try:
-             if with_labels:
-                 return self.succ[v].iteritems()
-             else:
-                 return self.succ[v].iterkeys()
+             return self.succ[v].iterkeys()
          except KeyError:
              raise NetworkXError, "node %s not in graph"%v
 
 
-    def predecessors_iter(self,v, with_labels=False):
+    def predecessors_iter(self,v):
         """Return an iterator for predecessor nodes of v."""
         try:
-            if with_labels:
-                return self.pred[v].iteritems()
-            else:
-                return self.pred[v].iterkeys()
+            return self.pred[v].iterkeys()
         except KeyError:
             raise NetworkXError, "node %s not in graph"%v
 
 
-    def successors(self, v, with_labels=False):
+    def successors(self, v):
         """Return sucessor nodes of v."""
-        return list(self.successors_iter(v,with_labels=with_labels))
+        return list(self.successors_iter(v))
 
 
-    def predecessors(self, v, with_labels=False):
+    def predecessors(self, v):
         """Return predecessor nodes of v."""
-        return list(self.predecessors_iter(v,with_labels=with_labels))
+        return list(self.predecessors_iter(v))
 
     # digraph definintions 
     out_neighbors=successors
