@@ -152,64 +152,7 @@ def shortest_path(G,source,target=None,cutoff=None):
     else:
         return False     # return False if not reachable
 
-def bidirectional_shortest_path(G, source, target):
-    """
-       Return list of nodes in a shortest path between source and target.
-
-       This bidirectional version of shortest_path is much faster.
-       Note that it requires target node to be specified.
-    """
-    if source == None or target == None:
-        raise NetworkXException(\
-            "Bidirectional shortest path called without source or target")
-    if source == target:
-        return [source]
-    paths = [{source:None},{target:None}]
-    Q =     [[],[]] 
-    if G.is_directed():
-        graph_nbrs=[G.successors, G.predecessors]
-    else:
-        graph_nbrs=[G.neighbors_iter]*2
-    Q[0].append(source)
-    Q[1].append(target)
-    dir = 1
-    count = 0
-    while Q[0] and Q[1]:
-        count += 1
-        #chose direction
-        dir = 1-dir
-        #make local variables for this direction (for speed)
-        thisQ = Q[dir]
-        nextQ = []
-        pathforw = paths[dir]
-        pathback = paths[1-dir]
-        neighs = graph_nbrs[dir]
-        #visit all nodes on this level
-        for u in thisQ:
-            #go through their neighbors
-            for v in neighs(u):
-                if not v in pathforw:
-                    #update path if found
-                    paths[dir][v] = u 
-                    if v in pathback:
-                        #We have found a shortest path. 
-                        #build path using traceback
-                        path = []
-                        temp = v
-                        while temp != None:
-                            path.insert(0, temp)
-                            temp = paths[0][temp]
-                        temp = paths[1][v]
-                        while temp != None:
-                            path.append(temp)
-                            temp = paths[1][temp]
-                        return path
-                    nextQ.append(v)
-        #update que for next level
-        Q[dir] = nextQ
-    return False
-    
-def bidirectional_shortest_path2(G,source,target):
+def bidirectional_shortest_path(G,source,target):
     """
        Return list of nodes in a shortest path between source and target.
 
