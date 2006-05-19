@@ -180,6 +180,55 @@ Bidirectional Dijkstra
 (4, [0, 1, 2])
 
 
+Floyd-Warshall all pair shortest path
+-------------------------------------
+
+>>> dist, path = NX.floyd_warshall(XG)
+>>> dist['s']['v']
+9
+>>> path['s']['v']
+['s', 'x', 'u', 'v']
+
+>>> dist
+{'y': {'x': 12, 's': 7, 'u': 15, 'v': 6}, 'x': {'y': 2, 's': 9, 'u': 3, 'v': 4}, 's': {'y': 7, 'x': 5, 'u': 8, 'v': 9}, 'u': {'y': 2, 'x': 2, 's': 9, 'v': 1}, 'v': {'y': 1, 'x': 13, 's': 8, 'u': 16}}
+
+>>> dist, path = NX.floyd_warshall(GG)
+>>> dist['s']['v']
+8
+>>> path['s']['v']
+['s', 'y', 'v']
+
+>>> dist, path = NX.floyd_warshall(G)
+>>> dist['s']['v']
+2
+>>> path['s']['v']
+['s', 'x', 'v']
+
+>>> dist, path = NX.floyd_warshall(H)
+>>> dist[0][3]
+3
+>>> path[0][3]
+[0, 1, 2, 3]
+>>> dist[0][4]
+3
+
+>>> XG3=NX.XGraph()
+>>> XG3.add_edges_from([ [0,1,2],[1,2,12],[2,3,1],[3,4,5],[4,5,1],[5,0,10] ])
+>>> dist, path = NX.floyd_warshall(XG3)
+>>> dist[0][3]
+15
+>>> path[0][3]
+[0, 1, 2, 3]
+
+>>> XG4=NX.XGraph()
+>>> XG4.add_edges_from([ [0,1,2],[1,2,2],[2,3,1],[3,4,1],[4,5,1],[5,6,1],[6,7,1],[7,0,1] ])
+>>> dist, path = NX.floyd_warshall(XG4)
+>>> dist[0][2]
+4
+>>> path[0][2]
+[0, 1, 2]
+
+
 Topological Sort
 ----------------
 

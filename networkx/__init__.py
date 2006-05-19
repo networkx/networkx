@@ -69,7 +69,7 @@ from paths import shortest_path, shortest_path_length, eccentricity,\
                   number_connected_components, connected_components,\
                   is_connected, connected_component_subgraphs,\
                   node_connected_component,\
-                  predecessor
+                  predecessor, floyd_warshall
 from search import dfs_preorder, dfs_postorder, dfs_predecessor,\
             dfs_successor, bfs_length, bfs_path, dfs_forest
 from cluster import triangles, average_clustering, clustering, transitivity

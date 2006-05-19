@@ -500,6 +500,47 @@ def dijkstra_bi(graph, source, target):
                         finalpath = paths[0][w] + revpath[1:]
     return False
 
+def floyd_warshall(graph):
+    """
+    The Floyd-Warshall algorithm for all pair shortest paths.
+    
+    Returns a tuple distance, path containing two matrixes of shortest distance
+    and paths as dicts-in-dicts. 
+        
+    Not intended for large graphs. Time and space grows as O(N^3).
+    This algorithm handles negative weights.
+    """
+    
+    dist = {}
+    path = {}
+    for i in graph:
+        dist[i] = {}
+        path[i] = {}
+        for j in graph:
+            if i == j :continue
+            if not graph.has_edge(i,j): continue
+            if hasattr(graph,"get_edge"): 
+                val = graph.get_edge(i,j)
+            else:
+                val= 1
+            path[i][j] = [i, j]
+            dist[i][j] = val
+    for k in graph:
+        for i in graph:
+            if i==k : continue
+            for j in graph:
+                if j == i or j == k: continue
+                dij = 1e3000
+                dik = 1e3000
+                dkj = 1e3000
+                if j in dist[i]: dij = dist[i][j]
+                if k in dist[i]: dik = dist[i][k]
+                if j in dist[k]: dkj = dist[k][j]
+                if dij > dik + dkj:
+                    dist[i][j] = dik + dkj
+                    path[i][j] = path[i][k] + path[k][j][1:]
+    return dist, path
+
 
 def is_directed_acyclic_graph(G):
     """Return True if the graph G is a directed acyclic graph (DAG).
