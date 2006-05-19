@@ -622,12 +622,11 @@ class Graph(object):
         (quietly) ignored.
         
         """
+        e={}     # helper dict to keep track of multiply stored edges
         # prepare nbunch
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
-        e={}     # helper dict to keep track of multiply stored edges
-        # if nbunch is a single node 
-        if nbunch in self:
+        elif nbunch in self: # if nbunch is a single node 
             n1=nbunch
             for n2 in self.adj[n1]:
                 if not e.has_key((n1,n2)):

@@ -269,11 +269,7 @@ class XGraph(Graph):
         the neighbors of G. 
 
         """
-        try:
-            return self.neighbors(n)
-        except (KeyError, TypeError):
-            raise NetworkXError, "node %s not in graph"%n
-
+        return self.neighbors(n)
 
     def add_edge(self, n1, n2=None, x=None):  
         """Add a single edge to the graph.
@@ -450,19 +446,16 @@ class XGraph(Graph):
         # prepare nbunch
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
-        else:  # try nbunch as a single node
+        elif nbunch in self:  # try nbunch as a single node
             n1=nbunch
-            try:
-                if self.multiedges:
-                    for n2 in self.adj[n1]:
-                        for x in self.adj[n1][n2]:
-                            yield (n1,n2,x)
-                else:   
-                    for n2 in self.adj[n1]:
-                        yield (n1,n2,self.adj[n1][n2])
-                raise StopIteration
-            except (KeyError,TypeError), e:  # n is not a node of self
-                pass                         # treat as iterable
+            if self.multiedges:
+                for n2 in self.adj[n1]:
+                    for x in self.adj[n1][n2]:
+                        yield (n1,n2,x)
+            else:   
+                for n2 in self.adj[n1]:
+                    yield (n1,n2,self.adj[n1][n2])
+            raise StopIteration
         # this part reached only if nbunch is a container of (possible) nodes 
         e={}  # helper dict used to avoid duplicate edges
         try:  # reach this only if nbunch should be iterated over
@@ -598,27 +591,24 @@ class XGraph(Graph):
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
             nbunch=self.adj.iterkeys()
-        else:  
-            try: # nbunch as a single node
-                n=nbunch
-                if self.multiedges:
-                    deg=sum([ len(e) for e in self.adj[n].itervalues() ])
-                    if self.adj[n].has_key(n) and self.selfloops:
-                        deg+= len(self.adj[n][n])  # self loops double count
-                    if with_labels:
-                        return {n:deg} # useless but self-consistent?
-                    else:
-                        return deg
-                else: # case without multiedges
-                    deg=len(self.adj[n])
-                    # self loops
-                    deg+= self.adj[n].has_key(n)  # double count self-loop 
-                    if with_labels:
-                        return {n:deg} # useless but self-consistent?
-                    else:
-                        return deg
-            except (KeyError,TypeError):  # n is not a node
-                pass                      # treat as iterable
+        elif nbunch in self:  # nbunch as a single node
+            n=nbunch
+            if self.multiedges:
+                deg=sum([ len(e) for e in self.adj[n].itervalues() ])
+                if self.adj[n].has_key(n) and self.selfloops:
+                    deg+= len(self.adj[n][n])  # self loops double count
+                if with_labels:
+                    return {n:deg} # useless but self-consistent?
+                else:
+                    return deg
+            else: # case without multiedges
+                deg=len(self.adj[n])
+                # self loops
+                deg+= self.adj[n].has_key(n)  # double count self-loop 
+                if with_labels:
+                    return {n:deg} # useless but self-consistent?
+                else:
+                    return deg
         # do bunch of nodes
         d={}
         if self.multiedges:
@@ -650,28 +640,25 @@ class XGraph(Graph):
         # prepare nbunch
         if nbunch is None:   # most likely case
             nbunch=self.adj.iterkeys()
-        else:  
-            try: # nbunch as a single node
-                n=nbunch
-                if self.multiedges:
-                    deg=sum([ len(e) for e in self.adj[n].itervalues() ])
-                    if self.adj[n].has_key(n) and self.selfloops:
-                        deg+= len(self.adj[n][n])  # self loops double count
-                    if with_labels:
-                        yield (n,deg) # useless but self-consistent?
-                    else:
-                        yield deg
-                else: # case without multiedges
-                    deg=len(self.adj[n])
-                    # self loops
-                    deg+= self.adj[n].has_key(n)  # double count self-loop
-                    if with_labels:
-                        yield (n,deg) # useless but self-consistent? 
-                    else:
-                        yield deg
-                raise StopIteration       # don't leave this elif
-            except (KeyError,TypeError):  # n is not a node
-                pass                      # treat as iterable
+        elif nbunch in self:  # nbunch as a single node
+            n=nbunch
+            if self.multiedges:
+                deg=sum([ len(e) for e in self.adj[n].itervalues() ])
+                if self.adj[n].has_key(n) and self.selfloops:
+                    deg+= len(self.adj[n][n])  # self loops double count
+                if with_labels:
+                    yield (n,deg) # useless but self-consistent?
+                else:
+                    yield deg
+            else: # case without multiedges
+                deg=len(self.adj[n])
+                # self loops
+                deg+= self.adj[n].has_key(n)  # double count self-loop
+                if with_labels:
+                    yield (n,deg) # useless but self-consistent? 
+                else:
+                    yield deg
+            raise StopIteration       # don't leave this elif
         # do bunch of nodes
         if self.multiedges:
             for n in nbunch:
@@ -846,11 +833,8 @@ class XGraph(Graph):
 
         """
         # if nbunch is a single node convert into a list
-        try: # duck typing
-            if nbunch in self.adj:
-                nbunch=[nbunch]
-        except (KeyError,TypeError):
-            pass
+        if nbunch in self:
+            nbunch=[nbunch]
 
         # WARNING: setting inplace=True destroys the graph.
         if inplace: # demolish all nodes (and attached edges) not in nbunch
@@ -1235,6 +1219,7 @@ class XDiGraph(DiGraph):
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
         """
+        # prepare nbunch
         if nbunch is None: # include all nodes via iterator
             nbunch=self.nodes_iter()
         elif nbunch in self: # try nbunch as a single node
@@ -1242,7 +1227,7 @@ class XDiGraph(DiGraph):
             if self.multiedges:
                 for n2 in self.succ[n1]:
                     for x in self.succ[n1][n2]:
-                            yield (n1,n2,x)
+                        yield (n1,n2,x)
             else:
                 for n2 in self.succ[n1]:
                     yield (n1,n2,self.succ[n1][n2])
@@ -1360,8 +1345,7 @@ class XDiGraph(DiGraph):
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
             nbunch=self.pred.iterkeys()
-        else:  
-            try: # nbunch as a single node
+        elif nbunch in self:  # nbunch as a single node
                 n=nbunch
                 if self.multiedges:
                     deg=sum([len(edge) for edge in self.pred[n].itervalues()])
@@ -1371,8 +1355,6 @@ class XDiGraph(DiGraph):
                     return {n:deg} # useless but self-consistent?
                 else:
                     return deg
-            except (KeyError,TypeError):  # n is not a node
-                pass                      # treat as iterable
         # do bunch of nodes
         d={}
         if self.multiedges:
@@ -1406,19 +1388,16 @@ class XDiGraph(DiGraph):
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
             nbunch=self.succ.iterkeys()
-        else:  
-            try: # nbunch as a single node
-                n=nbunch
-                if self.multiedges:
-                    deg=sum([len(edge) for edge in self.succ[n].itervalues()])
-                else: # case without multiedges
-                    deg=len(self.succ[n])
-                if with_labels:
-                    return {n:deg} # useless but self-consistent?
-                else:
-                    return deg
-            except (KeyError,TypeError):  # n is not a node
-                pass                      # treat as iterable
+        elif nbunch in self: # nbunch as a single node
+            n=nbunch
+            if self.multiedges:
+                deg=sum([len(edge) for edge in self.succ[n].itervalues()])
+            else: # case without multiedges
+                deg=len(self.succ[n])
+            if with_labels:
+                return {n:deg} # useless but self-consistent?
+            else:
+                return deg
         # do bunch of nodes
         d={}
         if self.multiedges:
@@ -1451,20 +1430,17 @@ class XDiGraph(DiGraph):
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
             nbunch=self.succ.iterkeys()
-        else:  
-            try: # nbunch as a single node
-                n=nbunch
-                if self.multiedges:
-                    deg=sum([len(e) for e in self.succ[n].itervalues()])  + \
-                        sum([len(e) for e in self.pred[n].itervalues()])
-                else:
-                    deg=len(self.succ[n])+len(self.pred[n])
-                if with_labels:
-                    return {n:deg} 
-                else:
-                    return deg
-            except (KeyError,TypeError):  # n is not a node
-                pass                      # treat as iterable
+        elif nbunch in self:  # nbunch as a single node
+            n=nbunch
+            if self.multiedges:
+                deg=sum([len(e) for e in self.succ[n].itervalues()])  + \
+                    sum([len(e) for e in self.pred[n].itervalues()])
+            else:
+                deg=len(self.succ[n])+len(self.pred[n])
+            if with_labels:
+                return {n:deg} 
+            else:
+                return deg
         # case where nbunch is a container of (possible) nodes 
         d={}
         if self.multiedges:
@@ -1591,11 +1567,8 @@ class XDiGraph(DiGraph):
 
         """
         # if nbunch is a single node convert into a list
-        try: # duck typing
-            if nbunch in self.adj:
-                nbunch=[nbunch]
-        except (KeyError,TypeError):
-            pass
+        if nbunch in self:
+            nbunch=[nbunch]
 
         # WARNING: setting inplace=True destroys the graph.
         if inplace: # demolish all nodes (and attached edges) not in nbunch
