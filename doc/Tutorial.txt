@@ -4,7 +4,7 @@
 NetworkX Tutorial
 ~~~~~~~~~~~~~~~~~
 
-*last updated: 11 April 2005*
+*last updated: 19 May 2006*
 
 .. include:: Menu.txt
             
@@ -38,13 +38,13 @@ complex networks is presented in Albert and Barabási [BA02]_, Newman
 [Newman03]_, and Dorogovtsev and Mendes [DM03]_. See also the classic
 texts [Bollobas01]_, [Diestel97]_ and [West01_] for graph theoretic
 results and terminology. For basic graph algorithms, we recommend the
-texts of Sedgewick, e.g. [Sedgewick01]_ and [Sedgewick02]_.
+texts of Sedgewick, e.g. [Sedgewick01]_ and [Sedgewick02]_ and the
+modern survey of Brandes and Erlebach [BE05]_.
   
 Why Python? Past experience showed this approach to maximize
 productivity, power, multidisciplinary scope (our application test
 beds included large communication, social, data and biological
-networks), and platform independence (although we have only
-extensively tested it under Linux). This philosophy does not exclude
+networks), and platform independence. This philosophy does not exclude
 using whatever other language is appropriate for a specific subtask,
 since Python is also an excellent "glue" language [Langtangen04]_. 
 Equally important, Python is free, well-supported and a joy to use. 
@@ -55,13 +55,14 @@ NetworkX is free software; you can redistribute it and/or
 modify it under the terms of the **LGPL** (GNU Lesser General Public
 License) as published by the Free Software Foundation; either
 version 2.1 of the License, or (at your option) any later version.
-Please see the file Readme_ for more information. 
+Please see the file Readme_ for more information. We welcome user 
+input.
 
 Obtaining and Installing NetworkX
 ==================================
 
 You need Python. We recommend the latest stable release available
-from http://www.python.org/. The latest version can be found at
+from http://www.python.org/. The latest version of NX can be found at
 http://networkx.lanl.gov/. 
 NX will work on multiple platforms.
 
@@ -182,6 +183,9 @@ Empty graph-like objects are created with
   - G=XGraph(selfloops=True, multiedges=True)
   - G=XDiGraph(selfloops=True, multiedges=True)
 
+Only the XGraph and XDiGraph classes allow for the selfloops and
+multiedges options.
+
 This package implements graphs using data structures based on an
 adjacency list implemented as a node_centric dictionary of
 dictionaries. The dictionary contains keys corresponding to the nodes
@@ -192,7 +196,9 @@ lookup of nodes and neighbors in large graphs.  The underlying
 datastructure should only be visible in the modules base.py and
 xbase.py. In all other modules, graph-like objects are manipulated
 solely via the methods defined in base.py and xbase.py, and not by
-acting directly on the datastructure.
+acting directly on the datastructure. This design allows one to
+replace the 'dicts-of-dicts"-based datastructure with an alternative 
+datastructure without excessive effort.
 
 The following shorthand is used throughout NetworkX documentation and code:
 (we use mathematical notation n,v,w,... to indicate a node, v=vertex=node).
@@ -221,9 +227,10 @@ e=(n1,n2,x):
    an edge (a python 3-tuple) in XGraph and XDiGraph, containing the two
    nodes connected and the edge data/label/object stored associated with
    the edge. The object x, or a list of objects (if multiedges=True),
-   can be obtained using G.get_edge(n1,n2). In XGraph
-   G.add_edge(n1,n2) is equivalent to G.add_edge(n1,n2,1). However,
-   G.delete_edge(n1,n2) will delete all edges between n1 and n2.
+   can be obtained using G.get_edge(n1,n2). In XGraph and XDiGraph,
+   G.add_edge(n1,n2) is equivalent to G.add_edge(n1,n2,None). In the
+   case of multiple edges between nodes n1 and n2, one can use 
+   G.delete_multiedge(n1,n2) to delete all edges between n1 and n2. 
 
 elist:
    a list of edges (as 2- or 3-tuples)
@@ -234,6 +241,9 @@ ebunch:
    of edge-tuples. (Similar to nbunch, also see add_edge).
 
 Warning:
+  - Alhough any hashable object can be used as a node, one should not
+    change the object after it has been added as a
+    node (since the hash can depend on the object contents).
   - The ordering of objects within an arbitrary nbunch/ebunch
     can be machine- or implementation-dependent.
   - Algorithms applicable to arbitrary nbunch/ebunch should treat 
@@ -255,6 +265,7 @@ with it:
     - len(G)       number of nodes in G
     - G.has_node(n)       
     - n in G (equivalent to G.has_node(n))
+    - G.info()
     - G.nodes()
     - G.nodes_iter()
     - G.has_edge(n1,n2)
@@ -303,7 +314,8 @@ e.g. petersen_graph(), G.add_node(10).
 G can be inspected interactively by typing "G" (without the quotes).
 This will reply something like <networkx.base.Graph object at 0x40179a0c>.
 (On linux machines with CPython the hexadecimal address is the memory
-location of the object.)
+location of the object.) One can use G.info() for a brief summary of
+the graph properties.
 
 Examples
 ========
@@ -325,12 +337,12 @@ by adding a list of nodes:
 or by adding any nbunch of nodes (see above definition of an nbunch):
 
 >>> H=path_graph(10)
->>> G.add_nodes_from( H )
+>>> G.add_nodes_from(H)
 
 (H can be a graph, iterator,  string,  set, or even a file.)
 
-Any hashable object can represent a node, e.g. a Graph,
-a customized node object, etc.
+Any hashable object can represent a node, e.g. a text string, an
+image, an XML objext, another Graph, a customized node object, etc.
 
 >>> G.add_node(H)
 
@@ -358,8 +370,11 @@ after removing all nodes and edges,
 
 >>> G.clear()
 >>> G.add_edges_from([(1,2),(1,3)])
+>>> G.add_node(1)
+>>> G.add_edge((1,2))
 
-will add new nodes as required.
+will add new nodes/edges as required and stay quiet if they are
+already present.
 
 >>> G.add_node("spam")
 
@@ -388,10 +403,9 @@ do provide elementary drawing tools as well as an interface to use the
 open source Graphviz software package.  These reside in networkx.drawing,
 and will be imported if possible. See the Drawing_ section for details.
 
->>> from pylab import *
->>> from networkx.drawing import *
+>>> import pylab as P
 
-To test if this import was successful 
+To test if the import of networkx.drawing was successful 
 draw G using one of:
 
 >>> draw(G)
@@ -402,14 +416,14 @@ draw G using one of:
 when drawing to an interactive display. 
 Note that you may need to issue a pylab 
 
->>> show() 
+>>> P.show() 
 
 command if you are not using matplotlib in interactive mode (http://matplotlib.sourceforge.net/faq.html#SHOW).
 
 Or use
 
 >>> draw(G)
->>> savefig("path.ps")
+>>> P.savefig("path.ps")
 
 to write to the file "path.ps" in the local directory. If graphviz
 and pygraphviz or pydot are available on your system, you can also use:
@@ -510,7 +524,7 @@ can also be generated by:
 >>> K_3_5=complete_bipartite_graph(3,5)
 >>> barbell=barbell_graph(10,10)
 >>> lollipop=lollipop_graph(10,20)
-
+ 
 4. Using a stochastic graph generator, e.g.
 
 >>> er=erdos_renyi_graph(100,0.15)
@@ -715,6 +729,9 @@ References
 .. [Bollobas01] B. Bollobás, "Random Graphs", Second Edition,
    Cambridge University Press, 2001.
 
+.. [BE05] U. Brandes and T. Erlebach, "Network Analysis:
+   Methodological Foundations", Lecture Notes in Computer Science, 
+   Volume 3418, Springer-Verlag, 2005.
 
 .. [Diestel97] R. Diestel, "Graph Theory", Springer-Verlag, 1997.
    (A free electronic version is available at
@@ -751,3 +768,4 @@ References
 
 .. [West01] D. B. West, "Introduction to Graph Theory", Prentice Hall,
     2nd ed., 2001.  
+
