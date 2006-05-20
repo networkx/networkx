@@ -444,35 +444,32 @@ class XGraph(Graph):
         
         """
         # prepare nbunch
-        if nbunch is None: # include all nodes via iterator
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-        elif nbunch in self:  # try nbunch as a single node
-            n1=nbunch
-            if self.multiedges:
-                for n2 in self.adj[n1]:
-                    for x in self.adj[n1][n2]:
-                        yield (n1,n2,x)
-            else:   
-                for n2 in self.adj[n1]:
-                    yield (n1,n2,self.adj[n1][n2])
-            raise StopIteration
-        # this part reached only if nbunch is a container of (possible) nodes 
-        e={}  # helper dict used to avoid duplicate edges
-        try:  # reach this only if nbunch should be iterated over
+        elif nbunch in self: # if nbunch is a single node 
+            nbunch=[nbunch]
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise StopIteration # silently fail for non-sequence nonnode
+                # raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        seen={}  # helper dict used to avoid duplicate edges
+        if self.multiedges:
             for n1 in nbunch:
-                if n1 in self.adj:          # if n1 in graph 
-                    for n2 in self.adj[n1]: # if some edge n1-n2
-                        if e.has_key((n2,n1)):
-                            continue
-                        e.setdefault((n1,n2),1)
-                        if self.multiedges:
-                            for x in self.adj[n1][n2]:
-                                yield (n1,n2,x)
-                        else:   
-                            yield (n1,n2,self.adj[n1][n2])                            
-        except TypeError:
-            pass
-        del(e) # clear copy of temp dictionary
+                for n2,elist in self.adj[n1].iteritems(): 
+                    if n2 not in seen:
+                        for data in elist:
+                            yield (n1,n2,data)
+                seen[n1]=1
+        else:   
+            for n1 in nbunch:
+                for n2,data in self.adj[n1].iteritems(): 
+                    if n2 not in seen:
+                        yield (n1,n2,data)
+                seen[n1]=1
+        del(seen) # clear copy of temp dictionary
                # iterators can remain after they finish returning values.
 
     def edges(self, nbunch=None):
@@ -1220,30 +1217,26 @@ class XDiGraph(DiGraph):
         
         """
         # prepare nbunch
-        if nbunch is None: # include all nodes via iterator
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-        elif nbunch in self: # try nbunch as a single node
-            n1=nbunch
-            if self.multiedges:
-                for n2 in self.succ[n1]:
-                    for x in self.succ[n1][n2]:
-                        yield (n1,n2,x)
-            else:
-                for n2 in self.succ[n1]:
-                    yield (n1,n2,self.succ[n1][n2])
-            raise StopIteration
-        # this part reached only if nbunch is a container of (possible) nodes
-        try:
+        elif nbunch in self: # if nbunch as a single node
+            nbunch=[nbunch]
+        else:                # nbunch a sequence of nodes 
+            try:
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise StopIteration # silently fail for non-sequence nonnode
+                # raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        if self.multiedges:
             for n1 in nbunch:
-                if n1 in self.succ:
-                    for n2 in self.succ[n1]:
-                        if self.multiedges:
-                            for x in self.succ[n1][n2]:
-                                yield (n1,n2,x)
-                        else:
-                            yield (n1,n2,self.succ[n1][n2])
-        except TypeError:
-            pass
+                for n2,list_of_data in self.succ[n1].iteritems():
+                    for x in list_of_data:
+                        yield (n1,n2,x)
+        else:
+            for n1 in nbunch:
+                for n2,data in self.succ[n1].iteritems():
+                    yield (n1,n2,data)
 
     def in_edges_iter(self, nbunch=None):
         """Return iterator that iterates once over each edge pointing in
@@ -1255,30 +1248,27 @@ class XDiGraph(DiGraph):
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
         """
-        if nbunch is None: # include all nodes via iterator
+        # prepare nbunch
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-        elif nbunch in self: # try nbunch as a single node
-            n1=nbunch
-            if self.multiedges:
-                for n2 in self.pred[n1]:
-                    for x in self.pred[n1][n2]:
-                            yield (n2,n1,x)                
-            else:
-                for n2 in self.pred[n1]:
-                    yield (n2,n1,self.pred[n1][n2])
-            raise StopIteration
-        # this part reached only if nbunch is a container of (possible) nodes
-        try:
+        elif nbunch in self: # if nbunch as a single node
+            nbunch=[nbunch]
+        else:                # nbunch a sequence of nodes 
+            try:
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise StopIteration # silently fail for non-sequence nonnode
+                # raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        if self.multiedges:
             for n1 in nbunch:
-                if n1 in self.pred:
-                    for n2 in self.pred[n1]:
-                        if self.multiedges:
-                            for x in self.pred[n1][n2]:
-                                yield (n2,n1,x)
-                        else:
-                            yield (n2,n1,self.pred[n1][n2])
-        except TypeError:
-            pass
+                for n2,elist in self.pred[n1].iteritems():
+                    for data in elist:
+                        yield (n2,n1,data)
+        else:
+            for n1 in nbunch:
+                for n2,data in self.pred[n1].iteritems():
+                    yield (n2,n1,data)
 
     def out_edges(self, nbunch=None):
         """Return a list of all edges that point out of nodes in nbunch,

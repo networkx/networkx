@@ -622,27 +622,25 @@ class Graph(object):
         (quietly) ignored.
         
         """
-        e={}     # helper dict to keep track of multiply stored edges
         # prepare nbunch
-        if nbunch is None: # include all nodes via iterator
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
         elif nbunch in self: # if nbunch is a single node 
-            n1=nbunch
-            for n2 in self.adj[n1]:
-                if not e.has_key((n1,n2)):
-                    e[(n2,n1)]=None
-                    yield (n1,n2)
-        else: # treat nbunch as a container of nodes
-            try:
-                for n1 in nbunch:
-                    if n1 in self.adj: 
-                        for n2 in self.adj[n1]:
-                            if not e.has_key((n1,n2)):
-                                e.setdefault((n2,n1),1)
-                                yield (n1,n2)
+            nbunch=[nbunch]
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
             except TypeError:
-                pass
-        del(e) # clear copy of temp dictionary
+                raise StopIteration # silently fail for non-sequence nonnode
+                # raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        seen={}     # helper dict to keep track of multiply stored edges
+        for n1 in nbunch:
+            for n2 in self.adj[n1]:
+                if n2 not in seen:
+                    yield (n1,n2)
+            seen[n1]=1
+        del(seen) # clear copy of temp dictionary
                # iterators can remain after they finish returning values.
 
 
@@ -1220,25 +1218,24 @@ class DiGraph(Graph):
 
         See add_node for definition of nbunch.
         
-        Those nodes in nbunch that are not in the graph will be
-        (quietly) ignored.
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
         """
         # prepare nbunch
-        if nbunch is None: # include all nodes via iterator
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-        if nbunch in self:
-            v=nbunch
-            for u in self.succ[v]:
-                yield (v,u)
-        else: # treat nbunch as a container of nodes
-            try:
-                for v in nbunch:
-                    if v in self.succ:
-                        for u in self.succ[v]:
-                            yield (v,u)
+        elif nbunch in self: # if nbunch is a single node 
+            nbunch=[nbunch]
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
             except TypeError:
-                pass
+                raise StopIteration # silently fail for non-sequence nonnode
+                # raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        for n in nbunch:
+            for u in self.succ[n]:
+                yield (n,u)
 
     def in_edges_iter(self, nbunch=None):
         """Return iterator that iterates once over each edge adjacent
@@ -1247,25 +1244,24 @@ class DiGraph(Graph):
 
         See add_node for definition of nbunch.
         
-        Those nodes in nbunch that are not in the graph will be
-        (quietly) ignored.
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
         """
         # prepare nbunch
-        if nbunch is None: # include all nodes via iterator
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-        if nbunch in self:
-            v=nbunch
-            for u in self.pred[v]:
-                yield (u,v)
-        else: # treat nbunch as a container of nodes
-            try:
-                for v in nbunch:
-                    if v in self.pred:
-                        for u in self.pred[v]:
-                            yield (u,v)
+        elif nbunch in self: # if nbunch is a single node 
+            nbunch=[nbunch]
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
             except TypeError:
-                pass
+                raise StopIteration # silently fail for non-sequence nonnode
+                # raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        for n in nbunch:
+            for u in self.pred[n]:
+                yield (u,n)
 
 
     # define edges to be out_edges implicitly since edges uses edges_iter
