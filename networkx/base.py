@@ -787,24 +787,23 @@ class Graph(object):
         
         """
         # prepare nbunch
-        if nbunch is None: # include all nodes via iterator
-            nbunch=self.adj.iterkeys()
-        # if nbunch is a single node, return value
-        if nbunch in self:
-            n=nbunch
-            if with_labels:
-                return {n:len(self.adj[n])} # useless but self-consistent?
-            else:
-                return len(self.adj[n])
-        else: # do bunch of nodes
-            d={}
-            for n in nbunch:
-                if n in self:
-                    d.setdefault(n,len(self.adj[n]))
-            if with_labels:
-                return d
-            else:
-                return d.values()
+        if nbunch is None:   # include all nodes via iterator
+            nbunch=self.nodes_iter()
+        elif nbunch in self: # if nbunch is a single node 
+            deg=len(self.adj[nbunch])
+            if with_labels: return {nbunch:deg}
+            return deg
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        d={}
+        for n in nbunch:
+            d[n]=len(self.adj[n])
+        if with_labels: return d
+        return d.values()
 
     def degree_iter(self,nbunch=None,with_labels=False):
         """Return iterator that return degree(n) or (n,degree(n))
@@ -825,25 +824,22 @@ class Graph(object):
 
         """
         # prepare nbunch
-        if nbunch is None: # iterate over entire graph
-            nbunch=self.adj.iterkeys()
-
-        # if nbunch is a single node in the graph
-        if nbunch in self:
-            n=nbunch
-            if with_labels:
-                yield (n,len(self.adj[n])) # useless but self-consistent?
-            else:
-                yield len(self.adj[n])
-        else: # do bunch of nodes
-            if with_labels:
-                for n in nbunch:
-                    if n in self:
-                        yield (n,len(self.adj[n])) # tuple (n,degree)
-            else:
-                for n in nbunch:
-                    if n in self:
-                        yield len(self.adj[n])     # just degree
+        if nbunch is None:   # include all nodes via iterator
+            nbunch=self.nodes_iter()
+        elif nbunch in self: # if nbunch is a single node 
+            nbunch=[nbunch]
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        if with_labels:
+            for n in nbunch:
+                yield (n,len(self.adj[n])) # tuple (n,degree)
+        else:
+            for n in nbunch:
+                yield len(self.adj[n])     # just degree
                         
     def clear(self):
         """Remove name and delete all nodes and edges from graph."""
@@ -1341,27 +1337,22 @@ class DiGraph(Graph):
  
         """
         # prepare nbunch
-        if nbunch is None: # iterate over entire graph
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-            
-        # if nbunch is a single node in the graph
-        if nbunch in self:
-            n=nbunch
-            deg=len(self.succ[n])+len(self.pred[n])
-            if with_labels:
-                yield (n,deg) # useless but self-consistent?
-            else:
-                yield deg
+        elif nbunch in self: # if nbunch is a single node 
+            nbunch=[nbunch]
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        if with_labels:   # yield tuple (n,degree)
+            for n in nbunch:
+                yield (n,len(self.succ[n])+len(self.pred[n])) 
         else:
-            if with_labels:   # yield tuple (n,degree)
-                for n in nbunch:
-                    if n in self:
-                        yield (n,len(self.succ[n])+len(self.pred[n])) 
-            else:
-                for n in nbunch:
-                    if n in self:
-                        yield len(self.succ[n])+len(self.pred[n]) 
-
+            for n in nbunch:
+                yield len(self.succ[n])+len(self.pred[n]) 
 
     def in_degree_iter(self,nbunch=None,with_labels=False):
         """Return iterator for in_degree(n) or (n,in_degree(n))
@@ -1372,26 +1363,22 @@ class DiGraph(Graph):
         See degree_iter method for Digraph Class for more details. 
         """
         # prepare nbunch
-        if nbunch is None: # iterate over entire graph
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-            
-        # if nbunch is a single node in the graph
-        if nbunch in self:
-            n=nbunch
-            deg=len(self.pred[n])
-            if with_labels:
-                yield (n,deg) # useless but self-consistent?
-            else:
-                yield deg
+        elif nbunch in self: # if nbunch is a single node 
+            nbunch=[nbunch]
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        if with_labels:   # yield tuple (n,degree)
+            for n in nbunch:
+                yield (n,len(self.pred[n])) 
         else:
-            if with_labels:   # yield tuple (n,degree)
-                for n in nbunch:
-                    if n in self:
-                        yield (n,len(self.pred[n])) 
-            else:
-                for n in nbunch:
-                    if n in self:
-                        yield len(self.pred[n]) 
+            for n in nbunch:
+                yield len(self.pred[n]) 
 
     def out_degree_iter(self,nbunch=None,with_labels=False):
         """Return iterator for out_degree(n) or (n,out_degree(n))
@@ -1402,27 +1389,22 @@ class DiGraph(Graph):
         See degree_iter method for Digraph Class for more details. 
         """
         # prepare nbunch
-        if nbunch is None: # iterate over entire graph
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-            
-        # if nbunch is a single node in the graph
-        if nbunch in self:
-            n=nbunch
-            deg=len(self.succ[n])
-            if with_labels:
-                yield (n,deg) # useless but self-consistent?
-            else:
-                yield deg
+        elif nbunch in self: # if nbunch is a single node 
+            nbunch=[nbunch]
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
+        if with_labels:   # yield tuple (n,degree)
+            for n in nbunch:
+                yield (n,len(self.succ[n]))
         else:
-            if with_labels:   # yield tuple (n,degree)
-                for n in nbunch:
-                    if n in self:
-                        yield (n,len(self.succ[n]))
-            else:
-                for n in nbunch:
-                    if n in self:
-                        yield len(self.succ[n])
-
+            for n in nbunch:
+                yield len(self.succ[n])
 
     def degree(self,nbunch=None,with_labels=False):
         """Return degree of single node or of nbunch of nodes.
@@ -1444,26 +1426,23 @@ class DiGraph(Graph):
         
         """
         # prepare nbunch
-        if nbunch is None: # include all nodes via iterator
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-        # if single node, return value
-        elif nbunch in self:
-            n=nbunch
-            deg=len(self.succ[n])+len(self.pred[n])
-            if with_labels:
-                return {n:deg} # useless but self-consistent?
-            else:
-                return deg
-        # do bunch of nodes
+        elif nbunch in self: # if nbunch is a single node 
+            deg=len(self.pred[nbunch])+len(self.succ[nbunch])
+            if with_labels: return {nbunch:deg}
+            return deg
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
         d={}
         for n in nbunch:
-            if n in self:
-                d[n]=len(self.pred[n])+len(self.succ[n])
-        if with_labels:
-            return d
-        else:
-            return d.values()
-
+            d[n]=len(self.pred[n])+len(self.succ[n])
+        if with_labels: return d
+        return d.values()
 
     def out_degree(self,nbunch=None, with_labels=False):
         """Return out-degree of single node or of nbunch of nodes.
@@ -1473,25 +1452,23 @@ class DiGraph(Graph):
         
         """
         # prepare nbunch
-        if nbunch is None: # include all nodes via iterator
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-        # if single node, return value
-        elif nbunch in self:
-            n=nbunch
-            deg=len(self.succ[n])
-            if with_labels:
-                return {n:deg} # useless but self-consistent?
-            else:
-                return deg
-        # do bunch of nodes
+        elif nbunch in self: # if nbunch is a single node 
+            deg=len(self.succ[nbunch])
+            if with_labels: return {nbunch:deg}
+            return deg
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
         d={}
         for n in nbunch:
-            if n in self:
-                d[n]=len(self.succ[n])
-        if with_labels:
-            return d
-        else:
-            return d.values()
+            d[n]=len(self.succ[n])
+        if with_labels: return d
+        return d.values()
         
     def in_degree(self,nbunch=None, with_labels=False):
         """Return in-degree of single node or of nbunch of nodes.
@@ -1501,25 +1478,23 @@ class DiGraph(Graph):
 
         """
         # prepare nbunch
-        if nbunch is None: # include all nodes via iterator
+        if nbunch is None:   # include all nodes via iterator
             nbunch=self.nodes_iter()
-        # if single node, return value
-        elif nbunch in self:
-            n=nbunch
-            deg=len(self.pred[n])
-            if with_labels:
-                return {n:deg} # useless but self-consistent?
-            else:
-                return deg
-        # do bunch of nodes
+        elif nbunch in self: # if nbunch is a single node 
+            deg=len(self.pred[nbunch])
+            if with_labels: return {nbunch:deg}
+            return deg
+        else:                # nbunch a sequence of nodes
+            try: 
+                nbunch=[n for n in nbunch if n in self]
+            except TypeError:
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        # nbunch ready
         d={}
         for n in nbunch:
-            if n in self:
-                d[n]=len(self.pred[n])
-        if with_labels:
-            return d
-        else:
-            return d.values()
+            d[n]=len(self.pred[n])
+        if with_labels: return d
+        return d.values()
 
     def clear(self):
         """Remove name and delete all nodes and edges from digraph."""
