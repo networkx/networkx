@@ -445,26 +445,25 @@ class XGraph(Graph):
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
-            nbunch=self.nodes_iter()
+            bunch=self.nodes_iter()
         elif nbunch in self: # if nbunch is a single node 
-            nbunch=[nbunch]
-        else:                # nbunch a sequence of nodes
-            try: 
-                nbunch=[n for n in nbunch if n in self]
+            bunch=[nbunch]
+        else:                # if nbunch is a sequence of nodes
+            try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise StopIteration # silently fail for non-sequence nonnode
-                # raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                 raise StopIteration # silently fail for non-sequence nonnode
+             #raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
         seen={}  # helper dict used to avoid duplicate edges
         if self.multiedges:
-            for n1 in nbunch:
+            for n1 in bunch:
                 for n2,elist in self.adj[n1].iteritems(): 
                     if n2 not in seen:
                         for data in elist:
                             yield (n1,n2,data)
                 seen[n1]=1
         else:   
-            for n1 in nbunch:
+            for n1 in bunch:
                 for n2,data in self.adj[n1].iteritems(): 
                     if n2 not in seen:
                         yield (n1,n2,data)
@@ -587,39 +586,29 @@ class XGraph(Graph):
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
-            nbunch=self.adj.iterkeys()
-        elif nbunch in self:  # nbunch as a single node
-            n=nbunch
-            if self.multiedges:
-                deg=sum([ len(e) for e in self.adj[n].itervalues() ])
-                if self.adj[n].has_key(n) and self.selfloops:
-                    deg+= len(self.adj[n][n])  # self loops double count
-            else: 
-                deg=len(self.adj[n])
-                deg+= self.adj[n].has_key(n)  # double count self-loop 
-            if with_labels: return {n:deg} 
-            return deg
-        else:                # nbunch a sequence of nodes
-            try:
-                nbunch=[n for n in nbunch if n in self]
+            bunch=self.nodes_iter()
+        elif nbunch in self: # if nbunch is a single node 
+            bunch=[nbunch]
+        else:                # if nbunch is a sequence of nodes
+            try: bunch=[n for n in nbunch if n in self]
             except TypeError:
                 raise NetworkXError, "nbunch is not a node or a sequence of nodes."
-        # do bunch of nodes
+        # nbunch ready
         d={}
         if self.multiedges:
-            for n in nbunch:
+            for n in bunch:
                 deg = sum([len(e) for e in self.adj[n].itervalues()])
                 if self.adj[n].has_key(n) and self.selfloops:
                     deg+= len(self.adj[n][n])  # double count self-loops 
                 d[n]=deg
         else:
-            for n in nbunch:
+            for n in bunch:
                 deg=len(self.adj[n])
                 deg+= self.adj[n].has_key(n)  # double count self-loop
                 d[n]=deg
-        # return degree values of those nodes in the graph
-        if with_labels: return d
-        return d.values()
+        if with_labels: return d                  # return the dict
+        elif nbunch in self: return d.values()[0] # single node, so single value
+        return d.values()                         # return a list
 
     def degree_iter(self,nbunch=None,with_labels=False):
         """This is the degree() method returned in iterator form.
@@ -627,18 +616,17 @@ class XGraph(Graph):
         (like iteritems() on a dict.)
         """
         # prepare nbunch
-        if nbunch is None:   # most likely case
-            nbunch=self.adj.iterkeys()
-        elif nbunch in self:  # nbunch as a single node
-            nbunch=[nbunch]
-        else:                # nbunch a sequence of nodes
-            try:
-                nbunch=[n for n in nbunch if n in self]
+        if nbunch is None:   # include all nodes via iterator
+            bunch=self.nodes_iter()
+        elif nbunch in self: # if nbunch is a single node 
+            bunch=[nbunch]
+        else:                # if nbunch is a sequence of nodes
+            try: bunch=[n for n in nbunch if n in self]
             except TypeError:
                 raise NetworkXError, "nbunch is not a node or a sequence of nodes."
-        # do bunch of nodes
+        # nbunch ready
         if self.multiedges:
-            for n in nbunch:
+            for n in bunch:
                 deg = sum([len(e) for e in self.adj[n].itervalues()])
                 if self.selfloops and self.adj[n].has_key(n):
                     deg+= len(self.adj[n][n])  # double count self-loops 
@@ -647,7 +635,7 @@ class XGraph(Graph):
                 else:
                     yield deg
         else:
-            for n in nbunch:
+            for n in bunch:
                 deg=len(self.adj[n])
                 deg+= self.adj[n].has_key(n)  # double count self-loop
                 if with_labels:
@@ -1194,23 +1182,22 @@ class XDiGraph(DiGraph):
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
-            nbunch=self.nodes_iter()
-        elif nbunch in self: # if nbunch as a single node
-            nbunch=[nbunch]
-        else:                # nbunch a sequence of nodes 
-            try:
-                nbunch=[n for n in nbunch if n in self]
+            bunch=self.nodes_iter()
+        elif nbunch in self: # if nbunch is a single node 
+            bunch=[nbunch]
+        else:                # if nbunch is a sequence of nodes
+            try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise StopIteration # silently fail for non-sequence nonnode
-                # raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                 raise StopIteration # silently fail for non-sequence nonnode
+             #raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
         if self.multiedges:
-            for n1 in nbunch:
-                for n2,list_of_data in self.succ[n1].iteritems():
-                    for x in list_of_data:
-                        yield (n1,n2,x)
+            for n1 in bunch:
+                for n2,elist in self.succ[n1].iteritems():
+                    for data in elist:
+                        yield (n1,n2,data)
         else:
-            for n1 in nbunch:
+            for n1 in bunch:
                 for n2,data in self.succ[n1].iteritems():
                     yield (n1,n2,data)
 
@@ -1226,23 +1213,22 @@ class XDiGraph(DiGraph):
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
-            nbunch=self.nodes_iter()
-        elif nbunch in self: # if nbunch as a single node
-            nbunch=[nbunch]
-        else:                # nbunch a sequence of nodes 
-            try:
-                nbunch=[n for n in nbunch if n in self]
+            bunch=self.nodes_iter()
+        elif nbunch in self: # if nbunch is a single node 
+            bunch=[nbunch]
+        else:                # if nbunch is a sequence of nodes
+            try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise StopIteration # silently fail for non-sequence nonnode
-                # raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                 raise StopIteration # silently fail for non-sequence nonnode
+             #raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
         if self.multiedges:
-            for n1 in nbunch:
+            for n1 in bunch:
                 for n2,elist in self.pred[n1].iteritems():
                     for data in elist:
                         yield (n2,n1,data)
         else:
-            for n1 in nbunch:
+            for n1 in bunch:
                 for n2,data in self.pred[n1].iteritems():
                     yield (n2,n1,data)
 
@@ -1310,31 +1296,25 @@ class XDiGraph(DiGraph):
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
-            nbunch=self.pred.iterkeys()
-        elif nbunch in self:  # nbunch as a single node
-            n=nbunch
-            if self.multiedges:
-                deg=sum([len(edge) for edge in self.pred[n].itervalues()])
-            else: # case without multiedges
-                deg=len(self.pred[n])
-            if with_labels: return {n:deg} # useless but self-consistent?
-            return deg
-        else:                # nbunch a sequence of nodes
-            try:
-                nbunch=[n for n in nbunch if n in self]
+            bunch=self.nodes_iter()
+        elif nbunch in self: # if nbunch is a single node 
+            bunch=[nbunch]
+        else:                # if nbunch is a sequence of nodes
+            try: bunch=[n for n in nbunch if n in self]
             except TypeError:
                 raise NetworkXError, "nbunch is not a node or a sequence of nodes."
-        # do bunch of nodes
+        # nbunch ready
         d={}
         if self.multiedges:
-            for n in nbunch:
+            for n in bunch:
                 d[n] = sum([len(edge) for edge in self.pred[n].itervalues()])
         else: 
-            for n in nbunch:
+            for n in bunch:
                 d[n]=len(self.pred[n])
 
-        if with_labels: return d
-        return d.values()
+        if with_labels: return d                  # return the dict
+        elif nbunch in self: return d.values()[0] # single node, so single value
+        return d.values()                         # return a list
 
     def out_degree(self, nbunch=None, with_labels=False):
         """Return the out-degree of single node or of nbunch of nodes.
@@ -1350,31 +1330,25 @@ class XDiGraph(DiGraph):
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
-            nbunch=self.succ.iterkeys()
-        elif nbunch in self: # nbunch as a single node
-            n=nbunch
-            if self.multiedges:
-                deg=sum([len(edge) for edge in self.succ[n].itervalues()])
-            else: 
-                deg=len(self.succ[n])
-            if with_labels: return {n:deg} # useless but self-consistent?
-            return deg
-        else:                # nbunch a sequence of nodes
-            try:
-                nbunch=[n for n in nbunch if n in self]
+            bunch=self.nodes_iter()
+        elif nbunch in self: # if nbunch is a single node 
+            bunch=[nbunch]
+        else:                # if nbunch is a sequence of nodes
+            try: bunch=[n for n in nbunch if n in self]
             except TypeError:
                 raise NetworkXError, "nbunch is not a node or a sequence of nodes."
-        # do bunch of nodes
+        # nbunch ready
         d={}
         if self.multiedges:
-            for n in nbunch:
+            for n in bunch:
                 d[n] = sum([len(edge) for edge in self.succ[n].itervalues()])
         else:
-            for n in nbunch:
+            for n in bunch:
                 d[n]=len(self.succ[n])
 
-        if with_labels: return d
-        return d.values()
+        if with_labels: return d                  # return the dict
+        elif nbunch in self: return d.values()[0] # single node, so single value
+        return d.values()                         # return a list
 
     def degree(self, nbunch=None, with_labels=False):
         """Return the out-degree of single node or of nbunch of nodes.
@@ -1390,32 +1364,25 @@ class XDiGraph(DiGraph):
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
-            nbunch=self.succ.iterkeys()
-        elif nbunch in self:  # nbunch as a single node
-            n=nbunch
-            if self.multiedges:
-                deg=sum([len(e) for e in self.succ[n].itervalues()])  + \
-                    sum([len(e) for e in self.pred[n].itervalues()])
-            else:
-                deg=len(self.succ[n])+len(self.pred[n])
-            if with_labels: return {n:deg} 
-            return deg
-        else:                # nbunch a sequence of nodes
-            try:
-                nbunch=[n for n in nbunch if n in self]
+            bunch=self.nodes_iter()
+        elif nbunch in self: # if nbunch is a single node 
+            bunch=[nbunch]
+        else:                # if nbunch is a sequence of nodes
+            try: bunch=[n for n in nbunch if n in self]
             except TypeError:
                 raise NetworkXError, "nbunch is not a node or a sequence of nodes."
-        # do a bunch of nodes
+        # nbunch ready
         d={}
         if self.multiedges:
-            for n in nbunch:
+            for n in bunch:
                 d[n]=sum([len(e) for e in self.succ[n].itervalues()]) + \
                      sum([len(e) for e in self.pred[n].itervalues()])
         else:
-            for n in nbunch:
+            for n in bunch:
                 d[n]=len(self.succ[n])+len(self.pred[n])
-        if with_labels: return d
-        return d.values()
+        if with_labels: return d                  # return the dict
+        elif nbunch in self: return d.values()[0] # single node, so single value
+        return d.values()                         # return a list
 
     def nodes_with_selfloops(self):
         """Return list of all nodes having self-loops."""
