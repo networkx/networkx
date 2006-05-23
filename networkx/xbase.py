@@ -102,10 +102,13 @@ nbunch:
 
 e=(n1,n2):
    an edge (a python "2-tuple"), also written n1-n2 (if undirected)
-   and n1->n2 (if directed). In Xgraph G.add_edge(n1,n2) is equivalent
-   to add_edge(n1,n2,1). However, G.delete_edge(n1,n2) will delete all
-   edges between n1 and n2.
-
+   and n1->n2 (if directed). Note that 3-tuple edges of the form
+   (n1,n2,x) are used in the XGraph and XDiGraph classes. If G is an
+   XGraph, then G.add_edge(n1,n2) will add the edge (n1,n2,None), and
+   G.delete_node(n1,n2) will attempt to delete the edge (n1,n2,None).
+   In the case of multiple edges between nodes n1 and n2, one can use
+   G.delete_multiedge(n1,n2) to delete all edges between n1 and n2.
+   
 e=(n1,n2,x):
    an edge triple ("3-tuple") containing the two nodes connected and the 
    edge data/label/object stored associated with the edge. The object x,
@@ -139,7 +142,7 @@ Mutating Graph methods
    
     - G.add_node(n), G.add_nodes_from(nbunch)
     - G.delete_node(n), G.delete_nodes_from(nbunch)
-    - G.add_edge(n1,n2,x), G.add_edge(e), 
+    - G.add_edge(n1,n2), G.add_edge(n1,n2,x), G.add_edge(e), 
     - G.add_edges_from(ebunch)
     - G.delete_edge(n1,n2), G.delete_edge(n1,n2,x), G.delete_edge(e), 
     - G.delete_edges_from(ebunch)
@@ -518,7 +521,7 @@ class XGraph(Graph):
         If the edge does not exist, do nothing.
 
         To delete *all* edges between n1 and n2 use
-        >>>G.delete_multiedges(n1,n2)
+        >>> G.delete_multiedges(n1,n2)
         
         """
         if n2 is None:      # was called as delete_edge(e)
