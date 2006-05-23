@@ -44,15 +44,22 @@ nlist,vlist:
    a list of nodes 
 
 nbunch:
-   a "bunch" of nodes (vertices).  an nbunch is any iterable container
+   a "bunch" of nodes (vertices).  An nbunch is any iterable container
    of nodes that is not itself a node in the graph. (It can be an
    iterable or an iterator, e.g. a list, set, graph, file, etc..)
    
 e=(n1,n2):
-   an edge (a python "2-tuple"), also written u-v. In Xgraph
-   G.add_edge(n1,n2) is equivalent to add_edge(n1,n2,1). However,
-   G.delete_edge(n1,n2) will delete all edges between n1 and n2.
-
+   an edge (a python "2-tuple") in the Graph and DiGraph classes,
+   also written n1-n2 (if undirected), or n1->n2 (if directed).
+   Note that 3-tuple edges of the form (n1,n2,x) are used in the
+   XGraph and XDiGraph classes. See xbase.py for details on how
+   2-tuple edges, such as (n1,n2), are translated when 3-tuple edges
+   are expected. For example, if G is an XGraph, then G.add_edge(n1,n2)
+   will add the edge (n1,n2,None), and G.delete_node(n1,n2) will attempt
+   to delete the edge (n1,n2,None). In the case of multiple edges between
+   nodes n1 and n2, one can use G.delete_multiedge(n1,n2) to delete all
+   edges between n1 and n2.
+   
 elist:
    a list of edges (as tuples)
 
@@ -142,11 +149,11 @@ by using an iterator:
 or by adding any nbunch of nodes (see above definition of an nbunch):
 
 >>> H=path_graph(10)
->>> G.add_nodes_from( H )
+>>> G.add_nodes_from(H)
 
 (H can be another graph, or dict, or set, or even a file.)
 
->>> G.add_node( H )
+>>> G.add_node(H)
 
 (Any hashable object can represent a node, e.g. a Graph,
 a customized node object, etc.)
@@ -218,6 +225,7 @@ def edges_iter(G,nbunch=None):
     Return all edges if nbunch is unspecified or nbunch=None.
 
     For digraphs, edges=out_edges
+    
     """
     return G.edges_iter(nbunch)
 
