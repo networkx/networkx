@@ -59,7 +59,7 @@ e=(n1,n2):
    to delete the edge (n1,n2,None). In the case of multiple edges between
    nodes n1 and n2, one can use G.delete_multiedge(n1,n2) to delete all
    edges between n1 and n2.
-   
+
 elist:
    a list of edges (as tuples)
 
@@ -151,12 +151,11 @@ or by adding any nbunch of nodes (see above definition of an nbunch):
 >>> H=path_graph(10)
 >>> G.add_nodes_from(H)
 
-(H can be another graph, or dict, or set, or even a file.)
+H can be another graph, or dict, or set, or even a file.
+Any hashable object (except None) can represent a node, e.g. a Graph,
+a customized node object, etc.
 
 >>> G.add_node(H)
-
-(Any hashable object can represent a node, e.g. a Graph,
-a customized node object, etc.)
 
 G can also be grown by adding one edge at a time:
 
@@ -229,11 +228,11 @@ def edges_iter(G,nbunch=None):
     """
     return G.edges_iter(nbunch)
 
-def degree(G,nbunch=None):
+def degree(G,nbunch=None,with_labels=False):
     """Return degree of single node or of nbunch of nodes.
     If nbunch is ommitted, then return degrees of *all* nodes.
     """
-    return G.degree(nbunch)
+    return G.degree(nbunch,with_labels=with_labels)
 
 def neighbors(G,n):
     """Return a list of nodes connected to node n. """
@@ -401,10 +400,13 @@ class Graph(object):
         """
         Add a single node n to the graph.
 
-        The node n can be any hashable object
-        (it is used as a key in a dictionary).
-        On many platforms this includes mutables such as Graphs e.g.,
-        though one should be careful the hash doesn't change on mutables.
+        The node n can be any hashable object except None.
+
+        A hashable object is one that can be used as a key in a Python
+        dictionary. This includes strings, numbers, tuples of strings
+        and numbers, etc.  On many platforms this also includes
+        mutables such as Graphs e.g., though one should be careful the
+        hash doesn't change on mutables.
 
         Example:
 
@@ -427,8 +429,9 @@ class Graph(object):
 
         nbunch:
         A container of nodes that will be iterated through once
-        (thus it should be an iterator or be iterable)
-        Each element of the container should be hashable.
+        (thus it should be an iterator or be iterable).
+        Each element of the container should be a valid node type:
+        any hashable type except None.  See add_node for details.
 
         Examples:
         
@@ -463,7 +466,7 @@ class Graph(object):
         """Remove nodes in nbunch from graph.
 
         nbunch:
-        an iterable or iterator containing valid (hashable) node names.
+        an iterable or iterator containing valid node names.
 
         Attempting to delete a non-existent node will raise an exception.
         This could mean some nodes got deleted and other valid nodes did
@@ -512,11 +515,12 @@ class Graph(object):
     def add_edge(self, u, v=None):  
         """Add a single edge (u,v) to the graph.
 
-        Can be used in two basic forms:
-        G.add_edge(u,v) or G.add_edge( (u,v) ) are equivalent
-        forms of adding a single edge between nodes u and
-        v. Nodes are nor required to exist before adding an
-        edge; they will be added in silence.
+        >> G.add_edge(u,v)
+        and
+        >>> G.add_edge( (u,v) )
+        are equivalent forms of adding a single edge between nodes u and v.
+        The nodes u and v will be automatically added if not already in
+        the graph.  They must be a hashable (except None) Python object.
 
         The following examples all add the edge (1,2) to graph G.
 
@@ -564,11 +568,11 @@ class Graph(object):
     def delete_edge(self, u, v=None): 
         """Delete the single edge (u,v).
 
-        Can be used in two basic forms: Both
-        G.delete_edge(u,v)
+        Can be used in two basic forms: 
+        >>> G.delete_edge(u,v)
         and
-        G.delete_edge( (u,v) )
-        are equivalent forms of deleting a single edge between nodes u and v.
+        >> G.delete_edge( (u,v) )
+        are equivalent ways of deleting a single edge between nodes u and v.
 
         Return without complaining if the nodes or the edge do not exist.
 
@@ -1037,10 +1041,13 @@ class DiGraph(Graph):
     def add_node(self, n):
         """Add a single node to the digraph.
 
-        n can be any hashable object (it is used as a key in a
-        dictionary).  On many platforms this includes mutables
-        such as Graphs e.g., though one should be careful the hash
-        doesn't change during the lifetime of the graph.
+        The node n can be any hashable object except None.
+
+        A hashable object is one that can be used as a key in a Python
+        dictionary. This includes strings, numbers, tuples of strings
+        and numbers, etc.  On many platforms this also includes
+        mutables such as Graphs e.g., though one should be careful the
+        hash doesn't change on mutables.
 
         >>> from networkx import *
         >>> G=DiGraph()
@@ -1063,9 +1070,10 @@ class DiGraph(Graph):
         """Add multiple nodes to the digraph.
 
         nbunch:
-        A container of nodes that will be iterated through
-        once (thus it can be an iterator or an iterable).  A node can
-        be any hashable object (it is used as a key in a dictionary
+        A container of nodes that will be iterated through once
+        (thus it should be an iterator or be iterable).
+        Each element of the container should be a valid node type:
+        any hashable type except None.  See add_node for details.
 
         """
         for n in nbunch:
@@ -1092,8 +1100,7 @@ class DiGraph(Graph):
     def delete_nodes_from(self,nbunch):
         """Remove nodes in nbunch from the digraph.
         
-        nbunch: an iterable or iterator containing valid (hashable)
-        node names.
+        nbunch: an iterable or iterator containing valid node names.
 
         Attempting to delete a non-existent node will raise an exception.
         This could mean some nodes in nbunch were deleted and some valid
@@ -1117,11 +1124,12 @@ class DiGraph(Graph):
     def add_edge(self, u, v=None):  
         """Add a single directed edge (u,v) to the digraph.
 
-        Can be used in two basic forms:
-        G.add_edge(u,v) or G.add_edge( (u,v) ) are equivalent
-        forms of adding a single edge between nodes u and
-        v. Nodes are nor required to exist before adding an
-        edge; they will be added in silence.
+        >> G.add_edge(u,v)
+        and
+        >>> G.add_edge( (u,v) )
+        are equivalent forms of adding a single edge between nodes u and v.
+        The nodes u and v will be automatically added if not already in
+        the graph.  They must be a hashable (except None) Python object.
 
         For example, the following examples all add the edge (1,2) to
         the digraph G.
@@ -1182,11 +1190,11 @@ class DiGraph(Graph):
     def delete_edge(self, u, v=None): 
         """Delete the single directed edge (u,v) from the digraph.
 
-        Can be used in two basic forms. Both 
-        G.delete_edge(u,v), or
+        Can be used in two basic forms 
+        >>> G.delete_edge(u,v)
+        and
         G.delete_edge( (u,v) )
-
-        are equivalent forms of deleting a directed edge u->v.
+        are equivalent ways of deleting a directed edge u->v.
 
         If the edge does not exist return without complaining.
 

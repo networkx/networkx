@@ -108,7 +108,7 @@ e=(n1,n2):
    G.delete_node(n1,n2) will attempt to delete the edge (n1,n2,None).
    In the case of multiple edges between nodes n1 and n2, one can use
    G.delete_multiedge(n1,n2) to delete all edges between n1 and n2.
-   
+
 e=(n1,n2,x):
    an edge triple ("3-tuple") containing the two nodes connected and the 
    edge data/label/object stored associated with the edge. The object x,
@@ -184,8 +184,7 @@ Non-mutating Graph methods
 Examples
 ========
 
-Create an empty graph structure (a "null graph") with
-zero nodes and zero edges
+Create an empty graph structure (a "null graph") with no nodes and no edges
 
 >>> from networkx import *
 >>> G=XGraph(directed=True)  # default no-loops, no-multiedges
@@ -204,7 +203,7 @@ For graph coloring problems, one could use
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -222,7 +221,7 @@ class XGraph(Graph):
     edges.
 
     An XGraph edge is specified by a 3-tuple e=(n1,n2,x),
-    where n1 and n2 are (hashable) objects (nodes) and x is an
+    where n1 and n2 are nodes (hashable objects) and x is an
     arbitrary (and not necessarily unique) object associated with that
     edge.
 
@@ -280,8 +279,8 @@ class XGraph(Graph):
         Can be called as G.add_edge(n1,n2,x) or as
         G.add_edge(e), where e=(n1,n2,x).
 
-        n1,n2 are (hashable) node objects, and are added to
-        the Graph if not already present.
+        n1,n2 are node objects, and are added to the Graph if not already
+        present.  Nodes must be hashable Python objects (except None).
 
         x is an arbitrary (not necessarily hashable) object associated
         with this edge. It can be used to associate one or more:
@@ -955,11 +954,11 @@ class XDiGraph(DiGraph):
         or as G.add_edge(e), where e=(n1,n2,x).
 
         If called as G.add_edge(n1,n2) or G.add_edge(e), with e=(n1,n2),
-        then this is interpreted as adding the edge (n1,n2,1), so as to
+        then this is interpreted as adding the edge (n1,n2,None) to
         be compatible with the Graph and DiGraph classes.
 
-        n1,n2 are (hashable) node objects, and are added silently to
-        the Graph if not already present.
+        n1,n2 are node objects, and are added to the Graph if not already
+        present.  Nodes must be hashable Python objects (except None).
 
         x is an arbitrary (not necessarily hashable) object associated
         with this edge. It can be used to associate one or more,

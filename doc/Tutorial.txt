@@ -62,21 +62,25 @@ Obtaining and Installing NetworkX
 ==================================
 
 You need Python. We recommend the latest stable release available
-from http://www.python.org/. The latest version of NX can be found at
-http://networkx.lanl.gov/. 
+from http://www.python.org/. 
+
+The latest version of NX can be found at http://networkx.lanl.gov/ 
 NX will work on multiple platforms.
+
+The latest version of NetworkX can be found at http://networkx.lanl.gov/. 
+NetworkX will work on multiple platforms.
 
 On Linux platforms, download the current tarball numbered, say,
 networkx-x.y.z.tar.gz, to an appropriate directory,say /home/username/networks
 
 ::
 
-   gzip -d -c networkx-x.y.z.tar.gz|tar xvf-
-   cd networkxx-x.y.z
-   # do the following with your preferred python version
+   gzip -d -c networkx-x.xx.tar.gz|tar xvf-
+   cd networkxx-x-xx
+   # run the following with your preferred python version
    # if you are using cvs, remove your build directory first
    python setup.py build
-   # change to an id, that is allowed to do installation
+   # change to a user id that is allowed to do installation
    python setup.py install
 
 This will install NetworkX in your python site-packages directory.
@@ -106,8 +110,8 @@ Building and drawing a small graph
 
 We assume you can start an interactive python session. At the time
 of writing we require Python Release 2.3.4 or later. (Although not
-required, if you want to run the unit tests you will need Release
-2.4 or later.) We will assume that you are familiar with Python
+required, if you want to run the unit tests you will need Python 2.4
+or  later.) We will assume that you are familiar with Python
 terminology (see the official python website http://www.python.org for more
 information).
 
@@ -127,17 +131,16 @@ After starting python, import the networkx module with
 
 >>> import networkx as NX
 
-or
-(the usual mode for interactive experimentation that could clobber some names
-already in your namespace)
+or using the usual mode for interactive experimentation that could 
+clobber some names already in your namespace
 
 >>> from networkx import *
 
-(If this import fails, it means that python cannot find the installed
-module. Check your installation and your PYTHONPATH.)
+If this import fails, it means that python cannot find the installed
+module. Check your installation and your PYTHONPATH.
 
-To save much repetition, in all the examples below we will assume that NX has been imported
-with
+To save much repetition, in all the examples below we will assume that 
+NX has been imported with
 
 >>> from networkx import *
 
@@ -146,7 +149,7 @@ To create a new (simple) graph, call Graph() with zero or more arguments.
 >>> G=Graph()
 
 When called with zero arguments, one obtains the empty graph without
-any nodes or edges.  In NX every graph or network is a python
+any nodes or edges.  In NX every graph or network is a Python
 "object", and in python the functions associated with an "object" are
 known as methods.
 
@@ -220,8 +223,7 @@ nbunch, vbunch:
 
 e=(n1,n2):
    an edge (a python 2-tuple) in Graph and DiGraph, 
-   also written n1-n2 (if undirected) and 
-   n1->n2 (if directed).
+   also written n1-n2 (if undirected) and n1->n2 (if directed).
  
 e=(n1,n2,x): 
    an edge (a python 3-tuple) in XGraph and XDiGraph, containing the two
@@ -341,7 +343,7 @@ or by adding any nbunch of nodes (see above definition of an nbunch):
 
 (H can be a graph, iterator,  string,  set, or even a file.)
 
-Any hashable object can represent a node, e.g. a text string, an
+Any hashable object (except None) can represent a node, e.g. a text string, an
 image, an XML objext, another Graph, a customized node object, etc.
 
 >>> G.add_node(H)
@@ -452,17 +454,11 @@ theoretic functions such as:
 >>> connected_components(G)
 [[1, 2, 3], ['spam']]
 
->>> diameter(G)
-2
-
 >>> sorted(degree(G))
 [0, 1, 1, 2]
 
 >>> clustering(G)
 [0.0, 0.0, 0.0, 0.0]
-
->>> sorted(eccentricity(G))
-[0, 1, 2, 2]
 
 Some functions defined on the nodes, e.g. degree() and clustering(), can
 be given a single node or an nbunch of nodes as argument. If a single node is
@@ -635,10 +631,11 @@ Specialized Topics
 Graphs composed of general objects
 ----------------------------------
 
-For most applications, nodes will have string or integer labels
-(as in the example above). The power of Python ("everything is an
-object") allows us to construct graphs with ANY hashable object as
-a node. (Note though that this will not work with non-python
+For most applications, nodes will have string or integer labels.
+The power of Python ("everything is an object") allows us to construct 
+graphs with ANY hashable object as a node. 
+(The Python object None is not allowed as a node). 
+Note however that this will not work with non-Python
 datastructures, e.g. building a graph on a wrapped Python version
 of graphviz).
 
@@ -661,16 +658,16 @@ Handbook of Mathematical Functions. E.g.
 As another example, one can build (meta) graphs using other graphs as
 the nodes.
 
-We have found this power quite useful, but hasten to add that its abuse
+We have found this power quite useful, but its abuse
 can lead to unexpected surprises unless one is familiar with Python. If
-in doubt, the user should use convert_node_labels_to_integers to obtain
-a more traditional graph.
+in doubt, consider using convert_node_labels_to_integers to obtain
+a more traditional graph with integer labels.
 
 Imbedding general objects onto edges
 ------------------------------------
 
-An XGraph and XDiGraph object allows associating arbitrary objects
-with an edge. In these classes edges are 3-tuples (n1,n2,x),
+An XGraph and XDiGraph object allows arbitrary objects to be
+associated with an edge. In these classes edges are 3-tuples (n1,n2,x),
 representing an edge between nodes n1 and n2 that is decorated with
 the object x (not necessarily hashable). For example, n1 and n2 can be
 protein objects from the RCSB Protein Data Bank, and x can refer to an XML
@@ -686,7 +683,8 @@ Unit tests
 For most modules, say base.py, the command "python base.py" will run
 several unit tests in the networkx/tests subdirectory. This requires the use
 of Python 2.4 or later. To run all the unit tests, run "python setup.py test"
-in the base directory or  run "python test.py" in the networkx/tests subdirectory.
+in the base directory or  run "python test.py" in the networkx/tests 
+subdirectory.
 
 
 Not everything is an object
@@ -696,9 +694,10 @@ NX developed from the need to analyze dynamics on a diverse collection
 of large networks and we have stubbornly refused to objectify all the
 mathematical structures of graph theory down to the atomic
 level. Neither nodes nor edges are objects. A node can be any hashable
-object, and an edge is a 2-tuple (n1,n2) of nodes (in the case of
-Graph and DiGraph) or a triple (n1,n2,x) (in the case of XGraph and
-XDiGraph) consisting of two nodes and an object x decorating that edge.
+object (except None), and an edge is a 2-tuple (n1,n2) of nodes 
+(in the case of Graph and DiGraph) or a 3-tuple (n1,n2,x) (in the case 
+of XGraph and XDiGraph) consisting of two nodes and an object x
+decorating that edge.
 
 Graph dna
 ---------
