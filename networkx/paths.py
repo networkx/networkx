@@ -188,7 +188,7 @@ def bidirectional_pred_succ(G, source, target):
        succ is a dictionary of successors from w to the target.
     """
     # does BFS from both source and target and meets in the middle
-    if source == None or target == None:
+    if source is None or target is None:
         raise NetworkXException(\
             "Bidirectional shortest path called without source or target")
     if target == source:  return []
@@ -378,7 +378,7 @@ def dijkstra_bi(graph, source, target):
     overflows and roundoff erros can cause problems). 
 
     """
-    if source == None or target == None:
+    if source is None or target is None:
         raise NetworkXException("Bidirectional Dijkstra called with no source or target")
     if source == target:
         return (0, [source])
