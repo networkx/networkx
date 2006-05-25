@@ -34,31 +34,23 @@ def triangles(G,nbunch=None,with_labels=False):
     
         Note: Each triangle is counted three times: once at each vertex.
     """
-    G_has_edge=G.has_edge # cache function
+    bunch=G.prepare_nbunch(nbunch)
 
-    if nbunch is None: # include all nodes via iterator
-        nbunch=G.nodes_iter()
-    elif nbunch in G: # if nbunch is a node, return one value
-        v_nbrs=G.neighbors(nbunch)
-        triangles= [ u for u in v_nbrs for w in v_nbrs if G_has_edge(u,w) ]
-        ntriangles=len(triangles)
-        if with_labels:
-            return {nbunch:ntriangles/2} # useless but consistent?
-        else:
-            return ntriangles/2
-    # handle bunch of nodes
+    G_has_edge=G.has_edge # cache functions
+    G_neighbors=G.neighbors 
+
     tri={}
-    for v in nbunch:
-        v_nbrs=G.neighbors(v)
+    for v in bunch:
+        v_nbrs=G_neighbors(v)
         triangles= [ u for u in v_nbrs for w in v_nbrs if G_has_edge(u,w) ]
         ntriangles=len(triangles)
         tri[v]=ntriangles/2
              
     if with_labels:
         return tri
-    else:
-        if len(tri)==1: return tri.values()[0] # return single value
-        return tri.values()
+    elif nbunch in G: 
+        return tri.values()[0] # return single value
+    return tri.values()
 
 def average_clustering(G):
     """ Average clustering coefficient for a graph.
@@ -83,19 +75,21 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
     include the keyed node.  Ths is useful in moving from
     transitivity for clustering coefficient and back.
     """
-    if nbunch is None: # include all nodes via iterator
-        nbunch=G.nodes_iter()
-    # if nbunch is a node then convert into list
-    elif nbunch in G:
-        nbunch=[nbunch]
+    bunch=G.prepare_nbunch(nbunch)
+
+    G_has_edge=G.has_edge # cache functions
+    G_neighbors=G.neighbors 
 
     clusterc={}
-    for (v,deg) in G.degree_iter(nbunch, with_labels=True):
+    for v in bunch:
+        v_nbrs=G_neighbors(v)
+        deg=len(v_nbrs)
         if deg <= 1:    # isolated vertex or single pair gets cc 0
             clusterc[v]=0.0
         else:
-            ntriangles=triangles(G,v)
-            max_n=(deg*(deg-1))/2
+            triangles= [ u for u in v_nbrs for w in v_nbrs if G_has_edge(u,w) ]
+            ntriangles=len(triangles)   # actually twice number of triangles
+            max_n=deg*(deg-1)         # twice the number of possible triangles
             clusterc[v]=float(ntriangles)/float(max_n)
 
     if with_labels:
@@ -104,24 +98,25 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
             # scale by one over twice the number of triples
             scale=1./sum([ deg*(deg-1) for deg in degree.itervalues() ]) 
             weight={}
-            for v in clusterc:
+            for v in clusterc:  # only get those nodes in nbunch
                 deg=degree[v]
                 weight[v]=deg*(deg-1)*scale   # also twice, but cancels in scaling
             return clusterc,weight
         else:
             return clusterc
-    else:
-        if len(clusterc)==1: return clusterc.values()[0] # return single value
-        return clusterc.values()
+    elif nbunch in G: 
+        return clusterc.values()[0] # return single value
+    return clusterc.values()
 
 def transitivity(G):
     """ Transitivity (fraction of transitive triangles) for a graph"""
     G_has_edge=G.has_edge # cache function
+    G_neighbors=G.neighbors 
 
     triangles=0 # 6 times number of triangles
     contri=0  # 2 times number of connected triples
     for v in G.nodes_iter():
-        v_nbrs=G.neighbors(v)
+        v_nbrs=G_neighbors(v)
         deg=len(v_nbrs)
         contri += deg*(deg-1)
         triangles += len([ u for u in v_nbrs for w in v_nbrs if G_has_edge(u,w) ])

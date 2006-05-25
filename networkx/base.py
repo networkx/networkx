@@ -352,6 +352,37 @@ class Graph(object):
             print "%-15s: %s"%(key,self.dna[key])
 
 
+    def prepare_nbunch(self,nbunch=None):
+        """
+        Return a sequence (or iterator) of nodes contained
+        in nbunch which are also in the graph.
+
+        The input nbunch can be a single node, a sequence or
+        iterator of nodes or None (omitted).  If None, all
+        nodes in the graph are returned.
+
+        Note: This routine exhausts any iterator nbunch.
+        
+        Note: To test whether nbunch is a single node,
+        one can use "if nbunch in self:", even after processing
+        with this routine.
+        
+        Note: This routine raises a NetworkXError exception if
+        nbunch is not either a node, sequence, iterator, or None.
+        You can catch this exception if you want to change this
+        behavior.
+        """
+        if nbunch is None:   # include all nodes via iterator
+            bunch=self.nodes_iter()
+        elif nbunch in self: # if nbunch is a single node 
+            bunch=[nbunch]
+        else:                # if nbunch is a sequence of nodes
+            try:   # capture error for nonsequence/iterator entries.
+                bunch=[n for n in nbunch if n in self]
+                # bunch=(n for n in nbunch if n in self) # need python 2.4
+            except TypeError:
+               raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+        return bunch
 
     def info(self, n=None):
         """Print short info for graph G or node n."""
@@ -921,36 +952,30 @@ class Graph(object):
         general subgraph() function from the operators module.
 
         """
-        # if nbunch is a single node in the graph then convert into a list
-        # instead of iterating over it, this allows nodes to be iterable
-        if nbunch in self: nbunch=[nbunch]
+        bunch=self.prepare_nbunch(nbunch)
 
         if inplace: # demolish all nodes (and attached edges) not in nbunch
                     # override any setting of create_using
-            if hasattr(nbunch,"next"): # if we are an simple iterator
-                nbunch=dict.fromkeys(nbunch) # make a dict
-            self.delete_nodes_from([n for n in self if not n in nbunch])
+            bunch=dict.fromkeys(bunch) # make a dict
+            self.delete_nodes_from([n for n in self if n not in bunch])
             self.name="Subgraph of (%s)"%(self.name)
             return self
 
-        else:  # create new graph        
-            if create_using is not None:  # user specified graph
-                H=create_using
-                H.clear()
-            else:           # Graph object of the same type as current graph
-                H=self.__class__()
+        # create new graph        
+        if create_using is None:  # Graph object of the same type as current graph
+            H=self.__class__()
+        else:                     # user specified graph
+            H=create_using
+            H.clear()
+        H.name="Subgraph of (%s)"%(self.name)
+        H.add_nodes_from(bunch)
 
-            H.name="Subgraph of (%s)"%(self.name)
-            # H.dna=self.dna.copy()  # do not copy dna to a subgraph
-
-            H.add_nodes_from([n for n in nbunch if n in self])
-            # add edges
-            for n in H:
-                gn=self.adj[n]    # store in local variables for speed
-                hn=H.adj[n]
-                for u in H:
-                    if u in gn:
-                        hn[u]=None
+        # add edges
+        H_adj=H.adj       # cache
+        self_adj=self.adj # cache
+        dict_fromkeys=dict.fromkeys
+        for n in H:
+            H_adj[n]=dict_fromkeys([u for u in self_adj[n] if u in H_adj], None)
         return H
 
 
@@ -1542,37 +1567,33 @@ class DiGraph(Graph):
         general subgraph() function from the operators module.
 
         """
-        # if nbunch is a single node in the graph then convert into a list
-        # instead of iterating over it, this allows nodes to be iterable
-        if nbunch in self: nbunch=[nbunch]
+        bunch=self.prepare_nbunch(nbunch)
 
         if inplace: # demolish all nodes (and attached edges) not in nbunch
                     # override any setting of create_using
-            if hasattr(nbunch,"next"): # if we are an simple iterator
-                nbunch=dict.fromkeys(nbunch) # make a dict
-            self.delete_nodes_from([n for n in self if not n in nbunch])
+            bunch=dict.fromkeys(bunch) # make a dict
+            self.delete_nodes_from([n for n in self if n not in bunch])
             self.name="Subgraph of (%s)"%(self.name)
             return self
 
-        else:  # create new graph        
-            if create_using is not None:  # user specified graph
-                H=create_using
-                H.clear()
-            else:           # Graph object of the same type as current graph
-                H=self.__class__()
+        # create new graph        
+        if create_using is None:  # Graph object of the same type as current graph
+            H=self.__class__()
+        else:                     # user specified graph
+            H=create_using
+            H.clear()
+        H.name="Subgraph of (%s)"%(self.name)
+        H.add_nodes_from(bunch)
 
-            H.name="Subgraph of (%s)"%(self.name)
-            # H.dna=self.dna.copy()  # do not copy dna to a subgraph
-
-            H.add_nodes_from([n for n in nbunch if n in self])
-            # add edges
-            for n in H:
-                gsn=self.succ[n]    # store in local variables for speed
-                hsn=H.succ[n]
-                for u in H:
-                    if u in gsn:
-                        hsn[u]=None
-                        H.pred[u][n]=None
+        # add edges
+        H_succ=H.succ       # cache
+        H_pred=H.pred       
+        self_succ=self.succ 
+        self_pred=self.pred 
+        dict_fromkeys=dict.fromkeys
+        for n in H:
+            H_succ[n]=dict_fromkeys([u for u in self_succ[n] if u in H_succ], None)
+            H_pred[n]=dict_fromkeys([u for u in self_pred[n] if u in H_succ], None)
         return H
 
     def is_directed(self):

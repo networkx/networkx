@@ -31,31 +31,22 @@ Cluster
 
 >>> triangles(G)
 [0, 0, 0, 0, 0, 0, 0, 0]
-
 >>> triangles(G,1)
 0
-
 >>> triangles(G,[1,2])
 [0, 0]
-
 >>> triangles(G,1,with_labels=True)
 {1: 0}
-
 >>> triangles(G,[1,2],with_labels=True)
 {1: 0, 2: 0}
-
 >>> clustering(G)
 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
 >>> clustering(G,1)
 0.0
-
 >>> clustering(G,[1,2])
 [0.0, 0.0]
-
 >>> clustering(G,1,with_labels=True)
 {1: 0.0}
-
 >>> clustering(G,[1,2],with_labels=True)
 {1: 0.0, 2: 0.0}
 
@@ -73,12 +64,24 @@ Cluster
 >>> average_clustering(G)
 1.0
 
+>>> G.delete_edge(1,2)
+
+>>> triangles(G)
+[5, 3, 3, 5, 5]
+>>> triangles(G,1)
+3
+>>> clustering(G) == [5./6., 1.0, 1.0, 5./6., 5./6.]
+True
+>>> clustering(G,[1,4],with_labels=True)
+{1: 1.0, 4: 0.83333333333333337}
+
+
 Transitivity is weighted average of clustering
 ----------------------------------------------
 
 >>> t1=transitivity(G)
 >>> print t1
-1.0
+0.875
 >>> (cluster_d2,weights)=clustering(G,with_labels=True,weights=True)
 >>> trans=[]
 >>> for v in G.nodes():
