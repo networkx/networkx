@@ -1529,7 +1529,7 @@ class XDiGraph(DiGraph):
                 hsn=H.succ[n]
                 for u in H:
                     if u in gsn:
-                        edata=s_succ_n[u][:] # copy edge data
+                        edata=gsn[u][:] # copy edge data
                         hsn[u]=edata
                         H.pred[u][n]=edata
         else: # no multiedges

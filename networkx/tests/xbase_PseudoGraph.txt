@@ -627,7 +627,12 @@ False
 [('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('B', 'D', None)]
 
   # to_directed
-
+>>> Gdir=G.to_directed()
+>>> Gdirsub=Gdir.subgraph(['A','B','D'])
+>>> sorted(Gsub.nodes())
+['A', 'B', 'D']
+>>> sorted(Gsub.edges())
+[('A', 'A', None), ('A', 'B', None), ('A', 'B', None), ('B', 'D', None)]
 
 *Back in Konigsberg*
 
