@@ -4,7 +4,7 @@
 NetworkX Tutorial
 ~~~~~~~~~~~~~~~~~
 
-*last updated: 19 May 2006*
+*last updated: 24 May 2006*
 
 .. include:: Menu.txt
             
