@@ -795,48 +795,40 @@ class XGraph(Graph):
        general subgraph() function from the operators module.
 
         """
-        # if nbunch is a single node convert into a list
-        if nbunch in self:
-            nbunch=[nbunch]
+        bunch=self.prepare_nbunch(nbunch)
 
         # WARNING: setting inplace=True destroys the graph.
         if inplace: # demolish all nodes (and attached edges) not in nbunch
                     # override any setting of create_using
-            if hasattr(nbunch,"next"): # if we are an simple iterator
-                nbunch=dict.fromkeys(nbunch) # make a dict
-            self.delete_nodes_from([n for n in self if not n in nbunch])
+            bunch=dict.fromkeys(bunch) # make a dict
+            self.delete_nodes_from([n for n in self if n not in bunch])
             self.name="Subgraph of (%s)"%(self.name)
             return self
-        if create_using is None:  # Create new graph   
+
+        # Create new graph   
+        if create_using is None:  
             # return a Graph object of the same type as current graph
             # subgraph inherits multiedges and selfloops settings
             H=self.__class__(multiedges=self.multiedges,
                              selfloops=self.selfloops)
         else:
             # Recreate subgraph with create_using.
-            # Add nodes in subgraph, followed by iterating over
-            # each edge e in subgraph with H.add_edge(e)
             # Currently create_using must be an XGraph type object
             # or a multi-edge list will be copied as a single edge
             H=create_using
             H.clear()
         H.name="Subgraph of (%s)"%(self.name)
-        H.add_nodes_from([n for n in nbunch if n in self])
+        H.add_nodes_from(bunch)
 
+        # add edges
+        H_adj=H.adj       # store in local variables
+        self_adj=self.adj 
         if self.multiedges:
-            for n in H: 
-                gn=self.adj[n]    # store in local variables
-                hn=H.adj[n]
-                for u in H:
-                    if u in gn:
-                        hn[u]=gn[u][:]  # copy list
+            for n in H:   # create neighbor dict with copy of data list from self
+                H_adj[n]=dict([(u,d[:]) for u,d in self_adj[n].itemsiter() if u in H_adj])
         else: # no multiedges
-            for n in H: 
-                gn=self.adj[n]    # store in local variables
-                hn=H.adj[n]
-                for u in H:
-                    if u in gn:
-                        hn[u]=gn[u]
+            for n in H:   # create neighbor dict with edge data from self
+                H_adj[n]=dict([(u,d) for u,d in self_adj[n].itemsiter() if u in H_adj])
         return H
 
 
@@ -1009,7 +1001,6 @@ class XDiGraph(DiGraph):
         if n2 not in self.pred:
             self.pred[n2]={}
 
-        
         # self loop? quietly return if not allowed
         if not self.selfloops and n1==n2: 
             return
@@ -1494,18 +1485,16 @@ class XDiGraph(DiGraph):
        general subgraph() function from the operators module.
 
         """
-        # if nbunch is a single node convert into a list
-        if nbunch in self:
-            nbunch=[nbunch]
+        bunch=self.prepare_nbunch(nbunch)
 
         # WARNING: setting inplace=True destroys the graph.
         if inplace: # demolish all nodes (and attached edges) not in nbunch
                     # override any setting of create_using
-            if hasattr(nbunch,"next"): # if we are an simple iterator
-                nbunch=dict.fromkeys(nbunch) # make a dict
-            self.delete_nodes_from([n for n in self if not n in nbunch])
+            bunch=dict.fromkeys(bunch) # make a dict
+            self.delete_nodes_from([n for n in self if n not in bunch])
             self.name="Subgraph of (%s)"%(self.name)
             return self
+
         # create new graph        
         if create_using is None:
             # return a Graph object of the same type as current graph
@@ -1514,33 +1503,26 @@ class XDiGraph(DiGraph):
                              selfloops=self.selfloops)
         else:
             # Recreate subgraph with create_using.
-            # Add nodes in subgraph, followed by iterating over
-            # each edge e in subgraph with H.add_edge(e)
             # Currently create_using must be an XGraph type object
             # or a multi-edge list will be copied as a single edge
             H=create_using
             H.clear()
         H.name="Subgraph of (%s)"%(self.name)
-        H.add_nodes_from([n for n in nbunch if n in self])
+        H.add_nodes_from(bunch)
+        
         # add edges
+        H_succ=H.succ       # store in local variables
+        H_pred=H.pred       
+        self_succ=self.succ 
+        self_pred=self.pred 
         if self.multiedges:
-            for n in H: # 
-                gsn=self.succ[n]    # store in local variables
-                hsn=H.succ[n]
-                for u in H:
-                    if u in gsn:
-                        edata=gsn[u][:] # copy edge data
-                        hsn[u]=edata
-                        H.pred[u][n]=edata
+            for n in H:   # create dicts with copies of edge data list from self
+                H_succ[n]=dict([(u,d[:]) for u,d in self_succ[n].itemsiter() if u in H_succ])
+                H_pred[n]=dict([(u,d[:]) for u,d in self_pred[n].itemsiter() if u in H_pred])
         else: # no multiedges
-            for n in H: # 
-                gsn=self.succ[n]    # store in local variables
-                hsn=H.succ[n]
-                for u in H:
-                    if u in gsn:
-                        edata=gsn[u]
-                        hsn[u]=edata
-                        H.pred[u][n]=edata
+            for n in H:   # create dicts with edge data from self
+                H_succ[n]=dict([(u,d) for u,d in self_succ[n].itemsiter() if u in H_succ])
+                H_pred[n]=dict([(u,d) for u,d in self_pred[n].itemsiter() if u in H_pred])
         return H
 
     def copy(self):
