@@ -3,7 +3,7 @@ Spectrum
 
 >>> try:
 ...     import numpy.linalg
-...	eigenvalues=numpy.linalg.eigenvalues
+...	eigenvalues=numpy.linalg.eigvals
 ... except ImportError:
 ...     try:    
 ...         import LinearAlgebra

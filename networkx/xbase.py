@@ -825,10 +825,10 @@ class XGraph(Graph):
         self_adj=self.adj 
         if self.multiedges:
             for n in H:   # create neighbor dict with copy of data list from self
-                H_adj[n]=dict([(u,d[:]) for u,d in self_adj[n].itemsiter() if u in H_adj])
+                H_adj[n]=dict([(u,d[:]) for u,d in self_adj[n].iteritems() if u in H_adj])
         else: # no multiedges
             for n in H:   # create neighbor dict with edge data from self
-                H_adj[n]=dict([(u,d) for u,d in self_adj[n].itemsiter() if u in H_adj])
+                H_adj[n]=dict([(u,d) for u,d in self_adj[n].iteritems() if u in H_adj])
         return H
 
 
@@ -1517,12 +1517,12 @@ class XDiGraph(DiGraph):
         self_pred=self.pred 
         if self.multiedges:
             for n in H:   # create dicts with copies of edge data list from self
-                H_succ[n]=dict([(u,d[:]) for u,d in self_succ[n].itemsiter() if u in H_succ])
-                H_pred[n]=dict([(u,d[:]) for u,d in self_pred[n].itemsiter() if u in H_pred])
+                H_succ[n]=dict([(u,d[:]) for u,d in self_succ[n].iteritems() if u in H_succ])
+                H_pred[n]=dict([(u,d[:]) for u,d in self_pred[n].iteritems() if u in H_pred])
         else: # no multiedges
             for n in H:   # create dicts with edge data from self
-                H_succ[n]=dict([(u,d) for u,d in self_succ[n].itemsiter() if u in H_succ])
-                H_pred[n]=dict([(u,d) for u,d in self_pred[n].itemsiter() if u in H_pred])
+                H_succ[n]=dict([(u,d) for u,d in self_succ[n].iteritems() if u in H_succ])
+                H_pred[n]=dict([(u,d) for u,d in self_pred[n].iteritems() if u in H_pred])
         return H
 
     def copy(self):

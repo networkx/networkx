@@ -27,8 +27,8 @@ set up some test networks
 
 strings
 
->>> write_edgelist(G,fname);  
->>> H=read_edgelist(fname);
+>>> write_edgelist(G,fname); 
+>>> H=read_edgelist(fname)
 >>> G.delete_node('g') # isolated nodes are not written in edgelist
 >>> sorted(H.nodes())==sorted(G.nodes())
 True
@@ -37,7 +37,7 @@ True
 
 digraph
 
->>> write_edgelist(DG,fname);  
+>>> write_edgelist(DG,fname)  
 >>> H=read_edgelist(fname,create_using=DiGraph());
 >>> DG.delete_node('g') # isolated nodes are not written in edgelist
 >>> sorted(H.nodes())==sorted(DG.nodes())
@@ -50,21 +50,24 @@ integers
 
 >>> Gint=convert_node_labels_to_integers(G)
 >>> write_edgelist(Gint,fname)  
->>> H=read_edgelist(fname,nodetype=int);
+>>> H=read_edgelist(fname,nodetype=int)
 >>> sorted(H.nodes())==sorted(Gint.nodes())
 True
 >>> sorted(H.edges())==sorted(Gint.edges())
 True
+>>> os.close(fd)
 >>> os.unlink(fname)
 
 xgraph
 
+>>> (fd,fname)=tempfile.mkstemp()
 >>> write_edgelist(XG,fname)  
 >>> H=read_edgelist(fname,nodetype=int,edgetype=int,create_using=XGraph(selfloops=True,multiedges=True));
 >>> sorted(H.nodes())==sorted(XG.nodes())
 True
 >>> sorted(H.edges())==sorted(XG.edges())
 True
+>>> os.close(fd)
 >>> os.unlink(fname)
 
 ASCII Adjacency List
@@ -108,7 +111,7 @@ integers
 True
 >>> sorted(H.edges())==sorted(Gint.edges())
 True
-
+>>> os.close(fd)
 >>> os.unlink(fname)
 
 
@@ -164,6 +167,7 @@ xgraph
 True
 >>> sorted(H.edges())==sorted(XG.edges())
 True
+>>> os.close(fd)
 >>> os.unlink(fname)
 
 
@@ -177,6 +181,7 @@ Pickled
 True
 >>> sorted(G.edges())==sorted(Gin.edges())
 True
+>>> os.close(fd)
 >>> os.unlink(fname)
 
 
@@ -186,12 +191,15 @@ Filehandling/Compression/Uncompression
 >>> (fd,fname)=tempfile.mkstemp()
 >>> fh=open(fname,'w')
 >>> write_adjlist(G,fh)
+>>> fh.close()
 >>> fh=open(fname,'r')
 >>> H=read_adjlist(fh)
 >>> sorted(G.nodes())==sorted(Gin.nodes())
 True
 >>> sorted(G.edges())==sorted(Gin.edges())
 True
+>>> fh.close()
+>>> os.close(fd)
 >>> os.unlink(fname)
 
 gz
@@ -203,6 +211,7 @@ gz
 True
 >>> sorted(G.edges())==sorted(Gin.edges())
 True
+>>> os.close(fd)
 >>> os.unlink(fname)
 
 bz2 (not in standard distribution? so not included here) 

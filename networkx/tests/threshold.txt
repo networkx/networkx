@@ -10,7 +10,7 @@ Threshold Graphs
 
 >>> try:
 ...     import numpy as N
-...	eigenval=N.linalg.eigenvalues
+...	eigenval=N.linalg.eigvals
 ... except ImportError:
 ...     try:    
 ...         import Numeric as N

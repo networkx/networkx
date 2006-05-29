@@ -396,7 +396,7 @@ def dijkstra_bi(graph, source, target):
     else:
         neighs = [graph.neighbors_iter, graph.neighbors_iter]
     #variables to hold shortest discovered path
-    finaldist = 1e30000
+    #finaldist = 1e30000
     finalpath = []
     # if unweighted graph, set the weights to 1 on edges by
     # introducing a get_edge method
@@ -436,7 +436,7 @@ def dijkstra_bi(graph, source, target):
                     #see if this path is better than than the already
                     #discovered shortest path
                     totaldist = seen[0][w] + seen[1][w] 
-                    if finaldist > totaldist:
+                    if finalpath == [] or finaldist > totaldist:
                         finaldist = totaldist
                         revpath = paths[1][w][:]
                         revpath.reverse()
@@ -473,15 +473,14 @@ def floyd_warshall(graph):
             if i==k : continue
             for j in graph:
                 if j == i or j == k: continue
-                dij = 1e3000
-                dik = 1e3000
-                dkj = 1e3000
-                if j in dist[i]: dij = dist[i][j]
-                if k in dist[i]: dik = dist[i][k]
-                if j in dist[k]: dkj = dist[k][j]
-                if dij > dik + dkj:
-                    dist[i][j] = dik + dkj
-                    path[i][j] = path[i][k] + path[k][j][1:]
+                if j in dist[k] and k in dist[i]: 
+                    if j in dist[i]:
+                        if dist[i][j] > dist[i][k] + dist[k][j]:
+                            dist[i][j] = dist[i][k] + dist[k][j]
+                            path[i][j] = path[i][k] + path[k][j][1:]
+                    else:
+                        dist[i][j] = dist[i][k] + dist[k][j]
+                        path[i][j] = path[i][k] + path[k][j][1:]
     return dist, path
 
 
