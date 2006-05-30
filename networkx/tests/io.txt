@@ -29,6 +29,9 @@ strings
 
 >>> write_edgelist(G,fname); 
 >>> H=read_edgelist(fname)
+>>> H2=read_edgelist(fname)
+>>> H is not H2  # they should be different graphs
+True
 >>> G.delete_node('g') # isolated nodes are not written in edgelist
 >>> sorted(H.nodes())==sorted(G.nodes())
 True
@@ -39,6 +42,9 @@ digraph
 
 >>> write_edgelist(DG,fname)  
 >>> H=read_edgelist(fname,create_using=DiGraph());
+>>> H2=read_edgelist(fname,create_using=DiGraph());
+>>> H is not H2  # they should be different graphs
+True
 >>> DG.delete_node('g') # isolated nodes are not written in edgelist
 >>> sorted(H.nodes())==sorted(DG.nodes())
 True
@@ -51,6 +57,9 @@ integers
 >>> Gint=convert_node_labels_to_integers(G)
 >>> write_edgelist(Gint,fname)  
 >>> H=read_edgelist(fname,nodetype=int)
+>>> H2=read_edgelist(fname,nodetype=int)
+>>> H is not H2  # they should be different graphs
+True
 >>> sorted(H.nodes())==sorted(Gint.nodes())
 True
 >>> sorted(H.edges())==sorted(Gint.edges())
@@ -63,6 +72,9 @@ xgraph
 >>> (fd,fname)=tempfile.mkstemp()
 >>> write_edgelist(XG,fname)  
 >>> H=read_edgelist(fname,nodetype=int,edgetype=int,create_using=XGraph(selfloops=True,multiedges=True));
+>>> H2=read_edgelist(fname,nodetype=int,edgetype=int,create_using=XGraph(selfloops=True,multiedges=True));
+>>> H is not H2  # they should be different graphs
+True
 >>> sorted(H.nodes())==sorted(XG.nodes())
 True
 >>> sorted(H.edges())==sorted(XG.edges())
@@ -89,6 +101,9 @@ strings
 
 >>> write_adjlist(G,fname);  
 >>> H=read_adjlist(fname);
+>>> H2=read_adjlist(fname)
+>>> H is not H2  # they should be different graphs
+True
 >>> sorted(H.nodes())==sorted(G.nodes())
 True
 >>> sorted(H.edges())==sorted(G.edges())
@@ -98,6 +113,9 @@ digraph
 
 >>> write_adjlist(DG,fname);  
 >>> H=read_adjlist(fname,create_using=DiGraph());
+>>> H2=read_adjlist(fname,create_using=DiGraph());
+>>> H is not H2  # they should be different graphs
+True
 >>> sorted(H.nodes())==sorted(DG.nodes())
 True
 >>> sorted(H.edges())==sorted(DG.edges())
@@ -107,6 +125,9 @@ integers
 
 >>> write_adjlist(Gint,fname);  
 >>> H=read_adjlist(fname,nodetype=int);
+>>> H2=read_adjlist(fname,nodetype=int);
+>>> H is not H2  # they should be different graphs
+True
 >>> sorted(H.nodes())==sorted(Gint.nodes())
 True
 >>> sorted(H.edges())==sorted(Gint.edges())
@@ -136,6 +157,9 @@ strings
 
 >>> write_multiline_adjlist(G,fname);  
 >>> H=read_multiline_adjlist(fname);
+>>> H2=read_multiline_adjlist(fname)
+>>> H is not H2  # they should be different graphs
+True
 >>> sorted(H.nodes())==sorted(G.nodes())
 True
 >>> sorted(H.edges())==sorted(G.edges())
@@ -145,6 +169,9 @@ digraph
 
 >>> write_multiline_adjlist(DG,fname);  
 >>> H=read_multiline_adjlist(fname,create_using=DiGraph());
+>>> H2=read_multiline_adjlist(fname,create_using=DiGraph());
+>>> H is not H2  # they should be different graphs
+True
 >>> sorted(H.nodes())==sorted(DG.nodes())
 True
 >>> sorted(H.edges())==sorted(DG.edges())
@@ -154,6 +181,9 @@ integers
 
 >>> write_multiline_adjlist(Gint,fname);  
 >>> H=read_multiline_adjlist(fname,nodetype=int);
+>>> H2=read_multiline_adjlist(fname,nodetype=int);
+>>> H is not H2  # they should be different graphs
+True
 >>> sorted(H.nodes())==sorted(Gint.nodes())
 True
 >>> sorted(H.edges())==sorted(Gint.edges())
@@ -163,6 +193,9 @@ xgraph
 
 >>> write_multiline_adjlist(XG,fname)  
 >>> H=read_multiline_adjlist(fname,nodetype=int,edgetype=int,create_using=XGraph(selfloops=True,multiedges=True));
+>>> H2=read_multiline_adjlist(fname,nodetype=int,edgetype=int,create_using=XGraph(selfloops=True,multiedges=True));
+>>> H is not H2  # they should be different graphs
+True
 >>> sorted(H.nodes())==sorted(XG.nodes())
 True
 >>> sorted(H.edges())==sorted(XG.edges())

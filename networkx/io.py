@@ -94,7 +94,7 @@ def write_multiline_adjlist(G,path):
         if not directed: 
             seen[s]=1
             
-def read_multiline_adjlist(path, create_using=networkx.Graph(), nodetype=str, edgetype=str):
+def read_multiline_adjlist(path, create_using=None, nodetype=str, edgetype=str):
     """Read graph in multi-line adjacency list format from path.
 
     path can be a filehandle or a string with the name of the file.
@@ -140,12 +140,14 @@ def read_multiline_adjlist(path, create_using=networkx.Graph(), nodetype=str, ed
      e edge-de-data
 
     """
-    try:
-        G=create_using
-        G.clear()
-    except:
-        raise TypeError("Input graph is not a networkx graph type")
-
+    if create_using is None:
+        G=networkx.Graph()
+    else:
+        try:
+            G=create_using
+            G.clear()
+        except:
+            raise TypeError("Input graph is not a networkx graph type")
 
     # is this a XGraph or XDiGraph?
     if hasattr(G,'allow_multiedges')==True:
@@ -239,7 +241,7 @@ def write_adjlist(G,path):
         fh.write("\n")            
 
 
-def read_adjlist(path,create_using=networkx.Graph(),nodetype=str):
+def read_adjlist(path,create_using=None,nodetype=str):
     """Read graph in single line adjacency list format from path.
 
     path can be a filehandle or a string with the name of the file.
@@ -276,11 +278,14 @@ def read_adjlist(path,create_using=networkx.Graph(),nodetype=str):
      d e
 
     """
-    try:
-        G=create_using
-        G.clear()
-    except:
-        raise TypeError("Input graph is not a networkx graph type")
+    if create_using is None:
+        G=networkx.Graph()
+    else:
+        try:
+            G=create_using
+            G.clear()
+        except:
+            raise TypeError("Input graph is not a networkx graph type")
 
     fh=_get_fh(path)        
 
@@ -327,7 +332,7 @@ def write_edgelist(G,path):
             fh.write("%s "%n) 
         fh.write("\n")                     
 
-def read_edgelist(path, create_using=networkx.Graph(), nodetype=str, edgetype=str):
+def read_edgelist(path, create_using=None, nodetype=str, edgetype=str):
     """Read graph in edgelist format from path
 
     path can be a filehandle or a string with the name of the file.
@@ -372,11 +377,14 @@ def read_edgelist(path, create_using=networkx.Graph(), nodetype=str, edgetype=st
      d e apple
 
     """
-    try:
-        G=create_using
-        G.clear()
-    except:
-        raise TypeError("Input graph is not a networkx graph type")
+    if create_using is None:
+        G=networkx.Graph()
+    else:
+        try:
+            G=create_using
+            G.clear()
+        except:
+            raise TypeError("Input graph is not a networkx graph type")
 
     # is this a XGraph or XDiGraph?
     if hasattr(G,'allow_multiedges')==True:
