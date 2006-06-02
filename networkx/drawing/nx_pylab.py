@@ -23,7 +23,7 @@ References:
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __date__ = "$Date: 2005-06-15 11:29:39 -0600 (Wed, 15 Jun 2005) $"
 __credits__ = """"""
-__revision__ = "$Revision: 1035 $"
+__revision__ = "$Id"
 #    Copyright (C) 2004,2005 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -37,8 +37,7 @@ try:
     import matplotlib.cbook as cb
     from matplotlib.colors import colorConverter
     from matplotlib.collections import LineCollection
-    from matplotlib.numerix import sin, cos, pi, sqrt, \
-         arctan2, arccos, arcsin
+    from matplotlib.numerix import sin, cos, pi, sqrt, arctan2, asarray
     from matplotlib.numerix.mlab import amin, amax
     from matplotlib.pylab import gca, hold, draw_if_interactive 
 except ImportError:
@@ -196,8 +195,8 @@ def draw_networkx_nodes(G, pos,
     if nodelist is None:
         nodelist=G.nodes()
 
-    x=[pos[v][0] for v in nodelist]
-    y=[pos[v][1] for v in nodelist]
+    x=asarray([pos[v][0] for v in nodelist])
+    y=asarray([pos[v][1] for v in nodelist])
 
     node_collection=ax.scatter(x, y,
                                s=node_size,
@@ -249,7 +248,7 @@ def draw_networkx_edges(G, pos,
         v=e[1]
         head.append(pos[u])
         tail.append(pos[v])
-    edge_pos=zip(head,tail)
+    edge_pos=asarray(zip(head,tail))
 
     if not cb.iterable(width):
         lw = (width,)
@@ -282,24 +281,25 @@ def draw_networkx_edges(G, pos,
         # waiting for someone else to implement arrows that will work 
         arrow_colors = ( colorConverter.to_rgba('k', alpha), )
         a_pos=[]
-        p=0.25 # make head segment 25 percent of edge length
+        p=1.0-0.25 # make head segment 25 percent of edge length
         for src,dst in edge_pos:
             x1,y1=src
             x2,y2=dst
-            d=sqrt((x2-x1)**2+(y2-y1)**2)
-            if d==0:
+            dx=x2-x1 # x offset
+            dy=y2-y1 # y offset
+            d=sqrt(float(dx**2+dy**2)) # length of edge
+            if d==0: # source and target at same position
                 continue
-            if x2==x1:
+            if dx==0: # vertical edge
                 xa=x2
-                ya=(y2-y1)*(1-p)+y1
-            if y2==y1:
+                ya=dy*p+y1
+            if dy==0: # horizontal edge
                 ya=y2
-                xa=(x2-x1)*(1-p)+x1
+                xa=dx*p+x1
             else:
-                theta=arccos((x2-x1)/d)
-                xa=cos(theta)*d*(1-p)+x1
-                theta=arcsin((y2-y1)/d)
-                ya=sin(theta)*d*(1-p)+y1
+                theta=arctan2(dy,dx)
+                xa=p*d*cos(theta)+x1
+                ya=p*d*sin(theta)+y1
                 
             a_pos.append(((xa,ya),(x2,y2)))
 
