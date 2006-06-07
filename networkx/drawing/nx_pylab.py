@@ -116,11 +116,11 @@ def draw(G, pos=None, with_labels=True, **kwds):
     if h is not None:
         hold(h)
     try:
-        draw_networkx(G, pos, ax=ax, with_labels=with_labels, **kwds)
-        draw_if_interactive()
         # turn of axes ticks and labels
         ax.set_xticks([])
         ax.set_yticks([])
+        draw_networkx(G, pos, ax=ax, with_labels=with_labels, **kwds)
+        draw_if_interactive()
 
     except:
         hold(b)
@@ -305,7 +305,7 @@ def draw_networkx_edges(G, pos,
 
         arrow_collection = LineCollection(a_pos,
                                 colors       = arrow_colors,
-                                linewidths   = (4,),
+                                linewidths   = lw*4,
                                 antialiaseds = (1,),
                                 transOffset = ax.transData,             
                                 )
@@ -362,9 +362,10 @@ def draw_networkx_labels(G, pos,
     if labels is None:
         labels=dict(zip(G.nodes(),G.nodes()))
 
+    text_items={}  # there is no text collection so we'll fake one        
     for n in labels:
         (x,y)=pos[n]
-        ax.text(x, y,
+        t=ax.text(x, y,
                 str(labels[n]),
                 size=font_size,
                 color=font_color,
@@ -374,7 +375,9 @@ def draw_networkx_labels(G, pos,
                 verticalalignment='center',
                 transform = ax.transData,
                 )
+        text_items[n]=t
 
+    return text_items
 
 def draw_circular(G, **kwargs):
     """Draw the graph G with a circular layout"""
