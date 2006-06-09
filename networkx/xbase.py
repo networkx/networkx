@@ -453,8 +453,7 @@ class XGraph(Graph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                 raise StopIteration # silently fail for non-sequence nonnode
-             #raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
         seen={}  # helper dict used to avoid duplicate edges
         if self.multiedges:
@@ -1181,8 +1180,7 @@ class XDiGraph(DiGraph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                 raise StopIteration # silently fail for non-sequence nonnode
-             #raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
         if self.multiedges:
             for n1 in bunch:
@@ -1212,8 +1210,7 @@ class XDiGraph(DiGraph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                 raise StopIteration # silently fail for non-sequence nonnode
-             #raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
         if self.multiedges:
             for n1 in bunch:

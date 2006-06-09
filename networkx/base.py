@@ -673,8 +673,7 @@ class Graph(object):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                 raise StopIteration # silently fail for non-sequence nonnode
-             #raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
         seen={}     # helper dict to keep track of multiply stored edges
         for n1 in bunch:
@@ -1262,8 +1261,7 @@ class DiGraph(Graph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                 raise StopIteration # silently fail for non-sequence nonnode
-             #raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
         for n in bunch:
             for u in self.succ[n]:
@@ -1287,8 +1285,7 @@ class DiGraph(Graph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                 raise StopIteration # silently fail for non-sequence nonnode
-             #raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
         for n in bunch:
             for u in self.pred[n]:
