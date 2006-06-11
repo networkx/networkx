@@ -622,7 +622,12 @@ def connected_components(G):
     Return a list of lists of nodes in each connected component of G.
 
     The list is ordered from largest connected component to smallest.
+    For undirected graphs only. 
     """
+    if G.is_directed():
+        raise networkx.NetworkXError,\
+              """Not allowed for directed graph G.
+              Use UG=G.to_undirected() to create an undirected graph."""
     seen={}
     components=[]
     for v in G:      
@@ -634,17 +639,26 @@ def connected_components(G):
     return components            
 
 def number_connected_components(G):
-    """Return the number of connected components in G."""
+    """Return the number of connected components in G.
+    For undirected graphs only. 
+    """
     return len(connected_components(G))
 
 def is_connected(G):
-    """Return True if G is connected."""
+    """Return True if G is connected.
+    For undirected graphs only. 
+    """
+    if G.is_directed():
+        raise networkx.NetworkXError,\
+              """Not allowed for directed graph G.
+              Use UG=G.to_undirected() to create an undirected graph."""
     return len(shortest_path(G, G.nodes_iter().next()))==len(G)
 
 def connected_component_subgraphs(G):
     """
     Return a list of graphs of each connected component of G.
     The list is ordered from largest connected component to smallest.
+    For undirected graphs only. 
 
     For example, to only get the largest connected component:
 
@@ -663,7 +677,14 @@ def connected_component_subgraphs(G):
 def node_connected_component(G,n):
     """
     Return the connected component to which node n belongs as a list of nodes.
+
+    For undirected graphs only. 
+
     """
+    if G.is_directed():
+        raise networkx.NetworkXError,\
+              """Not allowed for directed graph G.
+              Use UG=G.to_undirected() to create an undirected graph."""
     return shortest_path_length(G,n).keys()
 
 def _test_suite():
