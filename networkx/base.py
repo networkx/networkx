@@ -932,14 +932,14 @@ class Graph(object):
         """
         Return the subgraph induced on nodes in nbunch.
 
-        nbunch: either a singleton node, a string (which is treated
-        as a singleton node), or any iterable (non-string) container
-        of nodes for which len(nbunch) is defined. For example, a list,
-        dict, set, Graph, numeric array, or user-defined iterable object. 
+        nbunch: can be a singleton node, a string (which is treated
+        as a singleton node), or any iterable container of
+        of nodes. (It can be an iterable or an iterator, e.g. a list,
+        set, graph, file, numeric array, etc.)
 
-        Setting inplace=True will return the induced subgraph in original graph
-        by deleting nodes not in nbunch. This overrides create_using.
-        Warning: this can destroy the graph.
+        Setting inplace=True will return the induced subgraph in the
+        original graph by deleting nodes not in nbunch. This overrides
+        create_using.  Warning: this can destroy the graph.
 
         Unless otherwise specified, return a new graph of the same
         type as self.  Use (optional) create_using=R to return the
@@ -1356,11 +1356,12 @@ class DiGraph(Graph):
         for all n in nbunch. If nbunch is ommitted, then iterate
         over *all* nodes.
  
-        nbunch: a singleton node, a string (which is treated
-                as a singleton node), or any iterable (non-string)
-                container of nodes for which len(nbunch) is
-                defined. For example, a list, dict, set, Graph,
-                numeric array, or user-defined iterable object.
+        nbunch: can be a singleton node, a string (which is treated
+        as a singleton node), or any iterable container of
+        of nodes. (It can be an iterable or an iterator, e.g. a list,
+        set, graph, file, etc.)  If None, all nodes in the graph will
+        be used.
+
  
         If with_labels=True, iterator will return an (n,degree(n)) tuple of
         node and degree.
@@ -1545,10 +1546,10 @@ class DiGraph(Graph):
         """
         Return the subgraph induced on nodes in nbunch.
 
-        nbunch: either a singleton node, a string (which is treated
-        as a singleton node), or any iterable (non-string) container
-        of nodes for which len(nbunch) is defined. For example, a list,
-        dict, set, Graph, numeric array, or user-defined iterable object. 
+        nbunch: can be a singleton node, a string (which is treated
+        as a singleton node), or any iterable container of
+        of nodes. (It can be an iterable or an iterator, e.g. a list,
+        set, graph, file, etc.)
 
         Setting inplace=True will return the induced subgraph in original graph
         by deleting nodes not in nbunch. This overrides create_using.

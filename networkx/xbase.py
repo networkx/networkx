@@ -774,8 +774,9 @@ class XGraph(Graph):
 
        nbunch: either a singleton node, a string (which is treated
        as a singleton node), or any non-string iterable or iterator.
-       For example, a list, dict, set, Graph, numeric array, or 
-       user-defined iterable object. 
+       (It can be an iterable or an iterator, e.g. a list,
+       set, graph, file, numeric array, etc.)
+        
 
        Setting inplace=True will return induced subgraph in original
        graph by deleting nodes not in nbunch. It overrides any setting
@@ -1460,10 +1461,10 @@ class XDiGraph(DiGraph):
     def subgraph(self, nbunch, inplace=False, create_using=None):
         """Return the subgraph induced on nodes in nbunch.
 
-       nbunch: either a singleton node, a string (which is treated
-       as a singleton node), or any non-string iterable or iterator.
-       For example, a list, dict, set, Graph, numeric array, or 
-       user-defined iterable object. 
+        nbunch: can be a singleton node, a string (which is treated
+        as a singleton node), or any iterable container of
+        of nodes. (It can be an iterable or an iterator, e.g. a list,
+        set, graph, file, numeric array, etc.)
 
        Setting inplace=True will return induced subgraph in original
        graph by deleting nodes not in nbunch. It overrides any setting
