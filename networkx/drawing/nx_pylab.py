@@ -363,10 +363,12 @@ def draw_networkx_labels(G, pos,
         labels=dict(zip(G.nodes(),G.nodes()))
 
     text_items={}  # there is no text collection so we'll fake one        
-    for n in labels:
+    for (n,label) in labels.items():
         (x,y)=pos[n]
+        if not cb.is_string_like(label):
+            label=str(label) # this will cause "1" and 1 to be labeled the same
         t=ax.text(x, y,
-                str(labels[n]),
+                label,
                 size=font_size,
                 color=font_color,
                 family=font_family,
