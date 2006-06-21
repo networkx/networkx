@@ -1,43 +1,48 @@
 """
-Read and write NetworkX graphs.
+Read and write networkx graphs.
 
-Note that NetworkX graphs can contain any hashable Python object as
-node (not just integers and strings).  So writing a NetworkX graph
-as a text file may not always be what you want: see write_gpickle
-and gread_gpickle for that case.
-
-This module provides the following :
+This module provides the following simple functions to read and write
+networkx graphs:
 
 Edgelist format:
-Useful for connected graphs with or without edge data.
 
    write_edgelist(G,path)
-   G=read_edgelist(path)
+
+   read_edgelist(path, create_using=networkx.Graph(), nodetype=str,
+                 edgetype=str)
+
+Useful for connected graphs with or without edge data.
 
 Adjacency list with single line per node:
-Useful for connected or unconnected graphs without edge data.
 
     write_adjlist(G,path)
-    G=read_adjlist(path)
+
+    read_adjlist(path, create_using=networkx.Graph(), nodetype=str)
+
+Useful for connected or unconnected graphs without edge data.
 
 Adjacency list with multiple lines per node:
-Useful for connected or unconnected graphs with or without edge data.
 
     write_multiline_adjlist(G,path)
-    read_multiline_adjlist(path)
+
+    read_multiline_adjlist(path, create_using=networkx.Graph(),
+                           nodetype=str, edgetype=str)
+
+Useful for connected or unconnected graphs with or without edge data.
 
 Python pickled format:
-Useful for graphs with non text representable data.
 
     write_gpickle(G,path)
     read_gpickle(path)
 
+Useful for graphs with non ASCII representable data.
+
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-__date__ = """"""
+__date__ = "$Date: 2005-07-06 07:58:26 -0600 (Wed, 06 Jul 2005) $"
 __credits__ = """"""
-__revision__ = "$$"
-#    Copyright (C) 2004-2006 by 
+__revision__ = "$Revision: 1063 $"
+#    Copyright (C) 2004,2005 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -45,8 +50,6 @@ __revision__ = "$$"
 #    http://www.gnu.org/copyleft/lesser.html
 
 import cPickle 
-import codecs
-import locale
 import string
 import sys
 import time
@@ -56,30 +59,12 @@ import networkx
 
 def write_multiline_adjlist(G,path):
     """
-    Write the graph G in multiline adjacency list format to the file
-    or file handle path.
-
-    See read_multiline_adjlist for file format details.
-
-    >>> write_multiline_adjlist(G,"file.adjlist")
+    Write graph in multiline adjacency list format to path.
 
     path can be a filehandle or a string with the name of the file.
-
-    >>> fh=open("file.adjlist")
-    >>> write_multiline_adjlist(G,fh)
-
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> write_multiline_adjlist(G,"file.adjlist.gz")
-
-    The file will use the default text encoding on your system.
-    It is possible to write files in other encodings by opening
-    the file with the codecs module.  See doc/examples/unicode.py
-    for hints.
-
-    >>> import codecs
-    >>> fh=codecs.open("file.adjlist",encoding='utf=8') # use utf-8 encoding
-    >>> write_multiline_adjlist(G,fh)
+    Se read_multiline_adjlist for file format details.
 
     """
     fh=_get_fh(path,mode='w')        
@@ -95,11 +80,7 @@ def write_multiline_adjlist(G,path):
     for s in G.nodes():
         edges=[ edge for edge in G.edges_iter(s) if edge[1] not in seen ]
         deg=len(edges)
-        if is_string_like(s):
-            fh.write(s+"\t")
-        else:
-            fh.write(str(s)+"\t")                         
-        fh.write("%i\n"%(deg))
+        fh.write("%s %i\n"%(s,deg))
         for edge in edges:
             t=edge[1]
             if len(edge)==2: # Graph or DiGraph
@@ -107,59 +88,38 @@ def write_multiline_adjlist(G,path):
             else:            # XGraph or XDiGraph
                 d=edge[2]   # Note: could still be None
             if d is None:    
-                if is_string_like(t):
-                    fh.write(t+"\n")
-                else:
-                    fh.write(str(t)+"\n")                         
+                fh.write("%s\n"%t)
             else:   
-                if is_string_like(t):
-                    fh.write(t+"\t")
-                else:
-                    fh.write(str(t)+"\t")                         
-                if is_string_like(d):
-                    fh.write(d+"\n")
-                else:
-                    fh.write(str(d)+"\n")                         
+                fh.write("%s %s\n"%(t,d))
         if not directed: 
             seen[s]=1
             
-def read_multiline_adjlist(path, create_using=None,
-                           nodetype=None, edgetype=None):
+def read_multiline_adjlist(path, create_using=None, nodetype=str, edgetype=str):
     """Read graph in multi-line adjacency list format from path.
 
-    >>> G=read_multiline_adjlist("file.adjlist")
-
     path can be a filehandle or a string with the name of the file.
+    Filenames ending in .gz or .bz2 will be uncompressed.
 
-    >>> fh=open("file.adjlist")
-    >>> G=read_multiline_adjlist(fh)
+    nodetype is an optional function to map node strings to an alternate type.
+    e.g., use nodemap=int to create node IDs as integers
+    Since nodes must be hashable, the function nodetype
+    must return hashable types (e.g. int, float, str, frozenset -
+    or tuples of those, etc.) 
 
-    Filenames ending in .gz or .bz2 will be compressed.
+    edgetype is an optional function to map edge data strings to an alternate
+    type. e.g. use edgetype=float to create edge data as floating point numbers
 
-    >>> G=read_multiline_adjlist("file.adjlist.gz")
-
-    nodetype is an optional function to convert node strings to nodetype
-
-    For example
-
-    >>> G=read_multiline_adjlist("file.adjlist",nodetype=int)
-
-    will attempt to convert all nodes to integer type
-
-    Since nodes must be hashable, the function nodetype must return hashable
-    types (e.g. int, float, str, frozenset - or tuples of those, etc.) 
-
-    edgetype is a function to convert edge data strings to edgetype
-
-    >>> G=read_multiline_adjlist("file.adjlist",edgetype=int)
-
-    create_using is an optional networkx graph type, the default is
-    Graph(), a simple undirected graph 
-
-    >>> G=read_multiline_adjlist("file.adjlist",create_using=DiGraph())
+    create_using is an optional networkx graph type 
 
     A '# ' character at the beginning of a line indicates a comment line
-    The entries are separated by a tab (not whitespace).
+
+    >>> import networkx as NX
+    >>> G=NX.read_multiline_adjlist("file.adjlist")
+
+    >>> fh=open("file.edgelist")
+    >>> G=NX.read_multiline_adjlist(fh)
+
+    >>> G=NX.read_multiline_edgelist("file.adjlist",create_using=NX.DiGraph())
 
     Example multiline adjlist file format:: 
 
@@ -179,14 +139,6 @@ def read_multiline_adjlist(path, create_using=None,
      d 1
      e edge-de-data
 
-    Reading the file will use the default text encoding on your system.
-    It is possible to read files with other encodings by opening
-    the file with the codecs module.  See doc/examples/unicode.py
-    for hints.
-
-    >>> import codecs
-    >>> fh=codecs.open("file.adjlist",encoding='utf=8') # use utf-8 encoding
-    >>> G=read_multiline_adjlist(fh)
     """
     if create_using is None:
         G=networkx.Graph()
@@ -208,22 +160,19 @@ def read_multiline_adjlist(path, create_using=None,
     for line in inp:
         if line.startswith("#") or line.startswith("\n"):
             continue
-        line=line.strip() #remove trailing \n 
         try:
-            (u,deg)=line.split('\t')
+            (u,deg)=string.split(line)
             deg=int(deg)
         except:
             raise "Failed to read node and degree on line (%s)"%line
         try:
-            if nodetype is not None:
-                u=nodetype(u)
+            u=nodetype(u)
         except:
             raise TypeError("Failed to convert node (%s) to type %s"\
                   %(u,nodetype))
-        G.add_node(u)
+        G.add_node(nodetype(u))
         for i in range(deg):
-            line=inp.next().strip()
-            vlist=line.split('\t')
+            vlist=string.split(inp.next())
             if len(vlist)==1:
                 v=vlist[0]
                 d=None
@@ -232,16 +181,14 @@ def read_multiline_adjlist(path, create_using=None,
             else:
                 raise "Failed to read line: %s"%vlist
             try:
-                if nodetype is not None:
-                    v=nodetype(v)
+                v=nodetype(v)
             except:
                 raise TypeError("Failed to convert node (%s) to type %s"\
                                 %(v,nodetype))
             if xgraph:
                 if d is not None:
                     try:
-                        if edgetype is not None:
-                            d=edgetype(d)
+                        d=edgetype(d)
                     except:
                         raise TypeError\
                               ("Failed to convert edge data (%s) to type %s"\
@@ -256,30 +203,14 @@ def read_multiline_adjlist(path, create_using=None,
 def write_adjlist(G,path):
     """Write graph in single line adjacency list format to path.
 
-    See read_adjlist for file format details.
-
-    >>> write_adjlist(G,"file.adjlist")
-
     path can be a filehandle or a string with the name of the file.
-
-    >>> fh=open("file.adjlist")
-    >>> write_adjlist(G,fh)
-
     Filenames ending in .gz or .bz2 will be compressed.
-
-    >>> write_adjlist(G,"file.adjlist.gz")
-
-    The file will use the default text encoding on your system.
-    It is possible to write files in other encodings by opening
-    the file with the codecs module.  See doc/examples/unicode.py
-    for hints.
-
-    >>> import codecs
-    >>> fh=codecs.open("file.adjlist",encoding='utf=8') # use utf-8 encoding
-    >>> write_adjlist(G,fh)
 
     Does not handle data in XGraph or XDiGraph, use 'write_edgelist'
     or 'write_multiline_adjlist'
+
+    See read_adjlist for file format details.
+
     """
     fh=_get_fh(path,mode='w')        
     pargs="# "+string.join(sys.argv,' ')
@@ -296,10 +227,7 @@ def write_adjlist(G,path):
     directed=G.is_directed()
 
     for s in G.nodes():
-        if is_string_like(s):
-            fh.write(s+"\t")
-        else:
-            fh.write(str(s)+"\t")                         
+        fh.write("%s " %(s))
         for t in G.neighbors(s):
             if not directed:
                 if e.has_key((t,s)):
@@ -307,52 +235,41 @@ def write_adjlist(G,path):
                 e.setdefault((s,t),1)
             if multiedges:
                 for d in G.get_edge(s,t):
-                    if is_string_like(t):
-                        fh.write(t+"\t")
-                    else:
-                        fh.write(str(t)+"\t")                         
+                    fh.write("%s " %(t))
             else:
-                if is_string_like(t):
-                    fh.write(t+"\t")
-                else:
-                    fh.write(str(t)+"\t")                         
+                fh.write("%s " %(t))                
         fh.write("\n")            
 
 
-def read_adjlist(path,create_using=None,nodetype=None):
+def read_adjlist(path,create_using=None,nodetype=str):
     """Read graph in single line adjacency list format from path.
 
-    >>> G=read_adjlist("file.adjlist")
-
     path can be a filehandle or a string with the name of the file.
+    Filenames ending in .gz or .bz2 will be uncompressed.
 
-    >>> fh=open("file.adjlist")
-    >>> G=read_adjlist(fh)
-
-    Filenames ending in .gz or .bz2 will be compressed.
-
-    >>> G=read_adjlist("file.adjlist.gz")
-
-    nodetype is an optional function to convert node strings to nodetype
-
-    For example
-
-    >>> G=read_adjlist("file.adjlist",nodetype=int)
-
-    will attempt to convert all nodes to integer type
-
-    Since nodes must be hashable, the function nodetype must return hashable
-    types (e.g. int, float, str, frozenset - or tuples of those, etc.) 
-
-    create_using is an optional networkx graph type, the default is
-    Graph(), a simple undirected graph 
-
-    >>> G=read_adjlist("file.adjlist",create_using=DiGraph())
-
+    The default is to create a simple graph from the adjacency list.
     Does not handle edge data: use 'read_edgelist' or 'read_multiline_adjlist'
 
+    nodetype is an optional function to map node strings to an alternate type.
+    e.g., use nodemap=int to create node IDs as integers
+    Since nodes must be hashable, the function nodetype
+    must return hashable types (e.g. int, float, str, frozenset -
+    or tuples of those, etc.) 
+
+    edgetype is an optional function to map edge data strings to an alternate
+    type. e.g. use edgetype=float to create edge data as floating point numbers
+
+    create_using is an optional networkx graph type 
+
     A '# ' character at the beginning of a line indicates a comment line
-    The entries are separated by a tab (not whitespace).
+
+    >>> import networkx as NX
+    >>> G=NX.read_adjlist("file.adjlist")
+
+    >>> fh=open("file.edgelist")
+    >>> G=NX.read_adjlist(fh)
+
+    >>> G=NX.read_edgelist("file.adjlist",create_using=NX.DiGraph())
 
     Example adjlist file format:: 
 
@@ -375,16 +292,14 @@ def read_adjlist(path,create_using=None,nodetype=None):
     for line in fh.readlines():
         if line.startswith("#") or line.startswith("\n"):
             continue
-        line=line.strip() #remove trailing \n 
-        vlist=line.split('\t')
+        vlist=string.split(line)
         u=vlist.pop(0)
         # convert types
-        if nodetype is not None:
-            try:
-                u=nodetype(u)
-            except:
-                raise TypeError("Failed to convert node (%s) to type %s"\
-                                %(u,nodetype))
+        try:
+            u=nodetype(u)
+        except:
+            raise TypeError("Failed to convert node (%s) to type %s"\
+                  %(u,nodetype))
         G.add_node(u)
         try:
             vlist=map(nodetype,vlist)
@@ -399,31 +314,13 @@ def read_adjlist(path,create_using=None,nodetype=None):
 def write_edgelist(G,path):
     """Write graph G in edgelist format on file path.
 
-    See read_edgelist for file format details.
-
-    >>> write_edgelist(G,"file.edgelist")
-
     path can be a filehandle or a string with the name of the file.
-
-    >>> fh=open("file.edgelist")
-    >>> write_edgelist(G,fh)
-
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> write_edgelist(G,"file.edgelist.gz")
-
-    The file will use the default text encoding on your system.
-    It is possible to write files in other encodings by opening
-    the file with the codecs module.  See doc/examples/unicode.py
-    for hints.
-
-    >>> import codecs
-    >>> fh=codecs.open("file.edgelist",encoding='utf=8') # use utf-8 encoding
-    >>> write_edgelist(G,fh)
-
+    See read_edgelist for file format details.
 
     """
-    fh=_get_fh(path,mode='w')
+    fh=_get_fh(path,mode='w')        
 
     pargs="# "+string.join(sys.argv,' ')
     fh.write("%s\n" % (pargs))
@@ -432,44 +329,38 @@ def write_edgelist(G,path):
     for e in G.edges():
         for n in e:  # handle Graph or XGraph, two- or three-tuple
             if n is None: continue # don't write data for XGraph None 
-            if is_string_like(n):
-                fh.write(n+"\t")
-            else:
-                fh.write(str(n)+"\t")                         
+            fh.write("%s "%n) 
         fh.write("\n")                     
 
-def read_edgelist(path, create_using=None, nodetype=None, edgetype=None):
+def read_edgelist(path, create_using=None, nodetype=str, edgetype=str):
     """Read graph in edgelist format from path
 
-    >>> G=read_edgelist("file.edgelist")
-
     path can be a filehandle or a string with the name of the file.
+    Filenames ending in .gz or .bz2 will be uncompressed.
+
+    nodetype is an optional function to map node strings
+    to an alternate type.
+    e.g., use nodemap=int to create node IDs as integers
+
+    Since nodes must be hashable, the function nodetype
+    must return hashable types (e.g. int, float, str, frozenset -
+    or tuples of those, etc.) 
+
+    edgetype is an optional function to map edge data strings
+    to an alternate type. e.g. use edgetype=float to create edge
+    data as floating point numbers
+
+    create_using is an optional networkx graph type 
+
+    A '# ' character at the line beginning indicates a comment line
+
+    >>> import networkx as NX
+    >>> G=NX.read_edgelist("file.edgelist")
 
     >>> fh=open("file.edgelist")
-    >>> G=read_edgelist(fh)
+    >>> G=NX.read_edgelist(fh)
 
-    Filenames ending in .gz or .bz2 will be compressed.
-
-    >>> G=read_edgelist("file.edgelist.gz")
-
-    nodetype is an optional function to convert node strings to nodetype
-
-    For example
-
-    >>> G=read_edgelist("file.edgelist",nodetype=int)
-
-    will attempt to convert all nodes to integer type
-
-    Since nodes must be hashable, the function nodetype must return hashable
-    types (e.g. int, float, str, frozenset - or tuples of those, etc.) 
-
-    create_using is an optional networkx graph type, the default is
-    Graph(), a simple undirected graph 
-
-    >>> G=read_edgelist("file.edgelist",create_using=DiGraph())
-
-    A '# ' character at the beginning of a line indicates a comment line
-    The entries are separated by a tab (not whitespace).
+    >>> G=NX.read_edgelist("file.edgelist",create_using=NX.DiGraph())
 
     Example edgelist file format:: 
 
@@ -501,14 +392,14 @@ def read_edgelist(path, create_using=None, nodetype=None, edgetype=None):
     else:
         xgraph=False
 
-    fh=_get_fh(path)
+    fh=_get_fh(path)        
+
 
     for line in fh.readlines():
         if line.startswith("#") or line.startswith("\n"):
             continue
-        line=line.strip() #remove trailing \n 
         # split line, should have 2 or three items
-        s=line.split('\t')
+        s=string.split(line)
         if len(s)==2:
             (u,v)=s
             d=None
@@ -523,8 +414,7 @@ def read_edgelist(path, create_using=None, nodetype=None, edgetype=None):
         except:
             raise TypeError("Failed to convert edge (%s, %s) to type %s"\
                   %(u,v,nodetype))
-        if d is not None and edgetype is not None:
-
+        if d is not None:
             try:
                d=edgetype(d)
             except:
@@ -540,12 +430,7 @@ def read_edgelist(path, create_using=None, nodetype=None, edgetype=None):
 
 def write_gpickle(G,path):
     """
-    Write graph object in Python pickle format.
-
-    This will preserve Python objects used as nodes or edges.
-
-    >>> write_gpickle(G,"file.gpickle")
-
+    Write graph object in python pickle format
     See cPickle.
     
     """
@@ -554,10 +439,7 @@ def write_gpickle(G,path):
 
 def read_gpickle(path):
     """
-    Read graph object in Python pickle format
-
-    >>> G=read_gpickle(G,"file.gpickle")
-
+    Read graph object in python pickle format
     See cPickle.
     
     """
@@ -569,7 +451,7 @@ def _get_fh(path,mode='r'):
 
     Path can be a string or a file handle.
 
-    Attempt to uncompress/compress files ending in '.gz' and '.bz2'.
+    An attempt is made to uncompress files ending in '.gz' and '.bz2'.
 
     """
     if is_string_like(path):
