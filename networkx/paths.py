@@ -114,7 +114,7 @@ def single_source_shortest_path_length(G,source):
     """
     Shortest path length from source to all targets.
 
-    Returns a dictionary of shortest path lengths keyed by source.
+    Returns a dictionary of shortest path lengths keyed by target.
 
     >>> G=path_graph(5)
     >>> paths=single_source_shortest_path_length(G,1)
