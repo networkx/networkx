@@ -6,6 +6,43 @@ NetworkX News
 .. include:: Menu.txt
 
 
+What's new in NX-0.30?
+----------------------
+
+Release date: 23 June 2006
+
+See: https://networkx.lanl.gov/wiki/timeline
+
+New features
+~~~~~~~~~~~~
+   - update to work with Python 2.5 
+   - bidirectional version of shortest_path and Dijkstra 
+   - single_source_shortest_path and all_pairs_shortest_path
+   - s-metric and experimental code to generate  maximal s-metric graph 
+   - double_edge_swap and connected_double_edge_swap
+   - Floyd's algorithm for all pairs shortest path
+   - read and write unicode graph data to text files
+
+Bug fixes
+~~~~~~~~~
+   - speed improvements (faster version of subgraph, is_connected)
+   - added cumulative distribution and modified discrete distribution utilities
+   - report error if DiGraphs are sent to connected_components routines
+   - removed with_labels keywords for many functions where it was
+     causing confusion
+   - function name changes in shortest_path routines
+   - saner internal handling of nbunch (node bunches), raise an
+     exception if an nbunch isn't a node or iterable
+   - better keyword handling in io.py allows reading multiple graphs 
+   - don't mix Numeric and numpy arrays in graph layouts and drawing
+   - avoid automatically rescaling matplotlib axes when redrawing graph layout
+
+Examples
+~~~~~~~~
+   - unicode node labels 
+   https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/unicode.py
+
+
 What's new in NX-0.29?
 ----------------------
 

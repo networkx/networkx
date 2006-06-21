@@ -40,4 +40,6 @@ Thanks to the following people who have made contributions to NetworkX:
 
  - Phillipp Pagel helped fix eccentricity etc. for disconnected graphs 
 
- - Sverre Sundsdal contributed shortest path routines
+ - Sverre Sundsdal contributed bidirectional shortest path and
+   Dijkstra routines, s-metric computation and graph generation.  
+
