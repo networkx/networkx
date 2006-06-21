@@ -79,6 +79,7 @@ from small import  make_small_graph,\
                truncated_tetrahedron_graph,\
                tutte_graph
 
-from directed import gn_graph, gnc_graph, gnr_graph
+from directed import gn_graph,\
+               gnc_graph, \
+               gnr_graph
 
-#  clutter index:  44 functions
