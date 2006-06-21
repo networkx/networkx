@@ -15,7 +15,7 @@ Paths and path lengths
 
 >>> NX.shortest_path_length(G,1,16)
 6
->>> sp=NX.shortest_path_length(G,1)
+>>> sp=NX.single_source_shortest_path_length(G,1)
 >>> sp[16]
 6
 >>> NX.shortest_path(G,1,12)
@@ -24,7 +24,7 @@ Paths and path lengths
 >>> NX.bidirectional_shortest_path(G,1,12)
 [1, 2, 3, 4, 8, 12]
 
->>> sp=NX.shortest_path(G,1)
+>>> sp=NX.single_source_shortest_path(G,1)
 >>> sp[12] 
 [1, 2, 3, 4, 8, 12]
 
@@ -87,25 +87,27 @@ Dijkstra
 
 >>> XG=NX.XDiGraph()
 >>> XG.add_edges_from([('s','u',10) ,('s','x',5) ,('u','v',1) ,('u','x',2) ,('v','y',1) ,('x','u',3) ,('x','v',5) ,('x','y',2) ,('y','s',7) ,('y','v',6)])
->>> (D,P)= NX.dijkstra(XG,'s','v')
->>> P['v'] 
+>>> NX.draw(XG)
+>>> import pylab as P
+>>> P.savefig('test.png')
+>>> (D,P)= NX.single_source_dijkstra(XG,'s')
+>>> P['v']
 ['s', 'x', 'u', 'v']
->>> D['v'] 
+>>> D['v']
+9
+>>> NX.single_source_dijkstra_path(XG,'s')['v']
+['s', 'x', 'u', 'v']
+>>> NX.single_source_dijkstra_path_length(XG,'s')['v']
 9
 
->>> NX.dijkstra_path(XG,'s','v')
-['s', 'x', 'u', 'v']
->>> NX.dijkstra_path_length(XG,'s','v')
-9
-
->>> NX.dijkstra(XG,'s')[1]['v'] 
+>>> NX.single_source_dijkstra(XG,'s')[1]['v'] 
 ['s', 'x', 'u', 'v']
 
 >>> GG=XG.to_undirected()
->>> (D,P)= NX.dijkstra(GG,'s','v')
+>>> (D,P)= NX.single_source_dijkstra(GG,'s')
 >>> P['v'] 
 ['s', 'x', 'u', 'v']
->>> D['v']   # uses lower weight of 2 on u<->x edge
+>>> D['v']     # uses lower weight of 2 on u<->x edge
 8
 
 >>> NX.dijkstra_path(GG,'s','v')
@@ -133,9 +135,9 @@ Dijkstra
 
 >>> G=NX.DiGraph()  # no weights
 >>> G.add_edges_from([('s','u'), ('s','x'), ('u','v'), ('u','x'), ('v','y'), ('x','u'), ('x','v'), ('x','y'), ('y','s'), ('y','v')])
->>> NX.dijkstra(G,'s','v')[1]['v'] 
+>>> NX.single_source_dijkstra(G,'s','v')[1]['v'] 
 ['s', 'u', 'v']
->>> NX.dijkstra(G,'s')[1]['v'] 
+>>> NX.single_source_dijkstra(G,'s')[1]['v'] 
 ['s', 'u', 'v']
 
 >>> NX.dijkstra_path(G,'s','v')
@@ -164,21 +166,24 @@ NetworkXError: node s not reachable from moon
 Bidirectional Dijkstra
 ----------------------
 
->>> NX.dijkstra_bi(XG, 's', 'v')
+>>> NX.bidirectional_dijkstra(XG, 's', 'v')
 (9, ['s', 'x', 'u', 'v'])
->>> NX.dijkstra_bi(GG,'s','v')
+>>> NX.bidirectional_dijkstra(GG,'s','v')
 (8, ['s', 'y', 'v'])
->>> NX.dijkstra_bi(G,'s','v')
+>>> NX.bidirectional_dijkstra(G,'s','v')
 (2, ['s', 'x', 'v'])
->>> NX.dijkstra_bi(H,0,3)
+>>> NX.bidirectional_dijkstra(H,0,3)
 (3, [0, 1, 2, 3])
->>> NX.dijkstra_bi(H,0,4)
+>>> NX.bidirectional_dijkstra(H,0,4)
 (3, [0, 6, 5, 4])
->>> NX.dijkstra_bi(XG3,0,3)
+>>> NX.bidirectional_dijkstra(XG3,0,3)
 (15, [0, 1, 2, 3])
->>> NX.dijkstra_bi(XG4,0,2)
+>>> NX.bidirectional_dijkstra(XG4,0,2)
 (4, [0, 1, 2])
 
+# need more tests here
+>>> NX.dijkstra_path(XG,'s','v')==NX.single_source_dijkstra_path(XG,'s')['v']
+True
 
 Floyd-Warshall all pair shortest path
 -------------------------------------

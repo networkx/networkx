@@ -60,7 +60,8 @@ def kl_connected_subgraph(G,k,l,**kwds):
                 for w in path:
                     G2.delete_edge(prev,w)
                     prev=w
-                path=shortest_path(G2,u,v,k)  # ??? should "Cutoff" be k+1?
+#                path=shortest_path(G2,u,v,k) # ??? should "Cutoff" be k+1?
+                path=shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
             # No Other Paths
             if accept==0:
                 H.delete_edge(u,v)
@@ -100,7 +101,8 @@ def is_kl_connected(G,k,l,**kwds):
             for w in path:
                 G2.delete_edge(prev,w)
                 prev=w
-            path=shortest_path(G2,u,v,k)  # ??? should "Cutoff" be k+1?
+#            path=shortest_path(G2,u,v,k) # ??? should "Cutoff" be k+1?
+            path=shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
         # No Other Paths
         if accept==0:
             graphOK=False

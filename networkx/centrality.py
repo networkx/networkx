@@ -200,12 +200,12 @@ def closeness_centrality(G,v=False):
     The closeness centrality is normalized to be between 0 and 1.
 
     """
-    from networkx.paths import shortest_path_length
+    from networkx.paths import single_source_shortest_path_length
 
     closeness_centrality={}
 
     for n in G.nodes():
-        sp=shortest_path_length(G,n)
+        sp=single_source_shortest_path_length(G,n)
         if sum(sp.values()) > 0.0:                                            
             s=(len(sp)-1.0)  # normalize to number of nodes-1 in connected part
             closeness_centrality[n]=s/sum(sp.values())                     

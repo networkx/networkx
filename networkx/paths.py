@@ -2,10 +2,10 @@
 Shortest paths, diameter, radius, eccentricity, and related methods.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = "$Date: 2005-06-16 14:29:18 -0600 (Thu, 16 Jun 2005) $"
+__date__ = ""
 __credits__ = """"""
-__revision__ = "$Revision: 1046 $"
-#    Copyright (C) 2004,2005 by 
+__revision__ = ""
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -17,15 +17,16 @@ import networkx
 import heapq
 
 def eccentricity(G, v=None, sp=None, with_labels=False):
-    """Eccentricity of node v (or all nodes if v is None).
-       Maximum of shortest paths to all other nodes. 
+    """Return the eccentricity of node v in G (or all nodes if v is None).
 
-       The optional keyword sp must be a dict of dicts of
-       shortest_path_length keyed by source and target.
-       That is, sp[v][t] is the length from v to t.
+    The eccentricity is the maximum of shortest paths to all other nodes. 
+
+    The optional keyword sp must be a dict of dicts of
+    shortest_path_length keyed by source and target.
+    That is, sp[v][t] is the length from v to t.
        
-       If with_labels=True 
-       return dict of eccentricities keyed by vertex.
+    If with_labels=True 
+    return dict of eccentricities keyed by vertex.
     """
     nodes=[]
     if v is None:                # none, use entire graph 
@@ -38,13 +39,14 @@ def eccentricity(G, v=None, sp=None, with_labels=False):
     e={}
     for v in nodes:
         if sp is None:
-            length=shortest_path_length(G,v)
+            length=single_source_shortest_path_length(G,v)
         else:
             length=sp[v]
         try:
             assert len(length)==G.number_of_nodes()
         except:
-            raise networkx.NetworkXError, "Graph not connected: infinite path length"
+            raise networkx.NetworkXError,\
+                  "Graph not connected: infinite path length"
             
         e[v]=max(length.values())
 
@@ -55,16 +57,18 @@ def eccentricity(G, v=None, sp=None, with_labels=False):
         return e.values()
 
 def diameter(G, e=None):
-    """Diameter of graph.
-       Maximum of all pairs shortest path.
+    """Return the diameter of the graph G.
+
+    The diameter is the maximum of all pairs shortest path.
     """
     if e is None:
         e=eccentricity(G,with_labels=True)
     return max(e.values())
 
 def periphery(G, e=None):
-    """Periphery of graph.
-       Nodes with eccentricity equal to diameter. 
+    """Return the periphery of the graph G. 
+
+    The periphery is the set of nodes with eccentricity equal to the diameter. 
     """
     if e is None:
         e=eccentricity(G,with_labels=True)
@@ -74,16 +78,18 @@ def periphery(G, e=None):
 
 
 def radius(G, e=None):
-    """Radius of graph
-       Minimum of all pairs shortest path.
+    """Return the radius of the  graph G.
+
+    The radius is the minimum of all pairs shortest path.
        """
     if e is None:
         e=eccentricity(G,with_labels=True)
     return min(e.values())
 
 def center(G, e=None):
-    """Center of graph.
-       Nodes with eccentricity equal to radius. 
+    """Return the center of graph G.
+
+    The center is the set of nodes with eccentricity equal to radius. 
     """
     if e is None:
         e=eccentricity(G,with_labels=True)
@@ -93,11 +99,30 @@ def center(G, e=None):
     return p
 
 
-def shortest_path_length(G,source,target=None):
+def shortest_path_length(G,source,target):
+    """Return the shortest path length in the graph G between
+    the source and target.
+
+    G is treated as an unweighted graph.  For weighted graphs
+    see dijkstra_path_length.
+
     """
-    Shortest path length from source to target.
-    If target is None, a dict of shortest path lengths
-    from source to keyed node is returned.
+    return len(bidirectional_shortest_path(G,source,target))-1
+
+
+def single_source_shortest_path_length(G,source):
+    """
+    Shortest path length from source to all targets.
+
+    Returns a dictionary of shortest path lengths keyed by source.
+
+    >>> G=path_graph(5)
+    >>> paths=single_source_shortest_path_length(G,1)
+    >>> paths[4]
+    [1, 2, 3, 4]
+    >>> print paths
+    {0: [1, 0], 1: [1], 2: [1, 2], 3: [1, 2, 3], 4: [1, 2, 3, 4]}
+
     """
     seen={}                  # level (number of hops) when seen in BFS
     level=0                  # the current level
@@ -107,62 +132,50 @@ def shortest_path_length(G,source,target=None):
         nextlevel={}         # and start a new list (fringe)
         for v in thislevel:
             if not seen.has_key(v): 
-                if v==target: # shortcut if target
-                    return level
                 seen[v]=level # set the level of vertex v
                 nbrs=dict.fromkeys(G.neighbors_iter(v),1)
                 nextlevel.update(nbrs) # add neighbors of v
         level=level+1
+    return seen  # return all path lengths as hash
 
-    if target is not None:
-        return -1            # return -1 if not reachable
-    else:
-        return seen  # return all path lengths as hash
 
-def shortest_path(G,source,target=None,cutoff=None):
+def all_pairs_shortest_path_length(G):
+    """ Return dictionary of shortest path lengths between all nodes in G.
+
+    The dictionary only has keys for reachable node pairs.
+    >>> G=path_graph(5)
+    >>> paths=all_pairs_shortest_path_length(G)
+    >>> print paths[1][4]
+    3
+    >>> paths[1]
+    {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
+
     """
-       Return list of nodes in a shortest path between source
-       and target (there might be more than one).
+    paths={}
+    for n in G:
+        paths[n]=single_source_shortest_path_length(G,n)
+    return paths        
+        
+def shortest_path(G,source,target):
+    """Return a list of nodes in G for a shortest path between source
+    and target.
 
-       If no target is specified, returns dict of lists of 
-       paths from source to all nodes.
-       Cutoff is a limit on the number of hops traversed.
-       See also 'bidirectional_shortest_path'
+    There may be more than one shortest path.  This returns only one.
+    
     """
-    if target==source: return []  # trivial path
-    level=0                  # the current level
-    nextlevel={source:1}       # list of nodes to check at next level
-    paths={source:[source]}  # paths hash  (paths to key from source)
-    while nextlevel:
-        thislevel=nextlevel
-        nextlevel={}
-        for v in thislevel:
-            for w in G.neighbors(v):
-                if not paths.has_key(w): 
-                    paths[w]=paths[v]+[w]
-                    if w==target:      # Shortcut if target is not None
-                        return paths[w] 
-                    nextlevel[w]=1
-        level=level+1
-        if (cutoff is not None and cutoff <= level):
-            break
+    return bidirectional_shortest_path(G,source,target)
 
-    if target is None:
-        return paths    # return them all
-    else:
-        return False     # return False if not reachable
 
 def bidirectional_shortest_path(G,source,target):
     """
        Return list of nodes in a shortest path between source and target.
 
-       This bidirectional version of shortest_path is much faster than
-       shortest_path in most cases.
-       Note that it requires target node to be specified.
+       Also known as shortest_path.
+
     """
     try:
         # call helper to do the real work
-        pred,succ,w=bidirectional_pred_succ(G,source,target)
+        pred,succ,w=_bidirectional_pred_succ(G,source,target)
     except:
         return False  # no path from source to target
 
@@ -178,12 +191,13 @@ def bidirectional_shortest_path(G,source,target):
         path.insert(0,w)
         w=pred[w]
 
-
     return path        
 
-def bidirectional_pred_succ(G, source, target):
+def _bidirectional_pred_succ(G, source, target):
     """
-       Bidirectional shortest path helper.  Returns (pred,succ,w) where
+       Bidirectional shortest path helper.
+
+       Returns (pred,succ,w) where
        pred is a dictionary of predecessors from w to the source, and
        succ is a dictionary of successors from w to the target.
     """
@@ -229,128 +243,96 @@ def bidirectional_pred_succ(G, source, target):
 
     return False  # no path found
 
-    
 
-def dijkstra_path(G,source,target=None):
+def single_source_shortest_path(G,source,cutoff=None):
     """
-    Returns the shortest path for a weighted graph using
-    Dijkstra's algorithm.
+    Return list of nodes in a shortest path between source
+    and all other nodes in G reachable from source.
 
-    The path is computed from the source to an optional target.
-    If a target is specified the path is returned as a list of nodes.
-    If the target is not specified a dictionary of path lists keyed
-    by target node is returned.
-    
+    There may be more than one shortest path between the
+    source and target nodes - this routine returns only one.
+
+    Cutoff is a limit on the number of hops traversed.
+
+    See also shortest_path and bidirectional_shortest_path.
+    """
+    level=0                  # the current level
+    nextlevel={source:1}       # list of nodes to check at next level
+    paths={source:[source]}  # paths hash  (paths to key from source)
+    while nextlevel:
+        thislevel=nextlevel
+        nextlevel={}
+        for v in thislevel:
+            for w in G.neighbors(v):
+                if not paths.has_key(w): 
+                    paths[w]=paths[v]+[w]
+                    nextlevel[w]=1
+        level=level+1
+        if (cutoff is not None and cutoff <= level):
+            break
+    return paths   
+
+
+def all_pairs_shortest_path(G):
+    """ Return dictionary of shortest paths between all nodes in G.
+
+    The dictionary only has keys for reachable node pairs.
+
+    See also floyd_warshall.
+
+    """
+    paths={}
+    for n in G:
+        paths[n]=single_source_shortest_path(G,n)
+    return paths        
+
+
+def dijkstra_path(G,source,target):
+    """
+    Returns the shortest path from source to target in a weighted
+    graph G.  Uses a bidirectional version of Dijkstra's algorithm.
+
     Edge data must be numerical values for XGraph and XDiGraphs.
     The weights are assigned to be 1 for Graphs and DiGraphs.
 
-    See also 'dijkstra' for more information about the algorithm.
-
+    See also bidirectional_dijkstra for more information about the algorithm.
     """
-    (length,path)=dijkstra(G,source,target=target)
+#    (length,path)=bidirectional_dijkstra(G,source,target) # faster, needs test
+#     return path
+    (length,path)=single_source_dijkstra(G,source)
+    try:
+        return path[target]
+    except KeyError:
+        raise networkx.NetworkXError, \
+              "node %s not reachable from %s"%(source,target)
 
-    if target is not None:
-        try:
-            return path[target]
-        except KeyError:
-            raise networkx.NetworkXError, \
-                  "node %s not reachable from %s"%(source,target)
-    return path
 
-def dijkstra_path_length(G,source,target=None):
+def dijkstra_path_length(G,source,target):
     """
-    Returns the shortest path length for a weighted graph using
-    Dijkstra's algorithm .
+    Returns the shortest path length from source to target in a weighted
+    graph G.  Uses a bidirectional version of Dijkstra's algorithm.
 
-    The path length is computed from the source to an optional target.
-    If a target is specified the length is returned as an integer.
-    If the target is not specified a dictionary of path lengths keyed
-    by target node is returned.
-    
     Edge data must be numerical values for XGraph and XDiGraphs.
     The weights are assigned to be 1 for Graphs and DiGraphs.
 
-    See also "dijkstra" for more information about the algorithm.
+    See also bidirectional_dijkstra for more information about the algorithm.
 
     """
-    (length,path)=dijkstra(G,source,target=target)
+
+#    (length,path)=bidirectional_dijkstra(G,source,target) # faster, needs test
+#    return length
+    (length,path)=single_source_dijkstra(G,source)
+    try:
+        return length[target]
+    except KeyError:
+        raise networkx.NetworkXError, \
+              "node %s not reachable from %s"%(source,target)
 
 
-    if target is not None:
-        try:
-            return length[target]
-        except KeyError:
-            raise networkx.NetworkXError, \
-                  "node %s not reachable from %s"%(source,target)
 
-    return length
-
-
-def dijkstra(G,source,target=None):
+def bidirectional_dijkstra(graph, source, target):
     """
-    Dijkstra's algorithm for shortest paths in a weighted graph.
-
-    See
-
-    dijkstra_path() - shortest path list of nodes 
-    dijkstra_path_length() - shortest path length
-
-
-    Returns a tuple of two dictionaries keyed by node.
-    The first stores distance from the source.
-    The second stores the path from the source to that node.
-
-    Distances are calculated as sums of weighted edges traversed.
-    Edges must hold numerical values for XGraph and XDiGraphs.
-    The weights are 1 for Graphs and DiGraphs.
-
-    Optional target argument stops the search when target is found.
-
-    Based on python cookbook recipe (119466) at 
-    http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/119466
-
-    This algorithm is not guaranteed to work if edge weights
-    are negative or are floating point numbers (
-    overflows and roundoff erros can cause problems). 
-    
-    See also 'dijkstra_bi'
-    """
-    if source==target: return (0, [source])
-    dist = {}  # dictionary of final distances
-    paths = {source:[source]}  # dictionary of paths
-    seen = {source:0} 
-    fringe=networkx.queues.Priority(lambda x: seen[x])
-    fringe.append(source)
-    
-    if not G.is_directed():  G.successors=G.neighbors
-    # if unweighted graph, set the weights to 1 on edges by
-    # introducing a get_edge method
-    # NB: for the weighted graphs (XGraph,XDiGraph), the data
-    # on the edge (returned by get_edge) must be numerical
-    if not hasattr(G,"get_edge"): G.get_edge=lambda x,y:1
-
-    while fringe:
-        v=fringe.smallest()
-        if v in dist: continue # already searched this node.
-        dist[v] = seen[v]
-        if v == target: break
-            
-        for w in G.successors(v):
-            vwLength = dist[v] + G.get_edge(v,w)
-            if w in dist:
-                if vwLength < dist[w]:
-                    raise ValueError,\
-                          "Contradictory paths found: negative weights?"
-            elif w not in seen or vwLength < seen[w]:
-                seen[w] = vwLength
-                fringe.append(w) # breadth first search
-                paths[w] = paths[v]+[w]
-    return (dist,paths)
-
-def dijkstra_bi(graph, source, target):
-    """
-    Dijkstra's algorithm for shortest paths using bidirectional 
-    search. 
+    Dijkstra's algorithm for shortest paths using bidirectional search. 
 
     Returns a tuple where the first item stores distance from the 
     source and the second stores the path from the source to the  
@@ -374,12 +356,13 @@ def dijkstra_bi(graph, source, target):
     be specified.
 
     This algorithm is not guaranteed to work if edge weights
-    are negative or are floating point numbers (
-    overflows and roundoff erros can cause problems). 
+    are negative or are floating point numbers
+    (overflows and roundoff erros can cause problems). 
 
     """
     if source is None or target is None:
-        raise NetworkXException("Bidirectional Dijkstra called with no source or target")
+        raise NetworkXException(
+            "Bidirectional Dijkstra called with no source or target")
     if source == target:
         return (0, [source])
     #Init:   Forward             Backward
@@ -443,12 +426,114 @@ def dijkstra_bi(graph, source, target):
                         finalpath = paths[0][w] + revpath[1:]
     return False
 
+
+
+#def dijkstra(G,source,target):
+#    return bidirectional_dijkstra(G,source,target)
+
+
+def single_source_dijkstra_path(G,source):
+    """
+    Returns the shortest paths from source to all other reachable
+    nodes in a weighted graph G.  Uses Dijkstra's algorithm.
+
+    Returns a dictionary of shortest path lengths keyed by source.
+    
+    Edge data must be numerical values for XGraph and XDiGraphs.
+    The weights are assigned to be 1 for Graphs and DiGraphs.
+
+    See also single_source_dijkstra for more information about the algorithm.
+
+    """
+    (length,path)=single_source_dijkstra(G,source)
+    return path
+
+
+def single_source_dijkstra_path_length(G,source):
+    """
+    Returns the shortest path lengths from source to all other
+    reachable nodes in a weighted graph G.  Uses Dijkstra's algorithm.
+
+    Returns a dictionary of shortest path lengths keyed by source.
+    
+    Edge data must be numerical values for XGraph and XDiGraphs.
+    The weights are assigned to be 1 for Graphs and DiGraphs.
+
+    See also single_source_dijkstra for more information about the algorithm.
+
+    """
+    (length,path)=single_source_dijkstra(G,source)
+    return length
+
+
+def single_source_dijkstra(G,source,target=None):
+    """
+    Dijkstra's algorithm for shortest paths in a weighted graph G.
+
+    Use:
+
+    single_source_dijkstra_path() - shortest path list of nodes 
+
+    single_source_dijkstra_path_length() - shortest path length
+
+    Returns a tuple of two dictionaries keyed by node.
+    The first stores distance from the source.
+    The second stores the path from the source to that node.
+
+    Distances are calculated as sums of weighted edges traversed.
+    Edges must hold numerical values for XGraph and XDiGraphs.
+    The weights are 1 for Graphs and DiGraphs.
+
+    Optional target argument stops the search when target is found.
+
+    Based on the Python cookbook recipe (119466) at 
+    http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/119466
+
+    This algorithm is not guaranteed to work if edge weights
+    are negative or are floating point numbers
+    (overflows and roundoff erros can cause problems). 
+    
+    See also 'bidirectional_dijkstra_path'
+    """
+    if source==target: return (0, [source])
+    dist = {}  # dictionary of final distances
+    paths = {source:[source]}  # dictionary of paths
+    seen = {source:0} 
+    fringe=networkx.queues.Priority(lambda x: seen[x])
+    fringe.append(source)
+    
+    if not G.is_directed():  G.successors=G.neighbors
+    # if unweighted graph, set the weights to 1 on edges by
+    # introducing a get_edge method
+    # NB: for the weighted graphs (XGraph,XDiGraph), the data
+    # on the edge (returned by get_edge) must be numerical
+    if not hasattr(G,"get_edge"): G.get_edge=lambda x,y:1
+
+    while fringe:
+        v=fringe.smallest()
+        if v in dist: continue # already searched this node.
+        dist[v] = seen[v]
+        if v == target: break
+            
+        for w in G.successors(v):
+            vwLength = dist[v] + G.get_edge(v,w)
+            if w in dist:
+                if vwLength < dist[w]:
+                    raise ValueError,\
+                          "Contradictory paths found: negative weights?"
+            elif w not in seen or vwLength < seen[w]:
+                seen[w] = vwLength
+                fringe.append(w) # breadth first search
+                paths[w] = paths[v]+[w]
+    return (dist,paths)
+
+
 def floyd_warshall(graph):
     """
-    The Floyd-Warshall algorithm for all pair shortest paths.
+    The Floyd-Warshall algorithm for all pairs shortest paths.
     
-    Returns a tuple distance, path containing two matrixes of shortest distance
-    and paths as dicts-in-dicts. 
+    Returns a tuple (distance,path) containing two matrixes of
+    shortest distance and paths as dicts-in-dicts. 
         
     Not intended for large graphs. Time and space grows as O(N^3).
     This algorithm handles negative weights.
@@ -497,7 +582,7 @@ def is_directed_acyclic_graph(G):
 
 def topological_sort(G):
     """
-    Return a list of nodes of the graph G in topological sort order.
+    Return a list of nodes of the digraph G in topological sort order.
 
     A topological sort is a nonunique permutation of the nodes
     such that an edge from u to v implies that u appears before v in the
@@ -546,7 +631,7 @@ def topological_sort(G):
 
 def topological_sort_recursive(G):
     """
-    Return a list of nodes of the graph G in topological sort order.
+    Return a list of nodes of the digraph G in topological sort order.
 
     This is a recursive version of topological sort.
     
@@ -632,17 +717,19 @@ def connected_components(G):
     components=[]
     for v in G:      
         if v not in seen:
-            c=shortest_path_length(G,v)
+            c=single_source_shortest_path_length(G,v)
             components.append(c.keys())
             seen.update(c)
     components.sort(lambda x, y: cmp(len(y),len(x)))
     return components            
+
 
 def number_connected_components(G):
     """Return the number of connected components in G.
     For undirected graphs only. 
     """
     return len(connected_components(G))
+
 
 def is_connected(G):
     """Return True if G is connected.
@@ -652,7 +739,8 @@ def is_connected(G):
         raise networkx.NetworkXError,\
               """Not allowed for directed graph G.
               Use UG=G.to_undirected() to create an undirected graph."""
-    return len(shortest_path(G, G.nodes_iter().next()))==len(G)
+    return len(single_source_shortest_path(G, G.nodes_iter().next()))==len(G)
+
 
 def connected_component_subgraphs(G):
     """
@@ -660,10 +748,7 @@ def connected_component_subgraphs(G):
     The list is ordered from largest connected component to smallest.
     For undirected graphs only. 
 
-    For example, to only get the largest connected component:
-
-    >>> from networkx import *
-    >>> G=erdos_renyi_graph(100,0.02)    
+    For example, to get the largest connected component:
     >>> H=connected_component_subgraphs(G)[0]
 
     """
@@ -676,7 +761,7 @@ def connected_component_subgraphs(G):
 
 def node_connected_component(G,n):
     """
-    Return the connected component to which node n belongs as a list of nodes.
+    Return a list of nodes of the connected component containing node n.
 
     For undirected graphs only. 
 
@@ -685,7 +770,7 @@ def node_connected_component(G,n):
         raise networkx.NetworkXError,\
               """Not allowed for directed graph G.
               Use UG=G.to_undirected() to create an undirected graph."""
-    return shortest_path_length(G,n).keys()
+    return single_source_shortest_path_length(G,n).keys()
 
 def _test_suite():
     import doctest

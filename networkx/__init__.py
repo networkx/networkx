@@ -60,16 +60,19 @@ from base import Graph, DiGraph, NetworkXException, NetworkXError,\
                  number_of_nodes, number_of_edges, density,\
                  nodes_iter, edges_iter, is_directed
 from xbase import XGraph, XDiGraph
-from paths import shortest_path, shortest_path_length, eccentricity,\
-                  diameter, radius, periphery, center,\
-                  dijkstra_bi, bidirectional_shortest_path,\
-                  dijkstra, dijkstra_path, dijkstra_path_length,\
-                  topological_sort, topological_sort_recursive,\
-                  is_directed_acyclic_graph,\
-                  number_connected_components, connected_components,\
-                  is_connected, connected_component_subgraphs,\
-                  node_connected_component,\
-                  predecessor, floyd_warshall
+from paths import  eccentricity, diameter, radius, periphery, center,\
+     shortest_path, shortest_path_length,bidirectional_shortest_path,\
+     single_source_shortest_path, single_source_shortest_path_length,\
+     all_pairs_shortest_path, all_pairs_shortest_path_length,\
+     dijkstra_path, dijkstra_path_length, bidirectional_dijkstra,\
+     single_source_dijkstra_path, single_source_dijkstra_path_length,\
+     single_source_dijkstra,\
+     predecessor, floyd_warshall,\
+     topological_sort, topological_sort_recursive,\
+     is_directed_acyclic_graph,\
+     number_connected_components, connected_components,\
+     is_connected, connected_component_subgraphs,\
+     node_connected_component
 from search import dfs_preorder, dfs_postorder, dfs_predecessor,\
             dfs_successor, bfs_length, bfs_path, dfs_forest
 from cluster import triangles, average_clustering, clustering, transitivity

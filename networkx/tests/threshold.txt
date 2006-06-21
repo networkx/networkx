@@ -105,7 +105,7 @@ True
 >>> for j,pl in enumerate(spl):
 ...     n=cs1[j][0]
 ...     spld[n]=pl
->>> spld==NX.shortest_path_length(G, 3)
+>>> spld==NX.single_source_shortest_path_length(G, 3)
 True
 
 Weights and thresholds
