@@ -439,7 +439,7 @@ def write_edgelist(G,path):
         fh.write("\n")                     
 
 def read_edgelist(path, create_using=None, nodetype=None, edgetype=None):
-    """Read graph in edgelist format from path
+    """Read graph in edgelist format from path.
 
     >>> G=read_edgelist("file.edgelist")
 
@@ -563,6 +563,38 @@ def read_gpickle(path):
     """
     fh=_get_fh(path)
     return cPickle.load(fh)
+
+
+def write_yaml(G,path,default_flow_style=False,**kwds):
+    """Write graph G in YAML text format to path. 
+
+    See http://www.yaml.org
+
+    """
+    try:
+        import yaml
+    except ImportError:
+        raise ImportError, \
+              "Import Error: not able to import yaml: http://www.yaml.org "
+    fh=_get_fh(path,mode='w')        
+    yaml.dump(G,fh,default_flow_style=default_flow_style,**kwds)
+    
+
+def read_yaml(path):
+    """Read graph from YAML format from path.
+
+    See http://www.yaml.org
+
+    """
+    try:
+        import yaml
+    except ImportError:
+        raise ImportError, \
+              "Import Error: not able to import yaml: http://www.yaml.org "
+
+    fh=_get_fh(path,mode='r')        
+    return yaml.load(fh)
+
 
 def _get_fh(path,mode='r'):
     """ Return a file handle for given path.

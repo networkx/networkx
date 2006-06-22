@@ -218,6 +218,21 @@ True
 >>> os.unlink(fname)
 
 
+YAML
+----
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> write_yaml(G,fname);  
+>>> Gin=read_yaml(fname);
+>>> sorted(G.nodes())==sorted(Gin.nodes())
+True
+>>> sorted(G.edges())==sorted(Gin.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+
+
 Filehandling/Compression/Uncompression
 -------------------------
 

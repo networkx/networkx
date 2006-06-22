@@ -97,7 +97,8 @@ from utils import is_string_like, iterable,\
 from io import write_gpickle, read_gpickle, \
    read_edgelist, write_edgelist, \
    read_multiline_adjlist, write_multiline_adjlist, \
-   read_adjlist, write_adjlist
+   read_adjlist, write_adjlist,\
+   read_yaml, write_yaml
 
 # import some useful graphs - we always use these...
 from generators.classic import *
