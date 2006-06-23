@@ -54,7 +54,7 @@ import time
 from networkx.utils import is_string_like
 import networkx
 
-def write_multiline_adjlist(G,path):
+def write_multiline_adjlist(G,path,delimiter=' ',comments='#'):
     """
     Write the graph G in multiline adjacency list format to the file
     or file handle path.
@@ -83,10 +83,10 @@ def write_multiline_adjlist(G,path):
 
     """
     fh=_get_fh(path,mode='w')        
-    pargs="# "+string.join(sys.argv,' ')
+    pargs=comments+" "+string.join(sys.argv,' ')
     fh.write("%s\n" % (pargs))
-    fh.write("# GMT %s\n" % (time.asctime(time.gmtime())))
-    fh.write("# %s\n" % (G.name))
+    fh.write(comments+" GMT %s\n" % (time.asctime(time.gmtime())))
+    fh.write(comments+" %s\n" % (G.name))
 
     # directed
     directed=G.is_directed()
@@ -96,9 +96,9 @@ def write_multiline_adjlist(G,path):
         edges=[ edge for edge in G.edges_iter(s) if edge[1] not in seen ]
         deg=len(edges)
         if is_string_like(s):
-            fh.write(s+"\t")
+            fh.write(s+delimiter)
         else:
-            fh.write(str(s)+"\t")                         
+            fh.write(str(s)+delimiter)                         
         fh.write("%i\n"%(deg))
         for edge in edges:
             t=edge[1]
@@ -108,14 +108,14 @@ def write_multiline_adjlist(G,path):
                 d=edge[2]   # Note: could still be None
             if d is None:    
                 if is_string_like(t):
-                    fh.write(t+"\n")
+                    fh.write(t+'\n')
                 else:
-                    fh.write(str(t)+"\n")                         
+                    fh.write(str(t)+'\n')                         
             else:   
                 if is_string_like(t):
-                    fh.write(t+"\t")
+                    fh.write(t+delimiter)
                 else:
-                    fh.write(str(t)+"\t")                         
+                    fh.write(str(t)+delimiter)                         
                 if is_string_like(d):
                     fh.write(d+"\n")
                 else:
@@ -123,7 +123,8 @@ def write_multiline_adjlist(G,path):
         if not directed: 
             seen[s]=1
             
-def read_multiline_adjlist(path, create_using=None,
+def read_multiline_adjlist(path, comments="#", delimiter=' ',
+                           create_using=None,
                            nodetype=None, edgetype=None):
     """Read graph in multi-line adjacency list format from path.
 
@@ -158,8 +159,13 @@ def read_multiline_adjlist(path, create_using=None,
 
     >>> G=read_multiline_adjlist("file.adjlist",create_using=DiGraph())
 
-    A '# ' character at the beginning of a line indicates a comment line
-    The entries are separated by a tab (not whitespace).
+    The comments character (default='#') at the beginning of a
+    line indicates a comment line.
+
+    The entries are separated by delimiter (default=' ').
+    If whitespace is significant in node or edge labels you should use
+    some other delimiter such as a tab or other symbol.  
+    
 
     Example multiline adjlist file format:: 
 
@@ -206,11 +212,13 @@ def read_multiline_adjlist(path, create_using=None,
     inp=_get_fh(path)        
 
     for line in inp:
-        if line.startswith("#") or line.startswith("\n"):
-            continue
-        line=line.strip() #remove trailing \n 
+#        if line.startswith("#") or line.startswith("\n"):
+#            continue
+#        line=line.strip() #remove trailing \n 
+        line = line[:line.find(comments)].strip()
+        if not len(line): continue
         try:
-            (u,deg)=line.split('\t')
+            (u,deg)=line.split(delimiter)
             deg=int(deg)
         except:
             raise "Failed to read node and degree on line (%s)"%line
@@ -223,7 +231,7 @@ def read_multiline_adjlist(path, create_using=None,
         G.add_node(u)
         for i in range(deg):
             line=inp.next().strip()
-            vlist=line.split('\t')
+            vlist=line.split(delimiter)
             if len(vlist)==1:
                 v=vlist[0]
                 d=None
@@ -253,7 +261,7 @@ def read_multiline_adjlist(path, create_using=None,
     return G
 
 
-def write_adjlist(G,path):
+def write_adjlist(G,path,comments="#", delimiter=' '):
     """Write graph in single line adjacency list format to path.
 
     See read_adjlist for file format details.
@@ -282,10 +290,10 @@ def write_adjlist(G,path):
     or 'write_multiline_adjlist'
     """
     fh=_get_fh(path,mode='w')        
-    pargs="# "+string.join(sys.argv,' ')
+    pargs=comments+" "+string.join(sys.argv,' ')
     fh.write("%s\n" % (pargs))
-    fh.write("# GMT %s\n" % (time.asctime(time.gmtime())))
-    fh.write("# %s\n" % (G.name))
+    fh.write(comments+" GMT %s\n" % (time.asctime(time.gmtime())))
+    fh.write(comments+" %s\n" % (G.name))
     e={}  # helper dict used to avoid duplicate edges
     try:
         multiedges=G.multiedges
@@ -297,9 +305,9 @@ def write_adjlist(G,path):
 
     for s in G.nodes():
         if is_string_like(s):
-            fh.write(s+"\t")
+            fh.write(s+delimiter)
         else:
-            fh.write(str(s)+"\t")                         
+            fh.write(str(s)+delimiter)
         for t in G.neighbors(s):
             if not directed:
                 if e.has_key((t,s)):
@@ -308,18 +316,19 @@ def write_adjlist(G,path):
             if multiedges:
                 for d in G.get_edge(s,t):
                     if is_string_like(t):
-                        fh.write(t+"\t")
+                        fh.write(t+delimiter)
                     else:
-                        fh.write(str(t)+"\t")                         
+                        fh.write(str(t)+delimiter)
             else:
                 if is_string_like(t):
-                    fh.write(t+"\t")
+                    fh.write(t+delimiter)
                 else:
-                    fh.write(str(t)+"\t")                         
+                    fh.write(str(t)+delimiter)
         fh.write("\n")            
 
 
-def read_adjlist(path,create_using=None,nodetype=None):
+def read_adjlist(path,comments="#", delimiter=' ',
+                 create_using=None,nodetype=None):
     """Read graph in single line adjacency list format from path.
 
     >>> G=read_adjlist("file.adjlist")
@@ -351,10 +360,12 @@ def read_adjlist(path,create_using=None,nodetype=None):
 
     Does not handle edge data: use 'read_edgelist' or 'read_multiline_adjlist'
 
-    A '# ' character at the beginning of a line indicates a comment line
-    The entries are separated by a tab (not whitespace).
+    The comments character (default='#') at the beginning of a
+    line indicates a comment line.
 
-    Example adjlist file format:: 
+    The entries are separated by delimiter (default=' ').
+    If whitespace is significant in node or edge labels you should use
+    some other delimiter such as a tab or other symbol.  
 
      # source target
      a b c
@@ -373,10 +384,12 @@ def read_adjlist(path,create_using=None,nodetype=None):
     fh=_get_fh(path)        
 
     for line in fh.readlines():
-        if line.startswith("#") or line.startswith("\n"):
-            continue
-        line=line.strip() #remove trailing \n 
-        vlist=line.split('\t')
+        line = line[:line.find(comments)].strip()
+        if not len(line): continue
+#        if line.startswith("#") or line.startswith("\n"):
+#            continue
+#        line=line.strip() #remove trailing \n 
+        vlist=line.split(delimiter)
         u=vlist.pop(0)
         # convert types
         if nodetype is not None:
@@ -396,7 +409,7 @@ def read_adjlist(path,create_using=None,nodetype=None):
     return G
 
 
-def write_edgelist(G,path):
+def write_edgelist(G,path,comments="#", delimiter=' '):
     """Write graph G in edgelist format on file path.
 
     See read_edgelist for file format details.
@@ -425,20 +438,21 @@ def write_edgelist(G,path):
     """
     fh=_get_fh(path,mode='w')
 
-    pargs="# "+string.join(sys.argv,' ')
+    pargs=comments+" "+string.join(sys.argv,' ')
     fh.write("%s\n" % (pargs))
-    fh.write("# GMT %s\n" % (time.asctime(time.gmtime())))
-    fh.write("# %s\n" % (G.name))
+    fh.write(comments+" GMT %s\n" % (time.asctime(time.gmtime())))
+    fh.write(comments+" %s\n" % (G.name))
     for e in G.edges():
         for n in e:  # handle Graph or XGraph, two- or three-tuple
             if n is None: continue # don't write data for XGraph None 
             if is_string_like(n):
-                fh.write(n+"\t")
+                fh.write(n+delimiter)
             else:
-                fh.write(str(n)+"\t")                         
+                fh.write(str(n)+delimiter)                         
         fh.write("\n")                     
 
-def read_edgelist(path, create_using=None, nodetype=None, edgetype=None):
+def read_edgelist(path, comments="#", delimiter=' ',
+                  create_using=None, nodetype=None, edgetype=None):
     """Read graph in edgelist format from path.
 
     >>> G=read_edgelist("file.edgelist")
@@ -468,8 +482,13 @@ def read_edgelist(path, create_using=None, nodetype=None, edgetype=None):
 
     >>> G=read_edgelist("file.edgelist",create_using=DiGraph())
 
-    A '# ' character at the beginning of a line indicates a comment line
-    The entries are separated by a tab (not whitespace).
+
+    The comments character (default='#') at the beginning of a
+    line indicates a comment line.
+
+    The entries are separated by delimiter (default=' ').
+    If whitespace is significant in node or edge labels you should use
+    some other delimiter such as a tab or other symbol.  
 
     Example edgelist file format:: 
 
@@ -504,11 +523,13 @@ def read_edgelist(path, create_using=None, nodetype=None, edgetype=None):
     fh=_get_fh(path)
 
     for line in fh.readlines():
-        if line.startswith("#") or line.startswith("\n"):
-            continue
-        line=line.strip() #remove trailing \n 
+        line = line[:line.find(comments)].strip()
+        if not len(line): continue
+#        if line.startswith("#") or line.startswith("\n"):
+#            continue
+#        line=line.strip() #remove trailing \n 
         # split line, should have 2 or three items
-        s=line.split('\t')
+        s=line.split(delimiter)
         if len(s)==2:
             (u,v)=s
             d=None
