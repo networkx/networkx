@@ -44,11 +44,11 @@ G.add_edge(st,mh)
 # write in UTF-8 encoding
 fh=codecs.open('edgelist.utf-8','w',encoding='utf-8')
 fh.write('# -*- coding: %s -*-\n'%fh.encoding) # encoding hint for emacs
-NX.write_multiline_adjlist(G,fh)
+NX.write_multiline_adjlist(G,fh,delimiter='\t')
 
 # read and store in UTF-8
 fh=codecs.open('edgelist.utf-8','r',encoding='utf-8')
-H=NX.read_multiline_adjlist(fh)
+H=NX.read_multiline_adjlist(fh,delimiter='\t')
 
 for n in G.nodes():
     if n not in H:
