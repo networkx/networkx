@@ -2,7 +2,7 @@
 Generate graphs with a given degree sequence.
 
 """
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -10,9 +10,9 @@ Generate graphs with a given degree sequence.
 #    http://www.gnu.org/copyleft/lesser.html
 
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-__date__ = "$Date: 2005-06-15 12:42:59 -0600 (Wed, 15 Jun 2005) $"
+__date__ = "$Date$"
 __credits__ = """"""
-__revision__ = "$Revision: 1037 $"
+__revision__ = "$Revision$"
 
 import random
 import networkx
@@ -420,7 +420,7 @@ def connected_double_edge_swap(G, nswap=1):
 
 def li_smax_graph(degree_seq):
     """Generates a graph based with a given degree sequence and maximizing
-    the s-metric.  Experimental.
+    the s-metric.  Experimental implementation.
 
     Maximum s-metrix  means that high degree nodes are connected to high
     degree nodes. 
@@ -593,14 +593,7 @@ def li_smax_graph(degree_seq):
 
 def connected_smax_graph(degree_seq):
     """
-    Generates a graph based on degree sequence where maximizing the s-metric of
-    scale-free graphs. This simply means that high degree nodes are connected
-    to high degree nodes. 
-        
-        - `deg_sequence`: degree sequence, a list of integers with each entry
-         corresponding to the degree of a node.
-         A non-graphical degree sequence raises an Exception.    
-
+    Not implemented.
     """
     # incomplete implementation
     
@@ -624,7 +617,8 @@ def s_metric(G):
     Reference::
 
     @unpublished{li-2005,
-     author = {Lun Li and David Alderson and                             and John C. Doyle and Walter Willinger},
+     author = {Lun Li and David Alderson and
+               John C. Doyle and Walter Willinger},
      title = {Towards a Theory of Scale-Free Graphs:
               Definition, Properties, and  Implications (Extended Version)},
      url = {http://arxiv.org/abs/cond-mat/0501169},
