@@ -24,7 +24,8 @@ About
       - Includes many classic graphs and synthetic networks
       - Nodes and edges can be "anything" 
       	(e.g. time-series, text, images, XML records)
-      - Exploits existing code from high-quality legacy software in C, C++, Fortran, etc.
+      - Exploits existing code from high-quality legacy software in C, 
+        C++, Fortran, etc.
       - Open source (encourages community input)
       - Unit-tested
 
@@ -60,6 +61,7 @@ Requirements
       - PyGSL            http://pygsl.sourceforge.net/
       - Ipython          http://ipython.scipy.org/
       - pNetworkX	 http://foss.eepatents.com/pNetworkX                 
+      - PyYAML		 http://pyyaml.org/
 
 Downloading
 -----------

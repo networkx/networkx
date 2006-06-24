@@ -3,6 +3,8 @@
 NetworkX News
 =============
 
+*last updated: $Date$*
+
 .. include:: Menu.txt
 
 
@@ -22,6 +24,7 @@ New features
    - double_edge_swap and connected_double_edge_swap
    - Floyd's algorithm for all pairs shortest path
    - read and write unicode graph data to text files
+   - read and write YAML format tex files, http://yaml.org
 
 Bug fixes
 ~~~~~~~~~
