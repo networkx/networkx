@@ -4,7 +4,7 @@
 NetworkX Tutorial
 ~~~~~~~~~~~~~~~~~
 
-*last updated: 25 May 2006*
+*last updated: $Date$*
 
 .. include:: Menu.txt
             
@@ -70,14 +70,13 @@ The latest version of NetworkX can be found at http://networkx.lanl.gov/.
 NetworkX will work on multiple platforms.
 
 On Linux platforms, download the current tarball numbered, say,
-networkx-x.y.z.tar.gz, to an appropriate directory,say /home/username/networks
+networkx-x.y.z.tar.gz, to an appropriate directory, say /home/username/networks
 
 ::
 
    gzip -d -c networkx-x.xx.tar.gz|tar xvf-
-   cd networkxx-x-xx
-   # run the following with your preferred python version
-   # if you are using cvs, remove your build directory first
+   cd networkxx-x.xx
+   # run the following with your preferred Python version
    python setup.py build
    # change to a user id that is allowed to do installation
    python setup.py install
@@ -122,15 +121,15 @@ information).
   Type "help", "copyright", "credits" or "license" for more information.
   >>>
 
-(It might be useful to add the home directory where NX is installed to
+(If you did not install NX into the Python site directory 
+it might be useful to add the directory where NX is installed to
 your PYTHONPATH.)
 
-After starting python, import the networkx module with
-(the recommended way)
+After starting python, import the networkx module with (the recommended way)
 
 >>> import networkx as NX
 
-or using the usual mode for interactive experimentation that could 
+or using the usual mode for interactive experimentation that might
 clobber some names already in your namespace
 
 >>> from networkx import *
@@ -138,7 +137,7 @@ clobber some names already in your namespace
 If this import fails, it means that python cannot find the installed
 module. Check your installation and your PYTHONPATH.
 
-To save much repetition, in all the examples below we will assume that 
+To save some repetition, in all the examples below we will assume that 
 NX has been imported with
 
 >>> from networkx import *
@@ -149,7 +148,7 @@ To create a new (simple) graph, call Graph() with zero or more arguments.
 
 When called with zero arguments, one obtains the empty graph without
 any nodes or edges.  In NX every graph or network is a Python
-"object", and in python the functions associated with an "object" are
+"object", and in Python the functions associated with an "object" are
 known as methods.
 
 The following classes are provided:
@@ -189,7 +188,7 @@ Only the XGraph and XDiGraph classes allow for the selfloops and
 multiedges options.
 
 This package implements graphs using data structures based on an
-adjacency list implemented as a node_centric dictionary of
+adjacency list implemented as a node-centric dictionary of
 dictionaries. The dictionary contains keys corresponding to the nodes
 and the values are dictionaries of neighboring node keys with the
 value None (or edge data for XGraph(), or a list of edge data for
