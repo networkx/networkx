@@ -293,115 +293,6 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
     raise networkx.NetworkXError, \
           "Exceeded max (%d) attempts at a valid sequence."%max_tries
 
-def random_rewire_connected(graph, num_iterations):
-    """
-       Switches the edges of a connected graphs a set number of times while
-       keeping the graph connected and retaining the degree sequence.
-       
-       Optimization proposed in:
-       @misc{ gkantsidis03markov,
-        author = "C. Gkantsidis and M. Mihail and E. Zegura",
-        title = "The markov chain simulation method for generating connected power law random
-        graphs",
-        text = "C. Gkantsidis, M. Mihail, and E. Zegura. The markov chain simulation method
-        for generating connected power law random graphs. In Proc. 5th Workshop
-        on Algorithm Engineering and Experiments (ALENEX). SIAM, January 2003.",
-        year = "2003",
-        url = "citeseer.ist.psu.edu/gkantsidis03markov.html" }
-    """
-    if not networkx.is_connected(graph):
-       raise NetworkXException()
-    import math
-    typenr = 0
-    rnd = random.Random()
-    window = 1
-    window_counter = 0
-    graph2 = graph.copy()
-    edges = graph.edges()
-    if len(edges)<2 : return
-    iters = 0
-    noupdate = 0
-    while iters < num_iterations:
-         window_counter += 1
-         iters += 1
-         counter = 0
-         edges = graph2.edges()
-         [xy, (u,v)] = rnd.sample(edges, 2) 
-     #There needs to be a (x,y) and an (u,v) edge and the endpoints must be distincts
-         (x,y) = xy
-         while (u in xy or v in xy) and counter < num_iterations*2 :
-             [(u,v)] = rnd.sample(edges,1)
-             counter += 1
-         if counter >= num_iterations*2:
-             break
-         if noupdate > num_iterations *4:
-             break
-         if graph2.has_edge(u,x) or graph2.has_edge(v,y):
-             window_counter -=1
-             iters -=1
-             noupdate += 1 
-             continue
-         
-         graph2.delete_edge(x,y)
-         graph2.delete_edge(u,v)
-         graph2.add_edge(u,x)
-         graph2.add_edge(v,y)
-         if window_counter >= window:
-            newrnd = rnd.random()
-            if networkx.is_connected(graph2):
-                graph = graph2.copy()
-                window_counter = 0
-                window += 1
-            else :
-                graph2 = graph.copy()
-                window_counter = 0
-                window = math.ceil(float(window)/2)
-
-    if networkx.is_connected(graph2):
-       return graph2
-    else:
-       return graph
-
-def random_rewire(graph, num_iterations=10):
-    """
-       Randomly rewire the edges of a graphs a set number of times while the 
-       degree sequence stays the same.
-    """
-    rnd = random.Random()
-    window = 1
-    window_counter = 0
-    graph2 = graph.copy()
-    edges = graph.edges()
-    if len(edges)<2 : return
-    iters = 0
-    noupdate = 0
-    while iters < num_iterations:
-         window_counter += 1
-         iters += 1
-         counter = 0
-         edges = graph2.edges()
-         [xy, (u,v)] = rnd.sample(edges, 2) 
-     #There needs to be a (x,y) and an (u,v) edge and the endpoints must be distincts
-         (x,y) = xy
-         while (u in xy or v in xy) and counter < num_iterations*2 :
-             [(u,v)] = rnd.sample(edges,1)
-             counter += 1
-         if counter >= num_iterations*2:
-             break
-         if noupdate > num_iterations *4:
-             break
-         if graph2.has_edge(u,x) or graph2.has_edge(v,y):
-             window_counter -=1
-             iters -=1
-             noupdate += 1 
-             continue
-         
-         graph2.delete_edge(x,y)
-         graph2.delete_edge(u,v)
-         graph2.add_edge(u,x)
-         graph2.add_edge(v,y)
-    return graph2
-
 def double_edge_swap(G, nswap=1):
     """Attempt nswap double-edge swaps on the graph G. Return count
     of successful swaps.
@@ -465,7 +356,15 @@ def connected_double_edge_swap(G, nswap=1):
 
     The initial graph G must be connected and the resulting graph is connected.
 
+    Reference:
 
+     @misc{gkantsidis-03-markov,
+      author = "C. Gkantsidis and M. Mihail and E. Zegura",
+      title = "The Markov chain simulation method for generating connected
+               power law random graphs",
+      year = "2003",
+      url = "http://citeseer.ist.psu.edu/gkantsidis03markov.html"
+      }
 
     """
     if not networkx.is_connected(G):
@@ -503,7 +402,6 @@ def connected_double_edge_swap(G, nswap=1):
                 swapcount+=1
             n+=1
             wcount+=1
-#            print n,swapcount,window, networkx.is_connected(G)
         if networkx.is_connected(G): # increase window
             window+=1
         else: # undo changes from previous window, decrease window
@@ -521,17 +419,29 @@ def connected_double_edge_swap(G, nswap=1):
 
 
 def li_smax_graph(degree_seq):
-    """
-    Generates a graph based on degree sequence where maximizing the s-metric of
-    scale-free graphs. This simply means that high degree nodes are connected
-    to high degree nodes. 
-        
-        - `deg_sequence`: degree sequence, a list of integers with each entry
-         corresponding to the degree of a node.
-         A non-graphical degree sequence raises an Exception.    
+    """Generates a graph based with a given degree sequence and maximizing
+    the s-metric.  Experimental.
 
+    Maximum s-metrix  means that high degree nodes are connected to high
+    degree nodes. 
+        
+    - `deg_sequence`: degree sequence, a list of integers with each entry
+      corresponding to the degree of a node.
+      A non-graphical degree sequence raises an Exception.    
+
+    Reference::      
     
+      @unpublished{li-2005,
+       author = {Lun Li and David Alderson and Reiko Tanaka
+                and John C. Doyle and Walter Willinger},
+       title = {Towards a Theory of Scale-Free Graphs:
+               Definition, Properties, and  Implications (Extended Version)},
+       url = {http://arxiv.org/abs/cond-mat/0501169},
+       year = {2005}
+      }
+
     The algorithm
+
     STEP 0 - Initialization
     A = {0}
     B = {1, 2, 3, ..., n}
@@ -564,14 +474,6 @@ def li_smax_graph(degree_seq):
     STEP 3
         Go to STEP 1
 
-    
-    @MISC{li-2005,
-      author = {Lun Li and David Alderson and Reiko Tanaka and John C. Doyle and Walter Willinger},
-      title = {Towards a Theory of Scale-Free Graphs: Definition, Properties, and  Implications (Extended Version)},
-      url = {http://arxiv.org/abs/cond-mat/0501169},
-      year = {2005}
-    }
-    
     The article states that the algorithm will result in a maximal s-metric. 
     This implementation can not guarantee such maximality. I may have 
     misunderstood the algorithm, but I can not see how it can be anything 
@@ -689,26 +591,48 @@ def li_smax_graph(degree_seq):
                                         -degrees_left[j], (i,j)])
     return A_graph 
 
-def s_metric(graph):
+def connected_smax_graph(degree_seq):
     """
-    Calculates the s-metric defined in li-2005, that is over all edges 
-    (i,j) find the sum of the products d_i * d_j.
-
-    
-     @MISC{li-2005,
-      author = {Lun Li and David Alderson and Reiko Tanaka and John C. Doyle and Walter Willinger},
-      title = {Towards a Theory of Scale-Free Graphs: Definition, Properties, and  Implications (Extended Version)},
-      url = {http://arxiv.org/abs/cond-mat/0501169},
-      year = {2005}
-    }
-    """
-    sum = 0
-    edges = graph.edges()
-    for edge in edges:
-        (deg1,deg2) = graph.degree(edge)
-        sum += deg1*deg2
+    Generates a graph based on degree sequence where maximizing the s-metric of
+    scale-free graphs. This simply means that high degree nodes are connected
+    to high degree nodes. 
         
-    return sum
+        - `deg_sequence`: degree sequence, a list of integers with each entry
+         corresponding to the degree of a node.
+         A non-graphical degree sequence raises an Exception.    
+
+    """
+    # incomplete implementation
+    
+    if not is_valid_degree_sequence(degree_seq):
+        raise networkx.NetworkXError, 'Invalid degree sequence'
+   
+    # build dictionary of node id and degree, sorted by degree, largest first
+    degree_seq.sort() 
+    degree_seq.reverse()
+    ddict=dict(zip(xrange(len(degree_seq)),degree_seq))
+
+    G=empty_graph(1) # start with single node
+
+    return False
+
+def s_metric(G):
+    """
+    Return the "s-Metric" of graph G:
+    the sum of the product deg(u)*deg(v) for every edge u-v in G
+    
+    Reference::
+
+    @unpublished{li-2005,
+     author = {Lun Li and David Alderson and                             and John C. Doyle and Walter Willinger},
+     title = {Towards a Theory of Scale-Free Graphs:
+              Definition, Properties, and  Implications (Extended Version)},
+     url = {http://arxiv.org/abs/cond-mat/0501169},
+     year = {2005}
+     }
+    """
+    # this function doesn't belong in this module
+    return sum([G.degree(u)*G.degree(v) for (u,v) in G.edges_iter()])
    
 def _test_suite():
     import doctest
