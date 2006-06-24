@@ -330,41 +330,37 @@ def dijkstra_path_length(G,source,target):
 
 
 
-def bidirectional_dijkstra(graph, source, target):
+def bidirectional_dijkstra(G, source, target):
     """
     Dijkstra's algorithm for shortest paths using bidirectional search. 
 
-    Returns a tuple where the first item stores distance from the 
-    source and the second stores the path from the source to the  
-    target node.
+    Returns a two-tuple (d,p) where d is the distance and p
+    is the path from the source to the target.
 
     Distances are calculated as sums of weighted edges traversed.
+
     Edges must hold numerical values for XGraph and XDiGraphs.
-    The weights are 1 for Graphs and DiGraphs.
+    The weights are set to 1 for Graphs and DiGraphs.
     
-    This algorithm will perform a lot faster than ordinary dijkstra.
+    In practice  bidirectional Dijkstra is much more than twice as fast as 
+    ordinary Dijkstra.
+
     Ordinary Dijkstra expands nodes in a sphere-like manner from the
     source. The radius of this sphere will eventually be the length 
     of the shortest path. Bidirectional Dijkstra will expand nodes 
     from both the source and the target, making two spheres of half 
     this radius. Volume of the first sphere is pi*r*r while the  
-    others are 2*pi*r/2*r/2, making up half the volume. In practice 
-    bidirectional Dijkstra is much more than twice as fast as 
-    ordinary Dijkstra.
+    others are 2*pi*r/2*r/2, making up half the volume. 
     
-    Note: Bidirectional Dijkstra requires both source and target to 
-    be specified.
-
     This algorithm is not guaranteed to work if edge weights
     are negative or are floating point numbers
-    (overflows and roundoff erros can cause problems). 
+    (overflows and roundoff errors can cause problems). 
 
     """
     if source is None or target is None:
         raise NetworkXException(
             "Bidirectional Dijkstra called with no source or target")
-    if source == target:
-        return (0, [source])
+    if source == target: return (0, [source])
     #Init:   Forward             Backward
     dists =  [{},                {}]# dictionary of final distances
     paths =  [{source:[source]}, {target:[target]}] # dictionary of paths 
@@ -374,16 +370,16 @@ def bidirectional_dijkstra(graph, source, target):
     heapq.heappush(fringe[0], (0, source)) 
     heapq.heappush(fringe[1], (0, target))
     #neighs for extracting correct neighbor information
-    if graph.is_directed():
-        neighs = [graph.successors_iter, graph.predecessors_iter]
+    if G.is_directed():
+        neighs = [G.successors_iter, G.predecessors_iter]
     else:
-        neighs = [graph.neighbors_iter, graph.neighbors_iter]
+        neighs = [G.neighbors_iter, G.neighbors_iter]
     #variables to hold shortest discovered path
     #finaldist = 1e30000
     finalpath = []
     # if unweighted graph, set the weights to 1 on edges by
     # introducing a get_edge method
-    if not hasattr(graph,"get_edge"): graph.get_edge=lambda x,y:1
+    if not hasattr(G,"get_edge"): G.get_edge=lambda x,y:1
     dir = 1
     while fringe[0] and fringe[1]:
         # choose direction 
@@ -402,9 +398,9 @@ def bidirectional_dijkstra(graph, source, target):
             return (finaldist,finalpath)
         for w in neighs[dir](v):
             if(dir==0): #forward
-                vwLength = dists[dir][v] + graph.get_edge(v,w)
+                vwLength = dists[dir][v] + G.get_edge(v,w)
             else: #back, must remember to change v,w->w,v
-                vwLength = dists[dir][v] + graph.get_edge(w,v)
+                vwLength = dists[dir][v] + G.get_edge(w,v)
             
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
@@ -425,7 +421,6 @@ def bidirectional_dijkstra(graph, source, target):
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
     return False
-
 
 
 #def dijkstra(G,source,target):
@@ -491,7 +486,7 @@ def single_source_dijkstra(G,source,target=None):
 
     This algorithm is not guaranteed to work if edge weights
     are negative or are floating point numbers
-    (overflows and roundoff erros can cause problems). 
+    (overflows and roundoff errors can cause problems). 
     
     See also 'bidirectional_dijkstra_path'
     """
@@ -499,9 +494,8 @@ def single_source_dijkstra(G,source,target=None):
     dist = {}  # dictionary of final distances
     paths = {source:[source]}  # dictionary of paths
     seen = {source:0} 
-    fringe=networkx.queues.Priority(lambda x: seen[x])
-    fringe.append(source)
-    
+    fringe=[] # use heapq with (distance,label) tuples 
+    heapq.heappush(fringe,(0,source))
     if not G.is_directed():  G.successors=G.neighbors
     # if unweighted graph, set the weights to 1 on edges by
     # introducing a get_edge method
@@ -510,20 +504,20 @@ def single_source_dijkstra(G,source,target=None):
     if not hasattr(G,"get_edge"): G.get_edge=lambda x,y:1
 
     while fringe:
-        v=fringe.smallest()
+        (d,v)=heapq.heappop(fringe)
         if v in dist: continue # already searched this node.
         dist[v] = seen[v]
         if v == target: break
             
         for w in G.successors(v):
-            vwLength = dist[v] + G.get_edge(v,w)
+            vw_dist = dist[v] + G.get_edge(v,w)
             if w in dist:
-                if vwLength < dist[w]:
+                if vw_dist < dist[w]:
                     raise ValueError,\
                           "Contradictory paths found: negative weights?"
-            elif w not in seen or vwLength < seen[w]:
-                seen[w] = vwLength
-                fringe.append(w) # breadth first search
+            elif w not in seen or vw_dist < seen[w]:
+                seen[w] = vw_dist
+                heapq.heappush(fringe,(vw_dist,w))
                 paths[w] = paths[v]+[w]
     return (dist,paths)
 
