@@ -1,7 +1,19 @@
 """Release data for NetworkX."""
 
+#    Copyright (C) 2004-2006 by 
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    Distributed under the terms of the GNU Lesser General Public License
+#    http://www.gnu.org/copyleft/lesser.html
+
+__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
+__date__ = "$Date$"
+__credits__ = """"""
+__revision__ = "$Revision: 303 $"
+
 name = 'networkx'
-version = '0.30-svn'
+version = '0.31-svn'
 
 description = "Python package for creating and manipulating graphs and networks"
 
