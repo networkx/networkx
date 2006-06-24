@@ -294,9 +294,10 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
           "Exceeded max (%d) attempts at a valid sequence."%max_tries
 
 def double_edge_swap(G, nswap=1):
-    """Attempt nswap double-edge swaps on the graph G. Return count
-    of successful swaps.
+    """Attempt nswap double-edge swaps on the graph G.
 
+    Return count of successful swaps.
+    The graph G is modified in place.
     A double-edge swap removes two randomly choseen edges u-v and x-y
     and creates the new edges u-x and v-y:
 
@@ -341,8 +342,10 @@ def double_edge_swap(G, nswap=1):
     return swapcount
 
 def connected_double_edge_swap(G, nswap=1):
-    """Attempt nswap double-edge swaps on the graph G.  Return count
-    of successful swaps.  Enforce connectivity.
+    """Attempt nswap double-edge swaps on the graph G.
+
+    Returns count of successful swaps.  Enforces connectivity.
+    The graph G is modified in place.
 
     A double-edge swap removes two randomly choseen edges u-v and x-y
     and creates the new edges u-x and v-y:
@@ -367,6 +370,7 @@ def connected_double_edge_swap(G, nswap=1):
       }
 
     """
+    import math
     if not networkx.is_connected(G):
        raise networkx.NetworkXException("Graph not connected")
 
