@@ -43,8 +43,7 @@ Bug fixes
 Examples
 ~~~~~~~~
    - unicode node labels 
-   https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/unicode.py
-
+     https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/unicode.py
 
 What's new in NX-0.29?
 ----------------------
@@ -68,12 +67,13 @@ New features
 
 Bug fixes
 ~~~~~~~~~
-    - Betweenness centrality now correctly uses Brandes definition and
-      has normalization option outside main loop
-    - Empty graph now labled as empty_graph(n)
-    - shortest_path_length used python2.4 generator feature
-    - degree_sequence_tree off by one error caused nonconsecutive labeling
-    - periodic_grid_2d_graph removed in favor of grid_2d_graph with periodic=True
+   - Betweenness centrality now correctly uses Brandes definition and
+     has normalization option outside main loop
+   - Empty graph now labled as empty_graph(n)
+   - shortest_path_length used python2.4 generator feature
+   - degree_sequence_tree off by one error caused nonconsecutive labeling
+   - periodic_grid_2d_graph removed in favor of grid_2d_graph with
+     periodic=True
 
 What's new in NX-0.28?
 ----------------------
