@@ -48,8 +48,8 @@ networks), and platform independence. This philosophy does not exclude
 using whatever other language is appropriate for a specific subtask,
 since Python is also an excellent "glue" language [Langtangen04]_. 
 Equally important, Python is free, well-supported and a joy to use. 
-Among the many guides to python, we recommend the documentation at
-www.python.org and the text by Alex Martelli [Martelli03]_.
+Among the many guides to Python, we recommend the documentation at
+http://www.python.org and the text by Alex Martelli [Martelli03]_.
 
 NetworkX is free software; you can redistribute it and/or
 modify it under the terms of the **LGPL** (GNU Lesser General Public
@@ -81,7 +81,7 @@ networkx-x.y.z.tar.gz, to an appropriate directory, say /home/username/networks
    # change to a user id that is allowed to do installation
    python setup.py install
 
-This will install NetworkX in your python site-packages directory.
+This will install NetworkX in your Python site-packages directory.
 
 If you don't have permission to install software on your
 system, you can install into another directory using
@@ -95,7 +95,7 @@ For example
     or
     python setup.py install --home=~
 
-If you didn't install in the standard python site-packages directory
+If you didn't install in the standard Python site-packages directory
 you will need to set your PYTHONPATH variable to the alternate location.
 See http://docs.python.org/inst/search-path.html for further details.
 
@@ -106,11 +106,11 @@ A Quick Tour
 Building and drawing a small graph
 ----------------------------------
 
-We assume you can start an interactive python session. At the time
+We assume you can start an interactive Python session. At the time
 of writing we require Python Release 2.3.4 or later. (Although not
 required, if you want to run the unit tests you will need Python 2.4
-or  later.) We will assume that you are familiar with Python
-terminology (see the official python website http://www.python.org for more
+or later.) We will assume that you are familiar with Python
+terminology (see the official Python website http://www.python.org for more
 information).
 
 ::
@@ -125,7 +125,7 @@ information).
 it might be useful to add the directory where NX is installed to
 your PYTHONPATH.)
 
-After starting python, import the networkx module with (the recommended way)
+After starting Python, import the networkx module with (the recommended way)
 
 >>> import networkx as NX
 
@@ -134,7 +134,7 @@ clobber some names already in your namespace
 
 >>> from networkx import *
 
-If this import fails, it means that python cannot find the installed
+If this import fails, it means that Python cannot find the installed
 module. Check your installation and your PYTHONPATH.
 
 To save some repetition, in all the examples below we will assume that 
@@ -220,11 +220,11 @@ nbunch, vbunch:
    iterable or an iterator, e.g. a list, set, graph, file, etc..)
 
 e=(n1,n2):
-   an edge (a python 2-tuple) in Graph and DiGraph, 
+   an edge (a Python 2-tuple) in Graph and DiGraph, 
    also written n1-n2 (if undirected) and n1->n2 (if directed).
  
 e=(n1,n2,x): 
-   an edge (a python 3-tuple) in XGraph and XDiGraph, containing the two
+   an edge (a Python 3-tuple) in XGraph and XDiGraph, containing the two
    nodes connected and the edge data/label/object stored associated with
    the edge. The object x, or a list of objects (if multiedges=True),
    can be obtained using G.get_edge(n1,n2). In XGraph and XDiGraph,
