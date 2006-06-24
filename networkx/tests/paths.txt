@@ -87,9 +87,6 @@ Dijkstra
 
 >>> XG=NX.XDiGraph()
 >>> XG.add_edges_from([('s','u',10) ,('s','x',5) ,('u','v',1) ,('u','x',2) ,('v','y',1) ,('x','u',3) ,('x','v',5) ,('x','y',2) ,('y','s',7) ,('y','v',6)])
->>> NX.draw(XG)
->>> import pylab as P
->>> P.savefig('test.png')
 >>> (D,P)= NX.single_source_dijkstra(XG,'s')
 >>> P['v']
 ['s', 'x', 'u', 'v']
