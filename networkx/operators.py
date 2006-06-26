@@ -6,27 +6,28 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 __date__ = "$Date: 2005-06-15 08:09:52 -0600 (Wed, 15 Jun 2005) $"
 __credits__ = """"""
 __revision__ = "$Revision: 1024 $"
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-#from networkx.base import *
 import networkx
 from networkx.utils import is_string_like
 
 def subgraph(G, nbunch, inplace=False, create_using=None):
-    """Return the subgraph induced on nodes in nbunch.
+    """
+    Return the subgraph induced on nodes in nbunch.
 
-    nbunch: either a singleton node, a string (which is treated
-    as a singleton node, or any iterable (non-string) container
-    of nodes for which len(nbunch) is defined. For example, a list,
-    dict, set, Graph, numeric array, or user-defined iterable object. 
+    nbunch: can be a singleton node, a string (which is treated
+    as a singleton node), or any iterable container of
+    of nodes. (It can be an iterable or an iterator, e.g. a list,
+    set, graph, file, numeric array, etc.)
 
-    Setting inplace=True will return induced subgraph in original graph
-    by deleting nodes not in nbunch.
+    Setting inplace=True will return the induced subgraph in the
+    original graph by deleting nodes not in nbunch. This overrides
+    create_using.  Warning: this can destroy the graph.
 
     Unless otherwise specified, return a new graph of the same
     type as self.  Use (optional) create_using=R to return the
@@ -39,29 +40,29 @@ def subgraph(G, nbunch, inplace=False, create_using=None):
 
     Note: subgraph(G) calls G.subgraph()
 
-       """
-    H=G.subgraph(nbunch, inplace, create_using)
+    """
+    H = G.subgraph(nbunch, inplace, create_using)
     return H
                                                                                 
 def union(G,H,create_using=None,rename=False,**kwds):
     """ Return the union of graphs G and H.
     
-        Graphs G and H must be disjoint, otherwise an exception is raised.
+    Graphs G and H must be disjoint, otherwise an exception is raised.
 
-        Node names of G and H can be changed be specifying the tuple
-        rename=('G-','H-') (for example).
-        Node u in G is then renamed "G-u" and v in H is renamed "H-v".
+    Node names of G and H can be changed be specifying the tuple
+    rename=('G-','H-') (for example).
+    Node u in G is then renamed "G-u" and v in H is renamed "H-v".
 
-        To force a disjoint union with node relabeling, use
-        disjoint_union(G,H) or convert_node_labels_to integers().
+    To force a disjoint union with node relabeling, use
+    disjoint_union(G,H) or convert_node_labels_to integers().
 
-        Optional create_using=R returns graph R filled in with the
-        union of G and H.  Otherwise a new graph is created, of the
-        same class as G.  It is recommended that G and H be either
-        both directed or both undirected.
+    Optional create_using=R returns graph R filled in with the
+    union of G and H.  Otherwise a new graph is created, of the
+    same class as G.  It is recommended that G and H be either
+    both directed or both undirected.
 
-        A new name can be specified in the form
-        X=graph_union(G,H,name="new_name")
+    A new name can be specified in the form
+    X=graph_union(G,H,name="new_name")
 
     Implemented for Graph, DiGraph, XGraph, XDiGraph.        
 
@@ -100,7 +101,8 @@ def union(G,H,create_using=None,rename=False,**kwds):
     # node name check
     for n in Gname.values():
         if n in Hname.values():
-            raise networkx.NetworkXError,"node sets of G and H are not disjoint. Use appropriate rename=('Gprefix','Hprefix')"
+            raise networkx.NetworkXError,\
+            "node sets of G and H are not disjoint. Use appropriate rename=('Gprefix','Hprefix')"
     # node names OK, now build union
     for v in G:
         R.add_node(Gname[v])
