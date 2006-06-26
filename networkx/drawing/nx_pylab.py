@@ -228,7 +228,7 @@ def draw_networkx_edges(G, pos,
     See networkx.layout for functions that compute node positions.
 
     edgelist is an optional list of the edges in G to be drawn.
-    If provided only the edges in edgelist will be drawn. 
+    If provided, only the edges in edgelist will be drawn. 
     
     See draw_networkx for the list of other optional parameters.
 
@@ -238,6 +238,9 @@ def draw_networkx_edges(G, pos,
 
     if edgelist is None:
         edgelist=G.edges()
+
+    if not edgelist: # no edges!
+        return None
 
     # set edge positions
     head=[]
