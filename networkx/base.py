@@ -406,9 +406,9 @@ class Graph(object):
             print ("Type:").ljust(width_left), ",".join(type_name)
             print ("Number of nodes:").ljust(width_left), self.number_of_nodes()
             print ("Number of edges:").ljust(width_left), self.number_of_edges()
-            if self.order() > 0:
-                print ("Average Degree:").ljust(width_left), \
-                      round( self.size()/float(self.order()) ,4)
+            if len(self) > 0:
+                print ("Average degree:").ljust(width_left), \
+                      round( 2*self.size()/float(len(self)), 4)
         else:
             try:
                 list_neighbors = self.neighbors(n)
@@ -424,8 +424,9 @@ class Graph(object):
                     else:
                         print "".ljust(width_left), i
                     num_line += 1
-            except:
-                print "Node", n, "is not the graph"
+            except (KeyError, TypeError):
+                raise NetworkXError, "node %s not in graph"%n
+
 
     def add_node(self, n):
         """
@@ -1070,7 +1071,7 @@ class DiGraph(Graph):
         A hashable object is one that can be used as a key in a Python
         dictionary. This includes strings, numbers, tuples of strings
         and numbers, etc.  On many platforms this also includes
-        mutables such as Graphs e.g., though one should be careful the
+        mutables such as Graphs, though one should be careful that the
         hash doesn't change on mutables.
 
         >>> from networkx import *
