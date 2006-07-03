@@ -275,6 +275,7 @@ def draw_networkx_edges(G, pos,
                                 linestyle    = style,     
                                 transOffset = ax.transData,             
                                 )
+    edge_collection.set_alpha(alpha)
     arrow_collection=None
 
     if G.is_directed():
