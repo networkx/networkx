@@ -642,7 +642,13 @@ def _get_fh(path,mode='r'):
 
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/io.txt',package='networkx')
+    try:
+        import yaml
+        suite = doctest.DocFileSuite('tests/io.txt',
+                                     'tests/io_yaml.txt',
+                                     package='networkx')
+    except ImportError:
+        suite = doctest.DocFileSuite('tests/io.txt',package='networkx')
     return suite
 
 
