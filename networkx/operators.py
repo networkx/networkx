@@ -265,12 +265,79 @@ def convert_to_directed(G):
     """
     return G.to_directed()
 
-def convert_node_labels_to_integers(G,first_label=0,ordering="default",discard_old_labels=True):
+def relabel(G,mapping):
+    """Return a copy of G with node labels transformed by mapping.
+
+    mapping is either
+      - a dictionary with the old labels as keys and new labels as values
+      - a function transforming an old label with a new label
+
+    In either case, the new labels must be hashable Python objects.
+
+    mapping as dictionary:
+
+    >>> G=path_graph(3)  # nodes 0-1-2
+    >>> mapping={0:'a',1:'b',2:'c'}
+    >>> H=relabel(G,mapping)
+    >>> print H.nodes()
+    ['a', 'c', 'b']
+
+    >>> G=path_graph(26) # nodes 0..25
+    >>> mapping=dict(zip(G.nodes(),"abcdefghijklmnopqrstuvwxyz"))
+    >>> H=relabel(G,mapping) # nodes a..z
+    >>> mapping=dict(zip(G.nodes(),xrange(1,27)))
+    >>> G1=relabel(G,mapping) # nodes 1..26
+
+    mapping as function
+
+    >>> G=path_graph(3)
+    >>> def mapping(x):
+    ...    return x**2
+    >>> H=relabel(G,mapping)
+    >>> print H.nodes()
+    [0, 1, 4]
+
+    Also see convert_node_labels_to_integers.
+
     """
-    Return a copy of G, with n node labels replaced with integers,
+    H=create_empty_copy(G)
+    H.name="(%s)" % G.name
+
+    if hasattr(mapping,"__getitem__"):   # if we are a dict
+        map_func=mapping.__getitem__   # call as a function
+    else:
+        map_func=mapping
+
+    for node in G:
+        try:
+            H.add_node(map_func(node))
+        except:
+            raise networkx.NetworkXError,\
+                  "relabeling function cannot be applied to node %s" % node
+
+    for e in G.edges_iter():
+        u=map_func(e[0])
+        v=map_func(e[1])
+        if len(e)==2:
+            H.add_edge(u,v)
+        else:
+            H.add_edge(u,v,e[2])
+
+    return H        
+    
+
+def relabel_nodes_with_function(G, func):
+    """Deprecated: call relabel(G,func)."""
+    return relabel(G,func)
+
+
+def convert_node_labels_to_integers(G,first_label=0,
+                                    ordering="default",
+                                    discard_old_labels=True):
+    """ Return a copy of G, with n node labels replaced with integers,
     starting at first_label.
 
-    first_label: (optional, default=1)
+    first_label: (optional, default=0)
 
        An integer specifying the offset in numbering nodes.
        The n new integer labels are numbered first_label, ..., n+first_label.
@@ -291,7 +358,6 @@ def convert_node_labels_to_integers(G,first_label=0,ordering="default",discard_o
        labels to old labels, and set self.dna["node_labeled"]=True
 
     Works for Graph, DiGraph, XGraph, XDiGraph
-    
     """
 #    This function strips information attached to the nodes and/or
 #    edges of a graph, and returns a graph with appropriate integer
@@ -301,7 +367,9 @@ def convert_node_labels_to_integers(G,first_label=0,ordering="default",discard_o
 #    (labels) of the nodes (and edges) matter in deciding when two
 #    graphs are the same. For example, in problems of graph enumeration
 #    there is a distinct difference in techniques required when
-#    counting labeled vs. unlabeled graphs. When implementing graph
+#    counting labeled vs. unlabeled graphs.
+
+#    When implementing graph
 #    algorithms it is often convenient to strip off the original node
 #    and edge information and appropriately relabel the n nodes with
 #    the integer values 1,..,n. This is the purpose of this function,
@@ -310,92 +378,37 @@ def convert_node_labels_to_integers(G,first_label=0,ordering="default",discard_o
 #    returned but inserted into the dna of the new graph, or to discard that
 #    information if it is superfluous.
 
-
-    H=subgraph(G,[]) # create empty copy, works also for XGraph & XDiGraph
-    H.name="("+G.name+")_with_int_labels"
-    v_to_int_map={}
-    v_int=first_label
-    nodes=G.nodes_iter()
-
+    N=G.number_of_nodes()+first_label
     if ordering=="default":
-        for v in nodes:
-            v_to_int_map[v]=v_int
-#           print v_int, "-->", v
-            H.add_node(v_int)
-            v_int+=1
+        mapping=dict(zip(G.nodes(),range(first_label,N)))
     elif ordering=="sorted":
-        for v in sorted(G.nodes()):
-            v_to_int_map[v]=v_int
-#           print v_int, "-->", v
-            H.add_node(v_int)
-            v_int+=1
+        nlist=G.nodes()
+        nlist.sort()
+        mapping=dict(zip(nlist,range(first_label,N)))
     elif ordering=="increasing degree":
-        deg_v_pairs=[]
-        # create sequence of degree-node pairs
-        for v in nodes:
-            deg_v_pairs.append([G.degree(v),v])
-        deg_v_pairs.sort() # in-place sort from lowest to highest degree
-        for _,v in deg_v_pairs:
-            v_to_int_map[v]=v_int
-#           print v_int, "-->", v
-            H.add_node(v_int)
-            v_int+=1
+        dv_pairs=[(G.degree(n),n) for n in G]
+        dv_pairs.sort() # in-place sort from lowest to highest degree
+        mapping=dict(zip([n for d,n in dv_pairs],range(first_label,N)))
     elif ordering=="decreasing degree":
-        deg_v_pairs=[]
-        # create sequence of degree-node pairs
-        for v in nodes:
-            deg_v_pairs.append([G.degree(v),v])
-        deg_v_pairs.sort() # in-place sort from lowest to highest degree
-        deg_v_pairs.reverse()
-        for _,v in deg_v_pairs:
-            v_to_int_map[v]=v_int
-#           print v_int, "-->", v
-            H.add_node(v_int)
-            v_int+=1        
+        dv_pairs=[(G.degree(n),n) for n in G]
+        dv_pairs.sort() # in-place sort from lowest to highest degree
+        dv_pairs.reverse()
+        mapping=dict(zip([n for d,n in dv_pairs],range(first_label,N)))
     else:
-        raise networkx.NetworkXError,"unknown value of node ordering variable: ordering"
+        raise networkx.NetworkXError,\
+              "unknown value of node ordering variable: ordering"
 
-    edges=G.edges_iter()
-    for e in edges:
-        v_int=v_to_int_map[e[0]]
-        w_int=v_to_int_map[e[1]]
-#       print "edge ",v,"--",w, " mapped to ", v_int,"--",w_int
-        if len(e)==2:
-            H.add_edge(v_int,w_int)
-        else:
-            H.add_edge(v_int,w_int,e[2])
+    H=relabel(G,mapping)
 
+    H.name="("+G.name+")_with_int_labels"
     if discard_old_labels:
         H.dna["has_node_labels"]=False
         H.dna["node_labels"]=None
     else:
         H.dna["has_node_labels"]=True
-        H.dna["node_labels"]=v_to_int_map                
+        H.dna["node_labels"]=mapping
     return H
     
-def relabel_nodes_with_function(G, func):
-    """
-    Return new graph from input graph G, such that each node name is
-    relabeled by the application of the specified function func.
-    """
-    H=create_empty_copy(G)
-    H.name="(%s)" % G.name
-    nodes=G.nodes_iter()
-    for node in nodes:
-        try:
-            H.add_node(func(node))
-        except:
-            raise networkx.NetworkXError,\
-                  "relabeling function cannot be applied to node %s" % node
-    edges=G.edges_iter()    
-    for n1, n2 in edges:
-        try:
-            H.add_edge(func(n1), func(n2))
-        except:
-            raise networkx.NetworkXError,\
-                  "relabeling function cannot be applied to edge (%s, %s)" % \
-                  (n1, n2)
-    return H
 
 def _test_suite():
     import doctest
