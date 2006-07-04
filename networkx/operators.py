@@ -3,7 +3,7 @@ Operations on graphs; including  union, complement, subgraph.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = "$Date: 2005-06-15 08:09:52 -0600 (Wed, 15 Jun 2005) $"
+__date__ = "$Date$"
 __credits__ = """"""
 __revision__ = "$Revision: 1024 $"
 #    Copyright (C) 2004-2006 by 
