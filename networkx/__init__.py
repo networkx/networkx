@@ -100,6 +100,12 @@ from io import write_gpickle, read_gpickle, \
    read_adjlist, write_adjlist,\
    read_yaml, write_yaml
 
+from convert import from_whatever,\
+     from_dict_of_dicts, to_dict_of_dicts,\
+     from_dict_of_lists, to_dict_of_lists,\
+     from_numpy_matrix, to_numpy_matrix,\
+     from_scipy_sparse_matrix, to_scipy_sparse_matrix
+
 # import some useful graphs - we always use these...
 from generators.classic import *
 from generators.small import *

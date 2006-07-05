@@ -189,6 +189,8 @@ __revision__ = "$Revision: 1061 $"
 #    http://www.gnu.org/copyleft/lesser.html
 #
 
+import networkx.convert as convert
+
 # Exception handling
 
 # the root of all Exceptions
@@ -283,11 +285,15 @@ class Graph(object):
     or self-loops.  Attempting to add either will not change
     the graph and will not report an error.
     
-    """
-    def __init__(self, **kwds):
-        """Initialize Graph.
+    See networkx.base for more details.
 
-        G=Graph(name="empty") creates empty graph G with G.name="empty"
+    """
+    def __init__(self, data=None, **kwds):
+        """Initialize Graph.
+        
+        >>> G=Graph(name="empty")
+
+        creates empty graph G with G.name="empty"
 
         """
         self.name=kwds.get("name","No Name")
@@ -297,6 +303,10 @@ class Graph(object):
         self.dna["datastructure"]="vdict_of_dicts"
 
         self.adj={}  # empty adjacency hash
+
+        # attempt to load graph with data
+        if data is not None:
+            self=convert.from_whatever(data,create_using=self)
             
     def __str__(self):
         return self.name
@@ -1049,10 +1059,20 @@ class DiGraph(Graph):
 # we store two adjacency lists:
 #    the  predecessors of node n are stored in the dict self.pred
 #    the successors of node n are stored in the dict self.succ=self.adj
-    def __init__(self,**kwds):
-        super(DiGraph,self).__init__(**kwds)
+    def __init__(self,data=None,**kwds):
+
+        self.name=kwds.get("name","No Name")
+        # dna is a dictionary attached to each graph and used to store
+        # information about the graph structure
+        self.dna={}
+        self.dna["datastructure"]="vdict_of_dicts"
+
+        self.adj={}  # empty adjacency hash
         self.pred={}        # predecessor
         self.succ=self.adj  # successor
+
+        if data is not None:
+            self=convert.from_whatever(data,create_using=self)
 
     def __getitem__(self,n):
         """Return the in- and out-neighbors of node n as a list.

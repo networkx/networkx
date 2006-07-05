@@ -1,0 +1,239 @@
+Convert
+=======
+
+>>> from networkx.base import Graph,DiGraph
+>>> from networkx.xbase import XGraph,XDiGraph
+>>> from networkx.convert import *
+>>> from networkx.operators import *
+>>> from networkx.generators.classic import barbell_graph,cycle_graph
+
+Simple Graphs
+--------------
+
+>>> G=barbell_graph(10,3)
+
+Dict of dicts
+~~~~~~~~~~~~~
+
+>>> dod=to_dict_of_dicts(G)
+>>> GG=from_dict_of_dicts(dod)
+>>> sorted(G.nodes())==sorted(GG.nodes())
+True
+>>> sorted(G.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(dod)
+>>> sorted(G.nodes())==sorted(GW.nodes())
+True
+>>> sorted(G.edges())==sorted(GW.edges())
+True
+>>> GI=Graph(dod)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+
+
+>>> G=barbell_graph(10,3)
+
+Dict of lists
+~~~~~~~~~~~~~
+
+>>> dol=to_dict_of_lists(G)
+>>> GG=from_dict_of_lists(dol)
+>>> sorted(G.nodes())==sorted(GG.nodes())
+True
+>>> sorted(G.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(dol)
+>>> sorted(G.nodes())==sorted(GW.nodes())
+True
+>>> sorted(G.edges())==sorted(GW.edges())
+True
+>>> GI=Graph(dol)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+
+DiGraphs
+--------
+
+>>> G=cycle_graph(10)
+
+Dict of dicts
+~~~~~~~~~~~~~
+
+>>> dod=to_dict_of_dicts(G)
+>>> GG=from_dict_of_dicts(dod)
+>>> sorted(G.nodes())==sorted(GG.nodes())
+True
+>>> sorted(G.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(dod)
+>>> sorted(G.nodes())==sorted(GW.nodes())
+True
+>>> sorted(G.edges())==sorted(GW.edges())
+True
+>>> GI=Graph(dod)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+
+
+>>> G=cycle_graph(10,create_using=DiGraph())
+
+Dict of lists
+~~~~~~~~~~~~~
+
+>>> dol=to_dict_of_lists(G)
+>>> GG=from_dict_of_lists(dol,create_using=DiGraph())
+>>> sorted(G.nodes())==sorted(GG.nodes())
+True
+>>> sorted(G.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(dol,create_using=DiGraph())
+>>> sorted(G.nodes())==sorted(GW.nodes())
+True
+>>> sorted(G.edges())==sorted(GW.edges())
+True
+>>> GI=DiGraph(dol)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+
+
+XGraph
+------
+
+>>> G=cycle_graph(10)
+>>> e=G.edges()
+>>> source=[u for u,v in e]
+>>> dest=[v for u,v in e]
+>>> ex=zip(source,dest,source)
+>>> G=XGraph()
+>>> G.add_edges_from(ex)
+
+Dict of dicts
+~~~~~~~~~~~~~
+
+>>> dod=to_dict_of_dicts(G)
+>>> GG=from_dict_of_dicts(dod,create_using=XGraph())
+>>> sorted(G.nodes())==sorted(GG.nodes())
+True
+>>> sorted(G.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(dod,create_using=XGraph())
+>>> sorted(G.nodes())==sorted(GW.nodes())
+True
+>>> sorted(G.edges())==sorted(GW.edges())
+True
+>>> GI=XGraph(dod)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+
+
+Dict of lists
+~~~~~~~~~~~~~
+
+>>> dol=to_dict_of_lists(G)
+>>> GG=from_dict_of_lists(dol,create_using=XGraph())
+
+dict of lists throws away edge data so set it to none
+>>> enone=[(u,v,None) for (u,v,d) in G.edges()]
+>>> sorted(G.nodes())==sorted(GG.nodes())
+True
+>>> enone==sorted(GG.edges())
+True
+>>> GW=from_whatever(dol,create_using=XGraph())
+>>> sorted(G.nodes())==sorted(GW.nodes())
+True
+>>> enone==sorted(GW.edges())
+True
+>>> GI=XGraph(dol)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> enone==sorted(GI.edges())
+True
+
+
+with multiedges and self loops
+
+>>> G=cycle_graph(10)
+>>> e=G.edges()
+>>> source=[u for u,v in e]
+>>> dest=[v for u,v in e]
+>>> ex=zip(source,dest,source)
+>>> XG=XGraph()
+>>> XG.add_edges_from(ex)
+>>> XGM=XGraph(multiedges=True)
+>>> XGM.add_edges_from(ex)
+>>> XGM.add_edge(0,1,2) # multiedge
+>>> XGS=XGraph(selfloops=True)
+>>> XGS.add_edges_from(ex)
+>>> XGS.add_edge(0,0,100) # self loop
+
+
+Dict of dicts
+~~~~~~~~~~~~~
+
+with self loops, OK
+
+>>> dod=to_dict_of_dicts(XGS)
+>>> GG=from_dict_of_dicts(dod,create_using=XGraph(selfloops=True))
+>>> sorted(XGS.nodes())==sorted(GG.nodes())
+True
+>>> sorted(XGS.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(dod,create_using=XGraph(selfloops=True))
+>>> sorted(XGS.nodes())==sorted(GW.nodes())
+True
+>>> sorted(XGS.edges())==sorted(GW.edges())
+True
+>>> GI=XGraph(dod,selfloops=True)
+>>> sorted(XGS.nodes())==sorted(GI.nodes())
+True
+>>> sorted(XGS.edges())==sorted(GI.edges())
+True
+
+
+Dict of lists
+~~~~~~~~~~~~~
+with self loops, OK
+
+>>> dol=to_dict_of_lists(XGS)
+>>> GG=from_dict_of_lists(dol,create_using=XGraph(selfloops=True))
+
+dict of lists throws away edge data so set it to none
+>>> enone=[(u,v,None) for (u,v,d) in XGS.edges()]
+>>> sorted(XGS.nodes())==sorted(GG.nodes())
+True
+>>> enone==sorted(GG.edges())
+True
+>>> GW=from_whatever(dol,create_using=XGraph(selfloops=True))
+>>> sorted(XGS.nodes())==sorted(GW.nodes())
+True
+>>> enone==sorted(GW.edges())
+True
+>>> GI=XGraph(dol,selfloops=True)
+>>> sorted(XGS.nodes())==sorted(GI.nodes())
+True
+>>> enone==sorted(GI.edges())
+True
+
+Dict of dicts
+~~~~~~~~~~~~~
+
+with multiedges, not OK
+
+
+Dict of lists
+~~~~~~~~~~~~~
+with multiedges, OK, but better write as DiGraph else you'll get double edges
+
+
+
+

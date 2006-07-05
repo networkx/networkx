@@ -212,7 +212,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 #
 
 from networkx.base import Graph, DiGraph, NetworkXException, NetworkXError
-
+import networkx.convert as convert
 
 class XGraph(Graph):
     """A class implementing general undirected graphs, allowing
@@ -242,7 +242,7 @@ class XGraph(Graph):
     """
 
 
-    def __init__(self,**kwds):
+    def __init__(self,data=None,**kwds):
         """Initialize XGraph.
 
         Optional arguments::
@@ -263,6 +263,10 @@ class XGraph(Graph):
         self.dna["datastructure"]="xgraph_dict_of_dicts"
         
         self.adj={}      # adjacency list
+
+        if data is not None:
+            self=convert.from_whatever(data,create_using=self)
+
 
     def __getitem__(self,n):
         """Return the neighbors of node n as a list.
@@ -914,7 +918,7 @@ class XDiGraph(DiGraph):
 #    For each edge (n1,n2,x) in self.succ there exists a corresponding edge
 #    (n2,n1,x) in self.pred
 
-    def __init__(self,**kwds):
+    def __init__(self,data=None,**kwds):
         """Initialize XDiGraph.
 
         Optional arguments::
@@ -937,6 +941,11 @@ class XDiGraph(DiGraph):
         self.adj={}         # adjacency list
         self.pred={}        # predecessor
         self.succ=self.adj  # successor is same as adj
+
+        if data is not None:
+            self=convert.from_whatever(data,create_using=self)
+
+
 
 
     def add_edge(self, n1, n2=None, x=None):  

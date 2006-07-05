@@ -1,0 +1,167 @@
+Convert
+=======
+
+>>> from networkx.base import Graph,DiGraph
+>>> from networkx.xbase import XGraph,XDiGraph
+>>> from networkx.convert import *
+>>> from networkx.operators import *
+>>> import os,tempfile
+
+Convert
+=======
+
+>>> from networkx.base import Graph,DiGraph
+>>> from networkx.xbase import XGraph,XDiGraph
+>>> from networkx.convert import *
+>>> from networkx.operators import *
+>>> from networkx.generators.classic import barbell_graph,cycle_graph
+>>> import scipy
+
+Simple Graphs
+--------------
+
+>>> G=barbell_graph(10,3)
+
+Scipy sparse matrix
+~~~~~~~~~~~~~~~~~~~
+
+>>> A=to_scipy_sparse_matrix(G)
+>>> GG=from_scipy_sparse_matrix(A)
+>>> sorted(G.nodes())==sorted(GG.nodes())
+True
+>>> sorted(G.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(A)
+>>> sorted(G.nodes())==sorted(GW.nodes())
+True
+>>> sorted(G.edges())==sorted(GW.edges())
+True
+>>> GI=Graph(A)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+>>> ACSR=A.tocsr()
+>>> GI=Graph(ACSR)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+>>> ACOO=A.tocoo()
+>>> GI=Graph(ACOO)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+>>> ACSC=A.tocsc()
+>>> GI=Graph(ACSC)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+>>> AD=A.todense()
+>>> GI=Graph(AD)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+>>> AA=A.toarray()
+>>> GI=Graph(AA)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+
+DiGraphs
+--------
+
+>>> G=cycle_graph(10,create_using=DiGraph())
+
+Scipy sparse matrix
+~~~~~~~~~~~~~~~~~~~
+
+>>> A=to_scipy_sparse_matrix(G)
+>>> GG=from_scipy_sparse_matrix(A,create_using=DiGraph())
+>>> sorted(G.nodes())==sorted(GG.nodes())
+True
+>>> sorted(G.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(A,create_using=DiGraph())
+>>> sorted(G.nodes())==sorted(GW.nodes())
+True
+>>> sorted(G.edges())==sorted(GW.edges())
+True
+>>> GI=DiGraph(A)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted(GI.edges())
+True
+
+
+XGraph
+------
+
+>>> G=cycle_graph(4)
+>>> e=G.edges()
+>>> source=[u for u,v in e]
+>>> dest=[v for u,v in e]
+>>> weight=[s+10 for s in source]
+>>> ex=zip(source,dest,weight)
+>>> XG=XGraph()
+>>> XG.add_edges_from(ex)
+
+
+Numpy matrix
+~~~~~~~~~~~~
+
+>>> A=to_scipy_sparse_matrix(XG)
+>>> GG=from_scipy_sparse_matrix(A,create_using=XGraph())
+>>> sorted(XG.nodes())==sorted(GG.nodes())
+True
+>>> sorted(XG.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(A,create_using=XGraph())
+>>> sorted(XG.nodes())==sorted(GW.nodes())
+True
+>>> sorted(XG.edges())==sorted(GW.edges())
+True
+>>> GI=XGraph(A)
+>>> sorted(XG.nodes())==sorted(GI.nodes())
+True
+>>> sorted(XG.edges())==sorted(GI.edges())
+True
+
+
+XDiGraph
+------
+
+>>> G=cycle_graph(4)
+>>> e=G.edges()
+>>> source=[u for u,v in e]
+>>> dest=[v for u,v in e]
+>>> weight=[s+10 for s in source]
+>>> ex=zip(source,dest,weight)
+>>> XG=XDiGraph()
+>>> XG.add_edges_from(ex)
+
+
+Scipy sparse matrix
+~~~~~~~~~~~~~~~~~~~
+
+>>> A=to_scipy_sparse_matrix(XG)
+>>> GG=from_scipy_sparse_matrix(A,create_using=XDiGraph())
+>>> sorted(XG.nodes())==sorted(GG.nodes())
+True
+>>> sorted(XG.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(A,create_using=XDiGraph())
+>>> sorted(XG.nodes())==sorted(GW.nodes())
+True
+>>> sorted(XG.edges())==sorted(GW.edges())
+True
+>>> GI=XDiGraph(A)
+>>> sorted(XG.nodes())==sorted(GI.nodes())
+True
+>>> sorted(XG.edges())==sorted(GI.edges())
+True
+
