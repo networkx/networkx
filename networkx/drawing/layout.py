@@ -86,11 +86,9 @@ def random_layout(G, dim=2):
         vpos[v]=N.array([random.random() for i in range(dim)])
     return vpos        
 
-def spring_layout(G, iterations=50, dim=2, node_pos=False):
+def spring_layout(G, iterations=50, dim=2, node_pos=None):
     """Spring force model layout"""
-#    from Numeric import array,dot,sum,sqrt
-    if not node_pos:
-        # set the initial positions randomly in 1x1 box
+    if node_pos==None :  # set the initial positions randomly in 1x1 box
         vpos=random_layout(G, dim=dim) 
     else:
         vpos=node_pos
