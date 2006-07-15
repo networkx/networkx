@@ -1,6 +1,16 @@
 """
 Convert NetworkX graphs to and from other formats.
 
+from_whatever attemps to guess the input format
+
+Create a 10 node random digraph
+
+>>> from networkx import *
+>>> import numpy
+>>> a=numpy.reshape(numpy.random.random_integers(0,1,size=100),(10,10))
+>>> D=from_whatever(D,create_using=DiGraph()) # or D=DiGraph(a) 
+
+
 For graphviz formats see networkx.drawing.nx_pygraphviz
 or networkx.drawing.nx_pydot.
 
