@@ -79,7 +79,7 @@ from cluster import triangles, average_clustering, clustering, transitivity
 from operators import union, cartesian_product, compose, complement,\
                       disjoint_union, create_empty_copy,\
                       subgraph, convert_to_undirected, convert_to_directed,\
-                      convert_node_labels_to_integers, relabel
+                      convert_node_labels_to_integers, relabel_nodes
 from centrality import betweenness_centrality, \
                        degree_centrality, \
                        closeness_centrality

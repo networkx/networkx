@@ -265,7 +265,7 @@ def convert_to_directed(G):
     """
     return G.to_directed()
 
-def relabel(G,mapping):
+def relabel_nodes(G,mapping):
     """Return a copy of G with node labels transformed by mapping.
 
     mapping is either
@@ -278,22 +278,22 @@ def relabel(G,mapping):
 
     >>> G=path_graph(3)  # nodes 0-1-2
     >>> mapping={0:'a',1:'b',2:'c'}
-    >>> H=relabel(G,mapping)
+    >>> H=relabel_nodes(G,mapping)
     >>> print H.nodes()
     ['a', 'c', 'b']
 
     >>> G=path_graph(26) # nodes 0..25
     >>> mapping=dict(zip(G.nodes(),"abcdefghijklmnopqrstuvwxyz"))
-    >>> H=relabel(G,mapping) # nodes a..z
+    >>> H=relabel_nodes(G,mapping) # nodes a..z
     >>> mapping=dict(zip(G.nodes(),xrange(1,27)))
-    >>> G1=relabel(G,mapping) # nodes 1..26
+    >>> G1=relabel_nodes(G,mapping) # nodes 1..26
 
     mapping as function
 
     >>> G=path_graph(3)
     >>> def mapping(x):
     ...    return x**2
-    >>> H=relabel(G,mapping)
+    >>> H=relabel_nodes(G,mapping)
     >>> print H.nodes()
     [0, 1, 4]
 
@@ -327,8 +327,8 @@ def relabel(G,mapping):
     
 
 def relabel_nodes_with_function(G, func):
-    """Deprecated: call relabel(G,func)."""
-    return relabel(G,func)
+    """Deprecated: call relabel_nodes(G,func)."""
+    return relabel_nodes(G,func)
 
 
 def convert_node_labels_to_integers(G,first_label=0,
@@ -398,7 +398,7 @@ def convert_node_labels_to_integers(G,first_label=0,
         raise networkx.NetworkXError,\
               "unknown value of node ordering variable: ordering"
 
-    H=relabel(G,mapping)
+    H=relabel_nodes(G,mapping)
 
     H.name="("+G.name+")_with_int_labels"
     if discard_old_labels:
