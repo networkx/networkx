@@ -298,8 +298,6 @@ def grid_graph(dim,periodic=False):
 
     """    
     from networkx.utils import is_list_of_ints
-    if not isinstance(dim,list):
-        raise TypeError,"dim is not a list"
     dlabel="%s"%dim
     if dim==[]:
         G=networkx.Graph()
@@ -324,8 +322,7 @@ def grid_graph(dim,periodic=False):
         G=networkx.operators.cartesian_product(Gnew,Gold)
     # graph G is done but has labels of the form (1,(2,(3,1)))
     # so relabel
-    # this works but loses the info from each dimension
-    H=networkx.operators.relabel_nodes_with_function(G, networkx.utils.flatten)
+    H=networkx.operators.relabel_nodes(G, networkx.utils.flatten)
     H.name="grid_graph(%s)"%dlabel
     return H
 
