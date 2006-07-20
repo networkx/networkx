@@ -31,6 +31,7 @@ from classic import  balanced_tree,\
                trivial_graph,\
                wheel_graph
 from degree_seq import  configuration_model,\
+               expected_degree_graph,\
                havel_hakimi_graph,\
                is_valid_degree_sequence,\
                create_degree_sequence,\
