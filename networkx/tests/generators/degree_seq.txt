@@ -48,6 +48,28 @@ True
 >>> is_valid_degree_sequence(z)
 False
 
+expected_degree_graph
+---------------------
+empty graph has empty degree sequence
+>>> deg_seq=[]
+>>> G=expected_degree_graph(deg_seq)
+>>> G.degree()
+[]
+
+test that fixed seed delivers the same graph
+
+>>> deg_seq=[3,3,3,3,3,3,3,3,3,3,3,3]
+>>> G1=expected_degree_graph(deg_seq,seed=1000)
+>>> G2=expected_degree_graph(deg_seq,seed=1000)
+>>> is_isomorphic(G1,G2)
+True
+>>> G1=expected_degree_graph(deg_seq,seed=10)
+>>> G2=expected_degree_graph(deg_seq,seed=10)
+>>> is_isomorphic(G1,G2)
+True
+
+
+
 Havel-Hakimi Construction
 -------------------------
 

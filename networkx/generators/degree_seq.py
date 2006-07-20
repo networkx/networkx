@@ -110,6 +110,55 @@ def configuration_model(deg_sequence,seed=None):
     return G
 
 
+def expected_degree_graph(w, seed=None):
+    """Return a random graph with expected degrees given by w
+    (denoted G(w)).  Return False if unsuccessful.
+
+    :Parameters:
+       - `w`: a list of expected degrees
+       - `seed`: seed for random number generator (default=None)
+
+    Reference::
+
+      @Article{connected-components-2002,
+        author =	{Fan Chung and L. Lu},
+        title = 	{Connected components in random graphs
+        with given expected degree sequences},
+        journal = 	{Ann. Combinatorics},
+        year = 		{2002},
+        volume = 	{6},
+        pages = 	{125-145},
+        }
+
+
+	"""
+
+    n = len(w)
+
+    G=empty_graph(n)
+    G.name="random_expected_degree_graph"
+
+    if n==0 or max(w)==0: # done if no edges
+        return G 
+
+    d = sum(w)
+    rho = 1.0 / float(d)
+    for i in xrange(n):
+        if (w[i])**2 > d:
+            raise networkx.NetworkXError,\
+                  "NetworkXError w[i]**2 must be <= sum(w)\
+                  for all i, w[i] = %f, sum(w) = %f" % (w[i],d)
+
+    if seed is not None:
+        random.seed(seed)
+	
+    for u in xrange(n):
+        for v in xrange(u+1,n):
+            if random.random() < w[u]*w[v]*rho:
+                G.add_edge(u,v)
+    return G 
+
+
 def havel_hakimi_graph(deg_sequence,seed=None):
     """Return a simple graph with given degree sequence, constructed using the
     Havel-Hakimi algorithm.
