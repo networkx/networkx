@@ -242,6 +242,8 @@ def to_numpy_matrix(G,nodelist=None):
         else:
             d=e[2]
         A[index[u],index[v]]=d
+        if not G.is_directed():
+            A[index[v],index[u]]=d
     return A            
 
 def from_numpy_matrix(A,create_using=None):
@@ -341,6 +343,8 @@ def to_scipy_sparse_matrix(G,nodelist=None):
         else:
             d=e[2]
         A[index[u],index[v]]=d
+        if not G.is_directed():
+            A[index[v],index[u]]=d
     return A            
 
 
