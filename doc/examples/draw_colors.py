@@ -4,10 +4,7 @@ Draw a graph with matplotlib.
 You must have matplotlib for this to work.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2005-03-22 13:57:46 -0700 (Tue, 22 Mar 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 831 $"
-#    Copyright (C) 2004 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -22,9 +19,9 @@ except:
     
 from networkx import *
 
-G=grid_2d_graph(4,4)  #4x4 grid
+G=barbell_graph(4,3)  
 pos=spring_layout(G)
 draw(G,pos,alpha=0.5,with_labels=False)
-draw(G,pos,nodelist=[1,2,3,4],node_color='b') # blue
+draw(G,pos,nodelist=[0,1,2,3],node_color='b') # blue
 savefig("grid.png") # save as png
 show() # display

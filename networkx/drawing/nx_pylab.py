@@ -39,7 +39,6 @@ try:
     from matplotlib.collections import LineCollection
     from matplotlib.numerix import sin, cos, pi, sqrt, arctan2, asarray
     from matplotlib.numerix.mlab import amin, amax
-    from matplotlib.pylab import gca, hold, draw_if_interactive 
 except ImportError:
     raise ImportError, "Import Error: not able to import matplotlib."
 
@@ -106,6 +105,8 @@ def draw(G, pos=None, with_labels=True, **kwds):
     >>> P.draw()    # pylab draw()
 
     """
+    from matplotlib.pylab import gca, hold, draw_if_interactive 
+
     if pos is None:
         pos=networkx.drawing.spring_layout(G) # default to spring layout
 
@@ -156,6 +157,7 @@ def draw_networkx(G, pos, with_labels=True, ax=None, **kwds):
     draw_networkx_edges()
     draw_networkx_labels()
     """
+    from matplotlib.pylab import gca, hold, draw_if_interactive 
     if ax is None:
         ax=gca()
     node_collection=draw_networkx_nodes(G, pos, ax=ax, **kwds)
@@ -189,6 +191,7 @@ def draw_networkx_nodes(G, pos,
     see draw_networkx for the list of other optional parameters.
 
     """
+    from matplotlib.pylab import gca, hold, draw_if_interactive 
     if ax is None:
         ax=gca()
 
@@ -233,6 +236,7 @@ def draw_networkx_edges(G, pos,
     See draw_networkx for the list of other optional parameters.
 
     """
+    from matplotlib.pylab import gca, hold, draw_if_interactive 
     if ax is None:
         ax=gca()
 
@@ -360,6 +364,7 @@ def draw_networkx_labels(G, pos,
     See draw_networkx for the list of other optional parameters.
 
     """
+    from matplotlib.pylab import gca, hold, draw_if_interactive 
     if ax is None:
         ax=gca()
 

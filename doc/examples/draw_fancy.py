@@ -23,12 +23,11 @@ except:
 from networkx import *
 
 
-G=grid_2d_graph(4,4) # 4x4 grid
+G=barbell_graph(4,3) # 4x4 grid
 pos=spring_layout(G) # positions for all nodes
-
 # nodes
-greennodes=[1,2,3,4]
-bluenodes=[5,6,7,8]
+greennodes=[0,1,2,3]
+bluenodes=[7,8,9,10]
 othernodes=[v for v in G if v not in greennodes+bluenodes]
 draw_networkx_nodes(G,pos,nodelist=greennodes,node_color='g',
                     node_size=500)
@@ -38,8 +37,8 @@ draw_networkx_nodes(G,pos,nodelist=othernodes)
 
 # edges
 draw_networkx_edges(G,pos,width=2.0)
-draw_networkx_edges(G,pos,edgelist=[(1,2),(3,4)],
-                    width=8,alpha=0.5,edge_color='g')
+edgelist=[(3,4),(4,5),(5,6),(6,7)]
+draw_networkx_edges(G,pos,edgelist=edgelist, width=8,alpha=0.5,edge_color='g')
 
 # labels
 labels={}
@@ -49,9 +48,9 @@ draw_networkx_labels(G,pos,labels,font_color='w',font_family='sans-serif')
 
 # math labels
 labels={}
-labels[12]='$\pi$'
-labels[13]='$\mu$'
-labels[14]='$\epsilon$'
+labels[4]='$\pi$'
+labels[5]='$\mu$'
+labels[6]='$\epsilon$'
 draw_networkx_labels(G,pos,labels,font_size=16)
 
 savefig("draw_fancy.png") # save as png
