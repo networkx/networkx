@@ -27,7 +27,7 @@ Bug fixes
    - Use faster heapq in dijkstra 
    - Don't complain if X windows is not available
 
-vExamples
+Examples
 ~~~~~~~~
    - update drawing examples
 
