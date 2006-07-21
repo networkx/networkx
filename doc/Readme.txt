@@ -58,8 +58,9 @@ Requirements
 
    Optional useful packages:
 
-      - PyGSL            http://pygsl.sourceforge.net/
       - Ipython          http://ipython.scipy.org/
+      - SciPy		 http://scipy.org/
+      - PyGSL            http://pygsl.sourceforge.net/
       - pNetworkX	 http://foss.eepatents.com/pNetworkX                 
       - PyYAML		 http://pyyaml.org/
 

@@ -7,6 +7,30 @@ NetworkX News
 
 .. include:: Menu.txt
 
+What's new in NX-0.31?
+----------------------
+
+Release date: 20 July 2006
+
+See: https://networkx.lanl.gov/wiki/timeline
+
+New features
+~~~~~~~~~~~~
+   - arbitrary node relabeling (use relabel_nodes)
+   - conversion of NetworkX graphs to/from Python dict/list types,
+     numpy matrix or array types, and scipy_sparse_matrix types
+   - generator for random graphs with given expected degree sequence
+
+Bug fixes
+~~~~~~~~~
+   - Allow drawing graphs with no edges using pylab
+   - Use faster heapq in dijkstra 
+   - Don't complain if X windows is not available
+
+vExamples
+~~~~~~~~
+   - update drawing examples
+
 
 What's new in NX-0.30?
 ----------------------
