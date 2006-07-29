@@ -1,10 +1,25 @@
-=================
 How to Contribute
-=================
+-----------------
 
 NetworkX is an open source project and we are glad to have
 contributions of algorithms, examples, bug reports and fixes or any
 other suggestions for improvements or features.
+
+Mailing Lists
+-------------
+
+- networkx-discuss_: discussions of all things related to using NetworkX 
+
+  Alternate archives:
+   - http://groups.google.com/group/networkx-discuss
+   - http://dir.gmane.org/gmane.comp.python.networkx 
+
+- networkx-devel_ is for topics related to development of the NetworkX
+
+
+  Alternate archives:
+   - http://groups.google.com/group/networkx-devel 
+
 
 Source code repository
 ----------------------
@@ -19,21 +34,6 @@ To access the repository using subversion_, you will need a subversion client
 
   svn co https://networkx.lanl.gov/svn/networkx/trunk networkx
 
-
-Mailing Lists
--------------
-
-- networkx-discuss_: discussions of all things related to using NetworkX 
-
-  Archives:
-   - http://groups.google.com/group/networkx-discuss
-   - http://dir.gmane.org/gmane.comp.python.networkx 
-
-- networkx-devel_ is for topics related to development of the NetworkX
-
-
-  Archives:
-   - http://groups.google.com/group/networkx-devel 
 
 
 Trac Ticket System: Bugs, features, fixes 
