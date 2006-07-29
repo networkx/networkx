@@ -1,13 +1,8 @@
 NetworkX 
 ========
-.. include:: Menu.txt
 
 *High productivity software for complex networks*
 -------------------------------------------------
-.. image:: art.png
-   :align: right
-
-
 
 About
 -----
@@ -115,15 +110,6 @@ Using
    >>> print G.edges()
    [(1, 2)]
 
-   See the Tutorial_, Reference_, QuickRef_, and Examples_.
-
-.. raw:: html
-
-   <div align="left" class="image image align-left image-reference"><a
-    class="reference" href="http://sourceforge.net/"><img align="left"
-    alt="SourceForge.net Logo" class="image" height="31"
-    src="http://sourceforge.net/sflogo.php?group_id=122233&amp;type=1"
-    width="88" /></a></div>
 
 
 
