@@ -1,8 +1,6 @@
 Credits
 ========
 
-.. include:: Menu.txt
-
 Thanks to Guido van Rossum for the idea of using Python for
 implementing a graph data structure  
 http://www.python.org/doc/essays/graphs.html

@@ -3,10 +3,6 @@
 NetworkX News
 =============
 
-*last updated: $Date$*
-
-.. include:: Menu.txt
-
 What's new in NX-0.31?
 ----------------------
 

@@ -1,8 +1,6 @@
 NetworkX
 ========
 
-.. include:: Menu.txt
-
 License
 -------
 
