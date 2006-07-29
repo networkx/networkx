@@ -1,8 +1,6 @@
 NetworkX Examples
 =================
 
-.. include:: Menu.txt
-
 See the examples at
 https://networkx.lanl.gov/wiki/browser/networkx/trunk/doc/examples/
 
@@ -42,11 +40,18 @@ Draw with matplotlib
 
 >>> draw(G)
 
-.. image:: basic-s.png
+.. raw:: html
+
+    <img alt="NetworkX art" class="image" height="600"
+    src="https://networkx.lanl.gov/basic-s.png"  width="800" />
 
 More elaborate drawings are also possible
 
-.. image:: as.png
+.. raw:: html
+
+    <img alt="NetworkX art" class="image" height="800"
+    src="https://networkx.lanl.gov/as.png"  width="800" />
+
 
 
 
