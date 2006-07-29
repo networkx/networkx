@@ -1,6 +1,5 @@
-=================
 NetworkX Overview
-=================
+~~~~~~~~~~~~~~~~~
 
 Introduction
 =============
@@ -127,9 +126,8 @@ values keyed by node is returned.
 The following examples use the "triangles" function which returns 
 the number of triangles a given node belongs to.
 
-::
 
-Example usage:
+Example usage
 
 >>> G=networkx.complete_graph(4)	
 >>> print G.nodes()
