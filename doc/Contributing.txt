@@ -1,0 +1,50 @@
+=================
+How to Contribute
+=================
+
+NetworkX is an open source project and we are glad to have
+contributions of algorithms, examples, bug reports and fixes or any
+other suggestions for improvements or features.
+
+Source code repository
+----------------------
+You can browse the source at 
+
+https://networkx.lanl.gov/wiki/browser/networkx/trunk
+
+To access the repository using subversion_, you will need a subversion client 
+(e.g. svn for Linux).  Then check out the code using
+
+::
+
+  svn co https://networkx.lanl.gov/svn/networkx/trunk networkx
+
+
+Mailing Lists
+-------------
+
+- networkx-discuss_: discussions of all things related to using NetworkX 
+
+  Archives:
+   - http://groups.google.com/group/networkx-discuss
+   - http://dir.gmane.org/gmane.comp.python.networkx 
+
+- networkx-devel_ is for topics related to development of the NetworkX
+
+
+  Archives:
+   - http://groups.google.com/group/networkx-devel 
+
+
+Trac Ticket System: Bugs, features, fixes 
+-----------------------------------------
+
+Use the ticket_ system to report a bug, or request a feature.
+
+Send email to hagberg@lanl.gov with patches or requests for 
+source code repository write access.
+
+.. _subversion: http://subversion.tigris.org
+.. _ticket: https://networkx.lanl.gov/wiki/newticket ticket
+.. _networkx-discuss: http://sourceforge.net/mail/?group_id=122233
+.. _networkx-devel:  http://sourceforge.net/mailarchive/forum.php?forum_id=48645 
