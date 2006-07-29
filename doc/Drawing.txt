@@ -69,7 +69,7 @@ Draw with matplotlib:
 
    <div align="left" class="image image align-left image-reference">
     <img align="left" alt="NetworkX" class="image" height="600"
-    src="https://networkx.lanl.gov/tetrahedral-s.png"  width="800" />
+    src="https://networkx.lanl.gov/images/tetrahedral-s.png"  width="800" />
     </div>
     <br clear=both></br>
 

@@ -43,14 +43,14 @@ Draw with matplotlib
 .. raw:: html
 
     <img alt="NetworkX art" class="image" height="600"
-    src="https://networkx.lanl.gov/basic-s.png"  width="800" />
+    src="https://networkx.lanl.gov/images/basic-s.png"  width="800" />
 
 More elaborate drawings are also possible
 
 .. raw:: html
 
     <img alt="NetworkX art" class="image" height="800"
-    src="https://networkx.lanl.gov/as.png"  width="800" />
+    src="https://networkx.lanl.gov/images/as.png"  width="800" />
 
 
 

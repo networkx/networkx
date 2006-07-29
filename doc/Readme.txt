@@ -7,7 +7,7 @@ NetworkX
 
    <div align="left" class="image image align-right image-reference">
     <img align="right" alt="NetworkX art" class="image" height="540"
-    src="https://networkx.lanl.gov/art.png"  width="270" />
+    src="https://networkx.lanl.gov/images/art.png"  width="270" />
     </div>
 
 
