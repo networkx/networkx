@@ -3,6 +3,13 @@ NetworkX
 
 *High productivity software for complex networks*
 -------------------------------------------------
+.. raw:: html
+
+   <div align="left" class="image image align-right image-reference">
+    <img align="right" alt="NetworkX art" class="image" height="540"
+    src="https://networkx.lanl.gov/art.png"  width="270" />
+    </div>
+
 
 About
 -----
@@ -29,12 +36,9 @@ About
 
       - Allows fast prototyping of new algorithms
       - Easy to teach 
-      - Multiplatform
+      - Multi-platform
       - Allows easy access to almost any database
 
-
-   See the trac Wiki_ for code development information, bug tracking,
-   and source code browsing.
 
 Requirements
 -------------
@@ -43,7 +47,7 @@ Requirements
 
       - Python version 2.3 or later http://www.python.org/
 
-   Optional packages to enable drawing networks (see Drawing_):      
+   Optional packages to enable drawing networks:
 
       - Matplotlib       http://matplotlib.sourceforge.net/
       - Pygraphviz	 http://networkx.lanl.gov/pygraphviz/
@@ -75,8 +79,6 @@ Downloading
 
 Quick Install
 -------------
-
-   (See the Tutorial_ for more information)
 
    **Linux and OSX** (install from source)
 
@@ -111,5 +113,11 @@ Using
    [(1, 2)]
 
 
+.. raw:: html
 
+   <div align="left" class="image image align-left image-reference"><a
+    class="reference" href="http://sourceforge.net/"><img align="left"
+    alt="SourceForge.net Logo" class="image" height="31"
+    src="http://sourceforge.net/sflogo.php?group_id=122233&amp;type=1"
+    width="88" /></a></div>
 
