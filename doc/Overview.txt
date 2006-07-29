@@ -2,8 +2,6 @@
 NetworkX Overview
 =================
 
-.. include:: Menu.txt
-
 Introduction
 =============
 NetworkX is built to allow easy creation, manipulation and measurement

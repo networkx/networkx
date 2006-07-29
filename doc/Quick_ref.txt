@@ -2,9 +2,6 @@
 **NetworkX Quick Reference**
 ============================
 
-*(last modified: 25 May 2006)*
-
-
 More detailed documentation and listing of options and defaults can
 be found in the `html documentation`_ or by using pydoc (or interactive
 help) on a function, method or class. For example, for methods of the
