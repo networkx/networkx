@@ -1,8 +1,6 @@
 Drawing
 ========
 
-.. include:: Menu.txt
-
 NetworkX provides interfaces to two packages for graph drawing,
 matplotlib and graphviz.
 
@@ -67,9 +65,13 @@ Draw with matplotlib:
 >>> P.savefig("tetrahedral.png")
 >>> P.show()
 
-.. class:: doctest-block
-.. image:: tetrahedral-s.png
+.. raw:: html
 
+   <div align="left" class="image image align-left image-reference">
+    <img align="left" alt="NetworkX" class="image" height="600"
+    src="https://networkx.lanl.gov/tetrahedral-s.png"  width="800" />
+    </div>
+    <br clear=both></br>
 
 Write a dot language file:
 
