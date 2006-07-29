@@ -6,9 +6,6 @@ NetworkX Tutorial
 
 *last updated: $Date$*
 
-.. include:: Menu.txt
-            
-
 Introduction
 ============
 
@@ -55,7 +52,7 @@ NetworkX is free software; you can redistribute it and/or
 modify it under the terms of the **LGPL** (GNU Lesser General Public
 License) as published by the Free Software Foundation; either
 version 2.1 of the License, or (at your option) any later version.
-Please see the file Readme_ for more information. 
+Please see the license for more information. 
 
 Obtaining and Installing NetworkX
 ==================================
@@ -398,7 +395,7 @@ Drawing a small graph
 NetworkX does not provide sophisticated graph drawing tools. We
 do provide elementary drawing tools as well as an interface to use the
 open source Graphviz software package.  These reside in networkx.drawing,
-and will be imported if possible. See the Drawing_ section for details.
+and will be imported if possible. See the drawing section for details.
 
 >>> import pylab as P
 
@@ -603,7 +600,7 @@ layout (node and edge positioning) and drawing. We also use matplotlib for
 graph spectra and in some drawing operations. Without either, one can
 still use the basic graph-related functions.
 
-See the graph Drawing_ section for details on how to install and use 
+See the graph drawing section for details on how to install and use 
 these tools.
 
 Matplotlib
