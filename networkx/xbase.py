@@ -854,15 +854,19 @@ class XGraph(Graph):
         self.add_path(nlist+[nlist[0]])  # wrap first element
 
 class XDiGraph(DiGraph):
-    """ A class implementing general undirected digraphs, allowing
-    (optional) self-loops, multiple edges, arbitrary (hashable)
-    objects as nodes and arbitrary objects associated with
-    edges.
+    """ A class implementing general digraphs, allowing
+    (optional) self-loops, (optional) multiple edges,
+    arbitrary (hashable) objects as nodes, and arbitrary
+    objects associated with edges.
 
     As in XGraph, an XDiGraph edge is uniquely specified by a 3-tuple
     e=(n1,n2,x), where n1 and n2 are (hashable) objects (nodes) and x
     is an arbitrary (and not necessarily unique) object associated with
     that edge.
+
+    See the documentation of XGraph for the use of the optional
+    parameters selfloops (defaults is False) and multiedges
+    (default is False).
 
     XDiGraph inherits from DiGraph, with all purely node-specific methods
     identical to those of DiGraph. XDiGraph edges are identical to XGraph
