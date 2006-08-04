@@ -14,6 +14,9 @@ Cluster
 >>> clustering(G,with_labels=True)
 {}
 
+>>> transitivity(G)
+0.0
+
 >>> G = path_graph(10)
 
 >>> triangles(G)
@@ -25,6 +28,9 @@ Cluster
 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 >>> clustering(G,with_labels=True)
 {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0}
+
+>>> transitivity(G)
+0.0
 
 
 >>> G = cubical_graph()
@@ -49,6 +55,8 @@ Cluster
 {1: 0.0}
 >>> clustering(G,[1,2],with_labels=True)
 {1: 0.0, 2: 0.0}
+>>> transitivity(G)
+0.0
 
 
 >>> G = complete_graph(5)
@@ -63,6 +71,8 @@ Cluster
 [1.0, 1.0, 1.0, 1.0, 1.0]
 >>> average_clustering(G)
 1.0
+>>> transitivity(G)
+1.0
 
 >>> G.delete_edge(1,2)
 
@@ -74,6 +84,8 @@ Cluster
 True
 >>> clustering(G,[1,4],with_labels=True)
 {1: 1.0, 4: 0.83333333333333337}
+>>> transitivity(G)
+0.875
 
 
 Transitivity is weighted average of clustering
@@ -89,5 +101,6 @@ Transitivity is weighted average of clustering
 >>> t2=sum(trans)
 >>> abs(t1-t2)<1e-15 
 True
+
 
 

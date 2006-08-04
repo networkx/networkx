@@ -120,7 +120,11 @@ def transitivity(G):
         deg=len(v_nbrs)
         contri += deg*(deg-1)
         triangles += len([ u for u in v_nbrs for w in v_nbrs if G_has_edge(u,w) ])
-    return float(triangles)/float(contri)
+    t=float(triangles)
+    if t==0: # we had no triangles or possible triangles
+        return t
+    else:
+        return t/float(contri)
 
 
 def _test_suite():
