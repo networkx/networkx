@@ -105,7 +105,7 @@ e=(n1,n2):
    and n1->n2 (if directed). Note that 3-tuple edges of the form
    (n1,n2,x) are used in the XGraph and XDiGraph classes. If G is an
    XGraph, then G.add_edge(n1,n2) will add the edge (n1,n2,None), and
-   G.delete_node(n1,n2) will attempt to delete the edge (n1,n2,None).
+   G.delete_edge(n1,n2) will attempt to delete the edge (n1,n2,None).
    In the case of multiple edges between nodes n1 and n2, one can use
    G.delete_multiedge(n1,n2) to delete all edges between n1 and n2.
 

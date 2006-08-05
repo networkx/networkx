@@ -55,7 +55,7 @@ e=(n1,n2):
    XGraph and XDiGraph classes. See xbase.py for details on how
    2-tuple edges, such as (n1,n2), are translated when 3-tuple edges
    are expected. For example, if G is an XGraph, then G.add_edge(n1,n2)
-   will add the edge (n1,n2,None), and G.delete_node(n1,n2) will attempt
+   will add the edge (n1,n2,None), and G.delete_edge(n1,n2) will attempt
    to delete the edge (n1,n2,None). In the case of multiple edges between
    nodes n1 and n2, one can use G.delete_multiedge(n1,n2) to delete all
    edges between n1 and n2.
