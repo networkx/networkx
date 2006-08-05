@@ -294,9 +294,9 @@ IO
   read_multiline_adjlist(path, comments='#', delimiter=' ', create_using=None, nodetype=None, edgetype=None )
   write_multiline_adjlist(G, path, comments='#', delimiter=' ')
   read_gpickle(path)
-  write_gpickle(G,path)
+  write_gpickle(G, path)
   read_yaml(path)
-  write_yaml(G,path,default_flow_style=False)
+  write_yaml(G, path, default_flow_style=False)
 
 
 .. _html documentation: Reference/index.html
