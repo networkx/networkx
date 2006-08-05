@@ -286,6 +286,7 @@ Graphs from degree sequences
 IO
 ==
 ::
+
   read_adjlist(path, create_using=False)
   write_adjlist(G,path)
   read_edgelist(path, create_using=False)
