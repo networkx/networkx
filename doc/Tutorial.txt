@@ -683,29 +683,13 @@ Not everything is an object
 ---------------------------
 
 NX developed from the need to analyze dynamics on a diverse collection
-of large networks and we have stubbornly refused to objectify all the
+of large networks and we have thus far refused to objectify all the
 mathematical structures of graph theory down to the atomic
-level. Neither nodes nor edges are objects. A node can be any hashable
-object (except None), and an edge is a 2-tuple (n1,n2) of nodes 
-(in the case of Graph and DiGraph) or a 3-tuple (n1,n2,x) (in the case 
-of XGraph and XDiGraph) consisting of two nodes and an object x
-decorating that edge.
-
-Graph dna
----------
-
-Some basic properties of a graph are stored in a dictionary called the
-graph dna (graph dna = graph properties). These include the name, the
-datastructure, and possibly some other properties. The graph dna is
-provided as a user-defined variable and should not be relied on.
-
-
-Use print_dna() to inspect the current dna of graph G, e.g.
-
-
->>> G=circular_ladder_graph(20)
->>> G.print_dna()
-datastructure  : vdict_of_dicts
+level. Neither nodes nor edges are implemented as Classes.  A node can
+be any hashable object (except None), and an edge is a 2-tuple (n1,n2)
+of nodes (in the case of Graph and DiGraph) or a 3-tuple (n1,n2,x) (in
+the case of XGraph and XDiGraph) consisting of two nodes and an object
+x decorating that edge.
 
 
 References
