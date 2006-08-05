@@ -187,7 +187,7 @@ Examples
 Create an empty graph structure (a "null graph") with no nodes and no edges
 
 >>> from networkx import *
->>> G=XGraph(directed=True)  # default no-loops, no-multiedges
+>>> G=XGraph()  # default no self-loops, no multiple edges
 
 You can add nodes in the same way as the simple Graph class
 >>> G.add_nodes_from(xrange(100,110))
