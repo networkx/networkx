@@ -23,12 +23,12 @@ or
 
 to report all Graph methods. 
 
-For multi-class functions such
-as subgraph or watts_strogatz_graph, 
+For functions associated with multiple graph classes, such
+as subgraph or watts_strogatz_graph, use 
 
 ::
 
-  use pydoc networkx.subgraph 
+  pydoc networkx.subgraph 
 
 or 
 
@@ -283,8 +283,8 @@ Graphs from degree sequences
    uniform_sequence(n)                - return a sequence with uniform distribution of length n.
    discrete_sequence(n,distribution)  - return a sequence with distribution matching given distribution.
 
-IO:
-===
+IO
+==
 ::
   read_adjlist(path, create_using=False)
   write_adjlist(G,path)
