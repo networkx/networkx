@@ -9,7 +9,7 @@
 More detailed documentation and listing of options and defaults can
 be found in the `html documentation`_ or by using pydoc (or interactive
 help) on a function, method or class. For example, for methods of the
-graph class such as add_node, use 
+Graph class such as add_node, use 
 
 ::
 
@@ -48,10 +48,11 @@ actors).
  nlist     - a list of nodes.
  nbunch    - a bunch of nodes: 
              any iterable container of nodes.
- e=(u,v)   - an edge as a python tuple (also written u-v or u->v).
- elist     - a list of edges [(v1,w1),(v2,w2),..,(vk,wk)]
- ebunch    - a bunch of edges (as 2-tuples):
-             any iterable container of edge-tuples (v1,w1),(v2,w2),...
+ e=(u,v)   - a Graph or DiGraph edge as a Python tuple (also written u-v or u->v).
+ e=(u,v,x) - an XGraph or XGraph edge as a Python tuple, x is an arbitrary object
+ elist     - a list of edges
+ ebunch    - a bunch of edges:
+             any iterable container of edge-tuples 
 
 Creation
 ========
@@ -224,23 +225,23 @@ Variable size graphs
 ::
 
   make_small_graph(graph_description,create_using=None,**kwds)
-  LCF_graph(n,shift_list,repeats)  
+  LCF_graph(n, shift_list, repeats)  
   
-  balanced_tree(r,h)
-  barbell_graph(m1,m2)
+  balanced_tree(r, h)
+  barbell_graph(m1, m2)
   complete_graph(n)
-  complete_bipartite_graph(n1,n2)
+  complete_bipartite_graph(n1, n2)
   circular_ladder_graph(n)
   cycle_graph(n)
-  empty_graph(n,create_using=None,**kwds)
+  empty_graph(n, create_using=None, **kwds)
   grid_graph([m1,m2,...,mk])  
-  grid_2d_graph(m,n)
+  grid_2d_graph(m, n)
   hypercube_graph(n)
   ladder_graph(n)
-  lollipop_graph(m,n)
-  null_graph(create_using=None,**kwds)
+  lollipop_graph(m, n)
+  null_graph(create_using=None, **kwds)
   path_graph(n)
-  periodic_grid_2d_graph(m,n)
+  periodic_grid_2d_graph(m, n)
   star_graph(n)
   wheel_graph(n)
 
@@ -260,28 +261,28 @@ Random graphs
 -------------
 ::
 
-   barabasi_albert_graph(n,m,seed=None)
-   binomial_graph(n,p,seed=None) 
-   erdos_renyi_graph(n,p,seed=None)
-   gnm_random_graph(n,m,seed=None)
-   gnp_random_graph(n,p,seed=None)
-   powerlaw_cluster_graph(n,m,p,seed=None)
-   random_regular_graph(d,n,seed=None)
-   random_lobster(n,p1,p2,seed=None)
-   watts_strogatz_graph(n,k,p,seed=None)
+   barabasi_albert_graph(n, m, seed=None)
+   binomial_graph(n, p, seed=None) 
+   erdos_renyi_graph(n, p, seed=None)
+   gnm_random_graph(n, m, seed=None)
+   gnp_random_graph(n, p, seed=None)
+   powerlaw_cluster_graph(n, m, p, seed=None)
+   random_regular_graph(d, n, seed=None)
+   random_lobster(n, p1, p2, seed=None)
+   watts_strogatz_graph(n, k, p, seed=None)
 
 Graphs from degree sequences
 ----------------------------
 ::
 
-   configuration_model(deg_sequence,seed=None)
-   havel_hakimi_graph(deg_sequence,seed=None)
+   configuration_model(deg_sequence, seed=None)
+   havel_hakimi_graph(deg_sequence, seed=None)
    is_valid_degree_sequence(deg_sequence)
    create_degree_sequence(n, sfunction=None, max_tries=50, **kwds)
-   pareto_sequence(n,exponent=1.0)    - return a sequence with pareto distribution of length n.
-   powerlaw_sequence(n,exponent=2.0)  - return a sequence with powerlaw distribution of length n.
+   pareto_sequence(n, exponent=1.0)    - return a sequence with pareto distribution of length n.
+   powerlaw_sequence(n, exponent=2.0)  - return a sequence with powerlaw distribution of length n.
    uniform_sequence(n)                - return a sequence with uniform distribution of length n.
-   discrete_sequence(n,distribution)  - return a sequence with distribution matching given distribution.
+   discrete_sequence(n, distribution)  - return a sequence with distribution matching given distribution.
 
 IO
 ==
