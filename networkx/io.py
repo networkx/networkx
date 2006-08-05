@@ -11,25 +11,25 @@ This module provides the following :
 Edgelist format:
 Useful for connected graphs with or without edge data.
 
-   write_edgelist(G,path)
+   write_edgelist(G, path)
    G=read_edgelist(path)
 
 Adjacency list with single line per node:
 Useful for connected or unconnected graphs without edge data.
 
-    write_adjlist(G,path)
+    write_adjlist(G, path)
     G=read_adjlist(path)
 
 Adjacency list with multiple lines per node:
 Useful for connected or unconnected graphs with or without edge data.
 
-    write_multiline_adjlist(G,path)
+    write_multiline_adjlist(G, path)
     read_multiline_adjlist(path)
 
 Python pickled format:
 Useful for graphs with non text representable data.
 
-    write_gpickle(G,path)
+    write_gpickle(G, path)
     read_gpickle(path)
 
 """
@@ -54,7 +54,7 @@ import time
 from networkx.utils import is_string_like
 import networkx
 
-def write_multiline_adjlist(G,path,delimiter=' ',comments='#'):
+def write_multiline_adjlist(G, path, delimiter=' ', comments='#'):
     """
     Write the graph G in multiline adjacency list format to the file
     or file handle path.
@@ -143,7 +143,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
 
     For example
 
-    >>> G=read_multiline_adjlist("file.adjlist",nodetype=int)
+    >>> G=read_multiline_adjlist("file.adjlist", nodetype=int)
 
     will attempt to convert all nodes to integer type
 
@@ -152,12 +152,12 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
 
     edgetype is a function to convert edge data strings to edgetype
 
-    >>> G=read_multiline_adjlist("file.adjlist",edgetype=int)
+    >>> G=read_multiline_adjlist("file.adjlist", edgetype=int)
 
     create_using is an optional networkx graph type, the default is
     Graph(), a simple undirected graph 
 
-    >>> G=read_multiline_adjlist("file.adjlist",create_using=DiGraph())
+    >>> G=read_multiline_adjlist("file.adjlist", create_using=DiGraph())
 
     The comments character (default='#') at the beginning of a
     line indicates a comment line.
@@ -191,7 +191,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
     for hints.
 
     >>> import codecs
-    >>> fh=codecs.open("file.adjlist",encoding='utf=8') # use utf-8 encoding
+    >>> fh=codecs.open("file.adjlist", encoding='utf=8') # use utf-8 encoding
     >>> G=read_multiline_adjlist(fh)
     """
     if create_using is None:
@@ -261,21 +261,21 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
     return G
 
 
-def write_adjlist(G,path,comments="#", delimiter=' '):
-    """Write graph in single line adjacency list format to path.
+def write_adjlist(G, path, comments="#", delimiter=' '):
+    """Write graph G in single-line adjacency-list format to path.
 
     See read_adjlist for file format details.
 
-    >>> write_adjlist(G,"file.adjlist")
+    >>> write_adjlist(G, "file.adjlist")
 
     path can be a filehandle or a string with the name of the file.
 
     >>> fh=open("file.adjlist")
-    >>> write_adjlist(G,fh)
+    >>> write_adjlist(G, fh)
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> write_adjlist(G,"file.adjlist.gz")
+    >>> write_adjlist(G, "file.adjlist.gz")
 
     The file will use the default text encoding on your system.
     It is possible to write files in other encodings by opening
@@ -327,8 +327,8 @@ def write_adjlist(G,path,comments="#", delimiter=' '):
         fh.write("\n")            
 
 
-def read_adjlist(path,comments="#", delimiter=' ',
-                 create_using=None,nodetype=None):
+def read_adjlist(path, comments="#", delimiter=' ',
+                 create_using=None, nodetype=None):
     """Read graph in single line adjacency list format from path.
 
     >>> G=read_adjlist("file.adjlist")
@@ -346,7 +346,7 @@ def read_adjlist(path,comments="#", delimiter=' ',
 
     For example
 
-    >>> G=read_adjlist("file.adjlist",nodetype=int)
+    >>> G=read_adjlist("file.adjlist", nodetype=int)
 
     will attempt to convert all nodes to integer type
 
@@ -356,7 +356,7 @@ def read_adjlist(path,comments="#", delimiter=' ',
     create_using is an optional networkx graph type, the default is
     Graph(), a simple undirected graph 
 
-    >>> G=read_adjlist("file.adjlist",create_using=DiGraph())
+    >>> G=read_adjlist("file.adjlist", create_using=DiGraph())
 
     Does not handle edge data: use 'read_edgelist' or 'read_multiline_adjlist'
 
@@ -409,12 +409,12 @@ def read_adjlist(path,comments="#", delimiter=' ',
     return G
 
 
-def write_edgelist(G,path,comments="#", delimiter=' '):
+def write_edgelist(G, path, comments="#", delimiter=' '):
     """Write graph G in edgelist format on file path.
 
     See read_edgelist for file format details.
 
-    >>> write_edgelist(G,"file.edgelist")
+    >>> write_edgelist(G, "file.edgelist")
 
     path can be a filehandle or a string with the name of the file.
 
@@ -423,7 +423,7 @@ def write_edgelist(G,path,comments="#", delimiter=' '):
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> write_edgelist(G,"file.edgelist.gz")
+    >>> write_edgelist(G, "file.edgelist.gz")
 
     The file will use the default text encoding on your system.
     It is possible to write files in other encodings by opening
@@ -470,7 +470,7 @@ def read_edgelist(path, comments="#", delimiter=' ',
 
     For example
 
-    >>> G=read_edgelist("file.edgelist",nodetype=int)
+    >>> G=read_edgelist("file.edgelist", nodetype=int)
 
     will attempt to convert all nodes to integer type
 
@@ -559,7 +559,7 @@ def read_edgelist(path, comments="#", delimiter=' ',
             
     return G
 
-def write_gpickle(G,path):
+def write_gpickle(G, path):
     """
     Write graph object in Python pickle format.
 
@@ -586,7 +586,7 @@ def read_gpickle(path):
     return cPickle.load(fh)
 
 
-def write_yaml(G,path,default_flow_style=False,**kwds):
+def write_yaml(G, path, default_flow_style=False, **kwds):
     """Write graph G in YAML text format to path. 
 
     See http://www.yaml.org
@@ -617,7 +617,7 @@ def read_yaml(path):
     return yaml.load(fh)
 
 
-def _get_fh(path,mode='r'):
+def _get_fh(path, mode='r'):
     """ Return a file handle for given path.
 
     Path can be a string or a file handle.
