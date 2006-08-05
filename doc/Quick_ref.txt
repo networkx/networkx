@@ -49,10 +49,10 @@ actors).
  nbunch    - a bunch of nodes: 
              any iterable container of nodes.
  e=(u,v)   - a Graph or DiGraph edge as a Python tuple (also written u-v or u->v).
- e=(u,v,x) - an XGraph or XGraph edge as a Python tuple, x is an arbitrary object
- elist     - a list of edges
+ e=(u,v,x) - an XGraph or XGraph edge as a Python tuple, x is an arbitrary object.
+ elist     - a list of edges.
  ebunch    - a bunch of edges:
-             any iterable container of edge-tuples 
+             any iterable container of edge-tuples. 
 
 Creation
 ========
@@ -130,11 +130,11 @@ Methods:
   G.has_edge(u,v)      - True if (u,v) is an edge in G.
 
   G.neighbors(n)       - return list of nodes connected to node n.
-  G[n]                 - equivalent to G.neighbors(n)
+  G[n]                 - equivalent to G.neighbors(n).
   G.neighbors_iter(n)  - return iterator over the neighbors of node n.
   G.has_neighbor(v,u)  - check if u is a neighbor of v (returns True or False).
 
-  G.degree(n)                - return degree of node n
+  G.degree(n)                - return degree of node n.
   G.degree()                 - return list of degrees of all nodes in G.
   G.degree(with_labels=True) - return dict mapping each node in G to
                                its degree.
@@ -145,14 +145,14 @@ Directed Graphs Only
 --------------------
 ::
 
-  G.out_edges()	        - like edges but only outward pointing edges
-  G.in_edges()		- like edges but only inward pointing edges
-  G.in_degree()         - like degree but only inward edges count
-  G.out_degree()        - like degree but only outward edges count
-  G.predecessors()      - like neighbors but only inward edges count
-  G.successors()        - like neighbors but only outward edges count
-  G.predecessors_iter() - like neighbors_iter but only inward edges count
-  G.successors_iter()   - like neighbors_iter but only outward edges count
+  G.out_edges()	        - like edges, but only outward pointing edges.
+  G.in_edges()		- like edges, but only inward pointing edges.
+  G.in_degree()         - like degree, but only inward edges count.
+  G.out_degree()        - like degree, but only outward edges count.
+  G.predecessors()      - like neighbors, but only inward edges count.
+  G.successors()        - like neighbors, but only outward edges count.
+  G.predecessors_iter() - like neighbors_iter, but only inward edges count.
+  G.successors_iter()   - like neighbors_iter, but only outward edges count.
                                                                                         
 
 Functions
@@ -190,7 +190,7 @@ Functions
   laplacian(G)                   - Graph Laplacian for G as a Numeric array.
   generalized_laplacian(G)       - generalized graph Laplacian for G as a Numeric array.
 
-  is_directed_acyclic_graph(G)   - True if DAG
+  is_directed_acyclic_graph(G)   - True if DAG.
   topological_sort(G)            - list of nodes in directed graph such that every edge goes from left to right.
 
 Nodal Properties
@@ -201,6 +201,7 @@ Nodal Properties
 ::
 
   neighbors(G,n)                - neighbors of n in G.
+  G[n]                          - same as above.
   degree(G,n)                   - number of edges for n in G.
   eccentricity(G,n)             - maximum of shortest-path lengths from n to anywhere in G. 
   triangles(G,n)                - number of triangles which include n. 
