@@ -23,7 +23,7 @@ from networkx.generators.classic import empty_graph, path_graph, complete_graph
 #-------------------------------------------------------------------------
 
 
-def fast_gnp_random_graph(n,p,seed=None):
+def fast_gnp_random_graph(n, p, seed=None):
     """
     Return a random graph G_{n,p}.
 
@@ -70,7 +70,7 @@ def fast_gnp_random_graph(n,p,seed=None):
     return G
 
 
-def gnp_random_graph(n,p,seed=None):
+def gnp_random_graph(n, p, seed=None):
     """
     Return a random graph G_{n,p}.
 
@@ -107,7 +107,7 @@ def gnp_random_graph(n,p,seed=None):
 binomial_graph=gnp_random_graph
 erdos_renyi_graph=gnp_random_graph
 
-def dense_gnm_random_graph(n,m,seed=None):
+def dense_gnm_random_graph(n, m, seed=None):
     """
     Return the random graph G_{n,m}.
 
@@ -159,7 +159,7 @@ def dense_gnm_random_graph(n,m,seed=None):
             u+=1
             v=u+1
 
-def gnm_random_graph(n,m,seed=None):
+def gnm_random_graph(n, m, seed=None):
     """
     Return the random graph G_{n,m}.
 
@@ -200,17 +200,20 @@ def gnm_random_graph(n,m,seed=None):
             edge_count=edge_count+1
     return G
 
-def newman_watts_strogatz_graph(n,k,p,seed=None):
+def newman_watts_strogatz_graph(n, k, p, seed=None):
     """
     Return a Newman-Watts-Strogatz small world graph.
 
-    The graph is a ring with k neighbors with new edges (shortcuts)
-    *added* randomly with probability p for each edge.  No edges
-    are removed.
+    First create a ring over n nodes.  Then each node in the ring is
+    connected with its k nearest neighbors.  Then shortcuts are
+    created by adding new edges as follows: for each edge u-v in the
+    underlying "n-ring with k nearest neighbors"; with probability p
+    add a new edge u-w with randomly-chosen existing node w.
+    In contrast with watts_strogatz_graph(), no edges are removed.
 
     :Parameters:
       - `n`: the number of nodes
-      - `k`: each vertex is connected to k neighbors in the circular topology
+      - `k`: each node is connected to k nearest neighbors in ring topology
       - `p`: the probability of adding a new edge for each edge
       - `seed`: seed for random number generator (default=None)
       
@@ -226,28 +229,36 @@ def newman_watts_strogatz_graph(n,k,p,seed=None):
         tov = fromv[n:] + fromv[0:n] # the first n are now last
         for i in range(len(fromv)):
             G.add_edge(fromv[i], tov[i])
-    # randomly connect nodes with probability p
-    e = G.edges()
+    # for each edge u-v, with probability p, randomly select existing
+    # node w and add new edge u-w 
+    e = G.edges() 
     for (u, v) in e:
         if random.random() < p:
-            v = random.choice(nlist)
-            # no G loops and we want a new edge
+            w = random.choice(nlist)
+            # no self-loops and reject if edge u-w exists
             # is that the correct NWS model?
-            while v == u or G.has_edge(u, v): 
-                v = random.choice(nlist)
-            G.add_edge(u,v)
+            while w == u or G.has_edge(u, w): 
+                w = random.choice(nlist)
+            G.add_edge(u,w)
     return G            
 
-def watts_strogatz_graph(n,k,p,seed=None):
+def watts_strogatz_graph(n, k, p, seed=None):
     """
     Return a Watts-Strogatz small world graph.
 
-    The graph is a ring with k neighbors with
-    edges rewired randomly with probability p.
+    First create a ring over n nodes.  Then each node in the ring is
+    connected with its k nearest neighbors.  Then shortcuts are
+    created by rewiring existing edges as follows: for each edge u-v
+    in the underlying "n-ring with k nearest neighbors"; with
+    probability p replace u-v with a new edge u-w with
+    randomly-chosen existing node w. In contrast with
+    newman_watts_strogatz_graph(), the random rewiring does not
+    increase the number of edges.
+    
 
     :Parameters:
       - `n`: the number of nodes
-      - `k`: each vertex is connected to k neighbors in the circular topology
+      - `k`: each node is connected to k neighbors in the ring topology
       - `p`: the probability of rewiring an edge
       - `seed`: seed for random number generator (default=None)
       
@@ -263,22 +274,23 @@ def watts_strogatz_graph(n,k,p,seed=None):
         tov = fromv[n:] + fromv[0:n] # the first n are now last
         for i in range(len(fromv)):
             G.add_edge(fromv[i], tov[i])
-    # randomly rewire nodes with probability p
+    # for each edge u-v, with probability p, randomly replace with
+    # edge u-w
     e = G.edges()
     for (u, v) in e:
         if random.random() < p:
             newv = random.choice(nlist)
-            # no G loops and we want a new edge
+            # avoid self-loops and reject if edge u-newv exists
             # is that the correct WS model?
             while newv == u or G.has_edge(u, newv): 
                 newv = random.choice(nlist)
-            G.delete_edge(u,v)
+            G.delete_edge(u,v)  # conserve number of edges 
             G.add_edge(u,newv)
     return G            
 
 
 
-def random_regular_graph(d,n,seed=None):
+def random_regular_graph(d, n, seed=None):
     """Return a random regular graph of n nodes each with degree d, G_{n,d}.
     Return False if unsuccessful.
     
@@ -287,7 +299,7 @@ def random_regular_graph(d,n,seed=None):
     Nodes are numbered 0...n-1. 
     To get a uniform sample from the space of random graphs
     you should chose d<n^{1/3}.
-    .
+    
     For algorith see Kim and Vu's paper.
 
     Reference::
@@ -360,7 +372,7 @@ def random_regular_graph(d,n,seed=None):
 
 
 
-def barabasi_albert_graph(n,m,seed=None):
+def barabasi_albert_graph(n , m, seed=None):
     """Return random graph using Barabási-Albert preferential attachment model.
     
     A graph of n nodes is grown by attaching new nodes
@@ -414,7 +426,7 @@ def barabasi_albert_graph(n,m,seed=None):
         source += 1
     return G
 
-def powerlaw_cluster_graph(n,m,p,seed=None):
+def powerlaw_cluster_graph(n, m, p, seed=None):
     """
     Holme and Kim algorithm for growing graphs with powerlaw
     degree distribution and approximate average clustering. 
@@ -500,7 +512,7 @@ def powerlaw_cluster_graph(n,m,p,seed=None):
         source += 1
     return G
 
-def random_lobster(n,p1,p2,seed=None):
+def random_lobster(n, p1, p2, seed=None):
     """Return a random lobster.
 
      A caterpillar is a tree that reduces to a path graph when pruning
@@ -514,7 +526,8 @@ def random_lobster(n,p1,p2,seed=None):
       - `p2`: probability of adding an edge one level beyond backbone
       - `seed`: seed for random number generator (default=None)
 
-"""
+    """
+    # a necessary ingredient in any self-respecting graph library
     if seed is not None:
         random.seed(seed)
     llen=int(2*random.random()*n + 0.5)
@@ -531,7 +544,7 @@ def random_lobster(n,p1,p2,seed=None):
                 L.add_edge(current_node-1,current_node)
     return L # voila, un lobster!
 
-def random_shell_graph(constructor,seed=None):
+def random_shell_graph(constructor, seed=None):
     """
     Return a random shell graph for the constructor given.
 
