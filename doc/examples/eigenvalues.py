@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 """
-Create an Erdos-Renyi random graph and compute the eigenvalues.
+Create an G{n,m} random graph and compute the eigenvalues.
 
-Requires LinearAlgebra package from Numeric Python.
+Requires numpy or LinearAlgebra package from Numeric Python.
 
 Uses optional pylab plotting to produce histogram of eigenvalues.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2005-06-17 11:38:54 -0600 (Fri, 17 Jun 2005) $"
 __credits__ = """"""
-__revision__ = "$Revision: 1055 $"
-#    Copyright (C) 2004 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -19,7 +17,16 @@ __revision__ = "$Revision: 1055 $"
 #    http://www.gnu.org/copyleft/lesser.html
 
 from networkx import *
-import LinearAlgebra as LA
+try:
+    import numpy.linalg
+    eigenvalues=numpy.linalg.eigvals
+except ImportError:
+    try:    
+        import LinearAlgebra
+        eigenvalues=LinearAlgebra.eigenvalues
+    except ImportError:
+        raise ImportError,"Neither numpy nor Numeric can be imported."
+
 try:
     from pylab import *
 except:
@@ -31,7 +38,7 @@ m=5000 # 5000 edges
 G=gnm_random_graph(n,m)
 
 L=generalized_laplacian(G) 
-e=LA.eigenvalues(L)
+e=eigenvalues(L)
 print "Largest eigenvalue:",max(e)
 print "Smallest eigenvalue:",min(e)
 # plot with matplotlib if we have it
