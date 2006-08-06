@@ -205,7 +205,7 @@ def _bidirectional_pred_succ(G, source, target):
     if source is None or target is None:
         raise NetworkXException(\
             "Bidirectional shortest path called without source or target")
-    if target == source:  return []
+    if target == source:  return ({1:None},{1:None},1)
 
     # handle either directed or undirected
     if G.is_directed():
