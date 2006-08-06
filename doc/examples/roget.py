@@ -79,5 +79,6 @@ if __name__ == '__main__':
     print "Loaded Donald Knuth's roget.dat containing 1022 categories."
     print "digraph has %d nodes with %d edges"\
           %(number_of_nodes(G),number_of_edges(G))
-    print number_connected_components(G),"connected components"
+    UG=G.to_undirected()
+    print number_connected_components(UG),"connected components"
 
