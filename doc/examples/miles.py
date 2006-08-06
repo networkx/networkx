@@ -19,10 +19,7 @@ References.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2005-04-01 14:20:02 -0700 (Fri, 01 Apr 2005) $"
-__credits__ = """"""
-__revision__ = ""
-#    Copyright (C) 2004 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -101,7 +98,7 @@ if __name__ == '__main__':
 #             with_labels=False)
         # with nodes colored by degree sized by population
         node_color=P.array([float(H.degree(v)) for v in H])
-        draw(H,G.position,
+        NX.draw(H,G.position,
              node_size=[G.population[v] for v in H],
              node_color=node_color,
              with_labels=False)
