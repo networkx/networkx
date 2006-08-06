@@ -36,6 +36,7 @@ __revision__ = "$Revision: 1034 $"
 #    http://www.gnu.org/copyleft/lesser.html
 import os
 import sys
+from networkx.utils import is_string_like
 try:
     import pygraphviz
 except ImportError:
@@ -72,33 +73,69 @@ def read_dot(path=False):
     return networkx_from_pygraphviz(A)
 
 
-def pygraphviz_from_networkx(N):
-	"""Creates a graphviz graph from an networkx graph N"""
-	# node_orig = 1
+def pygraphviz_from_networkx(N,
+                             graph_attr=None,
+                             node_attr=None,
+                             edge_attr=None):
+	"""Creates a pygraphviz graph from an networkx graph N"""
+
+        if graph_attr is None:
+            graph_attr={}
+        if node_attr is None:
+            node_attr={}
+        if edge_attr is None:
+            edge_attr={}
+  
+        if hasattr(N,'allow_multiedges')==True:
+            xgraph=True
+        else:
+            xgraph=False
 
         if N.is_directed():
-            A = pygraphviz.Agraph(type=pygraphviz.cvar.Agdirected)
+            A = pygraphviz.Agraph(name=N.name,type=pygraphviz.cvar.Agdirected)
+            digraph=True
+            print "digraph"
 	else:
-            A = pygraphviz.Agraph(type=pygraphviz.cvar.Agundirected)
+            A = pygraphviz.Agraph(name=N.name,type=pygraphviz.cvar.Agundirected)
+            digraph=False
 
-        for v in N.nodes_iter():
-            n=A.add_node(str(v))
+        # set graph attributues            
+        A.set_attr(graph_attr)
+
+        # set node attributes            
+        for n in N.nodes_iter():
+            node=A.add_node(str(n))
+            if n in node_attr:
+                A.set_node_attr(node,node_attr[n])
+
+
+        # set edge attributes
         for e in N.edges_iter():
+            name=None
             if len(e)==2:
                 (u,v)=e
-                e=A.add_edge(str(u),str(v),str(u)+str(v))
-            elif len(e)==3:
+            elif len(e)==3:  # XGraph or XDigraph
                 (u,v,x)=e
-                if x is not None:
-                    x=str(x)
-                e=A.add_edge(str(u),str(v),x)
-
-
-        # FIXME - add properties from networkx to pydot graph?
-        # a nice feature would be to add node positions to pydot graph.
+                if x is not None: 
+                    if is_string_like(x): # use data as edge name
+                        name=x
+            edge=A.add_edge(str(u),str(v),name)
+            if xgraph: # if this is an XGraph or XDiGraph
+                if isinstance(x,dict): # and the data looks like a dict
+                    A.set_edge_attr((u,v),x)  # use that as the attributes
+            # now apply the edge attributes from calling argument
+            if (u,v) in edge_attr: 
+                A.set_edge_attr((u,v),edge_attr[(u,v)])
+            if not digraph:                    
+                if (v,u) in edge_attr:
+                    A.set_edge_attr((v,u),edge_attr[(v,u)])
+                        
         return A
 
-def networkx_from_pygraphviz(A, create_using=None):
+def networkx_from_pygraphviz(A, create_using=None,
+                             graph_attr=None,
+                             node_attr=None,
+                             edge_attr=None):
 	"""Creates an networkx graph from an pygraphviz graph A"""
         import networkx
 
@@ -110,21 +147,34 @@ def networkx_from_pygraphviz(A, create_using=None):
 
         N=networkx.empty_graph(0,create_using)
 
-        N.name="from pygraphviz"
+        if hasattr(N,'allow_multiedges')==True:
+            xgraph=True
+        else:
+            xgraph=False
 
+        N.name=str(A)
+
+        if graph_attr is not None:
+            graph_attr.update(A.get_all_attr())
         edges_seen = {}
         for node in A.nodes():
             name=pygraphviz.agnameof(node.anode)
             N.add_node(name)
+            if node_attr is not None:
+                node_attr[name]=A.get_all_attr(node=node)
         for edge in A.edges():
             if edge in edges_seen:
                 continue
             source=pygraphviz.agnameof(edge.source().anode)
             target=pygraphviz.agnameof(edge.target().anode)
             edges_seen[edge]=1
-            N.add_edge(source,target)
-
-        # FIXME - add properties from pygraphviz to networkx?
+            if edge_attr is not None:
+                N.add_edge(source,target)
+                edge_attr[(source,target)]=A.get_all_attr(edge=(source,target))
+            elif xgraph:
+                N.add_edge(source,target,A.get_all_attr(edge=(source,target)))
+            else:
+                N.add_edge(source,target)
 	return N
 
 def graphviz_layout(G,prog='neato',root=None, args=''):
