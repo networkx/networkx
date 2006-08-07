@@ -301,5 +301,5 @@ IO
   write_yaml(G, path, default_flow_style=False)
 
 
-.. _html documentation: Reference/index.html
+.. _html documentation: https://networkx.lanl.gov/Reference/
 
