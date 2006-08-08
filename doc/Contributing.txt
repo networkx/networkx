@@ -45,6 +45,6 @@ Send email to hagberg@lanl.gov with patches or requests for
 source code repository write access.
 
 .. _subversion: http://subversion.tigris.org
-.. _ticket: https://networkx.lanl.gov/wiki/newticket ticket
+.. _ticket: https://networkx.lanl.gov/newticket ticket
 .. _networkx-discuss: http://sourceforge.net/mail/?group_id=122233
 .. _networkx-devel:  http://sourceforge.net/mailarchive/forum.php?forum_id=48645 

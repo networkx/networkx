@@ -5,7 +5,7 @@ See the examples at
 https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/
 
 And the gallery at
-https://networkx.lanl.gov/wiki/wiki/gallery
+https://networkx.lanl.gov/wiki/gallery
 
 Basic
 -----

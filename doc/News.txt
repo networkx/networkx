@@ -8,7 +8,7 @@ What's new in NX-0.31?
 
 Release date: 20 July 2006
 
-See: https://networkx.lanl.gov/wiki/timeline
+See: https://networkx.lanl.gov/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -33,7 +33,7 @@ What's new in NX-0.30?
 
 Release date: 23 June 2006
 
-See: https://networkx.lanl.gov/wiki/timeline
+See: https://networkx.lanl.gov/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -63,14 +63,14 @@ Bug fixes
 Examples
 ~~~~~~~~
    - unicode node labels 
-     https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/unicode.py
+     https://networkx.lanl.gov/file/networkx/trunk/doc/examples/unicode.py
 
 What's new in NX-0.29?
 ----------------------
 
 Release date: 28 April 2006
 
-See: https://networkx.lanl.gov/wiki/timeline
+See: https://networkx.lanl.gov/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -100,7 +100,7 @@ What's new in NX-0.28?
 
 Release date: 13 March 2006
 
-See: https://networkx.lanl.gov/wiki/timeline
+See: https://networkx.lanl.gov/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -109,15 +109,15 @@ New features
   - predecessor(G,n) function that returns dictionary of
     nodes with predecessors from breadth-first search of G 
     starting at node n.
-    https://networkx.lanl.gov/wiki/ticket/26
+    https://networkx.lanl.gov/ticket/26
 
 Examples
 ~~~~~~~~
   - Formation of giant component in binomial_graph:
-    https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/binomial_giant.py
+    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/binomial_giant.py
   - Chess masters matches:
-    https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/chess_masters.py
-  - Gallery https://networkx.lanl.gov/wiki/wiki/gallery
+    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/chess_masters.py
+  - Gallery https://networkx.lanl.gov/wiki/gallery
   
 Bug fixes
 ~~~~~~~~~
@@ -130,7 +130,7 @@ Bug fixes
     Erdős, and Rényi in UTF-8 encoding
   - Increased speed of connected_components and related functions
     by using faster BFS algorithm in networkx.paths
-    https://networkx.lanl.gov/wiki/ticket/27     
+    https://networkx.lanl.gov/ticket/27     
   - XGraph and XDiGraph with multiedges=True produced error on delete_edge
   - Cleaned up docstring errors
   - Normalize names of some graphs to produce strings that represent
@@ -142,7 +142,7 @@ What's new in NX-0.27?
 
 Release date: 5 February 2006
 
-See: https://networkx.lanl.gov/wiki/timeline
+See: https://networkx.lanl.gov/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -155,14 +155,14 @@ New features
     neighbors() and edges().  For digraphs edges=out_edges.
     Neighbors now returns a list of neighboring nodes with
     possible duplicates for graphs with parallel edges
-    See https://networkx.lanl.gov/wiki/ticket/24
+    See https://networkx.lanl.gov/ticket/24
   - Addition of out_edges, in_edges and corresponding out_neighbors
     and in_neighbors for digraphs.  For digraphs edges=out_edges.
    
 Examples
 ~~~~~~~~
   - Minard's data for Napoleon's Russian campaign
-    https://networkx.lanl.gov/wiki/file/networkx/trunk/doc/examples/minard.py
+    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/minard.py
 
 Bug fixes
 ~~~~~~~~~
@@ -191,7 +191,7 @@ Examples
 ~~~~~~~~
   - Several new examples showing how draw to graphs with various
     properties of nodes, edges, and labels
-    https://networkx.lanl.gov/wiki/file/networkx/trunk/examples/
+    https://networkx.lanl.gov/file/networkx/trunk/examples/
 
 Bug fixes
 ~~~~~~~~~
@@ -219,7 +219,7 @@ Examples
 ~~~~~~~~
   - Email example shows how to use XDiGraph with Python objects as
     edge data
-    https://networkx.lanl.gov/wiki/file/networkx/trunk/examples/unixemail.py
+    https://networkx.lanl.gov/file/networkx/trunk/examples/unixemail.py
 
 
 Documentation
