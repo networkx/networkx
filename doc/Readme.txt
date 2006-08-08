@@ -69,7 +69,7 @@ Downloading
    You can download NetworkX from 
    http://sourceforge.net/project/showfiles.php?group_id=122233
 
-   You can browse the source at https://networkx.lanl.gov/wiki/browser/networkx/trunk
+   You can browse the source at https://networkx.lanl.gov/browser/networkx/trunk
 
    To access the source repository using subversion, you will need a subversion client (e.g. svn for Linux). Then check out the code using
 
