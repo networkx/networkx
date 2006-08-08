@@ -82,7 +82,7 @@ def LCF_graph(n,shift_list,repeats):
     desargues_graph, heawood_graph and pappus_graph below.
     
     n (number of nodes)
-      The starting graph is the n-cycle with nodes 1,...,n.
+      The starting graph is the n-cycle with nodes 0,...,n-1.
       (The null graph is returned if n < 0.)
 
     shift_list = [s1,s2,..,sk], a list of integer shifts mod n,
@@ -106,6 +106,7 @@ def LCF_graph(n,shift_list,repeats):
 
     See http://mathworld.wolfram.com/LCFNotation.html for a description
     and references.
+    
     """
 
     if n <= 0:
