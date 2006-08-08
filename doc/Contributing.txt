@@ -25,7 +25,7 @@ Source code repository
 ----------------------
 You can browse the source at 
 
-https://networkx.lanl.gov/wiki/browser/networkx/trunk
+https://networkx.lanl.gov/browser/networkx/trunk
 
 To access the repository using subversion_, you will need a subversion client 
 (e.g. svn for Linux).  Then check out the code using
