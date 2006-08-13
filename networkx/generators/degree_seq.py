@@ -1,5 +1,5 @@
 """
-Generate graphs with a given degree sequence.
+Generate graphs with a given degree sequence or expected degree sequence.
 
 """
 #    Copyright (C) 2004-2006 by 
@@ -10,9 +10,6 @@ Generate graphs with a given degree sequence.
 #    http://www.gnu.org/copyleft/lesser.html
 
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-__date__ = "$Date$"
-__credits__ = """"""
-__revision__ = "$Revision$"
 
 import random
 import networkx
@@ -34,19 +31,19 @@ def configuration_model(deg_sequence,seed=None):
       - `seed`: seed for random number generator (default=None)
 
 
-    >> z=create_degree_sequence(100,powerlaw_sequence)
-    >> G=configuration_model(z)
+    >>> z=create_degree_sequence(100,powerlaw_sequence)
+    >>> G=configuration_model(z)
 
     The pseudograph G is a networkx.XGraph that allows multiple (parallel) edges
     between nodes and edges that connect nodes to themseves (self loops).
 
     To remove self-loops:
 
-    >> G.ban_selfloops()
+    >>> G.ban_selfloops()
     
     To remove parallel edges:
 
-    >> G.ban_multiedges()
+    >>> G.ban_multiedges()
 
     Steps:
 
@@ -111,12 +108,18 @@ def configuration_model(deg_sequence,seed=None):
 
 
 def expected_degree_graph(w, seed=None):
-    """Return a random graph with expected degrees given by w
-    (denoted G(w)).  Return False if unsuccessful.
+    """Return a random graph G(w) with expected degrees given by w.
 
     :Parameters:
        - `w`: a list of expected degrees
        - `seed`: seed for random number generator (default=None)
+
+    >>> z=[10 for i in range(100)]
+    >>> G=expected_degree_graph(z)
+
+    To remove self-loops:
+
+    >>> G.ban_selfloops()
 
     Reference::
 
@@ -134,26 +137,26 @@ def expected_degree_graph(w, seed=None):
 	"""
 
     n = len(w)
-
-    G=empty_graph(n)
+    # allow self loops
+    G=networkx.empty_graph(n,create_using=networkx.XGraph(selfloops=True))
     G.name="random_expected_degree_graph"
 
     if n==0 or max(w)==0: # done if no edges
         return G 
 
     d = sum(w)
-    rho = 1.0 / float(d)
+    rho = 1.0 / float(d) # Vol(G)
     for i in xrange(n):
         if (w[i])**2 > d:
             raise networkx.NetworkXError,\
                   "NetworkXError w[i]**2 must be <= sum(w)\
-                  for all i, w[i] = %f, sum(w) = %f" % (w[i],d)
+                  for all i, w[%d] = %f, sum(w) = %f" % (i,w[i],d)
 
     if seed is not None:
         random.seed(seed)
 	
     for u in xrange(n):
-        for v in xrange(u+1,n):
+        for v in xrange(u,n):
             if random.random() < w[u]*w[v]*rho:
                 G.add_edge(u,v)
     return G 

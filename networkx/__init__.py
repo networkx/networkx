@@ -110,6 +110,8 @@ from convert import from_whatever,\
 from generators.classic import *
 from generators.small import *
 from generators.random_graphs import *
+from generators.degree_seq import *
+from generators.directed import *
 from drawing import *
 
 
