@@ -135,10 +135,10 @@ def from_dict_of_lists(d,create_using=None):
         except:
             raise TypeError("Input graph is not a networkx graph type")
 
-    G.add_nodes_from(d.keys())        
     for node in d:
         for nbr in d[node]:
             G.add_edge(node,nbr)
+    G.add_nodes_from(d.keys())        
     return G                         
 
 
@@ -187,7 +187,6 @@ def from_dict_of_dicts(d,create_using=None):
     else:
         xgraph=False
 
-    G.add_nodes_from(d.keys())        
     for u in d:
         for v in d[u]:
             if xgraph:
@@ -195,6 +194,7 @@ def from_dict_of_dicts(d,create_using=None):
             else:
                 G.add_edge(u,v)
 
+    G.add_nodes_from(d.keys())        
     return G                         
 
 
