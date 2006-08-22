@@ -766,6 +766,51 @@ def node_connected_component(G,n):
               Use UG=G.to_undirected() to create an undirected graph."""
     return single_source_shortest_path_length(G,n).keys()
 
+def bfs(G,source):
+    """
+    Traverse the graph G with breadth-first-search from source.
+    Return list of nodes connected to source in BFS order.
+    
+    Primarily intended as an example.
+    See also shortest_path and bidirectional_shortest_path.
+    """
+
+    nlist=[source] # list of nodes in a BFS order
+    seen={} # nodes seen
+    queue=[source] # FIFO queue
+    seen[source]=True 
+    while queue:
+        v=queue.pop(0)  # this is expensive, should use a faster FIFO queue
+        for w in G.neighbors(v):
+            if w not in seen:
+                seen[w]=True
+                queue.append(w)
+                nlist.append(w)
+    return nlist
+
+
+def dfs(G,source):
+    """
+    Traverse the graph G with depth-first-search from source.
+    Return list of nodes connected to source in DFS order.
+    
+    Primarily intended as an example.
+
+    """
+    nlist=[] # list of nodes in a DFS order
+    seen={} # nodes seen
+    queue=[source]  # use as LIFO queue
+    seen[source]=True 
+    while queue:
+        v=queue.pop()
+        nlist.append(v)
+        for w in G.neighbors(v):
+            if w not in seen:
+                seen[w]=True
+                queue.append(w)
+    return nlist
+
+
 def _test_suite():
     import doctest
     suite = doctest.DocFileSuite('tests/paths.txt',package='networkx')

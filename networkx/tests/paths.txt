@@ -362,7 +362,6 @@ NetworkXError: Not allowed for directed graph G.
               Use UG=G.to_undirected() to create an undirected graph.
 
 
-
 Predecessor
 -----------
 
@@ -374,4 +373,29 @@ Predecessor
 >>> G=NX.grid_2d_graph(2,2)
 >>> sorted(NX.predecessor(G,(0,0)).items())
 [((0, 0), []), ((0, 1), [(0, 0)]), ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])]
+
+BFS
+---
+
+Smoke test
+
+>>> G=NX.path_graph(5)
+>>> NX.bfs(G,0)
+[0, 1, 2, 3, 4]
+>>> NX.bfs(G,4)
+[4, 3, 2, 1, 0]
+
+
+DFS
+---
+
+Smoke test
+
+>>> G=NX.path_graph(5)
+>>> NX.dfs(G,0)
+[0, 1, 2, 3, 4]
+>>> NX.dfs(G,4)
+[4, 3, 2, 1, 0]
+
+
 

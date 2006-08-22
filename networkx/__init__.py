@@ -72,7 +72,7 @@ from paths import  eccentricity, diameter, radius, periphery, center,\
      is_directed_acyclic_graph,\
      number_connected_components, connected_components,\
      is_connected, connected_component_subgraphs,\
-     node_connected_component
+     node_connected_component, bfs, dfs
 from search import dfs_preorder, dfs_postorder, dfs_predecessor,\
             dfs_successor, bfs_length, bfs_path, dfs_forest
 from cluster import triangles, average_clustering, clustering, transitivity
