@@ -117,11 +117,11 @@ def single_source_shortest_path_length(G,source,cutoff=None):
     Returns a dictionary of shortest path lengths keyed by target.
 
     >>> G=path_graph(5)
-    >>> paths=single_source_shortest_path_length(G,1)
-    >>> paths[4]
-    [1, 2, 3, 4]
-    >>> print paths
-    {0: [1, 0], 1: [1], 2: [1, 2], 3: [1, 2, 3], 4: [1, 2, 3, 4]}
+    >>> length=single_source_shortest_path_length(G,1)
+    >>> length[4]
+    3
+    >>> print length
+    {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
 
     cutoff is optional integer depth to stop the search - only
     paths of length <= cutoff are returned.
@@ -148,10 +148,10 @@ def all_pairs_shortest_path_length(G,cutoff=None):
 
     The dictionary only has keys for reachable node pairs.
     >>> G=path_graph(5)
-    >>> paths=all_pairs_shortest_path_length(G)
-    >>> print paths[1][4]
+    >>> length=all_pairs_shortest_path_length(G)
+    >>> print length[1][4]
     3
-    >>> paths[1]
+    >>> length[1]
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
 
 
@@ -676,7 +676,6 @@ def predecessor(G,source,target=False,cutoff=False):
 
     Example for the path graph 0-1-2-3
     
-    >>> from networkx import *
     >>> G=path_graph(4)
     >>> print G.nodes()
     [0, 1, 2, 3]
