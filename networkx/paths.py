@@ -110,9 +110,9 @@ def shortest_path_length(G,source,target):
     return len(bidirectional_shortest_path(G,source,target))-1
 
 
-def single_source_shortest_path_length(G,source):
+def single_source_shortest_path_length(G,source,cutoff=None):
     """
-    Shortest path length from source to all targets.
+    Shortest path length from source to all reachable nodes.
 
     Returns a dictionary of shortest path lengths keyed by target.
 
@@ -122,6 +122,9 @@ def single_source_shortest_path_length(G,source):
     [1, 2, 3, 4]
     >>> print paths
     {0: [1, 0], 1: [1], 2: [1, 2], 3: [1, 2, 3], 4: [1, 2, 3, 4]}
+
+    cutoff is optional integer depth to stop the search - only
+    paths of length <= cutoff are returned.
 
     """
     seen={}                  # level (number of hops) when seen in BFS
@@ -135,11 +138,12 @@ def single_source_shortest_path_length(G,source):
                 seen[v]=level # set the level of vertex v
                 nbrs=dict.fromkeys(G.neighbors_iter(v),1)
                 nextlevel.update(nbrs) # add neighbors of v
+        if (cutoff is not None and cutoff <= level):  break
         level=level+1
-    return seen  # return all path lengths as hash
+    return seen  # return all path lengths as dictionary
 
 
-def all_pairs_shortest_path_length(G):
+def all_pairs_shortest_path_length(G,cutoff=None):
     """ Return dictionary of shortest path lengths between all nodes in G.
 
     The dictionary only has keys for reachable node pairs.
@@ -150,10 +154,14 @@ def all_pairs_shortest_path_length(G):
     >>> paths[1]
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
 
+
+    cutoff is optional integer depth to stop the search - only
+    paths of length <= cutoff are returned.
+
     """
     paths={}
     for n in G:
-        paths[n]=single_source_shortest_path_length(G,n)
+        paths[n]=single_source_shortest_path_length(G,n,cutoff=cutoff)
     return paths        
         
 def shortest_path(G,source,target):
@@ -252,13 +260,16 @@ def single_source_shortest_path(G,source,cutoff=None):
     There may be more than one shortest path between the
     source and target nodes - this routine returns only one.
 
-    Cutoff is a limit on the number of hops traversed.
+    cutoff is optional integer depth to stop the search - only
+    paths of length <= cutoff are returned.
 
     See also shortest_path and bidirectional_shortest_path.
     """
     level=0                  # the current level
     nextlevel={source:1}       # list of nodes to check at next level
-    paths={source:[source]}  # paths hash  (paths to key from source)
+    paths={source:[source]}  # paths dictionary  (paths to key from source)
+    if cutoff==0:
+        return paths
     while nextlevel:
         thislevel=nextlevel
         nextlevel={}
@@ -268,22 +279,24 @@ def single_source_shortest_path(G,source,cutoff=None):
                     paths[w]=paths[v]+[w]
                     nextlevel[w]=1
         level=level+1
-        if (cutoff is not None and cutoff <= level):
-            break
+        if (cutoff is not None and cutoff <= level):  break
     return paths   
 
 
-def all_pairs_shortest_path(G):
+def all_pairs_shortest_path(G,cutoff=None):
     """ Return dictionary of shortest paths between all nodes in G.
 
     The dictionary only has keys for reachable node pairs.
+
+    cutoff is optional integer depth to stop the search - only
+    paths of length <= cutoff are returned.
 
     See also floyd_warshall.
 
     """
     paths={}
     for n in G:
-        paths[n]=single_source_shortest_path(G,n)
+        paths[n]=single_source_shortest_path(G,n,cutoff=cutoff)
     return paths        
 
 
@@ -674,7 +687,7 @@ def predecessor(G,source,target=False,cutoff=False):
     level=0                  # the current level
     nextlevel=[source]       # list of nodes to check at next level
     seen={source:level}      # level (number of hops) when seen in BFS
-    pred={source:[]}         # predecessor hash
+    pred={source:[]}         # predecessor dictionary
     while nextlevel:
         level=level+1
         thislevel=nextlevel
