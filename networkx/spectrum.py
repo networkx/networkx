@@ -1,14 +1,11 @@
 """
 Laplacian, adjacency matrix, and spectrum of graphs.
 
-Uses numpy or, if numpy is not installed, use Numeric.
+Needs either numpy or Numeric.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = "$Date: 2005-06-15 14:18:07 -0600 (Wed, 15 Jun 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 1044 $"
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -16,7 +13,8 @@ __revision__ = "$Revision: 1044 $"
 #    http://www.gnu.org/copyleft/lesser.html
 
 
-# try numpy first and Numeric, second. Fail if neither is available. 
+# try numpy first and Numeric second.
+# Fail if neither is available. 
 try:
     import numpy as N
 except ImportError:
@@ -34,7 +32,7 @@ def adj_matrix(G,nodelist=None):
     The value of the entry in the adjacency matrix is zero or one.
     E.g. self-loops, multi-edges, or weighted graphs are not handled.
 
-    The returned matrix is a numpy/numeric array. 
+    The returned matrix is a numpy or Numeric array. 
 
     """
     if nodelist is None:
@@ -57,14 +55,14 @@ def laplacian(G,nodelist=None):
        D is the diagonal matrix in which the i'th entry is the degree of node i
        A is the adjacency matrix.
 
-    The returned matrix is a numpy/numeric array. 
+    The returned matrix is a numpy or Numeric array. 
 
     """
     # this isn't the most efficient way to do this...
     n=G.order()
     I=N.identity(n)
     A=adj_matrix(G,nodelist=nodelist)
-    D=I*N.sum(A)
+    D=I*N.sum(A,axis=1)
     L=D-A
     return L
 
@@ -76,14 +74,16 @@ def normalized_laplacian(G,nodelist=None):
     CBMS Regional Conference Series in Mathematics, Number 92,
     1997.
 
+    The returned matrix is a numpy or Numeric array. 
+
     """
-    # this isn't the most efficient way to do this...
+    # FIXME: this isn't the most efficient way to do this...
     n=G.order()
     I=N.identity(n)
     A=adj_matrix(G,nodelist=nodelist)
-    D=I*N.sum(A)
+    D=I*N.sum(A,axis=1)
     L=D-A
-    d=sum(A)
+    d=N.sum(A,axis=1)
     T=I*(N.where(d,N.sqrt(1./d),0))
     L=N.dot(T,N.dot(L,T))
     return L

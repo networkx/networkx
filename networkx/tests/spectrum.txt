@@ -21,17 +21,20 @@ Spectrum
 Adjacency Matrix
 ----------------
 
->>> print adj_matrix(G).tolist()
-[[0, 1, 1, 1, 0], [1, 0, 1, 0, 0], [1, 1, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-
->>> print adj_matrix(G,nodelist=[0,1]).tolist()
-[[0, 1], [1, 0]]
+>>> NA=N.array([[0, 1, 1, 1, 0], [1, 0, 1, 0, 0], [1, 1, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 0, 0]])
+>>> s=N.sum(N.sum((adj_matrix(G)-NA)))
+>>> print float(s) 
+0.0
 
 Laplacian
 ---------
+>>> NL=N.array([[3, -1, -1, -1, 0], [-1, 2, -1, 0, 0], [-1, -1, 2, 0, 0], [-1, 0, 0, 1, 0], [0, 0, 0, 0, 0]])
 >>> L= laplacian(G)
->>> print L.tolist()
-[[3, -1, -1, -1, 0], [-1, 2, -1, 0, 0], [-1, -1, 2, 0, 0], [-1, 0, 0, 1, 0], [0, 0, 0, 0, 0]]
+>>> s=N.sum(N.sum((adj_matrix(G)-NA)))
+>>> print float(s) 
+0.0
+
+>>> NGL=N.array([[3, -1, -1, -1, 0], [-1, 2, -1, 0, 0], [-1, -1, 2, 0, 0], [-1, 0, 0, 1, 0], [0, 0, 0, 0, 0]])
 
 >>> GL=generalized_laplacian(G)
 >>> for row in GL:
