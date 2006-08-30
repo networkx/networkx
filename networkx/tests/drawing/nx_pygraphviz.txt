@@ -5,7 +5,7 @@ nx_pydot
 >>> from networkx.drawing import *
 >>> from networkx.drawing.nx_pygraphviz import *
 
->>> import os
+>>> import os,sys
 
 Undirected
 ----------
@@ -26,17 +26,45 @@ True
 True
 
 
+>>> P=to_pygraphviz(H)
+>>> N=from_pygraphviz(P)
+>>> sorted(N.nodes())==sorted(H.nodes())
+True
+>>> sorted(N.edges())==sorted(H.edges())
+True
+
+read write
+----------
+
+with file name
+----------------
+
 >>> import tempfile
 >>> fname=tempfile.mktemp()
 >>> write_dot(N,fname)
-
-
 >>> Hin=read_dot(fname)
 >>> os.unlink(fname)
 >>> sorted(Hin.nodes())==sorted(H.nodes())
 True
 >>> sorted(Hin.edges())==sorted(H.edges())
 True
+
+with file handle
+----------------
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> fh=open(fname,'w')
+>>> write_dot(N,fh)
+>>> fh.close()
+>>> fh=open(fname,'r')
+>>> Hin=read_dot(fh)
+>>> sorted(Hin.nodes())==sorted(H.nodes())
+True
+>>> sorted(Hin.edges())==sorted(H.edges())
+True
+>>> fh.close()
+>>> os.unlink(fname)
+
 
 Directed
 ----------
@@ -68,4 +96,34 @@ True
 >>> sorted(Hin.edges())==sorted(H.edges())
 True
 
+Layout
+------
+
 >>> pos=graphviz_layout(H,prog="circo",args="-Gepsilon=0.1",root='A')
+
+Attributes
+----------
+
+
+Undirected
+----------
+
+>>> H=Graph()
+>>> H.add_edge('A','B')
+>>> H.add_edge('A','C')
+>>> H.add_edge('B','C')
+>>> H.add_edge('A','D')
+>>> H.add_node('E')
+
+>>> H.attr={}
+>>> H.nattr={'A':{},'B':{},'C':{},'D':{},'E':{}}
+>>> eattr={('A','B'):{},('A','C'):{},('B','C'):{},('A','E'):{}}
+>>> H.nattr['A']['color']='red'
+>>> eattr[('A','B')]['color']='blue'
+>>> H.attr.update(label='colors')
+
+>>> P=to_pygraphviz(H,H.attr,H.nattr,eattr)
+>>> fh=open('foo.dot','w')
+>>> P.write(fh)
+
+fh=sys.stdout
