@@ -105,9 +105,13 @@ def shortest_path_length(G,source,target):
 
     G is treated as an unweighted graph.  For weighted graphs
     see dijkstra_path_length.
-
     """
-    return len(bidirectional_shortest_path(G,source,target))-1
+            
+    try:
+        return len(bidirectional_shortest_path(G,source,target))-1
+    except TypeError:
+        raise networkx.NetworkXError,\
+              "no path from %s to %s"%(source,target)
 
 
 def single_source_shortest_path_length(G,source,cutoff=None):
