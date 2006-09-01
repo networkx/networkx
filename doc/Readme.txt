@@ -60,7 +60,7 @@ Requirements
       - Ipython          http://ipython.scipy.org/
       - SciPy		 http://scipy.org/
       - PyGSL            http://pygsl.sourceforge.net/
-      - pNetworkX	 http://foss.eepatents.com/pNetworkX                 
+      - sAsync		 http://foss.eepatents.com/sAsync                
       - PyYAML		 http://pyyaml.org/
 
 Downloading
