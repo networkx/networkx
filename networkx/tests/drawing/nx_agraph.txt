@@ -1,0 +1,100 @@
+nx_pydot
+========
+
+>>> from networkx import *
+>>> from networkx.drawing import *
+>>> from networkx.drawing.nx_agraph import *
+
+>>> import os,sys
+
+Undirected
+----------
+
+>>> H=Graph()
+>>> H.add_edge('A','B')
+>>> H.add_edge('A','C')
+>>> H.add_edge('B','C')
+>>> H.add_edge('A','D')
+>>> H.add_node('E')
+
+
+>>> A=to_agraph(H)
+>>> N=Graph(from_agraph(A)) 
+>>> sorted(N.nodes())==sorted(H.nodes())
+True
+>>> sorted(N.edges())==sorted(H.edges())
+True
+
+read write
+----------
+
+with file name
+----------------
+
+>>> import tempfile
+>>> fname=tempfile.mktemp()
+>>> write_dot(N,fname)
+>>> Hin=Graph(read_dot(fname))
+>>> os.unlink(fname)
+>>> sorted(Hin.nodes())==sorted(H.nodes())
+True
+>>> sorted(Hin.edges())==sorted(H.edges())
+True
+
+with file handle
+----------------
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> fh=open(fname,'w')
+>>> write_dot(N,fh)
+>>> fh.close()
+
+
+>>> fh=open(fname,'r')
+>>> Hin=Graph(read_dot(fh))
+>>> sorted(Hin.nodes())==sorted(H.nodes())
+True
+>>> sorted(Hin.edges())==sorted(H.edges())
+True
+>>> fh.close()
+>>> os.unlink(fname)
+
+
+
+Directed
+----------
+
+>>> H=DiGraph()
+>>> H.add_edge('A','B')
+>>> H.add_edge('A','C')
+>>> H.add_edge('B','C')
+>>> H.add_edge('A','D')
+>>> H.add_node('E')
+
+
+>>> A=to_agraph(H)
+>>> N=DiGraph(from_agraph(A))
+>>> sorted(N.nodes())==sorted(H.nodes())
+True
+>>> sorted(N.edges())==sorted(H.edges())
+True
+
+>>> import tempfile
+>>> fname=tempfile.mktemp()
+>>> write_dot(N,fname)
+
+
+>>> Hin=DiGraph(read_dot(fname))
+>>> os.unlink(fname)
+>>> sorted(Hin.nodes())==sorted(H.nodes())
+True
+>>> sorted(Hin.edges())==sorted(H.edges())
+True
+
+Layout
+------
+
+>>> pos=graphviz_layout(H,prog="circo",args="-Gepsilon=0.1")
+
+
+

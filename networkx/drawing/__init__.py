@@ -17,6 +17,16 @@ except ImportError:
     pass
 
 try:
+    # needs pygraphviz, graphviz
+    # if successful,
+    # write_dot, read_dot, graphviz_layout will come from pygraphviz
+    # else they will be the ones in nx_pydot or none at all if that failed
+    from nx_agraph import *
+except ImportError:
+    pass
+
+
+try:
     # needs matplotlib (including either numpy, Numeric, or numarray)
     from nx_pylab import *
 except ImportError:

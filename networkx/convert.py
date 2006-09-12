@@ -37,6 +37,7 @@ def from_whatever(thing,create_using=None):
        numpy matrix
        numpy ndarray
        scipy sparse matrix
+       pygraphviz agraph
 
     """
     if create_using is None:
@@ -48,6 +49,15 @@ def from_whatever(thing,create_using=None):
         except:
             raise TypeError("Input graph is not a NetworkX graph type.")
         
+    # pygraphviz  agraph
+    if hasattr(thing,"is_strict"):
+        try:
+            return networkx.from_agraph(thing,create_using=create_using)
+        except:
+            raise
+#            raise networkx.NetworkXError,\
+#                  "Input is not a correct pygraphviz graph."
+
     # NX graph
     if hasattr(thing,"add_node"):
         try:
