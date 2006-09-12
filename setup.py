@@ -4,19 +4,12 @@
 Setup script for networkx
 
 """
-#FIXME: add drawing as optional package with dependencies
 
 from glob import glob
 import os
 import sys
 
-# use setuptools if we got it, else distutils
-try: 
-#    import ez_setup
-#    ez_setup.use_setuptools()
-    from setuptools import setup
-except:
-    from distutils.core import setup
+from distutils.core import setup
 
 if sys.argv[-1] == 'setup.py':
     print "To install, run 'python setup.py install'"
