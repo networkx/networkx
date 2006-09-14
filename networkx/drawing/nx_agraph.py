@@ -218,9 +218,10 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     A=to_agraph(G)
     A.layout()
     node_pos={}
-    for n in A.nodes():
+    for n in G.nodes():
+        node=pygraphviz.Node(A,n)
         try:
-            xx,yy=n.attr["pos"].split(',')
+            xx,yy=node.attr["pos"].split(',')
             node_pos[n]=(float(xx),float(yy))
         except:
             print "no position for node",n
