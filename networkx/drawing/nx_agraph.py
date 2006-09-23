@@ -83,25 +83,25 @@ def from_agraph(A,create_using=None):
     return N        
 
 def to_agraph(N, graph_attr={}, node_attr={}, edge_attr={},
-              strict=True, directed=False):
+              strict=True):
     """Return a pygraphviz graph from a NetworkX graph N.
 
     If N is a Graph or DiGraph, graphviz attributes can
     be supplied through the arguments
 
-    graph_attr:  dictionary containing three dictionaries
-                 with default arguments for graph, nodes, and edges
+    graph_attr:  dictionary with default attributes for graph, nodes, and edges
+                 keyed by 'graph', 'node', and 'edge' to attribute dictionaries
 
-    node_attr: dictionary keyed by node with node attributes
+    node_attr: dictionary keyed by node to node attribute dictionary
 
-    edge_attr: dictionary keyed by edge tuple with edge attributes
+    edge_attr: dictionary keyed by edge tuple to edge attribute dictionary
 
     If N is an XGraph or XDiGraph an attempt will be made first
     to copy properties attached to the graph (see from_agraph)
     and then updated with the calling arguments if any.
 
     """
-    if N.is_directed(): directed=True
+    directed= N.is_directed()
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
 
     # default graph attributes            
