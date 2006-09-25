@@ -8,10 +8,7 @@ See https://networkx.lanl.gov/drawing.html for more info.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2005-03-28 13:05:55 -0700 (Mon, 28 Mar 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 882 $"
-#    Copyright (C) 2004 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

@@ -1,4 +1,13 @@
 """
+Interface to pygraphviz AGraph class.
+
+Usage 
+
+ >>> from networkx import *
+ >>> G=complete_graph(5)
+ >>> A=to_agraph(G)
+ >>> H=from_agraph(A)
+
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __credits__ = """"""
@@ -82,7 +91,7 @@ def from_agraph(A,create_using=None):
 
     return N        
 
-def to_agraph(N, graph_attr={}, node_attr={}, edge_attr={},
+def to_agraph(N, graph_attr=None, node_attr=None, edge_attr=None,
               strict=True):
     """Return a pygraphviz graph from a NetworkX graph N.
 
@@ -109,23 +118,28 @@ def to_agraph(N, graph_attr={}, node_attr={}, edge_attr={},
         A.graph_attr.update(N.graph_attr['graph'])
     except:
         pass
-    if 'graph' in graph_attr:
+    try:
         A.graph_attr.update(graph_attr['graph'])
+    except:
+        pass
     # default node attributes            
     try:        
         A.node_attr.update(N.graph_attr['node'])
     except:
         pass
-    if 'node' in graph_attr:
+    try:
         A.node_attr.update(graph_attr['node'])
+    except:
+        pass
     # default edge attributes            
     try:        
         A.edge_attr.update(N.graph_attr['edge'])
     except:
         pass
-    if 'edge' in graph_attr:
+    try:
         A.edge_attr.update(graph_attr['edge'])
-
+    except:
+        pass
 
     # add nodes
     for n in N.nodes_iter():
@@ -138,8 +152,11 @@ def to_agraph(N, graph_attr={}, node_attr={}, edge_attr={},
         except:
             pass
         # update with attributes from calling parameters
-        if n in node_attr:
-            node.attr.update(node_attr[n])
+        try:
+            if n in node_attr:
+                node.attr.update(node_attr[n])
+        except:
+            pass
 
     # loop over edges
     for e in N.edges_iter():
@@ -148,13 +165,15 @@ def to_agraph(N, graph_attr={}, node_attr={}, edge_attr={},
             data=None
         else:
             (u,v,data)=e
+
         if data is None: # no data, just add edge
             A.add_edge(u,v)
             edge=pygraphviz.Edge(A,u,v)
         else: # could have list of edge data or single edge data
-            if hasattr(N,'allow_multiedges')==True:
+            try:
+                N.allow_multiedges()==True
                 dlist=N.get_edge(u,v)
-            else:
+            except:
                 dlist=[N.get_edge(u,v)]
             for d in dlist:
                 A.add_edge(u,v)
@@ -163,8 +182,8 @@ def to_agraph(N, graph_attr={}, node_attr={}, edge_attr={},
                     edge.attr.update(d)
         # update from calling argument
         try:  # e might not be hashable
-            if e in edge_attr:
-                edge.attr.update(edge_attr[e])
+            if (u,v) in edge_attr:
+                edge.attr.update(edge_attr[(u,v)])
         except:
             pass
 

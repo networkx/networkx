@@ -10,8 +10,8 @@ except ImportError:
 try:
     # needs pygraphviz, graphviz
     # if successful,
-    # write_dot, read_dot, graphviz_layout will come from pygraphviz
-    # else they will be the ones in nx_pydot or none at all if that failed
+    # write_dot, read_dot, graphviz_layout will come from pygraphviz Agraph
+    # version 0.21 or earlier
     from nx_pygraphviz import *
 except ImportError:
     pass
@@ -19,12 +19,11 @@ except ImportError:
 try:
     # needs pygraphviz, graphviz
     # if successful,
-    # write_dot, read_dot, graphviz_layout will come from pygraphviz
-    # else they will be the ones in nx_pydot or none at all if that failed
+    # write_dot, read_dot, graphviz_layout will come from pygraphviz AGraph
+    # version 0.32 or greater
     from nx_agraph import *
 except ImportError:
     pass
-
 
 try:
     # needs matplotlib (including either numpy, Numeric, or numarray)
