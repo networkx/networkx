@@ -40,6 +40,21 @@ About
       - Allows easy access to almost any database
 
 
+Quick Example
+-------------
+
+   Just write in Python
+
+   >>> import networkx as NX
+   >>> G=NX.Graph()
+   >>> G.add_edge(1,2)
+   >>> G.add_node("spam")
+   >>> print G.nodes()
+   [1, 2, 'spam']
+   >>> print G.edges()
+   [(1, 2)]
+
+
 Requirements
 -------------
 
@@ -63,8 +78,8 @@ Requirements
       - sAsync		 http://foss.eepatents.com/sAsync                
       - PyYAML		 http://pyyaml.org/
 
-Downloading
------------
+Download
+--------
 
    You can download NetworkX from 
    http://sourceforge.net/project/showfiles.php?group_id=122233
@@ -80,10 +95,21 @@ Downloading
 Quick Install
 -------------
 
-   **Linux and OSX** (install from source)
+   Installing from source:
 
-      Download the source tar file or zip file, unpack, and run 
-      "python setup.py install". 
+      - Download the source (tar.gz or zip file)
+      - Unpack and change directory to networkx-x.xx
+      - Run "python setup.py install" to build and install
+      - (optional) cd networkx/tests and run "python setup_egg.py test" to execute the tests
+      
+    
+   Installing a Python egg from source:
+
+      - Download the source (tar.gz or zip file)
+      - Unpack and change directory to networkx-x.xx
+      - Run "python setup_egg.py install" to build and install
+      - (optional) run "python setup_egg.py test" to execute the tests
+
 
    **Windows** (binary installer)
  
@@ -98,19 +124,13 @@ Quick Install
    easy_install networkx
 
 
-Using 
------
+Authors
+-------
+   
+  - Aric Hagberg  http://math.lanl.gov/~hagberg/
+  - Dan Schult
+  - Pieter Swart
 
-   Just write in Python
-
-   >>> import networkx as NX
-   >>> G=NX.Graph()
-   >>> G.add_edge(1,2)
-   >>> G.add_node("spam")
-   >>> print G.nodes()
-   [1, 2, 'spam']
-   >>> print G.edges()
-   [(1, 2)]
 
 
 .. raw:: html

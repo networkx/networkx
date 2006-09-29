@@ -3,6 +3,42 @@
 NetworkX News
 =============
 
+What's new in NX-0.32?
+----------------------
+
+Release date: 29 September 2006
+
+See: https://networkx.lanl.gov/timeline
+
+New features
+~~~~~~~~~~~~
+  - Update to work with numpy-1.0x
+  - Make egg usage optional: use python setup_egg.py bdist_egg to build egg
+  - Generators and functions for bipartite graphs
+  - Experimental classes for trees and forests
+  - Support for new pygraphviz update (in nx_agraph.py) , see
+    https://networkx.lanl.gov/pygraphviz/ for pygraphviz details 
+
+Bug fixes
+~~~~~~~~~
+  - Handle special cases correctly in triangles function
+  - Typos in documentation  
+  - Handle special cases in shortest_path and shortest_path_length,
+    allow cutoff parameter for maximum depth to search
+  - Update examples: erdos_renyi.py, miles.py, roget,py, eigenvalues.py
+
+
+Examples
+~~~~~~~~
+  - Expected degree sequence
+    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/expected_degree_sequence.py
+  - New pygraphviz interface
+    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/.py
+    https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/pygraphviz_simple.py
+    https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/pygraphviz_miles.py
+    https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/pygraphviz_attributes.py
+
+
 What's new in NX-0.31?
 ----------------------
 
