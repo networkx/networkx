@@ -11,7 +11,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 __date__ = "$Date$"
 
 name = 'networkx'
-version = '0.32-svn'
+version = '0.32'
 
 description = "Python package for creating and manipulating graphs and networks"
 
