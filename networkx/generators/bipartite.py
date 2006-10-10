@@ -69,7 +69,7 @@ def bipartite_configuration_model(aseq, bseq,
     astubs=[x for subseq in stubs for x in subseq]
 
     stubs=[]
-    stubs.extend(([v]*bseq[v-lena] for v in range(lena,lena+lenb)))  
+    stubs.extend([[v]*bseq[v-lena] for v in range(lena,lena+lenb)])  
     bstubs=[]
     bstubs=[x for subseq in stubs for x in subseq]
 
@@ -77,7 +77,7 @@ def bipartite_configuration_model(aseq, bseq,
     random.shuffle(astubs)
     random.shuffle(bstubs)
 
-    G.add_edges_from(([astubs[i],bstubs[i]] for i in xrange(suma)))
+    G.add_edges_from([[astubs[i],bstubs[i]] for i in xrange(suma)])
 
     G.name="bipartite_configuration_model"
     return G
