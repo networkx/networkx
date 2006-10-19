@@ -577,7 +577,7 @@ def read_gpickle(path):
     """
     Read graph object in Python pickle format
 
-    >>> G=read_gpickle(G,"file.gpickle")
+    >>> G=read_gpickle("file.gpickle")
 
     See cPickle.
     
