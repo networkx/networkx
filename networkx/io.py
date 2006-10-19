@@ -570,7 +570,7 @@ def write_gpickle(G, path):
     See cPickle.
     
     """
-    fh=_get_fh(path,mode='w')        
+    fh=_get_fh(path,mode='wb')        
     cPickle.dump(G,fh,cPickle.HIGHEST_PROTOCOL)
 
 def read_gpickle(path):
@@ -582,7 +582,7 @@ def read_gpickle(path):
     See cPickle.
     
     """
-    fh=_get_fh(path)
+    fh=_get_fh(path,'rb')
     return cPickle.load(fh)
 
 
