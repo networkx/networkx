@@ -54,7 +54,7 @@ test
 
 >>> H=XGraph()
 >>> print H.name
-No Name
+<BLANKLINE>
 
 Nodes
 -----

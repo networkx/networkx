@@ -288,7 +288,7 @@ class Graph(object):
     See networkx.base for more details.
 
     """
-    def __init__(self, data=None, **kwds):
+    def __init__(self, data=None, name=None, **kwds):
         """Initialize Graph.
         
         >>> G=Graph(name="empty")
@@ -296,7 +296,7 @@ class Graph(object):
         creates empty graph G with G.name="empty"
 
         """
-        self.name=kwds.get("name","No Name")
+        self.name=''
         # dna is a dictionary attached to each graph and used to store
         # information about the graph structure
         self.dna={}
@@ -307,6 +307,9 @@ class Graph(object):
         # attempt to load graph with data
         if data is not None:
             self=convert.from_whatever(data,create_using=self)
+
+        if name is not None:
+            self.name=name
             
     def __str__(self):
         return self.name
@@ -892,7 +895,7 @@ class Graph(object):
                         
     def clear(self):
         """Remove name and delete all nodes and edges from graph."""
-        self.name=""
+        self.name=None
         self.adj.clear() # WARNING: the dna is not scrubbed to
                        # recover its state at time of object creation
 
@@ -1059,9 +1062,9 @@ class DiGraph(Graph):
 # we store two adjacency lists:
 #    the  predecessors of node n are stored in the dict self.pred
 #    the successors of node n are stored in the dict self.succ=self.adj
-    def __init__(self,data=None,**kwds):
+    def __init__(self,data=None,name=None,**kwds):
 
-        self.name=kwds.get("name","No Name")
+        self.name=''
         # dna is a dictionary attached to each graph and used to store
         # information about the graph structure
         self.dna={}
@@ -1073,6 +1076,9 @@ class DiGraph(Graph):
 
         if data is not None:
             self=convert.from_whatever(data,create_using=self)
+
+        if name is not None:
+            self.name=name
 
     def __getitem__(self,n):
         """Return the in- and out-neighbors of node n as a list.
@@ -1541,7 +1547,7 @@ class DiGraph(Graph):
 
     def clear(self):
         """Remove name and delete all nodes and edges from digraph."""
-        self.name=""
+        self.name=None
         self.succ.clear() # WARNING: the dna is not scrubbed to
         self.pred.clear() # recover its state at time of object creation
 

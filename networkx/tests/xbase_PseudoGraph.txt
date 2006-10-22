@@ -61,7 +61,7 @@ test
 
 >>> H=XGraph(multiedges=True, selfloops=True)
 >>> print H.name
-No Name
+<BLANKLINE>
 
 The first PseudoGraph
 (cf. http://mathworld.wolfram.com/KoenigsbergBridgeProblem.html)

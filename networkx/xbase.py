@@ -242,7 +242,7 @@ class XGraph(Graph):
     """
 
 
-    def __init__(self,data=None,**kwds):
+    def __init__(self,data=None,name=None,**kwds):
         """Initialize XGraph.
 
         Optional arguments::
@@ -251,7 +251,7 @@ class XGraph(Graph):
         multiedges: if True multiple edges are allowed (default=False)
 
         """
-        self.name=kwds.get("name","No Name")
+        self.name=''
         self.selfloops=kwds.get("selfloops",False)    # no self-loops
         self.multiedges=kwds.get("multiedges",False)  # no multiedges
 
@@ -266,7 +266,9 @@ class XGraph(Graph):
 
         if data is not None:
             self=convert.from_whatever(data,create_using=self)
-
+            
+        if name is not None:
+            self.name=name
 
     def __getitem__(self,n):
         """Return the neighbors of node n as a list.
@@ -922,7 +924,7 @@ class XDiGraph(DiGraph):
 #    For each edge (n1,n2,x) in self.succ there exists a corresponding edge
 #    (n2,n1,x) in self.pred
 
-    def __init__(self,data=None,**kwds):
+    def __init__(self,data=None,name=None,**kwds):
         """Initialize XDiGraph.
 
         Optional arguments::
@@ -931,7 +933,7 @@ class XDiGraph(DiGraph):
         multiedges: if True then multiple edges are allowed (default=False)
 
         """
-        self.name=kwds.get("name","No Name")
+        self.name=''
         self.selfloops=kwds.get("selfloops",False)    # no self-loops
         self.multiedges=kwds.get("multiedges",False)  # no multiedges
 
@@ -949,7 +951,8 @@ class XDiGraph(DiGraph):
         if data is not None:
             self=convert.from_whatever(data,create_using=self)
 
-
+        if name is not None:
+            self.name=name
 
 
     def add_edge(self, n1, n2=None, x=None):  

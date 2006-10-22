@@ -35,7 +35,7 @@ datastructure  : vdict_of_dicts
 
 >>> H=Graph()
 >>> print H.name
-No Name
+<BLANKLINE>
 
 Nodes
 -----

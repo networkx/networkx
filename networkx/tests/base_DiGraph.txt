@@ -64,7 +64,7 @@ datastructure  : vdict_of_dicts
 
 >>> H= DiGraph()
 >>> print H.name
-No Name
+<BLANKLINE>
 
 
 Nodes

@@ -133,7 +133,7 @@ test
 
 >>> H= XDiGraph()
 >>> print H.name
-No Name
+<BLANKLINE>
 
 
 Nodes
