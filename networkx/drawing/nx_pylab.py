@@ -313,7 +313,7 @@ def draw_networkx_edges(G, pos,
 
         arrow_collection = LineCollection(a_pos,
                                 colors       = arrow_colors,
-                                linewidths   = lw*4,
+                                linewidths   = [4*ww for ww in lw],
                                 antialiaseds = (1,),
                                 transOffset = ax.transData,             
                                 )
