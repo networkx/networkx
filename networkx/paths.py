@@ -580,6 +580,80 @@ def floyd_warshall(graph):
     return dist, path
 
 
+######################################################################
+### Jeff A mods.  Kept very local for now.
+
+def floyd_warshall_array(graph):
+    """
+    The Floyd-Warshall algorithm for all pairs shortest paths.
+    
+    Returns a tuple (distance,path) containing two arrays of shortest
+    distance and paths as a predecessor matrix.  This differs from
+    floyd_warshall only in the types of the return values.  Thus,
+    path[i,j] gives the predecessor at j on a path from i to j.  A
+    value of None indicates that no path exists.  A predecessor of i
+    indicates the beginning of the path.  The advantage of this
+    implementation is that, while running time is O(n^3), running
+    space is O(n^2).
+
+    This algorithm handles negative weights.
+    """
+
+    # A weight that's more than any path weight
+    HUGE_VAL = 1
+    if(hasattr(graph,"get_edge")):
+        for e in graph.edges():
+            HUGE_VAL += e[2]
+    else:
+        HUGE_VAL += len(graph.edges())
+
+    dist = {}
+    dist_prev = {}
+    pred = {}
+    pred_prev = {}
+    for i in graph:
+        dist[i] = {}
+        dist_prev[i] = {}
+        pred[i] = {}
+        pred_prev[i] = {}
+        for j in graph:
+            dist[i][j] = 0              # arbitrary, just create slot
+            pred[i][j] = 0              # arbitrary, just create slot
+            if i == j:
+                dist_prev[i][j] = 0
+                pred_prev[i][j] = -1
+            elif graph.has_edge(i,j):
+                if hasattr(graph,"get_edge"): 
+                    val = graph.get_edge(i,j)
+                else:
+                    val= 1
+                dist_prev[i][j] = val
+                pred_prev[i][j] = i
+            else:
+                # no edge, distinct vertices
+                dist_prev[i][j] = HUGE_VAL
+                pred_prev[i][j] = -1    # None, but has to be numerically comparable
+    for k in graph:
+        for i in graph:
+            for j in graph:
+                dist[i][j] = min(dist_prev[i][j], dist_prev[i][k] + dist_prev[k][j])
+                if dist_prev[i][j] <= dist_prev[i][k] + dist[k][j]:
+                    pred[i][j] = pred_prev[i][j]
+                else:
+                    pred[i][j] = pred_prev[k][j]
+        tmp = dist_prev
+        dist_prev = dist
+        dist = tmp
+
+        tmp = pred_prev
+        pred_prev = pred
+        pred = tmp
+    # The last time through the loop, we exchanged for nothing, so
+    # return the prev versions, since they're really the current
+    # versions.
+    return dist_prev, pred_prev
+######################################################################
+
 def is_directed_acyclic_graph(G):
     """Return True if the graph G is a directed acyclic graph (DAG).
 
