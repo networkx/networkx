@@ -23,28 +23,38 @@ except ImportError:
     except ImportError:
         raise ImportError,"Neither Numeric nor numpy can be imported."
 
-def adj_matrix(G,nodelist=None):
+def adj_matrix(G,nodelist=None,weighted=False):
     """Return adjacency matrix of graph
 
     If nodelist is defined return adjacency matrix with nodes in nodelist
     in the order specified.
 
-    The value of the entry in the adjacency matrix is zero or one.
-    E.g. self-loops, multi-edges, or weighted graphs are not handled.
+    If weighted is False, then the value of the entry in the adjacency
+    matrix is zero or one.  E.g. self-loops, multi-edges, or weighted
+    graphs are not handled.  If weighted is True, the weight matrix is
+    returned.  Note, however, that the weighted representation can not
+    distinguish between between zero weight edges and absent edges.
 
     The returned matrix is a numpy or Numeric array. 
 
     """
     if nodelist is None:
         nodelist=G.nodes()
+    if weighted:
+        if not hasattr(G,"get_edge"):
+            w=lambda x,y:1
+        else:
+            w=lambda x,y:G.get_edge(x,y)
+    else:
+        w=lambda x,y:1
     nlen=len(nodelist)    
     index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
     a = N.zeros((nlen,nlen))
     for n1 in nodelist:
         nbrs=[n for n in G.neighbors(n1) if n in nodelist]
         for n2 in nbrs:
-            a[index[n1],index[n2]]=1
-            a[index[n2],index[n1]]=1
+            a[index[n1],index[n2]]=w(n1,n2)
+            a[index[n2],index[n1]]=w(n1,n2)
     return a            
 
 def laplacian(G,nodelist=None):
