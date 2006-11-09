@@ -656,6 +656,15 @@ class Graph(object):
         return self.has_edge(u,v)
 
 
+    def get_edge(self, n1, n2):
+        """Return 1 if graph contains the edge u-v, 0 otherwise """
+        # useful for helping build adjacency matrix representation
+        if self.has_edge(n1,n2):
+            return 1
+        else:
+            return 0
+
+
     def neighbors_iter(self,n):
          """Return an iterator over all neighbors of node n.  """
          try:

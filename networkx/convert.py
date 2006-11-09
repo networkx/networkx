@@ -161,22 +161,14 @@ def to_dict_of_dicts(G,nodelist=None):
     if nodelist is None:
         nodelist=G.nodes()
 
-    # is this a XGraph or XDiGraph?
-    if hasattr(G,'allow_multiedges')==True:
-        xgraph=True
-    else:
-        xgraph=False
-
     d = {}
     for u in nodelist:
         d[u]={}
         for v in G.neighbors(u):
-            if xgraph:
-                data=G.get_edge(u,v)
-            else:
-                data=None
+            data=G.get_edge(u,v)
             d[u][v]=data
     return d            
+
 
 def from_dict_of_dicts(d,create_using=None):
     """Return a NetworkX graph G from a Python dictionary of dictionaries.
