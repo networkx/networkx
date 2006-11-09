@@ -34,11 +34,14 @@ __revision__ = "$Id"
 import networkx
 
 try:
+    import matplotlib
     import matplotlib.cbook as cb
-    from matplotlib.colors import colorConverter
+    from matplotlib.colors import colorConverter,normalize,Colormap
     from matplotlib.collections import LineCollection
     from matplotlib.numerix import sin, cos, pi, sqrt, arctan2, asarray
     from matplotlib.numerix.mlab import amin, amax
+    from matplotlib import compare_versions
+    from matplotlib import compare_versions
 except ImportError:
     raise ImportError, "Import Error: not able to import matplotlib."
 
@@ -75,6 +78,8 @@ def draw(G, pos=None, with_labels=True, **kwds):
       - `vmin,vmax`: min and max for colormap scaling (default=None)
       - `width`: line width of edges (default =1.0)
       - `edge_color`: scalar or array (default='k')
+      - `edge_cmap`: colormap for edge intensities (default=None) 
+      - `edge_vmin,edge_vmax`: min and max for colormap edge scaling (default=None)
       - `style`: edge linestyle (default='solid') (solid|dashed|dotted,dashdot)
       - `labels`: dictionary keyed by node of text labels (default=None)
       - `font_size`: size for text labels (default=12)
@@ -220,6 +225,9 @@ def draw_networkx_edges(G, pos,
                         edge_color='k',
                         style='solid',
                         alpha=1.0,
+                        edge_cmap=None,
+                        edge_vmin=None,
+                        edge_vmax=None, 
                         ax=None,
                         **kwds):
     """Draw the edges of the graph G
@@ -237,6 +245,7 @@ def draw_networkx_edges(G, pos,
 
     """
     from matplotlib.pylab import gca, hold, draw_if_interactive 
+
     if ax is None:
         ax=gca()
 
@@ -262,9 +271,6 @@ def draw_networkx_edges(G, pos,
     else:
         lw = width
 
-    # edge colors specified with floats won't work here
-    # since LineCollection doesn't use ScalarMappable.
-    # You can use an array of RGBA or text labels
     if not cb.is_string_like(edge_color) \
            and cb.iterable(edge_color) \
            and len(edge_color)==len(edge_pos):
@@ -280,6 +286,22 @@ def draw_networkx_edges(G, pos,
                                 transOffset = ax.transData,             
                                 )
     edge_collection.set_alpha(alpha)
+
+    # need 0.87.7 or greater for edge colormaps
+    if map(int,matplotlib.__version__.split('.'))>=[0,87,7]:
+        if edge_colors is None:
+            if edge_cmap is not None: assert(isinstance(edge_cmap, Colormap))
+            edge_collection.set_array(asarray(edge_color))
+            edge_collection.set_cmap(edge_cmap)
+            if edge_vmin is not None or edge_vmax is not None:
+                edge_collection.set_clim(edge_vmin, edge_vmax)
+            else:
+                edge_collection.autoscale()
+    else:
+        raise UserWarning(\
+            """matplotlib version >= 0.87.7 required for colormapped edges.
+        (version %s detected)."""%matplotlib.__version__)
+
     arrow_collection=None
 
     if G.is_directed():
