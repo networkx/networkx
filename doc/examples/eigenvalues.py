@@ -21,11 +21,7 @@ try:
     import numpy.linalg
     eigenvalues=numpy.linalg.eigvals
 except ImportError:
-    try:    
-        import LinearAlgebra
-        eigenvalues=LinearAlgebra.eigenvalues
-    except ImportError:
-        raise ImportError,"Neither numpy nor Numeric can be imported."
+    raise ImportError,"numpy can not be imported."
 
 try:
     from pylab import *
