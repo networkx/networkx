@@ -42,7 +42,7 @@ class Tree(Graph):
             Graph.add_node(self,n) # first node
         else:  # not allowed
             raise NetworkXError(\
-                "adding single node %s not allowed in tree"%(n))
+                "adding single node %s not allowed in non-empty tree"%(n))
 
     def add_nodes_from(self, nbunch):
         for n in nbunch:
@@ -110,6 +110,24 @@ class Tree(Graph):
     def delete_leaves_from(self, ebunch):  
         for e in ebunch:
             self.delete_leaf(e)
+
+    def union_sub(self, T1, **kwds):
+        """Polymorphic helper method for Graph.union().
+
+        Required keywords: v_from and v_to, where v_from is the node
+        in self to which v_to should be attached as child."""
+        T = self.copy()
+        parent = kwds['v_from']
+        node = kwds['v_to']
+        T.add_edge(parent, node)
+        T.union_sub_tree_helper(T1, node)
+        return T
+
+    def union_sub_tree_helper(self, T1, parent, grandparent=None):
+        for child in T1[parent]:
+            if(child != grandparent):
+                self.add_edge(parent, child)
+                self.union_sub_tree_helper(T1, child, parent)
 
 
 class RootedTree(Tree,Graph):
