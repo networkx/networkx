@@ -15,15 +15,10 @@ from math import pi,sin,cos,sqrt
 import sys
 from networkx.utils import uniform_sequence
 
-
-# try numpy first and Numeric, second. Fail if neither is available. 
 try:
     import numpy as N
 except ImportError:
-    try:
-        import Numeric as N
-    except ImportError:
-        raise ImportError,"Neither Numeric nor numpy can be imported."
+    raise ImportError,"numpy can not be imported."
 
 def circular_layout(G, dim=2):
     """

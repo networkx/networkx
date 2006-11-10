@@ -26,13 +26,13 @@ except ImportError:
     pass
 
 try:
-    # needs matplotlib (including either numpy, Numeric, or numarray)
+    # needs matplotlib 
     from nx_pylab import *
 except ImportError:
     pass
 
 try:
-    # needs numpy or Numeric
+    # needs numpy 
     from layout import *
 except ImportError:
     pass
