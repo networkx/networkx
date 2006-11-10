@@ -186,9 +186,9 @@ Functions
   kl_connected_subgraph(G)       - subgraph of G that is kl-connected.
   is_kl_connected(G)             - True if G is kl-connected.
   
-  adj_matrix(G)                  - adjacency matrix for G as a Numeric array.
-  laplacian(G)                   - Graph Laplacian for G as a Numeric array.
-  generalized_laplacian(G)       - generalized graph Laplacian for G as a Numeric array.
+  adj_matrix(G)                  - adjacency matrix for G as a numpy matrix.
+  laplacian(G)                   - Graph Laplacian for G as a numpy matrix
+  generalized_laplacian(G)       - generalized graph Laplacian for G as a numpy matrix.
 
   is_directed_acyclic_graph(G)   - True if DAG.
   topological_sort(G)            - list of nodes in directed graph such that every edge goes from left to right.

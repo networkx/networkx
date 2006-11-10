@@ -65,10 +65,9 @@ Requirements
    Optional packages to enable drawing networks:
 
       - Matplotlib       http://matplotlib.sourceforge.net/
-      - Pygraphviz	 http://networkx.lanl.gov/pygraphviz/
+      - pygraphviz	 http://networkx.lanl.gov/pygraphviz/
       - Graphviz         http://graphviz.org/
-      - Pydot            http://www.dkbza.org/pydot.html
-      - numpy or Numeric http://numeric.scipy.org/
+      - numpy		 http://numpy.scipy.org/
 
    Optional useful packages:
 
