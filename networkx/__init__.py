@@ -85,9 +85,11 @@ from centrality import betweenness_centrality, \
                        closeness_centrality
 from hybrid import kl_connected_subgraph, is_kl_connected
 
-# need numpy or Numeric for spectrum
+# need numpy for spectrum
 try:
-    from spectrum import adj_matrix, laplacian, generalized_laplacian 
+    from spectrum import \
+         adj_matrix, laplacian, generalized_laplacian,\
+         laplacian_spectrum, adjacency_spectrum
 except ImportError:
     pass
 

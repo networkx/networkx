@@ -1,7 +1,7 @@
 """
 Laplacian, adjacency matrix, and spectrum of graphs.
 
-Needs either numpy or Numeric.
+Needs numpy array package: numpy.scipy.org.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
@@ -12,91 +12,74 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-
-# try numpy first and Numeric second.
-# Fail if neither is available. 
 try:
     import numpy as N
-except ImportError:
-    try:
-        import Numeric as N
-    except ImportError:
-        raise ImportError,"Neither Numeric nor numpy can be imported."
+except:
+    raise ImportError
 
-def adj_matrix(G,nodelist=None,weighted=False):
-    """Return adjacency matrix of graph
+import networkx
 
-    If nodelist is defined return adjacency matrix with nodes in nodelist
-    in the order specified.
+def adj_matrix(G,nodelist=None):
+    """Return adjacency matrix of graph as a numpy matrix.
 
-    If weighted is False, then the value of the entry in the adjacency
-    matrix is zero or one.  E.g. self-loops, multi-edges, or weighted
-    graphs are not handled.  If weighted is True, the weight matrix is
-    returned.  Note, however, that the weighted representation can not
-    distinguish between between zero weight edges and absent edges.
+    This just calls networkx.convert.to_numpy_matrix.
 
-    The returned matrix is a numpy or Numeric array. 
+    If you want a pure python adjacency matrix represntation try
+    networkx.convert.to_dict_of_dicts
+    which will return a dictionary-of-dictionaries format that
+    can be addressed as a sparse matrix.
 
     """
-    if nodelist is None:
-        nodelist=G.nodes()
-    if weighted:
-        if not hasattr(G,"get_edge"):
-            w=lambda x,y:1
-        else:
-            w=lambda x,y:G.get_edge(x,y)
-    else:
-        w=lambda x,y:1
-    nlen=len(nodelist)    
-    index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
-    a = N.zeros((nlen,nlen))
-    for n1 in nodelist:
-        nbrs=[n for n in G.neighbors(n1) if n in nodelist]
-        for n2 in nbrs:
-            a[index[n1],index[n2]]=w(n1,n2)
-            a[index[n2],index[n1]]=w(n1,n2)
-    return a            
+    return networkx.to_numpy_matrix(G,nodelist=nodelist)
+
 
 def laplacian(G,nodelist=None):
-    """Return standard combinatorial Laplacian of G.
+    """Return standard combinatorial Laplacian of G as a numpy matrix.
 
     Return the matrix L = D - A, where
 
        D is the diagonal matrix in which the i'th entry is the degree of node i
        A is the adjacency matrix.
 
-    The returned matrix is a numpy or Numeric array. 
-
     """
     # this isn't the most efficient way to do this...
     n=G.order()
     I=N.identity(n)
-    A=adj_matrix(G,nodelist=nodelist)
+    A=N.asarray(networkx.to_numpy_matrix(G,nodelist=nodelist))
     D=I*N.sum(A,axis=1)
     L=D-A
     return L
 
 
 def normalized_laplacian(G,nodelist=None):
-    """Return normalized Laplacian of G.
+    """Return normalized Laplacian of G as a numpy matrix.
 
     See Spectral Graph Theory by Fan Chung-Graham.
     CBMS Regional Conference Series in Mathematics, Number 92,
     1997.
 
-    The returned matrix is a numpy or Numeric array. 
-
     """
     # FIXME: this isn't the most efficient way to do this...
     n=G.order()
     I=N.identity(n)
-    A=adj_matrix(G,nodelist=nodelist)
-    D=I*N.sum(A,axis=1)
-    L=D-A
+    A=N.asarray(networkx.to_numpy_matrix(G,nodelist=nodelist))
     d=N.sum(A,axis=1)
-    T=I*(N.where(d,N.sqrt(1./d),0))
+    L=I*d-A
+    osd=N.zeros(len(d))
+    for i in range(len(d)):
+        if d[i]>0: osd[i]=N.sqrt(1.0/d[i])
+    T=I*osd
     L=N.dot(T,N.dot(L,T))
     return L
+
+def laplacian_spectrum(G):
+    """Return eigenvalues of the Laplacian of G""" 
+    return N.linalg.eigvals(laplacian(G))
+
+def adjacency_spectrum(G):
+    """Return eigenvalues of the adjacency matrix of G""" 
+    return N.linalg.eigvals(adj_matrix(G))
+
 
 combinatorial_laplacian=laplacian
 generalized_laplacian=normalized_laplacian
