@@ -152,21 +152,24 @@ def from_dict_of_lists(d,create_using=None):
     return G                         
 
 
-def to_dict_of_dicts(G,nodelist=None):
+def to_dict_of_dicts(G,nodelist=None,weighted=False):
     """Return graph G as a Python dictionary of dictionaries.
 
     If nodelist is defined return a dict of dicts with only those nodes.
-
+    
     """
     if nodelist is None:
         nodelist=G.nodes()
+    if not weighted or not hasattr(G,"get_edge"):
+        w=lambda x,y:1
+    else:
+        w=lambda x,y:G.get_edge(x,y)
 
     d = {}
     for u in nodelist:
         d[u]={}
         for v in G.neighbors(u):
-            data=G.get_edge(u,v)
-            d[u][v]=data
+            d[u][v]=w(u,v)
     return d            
 
 
