@@ -539,47 +539,6 @@ def single_source_dijkstra(G,source,target=None):
     return (dist,paths)
 
 
-def floyd_warshall(graph):
-    """
-    The Floyd-Warshall algorithm for all pairs shortest paths.
-    
-    Returns a tuple (distance,path) containing two matrixes of
-    shortest distance and paths as dicts-in-dicts. 
-        
-    Not intended for large graphs. Time and space grows as O(N^3).
-    This algorithm handles negative weights.
-    """
-    
-    dist = {}
-    path = {}
-    for i in graph:
-        dist[i] = {}
-        path[i] = {}
-        for j in graph:
-            if i == j :continue
-            if not graph.has_edge(i,j): continue
-            if hasattr(graph,"get_edge"): 
-                val = graph.get_edge(i,j)
-            else:
-                val= 1
-            path[i][j] = [i, j]
-            dist[i][j] = val
-    for k in graph:
-        for i in graph:
-            if i==k : continue
-            for j in graph:
-                if j == i or j == k: continue
-                if j in dist[k] and k in dist[i]: 
-                    if j in dist[i]:
-                        if dist[i][j] > dist[i][k] + dist[k][j]:
-                            dist[i][j] = dist[i][k] + dist[k][j]
-                            path[i][j] = path[i][k] + path[k][j][1:]
-                    else:
-                        dist[i][j] = dist[i][k] + dist[k][j]
-                        path[i][j] = path[i][k] + path[k][j][1:]
-    return dist, path
-
-
 ######################################################################
 ### Jeff A mods.  Kept very local for now.
 
@@ -588,7 +547,9 @@ def floyd_warshall_array(graph):
     The Floyd-Warshall algorithm for all pairs shortest paths.
     
     Returns a tuple (distance,path) containing two arrays of shortest
-    distance and paths as a predecessor matrix.  This differs from
+    distance and paths as a predecessor matrix.
+
+    This differs from
     floyd_warshall only in the types of the return values.  Thus,
     path[i,j] gives the predecessor at j on a path from i to j.  A
     value of None indicates that no path exists.  A predecessor of i
@@ -601,11 +562,8 @@ def floyd_warshall_array(graph):
 
     # A weight that's more than any path weight
     HUGE_VAL = 1
-    if(hasattr(graph,"get_edge")):
-        for e in graph.edges():
-            HUGE_VAL += e[2]
-    else:
-        HUGE_VAL += len(graph.edges())
+    for e in graph.edges():
+        HUGE_VAL += graph.get_edge(e[0],e[1])
 
     dist = {}
     dist_prev = {}
@@ -623,10 +581,7 @@ def floyd_warshall_array(graph):
                 dist_prev[i][j] = 0
                 pred_prev[i][j] = -1
             elif graph.has_edge(i,j):
-                if hasattr(graph,"get_edge"): 
-                    val = graph.get_edge(i,j)
-                else:
-                    val= 1
+                val = graph.get_edge(i,j)
                 dist_prev[i][j] = val
                 pred_prev[i][j] = i
             else:
@@ -653,6 +608,52 @@ def floyd_warshall_array(graph):
     # versions.
     return dist_prev, pred_prev
 ######################################################################
+
+def floyd_warshall(G,huge=1e30000):
+    """
+    The Floyd-Warshall algorithm for all pairs shortest paths.
+    
+    Returns a tuple (distance,path) containing two dictionaries of shortest
+    distance and predecessor paths.
+
+    This algorithm is most appropriate for dense graphs.
+    The running time is O(n^3), and running space is O(n^2)
+    where n is the number of nodes in G.  
+
+    For sparse graphs, see
+
+    all_pairs_shortest_path
+    all_pairs_shortest_path_length
+
+    which are based on Dijkstra's algorithm.
+
+    """
+    # dictionary-of-dictionaries representation for dist and pred
+    dist={} 
+    # initialize path distance dictionary to be the adjacency matrix
+    # but with sentinal value "huge" where there is no edge
+    # also set the distance to self to 0 (zero diagonal)
+    pred={}
+    # initialize predecessor dictionary 
+    for u in G.nodes():
+        dist[u]={}
+        pred[u]={}
+        for v in G.nodes():
+            if G.has_edge(u,v):
+                dist[u][v]=G.get_edge(u,v)
+                pred[u][v]=u
+            else:
+                dist[u][v]=huge
+                pred[u][v]=None 
+        dist[u][u]=0  # set 0 distance to self
+
+    for w in G.nodes():
+        for u in G.nodes():
+            for v in G.nodes():
+                if dist[u][v] > dist[u][w] + dist[w][v]:
+                    dist[u][v] = dist[u][w] + dist[w][v]
+                    pred[u][v] = pred[w][v]
+    return dist,pred
 
 def is_directed_acyclic_graph(G):
     """Return True if the graph G is a directed acyclic graph (DAG).
