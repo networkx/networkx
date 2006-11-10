@@ -114,4 +114,4 @@ from generators.degree_seq import *
 from generators.directed import *
 from drawing import *
 
-
+from tests import run as test
