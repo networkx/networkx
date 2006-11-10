@@ -15,11 +15,11 @@ Add node
 >>> T.add_node(0)
 Traceback (most recent call last):
 ...
-NetworkXError: adding single node 0 not allowed in tree
+NetworkXError: adding single node 0 not allowed in non-empty tree
 >>> T.add_nodes_from(range(0,1))
 Traceback (most recent call last):
 ...
-NetworkXError: adding single node 0 not allowed in tree
+NetworkXError: adding single node 0 not allowed in non-empty tree
 
 
 Add leaf
@@ -116,11 +116,11 @@ Add node
 >>> T.add_node(0)
 Traceback (most recent call last):
 ...
-NetworkXError: adding single node 0 not allowed in tree
+NetworkXError: adding single node 0 not allowed in non-empty tree
 >>> T.add_nodes_from(range(0,1))
 Traceback (most recent call last):
 ...
-NetworkXError: adding single node 0 not allowed in tree
+NetworkXError: adding single node 0 not allowed in non-empty tree
 
 
 Add leaf
@@ -218,7 +218,7 @@ NetworkXError: adding edge 1-4 not allowed in tree
 >>> T.add_node(5)
 Traceback (most recent call last):
 ...
-NetworkXError: adding single node 5 not allowed in tree
+NetworkXError: adding single node 5 not allowed in non-empty tree
 
 >>> T.add_edge(4,5)
 >>> print sorted(T.edges())
