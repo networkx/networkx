@@ -30,7 +30,7 @@ def adj_matrix(G,nodelist=None):
     can be addressed as a sparse matrix.
 
     """
-    return networkx.to_numpy_matrix(G,nodelist=nodelist,weighted=False)
+    return networkx.to_numpy_matrix(G,nodelist=nodelist)
 
 
 def laplacian(G,nodelist=None):
