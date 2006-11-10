@@ -33,20 +33,6 @@ def adj_matrix(G,nodelist=None):
     return networkx.to_numpy_matrix(G,nodelist=nodelist,weighted=False)
 
 
-def weight_matrix(G,nodelist=None):
-    """Return the weight matrix of graph as a numpy matrix.
-
-    If the graph is unweighted, this just calls adj_matrix().
-
-    If you want a pure python weight matrix represntation try
-    networkx.convert.to_dict_of_dicts with weighted=True,
-    which will return a dictionary-of-dictionaries format that
-    can be addressed as a sparse matrix.
-
-    """
-    return networkx.to_numpy_matrix(G,nodelist=nodelist,weighted=True)
-
-
 def laplacian(G,nodelist=None):
     """Return standard combinatorial Laplacian of G as a numpy matrix.
 
