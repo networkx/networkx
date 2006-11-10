@@ -204,7 +204,7 @@ def from_dict_of_dicts(d,create_using=None):
 
 
 
-def to_numpy_matrix(G,nodelist=None):
+def to_numpy_matrix(G,nodelist=None,weighted=True):
     """Return adjacency matrix of graph as a numpy matrix.
 
     If nodelist is defined return adjacency matrix with nodes in nodelist
@@ -242,7 +242,7 @@ def to_numpy_matrix(G,nodelist=None):
     for e in G.edges_iter(nodelist):
         u=e[0]
         v=e[1]
-        if len(e)==2:
+        if len(e)==2 or weighted == False:
             d=1
         else:
             d=e[2]
