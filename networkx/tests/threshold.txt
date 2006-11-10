@@ -12,12 +12,7 @@ Threshold Graphs
 ...     import numpy as N
 ...	eigenval=N.linalg.eigvals
 ... except ImportError:
-...     try:    
-...         import Numeric as N
-...         import LinearAlgebra
-...	    eigenval=LinearAlgebra.eigenvalues
-...     except ImportError:
-...         raise ImportError,"Neither numpy nor Numeric can be imported."
+...     raise ImportError,"numpy can not be imported."
 
 Threshold Sequence and Graph Test
 ---------------------------------
