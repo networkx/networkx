@@ -18,14 +18,6 @@ __version__ = "$Revision: 1049 $"
 import random  # for swap_d 
 from math import sqrt
 import networkx
-# try numpy first and Numeric, second. Fail if neither is available. 
-try:
-    import numpy as N
-except ImportError:
-    try:
-        import Numeric as N
-    except ImportError:
-        raise ImportError,"Neither Numeric nor numpy can be imported."
 
 def is_threshold_graph(G):
     """
@@ -703,7 +695,6 @@ def spectral_projection(u,eigenpairs):
     eigenpairs should be a list of two objects.  The
     first is a list of eigenvalues and the second a list
     of eigenvectors.  The eigenvectors should be lists. 
-    FIXME--allow Numeric/numpy arrays for eigenvectors.
 
     There's not a lot of error checking on lengths of 
     arrays, etc. so be careful.
