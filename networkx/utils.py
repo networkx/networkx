@@ -25,7 +25,7 @@ def is_singleton(obj):
 
 def is_string_like(obj): # from John Hunter, types-free version
     """Check if obj is string."""
-    if hasattr(obj, 'shape'): return False # this is a workaround
+#    if hasattr(obj, 'shape'): return False # this is a workaround
                                        # for a bug in numeric<23.1
     try:
         obj + ''
