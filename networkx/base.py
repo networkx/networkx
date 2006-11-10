@@ -1046,36 +1046,6 @@ class Graph(object):
         """Return the size of a graph = number of edges. """
         return sum(self.degree())/2
 
-    def union(self, G1, overlap_ok=False, **kwds):
-        """Return a new graph whose nodes are the union of the nodes
-        of input graphs self and G1 and whose edges are induced from self
-        and G1.  If overlap_ok is False, then it is an error if any
-        node of self has the same name as a node of G1.  The graph G
-        returned is a union of shallow copies.  Extra arguments in
-        kwds are available for union_sub in such cases as it makes
-        sense."""
-        if(not overlap_ok):
-            if len(set(G1.nodes() + self.nodes())) != len(G1.nodes()) + len(self.nodes()):
-                raise NetworkXError, "Graphs node sets overlap in union."
-        G = self.union_sub(G1, **kwds)
-        return G
-        
-    def union_sub(self, G1):
-        """Helper for union, meant to be overridden by subclasses as
-        needed.  Trees and forests are the primary instance of
-        subclasses for which polymorphism is likely to be needed.
-        This need for polymorphism is the reason why this function is
-        in Graph instead of a helper function outside Graph.
-
-        It is surely a bug that we don't do better type discovery in
-        the next line.  This will still work for vanilla cases,
-        however."""
-        G = self.copy()
-        G.add_nodes_from(G1.nodes())
-        G.add_edges_from(G1.edges())
-        return G
-
-
 
 class DiGraph(Graph):
     """ A graph with directed edges. Subclass of Graph.
