@@ -589,19 +589,6 @@ class Graph(object):
         self.adj[v][u]=None
 
 
-    def add_edges(self, u, nbunch):
-        """Add edges from u to all the vertices in nbunch.
-
-        nbunch:
-        A container of nodes that will be iterated through once
-        (thus it should be an iterator or be iterable).
-        Each element of the container should be a valid node type:
-        any hashable type except None.  See add_node for details.
-        """
-        for v in nbunch:
-            self.add_edge(u,v)
-
-
     def add_edges_from(self, ebunch):  
         """Add all the edges in ebunch to the graph.
 
