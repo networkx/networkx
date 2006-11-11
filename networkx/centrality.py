@@ -200,7 +200,7 @@ def closeness_centrality(G,v=False):
     The closeness centrality is normalized to be between 0 and 1.
 
     """
-    from networkx.paths import single_source_shortest_path_length
+    from networkx.shortest_path import single_source_shortest_path_length
 
     closeness_centrality={}
 

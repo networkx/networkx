@@ -1,10 +1,9 @@
+# -*- coding: utf-8 -*-
 """
-Shortest paths, diameter, radius, eccentricity, and related methods.
+Shortest path algorithms.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = ""
-__credits__ = """"""
-__revision__ = ""
+__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+___revision__ = ""
 #    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -15,88 +14,6 @@ import networkx
 #use deque only if networkx requires python 2.4
 #from collections import deque 
 import heapq
-
-def eccentricity(G, v=None, sp=None, with_labels=False):
-    """Return the eccentricity of node v in G (or all nodes if v is None).
-
-    The eccentricity is the maximum of shortest paths to all other nodes. 
-
-    The optional keyword sp must be a dict of dicts of
-    shortest_path_length keyed by source and target.
-    That is, sp[v][t] is the length from v to t.
-       
-    If with_labels=True 
-    return dict of eccentricities keyed by vertex.
-    """
-    nodes=[]
-    if v is None:                # none, use entire graph 
-        nodes=G.nodes() 
-    elif isinstance(v, list):  # check for a list
-        nodes=v
-    else:                      # assume it is a single value
-        nodes=[v]
-
-    e={}
-    for v in nodes:
-        if sp is None:
-            length=single_source_shortest_path_length(G,v)
-        else:
-            length=sp[v]
-        try:
-            assert len(length)==G.number_of_nodes()
-        except:
-            raise networkx.NetworkXError,\
-                  "Graph not connected: infinite path length"
-            
-        e[v]=max(length.values())
-
-    if with_labels:
-        return e
-    else:
-        if len(e)==1: return e.values()[0] # return single value
-        return e.values()
-
-def diameter(G, e=None):
-    """Return the diameter of the graph G.
-
-    The diameter is the maximum of all pairs shortest path.
-    """
-    if e is None:
-        e=eccentricity(G,with_labels=True)
-    return max(e.values())
-
-def periphery(G, e=None):
-    """Return the periphery of the graph G. 
-
-    The periphery is the set of nodes with eccentricity equal to the diameter. 
-    """
-    if e is None:
-        e=eccentricity(G,with_labels=True)
-    diameter=max(e.values())
-    p=[v for v in e if e[v]==diameter]
-    return p
-
-
-def radius(G, e=None):
-    """Return the radius of the  graph G.
-
-    The radius is the minimum of all pairs shortest path.
-       """
-    if e is None:
-        e=eccentricity(G,with_labels=True)
-    return min(e.values())
-
-def center(G, e=None):
-    """Return the center of graph G.
-
-    The center is the set of nodes with eccentricity equal to radius. 
-    """
-    if e is None:
-        e=eccentricity(G,with_labels=True)
-    # order the nodes by path length
-    radius=min(e.values())
-    p=[v for v in e if e[v]==radius]
-    return p
 
 
 def shortest_path_length(G,source,target):
@@ -655,96 +572,6 @@ def floyd_warshall(G,huge=1e30000):
                     pred[u][v] = pred[w][v]
     return dist,pred
 
-def is_directed_acyclic_graph(G):
-    """Return True if the graph G is a directed acyclic graph (DAG).
-
-    Otherwise return False.
-    
-    """
-    if topological_sort(G) is None:
-        return False
-    else:
-        return True
-
-def topological_sort(G):
-    """
-    Return a list of nodes of the digraph G in topological sort order.
-
-    A topological sort is a nonunique permutation of the nodes
-    such that an edge from u to v implies that u appears before v in the
-    topological sort order.
-
-    If G is not a directed acyclic graph no topological sort exists
-    and the Python keyword None is returned.
-
-    This algorithm is based on a description and proof at
-    http://www2.toki.or.id/book/AlgDesignManual/book/book2/node70.htm
-
-    See also is_directed_acyclic_graph()
-    
-    """
-    # nonrecursive version
-
-    seen={}
-    order_explored=[] # provide order and 
-    explored={}       # fast search without more general priorityDictionary
-                     
-    if not G.is_directed():  G.successors_iter=G.neighbors_iter
-
-    for v in G.nodes_iter():     # process all vertices in G
-        if v in explored: continue
-
-        fringe=[v]   # nodes yet to look at
-        while fringe:
-            w=fringe[-1]  # depth first search
-            if w in explored: # already looked down this branch
-                fringe.pop()
-                continue
-            seen[w]=1     # mark as seen
-            # Check successors for cycles and for new nodes
-            new_nodes=[]
-            for n in G.successors_iter(w):  
-                if n not in explored:
-                    if n in seen: return #CYCLE !!
-                    new_nodes.append(n)
-            if new_nodes:   # Add new_nodes to fringe
-                fringe.extend(new_nodes)
-            else:           # No new nodes so w is fully explored
-                explored[w]=1
-                order_explored.insert(0,w) # reverse order explored
-                fringe.pop()    # done considering this node
-    return order_explored
-
-def topological_sort_recursive(G):
-    """
-    Return a list of nodes of the digraph G in topological sort order.
-
-    This is a recursive version of topological sort.
-    
-    """
-    # function for recursive dfs
-    def _dfs(G,seen,explored,v):
-        seen[v]=1
-        for w in G.successors(v):
-            if w not in seen: 
-                if not _dfs(G,seen,explored,w):
-                    return
-            elif w in seen and w not in explored:
-                # cycle Found--- no topological sort
-                return False
-        explored.insert(0,v) # inverse order of when explored 
-        return v
-
-    seen={}
-    explored=[]
-
-    if not G.is_directed():  G.successors=G.neighbors
-    
-    for v in G.nodes_iter():  # process all nodes
-        if v not in explored:
-            if not _dfs(G,seen,explored,v): 
-                return 
-    return explored
 
 def predecessor(G,source,target=False,cutoff=False):
     """ Returns dictionary of predecessors for the path from source to all
@@ -787,75 +614,6 @@ def predecessor(G,source,target=False,cutoff=False):
     else:
         return pred
 
-def connected_components(G):
-    """
-    Return a list of lists of nodes in each connected component of G.
-
-    The list is ordered from largest connected component to smallest.
-    For undirected graphs only. 
-    """
-    if G.is_directed():
-        raise networkx.NetworkXError,\
-              """Not allowed for directed graph G.
-              Use UG=G.to_undirected() to create an undirected graph."""
-    seen={}
-    components=[]
-    for v in G:      
-        if v not in seen:
-            c=single_source_shortest_path_length(G,v)
-            components.append(c.keys())
-            seen.update(c)
-    components.sort(lambda x, y: cmp(len(y),len(x)))
-    return components            
-
-
-def number_connected_components(G):
-    """Return the number of connected components in G.
-    For undirected graphs only. 
-    """
-    return len(connected_components(G))
-
-
-def is_connected(G):
-    """Return True if G is connected.
-    For undirected graphs only. 
-    """
-    if G.is_directed():
-        raise networkx.NetworkXError,\
-              """Not allowed for directed graph G.
-              Use UG=G.to_undirected() to create an undirected graph."""
-    return len(single_source_shortest_path(G, G.nodes_iter().next()))==len(G)
-
-
-def connected_component_subgraphs(G):
-    """
-    Return a list of graphs of each connected component of G.
-    The list is ordered from largest connected component to smallest.
-    For undirected graphs only. 
-
-    For example, to get the largest connected component:
-    >>> H=connected_component_subgraphs(G)[0]
-
-    """
-    cc=connected_components(G)
-    graph_list=[]
-    for c in cc:
-        graph_list.append(G.subgraph(c,inplace=False))
-    return graph_list
-
-
-def node_connected_component(G,n):
-    """
-    Return a list of nodes of the connected component containing node n.
-
-    For undirected graphs only. 
-
-    """
-    if G.is_directed():
-        raise networkx.NetworkXError,\
-              """Not allowed for directed graph G.
-              Use UG=G.to_undirected() to create an undirected graph."""
-    return single_source_shortest_path_length(G,n).keys()
 
 def bfs(G,source):
     """
@@ -902,9 +660,10 @@ def dfs(G,source):
     return nlist
 
 
+
 def _test_suite():
     import doctest
-    suite = doctest.DocFileSuite('tests/paths.txt',package='networkx')
+    suite = doctest.DocFileSuite('tests/shortest_path.txt',package='networkx')
     return suite
 
 

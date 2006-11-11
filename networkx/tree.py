@@ -12,8 +12,9 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #
 
 from networkx.base import Graph, DiGraph, NetworkXException, NetworkXError
-import networkx.paths as paths
 import networkx.convert as convert
+import networkx.component as component
+import networkx.shortest_path as shortest_path
 
 # Yes, these aren't the natural datastructures for trees. 
 
@@ -29,7 +30,7 @@ class Tree(Graph):
                 raise NetworkXError, "Data %s is not a tree"%data
             # check if it is a tree.
             if G.order()==G.size()+1 and \
-                   paths.number_connected_components(G)==1:
+                   component.number_connected_components(G)==1:
                 self.adj=G.adj.copy()
                 del G
             else:
@@ -190,7 +191,7 @@ class RootedTree(Tree,Graph):
 
 
     def root_tree(self,root):        
-        preds=paths.predecessor(self,root)
+        preds=shortest_path.predecessor(self,root)
         del preds[root]
         for p in preds:
             self.par[p]=preds[p][0] # preds[node] is an array 
@@ -284,7 +285,7 @@ class Forest(Tree,Graph):
             # FIXME this does more work then is necessary
             # since nbrs of n could be in same conected component
             # and then will get renumbered more than once
-            vnodes=paths.node_connected_component(self,nbr)
+            vnodes=component.node_connected_component(self,nbr)
             for v in vnodes:
                 self.comp[v]=self.nc
             self.nc+=1
@@ -302,7 +303,7 @@ class Forest(Tree,Graph):
                     Graph.add_edge(self,u,v)
                     ucomp=self.comp[u]
                     # set component number of v tree to u tree
-                    for n in paths.node_connected_component(self,v):
+                    for n in component.node_connected_component(self,v):
                         self.comp[n]=ucomp
             else: # add u-v to tree in component with u
                 Graph.add_edge(self,u,v)
@@ -318,7 +319,7 @@ class Forest(Tree,Graph):
         Graph.delete_edge(self,u,v)
         # this will always break a tree into two trees
         # put nodes connected to v in a new component
-        vnodes=paths.node_connected_component(self,v)
+        vnodes=component.node_connected_component(self,v)
         for n in vnodes:
             self.comp[n]=self.nc
         self.nc+=1

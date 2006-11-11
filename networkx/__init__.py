@@ -60,7 +60,8 @@ from base import Graph, DiGraph, NetworkXException, NetworkXError,\
                  number_of_nodes, number_of_edges, density,\
                  nodes_iter, edges_iter, is_directed
 from xbase import XGraph, XDiGraph
-from paths import  eccentricity, diameter, radius, periphery, center,\
+from distance import eccentricity, diameter, radius, periphery, center
+from shortest_path import  \
      shortest_path, shortest_path_length,bidirectional_shortest_path,\
      single_source_shortest_path, single_source_shortest_path_length,\
      all_pairs_shortest_path, all_pairs_shortest_path_length,\
@@ -68,11 +69,14 @@ from paths import  eccentricity, diameter, radius, periphery, center,\
      single_source_dijkstra_path, single_source_dijkstra_path_length,\
      single_source_dijkstra,\
      predecessor, floyd_warshall,\
+     bfs, dfs
+from dag import \
      topological_sort, topological_sort_recursive,\
-     is_directed_acyclic_graph,\
+     is_directed_acyclic_graph
+from component import \
      number_connected_components, connected_components,\
      is_connected, connected_component_subgraphs,\
-     node_connected_component, bfs, dfs
+     node_connected_component
 from search import dfs_preorder, dfs_postorder, dfs_predecessor,\
             dfs_successor, bfs_length, bfs_path, dfs_forest
 from cluster import triangles, average_clustering, clustering, transitivity

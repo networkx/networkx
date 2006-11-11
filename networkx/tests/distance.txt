@@ -1,0 +1,44 @@
+Distance
+========
+
+>>> import networkx as NX
+>>> from networkx.operators import convert_node_labels_to_integers as cnlti
+>>> G=cnlti(NX.grid_2d_graph(4,4),first_label=1,ordering="sorted")
+
+    .. image:: paths_G.png
+
+
+Eccentricity, diameter, etc.
+----------------------------
+
+>>> NX.eccentricity(G,1)
+6
+>>> e=NX.eccentricity(G,with_labels=True)
+>>> e[1]
+6
+>>> NX.diameter(G)
+6
+>>> NX.radius(G)
+4
+>>> NX.periphery(G)
+[1, 4, 13, 16]
+>>> NX.center(G)
+[6, 7, 10, 11]
+
+>>> G=NX.Graph()
+>>> G.add_edge(1,2)
+>>> G.add_edge(3,4)
+>>> NX.diameter(G)
+Traceback (most recent call last):
+...
+NetworkXError: Graph not connected: infinite path length
+>>> NX.radius(G)
+Traceback (most recent call last):
+...
+NetworkXError: Graph not connected: infinite path length
+>>> NX.eccentricity(G)
+Traceback (most recent call last):
+...
+NetworkXError: Graph not connected: infinite path length
+
+
