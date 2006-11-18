@@ -397,6 +397,15 @@ with_labels=True always return a dict
 >>> sorted(list(G.degree_iter()))
 [0, 0, 0, 2, 2, 3, 3]
 
+>>> H=DiGraph()
+>>> H.add_edges_from([(1,24),(1,2)])
+>>> H.in_degree([1,24])
+[0, 1]
+>>> H.out_degree([1,24])
+[2, 0]
+>>> H.degree([1,24])
+[2, 1]
+
 >>> P3=path_graph(3)
 >>> P5=path_graph(5)
 >>> P3.degree(['A','B']) # silently ignore nodes not in P3

@@ -436,6 +436,11 @@ with_labels=True always return a dict
 >>> sorted(list(G.degree_iter()))
 [0, 0, 0, 2, 2, 3, 3]
 
+>>> H=XGraph()
+>>> H.add_edges_from([(1,24),(1,2)])
+>>> H.degree([1,24])
+[2, 1]
+
 >>> P3X.degree(['A','B']) # silently ignore nodes not in P3
 []
 >>> sorted(P10X.degree(P3X)) # nbunch can be a graph

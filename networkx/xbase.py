@@ -568,55 +568,6 @@ class XGraph(Graph):
             # in the code from delete_edge, do we have a good reason ?
             self.delete_edge(e)
 
-    def degree(self, nbunch=None, with_labels=False):
-        """Return degree of single node or of nbunch of nodes.
-        If nbunch is omitted or nbunch=None, then return
-        degrees of *all* nodes.
-        
-        The degree of a node is the number of edges attached to that
-        node.
-
-        Can be called in three ways:
-          - G.degree(n):       return the degree of node n
-          - G.degree(nbunch):  return a list of values,
-             one for each n in nbunch
-             (nbunch is any iterable container of nodes.)
-          - G.degree(): same as nbunch = all nodes in graph.
-             Always return a list.
-
-        If with_labels==True, then return a dict that maps each n
-        in nbunch to degree(n).
-
-        Any nodes in nbunch that are not in the graph are
-        (quietly) ignored.
-
-        """
-        # prepare nbunch
-        if nbunch is None:   # include all nodes via iterator
-            bunch=self.nodes_iter()
-        elif nbunch in self: # if nbunch is a single node 
-            bunch=[nbunch]
-        else:                # if nbunch is a sequence of nodes
-            try: bunch=[n for n in nbunch if n in self]
-            except TypeError:
-                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
-        # nbunch ready
-        d={}
-        if self.multiedges:
-            for n in bunch:
-                deg = sum([len(e) for e in self.adj[n].itervalues()])
-                if self.adj[n].has_key(n) and self.selfloops:
-                    deg+= len(self.adj[n][n])  # double count self-loops 
-                d[n]=deg
-        else:
-            for n in bunch:
-                deg=len(self.adj[n])
-                deg+= self.adj[n].has_key(n)  # double count self-loop
-                d[n]=deg
-        if with_labels: return d                  # return the dict
-        elif nbunch in self: return d.values()[0] # single node, so single value
-        return d.values()                         # return a list
-
     def degree_iter(self,nbunch=None,with_labels=False):
         """This is the degree() method returned in iterator form.
         If with_labels=True, iterator yields 2-tuples of form (n,degree(n))
@@ -1369,6 +1320,25 @@ class XDiGraph(DiGraph):
         (quietly) ignored.
 
         """
+        if with_labels:           # return a dict
+            return dict(self.degree_iter(nbunch,with_labels))
+        elif nbunch in self:      # return a single node
+            return self.degree_iter(nbunch,with_labels).next()
+        else:                     # return a list
+            return list(self.degree_iter(nbunch,with_labels))
+
+    def degree_iter(self, nbunch=None, with_labels=False):
+        """Return the out-degree of single node or of nbunch of nodes.
+        If nbunch is omitted or nbunch=None, then return
+        out-degrees of *all* nodes.
+        
+        If with_labels=True, then return a dict that maps each n
+        in nbunch to out_degree(n).
+
+        Any nodes in nbunch that are not in the graph are
+        (quietly) ignored.
+
+        """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
             bunch=self.nodes_iter()
@@ -1379,17 +1349,21 @@ class XDiGraph(DiGraph):
             except TypeError:
                 raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
-        d={}
         if self.multiedges:
             for n in bunch:
-                d[n]=sum([len(e) for e in self.succ[n].itervalues()]) + \
-                     sum([len(e) for e in self.pred[n].itervalues()])
+                d=sum([len(e) for e in self.succ[n].itervalues()]) + \
+                  sum([len(e) for e in self.pred[n].itervalues()])
+                if with_labels:
+                    yield (n,d)
+                else:
+                    yield d
         else:
             for n in bunch:
-                d[n]=len(self.succ[n])+len(self.pred[n])
-        if with_labels: return d                  # return the dict
-        elif nbunch in self: return d.values()[0] # single node, so single value
-        return d.values()                         # return a list
+                d=len(self.succ[n])+len(self.pred[n])
+                if with_labels:
+                    yield (n,d)
+                else:
+                    yield d
 
     def nodes_with_selfloops(self):
         """Return list of all nodes having self-loops."""
