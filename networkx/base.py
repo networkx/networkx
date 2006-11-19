@@ -1381,19 +1381,18 @@ class DiGraph(Graph):
     neighbors_iter=successors_iter
 
     def degree_iter(self,nbunch=None,with_labels=False):
-        """Return iterator that return degree(n) or (n,degree(n))
-        for all n in nbunch. If nbunch is ommitted, then iterate
-        over *all* nodes.
+        """Return iterator that returns in_degree(n)+out_degree(n)
+        or (n,in_degree(n)+out_degree(n)) for all n in nbunch. 
+        If nbunch is ommitted, then iterate over *all* nodes.
  
-        nbunch: can be a singleton node, a string (which is treated
-        as a singleton node), or any iterable container of
-        of nodes. (It can be an iterable or an iterator, e.g. a list,
-        set, graph, file, etc.)  If None, all nodes in the graph will
-        be used.
-
+        Can be called in three ways:
+        G.degree_iter(n):       return iterator the degree of node n
+        G.degree_iter(nbunch):  return a list of values,
+        one for each n in nbunch (nbunch is any iterable container of nodes.)
+        G.degree_iter():        same as nbunch = all nodes in graph.
  
-        If with_labels=True, iterator will return an (n,degree(n)) tuple of
-        node and degree.
+        If with_labels=True, iterator will return an
+        (n,in_degree(n)+out_degree(n)) tuple of node and degree.
  
         Any nodes in nbunch but not in the graph will be (quietly) ignored.
  

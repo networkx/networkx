@@ -1240,17 +1240,13 @@ class XDiGraph(DiGraph):
         for (u,v,d) in self.in_edges_iter(n):
             yield u
 
-    def in_degree(self, nbunch=None, with_labels=False):
-        """Return the in-degree of single node or of nbunch of nodes.
-        If nbunch is omitted or nbunch=None, then return
-        in-degrees of *all* nodes.
+    def in_degree_iter(self, nbunch=None, with_labels=False):
+        """Return iterator for in_degree(n) or (n,in_degree(n))
+        for all n in nbunch.
         
-        If with_labels=True, then return a dict that maps each n
-        in nbunch to in_degree(n).
-
-        Any nodes in nbunch that are not in the graph are
-        (quietly) ignored.
-
+        If nbunch is ommitted, then iterate over *all* nodes.
+        
+        See degree_iter method for more details.
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
@@ -1262,29 +1258,28 @@ class XDiGraph(DiGraph):
             except TypeError:
                 raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
-        d={}
         if self.multiedges:
-            for n in bunch:
-                d[n] = sum([len(edge) for edge in self.pred[n].itervalues()])
+            if with_labels:   # yield tuple (n,in_degree)
+                for n in bunch:
+                    yield (n,sum([len(edge) for edge in self.pred[n].itervalues()]))
+            else:
+                for n in bunch:
+                    yield sum([len(edge) for edge in self.pred[n].itervalues()])
         else: 
-            for n in bunch:
-                d[n]=len(self.pred[n])
+            if with_labels:   # yield tuple (n,in_degree)
+                for n in bunch:
+                    yield (n,len(self.pred[n]))
+            else:
+                for n in bunch:
+                    yield len(self.pred[n])
 
-        if with_labels: return d                  # return the dict
-        elif nbunch in self: return d.values()[0] # single node, so single value
-        return d.values()                         # return a list
-
-    def out_degree(self, nbunch=None, with_labels=False):
-        """Return the out-degree of single node or of nbunch of nodes.
-        If nbunch is omitted or nbunch=None, then return
-        out-degrees of *all* nodes.
+    def out_degree_iter(self, nbunch=None, with_labels=False):
+        """Return iterator for out_degree(n) or (n,out_degree(n))
+        for all n in nbunch.
         
-        If with_labels=True, then return a dict that maps each n
-        in nbunch to out_degree(n).
-
-        Any nodes in nbunch that are not in the graph are
-        (quietly) ignored.
-
+        If nbunch is ommitted, then iterate over *all* nodes.
+        
+        See degree_iter method for more details.
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
@@ -1296,48 +1291,37 @@ class XDiGraph(DiGraph):
             except TypeError:
                 raise NetworkXError, "nbunch is not a node or a sequence of nodes."
         # nbunch ready
-        d={}
         if self.multiedges:
-            for n in bunch:
-                d[n] = sum([len(edge) for edge in self.succ[n].itervalues()])
+            if with_labels:
+                for n in bunch:
+                    yield (n,sum([len(edge) for edge in self.succ[n].itervalues()]))
+            else:
+                for n in bunch:
+                    yield sum([len(edge) for edge in self.succ[n].itervalues()])
         else:
-            for n in bunch:
-                d[n]=len(self.succ[n])
-
-        if with_labels: return d                  # return the dict
-        elif nbunch in self: return d.values()[0] # single node, so single value
-        return d.values()                         # return a list
-
-    def degree(self, nbunch=None, with_labels=False):
-        """Return the out-degree of single node or of nbunch of nodes.
-        If nbunch is omitted or nbunch=None, then return
-        out-degrees of *all* nodes.
-        
-        If with_labels=True, then return a dict that maps each n
-        in nbunch to out_degree(n).
-
-        Any nodes in nbunch that are not in the graph are
-        (quietly) ignored.
-
-        """
-        if with_labels:           # return a dict
-            return dict(self.degree_iter(nbunch,with_labels))
-        elif nbunch in self:      # return a single node
-            return self.degree_iter(nbunch,with_labels).next()
-        else:                     # return a list
-            return list(self.degree_iter(nbunch,with_labels))
+            if with_labels:
+                for n in bunch:
+                    yield (n,len(self.succ[n]))
+            else:
+                for n in bunch:
+                    yield len(self.succ[n])
 
     def degree_iter(self, nbunch=None, with_labels=False):
-        """Return the out-degree of single node or of nbunch of nodes.
-        If nbunch is omitted or nbunch=None, then return
-        out-degrees of *all* nodes.
-        
-        If with_labels=True, then return a dict that maps each n
-        in nbunch to out_degree(n).
-
-        Any nodes in nbunch that are not in the graph are
-        (quietly) ignored.
-
+        """Return iterator that returns in_degree(n)+out_degree(n)
+        or (n,in_degree(n)+out_degree(n)) for all n in nbunch. 
+        If nbunch is ommitted, then iterate over *all* nodes.
+ 
+        Can be called in three ways:
+        G.degree_iter(n):       return iterator the degree of node n
+        G.degree_iter(nbunch):  return a list of values,
+        one for each n in nbunch (nbunch is any iterable container of nodes.)
+        G.degree_iter():        same as nbunch = all nodes in graph.
+ 
+        If with_labels=True, iterator will return an
+        (n,in_degree(n)+out_degree(n)) tuple of node and degree.
+ 
+        Any nodes in nbunch but not in the graph will be (quietly) ignored.
+ 
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
