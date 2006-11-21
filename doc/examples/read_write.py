@@ -3,10 +3,7 @@
 Read and write graphs.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2004-11-03 08:11:09 -0700 (Wed, 03 Nov 2004) $"
-__credits__ = """"""
-__revision__ = "$Revision: 503 $"
-#    Copyright (C) 2004 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -14,8 +11,11 @@ __revision__ = "$Revision: 503 $"
 #    http://www.gnu.org/copyleft/lesser.html
 
 from networkx import *
+import sys
 G=grid_2d_graph(5,5)  # 5x5 grid
-write_adjlist(G) # write adjacency list to screen
-write_edgelist(G,path="grid.edgelist") # write edgelist to grid.edgelist
-H=read_edgelist(path="grid.edgelist") # read edgelist from grid.edgelist
+write_adjlist(G,sys.stdout) # write adjacency list to screen
+# write edgelist to grid.edgelist
+write_edgelist(G,path="grid.edgelist",delimiter=":") 
+# read edgelist from grid.edgelist
+H=read_edgelist(path="grid.edgelist",delimiter=":") 
 

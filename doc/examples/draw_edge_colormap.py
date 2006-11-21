@@ -18,7 +18,6 @@ except:
 See https://networkx.lanl.gov/Drawing.html for info""")
     
 from networkx import *
-import matplotlib
 
 G=star_graph(20)  # 11 nodes, 10 edges
 pos=spring_layout(G)

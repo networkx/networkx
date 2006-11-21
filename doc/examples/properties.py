@@ -21,7 +21,7 @@ pathlengths=[]
 
 print "source vertex {target:length, }"
 for v in G.nodes():
-    spl=shortest_path_length(G,v)
+    spl=single_source_shortest_path_length(G,v)
     print v,spl
     for p in spl.values():
         pathlengths.append(p)
