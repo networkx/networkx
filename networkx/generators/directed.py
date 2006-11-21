@@ -17,7 +17,7 @@ __author__ ="""Aric Hagberg (hagberg@lanl.gov)"""
 import math
 import random
 
-from networkx.base import DiGraph
+from networkx.digraph import DiGraph
 from networkx.generators.classic import empty_graph
 from networkx.utils import discrete_sequence
 
