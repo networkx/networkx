@@ -396,9 +396,9 @@ Check boundaries in path graph.
 >>> sorted(P10.node_boundary([4,5,6],[9,10]))
 []
 >>> P10.node_boundary([1,2,3],[3,4,5]) 
-Traceback (most recent call last):
-...
-NetworkXError: nbunch1 and nbunch2 are not disjoint
+[3, 4]
+
+# Note we used to raise an exception when bunches not disjoint.
 
 
 >>> P10.edge_boundary([])
@@ -416,9 +416,7 @@ NetworkXError: nbunch1 and nbunch2 are not disjoint
 >>> sorted(P10.edge_boundary([4,5,6],[9,10]))
 []
 >>> P10.edge_boundary([1,2,3],[3,4,5]) 
-Traceback (most recent call last):
-...
-NetworkXError: nbunch1 and nbunch2 are not disjoint
+[(2, 3), (3, 4)]
 
 Check boundaries in a complete graph
 
@@ -437,9 +435,7 @@ Check boundaries in a complete graph
 >>> K10.node_boundary(K10)
 []
 >>> K10.node_boundary([1,2,3],[3,4,5]) 
-Traceback (most recent call last):
-...
-NetworkXError: nbunch1 and nbunch2 are not disjoint
+[3, 4, 5]
 
 
 >>> K10.edge_boundary([])
@@ -457,10 +453,7 @@ NetworkXError: nbunch1 and nbunch2 are not disjoint
 >>> sorted(K10.edge_boundary([4,5,6],[9,10]))
 [(4, 9), (4, 10), (5, 9), (5, 10), (6, 9), (6, 10)]
 >>> K10.edge_boundary([1,2,3],[3,4,5]) 
-Traceback (most recent call last):
-...
-NetworkXError: nbunch1 and nbunch2 are not disjoint
-
+[(1, 3), (1, 4), (1, 5), (2, 3), (2, 4), (2, 5), (3, 4), (3, 5)]
 
 Check boundaries in the petersen graph
 

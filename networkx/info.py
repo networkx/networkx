@@ -160,6 +160,7 @@ Non-mutating Graph methods
     - G.neighbors_iter(n) # iterator over neighbors
     - G.number_of_nodes(), G.order()
     - G.number_of_edges(), G.size()
+    - G.edge_boundary(nbunch1), G.node_boundary(nbunch1)
     - G.degree(n), G.degree(nbunch)
     - G.degree_iter(n), G.degree_iter(nbunch)
     - G.is_directed()

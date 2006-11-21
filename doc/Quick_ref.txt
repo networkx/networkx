@@ -128,11 +128,15 @@ Methods:
   G.edges_iter(nbunch) - return iterator that iterate once over
                          each edge adjacent to some node in nbunch. 
   G.has_edge(u,v)      - True if (u,v) is an edge in G.
+  G.edge_boundary(nb1) - return a list of edges outward from nb1.
+  G.edge_boundary(nb1,nb2) - return a list of edges between nb1 and nb2.
 
   G.neighbors(n)       - return list of nodes connected to node n.
   G[n]                 - equivalent to G.neighbors(n).
   G.neighbors_iter(n)  - return iterator over the neighbors of node n.
   G.has_neighbor(v,u)  - check if u is a neighbor of v (returns True or False).
+  G.node_boundary(nb1) - return list of nodes outside but connected to nb1.
+  G.node_boundary(nb1,nb2) - return list of nodes in nb2 connected to nb1.
 
   G.degree(n)                - return degree of node n.
   G.degree()                 - return list of degrees of all nodes in G.

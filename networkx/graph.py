@@ -500,46 +500,21 @@ class Graph(object):
         Nodes in nbunch1 and nbunch2 that are not in the graph are
         ignored.
 
-        nbunch1 and nbunch2 must be disjoint, else raise an exception.
+        nbunch1 and nbunch2 are usually meant to be disjoint, 
+        but in the interest of speed and generality, that is 
+        not required here.
+
+        This routine is faster if nbunch1 is smaller than nbunch2.
 
         """
-        bdy=[]
-        # listify to avoid exhausting a once-through iterable container
-        # nlist1 and nlist2 contains only nodes that are in the graph
-        nlist1=[n for n in nbunch1 if n in self]
-        len1=len(nlist1)
+        ndict1=dict.fromkeys([n for n in nbunch1 if n in self])
+        if nbunch2 is None:     # Then nbunch2 is complement of nbunch1
+            return [(n1,n2) for n1 in ndict1 for n2 in self.adj[n1] \
+                    if n2 not in ndict1]
 
-        if nbunch2 is None: # use nbunch2 = complement of nbunch1
-            nlist2=[n for n in self if n not in nlist1]
-            len2=len(nlist2) # size of node complement
-        else:
-            nlist2=[n for n in nbunch2 if n in self]
-            len2=len(nlist2)
-            # check for non-empty intersection:
-            # nbunch1, nbunch2 and self.nodes() should have no nodes
-            # in common
-            # use shortest outer loop
-            if len1 <= len2:
-                for n in nlist1:
-                    if n in nlist2:
-                        raise NetworkXError,\
-                        "nbunch1 and nbunch2 are not disjoint"
-            else:
-                for n in nlist2:
-                    if n in nlist1:
-                        raise NetworkXError, \
-                        "nbunch1 and nbunch2 are not disjoint"
-        if len1 <= len2:
-            for n1 in nlist1:
-                for n2 in self.adj[n1]:
-                    if n2 in nlist2:
-                        bdy.append((n1,n2))
-        elif len2 <= len1:
-            for n2 in nlist2:
-                for n1 in self.adj[n2]:
-                    if n1 in nlist1:
-                        bdy.append((n1,n2))
-        return bdy
+        ndict2=dict.fromkeys(nbunch2)
+        return [(n1,n2) for n1 in ndict1 for n2 in self.adj[n1] \
+                if n2 in ndict2]
 
     def node_boundary(self, nbunch1, nbunch2=None):
         """Return list of all nodes on external boundary of nbunch1 that are
@@ -551,51 +526,29 @@ class Graph(object):
         Nodes in nbunch1 and nbunch2 that are not in the graph are
         ignored.
 
-        nbunch1 and nbunch2 must be disjoint (when restricted to the
-        graph), else a NetworkXError is raised.
+        nbunch1 and nbunch2 are usually meant to be disjoint, 
+        but in the interest of speed and generality, that is 
+        not required here.
+
+        This routine is faster if nbunch1 is smaller than nbunch2.
 
         """
-        bdy=[]
-        # listify to avoid exhausting a once-through iterable container
-        # nlist1 and nlist2 contains only nodes that are in the graph
-        nlist1=[n for n in nbunch1 if n in self]
-        len1=len(nlist1)
-
-        if nbunch2 is None: # use nbunch2 = complement of nbunch1
-            nlist2=[n for n in self if n not in nlist1]
-            len2=len(nlist2) # size of node complement
-        else:
-            nlist2=[n for n in nbunch2 if n in self]
-            len2=len(nlist2)
-            # check for non-empty intersection:
-            # nbunch1, nbunch2 and self.nodes() should have no nodes
-            # in common
-            # use shortest outer loop
-            if len1 <= len2:
-                for n in nlist1:
-                    if n in nlist2:
-                        raise NetworkXError,\
-                        "nbunch1 and nbunch2 are not disjoint"
-            else:
-                for n in nlist2:
-                    if n in nlist1:
-                        raise NetworkXError,\
-                        "nbunch1 and nbunch2 are not disjoint"
-        # use shortest outer loop
-        if len1 <= len2:
-            # find external boundary of nlist1
-            for n1 in nlist1:
+        ndict1=dict.fromkeys([n for n in nbunch1 if n in self])
+        if nbunch2 is None:     # Then nbunch2 is complement of nbunch1
+            bdy={}
+            for n1 in ndict1:
                 for n2 in self.adj[n1]:
-                    if (not n2 in bdy) and (n2 in nlist2):
-                            bdy.append(n2)
-        else:
-            # find internal boundary of nlist2
-            for n2 in nlist2:
-                if not n2 in bdy:
-                    for n in self.adj[n2]:
-                        if n in nlist1:
-                            bdy.append(n2)
-                            break        
+                    if n2 not in ndict1: 
+                        bdy[n2]=1 # make dict to avoid duplicates
+            return bdy.keys()
+        
+        ndict2=dict.fromkeys(nbunch2)
+        bdy=[]
+        for n1 in ndict1:
+            for n2 in self.adj[n1]:
+                if n2 in ndict2:
+                    bdy.append(n2)
+                    del ndict2[n2]  # avoid duplicates
         return bdy
 
     def degree(self, nbunch=None, with_labels=False):
