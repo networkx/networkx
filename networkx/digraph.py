@@ -57,10 +57,6 @@ class DiGraph(Graph):
     def __init__(self,data=None,name=None,**kwds):
 
         self.name=''
-        # dna is a dictionary attached to each graph and used to store
-        # information about the graph structure
-        self.dna={}
-        self.dna["datastructure"]="vdict_of_dicts"
 
         self.adj={}  # empty adjacency hash
         self.pred={}        # predecessor
@@ -476,19 +472,18 @@ class DiGraph(Graph):
     def clear(self):
         """Remove name and delete all nodes and edges from digraph."""
         self.name=None
-        self.succ.clear() # WARNING: the dna is not scrubbed to
-        self.pred.clear() # recover its state at time of object creation
+        self.succ.clear() 
+        self.pred.clear() 
 
     def copy(self):
         """Return a (shallow) copy of the digraph.
 
         Identical to dict.copy() of adjacency dicts pred and succ,
-        with name and dna copied as well.
+        with name copied as well.
         
         """
         H=self.__class__()
         H.name=self.name
-        H.dna=self.dna.copy()
         H.adj=self.adj.copy()
         H.succ=H.adj  # fix pointer again
         for v in H.adj:
@@ -563,7 +558,6 @@ class DiGraph(Graph):
         """
         H=Graph()
         H.name=self.name
-        H.dna=self.dna.copy()
         H.adj=self.succ.copy()  # copy nodes
         for u in H.adj:
             H.adj[u]=self.succ[u].copy()  # copy successors
@@ -587,7 +581,6 @@ class DiGraph(Graph):
         H=self.__class__() # new empty DiGraph
 
         H.name="Reverse of (%s)"%(self.name)
-        # H.dna=self.dna.copy()  # do not copy dna to reverse
 
         H.add_nodes_from(self)
         H.add_edges_from([(v,u) for (u,v) in self.edges_iter()])

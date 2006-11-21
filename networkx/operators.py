@@ -355,7 +355,7 @@ def convert_node_labels_to_integers(G,first_label=0,
     *discard_old_labels*
        if True (default) discard old labels
        if False, create a dict self.node_labels that maps new
-       labels to old labels, and set self.dna["node_labeled"]=True
+       labels to old labels
 
     Works for Graph, DiGraph, XGraph, XDiGraph
     """
@@ -375,8 +375,7 @@ def convert_node_labels_to_integers(G,first_label=0,
 #    the integer values 1,..,n. This is the purpose of this function,
 #    and it provides the option (see discard_old_labels variable) to either
 #    preserve the original labels in separate dicts (these are not
-#    returned but inserted into the dna of the new graph, or to discard that
-#    information if it is superfluous.
+#    returned but made an attribute of the new graph.
 
     N=G.number_of_nodes()+first_label
     if ordering=="default":
@@ -401,12 +400,8 @@ def convert_node_labels_to_integers(G,first_label=0,
     H=relabel_nodes(G,mapping)
 
     H.name="("+G.name+")_with_int_labels"
-    if discard_old_labels:
-        H.dna["has_node_labels"]=False
-        H.dna["node_labels"]=None
-    else:
-        H.dna["has_node_labels"]=True
-        H.dna["node_labels"]=mapping
+    if not discard_old_labels:
+        H.node_labels=mapping
     return H
     
 

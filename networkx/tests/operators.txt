@@ -355,9 +355,7 @@ True
 True
 >>> degree(H,3)==3
 True
->>> H.dna['has_node_labels']
-True
->>> mapping=H.dna['node_labels']
+>>> mapping=H.node_labels
 >>> mapping['C']==3
 True
 >>> mapping['D']==0
@@ -377,9 +375,7 @@ True
 True
 
 >>> H=convert_node_labels_to_integers(G,ordering="sorted",discard_old_labels=False)
->>> H.dna['has_node_labels']
-True
->>> mapping=H.dna['node_labels']
+>>> mapping=H.node_labels
 >>> mapping['A']==0
 True
 >>> mapping['B']==1

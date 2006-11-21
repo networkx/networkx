@@ -102,13 +102,6 @@ class XDiGraph(DiGraph):
         self.selfloops=kwds.get("selfloops",False)    # no self-loops
         self.multiedges=kwds.get("multiedges",False)  # no multiedges
 
-        # dna is a dictionary attached to each graph and used to store
-        # information about the graph structure. In this version the
-        # dna is provided as a user-defined variable and should not be
-        # relied on.
-        self.dna={}
-        self.dna["datastructure"]="xgraph_dict_of_dicts"
-        
         self.adj={}         # adjacency list
         self.pred={}        # predecessor
         self.succ=self.adj  # successor is same as adj
@@ -696,7 +689,6 @@ class XDiGraph(DiGraph):
         """
         H=self.__class__(multiedges=self.multiedges,selfloops=self.selfloops)
         H.name=self.name
-        H.dna=self.dna.copy()
         for n in self:
             H.add_node(n)
         for e in self.edges_iter():
@@ -723,7 +715,6 @@ class XDiGraph(DiGraph):
         from networkx.xgraph import XGraph
         H=XGraph(multiedges=self.multiedges,selfloops=self.selfloops)
         H.name=self.name
-        H.dna=self.dna.copy()
         for n in self:
             H.add_node(n)                   # copy nodes
         for e in self.edges_iter():

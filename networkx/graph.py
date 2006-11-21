@@ -83,10 +83,6 @@ class Graph(object):
 
         """
         self.name=''
-        # dna is a dictionary attached to each graph and used to store
-        # information about the graph structure
-        self.dna={}
-        self.dna["datastructure"]="vdict_of_dicts"
 
         self.adj={}  # empty adjacency hash
 
@@ -137,16 +133,6 @@ class Graph(object):
         """
         return list(self.neighbors_iter(n))
     
-    def print_dna(self):
-        """Print graph "DNA": a dictionary of graph names and properties.
-        
-        In this version the dna is provided as a user-defined variable
-        and should not be relied on.
-        """
-        for key in self.dna:
-            print "%-15s: %s"%(key,self.dna[key])
-
-
     def prepare_nbunch(self,nbunch=None):
         """
         Return a sequence (or iterator) of nodes contained
@@ -679,19 +665,17 @@ class Graph(object):
     def clear(self):
         """Remove name and delete all nodes and edges from graph."""
         self.name=None
-        self.adj.clear() # WARNING: the dna is not scrubbed to
-                       # recover its state at time of object creation
+        self.adj.clear() 
 
     def copy(self):
         """Return a (shallow) copy of the graph.
 
-        Identical to dict.copy() of adjacency dict adj, with name and
-        dna copied as well.
+        Identical to dict.copy() of adjacency dict adj, with name
+        copied as well.
         
         """
         H=self.__class__()
         H.name=self.name
-        H.dna=self.dna.copy()
         H.adj=self.adj.copy()
         for v in H.adj:
             H.adj[v]=self.adj[v].copy()
@@ -717,7 +701,6 @@ class Graph(object):
         from networkx.digraph import DiGraph
         H=DiGraph()
         H.name=self.name
-        H.dna=self.dna.copy()
         H.adj=self.adj.copy() # copy nodes
         H.succ=H.adj  # fix pointer again
         for v in H.adj:

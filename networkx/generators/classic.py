@@ -240,8 +240,6 @@ def empty_graph(n=0,create_using=None):
     base) and then add n nodes and zero edges, and return the modified
     graph (resp. digraph, pseudograph, etc.).
 
-    WARNING: The graph dna is not scrubbed in this process.
-
     See also create_empty_copy(G).
     
     """

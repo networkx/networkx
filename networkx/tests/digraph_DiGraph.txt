@@ -59,9 +59,6 @@ Name
 test
 >>> print G.name
 test
->>> G.print_dna()
-datastructure  : vdict_of_dicts
-
 >>> H= DiGraph()
 >>> print H.name
 <BLANKLINE>
@@ -445,8 +442,6 @@ Operations
 >>> H=G.copy()      # copy
 >>> H.adj==G.adj
 True
->>> H.dna==G.dna
-True
 >>> H.name==G.name
 True
 >>> H==G
@@ -466,8 +461,6 @@ False
 >>> UG.is_directed()
 False
 >>> G.is_directed()
-True
->>> UG.dna==G.dna
 True
 >>> UG.name==G.name
 True
