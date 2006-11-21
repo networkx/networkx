@@ -181,44 +181,30 @@ Methods returning a new graph
 Implementation Notes
 ====================
 
-The Graph and DiGraph classes implement graphs using data structures
+The graph classes implement graphs using data structures
 based on an adjacency list implemented as a node-centric dictionary of
 dictionaries. The dictionary contains keys corresponding to the nodes
 and the values are dictionaries of neighboring node keys with the
-value None (the Python None type).  This allows fast addition,
-deletion and lookup of nodes and neighbors in large graphs.  The
-underlying datastructure should only be visible in the defining modules. 
-In all other modules, instances of graph-like objects are manipulated 
-solely via the methods defined by the class and not by acting directly 
-on the datastructure.
-
-XGraph and XDiGraph are also implemented using a data structure based on
-adjacency lists implemented as a dictionary of dictionaries. The outer
-dictionary is keyed by node to an inner dictionary keyed by
-neighboring nodes to the edge data/labels/objects (which default to None
-to correspond the datastructure used in classes Graph and DiGraph).
-If multiedges=True, a list of edge data/labels/objects is stored as
-the value of the inner dictionary.  This double dict structure mimics
-a sparse matrix and allows fast addition, deletion and lookup of nodes
-and neighbors in large graphs.  The underlying datastructure should
-only be visible in this module. In all other modules, graph-like
-objects are manipulated solely via the methods defined here and not by
-acting directly on the datastructure.
+value None (the Python None type) for Graph and DiGraph or
+user specified (default is None) for XGraph and XDiGraph.
+The dictionary of dictionary structure  allows fast addition,
+deletion and lookup of nodes and neighbors in large graphs.  
 
 Similarities between XGraph and Graph
 -------------------------------------
 
-XGraph and Graph differ fundamentally; XGraph edges are 3-tuples
-(n1,n2,x) and Graph edges are 2-tuples (n1,n2). XGraph inherits from the
-Graph class, and XDiGraph from the DiGraph class.
+XGraph and Graph differ in the way edge data is handled.
+XGraph edges are 3-tuples (n1,n2,x) and Graph edges are 2-tuples (n1,n2).
+XGraph inherits from the Graph class, and XDiGraph from the DiGraph class.
 
-They do share important similarities.
+Graph and XGraph are similar in the following ways:
 
 1. Edgeless graphs are the same in XGraph and Graph.
    For an edgeless graph, represented by G (member of the Graph class)
    and XG (member of XGraph class), there is no difference between
-   the datastructures G.adj and XG.adj, other than perhaps the 
-   ordering of the keys in the adj dict.
+   the datastructures G.adj and XG.adj, other than possibly
+   in the ordering of the keys in the adj dict.
+
 
 2. Basic graph construction code for G=Graph() will also work for
    G=XGraph().  In the Graph class, the simplest graph construction
