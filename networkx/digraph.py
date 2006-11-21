@@ -33,7 +33,6 @@ class DiGraph(Graph):
     - delete_edges_from
     - edges_iter
     - degree_iter
-    - degree
     - copy
     - clear
     - subgraph

@@ -804,11 +804,11 @@ class Graph(object):
 
     def size(self):
         """Return the size of a graph = number of edges. """
-        return sum(self.degree())/2
+        return sum(self.degree_iter())/2
 
     def number_of_edges(self):
         """Return the size of a graph = number of edges. """
-        return sum(self.degree())/2
+        return sum(self.degree_iter())/2
 
 
 
