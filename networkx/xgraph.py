@@ -56,14 +56,43 @@ class XGraph(Graph):
     creates an empty simple and undirected graph (no self-loops or
     multiple edges allowed).  It is equivalent to the expression:
 
-    >>> G=XGraph(name="No Name",selfloops=False,multiedges=False)
+    >>> G=XGraph(name='',selfloops=False,multiedges=False)
 
     >>> G=XGraph(name="empty",multiedges=True)
 
-    creates an empty graph with G.name="empty", that do not allow the
-    addition of self-loops but do allow for multiple edges.
+    creates an empty graph with G.name="empty", that does not allow 
+    the addition of self-loops but does allow for multiple edges.
     
-    See also the XDiGraph class below.
+    See also the XDiGraph class.
+
+    =============
+    XGraph inherits from Graph, overriding the following methods:
+
+    - __init__
+    - add_edge
+    - add_edges_from
+    - has_edge, has_neighbor
+    - get_edge
+    - edges_iter
+    - delete_edge
+    - delete_edges_from
+    - degree_iter
+    - to_directed
+    - copy
+    - subgraph
+
+    XGraph adds the following methods to those of Graph:
+
+    - delete_multiedge
+    - nodes_with_selfloops
+    - selfloop_edges
+    - number_of_selfloops
+    - allow_selfloops
+    - remove_all_selfloops
+    - ban_selfloops
+    - allow_multiedges
+    - remove_all_multiedges
+    - ban_multiedges
 
     """
 
@@ -72,7 +101,7 @@ class XGraph(Graph):
         """Initialize XGraph.
 
         Optional arguments::
-        name: graph name (default="No Name")
+        name: graph name (default='')
         selfloops: if True selfloops are allowed (default=False)
         multiedges: if True multiple edges are allowed (default=False)
 
@@ -95,15 +124,6 @@ class XGraph(Graph):
             
         if name is not None:
             self.name=name
-
-    def __getitem__(self,n):
-        """Return the neighbors of node n as a list.
-
-        This provides graph G the natural property that G[n] returns
-        the neighbors of G. 
-
-        """
-        return self.neighbors(n)
 
     def add_edge(self, n1, n2=None, x=None):  
         """Add a single edge to the graph.
@@ -232,7 +252,6 @@ class XGraph(Graph):
         return (self.adj.has_key(n1) and
                 self.adj[n1].has_key(n2))
     
-
     def neighbors_iter(self, n):
         """Return an iterator of nodes connected to node n. 
 
@@ -243,14 +262,6 @@ class XGraph(Graph):
             raise NetworkXError, "node %s not in graph"%n
         for (u,v,d) in self.edges_iter(n):
             yield v
-
-    def neighbors(self, n):
-        """Return a list of nodes connected to node n. 
-
-        Returns the same data as edges(n) but in a different format.
-
-        """
-        return list(self.neighbors_iter(n))
 
     def get_edge(self, n1, n2):
         """Return the objects associated with each edge between n1 and n2.
@@ -304,19 +315,6 @@ class XGraph(Graph):
         del(seen) # clear copy of temp dictionary
                # iterators can remain after they finish returning values.
 
-    def edges(self, nbunch=None):
-        """Return a list of all edges that originate at a node in nbunch,
-        or a list of all edges if nbunch=None.
-
-        See add_node for definition of nbunch.
-
-        Nodes in nbunch that are not in the graph will be (quietly) ignored.
-        
-        For digraphs, edges=out_edges
-
-        """
-        return list(self.edges_iter(nbunch))
-
     def delete_multiedge(self, n1, n2):
         """ Delete all edges between nodes n1 and n2.
      
@@ -330,7 +328,6 @@ class XGraph(Graph):
         else:
             self.delete_edge(n1, n2)
         return
-
 
     def delete_edge(self, n1, n2=None, x=None): 
         """Delete the edge (n1,n2,x) from the graph.
@@ -427,15 +424,6 @@ class XGraph(Graph):
                 else:
                     yield deg
 
-    
-    def number_of_edges(self):
-        """Return number of edges"""
-        return sum(self.degree_iter())/2
-
-#    def size(self):
-#        """Return the size of a graph = number of edges. """
-#        return self.number_of_edges()
-    
     def copy(self):
         """Return a (shallow) copy of the graph.
 
@@ -616,23 +604,6 @@ class XGraph(Graph):
         return H
 
 
-
-# End of basic operations (under the hood and close to the datastructure)
-# The following remaining Graph methods use the above methods and not the
-# datastructure directly
-
-    def add_path(self, nlist):
-        """Add the path through the nodes in nlist to graph"""
-        nfrom = nlist.pop(0)
-        while len(nlist) > 0:
-            nto=nlist.pop(0)
-            self.add_edge(nfrom,nto)
-            nfrom=nto
-
-    def add_cycle(self, nlist):
-        """Add the cycle of nodes in nlist to graph"""
-        self.add_path(nlist+[nlist[0]])  # wrap first element
-        
 def _test_suite():
     import doctest
     suite = doctest.DocFileSuite(
