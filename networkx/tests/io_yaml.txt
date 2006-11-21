@@ -1,5 +1,4 @@
->>> from networkx.base import Graph,DiGraph
->>> from networkx.xbase import XGraph,XDiGraph
+>>> from networkx import *
 >>> from networkx.io import *
 >>> from networkx.operators import *
 >>> import os,tempfile

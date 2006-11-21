@@ -1,17 +1,8 @@
 Convert
 =======
 
->>> from networkx.base import Graph,DiGraph
->>> from networkx.xbase import XGraph,XDiGraph
->>> from networkx.convert import *
->>> from networkx.operators import *
 >>> import os,tempfile
-
-Convert
-=======
-
->>> from networkx.base import Graph,DiGraph
->>> from networkx.xbase import XGraph,XDiGraph
+>>> from networkx import *
 >>> from networkx.convert import *
 >>> from networkx.operators import *
 >>> from networkx.generators.classic import barbell_graph,cycle_graph
