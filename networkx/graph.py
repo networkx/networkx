@@ -1,129 +1,6 @@
 """
-Base classes for graphs and digraphs.
+Base class for graphs.
 
-Unless otherwise specified, by graph we mean a simple graph that has
-no self-loops or multiple (parallel) edges. (See the module xbase.py
-for graph classes XGraph and XDiGraph that allow for self-loops,
-mutiple edges and arbitrary objects associated with edges.)
-
-The following classes are provided:
-
-Graph
-   The basic operations common to graph-like classes.
-
-DiGraph
-   Operations common to digraphs, a graph with directed edges.
-   Subclass of Graph.
-
-An empty graph or digraph is created with
- - G=Graph()
- - G=DiGraph()
-
-This module implements graphs using data structures based on an
-adjacency list implemented as a node-centric dictionary of
-dictionaries. The dictionary contains keys corresponding to the nodes
-and the values are dictionaries of neighboring node keys with the
-value None (the Python None type).  This allows fast addition,
-deletion and lookup of nodes and neighbors in large graphs.  The
-underlying datastructure should only be visible in this module. In all
-other modules, instances of graph-like objects are manipulated solely
-via the methods defined here and not by acting directly on the
-datastructure.
-
-The following notation is used throughout NetworkX documentation and
-code: (we use mathematical notation n,v,w,... to indicate a node,
-v=vertex=node).
- 
-G,G1,G2,H,etc:
-   Graphs
-
-n,n1,n2,u,v,v1,v2:
-   nodes (v stands for vertex=node)
-
-nlist,vlist:
-   a list of nodes 
-
-nbunch:
-   a "bunch" of nodes (vertices).  An nbunch is any iterable container
-   of nodes that is not itself a node in the graph. (It can be an
-   iterable or an iterator, e.g. a list, set, graph, file, etc..)
-   
-e=(n1,n2):
-   an edge (a python "2-tuple") in the Graph and DiGraph classes,
-   also written n1-n2 (if undirected), or n1->n2 (if directed).
-   Note that 3-tuple edges of the form (n1,n2,x) are used in the
-   XGraph and XDiGraph classes. See xbase.py for details on how
-   2-tuple edges, such as (n1,n2), are translated when 3-tuple edges
-   are expected. For example, if G is an XGraph, then G.add_edge(n1,n2)
-   will add the edge (n1,n2,None), and G.delete_edge(n1,n2) will attempt
-   to delete the edge (n1,n2,None). In the case of multiple edges between
-   nodes n1 and n2, one can use G.delete_multiedge(n1,n2) to delete all
-   edges between n1 and n2.
-
-elist:
-   a list of edges (as tuples)
-
-ebunch:
-   a bunch of edges (as tuples)
-   an ebunch is any iterable (non-string) container
-   of edge-tuples. (Similar to nbunch, also see add_edge).
-
-Warning:
-  - The ordering of objects within an arbitrary nbunch/ebunch
-    can be machine- or implementation-dependent.
-  - Algorithms should treat an arbitrary nbunch/ebunch as
-    once-through-and-exhausted iterable containers.
-  - len(nbunch) and len(ebunch) need not be defined.    
-
-
-Methods
-=======
-
-The Graph class provides rudimentary graph operations:
-
-Mutating Graph methods
-----------------------
-   
-    - G.add_node(n), G.add_nodes_from(nbunch)
-    - G.delete_node(n), G.delete_nodes_from(nbunch)
-    - G.add_edge(n1,n2), G.add_edge(e), where e=(u,v)
-    - G.add_edges_from(ebunch)
-    - G.delete_edge(n1,n2), G.delete_edge(e), where e=(u,v)
-    - G.delete_edges_from(ebunch)
-    - G.add_path(nlist)
-    - G.add_cycle(nlist)
-    - G.clear()
-    - G.subgraph(nbunch,inplace=True)
-
-Non-mutating Graph methods
---------------------------
-
-    - len(G)
-    - n in G (equivalent to G.has_node(n))
-    - G.has_node(n)
-    - G.nodes()
-    - G.nodes_iter()
-    - G.has_edge(n1,n2)
-    - G.edges(), G.edges(n), G.edges(nbunch)      
-    - G.edges_iter(), G.edges_iter(n), G.edges_iter(nbunch)
-    - G.neighbors(n)
-    - G[n]  (equivalent to G.neighbors(n))
-    - G.neighbors_iter(n) # iterator over neighbors
-    - G.number_of_nodes()
-    - G.number_of_edges()
-    - G.degree(n), G.degree(nbunch)
-    - G.degree_iter(n), G.degree_iter(nbunch)
-    - G.is_directed()
-
-Methods returning a new graph
------------------------------
-
-    - G.subgraph(nbunch)
-    - G.subgraph(nbunch,create_using=H)
-    - G.copy()
-    - G.to_undirected()
-    - G.to_directed()
-    
 Examples
 ========
 
@@ -175,13 +52,11 @@ There are no complaints when adding existing nodes or edges:
 >>> G.add_edge([(1,2),(1,3)])
 
 will add new nodes as required.
-    
+
+
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = "$Date: 2005-06-24 14:16:40 -0600 (Fri, 24 Jun 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 1061 $"
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-206 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -197,8 +72,6 @@ class Graph(object):
     """Graph is a simple graph without any multiple (parallel) edges
     or self-loops.  Attempting to add either will not change
     the graph and will not report an error.
-    
-    See networkx.base for more details.
 
     """
     def __init__(self, data=None, name=None, **kwds):

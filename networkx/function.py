@@ -1,18 +1,15 @@
 """
+Functional interface to graph properties.
     
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = "$Date: 2005-06-24 14:16:40 -0600 (Fri, 24 Jun 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 1061 $"
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 #
-
 
 # functional style helpers
 

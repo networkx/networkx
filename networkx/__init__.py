@@ -5,6 +5,7 @@ NetworkX
    NetworkX (NX) is a Python package for the creation, manipulation, and
    study of the structure, dynamics, and functions of complex networks.  
 
+   https://networkx.lanl.gov/
 
 Using 
 -----
@@ -19,12 +20,8 @@ Using
    [1, 2, 'spam']
    >>> print G.edges()
    [(1, 2)]
-
-See networkx.base for the details of the API.
-
-
 """
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -34,15 +31,12 @@ See networkx.base for the details of the API.
 # Add platform dependent shared library path to sys.path
 #
 import sys
-#import os, sys
-#sys.path.append(os.path.join(os.path.split(__file__)[0], sys.platform))
 if sys.version_info[:2] < (2, 3):
     print "Python version 2.3 or later is required for NetworkX (%d.%d detected)." %  sys.version_info[:2]
     sys.exit(-1)
-#del os
 del sys
 # Release data
-import release  # do it explicitly so pydoc can see it - pydoc bug
+import release 
 __version__  = release.version
 __date__     = release.date
 __author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
@@ -50,7 +44,8 @@ __author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
                 release.authors['Swart'] )
 __license__  = release.license
 
-
+import info
+__doc__+=info.__doc__
 
 #
 # NetworkX package modules
