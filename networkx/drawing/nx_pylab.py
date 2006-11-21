@@ -33,6 +33,7 @@ __revision__ = "$Id"
 
 import networkx
 
+
 try:
     import matplotlib
     import matplotlib.cbook as cb
@@ -203,10 +204,15 @@ def draw_networkx_nodes(G, pos,
     if nodelist is None:
         nodelist=G.nodes()
 
-    x=asarray([pos[v][0] for v in nodelist])
-    y=asarray([pos[v][1] for v in nodelist])
+    try:
+        xy=asarray([pos[v] for v in nodelist],dtype='d')
+    except KeyError,e:
+        raise networkx.NetworkXError('Node %s has no position.'%e)
+    except ValueError:
+        raise networkx.NetworkXError('Bad value in node positions.')
 
-    node_collection=ax.scatter(x, y,
+
+    node_collection=ax.scatter(xy[:,0], xy[:,1],
                                s=node_size,
                                c=node_color,
                                marker=node_shape,
@@ -256,15 +262,7 @@ def draw_networkx_edges(G, pos,
         return None
 
     # set edge positions
-    head=[]
-    tail=[]
-    for e in edgelist:
-        # edge e can be a 2-tuple (Graph) or a 3-tuple (Xgraph)
-        u=e[0]
-        v=e[1]
-        head.append(pos[u])
-        tail.append(pos[v])
-    edge_pos=asarray(zip(head,tail))
+    edge_pos=asarray([(pos[e[0]],pos[e[1]]) for e in edgelist])
 
     if not cb.iterable(width):
         lw = (width,)
@@ -341,12 +339,20 @@ def draw_networkx_edges(G, pos,
                                 )
         
     # update view        
-    xx= [x for (x,y) in head+tail]        
-    yy= [y for (x,y) in head+tail]        
-    minx = amin(xx)
-    maxx = amax(xx)
-    miny = amin(yy)
-    maxy = amax(yy)
+#    xx= [x for (x,y) in head+tail]        
+#    yy= [y for (x,y) in head+tail]        
+#    xx= [x for (x,y) in edge_pos]        
+#    yy= [y for (x,y) in edge_pos]        
+#    minx = amin(xx)
+#    maxx = amax(xx)
+#    miny = amin(yy)
+#    maxy = amax(yy)
+    minx = amin(edge_pos[:,:,0].flatten())
+    maxx = amax(edge_pos[:,:,0].flatten())
+    miny = amin(edge_pos[:,:,1].flatten())
+    maxy = amax(edge_pos[:,:,1].flatten())
+
+
     w = maxx-minx
     h = maxy-miny
     padx, pady = 0.05*w, 0.05*h
