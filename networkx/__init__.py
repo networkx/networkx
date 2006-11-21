@@ -55,11 +55,14 @@ __license__  = release.license
 #
 # NetworkX package modules
 #
-from base import Graph, DiGraph, NetworkXException, NetworkXError,\
-                 nodes, edges, degree, degree_histogram, neighbors,\
+from exception import  NetworkXException, NetworkXError
+from graph import Graph
+from digraph import DiGraph
+from function import  nodes, edges, degree, degree_histogram, neighbors,\
                  number_of_nodes, number_of_edges, density,\
                  nodes_iter, edges_iter, is_directed
-from xbase import XGraph, XDiGraph
+from xgraph import XGraph
+from xdigraph import XDiGraph
 from distance import eccentricity, diameter, radius, periphery, center
 from shortest_path import  \
      shortest_path, shortest_path_length,bidirectional_shortest_path,\
