@@ -14,7 +14,7 @@ __revision__ = "$Revision: 911 $"
 #    http://www.gnu.org/copyleft/lesser.html
 import copy
 import sets
-from networkx import shortest_path
+from networkx.path import shortest_path
 
 def kl_connected_subgraph(G,k,l,**kwds):
     """ Returns the maximum locally (k,l) connected subgraph of G.

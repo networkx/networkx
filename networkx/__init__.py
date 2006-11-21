@@ -59,7 +59,7 @@ from function import  nodes, edges, degree, degree_histogram, neighbors,\
 from xgraph import XGraph
 from xdigraph import XDiGraph
 from distance import eccentricity, diameter, radius, periphery, center
-from shortest_path import  \
+from path import  \
      shortest_path, shortest_path_length,bidirectional_shortest_path,\
      single_source_shortest_path, single_source_shortest_path_length,\
      all_pairs_shortest_path, all_pairs_shortest_path_length,\

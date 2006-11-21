@@ -16,7 +16,7 @@ from networkx.digraph import DiGraph
 from  networkx.exception import NetworkXException, NetworkXError
 import networkx.convert as convert
 import networkx.component as component
-import networkx.shortest_path as shortest_path
+import networkx.path as shortest_path
 
 # Yes, these aren't the natural datastructures for trees. 
 

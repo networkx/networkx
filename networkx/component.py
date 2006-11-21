@@ -11,7 +11,7 @@ ___revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 import networkx
-from networkx.shortest_path import \
+from networkx.path import \
      single_source_shortest_path,\
      single_source_shortest_path_length
 

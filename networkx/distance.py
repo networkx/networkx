@@ -9,7 +9,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 import networkx
-from networkx.shortest_path import single_source_shortest_path_length
+from networkx.path import single_source_shortest_path_length
 
 def eccentricity(G, v=None, sp=None, with_labels=False):
     """Return the eccentricity of node v in G (or all nodes if v is None).
