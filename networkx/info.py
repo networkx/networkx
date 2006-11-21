@@ -10,7 +10,6 @@ Graph
 
    >>> G=Graph()
    
-
 DiGraph
 
    A directed graph that has no self-loops or multiple (parallel) edges.
@@ -30,49 +29,50 @@ XGraph
 
    >>> G=XGraph()
    
-
 XDiGraph
 
    A directed graph that has (optional) self-loops or multiple (parallel)
    edges and arbitrary data on the edges.
 
    A simple digraph that has no self-loops or multiple (parallel) edges.
-   Subclass of Graph.
+   Subclass of DiGraph which is a subclass of Graph.
 
    An empty digraph is created with
 
    >>> G=DiGraph()
 
 
-The XGraph and XDiGraph classes are extensions of the Graph and
-DiGraph classes in base.py. The key difference is that an XGraph edge
-is a 3-tuple e=(n1,n2,x), representing an undirected edge between
-nodes n1 and n2 that is decorated with the object x. Here n1 and n2
-are (hashable) node objects and x is a (not necessarily hashable) edge
-object. Since the edge is undirected, edge (n1,n2,x) is equivalent to
-edge (n2,n1,x).
+The XGraph and XDiGraph classes extend the Graph and DiGraph classes
+by allowing (optional) self loops, multiedges and by decorating
+each edge with an object x.  
 
-An XDiGraph edge is a similar 3-tuple e=(n1,n2,x), with the additional
-property of directedness. I.e. e=(n1,n2,x) is a directed edge from n1 to
-n2 decorated with the object x, and is not equivalent to the edge (n2,n1,x).
+Each XDiGraph or XGraph edge is a 3-tuple e=(n1,n2,x), 
+representing an edge between nodes n1 and n2 that 
+is decorated with the object x. Here n1 and n2 are (hashable) 
+node objects and x is a (not necessarily hashable) edge object. 
+If multiedges are allowed, G.get_edge(n1,n2) returns a 
+list of edge objects.
 
-Whether a graph or digraph allow self-loops or multiple edges is
-determined at the time of object instantiation via specifying the
-parameters selfloops=True/False and multiedges=True/False. For
-example, an empty XGraph is created with:
+Whether an XGraph or XDiGraph allow self-loops or multiple edges is
+determined initially via parameters selfloops=True/False and 
+multiedges=True/False. 
+For example, the example empty XGraph created above is equivalent to
 
->>> G=XGraph()
+>>> G=XGraph(selfloops=False, multiedges=False)
 
-which is equivalent to
+Similar defaults hold for XDiGraph.  The command
 
->>> G=XGraph(name="No Name", selfloops=False, multiedges=False)
+>>> G=XDiGraph(multiedges=True)
 
-and similarly for XDiGraph.
+creates an empty digraph G that does not allow selfloops 
+but does allow for multiple (parallel) edges.  Methods exist 
+for allowing or disallowing each feature after instatiation as well.
 
->>> G=XDiGraph(name="empty", multiedges=True)
-
-creates an empty digraph G with G.name="empty", that do not
-allow the addition of selfloops but do allow for multiple edges.
+Note that if G is an XGraph then G.add_edge(n1,n2) will add 
+the edge (n1,n2,None), and G.delete_edge(n1,n2) will attempt 
+to delete the edge (n1,n2,None).
+In the case of multiple edges between nodes n1 and n2, one can use
+G.delete_multiedge(n1,n2) to delete all edges between n1 and n2.
 
 
 Notation
@@ -92,18 +92,16 @@ nlist:
 
 nbunch:
    a "bunch" of nodes (vertices).
-   an nbunch is any iterable (non-string) container 
-   of nodes that is not itself a node of the graph.
+   An nbunch is either a single node of the graph or
+   any iterable container/iterator of nodes.  The distinction
+   is determined by checking if nbunch is in the graph.
+   If you use iterable containers as nodes you should be 
+   careful when using nbunch.
 
 e=(n1,n2):
    an edge (a python "2-tuple"), also written n1-n2 (if undirected)
-   and n1->n2 (if directed). Note that 3-tuple edges of the form
-   (n1,n2,x) are used in the XGraph and XDiGraph classes. If G is an
-   XGraph, then G.add_edge(n1,n2) will add the edge (n1,n2,None), and
-   G.delete_edge(n1,n2) will attempt to delete the edge (n1,n2,None).
-   In the case of multiple edges between nodes n1 and n2, one can use
-   G.delete_multiedge(n1,n2) to delete all edges between n1 and n2.
-
+   and n1->n2 (if directed). 
+   
 e=(n1,n2,x):
    an edge triple ("3-tuple") containing the two nodes connected and the 
    edge data/label/object stored associated with the edge. The object x,
@@ -114,10 +112,9 @@ elist:
    a list of edges (as 2- or 3-tuples)
 
 ebunch:
-   a bunch of edges (as 2- or 3-tuples)
-   an ebunch is any iterable (non-string) container
+   a bunch of edges (as 2- or 3-tuples).
+   An ebunch is any iterable (non-string) container
    of edge-tuples (either 2-tuples, 3-tuples or a mixture).
-   (similar to nbunch, also see add_edge).
 
 Warning:
   - The ordering of objects within an arbitrary nbunch/ebunch can be
@@ -150,21 +147,24 @@ Non-mutating Graph methods
 --------------------------
 
     - len(G)
-    - n in G (equivalent to G.has_node(n))
     - G.has_node(n)
+    - n in G (equivalent to G.has_node(n))
+    - for n in G: (iterate through the nodes of G)
     - G.nodes()
     - G.nodes_iter()
-    - G.has_edge(n1,n2)
+    - G.has_edge(n1,n2), G.has_neighbor(n1,n2), G.get_edge(n1,n2)
     - G.edges(), G.edges(n), G.edges(nbunch)      
     - G.edges_iter(), G.edges_iter(n), G.edges_iter(nbunch)
     - G.neighbors(n)
     - G[n]  (equivalent to G.neighbors(n))
     - G.neighbors_iter(n) # iterator over neighbors
-    - G.number_of_nodes()
-    - G.number_of_edges()
+    - G.number_of_nodes(), G.order()
+    - G.number_of_edges(), G.size()
     - G.degree(n), G.degree(nbunch)
     - G.degree_iter(n), G.degree_iter(nbunch)
     - G.is_directed()
+    - G.info()  # print variaous info about a graph
+    - G.prepare_nbunch(nbunch)  # return list of nodes in G and nbunch
 
 Methods returning a new graph
 -----------------------------
@@ -187,13 +187,13 @@ dictionaries. The dictionary contains keys corresponding to the nodes
 and the values are dictionaries of neighboring node keys with the
 value None (the Python None type).  This allows fast addition,
 deletion and lookup of nodes and neighbors in large graphs.  The
-underlying datastructure should only be visible in this module. In all
-other modules, instances of graph-like objects are manipulated solely
-via the methods defined here and not by acting directly on the
-datastructure.
+underlying datastructure should only be visible in the defining modules. 
+In all other modules, instances of graph-like objects are manipulated 
+solely via the methods defined by the class and not by acting directly 
+on the datastructure.
 
-XGraph and XDiGraph are implemented using a data structure based on an
-adjacency list implemented as a dictionary of dictionaries. The outer
+XGraph and XDiGraph are also implemented using a data structure based on
+adjacency lists implemented as a dictionary of dictionaries. The outer
 dictionary is keyed by node to an inner dictionary keyed by
 neighboring nodes to the edge data/labels/objects (which default to None
 to correspond the datastructure used in classes Graph and DiGraph).
@@ -217,8 +217,8 @@ They do share important similarities.
 1. Edgeless graphs are the same in XGraph and Graph.
    For an edgeless graph, represented by G (member of the Graph class)
    and XG (member of XGraph class), there is no difference between
-   the datastructures G.adj and XG.adj, other than in the ordering of the
-   keys in the adj dict.
+   the datastructures G.adj and XG.adj, other than perhaps the 
+   ordering of the keys in the adj dict.
 
 2. Basic graph construction code for G=Graph() will also work for
    G=XGraph().  In the Graph class, the simplest graph construction
@@ -234,9 +234,9 @@ They do share important similarities.
 
    If one replaces the graph creation command with G=XGraph(), and then
    apply the identical list of construction commands, the resulting XGraph
-   object will be a simple graph G with identical datastructure G.adj. This
-   property ensures reuse of code developed for graph generation in the
-   Graph class.
+   object will be a simple graph G with identical datastructure G.adj. 
+   This property ensures reuse of code developed for graph generation 
+   in the Graph class.
 
 
 """
