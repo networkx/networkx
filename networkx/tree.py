@@ -11,7 +11,9 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    http://www.gnu.org/copyleft/lesser.html
 #
 
-from networkx.base import Graph, DiGraph, NetworkXException, NetworkXError
+from networkx.graph import Graph
+from networkx.digraph import DiGraph
+from  networkx.exception import NetworkXException, NetworkXError
 import networkx.convert as convert
 import networkx.component as component
 import networkx.shortest_path as shortest_path
