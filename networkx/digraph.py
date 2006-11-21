@@ -22,7 +22,6 @@ class DiGraph(Graph):
     DiGraph inherits from Graph, overriding the following methods:
 
     - __init__: replaces self.adj with the dicts self.pred and self.succ
-    - __getitem__
     - add_node
     - delete_node
     - add_edge
@@ -73,15 +72,6 @@ class DiGraph(Graph):
         if name is not None:
             self.name=name
 
-    def __getitem__(self,n):
-        """Return the in- and out-neighbors of node n as a list.
-
-        This provides digraph G the natural property that G[n] returns
-        the neighbors of G. 
-
-        """
-        return self.neighbors(n)
-        
     def add_node(self, n):
         """Add a single node to the digraph.
 

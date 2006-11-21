@@ -135,11 +135,7 @@ class Graph(object):
         the neighbors of G. 
 
         """
-        try:
-            return self.adj[n].keys()
-        except (KeyError, TypeError):
-            raise NetworkXError, "node %s not in graph"%n
-
+        return list(self.neighbors_iter(n))
     
     def print_dna(self):
         """Print graph "DNA": a dictionary of graph names and properties.

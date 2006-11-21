@@ -66,6 +66,7 @@ class XDiGraph(DiGraph):
     - ban_multiedges
     - remove_all_multiedges
 
+    While XDiGraph does not inherit from XGraph, we compare them here.
     XDigraph adds the following methods to those of XGraph:
 
     - has_successor
@@ -78,8 +79,6 @@ class XDiGraph(DiGraph):
     - out_degree_iter
     - in_degree
     - in_degree_iter
-    - to_undirected
-    - is_directed
 
     """
 #    XDiGraph, like DiGraph, uses two adjacency lists:
@@ -405,34 +404,6 @@ class XDiGraph(DiGraph):
                 for n2,data in self.pred[n1].iteritems():
                     yield (n2,n1,data)
 
-    def out_edges(self, nbunch=None):
-        """Return a list of all edges that point out of nodes in nbunch,
-        or a list of all edges if nbunch=None.
-
-        See add_node for definition of nbunch.
-
-        Nodes in nbunch that are not in the graph will be (quietly) ignored.
-        
-        """
-        return list(self.out_edges_iter(nbunch))
-
-
-    def in_edges(self, nbunch=None):
-        """Return a list of all edges that point in to nodes in nbunch,
-        or a list of all edges if nbunch=None.
-
-        See add_node for definition of nbunch.
-
-        Nodes in nbunch that are not in the graph will be (quietly) ignored.
-        
-        """
-        return list(self.in_edges_iter(nbunch))
-
-
-    edges_iter=out_edges_iter
-    edges=out_edges
-
-
     def successors_iter(self, n):
         """Return an iterator of nodes pointing out of node n. 
 
@@ -454,6 +425,9 @@ class XDiGraph(DiGraph):
             raise NetworkXError, "node %s not in graph"%n
         for (u,v,d) in self.in_edges_iter(n):
             yield u
+
+    edges_iter=out_edges_iter
+    neighbors_iter=successors_iter
 
     def in_degree_iter(self, nbunch=None, with_labels=False):
         """Return iterator for in_degree(n) or (n,in_degree(n))
