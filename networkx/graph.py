@@ -741,7 +741,6 @@ class Graph(object):
         return sum(self.degree_iter())/2
 
 
-
 def _test_suite():
     import doctest
     suite = doctest.DocFileSuite('tests/graph_Graph.txt',
