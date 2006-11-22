@@ -423,19 +423,11 @@ to write to the file "path.ps" in the local directory. If graphviz
 and pygraphviz or pydot are available on your system, you can also use:
 
 >>> draw_graphviz(G)
->>> write_dot(G)
-graph G {
-"1";
-"2";
-"3";
-"spam";
-"1" -- "2";
-"1" -- "3";
-}
-<BLANKLINE>
+>>> write_dot(G,'file.dot')
 
-You may find it useful to interactively test code using "ipython
--pylab", thereby combining the power of ipython and matplotlib.
+
+You may find it useful to interactively test code using "ipython -pylab", 
+which combines the power of ipython and matplotlib.
 
 Functions for analyzing graph properties
 ----------------------------------------
