@@ -66,7 +66,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 from networkx.exception import NetworkXException, NetworkXError
 import networkx.convert as convert
 
-
 class Graph(object):
     """Graph is a simple graph without any multiple (parallel) edges
     or self-loops.  Attempting to add either will not change
