@@ -5,11 +5,7 @@ Spectrum
 ...     import numpy.linalg
 ...	eigenvalues=numpy.linalg.eigvals
 ... except ImportError:
-...     try:    
-...         import LinearAlgebra
-...	    eigenvalues=LinearAlgebra.eigenvalues
-...     except ImportError:
-...         raise ImportError,"Neither numpy nor Numeric can be imported."
+...     raise ImportError,"numpy not found"
 
 
 >>> from networkx.generators.degree_seq import *

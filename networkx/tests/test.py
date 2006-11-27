@@ -8,28 +8,45 @@ import unittest
 
 def all():
     try:
-        # import ez_setup # force use of setuptools
-        # ez_setup.use_setuptools()
         from pkg_resources import resource_filename, resource_listdir
         tests=[resource_filename(__name__, t)
               for t in resource_listdir("networkx",'tests') if t.endswith("txt")]
         tests+=[resource_filename(__name__, 'generators/'+t)
               for t in resource_listdir("networkx",'tests/generators') if t.endswith("txt")]
     except:
-        tests=glob.glob("*.txt") # this will only work from test directory   
+        tests=glob.glob("*.txt") 
         tests+=glob.glob("generators/*.txt")
         #tests+=glob.glob("drawing/*.txt")  
 
-    # skip some tests if we don't have numpy 
+    # tests depending on numpy
     try:
         import numpy
     except ImportError:
-        print "numpy not found"
-        print "skipping tests of spectrum.py and threshold.py"
-        tests.remove('spectrum.txt')
-        tests.remove('threshold.txt')
-#            tests=[t for t in tests if 'spectrum.txt' not in t \
-#                    if 'threshold.txt' not in t]
+        print "numpy not found: skipping tests of spectrum.py, threshold.py, convert.py (numpy)"
+        tests=[t for t in tests \
+               if 'spectrum.txt' not in t \
+               if 'threshold.txt' not in t\
+               if 'convert_numpy.txt' not in t\
+               ]
+
+    # tests depending on scipy        
+    try:
+        import scipy
+    except ImportError:
+        print "scipy not found: skipping tests of convert.py (scipy)"
+        tests=[t for t in tests \
+               if 'convert_scipy.txt' not in t\
+               ]
+    # tests depending on yaml        
+    try:
+        import yaml
+    except ImportError:
+        print "yaml not found: skipping tests of io.py (yaml)"
+        tests=[t for t in tests \
+               if 'io_yaml.txt' not in t\
+               ]
+
+
 
 
     suite = unittest.TestSuite()

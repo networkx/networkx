@@ -15,7 +15,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 try:
     import numpy as N
 except:
-    raise ImportError
+    raise ImportError, 'numpy not found'
 
 import networkx
 
