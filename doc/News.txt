@@ -3,6 +3,38 @@
 NetworkX News
 =============
 
+What's new in NX-0.33?
+----------------------
+
+Release date: 27 November 2006
+
+See: https://networkx.lanl.gov/timeline
+
+New features
+~~~~~~~~~~~~
+  - draw edges with specified colormap
+  - more efficient version of Floyd's algorithm for all pairs shortest path
+  - use numpy only, Numeric is deprecated
+  - tests can now be run with
+     >>> import networkx
+     >>> networkx.test()    
+
+Bug fixes
+~~~~~~~~~
+  - read_gpickle now works correctly with Windows
+  - refactored large modules into smaller code files
+  - degree(nbunch) now returns degrees in same order as nbunch 
+  - degree() now works for multiedges=True
+  - update node_boundary and edge_boundary for efficiency
+  - edited documentation for graph classes, now mostly in info.py
+
+Examples
+~~~~~~~~
+  - Draw edges with colormap
+    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/draw_edge_colormap.py
+
+
+
 What's new in NX-0.32?
 ----------------------
 
