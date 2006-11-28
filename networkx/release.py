@@ -8,10 +8,9 @@
 #    http://www.gnu.org/copyleft/lesser.html
 
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-__date__ = "$Date$"
 
 name = 'networkx'
-version = '0.32'
+version = '0.33'
 
 description = "Python package for creating and manipulating graphs and networks"
 
