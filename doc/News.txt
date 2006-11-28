@@ -15,6 +15,8 @@ New features
   - draw edges with specified colormap
   - more efficient version of Floyd's algorithm for all pairs shortest path
   - use numpy only, Numeric is deprecated
+  - include tests in source package (networkx/tests)
+  - include documentation in source package (doc)
   - tests can now be run with
      >>> import networkx
      >>> networkx.test()    

@@ -8,6 +8,7 @@ Setup script for networkx
 from glob import glob
 import os
 import sys
+if os.path.exists('MANIFEST'): os.remove('MANIFEST')
 
 from distutils.core import setup
 
@@ -52,7 +53,6 @@ setup(name             = name,
       packages         = packages,
       data_files      =  data,
       package_data     = {'': ['*.txt'],}, 
-      test_suite = "networkx.tests.test.all",
       classifiers = [
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
