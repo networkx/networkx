@@ -39,7 +39,12 @@ data = [(docdirbase, glob("doc/*.txt")),
         (os.path.join(docdirbase, 'data'),glob("doc/data/*ls")),
         ]
 
-setup(name             = name,
+package_data     = {'': ['*.txt'],} 
+
+
+if __name__ == "__main__":
+
+    setup(name             = name,
       version          = version,
       author           = authors['Hagberg'][0],
       author_email     = authors['Hagberg'][1],
@@ -51,20 +56,8 @@ setup(name             = name,
       url              = url,      
       download_url     = download_url,
       packages         = packages,
-      data_files      =  data,
-      package_data     = {'': ['*.txt'],}, 
-      classifiers = [
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Scientific/Engineering :: Bio-Informatics',
-        'Topic :: Scientific/Engineering :: Information Analysis',
-        'Topic :: Scientific/Engineering :: Mathematics',
-        'Topic :: Scientific/Engineering :: Physics',
-        ]
+      data_files       = data,
+      package_data     = package_data, 
+      classifiers      = classifiers,
       )
 
