@@ -426,10 +426,9 @@ class Graph(object):
     def get_edge(self, n1, n2):
         """Return 1 if graph contains the edge u-v, 0 otherwise """
         # useful for helping build adjacency matrix representation
-        try:
-            self.has_edge(n1,n2)
+        if self.has_edge(n1,n2):
             return 1
-        except KeyError:
+        else:
             raise NetworkXError, "no edge (%s,%s) in graph"%(n1,n2)
 
 
