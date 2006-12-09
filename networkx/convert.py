@@ -250,6 +250,7 @@ def to_numpy_matrix(G,nodelist=None):
             d=1
         else:
             d=e[2]
+            if d is None: d=1 # None would be a nan in numpy, use 1
         A[index[u],index[v]]=d
         if not G.is_directed():
             A[index[v],index[u]]=d
@@ -351,6 +352,7 @@ def to_scipy_sparse_matrix(G,nodelist=None):
             d=1
         else:
             d=e[2]
+            if d is None: d=1 # None would be a nan, use 1 
         A[index[u],index[v]]=d
         if not G.is_directed():
             A[index[v],index[u]]=d
