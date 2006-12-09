@@ -235,8 +235,8 @@ def to_numpy_matrix(G,nodelist=None):
 
     if hasattr(G,"multiedges"):
         if G.multiedges==True:
-            raise ImportError, \
-                  "Not allowed with for graphs with multiedges."
+            raise TypeError, \
+                  "Conversion to numpy_matrix not allowed with for graphs with multiedges."
 
     if nodelist is None:
         nodelist=G.nodes()
@@ -337,8 +337,8 @@ def to_scipy_sparse_matrix(G,nodelist=None):
 
     if hasattr(G,"multiedges"):
         if G.multiedges==True:
-            raise ImportError, \
-                  "Not allowed with for graphs with multiedges."
+            raise TypeError, \
+                  "Conversion to scipy_sparse_matrix not allowed with for graphs with multiedges."
 
     if nodelist is None:
         nodelist=G.nodes()
