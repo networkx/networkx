@@ -409,7 +409,7 @@ class Graph(object):
                 del self.adj[v][u]   
 
     def has_edge(self, u, v=None):
-        """Return True if graph contains the edge u-v. """
+        """Return True if graph contains the edge u-v, return False otherwise."""
         if  v is None:
             (u,v)=u    # split tuple in first position
         return self.adj.has_key(u) and self.adj[u].has_key(v)
@@ -424,7 +424,10 @@ class Graph(object):
 
 
     def get_edge(self, n1, n2):
-        """Return 1 if graph contains the edge u-v, 0 otherwise """
+        """Return 1 if graph contains the edge u-v. 
+        Raise an exception otherwise.
+    
+        """
         # useful for helping build adjacency matrix representation
         if self.has_edge(n1,n2):
             return 1
