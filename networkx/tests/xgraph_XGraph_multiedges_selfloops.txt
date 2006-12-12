@@ -63,10 +63,16 @@ test
 >>> print H.name
 <BLANKLINE>
 
+>>> G2=XGraph(data={1:[1]}, name="test", selfloops=True)
+>>> print G2.edges()
+[(1, 1, None)]
+>>> print G2.name
+test
+
 The first PseudoGraph
 (cf. http://mathworld.wolfram.com/KoenigsbergBridgeProblem.html)
 
->>> K=XGraph(name="Konigsberg", multiedges=True, loops=True) 
+>>> K=XGraph(name="Konigsberg", multiedges=True, selfloops=True) 
 >>> sorted(K) # test empty K.__iter__
 []
 >>> 'Euler' in K # test __contains__

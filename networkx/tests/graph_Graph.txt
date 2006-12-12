@@ -34,6 +34,13 @@ test
 >>> print H.name
 <BLANKLINE>
 
+>>> G2=Graph(data={1:[2],2:[1]}, name="test")
+>>> print G2.edges()
+[(1, 2)]
+>>> print G2.name
+test
+
+
 Nodes
 -----
 

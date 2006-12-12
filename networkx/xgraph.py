@@ -97,7 +97,7 @@ class XGraph(Graph):
     """
 
 
-    def __init__(self,data=None,name=None,**kwds):
+    def __init__(self, data=None, name='', selfloops=False, multiedges=False):
         """Initialize XGraph.
 
         Optional arguments::
@@ -106,17 +106,12 @@ class XGraph(Graph):
         multiedges: if True multiple edges are allowed (default=False)
 
         """
-        self.name=''
-        self.selfloops=kwds.get("selfloops",False)    # no self-loops
-        self.multiedges=kwds.get("multiedges",False)  # no multiedges
-
         self.adj={}      # adjacency list
-
+        self.selfloops=selfloops
+        self.multiedges=multiedges
         if data is not None:
             self=convert.from_whatever(data,create_using=self)
-            
-        if name is not None:
-            self.name=name
+        self.name=name
 
     def add_edge(self, n1, n2=None, x=None):  
         """Add a single edge to the graph.

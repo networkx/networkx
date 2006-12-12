@@ -72,7 +72,7 @@ class Graph(object):
     the graph and will not report an error.
 
     """
-    def __init__(self, data=None, name=None, **kwds):
+    def __init__(self, data=None, name=''):
         """Initialize Graph.
         
         >>> G=Graph(name="empty")
@@ -80,17 +80,12 @@ class Graph(object):
         creates empty graph G with G.name="empty"
 
         """
-        self.name=''
-
         self.adj={}  # empty adjacency hash
-
         # attempt to load graph with data
         if data is not None:
-            self=convert.from_whatever(data,create_using=self)
+            convert.from_whatever(data,create_using=self)
+        self.name=name
 
-        if name is not None:
-            self.name=name
-            
     def __str__(self):
         return self.name
 

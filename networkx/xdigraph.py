@@ -41,7 +41,7 @@ class XDiGraph(DiGraph):
     edges, except that they are directed rather than undirected.
     XDiGraph replaces the following DiGraph methods:
 
-    - __init__: read multiedges and selfloops kwds.
+    - __init__: read multiedges and selfloops optional args.
     - add_edge
     - add_edges_from
     - delete_edge
@@ -89,7 +89,7 @@ class XDiGraph(DiGraph):
 #    For each edge (n1,n2,x) in self.succ there exists a corresponding edge
 #    (n2,n1,x) in self.pred
 
-    def __init__(self,data=None,name=None,**kwds):
+    def __init__(self, data=None, name='', selfloops=False, multiedges=False):
         """Initialize XDiGraph.
 
         Optional arguments::
@@ -98,19 +98,14 @@ class XDiGraph(DiGraph):
         multiedges: if True then multiple edges are allowed (default=False)
 
         """
-        self.name=''
-        self.selfloops=kwds.get("selfloops",False)    # no self-loops
-        self.multiedges=kwds.get("multiedges",False)  # no multiedges
-
         self.adj={}         # adjacency list
         self.pred={}        # predecessor
         self.succ=self.adj  # successor is same as adj
-
+        self.selfloops=selfloops
+        self.multiedges=multiedges
         if data is not None:
-            self=convert.from_whatever(data,create_using=self)
-
-        if name is not None:
-            self.name=name
+            convert.from_whatever(data,create_using=self)
+        self.name=name
 
 
     def add_edge(self, n1, n2=None, x=None):  

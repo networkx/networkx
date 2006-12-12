@@ -54,19 +54,13 @@ class DiGraph(Graph):
 # we store two adjacency lists:
 #    the  predecessors of node n are stored in the dict self.pred
 #    the successors of node n are stored in the dict self.succ=self.adj
-    def __init__(self,data=None,name=None,**kwds):
-
-        self.name=''
-
+    def __init__(self, data=None, name=''):
         self.adj={}  # empty adjacency hash
         self.pred={}        # predecessor
         self.succ=self.adj  # successor
-
         if data is not None:
-            self=convert.from_whatever(data,create_using=self)
-
-        if name is not None:
-            self.name=name
+            convert.from_whatever(data,create_using=self)
+        self.name=name
 
     def add_node(self, n):
         """Add a single node to the digraph.
