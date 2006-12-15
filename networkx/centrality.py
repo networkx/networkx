@@ -122,10 +122,12 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
     onodes = map(lambda k: (length[k], k), length.keys())
     onodes.sort()
     onodes[:] = [val for (key, val) in onodes]
-    # intialize betweenness
-    [between.setdefault((u,v),1.0) for (u,v) in G.edges(nodes)] 
-    [between.setdefault((v,u),1.0) for (u,v) in G.edges(nodes)] 
-#    print between
+    # intialize betweenness, doesn't account for any edge weights
+    for e in G.edges(nodes):
+        u,v=e[0],e[1]
+        between[(u,v)]=1.0
+        between[(v,u)]=1.0
+
     while onodes:           # work through all paths
         v=onodes.pop()
         if (pred.has_key(v)):
