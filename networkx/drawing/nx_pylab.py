@@ -40,7 +40,7 @@ try:
     from matplotlib.colors import colorConverter,normalize,Colormap
     from matplotlib.collections import LineCollection
     from matplotlib.numerix import sin, cos, pi, sqrt, arctan2, asarray
-    from matplotlib.numerix.mlab import amin, amax
+    from matplotlib.numerix.mlab import amin, amax, ravel
     from matplotlib import compare_versions
     from matplotlib import compare_versions
 except ImportError:
@@ -205,7 +205,8 @@ def draw_networkx_nodes(G, pos,
         nodelist=G.nodes()
 
     try:
-        xy=asarray([pos[v] for v in nodelist],dtype='d')
+#        xy=asarray([pos[v] for v in nodelist],dtype='d')
+        xy=asarray([pos[v] for v in nodelist])
     except KeyError,e:
         raise networkx.NetworkXError('Node %s has no position.'%e)
     except ValueError:
@@ -339,18 +340,11 @@ def draw_networkx_edges(G, pos,
                                 )
         
     # update view        
-#    xx= [x for (x,y) in head+tail]        
-#    yy= [y for (x,y) in head+tail]        
-#    xx= [x for (x,y) in edge_pos]        
-#    yy= [y for (x,y) in edge_pos]        
-#    minx = amin(xx)
-#    maxx = amax(xx)
-#    miny = amin(yy)
-#    maxy = amax(yy)
-    minx = amin(edge_pos[:,:,0].flatten())
-    maxx = amax(edge_pos[:,:,0].flatten())
-    miny = amin(edge_pos[:,:,1].flatten())
-    maxy = amax(edge_pos[:,:,1].flatten())
+    minx = amin(ravel(edge_pos[:,:,0]))
+    maxx = amax(ravel(edge_pos[:,:,0]))
+    miny = amin(ravel(edge_pos[:,:,1]))
+    maxy = amax(ravel(edge_pos[:,:,1]))
+
 
 
     w = maxx-minx
