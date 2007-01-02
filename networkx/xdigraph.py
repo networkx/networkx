@@ -537,18 +537,18 @@ class XDiGraph(DiGraph):
     def selfloop_edges(self):
         """Return all edges that are self-loops."""
         nlist=self.nodes_with_selfloops()
-        loops=[]
-        for n in nlist:
-            if self.multiedges:
-                for x in self.succ[n][n]:
-                    loops.append((n,n,x))
-            else:
-                loops.append((n,n,self.succ[n][n]))
-        return loops
+        if self.multiedges:
+            return [ (n,n,x) for n in nlist for x in self.adj[n][n]]
+        else:
+            return [ (n,n,self.adj[n][n]) for n in nlist ]
             
     def number_of_selfloops(self):
         """Return number of self-loops in graph."""
-        return len(self.selfloop_edges())
+        nlist=self.nodes_with_selfloops()
+        if self.multiedges:
+            return sum([ len(self.adj[n][n]) for n in nlist])
+        else:
+            return len(nlist)
 
     def allow_selfloops(self):
         """Henceforth allow addition of self-loops

@@ -109,7 +109,7 @@ class Graph(object):
 
         """
         try:
-            return self.adj.__contains__(n)
+            return n in self.adj
         except TypeError:
             return False
         
@@ -309,7 +309,7 @@ class Graph(object):
         
         """
         try:
-            return self.adj.__contains__(n)
+            return n in self.adj
         except TypeError:
             return False
 
@@ -409,13 +409,13 @@ class Graph(object):
             (u,v)=u    # split tuple in first position
         return self.adj.has_key(u) and self.adj[u].has_key(v)
 
-    def has_neighbor(self, u, v=None):
+    def has_neighbor(self, u, v):
         """Return True if node u has neighbor v.
 
         This is equivalent to has_edge(u,v).
 
         """
-        return self.has_edge(u,v)
+        return self.adj.has_key(u) and self.adj[u].has_key(v)
 
 
     def get_edge(self, n1, n2):
@@ -502,13 +502,13 @@ class Graph(object):
         This routine is faster if nbunch1 is smaller than nbunch2.
 
         """
-        ndict1=dict.fromkeys([n for n in nbunch1 if n in self])
         if nbunch2 is None:     # Then nbunch2 is complement of nbunch1
+            ndict1=dict.fromkeys([n for n in nbunch1 if n in self])
             return [(n1,n2) for n1 in ndict1 for n2 in self.adj[n1] \
                     if n2 not in ndict1]
 
         ndict2=dict.fromkeys(nbunch2)
-        return [(n1,n2) for n1 in ndict1 for n2 in self.adj[n1] \
+        return [(n1,n2) for n1 in nbunch1 if n1 in self for n2 in self.adj[n1] \
                 if n2 in ndict2]
 
     def node_boundary(self, nbunch1, nbunch2=None):
@@ -528,8 +528,8 @@ class Graph(object):
         This routine is faster if nbunch1 is smaller than nbunch2.
 
         """
-        ndict1=dict.fromkeys([n for n in nbunch1 if n in self])
         if nbunch2 is None:     # Then nbunch2 is complement of nbunch1
+            ndict1=dict.fromkeys([n for n in nbunch1 if n in self])
             bdy={}
             for n1 in ndict1:
                 for n2 in self.adj[n1]:
@@ -539,7 +539,7 @@ class Graph(object):
         
         ndict2=dict.fromkeys(nbunch2)
         bdy=[]
-        for n1 in ndict1:
+        for n1 in [n in nbunch1 if n in self]:
             for n2 in self.adj[n1]:
                 if n2 in ndict2:
                     bdy.append(n2)
@@ -715,15 +715,15 @@ class Graph(object):
 
     def add_path(self, nlist):
         """Add the path through the nodes in nlist to graph"""
-        fromv = nlist.pop(0)
-        while len(nlist) > 0:
-            tov=nlist.pop(0)
+        fromv = nlist[0]
+        for tov in nlist[1:]:
             self.add_edge(fromv,tov)
             fromv=tov
 
     def add_cycle(self, nlist):
         """Add the cycle of nodes in nlist to graph"""
-        self.add_path(nlist+[nlist[0]])  # wrap first element
+        self.add_path(nlist)
+        self.add_edge(nlist[-1],nlist[0])  # wrap first element
 
     def is_directed(self):
         """ Return True if graph is directed."""
