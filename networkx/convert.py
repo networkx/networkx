@@ -40,23 +40,13 @@ def from_whatever(thing,create_using=None):
        pygraphviz agraph
 
     """
-    if create_using is None:
-        G=networkx.Graph()
-    else:
-        try:
-            G=create_using
-            G.clear()
-        except:
-            raise TypeError("Input graph is not a NetworkX graph type.")
-        
     # pygraphviz  agraph
     if hasattr(thing,"is_strict"):
         try:
             return networkx.from_agraph(thing,create_using=create_using)
         except:
-            raise
-#            raise networkx.NetworkXError,\
-#                  "Input is not a correct pygraphviz graph."
+            raise networkx.NetworkXError,\
+                  "Input is not a correct pygraphviz graph."
 
     # NX graph
     if hasattr(thing,"add_node"):

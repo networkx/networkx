@@ -539,7 +539,7 @@ class Graph(object):
         
         ndict2=dict.fromkeys(nbunch2)
         bdy=[]
-        for n1 in [n in nbunch1 if n in self]:
+        for n1 in [n for n in nbunch1 if n in self]:
             for n2 in self.adj[n1]:
                 if n2 in ndict2:
                     bdy.append(n2)
