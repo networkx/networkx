@@ -46,22 +46,34 @@ class XDiGraph(DiGraph):
     - add_edges_from
     - delete_edge
     - delete_edges_from
-    - delete_multiedge
     - has_edge
+    - has_predecessor
+    - has_successor
+    - get_edge
     - edges_iter
+    - in_edges_iter
+    - out_edges_iter
+    - neighbors_iter
+    - successors_iter
+    - predecessors_iter
     - degree_iter
-    - degree
-    - copy
-    - clear
+    - out_degree_iter
+    - in_degree_iter
     - subgraph
-    - is_directed
-    - to_directed
+    - copy
+    - to_undirected
+    - reverse
     
     XDiGraph also adds the following methods to those of DiGraph:
 
     - allow_selfloops
     - remove_all_selfloops
     - ban_selfloops
+    - nodes_with_selfloops
+    - self_loop_edges
+    - number_of_selfloops
+
+    - delete_multiedge
     - allow_multiedges
     - ban_multiedges
     - remove_all_multiedges
@@ -79,6 +91,7 @@ class XDiGraph(DiGraph):
     - out_degree_iter
     - in_degree
     - in_degree_iter
+    - reverse
 
     """
 #    XDiGraph, like DiGraph, uses two adjacency lists:
@@ -406,7 +419,7 @@ class XDiGraph(DiGraph):
     def predecessors_iter(self, n):
         """Return an iterator of nodes pointing in to node n. 
 
-        Returns the same data as out_edges(n) but in a different format.
+        Returns the same data as in_edges(n) but in a different format.
 
         """
         if n not in self:
@@ -682,12 +695,9 @@ class XDiGraph(DiGraph):
         graph are added to the copy.
         
         """
-        H=self.__class__(multiedges=self.multiedges,selfloops=self.selfloops)
-        H.name=self.name
-        for n in self:
-            H.add_node(n)
-        for e in self.edges_iter():
-            H.add_edge(e)
+        H=self.__class__(name=self.name, multiedges=self.multiedges, selfloops=self.selfloops)
+        H.add_nodes_from(self)
+        H.add_edges_from(self.edges_iter())
         return H        
 
     def to_undirected(self):
@@ -708,12 +718,20 @@ class XDiGraph(DiGraph):
         
         """
         from networkx.xgraph import XGraph
-        H=XGraph(multiedges=self.multiedges,selfloops=self.selfloops)
-        H.name=self.name
-        for n in self:
-            H.add_node(n)                   # copy nodes
-        for e in self.edges_iter():
-            H.add_edge(e)                   # convert each edge
+        H=XGraph(name=self.name, multiedges=self.multiedges, selfloops=self.selfloops)
+        H.add_nodes_from(self)
+        H.add_edges_from(self.edges_iter())
+        return H
+
+    def reverse(self):
+        """
+        Return a new digraph with the same vertices and edges
+        as self but with the directions of the edges reversed.
+        """
+        H=self.__class__(name="Reverse of (%s)"%self.name,\
+                multiedges=self.multiedges, selfloops=self.selfloops)
+        H.add_nodes_from(self)
+        H.add_edges_from( [ (v,u,d) for (u,v,d) in self.edges_iter() ] )
         return H
 
         
