@@ -117,7 +117,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     # allow callers to override the hold state by passing hold=True|False
     b = ax.ishold()
     if hold is not None:
-        matplotlib.pylab.hold(h)
+        matplotlib.pylab.hold(hold)
     try:
         # turn of axes ticks and labels
         ax.set_xticks([])
