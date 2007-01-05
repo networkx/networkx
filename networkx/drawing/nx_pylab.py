@@ -41,12 +41,10 @@ try:
     from matplotlib.collections import LineCollection
     from matplotlib.numerix import sin, cos, pi, sqrt, arctan2, asarray
     from matplotlib.numerix.mlab import amin, amax, ravel
-    from matplotlib import compare_versions
-    from matplotlib import compare_versions
 except ImportError:
     raise ImportError, "Import Error: not able to import matplotlib."
 
-def draw(G, pos=None, with_labels=True, **kwds):
+def draw(G, pos=None, ax=None, hold=None, **kwds):
     """Draw the graph G with matplotlib (pylab).
 
     This is a pylab friendly function that will use the
@@ -111,30 +109,26 @@ def draw(G, pos=None, with_labels=True, **kwds):
     >>> P.draw()    # pylab draw()
 
     """
-    from matplotlib.pylab import gca, hold, draw_if_interactive 
-
     if pos is None:
         pos=networkx.drawing.spring_layout(G) # default to spring layout
 
-    ax=gca()
+    if ax is None:
+        ax=matplotlib.pylab.gca()
     # allow callers to override the hold state by passing hold=True|False
     b = ax.ishold()
-    h = kwds.get('hold', None)
-    if h is not None:
-        hold(h)
+    if hold is not None:
+        matplotlib.pylab.hold(h)
     try:
         # turn of axes ticks and labels
         ax.set_xticks([])
         ax.set_yticks([])
-        draw_networkx(G, pos, ax=ax, with_labels=with_labels, **kwds)
-        draw_if_interactive()
-
+        draw_networkx(G, pos, ax=ax, **kwds)
     except:
-        hold(b)
+        matplotlib.pylab.hold(b)
         raise
-    hold(b)
+    matplotlib.pylab.hold(b)
 
-def draw_networkx(G, pos, with_labels=True, ax=None, **kwds):
+def draw_networkx(G, pos, with_labels=True, **kwds):
     """Draw the graph G with given node positions pos
 
     Usage:
@@ -163,13 +157,11 @@ def draw_networkx(G, pos, with_labels=True, ax=None, **kwds):
     draw_networkx_edges()
     draw_networkx_labels()
     """
-    from matplotlib.pylab import gca, hold, draw_if_interactive 
-    if ax is None:
-        ax=gca()
-    node_collection=draw_networkx_nodes(G, pos, ax=ax, **kwds)
-    edge_collection=draw_networkx_edges(G, pos, ax=ax, **kwds) 
+    from matplotlib.pylab import draw_if_interactive 
+    node_collection=draw_networkx_nodes(G, pos, **kwds)
+    edge_collection=draw_networkx_edges(G, pos, **kwds) 
     if with_labels:
-        draw_networkx_labels(G, pos, ax=ax, **kwds)
+        draw_networkx_labels(G, pos, **kwds)
     draw_if_interactive()
 
 def draw_networkx_nodes(G, pos,
@@ -181,8 +173,7 @@ def draw_networkx_nodes(G, pos,
                         cmap=None,
                         vmin=None,
                         vmax=None, 
-                        ax=None,
-                        **kwds):
+                        ax=None):
     """Draw nodes of graph G
 
     This draws only the nodes of the graph G.
@@ -197,9 +188,8 @@ def draw_networkx_nodes(G, pos,
     see draw_networkx for the list of other optional parameters.
 
     """
-    from matplotlib.pylab import gca, hold, draw_if_interactive 
     if ax is None:
-        ax=gca()
+        ax=matplotlib.pylab.gca()
 
     if nodelist is None:
         nodelist=G.nodes()
@@ -235,8 +225,7 @@ def draw_networkx_edges(G, pos,
                         edge_cmap=None,
                         edge_vmin=None,
                         edge_vmax=None, 
-                        ax=None,
-                        **kwds):
+                        ax=None):
     """Draw the edges of the graph G
 
     This draws only the edges of the graph G.
@@ -251,10 +240,8 @@ def draw_networkx_edges(G, pos,
     See draw_networkx for the list of other optional parameters.
 
     """
-    from matplotlib.pylab import gca, hold, draw_if_interactive 
-
     if ax is None:
-        ax=gca()
+        ax=matplotlib.pylab.gca()
 
     if edgelist is None:
         edgelist=G.edges()
@@ -371,8 +358,7 @@ def draw_networkx_labels(G, pos,
                          font_family='sans-serif',
                          font_weight='normal',
                          alpha=1.0,
-                         ax=None,
-                         **kwds):
+                         ax=None):
     """Draw node labels on the graph G
 
     pos is a dictionary keyed by vertex with a two-tuple
@@ -386,9 +372,8 @@ def draw_networkx_labels(G, pos,
     See draw_networkx for the list of other optional parameters.
 
     """
-    from matplotlib.pylab import gca, hold, draw_if_interactive 
     if ax is None:
-        ax=gca()
+        ax=matplotlib.pylab.gca()
 
     if labels is None:
         labels=dict(zip(G.nodes(),G.nodes()))
