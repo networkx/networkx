@@ -406,3 +406,14 @@ relabel
 >>> sorted(H.nodes())
 [65, 66, 67, 68]
 
+
+create_empty_copy
+-----------------
+>>> G=empty_graph()
+>>> G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
+>>> H=create_empty_copy(G)
+>>> sorted(H.nodes())
+['A', 'B', 'C', 'D']
+>>> H.edges()
+[]
+

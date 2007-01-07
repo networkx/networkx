@@ -69,7 +69,7 @@ def union(G,H,create_using=None,rename=False,**kwds):
     """
     newname=kwds.get("name", "union( %s, %s )"%(G.name,H.name) )
     if create_using is None:
-        R=create_empty_copy(G)
+       R=G.__class__()
     else:
         R=create_using
         R.clear()
@@ -192,7 +192,7 @@ def compose(G,H,create_using=None, **kwds):
     """
     newname= kwds.get("name", "compose( %s, %s )"%(G.name,H.name) )
     if create_using is None:
-        R=create_empty_copy(G)
+        R=G.__class__()
     else:
         R=create_using
         R.clear()
@@ -220,7 +220,7 @@ def complement(G,create_using=None, **kwds):
     """
     newname=kwds.get("name", "complement(%s)"%(G.name) )
     if create_using is None:
-        R=create_empty_copy(G)
+        R=G.__class__()
     else:
         R=create_using
         R.clear()
@@ -234,13 +234,12 @@ def complement(G,create_using=None, **kwds):
 
 
 def create_empty_copy(G):
-    """Return a new, empty graph-like object of the same type/class as G.
-
-    Works for Graph, DiGraph, XGraph, XDiGraph
+    """Return a copy of the graph G with all of the edges removed.
 
     """
-    H=subgraph(G,[])
-    H.name="No Name"
+    H=G.__class__()
+    H.name='empty '+G.name
+    H.add_nodes_from(G)
     return H
 
 
@@ -300,7 +299,8 @@ def relabel_nodes(G,mapping):
     Also see convert_node_labels_to_integers.
 
     """
-    H=create_empty_copy(G)
+#    H=create_empty_copy(G)
+    H=G.__class__()
     H.name="(%s)" % G.name
 
     if hasattr(mapping,"__getitem__"):   # if we are a dict
