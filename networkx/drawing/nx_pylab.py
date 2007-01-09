@@ -173,7 +173,8 @@ def draw_networkx_nodes(G, pos,
                         cmap=None,
                         vmin=None,
                         vmax=None, 
-                        ax=None):
+                        ax=None,
+                        **kwds):
     """Draw nodes of graph G
 
     This draws only the nodes of the graph G.
@@ -225,7 +226,8 @@ def draw_networkx_edges(G, pos,
                         edge_cmap=None,
                         edge_vmin=None,
                         edge_vmax=None, 
-                        ax=None):
+                        ax=None,
+                        **kwds):
     """Draw the edges of the graph G
 
     This draws only the edges of the graph G.
@@ -358,7 +360,8 @@ def draw_networkx_labels(G, pos,
                          font_family='sans-serif',
                          font_weight='normal',
                          alpha=1.0,
-                         ax=None):
+                         ax=None,
+                         **kwds):
     """Draw node labels on the graph G
 
     pos is a dictionary keyed by vertex with a two-tuple
