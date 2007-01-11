@@ -313,15 +313,15 @@ def is_valid_degree_sequence(deg_sequence):
 
 def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
     """ Attempt to create a valid degree sequence of length n using
-    specified function sfunction(n,kwds).
+    specified function sfunction(n,**kwds).
 
       - `n`: length of degree sequence = number of nodes
-      - `sfunction`: a function, called as "sfunction(n,kwds)",
+      - `sfunction`: a function, called as "sfunction(n,**kwds)",
          that returns a list of n real or integer values.
       - `max_tries`: max number of attempts at creating valid degree
          sequence.
 
-    Repeatedly create a degree sequence by calling sfunction(n,kwds)
+    Repeatedly create a degree sequence by calling sfunction(n,**kwds)
     until achieving a valid degree sequence. If unsuccessful after
     max_tries attempts, raise an exception.
     

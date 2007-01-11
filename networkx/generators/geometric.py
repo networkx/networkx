@@ -21,19 +21,17 @@ import random,sys
 #  Random Geometric Graphs
 #---------------------------------------------------------------------------
         
-def random_geometric_graph(n, radius, result=False, **kwds):
+def random_geometric_graph(n, radius, create_using=None, repel=0.0, verbose=False, dim=2):
     """Random geometric graph in the unit cube
 
     Returned Graph has added attribute G.pos which is a 
     dict keyed by node to the position tuple for the node.
     """
-    if result:    # if specific type of graph entered, return that type
-        G=result
+    if create_using is None:    
+        G=networkx.Graph()
     else:
-        G=networkx.Graph(**kwds)
-    repel=kwds.get("repel",0.0)
-    verbose=kwds.get("verbose",False)
-    dim=kwds.get("dim",2)
+        G=create_using
+        G.clear()
     G.name="Random Geometric Graph"
     G.add_nodes_from([v for v in range(n)])  # add n nodes
     # position them randomly in the unit cube in n dimensions

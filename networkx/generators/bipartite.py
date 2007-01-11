@@ -18,7 +18,7 @@ import networkx as NX
 def bipartite_configuration_model(aseq, bseq,
                                   create_using=None,
                                   seed=None,
-                                  **kwds):
+                                  ):
     """
     Return a random bipartite graph from two given degree sequences.
 
@@ -42,7 +42,7 @@ def bipartite_configuration_model(aseq, bseq,
     if create_using==None:
         create_using=NX.XGraph(multiedges=True)
 
-    G=NX.empty_graph(0,create_using,**kwds)
+    G=NX.empty_graph(0,create_using)
 
     if not seed is None:
         random.seed(seed)    
@@ -85,7 +85,7 @@ def bipartite_configuration_model(aseq, bseq,
 
 def bipartite_havel_hakimi_graph(aseq, bseq,
                                  create_using=None,
-                                 **kwds):
+                                 ):
     """
     Return a bipartite graph from two given degree sequences
     using a Havel-Hakimi style construction.
@@ -103,7 +103,7 @@ def bipartite_havel_hakimi_graph(aseq, bseq,
     if create_using==None:
         create_using=NX.XGraph(multiedges=True)
 
-    G=NX.empty_graph(0,create_using,**kwds)
+    G=NX.empty_graph(0,create_using)
 
     # length of the each sequence
     naseq=len(aseq)
@@ -143,7 +143,7 @@ def bipartite_havel_hakimi_graph(aseq, bseq,
 
 def bipartite_reverse_havel_hakimi_graph(aseq, bseq,
                                          create_using=None,
-                                         **kwds):
+                                         ):
     """
     Return a bipartite graph from two given degree sequences
     using a "reverse" Havel-Hakimi style construction.
@@ -161,7 +161,7 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq,
     if create_using==None:
         create_using=NX.XGraph(multiedges=True)
 
-    G=NX.empty_graph(0,create_using,**kwds)
+    G=NX.empty_graph(0,create_using)
 
 
     # length of the each sequence
@@ -202,7 +202,7 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq,
 
 def bipartite_alternating_havel_hakimi_graph(aseq, bseq,
                                             create_using=None,
-                                            **kwds):
+                                            ):
     """
     Return a bipartite graph from two given degree sequences
     using a alternating Havel-Hakimi style construction.
@@ -221,7 +221,7 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,
     if create_using==None:
         create_using=NX.XGraph(multiedges=True)
 
-    G=NX.empty_graph(0,create_using,**kwds)
+    G=NX.empty_graph(0,create_using)
 
     # length of the each sequence
     naseq=len(aseq)
@@ -263,7 +263,7 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,
 
 def bipartite_preferential_attachment_graph(aseq,p,
                                             create_using=None,
-                                            **kwds):
+                                            ):
     """
     Create a bipartite graph with a preferential attachment model
     from a given single "top" degree sequence.
@@ -293,7 +293,7 @@ def bipartite_preferential_attachment_graph(aseq,p,
     if create_using==None:
         create_using=NX.XGraph(multiedges=True)
 
-    G=NX.empty_graph(0,create_using,**kwds)
+    G=NX.empty_graph(0,create_using)
 
     if p > 1: 
         raise NX.NetworkXError, "probability %s > 1"%(p)
@@ -322,7 +322,7 @@ def bipartite_preferential_attachment_graph(aseq,p,
 
 def bipartite_random_regular_graph(d, n,
                                    create_using=None,
-                                   **kwds):
+                                   ):
     """
     UNTESTED:Generate a random bipartite graph of n nodes each with degree d.
 
@@ -361,7 +361,7 @@ def bipartite_random_regular_graph(d, n,
     if create_using==None:
         create_using=NX.XGraph(multiedges=True)
 
-    G=NX.empty_graph(0,create_using,**kwds)
+    G=NX.empty_graph(0,create_using)
 
     nodes=range(0,n)
     G.add_nodes_from(nodes)
@@ -391,7 +391,7 @@ def bipartite_random_regular_graph(d, n,
     return G
 
 
-def project(B,nodes,create_using=None,**kwds):
+def project(B,nodes,create_using=None):
     """
     Returns a graph that is the projection of the bipartite graph B
     onto the set of nodes given in list nodes.
@@ -405,7 +405,7 @@ def project(B,nodes,create_using=None,**kwds):
     if create_using==None:
         create_using=NX.Graph()
 
-    G=NX.empty_graph(0,create_using,**kwds)
+    G=NX.empty_graph(0,create_using)
 
     for v in nodes:
         G.add_node(v)

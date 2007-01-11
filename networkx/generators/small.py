@@ -19,7 +19,7 @@ import networkx
 #------------------------------------------------------------------------------
 def make_small_graph(graph_description, create_using=None):
     """
-    Return the small graph described by graph_description and kwds.
+    Return the small graph described by graph_description.
 
     graph_description is a list of the form [ltype,name,n,xlist]
 
@@ -45,7 +45,7 @@ def make_small_graph(graph_description, create_using=None):
  
     >>> G=make_small_graph(["edgelist","C_4",4,[[1,2],[3,4],[2,3],[4,1]]])
 
-    Other graph descriptors can be passed to Graph() using kwds
+    Use the create_using argument to choose the graph class/type. 
     """
     ltype=graph_description[0]
     name=graph_description[1]
