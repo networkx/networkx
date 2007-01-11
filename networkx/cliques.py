@@ -173,7 +173,7 @@ def _extend(old_nodes,num_not,num_left,G,clique,cliques):
             pos += 1
          v=cands[pos]
 
-def make_max_clique_graph(G,create_using=None,**kwds):
+def make_max_clique_graph(G,create_using=None,name=None):
     """ 
     Create the maximal clique graph of a graph.
     It finds the maximal cliques and treats these as nodes.
@@ -188,8 +188,11 @@ def make_max_clique_graph(G,create_using=None,**kwds):
     size=len(cliq)
     if create_using:
         B=create_using
+        B.clear()
     else:
-        B=networkx.Graph(**kwds)
+        B=networkx.Graph()
+    if name is not None:
+        B.name=name
 
     for i in range(1,size+1):
         B.add_node(i)
@@ -201,7 +204,7 @@ def make_max_clique_graph(G,create_using=None,**kwds):
                 B.add_edge(i,j)
     return B
 
-def make_clique_bipartite(G,fpos=None,create_using=None,**kwds):
+def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
     """ 
     Create a bipartite clique graph from a graph G.
     Nodes of G are retained as the "bottom nodes" of B and 
@@ -219,8 +222,12 @@ def make_clique_bipartite(G,fpos=None,create_using=None,**kwds):
     cliq=find_cliques(G)
     if create_using:
         B=create_using
+        B.clear()
     else:
-        B=networkx.Graph(**kwds)
+        B=networkx.Graph()
+    if name is not None:
+        B.name=name
+
     B.add_nodes_from(G)
     B.node_type={}   # New Attribute for B
     for n in B:
@@ -250,7 +257,7 @@ def make_clique_bipartite(G,fpos=None,create_using=None,**kwds):
                 ppos +=delta_ppos
     return B
    
-def project_down(B,create_using=None,**kwds):
+def project_down(B,create_using=None,name=None):
     """ 
     Project a bipartite graph B down onto its "Bottom Nodes".
     The nodes retain their names and are connected if they
@@ -259,8 +266,12 @@ def project_down(B,create_using=None,**kwds):
     """
     if create_using:
         G=create_using
+        G.clear()
     else:
-        G=networkx.Graph(**kwds)
+        G=networkx.Graph()
+    if name is not None:
+        G.name=name
+
     for v in B.nodes():
        if B.node_type[v]=="Bottom":
           G.add_node(v)
@@ -268,7 +279,7 @@ def project_down(B,create_using=None,**kwds):
              G.add_edges_from([(v,u) for u in B.neighbors(cv)])
     return G
  
-def project_up(B,create_using=None,**kwds):
+def project_up(B,create_using=None,name=None):
     """ 
     Project a bipartite graph B up onto its "Top Nodes".
     The nodes retain their names and are connected if they
@@ -277,8 +288,12 @@ def project_up(B,create_using=None,**kwds):
     """
     if create_using:
         G=create_using
+        G.clear()
     else:
-        G=networkx.Graph(**kwds)
+        G=networkx.Graph()
+    if name is not None:
+        G.name=name
+
     for v in B.nodes():
        if B.node_type[v]=="Top":
           vname= -v   #Change sign of name for Top Nodes

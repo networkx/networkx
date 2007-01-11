@@ -176,7 +176,7 @@ union and compose
 -----------------
 
 >>> R=DiGraph()
->>> G=union(G1,G2,result=R)
+>>> G=union(G1,G2,create_using=R)
 >>> H=compose(G1,G2)
 >>> sorted(G.edges())==sorted(H.edges())
 True

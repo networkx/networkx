@@ -86,7 +86,7 @@ def is_list_of_ints( intlist ):
 # some helpers for choosing random sequences from distributions
 # uses scipy: www.scipy.org
 
-def scipy_pareto_sequence(n,**kwds):
+def scipy_pareto_sequence(n,exponent=1.0):
     """
     Return sample sequence of length n from a Pareto distribution.
 
@@ -97,12 +97,11 @@ def scipy_pareto_sequence(n,**kwds):
         print "Import error: not able to import scipy"
         return
     random._inst = random.Random()
-    exponent=kwds.get("exponent",1.0)
     stats.seed(random.randint(1,2**30),random.randint(1,2**30))
     return stats.pareto(exponent,size=n)
 
 
-def scipy_powerlaw_sequence(n,**kwds):
+def scipy_powerlaw_sequence(n,exponent=2.0):
     """
     Return sample sequence of length n from a power law distribution.
 
@@ -113,12 +112,11 @@ def scipy_powerlaw_sequence(n,**kwds):
         print "Import error: not able to import scipy"
         return
     random._inst = random.Random()
-    exponent=kwds.get("exponent",2.0)
     stats.seed(random.randint(1,2**30),random.randint(1,2**30))
     return stats.pareto(exponent-1,size=n)
 
 
-def scipy_poisson_sequence(n,**kwds):
+def scipy_poisson_sequence(n,mu=1.0):
     """
     Return sample sequence of length n from a Poisson distribution.
 
@@ -129,7 +127,6 @@ def scipy_poisson_sequence(n,**kwds):
         print "Import error: not able to import scipy"
         return
     random._inst = random.Random()
-    mu=kwds.get("mu",1.0)
     stats.seed(random.randint(1,2**30),random.randint(1,2**30))
     return stats.poisson(mu,size=n)
 
@@ -147,7 +144,7 @@ def scipy_uniform_sequence(n):
     stats.seed(random.randint(1,2**30),random.randint(1,2**30))
     return stats.uniform(size=n)
 
-def scipy_discrete_sequence(n,**kwds):
+def scipy_discrete_sequence(n,distribution=False):
     """
     Return sample sequence of length n from a given discrete distribution
 
@@ -160,10 +157,10 @@ def scipy_discrete_sequence(n,**kwds):
         print "Import error: not able to import scipy"
         return
     import bisect
-    random._inst = random.Random()
-    p=kwds.get("distribution",False)
-    if p is False:
+    if not distribution:
         return "no distribution specified"
+    p=distribution
+    random._inst = random.Random()
 
     # make CDF out of distribution to use for sample
     cdf=[]
@@ -186,7 +183,7 @@ def scipy_discrete_sequence(n,**kwds):
 # note: gsl's default number generator is the same as Python's
 # (Mersenne Twister)
 
-def gsl_pareto_sequence(n,**kwds):
+def gsl_pareto_sequence(n,exponent=1.0,scale=1.0,seed=None):
     """
     Return sample sequence of length n from a Pareto distribution.
 
@@ -198,14 +195,13 @@ def gsl_pareto_sequence(n,**kwds):
         return
     rng=pygsl.rng.rng()
     random._inst = random.Random()
-    seed=kwds.get("seed",random.randint(1,2**32-1))
+    if seed is None:
+        seed=random.randint(1,2**32-1)
     rng.set(seed)
 
-    exponent=kwds.get("exponent",1.0)
-    scale=kwds.get("scale",1.0)
     return rng.pareto(exponent,scale,n)
 
-def gsl_powerlaw_sequence(n,**kwds):
+def gsl_powerlaw_sequence(n,exponent=2.0,scale=1.0,seed=None):
     """
     Return sample sequence of length n from a power law distribution.
 
@@ -217,14 +213,13 @@ def gsl_powerlaw_sequence(n,**kwds):
         return
     rng=pygsl.rng.rng()
     random._inst = random.Random()
-    seed=kwds.get("seed",random.randint(1,2**32-1))
+    if seed is None:
+        seed=random.randint(1,2**32-1)
     rng.set(seed)
 
-    exponent=kwds.get("exponent",2.0)
-    scale=kwds.get("scale",1.0)
     return rng.pareto(exponent-1,scale,n)
 
-def gsl_poisson_sequence(n,**kwds):
+def gsl_poisson_sequence(n,mu=1.0,seed=None):
     """
     Return sample sequence of length n from a Poisson distribution.
 
@@ -236,13 +231,13 @@ def gsl_poisson_sequence(n,**kwds):
         return
     rng=pygsl.rng.rng()
     random._inst = random.Random()
-    seed=kwds.get("seed",random.randint(1,2**32-1))
+    if seed is None:
+        seed=random.randint(1,2**32-1)
     rng.set(seed)
 
-    mu=kwds.get("mu",1.0)
     return rng.poisson(mu,n)
 
-def gsl_uniform_sequence(n,**kwds):
+def gsl_uniform_sequence(n,seed=None):
     """
     Return sample sequence of length n from a uniform distribution.
 
@@ -254,7 +249,8 @@ def gsl_uniform_sequence(n,**kwds):
         return
     rng=pygsl.rng.rng()
     random._inst = random.Random()
-    seed=kwds.get("seed",random.randint(1,2**32-1))
+    if seed is None:
+        seed=random.randint(1,2**32-1)
     rng.set(seed)
 
     return rng.uniform(n)
@@ -264,19 +260,17 @@ def gsl_uniform_sequence(n,**kwds):
 # uses Python's random module
 # http://www.python.org/doc/current/lib/module-random.html
 
-def pareto_sequence(n,**kwds):
+def pareto_sequence(n,exponent=1.0):
     """
     Return sample sequence of length n from a Pareto distribution.
     """
-    exponent=kwds.get("exponent",1.0)
     return [random.paretovariate(exponent) for i in xrange(n)]
 
 
-def powerlaw_sequence(n,**kwds):
+def powerlaw_sequence(n,exponent=2.0):
     """
     Return sample sequence of length n from a power law distribution.
     """
-    exponent=kwds.get("exponent",2.0)
     return [random.paretovariate(exponent-1) for i in xrange(n)]
 
 

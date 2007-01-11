@@ -44,7 +44,7 @@ def subgraph(G, nbunch, inplace=False, create_using=None):
     H = G.subgraph(nbunch, inplace, create_using)
     return H
                                                                                 
-def union(G,H,create_using=None,rename=False,**kwds):
+def union(G,H,create_using=None,rename=False,name=None):
     """ Return the union of graphs G and H.
     
     Graphs G and H must be disjoint, otherwise an exception is raised.
@@ -67,13 +67,14 @@ def union(G,H,create_using=None,rename=False,**kwds):
     Implemented for Graph, DiGraph, XGraph, XDiGraph.        
 
     """
-    newname=kwds.get("name", "union( %s, %s )"%(G.name,H.name) )
+    if name is None:
+        name="union( %s, %s )"%(G.name,H.name)
     if create_using is None:
        R=G.__class__()
     else:
         R=create_using
         R.clear()
-    R.name=newname
+    R.name=name
 
     # rename graph to obtain disjoint node labels
     # note that for objects w/o succinct __name__,
@@ -173,7 +174,7 @@ def cartesian_product(G,H):
     return Prod
 
 
-def compose(G,H,create_using=None, **kwds):
+def compose(G,H,create_using=None, name=None):
     """ Return a new graph of G composed with H.
     
     The node sets of G and H need not be disjoint.
@@ -190,13 +191,14 @@ def compose(G,H,create_using=None, **kwds):
     Implemented for Graph, DiGraph, XGraph, XDiGraph    
 
     """
-    newname= kwds.get("name", "compose( %s, %s )"%(G.name,H.name) )
+    if name is None:
+        name="compose( %s, %s )"%(G.name,H.name)
     if create_using is None:
         R=G.__class__()
     else:
         R=create_using
         R.clear()
-    R.name=newname
+    R.name=name
     R.add_nodes_from([v for v in G.nodes() ])
     R.add_edges_from(G.edges())
     R.add_nodes_from([v for v in H.nodes() ])
@@ -204,7 +206,7 @@ def compose(G,H,create_using=None, **kwds):
     return R
 
 
-def complement(G,create_using=None, **kwds):
+def complement(G,create_using=None,name=None):
     """ Return graph complement of G.
 
     Unless otherwise specified, return a new graph of the same type as
@@ -218,13 +220,14 @@ def complement(G,create_using=None, **kwds):
     objects that allow multiple edges or self-loops.
 
     """
-    newname=kwds.get("name", "complement(%s)"%(G.name) )
+    if name is None:
+        name="complement(%s)"%(G.name) 
     if create_using is None:
         R=G.__class__()
     else:
         R=create_using
         R.clear()
-    R.name=newname
+    R.name=name
     R.add_nodes_from([v for v in G.nodes() ])
     for v in G.nodes():
         for u in G.nodes():

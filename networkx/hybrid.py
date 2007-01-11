@@ -16,7 +16,7 @@ import copy
 import sets
 from networkx.path import shortest_path
 
-def kl_connected_subgraph(G,k,l,**kwds):
+def kl_connected_subgraph(G,k,l,low_memory=False,same_as_graph=False):
     """ Returns the maximum locally (k,l) connected subgraph of G.
 
         (k,l)-connected subgraphs are presented by Fan Chung and Li
@@ -28,8 +28,6 @@ def kl_connected_subgraph(G,k,l,**kwds):
         same_as_graph=True then return a tuple with subgraph and
         pflag for if G is kl-connected
     """
-    lowmem=kwds.get('low_memory',False)
-    same_as_graph=kwds.get('same_as_graph',False)
     H=copy.deepcopy(G)    # subgraph we construct by removing from G
     
     graphOK=True
@@ -39,7 +37,7 @@ def kl_connected_subgraph(G,k,l,**kwds):
         for edge in H.edges():
             (u,v)=edge
             ### Get copy of graph needed for this search
-            if lowmem:
+            if low_memory:
                 verts=sets.Set([u,v])
                 for i in range(k):
                     [verts.update(G.neighbors(w)) for w in verts.copy()]
@@ -73,14 +71,13 @@ def kl_connected_subgraph(G,k,l,**kwds):
         return (H,graphOK)
     return H
 
-def is_kl_connected(G,k,l,**kwds):
+def is_kl_connected(G,k,l,low_memory=False):
     """Returns True if G is kl connected """
-    lowmem=kwds.get('low_memory',False)
     graphOK=True
     for edge in G.edges():
         (u,v)=edge
         ### Get copy of graph needed for this search
-        if lowmem:
+        if low_memory:
             verts=sets.Set([u,v])
             for i in range(k):
                 [verts.update(G.neighbors(w)) for w in verts.copy()]
