@@ -41,6 +41,7 @@ try:
     from matplotlib.collections import LineCollection
     from matplotlib.numerix import sin, cos, pi, sqrt, arctan2, asarray
     from matplotlib.numerix.mlab import amin, amax, ravel
+    import matplotlib.pylab
 except ImportError:
     raise ImportError, "Import Error: not able to import matplotlib."
 
