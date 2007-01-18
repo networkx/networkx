@@ -22,7 +22,7 @@ Generators - Atlas
 >>> failures=[]
 >>> for i in range(GAGsize):
 ...    name=GAG[i].name
-...    if int(name[1:]) != i: failuresed_names.append(i)
+...    if int(name[1:]) != i: failures.append(i)
 >>> print failures
 []
 
