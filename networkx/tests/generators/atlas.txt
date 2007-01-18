@@ -5,8 +5,61 @@ Generators - Atlas
 >>> from networkx.generators.atlas import *
     
 >>> GAG=graph_atlas_g()
+>>> GAGsize=len(GAG)
+>>> G=GAG[0]
+>>> number_of_nodes(G)
+0
+>>> number_of_edges(G)
+0
+
 >>> G=GAG[7]
 >>> number_of_nodes(G)
 3
 >>> number_of_edges(G)
 3
+
+# check that GAG[137].name is 'G137', etc.
+>>> failures=[]
+>>> for i in range(GAGsize):
+...    name=GAG[i].name
+...    if int(name[1:]) != i: failuresed_names.append(i)
+>>> print failures
+[]
+
+# check for monotone increasing number of nodes
+>>> failures=[]
+>>> G_previous=GAG[0]
+>>> for i in range(1,GAGsize):
+...    G=GAG[i]
+...    if len(G)-len(G_previous) > 1: failures.append(i)
+...    G_previous=G.copy()
+>>> print failures
+[]
+
+# check for monotone increasing number of edges
+# (for fixed number of nodes)
+>>> failures=[]
+>>> G_previous=GAG[0]
+>>> for i in range(1,GAGsize):
+...    G=GAG[i]
+...    if len(G)==len(G_previous): 
+...       if G.size()-G_previous.size() > 1: failures.append(i)
+...    G_previous=G.copy()
+>>> print failures
+[]
+
+# check for monotone increasing degree sequence
+# (for fixed number f nodes and edges)
+# note that 111223 < 112222
+>>> failures=[]
+>>> G_previous=GAG[0]
+>>> for i in range(1,GAGsize):
+...    G=GAG[i]
+...    if len(G)==len(G_previous) & G.size()==G_previous.size():
+...       G_deg_seq=G.degree().sort()
+...       G_previous_deg_seq=G_previous.degree().sort() 
+...       if not G_previous_deg_seq < G_deg_seq: failures.append(i)
+...       G_previous=G.copy()
+>>> print failures
+[]
+

@@ -1,12 +1,15 @@
 """
 Generators for the small graph atlas.
 
+
 See
 "An Atlas of Graphs" by Ronald C. Read and Robin J. Wilson,
 Oxford University Press, 1998.
 
+Because of its size, this module is not imported by default.
+
 """
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004,2005,2006,2007 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -21,8 +24,8 @@ from networkx.generators.small import make_small_graph
 
 def graph_atlas_g():
     """
-    Return the list [G1,G2,...,G1252] of graphs as named in the Graph Atlas.
-    G1,...,G1252 are all graphs with up to 7 nodes.
+    Return the list [G0,G1,...,G1252] of graphs as named in the Graph Atlas.
+    G0,G1,...,G1252 are all graphs with up to 7 nodes.
 
     The graphs are listed:
       1. in increasing order of number of nodes;
@@ -36,6 +39,7 @@ def graph_atlas_g():
     Note that indexing is set up so that for
     GAG=graph_atlas_g(), then
     G123=GAG[123] and G[0]=empty_graph(0)
+
     """
 
     descr_list=[
