@@ -276,9 +276,7 @@ def from_numpy_matrix(A,create_using=None):
 
     nx,ny=A.shape
 
-    try:
-        nx==ny
-    except:
+    if nx!=ny:
         raise networkx.NetworkXError, \
               "Adjacency matrix is not square. nx,ny=%s",A.shape
 
