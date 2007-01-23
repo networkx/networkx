@@ -480,7 +480,7 @@ def floyd_warshall_array(graph):
     # A weight that's more than any path weight
     HUGE_VAL = 1
     for e in graph.edges():
-        HUGE_VAL += graph.get_edge(e[0],e[1])
+        HUGE_VAL += abs(graph.get_edge(e[0],e[1]))
 
     dist = {}
     dist_prev = {}
