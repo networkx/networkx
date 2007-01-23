@@ -16,9 +16,13 @@ import sys
 from networkx.utils import uniform_sequence
 
 try:
-    import numpy as N
-except ImportError:
-    raise ImportError,"numpy can not be imported."
+    import Numeric as N
+except:
+    try:
+        import numpy as N
+    except:
+        raise ImportError,"numpy and/or Numeric can not be imported."    
+
 
 def circular_layout(G, dim=2):
     """

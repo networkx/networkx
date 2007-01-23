@@ -32,7 +32,7 @@ __revision__ = "$Id"
 #    http://www.gnu.org/copyleft/lesser.html
 
 import networkx
-
+import sys
 
 try:
     import matplotlib
@@ -286,10 +286,13 @@ def draw_networkx_edges(G, pos,
                 edge_collection.set_clim(edge_vmin, edge_vmax)
             else:
                 edge_collection.autoscale()
-    else:
-        raise UserWarning(\
-            """matplotlib version >= 0.87.7 required for colormapped edges.
-        (version %s detected)."""%matplotlib.__version__)
+#    else:
+#        sys.stderr.write(\
+#            """matplotlib version >= 0.87.7 required for colormapped edges.
+#        (version %s detected)."""%matplotlib.__version__)
+#        raise UserWarning(\
+#            """matplotlib version >= 0.87.7 required for colormapped edges.
+#        (version %s detected)."""%matplotlib.__version__)
 
     arrow_collection=None
 
