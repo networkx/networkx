@@ -14,8 +14,10 @@ def all():
         tests+=[resource_filename(__name__, 'generators/'+t)
               for t in resource_listdir("networkx",'tests/generators') if t.endswith("txt")]
     except:
-        tests=glob.glob("*.txt") 
-        tests+=glob.glob("generators/*.txt")
+        import networkx
+        base=os.path.dirname(networkx.__file__)+"/tests/"
+        tests=glob.glob(base+"*.txt") 
+        tests+=glob.glob(base+"generators/*.txt")
         #tests+=glob.glob("drawing/*.txt")  
 
     # tests depending on numpy
