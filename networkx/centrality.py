@@ -62,7 +62,7 @@ def _node_betweenness(G,source,cutoff=False,normalized=True):
 
     """
     # get the predecessor and path length data
-    (pred,length)=_fast_predecessor(G,source,cutoff) 
+    (pred,length)=_fast_predecessor(G,source,cutoff=cutoff) 
 
     # order the nodes by path length
     onodes = [ (l,vert) for (vert,l) in length.items() ]
@@ -117,7 +117,7 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
     """
     between={}
     # get the predecessor data
-    (pred,length)=_fast_predecessor(G,source,cutoff) 
+    (pred,length)=_fast_predecessor(G,source,cutoff=cutoff) 
     # order the nodes by path length
     onodes = map(lambda k: (length[k], k), length.keys())
     onodes.sort()
