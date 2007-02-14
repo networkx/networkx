@@ -418,16 +418,19 @@ class Graph(object):
         return self.adj.has_key(u) and self.adj[u].has_key(v)
 
 
-    def get_edge(self, n1, n2):
+    def get_edge(self, u, v):
         """Return 1 if graph contains the edge u-v. 
         Raise an exception otherwise.
     
         """
         # useful for helping build adjacency matrix representation
-        if self.has_edge(n1,n2):
+        if v is None:
+            (u,v)=u
+
+        if self.has_edge(u,v):
             return 1
         else:
-            raise NetworkXError, "no edge (%s,%s) in graph"%(n1,n2)
+            raise NetworkXError, "no edge (%s,%s) in graph"%(u,v)
 
 
     def neighbors_iter(self,n):
