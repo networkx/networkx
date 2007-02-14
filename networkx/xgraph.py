@@ -251,18 +251,20 @@ class XGraph(Graph):
         for (u,v,d) in self.edges_iter(n):
             yield v
 
-    def get_edge(self, n1, n2):
-        """Return the objects associated with each edge between n1 and n2.
+    def get_edge(self, u, v):
+        """Return the objects associated with each edge between u and v.
 
         If multiedges=False, a single object is returned.
         If multiedges=True, a list of objects is returned.
         If no edge exists, raise an exception.
 
         """
+        if v is None:
+            (u,v)=u
         try:
-            result = self.adj[n1][n2]    # raises KeyError if edge not found
+            result = self.adj[u][v]    # raises KeyError if edge not found
         except KeyError:
-            raise NetworkXError, "no edge (%s,%s) in graph"%(n1,n2)
+            raise NetworkXError, "no edge (%s,%s) in graph"%(u,v)
         if self.multiedges:
             return result[:]   # return a copy so user can't mess up list
         return result
