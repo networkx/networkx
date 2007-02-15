@@ -53,7 +53,7 @@ def betweenness_centrality(G,v=False,cutoff=False,normalized=True):
 def _node_betweenness(G,source,cutoff=False,normalized=True):
     """See betweenness_centrality for what you probably want.
 
-    This is betweenness for a single node.
+    This is only betweenness of each node for paths from a single source.
     The fraction of number of shortests paths from source that go
     through each node.
 
