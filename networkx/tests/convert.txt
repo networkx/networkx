@@ -163,8 +163,7 @@ with multiedges and self loops
 
 >>> G=cycle_graph(10)
 >>> e=G.edges()
->>> source=[u for u,v in e]
->>> dest=[v for u,v in e]
+>>> source,dest = zip(*e)
 >>> ex=zip(source,dest,source)
 >>> XG=XGraph()
 >>> XG.add_edges_from(ex)
@@ -226,8 +225,24 @@ True
 Dict of dicts
 ~~~~~~~~~~~~~
 
-with multiedges, not OK
+with multiedges, OK
 
+>>> dod=to_dict_of_dicts(XGM)
+>>> GG=from_dict_of_dicts(dod,create_using=XGraph(multiedges=True))
+>>> sorted(XGM.nodes())==sorted(GG.nodes())
+True
+>>> sorted(XGM.edges())==sorted(GG.edges())
+True
+>>> GW=from_whatever(dod,create_using=XGraph(multiedges=True))
+>>> sorted(XGM.nodes())==sorted(GW.nodes())
+True
+>>> sorted(XGM.edges())==sorted(GW.edges())
+True
+>>> GI=XGraph(dod,multiedges=True)
+>>> sorted(XGM.nodes())==sorted(GI.nodes())
+True
+>>> sorted(XGM.edges())==sorted(GI.edges())
+True
 
 Dict of lists
 ~~~~~~~~~~~~~

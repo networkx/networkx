@@ -6,6 +6,15 @@ Convert
 >>> from networkx.generators.classic import barbell_graph,cycle_graph
 >>> import numpy
 
+Bad shape
+---------
+
+>>> A=numpy.array([[1,2,3],[4,5,6]])
+>>> from_numpy_matrix(A)
+Traceback (most recent call last):
+...
+NetworkXError: Adjacency matrix is not square. nx,ny=(2, 3)
+
 Simple Graphs
 --------------
 

@@ -274,7 +274,7 @@ def from_numpy_matrix(A,create_using=None):
 
     if nx!=ny:
         raise networkx.NetworkXError, \
-              "Adjacency matrix is not square. nx,ny=%s",A.shape
+              "Adjacency matrix is not square. nx,ny=%s"%(A.shape,)
 
     G.add_nodes_from(range(nx)) # make sure we get isolated nodes
 
@@ -371,7 +371,7 @@ def from_scipy_sparse_matrix(A,create_using=None):
 
     if nx!=ny:
         raise networkx.NetworkXError, \
-              "Adjacency matrix is not square. nx,ny=%s",A.shape
+              "Adjacency matrix is not square. nx,ny=%s"%(A.shape,)
 
 
     G.add_nodes_from(range(nx)) # make sure we get isolated nodes
