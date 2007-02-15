@@ -8,8 +8,7 @@ Create a 10 node random digraph
 >>> from networkx import *
 >>> import numpy
 >>> a=numpy.reshape(numpy.random.random_integers(0,1,size=100),(10,10))
->>> D=from_whatever(D,create_using=DiGraph()) # or D=DiGraph(a) 
-
+>>> D=from_whatever(a,create_using=DiGraph()) # or D=DiGraph(a) 
 
 For graphviz formats see networkx.drawing.nx_pygraphviz
 or networkx.drawing.nx_pydot.
@@ -26,7 +25,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 import networkx
 
-def prep_create_using(create_using):
+def _prep_create_using(create_using):
     """
     Returns a graph object ready to be populated.
 
@@ -139,7 +138,7 @@ def from_dict_of_lists(d,create_using=None):
     """Return a NetworkX graph G from a Python dict of lists.
 
     """
-    G=prep_create_using(create_using)
+    G=_prep_create_using(create_using)
 
     for node in d:
         for nbr in d[node]:
@@ -183,17 +182,21 @@ def from_dict_of_dicts(d,create_using=None):
     should be a list, though this routine does not check for that.
 
     """
-    G=prep_create_using(create_using)
+    G=_prep_create_using(create_using)
     G.add_nodes_from(d)
 
     # is this a XGraph or XDiGraph?
-    # FIXME  This is a bad way to check for whether edge data exists...
-    #        If someone ever creates WeightedGraph without multiedges, it won't work.
-    if hasattr(G,'allow_multiedges'):
+    # FIXME
+    # This is a bad way to check for whether edge data exists...
+    # If someone ever creates a graph class with edge data and
+    # without an allow_multiedges method, it won't work.
+    if hasattr(G,'allow_multiedges'): # assume edge data
         if G.multiedges:
+            # this is a NetworkX graph with multiedges=True
+            # make a copy of the list of edge data (but not the edge data)
             for u in d:
                 for v in d[u]:
-                    G.adj[u][v]=d[u][v][:]  # make a copy of the list of edge_data
+                    G.adj[u][v]=d[u][v][:] # copy of the edge_data list
         else:
             for u in d:
                 for v in d[u]:
@@ -268,7 +271,7 @@ def from_numpy_matrix(A,create_using=None):
         raise ImportError, \
               "Import Error: not able to import numpy: http://numpy.scipy.org "
 
-    G=prep_create_using(create_using)
+    G=_prep_create_using(create_using)
 
     nx,ny=A.shape
 
@@ -281,8 +284,10 @@ def from_numpy_matrix(A,create_using=None):
     # get a list of edges
     x,y=numpy.asarray(A).nonzero()         
     # is this a XGraph or XDiGraph?
-    # FIXME  This is a bad way to check for whether edge data exists...
-    #        If someone ever creates WeightedGraph without multiedges, it won't work.
+    # FIXME
+    # This is a bad way to check for whether edge data exists...
+    # If someone ever creates a graph class with edge data and
+    # without an allow_multiedges method, it won't work.
     if hasattr(G,'allow_multiedges'):
         for (u,v) in zip(x,y):        
             G.add_edge(u,v,A[u,v])
@@ -355,17 +360,19 @@ def from_scipy_sparse_matrix(A,create_using=None):
     >>> G=from_scipy_sparse_matrix(A)
 
     """
-    G=prep_create_using(create_using)
+    G=_prep_create_using(create_using)
 
     # is this a XGraph or XDiGraph?
-    # FIXME  This is a bad way to check for whether edge data exists...
-    #        If someone ever creates WeightedGraph without multiedges, it won't work.
+    # FIXME
+    # This is a bad way to check for whether edge data exists...
+    # If someone ever creates a graph class with edge data and
+    # without an allow_multiedges method, it won't work.
     if hasattr(G,'allow_multiedges'):
         xgraph=True
     else:
         xgraph=False
 
-    # convert everythin to coo - not the most efficient        
+    # convert everything to coo - not the most efficient        
     AA=A.tocoo()
     nx,ny=AA.shape
 
