@@ -91,7 +91,7 @@ obtained through methods as well as functions.  These are::
  - G.edges(): a list of 2-tuples specifying edges of G.
  - G.edges_iter(): an iterator over the edges (as 2-tuples) of G.
  - G.has_edge(u,v): check if edge (u,v) in G (returns True or False).
- - G.neighbors(v): list of the neighbors of node v.
+ - G.neighbors(v): list of the neighbors of node v (outgoing if directed).
  - G.neighbors_iter(v): an iterator over the neighbors of node v.
  - G.degree(): list of the degree of each node.
  - G.degree_iter(): an iterator over the degrees of the nodes in G.

@@ -572,10 +572,10 @@ methods to those of Graph:
     - out_edges_iter
     - in_edges
     - in_edges_iter
-    - successors=in_neighbors=neighbors
-    - successors_iter=in_neighbors_iter=neighbors_iter
-    - predecessors=out_neighbors
-    - predecessors_iter=out_neighbors_iter
+    - successors=out_neighbors=neighbors
+    - successors_iter=out_neighbors_iter=neighbors_iter
+    - predecessors=in_neighbors
+    - predecessors_iter=in_neighbors_iter
     - out_degree
     - out_degree_iter
     - in_degree
