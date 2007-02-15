@@ -26,6 +26,26 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 import networkx
 
+def prep_create_using(create_using):
+    """
+    Returns a graph object ready to be populated.
+
+    If create_using is None return the default (just networkx.Graph())
+    If create_using.clear() works, assume it returns a graph object.
+    Otherwise raise an exception because create_using is not a networkx graph.
+
+    """
+    if create_using is None:
+        G=networkx.Graph()
+    else:
+        try:
+            G=create_using
+            G.clear()
+        except:
+            raise TypeError("Input graph is not a networkx graph type")
+    return G
+
+
 def from_whatever(thing,create_using=None):
     """Attempt to make a NetworkX graph from an known type.
 
@@ -108,16 +128,9 @@ def to_dict_of_lists(G,nodelist=None):
 
     """
     if nodelist is None:
-        nodelist=G.nodes()
-
-    # is this a XGraph or XDiGraph?
-    if hasattr(G,'allow_multiedges')==True:
-        xgraph=True
-    else:
-        xgraph=False
+        nodelist=G
 
     d = {}
-
     for n in nodelist:
         d[n]=G.neighbors(n)
     return d            
@@ -126,14 +139,7 @@ def from_dict_of_lists(d,create_using=None):
     """Return a NetworkX graph G from a Python dict of lists.
 
     """
-    if create_using is None:
-        G=networkx.Graph()
-    else:
-        try:
-            G=create_using
-            G.clear()
-        except:
-            raise TypeError("Input graph is not a networkx graph type")
+    G=prep_create_using(create_using)
 
     for node in d:
         for nbr in d[node]:
@@ -170,30 +176,33 @@ def to_dict_of_dicts(G,nodelist=None,edge_data=None):
 def from_dict_of_dicts(d,create_using=None):
     """Return a NetworkX graph G from a Python dictionary of dictionaries.
 
+    The value of the inner dict becomes the edge_data for the NetworkX graph
+    EVEN if create_using is a NetworkX Graph which doesn't ever use this data.
+
+    If create_using is an XGraph/XDiGraph with multiedges==True, the edge_data
+    should be a list, though this routine does not check for that.
+
     """
-    if create_using is None:
-        G=networkx.Graph()
-    else:
-        try:
-            G=create_using
-            G.clear()
-        except:
-            raise TypeError("Input graph is not a networkx graph type")
+    G=prep_create_using(create_using)
+    G.add_nodes_from(d)
 
     # is this a XGraph or XDiGraph?
-    if hasattr(G,'allow_multiedges')==True:
-        xgraph=True
-    else:
-        xgraph=False
+    # FIXME  This is a bad way to check for whether edge data exists...
+    #        If someone ever creates WeightedGraph without multiedges, it won't work.
+    if hasattr(G,'allow_multiedges'):
+        if G.multiedges:
+            for u in d:
+                for v in d[u]:
+                    G.adj[u][v]=d[u][v][:]  # make a copy of the list of edge_data
+        else:
+            for u in d:
+                for v in d[u]:
+                    G.adj[u][v]=d[u][v]
+    else: # no edge data
+        for u in d:
+            for v in d[u]:
+                G.adj[u][v]=None
 
-    for u in d:
-        for v in d[u]:
-            if xgraph:
-                G.add_edge((u,v,d[u][v]))
-            else:
-                G.add_edge(u,v)
-
-    G.add_nodes_from(d.keys())        
     return G                         
 
 
@@ -224,7 +233,7 @@ def to_numpy_matrix(G,nodelist=None):
               "Import Error: not able to import numpy: http://numpy.scipy.org "
 
     if hasattr(G,"multiedges"):
-        if G.multiedges==True:
+        if G.multiedges:
             raise TypeError, \
                   "Conversion to numpy_matrix not allowed with for graphs with multiedges."
 
@@ -259,20 +268,7 @@ def from_numpy_matrix(A,create_using=None):
         raise ImportError, \
               "Import Error: not able to import numpy: http://numpy.scipy.org "
 
-    if create_using is None:
-        G=networkx.Graph()
-    else:
-        try:
-            G=create_using
-            G.clear()
-        except:
-            raise TypeError("Input graph is not a networkx graph type")
-
-    # is this a XGraph or XDiGraph?
-    if hasattr(G,'allow_multiedges')==True:
-        xgraph=True
-    else:
-        xgraph=False
+    G=prep_create_using(create_using)
 
     nx,ny=A.shape
 
@@ -282,11 +278,16 @@ def from_numpy_matrix(A,create_using=None):
 
     G.add_nodes_from(range(nx)) # make sure we get isolated nodes
 
+    # get a list of edges
     x,y=numpy.asarray(A).nonzero()         
-    for (u,v) in zip(x,y):        
-        if xgraph:
+    # is this a XGraph or XDiGraph?
+    # FIXME  This is a bad way to check for whether edge data exists...
+    #        If someone ever creates WeightedGraph without multiedges, it won't work.
+    if hasattr(G,'allow_multiedges'):
+        for (u,v) in zip(x,y):        
             G.add_edge(u,v,A[u,v])
-        else:
+    else:
+        for (u,v) in zip(x,y):        
             G.add_edge(u,v)                
     return G
 
@@ -324,7 +325,7 @@ def to_scipy_sparse_matrix(G,nodelist=None):
               see http://scipy.org""" 
 
     if hasattr(G,"multiedges"):
-        if G.multiedges==True:
+        if G.multiedges:
             raise TypeError, \
                   "Conversion to scipy_sparse_matrix not allowed with for graphs with multiedges."
 
@@ -354,17 +355,12 @@ def from_scipy_sparse_matrix(A,create_using=None):
     >>> G=from_scipy_sparse_matrix(A)
 
     """
-    if create_using is None:
-        G=networkx.Graph()
-    else:
-        try:
-            G=create_using
-            G.clear()
-        except:
-            raise TypeError("Input graph is not a networkx graph type")
+    G=prep_create_using(create_using)
 
     # is this a XGraph or XDiGraph?
-    if hasattr(G,'allow_multiedges')==True:
+    # FIXME  This is a bad way to check for whether edge data exists...
+    #        If someone ever creates WeightedGraph without multiedges, it won't work.
+    if hasattr(G,'allow_multiedges'):
         xgraph=True
     else:
         xgraph=False
@@ -372,9 +368,8 @@ def from_scipy_sparse_matrix(A,create_using=None):
     # convert everythin to coo - not the most efficient        
     AA=A.tocoo()
     nx,ny=AA.shape
-    try:
-        nx==ny
-    except:
+
+    if nx!=ny:
         raise networkx.NetworkXError, \
               "Adjacency matrix is not square. nx,ny=%s",A.shape
 
