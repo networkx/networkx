@@ -139,11 +139,22 @@ def from_dict_of_lists(d,create_using=None):
 
     """
     G=_prep_create_using(create_using)
+    G.add_nodes_from(d)        
 
-    for node in d:
-        for nbr in d[node]:
-            G.add_edge(node,nbr)
-    G.add_nodes_from(d.keys())        
+    if hasattr(G,"allow_multiedges") and G.multiedges and not G.is_directed():
+        # a dict_of_lists can't show multiedges.  BUT for undirected graphs,
+        # each edge shows up twice in the dict_of_lists.  
+        # So we need to treat this case separately.
+        seen={}
+        for node in d:
+            for nbr in d[node]:
+                if (node,nbr) not in seen:
+                    G.add_edge(node,nbr)
+                    seen[(nbr,node)]=1  # don't allow reverse edge to show up 
+    else:
+        for node in d:
+            for nbr in d[node]:
+                G.add_edge(node,nbr)
     return G                         
 
 

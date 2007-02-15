@@ -248,6 +248,23 @@ Dict of lists
 ~~~~~~~~~~~~~
 with multiedges, OK, but better write as DiGraph else you'll get double edges
 
+>>> dol=to_dict_of_lists(G)
+>>> GG=from_dict_of_lists(dol,create_using=XGraph(multiedges=True))
+>>> sorted(G.nodes())==sorted(GG.nodes())
+True
+>>> sorted(G.edges())==sorted([ e[:2] for e in GG.edges()])
+True
+>>> GW=from_whatever(dol,create_using=XGraph(multiedges=True))
+>>> sorted(G.nodes())==sorted(GW.nodes())
+True
+>>> sorted(G.edges())==sorted([ e[:2] for e in GW.edges()])
+True
+>>> GI=XGraph(dol,multiedges=True)
+>>> sorted(G.nodes())==sorted(GI.nodes())
+True
+>>> sorted(G.edges())==sorted([ e[:2] for e in GI.edges()])
+True
+
 
 
 
