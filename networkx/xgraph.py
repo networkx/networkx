@@ -252,7 +252,7 @@ class XGraph(Graph):
             yield v
 
     def get_edge(self, u, v):
-        """Return the objects associated with each edge between u and v.
+        """Return the objects associated with each edge from node u to node v.
 
         If multiedges=False, a single object is returned.
         If multiedges=True, a list of objects is returned.
