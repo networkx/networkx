@@ -430,20 +430,13 @@ def single_source_dijkstra(G,source,target=None):
     seen = {source:0} 
     fringe=[] # use heapq with (distance,label) tuples 
     heapq.heappush(fringe,(0,source))
-    if not G.is_directed():  G.successors=G.neighbors
-    # if unweighted graph, set the weights to 1 on edges by
-    # introducing a get_edge method
-    # NB: for the weighted graphs (XGraph,XDiGraph), the data
-    # on the edge (returned by get_edge) must be numerical
-    if not hasattr(G,"get_edge"): G.get_edge=lambda x,y:1
-
     while fringe:
         (d,v)=heapq.heappop(fringe)
         if v in dist: continue # already searched this node.
         dist[v] = seen[v]
         if v == target: break
             
-        for w in G.successors(v):
+        for w in G.neighbors(v):
             vw_dist = dist[v] + G.get_edge(v,w)
             if w in dist:
                 if vw_dist < dist[w]:
