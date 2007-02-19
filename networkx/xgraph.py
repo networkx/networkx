@@ -251,23 +251,37 @@ class XGraph(Graph):
         for (u,v,d) in self.edges_iter(n):
             yield v
 
-    def get_edge(self, u, v):
-        """Return the objects associated with each edge from node u to node v.
-
-        If multiedges=False, a single object is returned.
-        If multiedges=True, a list of objects is returned.
-        If no edge exists, raise an exception.
+    def get_edge_iter(self, u, v):
+        """Return an iterator over the objects associated with each edge
+        from node u to node v.
 
         """
         if v is None:
             (u,v)=u
         try:
             result = self.adj[u][v]    # raises KeyError if edge not found
+            if self.multiedges:
+                for data in result:
+                    yield data
+            else:
+                yield result
         except KeyError:
-            raise NetworkXError, "no edge (%s,%s) in graph"%(u,v)
+            pass
+
+    def get_edge(self, u, v):
+        """Return the objects associated with each edge from node u to node v.
+
+        If multiedges=False, a single object is returned.
+        If multiedges=True, a list of objects is returned.
+        If no edge exists, None is returned.
+
+        """
+        edge_data=list(self.get_edge_iter(u,v))
         if self.multiedges:
-            return result[:]   # return a copy so user can't mess up list
-        return result
+            return edge_data
+        else:
+            return edge_data[0]
+            
             
     def edges_iter(self, nbunch=None):
         """Return iterator that iterates once over each edge adjacent

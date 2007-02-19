@@ -261,22 +261,36 @@ class XDiGraph(DiGraph):
                 self.pred[n1].has_key(n2))    
     
 
-    def get_edge(self, n1, n2):
-        """Return the objects associated with each edge between n1 and n2.
+    def get_edge_iter(self, u, v):
+        """Return an iterator over the objects associated with each edge
+        from node u to node v.
+
+        """
+        if v is None:
+            (u,v)=u
+        try:
+            result = self.adj[u][v]    # raises KeyError if edge not found
+            if self.multiedges:
+                for data in result:
+                    yield data
+            else:
+                yield result
+        except KeyError:
+            pass
+
+    def get_edge(self, u, v):
+        """Return the objects associated with each edge from node u to node v.
 
         If multiedges=False, a single object is returned.
         If multiedges=True, a list of objects is returned.
-        If no edge exists, raise an exception.
+        If no edge exists, None is returned.
 
         """
-        try:
-            result = self.adj[n1][n2]    # raises KeyError if edge not found
-        except KeyError:
-            raise NetworkXError, "no edge (%s,%s) in graph"%(n1,n2)
+        edge_data=list(self.get_edge_iter(u,v))
         if self.multiedges:
-            return result[:]   # return a copy so user can't mess up list
-        return result
-
+            return edge_data
+        else:
+            return edge_data[0]
 
     def delete_multiedge(self, n1, n2):
         """ Delete all edges between nodes n1 and n2.

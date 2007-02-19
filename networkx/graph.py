@@ -430,8 +430,7 @@ class Graph(object):
         if self.has_edge(u,v):
             return 1
         else:
-            raise NetworkXError, "no edge (%s,%s) in graph"%(u,v)
-
+            return None
 
 
 
