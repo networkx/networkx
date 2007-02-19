@@ -34,13 +34,17 @@ def betweenness_centrality(G,v=False,cutoff=False,normalized=True):
     if v:   # only one node
         betweenness=0
         for source in G.nodes(): 
-            ubetween=_node_betweenness(G,source,cutoff=cutoff,normalized=normalized )
+            ubetween=_node_betweenness(G,source,
+                                       cutoff=cutoff,
+                                       normalized=normalized)
             betweenness+=ubetween[v]
         return betweenness
     else:
         betweenness={}.fromkeys(G.nodes(),0) 
         for source in betweenness: 
-            ubetween=_node_betweenness(G,source,cutoff=cutoff,normalized=False)
+            ubetween=_node_betweenness(G,source,
+                                       cutoff=cutoff,
+                                       normalized=False)
             for vk in ubetween:
                 betweenness[vk]+=ubetween[vk]
         if normalized:
@@ -62,7 +66,9 @@ def _node_betweenness(G,source,cutoff=False,normalized=True):
 
     """
     # get the predecessor and path length data
-    (pred,length)=_fast_predecessor(G,source,cutoff=cutoff) 
+#    (pred,length)=_fast_predecessor(G,source,cutoff=cutoff,seen=True) 
+    from networkx.path import predecessor
+    (pred,length)=predecessor(G,source,cutoff=cutoff,return_seen=True) 
 
     # order the nodes by path length
     onodes = [ (l,vert) for (vert,l) in length.items() ]
@@ -78,8 +84,8 @@ def _node_betweenness(G,source,cutoff=False,normalized=True):
         if (pred.has_key(v)):
             num_paths=len(pred[v])   # Discount betweenness if more than 
             for x in pred[v]:        # one shortest path.
-                if x==source:        # stop if hit source because all remaining v  
-                    break            #  also have pred[v]==[source]
+                if x==source:   # stop if hit source because all remaining v  
+                    break       #  also have pred[v]==[source]
                 between[x]+=between[v]/num_paths
     for v in between:
         between[v]-=1
@@ -140,40 +146,6 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
                         between[(x,w)]+=between[(w,v)]/num_paths
     return between
 
-
-
-def _fast_predecessor(G,source,target=False,cutoff=False):
-    """
-    Helper for betweenness.
-
-    Returns dict of predecessors and shortest path lengths.
-    Cutoff is a limit on the number of hops traversed.
-    """
-    level=0                  # the current level
-    nextlevel=[source]       # list of nodes to check at next level
-    seen={source:level}      # level (number of hops) when seen in BFS
-    pred={source:[]}         # predecessor hash
-    while nextlevel:
-        level=level+1
-        thislevel=nextlevel
-        nextlevel=[]
-        for v in thislevel:
-            for w in G.neighbors(v):
-                if (not seen.has_key(w)): 
-                    pred[w]=[v]
-                    seen[w]=level
-                    nextlevel.append(w)
-                elif (seen[w]==level):# add v to predecessor list if it 
-                    pred[w].append(v) # is at the correct level
-        if (cutoff and cutoff <= level):
-            break
-
-    if target:
-        if not pred.has_key(target): return ([],-1)  # No predecessor
-        return (pred[target],seen[target])
-    else:
-        return (pred,seen) 
-
 def degree_centrality(G,v=False):
     """
     Degree centrality for nodes (fraction of nodes connected to).
@@ -223,6 +195,8 @@ def _test_suite():
     import doctest
     suite = doctest.DocFileSuite('tests/centrality.txt',package='networkx')
     return suite
+
+
 
 
 if __name__ == "__main__":

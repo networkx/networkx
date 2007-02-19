@@ -573,7 +573,7 @@ def floyd_warshall(G,huge=1e30000):
     return dist,pred
 
 
-def predecessor(G,source,target=False,cutoff=False):
+def predecessor(G,source,target=False,cutoff=False,return_seen=False):
     """ Returns dictionary of predecessors for the path from source to all
     nodes in G.  
 
@@ -609,10 +609,18 @@ def predecessor(G,source,target=False,cutoff=False):
             break
 
     if target:
-        if not pred.has_key(target): return ([],-1)  # No predecessor
-        return pred[target]
+        if return_seen:
+            if not pred.has_key(target): return ([],-1)  # No predecessor
+            return (pred[target],seen[target])
+        else:
+            if not pred.has_key(target): return []  # No predecessor
+            return pred[target]
     else:
-        return pred
+        if return_seen:
+            return (pred,seen)
+        else:
+            return pred
+
 
 
 def bfs(G,source):
