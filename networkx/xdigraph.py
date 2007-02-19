@@ -734,6 +734,36 @@ class XDiGraph(DiGraph):
         H.add_edges_from( [ (v,u,d) for (u,v,d) in self.edges_iter() ] )
         return H
 
+    def number_of_edges(self, u=None, v=None, x=None):
+        """Return the number of edges between nodes u and v.
+
+        If u and v are not specified return the number of edges in the
+        entire graph.
+
+        The edge argument e=(u,v) can be specified as 
+        G.number_of_edges(u,v) or G.number_of_edges(e)
+
+        """
+        if u is None: return self.size()
+        if v is None:
+            if len(u)==3: # e=(u,v,x)
+                (u,v,x)=u
+            else: # assume e=(u,v), x=None
+                (u,v)=u
+                
+        if self.has_edge(u,v,x):
+            if self.multiedges:
+                if x is None: # return all edges
+                    return len(self.get_edge(u,v))
+                else: # only edges matching (u,v,x)
+                    return len([d for d in self.get_edge(u,v) if d is x])
+            else:
+                return 1
+        else:
+            return 0
+
+   
+
         
 def _test_suite():
     import doctest

@@ -878,3 +878,25 @@ Test for no error when nbunch has node not in G.nodes()
 >>> H=K5.subgraph([9])
 >>> is_isomorphic(H,null_graph())
 True
+
+
+number_of_edges
+---------------
+
+>>> X=XDiGraph()
+>>> X.add_edge(1,2,'a')
+>>> X.add_edge(1,3,'a')
+>>> X.number_of_edges()
+2
+>>> X.number_of_edges(1,2)
+1
+>>> X.number_of_edges((1,2))
+1
+>>> X.number_of_edges(1,2,'a')
+1
+>>> X.number_of_edges((1,2,'a'))
+1
+>>> X.number_of_edges(1,2,'b')
+0
+>>> X.number_of_edges(1,4)
+0

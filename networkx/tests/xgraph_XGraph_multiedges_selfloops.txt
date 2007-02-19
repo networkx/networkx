@@ -783,3 +783,30 @@ ban_selfloops, clear
 >>> K.clear()
 >>> number_of_nodes(K)
 0
+
+
+number_of_edges
+---------------
+
+>>> X=XDiGraph(multiedges=True,selfloops=True)
+>>> X.add_edge(1,1,'a')
+>>> X.add_edge(1,1,'a')
+>>> X.add_edge(1,1,'b')
+>>> X.add_edge(1,2,'aa')
+>>> X.add_edge(1,3)
+>>> X.number_of_edges()
+5
+>>> X.number_of_edges(1,1)
+3
+>>> X.number_of_edges((1,1))
+3
+>>> X.number_of_edges(1,1,'a')
+2
+>>> X.number_of_edges((1,1,'a'))
+2
+>>> X.number_of_edges(1,1,'b')
+1
+>>> X.number_of_edges(1,2)
+1
+>>> X.number_of_edges(1,4)
+0

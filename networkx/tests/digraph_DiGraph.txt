@@ -440,6 +440,13 @@ with_labels=True always return a dict
 7
 >>> G.size()
 5
+>>> G.number_of_edges()
+5
+>>> G.number_of_edges('A','B')
+1
+>>> G.number_of_edges('A','D')
+0
+
 
 
 Operations

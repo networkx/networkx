@@ -433,6 +433,8 @@ class Graph(object):
             raise NetworkXError, "no edge (%s,%s) in graph"%(u,v)
 
 
+
+
     def neighbors_iter(self,n):
          """Return an iterator over all neighbors of node n.  """
          try:
@@ -736,10 +738,22 @@ class Graph(object):
         """Return the size of a graph = number of edges. """
         return sum(self.degree_iter())/2
 
-    def number_of_edges(self):
-        """Return the size of a graph = number of edges. """
-        return sum(self.degree_iter())/2
+    def number_of_edges(self, u=None, v=None):
+        """Return the number of edges between nodes u and v.
 
+        If u and v are not specified return the number of edges in the
+        entire graph.
+
+        The edge argument e=(u,v) can be specified as 
+        G.number_of_edges(u,v) or G.number_of_edges(e)
+
+        """
+        if u is None: return self.size()
+        if v is None: (u,v)=u
+        if self.has_edge(u,v):
+            return 1
+        else:
+            return 0
 
 def _test_suite():
     import doctest
