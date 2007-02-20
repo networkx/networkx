@@ -49,8 +49,8 @@ def brandes_betweenness_centrality(G,nbunch=None):
             for v in P[w]:
                 delta[v]=delta[v]+\
                           (float(sigma[v])/float(sigma[w]))*(1.0+delta[w])
-                if w != s:
-                    betweenness[w]=betweenness[w]+delta[w]
+            if w != s:
+                betweenness[w]=betweenness[w]+delta[w]
                     
     # FIXME: divide by 2 for undirected graphs?
     return betweenness            
