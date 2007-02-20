@@ -212,6 +212,27 @@ Predecessor
 >>> sorted(NX.predecessor(G,(0,0)).items())
 [((0, 0), []), ((0, 1), [(0, 0)]), ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])]
 
+Dijkstra Predecessor
+--------------------
+
+>>> G=NX.path_graph(4)
+>>> NX.dijkstra_predecessor_and_distance(G,0)
+({0: [], 1: [0], 2: [1], 3: [2]}, {0: 0, 1: 1, 2: 2, 3: 3})
+>>> G=NX.grid_2d_graph(2,2)
+>>> pred,dist=NX.dijkstra_predecessor_and_distance(G,(0,0))
+>>> sorted(pred.items())
+[((0, 0), []), ((0, 1), [(0, 0)]), ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])]
+>>> sorted(dist.items())
+[((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)]
+
+>>> XG=NX.XDiGraph()
+>>> XG.add_edges_from([('s','u',10) ,('s','x',5) ,('u','v',1) ,('u','x',2) ,('v','y',1) ,('x','u',3) ,('x','v',5) ,('x','y',2) ,('y','s',7) ,('y','v',6)])
+>>> (P,D)= NX.dijkstra_predecessor_and_distance(XG,'s')
+>>> P['v']
+['u']
+>>> D['v']
+9
+
 BFS
 ---
 

@@ -84,6 +84,24 @@ Closeness Centrality
 1 1.0
 2 0.0
 
+Weighted Betweenness
+--------------------
+
+>>> XG=XDiGraph()
+>>> XG.add_edges_from([('s','u',10) ,('s','x',5) ,('u','v',1) ,('u','x',2) ,('v','y',1) ,('x','u',3) ,('x','v',5) ,('x','y',2) ,('y','s',7) ,('y','v',6)])
+>>> b=betweenness_centrality(XG,'s',weighted_edges=True)
+>>> print "%s"%b
+0.333333333333
+>>> b=betweenness_centrality(XG,weighted_edges=True,normalized=False)
+>>> for v,bb in b.items():
+...     print "%s %s"%(v,bb)
+y 5.0
+x 5.0
+s 4.0
+u 2.0
+v 2.0
+
+
 
 Edge Betweenness
 ----------------

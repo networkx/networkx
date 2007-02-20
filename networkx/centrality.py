@@ -13,6 +13,7 @@ __date__ = "$Date: 2005-07-06 08:02:28 -0600 (Wed, 06 Jul 2005) $"
 __credits__ = """"""
 __revision__ = "$Revision: 1064 $"
 
+from networkx.path import dijkstra_predecessor_and_distance, predecessor
 
 def brandes_betweenness_centrality(G,nbunch=None):
 # directly from
@@ -57,7 +58,7 @@ def brandes_betweenness_centrality(G,nbunch=None):
 
 
 
-def betweenness_centrality(G,v=False,cutoff=False,normalized=True):
+def betweenness_centrality(G,v=None,cutoff=None,normalized=True,weighted_edges=None):
     """Betweenness centrality for nodes.
     The fraction of number of shortests paths that go
     through each node.
@@ -74,21 +75,24 @@ def betweenness_centrality(G,v=False,cutoff=False,normalized=True):
        Faster Evaluation of Shortest-Path Based Centrality Indices, 2003,
        available at http://citeseer.nj.nec.com/brandes00faster.html
     
+    If weighted_edges is True then use Dijkstra for finding shortest paths.
     """
-    if v:   # only one node
+    if v is not None:   # only one node
         betweenness=0
-        for source in G.nodes(): 
+        for source in G: 
             ubetween=_node_betweenness(G,source,
                                        cutoff=cutoff,
-                                       normalized=normalized)
+                                       normalized=normalized,
+                                       weighted_edges=weighted_edges)
             betweenness+=ubetween[v]
         return betweenness
     else:
-        betweenness={}.fromkeys(G.nodes(),0) 
+        betweenness={}.fromkeys(G,0) 
         for source in betweenness: 
             ubetween=_node_betweenness(G,source,
                                        cutoff=cutoff,
-                                       normalized=False)
+                                       normalized=False,
+                                       weighted_edges=weighted_edges)
             for vk in ubetween:
                 betweenness[vk]+=ubetween[vk]
         if normalized:
@@ -98,7 +102,7 @@ def betweenness_centrality(G,v=False,cutoff=False,normalized=True):
                 betweenness[v] *= scale
         return betweenness  # all nodes
 
-def _node_betweenness(G,source,cutoff=False,normalized=True):
+def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=None):
     """See betweenness_centrality for what you probably want.
 
     This is only betweenness of each node for paths from a single source.
@@ -108,11 +112,15 @@ def _node_betweenness(G,source,cutoff=False,normalized=True):
     To get the betweenness for a node you need to do all-pairs
     shortest paths.  
 
+    If weighted_edges is True then use Dijkstra for finding shortest paths.
+    In this case a cutoff is not implemented and so ignored.
+
     """
     # get the predecessor and path length data
-#    (pred,length)=_fast_predecessor(G,source,cutoff=cutoff,seen=True) 
-    from networkx.path import predecessor
-    (pred,length)=predecessor(G,source,cutoff=cutoff,return_seen=True) 
+    if weighted_edges:
+        (pred,length)=dijkstra_predecessor_and_distance(G,source) 
+    else:
+        (pred,length)=predecessor(G,source,cutoff=cutoff,return_seen=True) 
 
     # order the nodes by path length
     onodes = [ (l,vert) for (vert,l) in length.items() ]
@@ -167,7 +175,9 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
     """
     between={}
     # get the predecessor data
-    (pred,length)=_fast_predecessor(G,source,cutoff=cutoff) 
+    #(pred,length)=_fast_predecessor(G,source,cutoff=cutoff) 
+    from networkx.path import predecessor
+    (pred,length)=predecessor(G,source,cutoff=cutoff,return_seen=True) 
     # order the nodes by path length
     onodes = map(lambda k: (length[k], k), length.keys())
     onodes.sort()

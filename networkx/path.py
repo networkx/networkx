@@ -448,6 +448,38 @@ def single_source_dijkstra(G,source,target=None):
                 paths[w] = paths[v]+[w]
     return (dist,paths)
 
+def dijkstra_predecessor_and_distance(G,source):
+    """
+    Same algorithm as for single_source_dijsktra, but returns two dicts
+    representing a list of predecessors of a node and the distance to
+    each node respectively.  The list of predecessors contains more than
+    one element only when there are more than one shortest paths to the key node.
+
+    This routine is intended for use with the betweenness centrality algorithms
+    in centrality.py.
+    """
+    dist = {}  # dictionary of final distances
+    pred = {source:[]}  # dictionary of predecessors
+    seen = {source:0} 
+    fringe=[] # use heapq with (distance,label) tuples 
+    heapq.heappush(fringe,(0,source))
+    while fringe:
+        (d,v)=heapq.heappop(fringe)
+        if v in dist: continue # already searched this node.
+        dist[v] = seen[v]
+        for w in G.neighbors(v):
+            vw_dist = dist[v] + G.get_edge(v,w)
+            if w in dist:
+                if vw_dist < dist[w]:
+                    raise ValueError,\
+                          "Contradictory paths found: negative weights?"
+            elif w not in seen or vw_dist < seen[w]:
+                seen[w] = vw_dist
+                heapq.heappush(fringe,(vw_dist,w))
+                pred[w] = [v]
+            elif vw_dist==seen[w]:
+                pred[w].append(v)
+    return (pred,dist)
 
 ######################################################################
 ### Jeff A mods.  Kept very local for now.
@@ -566,7 +598,7 @@ def floyd_warshall(G,huge=1e30000):
     return dist,pred
 
 
-def predecessor(G,source,target=False,cutoff=False,return_seen=False):
+def predecessor(G,source,target=None,cutoff=None,return_seen=None):
     """ Returns dictionary of predecessors for the path from source to all
     nodes in G.  
 
@@ -601,7 +633,7 @@ def predecessor(G,source,target=False,cutoff=False,return_seen=False):
         if (cutoff and cutoff <= level):
             break
 
-    if target:
+    if target is not None:
         if return_seen:
             if not pred.has_key(target): return ([],-1)  # No predecessor
             return (pred[target],seen[target])
