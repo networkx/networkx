@@ -13,6 +13,50 @@ __date__ = "$Date: 2005-07-06 08:02:28 -0600 (Wed, 06 Jul 2005) $"
 __credits__ = """"""
 __revision__ = "$Revision: 1064 $"
 
+
+def brandes_betweenness_centrality(G,nbunch=None):
+# directly from
+# Ulrik Brandes, A Faster Algorithm for Betweenness Centrality. Journal of Mathematical Sociology 25(2):163-177, 2001.
+# http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+    from collections import deque
+    if nbunch is None:
+        nbunch=G.nodes()
+    betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
+    for s in nbunch:
+        S=deque()                   # use S as stack (LIFO)
+        P={}
+        for v in G:
+            P[v]=[]
+        sigma=dict.fromkeys(G,0)    # sigma[v]=0 for v in G
+        d=dict.fromkeys(G,-1)       # d[v]=-1 for v in G
+        sigma[s]=1
+        d[s]=0
+        Q=deque()                   # use Q as queue (FIFO)
+        Q.append(s)
+        while Q:   # use BFS to find shortest paths
+            v=Q.popleft()
+            S.append(v)
+            for w in G.neighbors(v):
+                if d[w]<0:
+                    Q.append(w)
+                    d[w]=d[v]+1
+                if d[w]==d[v]+1:   # this is a shortest path, count paths
+                    sigma[w]=sigma[w]+sigma[v]
+                    P[w].append(v) # predecessors 
+        delta=dict.fromkeys(G,0) 
+        while S:
+            w=S.pop()
+            for v in P[w]:
+                delta[v]=delta[v]+\
+                          (float(sigma[v])/float(sigma[w]))*(1.0+delta[w])
+                if w != s:
+                    betweenness[w]=betweenness[w]+delta[w]
+                    
+    # FIXME: divide by 2 for undirected graphs?
+    return betweenness            
+
+
+
 def betweenness_centrality(G,v=False,cutoff=False,normalized=True):
     """Betweenness centrality for nodes.
     The fraction of number of shortests paths that go
