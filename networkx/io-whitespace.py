@@ -164,7 +164,7 @@ def read_multiline_adjlist(path, create_using=None, nodetype=str, edgetype=str):
             (u,deg)=string.split(line)
             deg=int(deg)
         except:
-            raise "Failed to read node and degree on line (%s)"%line
+            raise TypeError("Failed to read node and degree on line (%s)"%line)
         try:
             u=nodetype(u)
         except:
@@ -179,7 +179,7 @@ def read_multiline_adjlist(path, create_using=None, nodetype=str, edgetype=str):
             elif len(vlist)==2:
                 (v,d)=vlist
             else:
-                raise "Failed to read line: %s"%vlist
+                raise TypeError("Failed to read line: %s"%vlist)
             try:
                 v=nodetype(v)
             except:
@@ -406,7 +406,7 @@ def read_edgelist(path, create_using=None, nodetype=str, edgetype=str):
         elif len(s)==3:
             (u,v,d)=s
         else:
-            raise "Failed to read line: %s"%line
+            raise TypeError("Failed to read line: %s"%line)
 
         # convert types
         try:

@@ -221,7 +221,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
             (u,deg)=line.split(delimiter)
             deg=int(deg)
         except:
-            raise "Failed to read node and degree on line (%s)"%line
+            raise TypeError("Failed to read node and degree on line (%s)"%line)
         try:
             if nodetype is not None:
                 u=nodetype(u)
@@ -238,7 +238,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
             elif len(vlist)==2:
                 (v,d)=vlist
             else:
-                raise "Failed to read line: %s"%vlist
+                raise TypeError("Failed to read line: %s"%vlist)
             try:
                 if nodetype is not None:
                     v=nodetype(v)
@@ -536,7 +536,7 @@ def read_edgelist(path, comments="#", delimiter=' ',
         elif len(s)==3:
             (u,v,d)=s
         else:
-            raise "Failed to read line: %s"%line
+            raise TypeError("Failed to read line: %s"%line)
 
         # convert types
         try:
