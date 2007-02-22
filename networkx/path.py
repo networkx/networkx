@@ -18,18 +18,16 @@ import heapq
 
 def shortest_path_length(G,source,target):
     """Return the shortest path length in the graph G between
-    the source and target.
+    the source and target.  Raise an exception if no path exists.
 
     G is treated as an unweighted graph.  For weighted graphs
     see dijkstra_path_length.
     """
-            
-    try:
-        return len(bidirectional_shortest_path(G,source,target))-1
-    except TypeError:
+    path=bidirectional_shortest_path(G,source,target)
+    if path is False:
         raise networkx.NetworkXError,\
               "no path from %s to %s"%(source,target)
-
+    return len(path)-1
 
 def single_source_shortest_path_length(G,source,cutoff=None):
     """
@@ -98,15 +96,16 @@ def shortest_path(G,source,target):
 def bidirectional_shortest_path(G,source,target):
     """
        Return list of nodes in a shortest path between source and target.
+       Return False if no path exists.
 
        Also known as shortest_path.
 
     """
-    try:
-        # call helper to do the real work
-        pred,succ,w=_bidirectional_pred_succ(G,source,target)
-    except:
+    # call helper to do the real work
+    results=_bidirectional_pred_succ(G,source,target)
+    if results is False:
         return False  # no path from source to target
+    pred,succ,w=results
 
     # build path from pred+w+succ
     path=[]
