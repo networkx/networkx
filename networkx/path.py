@@ -449,13 +449,14 @@ def single_source_dijkstra(G,source,target=None):
 
 def dijkstra_predecessor_and_distance(G,source):
     """
-    Same algorithm as for single_source_dijsktra, but returns two dicts
-    representing a list of predecessors of a node and the distance to
-    each node respectively.  The list of predecessors contains more than
-    one element only when there are more than one shortest paths to the key node.
+    Same algorithm as for single_source_dijsktra, but returns two
+    dicts representing a list of predecessors of a node and the
+    distance to each node respectively.  The list of predecessors
+    contains more than one element only when there are more than one
+    shortest paths to the key node.
 
-    This routine is intended for use with the betweenness centrality algorithms
-    in centrality.py.
+    This routine is intended for use with the betweenness centrality
+    algorithms in centrality.py.
     """
     dist = {}  # dictionary of final distances
     pred = {source:[]}  # dictionary of predecessors
