@@ -28,3 +28,7 @@ To produce formatted output of all of the tests run
 "make doc" and html format will be produced in the directory html/
 You must have rst2html.py installed to do this (rst2html is part of the python
 docutils package).
+
+
+The python module benchmark.py can be used to compare relative speed of small
+code bits using the timeit module for different graph classes.
