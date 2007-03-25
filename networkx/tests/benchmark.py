@@ -39,7 +39,7 @@ class Benchmark(object):
             graph_class = [graph_class]
 
         for GC in graph_class:
-            setup_string='import networkx as NX; G=NX.%s.%s();'%(GC.lower(),GC) \
+            setup_string='import networkx as NX\nG=NX.%s.%s()\n'%(GC.lower(),GC) \
                     + setup_str
             self.class_tests[GC] = Timer(test_str, setup_string)
 
@@ -65,7 +65,9 @@ class Benchmark(object):
 if __name__ == "__main__":
     # set up for all routines:
     classes=['Graph','XGraph','DiGraph','XDiGraph']
-    all_tests=['add_nodes','add_edges','delete_nodes','delete_edges','dijkstra']
+    all_tests=['add_nodes','add_edges','delete_nodes','delete_edges',\
+            'neighbors','edges','degree','dijkstra','shortest path',\
+            'subgraph','laplacian']
     # Choose which tests to run
     #tests=all_tests
     tests=all_tests[-1:]
@@ -79,7 +81,7 @@ if __name__ == "__main__":
 
     if 'add_edges' in tests:
         title='Benchmark: Adding edges'
-        setup='elist=[(i,i+3) for i in range(%s-3)];G.add_nodes_from(range(%i))'%(N,N)
+        setup='elist=[(i,i+3) for i in range(%s-3)]\nG.add_nodes_from(range(%i))'%(N,N)
         test_string=('G.add_edges_from(elist)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=1000)
         b.run()
@@ -87,32 +89,132 @@ if __name__ == "__main__":
     if 'delete_nodes' in tests:
         title='Benchmark: Adding and Deleting nodes'
         setup='nlist=range(%i)'%N
-        test_string=('G.add_nodes_from(nlist);G.delete_nodes_from(nlist)',setup)
+        test_string=('G.add_nodes_from(nlist)\nG.delete_nodes_from(nlist)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=1000)
         b.run()
 
     if 'delete_edges' in tests:
         title='Benchmark: Adding and Deleting edges'
         setup='elist=[(i,i+3) for i in range(%s-3)]'%N
-        test_string=('G.add_edges_from(elist); G.delete_edges_from(elist)',setup)
+        test_string=('G.add_edges_from(elist)\n G.delete_edges_from(elist)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=1000)
+        b.run()
+
+    if 'neighbors' in tests:
+        N=500
+        p=0.3
+        title='Benchmark: reporting neighbors'
+        b=Benchmark(classes,title,runs=3,reps=1)
+        test_string='for n in G:\n for nbr in G.neighbors(n):\n  pass'
+        all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
+        setup=all_setup+'G.add_edge(u,v)\n'
+        b['Graph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v,1)' 
+        b['XGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
+        b['XDiGraph']=(test_string,setup)
+        b.run()
+
+    if 'edges' in tests:
+        N=500
+        p=0.3
+        title='Benchmark: reporting edges'
+        b=Benchmark(classes,title,runs=3,reps=1)
+        test_string='for n in G:\n for e in G.edges(n):\n  pass'
+        all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
+        setup=all_setup+'G.add_edge(u,v)\n'
+        b['Graph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v,1)' 
+        b['XGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
+        b['XDiGraph']=(test_string,setup)
+        b.run()
+
+    if 'degree' in tests:
+        N=500
+        p=0.3
+        title='Benchmark: reporting degree'
+        b=Benchmark(classes,title,runs=3,reps=1)
+        test_string='for d in G.degree():\n  pass'
+        all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
+        setup=all_setup+'G.add_edge(u,v)\n'
+        b['Graph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v,1)' 
+        b['XGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
+        b['XDiGraph']=(test_string,setup)
         b.run()
 
     if 'dijkstra' in tests:
         N=500
         p=0.3
-        title='dijkstra all pair shortest path'
-        setup='H=NX.binomial_graph(%s,%s);G=H.subgraph(None,create_using=G);i=6'%(N,p) # bring in from pickle file?
-        test_string=('p=NX.single_source_dijkstra(G,i)',setup)
-        b=Benchmark(classes,title,test_string,runs=3,reps=1)
-        # Now update setup string for XGraph and XDiGraph
-        setup='''
-H=NX.binomial_graph(%s,%s)
-G=H.subgraph(None,create_using=G)
-for (u,v,d) in G.edges_iter():
-    G.add_edge(u,v,1)  # set edge data to 1 from None
-i=6'''%(N,p) 
-        test_string=('p=NX.single_source_dijkstra(G,i)',setup)
-        b['XGraph']=test_string
-        b['XDiGraph']=test_string
+        title='dijkstra single source shortest path'
+        b=Benchmark(classes,title,runs=3,reps=1)
+        test_string='p=NX.single_source_dijkstra(G,i)'
+        all_setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
+        setup=all_setup+'G.add_edge(u,v)'
+        b['Graph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v,1)' 
+        b['XGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
+        b['XDiGraph']=(test_string,setup)
+        b.run()
+
+    if 'shortest path' in tests:
+        N=500
+        p=0.3
+        title='single source shortest path'
+        b=Benchmark(classes,title,runs=3,reps=1)
+        test_string='p=NX.single_source_shortest_path(G,i)'
+        all_setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
+        setup=all_setup+'G.add_edge(u,v)'
+        b['Graph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v,1)' 
+        b['XGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
+        b['XDiGraph']=(test_string,setup)
+        b.run()
+
+    if 'subgraph' in tests:
+        N=500
+        p=0.3
+        title='subgraph method'
+        b=Benchmark(classes,title,runs=3,reps=1)
+        test_string='G.subgraph(nlist)'
+        all_setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
+        setup=all_setup+'G.add_edge(u,v)'
+        b['Graph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v,1)' 
+        b['XGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
+        b['XDiGraph']=(test_string,setup)
+        b.run()
+
+    if 'laplacian' in tests:
+        N=500
+        p=0.3
+        title='creation of laplacian matrix'
+        b=Benchmark(classes,title,runs=3,reps=1)
+        test_string='NX.laplacian(G)'
+        all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
+        setup=all_setup+'G.add_edge(u,v)'
+        b['Graph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v,1)' 
+        b['XGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
+        b['XDiGraph']=(test_string,setup)
         b.run()

@@ -425,10 +425,16 @@ class XDiGraph(DiGraph):
         Returns the same data as out_edges(n) but in a different format.
 
         """
-        if n not in self:
+        try:
+            if self.multiedges:
+                for nbr,elist in self.succ[n].iteritems():
+                    for data in elist:
+                        yield nbr
+            else:
+                for nbr in self.succ[n].iterkeys():
+                    yield nbr
+        except KeyError:
             raise NetworkXError, "node %s not in graph"%n
-        for (u,v,d) in self.out_edges_iter(n):
-            yield v
 
     def predecessors_iter(self, n):
         """Return an iterator of nodes pointing in to node n. 

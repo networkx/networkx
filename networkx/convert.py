@@ -256,6 +256,7 @@ def to_numpy_matrix(G,nodelist=None):
     nlen=len(nodelist)    
     index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
     A = numpy.asmatrix(numpy.zeros((nlen,nlen)))
+    directed=G.is_directed()
     for e in G.edges_iter(nodelist):
         u=e[0]
         v=e[1]
@@ -265,7 +266,7 @@ def to_numpy_matrix(G,nodelist=None):
             d=e[2]
             if d is None: d=1 # None would be a nan in numpy, use 1
         A[index[u],index[v]]=d
-        if not G.is_directed():
+        if not directed:
             A[index[v],index[u]]=d
     return A            
 

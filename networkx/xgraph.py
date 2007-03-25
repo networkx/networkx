@@ -246,10 +246,17 @@ class XGraph(Graph):
         Returns the same data as edges(n) but in a different format.
 
         """
-        if n not in self:
-            raise NetworkXError, "node %s not in graph"%n
-        for (u,v,d) in self.edges_iter(n):
-            yield v
+        if not self.multiedges:
+            try:
+                for nbr in Graph.neighbors_iter(self,n):
+                    yield nbr
+            except KeyError:
+                raise NetworkXError, "node %s not in graph"%n
+        else:
+            if n not in self:
+                raise NetworkXError, "node %s not in graph"%n
+            for (u,v,d) in self.edges_iter(n):
+                yield v
 
     def get_edge_iter(self, u, v):
         """Return an iterator over the objects associated with each edge
