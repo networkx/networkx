@@ -10,16 +10,37 @@ Mailing Lists
 
 - networkx-discuss_: discussions of all things related to using NetworkX 
 
-  Alternate archives:
-   - http://groups.google.com/group/networkx-discuss
-   - http://dir.gmane.org/gmane.comp.python.networkx 
+.. raw:: html
+
+  <table style="background-color: #fff; padding: 5px;" cellspacing=0>
+  <tr><td>
+    <img src="http://groups.google.com/groups/img/3/groups_bar.gif"
+         height=26 width=132 alt="Google Groups Beta">
+  </td></tr>
+  <tr><td style="padding-left: 5px;font-size: 125%">
+    <b>networkx-discuss</b>
+  </td></tr>
+  <tr><td style="padding-left: 5px">
+  <a href="http://groups.google.com/group/networkx-discuss">Visit this group</a>
+  </td></tr>
+  </table>
 
 - networkx-devel_ is for topics related to development of the NetworkX
 
+.. raw:: html
 
-  Alternate archives:
-   - http://groups.google.com/group/networkx-devel 
-
+  <table style="background-color: #fff; padding: 5px;" cellspacing=0>
+  <tr><td>
+    <img src="http://groups.google.com/groups/img/3/groups_bar.gif"
+         height=26 width=132 alt="Google Groups Beta">
+  </td></tr>
+  <tr><td style="padding-left: 5px;font-size: 125%">
+    <b>networkx-devel</b>
+  </td></tr>
+  <tr><td style="padding-left: 5px">
+    <a href="http://groups.google.com/group/networkx-devel">Visit this group</a>
+  </td></tr>
+  </table>
 
 Source code repository
 ----------------------
@@ -48,5 +69,5 @@ source code repository write access.
 .. _subversion: http://subversion.tigris.org
 .. _ticket: https://networkx.lanl.gov/newticket ticket
 .. _register: https://networkx.lanl.gov/register
-.. _networkx-discuss: http://sourceforge.net/mail/?group_id=122233
-.. _networkx-devel:  http://sourceforge.net/mailarchive/forum.php?forum_id=48645 
+.. _networkx-discuss: http://groups.google.com/group/networkx-discuss
+.. _networkx-devel:  http://groups.google.com/group/networkx-devel
