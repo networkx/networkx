@@ -2,7 +2,7 @@ Isomorph
 ========
 
 >>> import networkx as NX
->>> from networkx.isomorph import graph_could_be_isomorphic,fast_graph_could_be_isomorphic, faster_graph_could_be_isomorphic
+>>> from networkx.isomorph import graph_could_be_isomorphic,fast_graph_could_be_isomorphic, faster_graph_could_be_isomorphic, is_isomorphic
     
 
 >>> G1=NX.Graph()
@@ -25,4 +25,7 @@ True
 True
 >>> faster_graph_could_be_isomorphic(G3,G2)
 True
-
+>>> is_isomorphic(G1,G2)
+True
+>>> is_isomorphic(G1,G4)
+False
