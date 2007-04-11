@@ -30,7 +30,7 @@ class Benchmark(object):
 
     def __setitem__(self,graph_class,(test_str,setup_str)):
         """
-        Set a simlpe bit of code and setup string for the test.
+        Set a simple bit of code and setup string for the test.
         Use this for cases where the code differs from one class to another.
         """
         if graph_class == 'all':
@@ -39,26 +39,35 @@ class Benchmark(object):
             graph_class = [graph_class]
 
         for GC in graph_class:
-            setup_string='import networkx as NX\nG=NX.%s.%s()\n'%(GC.lower(),GC) \
-                    + setup_str
+            setup_string='import networkx as NX\nG=NX.%s.%s()\n'%\
+                          (GC.lower(),GC) + setup_str
             self.class_tests[GC] = Timer(test_str, setup_string)
+
 
     def run(self):
         """Run the benchmark for each class and print results."""
         column_len = max(len(G) for G in self.class_tests)
 
+        print '='*72
         if self.title:
-            print self.title
-        print 'Doing %d runs, each with %d reps.' % (self.runs,self.reps)
-        print '-'*72
+            print "%s: %s runs, %s reps"% (self.title,self.runs,self.reps)
+        print '='*72
 
+        times=[]
         for GC,timer in self.class_tests.items():
             name = GC.ljust(column_len)
             try:
-                print "%s: %s" % (name, timer.repeat(self.runs,self.reps))
+                t=sum(timer.repeat(self.runs,self.reps))/self.runs
+#                print "%s: %s" % (name, timer.repeat(self.runs,self.reps))
+                times.append((t,name))
             except Exception, e:
                 print "%s: Failed to benchmark (%s)." % (name,e)
+                        
 
+        times.sort()                
+        tmin=times[0][0]                
+        for t,name in times:
+            print "%s: %5.2f %s" % (name, t/tmin*100.,t)            
         print '-'*72
         print
 
@@ -69,8 +78,8 @@ if __name__ == "__main__":
             'neighbors','edges','degree','dijkstra','shortest path',\
             'subgraph','laplacian']
     # Choose which tests to run
-    #tests=all_tests
-    tests=all_tests[-1:]
+    tests=all_tests
+    #tests=all_tests[-1:]
     N=100
 
     if 'add_nodes' in tests:
@@ -96,7 +105,7 @@ if __name__ == "__main__":
     if 'delete_edges' in tests:
         title='Benchmark: Adding and Deleting edges'
         setup='elist=[(i,i+3) for i in range(%s-3)]'%N
-        test_string=('G.add_edges_from(elist)\n G.delete_edges_from(elist)',setup)
+        test_string=('G.add_edges_from(elist)\nG.delete_edges_from(elist)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=1000)
         b.run()
 
