@@ -348,9 +348,7 @@ Test G.edges(nbunch) with various forms of nbunch
 node not in nbunch should be quietly ignored
 
 >>> sorted(G.edges(6))    # non-iterable non-node
-Traceback (most recent call last):
-...
-NetworkXError: nbunch is not a node or a sequence of nodes.
+[]
 
 >>> sorted(G.edges('Z'))  # iterable non-node
 []
@@ -567,9 +565,7 @@ Extracting objects imbedded into edges.
 [1, 2, 3, 4, 5, 6]
 >>> H.delete_nodes_from([1,2,3,4,5,6])
 >>> sorted(H.edges(1))
-Traceback (most recent call last):
-...
-NetworkXError: nbunch is not a node or a sequence of nodes.
+[]
 
 
 

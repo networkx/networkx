@@ -377,7 +377,7 @@ class XDiGraph(DiGraph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                bunch=[]
         # nbunch ready
         if self.multiedges:
             for n1 in bunch:
@@ -407,7 +407,7 @@ class XDiGraph(DiGraph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                bunch=[]
         # nbunch ready
         if self.multiedges:
             for n1 in bunch:
@@ -466,7 +466,7 @@ class XDiGraph(DiGraph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                bunch=[]
         # nbunch ready
         if self.multiedges:
             if with_labels:   # yield tuple (n,in_degree)
@@ -499,7 +499,7 @@ class XDiGraph(DiGraph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                bunch=[]
         # nbunch ready
         if self.multiedges:
             if with_labels:
@@ -541,7 +541,7 @@ class XDiGraph(DiGraph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                bunch=[]
         # nbunch ready
         if self.multiedges:
             for n in bunch:

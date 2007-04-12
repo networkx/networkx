@@ -307,7 +307,7 @@ class XGraph(Graph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                bunch=[]
         # nbunch ready
         seen={}  # helper dict used to avoid duplicate edges
         if self.multiedges:
@@ -415,7 +415,7 @@ class XGraph(Graph):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                bunch=[]
         # nbunch ready
         if self.multiedges:
             for n in bunch:

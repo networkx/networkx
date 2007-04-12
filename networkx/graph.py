@@ -141,7 +141,7 @@ class Graph(object):
         one can use "if nbunch in self:", even after processing
         with this routine.
         
-        Note: This routine raises a NetworkXError exception if
+        Note: This routine returns an empty list if
         nbunch is not either a node, sequence, iterator, or None.
         You can catch this exception if you want to change this
         behavior.
@@ -155,7 +155,7 @@ class Graph(object):
                 bunch=[n for n in nbunch if n in self]
                 # bunch=(n for n in nbunch if n in self) # need python 2.4
             except TypeError:
-               raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                bunuch=[]
         return bunch
 
     def info(self, n=None):
@@ -465,7 +465,7 @@ class Graph(object):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                bunch=[]
         # nbunch ready
         seen={}     # helper dict to keep track of multiply stored edges
         for n1 in bunch:
@@ -605,7 +605,7 @@ class Graph(object):
         else:                # if nbunch is a sequence of nodes
             try: bunch=[n for n in nbunch if n in self]
             except TypeError:
-                raise NetworkXError, "nbunch is not a node or a sequence of nodes."
+                bunch=[]
         # nbunch ready
         if with_labels:
             for n in bunch:

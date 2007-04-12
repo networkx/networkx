@@ -339,17 +339,11 @@ Test G.edges(nbunch) with various forms of nbunch
 node not in nbunch should be quietly ignored
 
 >>> sorted(G.edges(6))    # non-iterable non-node
-Traceback (most recent call last):
-...
-NetworkXError: nbunch is not a node or a sequence of nodes.
+[]
 >>> sorted(G.in_edges(6))    # non-iterable non-node
-Traceback (most recent call last):
-...
-NetworkXError: nbunch is not a node or a sequence of nodes.
+[]
 >>> sorted(G.out_edges(6))    # non-iterable non-node
-Traceback (most recent call last):
-...
-NetworkXError: nbunch is not a node or a sequence of nodes.
+[]
 
 >>> sorted(G.edges('Z'))  # iterable non-node
 []
@@ -453,17 +447,11 @@ degree of single node in iterable container must return list
 degree of nonnode which is also noniterator
 
 >>> G.degree(6)    # non-iterable non-node
-Traceback (most recent call last):
-...
-NetworkXError: nbunch is not a node or a sequence of nodes.
+[]
 >>> G.in_degree(6)    # non-iterable non-node
-Traceback (most recent call last):
-...
-NetworkXError: nbunch is not a node or a sequence of nodes.
+[]
 >>> G.out_degree(6)    # non-iterable non-node
-Traceback (most recent call last):
-...
-NetworkXError: nbunch is not a node or a sequence of nodes.
+[]
 
 with_labels=True always return a dict
 
