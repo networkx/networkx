@@ -44,3 +44,4 @@ Thanks to the following people who have made contributions to NetworkX:
  - Ross M. Richardson contributed the expected degree graph generator
    and helped test the pygraphviz interface
 
+ - Christopher Ellison implemented the VF2 isomorphism algorithm

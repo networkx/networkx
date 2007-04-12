@@ -3,6 +3,43 @@
 NetworkX News
 =============
 
+
+NetworkX-0.34
+-------------
+
+Release date: 12 April 2007
+
+See: https://networkx.lanl.gov/timeline
+
+New features
+~~~~~~~~~~~~
+  - benchmarks for graph classes	
+  - Brandes betweenness centrality algorithm
+  - Dijkstra predecessor and distance algorithm
+  - xslt to convert DIA graphs to NetworkX
+  - number_of_edges(u,v) counts edges between nodes u and v
+  - run tests with python setup_egg.py test (needs setuptools)
+    else use python -c "import networkx; networkx.test()"
+  - is_isomorphic() that uses vf2 algorithm
+
+Bug fixes
+~~~~~~~~~
+  - speedups of neighbors() 	
+  - simplified Dijkstra's algorithm code
+  - better exception handling for shortest paths   
+  - get_edge(u,v) returns None (instead of exception) if no edge u-v
+  - floyd_warshall_array fixes for negative weights
+  - bad G467, docs and unittest fixes for graph atlas
+  - don't put nans in numpy or scipy sparse adjacency matrix
+  - handle get_edge() exception (return None if no edge)
+  - remove extra kwds arguments in many places
+  - no multi counting edges in conversion to dict of lists for multigraphs
+  - allow passing tuple to get_edge()
+  - bad parameter order in node/edge betweenness 
+  - edge betweenness doesn't fail with XGraph 
+
+
+
 What's new in NX-0.33?
 ----------------------
 
