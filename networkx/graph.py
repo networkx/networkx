@@ -23,7 +23,7 @@ by using an iterator:
 
 >>> G.add_nodes_from(xrange(100,110))
 
-or by adding any nbunch of nodes (see above definition of an nbunch):
+or by adding any container of nodes 
 
 >>> H=path_graph(10)
 >>> G.add_nodes_from(H)
@@ -230,10 +230,10 @@ class Graph(object):
             self.adj[n]={}
 
 
-    def add_nodes_from(self, nbunch):
+    def add_nodes_from(self, nlist):
         """Add multiple nodes to the graph.
 
-        nbunch:
+        nlist:
         A container of nodes that will be iterated through once
         (thus it should be an iterator or be iterable).
         Each element of the container should be a valid node type:
@@ -250,7 +250,7 @@ class Graph(object):
         [0, 1, 2, 'H', 'e', 'l', 'o']
 
         """
-        for n in nbunch:
+        for n in nlist:
             if n not in self.adj:
                 self.adj[n]={}
 
@@ -268,10 +268,10 @@ class Graph(object):
         except KeyError: # NetworkXError if n not in self
             raise NetworkXError, "node %s not in graph"%n
 
-    def delete_nodes_from(self,nbunch):
-        """Remove nodes in nbunch from graph.
+    def delete_nodes_from(self,nlist):
+        """Remove nodes in nlist from graph.
 
-        nbunch:
+        nlist:
         an iterable or iterator containing valid node names.
 
         Attempting to delete a non-existent node will raise an exception.
@@ -279,7 +279,7 @@ class Graph(object):
         not.
 
         """
-        for n in nbunch: 
+        for n in nlist: 
              try:
                 for u in self.adj[n].keys():  
                     del self.adj[u][n]  # (faster) remove all edges n-u in graph
@@ -451,10 +451,10 @@ class Graph(object):
         to nodes in nbunch, or over all edges in graph if no
         nodes are specified.
 
-        See add_node for definition of nbunch.
-        
-        Those nodes in nbunch that are not in the graph will be
-        (quietly) ignored.
+        If nbunch is None return all edges in the graph.
+        The argument nbunch can be any single node, or 
+        any sequence or iterator of nodes.  
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
         """
         # prepare nbunch
@@ -481,10 +481,10 @@ class Graph(object):
         """Return list of all edges that are adjacent to a node in nbunch,
         or a list of all edges in graph if no nodes are specified.
 
-        See add_node for definition of nbunch.
-
-        Those nodes in nbunch that are not in the graph will be
-        (quietly) ignored.
+        If nbunch is None return all edges in the graph.
+        The argument nbunch can be any single node, or 
+        any sequence or iterator of nodes.  
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
         For digraphs, edges=out_edges
 
@@ -593,7 +593,7 @@ class Graph(object):
         If with_labels==True, iterator will return an (n,degree(n)) tuple of
         node and degree.
 
-        Those nodes in nbunch that are not in the graph will be
+        Any nodes in nbunch that are not in the graph are
         (quietly) ignored.
 
         """
@@ -665,8 +665,7 @@ class Graph(object):
         """
         Return the subgraph induced on nodes in nbunch.
 
-        nbunch: can be a singleton node, a string (which is treated
-        as a singleton node), or any iterable container of
+        nbunch: can be a single node or any iterable container of
         of nodes. (It can be an iterable or an iterator, e.g. a list,
         set, graph, file, numeric array, etc.)
 

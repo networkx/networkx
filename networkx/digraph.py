@@ -90,17 +90,17 @@ class DiGraph(Graph):
         if n not in self.pred:
             self.pred[n]={}
 
-    def add_nodes_from(self, nbunch):
+    def add_nodes_from(self, nlist):
         """Add multiple nodes to the digraph.
 
-        nbunch:
+        nlist:
         A container of nodes that will be iterated through once
         (thus it should be an iterator or be iterable).
         Each element of the container should be a valid node type:
         any hashable type except None.  See add_node for details.
 
         """
-        for n in nbunch:
+        for n in nlist:
             if n not in self.succ:
                 self.succ[n]={}
             if n not in self.pred:
@@ -121,17 +121,17 @@ class DiGraph(Graph):
         except KeyError: # NetworkXError if n not in self
             raise NetworkXError, "node %s not in graph"%n
 
-    def delete_nodes_from(self,nbunch):
-        """Remove nodes in nbunch from the digraph.
+    def delete_nodes_from(self,nlist):
+        """Remove nodes in nlist from the digraph.
         
-        nbunch: an iterable or iterator containing valid node names.
+        nlist: an iterable or iterator containing valid node names.
 
         Attempting to delete a non-existent node will raise an exception.
-        This could mean some nodes in nbunch were deleted and some valid
+        This could mean some nodes in nlist were deleted and some valid
         nodes were not!
         
         """
-        for n in nbunch: 
+        for n in nlist: 
             try:
                 for u in self.succ[n].keys():  
 #                    self.delete_edge(n,u)# remove all edges n-u in graph
@@ -248,7 +248,7 @@ class DiGraph(Graph):
         of nodes in nbunch, or over all edges in digraph if no
         nodes are specified.
 
-        See add_node for definition of nbunch.
+        See edges() for definition of nbunch.
         
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
@@ -272,7 +272,7 @@ class DiGraph(Graph):
         to nodes in nbunch, or over all edges in digraph if no
         nodes are specified.
 
-        See add_node for definition of nbunch.
+        See edges() for definition of nbunch.
         
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
@@ -299,10 +299,9 @@ class DiGraph(Graph):
         """Return list of all edges that point out of nodes in nbunch,
         or a list of all edges in graph if no nodes are specified.
 
-        See add_node for definition of nbunch.
+        See edges() for definition of nbunch.
 
-        Those nodes in nbunch that are not in the graph will be
-        (quietly) ignored.
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
         """
         return list(self.out_edges_iter(nbunch))
@@ -311,10 +310,9 @@ class DiGraph(Graph):
         """Return list of all edges that point in to nodes in nbunch,
         or a list of all edges in graph if no nodes are specified.
 
-        See add_node for definition of nbunch.
+        See edges() for definition of nbunch.
 
-        Those nodes in nbunch that are not in the graph will be
-        (quietly) ignored.
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
         """
         return list(self.in_edges_iter(nbunch))
@@ -391,7 +389,7 @@ class DiGraph(Graph):
 
         If nbunch is ommitted, then iterate over *all* nodes.
  
-        See degree_iter method for Digraph Class for more details. 
+        See degree_iter method for more details. 
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
@@ -416,7 +414,7 @@ class DiGraph(Graph):
 
         If nbunch is ommitted, then iterate over *all* nodes.
  
-        See degree_iter method for Digraph Class for more details. 
+        See degree_iter method for more details. 
         """
         # prepare nbunch
         if nbunch is None:   # include all nodes via iterator
@@ -490,10 +488,9 @@ class DiGraph(Graph):
         """
         Return the subgraph induced on nodes in nbunch.
 
-        nbunch: can be a singleton node, a string (which is treated
-        as a singleton node), or any iterable container of
+        nbunch: can be a single node or any iterable container of
         of nodes. (It can be an iterable or an iterator, e.g. a list,
-        set, graph, file, etc.)
+        set, graph, file, numeric array, etc.)
 
         Setting inplace=True will return the induced subgraph in original graph
         by deleting nodes not in nbunch. This overrides create_using.

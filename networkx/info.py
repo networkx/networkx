@@ -132,8 +132,8 @@ Each class provides basic graph methods.
 Mutating Graph methods
 ----------------------
    
-    - G.add_node(n), G.add_nodes_from(nbunch)
-    - G.delete_node(n), G.delete_nodes_from(nbunch)
+    - G.add_node(n), G.add_nodes_from(nlist)
+    - G.delete_node(n), G.delete_nodes_from(nlist)
     - G.add_edge(n1,n2), G.add_edge(e), where e=(u,v)
     - G.add_edges_from(ebunch)
     - G.delete_edge(n1,n2), G.delete_edge(e), where e=(u,v)

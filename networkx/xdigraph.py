@@ -364,7 +364,7 @@ class XDiGraph(DiGraph):
         out of nodes in nbunch, or over all edges in digraph if no
         nodes are specified.
 
-        See add_node for definition of nbunch.
+        See edges() for definition of nbunch.
         
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
@@ -394,7 +394,7 @@ class XDiGraph(DiGraph):
         to nodes in nbunch, or over all edges in digraph if no
         nodes are specified.
 
-        See add_node for definition of nbunch.
+        See edges() for definition of nbunch.
         
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
         
@@ -645,26 +645,25 @@ class XDiGraph(DiGraph):
     def subgraph(self, nbunch, inplace=False, create_using=None):
         """Return the subgraph induced on nodes in nbunch.
 
-        nbunch: can be a singleton node, a string (which is treated
-        as a singleton node), or any iterable container of
+        nbunch: can be a single node or any iterable container of
         of nodes. (It can be an iterable or an iterator, e.g. a list,
         set, graph, file, numeric array, etc.)
 
-       Setting inplace=True will return induced subgraph in original
-       graph by deleting nodes not in nbunch. It overrides any setting
-       of create_using.
+        Setting inplace=True will return induced subgraph in original
+        graph by deleting nodes not in nbunch. It overrides any setting
+        of create_using.
 
-       WARNING: specifying inplace=True makes it easy to destroy the graph.
+        WARNING: specifying inplace=True makes it easy to destroy the graph.
 
-       Unless otherwise specified, return a new graph of the same
-       type as self.  Use (optional) create_using=R to return the
-       resulting subgraph in R. R can be an existing graph-like
-       object (to be emptied) or R can be a call to a graph object,
-       e.g. create_using=DiGraph(). See documentation for
-       empty_graph()
+        Unless otherwise specified, return a new graph of the same
+        type as self.  Use (optional) create_using=R to return the
+        resulting subgraph in R. R can be an existing graph-like
+        object (to be emptied) or R can be a call to a graph object,
+        e.g. create_using=DiGraph(). See documentation for
+        empty_graph()
 
-       Note: use subgraph(G) rather than G.subgraph() to access the more
-       general subgraph() function from the operators module.
+        Note: use subgraph(G) rather than G.subgraph() to access the more
+        general subgraph() function from the operators module.
 
         """
         bunch=self.prepare_nbunch(nbunch)
