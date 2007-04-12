@@ -80,15 +80,12 @@ Requirements
 Download
 --------
 
-   You can download NetworkX from 
-   http://sourceforge.net/project/showfiles.php?group_id=122233
+   - Releases
 
-   You can browse the source at https://networkx.lanl.gov/browser/networkx/trunk
+     - Python Cheese Shop:  http://cheeseshop.python.org/pypi/networkx/
+     - NetworkX site: https://networkx.lanl.gov/download/?C=M;O=D
 
-   To access the source repository using subversion, you will need a subversion client (e.g. svn for Linux). Then check out the code using
-
-    svn co https://networkx.lanl.gov/svn/networkx/trunk networkx
-
+   - Subversion repository: https://networkx.lanl.gov/svn/networkx/trunk
 
 
 Quick Install
@@ -120,6 +117,8 @@ Quick Install
 
    NetworkX also may be installed using EasyInstall http://peak.telecommunity.com/DevCenter/EasyInstall
 
+::
+
    easy_install networkx
 
 
@@ -131,12 +130,4 @@ Authors
   - Pieter Swart
 
 
-
-.. raw:: html
-
-   <div align="left" class="image image align-left image-reference"><a
-    class="reference" href="http://sourceforge.net/"><img align="left"
-    alt="SourceForge.net Logo" class="image" height="31"
-    src="http://sourceforge.net/sflogo.php?group_id=122233&amp;type=1"
-    width="88" /></a></div>
 
