@@ -99,28 +99,21 @@ def faster_graph_could_be_isomorphic(G1,G2):
     # OK...
     return True
 
-def is_isomorphic(G1,G2,**kwds):
-    """Returns True if the graphs are isomorphic and False if the graphs are not
-    isomorphic. The keyword 'algorithm' can be used to specify a particular
-    algorithm.  Allowable algorithms are:
-    
-        algorithm='vf2'
-        
-    The default algorithm is 'vf2'.
+def is_isomorphic(G1,G2):
+    """Returns True if the graphs G1 and G2 are isomorphic and False otherwise.
+
+    Uses the vf2 algorithm - see networkx.isomorphvf2
         
     """
-    algorithm = kwds.get('algorithm','vf2')
-    
-    if algorithm == 'vf2':
-        if G1.is_directed() and G2.is_directed():
-            return networkx.isomorphvf2.DiGraphMatcher(G1,G2).is_isomorphic()
-        elif not (G1.is_directed() and G2.is_directed()):
-            return networkx.isomorphvf2.GraphMatcher(G1,G2).is_isomorphic()
-        else:
+    if G1.is_directed() and G2.is_directed():
+        return networkx.isomorphvf2.DiGraphMatcher(G1,G2).is_isomorphic()
+    elif not (G1.is_directed() and G2.is_directed()):
+        return networkx.isomorphvf2.GraphMatcher(G1,G2).is_isomorphic()
+    else:
             # Graphs are of mixed type. We could just return False, 
             # but then there is the case of completely disconnected graphs...
             # which could be isomorphic.
-            raise NetworkXError, "Both graphs were not directed or both graphs were not undirected."
+        raise NetworkXError, "Both graphs were not directed or both graphs were not undirected."
     
 
 

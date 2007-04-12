@@ -10,19 +10,20 @@ Modified to handle undirected graphs.
 Modified to handle multiple edges.
 """
 
-__date__ = "$Date:$"
+__date__ = "$Date$"
 __credits__ = "$Credits:$"
-__revision__ = "$Revision:$"
+__revision__ = "$Revision$"
 
 #    Copyright (C) 2007 by
 #    Christopher Ellison <cellison@cse.ucdavis.edu>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 #
-# This work was completed as part of the Computational Mechanics Python (CMPy) project.
-#   James P. Crutchfield, principal investigator.
-#   Center for Computational Science and Engineering and Physics Department, UC Davis.
-# 
+# This work was completed as part of the
+# Computational Mechanics Python (CMPy) project.
+# James P. Crutchfield, principal investigator.
+# Center for Computational Science and Engineering and Physics Department,
+# UC Davis.
 
 import sys
 from sets import Set
@@ -46,8 +47,6 @@ class GraphMatcher(object):
     For more information, see the docmentation for:
       syntactic_feasibliity()
       semantic_feasibility()
-
-    
     
     Suppose G1 and G2 are isomorphic graphs. Verification is as follows:
     
