@@ -1,6 +1,6 @@
 """Release data for NetworkX."""
 
-#    Copyright (C) 2004-2006 by 
+#    Copyright (C) 2004-2007 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -10,7 +10,7 @@
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
 
 name = 'networkx'
-version = '0.33-svn'
+version = '0.34'
 
 description = "Python package for creating and manipulating graphs and networks"
 
@@ -26,7 +26,7 @@ authors = {'Hagberg' : ('Aric Hagberg','hagberg@lanl.gov'),
            'Swart' : ('Pieter Swart','swart@lanl.gov')
            }
 url = 'http://networkx.lanl.gov/'
-download_url="http://sourceforge.net/project/showfiles.php?group_id=122233"
+download_url="http://networkx.lanl.gov/download"
 platforms = ['Linux','Mac OSX','Windows XP/2000/NT']
 keywords = ['Networks', 'Graph Theory', 'Mathematics', 'network', 'graph', 'discrete mathematics', 'math']
 classifiers = [
