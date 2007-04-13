@@ -1,11 +1,10 @@
 Mailing Lists
 -------------
 
-The mailing lists is the primary forum for communication about
-NetworkX.  Anyone can view the mailing list archives but to
-post a message to the mailing list you must be a member.
-Follow the link below for the list archive enter your email address
-to join.
+The mailing lists are the primary forum for communication about
+NetworkX.  Anyone can view the mailing list archives but to post a
+message to the mailing list you must be a member.  Follow the link
+below for the list archive enter your email address to join.
 
 networkx-discuss_ 
 ~~~~~~~~~~~~~~~~~

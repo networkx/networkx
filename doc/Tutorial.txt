@@ -64,7 +64,7 @@ The latest version of NetworkX can be found at http://networkx.lanl.gov/.
 NetworkX will work on multiple platforms.
 
 On Linux platforms, download the current tarball numbered, say,
-networkx-x.y.z.tar.gz, to an appropriate directory, say /home/username/networks
+networkx-x.xx.tar.gz, to an appropriate directory, say /home/username/networks
 
 ::
 

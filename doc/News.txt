@@ -3,7 +3,6 @@
 NetworkX News
 =============
 
-
 NetworkX-0.34
 -------------
 
@@ -29,7 +28,7 @@ Bug fixes
   - better exception handling for shortest paths   
   - get_edge(u,v) returns None (instead of exception) if no edge u-v
   - floyd_warshall_array fixes for negative weights
-  - bad G467, docs and unittest fixes for graph atlas
+  - bad G467, docs, and unittest fixes for graph atlas
   - don't put nans in numpy or scipy sparse adjacency matrix
   - handle get_edge() exception (return None if no edge)
   - remove extra kwds arguments in many places
@@ -37,8 +36,8 @@ Bug fixes
   - allow passing tuple to get_edge()
   - bad parameter order in node/edge betweenness 
   - edge betweenness doesn't fail with XGraph 
-
-
+  - don't throw exceptions for nodes not in graph (silently ignore instead)
+    in edges_* and degree_*
 
 What's new in NX-0.33?
 ----------------------
