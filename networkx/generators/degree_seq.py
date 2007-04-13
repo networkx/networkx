@@ -351,11 +351,12 @@ def double_edge_swap(G, nswap=1):
     Return count of successful swaps.
     The graph G is modified in place.
     A double-edge swap removes two randomly choseen edges u-v and x-y
-    and creates the new edges u-x and v-y:
+    and creates the new edges u-x and v-y::
 
-    u--v            u  v
-           becomes  |  |
-    x--y            x  y
+     u--v            u  v
+            becomes  |  |
+     x--y            x  y
+
 
     If either the edge u-x or v-y already exist no swap is performed so
     the actual count of swapped edges is always <= nswap
@@ -400,18 +401,19 @@ def connected_double_edge_swap(G, nswap=1):
     The graph G is modified in place.
 
     A double-edge swap removes two randomly choseen edges u-v and x-y
-    and creates the new edges u-x and v-y:
+    and creates the new edges u-x and v-y::
 
-    u--v            u  v
-           becomes  |  |
-    x--y            x  y
+     u--v            u  v
+            becomes  |  |
+     x--y            x  y
+
 
     If either the edge u-x or v-y already exist no swap is performed so
     the actual count of swapped edges is always <= nswap
 
     The initial graph G must be connected and the resulting graph is connected.
 
-    Reference:
+    Reference::
 
      @misc{gkantsidis-03-markov,
       author = "C. Gkantsidis and M. Mihail and E. Zegura",
@@ -419,7 +421,8 @@ def connected_double_edge_swap(G, nswap=1):
                power law random graphs",
       year = "2003",
       url = "http://citeseer.ist.psu.edu/gkantsidis03markov.html"
-      }
+     }
+
 
     """
     import math
@@ -481,9 +484,9 @@ def li_smax_graph(degree_seq):
     Maximum s-metrix  means that high degree nodes are connected to high
     degree nodes. 
         
-    - `deg_sequence`: degree sequence, a list of integers with each entry
-      corresponding to the degree of a node.
-      A non-graphical degree sequence raises an Exception.    
+    - `degree_seq`: degree sequence, a list of integers with each entry
+       corresponding to the degree of a node.
+       A non-graphical degree sequence raises an Exception.    
 
     Reference::      
     
@@ -496,39 +499,40 @@ def li_smax_graph(degree_seq):
        year = {2005}
       }
 
-    The algorithm
+    The algorithm::
 
-    STEP 0 - Initialization
-    A = {0}
-    B = {1, 2, 3, ..., n}
-    O = {(i; j), ..., (k, l),...} where i < j, i <= k < l and 
-            d_i * d_j >= d_k *d_l 
-    wA = d_1
-    dB = sum(degrees)
+     STEP 0 - Initialization
+     A = {0}
+     B = {1, 2, 3, ..., n}
+     O = {(i; j), ..., (k, l),...} where i < j, i <= k < l and 
+             d_i * d_j >= d_k *d_l 
+     wA = d_1
+     dB = sum(degrees)
 
-    STEP 1 - Link selection
-    (a) If |O| = 0 TERMINATE. Return graph A.
-    (b) Select element(s) (i, j) in O having the largest d_i * d_j , if for 
-            any i or j either w_i = 0 or w_j = 0 delete (i, j) from O
-    (c) If there are no elements selected go to (a).
-    (d) Select the link (i, j) having the largest value w_i (where for each 
-            (i, j) w_i is the smaller of w_i and w_j ), and proceed to STEP 2.
+     STEP 1 - Link selection
+     (a) If |O| = 0 TERMINATE. Return graph A.
+     (b) Select element(s) (i, j) in O having the largest d_i * d_j , if for 
+             any i or j either w_i = 0 or w_j = 0 delete (i, j) from O
+     (c) If there are no elements selected go to (a).
+     (d) Select the link (i, j) having the largest value w_i (where for each 
+             (i, j) w_i is the smaller of w_i and w_j ), and proceed to STEP 2.
 
-    STEP 2 - Link addition
-    Type 1: i in A and j in B. 
-            Add j to the graph A and remove it from the set B add a link 
-            (i, j) to the graph A. Update variables:
-            wA = wA + d_j -2 and dB = dB - d_j
-            Decrement w_i and w_j with one. Delete (i, j) from O
-    Type 2: i and j in A.
-        Check Tree Condition: If dB = 2 * |B| - wA. 
-            Delete (i, j) from O, continue to STEP 3
-        Check Disconnected Cluster Condition: If wA = 2. 
-            Delete (i, j) from O, continue to STEP 3
-        Add the link (i, j) to the graph A 
-        Decrement w_i and w_j with one, and wA = wA -2
-    STEP 3
-        Go to STEP 1
+     STEP 2 - Link addition
+     Type 1: i in A and j in B. 
+             Add j to the graph A and remove it from the set B add a link 
+             (i, j) to the graph A. Update variables:
+             wA = wA + d_j -2 and dB = dB - d_j
+             Decrement w_i and w_j with one. Delete (i, j) from O
+     Type 2: i and j in A.
+         Check Tree Condition: If dB = 2 * |B| - wA. 
+             Delete (i, j) from O, continue to STEP 3
+         Check Disconnected Cluster Condition: If wA = 2. 
+             Delete (i, j) from O, continue to STEP 3
+         Add the link (i, j) to the graph A 
+         Decrement w_i and w_j with one, and wA = wA -2
+     STEP 3
+         Go to STEP 1
+
 
     The article states that the algorithm will result in a maximal s-metric. 
     This implementation can not guarantee such maximality. I may have 
@@ -672,14 +676,15 @@ def s_metric(G):
     
     Reference::
 
-    @unpublished{li-2005,
-     author = {Lun Li and David Alderson and
+     @unpublished{li-2005,
+      author = {Lun Li and David Alderson and
                John C. Doyle and Walter Willinger},
-     title = {Towards a Theory of Scale-Free Graphs:
-              Definition, Properties, and  Implications (Extended Version)},
-     url = {http://arxiv.org/abs/cond-mat/0501169},
-     year = {2005}
-     }
+      title = {Towards a Theory of Scale-Free Graphs:
+               Definition, Properties, and  Implications (Extended Version)},
+      url = {http://arxiv.org/abs/cond-mat/0501169},
+      year = {2005}
+      }
+
     """
     # this function doesn't belong in this module
     return sum([G.degree(u)*G.degree(v) for (u,v) in G.edges_iter()])

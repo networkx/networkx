@@ -65,7 +65,7 @@ class XGraph(Graph):
     
     See also the XDiGraph class.
 
-    =============
+
     XGraph inherits from Graph, overriding the following methods:
 
     - __init__
