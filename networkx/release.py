@@ -10,7 +10,7 @@
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
 
 name = 'networkx'
-version = '0.34'
+version = '0.35-svn'
 
 description = "Python package for creating and manipulating graphs and networks"
 
