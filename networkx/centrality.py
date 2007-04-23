@@ -2,7 +2,7 @@
 Centrality measures.
 
 """
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2007 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -15,15 +15,24 @@ __revision__ = "$Revision: 1064 $"
 
 from networkx.path import dijkstra_predecessor_and_distance, predecessor
 
-def brandes_betweenness_centrality(G,nbunch=None):
-# directly from
-# Ulrik Brandes, A Faster Algorithm for Betweenness Centrality. Journal of Mathematical Sociology 25(2):163-177, 2001.
-# http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+
+def brandes_betweenness_centrality(G,normalized=True):
+    """Compute the betweenness centrality for nodes in G:
+    the fraction of number of shortests paths that pass through each node.
+
+    The keyword normalized (default=True) specifies whether the 
+    betweenness values are normalized by b=b/(n-1)(n-2) where
+    n is the number of nodes in G.
+
+    The algorithm is from
+    Ulrik Brandes,
+    A Faster Algorithm for Betweenness Centrality.
+    Journal of Mathematical Sociology 25(2):163-177, 2001.
+    http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+"""
     from collections import deque
-    if nbunch is None:
-        nbunch=G.nodes()
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
-    for s in nbunch:
+    for s in G:
         S=deque()                   # use S as stack (LIFO)
         P={}
         for v in G:
@@ -53,32 +62,45 @@ def brandes_betweenness_centrality(G,nbunch=None):
             if w != s:
                 betweenness[w]=betweenness[w]+delta[w]
                     
-    # FIXME: divide by 2 for undirected graphs?
+    # normalize
+    if normalized:
+        order=len(betweenness)
+        if order <=2:
+            return betweenness # no normalization b=0 for all nodes
+        scale=1.0/((order-1)*(order-2))
+        for v in betweenness:
+            betweenness[v] *= scale
+
     return betweenness            
 
 
 
-def betweenness_centrality(G,v=None,cutoff=None,normalized=True,weighted_edges=None):
-    """Betweenness centrality for nodes.
+def newman_betweenness_centrality(G,v=None,cutoff=None,
+                           normalized=True,
+                           weighted_edges=None):
+    """
+    This actually computes 'load' and not betweenness.
+    See https://networkx.lanl.gov/ticket/103
+
+    Betweenness centrality for nodes.
     The fraction of number of shortests paths that go
     through each node.
 
     Returns a dictionary of betweenness values keyed by node.
     The betweenness is normalized to be between [0,1].
-    The algorithm is described in [brandes-2003-faster]_.
 
     If normalized=False the resulting betweenness is not normalized.
 
     Reference:
 
-    .. [brandes-2003-faster] Ulrik Brandes,
-       Faster Evaluation of Shortest-Path Based Centrality Indices, 2003,
-       available at http://citeseer.nj.nec.com/brandes00faster.html
+    Scientific collaboration networks: II.
+    Shortest paths, weighted networks, and centrality,
+    M. E. J. Newman, Phys. Rev. E 64, 016132 (2001).
     
     If weighted_edges is True then use Dijkstra for finding shortest paths.
     """
     if v is not None:   # only one node
-        betweenness=0
+        betweenness=0.0
         for source in G: 
             ubetween=_node_betweenness(G,source,
                                        cutoff=cutoff,
@@ -87,7 +109,7 @@ def betweenness_centrality(G,v=None,cutoff=None,normalized=True,weighted_edges=N
             betweenness+=ubetween[v]
         return betweenness
     else:
-        betweenness={}.fromkeys(G,0) 
+        betweenness={}.fromkeys(G,0.0) 
         for source in betweenness: 
             ubetween=_node_betweenness(G,source,
                                        cutoff=cutoff,
@@ -97,23 +119,28 @@ def betweenness_centrality(G,v=None,cutoff=None,normalized=True,weighted_edges=N
                 betweenness[vk]+=ubetween[vk]
         if normalized:
             order=len(betweenness)
+            if order <=2:
+                return betweenness # no normalization b=0 for all nodes
             scale=1.0/((order-1)*(order-2))
             for v in betweenness:
                 betweenness[v] *= scale
         return betweenness  # all nodes
 
 def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=None):
-    """See betweenness_centrality for what you probably want.
+    """Node betweenness helper:
+    see betweenness_centrality for what you probably want.
 
-    This is only betweenness of each node for paths from a single source.
-    The fraction of number of shortests paths from source that go
-    through each node.
+    This actually computes "load" and not betweenness.
+    See https://networkx.lanl.gov/ticket/103
 
-    To get the betweenness for a node you need to do all-pairs
-    shortest paths.  
+    This calculates betweenness of each node for paths from a single source.
+    (The fraction of number of shortests paths from source that go
+    through each node.)
+
+    To get the betweenness for a node you need to do all-pairs shortest paths.
 
     If weighted_edges is True then use Dijkstra for finding shortest paths.
-    In this case a cutoff is not implemented and so ignored.
+    In this case a cutoff is not implemented and so is ignored.
 
     """
     # get the predecessor and path length data
@@ -125,20 +152,20 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=None)
     # order the nodes by path length
     onodes = [ (l,vert) for (vert,l) in length.items() ]
     onodes.sort()
-    onodes[:] = [vert for (l,vert) in onodes]
+    onodes[:] = [vert for (l,vert) in onodes if l>0]
     
     # intialize betweenness
     between={}.fromkeys(length,1.0)
-    # work through all paths
-    # remove source
+
     while onodes:           
         v=onodes.pop()
-        if (pred.has_key(v)):
+        if v in pred:
             num_paths=len(pred[v])   # Discount betweenness if more than 
             for x in pred[v]:        # one shortest path.
                 if x==source:   # stop if hit source because all remaining v  
                     break       #  also have pred[v]==[source]
-                between[x]+=between[v]/num_paths
+                between[x]+=between[v]/float(num_paths)
+    #  remove source
     for v in between:
         between[v]-=1
     # rescale to be between 0 and 1                
@@ -149,6 +176,9 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=None)
             for v in between:
                 between[v] *= scale
     return between
+
+betweenness_centrality=brandes_betweenness_centrality
+
 
 def edge_betweenness(G,nodes=False,cutoff=False):
     """
