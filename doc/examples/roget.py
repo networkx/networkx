@@ -41,11 +41,15 @@ def roget_graph():
     """ Return the thesaurus graph from the roget.dat example in
     the Stanford Graph Base.
     """
+    # open file roget.dat.gz (or roget.dat)
     try:
-        fh=open("roget.dat","r")
+        try:
+            import gzip
+            fh=gzip.open('roget.dat.gz','r')
+        except:
+            fh=open("roget.dat","r")
     except IOError:
-        print "roget.dat not found"
-        raise
+        raise "File roget.dat not found."
 
     G=DiGraph()
 

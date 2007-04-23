@@ -59,28 +59,38 @@ def _wdist(a,b):
 def words_graph():
     """ Return the words example graph from the Stanford GraphBase"""
 
-    datafile = 'words.dat'
-    words = map(lambda x: x[0:5], filter(_notComment, open(datafile).readlines()))
-    if not words:   # zero length
-        raise StandardError, "error reading graph definition data in ", datafile
+    import sys
+    # open file words.dat.gz (or words.dat)
+    try:
+        try:
+            import gzip
+            fh=gzip.open('words.dat.gz','r')
+        except:
+            fh=open("words.dat","r")
+    except IOError:
+        raise "File words.dat not found."
 
     G = Graph(name="words")
-
-    for w in words:
+    sys.stderr.write("Loading words.dat: ")
+    for line in fh.readlines():
+        if line.startswith("*"):
+            continue
+        w=line[0:5]
         G.add_node(w)
-    for k in xrange(0,len(words)):
-        for l in xrange(k+1,len(words)):
+    nwords=number_of_nodes(G)
+    words=G.nodes()
+    for k in xrange(0,nwords):
+        if (k%100==0): 
+            sys.stderr.softspace=0
+            sys.stderr.write(".")
+        for l in xrange(k+1,nwords):
             if _wdist(words[k],words[l]) == 1:
                 G.add_edge(words[k],words[l])
-    
     return G
-
-
 
 
 if __name__ == '__main__':
     from networkx import *
-    print "Loading words.dat"
     G=words_graph()
     print "Loaded Donald Knuth's words.dat containing 5757 five-letter English words."
     print "Two words are connected if they differ in one letter."

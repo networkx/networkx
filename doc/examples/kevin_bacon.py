@@ -29,11 +29,15 @@ def kevin_bacon_graph():
     Each edge between two actors contain the movie name.
     
     """
+    # open file miles.dat.gz (or miles.dat)
     try:
-        datafile=open("kevin_bacon.dat",'rb')
+        try:
+            import gzip
+            datafile=gzip.open('kevin_bacon.dat.gz','r')
+        except:
+            datafile=open("kevin_bacon.dat","r")
     except IOError:
-        print "kevin_bacon.dat not found."
-        raise
+        raise "File kevin_bacon.dat not found."
 
     G=XGraph(multiedges=True)
 
