@@ -146,6 +146,7 @@ def spectral_layout(G, dim=2, vpos=None, iterations=1000, eps=1.e-3):
     else:
         # use given positions
         uhat=[]
+        nodes = vpos.keys()
         for p in range(dim):
             rx=[(v,pos[p]) for (v,pos) in vpos.iteritems()]   
             uhat.append( dict(rx) )
