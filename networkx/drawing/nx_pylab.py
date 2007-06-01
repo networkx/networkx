@@ -196,8 +196,10 @@ def draw_networkx_nodes(G, pos,
     if nodelist is None:
         nodelist=G.nodes()
 
+    if not nodelist or len(nodelist)==0:  # empty nodelist, no drawing
+        return None 
+
     try:
-#        xy=asarray([pos[v] for v in nodelist],dtype='d')
         xy=asarray([pos[v] for v in nodelist])
     except KeyError,e:
         raise networkx.NetworkXError('Node %s has no position.'%e)
@@ -249,7 +251,7 @@ def draw_networkx_edges(G, pos,
     if edgelist is None:
         edgelist=G.edges()
 
-    if not edgelist: # no edges!
+    if not edgelist or len(edgelist)==0: # no edges!
         return None
 
     # set edge positions
