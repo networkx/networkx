@@ -155,7 +155,7 @@ class Graph(object):
                 bunch=[n for n in nbunch if n in self]
                 # bunch=(n for n in nbunch if n in self) # need python 2.4
             except TypeError:
-                bunuch=[]
+                bunch=[]
         return bunch
 
     def info(self, n=None):
