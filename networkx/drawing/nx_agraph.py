@@ -235,7 +235,7 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     
     """
     A=to_agraph(G)
-    A.layout(prog=prog)
+    A.layout(prog=prog,args=args)
     node_pos={}
     for n in G.nodes():
         node=pygraphviz.Node(A,n)
