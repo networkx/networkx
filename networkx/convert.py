@@ -205,17 +205,26 @@ def from_dict_of_dicts(d,create_using=None):
         if G.multiedges:
             # this is a NetworkX graph with multiedges=True
             # make a copy of the list of edge data (but not the edge data)
-            for u in d:
-                for v in d[u]:
-                    G.adj[u][v]=d[u][v][:] # copy of the edge_data list
+            if G.is_directed():
+                for u,nbrs in d.iteritems():
+                    for v,datalist in nbrs.iteritems():
+                        dl=datalist[:] # copy of the edge_data list
+                        G.pred[u][v]=dl
+                        G.succ[u][v]=dl
+            else:
+                for u,nbrs in d.iteritems():
+                    for v,datalist in nbrs.iteritems():
+                        dl=datalist[:] # copy of the edge_data list
+                        G.adj[u][v]=dl
+                        G.adj[v][u]=dl
         else:
-            for u in d:
-                for v in d[u]:
-                    G.adj[u][v]=d[u][v]
+            for u,nbrs in d.iteritems():
+                for v,data in nbrs.iteritems():
+                    G.add_edge(u,v,data)
     else: # no edge data
-        for u in d:
-            for v in d[u]:
-                G.adj[u][v]=None
+        for u,nbrs in d.iteritems():
+            for v in nbrs:
+                G.add_edge(u,v)
 
     return G                         
 
