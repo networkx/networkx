@@ -60,6 +60,14 @@ NetworkXError: node 5 not in graph
 >>> print T.edges()
 [(1, 2)]
 
+>>> T=Forest()
+>>> T.add_edge(1,2)
+>>> T.delete_node(2)
+>>> T.tree_nodes()
+[[1]]
+>>> T.delete_node(1)
+>>> T.tree_nodes()
+[]
 
 Delete edge
 -----------

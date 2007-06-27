@@ -281,6 +281,7 @@ class Forest(Tree,Graph):
         # get neighbors first since this will remove all edges to them
         neighbors=self.neighbors(n)
         Graph.delete_node(self,n) # delete node and adjacent edges
+        del self.comp[n]     # remove node from component dictionary
         if len(neighbors)==1: return # n was a leaf node
         for nbr in neighbors:
             # make new components of each nbr and connected graph
@@ -291,7 +292,6 @@ class Forest(Tree,Graph):
             for v in vnodes:
                 self.comp[v]=self.nc
             self.nc+=1
-        del self.comp[n]     # remove node from component dictionary
 
     def add_edge(self, u, v=None):  
         if v is None: (u,v)=u  # no v given, assume u is an edge tuple
