@@ -616,7 +616,7 @@ class Graph(object):
                         
     def clear(self):
         """Remove name and delete all nodes and edges from graph."""
-        self.name=None
+        self.name=''
         self.adj.clear() 
 
     def copy(self):

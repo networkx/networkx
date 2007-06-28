@@ -463,7 +463,7 @@ class DiGraph(Graph):
 
     def clear(self):
         """Remove name and delete all nodes and edges from digraph."""
-        self.name=None
+        self.name=''
         self.succ.clear() 
         self.pred.clear() 
 
