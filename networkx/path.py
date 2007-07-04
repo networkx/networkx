@@ -434,7 +434,6 @@ def single_source_dijkstra(G,source,target=None):
         if v in dist: continue # already searched this node.
         dist[v] = seen[v]
         if v == target: break
-            
         for w in G.neighbors(v):
             vw_dist = dist[v] + G.get_edge(v,w)
             if w in dist:
@@ -458,13 +457,15 @@ def dijkstra_predecessor_and_distance(G,source):
     This routine is intended for use with the betweenness centrality
     algorithms in centrality.py.
     """
+    push=heapq.heappush
+    pop=heapq.heappop
     dist = {}  # dictionary of final distances
     pred = {source:[]}  # dictionary of predecessors
     seen = {source:0} 
     fringe=[] # use heapq with (distance,label) tuples 
-    heapq.heappush(fringe,(0,source))
+    push(fringe,(0,source))
     while fringe:
-        (d,v)=heapq.heappop(fringe)
+        (d,v)=pop(fringe)
         if v in dist: continue # already searched this node.
         dist[v] = seen[v]
         for w in G.neighbors(v):
@@ -475,7 +476,7 @@ def dijkstra_predecessor_and_distance(G,source):
                           "Contradictory paths found: negative weights?"
             elif w not in seen or vw_dist < seen[w]:
                 seen[w] = vw_dist
-                heapq.heappush(fringe,(vw_dist,w))
+                push(fringe,(vw_dist,w))
                 pred[w] = [v]
             elif vw_dist==seen[w]:
                 pred[w].append(v)
@@ -662,7 +663,7 @@ def bfs(G,source):
     queue=[source] # FIFO queue
     seen[source]=True 
     while queue:
-        v=queue.pop(0)  # this is expensive, should use a faster FIFO queue
+        v=queue.pop()
         for w in G.neighbors(v):
             if w not in seen:
                 seen[w]=True
@@ -684,7 +685,7 @@ def dfs(G,source):
     queue=[source]  # use as LIFO queue
     seen[source]=True 
     while queue:
-        v=queue.pop()
+        v=queue.pop(0)  # this is expensive, should use a faster FIFO queue
         nlist.append(v)
         for w in G.neighbors(v):
             if w not in seen:
