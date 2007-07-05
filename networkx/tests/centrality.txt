@@ -7,7 +7,7 @@ Centrality
 Betweenness
 -----------
 
->>> b=betweenness_centrality(G)
+>>> b=betweenness_centrality(G,weighted_edges=True)
 >>> for v in G.nodes():
 ...     print "%0.2d %5.3f"%(v,b[v])
 00 0.023
@@ -21,7 +21,7 @@ Betweenness
 08 0.222
 09 0.000
 
->>> b=betweenness_centrality(G,normalized=False)
+>>> b=betweenness_centrality(G,normalized=False,weighted_edges=True)
 >>> for v in G.nodes():
 ...     print "%0.2d %5.3f"%(v,b[v])
 00 1.667
@@ -70,14 +70,14 @@ Closeness Centrality
 09 0.310
 
 >>> GG=path_graph(3)
->>> b=betweenness_centrality(GG,normalized=False)
+>>> b=betweenness_centrality(GG,normalized=False,weighted_edges=True)
 >>> for v,bb in b.items():
 ...     print "%s %s"%(v,bb)
 0 0.0
 1 2.0
 2 0.0
 
->>> b=betweenness_centrality(GG,normalized=True)
+>>> b=betweenness_centrality(GG,normalized=True,weighted_edges=True)
 >>> for v,bb in b.items():
 ...     print "%s %s"%(v,bb)
 0 0.0
@@ -92,7 +92,18 @@ Weighted Betweenness
 >>> b=newman_betweenness_centrality(XG,'s',weighted_edges=True)
 >>> print "%s"%b
 0.333333333333
+
+
 >>> b=newman_betweenness_centrality(XG,weighted_edges=True,normalized=False)
+>>> for v,bb in b.items():
+...     print "%s %s"%(v,bb)
+y 5.0
+x 5.0
+s 4.0
+u 2.0
+v 2.0
+
+>>> b=betweenness_centrality(XG,weighted_edges=True,normalized=False)
 >>> for v,bb in b.items():
 ...     print "%s %s"%(v,bb)
 y 5.0

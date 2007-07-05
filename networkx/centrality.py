@@ -16,13 +16,16 @@ __revision__ = "$Revision: 1064 $"
 from networkx.path import dijkstra_predecessor_and_distance, predecessor
 
 
-def brandes_betweenness_centrality(G,normalized=True):
+def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
     """Compute the betweenness centrality for nodes in G:
     the fraction of number of shortests paths that pass through each node.
 
     The keyword normalized (default=True) specifies whether the 
     betweenness values are normalized by b=b/(n-1)(n-2) where
     n is the number of nodes in G.
+
+    The keyword weighted_edges (default=False) specifies whether
+    to use edge weights (otherwise weights are all assumed equal).
 
     The algorithm is from
     Ulrik Brandes,
@@ -31,6 +34,7 @@ def brandes_betweenness_centrality(G,normalized=True):
     http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
 """
     from collections import deque
+    import heapq
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     for s in G:
         S=deque()                   # use S as stack (LIFO)
@@ -38,21 +42,47 @@ def brandes_betweenness_centrality(G,normalized=True):
         for v in G:
             P[v]=[]
         sigma=dict.fromkeys(G,0)    # sigma[v]=0 for v in G
-        d=dict.fromkeys(G,-1)       # d[v]=-1 for v in G
+        D={}
         sigma[s]=1
-        d[s]=0
-        Q=deque()                   # use Q as queue (FIFO)
-        Q.append(s)
-        while Q:   # use BFS to find shortest paths
-            v=Q.popleft()
-            S.append(v)
-            for w in G.neighbors(v):
-                if d[w]<0:
-                    Q.append(w)
-                    d[w]=d[v]+1
-                if d[w]==d[v]+1:   # this is a shortest path, count paths
-                    sigma[w]=sigma[w]+sigma[v]
-                    P[w].append(v) # predecessors 
+        if not weighted_edges:  # use BFS
+            D[s]=0
+            Q=deque()                   # use Q as queue (FIFO)
+            Q.append(s)
+            while Q:   # use BFS to find shortest paths
+                v=Q.popleft()
+                S.append(v)
+                for w in G.neighbors(v):
+                    if w not in D:
+                        Q.append(w)
+                        D[w]=D[v]+1
+                    if D[w]==D[v]+1:   # this is a shortest path, count paths
+                        sigma[w]=sigma[w]+sigma[v]
+                        P[w].append(v) # predecessors 
+        else:  # use Dijkstra's algorithm for shortest paths,
+               # modified from Eppstein
+            push=heapq.heappush
+            pop=heapq.heappop
+            seen = {s:0} 
+            Q=[]   # use Q as heap with (distance,node id) tuples
+            push(Q,(0,s,s))
+            while Q:   
+                (dist,pred,v)=pop(Q)
+                if v in D:
+                    continue # already searched this node.
+                sigma[v]=sigma[v]+sigma[pred] # count paths
+                S.append(v)
+                D[v] = seen[v]
+                for w in G.neighbors(v):
+                    vw_dist = D[v] + G.get_edge(v,w)
+                    if w not in D and (w not in seen or vw_dist < seen[w]):
+                        seen[w] = vw_dist
+                        push(Q,(vw_dist,v,w))
+                        P[w]=[v]
+                    elif vw_dist==seen[w]:  # handle equal paths
+                        sigma[w]=sigma[w]+sigma[v]
+                        P[w].append(v)
+
+
         delta=dict.fromkeys(G,0) 
         while S:
             w=S.pop()
@@ -77,27 +107,29 @@ def brandes_betweenness_centrality(G,normalized=True):
 
 def newman_betweenness_centrality(G,v=None,cutoff=None,
                            normalized=True,
-                           weighted_edges=None):
+                           weighted_edges=False):
     """
     This actually computes 'load' and not betweenness.
+
     See https://networkx.lanl.gov/ticket/103
 
-    Betweenness centrality for nodes.
+    "Load" centrality for nodes.
+
     The fraction of number of shortests paths that go
-    through each node.
+    through each node counted according to the algorithm in 
+
+    Scientific collaboration networks: II.
+    Shortest paths, weighted networks, and centrality,
+    M. E. J. Newman, Phys. Rev. E 64, 016132 (2001).
 
     Returns a dictionary of betweenness values keyed by node.
     The betweenness is normalized to be between [0,1].
 
     If normalized=False the resulting betweenness is not normalized.
-
-    Reference:
-
-    Scientific collaboration networks: II.
-    Shortest paths, weighted networks, and centrality,
-    M. E. J. Newman, Phys. Rev. E 64, 016132 (2001).
     
     If weighted_edges is True then use Dijkstra for finding shortest paths.
+    
+
     """
     if v is not None:   # only one node
         betweenness=0.0
@@ -111,6 +143,7 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
     else:
         betweenness={}.fromkeys(G,0.0) 
         for source in betweenness: 
+#            print "s",source
             ubetween=_node_betweenness(G,source,
                                        cutoff=cutoff,
                                        normalized=False,
@@ -126,23 +159,24 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
                 betweenness[v] *= scale
         return betweenness  # all nodes
 
-def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=None):
+def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=False):
     """Node betweenness helper:
     see betweenness_centrality for what you probably want.
 
     This actually computes "load" and not betweenness.
     See https://networkx.lanl.gov/ticket/103
 
-    This calculates betweenness of each node for paths from a single source.
+    This calculates the load of each node for paths from a single source.
     (The fraction of number of shortests paths from source that go
     through each node.)
 
-    To get the betweenness for a node you need to do all-pairs shortest paths.
+    To get the load for a node you need to do all-pairs shortest paths.
 
     If weighted_edges is True then use Dijkstra for finding shortest paths.
     In this case a cutoff is not implemented and so is ignored.
 
     """
+
     # get the predecessor and path length data
     if weighted_edges:
         (pred,length)=dijkstra_predecessor_and_distance(G,source) 
@@ -178,6 +212,8 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=None)
     return between
 
 betweenness_centrality=brandes_betweenness_centrality
+
+load_centrality=newman_betweenness_centrality
 
 
 def edge_betweenness(G,nodes=False,cutoff=False):
@@ -250,7 +286,7 @@ def degree_centrality(G,v=False):
     else:
         return degree_centrality[v]
 
-def closeness_centrality(G,v=False, weighted_edges=None):
+def closeness_centrality(G,v=False, weighted_edges=False):
     """
     Closeness centrality for nodes (1/average distance to all nodes).
 
