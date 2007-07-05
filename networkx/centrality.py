@@ -266,7 +266,7 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
                         between[(x,w)]+=between[(w,v)]/num_paths
     return between
 
-def degree_centrality(G,v=False):
+def degree_centrality(G,v=None):
     """
     Degree centrality for nodes (fraction of nodes connected to).
 
@@ -281,12 +281,12 @@ def degree_centrality(G,v=False):
     for vk in deg:
         degree_centrality[vk]=deg[vk]*s
 
-    if not v:
+    if v is None:
         return degree_centrality
     else:
         return degree_centrality[v]
 
-def closeness_centrality(G,v=False, weighted_edges=False):
+def closeness_centrality(G,v=None,weighted_edges=False):
     """
     Closeness centrality for nodes (1/average distance to all nodes).
 
@@ -309,7 +309,7 @@ def closeness_centrality(G,v=False, weighted_edges=False):
             closeness_centrality[n]=s/sum(sp.values())                     
         else:                                                                
             closeness_centrality[n]=0.0           
-    if not v:
+    if v is None:
         return closeness_centrality
     else:
         return closeness_centrality[v]
