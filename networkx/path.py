@@ -663,7 +663,7 @@ def bfs(G,source):
     queue=[source] # FIFO queue
     seen[source]=True 
     while queue:
-        v=queue.pop()
+        v=queue.pop(0)
         for w in G.neighbors(v):
             if w not in seen:
                 seen[w]=True
@@ -683,13 +683,15 @@ def dfs(G,source):
     nlist=[] # list of nodes in a DFS order
     seen={} # nodes seen
     queue=[source]  # use as LIFO queue
-    seen[source]=True 
+    seen[source]=1
+    i=2
     while queue:
-        v=queue.pop(0)  # this is expensive, should use a faster FIFO queue
+        v=queue.pop()  # this is expensive, should use a faster FIFO queue
         nlist.append(v)
         for w in G.neighbors(v):
             if w not in seen:
-                seen[w]=True
+                seen[w]=i
+                i=i+1
                 queue.append(w)
     return nlist
 
