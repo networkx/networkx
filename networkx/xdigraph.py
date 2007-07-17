@@ -434,7 +434,7 @@ class XDiGraph(DiGraph):
                 for nbr in self.succ[n].iterkeys():
                     yield nbr
         except KeyError:
-            raise NetworkXError, "node %s not in graph"%n
+            raise NetworkXError, "node %s not in graph"%(n,)
 
     def predecessors_iter(self, n):
         """Return an iterator of nodes pointing in to node n. 
@@ -443,7 +443,7 @@ class XDiGraph(DiGraph):
 
         """
         if n not in self:
-            raise NetworkXError, "node %s not in graph"%n
+            raise NetworkXError, "node %s not in graph"%(n,)
         for (u,v,d) in self.in_edges_iter(n):
             yield u
 

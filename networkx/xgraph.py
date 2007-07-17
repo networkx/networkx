@@ -251,10 +251,10 @@ class XGraph(Graph):
                 for nbr in Graph.neighbors_iter(self,n):
                     yield nbr
             except KeyError:
-                raise NetworkXError, "node %s not in graph"%n
+                raise NetworkXError, "node %s not in graph"%(n,)
         else:
             if n not in self:
-                raise NetworkXError, "node %s not in graph"%n
+                raise NetworkXError, "node %s not in graph"%(n,)
             for (u,v,d) in self.edges_iter(n):
                 yield v
 

@@ -762,3 +762,19 @@ Test for no error when nbunch has node not in G.nodes()
 >>> H=K5.subgraph([9])
 >>> is_isomorphic(H,null_graph())
 True
+
+Test error handling of tuple as a node
+>>> H.delete_node((1,2))
+Traceback (most recent call last):
+...
+NetworkXError: node (1, 2) not in graph
+
+>>> H.delete_nodes_from([(1,2)])
+Traceback (most recent call last):
+...
+NetworkXError: node (1, 2) not in graph
+
+>>> H.neighbors((1,2))
+Traceback (most recent call last):
+...
+NetworkXError: node (1, 2) not in graph

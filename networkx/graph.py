@@ -199,7 +199,7 @@ class Graph(object):
                         print "".ljust(width_left), i
                     num_line += 1
             except (KeyError, TypeError):
-                raise NetworkXError, "node %s not in graph"%n
+                raise NetworkXError, "node %s not in graph"%(n,)
 
 
     def add_node(self, n):
@@ -266,7 +266,7 @@ class Graph(object):
 #                self.delete_edge(n,u)# remove all edges n-u in graph
             del self.adj[n]          # now remove node
         except KeyError: # NetworkXError if n not in self
-            raise NetworkXError, "node %s not in graph"%n
+            raise NetworkXError, "node %s not in graph"%(n,)
 
     def delete_nodes_from(self,nlist):
         """Remove nodes in nlist from graph.
@@ -286,7 +286,7 @@ class Graph(object):
 #                    self.delete_edge(n,u)# remove all edges n-u in graph
                 del self.adj[n]          # now remove node
              except KeyError: # NetworkXError if n not in self
-                 raise NetworkXError, "node %s not in graph"%n
+                 raise NetworkXError, "node %s not in graph"%(n,)
 
 
     def nodes_iter(self):
@@ -439,7 +439,7 @@ class Graph(object):
          try:
              return self.adj[n].iterkeys()
          except KeyError:
-             raise NetworkXError, "node %s not in graph"%n
+             raise NetworkXError, "node %s not in graph"%(n,)
 
     def neighbors(self, n):
         """Return a list of nodes connected to node n.  """

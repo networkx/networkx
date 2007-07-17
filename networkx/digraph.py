@@ -119,7 +119,7 @@ class DiGraph(Graph):
                 del self.succ[u][n] # remove all edges n-u in graph
             del self.pred[n]          # remove node from pred
         except KeyError: # NetworkXError if n not in self
-            raise NetworkXError, "node %s not in graph"%n
+            raise NetworkXError, "node %s not in graph"%(n,)
 
     def delete_nodes_from(self,nlist):
         """Remove nodes in nlist from the digraph.
@@ -142,7 +142,7 @@ class DiGraph(Graph):
                     del self.succ[u][n] # remove all edges n-u in graph
                 del self.pred[n]          # now remove node
             except KeyError: # NetworkXError if n not in self
-                raise NetworkXError, "node %s not in graph"%n
+                raise NetworkXError, "node %s not in graph"%(n,)
 
 
     def add_edge(self, u, v=None):  
@@ -318,30 +318,30 @@ class DiGraph(Graph):
         return list(self.in_edges_iter(nbunch))
 
 
-    def successors_iter(self,v):
-         """Return an iterator for successor nodes of v."""
+    def successors_iter(self,n):
+         """Return an iterator for successor nodes of n."""
          try:
-             return self.succ[v].iterkeys()
+             return self.succ[n].iterkeys()
          except KeyError:
-             raise NetworkXError, "node %s not in graph"%v
+             raise NetworkXError, "node %s not in graph"%(n,)
 
 
-    def predecessors_iter(self,v):
-        """Return an iterator for predecessor nodes of v."""
+    def predecessors_iter(self,n):
+        """Return an iterator for predecessor nodes of n."""
         try:
-            return self.pred[v].iterkeys()
+            return self.pred[n].iterkeys()
         except KeyError:
-            raise NetworkXError, "node %s not in graph"%v
+            raise NetworkXError, "node %s not in graph"%(n,)
 
 
-    def successors(self, v):
-        """Return sucessor nodes of v."""
-        return list(self.successors_iter(v))
+    def successors(self, n):
+        """Return sucessor nodes of n."""
+        return list(self.successors_iter(n))
 
 
-    def predecessors(self, v):
-        """Return predecessor nodes of v."""
-        return list(self.predecessors_iter(v))
+    def predecessors(self, n):
+        """Return predecessor nodes of n."""
+        return list(self.predecessors_iter(n))
 
     # digraph definintions 
     out_neighbors=successors
