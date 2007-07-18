@@ -70,7 +70,7 @@ def union(G,H,create_using=None,rename=False,name=None):
     if name is None:
         name="union( %s, %s )"%(G.name,H.name)
     if create_using is None:
-       R=G.__class__()
+        R=create_empty_copy(G,with_nodes=False)
     else:
         R=create_using
         R.clear()
@@ -194,7 +194,7 @@ def compose(G,H,create_using=None, name=None):
     if name is None:
         name="compose( %s, %s )"%(G.name,H.name)
     if create_using is None:
-        R=G.__class__()
+        R=create_empty_copy(G,with_nodes=False)
     else:
         R=create_using
         R.clear()
@@ -223,7 +223,7 @@ def complement(G,create_using=None,name=None):
     if name is None:
         name="complement(%s)"%(G.name) 
     if create_using is None:
-        R=G.__class__()
+        R=create_empty_copy(G,with_nodes=False)
     else:
         R=create_using
         R.clear()
@@ -236,13 +236,18 @@ def complement(G,create_using=None,name=None):
     return R
 
 
-def create_empty_copy(G):
+def create_empty_copy(G,with_nodes=True):
     """Return a copy of the graph G with all of the edges removed.
 
     """
-    H=G.__class__()
+    if hasattr(G,'allow_multiedges')==True:
+        H=G.__class__(multiedges=G.multiedges,selfloops=G.selfloops)
+    else:
+        H=G.__class__()
+
     H.name='empty '+G.name
-    H.add_nodes_from(G)
+    if with_nodes:
+        H.add_nodes_from(G)
     return H
 
 
@@ -302,8 +307,7 @@ def relabel_nodes(G,mapping):
     Also see convert_node_labels_to_integers.
 
     """
-#    H=create_empty_copy(G)
-    H=G.__class__()
+    H=create_empty_copy(G,with_nodes=False)
     H.name="(%s)" % G.name
 
     if hasattr(mapping,"__getitem__"):   # if we are a dict
