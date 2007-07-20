@@ -9,9 +9,9 @@ Centrality measures.
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
-__date__ = "$Date: 2005-07-06 08:02:28 -0600 (Wed, 06 Jul 2005) $"
+__date__ = """"""
 __credits__ = """"""
-__revision__ = "$Revision: 1064 $"
+__revision__ = """"""
 
 from networkx.path import dijkstra_predecessor_and_distance, predecessor
 
@@ -33,11 +33,10 @@ def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
     Journal of Mathematical Sociology 25(2):163-177, 2001.
     http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
 """
-    from collections import deque
     import heapq
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     for s in G:
-        S=deque()                   # use S as stack (LIFO)
+        S=[]
         P={}
         for v in G:
             P[v]=[]
@@ -46,12 +45,12 @@ def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
         sigma[s]=1
         if not weighted_edges:  # use BFS
             D[s]=0
-            Q=deque()                   # use Q as queue (FIFO)
-            Q.append(s)
+            Q=[s]
             while Q:   # use BFS to find shortest paths
-                v=Q.popleft()
+                v=Q.pop(0)
                 S.append(v)
                 for w in G.neighbors(v):
+#                for w in G.adj[v]: # speed hack, exposes internals
                     if w not in D:
                         Q.append(w)
                         D[w]=D[v]+1
@@ -72,6 +71,7 @@ def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
                 sigma[v]=sigma[v]+sigma[pred] # count paths
                 S.append(v)
                 D[v] = seen[v]
+#                for w in G.adj[v]: # speed hack, exposes internals
                 for w in G.neighbors(v):
                     vw_dist = D[v] + G.get_edge(v,w)
                     if w not in D and (w not in seen or vw_dist < seen[w]):
@@ -143,7 +143,6 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
     else:
         betweenness={}.fromkeys(G,0.0) 
         for source in betweenness: 
-#            print "s",source
             ubetween=_node_betweenness(G,source,
                                        cutoff=cutoff,
                                        normalized=False,
