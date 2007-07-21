@@ -19,7 +19,6 @@ About
  
    Features:
 
-      - Allows for 1M+ nodes, 10M+ edges
       - Includes standard graph-theoretic and statistical physics functions
       - Easy exchange of network algorithms between applications, 
       	disciplines, and platforms
@@ -33,7 +32,6 @@ About
 
    Additional benefits due to Python:              
     
-
       - Allows fast prototyping of new algorithms
       - Easy to teach 
       - Multi-platform
@@ -65,9 +63,9 @@ Requirements
    Optional packages to enable drawing networks:
 
       - Matplotlib       http://matplotlib.sourceforge.net/
+      - numpy		 http://numpy.scipy.org/
       - pygraphviz	 http://networkx.lanl.gov/pygraphviz/
       - Graphviz         http://graphviz.org/
-      - numpy		 http://numpy.scipy.org/
 
    Optional useful packages:
 
@@ -94,7 +92,7 @@ Quick Install
    Installing from source:
 
       - Download the source (tar.gz or zip file)
-      - Unpack and change directory to networkx-x.xx
+      - Unpack and change directory to networkx-x.xx where x.xx is the version number
       - Run "python setup.py install" to build and install
       - (optional) cd networkx/tests and run "python setup_egg.py test" to execute the tests
       
@@ -102,24 +100,13 @@ Quick Install
    Installing a Python egg from source:
 
       - Download the source (tar.gz or zip file)
-      - Unpack and change directory to networkx-x.xx
+      - Unpack and change directory to networkx-x.xx where x.xx is the version number
       - Run "python setup_egg.py install" to build and install
       - (optional) run "python setup_egg.py test" to execute the tests
 
 
-   **Windows** (binary installer)
- 
-      Download the installer, run and follow the instructions.
-      Please note that we are not Windows users and have only verified
-      that the Windows installer passes the "smoke test".  If you
-      have problems we suggest installing from the source distribution.
+See Install for more details.
 
-
-   NetworkX also may be installed using EasyInstall http://peak.telecommunity.com/DevCenter/EasyInstall
-
-::
-
-   easy_install networkx
 
 
 Authors

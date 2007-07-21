@@ -1,0 +1,139 @@
+Install
+-------
+
+Requirements
+-------------
+
+To use NetworkX you need Python version 2.3 or later http://www.python.org/
+
+If you don't have Python installed on your system:
+
+Windows
+~~~~~~~
+The easiest way to get Python and most optional packages it to install
+the Enthought Python distribution: http://code.enthought.com/enthon/
+
+Other options are
+
+ - Download from the official Python site at
+   http://www.python.org/download/
+
+ - ActiveState also distributes a binary version 
+http://activestate.com/Products/ActivePython/?mp=1
+
+OSX
+~~~
+OSX ships with Python version 2.3.  You are encouraged to download
+a newer release. Pre-built Python packages are available from 
+
+ - Pythonmac  http://www.pythonmac.org/packages/ 
+
+Other options are:
+
+ - ActiveState http://activestate.com/Products/ActivePython/?mp=1
+
+ - Download from the official Python site at
+   http://www.python.org/download/
+
+If you are using Fink or MacPorts, Python is available through both
+of those package systems.
+
+
+Installing Pre-built packages
+-----------------------------
+
+The following pre-built packages are available:
+
+Windows
+~~~~~~~
+Download and run the latest version of the Windows installer (.exe extension)
+(See Download).
+
+OSX (Pythonmac)
+~~~~~~~~~~~~~~~
+Download and install the mpkg for your system (see Download).
+
+
+Linux
+~~~~~
+Debian packages are available at http://packages.debian.org/unstable/graphics/python-networkx
+
+
+Python Eggs for All Platforms 
+-----------------------------
+
+Python eggs are prepackaged distributions that can be automatically 
+installed using EasyInstall http://peak.telecommunity.com/DevCenter/EasyInstall
+
+Run
+
+::
+
+   easy_install networkx
+
+and an attempt will be made to find and install an appropriate version
+that matches your operating system and Python version. 
+
+
+
+Installing from Source
+----------------------
+
+You can install from source by downloading a source archive file
+(tar.gz or zip) or checking out the files from the Subversion repository.
+NetworkX is a pure Python package (you don't need a compiler to build
+or install it).
+
+Source Archive File
+~~~~~~~~~~~~~~~~~~~
+  - Download the source (tar.gz or zip file) (see Downloads)
+  - Unpack and change directory to networkx-x.xx where x.xx is the version number
+  - Run "python setup.py install" to build and install 
+  - (optional) cd networkx/tests and run "python setup_egg.py test" to execute the tests
+
+SVN Repository
+~~~~~~~~~~~~~~
+Make sure you have Subversion installed (SVN)
+
+  - Check out the networkx trunk: svn co https://networkx.lanl.gov/svn/networkx/trunk networkx
+  - Run "python setup.py install" to build and install 
+  - (optional) cd networkx/tests and run "python setup_egg.py test" to execute the tests
+
+
+Optional packages 
+-----------------
+
+NetworkX will work without the following 
+
+ - To enable drawing networks with matplotlib you need
+
+      - numpy		 http://numpy.scipy.org/
+      - Matplotlib       http://matplotlib.sourceforge.net/
+
+ - To enable graphviz layout and drawing features you need
+
+      - pygraphviz	 http://networkx.lanl.gov/pygraphviz/
+      - Graphviz         http://graphviz.org/
+
+
+Installing Optional Packages
+----------------------------
+
+NetworkX uses Matplotlib for drawing graphs.  The easiest way to 
+Matplotlib is to install pre-built binary packages for your platform.  See the
+instructions at 
+
+ - http://matplotlib.sourceforge.net/installing.html
+
+Matplotlib uses numpy for numerical array computing. 
+
+Additional useful packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+These are extra packages you may consider to use with NetworkX
+
+      - IPython, interactive Python shell, http://ipython.scipy.org/
+      - NumPy, high performance arrays for Python, http://scipy.org/
+      - SciPy, scientific computing package, http://scipy.org/
+      - sAsync, persistent storage with SQL, http://foss.eepatents.com/sAsync  
+      - PyYAML, structured output format, http://pyyaml.org/
+
