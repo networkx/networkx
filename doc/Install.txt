@@ -1,6 +1,3 @@
-Install
--------
-
 Requirements
 -------------
 
@@ -19,7 +16,7 @@ Other options are
    http://www.python.org/download/
 
  - ActiveState also distributes a binary version 
-http://activestate.com/Products/ActivePython/?mp=1
+   http://activestate.com/Products/ActivePython/?mp=1
 
 OSX
 ~~~
