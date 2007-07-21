@@ -1,0 +1,81 @@
+Edgelist
+========
+
+>>> from networkx import *
+>>> from networkx.io import *
+>>> from networkx.operators import *
+>>> import os,tempfile
+
+
+ASCII Edge List
+--------------------
+set up some test networks
+
+>>> G=Graph(name="test")
+>>> e=[('a','b'),('b','c'),('c','d'),('d','e'),('e','f'),('a','f')]
+>>> G.add_edges_from(e)
+>>> G.add_node('g')
+>>> DG=G.to_directed()
+>>> XG=XGraph(multiedges=True,selfloops=True)
+>>> XG.add_edges_from([(1,2,5),(1,2,5),(1,2),(3,3,42)])
+
+
+>>> (fd,fname)=tempfile.mkstemp()
+
+strings
+
+>>> write_edgelist(G,fname); 
+>>> H=read_edgelist(fname)
+>>> H2=read_edgelist(fname)
+>>> H is not H2  # they should be different graphs
+True
+>>> G.delete_node('g') # isolated nodes are not written in edgelist
+>>> sorted(H.nodes())==sorted(G.nodes())
+True
+>>> sorted(H.edges())==sorted(G.edges())
+True
+
+digraph
+
+>>> write_edgelist(DG,fname)  
+>>> H=read_edgelist(fname,create_using=DiGraph());
+>>> H2=read_edgelist(fname,create_using=DiGraph());
+>>> H is not H2  # they should be different graphs
+True
+>>> DG.delete_node('g') # isolated nodes are not written in edgelist
+>>> sorted(H.nodes())==sorted(DG.nodes())
+True
+>>> sorted(H.edges())==sorted(DG.edges())
+True
+
+
+integers
+
+>>> Gint=convert_node_labels_to_integers(G)
+>>> write_edgelist(Gint,fname)  
+>>> H=read_edgelist(fname,nodetype=int)
+>>> H2=read_edgelist(fname,nodetype=int)
+>>> H is not H2  # they should be different graphs
+True
+>>> sorted(H.nodes())==sorted(Gint.nodes())
+True
+>>> sorted(H.edges())==sorted(Gint.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+xgraph
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> write_edgelist(XG,fname)  
+>>> H=read_edgelist(fname,nodetype=int,edgetype=int,create_using=XGraph(selfloops=True,multiedges=True));
+>>> H2=read_edgelist(fname,nodetype=int,edgetype=int,create_using=XGraph(selfloops=True,multiedges=True));
+>>> H is not H2  # they should be different graphs
+True
+>>> sorted(H.nodes())==sorted(XG.nodes())
+True
+>>> sorted(H.edges())==sorted(XG.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+

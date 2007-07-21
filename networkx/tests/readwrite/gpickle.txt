@@ -1,0 +1,32 @@
+IO
+==
+
+>>> from networkx import *
+>>> from networkx.io import *
+>>> from networkx.operators import *
+>>> import os,tempfile
+
+
+
+set up some test networks
+
+>>> G=Graph(name="test")
+>>> e=[('a','b'),('b','c'),('c','d'),('d','e'),('e','f'),('a','f')]
+>>> G.add_edges_from(e)
+>>> G.add_node('g')
+
+>>> (fd,fname)=tempfile.mkstemp()
+
+Pickled
+-------
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> write_gpickle(G,fname);  
+>>> Gin=read_gpickle(fname);
+>>> sorted(G.nodes())==sorted(Gin.nodes())
+True
+>>> sorted(G.edges())==sorted(Gin.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+

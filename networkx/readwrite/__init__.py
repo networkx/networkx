@@ -12,8 +12,9 @@ A package for reading and writing graphs in various formats.
 #
 
 
-from io import write_gpickle, read_gpickle, \
-   read_edgelist, write_edgelist, \
-   read_multiline_adjlist, write_multiline_adjlist, \
-   read_adjlist, write_adjlist,\
-   read_yaml, write_yaml
+from adjlist import  read_multiline_adjlist, write_multiline_adjlist, \
+   read_adjlist, write_adjlist
+
+from edgelist import read_edgelist,write_edgelist
+from gpickle import read_gpickle,write_gpickle
+from nx_yaml import read_yaml, write_yaml

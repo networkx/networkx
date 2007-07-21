@@ -1,0 +1,172 @@
+IO
+==
+
+>>> from networkx import *
+>>> from networkx.io import *
+>>> from networkx.operators import *
+>>> import os,tempfile
+
+
+ASCII Adjacency List
+--------------------
+
+set up some test networks
+
+>>> G=Graph(name="test")
+>>> e=[('a','b'),('b','c'),('c','d'),('d','e'),('e','f'),('a','f')]
+>>> G.add_edges_from(e)
+>>> G.add_node('g')
+>>> DG=G.to_directed()
+>>> XG=XGraph(multiedges=True,selfloops=True)
+>>> XG.add_edges_from([(1,2,5),(1,2,5),(1,2),(3,3,42)])
+
+>>> (fd,fname)=tempfile.mkstemp()
+
+strings
+
+>>> write_adjlist(G,fname);  
+>>> H=read_adjlist(fname);
+>>> H2=read_adjlist(fname)
+>>> H is not H2  # they should be different graphs
+True
+>>> sorted(H.nodes())==sorted(G.nodes())
+True
+>>> sorted(H.edges())==sorted(G.edges())
+True
+
+digraph
+
+>>> write_adjlist(DG,fname);  
+>>> H=read_adjlist(fname,create_using=DiGraph());
+>>> H2=read_adjlist(fname,create_using=DiGraph());
+>>> H is not H2  # they should be different graphs
+True
+>>> sorted(H.nodes())==sorted(DG.nodes())
+True
+>>> sorted(H.edges())==sorted(DG.edges())
+True
+
+integers
+
+>>> Gint=convert_node_labels_to_integers(G)
+>>> write_adjlist(Gint,fname);  
+>>> H=read_adjlist(fname,nodetype=int);
+>>> H2=read_adjlist(fname,nodetype=int);
+>>> H is not H2  # they should be different graphs
+True
+>>> sorted(H.nodes())==sorted(Gint.nodes())
+True
+>>> sorted(H.edges())==sorted(Gint.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+
+ASCII Multiline Adjacency List
+------------------------------
+
+set up some test networks
+
+>>> G=Graph(name="test")
+>>> e=[('a','b'),('b','c'),('c','d'),('d','e'),('e','f'),('a','f')]
+>>> G.add_edges_from(e)
+>>> G.add_node('g')
+>>> DG=G.to_directed()
+>>> DG.delete_edge(('b','a'))
+>>> DG.delete_edge(('b','c'))
+>>> XG=XGraph(multiedges=True,selfloops=True)
+>>> XG.add_edges_from([(1,2,5),(1,2,5),(1,2),(3,3,42)])
+
+>>> (fd,fname)=tempfile.mkstemp()
+
+strings
+
+>>> write_multiline_adjlist(G,fname);  
+>>> H=read_multiline_adjlist(fname);
+>>> H2=read_multiline_adjlist(fname)
+>>> H is not H2  # they should be different graphs
+True
+>>> sorted(H.nodes())==sorted(G.nodes())
+True
+>>> sorted(H.edges())==sorted(G.edges())
+True
+
+digraph
+
+>>> write_multiline_adjlist(DG,fname);  
+>>> H=read_multiline_adjlist(fname,create_using=DiGraph());
+>>> H2=read_multiline_adjlist(fname,create_using=DiGraph());
+>>> H is not H2  # they should be different graphs
+True
+>>> sorted(H.nodes())==sorted(DG.nodes())
+True
+>>> sorted(H.edges())==sorted(DG.edges())
+True
+
+integers
+
+>>> write_multiline_adjlist(Gint,fname);  
+>>> H=read_multiline_adjlist(fname,nodetype=int);
+>>> H2=read_multiline_adjlist(fname,nodetype=int);
+>>> H is not H2  # they should be different graphs
+True
+>>> sorted(H.nodes())==sorted(Gint.nodes())
+True
+>>> sorted(H.edges())==sorted(Gint.edges())
+True
+
+xgraph
+
+>>> write_multiline_adjlist(XG,fname)  
+>>> H=read_multiline_adjlist(fname,nodetype=int,edgetype=int,create_using=XGraph(selfloops=True,multiedges=True));
+>>> H2=read_multiline_adjlist(fname,nodetype=int,edgetype=int,create_using=XGraph(selfloops=True,multiedges=True));
+>>> H is not H2  # they should be different graphs
+True
+>>> sorted(H.nodes())==sorted(XG.nodes())
+True
+>>> sorted(H.edges())==sorted(XG.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+
+Filehandling/Compression/Uncompression
+-------------------------
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> fh=open(fname,'w')
+>>> write_adjlist(G,fh)
+>>> fh.close()
+>>> fh=open(fname,'r')
+>>> H=read_adjlist(fh)
+>>> sorted(G.nodes())==sorted(H.nodes())
+True
+>>> sorted(G.edges())==sorted(H.edges())
+True
+>>> fh.close()
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+gz
+
+>>> (fd,fname)=tempfile.mkstemp(suffix='.gz')
+>>> write_adjlist(G,fname)
+>>> H=read_adjlist(fname)
+>>> sorted(G.nodes())==sorted(H.nodes())
+True
+>>> sorted(G.edges())==sorted(H.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+bz2 (not in standard distribution? so not included here) 
+
+(fd,fname)=tempfile.mkstemp(suffix='.bz2')
+write_adjlist(G,fname)
+H=read_adjlist(fname)
+sorted(G.nodes())==sorted(H.nodes())
+True
+sorted(G.edges())==sorted(H.edges())
+True
+os.unlink(fname)
+
