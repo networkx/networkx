@@ -1,8 +1,7 @@
-IO
-==
+gpickle
+=======
 
 >>> from networkx import *
->>> from networkx.io import *
 >>> from networkx.operators import *
 >>> import os,tempfile
 

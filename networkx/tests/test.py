@@ -13,11 +13,14 @@ def all():
               for t in resource_listdir("networkx",'tests') if t.endswith("txt")]
         tests+=[resource_filename(__name__, 'generators/'+t)
               for t in resource_listdir("networkx",'tests/generators') if t.endswith("txt")]
+        tests+=[resource_filename(__name__, 'readwrite/'+t)
+              for t in resource_listdir("networkx",'tests/readwrite') if t.endswith("txt")]
     except:
         import networkx
         base=os.path.dirname(networkx.__file__)+"/tests/"
         tests=glob.glob(base+"*.txt") 
         tests+=glob.glob(base+"generators/*.txt")
+        tests+=glob.glob(base+"readwrite/*.txt")
         #tests+=glob.glob("drawing/*.txt")  
 
     # tests depending on numpy
@@ -43,9 +46,9 @@ def all():
     try:
         import yaml
     except ImportError:
-        print "yaml not found: skipping tests of io.py (yaml)"
+        print "yaml not found: skipping tests of nx_yaml.py (yaml)"
         tests=[t for t in tests \
-               if 'io_yaml.txt' not in t\
+               if 'nx_yaml.txt' not in t\
                ]
 
 

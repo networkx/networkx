@@ -33,7 +33,7 @@ import string
 import sys
 import time
 
-from networkx.utils import is_string_like
+from networkx.utils import is_string_like,_get_fh
 import networkx
 
 def write_gpickle(G, path):
