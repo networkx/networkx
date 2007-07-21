@@ -104,7 +104,7 @@ except ImportError:
 
 from utils import is_string_like, iterable,\
                   pareto_sequence, powerlaw_sequence, uniform_sequence,\
-                  cumulative_distribution, discrete_sequence
+                  cumulative_distribution, discrete_sequence,_get_fh
 
 
 from convert import from_whatever,\

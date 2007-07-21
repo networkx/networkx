@@ -73,6 +73,30 @@ def is_list_of_ints( intlist ):
         if not isinstance(i,int): return False
     return True
 
+def _get_fh(path, mode='r'):
+    """ Return a file handle for given path.
+
+    Path can be a string or a file handle.
+
+    Attempt to uncompress/compress files ending in '.gz' and '.bz2'.
+
+    """
+    if is_string_like(path):
+        if path.endswith('.gz'):
+            import gzip
+            fh = gzip.open(path,mode=mode)
+        elif path.endswith('.bz2'):
+            import bz2
+            fh = bz2.BZ2File(path,mode=mode)
+        else:
+            fh = file(path,mode=mode)
+    elif hasattr(path, 'seek'):
+        fh = path
+    else:
+        raise ValueError('path must be a string or file handle')
+    return fh
+
+
 ##def iterable(obj):
 ##  """ Return True if obj is iterable with a well-defined len()"""
 ##    try:
