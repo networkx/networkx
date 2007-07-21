@@ -83,3 +83,109 @@ NetworkXError: Not allowed for directed graph G.
               Use UG=G.to_undirected() to create an undirected graph.
 
 
+
+Strongly Connected components
+-----------------------------
+
+>>> from networkx import *
+
+>>> G1=NX.DiGraph()
+>>> G1.add_edges_from([(1,2),(2,3),(2,8),(3,4),(3,7),(4,5),(5,3),(5,6),(7,4),(7,6),(8,1),(8,7)])
+>>> C1=[[1, 2, 8], [3, 4, 5, 7], [6]]
+
+>>> G2 = NX.DiGraph()
+>>> G2.add_edges_from([(1,2),(1,3),(1,4),(4,2),(3,4),(2,3)])
+>>> C2 = [[1], [2, 3, 4]]
+
+>>> G3 = NX.DiGraph()
+>>> G3.add_edges_from([(1,2),(2,3),(3,2),(2,1)])
+>>> C3 = [[1, 2, 3]]
+
+Eppstein's tests
+
+>>> G4 = NX.DiGraph({ 0:[1],1:[2,3],2:[4,5],3:[4,5],4:[6],5:[],6:[]})
+>>> C4 = [[0],[1],[2],[3],[4],[5],[6]]
+    
+>>> G5 = NX.DiGraph({0:[1],1:[2,3,4],2:[0,3],3:[4],4:[3]})
+>>> C5 = [[0,1,2],[3,4]]
+
+
+
+Tarjan
+
+>>> scc=strongly_connected_components
+>>> sorted([sorted(g) for g in scc(G1)])==C1
+True
+>>> sorted([sorted(g) for g in scc(G2)])==C2
+True
+>>> sorted([sorted(g) for g in scc(G3)])==C3
+True
+>>> sorted([sorted(g) for g in scc(G4)])==C4
+True
+>>> sorted([sorted(g) for g in scc(G5)])==C5
+True
+
+Tarjan Recursive
+
+>>> scc=strongly_connected_components_recursive
+>>> sorted([sorted(g) for g in scc(G1)])==C1
+True
+>>> sorted([sorted(g) for g in scc(G2)])==C2
+True
+>>> sorted([sorted(g) for g in scc(G3)])==C3
+True
+>>> sorted([sorted(g) for g in scc(G4)])==C4
+True
+>>> sorted([sorted(g) for g in scc(G5)])==C5
+True
+
+Kosaraju
+
+>>> scc=kosaraju_strongly_connected_components
+>>> sorted([sorted(g) for g in scc(G1)])==C1
+True
+>>> sorted([sorted(g) for g in scc(G2)])==C2
+True
+>>> sorted([sorted(g) for g in scc(G3)])==C3
+True
+>>> sorted([sorted(g) for g in scc(G4)])==C4
+True
+>>> sorted([sorted(g) for g in scc(G5)])==C5
+True
+
+
+Number of strongly connected components
+
+>>> ncc=number_strongly_connected_components
+>>> ncc(G1)==len(C1)
+True
+>>> ncc(G2)==len(C2)
+True
+>>> ncc(G3)==len(C3)
+True
+>>> ncc(G4)==len(C4)
+True
+>>> ncc(G5)==len(C5)
+True
+
+
+>>> is_strongly_connected(G3)
+True
+
+
+Subgraphs
+
+>>> scc=strongly_connected_component_subgraphs
+>>> sorted([sorted(g.nodes()) for g in scc(G1)])==C1
+True
+>>> sorted([sorted(g.nodes()) for g in scc(G2)])==C2
+True
+>>> sorted([sorted(g.nodes()) for g in scc(G3)])==C3
+True
+>>> sorted([sorted(g.nodes()) for g in scc(G4)])==C4
+True
+>>> sorted([sorted(g.nodes()) for g in scc(G5)])==C5
+True
+
+
+
