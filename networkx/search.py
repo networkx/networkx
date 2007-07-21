@@ -15,6 +15,7 @@ __revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
+import networkx
 def dfs_preorder(G,source=None,reverse_graph=False):
     """
     Return list of nodes connected to source in DFS preorder.
