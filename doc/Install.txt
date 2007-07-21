@@ -116,13 +116,23 @@ NetworkX will work without the following
 Installing Optional Packages
 ----------------------------
 
-NetworkX uses Matplotlib for drawing graphs.  The easiest way to 
-Matplotlib is to install pre-built binary packages for your platform.  See the
-instructions at 
+For Windows and OSX (non-fink, non-MacPorts) the easiest way to
+get Matplotlib/Numpy/Scipy installed is to follow the directions for
+installing pre-built Scipy binary packages at http://scipy.org/Download
+
+For Linux systems try installing binary packages through your package
+management system.
+
+Matplotlib
+~~~~~~~~~~
+
+NetworkX uses Matplotlib for drawing graphs.  
+For installation see the instructions at 
 
  - http://matplotlib.sourceforge.net/installing.html
 
-Matplotlib uses numpy for numerical array computing. 
+Matplotlib uses numpy for numerical array computing (see above comment
+on how to install Matplotlib/Numpy/Scipy all together). 
 
 Additional useful packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
