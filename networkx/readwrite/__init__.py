@@ -20,4 +20,5 @@ from gpickle import read_gpickle,write_gpickle
 from nx_yaml import read_yaml, write_yaml
 from graphml import read_graphml, parse_graphml
 from leda import read_leda, parse_leda
-
+from sparsegraph6 import read_graph6,parse_graph6,read_graph6_list,\
+     read_sparse6,parse_sparse6,read_sparse6_list
