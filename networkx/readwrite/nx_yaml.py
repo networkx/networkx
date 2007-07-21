@@ -21,8 +21,7 @@ import string
 import sys
 import time
 
-from networkx.utils import is_string_like
-from io import _get_fh
+from networkx.utils import is_string_like, _get_fh
 import networkx
 
 def write_yaml(G, path, default_flow_style=False, **kwds):
