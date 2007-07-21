@@ -18,3 +18,5 @@ from adjlist import  read_multiline_adjlist, write_multiline_adjlist, \
 from edgelist import read_edgelist,write_edgelist
 from gpickle import read_gpickle,write_gpickle
 from nx_yaml import read_yaml, write_yaml
+from graphml import read_graphml, parse_graphml
+

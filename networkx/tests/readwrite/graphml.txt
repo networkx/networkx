@@ -1,0 +1,27 @@
+>>> from networkx import *
+>>> from networkx.operators import *
+>>> import os,tempfile
+
+>>> data="""<?xml version="1.0" encoding="UTF-8"?>\n<!-- This file was written by the JAVA GraphML Library.-->\n<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\nxsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n  <graph id="G" edgedefault="directed">\n    <node id="n0"/>\n    <node id="n1"/>\n    <node id="n2"/>\n    <node id="n3"/>\n    <node id="n4"/>\n    <node id="n5"/>\n    <node id="n6"/>\n    <node id="n7"/>\n    <node id="n8"/>\n    <node id="n9"/>\n    <node id="n10"/>\n    <edge id="foo" source="n0" target="n2"/>\n    <edge source="n1" target="n2"/>\n    <edge source="n2" target="n3"/>\n    <edge source="n3" target="n5"/>\n    <edge source="n3" target="n4"/>\n    <edge source="n4" target="n6"/>\n    <edge source="n6" target="n5"/>\n    <edge source="n5" target="n7"/>\n    <edge source="n6" target="n8"/>\n    <edge source="n8" target="n7"/>\n    <edge source="n8" target="n9"/>\n    <edge source="n8" target="n10" directed="false"/>\n  </graph>\n</graphml>"""
+
+>>> G=parse_graphml(data)
+
+>>> print sorted(G.nodes())
+[u'n0', u'n1', u'n10', u'n2', u'n3', u'n4', u'n5', u'n6', u'n7', u'n8', u'n9']
+
+>>> print [sorted(e) for e in sorted(G.edges())]
+[[u'foo', u'n0', u'n2'], [None, u'n1', u'n2'], [None, u'n10', u'n8'], [None, u'n2', u'n3'], [None, u'n3', u'n4'], [None, u'n3', u'n5'], [None, u'n4', u'n6'], [None, u'n5', u'n7'], [None, u'n5', u'n6'], [None, u'n6', u'n8'], [None, u'n10', u'n8'], [None, u'n7', u'n8'], [None, u'n8', u'n9']]
+
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> fh=open(fname,'w')
+>>> fh.write(data)
+>>> fh.close()
+>>> Gin=read_graphml(fname)
+>>> sorted(G.nodes())==sorted(Gin.nodes())
+True
+>>> sorted(G.edges())==sorted(Gin.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
