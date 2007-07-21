@@ -2,7 +2,7 @@
 """
 Connected components and strongly connected components.
 """
-__authors__ = """Eben Kenah\nAric Hagberg (hagberg@lanl.gov)"""
+__authors__ = """Eben Kennah (ekenah@t7.lanl.gov)\nAric Hagberg (hagberg@lanl.gov)"""
 ___revision__ = ""
 #    Copyright (C) 2004-2007 by 
 #    Aric Hagberg <hagberg@lanl.gov>
