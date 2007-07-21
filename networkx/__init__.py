@@ -105,11 +105,7 @@ except ImportError:
 from utils import is_string_like, iterable,\
                   pareto_sequence, powerlaw_sequence, uniform_sequence,\
                   cumulative_distribution, discrete_sequence
-from io import write_gpickle, read_gpickle, \
-   read_edgelist, write_edgelist, \
-   read_multiline_adjlist, write_multiline_adjlist, \
-   read_adjlist, write_adjlist,\
-   read_yaml, write_yaml
+
 
 from convert import from_whatever,\
      from_dict_of_dicts, to_dict_of_dicts,\
@@ -123,6 +119,9 @@ from generators.small import *
 from generators.random_graphs import *
 from generators.degree_seq import *
 from generators.directed import *
+# drawing
 from drawing import *
+# read/write graphs in various formats
+from readwrite import *
 
 from tests import run as test
