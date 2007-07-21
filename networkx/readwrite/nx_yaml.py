@@ -60,7 +60,7 @@ def read_yaml(path):
 def _test_suite():
     import doctest
     import yaml
-    suite = doctest.DocFileSuite('tests/readwrite/io_yaml.txt',package='networkx')
+    suite = doctest.DocFileSuite('tests/readwrite/nx_yaml.txt',package='networkx')
     return suite
 
 if __name__ == "__main__":
