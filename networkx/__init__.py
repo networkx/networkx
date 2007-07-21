@@ -81,7 +81,7 @@ from component import \
      kosaraju_strongly_connected_components
 
 from search import dfs_preorder, dfs_postorder, dfs_predecessor,\
-            dfs_successor, bfs_length, bfs_path, dfs_forest
+            dfs_successor, dfs_tree
 from cluster import triangles, average_clustering, clustering, transitivity
 from operators import union, cartesian_product, compose, complement,\
                       disjoint_union, create_empty_copy,\

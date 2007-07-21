@@ -1,133 +1,185 @@
 """
-Search algorithms, shortest path, spanning trees, etc.
+Search algorithms.
 
-See also networkx.paths.
-
-The following search methods available, see the documentation below.
-
- - number_connected_components(G)
- - connected_components(G)
- - connected_component_subgraphs(G)
- - dfs_preorder(G,v=None)
- - dfs_postorder(G,v=None)
- - dfs_predecessor(G,v=None)
- - dfs_successor(G,v=None)
- - bfs_length(G,source=None,target=None)
- - bfs_path(G,source,target=None)
- - dfs_forest(G,v=None)
-
-These algorithms are based on Program 18.10 "Generalized graph search",
-page 128, Algorithms in C, Part 5, Graph Algorithms by Robert Sedgewick
-
-Reference::
-
-  @Book{sedgewick-2001-algorithms-5,
-  author = 	 {Robert Sedgewick},
-  title = 	 {Algorithms in C, Part 5: Graph Algorithms},
-  publisher = 	 {Addison Wesley Professional},
-  year = 	 {2001},
-  edition = 	 {3rd},
-  }
+See also networkx.path.
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = "$Date: 2005-06-15 08:19:25 -0600 (Wed, 15 Jun 2005) $"
+__authors__ = """Eben Kennah (ekenah@t7.lanl.gov)\nAric Hagberg (hagberg@lanl.gov)"""
+__date__ = ""
 __credits__ = """"""
-__revision__ = "$Revision: 1026 $"
-#    Copyright (C) 2004,2005 by 
+__revision__ = ""
+#    Copyright (C) 2004-2007 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
-import networkx.queues
-import search_class as SC
 
-def dfs_preorder(G,v=None):
+def dfs_preorder(G,source=None,reverse_graph=False):
     """
-    Return a list of nodes ordered by depth first search (DFS) preorder. 
-    If the graph has more than one component return a list of lists.
-    Optional v=v limits search to component of graph containing v.
+    Return list of nodes connected to source in DFS preorder.
+    Traverse the graph G with depth-first-search from source.
+    Non-recursive algorithm.
     """
-    V=SC.Preorder(G, queue=networkx.queues.DFS)
-    V.search(v)
-    return V.forest
+    if source is None:
+        nlist=G.nodes() # process entire graph
+    else:
+        nlist=[source]  # only process component with source
 
-def dfs_postorder(G,v=None):
-    """
-    Return a list of nodes ordered by depth first search (DFS) postorder. 
-    If the graph has more than one component return a list of lists.
-    Optional v=v limits search to component of graph containing v.
-    """
-    V=SC.Postorder(G,queue=networkx.queues.DFS)
-    V.search(v)
-    return V.forest
-
-
-def dfs_predecessor(G,v=None):
-    """
-    Return a dictionary of nodes each with a list of predecessor
-    nodes in depth first search (DFS) order.
-    Optional v=v limits search to component of graph containing v.
-    """
-    V=SC.Predecessor(G,queue=networkx.queues.DFS)
-    V.search(v)
-    return V.data
-
-
-def dfs_successor(G,v=None):
-    """
-    Return a dictionary of nodes each with a list of successor
-    nodes in depth first search (DFS) order.
-    Optional v=v limits search to component of graph containing v.
-    """
-    V=SC.Successor(G,queue=networkx.queues.DFS)
-    V.search(v)
-    return V.data
-
-def bfs_length(G,source,target=None):
-    """
-    Return a dictionary of nodes with the shortest path length from source.
-    """
-    V=SC.Length(G,queue=networkx.queues.BFS)
-    V.search(source)
-    if target!=None:
+    if reverse_graph==True:
         try:
-            return V.length[target]
-        except KeyError:
-            return -1 # no target in graph
+            neighbors=G.in_neighbors
+        except:
+            neighbors=G.neighbors
     else:
-        return V.length
+        neighbors=G.neighbors
 
-def bfs_path(G,source,target=None):
+    seen={} # nodes seen      
+    pre=[]  # list of nodes in a DFS preorder
+    for source in nlist:
+        if source in seen: continue
+        queue=[source]     # use as LIFO queue
+        while queue:
+            v=queue[-1]
+            if v not in seen:
+                pre.append(v)
+                seen[v]=True
+            done=1
+            for w in neighbors(v):
+                if w not in seen:
+                    queue.append(w)
+                    done=0
+                    break
+            if done==1:
+                queue.pop()
+    return pre
+
+
+def dfs_postorder(G,source=None,reverse_graph=False):
     """
-    Return a dictionary of nodes with the paths 
-    from source to all reachable nodes.
-    Optional target=target produces only one path as a list.
+    Return list of nodes connected to source in DFS preorder.
+    Traverse the graph G with depth-first-search from source.
+    Non-recursive algorithm.
     """
-    V=SC.Predecessor(G,queue=networkx.queues.BFS)
-    V.search(source)
-    if target!=None:
-        path=V.path(target)
-        path.insert(0,source)
-        return path # return one path
+    if source is None:
+        nlist=G.nodes() # process entire graph
     else:
-        paths={}
-        for k in V.data.keys():
-            paths[k]=V.path(k)
-            paths[k].insert(0,source)
-        return paths
+        nlist=[source]  # only process component with source
+    
+    if reverse_graph==True:
+        try:
+            neighbors=G.in_neighbors
+        except:
+            neighbors=G.neighbors
+    else:
+        neighbors=G.neighbors
+    
+    seen={} # nodes seen      
+    post=[] # list of nodes in a DFS postorder
+    for source in nlist:
+        if source in seen: continue
+        queue=[source]     # use as LIFO queue
+        while queue:
+            v=queue[-1]
+            if v not in seen:
+                seen[v]=True
+            done=1
+            for w in neighbors(v):
+                if w not in seen:
+                    queue.append(w)
+                    done=0
+                    break
+            if done==1:
+                post.append(v)
+                queue.pop()
+    return post
 
 
-def dfs_forest(G,v=None):
+def dfs_tree(G,source=None,reverse_graph=False):
+    """Return directed graph (tree) of depth-first-search with root at source.
+    If the graph is disconnected, return a disconnected graph (forest).
     """
-    Return a forest of trees built from depth first search (DFS).
-    Optional v=v limits search to component of graph containing v
-    and will return a single tree.
+    succ=dfs_successor(G,source=source,reverse_graph=reverse_graph)
+    return networkx.DiGraph(succ)
+
+def dfs_predecessor(G,source=None,reverse_graph=False):
     """
-    V=SC.Forest(G,queue=networkx.queues.DFS)
-    V.search(v)
-    return V.forest
+    Return predecessors of depth-first-search with root at source.
+    """
+    if source is None:
+        nlist=G.nodes() # process entire graph
+    else:
+        nlist=[source]  # only process component with source
+
+    if reverse_graph==True:
+        try:
+            neighbors=G.in_neighbors
+        except:
+            neighbors=G.neighbors
+    else:
+        neighbors=G.neighbors
+
+    seen={}   # nodes seen      
+    pred={}
+    for source in nlist:
+        if source in seen: continue
+        queue=[source]     # use as LIFO queue
+        pred[source]=[]
+        while queue:
+            v=queue[-1]
+            if v not in seen:
+                seen[v]=True
+            done=1
+            for w in neighbors(v):
+                if w not in seen:
+                    queue.append(w)
+                    pred[w]=[v]     # Each node has at most one predecessor
+                    done=0
+                    break
+            if done==1:
+                queue.pop()
+    return pred
+
+
+def dfs_successor(G,source=None,reverse_graph=False):
+    """
+    Return succesors of depth-first-search with root at source.
+    """
+
+    if source is None:
+        nlist=G.nodes() # process entire graph
+    else:
+        nlist=[source]  # only process component with source
+
+    if reverse_graph==True:
+        try:
+            neighbors=G.in_neighbors
+        except:
+            neighbors=G.neighbors
+    else:
+        neighbors=G.neighbors
+
+    seen={}   # nodes seen      
+    succ={}
+    for source in nlist:
+        if source in seen: continue
+        queue=[source]     # use as LIFO queue
+        while queue:
+            v=queue[-1]
+            if v not in seen:
+                seen[v]=True
+                succ[v]=[]
+            done=1
+            for w in neighbors(v):
+                if w not in seen:
+                    queue.append(w)
+                    succ[v].append(w)
+                    done=0
+                    break
+            if done==1:
+                queue.pop()
+    return succ
+
 
 def _test_suite():
     import doctest
