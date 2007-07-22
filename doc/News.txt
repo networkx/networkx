@@ -3,6 +3,31 @@
 NetworkX News
 =============
 
+NetworkX-0.35
+-------------
+
+Release date: 22 July 2007
+
+See: https://networkx.lanl.gov/timeline
+
+New features
+~~~~~~~~~~~~
+  - algorithms for strongly connected components.
+  - Brandes betweenness centrality algorithm (weighted and unweighted versions) 
+  - closeness centrality for weighted graphs
+  - dfs_preorder, dfs_postorder, dfs_tree, dfs_successor, dfs_predecessor
+  - readers for GraphML, LEDA, sparse6, and graph6 formats.
+  - allow arguments in graphviz_layout to be passed directly to graphviz
+
+Bug fixes
+~~~~~~~~~
+  - more detailed installation instructions
+  - replaced dfs_preorder,dfs_postorder (see search.py)
+  - allow initial node positions in spectral_layout
+  - report no error on attempting to draw empty graph
+  - report errors correctly when using tuples as nodes #114
+  - handle conversions from incomplete dict-of-dict data
+
 NetworkX-0.34
 -------------
 
