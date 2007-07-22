@@ -79,7 +79,7 @@ or install it).
 
 Source Archive File
 ~~~~~~~~~~~~~~~~~~~
-  - Download the source (tar.gz or zip file) (see Downloads)
+  - Download the source (tar.gz or zip file).
   - Unpack and change directory to networkx-x.xx where x.xx is the version number
   - Run "python setup.py install" to build and install 
   - (optional) cd networkx/tests and run "python setup_egg.py test" to execute the tests

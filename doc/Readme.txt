@@ -53,28 +53,6 @@ Quick Example
    [(1, 2)]
 
 
-Requirements
--------------
-
-   To use NetworkX you need
-
-      - Python version 2.3 or later http://www.python.org/
-
-   Optional packages to enable drawing networks:
-
-      - Matplotlib       http://matplotlib.sourceforge.net/
-      - numpy		 http://numpy.scipy.org/
-      - pygraphviz	 http://networkx.lanl.gov/pygraphviz/
-      - Graphviz         http://graphviz.org/
-
-   Optional useful packages:
-
-      - Ipython          http://ipython.scipy.org/
-      - SciPy		 http://scipy.org/
-      - PyGSL            http://pygsl.sourceforge.net/
-      - sAsync		 http://foss.eepatents.com/sAsync                
-      - PyYAML		 http://pyyaml.org/
-
 Download
 --------
 
@@ -84,29 +62,6 @@ Download
      - NetworkX site: https://networkx.lanl.gov/download/?C=M;O=D
 
    - Subversion repository: https://networkx.lanl.gov/svn/networkx/trunk
-
-
-Quick Install
--------------
-
-   Installing from source:
-
-      - Download the source (tar.gz or zip file)
-      - Unpack and change directory to networkx-x.xx where x.xx is the version number
-      - Run "python setup.py install" to build and install
-      - (optional) cd networkx/tests and run "python setup_egg.py test" to execute the tests
-      
-    
-   Installing a Python egg from source:
-
-      - Download the source (tar.gz or zip file)
-      - Unpack and change directory to networkx-x.xx where x.xx is the version number
-      - Run "python setup_egg.py install" to build and install
-      - (optional) run "python setup_egg.py test" to execute the tests
-
-
-See Install for more details.
-
 
 
 Authors
