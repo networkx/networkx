@@ -7,7 +7,7 @@ If you don't have Python installed on your system:
 
 Windows
 ~~~~~~~
-The easiest way to get Python and most optional packages it to install
+The easiest way to get Python and most optional packages is to install
 the Enthought Python distribution: http://code.enthought.com/enthon/
 
 Other options are
@@ -36,20 +36,18 @@ If you are using Fink or MacPorts, Python is available through both
 of those package systems.
 
 
-Installing Pre-built packages
------------------------------
+Installing Pre-built NetworkX packages
+--------------------------------------
 
-The following pre-built packages are available:
+The following pre-built NetworkX packages are available:
 
 Windows
 ~~~~~~~
-Download and run the latest version of the Windows installer (.exe extension)
-(See Download).
+Download and run the latest version of the Windows installer (.exe extension).
 
 OSX (Pythonmac)
 ~~~~~~~~~~~~~~~
-Download and install the mpkg for your system (see Download).
-
+Download and install the latest mpkg for your system.
 
 Linux
 ~~~~~
@@ -71,13 +69,11 @@ Run
 and an attempt will be made to find and install an appropriate version
 that matches your operating system and Python version. 
 
-
-
 Installing from Source
 ----------------------
 
 You can install from source by downloading a source archive file
-(tar.gz or zip) or checking out the files from the Subversion repository.
+(tar.gz or zip) or by checking out the files from the Subversion repository.
 NetworkX is a pure Python package (you don't need a compiler to build
 or install it).
 
@@ -94,13 +90,14 @@ Make sure you have Subversion installed (SVN)
 
   - Check out the networkx trunk: svn co https://networkx.lanl.gov/svn/networkx/trunk networkx
   - Run "python setup.py install" to build and install 
-  - (optional) cd networkx/tests and run "python setup_egg.py test" to execute the tests
+  - (optional) run "python setup_egg.py test" to execute the tests
 
 
 Optional packages 
 -----------------
 
-NetworkX will work without the following 
+NetworkX will work without the following optional packages.
+But to enable all functionality you will need the following:
 
  - To enable drawing networks with matplotlib you need
 
@@ -139,7 +136,6 @@ Additional useful packages
 These are extra packages you may consider to use with NetworkX
 
       - IPython, interactive Python shell, http://ipython.scipy.org/
-      - NumPy, high performance arrays for Python, http://scipy.org/
       - SciPy, scientific computing package, http://scipy.org/
       - sAsync, persistent storage with SQL, http://foss.eepatents.com/sAsync  
       - PyYAML, structured output format, http://pyyaml.org/
