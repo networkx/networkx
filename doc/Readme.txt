@@ -59,7 +59,7 @@ Download
    - Releases
 
      - Python Cheese Shop:  http://cheeseshop.python.org/pypi/networkx/
-     - NetworkX site: https://networkx.lanl.gov/download/?C=M;O=D
+     - NetworkX site: https://networkx.lanl.gov/download/networkx/
 
    - Subversion repository: https://networkx.lanl.gov/svn/networkx/trunk
 
