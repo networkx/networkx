@@ -66,8 +66,7 @@ from path import  \
      dijkstra_path, dijkstra_path_length, bidirectional_dijkstra,\
      single_source_dijkstra_path, single_source_dijkstra_path_length,\
      single_source_dijkstra,\
-     dijkstra_predecessor_and_distance, predecessor, floyd_warshall,\
-     bfs, dfs
+     dijkstra_predecessor_and_distance, predecessor, floyd_warshall
 from dag import \
      topological_sort, topological_sort_recursive,\
      is_directed_acyclic_graph
