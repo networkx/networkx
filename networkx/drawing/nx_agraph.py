@@ -19,7 +19,7 @@ __credits__ = """"""
 #    http://www.gnu.org/copyleft/lesser.html
 import os
 import sys
-from networkx.io import _get_fh
+from networkx.utils import _get_fh
 try:
     import pygraphviz
 except ImportError:

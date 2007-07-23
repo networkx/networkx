@@ -41,8 +41,7 @@ __revision__ = "$Revision: 1034 $"
 #    http://www.gnu.org/copyleft/lesser.html
 import os
 import sys
-from networkx.utils import is_string_like
-from networkx.io import _get_fh
+from networkx.utils import is_string_like,_get_fh
 try:
     import pygraphviz
 except ImportError:
