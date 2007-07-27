@@ -31,8 +31,8 @@ def parse_leda(lines):
     """Parse LEDA.GRAPH format from string or iterable.
     Returns an XGraph or XDiGraph."""
     if is_string_like(lines): lines=iter(lines.split('\n'))
-    lines = (line.rstrip('\n') for line in lines \
-            if not (line.startswith('#') or line.startswith('\n') or line==''))
+    lines = iter([line.rstrip('\n') for line in lines \
+            if not (line.startswith('#') or line.startswith('\n') or line=='')])
     for i in range(3):
         lines.next()
     # Graph

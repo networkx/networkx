@@ -13,6 +13,7 @@ include doc/examples/sample.mbox
 include networkx/tests/*.txt
 include networkx/tests/drawing/*.txt
 include networkx/tests/generators/*.txt
+include networkx/tests/readwrite/*.txt
 
 global-exclude *~
 global-exclude *.pyc

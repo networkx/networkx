@@ -26,9 +26,11 @@ execfile(os.path.join('networkx','release.py'))
 packages=["networkx",
           "networkx.generators",
           "networkx.drawing",
+          "networkx.readwrite",
           "networkx.tests",
           "networkx.tests.generators",
           "networkx.tests.drawing",
+          "networkx.tests.readwrite",
           ]
 
 docdirbase  = 'share/doc/networkx-%s' % version
