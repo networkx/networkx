@@ -3,6 +3,17 @@
 NetworkX News
 =============
 
+NetworkX-0.35.1
+---------------
+
+Release date: 27 July 2007
+
+See: https://networkx.lanl.gov/timeline
+
+Small update to fix import readwrite problem and maintain Python2.3
+compatibility.
+
+
 NetworkX-0.35
 -------------
 
