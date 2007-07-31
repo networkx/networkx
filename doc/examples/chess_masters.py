@@ -51,9 +51,9 @@ def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
     Edges contain game data in a dict.
 
     """
-    try:# use networkx.io._get_fh to uncompress
+    try:# use networkx.utils._get_fh to uncompress
         # pgn file if required
-        datafile=io._get_fh(pgn_file,mode='rb')
+        datafile=utils._get_fh(pgn_file,mode='rb')
     except IOError:
         print "Could not read file %s."%(pgn_file)
         raise
