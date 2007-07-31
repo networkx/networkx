@@ -1,8 +1,5 @@
 Download
 --------
-
-Latest release is 0.34, released 2007-04-12
-
 Source and binary releases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
  - http://cheeseshop.python.org/pypi/networkx/
