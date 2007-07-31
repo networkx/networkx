@@ -4,7 +4,7 @@ Search algorithms.
 See also networkx.path.
 
 """
-__authors__ = """Eben Kennah (ekenah@t7.lanl.gov)\nAric Hagberg (hagberg@lanl.gov)"""
+__authors__ = """Eben Kenah (ekenah@t7.lanl.gov)\nAric Hagberg (hagberg@lanl.gov)"""
 __date__ = ""
 __credits__ = """"""
 __revision__ = ""
