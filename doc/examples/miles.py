@@ -3,7 +3,7 @@
 An example using networkx.XGraph().
 
 miles_graph() returns an undirected graph over the 128 US cities from
-the datafile miles.dat. The cities each have location and population
+the datafile miles_dat.txt. The cities each have location and population
 data.  The edges are labeled with the distance betwen the two cities.
 
 This example is described in Section 1.1 in Knuth's book [1,2].
@@ -30,18 +30,18 @@ import networkx as NX
 
 
 def miles_graph():
-    """ Return the cites example graph in miles.dat
+    """ Return the cites example graph in miles_dat.txt
         from the Stanford GraphBase.
     """
-    # open file miles.dat.gz (or miles.dat)
+    # open file miles_dat.txt.gz (or miles_dat.txt)
     try:
         try:
             import gzip
-            fh = gzip.open('miles.dat.gz','r')
+            fh = gzip.open('miles_dat.txt.gz','r')
         except:
-            fh=open("miles.dat","r")
+            fh=open("miles_dat.txt","r")
     except IOError:
-        raise "File miles.dat not found."
+        raise "File miles_dat.txt not found."
 
     G=NX.XGraph()
     G.position={}
@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
     G=miles_graph()
 
-    print "Loaded Donald Knuth's miles.dat containing 128 cities."
+    print "Loaded miles_dat.txt containing 128 cities."
     print "digraph has %d nodes with %d edges"\
           %(NX.number_of_nodes(G),NX.number_of_edges(G))
 

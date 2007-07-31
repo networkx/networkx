@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 """
-The roget.dat example from the Stanford Graph Base.
-
 Build a directed graph of 1022 categories and
 5075 cross-references as defined in the 1879 version of Roget's Thesaurus
-contained in the datafile roget.dat. This example is described in
+contained in the datafile roget_dat.txt. This example is described in
 Section 1.2 in Knuth's book [1,2].
 
 Note that one of the 5075 cross references is a self loop and
@@ -41,15 +39,15 @@ def roget_graph():
     """ Return the thesaurus graph from the roget.dat example in
     the Stanford Graph Base.
     """
-    # open file roget.dat.gz (or roget.dat)
+    # open file roget_dat.txt.gz (or roget_dat.txt)
     try:
         try:
             import gzip
-            fh=gzip.open('roget.dat.gz','r')
+            fh=gzip.open('roget_dat.txt.gz','r')
         except:
-            fh=open("roget.dat","r")
+            fh=open("roget_dat.txt","r")
     except IOError:
-        raise "File roget.dat not found."
+        raise "File roget_dat.txt not found."
 
     G=DiGraph()
 
@@ -80,7 +78,7 @@ def roget_graph():
 if __name__ == '__main__':
     from networkx import *
     G=roget_graph()
-    print "Loaded Donald Knuth's roget.dat containing 1022 categories."
+    print "Loaded roget_dat.txt containing 1022 categories."
     print "digraph has %d nodes with %d edges"\
           %(number_of_nodes(G),number_of_edges(G))
     UG=G.to_undirected()

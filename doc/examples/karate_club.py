@@ -2,8 +2,13 @@
 """
 Zachary's Karate Club graph
 
-Data from:
+Data file rom:
 http://vlado.fmf.uni-lj.si/pub/networks/data/Ucinet/UciData.htm
+
+Reference:
+Zachary W. (1977).
+An information flow model for conflict and fission in small groups.
+Journal of Anthropological Research, 33, 452-473.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\n Katy Bold (kbold@princeton.edu"""

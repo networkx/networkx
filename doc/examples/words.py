@@ -1,8 +1,6 @@
 """
-The words.dat example from the Stanford Graph Base.
-
 SGBWords() returns an undirected graph over the 5757 5-letter
-words in the datafile words.dat.  Two words are connected by an edge
+words in the datafile words_dat.txt.  Two words are connected by an edge
 if they differ in one letter, resulting in 14,135 edges. This example
 is described in Section 1.1 in Knuth's book [1,2].
 
@@ -60,18 +58,18 @@ def words_graph():
     """ Return the words example graph from the Stanford GraphBase"""
 
     import sys
-    # open file words.dat.gz (or words.dat)
+    # open file words_dat.txt.gz (or words_dat.txt)
     try:
         try:
             import gzip
-            fh=gzip.open('words.dat.gz','r')
+            fh=gzip.open('words_dat.txt.gz','r')
         except:
-            fh=open("words.dat","r")
+            fh=open("words_dat.txt","r")
     except IOError:
-        raise "File words.dat not found."
+        raise "File words_dat.txt not found."
 
     G = Graph(name="words")
-    sys.stderr.write("Loading words.dat: ")
+    sys.stderr.write("Loading words_dat.txt: ")
     for line in fh.readlines():
         if line.startswith("*"):
             continue
@@ -92,7 +90,7 @@ def words_graph():
 if __name__ == '__main__':
     from networkx import *
     G=words_graph()
-    print "Loaded Donald Knuth's words.dat containing 5757 five-letter English words."
+    print "Loaded words_dat.txt containing 5757 five-letter English words."
     print "Two words are connected if they differ in one letter."
     print "graph has %d nodes with %d edges"\
           %(number_of_nodes(G),number_of_edges(G))
