@@ -133,7 +133,7 @@ def complete_graph(n,create_using=None):
     G=empty_graph(n,create_using)
     G.name="complete_graph(%d)"%n
     for u in xrange(n):
-        for v in xrange(u,n):
+        for v in xrange(n):
             G.add_edge(u,v)
     return G
 
