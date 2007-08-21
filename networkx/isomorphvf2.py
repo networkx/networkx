@@ -988,4 +988,3 @@ if __name__ == "__main__":
     sys.path.insert(0,nxbase) # prepend to search path
     unittest.TextTestRunner().run(_test_suite())
     
-
