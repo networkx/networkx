@@ -160,7 +160,7 @@ class GraphMatcher(object):
                 if self.syntactic_feasibility(G1_node, G2_node):
                     if self.semantic_feasibility(G1_node, G2_node):
                         # Recursive call, adding the feasible state.
-                        self.match(GMState(self, G1_node,G2_node))
+                        self.match(GMState(self, G1_node, G2_node))
             # Garbage collection for GMState() will 'restore data structures'.
     
     def semantic_feasibility(self, G1_node, G2_node):
@@ -761,7 +761,7 @@ class GMState(object):
     
     ###
     ### The following variables are class variables.
-    ### So they will be shared by all instances of the DiGMState class.
+    ### So they will be shared by all instances of the GMState class.
     ### This is the improvement of the VF2 algorithm over the VF algorithm.
     ###
     
@@ -781,6 +781,7 @@ class GMState(object):
     # part of the corresponding set.
     inout_1 = {}
     inout_2 = {}
+    # Practically, these sets simply store the nodes in the subgraph.
     
     def __init__(self, GM, G1_node=None, G2_node=None):
         """Initializes GMState object.
@@ -821,14 +822,16 @@ class GMState(object):
             for node in GMState.core_1:
                 new_nodes.update([neighbor for neighbor in GM.G1.neighbors(node) if neighbor not in GMState.core_1])
             for node in new_nodes:
-                GMState.inout_1[node] = self.depth
-                
+                if node not in GMState.inout_1:
+                    GMState.inout_1[node] = self.depth
+
             # Updates for T_2^{inout}
             new_nodes = Set([])
             for node in GMState.core_2:
                 new_nodes.update([neighbor for neighbor in GM.G2.neighbors(node) if neighbor not in GMState.core_2])
             for node in new_nodes:
-                GMState.inout_2[node] = self.depth
+                if node not in GMState.inout_2:
+                    GMState.inout_2[node] = self.depth
                 
     def __del__(self):
         """Deletes the GMState object and restores the class variables."""
@@ -876,7 +879,7 @@ class DiGMState(object):
     # in_2[m]  is non-zero if m is in M_2 or in T_2^{in}
     # out_2[m] is non-zero if m is in M_2 or in T_2^{out}
     #
-    # The value stored is the depth of the SSR tree when the node became
+    # The value stored is the depth of the search tree when the node became
     # part of the corresponding set.
     in_1 = {}
     in_2 = {}
@@ -924,28 +927,32 @@ class DiGMState(object):
             for node in DiGMState.core_1:
                 new_nodes.update([predecessor for predecessor in DiGM.G1.predecessors(node) if predecessor not in DiGMState.core_1])
             for node in new_nodes:
-                DiGMState.in_1[node] = self.depth
+                if node not in DiGMState.in_1:
+                    DiGMState.in_1[node] = self.depth
                 
             # Updates for T_2^{in}
             new_nodes = Set([])
             for node in DiGMState.core_2:
                 new_nodes.update([predecessor for predecessor in DiGM.G2.predecessors(node) if predecessor not in DiGMState.core_2])
             for node in new_nodes:
-                DiGMState.in_2[node] = self.depth
+                if node not in DiGMState.in_2:
+                    DiGMState.in_2[node] = self.depth
                 
             # Updates for T_1^{out}
             new_nodes = Set([])        
             for node in DiGMState.core_1:
                 new_nodes.update([successor for successor in DiGM.G1.successors(node) if successor not in DiGMState.core_1])
             for node in new_nodes:
-                DiGMState.out_1[node] = self.depth
+                if node not in DiGMState.out_1:                
+                    DiGMState.out_1[node] = self.depth
     
             # Updates for T_2^{out}
             new_nodes = Set([])        
             for node in DiGMState.core_2:
                 new_nodes.update([successor for successor in DiGM.G2.successors(node) if successor not in DiGMState.core_2])
             for node in new_nodes:
-                DiGMState.out_2[node] = self.depth
+                if node not in DiGMState.out_2:
+                    DiGMState.out_2[node] = self.depth
 
     def __del__(self):
         """Deletes the DiGMState object and restores the class variables."""
