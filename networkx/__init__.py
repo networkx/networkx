@@ -87,8 +87,12 @@ from operators import union, cartesian_product, compose, complement,\
                       subgraph, convert_to_undirected, convert_to_directed,\
                       convert_node_labels_to_integers, relabel_nodes
 from centrality import betweenness_centrality, \
+                       betweenness_centrality_source, \
+                       load_centrality,\
                        newman_betweenness_centrality,\
                        brandes_betweenness_centrality,\
+                       edge_betweenness,\
+                       edge_load,\
                        degree_centrality, \
                        closeness_centrality
 from hybrid import kl_connected_subgraph, is_kl_connected

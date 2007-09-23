@@ -8,10 +8,7 @@ Centrality measures.
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
-__date__ = """"""
-__credits__ = """"""
-__revision__ = """"""
+__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nSasha Gutfraind (ag362@cornell.edu)"""
 
 from networkx.path import dijkstra_predecessor_and_distance, predecessor
 
@@ -32,6 +29,7 @@ def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
     A Faster Algorithm for Betweenness Centrality.
     Journal of Mathematical Sociology 25(2):163-177, 2001.
     http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+
 """
     import heapq
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
@@ -109,11 +107,10 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
                            normalized=True,
                            weighted_edges=False):
     """
-    This actually computes 'load' and not betweenness.
-
-    See https://networkx.lanl.gov/ticket/103
-
     "Load" centrality for nodes.
+
+    This actually computes 'load' and not betweenness.
+    See https://networkx.lanl.gov/ticket/103
 
     The fraction of number of shortests paths that go
     through each node counted according to the algorithm in 
@@ -214,8 +211,180 @@ betweenness_centrality=brandes_betweenness_centrality
 
 load_centrality=newman_betweenness_centrality
 
+def betweenness_centrality_source(G,normalized=True,
+                                  weighted_edges=False,
+                                  sources=None):
+    """
+    Enchanced version of the method in centrality module that allows
+    specifying a list of sources (subgraph).
 
-def edge_betweenness(G,nodes=False,cutoff=False):
+    weighted_edges:: consider edge weights by running Dijkstra's algorithm          (no effect on unweighted graphs).
+
+    sources:: list of nodes to consider as subgraph
+
+    See Sec. 4 in 
+    Ulrik Brandes,
+    A Faster Algorithm for Betweenness Centrality.
+    Journal of Mathematical Sociology 25(2):163-177, 2001.
+    http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+
+
+    This algorithm does not count the endpoints, i.e.
+    a path from s to t does not contribute to the betweenness of s and t.
+    """
+    import heapq
+    
+    if sources == None:
+        sources = G.nodes()
+
+    betweenness=dict.fromkeys(G,0.0)
+    for s in sources:
+        S,P,D,sigma = _brandes_betweenness_helper(G,s,weighted_edges)
+
+        delta=dict.fromkeys(G,0) # unnormalized betweenness
+        while S:
+            w=S.pop()
+            for v in P[w]:
+                delta[v] = delta[v] + \
+                           (float(sigma[v])/float(sigma[w]))*(1.0+delta[w])
+            if w == s:
+                continue
+            betweenness[w] = betweenness[w] + delta[w]
+                   
+    # normalize to size of entire graph
+    if normalized and G.number_of_edges() > 1:
+        order=len(betweenness)
+        scale=1.0/((order-1)*(order-2))
+        for v in betweenness:
+            betweenness[v] *= scale
+
+    return betweenness
+
+
+def edge_betweenness(G,normalized=True,weighted_edges=False,sources=None):
+    """
+    Edge betweenness centrality. 
+
+    weighted_edges:: consider edge weights by running Dijkstra's algorithm          (no effect on unweighted graphs).
+
+    sources:: list of nodes to consider as subgraph
+
+    """
+    import heapq
+    
+    if sources == None:
+        sources = G.nodes()
+
+    if not weighted_edges:
+        betweenness=dict.fromkeys(G.edges(),0.0)
+    else:
+        betweenness=dict.fromkeys(map(lambda x:x[0:2], G.edges()), 0.0)
+
+    if G.is_directed():
+        for s in sources:
+            S, P, D, sigma =_brandes_betweenness_helper(G,s,weighted_edges)
+            delta=dict.fromkeys(G,0.0)
+            while S:
+                w=S.pop()
+                for v in P[w]:
+                    edgeFlow = (float(sigma[v])/float(sigma[w]))*(1.0+delta[w])
+                    edge = (v,w)
+                    delta[v]          += edgeFlow
+                    betweenness[edge] += edgeFlow
+    else:
+        for s in sources:
+            S, P, D, sigma =_brandes_betweenness_helper(G,s,weighted_edges)
+            delta=dict.fromkeys(G,0.0)
+            while S:
+                w=S.pop()
+                for v in P[w]:
+                    edgeFlow = (float(sigma[v])/float(sigma[w]))*(1.0+delta[w])
+                    if betweenness.has_key((v,w)):
+                        edge = (v,w)
+                    else:
+                        edge = (w,v)
+                    delta[v]          += edgeFlow
+                    betweenness[edge] += edgeFlow
+
+                   
+    if normalized and G.number_of_edges() > 1:
+        # normalize to size of entire graph (beware of disconnected components)
+        order=len(betweenness)
+        scale=1.0/((order-1)*(order-2))
+        for edge in betweenness:
+            betweenness[edge] *= scale
+
+    return betweenness
+
+
+def _brandes_betweenness_helper(G,root,weighted_edges):
+    """
+    Helper for betweenness centrality and edge betweenness centrality.
+
+    Runs single-source shortest path from root node.
+
+    weighted_edges:: consider edge weights 
+
+    Finds::
+
+    S=[] list of nodes reached during traversal
+    P={} predecessors, keyed by child node
+    D={} distances
+    sigma={} indexed by node, is the number of paths to root
+    going through the node
+    """
+    import heapq
+    S=[]
+    P={}
+    for v in G:
+        P[v]=[]
+    sigma=dict.fromkeys(G,0.0)
+    D={}
+    sigma[root]=1
+
+    if not weighted_edges:  # use BFS
+        D[root]=0
+        Q=[root]
+        while Q:   # use BFS to find shortest paths
+            v=Q.pop(0)
+            S.append(v)
+            for w in G.neighbors(v): #  for w in G.adj[v]: # speed hack, exposes internals
+                if w not in D:
+                    Q.append(w)
+                    D[w]=D[v]+1
+                if D[w]==D[v]+1:   # this is a shortest path, count paths
+                    sigma[w]=sigma[w]+sigma[v]
+                    P[w].append(v) # predecessors
+    else:  # use Dijkstra's algorithm for shortest paths,
+           # modified from Eppstein
+        push=heapq.heappush
+        pop=heapq.heappop
+        seen = {root:0}
+        Q=[]   # use Q as heap with (distance,node id) tuples
+        push(Q,(0,root,root))
+        while Q:   
+            (dist,pred,v)=pop(Q)
+            if v in D:
+                continue # already searched this node.
+            sigma[v]=sigma[v]+sigma[pred] # count paths
+            S.append(v)
+            D[v] = seen[v]
+#                for w in G.adj[v]: # speed hack, exposes internals
+            for w in G.neighbors(v): #  for w in G.adj[v]: # speed hack, exposes internals
+                vw_dist = D[v] + G.get_edge(v,w)
+                if w not in D and (w not in seen or vw_dist < seen[w]):
+                    seen[w] = vw_dist
+                    push(Q,(vw_dist,v,w))
+                    P[w]=[v]
+                elif vw_dist==seen[w]:  # handle equal paths
+                    sigma[w]=sigma[w]+sigma[v]
+                    P[w].append(v)
+    return S, P, D, sigma
+
+
+
+
+def edge_load(G,nodes=False,cutoff=False):
     """
     Edge Betweenness 
 
@@ -271,7 +440,8 @@ def degree_centrality(G,v=None):
 
     Returns a dictionary of degree centrality values keyed by node.
 
-    The degree centrality is normalized to be between 0 and 1.
+    The degree centrality is normalized to the maximum possible degree
+    in the graph G.
 
     """
     degree_centrality={}
