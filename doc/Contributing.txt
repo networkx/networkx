@@ -10,9 +10,13 @@ Bug Tracking and Feature Requests
 ---------------------------------
 
 Use the Trac ticket_ system to report a bug, or request a feature.
+
 Because of ongoing spam problems you will need to register_ first.
 After you register and sign in, create a ticket by clicking on
 the "New Ticket" tab.   
+
+Registration is temporarily disabled.  
+Send email to hagberg@lanl.gov for an account.
 
 Source code
 -----------
