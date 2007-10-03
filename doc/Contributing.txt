@@ -15,9 +15,6 @@ Because of ongoing spam problems you will need to register_ first.
 After you register and sign in, create a ticket by clicking on
 the "New Ticket" tab.   
 
-Registration is temporarily disabled.  
-Send email to hagberg@lanl.gov for an account.
-
 Source code
 -----------
 
