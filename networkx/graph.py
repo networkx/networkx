@@ -418,7 +418,7 @@ class Graph(object):
         return self.adj.has_key(u) and self.adj[u].has_key(v)
 
 
-    def get_edge(self, u, v):
+    def get_edge(self, u, v=None):
         """Return 1 if graph contains the edge u-v. 
         Raise an exception otherwise.
     
