@@ -325,7 +325,6 @@ class DiGraph(Graph):
          except KeyError:
              raise NetworkXError, "node %s not in graph"%(n,)
 
-
     def predecessors_iter(self,n):
         """Return an iterator for predecessor nodes of n."""
         try:
@@ -333,15 +332,19 @@ class DiGraph(Graph):
         except KeyError:
             raise NetworkXError, "node %s not in graph"%(n,)
 
-
     def successors(self, n):
         """Return sucessor nodes of n."""
-        return list(self.successors_iter(n))
-
+        try:
+            return self.succ[n].keys()
+        except KeyError:
+            raise NetworkXError, "node %s not in graph"%(n,)
 
     def predecessors(self, n):
         """Return predecessor nodes of n."""
-        return list(self.predecessors_iter(n))
+        try:
+            return self.pred[n].keys()
+        except KeyError:
+            raise NetworkXError, "node %s not in graph"%(n,)
 
     # digraph definintions 
     out_neighbors=successors

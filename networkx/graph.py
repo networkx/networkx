@@ -124,7 +124,10 @@ class Graph(object):
         the neighbors of G. 
 
         """
-        return list(self.neighbors_iter(n))
+        try:
+            return self.adj[n].keys()
+        except KeyError:
+            raise NetworkXError, "node %s not in graph"%(n,)
     
     def prepare_nbunch(self,nbunch=None):
         """
@@ -435,16 +438,19 @@ class Graph(object):
 
 
     def neighbors_iter(self,n):
-         """Return an iterator over all neighbors of node n.  """
-         try:
-             return self.adj[n].iterkeys()
-         except KeyError:
-             raise NetworkXError, "node %s not in graph"%(n,)
+        """Return an iterator over all neighbors of node n.  """
+        try:
+            return self.adj[n].iterkeys()
+        except KeyError:
+            raise NetworkXError, "node %s not in graph"%(n,)
 
     def neighbors(self, n):
         """Return a list of nodes connected to node n.  """
         # return lists now, was dictionary for with_labels=True
-        return list(self.neighbors_iter(n))
+        try:
+            return self.adj[n].keys()
+        except KeyError:
+            raise NetworkXError, "node %s not in graph"%(n,)
 
     def edges_iter(self, nbunch=None):
         """Return iterator that iterates once over each edge adjacent

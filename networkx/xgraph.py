@@ -113,6 +113,15 @@ class XGraph(Graph):
             self=convert.from_whatever(data,create_using=self)
         self.name=name
 
+    def __getitem__(self,n):
+        """Return the neighbors of node n as a list.
+
+        This provides graph G the natural property that G[n] returns
+        the neighbors of G. 
+
+        """
+        return list(self.neighbors_iter(n))
+
     def add_edge(self, n1, n2=None, x=None):  
         """Add a single edge to the graph.
 
@@ -248,7 +257,7 @@ class XGraph(Graph):
         """
         if not self.multiedges:
             try:
-                for nbr in Graph.neighbors_iter(self,n):
+                for nbr in self.adj[n].iterkeys():
                     yield nbr
             except KeyError:
                 raise NetworkXError, "node %s not in graph"%(n,)
@@ -257,6 +266,10 @@ class XGraph(Graph):
                 raise NetworkXError, "node %s not in graph"%(n,)
             for (u,v,d) in self.edges_iter(n):
                 yield v
+
+    def neighbors(self, n):
+        """Return a list of nodes connected to node n.  """
+        return list(self.neighbors_iter(n))
 
     def get_edge_iter(self, u, v):
         """Return an iterator over the objects associated with each edge
