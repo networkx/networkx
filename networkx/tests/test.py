@@ -50,6 +50,15 @@ def all():
         tests=[t for t in tests \
                if 'nx_yaml.txt' not in t\
                ]
+    # tests depending on pyparsing
+    try:
+        import pyparsing
+    except ImportError:
+        print "pyparsing not found: skipping tests of gml.py"
+        tests=[t for t in tests \
+               if 'gml.txt' not in t\
+               ]
+
 
 
 
