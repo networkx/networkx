@@ -131,7 +131,7 @@ def to_dict_of_lists(G,nodelist=None):
 
     d = {}
     for n in nodelist:
-        d[n]=G.neighbors(n)
+        d[n]=[nbr for nbr in G.neighbors(n) if nbr in nodelist]
     return d            
 
 def from_dict_of_lists(d,create_using=None):
@@ -179,7 +179,8 @@ def to_dict_of_dicts(G,nodelist=None,edge_data=None):
     for u in nodelist:
         d[u]={}
         for v in G.neighbors(u):
-            d[u][v]=get_edge(u,v)
+            if v in nodelist:
+                d[u][v]=get_edge(u,v)
     return d            
 
 
@@ -274,6 +275,8 @@ def to_numpy_matrix(G,nodelist=None):
         else:
             d=e[2]
             if d is None: d=1 # None would be a nan in numpy, use 1
+        if u not in nodelist or v not in nodelist:
+            continue
         A[index[u],index[v]]=d
         if not directed:
             A[index[v],index[u]]=d
@@ -368,6 +371,8 @@ def to_scipy_sparse_matrix(G,nodelist=None):
         else:
             d=e[2]
             if d is None: d=1 # None would be a nan, use 1 
+        if u not in nodelist or v not in nodelist:
+            continue
         A[index[u],index[v]]=d
         if not G.is_directed():
             A[index[v],index[u]]=d

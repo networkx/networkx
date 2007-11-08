@@ -166,3 +166,15 @@ True
 >>> sorted(XG.edges())==sorted(GI.edges())
 True
 
+
+With nodelist keyword
+---------------------
+
+>>> P4=path_graph(4)
+>>> P3=path_graph(3)
+>>> A=to_scipy_sparse_matrix(P4,nodelist=[0,1,2])
+>>> GA=Graph(A)
+>>> sorted(GA.nodes())==sorted(P3.nodes())
+True
+>>> sorted(GA.edges())==sorted(P3.edges())
+True

@@ -34,6 +34,22 @@ True
 
 >>> G=barbell_graph(10,3)
 
+
+
+
+With nodelist keyword
+---------------------
+
+>>> P4=path_graph(4)
+>>> P3=path_graph(3)
+>>> dod=to_dict_of_dicts(P4,nodelist=[0,1,2])
+>>> Gdod=Graph(dod)
+>>> sorted(Gdod.nodes())==sorted(P3.nodes())
+True
+>>> sorted(Gdod.edges())==sorted(P3.edges())
+True
+
+
 Dict of lists
 ~~~~~~~~~~~~~
 
@@ -53,6 +69,21 @@ True
 True
 >>> sorted(G.edges())==sorted(GI.edges())
 True
+
+
+
+With nodelist keyword
+---------------------
+
+>>> P4=path_graph(4)
+>>> P3=path_graph(3)
+>>> dol=to_dict_of_lists(P4,nodelist=[0,1,2])
+>>> Gdol=Graph(dol)
+>>> sorted(Gdol.nodes())==sorted(P3.nodes())
+True
+>>> sorted(Gdol.edges())==sorted(P3.edges())
+True
+
 
 DiGraphs
 --------
