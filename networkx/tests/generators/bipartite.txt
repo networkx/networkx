@@ -199,3 +199,7 @@ False
 >>> G=cycle_graph(6)
 >>> is_bipartite(G)
 True
+
+>>> G=Graph({0: {7: None},1: {7: None},2: {6: None},3: {6: None},4:{5: None},5: {4: None, 7: None},6: {2: None, 3: None, 7: None},7:{0: None, 1: None, 5: None, 6: None}})
+>>> is_bipartite(G)
+True

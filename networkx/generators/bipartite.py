@@ -416,22 +416,20 @@ def project(B,nodes,create_using=None):
 
 def bipartite_color(G):
     color={}
-    for n in G.nodes():
+    for n in G.nodes(): #handle disconnected graphs
         if n in color: continue
-        queue=[n]  # LIFO queue
-        c=1
+        queue=[n]  
         color[n]=1 # nodes seen with color (1 or 0)
         while queue:
             v=queue.pop()
-            c=1-c
-            for w in G.neighbors(v):
-                if w in color:
+            c=1-color[v] # opposite color of node v
+            for w in G.neighbors(v): 
+                if w in color: 
                     if color[w]==color[v]:
                         raise NX.NetworkXError, "graph is not bipartite"
                 else:
                     color[w]=c
                     queue.append(w)
-
     return color
 
 def is_bipartite(G):
