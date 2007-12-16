@@ -68,7 +68,7 @@ def configuration_model(deg_sequence,seed=None):
     of complex networks", SIAM REVIEW 45-2, pp 167-256, 2003.
         
     """
-    if not is_valid_degree_sequence(deg_sequence):
+    if not sum(deg_sequence)%2 ==0:
         raise networkx.NetworkXError, 'Invalid degree sequence'
 
     if not seed is None:
@@ -94,14 +94,12 @@ def configuration_model(deg_sequence,seed=None):
         for i in range(deg_sequence[n-1]):
             stublist.append(n)
 
-    # while there are stubs in the sublist, randomly select two stubs,
-    # connect them to make an edge, then pop them from the stublist    
+    # shuffle stublist and assign pairs by removing 2 elements at a time      
+    random.shuffle(stublist)
     while stublist:
-        source=random.choice(stublist)
-        stublist.remove(source)
-        target=random.choice(stublist)
-        stublist.remove(target)
-        G.add_edge(source,target)
+        n1 = stublist.pop()
+        n2 = stublist.pop()
+        G.add_edge(n1,n2)
 
     G.name="configuration_model %d nodes %d edges"%(G.order(),G.size())
     return G
