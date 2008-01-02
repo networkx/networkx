@@ -10,7 +10,6 @@ Usage
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__credits__ = """"""
 #    Copyright (C) 2004-2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -110,7 +109,13 @@ def to_agraph(N, graph_attr=None, node_attr=None, edge_attr=None,
     and then updated with the calling arguments if any.
 
     """
-    directed= N.is_directed()
+    directed=N.is_directed()
+    if hasattr(N,'allow_multiedges'):
+        if N.multiedges:
+            strict=False
+    if hasattr(N,'allow_selfloops'):
+        if N.selfloops:
+            strict=False
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
 
     # default graph attributes            
