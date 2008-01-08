@@ -230,6 +230,7 @@ def draw_networkx_edges(G, pos,
                         edge_vmin=None,
                         edge_vmax=None, 
                         ax=None,
+                        arrows=True,
                         **kwds):
     """Draw the edges of the graph G
 
@@ -242,6 +243,9 @@ def draw_networkx_edges(G, pos,
     edgelist is an optional list of the edges in G to be drawn.
     If provided, only the edges in edgelist will be drawn. 
     
+    For directed graphs, "arrows" (actually just thicker stubs) are drawn
+    at the head end.  Arrows can be turned off with keyword arrows=False.
+
     See draw_networkx for the list of other optional parameters.
 
     """
@@ -301,7 +305,7 @@ def draw_networkx_edges(G, pos,
 
     arrow_collection=None
 
-    if G.is_directed():
+    if G.is_directed() and arrows:
 
         # a directed graph hack
         # draw thick line segments at head end of edge
