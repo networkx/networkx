@@ -279,7 +279,10 @@ def draw_networkx_edges(G, pos,
     edge_collection.set_alpha(alpha)
 
     # need 0.87.7 or greater for edge colormaps
-    if map(int,matplotlib.__version__.split('.'))>=[0,87,7]:
+    mpl_version=matplotlib.__version__
+    if mpl_version.endswith('svn'):
+        mpl_version=matplotlib.__version__[0:-3]
+    if map(int,mpl_version.split('.'))>=[0,87,7]:
         if edge_colors is None:
             if edge_cmap is not None: assert(isinstance(edge_cmap, Colormap))
             edge_collection.set_array(asarray(edge_color))
