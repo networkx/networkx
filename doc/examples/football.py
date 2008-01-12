@@ -24,7 +24,7 @@ except ImportError:
     
 from networkx import *
 
-url="http://www-personal.umich.edu/~mejn/netdata/polblogs.zip"
+url="http://www-personal.umich.edu/~mejn/netdata/football.zip"
 
 import urllib                                       
 import StringIO
@@ -37,6 +37,8 @@ sock.close()
 zf = zipfile.ZipFile(s) # zipfile object
 txt=zf.read('football.txt') # read info file
 gml=zf.read('football.gml') # read gml data
+# throw away bogus first line with # from mejn files
+gml=gml.split('\n')[1:]
 G=parse_gml(gml) # parse gml data
 
 print txt

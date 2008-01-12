@@ -8,10 +8,7 @@ http://www-personal.umich.edu/~mejn/netdata/
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = """"""
-__credits__ = """"""
-__revision__ = ""
-#    Copyright (C) 2007 by 
+#    Copyright (C) 2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -52,9 +49,6 @@ def parse_gml(lines):
           "Import Error: not able to import pyparsing: http://pyparsing.wikispaces.com/"
 
     try:
-        # throw away bogus first line from mejn files
-        if not lines.startswith('graph'): 
-            lines=lines.split('\n')[1:]
         data = "".join(lines)
         gml = pyparse_gml()
         tokens =gml.parseString(data)
