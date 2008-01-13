@@ -49,3 +49,4 @@ Thanks to the following people who have made contributions to NetworkX:
  - Eben Kennah contributed the strongly connected components and
    DFS functions.
 
+- Sasha Gutfriend contributed edge betweenness algorithms

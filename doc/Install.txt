@@ -3,37 +3,7 @@ Requirements
 
 To use NetworkX you need Python version 2.3 or later http://www.python.org/
 
-If you don't have Python installed on your system:
-
-Windows
-~~~~~~~
-The easiest way to get Python and most optional packages is to install
-the Enthought Python distribution: http://code.enthought.com/enthon/
-
-Other options are
-
- - Download from the official Python site at
-   http://www.python.org/download/
-
- - ActiveState also distributes a binary version 
-   http://activestate.com/Products/ActivePython/?mp=1
-
-OSX
-~~~
-OSX ships with Python version 2.3.  You are encouraged to download
-a newer release. Pre-built Python packages are available from 
-
- - Pythonmac  http://www.pythonmac.org/packages/ 
-
-Other options are:
-
- - ActiveState http://activestate.com/Products/ActivePython/?mp=1
-
- - Download from the official Python site at
-   http://www.python.org/download/
-
-If you are using Fink or MacPorts, Python is available through both
-of those package systems.
+See below for tips on installing Python.
 
 
 Installing Pre-built NetworkX packages
@@ -45,9 +15,9 @@ Windows
 ~~~~~~~
 Download and run the latest version of the Windows installer (.exe extension).
 
-OSX (Pythonmac)
-~~~~~~~~~~~~~~~
-Download and install the latest mpkg for your system.
+OSX 10.5
+~~~~~~~~
+Download and install the latest mpkg. 
 
 Linux
 ~~~~~
@@ -140,3 +110,39 @@ These are extra packages you may consider to use with NetworkX
       - sAsync, persistent storage with SQL, http://foss.eepatents.com/sAsync  
       - PyYAML, structured output format, http://pyyaml.org/
 
+
+Installing Python
+-----------------
+
+If you don't have Python installed on your system:
+
+Windows
+~~~~~~~
+The easiest way to get Python and most optional packages is to install
+the Enthought Python distribution: http://code.enthought.com/enthon/
+
+Other options are
+
+ - Download from the official Python site at
+   http://www.python.org/download/
+
+ - ActiveState also distributes a binary version 
+   http://activestate.com/Products/ActivePython/?mp=1
+
+OSX
+~~~
+OSX 10.5 ships with Python version 2.5.  If you
+have an older version we encourage you to download
+a newer release. Pre-built Python packages are available from 
+
+ - Pythonmac  http://www.pythonmac.org/packages/ 
+
+Other options are:
+
+ - ActiveState http://activestate.com/Products/ActivePython/?mp=1
+
+ - Download from the official Python site at
+   http://www.python.org/download/
+
+If you are using Fink or MacPorts, Python is available through both
+of those package systems.

@@ -3,6 +3,29 @@
 NetworkX News
 =============
 
+NetworkX-0.36
+---------------
+
+Release date: 13 January 2008
+
+See: https://networkx.lanl.gov/timeline
+
+
+New features
+~~~~~~~~~~~~
+  - GML format graph reader, tests, and example (football.py)	
+  - edge_betweenness() and load_betweenness()
+
+Bug fixes
+~~~~~~~~~
+  - remove obsolete parts of pygraphviz interface 
+  - improve handling of Matplotlib version strings
+  - write_dot() now writes parallel edges and self loops
+  - is_bipartite() and bipartite_color() fixes 
+  - configuration model speedup using random.shuffle()
+  - convert with specified nodelist now works correctly
+  - vf2 isomorphism checker updates
+
 NetworkX-0.35.1
 ---------------
 
