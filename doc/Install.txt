@@ -21,7 +21,7 @@ Download and install the latest mpkg.
 
 Linux
 ~~~~~
-Debian packages are available at http://packages.debian.org/unstable/graphics/python-networkx
+Debian packages are available at http://packages.debian.org/python-networkx
 
 
 Python Eggs for All Platforms 
