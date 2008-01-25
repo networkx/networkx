@@ -175,6 +175,7 @@ def draw_networkx_nodes(G, pos,
                         vmin=None,
                         vmax=None, 
                         ax=None,
+                        linewidth=None,
                         **kwds):
     """Draw nodes of graph G
 
@@ -214,7 +215,8 @@ def draw_networkx_nodes(G, pos,
                                cmap=cmap, 
                                vmin=vmin,
                                vmax=vmax,
-                               alpha=alpha)
+                               alpha=alpha,
+                               linewidths=linewidths)
                                
     node_collection.set_zorder(2)            
     return node_collection
