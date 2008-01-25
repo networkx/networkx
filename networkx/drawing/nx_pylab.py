@@ -242,6 +242,12 @@ def draw_networkx_edges(G, pos,
 
     edgelist is an optional list of the edges in G to be drawn.
     If provided, only the edges in edgelist will be drawn. 
+
+    edgecolor can be a list of matplotlib color letters such as 'k' or
+    'b' that lists the color of each edge; the list must be ordered in
+    the same way as the edge list. Alternatively, this list can contain
+    numbers and those number are mapped to a color scale using the color
+    map edge_cmap.
     
     For directed graphs, "arrows" (actually just thicker stubs) are drawn
     at the head end.  Arrows can be turned off with keyword arrows=False.
@@ -269,9 +275,23 @@ def draw_networkx_edges(G, pos,
     if not cb.is_string_like(edge_color) \
            and cb.iterable(edge_color) \
            and len(edge_color)==len(edge_pos):
-        edge_colors = None
+        if matplotlib.numerix.alltrue([cb.is_string_like(c) 
+                                       for c in edge_color]):
+            # (should check ALL elements)
+            # list of color letters such as ['k','r','k',...]
+            edge_colors = tuple([colorConverter.to_rgba(c,alpha) 
+                                 for c in edge_color])
+        elif matplotlib.numerix.alltrue([not cb.is_string_like(c) 
+                                         for c in edge_color]):
+            # numbers (which are going to be mapped with a colormap)
+            edge_colors = None
+        else:
+            raise ValueError('edge_color must consist of either color names or numbers')
     else:
-        edge_colors = ( colorConverter.to_rgba(edge_color, alpha), )
+        if len(edge_color)==1:
+            edge_colors = ( colorConverter.to_rgba(edge_color, alpha), )
+        else:
+            raise ValueError('edge_color must be a single color or list of exactly m colors where m is the number or edges')
 
     edge_collection = LineCollection(edge_pos,
                                 colors       = edge_colors,
