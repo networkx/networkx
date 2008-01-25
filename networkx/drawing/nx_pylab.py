@@ -175,7 +175,7 @@ def draw_networkx_nodes(G, pos,
                         vmin=None,
                         vmax=None, 
                         ax=None,
-                        linewidth=None,
+                        linewidths=None,
                         **kwds):
     """Draw nodes of graph G
 
