@@ -160,7 +160,7 @@ def expected_degree_graph(w, seed=None):
     return G 
 
 
-def havel_hakimi_graph(deg_sequence,seed=None):
+def havel_hakimi_graph(deg_sequence):
     """Return a simple graph with given degree sequence, constructed using the
     Havel-Hakimi algorithm.
 
@@ -169,7 +169,6 @@ def havel_hakimi_graph(deg_sequence,seed=None):
          A non-graphical degree sequence (not sorted).
          A non-graphical degree sequence (i.e. one
          not realizable by some simple graph) raises an Exception.    
-      - `seed`: seed for random number generator (default=None)
 
     The Havel-Hakimi algorithm constructs a simple graph by
     successively connecting the node of highest degree to other nodes
@@ -190,8 +189,6 @@ def havel_hakimi_graph(deg_sequence,seed=None):
     if not is_valid_degree_sequence(deg_sequence):
         raise networkx.NetworkXError, 'Invalid degree sequence'
 
-    if not seed is None:
-        random.seed(seed)
 
     N=len(deg_sequence)
     G=networkx.empty_graph(N) # always return a simple graph
