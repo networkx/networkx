@@ -196,22 +196,27 @@ def write_gml(G, path):
     node_id={}
 
     fh.write("graph [\n")
-    # write graph attributes from G.graph_attr
-    for k,v in G.graph_attr.items():
+    # write graph attributes 
+    for k,v in graph_attr.items():
         if is_string_like(v):
             v='"'+v+'"'
         fh.write(indent+"%s %s\n"%(k,v))
     # write nodes        
     for n in G:
         fh.write(indent+"node [\n")
-        nid=node_attr[n].get('id',count.next()) # get id or assign number
+        # get id or assign number
+        if n in node_attr:
+            nid=node_attr[n].get('id',count.next())
+        else:
+            nid=count.next()
         node_id[n]=nid
         fh.write(2*indent+"id %s\n"%nid)
         fh.write(2*indent+"label \"%s\"\n"%n)
-        for k,v in G.node_attr[n].items():
-            if is_string_like(v): v='"'+v+'"'
-            if k=='id': continue
-            fh.write(2*indent+"%s %s\n"%(k,v))
+        if n in node_attr:
+          for k,v in node_attr[n].items():
+              if is_string_like(v): v='"'+v+'"'
+              if k=='id': continue
+              fh.write(2*indent+"%s %s\n"%(k,v))
         fh.write(indent+"]\n")
     # write edges
     for e in G.edges_iter():
