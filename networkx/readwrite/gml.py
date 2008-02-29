@@ -175,11 +175,11 @@ def write_gml(G, path):
 
     """
     fh=_get_fh(path,mode='w')        
-    comments="#"
-    pargs=comments+" "+' '.join(sys.argv)
-    fh.write("%s\n" % (pargs))
-    fh.write(comments+" GMT %s\n" % (time.asctime(time.gmtime())))
-    fh.write(comments+" %s\n" % (G.name))
+#    comments="#"
+#    pargs=comments+" "+' '.join(sys.argv)
+#    fh.write("%s\n" % (pargs))
+#    fh.write(comments+" GMT %s\n" % (time.asctime(time.gmtime())))
+#    fh.write(comments+" %s\n" % (G.name))
 
     # check for attributes or assign empty dict
     if hasattr(G,'graph_attr'):
@@ -222,14 +222,23 @@ def write_gml(G, path):
     for e in G.edges_iter():
         if len(e)==3:
             u,v,d=e
-            if d is None: d={}
+            # try to guess what is on the edge and do something reasonable
+            edgedata={}
+            if d is None:  # no data 
+                pass
+            elif hasattr(d,'iteritems'): # try dict-like
+                edgedata=dict(d.iteritems())
+            elif hasattr(d,'__iter__'): # some kind of container
+                edgedata['data']=d.__repr__()
+            else: # something else - string, number
+                edgedata['data']=d
         else:
             u,v=e
-            d={}
+            edgedata={}
         fh.write(indent+"edge [\n")
         fh.write(2*indent+"source %s\n"%node_id[u])
         fh.write(2*indent+"target %s\n"%node_id[v])
-        for k,v in d.items():
+        for k,v in edgedata.items():
             if k=='source': continue
             if k=='target': continue
             if is_string_like(v): v='"'+v+'"'
