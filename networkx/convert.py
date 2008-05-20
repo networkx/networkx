@@ -69,11 +69,11 @@ def from_whatever(thing,create_using=None):
 
     # NX graph
     if hasattr(thing,"add_node"):
-        try:
-            return from_dict_of_dicts(thing.adj,create_using=create_using)
-        except:
-            raise networkx.NetworkXError,\
-                  "Input is not a correct NetworkX graph."
+#        try:
+        return from_dict_of_dicts(thing.adj,create_using=create_using)
+#        except:
+#            raise networkx.NetworkXError,\
+#                  "Input is not a correct NetworkX graph."
 
     # dict of dicts/lists
     if isinstance(thing,dict):
@@ -209,13 +209,19 @@ def from_dict_of_dicts(d,create_using=None):
             if G.is_directed():
                 for u,nbrs in d.iteritems():
                     for v,datalist in nbrs.iteritems():
-                        dl=datalist[:] # copy of the edge_data list
+                        if type(datalist) == type([]):
+                            dl=datalist[:] # copy of the edge_data list
+                        else:
+                            dl=[datalist]
                         G.pred[u][v]=dl
                         G.succ[u][v]=dl
             else:
                 for u,nbrs in d.iteritems():
                     for v,datalist in nbrs.iteritems():
-                        dl=datalist[:] # copy of the edge_data list
+                        if type(datalist) == type([]):
+                            dl=datalist[:] # copy of the edge_data list
+                        else:
+                            dl=[datalist]
                         G.adj[u][v]=dl
                         G.adj[v][u]=dl
         else:
