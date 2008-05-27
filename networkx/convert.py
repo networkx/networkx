@@ -69,11 +69,11 @@ def from_whatever(thing,create_using=None):
 
     # NX graph
     if hasattr(thing,"add_node"):
-#        try:
-        return from_dict_of_dicts(thing.adj,create_using=create_using)
-#        except:
-#            raise networkx.NetworkXError,\
-#                  "Input is not a correct NetworkX graph."
+        try:
+            return from_dict_of_dicts(thing.adj,create_using=create_using)
+        except:
+            raise networkx.NetworkXError,\
+                  "Input is not a correct NetworkX graph."
 
     # dict of dicts/lists
     if isinstance(thing,dict):
