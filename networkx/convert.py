@@ -404,8 +404,8 @@ def from_scipy_sparse_matrix(A,create_using=None):
     else:
         xgraph=False
 
-    # convert everything to coo - not the most efficient        
-    AA=A.tocoo()
+    # convert all formats to lil - not the most efficient way       
+    AA=A.tolil()
     nx,ny=AA.shape
 
     if nx!=ny:
@@ -414,11 +414,13 @@ def from_scipy_sparse_matrix(A,create_using=None):
 
 
     G.add_nodes_from(range(nx)) # make sure we get isolated nodes
-    for i in range(AA.nnz):
-        e=AA.rowcol(i)
-        if xgraph:
-            e=(e[0],e[1],AA.getdata(i))
-        G.add_edge(e)
+
+    for i,row in enumerate(AA.rows):
+        for pos,j in enumerate(row):
+           if xgraph:
+               G.add_edge(i,j,AA.data[i][pos])
+           else:
+               G.add_edge(i,j)
     return G
 
 
