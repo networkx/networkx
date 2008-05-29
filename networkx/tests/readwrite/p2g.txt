@@ -1,0 +1,41 @@
+p2g
+===
+
+>>> from networkx import *
+>>> from networkx.operators import *
+>>> import os,tempfile
+
+
+>>> import os,tempfile
+
+>>> data="""name\n3 4\na\n1 2\nb\n\nc\n0 2\n"""
+
+>>> G=parse_p2g(data)
+
+>>> print sorted(G.nodes())
+['a', 'b', 'c']
+
+>>> print [(u,v) for (u,v,d) in sorted(G.edges())]
+[('a', 'b'), ('a', 'c'), ('c', 'a'), ('c', 'c')]
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> fh=open(fname,'w')
+>>> fh.write(data)
+>>> fh.close()
+>>> Gin=read_p2g(fname)
+>>> sorted(G.nodes())==sorted(Gin.nodes())
+True
+>>> sorted(G.edges())==sorted(Gin.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+>>> (fd,fname)=tempfile.mkstemp()
+
+>>> write_p2g(G,fname)
+>>> H=read_p2g(fname)
+>>> sorted(H.nodes())==sorted(G.nodes())
+True
+>>> sorted(H.edges())==sorted(G.edges())
+True
+

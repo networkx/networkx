@@ -24,3 +24,4 @@ from sparsegraph6 import read_graph6,parse_graph6,read_graph6_list,\
      read_sparse6,parse_sparse6,read_sparse6_list
 from gml import read_gml,parse_gml,write_gml
 from pajek import read_pajek,parse_pajek,write_pajek
+from p2g import read_p2g,parse_p2g,write_p2g
