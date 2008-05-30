@@ -132,4 +132,7 @@ from drawing import *
 # read/write graphs in various formats
 from readwrite import *
 
+# ubigraph
+from ubigraph import *
+
 from tests import run as test
