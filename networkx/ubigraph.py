@@ -70,8 +70,8 @@ class UbiGraph(XGraph):
         import xmlrpclib
         try:
             server_url = ubigraph_server
-            server = xmlrpclib.Server(server_url)
-            self.ubigraph = server.ubigraph
+            self.server = xmlrpclib.Server(server_url)
+            self.ubigraph = self.server.ubigraph
             if clear:
                 self.ubigraph.clear()
         except:
@@ -92,6 +92,9 @@ class UbiGraph(XGraph):
         # keep a mapping from nodes to ubigraph ids
         self.nodeid={} 
         self.nextid=nextid
+        self.idnode={} 
+
+
 
         self.adj={}      # adjacency list
         self.selfloops=selfloops
@@ -105,6 +108,7 @@ class UbiGraph(XGraph):
         if n not in self:
             XGraph.add_node(self,n)
             self.nodeid[n]=self.nextid
+            self.idnode[self.nextid]=n
             self.nextid+=1
             self.ubigraph.new_vertex_w_id(self.nodeid[n])
             # add ubigraph attributes
@@ -123,6 +127,9 @@ class UbiGraph(XGraph):
         if n in self:
             XGraph.delete_node(self,n)
             self.ubigraph.remove_vertex(self.nodeid[n])
+            id=self.nodeid[n]
+            del self.nodeid[n]
+            del self.idnode[id]
 
 
     def delete_nodes_from(self,nlist):
