@@ -5,9 +5,6 @@ See also networkx.path.
 
 """
 __authors__ = """Eben Kenah (ekenah@t7.lanl.gov)\nAric Hagberg (hagberg@lanl.gov)"""
-__date__ = ""
-__credits__ = """"""
-__revision__ = ""
 #    Copyright (C) 2004-2007 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -58,7 +55,7 @@ def dfs_preorder(G,source=None,reverse_graph=False):
 
 def dfs_postorder(G,source=None,reverse_graph=False):
     """
-    Return list of nodes connected to source in DFS preorder.
+    Return list of nodes connected to source in DFS postorder.
     Traverse the graph G with depth-first-search from source.
     Non-recursive algorithm.
     """

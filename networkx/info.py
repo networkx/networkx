@@ -39,7 +39,7 @@ XDiGraph
 
    An empty digraph is created with
 
-   >>> G=DiGraph()
+   >>> G=XDiGraph()
 
 
 The XGraph and XDiGraph classes extend the Graph and DiGraph classes
