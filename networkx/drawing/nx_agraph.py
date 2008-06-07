@@ -10,7 +10,7 @@ Usage
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2006 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -75,7 +75,8 @@ def from_agraph(A,create_using=None):
         else:
             u,v,k=e
         if hasattr(N,'allow_multiedges')==True: # XGraph
-            N.add_edge(u,v,e.attr)
+            attr=dict((k,v) for k,v in e.attr.items() if v!='')
+            N.add_edge(u,v,attr)
         else: # Graph
             N.add_edge(u,v)
         
@@ -90,8 +91,7 @@ def from_agraph(A,create_using=None):
 
     return N        
 
-def to_agraph(N, graph_attr=None, node_attr=None, edge_attr=None,
-              strict=True):
+def to_agraph(N, graph_attr=None, node_attr=None, strict=True):
     """Return a pygraphviz graph from a NetworkX graph N.
 
     If N is a Graph or DiGraph, graphviz attributes can
@@ -101,8 +101,6 @@ def to_agraph(N, graph_attr=None, node_attr=None, edge_attr=None,
                  keyed by 'graph', 'node', and 'edge' to attribute dictionaries
 
     node_attr: dictionary keyed by node to node attribute dictionary
-
-    edge_attr: dictionary keyed by edge tuple to edge attribute dictionary
 
     If N is an XGraph or XDiGraph an attempt will be made first
     to copy properties attached to the graph (see from_agraph)
@@ -167,30 +165,29 @@ def to_agraph(N, graph_attr=None, node_attr=None, edge_attr=None,
     for e in N.edges_iter():
         if len(e)==2:
             (u,v)=e
-            data=None
+            d=None
         else:
-            (u,v,data)=e
+            (u,v,d)=e
 
-        if data is None: # no data, just add edge
+        if d is None: 
+            # no data, just add edge
             A.add_edge(u,v)
-            edge=pygraphviz.Edge(A,u,v)
-        else: # could have list of edge data or single edge data
-            try:
-                N.allow_multiedges()==True
-                dlist=N.get_edge(u,v)
-            except:
-                dlist=[N.get_edge(u,v)]
-            for d in dlist:
-                A.add_edge(u,v)
-                edge=pygraphviz.Edge(A,u,v)
-                if hasattr(d,"__getitem__"):
-                    edge.attr.update(d)
-        # update from calling argument
-        try:  # e might not be hashable
-            if (u,v) in edge_attr:
-                edge.attr.update(edge_attr[(u,v)])
-        except:
-            pass
+        else: 
+            if hasattr(d,"__getitem__"):
+                # edge data is dictionary-like, treat it as attributes
+                # check for user assigned key
+                if 'key' in d:
+                    key=d['key']
+                    del d['key']
+                else:
+                    key=str(d)
+                data=d
+            else:
+                # edge data is some other object
+                key=str(d)
+                data={'data':key}
+            A.add_edge(u,v,key=key,**data)
+            edge=pygraphviz.Edge(A,u,v,key)
 
     return A
 
