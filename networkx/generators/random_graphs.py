@@ -3,16 +3,13 @@
 Generators for random graphs
 
 """
-#    Copyright (C) 2004,2005,2006 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = "$Date: 2005-06-17 08:06:22 -0600 (Fri, 17 Jun 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 1049 $"
 import random
 import math
 import networkx
@@ -216,6 +213,19 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
       - `k`: each node is connected to k nearest neighbors in ring topology
       - `p`: the probability of adding a new edge for each edge
       - `seed`: seed for random number generator (default=None)
+
+
+    Reference::
+
+    @ARTICLE{newman-1999-263,
+    author = {M.~E.~J. Newman and D.~J. Watts},
+    title = {Renormalization group analysis of the small-world network model},
+    journal = {Physics Letters A},
+    volume = {263},
+    pages = {341},
+    url = {http://www.citebase.org/abstract?id=oai:arXiv.org:cond-mat/9903357},
+    year = {1999}
+    }
       
     """
     if seed is not None:
