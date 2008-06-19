@@ -12,5 +12,5 @@ print "4D Hypercube Graph"
 G=UbiGraph(hypercube_graph(4))
 time.sleep(5)
 print "50 node circular ladder graph"
-G=UbiGraph(qcircular_ladder_graph(50))
+G=UbiGraph(circular_ladder_graph(50))
 time.sleep(5)
