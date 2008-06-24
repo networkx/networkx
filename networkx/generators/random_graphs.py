@@ -202,11 +202,11 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     Return a Newman-Watts-Strogatz small world graph.
 
     First create a ring over n nodes.  Then each node in the ring is
-    connected with its k nearest neighbors.  Then shortcuts are
-    created by adding new edges as follows: for each edge u-v in the
-    underlying "n-ring with k nearest neighbors"; with probability p
-    add a new edge u-w with randomly-chosen existing node w.
-    In contrast with watts_strogatz_graph(), no edges are removed.
+    connected with its k nearest neighbors (k-1 neighbors if k is odd).  
+    Then shortcuts are created by adding new edges as follows: 
+    for each edge u-v in the underlying "n-ring with k nearest neighbors" 
+    with probability p add a new edge u-w with randomly-chosen existing 
+    node w.  In contrast with watts_strogatz_graph(), no edges are removed.
 
     :Parameters:
       - `n`: the number of nodes
@@ -257,10 +257,10 @@ def watts_strogatz_graph(n, k, p, seed=None):
     Return a Watts-Strogatz small world graph.
 
     First create a ring over n nodes.  Then each node in the ring is
-    connected with its k nearest neighbors.  Then shortcuts are
-    created by rewiring existing edges as follows: for each edge u-v
-    in the underlying "n-ring with k nearest neighbors"; with
-    probability p replace u-v with a new edge u-w with
+    connected with its k nearest neighbors (k-1 neighbors if k is odd).  
+    Then shortcuts are created by rewiring existing edges as follows: 
+    for each edge u-v in the underlying "n-ring with k nearest neighbors" 
+    with probability p replace u-v with a new edge u-w with 
     randomly-chosen existing node w. In contrast with
     newman_watts_strogatz_graph(), the random rewiring does not
     increase the number of edges.
