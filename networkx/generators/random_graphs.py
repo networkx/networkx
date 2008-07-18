@@ -411,9 +411,9 @@ def barabasi_albert_graph(n , m, seed=None):
 
     """
         
-    if m < 1 or n < m:
+    if m < 1 or  m >=n:
         raise networkx.NetworkXError,\
-              "NetworkXError must have m>1 and m<n, m=%d,n=%d"%(m,n)
+              "Barabási-Albert network must have m>=1 and m<n, m=%d,n=%d"%(m,n)
 
     if seed is not None:
         random.seed(seed)    
@@ -424,7 +424,7 @@ def barabasi_albert_graph(n , m, seed=None):
     repeated_nodes=[]      # list of existing nodes,
                            # with nodes repeated once for each adjacent edge 
     source=m               # next node is m
-    while source<n:        # Now add the other n-1 nodes
+    while source<n:        # Now add the other n-m nodes
         G.add_edges_from(zip([source]*m,edge_targets)) # add links to m nodes
         repeated_nodes.extend(edge_targets) # add one node for each new link
         repeated_nodes.extend([source]*m) # and new node "source" has m links
