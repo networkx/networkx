@@ -218,6 +218,7 @@ def draw_networkx_nodes(G, pos,
                                alpha=alpha,
                                linewidths=linewidths)
                                
+    matplotlib.pylab.sci(node_collection)
     node_collection.set_zorder(2)            
     return node_collection
 
@@ -319,6 +320,7 @@ def draw_networkx_edges(G, pos,
                 edge_collection.set_clim(edge_vmin, edge_vmax)
             else:
                 edge_collection.autoscale()
+    matplotlib.pylab.sci(edge_collection)
 #    else:
 #        sys.stderr.write(\
 #            """matplotlib version >= 0.87.7 required for colormapped edges.
