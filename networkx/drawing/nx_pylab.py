@@ -320,7 +320,8 @@ def draw_networkx_edges(G, pos,
                 edge_collection.set_clim(edge_vmin, edge_vmax)
             else:
                 edge_collection.autoscale()
-    matplotlib.pylab.sci(edge_collection)
+            matplotlib.pylab.sci(edge_collection)
+
 #    else:
 #        sys.stderr.write(\
 #            """matplotlib version >= 0.87.7 required for colormapped edges.
