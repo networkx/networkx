@@ -277,7 +277,6 @@ def edge_betweenness(G,normalized=True,weighted_edges=False,sources=None):
 
     betweenness=dict.fromkeys(map(lambda x:x[0:2], G.edges()), 0.0)
 
-    print betweenness
     if G.is_directed():
         for s in sources:
             S, P, D, sigma =_brandes_betweenness_helper(G,s,weighted_edges)
