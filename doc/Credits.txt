@@ -9,7 +9,8 @@ Thanks to David Eppstein for the idea of representing a graph G
 so that "for n in G" loops over the nodes in G and G[n] are node n's 
 neighbors.      
 
-Thanks to the following people who have made contributions to NetworkX:
+Thanks to everyone for making contributions to NetworkX including the 
+following and many more:  
 
  - Katy Bold contributed the Karate Club graph 
 
@@ -22,7 +23,8 @@ Thanks to the following people who have made contributions to NetworkX:
 
  - Holly Johnsen helped fix the path based centrality measures 
 
- - Arnar Flatberg fixed the graph laplacian routines
+ - Arnar Flatberg fixed the graph laplacian routines and submitted
+   bug reports and fixes
 
  - Chris Myers suggested using None as a default datatype, suggested
    improvements for the IO routines, added grid generator index tuple
@@ -49,4 +51,16 @@ Thanks to the following people who have made contributions to NetworkX:
  - Eben Kennah contributed the strongly connected components and
    DFS functions.
 
-- Sasha Gutfriend contributed edge betweenness algorithms
+ - Sasha Gutfriend contributed edge betweenness algorithms
+
+ - Joris van Rantwijk wrote the maximum-weight matching code
+
+ - Andrew Conway suggested the Ubigraph module and contributed 
+   the initial code
+
+ - Charles Duffy submitted patches to improve topological sorting
+
+
+ 
+
+  
