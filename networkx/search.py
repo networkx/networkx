@@ -5,6 +5,8 @@ See also networkx.path.
 
 """
 __authors__ = """Eben Kenah (ekenah@t7.lanl.gov)\nAric Hagberg (hagberg@lanl.gov)"""
+__date__ = ""
+__revision__ = ""
 #    Copyright (C) 2004-2007 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -36,26 +38,19 @@ def dfs_preorder(G,source=None,reverse_graph=False):
     pre=[]  # list of nodes in a DFS preorder
     for source in nlist:
         if source in seen: continue
-        queue=[source]     # use as LIFO queue
-        while queue:
-            v=queue[-1]
-            if v not in seen:
-                pre.append(v)
-                seen[v]=True
-            done=1
-            for w in neighbors(v):
-                if w not in seen:
-                    queue.append(w)
-                    done=0
-                    break
-            if done==1:
-                queue.pop()
+        lifo=[source]
+        while lifo:
+            v = lifo.pop()
+            if v in seen: continue
+            pre.append(v)
+            seen[v]=True
+            lifo.extend((w for w in G.neighbors(v) if w not in seen))
     return pre
 
 
 def dfs_postorder(G,source=None,reverse_graph=False):
     """
-    Return list of nodes connected to source in DFS postorder.
+    Return list of nodes connected to source in DFS preorder.
     Traverse the graph G with depth-first-search from source.
     Non-recursive algorithm.
     """
@@ -74,6 +69,7 @@ def dfs_postorder(G,source=None,reverse_graph=False):
     
     seen={} # nodes seen      
     post=[] # list of nodes in a DFS postorder
+
     for source in nlist:
         if source in seen: continue
         queue=[source]     # use as LIFO queue

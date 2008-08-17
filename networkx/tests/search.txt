@@ -12,7 +12,7 @@ simple graph
 A dfs preorder - there are many
 
 >>> dfs_preorder(G,source=0)
-[0, 1, 2, 4, 3]
+[0, 1, 3, 4, 2]
 
 >>> dfs_postorder(G,source=0)
 [3, 4, 2, 1, 0]
