@@ -40,6 +40,13 @@ Draw with matplotlib
 
 >>> draw(G)
 
+Depending upon your system configuration, to view the output 
+you might also need
+
+>>> import pylab
+>>> pylab.show()
+
+
 .. raw:: html
 
     <img alt="NetworkX art" class="image" height="600"
