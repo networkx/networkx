@@ -23,7 +23,7 @@ def is_directed_acyclic_graph(G):
     else:
         return True
 
-def topological_sort(G):
+def topological_sort(G, comparator=None):
     """
     Return a list of nodes of the digraph G in topological sort order.
 
@@ -48,7 +48,11 @@ def topological_sort(G):
                      
     if not G.is_directed():  G.successors_iter=G.neighbors_iter
 
-    for v in G.nodes_iter():     # process all vertices in G
+    if comparator:
+        nodes_iter = sorted(G.nodes_iter(), cmp=comparator)
+    else:
+        nodes_iter = G.nodes_iter()
+    for v in nodes_iter:     # process all vertices in G
         if v in explored: continue
 
         fringe=[v]   # nodes yet to look at
@@ -72,7 +76,7 @@ def topological_sort(G):
                 fringe.pop()    # done considering this node
     return order_explored
 
-def topological_sort_recursive(G):
+def topological_sort_recursive(G, comparator=None):
     """
     Return a list of nodes of the digraph G in topological sort order.
 
@@ -97,7 +101,11 @@ def topological_sort_recursive(G):
 
     if not G.is_directed():  G.successors=G.neighbors
     
-    for v in G.nodes_iter():  # process all nodes
+    if comparator:
+        nodes_iter = sorted(G.nodes_iter(), cmp=comparator)
+    else:
+        nodes_iter = G.nodes_iter()
+    for v in nodes_iter:  # process all nodes
         if v not in explored:
             if not _dfs(G,seen,explored,v): 
                 return 
