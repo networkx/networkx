@@ -101,6 +101,8 @@ from cliques import find_cliques, make_max_clique_graph,\
                     graph_number_of_cliques,node_clique_number,\
                     number_of_cliques,cliques_containing_node
 from isomorph import is_isomorphic
+
+from matching import max_weight_matching
                     
 # need numpy for spectrum
 try:
