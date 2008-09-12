@@ -20,158 +20,154 @@ __revision__ = "$Revision: 1021 $"
 import networkx
 
 def find_cliques(G):
-   """
-   Find_cliques algorithm based on Bron & Kerbosch
+    """
+    Find_cliques algorithm based on Bron & Kerbosch
+    
+    This algorithm searchs for maximal cliques in a graph.
+    maximal cliques are the largest complete subgraph containing
+    a given point.  The largest maximal clique is sometimes called
+    the maximum clique.
+    
+    This algorithm produces the list of maximal cliques each
+    of which are a list of the members of the clique.
    
-   This algorithm searchs for maximal cliques in a graph.
-   maximal cliques are the largest complete subgraph containing
-   a given point.  The largest maximal clique is sometimes called
-   the maximum clique.
-   
-   This algorithm produces the list of maximal cliques each
-   of which are a list of the members of the clique.
-   
-   Based on Algol algorithm published by Bron & Kerbosch
-   A C version is available as part of the rambin package.
-   http://www.ram.org/computing/rambin/rambin.html
+    Based on Algol algorithm published by Bron & Kerbosch
+    A C version is available as part of the rambin package.
+    http://www.ram.org/computing/rambin/rambin.html
 
-   Reference::
+    Reference::
 
-      @article{362367,
-       author = {Coen Bron and Joep Kerbosch},
-       title = {Algorithm 457: finding all cliques of an undirected graph},
-       journal = {Commun. ACM},
-       volume = {16},
-       number = {9},
-       year = {1973},
-       issn = {0001-0782},
-       pages = {575--577},
-       doi = {http://doi.acm.org/10.1145/362342.362367},
-       publisher = {ACM Press},
-       }
-   """
-   all_nodes=G.nodes()
-   num_nodes=G.order()
-   clique=[]
-   cliques=[]
-   _extend(all_nodes,0,num_nodes,G,clique,cliques)
-   return cliques
+        @article{362367,
+        author = {Coen Bron and Joep Kerbosch},
+        title = {Algorithm 457: finding all cliques of an undirected graph},
+        journal = {Commun. ACM},
+        volume = {16},
+        number = {9},
+        year = {1973},
+        issn = {0001-0782},
+        pages = {575--577},
+        doi = {http://doi.acm.org/10.1145/362342.362367},
+        publisher = {ACM Press},
+        }
+    """
+    all_nodes=G.nodes()
+    num_nodes=G.order()
+    clique=[]
+    cliques=[]
+    _extend(all_nodes,0,num_nodes,G,clique,cliques)
+    return cliques
 
 def _extend(old_nodes,num_not,num_left,G,clique,cliques):
-   """ 
-   A recursive helper routine for find_cliques
-
-   This recursive routine explores the "old_nodes" set of nodes
-   for complete subgraphs.  num_left is the size of old_nodes. 
-   The first num_not nodes are called the "not" group by B&K
-   because they have already been considered. 
-   The rest (num_left-num_not) of them are called "candidates".
-
-   G is the graph, 
-   clique is the clique being built,
-   cliques is a list of maximal cliques found so far.
-   """
-   # set up sets nots and cands for easy reference
-   cands=old_nodes[num_not:]
-   nots=old_nodes[:num_not]
-
-   #  Look for nodes that are "candidates" with the
-   #  most neighbors among the "candidates"
-   max_conn=0
-   for p in cands:
-      isneighbor=lambda v: G.has_edge(p,v)# "isneighbor" function
-      conn=0       # count connections for ith node
-      for nb in cands:   
-        if isneighbor(nb):
-           conn +=1
-      if conn>max_conn:
-         fixp=p
-         max_conn=conn
-         if max_conn > num_left-1: break  # found a most connected node
+    """ 
+    A recursive helper routine for find_cliques
+ 
+    This recursive routine explores the "old_nodes" set of nodes
+    for complete subgraphs.  num_left is the size of old_nodes. 
+    The first num_not nodes are called the "not" group by B&K
+    because they have already been considered. 
+    The rest (num_left-num_not) of them are called "candidates".
+ 
+    G is the graph, 
+    clique is the clique being built,
+    cliques is a list of maximal cliques found so far.
+    """
+    # set up sets nots and cands for easy reference
+    cands=old_nodes[num_not:]
+    nots=old_nodes[:num_not]
+ 
+    #  Look for nodes that are "candidates" with the
+    #  most neighbors among the "candidates"
+    max_conn=0
+    for p in cands:
+        isneighbor=lambda v: G.has_edge(p,v)# "isneighbor" function
+        conn=0       # count connections for ith node
+        for nb in cands:   
+            if isneighbor(nb):
+                conn +=1
+        if conn>max_conn:
+            fixp=p
+            max_conn=conn
+            if max_conn > num_left-1: break  # found a most connected node
    
-   # Note: if max_conn still zero, then no connections among candidates
-   #     We can take a shortcut.
-   #     If connects to a "not" node, we already got that clique
-   #     Otherwise adding it makes a clique!
-   if max_conn==0:
-     for v in cands:
-        not_conn=0
-        isneighbor=lambda u:G.has_edge(v,u)  #"isneighbor" function
-        for u in nots:
-           if isneighbor(u):
-              not_conn=1
-              break
-        if not_conn==0:
-          clique.append(v)
-##          print "New Maximal Clique Found!",clique
-          cliques.append(clique[:])
-          clique.remove(v)
-     return
+    # Note: if max_conn still zero, then no connections among candidates
+    #     We can take a shortcut.
+    #     If connects to a "not" node, we already got that clique
+    #     Otherwise adding it makes a clique!
+    if max_conn==0:
+        for v in cands:
+            not_conn=0
+            isneighbor=lambda u:G.has_edge(v,u)  #"isneighbor" function
+            for u in nots:
+                if isneighbor(u):
+                    not_conn=1
+                    break
+            if not_conn==0:
+                clique.append(v)
+    ##          print "New Maximal Clique Found!",clique
+                cliques.append(clique[:])
+                clique.remove(v)
+         return
 
-   # Set up the Best Candidate as our fixed point for this tree
-   # best_position=old_nodes.index(fixp)
-   fixpneighbor=lambda v: G.has_edge(fixp,v) #"isneighbor" function
-   v=fixp
-
-   # Go through each of the candidate 
-   # nodes trying to build a clique
-   #       cntr counts how many are left to check
-   for cntr in range(num_left-num_not-max_conn,0,-1):
-      # add the best node to the list of clique
+    # Set up the Best Candidate as our fixed point for this tree
+    # best_position=old_nodes.index(fixp)
+    fixpneighbor=lambda v: G.has_edge(fixp,v) #"isneighbor" function
+    v=fixp
+ 
+    # Go through each of the candidate 
+    # nodes trying to build a clique
+    #       cntr counts how many are left to check
+    for cntr in range(num_left-num_not-max_conn,0,-1):
+        # add the best node to the list of clique
 ##      print tt,"next candidate is:",v
-      clique.append(v)
-      isneighbor=lambda u: G.has_edge(v,u) # "isneighbor" function
+        clique.append(v)
+        isneighbor=lambda u: G.has_edge(v,u) # "isneighbor" function
 
-      # Now create new lists to send to next recursion
-      # fill new array--starting with "not" nodes
-      new=[]
-      for u in nots:
-         if isneighbor(u):
-            new.append(u)
-      new_num_not=len(new)
-      # now fill rest of new array with "candidate" nodes
-      for u in cands:
-         if isneighbor(u):
-            new.append(u)
-      new_num_left=len(new)
+        # Now create new lists to send to next recursion
+        # fill new array--starting with "not" nodes
+        new=[]
+        for u in nots:
+            if isneighbor(u):
+                new.append(u)
+        new_num_not=len(new)
+        # now fill rest of new array with "candidate" nodes
+        for u in cands:
+            if isneighbor(u):
+                new.append(u)
+        new_num_left=len(new)
 
-      # check if zero or one node left
-      if new_num_left == 0:
-         # Now there are no nodes left in "cand" or "not" to look at
-         # we have found a maximal clique!!!
-         cliques.append(clique[:])
-##         print tt,"No nodes left so it must be a clique!"
-##         print tt,"New Maximal Clique Found!",clique
-      elif new_num_not<new_num_left:
-         if new_num_left==1:
-           #  Only one node left so it must be a clique!
-           clique.append(new[0])
-##           print tt,"Only one node left so it must be a clique!"
-##           print tt,"New Maximal Clique Found!",clique
-           cliques.append(clique[:])
-           clique.remove(new[0])
-         else:
-           # Recursion on this routine
-##            print tt,"Going into extend with cntr=",cntr
-##            tt=tt + "  "
-           _extend(new,new_num_not,new_num_left,G,clique,cliques)
-##            tt=tt[0:len(tt)-2]  # go back to previous indentation 
-##    else:    # new_num_not==new_num_left
-##             # no new cliques so we're done with this candidate
-##         print tt,"Only nodes from -not- left"
+        # check if zero or one node left
+        if new_num_left == 0:
+            # Now there are no nodes left in "cand" or "not" to look at
+            # we have found a maximal clique!!!
+            cliques.append(clique[:])
+##          print tt,"No nodes left so it must be a clique!"
+##          print tt,"New Maximal Clique Found!",clique
+        elif new_num_not<new_num_left:
+            if new_num_left==1:
+                #  Only one node left so it must be a clique!
+                clique.append(new[0])
+##              print tt,"Only one node left so it must be a clique!"
+##              print tt,"New Maximal Clique Found!",clique
+                cliques.append(clique[:])
+                clique.remove(new[0])
+            else:
+                # Recursion on this routine
+##              print tt,"Going into extend with cntr=",cntr
+##              tt=tt + "  "
+                _extend(new,new_num_not,new_num_left,G,clique,cliques)
+##              tt=tt[0:len(tt)-2]  # go back to previous indentation 
 
-
-      # Done with checking branches for this node,
-      # remove it from clique and add it to the NOT group
-      clique.remove(v)
-      nots.append(v)
-      cands.remove(v)
-      # find next candidate
-      pos=0
-      if cntr>1:
-         while fixpneighbor(cands[pos]):
-            pos += 1
-         v=cands[pos]
+        # Done with checking branches for this node,
+        # remove it from clique and add it to the NOT group
+        clique.remove(v)
+        nots.append(v)
+        cands.remove(v)
+        # find next candidate
+        pos=0
+        if cntr>1:
+            while fixpneighbor(cands[pos]):
+                pos += 1
+            v=cands[pos]
 
 def make_max_clique_graph(G,create_using=None,name=None):
     """ 
@@ -235,26 +231,26 @@ def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
  
     i=0
     if fpos is not None: 
-       B.pos={}     # New Attribute for B
-       delta_cpos=1./len(cliq)
-       delta_ppos=1./G.order()
-       cpos=0.
-       ppos=0.
+        B.pos={}     # New Attribute for B
+        delta_cpos=1./len(cliq)
+        delta_ppos=1./G.order()
+        cpos=0.
+        ppos=0.
     for cl in cliq:
-       i += 1
-       name= -i   # Top nodes get negative names
-       B.add_node(name)
-       B.node_type[name]="Top"
-       if fpos is not None: 
-          if not B.pos.has_key(name):
-             B.pos[name]=(0.2,cpos)
-             cpos +=delta_cpos
-       for v in cl:
-          B.add_edge(name,v)
-          if fpos is not None:
-             if not B.pos.has_key(v):
-                B.pos[v]=(0.8,ppos)
-                ppos +=delta_ppos
+        i += 1
+        name= -i   # Top nodes get negative names
+        B.add_node(name)
+        B.node_type[name]="Top"
+        if fpos is not None: 
+            if not B.pos.has_key(name):
+                B.pos[name]=(0.2,cpos)
+                cpos +=delta_cpos
+        for v in cl:
+            B.add_edge(name,v)
+            if fpos is not None:
+                if not B.pos.has_key(v):
+                    B.pos[v]=(0.8,ppos)
+                    ppos +=delta_ppos
     return B
    
 def project_down(B,create_using=None,name=None):
@@ -273,10 +269,10 @@ def project_down(B,create_using=None,name=None):
         G.name=name
 
     for v in B.nodes():
-       if B.node_type[v]=="Bottom":
-          G.add_node(v)
-          for cv in B.neighbors(v):
-             G.add_edges_from([(v,u) for u in B.neighbors(cv)])
+        if B.node_type[v]=="Bottom":
+            G.add_node(v)
+            for cv in B.neighbors(v):
+                G.add_edges_from([(v,u) for u in B.neighbors(cv)])
     return G
  
 def project_up(B,create_using=None,name=None):
@@ -295,12 +291,12 @@ def project_up(B,create_using=None,name=None):
         G.name=name
 
     for v in B.nodes():
-       if B.node_type[v]=="Top":
-          vname= -v   #Change sign of name for Top Nodes
-          G.add_node(vname)
-          for cv in B.neighbors(v):
-             # Note: -u changes the name (not Top node anymore)
-             G.add_edges_from([(vname,-u) for u in B.neighbors(cv) if u!=v])
+        if B.node_type[v]=="Top":
+            vname= -v   #Change sign of name for Top Nodes
+            G.add_node(vname)
+            for cv in B.neighbors(v):
+                # Note: -u changes the name (not Top node anymore)
+                G.add_edges_from([(vname,-u) for u in B.neighbors(cv) if u!=v])
     return G
  
 def graph_clique_number(G,cliques=None):
