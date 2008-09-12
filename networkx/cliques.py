@@ -78,12 +78,9 @@ def _extend(old_nodes,num_not,num_left,G,clique,cliques):
     #  Look for nodes that are "candidates" with the
     #  most neighbors among the "candidates"
     max_conn=0
+    scands=set(cands)
     for p in cands:
-        isneighbor=lambda v: G.has_edge(p,v)# "isneighbor" function
-        conn=0       # count connections for ith node
-        for nb in cands:   
-            if isneighbor(nb):
-                conn +=1
+        conn=len(scands & set(G[p]))
         if conn>max_conn:
             fixp=p
             max_conn=conn
@@ -102,11 +99,9 @@ def _extend(old_nodes,num_not,num_left,G,clique,cliques):
                     not_conn=1
                     break
             if not_conn==0:
-                clique.append(v)
-    ##          print "New Maximal Clique Found!",clique
-                cliques.append(clique[:])
-                clique.remove(v)
-         return
+##              print "New Maximal Clique Found!",clique
+                cliques.append( clique+[v] )
+        return
 
     # Set up the Best Candidate as our fixed point for this tree
     # best_position=old_nodes.index(fixp)
@@ -124,15 +119,10 @@ def _extend(old_nodes,num_not,num_left,G,clique,cliques):
 
         # Now create new lists to send to next recursion
         # fill new array--starting with "not" nodes
-        new=[]
-        for u in nots:
-            if isneighbor(u):
-                new.append(u)
+        new=[ u for u in nots if isneighbor(u)]
         new_num_not=len(new)
         # now fill rest of new array with "candidate" nodes
-        for u in cands:
-            if isneighbor(u):
-                new.append(u)
+        new.extend( [ u for u in cands if isneighbor(u)] )
         new_num_left=len(new)
 
         # check if zero or one node left
@@ -145,11 +135,9 @@ def _extend(old_nodes,num_not,num_left,G,clique,cliques):
         elif new_num_not<new_num_left:
             if new_num_left==1:
                 #  Only one node left so it must be a clique!
-                clique.append(new[0])
 ##              print tt,"Only one node left so it must be a clique!"
 ##              print tt,"New Maximal Clique Found!",clique
-                cliques.append(clique[:])
-                clique.remove(new[0])
+                cliques.append(clique+new)
             else:
                 # Recursion on this routine
 ##              print tt,"Going into extend with cntr=",cntr
