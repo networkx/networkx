@@ -50,14 +50,16 @@ def find_cliques(G):
         publisher = {ACM Press},
         }
     """
-    all_nodes=G.nodes()
-    num_nodes=G.order()
-    clique=[]
-    cliques=[]
-    _extend(all_nodes,0,num_nodes,G,clique,cliques)
-    return cliques
+    return list(find_cliques_iter(G))
 
-def _extend(old_nodes,num_not,num_left,G,clique,cliques):
+def find_cliques_iter(G):
+    """ Iterator version of find_cliques. """
+    all_nodes=G.nodes()
+    num_nodes=len(all_nodes)
+    clique=[]
+    return _extend(all_nodes,0,num_nodes,G,clique)
+
+def _extend(old_nodes,num_not,num_left,G,clique):
     """ 
     A recursive helper routine for find_cliques
  
@@ -69,7 +71,6 @@ def _extend(old_nodes,num_not,num_left,G,clique,cliques):
  
     G is the graph, 
     clique is the clique being built,
-    cliques is a list of maximal cliques found so far.
     """
     # set up sets nots and cands for easy reference
     cands=old_nodes[num_not:]
@@ -99,8 +100,8 @@ def _extend(old_nodes,num_not,num_left,G,clique,cliques):
                     not_conn=1
                     break
             if not_conn==0:
-##              print "New Maximal Clique Found!",clique
-                cliques.append( clique+[v] )
+                # New Maximal Clique Found!
+                yield clique+[v]
         return
 
     # Set up the Best Candidate as our fixed point for this tree
@@ -113,7 +114,6 @@ def _extend(old_nodes,num_not,num_left,G,clique,cliques):
     #       cntr counts how many are left to check
     for cntr in range(num_left-num_not-max_conn,0,-1):
         # add the best node to the list of clique
-##      print tt,"next candidate is:",v
         clique.append(v)
         isneighbor=lambda u: G.has_edge(v,u) # "isneighbor" function
 
@@ -129,21 +129,15 @@ def _extend(old_nodes,num_not,num_left,G,clique,cliques):
         if new_num_left == 0:
             # Now there are no nodes left in "cand" or "not" to look at
             # we have found a maximal clique!!!
-            cliques.append(clique[:])
-##          print tt,"No nodes left so it must be a clique!"
-##          print tt,"New Maximal Clique Found!",clique
+            yield clique[:]
         elif new_num_not<new_num_left:
             if new_num_left==1:
                 #  Only one node left so it must be a clique!
-##              print tt,"Only one node left so it must be a clique!"
-##              print tt,"New Maximal Clique Found!",clique
-                cliques.append(clique+new)
+                yield clique+new
             else:
                 # Recursion on this routine
-##              print tt,"Going into extend with cntr=",cntr
-##              tt=tt + "  "
-                _extend(new,new_num_not,new_num_left,G,clique,cliques)
-##              tt=tt[0:len(tt)-2]  # go back to previous indentation 
+                for c in _extend(new,new_num_not,new_num_left,G,clique):
+                    yield c
 
         # Done with checking branches for this node,
         # remove it from clique and add it to the NOT group
