@@ -113,21 +113,25 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     if pos is None:
         pos=networkx.drawing.spring_layout(G) # default to spring layout
 
+    cf=matplotlib.pylab.gcf()
+    cf.set_facecolor('w')
     if ax is None:
-        ax=matplotlib.pylab.gca()
-    # allow callers to override the hold state by passing hold=True|False
-    b = ax.ishold()
-    if hold is not None:
-        matplotlib.pylab.hold(hold)
+        ax=cf.add_axes((0,0,1,1))
+ # allow callers to override the hold state by passing hold=True|False
+    b = matplotlib.pylab.ishold()
+    h = kwds.pop('hold', None)
+    if h is not None:
+        matplotlib.pylab.hold(h)
     try:
-        # turn of axes ticks and labels
-        ax.set_xticks([])
-        ax.set_yticks([])
-        draw_networkx(G, pos, ax=ax, **kwds)
+        draw_networkx(G,pos,ax=ax,**kwds)
+        ax.set_axis_off()
+        matplotlib.pylab.draw_if_interactive()
     except:
         matplotlib.pylab.hold(b)
         raise
     matplotlib.pylab.hold(b)
+    return
+
 
 def draw_networkx(G, pos, with_labels=True, **kwds):
     """Draw the graph G with given node positions pos
