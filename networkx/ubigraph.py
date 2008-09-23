@@ -174,7 +174,7 @@ class UbiGraph(XGraph):
                                    # when doing a delete_edge
         # add ubigraph attributes
         for (k,v) in kwds.items():
-            ret=self.ubigraph.set_vertex_attribute(e,k,v) 
+            ret=self.ubigraph.set_edge_attribute(e,k,v) 
 
         # support toggling edge labels
         if self.use_edge_labels:
