@@ -204,7 +204,7 @@ def to_pydot(N, graph_attr=None, node_attr=None, edge_attr=None,
             except:
                 dlist=[N.get_edge(u,v)]
             for d in dlist:
-                if hasattr(d,"__getitem__"):
+                if hasattr(d,"__iter__"):
                     attr=d
                 else:
                     attr={'label':d}

@@ -173,7 +173,7 @@ def to_agraph(N, graph_attr=None, node_attr=None, strict=True):
             # no data, just add edge
             A.add_edge(u,v)
         else: 
-            if hasattr(d,"__getitem__"):
+            if hasattr(d,"__iter__"):
                 # edge data is dictionary-like, treat it as attributes
                 # check for user assigned key
                 if 'key' in d:
