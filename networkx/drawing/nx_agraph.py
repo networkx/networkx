@@ -165,7 +165,6 @@ def to_agraph(N, graph_attr=None, node_attr=None, strict=True):
             pass
 
     # loop over edges
-<<<<<<< .working
     for e in N.edges_iter():
         if len(e)==2:
             (u,v)=e
