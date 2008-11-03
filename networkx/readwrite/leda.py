@@ -6,15 +6,15 @@ See http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fi
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = """"""
-__credits__ = """"""
-__revision__ = ""
-#    Copyright (C) 2004-2007 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
+
+__all__ = ['read_leda', 'parse_leda']
+
 
 import networkx
 from networkx.exception import NetworkXException, NetworkXError
@@ -29,7 +29,7 @@ def read_leda(path):
 	
 def parse_leda(lines):
     """Parse LEDA.GRAPH format from string or iterable.
-    Returns an XGraph or XDiGraph."""
+    Returns an Graph or DiGraph."""
     if is_string_like(lines): lines=iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines \
             if not (line.startswith('#') or line.startswith('\n') or line=='')])
@@ -38,9 +38,9 @@ def parse_leda(lines):
     # Graph
     du = int(lines.next())	# -1 directed, -2 undirected
     if du==-1:
-        G = networkx.XDiGraph()
+        G = networkx.DiGraph()
     else:
-        G = networkx.XGraph()
+        G = networkx.Graph()
         
     # Nodes
     n =int(lines.next())	# number of vertices
@@ -64,21 +64,3 @@ def parse_leda(lines):
         G.add_edge(node[int(s)],node[int(t)],label[2:-2])
     return G
 
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/readwrite/leda.txt',
-                                 package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os 
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())

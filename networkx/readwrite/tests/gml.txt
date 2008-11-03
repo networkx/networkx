@@ -1,0 +1,35 @@
+>>> from networkx import *
+>>> from networkx.operators import *
+>>> import os,tempfile
+
+>>> data="""graph [\n  comment "This is a sample graph"\n  directed 1\n  IsPlanar 1\n  node [\n    id 1\n    label\n    "Node 1"\n  ]\n  node [\n    id 2\n    label\n    "Node 2" ]\n  node [\n    id 3\n    label\n    "Node 3"\n  ]\n  edge [\n    source 1\n    target 2\n    label "Edge from node 1 to node 2"\n  ]\n  edge [\n    source 2\n    target 3\n    label "Edge from node 2 to node 3"\n  ]\n  edge [\n    source 3\n    target 1 label\n    "Edge from node 3 to node 1"\n  ]\n]"""
+
+>>> G=parse_gml(data)
+
+>>> print sorted(G.nodes())
+['Node 1', 'Node 2', 'Node 3']
+
+>>> print [e for e in sorted(G.edges(data=True))]
+[('Node 1', 'Node 2', {'label': 'Edge from node 1 to node 2'}), ('Node 2', 'Node 3', {'label': 'Edge from node 2 to node 3'}), ('Node 3', 'Node 1', {'label': 'Edge from node 3 to node 1'})]
+
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> fh=open(fname,'w')
+>>> fh.write(data)
+>>> fh.close()
+>>> Gin=read_gml(fname)
+>>> sorted(G.nodes())==sorted(Gin.nodes())
+True
+>>> sorted(G.edges())==sorted(Gin.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+>>> (fd,fname)=tempfile.mkstemp()
+
+>>> write_gml(G,fname)
+>>> H=read_gml(fname)
+>>> sorted(H.nodes())==sorted(G.nodes())
+True
+>>> sorted(H.edges())==sorted(G.edges())
+True

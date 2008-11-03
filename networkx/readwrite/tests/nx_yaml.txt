@@ -1,0 +1,49 @@
+>>> from networkx import *
+>>> from networkx.operators import *
+>>> import os,tempfile
+
+>>> G=Graph(name="test")
+>>> e=[('a','b'),('b','c'),('c','d'),('d','e'),('e','f'),('a','f')]
+>>> G.add_edges_from(e)
+>>> G.add_node('g')
+>>> DG=DiGraph(G)
+>>> XG=MultiGraph()
+>>> XG.add_edges_from([(1,2,5),(1,2,5),(1,2),(3,3,42)])
+
+
+YAML
+----
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> write_yaml(G,fname);  
+>>> Gin=read_yaml(fname);
+>>> sorted(G.nodes())==sorted(Gin.nodes())
+True
+>>> sorted(G.edges())==sorted(Gin.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> write_yaml(DG,fname);  
+>>> Gin=read_yaml(fname);
+>>> sorted(DG.nodes())==sorted(Gin.nodes())
+True
+>>> sorted(DG.edges())==sorted(Gin.edges())
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+
+>>> (fd,fname)=tempfile.mkstemp()
+>>> write_yaml(XG,fname);  
+>>> Gin=read_yaml(fname);
+>>> sorted(XG.nodes())==sorted(Gin.nodes())
+True
+>>> sorted(XG.edges(data=True))==sorted(Gin.edges(data=True))
+True
+>>> os.close(fd)
+>>> os.unlink(fname)
+
+

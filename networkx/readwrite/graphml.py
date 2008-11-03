@@ -6,9 +6,6 @@ http://graphml.graphdrawing.org/
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = """"""
-__credits__ = """"""
-__revision__ = ""
 #    Copyright (C) 2004-2007 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -16,22 +13,26 @@ __revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
+__all__ = ['read_graphml', 'parse_graphml']
+
+
+
 import networkx
 from networkx.exception import NetworkXException, NetworkXError
 from networkx.utils import _get_fh
 	
 def read_graphml(path):
     """Read graph in GraphML format from path.
-    Returns an XGraph or XDiGraph."""
+    Returns an Graph or DiGraph."""
     fh=_get_fh(path,mode='r')        
     G=parse_graphml(fh)
     return G
 	
 def parse_graphml(lines):
     """Read graph in GraphML format from string.
-    Returns an XGraph or XDiGraph."""
+    Returns an Graph or DiGraph."""
     context = []
-    G=networkx.XDiGraph()
+    G=networkx.DiGraph()
     defaultDirected = [True]
 	
     def start_element(name,attrs):
@@ -78,23 +79,5 @@ def parse_graphml(lines):
     if defaultDirected[0]:
         return G
     else:
-        return G.to_undirected()
+        return networkx.Graph(G)
 
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/readwrite/graphml.txt',
-                                 package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os 
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())

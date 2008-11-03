@@ -1,0 +1,96 @@
+nx_pydot
+========
+
+>>> from networkx import *
+>>> from networkx.drawing.nx_pydot import *
+>>> import os
+>>> import sys
+>>> import pydot
+
+Undirected
+----------
+
+>>> H=Graph()
+>>> H.add_edge('A','B')
+>>> H.add_edge('A','C')
+>>> H.add_edge('B','C')
+>>> H.add_edge('A','D')
+>>> H.add_node('E')
+
+
+>>> P=to_pydot(H)
+>>> N=Graph(from_pydot(P))
+>>> sorted(N.nodes())==sorted(H.nodes())
+True
+>>> sorted(N.edges())==sorted(H.edges())
+True
+
+
+>>> import tempfile
+>>> fname=tempfile.mktemp()
+>>> P.write_raw(fname)
+True
+
+>>> Pin=pydot.graph_from_dot_file(fname)   
+>>> sorted([p.get_name() for p in P.get_node_list()])==sorted([p.get_name() for p in Pin.get_node_list()])
+True
+>>> e1=[(e.get_source(),e.get_destination()) for e in P.get_edge_list()]
+>>> e2=[(e.get_source(),e.get_destination()) for e in Pin.get_edge_list()]
+>>> sorted(e1)==sorted(e2)
+True
+
+
+>>> Hin=read_dot(fname)
+
+>>> os.unlink(fname)
+
+Directed
+--------
+
+>>> H=DiGraph()
+>>> H.add_edge('A','B')
+>>> H.add_edge('A','C')
+>>> H.add_edge('B','C')
+>>> H.add_edge('A','D')
+>>> H.add_node('E')
+
+
+>>> P=to_pydot(H)
+>>> N=DiGraph(from_pydot(P))
+
+>>> sorted(N.nodes())==sorted(H.nodes())
+True
+>>> sorted(N.edges())==sorted(H.edges())
+True
+
+
+>>> import tempfile
+>>> fname=tempfile.mktemp()
+>>> P.write_raw(fname)
+True
+
+>>> Pin=pydot.graph_from_dot_file(fname)   
+>>> sorted([p.get_name() for p in P.get_node_list()])==sorted([p.get_name() for p in Pin.get_node_list()])
+True
+>>> e1=[(e.get_source(),e.get_destination()) for e in P.get_edge_list()]
+>>> e2=[(e.get_source(),e.get_destination()) for e in Pin.get_edge_list()]
+>>> sorted(e1)==sorted(e2)
+True
+
+
+>>> Hin=read_dot(fname)
+>>> Hin=DiGraph(Hin)
+>>> sorted(H.nodes())==sorted(Hin.nodes())
+True
+>>> sorted(H.edges())==sorted(Hin.edges())
+True
+>>> os.unlink(fname)
+
+>>> fname=tempfile.mktemp()
+>>> write_dot(H,fname)
+>>> H1=read_dot(fname)
+>>> sorted(H.nodes())==sorted(Hin.nodes())
+True
+>>> sorted(H.edges())==sorted(Hin.edges())
+True
+>>> os.unlink(fname)

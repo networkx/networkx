@@ -3,10 +3,9 @@ Interface to pygraphviz AGraph class.
 
 Usage 
 
- >>> from networkx import *
- >>> G=complete_graph(5)
- >>> A=to_agraph(G)
- >>> H=from_agraph(A)
+ >>> G=nx.complete_graph(5)
+ >>> A=nx.to_agraph(G)
+ >>> H=nx.from_agraph(A)
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
@@ -16,6 +15,12 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
+
+__all__ = ['from_agraph', 'to_agraph', 
+           'write_dot', 'read_dot', 
+           'graphviz_layout',
+           'pygraphviz_layout']
+
 import os
 import sys
 from networkx.utils import _get_fh
@@ -25,11 +30,14 @@ except ImportError:
     raise
 
 def from_agraph(A,create_using=None):
-    """Return a NetworkX XGraph or XDiGraph from a pygraphviz graph.
+    """Return a NetworkX Graph or DiGraph from a pygraphviz graph.
 
-    >>> X=from_agraph(A)
 
-    The XGraph X will have a dictionary X.graph_attr containing
+    >>> G=nx.complete_graph(5)
+    >>> A=nx.to_agraph(G)
+    >>> X=nx.from_agraph(A)
+
+    The Graph X will have a dictionary X.graph_attr containing
     the default graphviz attributes for graphs, nodes and edges.
 
     Default node attributes will be in the dictionary X.node_attr
@@ -40,7 +48,7 @@ def from_agraph(A,create_using=None):
     If you want a Graph with no attributes attached instead of an XGraph
     with attributes use
 
-    >>> G=Graph(X)
+    >>> G=nx.Graph(X)
 
     """
     import networkx
@@ -52,12 +60,16 @@ def from_agraph(A,create_using=None):
         selfloops=True
         
     if create_using is None:        
-        if A.is_undirected():
-            create_using=networkx.XGraph(multiedges=multiedges,
-                                         selfloops=selfloops)
+        if A.is_directed():
+            if A.is_strict():
+                create_using=networkx.DiGraph()
+            else:
+                create_using=networkx.MultiDiGraph()
         else:
-            create_using=networkx.XDiGraph(multiedges=multiedges,
-                                           selfloops=selfloops)
+            if A.is_strict():
+                create_using=networkx.Graph()
+            else:
+                create_using=networkx.MultiGraph()
 
     # assign defaults        
     N=networkx.empty_graph(0,create_using)
@@ -72,23 +84,19 @@ def from_agraph(A,create_using=None):
     for e in A.edges():
         if len(e)==2:
             u,v=e
+            N.add_edge(u,v)
         else:
             u,v,k=e
-        if hasattr(N,'allow_multiedges')==True: # XGraph
             attr=dict((k,v) for k,v in e.attr.items() if v!='')
             N.add_edge(u,v,attr)
-        else: # Graph
-            N.add_edge(u,v)
         
     # add default attributes for graph, nodes, and edges       
     # hang them on N.graph_attr
-    if hasattr(N,'allow_multiedges')==True: # XGraph
-        N.graph_attr={}
-        N.graph_attr['graph']=A.graph_attr
-        N.graph_attr['node']=A.node_attr
-        N.graph_attr['edge']=A.edge_attr
-        N.node_attr=node_attr
-
+    N.graph_attr={}
+    N.graph_attr['graph']=A.graph_attr
+    N.graph_attr['node']=A.node_attr
+    N.graph_attr['edge']=A.edge_attr
+    N.node_attr=node_attr
     return N        
 
 def to_agraph(N, graph_attr=None, node_attr=None, strict=True):
@@ -102,18 +110,13 @@ def to_agraph(N, graph_attr=None, node_attr=None, strict=True):
 
     node_attr: dictionary keyed by node to node attribute dictionary
 
-    If N is an XGraph or XDiGraph an attempt will be made first
+    If N has an dict N.graph_attr an attempt will be made first
     to copy properties attached to the graph (see from_agraph)
     and then updated with the calling arguments if any.
 
     """
-    directed=N.is_directed()
-    if hasattr(N,'allow_multiedges'):
-        if N.multiedges:
-            strict=False
-    if hasattr(N,'allow_selfloops'):
-        if N.selfloops:
-            strict=False
+    directed=N.directed
+    strict=not N.multigraph # FIXME and N.number_of_selfloops()==0
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
 
     # default graph attributes            
@@ -145,7 +148,7 @@ def to_agraph(N, graph_attr=None, node_attr=None, strict=True):
         pass
 
     # add nodes
-    for n in N.nodes_iter():
+    for n in N:
         A.add_node(n)
         node=pygraphviz.Node(A,n)
         # try node attributes attached to graph
@@ -162,6 +165,7 @@ def to_agraph(N, graph_attr=None, node_attr=None, strict=True):
             pass
 
     # loop over edges
+<<<<<<< .working
     for e in N.edges_iter():
         if len(e)==2:
             (u,v)=e
@@ -188,7 +192,6 @@ def to_agraph(N, graph_attr=None, node_attr=None, strict=True):
                 data={'data':key}
             A.add_edge(u,v,key=key,**data)
             edge=pygraphviz.Edge(A,u,v,key)
-
     return A
 
 def write_dot(G,path):
@@ -215,10 +218,9 @@ def graphviz_layout(G,prog='neato',root=None, args=''):
     Create layout using graphviz.
     Returns a dictionary of positions keyed by node.
 
-    >>> from networkx import *
-    >>> G=petersen_graph()
-    >>> pos=graphviz_layout(G)
-    >>> pos=graphviz_layout(G,prog='dot')
+    >>> G=nx.petersen_graph()
+    >>> pos=nx.graphviz_layout(G)
+    >>> pos=nx.graphviz_layout(G,prog='dot')
     
     This is a wrapper for pygraphviz_layout.
 
@@ -230,16 +232,15 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     Create layout using pygraphviz and graphviz.
     Returns a dictionary of positions keyed by node.
 
-    >>> from networkx import *
-    >>> G=petersen_graph()
-    >>> pos=pygraphviz_layout(G)
-    >>> pos=pygraphviz_layout(G,prog='dot')
+    >>> G=nx.petersen_graph()
+    >>> pos=nx.pygraphviz_layout(G)
+    >>> pos=nx.pygraphviz_layout(G,prog='dot')
     
     """
     A=to_agraph(G)
     A.layout(prog=prog,args=args)
     node_pos={}
-    for n in G.nodes():
+    for n in G:
         node=pygraphviz.Node(A,n)
         try:
             xx,yy=node.attr["pos"].split(',')
@@ -248,25 +249,4 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
             print "no position for node",n
             node_pos[n]=(0.0,0.0)
     return node_pos
-
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/drawing/nx_agraph.txt',package='networkx')
-    return suite
-
-
-
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
 

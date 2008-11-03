@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-An example using networkx.XGraph().
+An example using networkx.Graph().
 
 miles_graph() returns an undirected graph over the 128 US cities from
 the datafile miles_dat.txt. The cities each have location and population
@@ -43,7 +43,7 @@ def miles_graph():
     except IOError:
         raise "File miles_dat.txt not found."
 
-    G=NX.XGraph()
+    G=NX.Graph()
     G.position={}
     G.population={}
 
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     H=NX.Graph()
     for v in G:
         H.add_node(v)
-    for (u,v,d) in G.edges():
+    for (u,v,d) in G.edges(data=True):
         if d < 300:
             H.add_edge(u,v)
 

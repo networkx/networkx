@@ -16,15 +16,14 @@ Useful for graphs with non text representable data.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-__date__ = """"""
-__credits__ = """"""
-__revision__ = "$$"
-#    Copyright (C) 2004-2007 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
+
+__all__ = ['read_gpickle', 'write_gpickle']
 
 import cPickle 
 import codecs
@@ -42,7 +41,8 @@ def write_gpickle(G, path):
 
     This will preserve Python objects used as nodes or edges.
 
-    >>> write_gpickle(G,"file.gpickle")
+    >>> G=nx.path_graph(4)
+    >>> nx.write_gpickle(G,"file.gpickle")
 
     See cPickle.
     
@@ -54,30 +54,13 @@ def read_gpickle(path):
     """
     Read graph object in Python pickle format
 
-    >>> G=read_gpickle("file.gpickle")
+
+    >>> G=nx.path_graph(4)
+    >>> nx.write_gpickle(G,"file.gpickle")
+    >>> G=nx.read_gpickle("file.gpickle")
 
     See cPickle.
     
     """
     fh=_get_fh(path,'rb')
     return cPickle.load(fh)
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/readwrite/gpickle.txt',
-                                 package='networkx')
-    return suite
-
-
-if __name__ == "__main__":
-    import os 
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    

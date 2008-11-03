@@ -1,0 +1,30 @@
+Search 
+======
+
+>>> from networkx import *
+
+simple graph
+
+>>> G=Graph()
+
+>>> G.add_edges_from([(0,1),(1,2),(1,3),(2,4),(3,4)])
+
+A dfs preorder - there are many
+
+>>> dfs_preorder(G,source=0)
+[0, 1, 2, 4, 3]
+
+>>> dfs_postorder(G,source=0)
+[3, 4, 2, 1, 0]
+
+>>> dfs_successor(G,source=0)
+{0: [1], 1: [2], 2: [4], 3: [], 4: [3]}
+
+>>> dfs_predecessor(G,source=0)
+{0: [], 1: [0], 2: [1], 3: [4], 4: [2]}
+
+>>> T=dfs_tree(G,source=0)
+>>> sorted(T.nodes())==sorted(G.nodes())
+True
+>>> sorted(T.edges())
+[(0, 1), (1, 2), (2, 4), (4, 3)]

@@ -16,7 +16,7 @@ to run the tests.
 
 
 """
-from setuptools import setup, Extension
+from setuptools import setup
 from setup import *
 
 if __name__ == "__main__":
@@ -38,7 +38,8 @@ if __name__ == "__main__":
       classifiers      = classifiers,
       package_data     = package_data,
       include_package_data = True,
-      test_suite       = "networkx.tests.test.all", 
+      test_suite       = 'nose.collector', 
+      tests_require    = "NetworkX_nose_plugin>=0.1", 
       )
 
 

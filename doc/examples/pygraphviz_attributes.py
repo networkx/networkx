@@ -19,7 +19,7 @@ from networkx import *
 
 # plain graph
 
-X=XGraph()
+X=Graph()
 # ad edges with red color
 X.add_edge(1,2,{'color':'red'})
 X.add_edge(2,3,{'color':'red'})
@@ -27,8 +27,8 @@ X.add_edge(2,3,{'color':'red'})
 X.add_node(3)
 X.add_node(4)
 
-# convert to a graphviz graph, use edge attributes from XGraph
-# no node attributes or default graph, node, or edge attributesa
+# convert to a graphviz graph, use edge attributes from Graph edge data
+# no node attributes or default graph, node, or edge attributes
 A=to_agraph(X)   
 
 
@@ -55,11 +55,11 @@ A1=to_agraph(X,
 # write to dot file
 A1.write('k5_attributes.dot')   
 
-# convert back to networkx XGraph with attributes on edges and
+# convert back to networkx Graph with attributes on edges and
 # default attributes as dictionary data
 X=from_agraph(A1)
 print "edges"
-print X.edges()
+print X.edges(data=True)
 print "default attributes"
 print X.graph_attr
 print "node attributes"

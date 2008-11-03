@@ -32,6 +32,8 @@ True
 True
 >>> iterable(K.nodes_iter())
 True
+>>> iterable(K.edges_iter())
+True
 
 is_list_of_ints 
 ---------------
@@ -40,9 +42,6 @@ True
 >>> is_list_of_ints([1,2,3,"kermit"])
 False
 
-
-**Note that iterable(K.edges_iter()) returns False**
-Can we fix this?
 
 
 Random Number Distributions

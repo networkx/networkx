@@ -14,10 +14,12 @@ gnr_graph: growing network with redirection
 #    http://www.gnu.org/copyleft/lesser.html
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)"""
 
+__all__ = ['gn_graph', 'gnc_graph', 'gnr_graph']
+
 import math
 import random
 
-from networkx.digraph import DiGraph
+import networkx
 from networkx.generators.classic import empty_graph
 from networkx.utils import discrete_sequence
 
@@ -34,12 +36,12 @@ def gn_graph(n,kernel=lambda x:x ,seed=None):
 
     Example:
 
-    >>> D=gn_graph(10)       # the GN graph
+    >>> D=nx.gn_graph(10)       # the GN graph
     >>> G=D.to_undirected()  # the undirected version
 
     To specify an attachment kernel use the kernel keyword
 
-    >>> D=gn_graph(10,kernel=lambda x:x**1.5) # A_k=k^1.5
+    >>> D=nx.gn_graph(10,kernel=lambda x:x**1.5) # A_k=k^1.5
 
     Reference::
 
@@ -54,7 +56,7 @@ def gn_graph(n,kernel=lambda x:x ,seed=None):
 
 
     """
-    G=empty_graph(1,create_using=DiGraph())
+    G=empty_graph(1,create_using=networkx.DiGraph())
     G.name="gn_graph(%s)"%(n)
 
     if seed is not None:
@@ -89,7 +91,7 @@ def gnr_graph(n,p,seed=None):
 
     Example:
 
-    >>> D=gnr_graph(10,0.5)  # the GNR graph
+    >>> D=nx.gnr_graph(10,0.5)  # the GNR graph
     >>> G=D.to_undirected()  # the undirected version
 
     Reference::
@@ -104,7 +106,7 @@ def gnr_graph(n,p,seed=None):
       }
 
     """
-    G=empty_graph(1,create_using=DiGraph())
+    G=empty_graph(1,create_using=networkx.DiGraph())
     G.name="gnr_graph(%s,%s)"%(n,p)
 
     if not seed is None:
@@ -142,7 +144,7 @@ def gnc_graph(n,seed=None):
       }
 
     """
-    G=empty_graph(1,create_using=DiGraph())
+    G=empty_graph(1,create_using=networkx.DiGraph())
     G.name="gnc_graph(%s)"%(n)
 
     if not seed is None:
@@ -159,24 +161,3 @@ def gnc_graph(n,seed=None):
 
     return G
 
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/generators/directed.txt',
-                                 package='networkx')
-    return suite
-
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required (%d.%d detected)."\
-              %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    

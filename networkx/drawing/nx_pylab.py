@@ -21,17 +21,28 @@ References:
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2005-06-15 11:29:39 -0600 (Wed, 15 Jun 2005) $"
-__credits__ = """"""
-__revision__ = "$Id"
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
+__all__ = ['draw',
+           'draw_networkx',
+           'draw_networkx_nodes',
+           'draw_networkx_edges',
+           'draw_networkx_labels',
+           'draw_circular',
+           'draw_random',
+           'draw_spectral',
+           'draw_spring',
+           'draw_shell',
+           'draw_graphviz']
+
+
 import networkx
+
 import sys
 
 try:
@@ -336,7 +347,7 @@ def draw_networkx_edges(G, pos,
 
     arrow_collection=None
 
-    if G.is_directed() and arrows:
+    if G.directed and arrows:
 
         # a directed graph hack
         # draw thick line segments at head end of edge
@@ -480,23 +491,3 @@ def draw_graphviz(G, prog="neato", **kwargs):
 def draw_nx(G,pos,**kwds):
     """For backward compatibility; use draw or draw_networkx"""
     draw(G,pos,**kwds)
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/drawing/nx_pylab.txt',\
-                                 package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required (%d.%d detected)." \
-              %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())

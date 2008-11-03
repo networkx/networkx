@@ -4,7 +4,7 @@ Operators
 Unit tests for graph operations in operators.py
 
 >>> from networkx import *
->>> from networkx.isomorph import graph_could_be_isomorphic
+>>> from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 >>> is_isomorphic=graph_could_be_isomorphic # fast but weak isomorphism checker
 
 
@@ -230,12 +230,12 @@ convert_data_structure
 
 >>> G1.has_edge('B', 'A')
 False
->>> UG=convert_to_undirected(G1)
+>>> UG=Graph(G1)
 >>> sorted(UG.edges())
 [('A', 'B'), ('A', 'C'), ('A', 'D')]
 >>> UG.has_edge('B', 'A')
 True
->>> DG=convert_to_directed(UG)
+>>> DG=DiGraph(UG)
 >>> DG.adj==UG.adj
 True
 >>> DG.delete_edge('A','B')

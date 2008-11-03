@@ -3,17 +3,13 @@ Utilities for networkx package
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = "$Date: 2005-06-15 08:30:40 -0600 (Wed, 15 Jun 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 1029 $"
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 import random
-import networkx
 
 ### some cookbook stuff
 
@@ -90,7 +86,7 @@ def _get_fh(path, mode='r'):
             fh = bz2.BZ2File(path,mode=mode)
         else:
             fh = file(path,mode=mode)
-    elif hasattr(path, 'write'):
+    elif hasattr(path, 'seek'):
         fh = path
     else:
         raise ValueError('path must be a string or file handle')
@@ -335,7 +331,7 @@ def discrete_sequence(n, distribution=None, cdistribution=None):
     elif distribution is not None:
         cdf=cumulative_distribution(distribution)
     else:
-        raise networkx.NetworkXError, \
+        raise InputError, \
                   "discrete_sequence: distribution or cdistribution missing"
         
 
@@ -345,22 +341,3 @@ def discrete_sequence(n, distribution=None, cdistribution=None):
     # choose from CDF
     seq=[bisect.bisect_left(cdf,s)-1 for s in inputseq]
     return seq
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/utils.txt',package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    
-

@@ -1,78 +1,76 @@
 """
-Graph classes
-=============
-
+Graph
 Graph
 
-   A simple graph that has no self-loops or multiple (parallel) edges.
 
-   An empty graph is created with
+Graph
+-----
 
-   >>> G=Graph()
+An undirected graph that allows self-loops, but not multiple (parallel)
+edges.  Nodes are arbitrary hashable objects.
+Arbitrary data may be associated with each edge.  Edge data that cannot 
+be treated as a numeric weight will not work with some algorithms in 
+NetworkX.  If you use such edge data, set Graph.weighted=False to avoid 
+confusion.
+
+An empty graph is created with
+
+>>> G=nx.Graph()
    
 DiGraph
+-------
 
-   A directed graph that has no self-loops or multiple (parallel) edges.
-   Subclass of Graph.
+A directed graph that allows self-loops, but not multiple 
+(parallel) edges.   Edge and node data is the same as for Graph.
+Subclass of Graph.
 
-   An empty digraph is created with
+An empty digraph is created with
 
-   >>> G=DiGraph()
-
-XGraph
-
-   A graph that has (optional) self-loops or multiple (parallel) edges
-   and arbitrary data on the edges.
-   Subclass of Graph.
-
-   An empty graph is created with
-
-   >>> G=XGraph()
-   
-XDiGraph
-
-   A directed graph that has (optional) self-loops or multiple (parallel)
-   edges and arbitrary data on the edges.
-
-   A simple digraph that has no self-loops or multiple (parallel) edges.
-   Subclass of DiGraph which is a subclass of Graph.
-
-   An empty digraph is created with
-
-   >>> G=XDiGraph()
+>>> G=nx.DiGraph()
 
 
-The XGraph and XDiGraph classes extend the Graph and DiGraph classes
-by allowing (optional) self loops, multiedges and by decorating
-each edge with an object x.  
+MultiGraph
+----------
+An undirected graph that allows multiple (parallel) edges with arbitrary 
+data on the edges.
+Subclass of Graph.
 
-Each XDiGraph or XGraph edge is a 3-tuple e=(n1,n2,x), 
-representing an edge between nodes n1 and n2 that 
-is decorated with the object x. Here n1 and n2 are (hashable) 
-node objects and x is a (not necessarily hashable) edge object. 
-If multiedges are allowed, G.get_edge(n1,n2) returns a 
-list of edge objects.
+An empty multigraph is created with
 
-Whether an XGraph or XDiGraph allow self-loops or multiple edges is
-determined initially via parameters selfloops=True/False and 
-multiedges=True/False. 
-For example, the example empty XGraph created above is equivalent to
+>>> G=nx.MultiGraph()
 
->>> G=XGraph(selfloops=False, multiedges=False)
 
-Similar defaults hold for XDiGraph.  The command
+MultiDiGraph
+------------
+A directed graph that allows multiple (parallel) edges with arbitrary 
+data on the edges.
+Subclass of DiGraph which is a subclass of Graph.
 
->>> G=XDiGraph(multiedges=True)
+An empty multidigraph is created with
 
-creates an empty digraph G that does not allow selfloops 
-but does allow for multiple (parallel) edges.  Methods exist 
-for allowing or disallowing each feature after instatiation as well.
+>>> G=nx.MultiDiGraph()
 
-Note that if G is an XGraph then G.add_edge(n1,n2) will add 
-the edge (n1,n2,None), and G.delete_edge(n1,n2) will attempt 
-to delete the edge (n1,n2,None).
-In the case of multiple edges between nodes n1 and n2, one can use
-G.delete_multiedge(n1,n2) to delete all edges between n1 and n2.
+LabeledGraph
+------------
+
+An undirected graph that stores node labels/dict in the dict G.labels.
+This has no impact on other computations, but allows you to associate
+any value object with each node.
+Subclass of Graph.
+
+An empty labeledgraph is created with
+
+>>> G=nx.LabeledGraph()
+
+LabeledDiGraph
+--------------
+
+A directed version of LabeledGraph.
+Subclass of LabeledGraph and DiGraph which are each subclasses of Graph.
+
+An empty labeleddigraph is created with
+
+>>> G=nx.LabeledDiGraph()
 
 
 Notation
@@ -124,6 +122,28 @@ Warning:
   - len(nbunch) and len(ebunch) need not be defined.
     
 
+Attributes
+==========
+
+Each graph class provides three attributes to help identify what
+algorithms may work with that graph type.  Each attribute is a
+boolean value (True/False).
+
+    - G.weighted
+    - G.directed
+    - G.multigraph
+
+
+G.weighted is the only one that should be changed directly by users.
+It specifies whether the edge data can be treated as a numeric weight.
+Algorithms that require numeric edge weights will give unpredictable 
+results if, e.g. strings are associated with edges.  If you use 
+non-numeric edge data, you should set G.weighted to False.
+
+Changing G.directed and G.multigraph should be accomplished by converting
+the graph to a new graph type with e.g. DiGraph(G) or MultiGraph(G).
+
+
 Methods
 =======
 
@@ -133,15 +153,15 @@ Mutating Graph methods
 ----------------------
    
     - G.add_node(n), G.add_nodes_from(nlist)
-    - G.delete_node(n), G.delete_nodes_from(nlist)
-    - G.add_edge(n1,n2), G.add_edge(e), where e=(u,v)
-    - G.add_edges_from(ebunch)
-    - G.delete_edge(n1,n2), G.delete_edge(e), where e=(u,v)
-    - G.delete_edges_from(ebunch)
+    - G.remove_node(n), G.remove_nodes_from(nlist)
+    - G.add_edge(n1,n2), G.add_edges_from(ebunch)
+    - G.remove_edge(n1,n2), G.remove_edges_from(ebunch)
+    - G.clear()
+    - G.subgraph(nbunch,copy=False)
+
     - G.add_path(nlist)
     - G.add_cycle(nlist)
-    - G.clear()
-    - G.subgraph(nbunch,inplace=True)
+    - G.add_star(nlist)
 
 Non-mutating Graph methods
 --------------------------
@@ -152,78 +172,67 @@ Non-mutating Graph methods
     - for n in G: (iterate through the nodes of G)
     - G.nodes()
     - G.nodes_iter()
+    - G.number_of_nodes(), G.order()
+    - G.neighbors(n)
+    - G.neighbors_iter(n) # iterator over neighbors
+    - G[n]  (returns a dict of edge data keyed by neighbor nodes of n)
+    - G.number_of_edges(), G.size()
+    - G.get_edge(n1,n2,default=0)  (returns edge data or default)
     - G.has_edge(n1,n2), G.has_neighbor(n1,n2), G.get_edge(n1,n2)
     - G.edges(), G.edges(n), G.edges(nbunch)      
     - G.edges_iter(), G.edges_iter(n), G.edges_iter(nbunch)
-    - G.neighbors(n)
-    - G[n]  (equivalent to G.neighbors(n))
-    - G.neighbors_iter(n) # iterator over neighbors
-    - G.number_of_nodes(), G.order()
-    - G.number_of_edges(), G.size()
-    - G.edge_boundary(nbunch1), G.node_boundary(nbunch1)
-    - G.degree(n), G.degree(nbunch)
-    - G.degree_iter(n), G.degree_iter(nbunch)
-    - G.is_directed()
+    - G.adjacency_list()   (returns a list of neighbor lists)
+    - G.adjacency_iter()   (iterates through (n,G[n]) pairs)
+    - G.degree(n), G.degree(nbunch), G.degree()
+    - G.degree(n, weighted=True)
+    - G.degree_iter()
+    - G.directed()
+    - G.nodes_with_selfloops(), G.selfloop_edges()
+    - G.number_of_selfloops()
     - G.info()  # print variaous info about a graph
-    - G.prepare_nbunch(nbunch)  # return list of nodes in G and nbunch
+    - G.nbunch_iter(nbunch)  # iterator of nodes in G and nbunch
 
 Methods returning a new graph
 -----------------------------
 
     - G.subgraph(nbunch)
-    - G.subgraph(nbunch,create_using=H)
     - G.copy()
-    - G.to_undirected()
-    - G.to_directed()
+    - G.to_undirected
+    - G.to_directed
     
+Directed Graphs
+---------------
 
+    - DG.successors_iter(n), DG.predecessors_iter(n) 
+    - DG.successors(n), DG.predecessors(n) 
+    - DG.has_successor(n), DG.has_predecessor(n) 
+    Note: neighbors() return only successors.
+    - DG.in_degree(), DG.out_degree() 
+    Note: degree() refers to both in and out edges.
+    - DG.reverse()
 
 
 Implementation Notes
 ====================
 
 The graph classes implement graphs using data structures
-based on an adjacency list implemented as a node-centric dictionary of
-dictionaries. The dictionary contains keys corresponding to the nodes
-and the values are dictionaries of neighboring node keys with the
-value None (the Python None type) for Graph and DiGraph or
-user specified (default is None) for XGraph and XDiGraph.
+based on a dictionary of dictionaries implementation of adjacency lists.
+The outer dictionary is keyed by nodes to an adjacency dictionary.
+The adjacency dictionary is keyed by neighbor with value being the 
+edge data associated with the edge between node and neighbor.
+The default edge data is the numeric value 1.
 The dictionary of dictionary structure  allows fast addition,
-deletion and lookup of nodes and neighbors in large graphs.  
+removal and lookup of nodes and neighbors in large graphs.  
 
-Similarities between XGraph and Graph
--------------------------------------
+Multigraphs
+-----------
 
-XGraph and Graph differ in the way edge data is handled.
-XGraph edges are 3-tuples (n1,n2,x) and Graph edges are 2-tuples (n1,n2).
-XGraph inherits from the Graph class, and XDiGraph from the DiGraph class.
-
-Graph and XGraph are similar in the following ways:
-
-1. Edgeless graphs are the same in XGraph and Graph.
-   For an edgeless graph, represented by G (member of the Graph class)
-   and XG (member of XGraph class), there is no difference between
-   the datastructures G.adj and XG.adj, other than possibly
-   in the ordering of the keys in the adj dict.
-
-
-2. Basic graph construction code for G=Graph() will also work for
-   G=XGraph().  In the Graph class, the simplest graph construction
-   consists of a graph creation command G=Graph() followed by a list
-   of graph construction commands, consisting of successive calls to
-   the methods:
-
-   G.add_node, G.add_nodes_from, G.add_edge, G.add_edges, G.add_path,
-   G.add_cycle G.delete_node, G.delete_nodes_from, G.delete_edge,
-   G.delete_edges_from
-
-   with all edges specified as 2-tuples,  
-
-   If one replaces the graph creation command with G=XGraph(), and then
-   apply the identical list of construction commands, the resulting XGraph
-   object will be a simple graph G with identical datastructure G.adj. 
-   This property ensures reuse of code developed for graph generation 
-   in the Graph class.
-
+Multigraphs use a dictionary of dictionaries of lists data
+structure.  Upon adding the first edge connecting two nodes,
+a list is created to store the edge data for all edges between
+these two nodes.  As implemented, a Multigraph is actually a 
+Graph with edge data being a list.  But, we prefer to think of 
+it as a Multigraph as a graph that allows multiple edges between
+the same two nodes.
 
 """

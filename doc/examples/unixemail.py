@@ -37,7 +37,7 @@ def msgfactory(fp):
         return email.message_from_file(fp)
     except email.Errors.MessageParseError:
         # Don't return None since that will stop the mailbox iterator
-	return ''
+        return ''
 
 
 
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     mbox = mailbox.UnixMailbox(fp, msgfactory) # parse unix mailbox
 
-    G=NX.XDiGraph(multiedges=True,selfloops=True) # create empty graph
+    G=NX.MultiDiGraph() # create empty graph
 
     # parse each messages and build graph 
     for msg in mbox: # msg is python email.Message.Message object
@@ -74,7 +74,7 @@ if __name__ == '__main__':
             G.add_edge(source_addr,target_addr,msg)  
 
     # print edges with message subject
-    for (u,v,m) in G.edges():
+    for (u,v,m) in G.edges_iter(data=True):
         print "From: %s To: %s Subject: %s"%(u,v,m["Subject"])
     
 

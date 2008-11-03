@@ -2,17 +2,22 @@
 Layout (positioning) algorithms for graph drawing.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = "$Date: 2005-06-15 08:53:26 -0600 (Wed, 15 Jun 2005) $"
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
+
+__all__ = ['circular_layout',
+           'random_layout',
+           'shell_layout',
+           'spring_layout',
+           'spectral_layout']
+
 from math import pi,sin,cos,sqrt
 import sys
 from networkx.utils import uniform_sequence
-from networkx.exception import NetworkXException, NetworkXError
 
 try:
     import Numeric as N
@@ -20,7 +25,7 @@ except:
     try:
         import numpy as N
     except:
-        raise ImportError("numpy and/or Numeric can not be imported.")    
+        raise ImportError,"numpy and/or Numeric can not be imported."    
 
 
 def circular_layout(G, dim=2):
@@ -206,7 +211,7 @@ def graph_low_ev_pi(uhat,G,eps=1.e-3,iterations=10000):
             ##normalize(vv)     vv=vv/|vv|
             norm=sqrt(sum([vals**2 for vals in vv.itervalues()]))
             if norm==0:
-                raise NetworkXError("Eigenvector with zero eigenvalue given as input.")
+                raise networkx.NetworkXError,"Eigenvector with zero eigenvalue given as input."
             nn=1.0/norm
             for k in vv:
                 vv[k] *= nn
@@ -223,7 +228,7 @@ def graph_low_ev_pi(uhat,G,eps=1.e-3,iterations=10000):
             if iii==iterations: 
                 #print "Maximum iterations achieved."
                 break
-                raise NetworkXError("Maximum number of iterations exceeded.") 
+                raise NetworkXError, "Maximum number of iterations exceeded." 
 #            if iii%20==0: sys.stderr.write(".")
     return v 
     

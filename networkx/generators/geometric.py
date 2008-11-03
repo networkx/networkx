@@ -2,16 +2,15 @@
 Generators for geometric graphs.
 
 """
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
-__date__ = "$Date: 2005-06-15 12:44:45 -0600 (Wed, 15 Jun 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 1038 $"
+
+__all__ = ['random_geometric_graph']
 
 import networkx
 import random,sys
@@ -76,24 +75,4 @@ def random_geometric_graph(n, radius, create_using=None, repel=0.0, verbose=Fals
             if r2 < radius**2 :
                 G.add_edge(u,v)
     return G
-
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/generators/geometric.txt',
-                                 package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    
 

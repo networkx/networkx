@@ -1,0 +1,5 @@
+Cores
+-----
+.. autosummary::
+   :toctree: generated/
+

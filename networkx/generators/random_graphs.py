@@ -15,6 +15,23 @@ import math
 import networkx
 from networkx.generators.classic import empty_graph, path_graph, complete_graph
 
+__all__ = ['fast_gnp_random_graph',
+           'gnp_random_graph',
+           'dense_gnm_random_graph',
+           'gnm_random_graph',
+           'erdos_renyi_graph',
+           'binomial_graph',
+           'newman_watts_strogatz_graph',
+           'watts_strogatz_graph',
+           'random_regular_graph',
+           'barabasi_albert_graph',
+           'powerlaw_cluster_graph',
+           'random_lobster',
+           'random_shell_graph',
+           'random_powerlaw_tree',
+           'random_powerlaw_tree_sequence']
+
+
 #-------------------------------------------------------------------------
 #  Some Famous Random Graphs
 #-------------------------------------------------------------------------
@@ -568,7 +585,7 @@ def random_shell_graph(constructor, seed=None):
       - `seed`: seed for random number generator (default=None)
       
     >>> constructor=[(10,20,0.8),(20,40,0.8)]
-    >>> G=random_shell_graph(constructor)        
+    >>> G=nx.random_shell_graph(constructor)        
 
     """
     G=empty_graph(0)
@@ -674,26 +691,4 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     raise networkx.NetworkXError, \
           "Exceeded max (%d) attempts for a valid tree sequence."%tries
     return False
-
-
-
-
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/generators/random_graphs.txt',package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    
 

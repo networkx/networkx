@@ -15,6 +15,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
+__all__ = ['read_gml', 'parse_gml', 'write_gml']
+
 import sys
 import time
 import networkx
@@ -24,7 +26,7 @@ from networkx.utils import _get_fh, is_string_like
 	
 def read_gml(path):
     """Read graph in GML format from path.
-    Returns an XGraph or XDiGraph.
+    Returns an Graph or DiGraph.
 
     This doesn't implement the complete GML specification for
     nested attributes for graphs, edges, and nodes. 
@@ -37,7 +39,7 @@ def read_gml(path):
 
 def parse_gml(lines):
     """Parse GML format from string or iterable.
-    Returns an XGraph or XDiGraph.
+    Returns an Graph or DiGraph.
 
     This doesn't implement the complete GML specification for
     nested attributes for graphs, edges, and nodes. 
@@ -61,9 +63,9 @@ def parse_gml(lines):
     # determine directed or undirected and init corresponding NX class
     directed=graph_attr.get('directed',0)
     if directed==1:
-        G=networkx.XDiGraph()
+        G=networkx.DiGraph()
     else:
-        G=networkx.XGraph()
+        G=networkx.Graph()
     G.node_attr={} # store node attributes here
     G.graph_attr=graph_attr
 
@@ -146,16 +148,20 @@ def write_gml(G, path):
     """
     Write the graph G in GML format to the file or file handle path.
 
-    >>> write_gml(G,"file.gml")
+    Examples
+    ---------
+
+    >>> G=nx.path_graph(4)
+    >>> nx.write_gml(G,"file.gml")
 
     path can be a filehandle or a string with the name of the file.
 
-    >>> fh=open("file.gml")
-    >>> write_multiline_adjlist(G,fh)
+    >>> fh=open("file.gml",'w')
+    >>> nx.write_gml(G,fh)
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> write_multiline_adjlist(G,"file.gml.gz")
+    >>> nx.write_gml(G,"file.gml.gz")
 
     
     The output file will use the default text encoding on your system.
@@ -164,8 +170,8 @@ def write_gml(G, path):
     for hints.
 
     >>> import codecs
-    >>> fh=codecs.open("file.edgelist",encoding='iso8859-1')# use iso8859-1
-    >>> write_edgelist(G,fh)
+    >>> fh=codecs.open("file.gml",'w',encoding='iso8859-1')# use iso8859-1
+    >>> nx.write_gml(G,fh)
 
     GML specifications indicate that the file should only use
     7bit ASCII text encoding.iso8859-1 (latin-1). 
@@ -245,22 +251,3 @@ def write_gml(G, path):
             fh.write(2*indent+"%s %s\n"%(k,v))
         fh.write(indent+"]\n")
     fh.write("]\n")
-
-    
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/readwrite/gml.txt',
-                                 package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os 
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())

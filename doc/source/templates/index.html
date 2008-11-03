@@ -1,0 +1,114 @@
+{% extends "layout.html" %}
+{% set title = 'Overview' %}
+{% block body %}
+
+
+<blockquote>
+<em> This documentation is currently being updated for release 0.99 of
+  NetworkX.  We hope to bring you even better and more complete
+  documentation with this release.  See the
+  <a href="{{ pathto("reference/api_changes") }}">API changes</a>
+  for this update (currently available in the svn trunk).
+</em>
+</blockquote>
+
+
+
+<h2>High productivity software for complex networks</a></h2>
+
+<img align="right" src="{{ pathto("_static/art1.png", 1) }}" alt="NetworkX art" />
+
+<blockquote>
+<p>NetworkX is a Python package for the creation, manipulation, and
+study of the structure, dynamics, and functions of complex networks.</p>
+</blockquote>
+
+<h2>Quick Example</h2>
+
+
+<table align="center" style="margin-left: 0px"><tr>
+    <td width="50%">
+<blockquote>
+<pre>
+&gt;&gt;&gt; import networkx as NX
+&gt;&gt;&gt; G=NX.Graph()
+&gt;&gt;&gt; G.add_edge(1,2)
+&gt;&gt;&gt; G.add_node(&quot;spam&quot;)
+&gt;&gt;&gt; print G.nodes()
+[1, 2, 'spam']
+&gt;&gt;&gt; print G.edges()
+[(1, 2)]
+</pre>
+    </td>
+    <td width="50%">
+</td></tr>
+</blockquote>
+</table>
+
+
+<h2>Documentation</h2>
+
+<table class="contentstable" align="center" style="margin-left: 30px"><tr>
+  <td width="50%">
+
+    <p class="biglink"><a class="biglink" href="{{ pathto("tutorial") }}">Tutorial</a><br/>
+       <span class="linkdescr">start here</span></p>
+    <p class="biglink"><a class="biglink" href="{{ pathto("reference/index") }}">Reference</a><br/>
+       <span class="linkdescr">guide to all functions and classes</span></p>
+    <p class="biglink"><a class="biglink" href="{{ pathto("examples/index") }}">Examples</a><br/>
+       <span class="linkdescr">using the library</span></p>
+    <p class="biglink"><a class="biglink" href="{{ pathto("examples/gallery") }}">Gallery</a><br/>
+       <span class="linkdescr">network drawings</span></p>
+  </td>
+  <td width="50%">
+    <p class="biglink"><a class="biglink" href="{{ pathto("contents") }}">Contents</a><br/>
+       <span class="linkdescr">a complete overview</span></p>
+    <p class="biglink"><a class="biglink" href="{{ pathto("search") }}">Search Page</a><br/>
+       <span class="linkdescr">search the documentation</span></p>
+    <p class="biglink"><a class="biglink" href="{{ pathto("genindex") }}">General Index</a><br/>
+       <span class="linkdescr">all functions, classes, terms</span></p>
+    <p class="biglink"><a class="biglink" href="{{ pathto("modindex") }}">Module Index</a><br/>
+       <span class="linkdescr">quick access to all documented modules</span></p>
+  </td></tr>
+</table>
+
+<h2>Features:</h2>
+<blockquote>
+<ul class="simple">
+<li>Includes standard graph-theoretic and statistical physics functions</li>
+<li>Easy exchange of network algorithms between applications,
+disciplines, and platforms</li>
+<li>Includes many classic graphs and synthetic networks</li>
+<li>Nodes and edges can be &quot;anything&quot;
+(e.g. time-series, text, images, XML records)</li>
+
+<li>Exploits existing code from high-quality legacy software in C,
+C++, Fortran, etc.</li>
+<li>Open source (encourages community input)</li>
+<li>Unit-tested</li>
+</ul>
+
+<p>Additional benefits due to Python:</p>
+
+<ul class="simple">
+<li>Allows fast prototyping of new algorithms</li>
+<li>Easy to teach</li>
+<li>Multi-platform</li>
+
+<li>Allows easy access to almost any database</li>
+</ul>
+</blockquote>
+
+  <h2>Get NetworkX</h2>
+<blockquote>
+  <p>
+    NetworkX is available as an <a
+    href="http://peak.telecommunity.com/DevCenter/EasyInstall">easy-install</a>able
+    package on the <a href="http://pypi.python.org/pypi/NetworkX">Python Package
+    Index</a>.
+  </p>
+  <p>The code can be found on the NetworkX SVN server at
+    <tt><a href="http://networkx.lanl.gov/svn/networkx/trunk">http://networkx.lanl.gov/svn/networkx/trunk</a></tt>.</p>
+</blockquote>
+
+{% endblock %}

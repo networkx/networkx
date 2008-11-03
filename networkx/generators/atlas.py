@@ -9,17 +9,16 @@ Oxford University Press, 1998.
 Because of its size, this module is not imported by default.
 
 """
-#    Copyright (C) 2004,2005,2006,2007 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 __author__ = """Pieter Swart (swart@lanl.gov)"""
-__date__ = "$Date: 2005-03-30 16:56:28 -0700 (Wed, 30 Mar 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 911 $"
  
+__all__ = ['graph_atlas_g']
+
 from networkx.generators.small import make_small_graph
 
 def graph_atlas_g():
@@ -12334,27 +12333,4 @@ def graph_atlas_g():
         GAG.append(g)
 
     return GAG
-
-
-def _test_suite():
-    """test hook"""
-    import doctest
-    suite = doctest.DocFileSuite('tests/generators/atlas.txt',
-                                 package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required (%d.%d detected)." \
-              %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    
-
 

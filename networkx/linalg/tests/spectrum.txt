@@ -1,0 +1,62 @@
+Spectrum 
+========
+
+>>> try:
+...     import numpy as N
+...     import numpy.linalg
+...	eigenvalues=numpy.linalg.eigvals
+... except ImportError:
+...     raise ImportError,"numpy not found"
+
+
+>>> from networkx.generators.degree_seq import *
+>>> from networkx.linalg.spectrum import *
+>>> import sys
+>>> deg=[3,2,2,1,0]
+>>> G=havel_hakimi_graph(deg)
+
+Adjacency Matrix
+----------------
+
+>>> NA=N.array([[0, 1, 1, 1, 0], [1, 0, 1, 0, 0], [1, 1, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 0, 0]])
+>>> s=N.sum(N.sum((adj_matrix(G)-NA)))
+>>> print float(s) 
+0.0
+
+Laplacian
+---------
+>>> NL=N.array([[3, -1, -1, -1, 0], [-1, 2, -1, 0, 0], [-1, -1, 2, 0, 0], [-1, 0, 0, 1, 0], [0, 0, 0, 0, 0]])
+>>> L= laplacian(G)
+>>> s=N.sum(N.sum((adj_matrix(G)-NA)))
+>>> print float(s) 
+0.0
+
+>>> NGL=N.array([[3, -1, -1, -1, 0], [-1, 2, -1, 0, 0], [-1, -1, 2, 0, 0], [-1, 0, 0, 1, 0], [0, 0, 0, 0, 0]])
+
+>>> GL=generalized_laplacian(G)
+>>> for row in GL:
+...    for entry in row:
+...        sys.stdout.write("%5.2f "%entry)
+...    print 
+ 1.00 -0.41 -0.41 -0.58  0.00 
+-0.41  1.00 -0.50  0.00  0.00 
+-0.41 -0.50  1.00  0.00  0.00 
+-0.58  0.00  0.00  1.00  0.00 
+ 0.00  0.00  0.00  0.00  0.00 
+
+Eigenvalues
+-----------
+
+>>> e=eigenvalues(L)
+>>> print map(int,map(round,sorted(e)))
+[0, 0, 1, 3, 4]
+
+>>> e=eigenvalues(GL)
+>>> for ev in sorted(e):
+...     print "%5.2f"%abs(ev)
+ 0.00
+ 0.00
+ 0.77
+ 1.50
+ 1.73
+

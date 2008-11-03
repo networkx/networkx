@@ -3,23 +3,40 @@ Generators for some classic graphs.
 
 The typical graph generator is called as follows:
 
->>> G=complete_graph(100)
+>>> G=nx.complete_graph(100)
 
 returning the complete graph on n nodes labeled 0,..,99
 as a simple graph. Except for empty_graph, all the generators 
 in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
-__date__ = "$Date: 2005-06-17 14:06:03 -0600 (Fri, 17 Jun 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 1056 $"
+
+
+__all__ = [ 'balanced_tree',
+            'barbell_graph',
+            'complete_graph',
+            'complete_bipartite_graph',
+            'circular_ladder_graph',
+            'cycle_graph',
+            'dorogovtsev_goltsev_mendes_graph',
+            'empty_graph',
+            'grid_graph',
+            'grid_2d_graph',
+            'hypercube_graph',
+            'ladder_graph',
+            'lollipop_graph',
+            'null_graph',
+            'path_graph',
+            'star_graph',
+            'trivial_graph',
+            'wheel_graph']
 
 
 #-------------------------------------------------------------------
@@ -115,9 +132,7 @@ def barbell_graph(m1,m2):
     if m2>1:
         G.add_edges_from([(v,v+1) for v in range(m1,m1+m2-1)])
     # right barbell
-    for u in range(m1+m2,2*m1+m2):
-        for v in range(u,2*m1+m2):
-            G.add_edge(u,v)
+    G.add_edges_from( (u,v) for u in range(m1+m2,2*m1+m2) for v in range(u+1,2*m1+m2))
     # connect it up
     G.add_edge(m1-1,m1)
     if m2>0:
@@ -133,7 +148,7 @@ def complete_graph(n,create_using=None):
     G=empty_graph(n,create_using)
     G.name="complete_graph(%d)"%n
     for u in xrange(n):
-        for v in xrange(n):
+        for v in xrange(u+1,n):
             G.add_edge(u,v)
     return G
 
@@ -211,8 +226,7 @@ def empty_graph(n=0,create_using=None):
     Node labels are the integers 0 to n-1
 
     For example:
-    >>> from networkx import *
-    >>> G=empty_graph(10)
+    >>> G=nx.empty_graph(10)
     >>> G.number_of_nodes()
     10
     >>> G.number_of_edges()
@@ -229,7 +243,7 @@ def empty_graph(n=0,create_using=None):
     empty digraph, network,etc.  For example,
 
     >>> n=10
-    >>> G=empty_graph(n,create_using=DiGraph())
+    >>> G=nx.empty_graph(n,create_using=nx.DiGraph())
 
     will create an empty digraph on n nodes.
 
@@ -261,25 +275,19 @@ def grid_2d_graph(m,n,periodic=False):
         boundary nodes via periodic boundary conditions.
     """
     G=empty_graph()
-    G.name="grid 2d graph"
+    G.name="grid_2d_graph"
     rows=range(m)
     columns=range(n)
-    def _label(i,j):
-        return (i,j)
-    for i in rows:
-        for j in columns:
-            G.add_node( _label(i,j) )
-    for i in rows:
-        for j in columns:
-            if i>0: G.add_edge( _label(i,j), _label(i-1,j) )
-            if i<m-1: G.add_edge( _label(i,j), _label(i+1,j) )
-            if j>0: G.add_edge( _label(i,j), _label(i,j-1) )
-            if j<n-1: G.add_edge( _label(i,j), _label(i,j+1) )
+    G.add_nodes_from( (i,j) for i in rows for j in columns )
+    G.add_edges_from( ((i,j),(i-1,j)) for i in rows for j in columns if i>0 )
+    G.add_edges_from( ((i,j),(i+1,j)) for i in rows for j in columns if i<m-1 )
+    G.add_edges_from( ((i,j),(i,j-1)) for i in rows for j in columns if j>0 )
+    G.add_edges_from( ((i,j),(i,j+1)) for i in rows for j in columns if j<n-1 )
     if periodic:
-        for i in rows:
-            G.add_edge(_label(i,0), _label(i,n-1))
-        for j in columns:
-            G.add_edge(_label(0,j), _label(m-1,j))
+        if n>1:
+            G.add_edges_from( ((i,0),(i,n-1)) for i in rows )
+        if m>1:
+            G.add_edges_from( ((0,j),(m-1,j)) for j in columns )
         G.name="periodic_grid_2d_graph(%d,%d)"%(m,n)
     return G
 
@@ -439,28 +447,7 @@ def wheel_graph(n):
     G=star_graph(n-1)
     G.name="wheel_graph(%d)"%n
     G.add_edges_from([(v,v+1) for v in xrange(1,n-1)])
-    if n>1:
+    if n>2:
         G.add_edge(1,n-1)
     return G
                         
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/generators/classic.txt',
-                                 package='networkx')
-    return suite
-
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required (%d.%d detected)."\
-              %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    

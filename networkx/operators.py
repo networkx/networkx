@@ -3,20 +3,21 @@ Operations on graphs; including  union, complement, subgraph.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-__date__ = "$Date$"
-__credits__ = """"""
-__revision__ = "$Revision: 1024 $"
-#    Copyright (C) 2004-2006 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
+__all__ = ['union', 'cartesian_product', 'compose', 'complement',
+           'disjoint_union', 'create_empty_copy', 'subgraph', 
+           'convert_node_labels_to_integers', 'relabel_nodes']
+
 import networkx
 from networkx.utils import is_string_like
 
-def subgraph(G, nbunch, inplace=False, create_using=None):
+def subgraph(G, nbunch, copy=True):
     """
     Return the subgraph induced on nodes in nbunch.
 
@@ -25,24 +26,14 @@ def subgraph(G, nbunch, inplace=False, create_using=None):
     of nodes. (It can be an iterable or an iterator, e.g. a list,
     set, graph, file, numeric array, etc.)
 
-    Setting inplace=True will return the induced subgraph in the
+    Setting copy=False will return the induced subgraph in the
     original graph by deleting nodes not in nbunch. This overrides
     create_using.  Warning: this can destroy the graph.
-
-    Unless otherwise specified, return a new graph of the same
-    type as self.  Use (optional) create_using=R to return the
-    resulting subgraph in R. R can be an existing graph-like
-    object (to be emptied) or R is a call to a graph object,
-    e.g. create_using=DiGraph(). See documentation for
-    empty_graph.
-
-    Implemented for Graph, DiGraph, XGraph, XDiGraph
 
     Note: subgraph(G) calls G.subgraph()
 
     """
-    H = G.subgraph(nbunch, inplace, create_using)
-    return H
+    return G.subgraph(nbunch, copy)
                                                                                 
 def union(G,H,create_using=None,rename=False,name=None):
     """ Return the union of graphs G and H.
@@ -62,7 +53,7 @@ def union(G,H,create_using=None,rename=False,name=None):
     both directed or both undirected.
 
     A new name can be specified in the form
-    X=graph_union(G,H,name="new_name")
+    X=union(G,H,name="new_name")
 
     Implemented for Graph, DiGraph, XGraph, XDiGraph.        
 
@@ -70,7 +61,7 @@ def union(G,H,create_using=None,rename=False,name=None):
     if name is None:
         name="union( %s, %s )"%(G.name,H.name)
     if create_using is None:
-        R=create_empty_copy(G,with_nodes=False)
+        R=G.__class__()
     else:
         R=create_using
         R.clear()
@@ -80,51 +71,34 @@ def union(G,H,create_using=None,rename=False,name=None):
     # note that for objects w/o succinct __name__,
     # the new labels can be quite verbose
     # See also disjoint_union
-    Gname={}
-    Hname={}
     if rename: # create new string labels
+        Gname={}
+        Hname={}
         for v in G:
             if is_string_like(v):
-                Gname.setdefault(v,rename[0]+v)
+                Gname[v]=rename[0]+v
             else:
-                Gname.setdefault(v,rename[0]+repr(v))
+                Gname[v]=rename[0]+repr(v)
         for v in H:
             if is_string_like(v):
-                Hname.setdefault(v,rename[1]+v)
+                Hname[v]=rename[1]+v
             else:
-                Hname.setdefault(v,rename[1]+repr(v))
+                Hname[v]=rename[1]+repr(v)
     else:
-        for v in G:
-            Gname.setdefault(v,v)
-        for v in H:
-            Hname.setdefault(v,v)
+        Gname=dict( ((v,v) for v in G) )
+        Hname=dict( ((v,v) for v in H) )
 
     # node name check
-    for n in Gname.values():
-        if n in Hname.values():
+    Hnames=set(Hname.values())
+    Gnames=set(Gname.values())
+    if Gnames & Hnames:
             raise networkx.NetworkXError,\
             "node sets of G and H are not disjoint. Use appropriate rename=('Gprefix','Hprefix')"
     # node names OK, now build union
-    for v in G:
-        R.add_node(Gname[v])
-    G_edges=G.edges_iter()
-    for e in G_edges:
-        if len(e)==2:
-            u,v=e
-            R.add_edge(Gname[u],Gname[v])
-        else:
-            u,v,x=e
-            R.add_edge(Gname[u],Gname[v],x)
-    for v in H:
-        R.add_node(Hname[v])
-    H_edges=H.edges_iter()
-    for e in H_edges:
-        if len(e)==2:
-            u,v=e
-            R.add_edge(Hname[u],Hname[v])
-        else:
-            u,v,x=e
-            R.add_edge(Hname[u],Hname[v],x)        
+    R.add_nodes_from(Gnames)
+    R.add_edges_from( ( (Gname[u],Gname[v],x) for u,v,x in G.edges_iter(data=True) ))
+    R.add_nodes_from(Hnames)
+    R.add_edges_from( ( (Hname[u],Hname[v],x) for u,v,x in H.edges_iter(data=True) ))
     return R
 
 
@@ -160,15 +134,8 @@ def cartesian_product(G,H):
         for w in H:
             Prod.add_node((v,w)) 
 
-    H_edges=H.edges_iter()
-    for (w1,w2) in H_edges:
-        for v in G:
-            Prod.add_edge((v,w1),(v,w2))
-
-    G_edges=G.edges_iter()
-    for (v1,v2) in G_edges:
-        for w in H:
-            Prod.add_edge((v1,w),(v2,w))
+    Prod.add_edges_from( (((v,w1),(v,w2),d) for w1,w2,d in H.edges_iter(data=True) for v in G) )
+    Prod.add_edges_from( (((v1,w),(v2,w),d) for v1,v2,d in G.edges_iter(data=True) for w in H) )
 
     Prod.name="Cartesian Product("+G.name+","+H.name+")"
     return Prod
@@ -177,6 +144,7 @@ def cartesian_product(G,H):
 def compose(G,H,create_using=None, name=None):
     """ Return a new graph of G composed with H.
     
+    Composition is the simple union of the node sets and edge sets.
     The node sets of G and H need not be disjoint.
 
     A new graph is returned, of the same class as G.
@@ -194,15 +162,15 @@ def compose(G,H,create_using=None, name=None):
     if name is None:
         name="compose( %s, %s )"%(G.name,H.name)
     if create_using is None:
-        R=create_empty_copy(G,with_nodes=False)
+        R=G.__class__()
     else:
         R=create_using
         R.clear()
     R.name=name
-    R.add_nodes_from([v for v in G.nodes() ])
-    R.add_edges_from(G.edges())
-    R.add_nodes_from([v for v in H.nodes() ])
-    R.add_edges_from(H.edges())
+    R.add_nodes_from(G)
+    R.add_edges_from(G.edges_iter(data=True))
+    R.add_nodes_from(H)
+    R.add_edges_from(H.edges_iter(data=True))
     return R
 
 
@@ -215,24 +183,21 @@ def complement(G,create_using=None,name=None):
     emptied) or R can be a call to a graph object,
     e.g. create_using=DiGraph(). See documentation for empty_graph()
 
-    Implemented for Graph, DiGraph, XGraph, XDiGraph.    
-    Note that complement() is not well-defined for XGraph and XDiGraph
-    objects that allow multiple edges or self-loops.
+    Note that complement() does not create self-loops and also 
+    does not produce parallel edges for MultiGraphs.
 
     """
     if name is None:
         name="complement(%s)"%(G.name) 
     if create_using is None:
-        R=create_empty_copy(G,with_nodes=False)
+        R=G.__class__()
     else:
         R=create_using
         R.clear()
     R.name=name
-    R.add_nodes_from([v for v in G.nodes() ])
-    for v in G.nodes():
-        for u in G.nodes():
-            if not G.has_edge(v,u):
-                R.add_edge(v,u) 
+    R.add_nodes_from(G)
+    R.add_edges_from( ((n,n2) for n,nbrs in G.adjacency_iter() for n2 in G 
+        if n2 not in nbrs if n is not n2) )
     return R
 
 
@@ -240,10 +205,7 @@ def create_empty_copy(G,with_nodes=True):
     """Return a copy of the graph G with all of the edges removed.
 
     """
-    if hasattr(G,'allow_multiedges')==True:
-        H=G.__class__(multiedges=G.multiedges,selfloops=G.selfloops)
-    else:
-        H=G.__class__()
+    H=G.__class__()
 
     H.name='empty '+G.name
     if with_nodes:
@@ -254,7 +216,7 @@ def create_empty_copy(G,with_nodes=True):
 def convert_to_undirected(G):
     """Return a new undirected representation of the graph G.
 
-    Works for Graph, DiGraph, XGraph, XDiGraph.
+    Works for Graph, DiGraph, MultiGraph, MultiDiGraph.
 
     Note: convert_to_undirected(G)=G.to_undirected()
 
@@ -265,12 +227,13 @@ def convert_to_undirected(G):
 def convert_to_directed(G):
     """Return a new directed representation of the graph G.
 
-    Works for Graph, DiGraph, XGraph, XDiGraph.
+    Works for Graph, DiGraph, MultiGraph, MultiDiGraph.
 
     Note: convert_to_directed(G)=G.to_directed()
     
     """
     return G.to_directed()
+
 
 def relabel_nodes(G,mapping):
     """Return a copy of G with node labels transformed by mapping.
@@ -283,31 +246,34 @@ def relabel_nodes(G,mapping):
 
     mapping as dictionary:
 
-    >>> G=path_graph(3)  # nodes 0-1-2
+    Examples
+    --------
+
+    >>> G=nx.path_graph(3)  # nodes 0-1-2
     >>> mapping={0:'a',1:'b',2:'c'}
-    >>> H=relabel_nodes(G,mapping)
+    >>> H=nx.relabel_nodes(G,mapping)
     >>> print H.nodes()
     ['a', 'c', 'b']
 
-    >>> G=path_graph(26) # nodes 0..25
+    >>> G=nx.path_graph(26) # nodes 0..25
     >>> mapping=dict(zip(G.nodes(),"abcdefghijklmnopqrstuvwxyz"))
-    >>> H=relabel_nodes(G,mapping) # nodes a..z
+    >>> H=nx.relabel_nodes(G,mapping) # nodes a..z
     >>> mapping=dict(zip(G.nodes(),xrange(1,27)))
-    >>> G1=relabel_nodes(G,mapping) # nodes 1..26
+    >>> G1=nx.relabel_nodes(G,mapping) # nodes 1..26
 
     mapping as function
 
-    >>> G=path_graph(3)
+    >>> G=nx.path_graph(3)
     >>> def mapping(x):
     ...    return x**2
-    >>> H=relabel_nodes(G,mapping)
+    >>> H=nx.relabel_nodes(G,mapping)
     >>> print H.nodes()
     [0, 1, 4]
 
     Also see convert_node_labels_to_integers.
 
     """
-    H=create_empty_copy(G,with_nodes=False)
+    H=G.__class__()
     H.name="(%s)" % G.name
 
     if hasattr(mapping,"__getitem__"):   # if we are a dict
@@ -322,13 +288,11 @@ def relabel_nodes(G,mapping):
             raise networkx.NetworkXError,\
                   "relabeling function cannot be applied to node %s" % node
 
-    for e in G.edges_iter():
-        u=map_func(e[0])
-        v=map_func(e[1])
-        if len(e)==2:
-            H.add_edge(u,v)
-        else:
-            H.add_edge(u,v,e[2])
+    #for n1,n2,d in G.edges_iter(data=True):
+    #    u=map_func(n1)
+    #    v=map_func(n2)
+    #    H.add_edge(u,v,d)
+    H.add_edges_from( (map_func(n1),map_func(n2),d) for (n1,n2,d) in G.edges_iter(data=True)) 
 
     return H        
     
@@ -392,11 +356,11 @@ def convert_node_labels_to_integers(G,first_label=0,
         nlist.sort()
         mapping=dict(zip(nlist,range(first_label,N)))
     elif ordering=="increasing degree":
-        dv_pairs=[(G.degree(n),n) for n in G]
+        dv_pairs=[(d,n) for (n,d) in G.degree_iter()]
         dv_pairs.sort() # in-place sort from lowest to highest degree
         mapping=dict(zip([n for d,n in dv_pairs],range(first_label,N)))
     elif ordering=="decreasing degree":
-        dv_pairs=[(G.degree(n),n) for n in G]
+        dv_pairs=[(d,n) for (n,d) in G.degree_iter()]
         dv_pairs.sort() # in-place sort from lowest to highest degree
         dv_pairs.reverse()
         mapping=dict(zip([n for d,n in dv_pairs],range(first_label,N)))
@@ -410,22 +374,3 @@ def convert_node_labels_to_integers(G,first_label=0,
     if not discard_old_labels:
         H.node_labels=mapping
     return H
-    
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/operators.txt',package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    

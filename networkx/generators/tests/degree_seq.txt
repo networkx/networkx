@@ -1,0 +1,202 @@
+============================
+Generators - Degree Sequence
+============================
+
+
+
+>>> from networkx import *
+>>> from networkx.generators.degree_seq import *
+>>> from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
+>>> is_isomorphic=graph_could_be_isomorphic # use fast but weak isomorphism checker
+
+configuration_model
+-------------------
+
+empty graph has empty degree sequence
+>>> deg_seq=[]
+>>> G=configuration_model(deg_seq)
+>>> G.degree()
+[]
+
+>>> deg_seq=[5,3,3,3,3,2,2,2,1,1,1]
+>>> G=configuration_model(deg_seq,seed=12345678)
+>>> sorted(G.degree(),reverse=True)
+[5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
+>>> sorted(G.degree(range(len(deg_seq))),reverse=True)
+[5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
+
+test that fixed seed delivers the same graph
+
+>>> deg_seq=[3,3,3,3,3,3,3,3,3,3,3,3]
+>>> G1=configuration_model(deg_seq,seed=1000)
+>>> G2=configuration_model(deg_seq,seed=1000)
+>>> is_isomorphic(G1,G2)
+True
+>>> G1=configuration_model(deg_seq,seed=10)
+>>> G2=configuration_model(deg_seq,seed=10)
+>>> is_isomorphic(G1,G2)
+True
+
+
+>>> z=[5,3,3,3,3,2,2,2,1,1,1]
+>>> is_valid_degree_sequence(z)
+True
+
+>>> G=havel_hakimi_graph(z)
+>>> G=configuration_model(z)
+>>> z=[1000,3,3,3,3,2,2,2,1,1,1]
+>>> is_valid_degree_sequence(z)
+False
+
+expected_degree_graph
+---------------------
+empty graph has empty degree sequence
+>>> deg_seq=[]
+>>> G=expected_degree_graph(deg_seq)
+>>> G.degree()
+[]
+
+test that fixed seed delivers the same graph
+
+>>> deg_seq=[3,3,3,3,3,3,3,3,3,3,3,3]
+>>> G1=expected_degree_graph(deg_seq,seed=1000)
+>>> G2=expected_degree_graph(deg_seq,seed=1000)
+>>> is_isomorphic(G1,G2)
+True
+>>> G1=expected_degree_graph(deg_seq,seed=10)
+>>> G2=expected_degree_graph(deg_seq,seed=10)
+>>> is_isomorphic(G1,G2)
+True
+
+
+
+Havel-Hakimi Construction
+-------------------------
+
+>>> G=havel_hakimi_graph(z)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid degree sequence
+
+>>> z=["A",3,3,3,3,2,2,2,1,1,1]
+>>> havel_hakimi_graph(z)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid degree sequence
+
+>>> z=[5,4,3,3,3,2,2,2]
+>>> G=havel_hakimi_graph(z)
+>>> G=configuration_model(z)
+>>> z=[6,5,4,4,2,1,1,1]
+>>> is_valid_degree_sequence(z)
+False
+>>> G=havel_hakimi_graph(z)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid degree sequence
+
+>>> z=[10,3,3,3,3,2,2,2,2,2,2]
+>>> is_valid_degree_sequence(z)
+True
+>>> G=havel_hakimi_graph(z)
+
+Degree Sequence Tree
+--------------------
+
+>>> z=[1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
+>>> is_valid_degree_sequence(z)
+True
+>>> G=degree_sequence_tree(z)
+>>> len(G.nodes())==len(z)
+True
+>>> len(G.edges())==sum(z)/2
+True
+
+>>> z=[1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
+>>> is_valid_degree_sequence(z)
+False
+>>> G=degree_sequence_tree(z)
+Traceback (most recent call last):
+...
+NetworkXError: Degree sequence invalid
+
+
+Degree Sequences
+----------------
+
+>>> from networkx.utils import *
+>>> seq=create_degree_sequence(10,uniform_sequence)
+>>> len(seq)
+10
+>>> seq=create_degree_sequence(10,powerlaw_sequence)
+>>> len(seq)
+10
+
+>>> graph = barabasi_albert_graph(200,1)
+
+>>> degreeStart = sorted(degree(graph))
+
+>>> swaps = connected_double_edge_swap(graph, 40)
+>>> is_connected(graph)
+True
+
+>>> degseq = sorted(degree(graph))
+>>> degreeStart == degseq
+True
+
+>>> swaps = double_edge_swap(graph, 40)
+>>> degseq2 = sorted(degree(graph))
+>>> degreeStart == degseq2
+True
+
+
+Contruction of s-max graph
+--------------------------
+
+>>> z=["A",3,3,3,3,2,2,2,1,1,1]
+>>> li_smax_graph(z)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid degree sequence
+
+>>> z=[5,4,3,3,3,2,2,2]
+>>> G=li_smax_graph(z)
+>>> is_connected(G)
+True
+>>> degs = degree(G)
+>>> degs.sort()
+>>> degs.reverse()
+>>> degs == z
+True
+>>> z=[6,5,4,4,2,1,1,1]
+>>> is_valid_degree_sequence(z)
+False
+>>> G=li_smax_graph(z)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid degree sequence
+
+>>> z=[10,3,3,3,3,2,2,2,2,2,2]
+>>> is_valid_degree_sequence(z)
+True
+>>> G=li_smax_graph(z)
+>>> is_connected(G)
+True
+>>> degs = degree(G)
+>>> degs.sort()
+>>> degs.reverse()
+>>> degs == z
+True
+
+
+S-metric
+--------
+
+>>> g = Graph()
+>>> g.add_edge(1,2)
+>>> g.add_edge(2,3)
+>>> g.add_edge(2,4)
+>>> g.add_edge(1,4)
+>>> s_metric(g)
+19
+

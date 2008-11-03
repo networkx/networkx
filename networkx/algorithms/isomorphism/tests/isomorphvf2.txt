@@ -1,0 +1,73 @@
+IsomorphVF2
+===========
+
+>>> import networkx as NX
+>>> import networkx.algorithms.isomorphism.isomorphvf2 as VF2
+
+>>> # Undirected graphs
+>>> G1 = NX.Graph()
+>>> G2 = NX.Graph()
+>>> # Nodes 'a', 'b', 'c' and 'd' form a column.
+>>> # Nodes 'e', 'f', 'g' and 'h' form a column.
+>>> G1.add_edges_from([ ['a','g'], ['a','h'], ['a','i'], 
+...                     ['b','g'], ['b','h'], ['b','j'], 
+...                     ['c','g'], ['c','i'], ['c','j'], 
+...                     ['d','h'], ['d','i'], ['d','j']  ])
+>>> # Nodes 1,2,3,4 form the clockwise corners of a large square.
+>>> # Nodes 5,6,7,8 form the clockwise corners of a small square inside the large square.
+>>> G2.add_edges_from([ [1,2], [2,3], [3,4], [4,1], 
+...                     [5,6], [6,7], [7,8], [8,5], 
+...                     [1,5], [2,6], [3,7], [4,8] ])
+>>> GM = VF2.GraphMatcher(G1,G2)
+>>> GM.is_isomorphic()
+True
+>>> mapping = GM.mapping.items()
+>>> mapping.sort()
+>>> mapping
+[('a', 1), ('b', 6), ('c', 3), ('d', 8), ('g', 2), ('h', 5), ('i', 4), ('j', 7)]
+
+
+
+
+>>> # Directed graphs.
+>>> G1 = NX.DiGraph()
+>>> G2 = NX.DiGraph()
+>>> # Nodes 'a', 'b', 'c' and 'd' form a column.
+>>> # Nodes 'e', 'f', 'g' and 'h' form a column.
+>>> G1.add_edges_from([ ['a','h'], ['h','d'], ['d','i'], ['i','a'],
+...                     ['g','b'], ['b','j'], ['j','c'], ['c','g'],
+...                     ['a','g'], ['h','b'], ['d','j'], ['i','c']  ])
+>>> # Nodes 1,2,3,4 form the clockwise corners of a large square.
+>>> # Nodes 5,6,7,8 form the clockwise corners of a small square inside the large square.
+>>> G2.add_edges_from([ [1,2], [2,3], [3,4], [4,1], 
+...                     [5,6], [6,7], [7,8], [8,5], 
+...                     [1,5], [2,6], [3,7], [4,8] ])
+>>> # This should work as well, but it is incomplete since succ=adj
+>>> GM = VF2.GraphMatcher(G1,G2)
+>>> GM.is_isomorphic()
+True
+>>> # However, this is the proper test
+>>> GM = VF2.DiGraphMatcher(G1,G2)
+>>> GM.is_isomorphic()
+True
+
+
+
+>>> G1 = NX.Graph()
+>>> G2 = NX.Graph()
+>>> G1.add_edges_from([ ['a','g'], ['a','h'], ['a','i'], 
+...                     ['b','g'], ['b','h'], ['b','j'], 
+...                     ['c','g'], ['c','i'], ['c','j'], 
+...                     ['d','h'], ['d','i'], ['d','j']  ])
+>>> # Nodes 1,2,3,4 form the clockwise corners of a large square.
+>>> # Nodes 5,6,7,8 form the clockwise corners of a small square inside the large square.
+>>> G2.add_edges_from([ [1,2], [2,3], [3,4], [4,1] ])
+>>> GM = VF2.GraphMatcher(G1,G2)
+>>> GM.subgraph_is_isomorphic()
+True
+>>> mapping = GM.mapping.items()
+>>> mapping.sort()
+>>> # Notice, there is more than one subgraph isomorphism for this example.
+>>> mapping
+[('a', 1), ('c', 3), ('g', 2), ('i', 4)]
+

@@ -1,0 +1,628 @@
+Generators - Classic
+====================
+
+Unit tests for various classic graph generators in generators/classic.py
+------------------------------------------------------------------------
+
+>>> from networkx import *
+>>> from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
+>>> is_isomorphic=graph_could_be_isomorphic
+
+
+
+balanced_tree
+-------------
+
+balanced_tree(r,h) is a tree with (r**(h+1)-1)/(r-1) edges
+
+>>> r=2; h=2
+>>> t=balanced_tree(r,h)
+>>> order=t.order()
+>>> order==(r**(h+1)-1)/(r-1)
+True
+>>> is_connected(t)
+True
+>>> t.size()==order-1
+True
+
+>>> r=3; h=3
+>>> t=balanced_tree(r,h)
+>>> order=t.order()
+>>> order==(r**(h+1)-1)/(r-1)
+True
+>>> is_connected(t)
+True
+>>> t.size()==order-1
+True
+
+>>> r=6; h=2
+>>> t=balanced_tree(r,h)
+>>> order=t.order()
+>>> order==(r**(h+1)-1)/(r-1)
+True
+>>> is_connected(t)
+True
+>>> t.size()==order-1
+True
+
+balanced_tree(r,1) is the r-star
+
+>>> r=2; h=1
+>>> t=balanced_tree(r,h)
+>>> is_isomorphic(t,star_graph(r))
+True
+
+>>> r=5; h=1
+>>> t=balanced_tree(r,h)
+>>> is_isomorphic(t,star_graph(r))
+True
+
+>>> r=10; h=1
+>>> t=balanced_tree(r,h)
+>>> is_isomorphic(t,star_graph(r))
+True
+
+Raise NetworkXError if r<2
+
+>>> r=1; h=10
+>>> t=balanced_tree(r,h)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid graph description, r should be >=2
+
+>>> r=0; h=10
+>>> t=balanced_tree(r,h)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid graph description, r should be >=2
+
+Raise NetworkXError if h<1
+
+>>> r=10; h=0
+>>> t=balanced_tree(r,h)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid graph description, h should be >=1
+
+Raise NetworkXError if h<1
+
+>>> r=4; h=0
+>>> t=balanced_tree(r,h)
+Traceback (most recent call last):
+...
+NetworkXError: Invalid graph description, h should be >=1
+
+barbell_graph
+-------------
+
+number of nodes = 2*m1 + m2 (2 m1-complete graphs + m2-path + 2 edges)
+number of edges = 2*(number_of_edges(m1-complete graph) + m2 + 1
+
+>>> m1=3; m2=5 
+>>> b=barbell_graph(m1,m2) 
+>>> number_of_nodes(b)==2*m1+m2
+True
+>>> number_of_edges(b)==m1*(m1-1) + m2 + 1
+True
+>>> b.name
+'barbell_graph(3,5)'
+
+>>> m1=4; m2=10 
+>>> b=barbell_graph(m1,m2) 
+>>> number_of_nodes(b)==2*m1+m2
+True
+>>> number_of_edges(b)==m1*(m1-1) + m2 + 1
+True
+>>> b.name
+'barbell_graph(4,10)'
+
+>>> m1=3; m2=20 
+>>> b=barbell_graph(m1,m2) 
+>>> number_of_nodes(b)==2*m1+m2
+True
+>>> number_of_edges(b)==m1*(m1-1) + m2 + 1
+True
+>>> b.name
+'barbell_graph(3,20)'
+
+Raise NetworkXError if m1<2
+
+>>> m1=1; m2=20 
+>>> b=barbell_graph(m1,m2)
+Traceback (most recent call last): 
+...  
+NetworkXError: Invalid graph description, m1 should be >=2
+
+Raise NetworkXError if m2<0
+
+>>> m1=5; m2=-2 
+>>> b=barbell_graph(m1,m2)
+Traceback (most recent call last): 
+...  
+NetworkXError: Invalid graph description, m2 should be >=0
+
+barbell_graph(2,m) = path_graph(m+4)
+
+>>> m1=2; m2=5 
+>>> b=barbell_graph(m1,m2) 
+>>> is_isomorphic(b, path_graph(m2+4))
+True
+
+>>> m1=2; m2=10 
+>>> b=barbell_graph(m1,m2) 
+>>> is_isomorphic(b, path_graph(m2+4))
+True
+
+>>> m1=2; m2=20 
+>>> b=barbell_graph(m1,m2) 
+>>> is_isomorphic(b, path_graph(m2+4))
+True
+
+
+
+complete_graph
+--------------
+
+complete_graph(m) is a connected graph with 
+m nodes and  m*(m+1)/2 edges
+
+>>> m=0
+>>> g=complete_graph(m)
+>>> number_of_nodes(g)==0
+True
+>>> number_of_edges(g)==0
+True
+
+>>> m=1
+>>> g=complete_graph(m)
+>>> number_of_nodes(g)==m
+True
+>>> number_of_edges(g)==0
+True
+
+>>> m=3
+>>> g=complete_graph(m)
+>>> number_of_nodes(g)==m
+True
+>>> number_of_edges(g)==m*(m-1)/2
+True
+
+>>> m=5
+>>> g=complete_graph(m)
+>>> number_of_nodes(g)==m
+True
+>>> number_of_edges(g)==m*(m-1)/2
+True
+
+complete_bipartite_graph
+------------------------
+
+>>> G=complete_bipartite_graph(0,0)
+>>> is_isomorphic( G, null_graph() )
+True
+
+>>> G=complete_bipartite_graph(1,0)
+>>> is_isomorphic( G, empty_graph(1) )
+True
+>>> G=complete_bipartite_graph(0,1)
+>>> is_isomorphic( G, empty_graph(1) )
+True
+
+>>> G=complete_bipartite_graph(5,0)
+>>> is_isomorphic( G, empty_graph(5) )
+True
+>>> G=complete_bipartite_graph(0,5)
+>>> is_isomorphic( G, empty_graph(5) )
+True
+
+>>> G=complete_bipartite_graph(2,2)
+>>> is_isomorphic( G, cycle_graph(4) )
+True
+
+>>> G=complete_bipartite_graph(1,5)
+>>> is_isomorphic( G, star_graph(5) )
+True
+>>> G=complete_bipartite_graph(5,1)
+>>> is_isomorphic( G, star_graph(5) )
+True
+
+complete_bipartite_graph(m1,m2) is a connected graph with 
+m1+m2 nodes and  m1*m2 edges
+
+>>> G=complete_bipartite_graph(5,11)
+>>> number_of_nodes(G)
+16
+>>> number_of_edges(G)
+55
+
+
+>>> G=complete_bipartite_graph(7,3)
+>>> number_of_nodes(G)
+10
+>>> number_of_edges(G)
+21
+
+
+circular_ladder_graph
+---------------------
+
+>>> G=circular_ladder_graph(5) 
+
+cycle_graph
+-----------
+
+>>> G=cycle_graph(4)
+>>> sorted(G.edges())
+[(0, 1), (0, 3), (1, 2), (2, 3)]
+
+>>> G=cycle_graph(4, create_using=DiGraph())
+>>> G.has_edge(2,1)
+False
+>>> G.has_edge(1,2)
+True
+
+dorogovtsev_goltsev_mendes_graph 
+--------------------------------
+ 
+>>> G=dorogovtsev_goltsev_mendes_graph(0) 
+>>> G.edges()
+[(0, 1)]
+>>> G.nodes()         
+[0, 1]
+>>> G=dorogovtsev_goltsev_mendes_graph(1) 
+>>> G.edges()                                                
+[(0, 1), (0, 2), (1, 2)]
+>>> average_clustering(G) 
+1.0
+>>> triangles(G) 
+[1, 1, 1]
+>>> G=dorogovtsev_goltsev_mendes_graph(10) 
+>>> number_of_nodes(G) 
+29526
+>>> number_of_edges(G) 
+59049
+>>> G.degree(0) 
+1024
+>>> G.degree(1) 
+1024
+>>> G.degree(2) 
+1024
+
+empty_graph
+-----------
+
+>>> G=empty_graph()
+>>> number_of_nodes(G)
+0
+
+>>> G=empty_graph(42)
+>>> number_of_nodes(G)
+42
+>>> number_of_edges(G)
+0
+>>> print G.name
+empty_graph(42)
+
+
+create empty digraph
+
+>>> G=empty_graph(42,create_using=DiGraph(name="duh")) 
+>>> number_of_nodes(G)
+42
+>>> number_of_edges(G)
+0
+>>> G.name # name was cleared, so nothing
+'empty_graph(42)'
+>>> isinstance(G,DiGraph)
+True
+
+
+create empty graph from another
+
+>>> pete=petersen_graph()
+>>> G=empty_graph(42,create_using=pete) 
+>>> number_of_nodes(G)
+42
+>>> number_of_edges(G)
+0
+>>> G.name # name was cleared, so nothing
+'empty_graph(42)'
+>>> isinstance(G,Graph)
+True
+
+
+
+grid_2d_graph
+-------------
+
+>>> G=grid_2d_graph(5,6)
+
+grid_graph
+----------
+
+grid_graph([n,m]) is a connected simple graph with the following properties:
+number_of_nodes=n*m
+degree_histogram=[0,0,4,2*(n+m)-8,(n-2)*(m-2)
+
+>>> n=3; m=5
+>>> g=grid_graph([n,m])
+>>> number_of_nodes(g)==n*m
+True
+>>> degree_histogram(g)==[0,0,4,2*(n+m)-8,(n-2)*(m-2)]
+True
+
+>>> n=5; m=3
+>>> g=grid_graph([n,m])
+>>> number_of_nodes(g)==n*m
+True
+>>> degree_histogram(g)==[0,0,4,2*(n+m)-8,(n-2)*(m-2)]
+True
+
+>>> n=4; m=5
+>>> g=grid_graph([n,m])
+>>> number_of_nodes(g)==n*m
+True
+>>> degree_histogram(g)==[0,0,4,2*(n+m)-8,(n-2)*(m-2)]
+True
+
+>>> n=5; m=4
+>>> g=grid_graph([n,m])
+>>> number_of_nodes(g)==n*m
+True
+>>> degree_histogram(g)==[0,0,4,2*(n+m)-8,(n-2)*(m-2)]
+True
+
+>>> n=1; m=5
+>>> g=grid_graph([n,m])
+>>> number_of_nodes(g)==n*m
+True
+>>> is_isomorphic(g,path_graph(m))
+True
+
+>>> n=5; m=1
+>>> g=grid_graph([n,m])
+>>> number_of_nodes(g)==n*m
+True
+>>> is_isomorphic(g,path_graph(n))
+True
+
+
+hypercube_graph
+---------------
+
+>>> g=hypercube_graph(0)
+>>> is_isomorphic(g, null_graph())
+True
+
+>>> g=hypercube_graph(1)
+>>> is_isomorphic(g, path_graph(2))
+True
+
+>>> g=hypercube_graph(2)
+>>> is_isomorphic(g, cycle_graph(4))
+True
+
+>>> g=hypercube_graph(3)
+>>> is_isomorphic(g, cubical_graph())
+True
+
+>>> g=hypercube_graph(4)
+>>> degree_histogram(g)
+[0, 0, 0, 0, 16]
+
+>>> g=hypercube_graph(5)
+>>> degree_histogram(g)
+[0, 0, 0, 0, 0, 32]
+
+>>> g=hypercube_graph(6)
+>>> degree_histogram(g)
+[0, 0, 0, 0, 0, 0, 64]
+
+
+ladder_graph
+------------
+ 
+>>> g=ladder_graph(0)
+>>> is_isomorphic(g, empty_graph(0))
+True
+
+>>> g=ladder_graph(1)
+>>> is_isomorphic(g, path_graph(2))
+True
+
+>>> g=ladder_graph(2)
+>>> is_isomorphic(g, hypercube_graph(2))
+True
+
+>>> is_isomorphic( ladder_graph(10), grid_graph([2,10]))
+True
+
+lollipop_graph
+--------------
+
+number of nodes = m1 + m2
+number of edges = number_of_edges(complete_graph(m1)) + m2
+
+>>> m1=3; m2=5 
+>>> b=lollipop_graph(m1,m2) 
+>>> number_of_nodes(b)==m1+m2
+True
+>>> number_of_edges(b)==m1*(m1-1)/2 + m2
+True
+>>> b.name
+'lollipop_graph(3,5)'
+
+>>> m1=4; m2=10 
+>>> b=lollipop_graph(m1,m2) 
+>>> number_of_nodes(b)==m1+m2
+True
+>>> number_of_edges(b)==m1*(m1-1)/2 + m2
+True
+>>> b.name
+'lollipop_graph(4,10)'
+
+>>> m1=3; m2=20 
+>>> b=lollipop_graph(m1,m2) 
+>>> number_of_nodes(b)==m1+m2
+True
+>>> number_of_edges(b)==m1*(m1-1)/2 + m2 
+True
+>>> b.name
+'lollipop_graph(3,20)'
+
+Raise NetworkXError if m<2
+
+>>> m1=1; m2=20 
+>>> b=lollipop_graph(m1,m2)
+Traceback (most recent call last): 
+...  
+NetworkXError: Invalid graph description, m should be >=2
+
+Raise NetworkXError if n<0
+
+>>> m1=5; m2=-2 
+>>> b=lollipop_graph(m1,m2)
+Traceback (most recent call last): 
+...  
+NetworkXError: Invalid graph description, n should be >=0
+
+lollipop_graph(2,m) = path_graph(m+2)
+
+>>> m1=2; m2=5 
+>>> b=lollipop_graph(m1,m2) 
+>>> is_isomorphic(b, path_graph(m2+2))
+True
+
+>>> m1=2; m2=10 
+>>> b=lollipop_graph(m1,m2) 
+>>> is_isomorphic(b, path_graph(m2+2))
+True
+
+>>> m1=2; m2=20 
+>>> b=lollipop_graph(m1,m2) 
+>>> is_isomorphic(b, path_graph(m2+2))
+True
+
+
+
+
+null_graph
+----------
+
+>>> number_of_nodes(null_graph())
+0
+ 
+path_graph
+----------
+
+>>> p=path_graph(0)
+>>> is_isomorphic(p, null_graph())
+True
+>>> p.name
+'path_graph(0)'
+
+>>> p=path_graph(1)
+>>> is_isomorphic( p, empty_graph(1))
+True
+>>> p.name
+'path_graph(1)'
+
+>>> p=path_graph(10)
+>>> is_connected(p)
+True
+>>> p.degree()
+[1, 2, 2, 2, 2, 2, 2, 2, 2, 1]
+>>> p.order()-1==p.size()
+True
+
+>>> p=path_graph(3, create_using=DiGraph())
+>>> p.has_edge(0,1)
+True
+>>> p.has_edge(1,0)
+False
+
+periodic_grid_2d_graph
+----------------------
+
+>>> g=grid_2d_graph(0,0, periodic=True)
+>>> g.degree()==[]
+True
+
+>>> g=grid_2d_graph(2,2, periodic=True)
+>>> is_isomorphic( g, cycle_graph(4) )
+True
+
+>>> g=grid_2d_graph(1,7, periodic=True)
+>>> is_isomorphic( g, cycle_graph(7) )
+True
+>>> g=grid_2d_graph(7,1, periodic=True)
+>>> is_isomorphic( g, cycle_graph(7) )
+True
+
+>>> g=grid_2d_graph(2,5, periodic=True)
+>>> is_isomorphic( g, circular_ladder_graph(5) )
+True
+>>> g=grid_2d_graph(5,2, periodic=True)
+>>> is_isomorphic( g, circular_ladder_graph(5) )
+True
+
+>>> g=grid_2d_graph(2,4, periodic=True)
+>>> is_isomorphic( g, cubical_graph() )
+True
+>>> g=grid_2d_graph(4,2, periodic=True)
+>>> is_isomorphic( g, cubical_graph() )
+True
+
+ 
+star_graph
+----------
+
+>>> is_isomorphic( star_graph(0), empty_graph(1) )
+True
+
+>>> is_isomorphic( star_graph(1), path_graph(2) )
+True
+
+>>> is_isomorphic( star_graph(2), path_graph(3) )
+True
+
+>>> s=star_graph(10)
+>>> s.degree()==[10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+True
+
+
+trivial_graph
+-------------
+
+>>> number_of_nodes(trivial_graph())
+1
+
+wheel_graph
+-----------
+
+>>> g=wheel_graph(0)
+>>> is_isomorphic( g, null_graph())
+True
+
+>>> g=wheel_graph(1)
+>>> is_isomorphic( g, empty_graph(1))
+True
+
+>>> g=wheel_graph(2)
+>>> is_isomorphic( g, path_graph(2))
+True
+
+>>> g=wheel_graph(3)
+>>> is_isomorphic( g, complete_graph(3))
+True
+
+>>> g=wheel_graph(4)
+>>> is_isomorphic( g, complete_graph(4))
+True
+>>> g.name
+'wheel_graph(4)'
+
+>>> g=wheel_graph(10)
+>>> sorted(g.degree())
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 9]
+

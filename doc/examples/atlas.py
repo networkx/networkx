@@ -16,7 +16,7 @@ __revision__ = ""
 
 from networkx import *
 from networkx.generators.atlas import *
-from networkx.isomorph import graph_could_be_isomorphic as isomorphic
+from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic as isomorphic
 import random
 
 def atlas6():

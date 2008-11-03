@@ -1,0 +1,39 @@
+Examples
+========
+
+See the examples at
+https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/
+
+And the gallery at
+https://networkx.lanl.gov/wiki/gallery
+
+Basic
+-----
+
+>>> from networkx import *
+>>> G=Graph()
+>>> G.add_edge(1,2)
+>>> G.add_edge(2,3)
+>>> G.add_edge(2,4)
+>>> G.add_edge(2,5)
+>>> G.add_edge(2,6)
+>>> G.add_edge(4,6)
+
+Print the nodes of the graph
+
+>>> print G.nodes()
+[1, 2, 3, 4, 5, 6]
+
+Print the degree of each node
+
+>>> for n in G:
+...     print n,G.degree(n)
+... 
+1 1
+2 5
+3 1
+4 2
+5 1
+6 2
+
+Draw with matplotlib

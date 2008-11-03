@@ -26,12 +26,17 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
+
+__all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
+           'to_pydot', 'from_pydot']
+
 import sys
 from networkx.utils import _get_fh
 try:
     import pydot
 except ImportError:
     raise
+
 
 
 def write_dot(G,path):
@@ -58,11 +63,9 @@ def read_dot(path):
 
 
 def from_pydot(P):
-    """Return a NetworkX XGraph or XDiGraph from a pydot graph.
+    """Return a NetworkX Graph or DiGraph from a pydot graph.
 
-    >>> X=from_pydot(P)
-
-    The XGraph X will have a dictionary X.graph_attr containing
+    The Graph X will have a dictionary X.graph_attr containing
     the default graphviz attributes for graphs, nodes and edges.
 
     Default node attributes will be in the dictionary X.node_attr
@@ -70,19 +73,25 @@ def from_pydot(P):
 
     Edge attributes will be returned as edge data in the graph X.
 
-    If you want a Graph with no attributes attached instead of an XGraph
-    with attributes use
+    Examples
+    ---------
 
-    >>> G=Graph(X)
+    >>> G=nx.complete_graph(5)
+    >>> P=nx.to_pydot(G)
+    >>> X=nx.from_pydot(P)
 
-    Similarly to make a DiGraph from an XDiGraph
+    If you want a Graph with no attributes attached use
 
-    >>> D=DiGraph(X)
+    >>> G=nx.Graph(X)
+
+    Similarly to make a DiGraph without attributes
+
+    >>> D=nx.DiGraph(X)
 
     """
     import networkx
 
-    if P.get_strict(0): # pydot bug: get_strict() shouldn't take argument 
+    if P.get_strict(None): # pydot bug: get_strict() shouldn't take argument 
         multiedges=False
         selfloops=False
     else:
@@ -90,11 +99,15 @@ def from_pydot(P):
         selfloops=True
         
     if P.get_type()=='graph': # undirected
-        create_using=networkx.XGraph(multiedges=multiedges,
-                                     selfloops=selfloops)
+        if P.get_strict(None):
+            create_using=networkx.Graph()
+        else:
+            create_using=networkx.MultiGraph()
     else:
-        create_using=networkx.XDiGraph(multiedges=multiedges,
-                                       selfloops=selfloops)
+        if P.get_strict(None):
+            create_using=networkx.DiGraph()
+        else:
+            create_using=networkx.MultiDiGraph()
 
     # assign defaults        
     N=networkx.empty_graph(0,create_using)
@@ -162,8 +175,7 @@ def to_pydot(N, graph_attr=None, node_attr=None, edge_attr=None,
     if graph_attr is not None:
         graph_attributes.update(graph_attr)
 
-    directed=N.is_directed()
-    if N.is_directed():
+    if N.directed:
         graph_type='digraph'
     else:
         graph_type='graph'
@@ -248,8 +260,9 @@ def graphviz_layout(G,prog='neato',root=None, **kwds):
     """Create layout using pydot and graphviz.
     Returns a dictionary of positions keyed by node.
 
-    >>> pos=graphviz_layout(G)
-    >>> pos=graphviz_layout(G,prog='dot')
+    >>> G=nx.complete_graph(4)
+    >>> pos=nx.graphviz_layout(G)
+    >>> pos=nx.graphviz_layout(G,prog='dot')
 
     This is a wrapper for pydot_layout.
 
@@ -262,8 +275,9 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     Create layout using pydot and graphviz.
     Returns a dictionary of positions keyed by node.
 
-    >>> pos=pydot_layout(G)
-    >>> pos=pydot_layout(G,prog='dot')
+    >>> G=nx.complete_graph(4)
+    >>> pos=nx.pydot_layout(G)
+    >>> pos=nx.pydot_layout(G,prog='dot')
     
     """
     from networkx.drawing.nx_pydot import pydot_from_networkx
@@ -298,21 +312,3 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
             node_pos[n]=(float(xx),float(yy))
     return node_pos
 
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/drawing/nx_pydot.txt',package='networkx')
-    return suite
-
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    

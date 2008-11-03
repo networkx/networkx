@@ -109,7 +109,7 @@ def minard_graph():
     g=[]        
 
     for data in [data1,data2,data3]:
-        G=XGraph()
+        G=Graph()
         i=0
         G.pos={} # location
         G.pop={} # size

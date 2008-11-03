@@ -99,7 +99,7 @@ True
 True
 
 
-XGraph
+Graph
 ------
 
 >>> G=cycle_graph(4)
@@ -108,7 +108,7 @@ XGraph
 >>> dest=[v for u,v in e]
 >>> weight=[s+10 for s in source]
 >>> ex=zip(source,dest,weight)
->>> XG=XGraph()
+>>> XG=Graph()
 >>> XG.add_edges_from(ex)
 
 
@@ -116,24 +116,24 @@ Numpy matrix
 ~~~~~~~~~~~~
 
 >>> A=to_scipy_sparse_matrix(XG)
->>> GG=from_scipy_sparse_matrix(A,create_using=XGraph())
+>>> GG=from_scipy_sparse_matrix(A,create_using=Graph())
 >>> sorted(XG.nodes())==sorted(GG.nodes())
 True
 >>> sorted(XG.edges())==sorted(GG.edges())
 True
->>> GW=from_whatever(A,create_using=XGraph())
+>>> GW=from_whatever(A,create_using=Graph())
 >>> sorted(XG.nodes())==sorted(GW.nodes())
 True
 >>> sorted(XG.edges())==sorted(GW.edges())
 True
->>> GI=XGraph(A)
+>>> GI=Graph(A)
 >>> sorted(XG.nodes())==sorted(GI.nodes())
 True
 >>> sorted(XG.edges())==sorted(GI.edges())
 True
 
 
-XDiGraph
+DiGraph
 ------
 
 >>> G=cycle_graph(4)
@@ -142,7 +142,7 @@ XDiGraph
 >>> dest=[v for u,v in e]
 >>> weight=[s+10 for s in source]
 >>> ex=zip(source,dest,weight)
->>> XG=XDiGraph()
+>>> XG=DiGraph()
 >>> XG.add_edges_from(ex)
 
 
@@ -150,17 +150,17 @@ Scipy sparse matrix
 ~~~~~~~~~~~~~~~~~~~
 
 >>> A=to_scipy_sparse_matrix(XG)
->>> GG=from_scipy_sparse_matrix(A,create_using=XDiGraph())
+>>> GG=from_scipy_sparse_matrix(A,create_using=DiGraph())
 >>> sorted(XG.nodes())==sorted(GG.nodes())
 True
 >>> sorted(XG.edges())==sorted(GG.edges())
 True
->>> GW=from_whatever(A,create_using=XDiGraph())
+>>> GW=from_whatever(A,create_using=DiGraph())
 >>> sorted(XG.nodes())==sorted(GW.nodes())
 True
 >>> sorted(XG.edges())==sorted(GW.edges())
 True
->>> GI=XDiGraph(A)
+>>> GI=DiGraph(A)
 >>> sorted(XG.nodes())==sorted(GI.nodes())
 True
 >>> sorted(XG.edges())==sorted(GI.edges())

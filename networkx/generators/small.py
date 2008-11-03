@@ -3,16 +3,39 @@ Various small and named graphs, together with some compact generators.
 
 """
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
-__date__ = "$Date: 2005-06-15 12:53:08 -0600 (Wed, 15 Jun 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 1040 $"
-#    Copyright (C) 2004,2005 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
-import networkx
+
+__all__ = ['make_small_graph',
+           'LCF_graph',
+           'bull_graph',
+           'chvatal_graph',
+           'cubical_graph',
+           'desargues_graph',
+           'diamond_graph',
+           'dodecahedral_graph',
+           'frucht_graph',
+           'heawood_graph',
+           'house_graph',
+           'house_x_graph',
+           'icosahedral_graph',
+           'krackhardt_kite_graph',
+           'moebius_kantor_graph',
+           'octahedral_graph',
+           'pappus_graph',
+           'petersen_graph',
+           'sedgewick_maze_graph',
+           'tetrahedral_graph',
+           'truncated_cube_graph',
+           'truncated_tetrahedron_graph',
+           'tutte_graph']
+
+from networkx.generators.classic import empty_graph, cycle_graph, path_graph, complete_graph
+from networkx.exception import NetworkXError
 
 #------------------------------------------------------------------------------
 #   Tools for creating small graphs
@@ -32,18 +55,18 @@ def make_small_graph(graph_description, create_using=None):
     specifies the nodes connected to vertex j.
     e.g. the "square" graph C_4 can be obtained by
 
-    >>> G=make_small_graph(["adjacencylist","C_4",4,[[2,4],[1,3],[2,4],[1,3]]])
+    >>> G=nx.make_small_graph(["adjacencylist","C_4",4,[[2,4],[1,3],[2,4],[1,3]]])
 
     or, since we do not need to add edges twice,
     
-    >>> G=make_small_graph(["adjacencylist","C_4",4,[[2,4],[3],[4],[]]])
+    >>> G=nx.make_small_graph(["adjacencylist","C_4",4,[[2,4],[3],[4],[]]])
     
     If ltype="edgelist" then xlist is an edge list 
     written as [[v1,w2],[v2,w2],...,[vk,wk]],
     where vj and wj integers in the range 1,..,n
     e.g. the "square" graph C_4 can be obtained by
  
-    >>> G=make_small_graph(["edgelist","C_4",4,[[1,2],[3,4],[2,3],[4,1]]])
+    >>> G=nx.make_small_graph(["edgelist","C_4",4,[[1,2],[3,4],[2,3],[4,1]]])
 
     Use the create_using argument to choose the graph class/type. 
     """
@@ -51,13 +74,13 @@ def make_small_graph(graph_description, create_using=None):
     name=graph_description[1]
     n=graph_description[2]
 
-    G=networkx.empty_graph(n, create_using)
+    G=empty_graph(n, create_using)
     nodes=G.nodes()
 
     if ltype=="adjacencylist":
         adjlist=graph_description[3]
         if len(adjlist) != n:
-            raise networkx.NetworkXError,"invalid graph_description"
+            raise NetworkXError,"invalid graph_description"
         G.add_edges_from([(u-1,v) for v in nodes for u in adjlist[v]])
     elif ltype=="edgelist":
         edgelist=graph_description[3]
@@ -65,7 +88,7 @@ def make_small_graph(graph_description, create_using=None):
             v1=e[0]-1
             v2=e[1]-1
             if v1<0 or v1>n-1 or v2<0 or v2>n-1:
-                raise networkx.NetworkXError,"invalid graph_description"
+                raise NetworkXError,"invalid graph_description"
             else:
                 G.add_edge(v1,v2)
     G.name=name
@@ -98,11 +121,11 @@ def LCF_graph(n,shift_list,repeats):
           
     The utility graph K_{3,3}
 
-    >>> G=LCF_graph(6,[3,-3],3)
+    >>> G=nx.LCF_graph(6,[3,-3],3)
     
     The Heawood graph
 
-    >>> G=LCF_graph(14,[5,-5],7)
+    >>> G=nx.LCF_graph(14,[5,-5],7)
 
     See http://mathworld.wolfram.com/LCFNotation.html for a description
     and references.
@@ -110,10 +133,10 @@ def LCF_graph(n,shift_list,repeats):
     """
 
     if n <= 0:
-        return networkx.empty_graph()
+        return empty_graph()
 
     # start with the n-cycle
-    G=networkx.cycle_graph(n)
+    G=cycle_graph(n)
     G.name="LCF_graph"
     nodes=G.nodes()
 
@@ -201,7 +224,7 @@ def frucht_graph():
     automorphism group consists only of the identity element.
 
     """
-    G=networkx.cycle_graph(7)
+    G=cycle_graph(7)
     G.add_edges_from([[0,7],[1,7],[2,8],[3,9],[4,9],[5,10],[6,10],
                 [7,11],[8,11],[8,9],[10,11]])
 
@@ -315,7 +338,7 @@ def sedgewick_maze_graph():
     Algorithms, Chapter 18, e.g. Figure 18.2 and following.
     Nodes are numbered 0,..,7
     """ 
-    G=networkx.empty_graph(0)
+    G=empty_graph(0)
     G.add_nodes_from(range(8))
     G.add_edges_from([[0,2],[0,7],[0,5]])
     G.add_edges_from([[1,7],[2,6]])
@@ -326,7 +349,6 @@ def sedgewick_maze_graph():
 
 def tetrahedral_graph():
     """ Return the 3-regular Platonic Tetrahedral graph."""
-    from networkx.generators.classic import complete_graph
     G=complete_graph(4)
     G.name="Platonic Tetrahedral graph"
     return G
@@ -349,7 +371,7 @@ def truncated_cube_graph():
 
 def truncated_tetrahedron_graph():
     """Return the skeleton of the truncated Platonic tetrahedron."""
-    G=networkx.path_graph(12)
+    G=path_graph(12)
 #    G.add_edges_from([(1,3),(1,10),(2,7),(4,12),(5,12),(6,8),(9,11)])
     G.add_edges_from([(0,2),(0,9),(1,6),(3,11),(4,11),(5,7),(8,10)])
     G.name="Truncated Tetrahedron Graph"
@@ -373,27 +395,4 @@ def tutte_graph():
         ]
     G=make_small_graph(description)
     return G
-
-
-def _test_suite():
-    """test hook"""
-    import doctest
-    suite = doctest.DocFileSuite('tests/generators/small.txt',\
-                                 package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)"\
-              %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    
-
 

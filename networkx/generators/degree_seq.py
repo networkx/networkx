@@ -2,7 +2,7 @@
 Generate graphs with a given degree sequence or expected degree sequence.
 
 """
-#    Copyright (C) 2004-2006 by 
+#    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -10,6 +10,19 @@ Generate graphs with a given degree sequence or expected degree sequence.
 #    http://www.gnu.org/copyleft/lesser.html
 
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
+
+
+__all__ = ['configuration_model',
+           'expected_degree_graph',
+           'havel_hakimi_graph',
+           'degree_sequence_tree',
+           'is_valid_degree_sequence',
+           'create_degree_sequence',
+           'double_edge_swap',
+           'connected_double_edge_swap',
+           'li_smax_graph',
+           's_metric']
+
 
 import random
 import networkx
@@ -31,19 +44,16 @@ def configuration_model(deg_sequence,seed=None):
       - `seed`: seed for random number generator (default=None)
 
 
-    >>> z=create_degree_sequence(100,powerlaw_sequence)
-    >>> G=configuration_model(z)
+    >>> from networkx.utils import powerlaw_sequence
+    >>> z=nx.create_degree_sequence(100,powerlaw_sequence)
+    >>> G=nx.configuration_model(z)
 
-    The pseudograph G is a networkx.XGraph that allows multiple (parallel) edges
-    between nodes and edges that connect nodes to themseves (self loops).
+    The pseudograph G is a networkx.MultiGraph that allows multiple (parallel) 
+    edges between nodes and self-loops (edges from a node to itself).
 
-    To remove self-loops:
-
-    >>> G.ban_selfloops()
-    
     To remove parallel edges:
 
-    >>> G.ban_multiedges()
+    >>> G=nx.Graph(G)
 
     Steps:
 
@@ -79,8 +89,7 @@ def configuration_model(deg_sequence,seed=None):
 #    G=networkx.empty_graph(N,create_using=networkx.Graph()) # no multiedges or selfloops
 
     # allow multiedges and selfloops
-    G=networkx.empty_graph(N,create_using=networkx.XGraph(multiedges=True, \
-                                                          selfloops=True))
+    G=networkx.empty_graph(N,create_using=networkx.MultiGraph())
 
     if N==0 or max(deg_sequence)==0: # done if no edges
         return G 
@@ -113,11 +122,8 @@ def expected_degree_graph(w, seed=None):
        - `seed`: seed for random number generator (default=None)
 
     >>> z=[10 for i in range(100)]
-    >>> G=expected_degree_graph(z)
+    >>> G=nx.expected_degree_graph(z)
 
-    To remove self-loops:
-
-    >>> G.ban_selfloops()
 
     Reference::
 
@@ -136,7 +142,7 @@ def expected_degree_graph(w, seed=None):
 
     n = len(w)
     # allow self loops
-    G=networkx.empty_graph(n,create_using=networkx.XGraph(selfloops=True))
+    G=networkx.empty_graph(n,create_using=networkx.Graph())
     G.name="random_expected_degree_graph"
 
     if n==0 or max(w)==0: # done if no edges
@@ -323,8 +329,8 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
     For examples of sfunctions that return sequences of random numbers,
     see networkx.Utils.
 
-    >>> from networkx.utils import *
-    >>> seq=create_degree_sequence(10,uniform_sequence)
+    >>> from networkx.utils import uniform_sequence
+    >>> seq=nx.create_degree_sequence(10,uniform_sequence)
 
     """
     tries=0
@@ -377,10 +383,10 @@ def double_edge_swap(G, nswap=1):
         if ui==xi: continue # same source, skip
         u=dk[ui] # convert index to label
         x=dk[xi] 
-        v=random.choice(G[u]) # choose target uniformly from nbrs
-        y=random.choice(G[x]) 
+        v=random.choice(G.neighbors(u)) # choose target uniformly from nbrs
+        y=random.choice(G.neighbors(x)) # Note: dan't use G[u] because choice can't use dict 
         if v==y: continue # same target, skip
-        if (not G.has_edge(u,x)) and (not G.has_edge(v,y)):
+        if (x not in G[u]) and (y not in G[v]):
             G.add_edge(u,x)
             G.add_edge(v,y)
             G.delete_edge(u,v)
@@ -444,8 +450,8 @@ def connected_double_edge_swap(G, nswap=1):
             if ui==xi: continue # same source, skip
             u=dk[ui] # convert index to label
             x=dk[xi] 
-            v=random.choice(G[u]) # choose target uniformly from nbrs
-            y=random.choice(G[x]) 
+            v=random.choice(G.neighbors(u)) # choose target uniformly from nbrs
+            y=random.choice(G.neighbors(x)) # Note: dan't use G[u] because choice can't use dict 
             if v==y: continue # same target, skip
             if (not G.has_edge(u,x)) and (not G.has_edge(v,y)):
                 G.delete_edge(u,v)
@@ -684,23 +690,3 @@ def s_metric(G):
     # this function doesn't belong in this module
     return sum([G.degree(u)*G.degree(v) for (u,v) in G.edges_iter()])
    
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/generators/degree_seq.txt',
-                                 package='networkx')
-    return suite
-
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required (%d.%d detected)." \
-              %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    

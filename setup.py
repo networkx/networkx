@@ -19,8 +19,8 @@ if sys.argv[-1] == 'setup.py':
     print "To install, run 'python setup.py install'"
     print
 
-if sys.version_info[:2] < (2, 3):
-    print "NX requires Python version 2.3 or later (%d.%d detected)." % \
+if sys.version_info[:2] < (2, 4):
+    print "NetworkX requires Python version 2.4 or later (%d.%d detected)." % \
           sys.version_info[:2]
     sys.exit(-1)
 
@@ -31,9 +31,9 @@ packages=["networkx",
           "networkx.drawing",
           "networkx.readwrite",
           "networkx.tests",
-          "networkx.tests.generators",
-          "networkx.tests.drawing",
-          "networkx.tests.readwrite",
+#          "networkx.tests.generators",
+#          "networkx.tests.drawing",
+#          "networkx.tests.readwrite",
           ]
 
 docdirbase  = 'share/doc/networkx-%s' % version

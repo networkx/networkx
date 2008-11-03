@@ -11,6 +11,8 @@ Generators and functions for bipartite graphs.
 #    http://www.gnu.org/copyleft/lesser.html
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
  
+__all__=[]
+
 import random
 import sys
 import networkx as NX
@@ -32,7 +34,7 @@ def bipartite_configuration_model(aseq, bseq,
 
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
 
-    If no graph type is specified use XGraph with parallel edges.
+    If no graph type is specified use MultiGraph with parallel edges.
 
     If you want a graph with no parallel edges use create_using=Graph()
     but then the resulting degree sequences might not be exact.
@@ -40,7 +42,7 @@ def bipartite_configuration_model(aseq, bseq,
     """
 
     if create_using==None:
-        create_using=NX.XGraph(multiedges=True)
+        create_using=NX.MultiGraph()
 
     G=NX.empty_graph(0,create_using)
 
@@ -101,7 +103,7 @@ def bipartite_havel_hakimi_graph(aseq, bseq,
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
     """
     if create_using==None:
-        create_using=NX.XGraph(multiedges=True)
+        create_using=NX.MultiGraph()
 
     G=NX.empty_graph(0,create_using)
 
@@ -159,7 +161,7 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq,
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
     """
     if create_using==None:
-        create_using=NX.XGraph(multiedges=True)
+        create_using=NX.MultiGraph()
 
     G=NX.empty_graph(0,create_using)
 
@@ -219,7 +221,7 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
     """
     if create_using==None:
-        create_using=NX.XGraph(multiedges=True)
+        create_using=NX.MultiGraph()
 
     G=NX.empty_graph(0,create_using)
 
@@ -291,7 +293,7 @@ def bipartite_preferential_attachment_graph(aseq,p,
 
     """
     if create_using==None:
-        create_using=NX.XGraph(multiedges=True)
+        create_using=NX.MultiGraph()
 
     G=NX.empty_graph(0,create_using)
 
@@ -359,7 +361,7 @@ def bipartite_random_regular_graph(d, n,
 
 
     if create_using==None:
-        create_using=NX.XGraph(multiedges=True)
+        create_using=NX.MultiGraph()
 
     G=NX.empty_graph(0,create_using)
 
@@ -452,19 +454,4 @@ def bipartite_sets(G):
     X=[n for n in color if color[n]==1]
     Y=[n for n in color if color[n]==0]
     return (X,Y)
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/generators/bipartite.txt',
-                                 package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)."%  sys.version_info[:2]
-        sys.exit(-1)
-    unittest.TextTestRunner().run(_test_suite())
-    
 
