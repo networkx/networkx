@@ -34,6 +34,6 @@ source code repository write access.
 
 
 .. _subversion: http://subversion.tigris.org
-.. _ticket: https://networkx.lanl.gov/newticket ticket
-.. _register: https://networkx.lanl.gov/register
+.. _ticket: https://networkx.lanl.gov/trac/newticket 
+.. _register: https://networkx.lanl.gov/trac/register
 
