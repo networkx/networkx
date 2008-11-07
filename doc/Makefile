@@ -25,7 +25,7 @@ help:
 	@echo "  linkcheck to check all external links for integrity"
 
 clean:
-	-rm -rf build/* source/reference/generated
+	-rm -rf build/* source/reference/generated source/examples/* source/static/examples
 
 dist: html
 	test -d build/latex || make latex
@@ -42,7 +42,7 @@ build/generate-stamp:
 	mkdir -p build
 	./sphinxext/numpyext/autosummary_generate.py source/reference/*.rst \
 		-p dump.xml -o source/reference/generated 
-	./make_examples_rst.py examples source/examples
+	./make_examples_rst.py examples source
 	touch build/generate-stamp
 
 ext-svn:

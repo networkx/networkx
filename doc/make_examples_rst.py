@@ -47,7 +47,7 @@ def main(exampledir,sourcedir):
     subdirs = datad.keys()
     subdirs.sort()
 
-    fhindex = file(os.path.join(sourcedir,'index.rst'), 'w')
+    fhindex = file(os.path.join(sourcedir,'examples','index.rst'), 'w')
     fhindex.write("""\
 .. _examples-index:
 
@@ -66,7 +66,7 @@ NetworkX Examples
 """)
 
     for subdir in subdirs:
-        output_dir= os.path.join(sourcedir,subdir)
+        output_dir= os.path.join(sourcedir,'examples',subdir)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
