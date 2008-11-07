@@ -60,7 +60,8 @@ class NetworkXDoctest(Doctest):
             test.globs = {'__builtins__':__builtins__,
                           '__file__':'__main__',
                           '__name__':'__main__',
-                          'nx':networkx}
+                          'nx':networkx,
+                          'networkx':networkx}
             cases.append(DocTestCase(test, result_var=self.doctest_result_var))
         if cases:
             yield self.suiteClass(cases, context=module, can_split=False)
