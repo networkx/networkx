@@ -17,8 +17,7 @@ __revision__ = "$Revision: 831 $"
 try:
     from pylab import *
 except:
-    print "pylab not found: see https://networkx.lanl.gov/Drawing.html for info"
-    raise 
+    raise
     
 from networkx import *
 

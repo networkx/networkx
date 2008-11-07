@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 """
-Read and write graphs.
+Compute some network properties for the lollipop graph.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2004-11-03 08:11:09 -0700 (Wed, 03 Nov 2004) $"
-__credits__ = """"""
-__revision__ = "$Revision: 503 $"
 #    Copyright (C) 2004 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
