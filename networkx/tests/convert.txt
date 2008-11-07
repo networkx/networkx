@@ -284,10 +284,10 @@ True
 True
 >>> sorted(XGM.edges())==sorted(GI.edges())
 True
->>> GM=XGraph(G, multiedges=True)
+>>> GM=MultiGraph(G)
 >>> sorted(GM.nodes())==sorted(G.nodes())
 True
->>> sorted([(u,v) for (u,v,d) in GM.edges()])==sorted(G.edges())
+>>> sorted([(u,v) for (u,v) in GM.edges()])==sorted(G.edges())
 True
 
 
