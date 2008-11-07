@@ -44,10 +44,8 @@ __author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
                 release.authors['Swart'] )
 __license__  = release.license
 
-import info
-__doc__+=info.__doc__
-
 from exception import  NetworkXException, NetworkXError
+
 from algorithms import *
 from classes import *
 from convert import *
@@ -59,4 +57,12 @@ from readwrite import *
 
 import utils
 from tests.run import run as test
+import algorithms
+import classes
+import convert
+import drawing
+import generators
+import linalg
+import operators
+import readwrite
 
