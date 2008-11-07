@@ -144,7 +144,7 @@ Node and edge styles:
                 u,v=u   # x=None
 
         # if edge exists, quietly return if multiple edges are not allowed
-        if not self.multiedges and self.has_edge(u,v,x):
+        if not self.multiedges and self.has_edge(u,v):
             return
 
         # add nodes            
@@ -238,7 +238,7 @@ Node and edge styles:
 # node and edge attrs            
             
     def set_node_attr(self,nbunch=None,style=None,**kwds):
-        bunch=self.prepare_nbunch(nbunch)
+        bunch=self.nbunch_iter(nbunch)
         for n in bunch:
             if style is None:
                 for (k,v) in kwds.items():
@@ -248,7 +248,7 @@ Node and edge styles:
 
     def set_edge_attr(self,ebunch=None,style=None,**kwds):
         if ebunch is None:
-            bunch=self.edges()
+            bunch=self.edges(data=True)
         else:
             try:
                 self.has_edge(ebunch)
@@ -297,7 +297,7 @@ Node and edge styles:
     def node_labels(self,nbunch=None,labels=None):
         """Toggle node labels.
         """
-        bunch=list(self.prepare_nbunch(nbunch))
+        bunch=list(self.nbunch_iter(nbunch))
         if self.use_node_labels==True:
             labels=dict(zip(bunch,['']*len(bunch)))
             self.use_node_labels=False
@@ -312,7 +312,7 @@ Node and edge styles:
         """Toggle edge labels.
         """
         if ebunch is None:
-            bunch=self.edges()
+            bunch=self.edges(data=True)
         else:
             try:
                 self.has_edge(ebunch)
