@@ -5,51 +5,38 @@ Draw degree histogram with matplotlib.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2005-02-23 13:02:09 -0700 (Wed, 23 Feb 2005) $"
-__credits__ = """"""
-__revision__ = "$Revision: 778 $"
-#    Copyright (C) 2004 by 
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
 
 try:
-    from matplotlib.pylab import *
-    import matplotlib.mlab as mlab
+    import matplotlib.pyplot as plt
+    import matplotlib
 except:
-    print
-    print "pylab not found: see https://networkx.lanl.gov/Drawing.html for info"
-    print
-    raise 
+    raise
 
-from networkx import *
-from networkx.generators.degree_seq import *
+import networkx as nx
 
-
-z=create_degree_sequence(1000,powerlaw_sequence)
-is_valid_degree_sequence(z)
+z=nx.create_degree_sequence(1000,nx.utils.powerlaw_sequence)
+nx.is_valid_degree_sequence(z)
 
 print "Configuration model"
-G=configuration_model(z)  # configuration model
+G=nx.configuration_model(z)  # configuration model
 
-degree_sequence=degree(G) # degree sequence
+degree_sequence=nx.degree(G) # degree sequence
 print "Degree sequence", degree_sequence
 dmax=max(degree_sequence)
 print "Degree histogram, max degree:",dmax
 #h,bins=mlab.hist(degree_sequence,bins=dmax)
-h,bins=mlab.hist(degree_sequence,bins=dmax)
+h,bins=matplotlib.numpy.histogram(degree_sequence,bins=dmax,new=True)
 
 # draw x-y plot
-figure(2)
 hmax=max(h)
-axis([1,dmax,1,hmax]) # set ranges
-x=compress(h,bins)    # remove bins with zero entries
-y=compress(h,h)       # remove corresponding entries
-loglog(x,y,'bo')
-title("Degree distribution")
-xlabel("degree")
-ylabel("number of nodes")
-show()
+plt.axis([1,dmax,1,hmax]) # set ranges
+#x=compress(h,bins)    # remove bins with zero entries
+#y=compress(h,h)       # remove corresponding entries
+x=bins.compress(h)
+y=h.compress(h)
+plt.loglog(x,y,'bo')
+plt.title("Degree distribution")
+plt.xlabel("degree")
+plt.ylabel("number of nodes")
+plt.show()
 

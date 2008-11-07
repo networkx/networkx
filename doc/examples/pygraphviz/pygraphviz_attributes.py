@@ -8,18 +8,17 @@ https://networkx.lanl.gov/pygraphviz/
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2006 by 
+#    Copyright (C) 2006-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from networkx import *
+import networkx as nx
 
-# plain graph
-
-X=Graph()
+# networkx graph
+X=nx.Graph()
 # ad edges with red color
 X.add_edge(1,2,{'color':'red'})
 X.add_edge(2,3,{'color':'red'})
@@ -27,12 +26,12 @@ X.add_edge(2,3,{'color':'red'})
 X.add_node(3)
 X.add_node(4)
 
-# convert to a graphviz graph, use edge attributes from Graph edge data
-# no node attributes or default graph, node, or edge attributes
-A=to_agraph(X)   
+# convert to a graphviz graph, 
+# use edge attributes from Graph edge data
+# no node attributes, or default graph, node, or edge attributes
+A=nx.to_agraph(X)   
 
-
-# set some default attributes
+# set some default attributes for pygraphviz
 default_attributes={'graph':{},'node':{},'edge':{}}
 default_attributes['graph']['label']='pygraphviz graph'
 default_attributes['node']['shape']='circle'
@@ -41,15 +40,10 @@ default_attributes['node']['shape']='circle'
 node_attributes={}
 node_attributes[3]={'color':'green','shape':'box'}
 
-# set some edge attributes
-edge_attributes={}
-edge_attributes[(2,3)]={'color':'green'}
-
 # convert to AGraph, override any attributes with those on given command line 
-A1=to_agraph(X,
+A1=nx.to_agraph(X,
              graph_attr=default_attributes,
              node_attr=node_attributes,
-             edge_attr=edge_attributes
              )
 
 # write to dot file
@@ -57,7 +51,7 @@ A1.write('k5_attributes.dot')
 
 # convert back to networkx Graph with attributes on edges and
 # default attributes as dictionary data
-X=from_agraph(A1)
+X=nx.from_agraph(A1)
 print "edges"
 print X.edges(data=True)
 print "default attributes"
