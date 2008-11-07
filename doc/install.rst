@@ -1,7 +1,7 @@
 Requirements
 -------------
 
-To use NetworkX you need Python version 2.3 or later http://www.python.org/
+To use NetworkX you need Python version 2.4 or later http://www.python.org/
 
 See below for tips on installing Python.
 
@@ -71,17 +71,23 @@ But to enable all functionality you will need the following:
 
  - To enable drawing networks with matplotlib you need
 
-      - numpy		 http://numpy.scipy.org/
-      - Matplotlib       http://matplotlib.sourceforge.net/
+      - numpy         http://numpy.scipy.org/
+      - Matplotlib    http://matplotlib.sourceforge.net/
 
  - To enable graphviz layout and drawing features you need
 
-      - pygraphviz	 http://networkx.lanl.gov/pygraphviz/
-      - Graphviz         http://graphviz.org/
-
+      - pygraphviz     http://networkx.lanl.gov/pygraphviz/
+      - Graphviz       http://graphviz.org/
 
 Installing Optional Packages
 ----------------------------
+
+These are extra packages you may consider to use with NetworkX
+
+      - IPython, interactive Python shell, http://ipython.scipy.org/
+      - SciPy, scientific computing package, http://scipy.org/
+      - sAsync, persistent storage with SQL, http://foss.eepatents.com/sAsync  
+      - PyYAML, structured output format, http://pyyaml.org/
 
 For Windows and OSX (non-fink, non-MacPorts) the easiest way to
 get Matplotlib/Numpy/Scipy installed is to follow the directions for
@@ -100,16 +106,6 @@ For installation see the instructions at
 
 Matplotlib uses numpy for numerical array computing (see above comment
 on how to install Matplotlib/Numpy/Scipy all together). 
-
-Additional useful packages
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-These are extra packages you may consider to use with NetworkX
-
-      - IPython, interactive Python shell, http://ipython.scipy.org/
-      - SciPy, scientific computing package, http://scipy.org/
-      - sAsync, persistent storage with SQL, http://foss.eepatents.com/sAsync  
-      - PyYAML, structured output format, http://pyyaml.org/
-
 
 Installing Python
 -----------------
