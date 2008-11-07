@@ -1,24 +1,5 @@
 """
 Base class for MultiGraph.
-
-MultiGraph allows multiple edges between nodes.
-    
-Examples
-========
-
-Create an empty graph structure (a "null graph") with no nodes and no edges
-
->>> from networkx import *
->>> G=nx.MultiGraph()  
-
-You can add nodes in the same way as the simple Graph class
->>> G.add_nodes_from(xrange(100,110))
-
-You can add edges with data/labels/objects as for the Graph class, 
-but here the same two nodes can have more than one edge between them.
-
->>> G.add_edges_from([(1,2,0.776),(1,2,0.535)])
-
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 
@@ -35,12 +16,31 @@ from networkx.exception import NetworkXException, NetworkXError
 import networkx.convert as convert
 
 class MultiGraph(Graph):
-    """MultiGraph is a fairly general class of graph allowing multiple
-    (parallel) edges.  
-    Nodes are arbitrary (hashable) objects.  
+    """
+    An undirected graph that allows multiple (parallel) edges with arbitrary 
+    data on the edges.
 
-    Arbitrary data/labels/objects can be associated with edges.
-    The default data is 1.  See the add_edge method for details.  
+    Subclass of Graph.
+
+    An empty multigraph is created with
+
+    >>> G=nx.MultiGraph()
+
+    
+    Examples
+    ========
+
+    Create an empty graph structure (a "null graph") with no nodes and no edges
+    
+    >>> G=nx.MultiGraph()  
+
+    You can add nodes in the same way as the simple Graph class
+    >>> G.add_nodes_from(xrange(100,110))
+
+    You can add edges with data/labels/objects as for the Graph class, 
+    but here the same two nodes can have more than one edge between them.
+
+    >>> G.add_edges_from([(1,2,0.776),(1,2,0.535)])
 
     See also the MultiDiGraph class for a directed graph version.
 

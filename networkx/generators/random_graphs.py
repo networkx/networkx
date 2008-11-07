@@ -225,14 +225,23 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     with probability p add a new edge u-w with randomly-chosen existing 
     node w.  In contrast with watts_strogatz_graph(), no edges are removed.
 
-    :Parameters:
-      - `n`: the number of nodes
-      - `k`: each node is connected to k nearest neighbors in ring topology
-      - `p`: the probability of adding a new edge for each edge
-      - `seed`: seed for random number generator (default=None)
+    Parameters
+    ----------
+    n : int
+        The number of nodes
+        
+    k : int
+        Each node is connected to k nearest neighbors in ring topology
+
+    p : float 
+        The probability of adding a new edge for each edge
+            
+    seed : int        
+       seed for random number generator (default=None)
 
 
-    Reference::
+    Notes
+    -----
 
     @ARTICLE{newman-1999-263,
     author = {M.~E.~J. Newman and D.~J. Watts},

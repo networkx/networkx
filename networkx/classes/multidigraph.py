@@ -1,27 +1,6 @@
 """
 Base class for MultiDiGraph.
 
-MultiDiGraph allows multiple directed edges between nodes.
-
-Examples
-========
-
-Create an empty graph structure (a "null graph") with no nodes and no edges
-
->>> from networkx import *
->>> G=nx.MultiDiGraph()  
-
-You can add nodes in the same way as the simple Graph class
->>> G.add_nodes_from(xrange(100,110))
-
-You can add edges with data/labels/objects as for the Graph class, 
-but here the same two nodes can have more than one edge between them.
-
->>> G.add_edges_from([(1,2,0.776),(1,3,0.535)])
-
-For graph coloring problems, one could use
->>> G.add_edges_from([(1,2,"blue"),(1,3,"red")])
-
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 
@@ -40,9 +19,33 @@ from networkx.exception import NetworkXException, NetworkXError
 import networkx.convert as convert
 
 class MultiDiGraph(DiGraph):
-    """
-    Digraphs with multiple edges, arbitrary (hashable) objects as nodes, 
-    and arbitrary objects associated with edges.
+    """A directed graph that allows multiple (parallel) edges with arbitrary 
+    data on the edges.
+
+    Subclass of DiGraph which is a subclass of Graph.
+
+    An empty multidigraph is created with
+
+    >>> G=nx.MultiDiGraph()
+
+    Examples
+    ========
+
+    Create an empty graph structure (a "null graph") with no nodes and no edges
+
+    >>> G=nx.MultiDiGraph()  
+
+    You can add nodes in the same way as the simple Graph class
+    >>> G.add_nodes_from(xrange(100,110))
+
+    You can add edges with data/labels/objects as for the Graph class, 
+    but here the same two nodes can have more than one edge between them.
+
+    >>> G.add_edges_from([(1,2,0.776),(1,3,0.535)])
+
+    For graph coloring problems, one could use
+    >>> G.add_edges_from([(1,2,"blue"),(1,3,"red")])
+
 
     A MultiDiGraph edge is uniquely specified by a 3-tuple
     e=(u,v,x), where u and v are (hashable) objects (nodes) and x
@@ -54,6 +57,7 @@ class MultiDiGraph(DiGraph):
     MultiDiGraph inherits from DiGraph, with all purely node-specific methods
     identical to those of DiGraph. MultiDiGraph edges are identical to MultiGraph
     edges, except that they are directed rather than undirected.
+
     MultiDiGraph replaces the following DiGraph methods:
 
     - add_edge

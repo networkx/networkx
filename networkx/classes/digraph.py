@@ -16,7 +16,15 @@ from networkx.exception import NetworkXException, NetworkXError
 import networkx.convert as convert
 #
 class DiGraph(Graph):
-    """ A graph with directed edges.
+    """ A directed graph that allows self-loops, but not multiple 
+    (parallel) edges.   
+
+    Edge and node data is the same as for Graph.
+    Subclass of Graph.
+
+    An empty digraph is created with
+
+    >>> G=nx.DiGraph()
 
     DiGraph inherits from the Graph class and overwrites the methods:
     - __init__
@@ -54,6 +62,14 @@ class DiGraph(Graph):
     multigraph=False
     directed=True
     def __init__(self, data=None, name='', weighted=True):
+        """Initialize an empty directed graph.
+
+        Examples
+        --------
+        >>> G=nx.DiGraph()
+        >>> G=nx.DiGraph(name='my graph')
+        >>> G=nx.DiGraph(weighted=False)  # don't assume edge data are weights
+        """
         # We store two adjacency lists:
         # the  predecessors of node n are stored in the dict self.pred
         # the successors of node n are stored in the dict self.succ=self.adj
@@ -72,7 +88,7 @@ class DiGraph(Graph):
             self.succ[n] = {}
             self.pred[n] = {}
 
-    add_node.__doc__ = Graph.add_node.__doc__
+    add_node.__doc__ = Graph.add_node.__doc__.replace('Graph','DiGraph')
 
     def add_nodes_from(self, nbunch):
         for n in nbunch:
@@ -80,7 +96,8 @@ class DiGraph(Graph):
                 self.succ[n] = {}
                 self.pred[n] = {}
 
-    add_nodes_from.__doc__ = Graph.add_nodes_from.__doc__
+    add_nodes_from.__doc__ = \
+        Graph.add_nodes_from.__doc__.replace('Graph','DiGraph')
 
 
     def remove_node(self, n):
@@ -95,7 +112,7 @@ class DiGraph(Graph):
             del self.succ[u][n] # remove all edges n-u in digraph
         del self.pred[n]          # remove node from pred
 
-    remove_node.__doc__ = Graph.remove_node.__doc__
+    remove_node.__doc__ = Graph.remove_node.__doc__.replace('Graph','DiGraph')
     delete_node = remove_node        
 
     def remove_nodes_from(self, nbunch):
@@ -111,7 +128,8 @@ class DiGraph(Graph):
             except KeyError:
                 pass # silent failure on remove
 
-    remove_nodes_from.__doc__ = Graph.remove_nodes_from.__doc__
+    remove_nodes_from.__doc__ = \
+        Graph.remove_nodes_from.__doc__.replace('Graph','DiGraph')
     delete_nodes_from = remove_nodes_from        
 
 
@@ -127,7 +145,7 @@ class DiGraph(Graph):
         self.succ[u][v]=data
         self.pred[v][u]=data
 
-    add_edge.__doc__ = Graph.add_edge.__doc__
+    add_edge.__doc__ = Graph.add_edge.__doc__.replace('Graph','DiGraph')
 
 
     def add_edges_from(self, ebunch, data=1):  
@@ -149,7 +167,8 @@ class DiGraph(Graph):
             self.succ[u][v] = d
             self.pred[v][u] = d
 
-    add_edges_from.__doc__ = Graph.add_edges_from.__doc__
+    add_edges_from.__doc__ = \
+        Graph.add_edges_from.__doc__.replace('Graph','DiGraph')
 
 
     def remove_edge(self, u, v): 
@@ -159,7 +178,7 @@ class DiGraph(Graph):
         except KeyError: 
             raise NetworkXError("edge %s-%s not in graph"%(u,v))
 
-    remove_edge.__doc__ = Graph.remove_edge.__doc__
+    remove_edge.__doc__ = Graph.remove_edge.__doc__.replace('Graph','DiGraph')
     delete_edge = remove_edge            
 
 
@@ -170,7 +189,8 @@ class DiGraph(Graph):
                 del self.succ[u][v]   
                 del self.pred[v][u]        
 
-    remove_edges_from.__doc__ = Graph.remove_edges_from.__doc__
+    remove_edges_from.__doc__ = \
+        Graph.remove_edges_from.__doc__.replace('Graph','DiGraph')
     delete_edges_from = remove_edges_from            
 
 
@@ -233,8 +253,8 @@ class DiGraph(Graph):
                 for nbr in nbrs:
                     yield (n,nbr)
 
-    edges_iter.__doc__ = Graph.edges_iter.__doc__
-
+    edges_iter.__doc__ = Graph.edges_iter.__doc__   
+   
 
     def degree_iter(self, nbunch=None, weighted=False):
         if nbunch is None:
@@ -459,14 +479,19 @@ class DiGraph(Graph):
         return H
     
     def to_directed(self):
-        """Return a directed representation of the digraph.  """
+        """Return a directed representation of the current graph.
+
+        If the graph is already directed this returns a copy of the
+        graph.
+
+        """
         return self.copy()
         
 
     def reverse(self, copy=True):
         """Return the reverse of the graph
         
-        The reverse is a graph with the same vertices and edges
+        The reverse is a graph with the same nodes and edges
         but with the directions of the edges reversed.
         """
         H = self.__class__(name="Reverse of (%s)"%self.name)
