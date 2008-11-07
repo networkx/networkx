@@ -432,6 +432,9 @@ class FunctionDoc(NumpyDocString):
             try:
                 # try to read signature
                 argspec = inspect.getargspec(func)
+		if role in ('meth') and argspec[0] and \
+                           argspec[0][0] in ('cls', 'self'):
+                        del argspec[0][0]
                 argspec = inspect.formatargspec(*argspec)
                 argspec = argspec.replace('*','\*')
                 signature = '%s%s' % (func_name, argspec)
