@@ -18,8 +18,9 @@ NetworkX documentation
    reference/index
    examples/index
    gallery/index
+   download
 
-
+   
 Indices and tables
 ==================
 

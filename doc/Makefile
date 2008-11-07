@@ -37,16 +37,18 @@ dist: html
 	(cd build && tar czf dist.tar.gz dist)
 
 generate: build/generate-stamp
+
 build/generate-stamp:
 	mkdir -p build
 	./sphinxext/numpyext/autosummary_generate.py source/reference/*.rst \
 		-p dump.xml -o source/reference/generated 
+	./make_examples_rst.py examples source/examples
 	touch build/generate-stamp
 
 ext-svn:
 	svn co http://sphinx.googlecode.com/svn/contrib/trunk/numpyext sphinxext/numpyext
 
-html: generate
+html: generate 
 	mkdir -p build/html build/doctrees
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
 #	python postprocess.py html build/html/*.html

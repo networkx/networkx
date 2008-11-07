@@ -1,8 +1,8 @@
 .. _drawing:
 
 
-Reading and Writing
-*******************
+Drawing
+*******
 
 .. currentmodule:: networkx
 
