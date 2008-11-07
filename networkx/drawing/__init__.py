@@ -21,6 +21,10 @@ try:
     from nx_pylab import *
 except ImportError:
     pass
+except RuntimeError:
+#    import warnings
+#    warnings.warn("No display for matplotlib")
+    pass
 
 try:
     # needs numpy 

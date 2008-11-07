@@ -55,6 +55,8 @@ try:
     import matplotlib.pylab
 except ImportError:
     raise ImportError, "Import Error: not able to import matplotlib."
+except RuntimeError:
+    raise
 
 def draw(G, pos=None, ax=None, hold=None, **kwds):
     """Draw the graph G with matplotlib (pylab).
@@ -127,7 +129,11 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     cf=matplotlib.pylab.gcf()
     cf.set_facecolor('w')
     if ax is None:
-        ax=cf.add_axes((0,0,1,1))
+        if cf._axstack() is None:
+            ax=cf.add_axes((0,0,1,1))
+        else:
+            ax=cf.gca()
+
  # allow callers to override the hold state by passing hold=True|False
     b = matplotlib.pylab.ishold()
     h = kwds.pop('hold', None)

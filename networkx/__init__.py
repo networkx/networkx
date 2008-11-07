@@ -54,6 +54,7 @@ from generators import *
 from linalg import *
 from operators import *
 from readwrite import *
+from ubigraph import *
 
 import utils
 from tests.run import run as test
