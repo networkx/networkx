@@ -147,7 +147,7 @@ NetworkX Examples
             if do_plot:
                 fh.write("\n\n.. plot:: %s\n\n::\n\n" % fullpath[3:])
             else:
-                linkname = os.path.join('..', '..', '_static', 'examples', subdir, fname)
+                linkname = os.path.join('..', '..', '_static', 'examples',fname)
                 fh.write("[`source code <%s>`_]\n\n::\n\n" % linkname)
 
             # indent the contents
