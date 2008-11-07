@@ -1,4 +1,19 @@
-"""
+__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+#    Copyright (C) 2008 by 
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    Distributed under the terms of the GNU Lesser General Public License
+#    http://www.gnu.org/copyleft/lesser.html
+
+
+from networkx.classes.multigraph import MultiGraph
+from networkx.classes.multidigraph import MultiDiGraph
+from networkx.exception import NetworkXException, NetworkXError
+import networkx.convert as convert
+
+class UbiGraph(MultiGraph):
+    """
 Base classes for interaction between NetworkX and Ubigraph.
 
 These classes allow drawing with Ubigraph and all of the NetworkX functions.
@@ -6,11 +21,11 @@ These classes allow drawing with Ubigraph and all of the NetworkX functions.
 Examples
 --------
 (start Ubigraph server)
->>> import networkx
->>> G=networkx.UbiGraph()
->>> G.add_edge('a','b',color='#0000ff') # blue edge between 'a' and 'b'
+->>> import networkx
+->>> G=nx.UbiGraph()
+->>> G.add_edge('a','b',color='#0000ff') # blue edge between 'a' and 'b'
 
->>> G=networkx.UbiGraph(networkx.cycle_graph(5)) # cycle of length 5
+->>> G=nx.UbiGraph(networkx.cycle_graph(5)) # cycle of length 5
 
 See the examples 
 https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/ubigraph
@@ -18,12 +33,12 @@ https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/ubigraph
 UbiGraph 
 --------
 NetworkX compatible graph class.  Allows self loops and multiple edges.  
-Extends to NetworkX XGraph class. 
+Extends to NetworkX MultiGraph class. 
 
 UbiDiGraph 
 --------
 NetworkX compatible digraph class.  Allows self loops and multiple edges.  
-Extends NetworkX XDiGraph class. 
+Extends NetworkX MultiDiGraph class. 
 
 Ubigraph attributes
 --------------------
@@ -32,34 +47,18 @@ this class also provides methods to set node and edge attributes and styles.
 
 Node and edge attributes:
 
->>> G=networkx.UbiGraph()
->>> G.add_node('a',shape='torus')
->>> G.add_edge('a','b',style='dashed')
->>> G.set_node_attr('a',color='#0000ff') # node a blue
->>> G.set_node_attr(color='#00ffff') # all nodes green
+->>> G=nx.UbiGraph()
+->>> G.add_node('a',shape='torus')
+->>> G.add_edge('a','b',style='dashed')
+->>> G.set_node_attr('a',color='#0000ff') # node a blue
+->>> G.set_node_attr(color='#00ffff') # all nodes green
 
 Node and edge styles:
 
->>> G=networkx.UbiGraph(networkx.cycle_graph(5)) # cycle of length 5
->>> redtorus=G.new_node_style(color="#ff0000',shape='torus')
->>> G.set_node_attr(style=redtorus) # all nodes to redtorus style
-
+->>> G=nx.UbiGraph(nx.cycle_graph(5)) # cycle of length 5
+->>> redtorus=G.new_node_style(color="#ff0000',shape='torus')
+->>> G.set_node_attr(style=redtorus) # all nodes to redtorus style
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2008 by 
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
-#
-
-from networkx.xgraph import XGraph
-from networkx.xdigraph import XDiGraph
-from networkx.exception import NetworkXException, NetworkXError
-import networkx.convert as convert
-
-class UbiGraph(XGraph):
     def __init__(self, data=None, name='', 
                  selfloops=False, 
                  multiedges=False, 
@@ -106,7 +105,7 @@ class UbiGraph(XGraph):
 
     def add_node(self, n,**kwds):
         if n not in self:
-            XGraph.add_node(self,n)
+            MultiGraph.add_node(self,n)
             self.nodeid[n]=self.nextid
             self.idnode[self.nextid]=n
             self.nextid+=1
@@ -125,7 +124,7 @@ class UbiGraph(XGraph):
 
     def delete_node(self,n):
         if n in self:
-            XGraph.delete_node(self,n)
+            MultiGraph.delete_node(self,n)
             self.ubigraph.remove_vertex(self.nodeid[n])
             id=self.nodeid[n]
             del self.nodeid[n]
@@ -231,7 +230,7 @@ class UbiGraph(XGraph):
 
     def clear(self):
         if len(self)>0:
-            XGraph.clear(self)
+            MultiGraph.clear(self)
             self.ubigraph.clear()
             self.nodeid={}
             self.nextid=0
@@ -331,7 +330,7 @@ class UbiGraph(XGraph):
         for eid,label in labels.items():
             self.ubigraph.set_edge_attribute(eid,'label',label)
 
-class UbiDiGraph(UbiGraph,XDiGraph):
+class UbiDiGraph(UbiGraph,MultiDiGraph):
     def __init__(self, data=None, name='', 
                  selfloops=False, 
                  multiedges=False, 
@@ -355,7 +354,7 @@ class UbiDiGraph(UbiGraph,XDiGraph):
 
     def add_node(self, n,**kwds):
         if n not in self:
-            XDiGraph.add_node(self,n)
+            MultiDiGraph.add_node(self,n)
             self.nodeid[n]=self.nextid
             self.nextid+=1
             self.ubigraph.new_vertex_w_id(self.nodeid[n])
@@ -368,7 +367,7 @@ class UbiDiGraph(UbiGraph,XDiGraph):
 
     def delete_node(self,n):
         if n in self:
-            XDiGraph.delete_node(self,n)
+            MultiDiGraph.delete_node(self,n)
             self.ubigraph.remove_vertex(self.nodeid[n])
 
 
@@ -448,7 +447,7 @@ class UbiDiGraph(UbiGraph,XDiGraph):
 
     def clear(self):
         if len(self)>0:
-            XDiGraph.clear(self)
+            MultiDiGraph.clear(self)
             self.ubigraph.clear()
             self.nodeid={}
             self.nextid=0
