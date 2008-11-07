@@ -25,10 +25,10 @@ sys.path.append(os.path.abspath('../sphinxext/numpyext'))
 # coming with Sphinx (named 'sphinx.addons.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath', 'numpydoc',
               'phantom_import', 'autosummary',
-              'sphinx.ext.coverage']#,
-#              'only_directives',
+              'sphinx.ext.coverage',
+              'only_directives',
 #              'plot_directive',
-#              ]
+              ]
 #extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest','numpydoc']
 #extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest']
 #extensions = [#'mathmpl',

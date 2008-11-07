@@ -3,6 +3,14 @@
 NetworkX documentation
 ======================
 
+.. htmlonly::
+
+    :Release: |version|
+    :Date: |today|
+
+    Download `PDF <http://networkx.lanl.gov/networkx.pdf>`_
+
+
 .. toctree::
    :maxdepth: 2
 

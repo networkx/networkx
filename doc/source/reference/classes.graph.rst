@@ -1,20 +1,20 @@
 .. _graph:
 
-.. currentmodule:: networkx
-
+=====
 Graph
------
-.. autoclass:: networkx.classes.Graph
+=====
+
+Overview
+--------
+.. currentmodule:: networkx
+.. autoclass:: Graph
+
+Methods
+-------
 
 .. autosummary::
    :toctree: generated/
 
-   Graph.__init__
-   Graph.__str__
-   Graph.__iter__
-   Graph.__contains__
-   Graph.__len__
-   Graph.__getitem__
    Graph.add_node
    Graph.add_nodes_from
    Graph.remove_node
@@ -54,3 +54,17 @@ Graph
    Graph.add_cycle
    Graph.nbunch_iter
 
+
+Special Methods
+---------------
+
+.. autosummary::
+   :toctree: generated/
+
+
+   Graph.__init__
+   Graph.__str__
+   Graph.__iter__
+   Graph.__contains__
+   Graph.__len__
+   Graph.__getitem__
