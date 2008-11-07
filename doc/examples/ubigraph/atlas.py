@@ -13,7 +13,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 from networkx import *
 from networkx.generators.atlas import *
-from networkx.isomorph import graph_could_be_isomorphic as isomorphic
+from networkx import graph_could_be_isomorphic as isomorphic
 import random
 
 def atlas6():
@@ -53,7 +53,7 @@ def iso(G1, glist):
 
 if __name__ == '__main__':
 
-    from networkx import *
+    import networkx as nx
     
     import random
 
@@ -62,8 +62,8 @@ if __name__ == '__main__':
     print "graph has %d nodes with %d edges"\
           %(number_of_nodes(G),number_of_edges(G))
     print number_connected_components(G),"connected components"
-    C=connected_component_subgraphs(G)
-    UG=UbiGraph(G)
+    C=nx.connected_component_subgraphs(G)
+    UG=nx.UbiGraph(G)
     for g in C:
         x = random.randint(0,256*256*256)
         UG.set_node_attr(g.nodes(),color='#%06x'%x)
