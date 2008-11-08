@@ -43,7 +43,7 @@ class Graph(object):
     Create an empty graph structure (a "null graph") with no nodes and 
     no edges.
 
-    >>> from networkx import *
+    >>> import networkx as nx
     >>> G=nx.Graph()
 
     G can be grown in several ways.
@@ -62,7 +62,7 @@ class Graph(object):
     or by adding any container of nodes (a list, dict, set
     or even a file or the nodes from another graph).
 
-    >>> H=path_graph(10)
+    >>> H=nx.path_graph(10)
     >>> G.add_nodes_from(H)
 
     Any hashable object (except None) can represent a node, 

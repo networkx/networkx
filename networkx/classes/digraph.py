@@ -26,38 +26,6 @@ class DiGraph(Graph):
 
     >>> G=nx.DiGraph()
 
-    DiGraph inherits from the Graph class and overwrites the methods:
-    - __init__
-    - add_node
-    - add_nodes_from
-    - remove_node
-    - remove_nodes_from
-    - add_edge
-    - add_edges_from
-    - remove_edge
-    - remove_edges_from
-    - neighbors
-    - neighbors_iter
-    - edges_iter
-    - degree_iter
-    - clear
-    - subgraph
-    - to_undirected
-    - to_directed
-
-    In addition DiGraph adds new methods for:
-    - has_successor
-    - has_predecessor
-    - successors
-    - predecessors
-    - successors_iter
-    - predecessors_iter
-    - in_degree
-    - out_degree
-    - in_degree_iter
-    - out_degree_iter
-    - reverse
-
     """
     multigraph=False
     directed=True
