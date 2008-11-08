@@ -19,3 +19,4 @@ Reference
    history
    credits      
    legal
+   citing
