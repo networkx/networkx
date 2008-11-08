@@ -23,10 +23,10 @@ import inspect
 def mangle_docstrings(app, what, name, obj, options, lines,
                       reference_offset=[0]):
     if what == 'module':
-        # Strip top title
-        title_re = re.compile(r'^\s*[#*=]{4,}\n[a-z0-9 -]+\n[#*=]{4,}\s*',
-                              re.I|re.S)
-        lines[:] = title_re.sub('', "\n".join(lines)).split("\n")
+        # Strip top title 
+#        title_re = re.compile(r'^\s*[#*=]{4,}\n[a-z0-9 -]+\n[#*=]{4,}\s*',
+#        lines[:] = title_re.sub('', "\n".join(lines)).split("\n")
+        pass # not sure what the bug is here - but this strips too many lines
     else:
         doc = get_doc_object(obj, what)
         lines[:] = str(doc).split("\n")

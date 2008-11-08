@@ -28,8 +28,10 @@ import heapq
 
 
 def shortest_path_length(G,source,target):
-    """Return the shortest path length in the graph G between
-    the source and target.  Raise an exception if no path exists.
+    """Return the shortest path length 
+    the source and target.  
+
+    Raise an exception if no path exists.
 
     G is treated as an unweighted graph.  For weighted graphs
     see dijkstra_path_length.
@@ -41,8 +43,7 @@ def shortest_path_length(G,source,target):
     return len(path)-1
 
 def single_source_shortest_path_length(G,source,cutoff=None):
-    """
-    Shortest path length from source to all reachable nodes.
+    """Return the hortest path length from source to all reachable nodes.
 
     Returns a dictionary of shortest path lengths keyed by target.
 
@@ -94,7 +95,7 @@ def all_pairs_shortest_path_length(G,cutoff=None):
     return paths        
         
 def shortest_path(G,source,target):
-    """Return a list of nodes in G for a shortest path between source
+    """Return a list of nodes in a shortest path between source
     and target.
 
     There may be more than one shortest path.  This returns only one.
@@ -106,6 +107,7 @@ def shortest_path(G,source,target):
 def bidirectional_shortest_path(G,source,target):
     """
        Return list of nodes in a shortest path between source and target.
+
        Return False if no path exists.
 
        Also known as shortest_path.
@@ -185,7 +187,7 @@ def _bidirectional_pred_succ(G, source, target):
 def single_source_shortest_path(G,source,cutoff=None):
     """
     Return list of nodes in a shortest path between source
-    and all other nodes in G reachable from source.
+    and all other nodes reachable from source.
 
     There may be more than one shortest path between the
     source and target nodes - this routine returns only one.
@@ -214,7 +216,7 @@ def single_source_shortest_path(G,source,cutoff=None):
 
 
 def all_pairs_shortest_path(G,cutoff=None):
-    """ Return dictionary of shortest paths between all nodes in G.
+    """ Return dictionary of shortest paths between all nodes.
 
     The dictionary only has keys for reachable node pairs.
 
@@ -233,7 +235,9 @@ def all_pairs_shortest_path(G,cutoff=None):
 def dijkstra_path(G,source,target):
     """
     Returns the shortest path from source to target in a weighted
-    graph G.  Uses a bidirectional version of Dijkstra's algorithm.
+    graph G.  
+
+Uses a bidirectional version of Dijkstra's algorithm.
 
     Edge data must be numerical values for XGraph and XDiGraphs.
     The weights are assigned to be 1 for Graphs and DiGraphs.
@@ -253,7 +257,9 @@ def dijkstra_path(G,source,target):
 def dijkstra_path_length(G,source,target):
     """
     Returns the shortest path length from source to target in a weighted
-    graph G.  Uses a bidirectional version of Dijkstra's algorithm.
+    graph G.  
+
+    Uses a bidirectional version of Dijkstra's algorithm.
 
     Edge data must be numerical values for XGraph and XDiGraphs.
     The weights are assigned to be 1 for Graphs and DiGraphs.
@@ -370,7 +376,9 @@ def bidirectional_dijkstra(G, source, target):
 def single_source_dijkstra_path(G,source):
     """
     Returns the shortest paths from source to all other reachable
-    nodes in a weighted graph G.  Uses Dijkstra's algorithm.
+    nodes in a weighted graph G.  
+
+    Uses Dijkstra's algorithm.
 
     Returns a dictionary of shortest path lengths keyed by source.
     
@@ -387,7 +395,9 @@ def single_source_dijkstra_path(G,source):
 def single_source_dijkstra_path_length(G,source):
     """
     Returns the shortest path lengths from source to all other
-    reachable nodes in a weighted graph G.  Uses Dijkstra's algorithm.
+    reachable nodes in a weighted graph G.  
+
+    Uses Dijkstra's algorithm.
 
     Returns a dictionary of shortest path lengths keyed by source.
     
@@ -455,9 +465,11 @@ def single_source_dijkstra(G,source,target=None):
 
 def dijkstra_predecessor_and_distance(G,source):
     """
-    Same algorithm as for single_source_dijsktra, but returns two
-    dicts representing a list of predecessors of a node and the
-    distance to each node respectively.  The list of predecessors
+    Returns two
+    dictionaries representing a list of predecessors of a node and the
+    distance to each node respectively.  
+
+    The list of predecessors
     contains more than one element only when there are more than one
     shortest paths to the key node.
 

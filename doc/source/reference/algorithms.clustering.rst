@@ -1,6 +1,7 @@
-
+**********
 Clustering
-----------
+**********
+
 .. automodule:: networkx.algorithms.cluster
 .. currentmodule:: networkx
 .. autosummary::

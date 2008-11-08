@@ -3,12 +3,14 @@
 Cliques
 =======
 
-Find and manipulate cliques of graphs
+Find and manipulate cliques of graphs.
 
 Note that finding the largest clique of a graph has been
-shown to be an NP complete problem so the algorithms here
-could take a LONG time to run.  In practice it hasn't been 
-too bad for the graphs tested.
+shown to be an NP-complete problem; the algorithms here
+could take a long time to run. 
+
+http://en.wikipedia.org/wiki/Clique_problem
+
 """
 __author__ = """Dan Schult (dschult@colgate.edu)"""
 #    Copyright (C) 2004-2008 by 
@@ -30,13 +32,13 @@ import networkx
 
 def find_cliques(G):
    """
-   Find_cliques algorithm based on Bron & Kerbosch
-   
-   This algorithm searchs for maximal cliques in a graph.
+   Search for maximal cliques in a graph.
+
+   This algorithm searches for maximal cliques in a graph.
    maximal cliques are the largest complete subgraph containing
    a given point.  The largest maximal clique is sometimes called
    the maximum clique.
-   
+
    This algorithm produces the list of maximal cliques each
    of which are a list of the members of the clique.
    
@@ -175,15 +177,17 @@ def _extend(old_nodes,num_not,num_left,G,clique,cliques):
          v=cands[pos]
 
 def make_max_clique_graph(G,create_using=None,name=None):
-    """ 
-    Create the maximal clique graph of a graph.
-    It finds the maximal cliques and treats these as nodes.
+    """ Create the maximal clique graph of a graph. 
+   
+    Finds the maximal cliques and treats these as nodes.
     The nodes are connected if they have common members in 
     the original graph.  Theory has done a lot with clique
     graphs, but I haven't seen much on maximal clique graphs.
 
-    Note: This should be the same as make_clique_bipartite followed
-    by project_up, but it saves all the intermediate stuff.
+    Notes
+    -----
+    This should be the same as make_clique_bipartite followed
+    by project_up, but it saves all the intermediate steps.
     """
     cliq=find_cliques(G)
     size=len(cliq)
@@ -206,8 +210,8 @@ def make_max_clique_graph(G,create_using=None,name=None):
     return B
 
 def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
-    """ 
-    Create a bipartite clique graph from a graph G.
+    """ Create a bipartite clique graph from a graph G. 
+   
     Nodes of G are retained as the "bottom nodes" of B and 
     cliques of G become "top nodes" of B.
     Edges are present if a bottom node belongs to the clique 
@@ -259,10 +263,11 @@ def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
     return B
    
 def project_down(B,create_using=None,name=None):
-    """ 
-    Project a bipartite graph B down onto its "Bottom Nodes".
+    """Project a bipartite graph B down onto its "bottom nodes". 
+    
     The nodes retain their names and are connected if they
-    share a common Top Node in the Bipartite Graph.
+    share a common top node in the bipartite graph.
+
     Returns a Graph.
     """
     if create_using:
@@ -281,10 +286,11 @@ def project_down(B,create_using=None,name=None):
     return G
  
 def project_up(B,create_using=None,name=None):
-    """ 
-    Project a bipartite graph B up onto its "Top Nodes".
+    """ Project a bipartite graph B down onto its "bottom nodes".
+    
     The nodes retain their names and are connected if they
     share a common Bottom Node in the Bipartite Graph.
+
     Returns a Graph.
     """
     if create_using:
@@ -314,8 +320,9 @@ def graph_clique_number(G,cliques=None):
 
 
 def graph_number_of_cliques(G,cliques=None):
-    """  Returns the number of maximal cliques in G
-       Optional list of cliques can be input if already computed.
+    """  Returns the number of maximal cliques in G.
+
+       An optional list of cliques can be input if already computed.
     """
     if cliques is None:
         cliques=find_cliques(G)

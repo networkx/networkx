@@ -10,6 +10,8 @@ __author__ = """Dan Schult(dschult@colgate.edu)"""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
+__all__ = ['find_cores']
+
 def find_cores(G,with_labels=True):
    """Return the core number for each vertex.
 

@@ -71,10 +71,14 @@ def is_connected(G):
 def connected_component_subgraphs(G):
     """
     Return a list of graphs of each connected component of G.
+
     The list is ordered from largest connected component to smallest.
     For undirected graphs only. 
 
-    For example, to get the largest connected component:
+    Examples
+    --------
+    Get largest connected component
+
     >>> G=nx.path_graph(4)
     >>> G.add_edge(5,6)
     >>> H=nx.connected_component_subgraphs(G)[0]
@@ -103,7 +107,8 @@ def node_connected_component(G,n):
 
 
 def strongly_connected_components(G):
-    """Returns list of strongly connected components in G.
+    """Returns a list of strongly connected components in G.
+
      Uses Tarjan's algorithm with Nuutila's modifications.
      Nonrecursive version of algorithm.
 
@@ -163,6 +168,7 @@ def strongly_connected_components(G):
 
 def kosaraju_strongly_connected_components(G,source=None):
     """Returns list of strongly connected components in G.
+
      Uses Kosaraju's algorithm.
      """
     components=[]
@@ -182,6 +188,7 @@ def kosaraju_strongly_connected_components(G,source=None):
 
 def strongly_connected_components_recursive(G):
     """Returns list of strongly connected components in G.
+
      Uses Tarjan's algorithm with Nuutila's modifications.
      this recursive version of the algorithm will hit the
      Python stack limit for large graphs.
@@ -222,6 +229,7 @@ def strongly_connected_components_recursive(G):
 def strongly_connected_component_subgraphs(G):
     """
     Return a list of graphs of each strongly connected component of G.
+
     The list is ordered from largest connected component to smallest.
 
     For example, to get the largest strongly connected component:
@@ -238,6 +246,7 @@ def strongly_connected_component_subgraphs(G):
 
 def number_strongly_connected_components(G):
     """Return the number of connected components in G.
+
     For undirected graphs only. 
     """
     return len(strongly_connected_components(G))

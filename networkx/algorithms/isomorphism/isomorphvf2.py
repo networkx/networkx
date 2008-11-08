@@ -1,13 +1,5 @@
 """
-An implementation of VF2 algorithm for graph ismorphism testing, as seen here:
-
-   Luigi P. Cordella, Pasquale Foggia, Carlo Sansone, Mario Vento,
-      "A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs,"
-      IEEE Transactions on Pattern Analysis and Machine Intelligence,
-      vol. 26,  no. 10,  pp. 1367-1372,  Oct.,  2004.
-
-Modified to handle undirected graphs.
-Modified to handle multiple edges.
+An implementation of VF2 algorithm for graph ismorphism testing.
 """
 
 __date__ = "$Date$"
@@ -26,8 +18,14 @@ __date__ = "$Date$"
 import sys
 from sets import Set
 
+__all__ = ['GraphMatcher',
+           'DiGraphMatcher']
+
 class GraphMatcher(object):
-    """A GraphMatcher is responsible for matching undirected graphs (Graph or
+    """Check isomorphism of graphs.
+
+
+    A GraphMatcher is responsible for matching undirected graphs (Graph or
     XGraph) in a  predetermined manner.  For graphs G1 and G2, this typically
     means a check for an isomorphism between them, though other checks are also
     possible.  For example, the GraphMatcher class can check if a subgraph 
@@ -46,6 +44,8 @@ class GraphMatcher(object):
       syntactic_feasibliity()
       semantic_feasibility()
     
+    Examples
+    --------
     Suppose G1 and G2 are isomorphic graphs. Verification is as follows:
     
     >>> G1=nx.path_graph(4)
@@ -58,6 +58,18 @@ class GraphMatcher(object):
 
     GM.mapping stores the isomorphism mapping.
     
+    Notes
+    -----
+
+    Luigi P. Cordella, Pasquale Foggia, Carlo Sansone, Mario Vento,
+    "A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs,"
+    IEEE Transactions on Pattern Analysis and Machine Intelligence,
+    vol. 26,  no. 10,  pp. 1367-1372,  Oct.,  2004.
+
+    Modified to handle undirected graphs.
+    Modified to handle multiple edges.
+
+
     """
     def __init__(self, G1, G2):
         """Initialize GraphMatcher.
@@ -325,7 +337,9 @@ class GraphMatcher(object):
     
     
 class DiGraphMatcher(object):
-    """A DiGraphMatcher is responsible for matching directed graphs (DiGraph or
+    """Check isomorphism of directed graphs.
+
+    A DiGraphMatcher is responsible for matching directed graphs (DiGraph or
     XDiGraph) in a  predetermined manner.  For graphs G1 and G2, this typically
     means a check for an isomorphism between them, though other checks are also
     possible.  For example, the DiGraphMatcher class can check if a subgraph 

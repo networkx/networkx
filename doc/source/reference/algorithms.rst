@@ -10,10 +10,11 @@ Algorithms
 .. toctree::
    :maxdepth: 2
 
-   algorithms.traversal
+   algorithms.boundary
    algorithms.centrality
    algorithms.clique
    algorithms.clustering
    algorithms.core
    algorithms.isomorphism
-   algorithms.boundary
+   algorithms.traversal
+

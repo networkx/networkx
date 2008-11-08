@@ -19,8 +19,8 @@ __all__ = ['dfs_preorder', 'dfs_postorder',
 import networkx
 
 def dfs_preorder(G,source=None,reverse_graph=False):
-    """
-    Return list of nodes connected to source in DFS preorder.
+    """Return list of nodes connected to source in depth-first-search preorder.
+
     Traverse the graph G with depth-first-search from source.
     Non-recursive algorithm.
     """
@@ -59,8 +59,9 @@ def dfs_preorder(G,source=None,reverse_graph=False):
 
 
 def dfs_postorder(G,source=None,reverse_graph=False):
-    """
-    Return list of nodes connected to source in DFS preorder.
+    """ 
+    Return list of nodes connected to source in depth-first-search postorder.
+
     Traverse the graph G with depth-first-search from source.
     Non-recursive algorithm.
     """
@@ -100,6 +101,7 @@ def dfs_postorder(G,source=None,reverse_graph=False):
 
 def dfs_tree(G,source=None,reverse_graph=False):
     """Return directed graph (tree) of depth-first-search with root at source.
+
     If the graph is disconnected, return a disconnected graph (forest).
     """
     succ=dfs_successor(G,source=source,reverse_graph=reverse_graph)

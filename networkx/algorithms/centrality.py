@@ -29,7 +29,9 @@ from networkx.algorithms.traversal.path import predecessor, \
 
 
 def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
-    """Compute the betweenness centrality for nodes in G:
+    """Compute betweenness centrality for nodes.
+
+    Betweenness centrality is
     the fraction of number of shortests paths that pass through each node.
 
     The keyword normalized (default=True) specifies whether the 
@@ -121,17 +123,17 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
                            normalized=True,
                            weighted_edges=False):
     """
-    "Load" centrality for nodes.
+    Compute load centrality for nodes.
 
-    This actually computes 'load' and not betweenness.
-    See https://networkx.lanl.gov/ticket/103
 
     The fraction of number of shortests paths that go
     through each node counted according to the algorithm in 
-
     Scientific collaboration networks: II.
     Shortest paths, weighted networks, and centrality,
     M. E. J. Newman, Phys. Rev. E 64, 016132 (2001).
+
+    This actually computes 'load' which is slightly 
+    diferent than betweenness.
 
     Returns a dictionary of betweenness values keyed by node.
     The betweenness is normalized to be between [0,1].
@@ -228,7 +230,9 @@ load_centrality=newman_betweenness_centrality
 def betweenness_centrality_source(G,normalized=True,
                                   weighted_edges=False,
                                   sources=None):
-    """
+    """Compute betweenness centrality for a subgraph.
+
+
     Enchanced version of the method in centrality module that allows
     specifying a list of sources (subgraph).
 
@@ -273,8 +277,7 @@ def betweenness_centrality_source(G,normalized=True,
 
 
 def edge_betweenness(G,normalized=True,weighted_edges=False,sources=None):
-    """
-    Edge betweenness centrality. 
+    """Compute betweenness centrality for edges. 
 
     weighted_edges:: consider edge weights by running Dijkstra's algorithm          (no effect on unweighted graphs).
 
@@ -387,8 +390,7 @@ def _brandes_betweenness_helper(G,root,weighted_edges):
 
 
 def edge_load(G,nodes=None,cutoff=False):
-    """
-    Edge Betweenness 
+    """Compute edge load.
 
     WARNING:
 
@@ -434,8 +436,10 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
 
 
 def degree_centrality(G,v=None):
-    """
-    Degree centrality for nodes (fraction of nodes connected to).
+    """Compute degree centrality for nodes.
+
+    The degree centrality for a node v is the fraction of nodes it
+    is connected to.
 
     If v=None, returns a dict of degree centrality values keyed by node.
     Otherwise, returns the degree centrality of the node v.
@@ -454,9 +458,10 @@ def degree_centrality(G,v=None):
 
 
 def closeness_centrality(G,v=None,weighted_edges=False):
-    """
-    Closeness centrality for nodes (1/average distance to all nodes).
+    """Compute closeness centrality for nodes.
 
+    Closeness centrality at a node is 1/average distance to all 
+    other nodes.
     Returns a dictionary of closeness centrality values keyed by node.
     The closeness centrality is normalized to be between 0 and 1.
 

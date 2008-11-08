@@ -19,10 +19,30 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 __all__=['edge_boundary','node_boundary']
 
 def edge_boundary(G, nbunch1, nbunch2=None):
-    """Return list of edges from G: (n1,n2) with n1 in nbunch1 and n2 in
-    nbunch2.  If nbunch2 is omitted or nbunch2=None, then nbunch2
-    is all nodes not in nbunch1.
+    """Return the edge boundary. 
 
+    Edge boundaries are edges that have only one end
+    in the given set of nodes.  
+
+    Parameters
+    -----------
+    G : graph
+      A networkx graph 
+
+    nbunch1 : list, container
+       Interior node set 
+
+    nbunch2 : list, container
+       Exterior node set.  If None then it is set to all of the
+       nodes in G not in nbunch1.
+
+    Returns
+    -------
+    elist : list
+       List of edges
+
+    Notes
+    ------
     Nodes in nbunch1 and nbunch2 that are not in G are ignored.
 
     nbunch1 and nbunch2 are usually meant to be disjoint, 
@@ -40,13 +60,31 @@ def edge_boundary(G, nbunch1, nbunch2=None):
             if n2 in nset2]
 
 def node_boundary(G, nbunch1, nbunch2=None):
-    """Return list of all nodes on external boundary of nbunch1 that are
-    in nbunch2.  If nbunch2 is omitted or nbunch2=None, then nbunch2
-    is all nodes not in nbunch1.
+    """Return the node boundary. 
 
-    Note that by definition the node_boundary is external to nbunch1.
-    
-    Nodes in nbunch1 and nbunch2 that are not in the graph are ignored.
+    The node boundary is all nodes in the edge boundary of a given
+    set of nodes that are in the set.
+
+    Parameters
+    -----------
+    G : graph
+      A networkx graph 
+
+    nbunch1 : list, container
+       Interior node set 
+
+    nbunch2 : list, container
+       Exterior node set.  If None then it is set to all of the
+       nodes in G not in nbunch1.
+
+    Returns
+    -------
+    nlist : list
+       List of nodes.
+
+    Notes
+    ------
+    Nodes in nbunch1 and nbunch2 that are not in G are ignored.
 
     nbunch1 and nbunch2 are usually meant to be disjoint, 
     but in the interest of speed and generality, that is 

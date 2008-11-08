@@ -14,9 +14,15 @@ __author__ = """Pieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"
 import networkx
 from networkx.exception import NetworkXException, NetworkXError
 
+__all__ = ['graph_could_be_isomorphic',
+           'fast_graph_could_be_isomorphic',
+           'faster_graph_could_be_isomorphic',
+           'is_isomorphic']
+
 def graph_could_be_isomorphic(G1,G2):
     """
     Returns False if graphs G1 and G2 are definitely not isomorphic.
+
     True does NOT garantee isomorphism.
   
     Checks for matching degree, triangle, and number of cliques sequences.
@@ -47,8 +53,8 @@ def graph_could_be_isomorphic(G1,G2):
     return True
 
 def fast_graph_could_be_isomorphic(G1,G2):
-    """
-    Returns False if graphs G1 and G2 are definitely not isomorphic.
+    """Returns False if graphs G1 and G2 are definitely not isomorphic.
+
     True does NOT garantee isomorphism.
   
     Checks for matching degree and triangle sequences.
@@ -74,8 +80,8 @@ def fast_graph_could_be_isomorphic(G1,G2):
     return True
 
 def faster_graph_could_be_isomorphic(G1,G2):
-    """
-    Returns False if graphs G1 and G2 are definitely not isomorphic.
+    """Returns False if graphs G1 and G2 are definitely not isomorphic.
+
     True does NOT garantee isomorphism.
   
     Checks for matching degree sequences in G1 and G2.
