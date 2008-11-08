@@ -15,7 +15,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
-           'nodes_iter', 'edges_iter', 'is_directed']
+           'nodes_iter', 'edges_iter', 'is_directed','info']
 
 def nodes(G):
     """Return a copy of the graph nodes in a list."""
@@ -94,3 +94,30 @@ def is_directed(G):
     """ Return True if graph is directed."""
     return G.directed
 
+def info(self, n=None):
+    """Print short info summary for graph G or node n."""
+    import textwrap
+    width_left = 18
+
+    if n is None:
+        print ("Name:").ljust(width_left), self.name
+        type_name = [type(self).__name__]
+        print ("Type:").ljust(width_left), ",".join(type_name)
+        print ("Number of nodes:").ljust(width_left), self.number_of_nodes()
+        print ("Number of edges:").ljust(width_left), self.number_of_edges()
+        if len(self) > 0:
+            print ("Average degree:").ljust(width_left), \
+                  round( sum(self.degree_iter())/float(len(self)), 4)
+    else:
+        try:
+            list_neighbors = self.neighbors(n)
+        except (KeyError, TypeError):
+            raise NetworkXError, "node %s not in graph"%(n,)
+        print "\nNode", n, "has the following properties:"
+        print ("Degree:").ljust(width_left), len(list_neighbors)
+        str_neighbors = str(list_neighbors)
+        str_neighbors = str_neighbors[1:len(str_neighbors)-1]
+        wrapped_neighbors = textwrap.wrap(str_neighbors, 50)
+        print ("Neighbors:").ljust(width_left), wrapped_neighbors[0]
+        for i in wrapped_neighbors[1:]:
+            print "".ljust(width_left), i

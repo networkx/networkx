@@ -90,7 +90,7 @@ add_edge()
 
    The * operator unpacks the edge tuple in the argument list.
 
-   Add edge now as
+   Add edge now has
    a data keyword parameter for setting the default (data=1) edge
    data.
    
@@ -104,7 +104,8 @@ add_edges_from()
    Now can take list or iterator of either two tuples (u,v),
    three tuples (u,v,data) or a mix of both.  
 
-   Now has data keyword parameter for setting the default (data=1) edge data.
+   Now has data keyword parameter (default 1) for setting the edge data
+   for any edge in the edge list that is a 2-tuple.
 
 
 has_edge()
@@ -152,7 +153,7 @@ subgraph()
 
 __getitem__()
 ^^^^^^^^^^^^^
-   Getting a node neighbors from the graph with G[v] now returns
+   Getting node neighbors from the graph with G[v] now returns
    a dictionary.
 
    >>> G=nx.path_graph(5)
@@ -175,9 +176,13 @@ Methods removed
 info() 
 ^^^^^^
    now use functional interface 
-   >>> G=nx.Graph()
+   >>> G=nx.Graph(name='test me')
+   >>> nx.info(G)
+   Name:              test me
+   Type:              Graph
+   Number of nodes:   0
+   Number of edges:   0
 
-   nx.info(G)
 
 node_boundary()
 ^^^^^^^^^^^^^^^
@@ -189,7 +194,7 @@ edge_boundary()
 
 is_directed() 
 ^^^^^^^^^^^^^
-   use 
+   use the directed attribute 
 
    >>> G=nx DiGraph()
    >>> G.directed
@@ -206,6 +211,11 @@ G.in_edges()
    >>> G=nx.DiGraph()
    >>> R=G.reverse()
    >>> R.edges()
+   []
+
+   or
+
+   >>> [(v,u) for (u,v) in G.edges()]
    []
 
 Methods added
@@ -248,7 +258,7 @@ Self-loops
 ----------
 For Graph and DiGraph self loops are now allowed.
 This might affect code or algorithms that add self loops 
-which were indented to be ignored.
+which were intended to be ignored.
 
 Use the methods
 
@@ -268,6 +278,6 @@ graph data in both the original and copy as pointers to the same data.
 
 prepare_nbunch
 --------------
-Used internally - now returns an iterator.
+Used internally - now called nbunch_iter and returns an iterator.
 
 
