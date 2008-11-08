@@ -1,15 +1,9 @@
 """
+*****
+Pydot
+*****
+
 Import and export NetworkX graphs in Graphviz dot format using pydot.
-
-Provides:
-
- - write_dot()
- - read_dot()
- - graphviz_layout()
- - pydot_layout()
-
- - to_pydot()
- - from_pydot(0
 
 Either this module or nx_pygraphviz can be used to interface with graphviz.  
 

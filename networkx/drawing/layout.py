@@ -1,5 +1,10 @@
 """
-Layout (positioning) algorithms for graph drawing.
+******
+Layout
+******
+
+Node positioning algorithms for graph drawing.
+
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 #    Copyright (C) 2004-2008 by 

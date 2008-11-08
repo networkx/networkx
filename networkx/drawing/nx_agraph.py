@@ -1,4 +1,8 @@
 """
+***************
+Graphviz AGraph
+***************
+
 Interface to pygraphviz AGraph class.
 
 Usage 
@@ -6,6 +10,9 @@ Usage
  >>> G=nx.complete_graph(5)
  >>> A=nx.to_agraph(G)
  >>> H=nx.from_agraph(A)
+
+Pygraphviz: http://networkx.lanl.gov/pygraphviz
+
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
