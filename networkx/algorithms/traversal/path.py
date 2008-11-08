@@ -237,7 +237,7 @@ def dijkstra_path(G,source,target):
     Returns the shortest path from source to target in a weighted
     graph G.  
 
-Uses a bidirectional version of Dijkstra's algorithm.
+    Uses a bidirectional version of Dijkstra's algorithm.
 
     Edge data must be numerical values for XGraph and XDiGraphs.
     The weights are assigned to be 1 for Graphs and DiGraphs.

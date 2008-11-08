@@ -16,9 +16,14 @@ NetworkX documentation
 
    tutorial
    reference/index
-   examples/index
-   gallery/index
    download
+
+
+.. htmlonly::
+   - `Examples <examples/index.html>`_
+
+
+
 
    
 Indices and tables
