@@ -1,23 +1,18 @@
 ..  -*- coding: utf-8 -*-
 
-~~~~~~~~
+********
 Tutorial
-~~~~~~~~
+********
 
 Introduction
 ============
-
-NetworkX = Network "X"  = NX (for short)
-
-Original Creators::
-
-	 Aric Hagberg, hagberg@lanl.gov
-	 Pieter Swart, swart@lanl.gov
-
 NetworkX is a Python-based package for the creation, manipulation, and
 study of the structure, dynamics, and function of complex networks. The
-name means **Network "X"** and we pronounce it **NX**. We will refer to
-(and import) NetworkX as NX for the sake of brevity.
+name means **Network "X"** and we pronounce it **NX**. We often 
+will shorten NetworkX to "nx" in code examples by using the
+Python import 
+
+>>> import networkx as nx
 
 The structure of a graph or network is encoded in the **edges**
 (connections, links, ties, arcs, bonds) between **nodes** (vertices,
@@ -56,9 +51,12 @@ Obtaining and Installing NetworkX
 ==================================
 
 You need Python. We recommend the latest stable release available
-from http://www.python.org/. 
+from http://www.python.org/.  NetworkX requires 
+Python Release 2.4 or later. 
 
-The latest version of NetworkX can be found at http://networkx.lanl.gov/. 
+The latest version of NetworkX can be found at
+http://networkx.lanl.gov/
+ 
 NetworkX will work on multiple platforms.
 
 On Linux platforms, download the current tarball numbered, say,
@@ -98,8 +96,7 @@ A Quick Tour
 Building and drawing a small graph
 ----------------------------------
 
-We assume you can start an interactive Python session. At the time
-of writing we require Python Release 2.4 or later. 
+We assume you can start an interactive Python session..
 We will assume that you are familiar with Python terminology 
 (see the official Python website http://www.python.org for more
 information).
@@ -192,9 +189,12 @@ directly on the datastructure.
 This design allows future replacement of the 'dicts-of-dicts"-based 
 datastructure with an alternative datastructure without excessive effort.
 
+Glossary
+--------
+
 The following shorthand is used throughout NetworkX documentation and code:
  
-G,G1,G2,H,etc:
+G,G1,G2,H,etc
    Graphs
 
 n,n1,n2,u,v,v1,v2:
@@ -248,11 +248,9 @@ Graph methods
 -------------
 
 A Graph object G has the following primitive methods associated
-with it:
+with it. (You can use dir(G) to inspect the methods associated with object G.)
 
-(You can use dir(G) to inspect the methods associated with object G.)
-
-1. Non-mutating Graph methods:
+1. Non-mutating Graph methods::
 
     - len(G), G.number_of_nodes(), G.order()  # number of nodes in G
     - n in G,     G.has_node(n)       
@@ -270,14 +268,14 @@ with it:
     - G.degree(), G.degree(n), G.degree(nbunch)
     - G.degree_iter(), G.degree_iter(n), G.degree_iter(nbunch)
 
-    The following return a new graph:
+    The following return a new graph::
 
-    - G.subgraph(nbunch)
+    - G.subgraph(nbunch,copy=True)
     - G.copy()
     - G.to_directed()
     - G.to_undirected()
     
-2. Mutating Graph methods:
+2. Mutating Graph methods::
 
     - G.add_node(n), G.add_nodes_from(nbunch)
     - G.remove_node(n), G.remove_nodes_from(nbunch)
@@ -310,15 +308,15 @@ Create an empty graph with zero nodes and zero edges.
 >>> G=nx.Graph()
 
 G can be grown in several ways.
-By adding one node at a time:
+By adding one node at a time,
 
 >>> G.add_node(1)
 
-by adding a list of nodes:
+by adding a list of nodes,
 
 >>> G.add_nodes_from([2,3])
 
-or by adding any nbunch of nodes (see above definition of an nbunch):
+or by adding any nbunch of nodes (see above definition of an nbunch),
 
 >>> H=nx.path_graph(10)
 >>> G.add_nodes_from(H)
@@ -332,15 +330,15 @@ image, an XML objext, another Graph, a customized node object, etc.
 
 (You should not change the object if the hash depends on its contents.)
 
-G can also be grown by adding one edge at a time:
+G can also be grown by adding one edge at a time,
 
 >>> G.add_edge( (1,2) )
 
-by adding a list of edges: 
+by adding a list of edges, 
 
 >>> G.add_edges_from([(1,2),(1,3)])
 
-or by adding any ebunch of edges (see above definition of an ebunch):
+or by adding any ebunch of edges (see above definition of an ebunch),
 
 >>> G.add_edges_from(H.edges())
 
@@ -349,29 +347,26 @@ remove_nodes_from, remove_edge and remove_edges_from, e.g.
 
 >>> G.remove_node(H)
 
-There are no complaints when adding existing nodes or edges. For example:
+There are no complaints when adding existing nodes or edges. For example,
 after removing all nodes and edges,
 
 >>> G.clear()
 >>> G.add_edges_from([(1,2),(1,3)])
 >>> G.add_node(1)
 >>> G.add_edge((1,2))
+>>> G.add_node("spam")
 
 will add new nodes/edges as required and stay quiet if they are
 already present.
 
->>> G.add_node("spam")
-
-
-
-At this stage the graph G consists of 4 nodes and 2 edges, as can be seen by:
+At this stage the graph G consists of 4 nodes and 2 edges, as can be seen by,
 
 >>> number_of_nodes(G)
 4
 >>> number_of_edges(G)
 2
 
-we can examine them with:
+We can examine them with
 
 >>> G.nodes()
 [1, 2, 3, 'spam']
@@ -382,15 +377,18 @@ we can examine them with:
 Drawing a small graph
 ---------------------
 
-NetworkX does not provide sophisticated graph drawing tools. We
-do provide elementary drawing tools as well as an interface to use the
-open source Graphviz software package.  These reside in networkx.drawing,
+NetworkX is not primarily a graph drawing package but 
+basic drawing with Matplotlib as well as an interface to use the
+open source Graphviz software package are included.  
+These reside in networkx.drawing,
 and will be imported if possible. See the drawing section for details.
 
->>> import pylab as P
+First import Matplotlib's plot interface
+
+>>> import matplotlib.pyplot as plt
 
 To test if the import of networkx.drawing was successful 
-draw G using one of:
+draw G using one of
 
 >>> nx.draw(G)
 >>> nx.draw_random(G)
@@ -398,23 +396,23 @@ draw G using one of:
 >>> nx.draw_spectral(G)
 
 when drawing to an interactive display. 
-Note that you may need to issue a pylab 
+Note that you may need to issue a Matplotlib 
 
->>> P.show() 
+>>> plt.show() 
 
-command if you are not using matplotlib in interactive mode (http://matplotlib.sourceforge.net/faq.html#SHOW).
+command if you are not using matplotlib in interactive mode
+http://matplotlib.sourceforge.net/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-with-plot
 
 Or use
 
 >>> nx.draw(G)
->>> P.savefig("path.png")
+>>> plt.savefig("path.png")
 
 to write to the file "path.png" in the local directory. If graphviz
-and pygraphviz or pydot are available on your system, you can also use:
+and pygraphviz or pydot are available on your system, you can also use
 
 >>> nx.draw_graphviz(G)
 >>> nx.write_dot(G,'file.dot')
-
 
 You may find it useful to interactively test code using "ipython -pylab", 
 which combines the power of ipython and matplotlib.
@@ -651,25 +649,15 @@ not all the graph-related functions and operations tested on them. Use
 with caution and tell us if you find them useful.
 
 
-Unit tests
-----------
+Not everything is a class
+-------------------------
 
-For most modules, say base.py, the command "python base.py" will run
-several unit tests in the networkx/tests subdirectory. This requires the use
-of Python 2.4 or later. To run all the unit tests, run "python setup.py test"
-in the base directory or  run "python test.py" in the networkx/tests 
-subdirectory.
-
-
-Not everything is an object
----------------------------
-
-NX developed from the need to analyze dynamics on a diverse collection
-of large networks and we have thus far refused to objectify all the
-mathematical structures of graph theory down to the atomic
-level. Neither nodes nor edges are implemented as Classes.  A node can
-be any hashable object (except None), and an edge can be associated with
-any object x using G.add_edge(n1,n2,x).
+NetworkX developed from the need to analyze dynamics on a diverse collection
+of large networks and we decided to take a node-centric view
+for designing the code internals and to use basic Python data structures.
+That is, nodes and edges are not custom Python objects but instead
+nodes are any hasable Python object and edges are three-tuples
+of nodes, (u,v,data), of two nodes and arbitrary Python objects as data. 
 
 
 References

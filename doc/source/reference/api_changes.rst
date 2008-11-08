@@ -114,7 +114,7 @@ has_edge()
 
    Old: 
 
-   >> # G.has_edge((u,v))  # or has_edge(e)
+   >>> # G.has_edge((u,v))  # or has_edge(e)
 
    New: 
 
