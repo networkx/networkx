@@ -27,8 +27,13 @@ if sys.version_info[:2] < (2, 4):
 execfile(os.path.join('networkx','release.py'))
 
 packages=["networkx",
+          "networkx.algorithms",
+          "networkx.algorithms.traversal",
+          "networkx.algorithms.isomorphism",
+          "networkx.classes",
           "networkx.generators",
           "networkx.drawing",
+          "networkx.linalg",
           "networkx.readwrite",
           "networkx.tests",
 #          "networkx.tests.generators",
@@ -37,11 +42,11 @@ packages=["networkx",
           ]
 
 docdirbase  = 'share/doc/networkx-%s' % version
-data = [(docdirbase, glob("doc/*.txt")),
+data = [(docdirbase, glob("doc/*.rst")),
         (os.path.join(docdirbase, 'examples'),glob("doc/examples/*.py")),
         (os.path.join(docdirbase, 'examples'),glob("doc/examples/*.dat")),
         (os.path.join(docdirbase, 'examples'),glob("doc/examples/*.edges")),
-        (os.path.join(docdirbase, 'data'),glob("doc/data/*ls")),
+#        (os.path.join(docdirbase, 'data'),glob("doc/data/*ls")),
         ]
 
 package_data     = {'': ['*.txt'],} 
