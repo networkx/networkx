@@ -4,6 +4,8 @@ import sys
 
 
 def run():
+    import networkx
+    path=networkx.__path__
     test_suite=None
     try:
         import nose
@@ -11,7 +13,7 @@ def run():
         print """nose not found, test option not available,
 http://somethingaboutorange.com/mrl/projects/nose""" 
         sys.exit(1)
-    nose.run()
+    nose.run(defaultTest=path)
 
 if __name__ == "__main__":
     run()
