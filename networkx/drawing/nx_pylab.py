@@ -46,7 +46,7 @@ try:
 except ImportError:
     raise ImportError, "Import Error: not able to import matplotlib."
 except RuntimeError:
-    raise
+    pass # unable to open display
 
 def draw(G, pos=None, ax=None, hold=None, **kwds):
     """Draw the graph G with matplotlib (pylab).
