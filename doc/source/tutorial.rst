@@ -16,10 +16,9 @@ Python import
 
 The structure of a graph or network is encoded in the **edges**
 (connections, links, ties, arcs, bonds) between **nodes** (vertices,
-sites, actors). If unqualified, by graph we mean a simple undirected
-graph, i.e. no self-loops and no multiple edges are allowed. By a
-network we usually mean a graph with weights (fields, properties) on
-nodes and/or edges.
+sites, actors). If unqualified, by graph we mean an undirected
+graph, i.e. no multiple edges are allowed. By a network we usually 
+mean a graph with weights (fields, properties) on nodes and/or edges.
 
 The potential audience for NetworkX include: mathematicians,
 physicists, biologists, computer scientists, social scientists. The
@@ -169,24 +168,26 @@ Empty graph-like objects are created with
 
 All graph classes allow any hashable object as a node and arbitrary 
 edge data/weights/labels to be associated with an edge.  
+
 All graph classes have boolean attributes to describe the nature of the
 graph:  directed, weighted, multiedges.
 The weighted attribute means that the edge weights are numerical, though
 that is not enforced.  Some functions will not work on graphs that do
-not have weighted==True (the default).
+not have weighted==True (the default), so it can be used to protect yourself
+against using a routine that requires numerical edge data.
 
 This package implements graphs using data structures based on an
 adjacency list implemented as a node-centric dictionary of
-dictionaries. The dictionary contains keys corresponding to the nodes
-with values that are dictionaries of neighboring node keyed to the
-edge data (default 1) associated with that edge, or a list of edge
-data for MultiGraph/MultiDiGraph.  This allows fast addition, deletion and
-lookup of nodes and neighbors in large graphs.  The underlying
-datastructure is accessed directly through methods (the API) 
-in the class definitions.  In all functions, graph-like objects 
-are manipulated solely via those API methods and not by acting 
-directly on the datastructure. 
-This design allows future replacement of the 'dicts-of-dicts"-based 
+dictionaries. The outer dictionary is keyed by nodes to values that are
+themselves dictionaries keyed by neighboring node to the
+edge object (default 1) associated with that edge (or a list of edge
+objects for MultiGraph/MultiDiGraph).  This 'dict-of-dicts' structure
+allows fast addition, deletion and lookup of nodes and neighbors in 
+large graphs.  The underlying datastructure is accessed directly 
+by methods (the API) in the class definitions.  
+All functions, on the other hand, manipulate graph-like objects 
+solely via those API methods and not by acting directly on the datastructure. 
+This design allows for possible replacement of the 'dicts-of-dicts"-based 
 datastructure with an alternative datastructure without excessive effort.
 
 Glossary
@@ -214,14 +215,11 @@ e=(n1,n2), (n1,n2,x):
    also written n1-n2 (if undirected) and n1->n2 (if directed).
  
 e=(n1,n2,x): 
-   an edge (a Python 3-tuple) in XGraph and XDiGraph, containing the two
-   nodes connected and the edge data/label/object stored associated with
-   the edge. 
-   The edge object x associated with an edge (or a list of objects 
-   for multigraphs) can be obtained using G.get_edge(n1,n2). 
-   G.add_edge(n1,n2) is equivalent to G.add_edge(n1,n2,1). 
-   In the case of multiple edges between nodes n1 and n2, one can use 
-   G.remove_edge(n1,n2) to remove all edges between n1 and n2, or
+   The edge object x (or list of objects for multigraphs) associated 
+   with an edge can be obtained using G.get_edge(n1,n2). 
+   The default G.add_edge(n1,n2) is equivalent to G.add_edge(n1,n2,1). 
+   In the case of multiple edges in multigraphs between nodes n1 and n2, 
+   one can use G.remove_edge(n1,n2) to remove all edges between n1 and n2, or
    G.remove_edge(n1,n2,x) to remove one edge associated with object x. 
 
 elist:
@@ -232,8 +230,22 @@ ebunch:
    an ebunch is any iterable (non-string) container
    of edge-tuples. (Similar to nbunch, also see add_edge).
 
+function/method names:
+   There are many ways you might want to return node properties for all nodes.
+   For example degree, clustering or betweenness are node properties.
+   NX provides functions which return node properties as a list, an iterator, 
+   a dict keyed by node to the property value or 2-tuples (node, property value).  
+   For example, clustering(G) returns a list of clustering values, 
+   clustering_iter(G) returns an iterator over the values.  
+   Both forms take the optional argument with_labels (default False).
+   clustering(G,with_labels=True) returns a dict keyed by node to the clustering value.
+   clustering_iter(G,with_labels=True) returns an iterator over 2-tuples (node,clustering value).
+   These two names and the with_labels keyword should be available for any node 
+   property by substituting the property name for "clustering" in these examples. 
+
+
 Warning:
-  - Alhough any hashable object can be used as a node, one should not
+  - Although any hashable object can be used as a node, one should not
     change the object after it has been added as a
     node (since the hash can depend on the object contents).
   - The ordering of objects within an arbitrary nbunch/ebunch
@@ -258,15 +270,21 @@ with it. (You can use dir(G) to inspect the methods associated with object G.)
     - for nbr in G[n]:  # loop through the neighbors of n in G
     - G.nodes()        # list of nodes
     - G.nodes_iter()   # iterator over nodes
-    - nbr in G[n],  G.has_edge(n1,n2)
+    - nbr in G[n],  G.has_edge(n1,n2), G.has_neighbor(n1,n2)
     - G.edges(), G.edges(n), G.edges(nbunch)      
     - G.edges_iter(), G.edges_iter(n), G.edges_iter(nbunch)
+    - G.get_edge(n1,n2)  # the object associated with this edge
     - G.neighbors(n)     # list of neighbors of n
     - G.neighbors_iter(n) # iterator over neighbors
     - G[n]               # dict of neighbors of n keyed to edge object
+    - G.adjacency_list  #list of 
     - G.number_of_edges(), G.size()
     - G.degree(), G.degree(n), G.degree(nbunch)
     - G.degree_iter(), G.degree_iter(n), G.degree_iter(nbunch)
+    - G.nodes_with_selfloops()
+    - G.selfloop_edges()
+    - G.number_of_selfloops()
+    - G.nbunch_iter(nbunch)  # iterator over nodes in both nbunch and G
 
     The following return a new graph::
 
@@ -324,7 +342,7 @@ or by adding any nbunch of nodes (see above definition of an nbunch),
 (H can be a graph, iterator,  string,  set, or even a file.)
 
 Any hashable object (except None) can represent a node, e.g. a text string, an
-image, an XML objext, another Graph, a customized node object, etc.
+image, an XML object, another Graph, a customized node object, etc.
 
 >>> G.add_node(H)
 
@@ -359,19 +377,58 @@ after removing all nodes and edges,
 will add new nodes/edges as required and stay quiet if they are
 already present.
 
-At this stage the graph G consists of 4 nodes and 2 edges, as can be seen by,
+>>> G.add_node("spam")       # adds node "spam"
+>>> G.add_nodes_from("spam") # adds 4 nodes: 's', 'p', 'a', 'm'
+
+At this stage the graph G consists of 8 nodes and 2 edges, as can be seen by:
 
 >>> number_of_nodes(G)
-4
+8
 >>> number_of_edges(G)
 2
 
 We can examine them with
 
 >>> G.nodes()
-[1, 2, 3, 'spam']
+[1, 2, 3, 'spam', 's', 'p', 'a', 'm']
 >>> G.edges()
 [(1, 2), (1, 3)]
+
+Removing nodes is similar:
+
+>>> G.remove_nodes_from("spam")
+>>> G.nodes()
+[1, 2, 3, 'spam']
+
+You can specify graph data upon instantiation if an appropriate structure exists.
+
+>>> H=nx.DiGraph(G)   # create a DiGraph with connection data from G
+>>> H.edges()
+[(1, 2), (1, 3), (2, 1), (3, 1)]
+>>> H=nx.Graph( {0: [1,2,3], 1: [0,3], 2: [0], 3:[0]} )  # a dict of lists adjacency
+
+Edge data/weights/labels/objects can also be associated with an edge:
+
+>>> H=nx.Graph()
+>>> H.add_edge(1,2,"red")
+>>> H.add_edges_from([(1,3,"blue"), (2,0,"red"), (0,3)])
+>>> H.edges()
+[(0, 2), (1, 2), (1, 3)]
+>>> H.edges(data=True)
+[(0, 2, 1), (1, 2, "red"), (1, 3, "blue")]
+
+Arbitrary objects can be associated with an edge.  The 3-tuples (n1,n2,x)
+represent an edge between nodes n1 and n2 that is decorated with
+the object x (not necessarily hashable).  For example, n1 and n2 can be
+protein objects from the RCSB Protein Data Bank, and x can refer to an XML
+record of a publication detailing experimental observations of their
+interaction. 
+
+You can see that while NX has not implemented either nodes or edges as 
+networkx classes.  This leaves you free to use your existing node and edge
+objects, or more typically, use numerical values or strings where appropriate.
+A node can be any hashable object (except None), and an edge can be associated 
+with any object x using G.add_edge(n1,n2,x).
 
 
 Drawing a small graph
@@ -449,8 +506,8 @@ the function will return a list of values at all nodes of the graph.
 >>> sorted(G.degree())
 [0, 1, 1, 2]
 
-When called with the "with_labels"=True option a dict with nodes as
-keys and function values as arguments is returned.
+The keyword argument with_labels=True returns a dict keyed by nodes
+to the node values.
 
 >>> G.degree([1,2],with_labels=True)
 {1: 2, 2: 1}
@@ -560,14 +617,17 @@ methods to those of Graph:
     - out_edges_iter
     - in_edges
     - in_edges_iter
-    - successors=out_neighbors=neighbors
-    - successors_iter=out_neighbors_iter=neighbors_iter
-    - predecessors=in_neighbors
-    - predecessors_iter=in_neighbors_iter
+    - has_successor=has_neighbor
+    - has_predecessor
+    - successors=neighbors
+    - successors_iter=neighbors_iter
+    - predecessors
+    - predecessors_iter
     - out_degree
     - out_degree_iter
     - in_degree
     - in_degree_iter
+    - reverse
 
 See networkx.DiGraph for more documentation. 
 
@@ -632,32 +692,9 @@ the nodes.
 
 We have found this power quite useful, but its abuse
 can lead to unexpected surprises unless one is familiar with Python. If
-in doubt, consider using convert_node_labels_to_integers to obtain
+in doubt, consider using convert_node_labels_to_integers() to obtain
 a more traditional graph with integer labels.
 
-Imbedding general objects onto edges
-------------------------------------
-
-An MultiGraph and MultiDiGraph object allows arbitrary objects to be
-associated with an edge. In these classes edges are 3-tuples (n1,n2,x),
-representing an edge between nodes n1 and n2 that is decorated with
-the object x (not necessarily hashable). For example, n1 and n2 can be
-protein objects from the RCSB Protein Data Bank, and x can refer to an XML
-record of a publication detailing experimental observations of their
-interaction. These classes are still in the experimental stage, with
-not all the graph-related functions and operations tested on them. Use
-with caution and tell us if you find them useful.
-
-
-Not everything is a class
--------------------------
-
-NetworkX developed from the need to analyze dynamics on a diverse collection
-of large networks and we decided to take a node-centric view
-for designing the code internals and to use basic Python data structures.
-That is, nodes and edges are not custom Python objects but instead
-nodes are any hasable Python object and edges are three-tuples
-of nodes, (u,v,data), of two nodes and arbitrary Python objects as data. 
 
 
 References
