@@ -1,4 +1,8 @@
 """
+*******
+GraphML
+*******
+
 Read graphs in GraphML format.
 http://graphml.graphdrawing.org/
 

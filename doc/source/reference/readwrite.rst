@@ -1,51 +1,18 @@
 .. _readwrite:
 
-
+*******************
 Reading and Writing
 *******************
 
-.. currentmodule:: networkx
+.. toctree::
+   :maxdepth: 2
 
-Adjacency List
----------------
-.. autosummary::
-   :toctree: generated/
+   readwrite.adjlist
+   readwrite.edgelist
+   readwrite.gml
+   readwrite.gpickle
+   readwrite.graphml
+   readwrite.leda
+   readwrite.yaml
+   readwrite.sparsegraph6
 
-Edge List
----------
-.. automodule:: networkx.readwrite.edgelist
-.. autosummary::
-   :toctree: generated/
-
-   read_edgelist
-   write_edgelist
-
-GML
----
-.. autosummary::
-   :toctree: generated/
-
-Pickle
-------
-.. autosummary::
-   :toctree: generated/
-
-GraphML
--------
-.. autosummary::
-   :toctree: generated/
-
-LEDA
-----
-.. autosummary::
-   :toctree: generated/
-
-YAML
-----
-.. autosummary::
-   :toctree: generated/
-
-SparseGraph6 
-------------
-.. autosummary::
-   :toctree: generated/

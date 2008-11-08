@@ -1,5 +1,9 @@
 """
-Read and write NetworkX graphs.
+***************
+Adjacency Lists
+***************
+
+Read and write NetworkX graphs as adjacency lists.
 
 Note that NetworkX graphs can contain any hashable Python object as
 node (not just integers and strings).  So writing a NetworkX graph

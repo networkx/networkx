@@ -1,4 +1,8 @@
 """
+**************
+SparseGraph 6
+**************
+
 Read graphs in graph6 and sparse6 format.
 See http://cs.anu.edu.au/~bdm/data/formats.txt
 

@@ -1,7 +1,7 @@
 .. _traversal:
 
 Traversal
-*********
+=========
 
 .. toctree::
    :maxdepth: 2

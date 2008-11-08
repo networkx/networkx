@@ -1,4 +1,8 @@
 """
+****
+YAML
+****
+
 Read and write NetworkX graphs in YAML format.
 See http://www.yaml.org for documentation.
 

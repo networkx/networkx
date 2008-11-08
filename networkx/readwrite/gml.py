@@ -1,4 +1,8 @@
 """
+***
+GML
+***
+
 Read graphs in GML format.
 See http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
 for format specification.

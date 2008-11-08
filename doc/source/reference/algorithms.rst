@@ -1,6 +1,6 @@
 .. _algorithms:
 
-
+**********
 Algorithms
 **********
 
