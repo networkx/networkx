@@ -318,9 +318,9 @@ class Graph(object):
         ...     print n,
         0 1 2
 
-	Notes
-	-----
-	It is simpler and equivalent to use the expression "for n in G"
+        Notes
+        -----
+        It is simpler and equivalent to use the expression "for n in G"
 
         >>> G=nx.path_graph(3)
         >>> for n in G:
@@ -351,30 +351,30 @@ class Graph(object):
         >>> print len(G)
         4
 
-	Notes
-	-----
-	This is the same as
-	     
+        Notes
+        -----
+        This is the same as
+             
         >>> len(G)
-	4
+        4
 
-	and	     	     
+        and
 
         >>> G.order()
-	4
+        4
 
-	"""
+        """
         return len(self.adj)
 
     def order(self):
         """Return the number of nodes.
 
-	See Also
-	--------
-	Graph.order(), Graph.__len__()
-	
+        See Also
+        --------
+        Graph.order(), Graph.__len__()
+        
 
-	"""
+        """
         return len(self.adj)
 
     def has_node(self,n):
@@ -386,8 +386,8 @@ class Graph(object):
         >>> print G.has_node(0)
         True
         
-	Notes
-	-----
+        Notes
+        -----
 
         It is more readable and simpler to use
         >>> 0 in G
@@ -438,7 +438,7 @@ class Graph(object):
         -----
         When using the Graph class, adding an edge that already 
         exists *overwrites* the edgedata.
-	Parallel edges are allowed when using the MultiGraph class. 
+        Parallel edges are allowed when using the MultiGraph class. 
 
         """
         # add nodes            
@@ -633,15 +633,15 @@ class Graph(object):
         >>> G.neighbors(0)
         [1]
 
-	Notes
-	-----
-	It is sometimes more convenient (and faster) to access
-	the adjacency dictionary directly
+        Notes
+        -----
+        It is sometimes more convenient (and faster) to access
+        the adjacency dictionary as G[n]
 
-	>>> G=nx.Graph()
-	>>> G.add_edge('a','b','data')
+        >>> G=nx.Graph()
+        >>> G.add_edge('a','b','data')
         >>> G['a']
-	{'b': 'data'}
+        {'b': 'data'}
         """
         try:
             return self.adj[n].keys()
@@ -657,12 +657,12 @@ class Graph(object):
         >>> print [n for n in G.neighbors(0)]
         [1]
 
-	Notes
-	-----
-	It is faster to iterate over the using the idiom
+        Notes
+        -----
+        It is faster to iterate over the using the idiom
         >>> print [n for n in G[0]]
         [1]
-	
+        
         """
         try:
             return self.adj[n].iterkeys()
@@ -914,18 +914,18 @@ class Graph(object):
     def clear(self):
         """Remove all nodes and edges from graph.
 
-	This also removes the graph name.
-	
-	Examples
-	--------
-	>>> G=nx.path_graph(4)
-	>>> G.clear()
-	>>> G.nodes()
-	[]
-	>>> G.edges()
-	[]
+        This also removes the graph name.
+        
+        Examples
+        --------
+        >>> G=nx.path_graph(4)
+        >>> G.clear()
+        >>> G.nodes()
+        []
+        >>> G.edges()
+        []
 
-	"""
+        """
 
         self.name = ''
         self.adj.clear() 
@@ -935,8 +935,8 @@ class Graph(object):
 
         Notes
         -----
-        This makes a complete copy of the graph using copy.deepcopy()
-        to copy all graph data.
+        This makes a complete copy of the graph connections though not 
+        of the node and edge data which still point to the same objects.
         
         """
         H=self.__class__(self)
@@ -1007,15 +1007,15 @@ class Graph(object):
     def nodes_with_selfloops(self):
         """Return a list of nodes with self loops.
 
-	Examples
-	--------
-	>>> G=nx.Graph()
-	>>> G.add_edge(1,1)
-	>>> G.add_edge(1,2)
-	>>> G.nodes_with_selfloops()
-	[1]
+        Examples
+        --------
+        >>> G=nx.Graph()
+        >>> G.add_edge(1,1)
+        >>> G.add_edge(1,2)
+        >>> G.nodes_with_selfloops()
+        [1]
 
-	"""
+        """
         return [ n for n,nbrs in self.adj.iteritems() if n in nbrs ]
 
     def selfloop_edges(self):
@@ -1026,15 +1026,15 @@ class Graph(object):
         """Return the number of selfloop edges (from a node to
         itself).
 
-	Examples
-	--------
-	>>> G=nx.Graph()
-	>>> G.add_edge(1,1)
-	>>> G.add_edge(1,2)
-	>>> G.number_of_selfloops()
-	1
+        Examples
+        --------
+        >>> G=nx.Graph()
+        >>> G.add_edge(1,1)
+        >>> G.add_edge(1,2)
+        >>> G.number_of_selfloops()
+        1
 
-	"""
+        """
         return len(self.nodes_with_selfloops())
 
     def size(self, weighted=False):
@@ -1059,11 +1059,11 @@ class Graph(object):
         >>> G.size(weighted=True)
         6
 
-	See Also
-	--------
-	Graph.number_of_edges()
+        See Also
+        --------
+        Graph.number_of_edges()
 
-	"""
+        """
 
         return sum(self.degree(weighted=weighted))/2
 

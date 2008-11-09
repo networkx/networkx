@@ -98,18 +98,8 @@ Building and drawing a small graph
 We assume you can start an interactive Python session..
 We will assume that you are familiar with Python terminology 
 (see the official Python website http://www.python.org for more
-information).
-
-::
-
-  %python
-  ...
-  Some lines giving information such as the version of python and compiler used.
-  ...
-  Type "help", "copyright", "credits" or "license" for more information.
-  >>>
-
-(If you did not install NX into the Python site directory 
+information.
+If you did not install NX into the Python site directory 
 it might be useful to add the directory where NX is installed to
 your PYTHONPATH.)
 
@@ -127,15 +117,6 @@ clobber some names already in your namespace
 
 If importing networkx fails, it means that Python cannot find the installed
 module. Check your installation and your PYTHONPATH.
-
-To create a new graph, call Graph() with zero or more arguments.
-
->>> G=nx.Graph()
-
-When called with zero arguments, one obtains the empty graph without
-any nodes or edges.  In NX every graph or network is a Python
-"object", and in Python the functions associated with an "object" are
-known as methods.
 
 The following classes are provided:
 
@@ -166,11 +147,16 @@ Empty graph-like objects are created with
 >>> G=nx.MultiGraph()
 >>> G=nx.MultiDiGraph()
 
+When called with zero arguments, one obtains the empty graph without
+any nodes or edges.  In NX every graph or network is a Python
+"object", and in Python the functions associated with an "object" are
+known as methods.
+
 All graph classes allow any hashable object as a node and arbitrary 
 edge data/weights/labels to be associated with an edge.  
 
 All graph classes have boolean attributes to describe the nature of the
-graph:  directed, weighted, multiedges.
+graph:  directed, weighted, multigraph.
 The weighted attribute means that the edge weights are numerical, though
 that is not enforced.  Some functions will not work on graphs that do
 not have weighted==True (the default), so it can be used to protect yourself
@@ -187,7 +173,7 @@ large graphs.  The underlying datastructure is accessed directly
 by methods (the API) in the class definitions.  
 All functions, on the other hand, manipulate graph-like objects 
 solely via those API methods and not by acting directly on the datastructure. 
-This design allows for possible replacement of the 'dicts-of-dicts"-based 
+This design allows for possible replacement of the 'dicts-of-dicts'-based 
 datastructure with an alternative datastructure without excessive effort.
 
 Glossary
@@ -230,18 +216,11 @@ ebunch:
    an ebunch is any iterable (non-string) container
    of edge-tuples. (Similar to nbunch, also see add_edge).
 
-function/method names:
-   There are many ways you might want to return node properties for all nodes.
-   For example degree, clustering or betweenness are node properties.
-   NX provides functions which return node properties as a list, an iterator, 
-   a dict keyed by node to the property value or 2-tuples (node, property value).  
-   For example, clustering(G) returns a list of clustering values, 
-   clustering_iter(G) returns an iterator over the values.  
-   Both forms take the optional argument with_labels (default False).
-   clustering(G,with_labels=True) returns a dict keyed by node to the clustering value.
-   clustering_iter(G,with_labels=True) returns an iterator over 2-tuples (node,clustering value).
-   These two names and the with_labels keyword should be available for any node 
-   property by substituting the property name for "clustering" in these examples. 
+iterator method names:
+   In many cases it is more efficient to loop using an iterator directly rather
+   than creating a list.  NX provides separate methods that return an iterator.  
+   For example, G.degree() and G.edges() return lists while G.degree_iter() 
+   and G.edges_iter() return iterators.
 
 
 Warning:
@@ -372,13 +351,11 @@ after removing all nodes and edges,
 >>> G.add_edges_from([(1,2),(1,3)])
 >>> G.add_node(1)
 >>> G.add_edge((1,2))
->>> G.add_node("spam")
+>>> G.add_node("spam")       # adds node "spam"
+>>> G.add_nodes_from("spam") # adds 4 nodes: 's', 'p', 'a', 'm'
 
 will add new nodes/edges as required and stay quiet if they are
 already present.
-
->>> G.add_node("spam")       # adds node "spam"
->>> G.add_nodes_from("spam") # adds 4 nodes: 's', 'p', 'a', 'm'
 
 At this stage the graph G consists of 8 nodes and 2 edges, as can be seen by:
 
@@ -424,7 +401,7 @@ protein objects from the RCSB Protein Data Bank, and x can refer to an XML
 record of a publication detailing experimental observations of their
 interaction. 
 
-You can see that while NX has not implemented either nodes or edges as 
+You can see that NX has not implemented either nodes or edges as 
 networkx classes.  This leaves you free to use your existing node and edge
 objects, or more typically, use numerical values or strings where appropriate.
 A node can be any hashable object (except None), and an edge can be associated 
@@ -440,7 +417,7 @@ open source Graphviz software package are included.
 These reside in networkx.drawing,
 and will be imported if possible. See the drawing section for details.
 
-First import Matplotlib's plot interface
+First import Matplotlib's plot interface (pylab works too)
 
 >>> import matplotlib.pyplot as plt
 
@@ -460,7 +437,11 @@ Note that you may need to issue a Matplotlib
 command if you are not using matplotlib in interactive mode
 http://matplotlib.sourceforge.net/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-with-plot
 
-Or use
+You may find it useful to interactively test code using "ipython -pylab", 
+which combines the power of ipython and matplotlib and provides a convenient
+interactive mode.
+
+Or to save drawings to a file, use
 
 >>> nx.draw(G)
 >>> plt.savefig("path.png")
@@ -470,9 +451,6 @@ and pygraphviz or pydot are available on your system, you can also use
 
 >>> nx.draw_graphviz(G)
 >>> nx.write_dot(G,'file.dot')
-
-You may find it useful to interactively test code using "ipython -pylab", 
-which combines the power of ipython and matplotlib.
 
 Functions for analyzing graph properties
 ----------------------------------------
@@ -528,8 +506,7 @@ can also be generated by:
     union(G1,G2)             - graph union
     disjoint_union(G1,G2)    - graph union assuming all nodes are different
     cartesian_product(G1,G2) - return Cartesian product graph
-    compose(G1,G2)           - combine graphs identifying nodes common
-                               to both
+    compose(G1,G2)           - combine graphs identifying nodes common to both
     complement(G)            - graph complement 
     create_empty_copy(G)     - return an empty copy of the same graph class
     convert_to_undirected(G) - return an undirected representation of G
@@ -748,4 +725,5 @@ References
 
 .. [West01] D. B. West, "Introduction to Graph Theory", Prentice Hall,
     2nd ed., 2001.  
+
 

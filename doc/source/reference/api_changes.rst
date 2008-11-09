@@ -86,7 +86,7 @@ add_edge()
 
    New 
 
-   >>> G.add_edge(*(u,v)) # or G.add_edge(*e) 
+   >>> G.add_edge(*e) # or G.add_edge(*(u,v)) 
 
    The * operator unpacks the edge tuple in the argument list.
 
@@ -101,8 +101,8 @@ add_edge()
 
 add_edges_from()
 ^^^^^^^^^^^^^^^^
-   Now can take list or iterator of either two tuples (u,v),
-   three tuples (u,v,data) or a mix of both.  
+   Now can take list or iterator of either 2-tuples (u,v),
+   3-tuples (u,v,data) or a mix of both.  
 
    Now has data keyword parameter (default 1) for setting the edge data
    for any edge in the edge list that is a 2-tuple.
@@ -119,7 +119,7 @@ has_edge()
 
    New: 
 
-   >>> G.has_edge(*(u,v)) # or has_edge(*e) 
+   >>> G.has_edge(*e) # or has_edge(*(u,v)) 
    True
    
    The * operator unpacks the edge tuple in the argument list.
@@ -148,6 +148,7 @@ subgraph()
    type either make a copy of
    the graph first and then change type or change type and make
    a subgraph.  E.g.
+
    >>> G=nx.path_graph(5)
    >>> H=nx.DiGraph(G.subgraph([0,1])) # digraph of copy of induced subgraph
 
@@ -167,7 +168,10 @@ __getitem__()
    [1]
    
    This change allows algorithms to use the underlying dict-of-dict
-   representaion through G[v] for substantial performance gains.
+   representaion through G[v] for substantial performance gains.  
+   Warning: The returned dictionary should not be modified as it may
+   corrupt the graph data structure.  Make a copy G[v].copy() if you 
+   wish to modify the dict.
 
 
 Methods removed
@@ -175,7 +179,8 @@ Methods removed
 
 info() 
 ^^^^^^
-   now use functional interface 
+   now a function
+
    >>> G=nx.Graph(name='test me')
    >>> nx.info(G)
    Name:              test me
@@ -271,10 +276,10 @@ to discover any self loops.
 Copy
 ----
 Copies of NetworkX graphs including using the copy() method
-now return deep copies of the graph.  This means that all
-edge data is recursively copied to the new graph. The earlier
-copy() method made shallow copies that left deeply nested
-graph data in both the original and copy as pointers to the same data. 
+now return complete copies of the graph.  This means that all
+connection information is copied--subsequent changes in the
+copy do not change the old graph.  But node keys and edge 
+data in the original and copy graphs are pointers to the same data.
 
 prepare_nbunch
 --------------
