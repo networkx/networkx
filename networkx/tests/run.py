@@ -13,6 +13,7 @@ def run():
         print """nose not found, test option not available,
 http://somethingaboutorange.com/mrl/projects/nose""" 
         sys.exit(1)
+    print "path",path
     nose.run(defaultTest=path)
 
 if __name__ == "__main__":
