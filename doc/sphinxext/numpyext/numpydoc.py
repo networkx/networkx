@@ -29,7 +29,7 @@ def mangle_docstrings(app, what, name, obj, options, lines,
         pass # not sure what the bug is here - but this strips too many lines
     else:
         doc = get_doc_object(obj, what)
-        lines[:] = str(doc).split("\n")
+        lines[:] = repr(doc).split("\n")
 
     if app.config.numpydoc_edit_link and hasattr(obj, '__name__') and \
            obj.__name__:
