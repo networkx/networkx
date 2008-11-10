@@ -22,6 +22,7 @@ import inspect
 
 def mangle_docstrings(app, what, name, obj, options, lines,
                       reference_offset=[0]):
+    
     if what == 'module':
         # Strip top title 
 #        title_re = re.compile(r'^\s*[#*=]{4,}\n[a-z0-9 -]+\n[#*=]{4,}\s*',
@@ -29,7 +30,7 @@ def mangle_docstrings(app, what, name, obj, options, lines,
         pass # not sure what the bug is here - but this strips too many lines
     else:
         doc = get_doc_object(obj, what)
-        lines[:] = repr(doc).split("\n")
+        lines[:] = doc.__str__().split("\n")
 
     if app.config.numpydoc_edit_link and hasattr(obj, '__name__') and \
            obj.__name__:

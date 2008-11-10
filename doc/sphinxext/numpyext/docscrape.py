@@ -9,6 +9,12 @@ import pydoc
 from StringIO import StringIO
 from warnings import warn
 
+from sphinx.ext.autodoc import get_module_charset
+_charset_re = re.compile(r'coding[:=]\s*([-\w.]+)')
+_module_charsets = {}
+
+
+
 class Reader(object):
     """A line-based string reader.
 
@@ -84,9 +90,23 @@ class Reader(object):
 
 
 class NumpyDocString(object):
-    def __init__(self,docstring):
+    def __init__(self,obj):
+        docstring=inspect.getdoc(obj) or ''
+        charset = None
+        module = getattr(obj, '__module__', None)
+        if module is not None:
+            charset = get_module_charset(module)
+        if isinstance(docstring, str):
+            if charset:
+                docstring = docstring.decode(charset)
+            else:
+                try:
+                    # try decoding with utf-8, should only work for real UTF-8
+                    docstring = docstring.decode('utf-8')
+                except UnicodeError:
+                    # last resort -- can't fail
+                    docstring = docstring.decode('latin1')
         docstring = docstring.split('\n')
-
         # De-indent paragraph
         try:
             indent = min(len(s) - len(s.lstrip()) for s in docstring
@@ -418,7 +438,7 @@ class FunctionDoc(NumpyDocString):
         self._f = func
         self._role = role # e.g. "func" or "meth"
         try:
-            NumpyDocString.__init__(self,inspect.getdoc(func) or '')
+            NumpyDocString.__init__(self,func)
         except ValueError, e:
             print '*'*78
             print "ERROR: '%s' while parsing `%s`" % (e, self._f)
@@ -481,7 +501,7 @@ class ClassDoc(NumpyDocString):
         self._name = cls.__name__
         self._func_doc = func_doc
 
-        NumpyDocString.__init__(self, pydoc.getdoc(cls))
+        NumpyDocString.__init__(self, cls)
 
     @property
     def methods(self):
