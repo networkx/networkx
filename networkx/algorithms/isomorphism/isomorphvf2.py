@@ -16,7 +16,6 @@ __date__ = "$Date$"
 # UC Davis.
 
 import sys
-from sets import Set
 
 __all__ = ['GraphMatcher',
            'DiGraphMatcher']
@@ -123,7 +122,7 @@ class GraphMatcher(object):
             # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
             if not (T1_inout or T2_inout):
                 # First we determine the candidate node for G2
-                other_node = min(Set(self.G2) - Set(GMState.core_2))
+                other_node = min(set(self.G2) - set(GMState.core_2))
                 for node in self.G1:
                     if node not in GMState.core_1:
                         yield node, other_node
@@ -444,7 +443,7 @@ class DiGraphMatcher(object):
                     # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
                     if not (T1_out or T2_out or T1_in or T2_in):
                         # First we determine the candidate node for G2
-                        node_2 = min(Set(self.G2) - Set(DiGMState.core_2))
+                        node_2 = min(set(self.G2) - set(DiGMState.core_2))
                         for node_1 in self.G1:
                             if node_1 not in DiGMState.core_1:
                                 yield node_1, node_2
@@ -840,7 +839,7 @@ class GMState(object):
             # Now we add every other node...
             
             # Updates for T_1^{inout}
-            new_nodes = Set([])
+            new_nodes = set([])
             for node in GMState.core_1:
                 new_nodes.update([neighbor for neighbor in GM.G1[node] if neighbor not in GMState.core_1])
             for node in new_nodes:
@@ -848,7 +847,7 @@ class GMState(object):
                     GMState.inout_1[node] = self.depth
 
             # Updates for T_2^{inout}
-            new_nodes = Set([])
+            new_nodes = set([])
             for node in GMState.core_2:
                 new_nodes.update([neighbor for neighbor in GM.G2[node] if neighbor not in GMState.core_2])
             for node in new_nodes:
@@ -945,7 +944,7 @@ class DiGMState(object):
             # Now we add every other node...
             
             # Updates for T_1^{in}
-            new_nodes = Set([])
+            new_nodes = set([])
             for node in DiGMState.core_1:
                 new_nodes.update([predecessor for predecessor in DiGM.G1.predecessors(node) if predecessor not in DiGMState.core_1])
             for node in new_nodes:
@@ -953,7 +952,7 @@ class DiGMState(object):
                     DiGMState.in_1[node] = self.depth
                 
             # Updates for T_2^{in}
-            new_nodes = Set([])
+            new_nodes = set([])
             for node in DiGMState.core_2:
                 new_nodes.update([predecessor for predecessor in DiGM.G2.predecessors(node) if predecessor not in DiGMState.core_2])
             for node in new_nodes:
@@ -961,7 +960,7 @@ class DiGMState(object):
                     DiGMState.in_2[node] = self.depth
                 
             # Updates for T_1^{out}
-            new_nodes = Set([])        
+            new_nodes = set([])        
             for node in DiGMState.core_1:
                 new_nodes.update([successor for successor in DiGM.G1.successors(node) if successor not in DiGMState.core_1])
             for node in new_nodes:
@@ -969,7 +968,7 @@ class DiGMState(object):
                     DiGMState.out_1[node] = self.depth
     
             # Updates for T_2^{out}
-            new_nodes = Set([])        
+            new_nodes = set([])        
             for node in DiGMState.core_2:
                 new_nodes.update([successor for successor in DiGM.G2.successors(node) if successor not in DiGMState.core_2])
             for node in new_nodes:
