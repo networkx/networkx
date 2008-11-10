@@ -119,7 +119,7 @@ def get_doc_object(obj, what=None):
     if what is None:
         if inspect.isclass(obj):
             what = 'class'
-
+        elif inspect.ismodule(obj):
             what = 'module'
         elif callable(obj):
             what = 'function'
