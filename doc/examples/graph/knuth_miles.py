@@ -96,16 +96,18 @@ if __name__ == '__main__':
 
     try:
         import matplotlib.pyplot as plt
-        # with nodes sized py population
-#        draw(H,G.position,
-#             node_size=[G.population[v] for v in H],
-#             with_labels=False)
+        plt.figure(figsize=(8,8))
         # with nodes colored by degree sized by population
         node_color=[float(H.degree(v)) for v in H]
         nx.draw(H,G.position,
              node_size=[G.population[v] for v in H],
              node_color=node_color,
              with_labels=False)
+
+        # scale the axes equally
+        plt.xlim(-5000,500)
+        plt.ylim(-2000,3500)
+
         plt.savefig("knuth_miles.png")
     except:
         pass
