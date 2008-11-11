@@ -61,6 +61,11 @@ if __name__ == '__main__':
                 with_labels=False,
                 alpha=0.5,
                 node_size=15)
+        # adjust the plot limits
+        xmax=1.02*max(xx for xx,yy in pos.values())
+        ymax=1.02*max(xx for xx,yy in pos.values())
+        plt.xlim(0,xmax)
+        plt.ylim(0,ymax)
         plt.savefig("lanl_routes.png")
         print "Wrote lanl_routes.png"
     except:
