@@ -12,7 +12,13 @@ Source and Binary Releases
 
 Subversion
 ~~~~~~~~~~
-  - https://networkx.lanl.gov/svn/networkx/trunk
+*Anonymous*          
+
+  - svn checkout http://networkx.lanl.gov/svn/networkx/trunk
+
+*Authenticated* 
+
+  - svn checkout https://networkx.lanl.gov/svn/networkx/trunk
 
 PyGraphviz
 ----------
@@ -24,4 +30,10 @@ Source and Binary Releases
 
 Subversion
 ~~~~~~~~~~
-  - https://networkx.lanl.gov/svn/pygraphviz/trunk
+*Anonymous*          
+
+  - svn checkout http://networkx.lanl.gov/svn/pygraphviz/trunk
+
+*Authenticated* 
+
+  - svn checkout https://networkx.lanl.gov/svn/pygraphviz/trunk
