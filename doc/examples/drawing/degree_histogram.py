@@ -38,5 +38,6 @@ plt.loglog(x,y,'bo')
 plt.title("Degree distribution")
 plt.xlabel("degree")
 plt.ylabel("number of nodes")
+plt.savefig("degree_histogram.png")
 plt.show()
 

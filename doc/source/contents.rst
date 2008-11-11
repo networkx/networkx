@@ -23,6 +23,10 @@ NetworkX documentation
    - `Examples <examples/index.html>`_
 
 
+.. htmlonly::
+   - `Gallery <gallery/index.html>`_
+
+
 
 
    

@@ -17,7 +17,7 @@ def lanl_graph():
     """
     import networkx as nx
     try:
-        fh=open("lanl.edges","r")
+        fh=open('lanl_routes.edgelist','r')
     except IOError:
         print "lanl.edges not found"
         raise
@@ -61,8 +61,8 @@ if __name__ == '__main__':
                 with_labels=False,
                 alpha=0.5,
                 node_size=15)
-        plt.savefig("lanl.png")
-        print "Wrote lanl.png"
+        plt.savefig("lanl_routes.png")
+        print "Wrote lanl_routes.png"
     except:
         print "This example could not find either matplotlib or pygraphviz."
         pass

@@ -9,15 +9,13 @@ the email message data.
 This example shows the power of XDiGraph to hold edge data
 of arbitrary Python objects (in this case a list of email messages).
 
-By default, load the sample unix email mailbox called "sample.mbox".
+By default, load the sample unix email mailbox called "unix_email.mbox".
 You can load your own mailbox by naming it on the command line, eg
 
 python unixemail.py /var/spool/mail/username
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = "$Date: 2005-03-22 13:57:46 -0700 (Tue, 22 Mar 2005) $"
-__credits__ = """"""
 #    Copyright (C) 2005 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -43,21 +41,21 @@ def msgfactory(fp):
 
 if __name__ == '__main__':
 
-    import networkx as NX
+    import networkx as nx
     try: 
-        import pylab as P
+        import matplotlib.pyplot as plt
     except:
         pass
 
     if len(sys.argv)==1:
-        file="sample.mbox"
+        file="unix_email.mbox"
     else:
         file=sys.argv[1]
     fp=open(file,"r")
 
     mbox = mailbox.UnixMailbox(fp, msgfactory) # parse unix mailbox
 
-    G=NX.MultiDiGraph() # create empty graph
+    G=nx.MultiDiGraph() # create empty graph
 
     # parse each messages and build graph 
     for msg in mbox: # msg is python email.Message.Message object
@@ -79,8 +77,9 @@ if __name__ == '__main__':
     
 
     try: # draw
-        pos=NX.spring_layout(G,iterations=10)
-        NX.draw(G,pos,node_size=2000,alpha=0.5)
-        P.show()
+        pos=nx.spring_layout(G,iterations=10)
+        nx.draw(G,pos,node_size=2000,alpha=0.5)
+        plt.savefig("unix_email.png")
+        plt.show()
     except: # matplotlib not available
         pass

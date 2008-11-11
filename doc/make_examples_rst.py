@@ -133,22 +133,22 @@ NetworkX Examples
             base=fname.partition('.')[0]
             title = '%s'%(base.replace('_',' ').title())
 
+
             #title = '<img src=%s> %s example code: %s'%(thumbfile, subdir, fname)
 
 
             fh.write(title + '\n')
             fh.write('='*len(title) + '\n\n')
 
-            do_plot = (subdir in ('api',
-                                  'pylab_examples',
-                                  'units') and
-                       not noplot_regex.search(contents))
-
-            if do_plot:
-                fh.write("\n\n.. plot:: %s\n\n::\n\n" % fullpath[3:])
-            else:
-                linkname = os.path.join('..', '..', '_static', 'examples',fname)
-                fh.write("[`source code <%s>`_]\n\n::\n\n" % linkname)
+            pngname=base+".png"
+            png=os.path.join(static_dir,pngname)
+            print os.getcwd(),png,os.path.exists(png)
+            linkname = os.path.join('..', '..', 'static', 'examples')
+            if os.path.exists(png):
+                print "adding link",os.path.join(linkname,pngname)
+                fh.write('.. image:: %s \n\n'%os.path.join(linkname,pngname))
+            linkname = os.path.join('..', '..', '_static', 'examples')
+            fh.write("[`source code <%s>`_]\n\n::\n\n" % os.path.join(linkname,fname))
 
             # indent the contents
             contents = '\n'.join(['    %s'%row.rstrip() for row in contents.split('\n')])

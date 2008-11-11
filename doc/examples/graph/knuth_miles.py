@@ -26,7 +26,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-import networkx as NX
+import networkx as nx
 
 
 def miles_graph():
@@ -37,13 +37,13 @@ def miles_graph():
     try:
         try:
             import gzip
-            fh = gzip.open('miles_dat.txt.gz','r')
+            fh = gzip.open('knuth_miles.txt.gz','r')
         except:
-            fh=open("miles_dat.txt","r")
+            fh=open("knuth_miles.txt","r")
     except IOError:
-        raise "File miles_dat.txt not found."
+        raise "File knuth_miles.txt not found."
 
-    G=NX.Graph()
+    G=nx.Graph()
     G.position={}
     G.population={}
 
@@ -73,7 +73,7 @@ def miles_graph():
     return G            
 
 if __name__ == '__main__':
-    import networkx as NX
+    import networkx as nx
     import re
     import sys
 
@@ -81,11 +81,11 @@ if __name__ == '__main__':
 
     print "Loaded miles_dat.txt containing 128 cities."
     print "digraph has %d nodes with %d edges"\
-          %(NX.number_of_nodes(G),NX.number_of_edges(G))
+          %(nx.number_of_nodes(G),nx.number_of_edges(G))
 
 
     # make new graph of cites, edge if less then 300 miles between them
-    H=NX.Graph()
+    H=nx.Graph()
     for v in G:
         H.add_node(v)
     for (u,v,d) in G.edges(data=True):
@@ -95,18 +95,18 @@ if __name__ == '__main__':
     # draw with matplotlib/pylab            
 
     try:
-        import pylab as P
+        import matplotlib.pyplot as plt
         # with nodes sized py population
 #        draw(H,G.position,
 #             node_size=[G.population[v] for v in H],
 #             with_labels=False)
         # with nodes colored by degree sized by population
-        node_color=P.array([float(H.degree(v)) for v in H])
-        NX.draw(H,G.position,
+        node_color=[float(H.degree(v)) for v in H]
+        nx.draw(H,G.position,
              node_size=[G.population[v] for v in H],
              node_color=node_color,
              with_labels=False)
-        P.savefig("miles.png")
+        plt.savefig("knuth_miles.png")
     except:
         pass
 

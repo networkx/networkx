@@ -114,16 +114,17 @@ html_sidebars = {'index': 'indexsidebar.html'}
 
 # Additional templates that should be rendered to pages, maps page names to
 # templates.
-html_additional_pages = {'index': 'index.html'}
+html_additional_pages = {'index': 'index.html','gallery':'gallery.html'}
 
 # If true, the reST sources are included in the HTML build as _sources/<name>.
-html_copy_source = True
+html_copy_source = False
 
 html_use_opensearch = 'http://networkx.lanl.gov'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NetworkX'
 
+pngmath_use_preview = True
 
 # Options for LaTeX output
 # ------------------------

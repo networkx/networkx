@@ -183,8 +183,8 @@ if __name__ == '__main__':
         P.xticks([])
         P.yticks([])
 
-        P.savefig("chess_masters_graph.png",dpi=75)
-        print "Wrote chess_masters_graph.png"
+        P.savefig("chess_masters.png",dpi=75)
+        print "Wrote chess_masters.png"
         P.show() # display
     except:
         print "Unable to draw: problem with graphviz or pylab"

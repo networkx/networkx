@@ -40,5 +40,5 @@ nx.draw_networkx_labels(G,pos,font_size=20,font_family='sans-serif')
 plt.xticks([])
 plt.yticks([]) 
 
-plt.savefig("weighted.png") # save as png
+plt.savefig("weighted_graph.png") # save as png
 plt.show() # display

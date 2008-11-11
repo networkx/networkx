@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 """
-Mindard's data from Napoleon's 1812-1813  Russian Campaign.
+Minard's data from Napoleon's 1812-1813  Russian Campaign.
 http://www.math.yorku.ca/SCS/Gallery/minard/minard.txt
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = ""
-__credits__ = """"""
-__revision__ = ""
 #    Copyright (C) 2006 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -15,14 +12,9 @@ __revision__ = ""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-try:
-    from pylab import *
-except:
-    print "pylab not found: see https://networkx.lanl.gov/Drawing.html for info"
-    raise 
-    
+import matplotlib.pyplot as plt
 import string
-from networkx import *
+import networkx as nx
 
 
 def minard_graph():
@@ -109,7 +101,7 @@ def minard_graph():
     g=[]        
 
     for data in [data1,data2,data3]:
-        G=Graph()
+        G=nx.Graph()
         i=0
         G.pos={} # location
         G.pop={} # size
@@ -132,18 +124,18 @@ if __name__ == "__main__":
 
     (g,city)=minard_graph()
 
-    figure(1,figsize=(11,5))
-    clf()
+    plt.figure(1,figsize=(11,5))
+    plt.clf()
     colors=['b','g','r']
     for G in g:
         c=colors.pop(0)
         node_size=[int(G.pop[n]/300.0) for n in G]
-        draw_networkx_edges(G,G.pos,edge_color=c,width=4,alpha=0.5)
-        draw_networkx_nodes(G,G.pos,node_size=node_size,node_color=c,alpha=0.5)
-        draw_networkx_nodes(G,G.pos,node_size=5,node_color='k')
+        nx.draw_networkx_edges(G,G.pos,edge_color=c,width=4,alpha=0.5)
+        nx.draw_networkx_nodes(G,G.pos,node_size=node_size,node_color=c,alpha=0.5)
+        nx.draw_networkx_nodes(G,G.pos,node_size=5,node_color='k')
 
     for c in city:
         x,y=city[c]
-        text(x,y+0.1,c)
-    savefig("minard.png")
+        plt.text(x,y+0.1,c)
+    plt.savefig("napoleon_russian_campaign.png")
 

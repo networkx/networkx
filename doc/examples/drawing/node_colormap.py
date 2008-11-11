@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 """
-Draw a graph with matplotlib.
+Draw a graph with matplotlib, color by degree.
 You must have matplotlib for this to work.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
 try:
     import matplotlib.pyplot as plt
 except:
-    raise
-    
+    raise 
 import networkx as nx
 
-G=nx.house_graph()
+
+G=nx.cycle_graph(12)
 pos=nx.spring_layout(G)
-nx.draw(G,pos,alpha=0.5,with_labels=False)
-nx.draw(G,pos,nodelist=[0,1,2,3],node_color='b') # blue
-plt.savefig("grid.png") # save as png
+nx.draw(G,pos,node_color=range(12),node_size=800)
+plt.savefig("node_colormap.png") # save as png
 plt.show() # display
