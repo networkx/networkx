@@ -39,10 +39,10 @@ for example in glob.glob("*.py"):
     print example
     png=example.replace('py','png')                             
     matplotlib.pyplot.figure(figsize=(8,8))
-#    stdout=sys.stdout
-#    sys.stdout=open("/dev/null")
+    stdout=sys.stdout
+    sys.stdout=open('/dev/null','w')
     execfile(example)
-#    sys.stdout=stdout
+    sys.stdout=stdout
     matplotlib.pyplot.clf()
 
     im=matplotlib.image.imread(png)
