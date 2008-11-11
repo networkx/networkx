@@ -38,7 +38,7 @@ os.chdir(examples_dir)
 for example in glob.glob("*.py"):
     print example
     png=example.replace('py','png')                             
-    matplotlib.pyplot.figure(figsize=(8,8))
+    matplotlib.pyplot.figure(figsize=(6,6))
     stdout=sys.stdout
     sys.stdout=open('/dev/null','w')
     execfile(example)
@@ -46,7 +46,7 @@ for example in glob.glob("*.py"):
     matplotlib.pyplot.clf()
 
     im=matplotlib.image.imread(png)
-    fig = Figure(figsize=(2.5, 2.5))
+    fig = Figure(figsize=(3.0, 3.0))
     canvas = FigureCanvas(fig)
     ax = fig.add_axes([0,0,1,1], aspect='auto', frameon=False, xticks=[], yticks
 =[])
