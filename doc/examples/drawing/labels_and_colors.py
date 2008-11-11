@@ -5,44 +5,45 @@ Draw a graph with matplotlib, color by degree.
 You must have matplotlib for this to work.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-try:
-    from pylab import *
-except:
-    print "pylab not found: see https://networkx.lanl.gov/Drawing.html for info"
-    raise 
+import matplotlib.pyplot as plt
     
-from networkx import *
+import networkx as nx
 
+G=nx.cubical_graph() 
+pos=nx.spring_layout(G) # positions for all nodes
 
-G=barbell_graph(4,3) # 4x4 grid
-pos=spring_layout(G) # positions for all nodes
 # nodes
-greennodes=[0,1,2,3]
-bluenodes=[7,8,9,10]
-othernodes=[v for v in G if v not in greennodes+bluenodes]
-draw_networkx_nodes(G,pos,nodelist=greennodes,node_color='g',
-                    node_size=500)
-draw_networkx_nodes(G,pos,nodelist=bluenodes,node_color='b',
-                    alpha=0.5,node_size=100)
-draw_networkx_nodes(G,pos,nodelist=othernodes)
+nx.draw_networkx_nodes(G,pos,
+                       nodelist=[0,1,2,3],
+                       node_color='r',
+                       node_size=500)
+nx.draw_networkx_nodes(G,pos,
+                       nodelist=[4,5,6,7],
+                       node_color='b',
+                       node_size=500)
 
 # edges
-draw_networkx_edges(G,pos,width=2.0)
-edgelist=[(3,4),(4,5),(5,6),(6,7)]
-draw_networkx_edges(G,pos,edgelist=edgelist, width=8,alpha=0.5,edge_color='g')
+nx.draw_networkx_edges(G,pos,width=2.0)
+nx.draw_networkx_edges(G,pos,
+                       edgelist=[(0,1),(1,2),(2,3),(3,0)],
+                       width=8,alpha=0.5,edge_color='r')
+nx.draw_networkx_edges(G,pos,
+                       edgelist=[(4,5),(5,6),(6,7),(7,4)],
+                       width=8,alpha=0.5,edge_color='b')
 
-# labels
+
+# some math labels
 labels={}
-labels[1]='one'
-labels[10]='ten'
-draw_networkx_labels(G,pos,labels,font_color='w',font_family='sans-serif')
+labels[0]=r'$a$'
+labels[1]=r'$b$'
+labels[2]=r'$c$'
+labels[3]=r'$d$'
+labels[4]=r'$\alpha$'
+labels[5]=r'$\beta$'
+labels[6]=r'$\gamma$'
+labels[7]=r'$\delta$'
+nx.draw_networkx_labels(G,pos,labels,font_size=16)
 
-# math labels
-labels={}
-labels[4]='$\pi$'
-labels[5]='$\mu$'
-labels[6]='$\epsilon$'
-draw_networkx_labels(G,pos,labels,font_size=16)
-
-savefig("labels_and_colors.png") # save as png
-show() # display
+plt.axis('off')
+plt.savefig("labels_and_colors.png") # save as png
+plt.show() # display
