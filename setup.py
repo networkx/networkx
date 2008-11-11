@@ -53,7 +53,7 @@ data = [(docdirbase, glob("doc/*.rst")),
         (os.path.join(docdirbase, 'examples'),glob("doc/examples/*/*.edges")),
         ]
 
-package_data     = {'': ['*.txt'],} 
+package_data     = {'': ['*.txt']} 
 
 
 if __name__ == "__main__":

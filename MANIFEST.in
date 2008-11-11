@@ -1,19 +1,15 @@
 include MANIFEST.in
 include setup_egg.py
 
-include doc/*.txt
-include doc/make_html.py
-include doc/data/*.png
-include doc/data/*.css
-include doc/examples/*.py
-include doc/examples/*.dat
-include doc/examples/*.edges
-include doc/examples/sample.mbox
+recursive-include doc *.txt *.rst *.html
+recursive-include doc/examples *.py *.dat *.edgelist *.mbox
 
 include networkx/tests/*.txt
-include networkx/tests/drawing/*.txt
-include networkx/tests/generators/*.txt
-include networkx/tests/readwrite/*.txt
+include networkx/tests/*.py
+include networkx/*/tests/*.txt
+include networkx/*/tests/*.py
+include networkx/*/*/tests/*.txt
+include networkx/*/*/tests/*.py
 
 global-exclude *~
 global-exclude *.pyc
