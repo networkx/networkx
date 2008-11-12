@@ -7,10 +7,35 @@
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
+
+import os
+import re
+
+
+def get_svn_revision():
+    #import networkx
+    rev = None
+    path ="."
+    entries_path = '%s/.svn/entries' % path
+    if os.path.exists(entries_path):
+        entries = open(entries_path, 'r').read()
+        # Versions >= 7 of the entries file are flat text.  The first line is
+        # the version number. The next set of digits after 'dir' is the revision.
+        if re.match('(\d+)', entries):
+            rev_match = re.search('\d+\s+dir\s+(\d+)', entries)
+            if rev_match:
+                rev = rev_match.groups()[0]
+    if rev:
+        return 'dev%s' % rev
+    return None
+
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
 
 name = 'networkx'
-version = '0.99-svn'
+version = '0.99'
+revision = get_svn_revision()
+if revision is not None:
+    version+=".%s"%revision
 
 description = "Python package for creating and manipulating graphs and networks"
 

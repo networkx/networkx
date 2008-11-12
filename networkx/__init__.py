@@ -43,6 +43,7 @@ __author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
               ( release.authors['Hagberg'] + release.authors['Schult'] + \
                 release.authors['Swart'] )
 __license__  = release.license
+__revision__ = release.revision
 
 from exception import  NetworkXException, NetworkXError
 
