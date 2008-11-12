@@ -22,5 +22,6 @@ pos={0:(0,0),
 nx.draw_networkx_nodes(G,pos,node_size=2000,nodelist=[4])
 nx.draw_networkx_nodes(G,pos,node_size=3000,nodelist=[0,1,2,3],node_color='b')
 nx.draw_networkx_edges(G,pos,alpha=0.5,width=6)
+plt.axis('off')
 plt.savefig("house_with_colors.png") # save as png
 plt.show() # display

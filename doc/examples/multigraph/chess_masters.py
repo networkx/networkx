@@ -140,15 +140,14 @@ if __name__ == '__main__':
 
         pos=graphviz_layout(H)
 
-
         draw_networkx_edges(H,pos,
                       alpha=0.3,
                       width=edgewidth,
                       edge_color='m'
                       )
         draw_networkx_nodes(H,pos,
-                      node_size=[wins[v]*35 for v in H],
-                      node_color='r',
+                      node_size=[wins[v]*50 for v in H],
+                      node_color='w',
                       alpha=0.4,
                       )
         draw_networkx_edges(H,pos,
@@ -179,10 +178,7 @@ if __name__ == '__main__':
         y = 0.85*dy + ymin
         P.text(x, y,  "node size = # games won")
 
-        # turn off x and y axes labels in pylab
-        P.xticks([])
-        P.yticks([])
-
+        P.axis('off')
         P.savefig("chess_masters.png",dpi=75)
         print "Wrote chess_masters.png"
         P.show() # display

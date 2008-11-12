@@ -36,9 +36,6 @@ nx.draw_networkx_edges(G,pos,edgelist=esmall,
 # labels
 nx.draw_networkx_labels(G,pos,font_size=20,font_family='sans-serif')
 
-# turn off x and y axes labels
-plt.xticks([])
-plt.yticks([]) 
-
+plt.axis('off')
 plt.savefig("weighted_graph.png") # save as png
 plt.show() # display
