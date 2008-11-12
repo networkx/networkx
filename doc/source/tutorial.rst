@@ -98,10 +98,9 @@ Building and drawing a small graph
 We assume you can start an interactive Python session..
 We will assume that you are familiar with Python terminology 
 (see the official Python website http://www.python.org for more
-information.
-If you did not install NX into the Python site directory 
-it might be useful to add the directory where NX is installed to
-your PYTHONPATH.)
+information).
+If you did not install NetworkX into the Python site directory 
+it might be useful to add that directory to your PYTHONPATH.
 
 After starting Python, import the networkx module with (the recommended way)
 
@@ -111,23 +110,23 @@ To save repetition, in all the examples below we assume that
 NX has been imported this way.
 
 You may also use the usual mode for interactive experimentation that might
-clobber some names already in your namespace
+clobber some names already in your name-space
 
 >>> from networkx import *
 
 If importing networkx fails, it means that Python cannot find the installed
 module. Check your installation and your PYTHONPATH.
 
-The following classes are provided:
+The following basic graph types are provided as Python classes:
 
 Graph
-   The basic operations common to graph-like classes.
    This class implements an undirected graph. It ignores
    multiple edges between two nodes.  It does allow self-loop
    edges between a node and itself.
 
 DiGraph
-   Operations common to directed graphs, that is, graphs with directed edges.
+   Directed graphs, that is, graphs with directed edges.
+   Operations common to directed graphs, 
    (A subclass of Graph.)
 
 MultiGraph
@@ -147,13 +146,14 @@ Empty graph-like objects are created with
 >>> G=nx.MultiGraph()
 >>> G=nx.MultiDiGraph()
 
-When called with zero arguments, one obtains the empty graph without
-any nodes or edges.  In NX every graph or network is a Python
+When called with no arguments you get a graph without
+any nodes or edges (empty graph).  In NX every graph or network is a Python
 "object", and in Python the functions associated with an "object" are
 known as methods.
 
-All graph classes allow any hashable object as a node and arbitrary 
-edge data/weights/labels to be associated with an edge.  
+All graph classes allow any hashable object as a node.   Hashable
+objects include strings, tuples, integers, and more.
+Arbitrary edge data/weights/labels can be associated with an edge.  
 
 All graph classes have boolean attributes to describe the nature of the
 graph:  directed, weighted, multigraph.
@@ -162,19 +162,20 @@ that is not enforced.  Some functions will not work on graphs that do
 not have weighted==True (the default), so it can be used to protect yourself
 against using a routine that requires numerical edge data.
 
-This package implements graphs using data structures based on an
-adjacency list implemented as a node-centric dictionary of
+The graph classes data structures are based on an
+adjacency list and implemented as a Python dictionary of
 dictionaries. The outer dictionary is keyed by nodes to values that are
 themselves dictionaries keyed by neighboring node to the
 edge object (default 1) associated with that edge (or a list of edge
-objects for MultiGraph/MultiDiGraph).  This 'dict-of-dicts' structure
-allows fast addition, deletion and lookup of nodes and neighbors in 
+objects for MultiGraph/MultiDiGraph).  This "dict-of-dicts" structure
+allows fast addition, deletion, and lookup of nodes and neighbors in 
 large graphs.  The underlying datastructure is accessed directly 
-by methods (the API) in the class definitions.  
+by methods (the programming interface "API") in the class definitions.  
 All functions, on the other hand, manipulate graph-like objects 
 solely via those API methods and not by acting directly on the datastructure. 
 This design allows for possible replacement of the 'dicts-of-dicts'-based 
-datastructure with an alternative datastructure without excessive effort.
+datastructure with an alternative datastructure that implements the
+same methods.
 
 Glossary
 --------
@@ -185,19 +186,19 @@ G,G1,G2,H,etc
    Graphs
 
 n,n1,n2,u,v,v1,v2:
-   nodes (vertices)
+   Nodes (vertices)
 
 nlist,vlist:
-   a list of nodes (vertices)
+   A list of nodes (vertices)
 
 nbunch, vbunch:
-   a "bunch" of nodes (vertices).
+   A "bunch" of nodes (vertices).
    An nbunch is any iterable container
    of nodes that is not itself a node in the graph. (It can be an
    iterable or an iterator, e.g. a list, set, graph, file, etc..)
 
 e=(n1,n2), (n1,n2,x):
-   an edge (a Python 2-tuple or 3-tuple),
+   An edge (a Python 2-tuple or 3-tuple),
    also written n1-n2 (if undirected) and n1->n2 (if directed).
  
 e=(n1,n2,x): 
@@ -209,21 +210,23 @@ e=(n1,n2,x):
    G.remove_edge(n1,n2,x) to remove one edge associated with object x. 
 
 elist:
-   a list of edges (as 2- or 3-tuples)
+   A list of edges (as 2- or 3-tuples)
 
 ebunch:
-   a bunch of edges (as tuples)
-   an ebunch is any iterable (non-string) container
+   A bunch of edges (as tuples).
+   An ebunch is any iterable (non-string) container
    of edge-tuples. (Similar to nbunch, also see add_edge).
 
 iterator method names:
-   In many cases it is more efficient to loop using an iterator directly rather
-   than creating a list.  NX provides separate methods that return an iterator.  
+   In many cases it is more efficient to iterate through items rather
+   than creating a list of items.  
+   NetworkX provides separate methods that return an iterator.  
    For example, G.degree() and G.edges() return lists while G.degree_iter() 
    and G.edges_iter() return iterators.
 
 
-Warning:
+Some potential pitfalls to be aware of:
+
   - Although any hashable object can be used as a node, one should not
     change the object after it has been added as a
     node (since the hash can depend on the object contents).
@@ -255,7 +258,7 @@ with it. (You can use dir(G) to inspect the methods associated with object G.)
     - G.get_edge(n1,n2)  # the object associated with this edge
     - G.neighbors(n)     # list of neighbors of n
     - G.neighbors_iter(n) # iterator over neighbors
-    - G[n]               # dict of neighbors of n keyed to edge object
+    - G[n]               # dictionary of neighbors of n keyed to edge object
     - G.adjacency_list  #list of 
     - G.number_of_edges(), G.size()
     - G.degree(), G.degree(n), G.degree(nbunch)
@@ -268,7 +271,7 @@ with it. (You can use dir(G) to inspect the methods associated with object G.)
     The following return a new graph::
 
     - G.subgraph(nbunch,copy=True)
-    - G.copy()
+    - G.copy() 
     - G.to_directed()
     - G.to_undirected()
     
@@ -294,17 +297,18 @@ e.g. petersen_graph(), G.add_node(10).
 
 G can be inspected interactively by typing "G" (without the quotes).
 This will reply something like <networkx.base.Graph object at 0x40179a0c>.
-(On linux machines with CPython the hexadecimal address is the memory
+(On Linux machines with CPython the hexadecimal address is the memory
 location of the object.) 
 
 Examples
 ========
 
-Create an empty graph with zero nodes and zero edges.
+Create an empty graph with no nodes and no edges.
 
 >>> G=nx.Graph()
 
 G can be grown in several ways.
+
 By adding one node at a time,
 
 >>> G.add_node(1)
@@ -329,9 +333,14 @@ image, an XML object, another Graph, a customized node object, etc.
 
 G can also be grown by adding one edge at a time,
 
->>> G.add_edge( (1,2) )
+>>> G.add_edge(1,2)
 
-by adding a list of edges, 
+or
+
+>>> e=(2,3)
+>>> G.add_edge(*e) # unpack edge tuple
+
+or by adding a list of edges, 
 
 >>> G.add_edges_from([(1,2),(1,3)])
 
@@ -350,7 +359,7 @@ after removing all nodes and edges,
 >>> G.clear()
 >>> G.add_edges_from([(1,2),(1,3)])
 >>> G.add_node(1)
->>> G.add_edge((1,2))
+>>> G.add_edge(1,2)
 >>> G.add_node("spam")       # adds node "spam"
 >>> G.add_nodes_from("spam") # adds 4 nodes: 's', 'p', 'a', 'm'
 
@@ -387,12 +396,12 @@ You can specify graph data upon instantiation if an appropriate structure exists
 Edge data/weights/labels/objects can also be associated with an edge:
 
 >>> H=nx.Graph()
->>> H.add_edge(1,2,"red")
->>> H.add_edges_from([(1,3,"blue"), (2,0,"red"), (0,3)])
+>>> H.add_edge(1,2,'red')
+>>> H.add_edges_from([(1,3,'blue'), (2,0,'red'), (0,3)])
 >>> H.edges()
-[(0, 2), (1, 2), (1, 3)]
+[(0, 2), (0, 3), (1, 2), (1, 3)]
 >>> H.edges(data=True)
-[(0, 2, 1), (1, 2, "red"), (1, 3, "blue")]
+[(0, 2, 'red'), (0, 3, 1), (1, 2, 'red'), (1, 3, 'blue')]
 
 Arbitrary objects can be associated with an edge.  The 3-tuples (n1,n2,x)
 represent an edge between nodes n1 and n2 that is decorated with
@@ -401,12 +410,11 @@ protein objects from the RCSB Protein Data Bank, and x can refer to an XML
 record of a publication detailing experimental observations of their
 interaction. 
 
-You can see that NX has not implemented either nodes or edges as 
-networkx classes.  This leaves you free to use your existing node and edge
+You can see that nodes and edges are not
+NetworkX classes.  This leaves you free to use your existing node and edge
 objects, or more typically, use numerical values or strings where appropriate.
 A node can be any hashable object (except None), and an edge can be associated 
 with any object x using G.add_edge(n1,n2,x).
-
 
 Drawing a small graph
 ---------------------
@@ -414,7 +422,7 @@ Drawing a small graph
 NetworkX is not primarily a graph drawing package but 
 basic drawing with Matplotlib as well as an interface to use the
 open source Graphviz software package are included.  
-These reside in networkx.drawing,
+These are part of the networkx.drawing package
 and will be imported if possible. See the drawing section for details.
 
 First import Matplotlib's plot interface (pylab works too)
@@ -441,13 +449,13 @@ You may find it useful to interactively test code using "ipython -pylab",
 which combines the power of ipython and matplotlib and provides a convenient
 interactive mode.
 
-Or to save drawings to a file, use
+Or to save drawings to a file, use, for example
 
 >>> nx.draw(G)
 >>> plt.savefig("path.png")
 
-to write to the file "path.png" in the local directory. If graphviz
-and pygraphviz or pydot are available on your system, you can also use
+to write to the file "path.png" in the local directory. If Graphviz
+and PyGraphviz, or pydot, are available on your system, you can also use
 
 >>> nx.draw_graphviz(G)
 >>> nx.write_dot(G,'file.dot')
@@ -455,8 +463,8 @@ and pygraphviz or pydot are available on your system, you can also use
 Functions for analyzing graph properties
 ----------------------------------------
 
-The structure of G can be analyzed using various graph
-theoretic functions such as:
+The structure of G can be analyzed using various graph-theoretic 
+functions such as:
  
 >>> nx.connected_components(G)
 [[1, 2, 3], ['spam']]
@@ -498,7 +506,7 @@ Graph generators and graph operations
 -------------------------------------
 
 In addition to constructing graphs node-by-node or edge-by-edge, they
-can also be generated by:
+can also be generated by
 
 1. Applying classic graph operations, such as::
 
@@ -538,6 +546,10 @@ can also be generated by:
 Graph IO
 ========
 
+NetworkX can read and write graphs in many formats.  See
+http://networkx.lanl.gov/reference/readwrite.html for
+a complete list of currently supported formats.
+
 Reading a graph from a file
 ---------------------------
 
@@ -567,10 +579,10 @@ Graphs with multiple edges
 ==========================
 
 See the MultiGraph and MultiDiGraph classes. For example, to 
-build Euler's famous graph of the bridges of Konigsberg over 
-the Pregel river, one can use:
-
->>> K=nx.MultiGraph(name="Konigsberg")
+build Euler's famous graph of the bridges of Königsberg over 
+the Pregel river, one can use 
+ 
+>>> K=nx.MultiGraph(name="Königsberg")
 >>> K.add_edges_from([("A","B","Honey Bridge"),
 ...                   ("A","B","Blacksmith's Bridge"),
 ...                   ("A","C","Green Bridge"),
@@ -580,8 +592,6 @@ the Pregel river, one can use:
 ...                   ("B","D","Wooden Bridge")])
 >>> K.degree("A")
 5
-
-
 
 Directed Graphs
 ===============
@@ -612,7 +622,7 @@ See networkx.DiGraph for more documentation.
 Interfacing with other tools
 ============================
 
-NetworkX provides interfaces to matplotlib and graphviz for graph
+NetworkX provides interfaces to Matplotlib and Graphviz for graph
 layout (node and edge positioning) and drawing. We also use matplotlib for 
 graph spectra and in some drawing operations. Without either, one can
 still use the basic graph-related functions.
