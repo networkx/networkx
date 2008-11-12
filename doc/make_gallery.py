@@ -35,7 +35,7 @@ if not os.path.exists(static_dir):
     os.makedirs(static_dir)
 
 os.chdir(examples_dir)
-for example in glob.glob("*.py"):
+for example in sorted(glob.glob("*.py")):
     print example
     png=example.replace('py','png')                             
     matplotlib.pyplot.figure(figsize=(6,6))
