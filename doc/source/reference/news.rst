@@ -3,6 +3,61 @@
 Release Log
 ===========
 
+Networkx-0.99
+-------------
+
+Release date: 
+
+See: https://networkx.lanl.gov/timeline
+
+New features
+~~~~~~~~~~~~
+
+Bug fixes
+~~~~~~~~~
+
+Examples
+~~~~~~~~
+
+
+NetworkX-0.37
+---------------
+
+Release date: 17 August 2008
+
+See: https://networkx.lanl.gov/timeline
+
+NetworkX now requires Python 2.4 or later for full functionality.
+
+New features
+~~~~~~~~~~~~
+ - Edge coloring and node line widths with Matplotlib drawings
+ - Update pydot functions to work with pydot-1.0.2
+ - Maximum-weight matching algorithm
+ - Ubigraph interface for 3D OpenGL layout and drawing
+ - Pajek graph file format reader and writer
+ - p2g graph file format reader and writer
+ - Secondary sort in topological sort
+
+Bug fixes
+~~~~~~~~~
+ - Better edge data handling with GML writer 
+ - Edge betweenness fix for XGraph with default data of None
+ - Handle Matplotlib version strings (allow "pre")
+ - Interface to PyGraphviz (to_agraph()) now handles parallel edges
+ - Fix bug in copy from XGraph to XGraph with multiedges
+ - Use SciPy sparse lil matrix format instead of coo format 
+ - Clear up ambiguous cases for Barabasi-Albert model
+ - Better care of color maps with Matplotlib when drawing colored nodes
+   and edges 
+ - Fix error handling in layout.py
+
+Examples
+~~~~~~~~
+ - Ubigraph examples showing 3D drawing at 
+   https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/ubigraph
+
+
 NetworkX-0.36
 ---------------
 
