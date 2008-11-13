@@ -25,6 +25,7 @@ import matplotlib.image
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
+examples_source_dir = '../examples/drawing'
 examples_dir = 'examples/drawing'
 template_dir = 'source/templates'
 static_dir = 'source/static/examples'
@@ -34,7 +35,7 @@ rows = []
 if not os.path.exists(static_dir):
     os.makedirs(static_dir)
 
-os.chdir(examples_dir)
+os.chdir(examples_source_dir)
 for example in sorted(glob.glob("*.py")):
     print example
     png=example.replace('py','png')                             

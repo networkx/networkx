@@ -43,7 +43,7 @@ build/generate-stamp:
 	./sphinxext/numpyext/autosummary_generate.py source/reference/*.rst \
 		-p dump.xml -o source/reference/generated 
 	./make_gallery.py 
-	./make_examples_rst.py examples source
+	./make_examples_rst.py ../examples source
 	touch build/generate-stamp
 
 ext-svn:

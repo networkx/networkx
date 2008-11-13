@@ -2,7 +2,7 @@ include MANIFEST.in
 include setup_egg.py
 
 recursive-include doc *.txt *.rst *.html
-recursive-include doc/examples *.py *.dat *.edgelist *.mbox
+recursive-include examples *.py *.dat *.edgelist *.mbox
 
 include networkx/tests/*.txt
 include networkx/tests/*.py

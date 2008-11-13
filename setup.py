@@ -48,9 +48,9 @@ packages=["networkx",
 
 docdirbase  = 'share/doc/networkx-%s' % version
 data = [(docdirbase, glob("doc/*.rst")),
-        (os.path.join(docdirbase, 'examples'),glob("doc/examples/*/*.py")),
-        (os.path.join(docdirbase, 'examples'),glob("doc/examples/*/*.dat")),
-        (os.path.join(docdirbase, 'examples'),glob("doc/examples/*/*.edges")),
+        (os.path.join(docdirbase, 'examples'),glob("examples/*/*.py")),
+        (os.path.join(docdirbase, 'examples'),glob("examples/*/*.dat")),
+        (os.path.join(docdirbase, 'examples'),glob("examples/*/*.edges")),
         ]
 
 package_data     = {'': ['*.txt']} 
