@@ -34,7 +34,7 @@ dist: html
 	(cd build/html; cp -r . ../../build/dist)
 	(cd build/html && zip -9r ../dist/networkx-manual.zip .)
 	cp build/latex/*.pdf build/dist
-	(cd build && tar czf dist.tar.gz dist)
+	(cd build/dist && tar czf ../dist.tar.gz .)
 
 generate: build/generate-stamp
 
