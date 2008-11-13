@@ -9,8 +9,8 @@ Overview
 .. currentmodule:: networkx
 .. autoclass:: Graph
 
-Methods
--------
+Adding and Removing Nodes and Edges
+-----------------------------------
 
 .. autosummary::
    :toctree: generated/
@@ -19,52 +19,67 @@ Methods
    Graph.add_nodes_from
    Graph.remove_node
    Graph.remove_nodes_from
-   Graph.nodes_iter
-   Graph.nodes
-   Graph.number_of_nodes
-   Graph.order
-   Graph.has_node
    Graph.add_edge
    Graph.add_edges_from
    Graph.remove_edge
    Graph.remove_edges_from
-   Graph.has_neighbor
-   Graph.has_edge
-   Graph.neighbors
-   Graph.neighbors_iter
-   Graph.edges
-   Graph.edges_iter
-   Graph.get_edge
-   Graph.adjacency_list
-   Graph.adjacency_iter
-   Graph.degree
-   Graph.degree_iter
-   Graph.clear
-   Graph.copy
-   Graph.to_directed
-   Graph.to_undirected
-   Graph.subgraph
-   Graph.nodes_with_selfloops
-   Graph.selfloop_edges
-   Graph.number_of_selfloops
-   Graph.size
-   Graph.number_of_edges
    Graph.add_star
    Graph.add_path
    Graph.add_cycle
-   Graph.nbunch_iter
+   Graph.clear
 
 
-Special Methods
----------------
 
+Iterating over nodes and edges
+------------------------------
 .. autosummary::
    :toctree: generated/
 
-
-   Graph.__init__
-   Graph.__str__
+   Graph.nodes
+   Graph.nodes_iter
    Graph.__iter__
-   Graph.__contains__
-   Graph.__len__
+   Graph.edges
+   Graph.edges_iter
+   Graph.get_edge
+   Graph.neighbors
+   Graph.neighbors_iter
    Graph.__getitem__
+   Graph.adjacency_list
+   Graph.adjacency_iter
+   Graph.nbunch_iter
+
+
+
+Information about graph structure
+---------------------------------
+.. autosummary::
+   :toctree: generated/
+
+   Graph.has_node
+   Graph.__contains__
+   Graph.has_edge
+   Graph.has_neighbor
+   Graph.nodes_with_selfloops
+   Graph.selfloop_edges
+   Graph.order
+   Graph.number_of_nodes
+   Graph.__len__
+   Graph.size
+   Graph.number_of_edges
+   Graph.number_of_selfloops
+   Graph.degree
+   Graph.degree_iter
+
+
+Making copies and subgraphs
+---------------------------
+.. autosummary::
+   :toctree: generated/
+
+   Graph.copy
+   Graph.to_directed
+   Graph.subgraph
+
+
+
+

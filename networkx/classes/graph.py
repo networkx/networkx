@@ -116,7 +116,7 @@ class Graph(object):
         return self.name
 
     def __iter__(self):
-        """Iterate over the nodes.
+        """Iterate over the nodes. Use "for n in G".
 
         Examples
         --------
@@ -128,7 +128,7 @@ class Graph(object):
         return self.adj.iterkeys()
 
     def __contains__(self,n):
-        """Return True if n is a node, False otherwise.  
+        """Return True if n is a node, False otherwise. Use "n in G".
 
         Examples
         --------
@@ -142,7 +142,7 @@ class Graph(object):
             return False
         
     def __len__(self):
-        """Return the number of nodes.
+        """Return the number of nodes. Use "len(G)".
 
         Examples
         --------
@@ -154,7 +154,7 @@ class Graph(object):
         return len(self.adj)
 
     def __getitem__(self, n):
-        """Return the neighbors of node n.  
+        """Return the neighbors of node n.  Use "G[n]".
 
         Examples
         --------

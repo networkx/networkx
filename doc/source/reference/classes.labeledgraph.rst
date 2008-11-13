@@ -9,8 +9,9 @@ Overview
 .. currentmodule:: networkx
 .. autoclass:: LabeledGraph
 
-Methods
--------
+
+Adding and Removing Nodes and Edges
+-----------------------------------
 
 .. autosummary::
    :toctree: generated/
@@ -19,52 +20,67 @@ Methods
    LabeledGraph.add_nodes_from
    LabeledGraph.remove_node
    LabeledGraph.remove_nodes_from
-   LabeledGraph.nodes_iter
-   LabeledGraph.nodes
-   LabeledGraph.number_of_nodes
-   LabeledGraph.order
-   LabeledGraph.has_node
    LabeledGraph.add_edge
    LabeledGraph.add_edges_from
    LabeledGraph.remove_edge
    LabeledGraph.remove_edges_from
-   LabeledGraph.has_neighbor
-   LabeledGraph.has_edge
-   LabeledGraph.neighbors
-   LabeledGraph.neighbors_iter
-   LabeledGraph.edges
-   LabeledGraph.edges_iter
-   LabeledGraph.get_edge
-   LabeledGraph.adjacency_list
-   LabeledGraph.adjacency_iter
-   LabeledGraph.degree
-   LabeledGraph.degree_iter
-   LabeledGraph.clear
-   LabeledGraph.copy
-   LabeledGraph.to_directed
-   LabeledGraph.to_undirected
-   LabeledGraph.subgraph
-   LabeledGraph.nodes_with_selfloops
-   LabeledGraph.selfloop_edges
-   LabeledGraph.number_of_selfloops
-   LabeledGraph.size
-   LabeledGraph.number_of_edges
    LabeledGraph.add_star
    LabeledGraph.add_path
    LabeledGraph.add_cycle
-   LabeledGraph.nbunch_iter
+   LabeledGraph.clear
 
 
-Special Methods
----------------
 
+Iterating over nodes and edges
+------------------------------
 .. autosummary::
    :toctree: generated/
 
-
-   LabeledGraph.__init__
-   LabeledGraph.__str__
+   LabeledGraph.nodes
+   LabeledGraph.nodes_iter
    LabeledGraph.__iter__
-   LabeledGraph.__contains__
-   LabeledGraph.__len__
+   LabeledGraph.edges
+   LabeledGraph.edges_iter
+   LabeledGraph.get_edge
+   LabeledGraph.neighbors
+   LabeledGraph.neighbors_iter
    LabeledGraph.__getitem__
+   LabeledGraph.adjacency_list
+   LabeledGraph.adjacency_iter
+   LabeledGraph.nbunch_iter
+
+
+
+Information about graph structure
+---------------------------------
+.. autosummary::
+   :toctree: generated/
+
+   LabeledGraph.has_node
+   LabeledGraph.__contains__
+   LabeledGraph.has_edge
+   LabeledGraph.has_neighbor
+   LabeledGraph.nodes_with_selfloops
+   LabeledGraph.selfloop_edges
+   LabeledGraph.order
+   LabeledGraph.number_of_nodes
+   LabeledGraph.__len__
+   LabeledGraph.size
+   LabeledGraph.number_of_edges
+   LabeledGraph.number_of_selfloops
+   LabeledGraph.degree
+   LabeledGraph.degree_iter
+
+
+Making copies and subgraphs
+---------------------------
+.. autosummary::
+   :toctree: generated/
+
+   LabeledGraph.copy
+   LabeledGraph.to_directed
+   LabeledGraph.subgraph
+
+
+
+
