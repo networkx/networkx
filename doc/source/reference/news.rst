@@ -8,7 +8,7 @@ Networkx-0.99
 
 Release date: 
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -25,7 +25,7 @@ NetworkX-0.37
 
 Release date: 17 August 2008
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 NetworkX now requires Python 2.4 or later for full functionality.
 
@@ -55,7 +55,7 @@ Bug fixes
 Examples
 ~~~~~~~~
  - Ubigraph examples showing 3D drawing at 
-   https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/ubigraph
+   https://networkx.lanl.gov/trac/browser/networkx/trunk/doc/examples/ubigraph
 
 
 NetworkX-0.36
@@ -63,7 +63,7 @@ NetworkX-0.36
 
 Release date: 13 January 2008
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 
 New features
@@ -86,7 +86,7 @@ NetworkX-0.35.1
 
 Release date: 27 July 2007
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 Small update to fix import readwrite problem and maintain Python2.3
 compatibility.
@@ -97,7 +97,7 @@ NetworkX-0.35
 
 Release date: 22 July 2007
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -122,7 +122,7 @@ NetworkX-0.34
 
 Release date: 12 April 2007
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -158,7 +158,7 @@ NetworkX-0.33
 
 Release date: 27 November 2006
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -183,7 +183,6 @@ Bug fixes
 Examples
 ~~~~~~~~
   - Draw edges with colormap
-    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/draw_edge_colormap.py
 
 
 
@@ -192,7 +191,7 @@ NetworkX-0.32
 
 Release date: 29 September 2006
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -215,19 +214,17 @@ Bug fixes
 Examples
 ~~~~~~~~
   - Expected degree sequence
-    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/expected_degree_sequence.py
   - New pygraphviz interface
-    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/.py
-    https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/pygraphviz_simple.py
-    https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/pygraphviz_miles.py
-    https://networkx.lanl.gov/browser/networkx/trunk/doc/examples/pygraphviz_attributes.py
+    https://networkx.lanl.gov/trac/browser/networkx/trunk/doc/examples/pygraphviz_simple.py
+    https://networkx.lanl.gov/trac/browser/networkx/trunk/doc/examples/pygraphviz_miles.py
+    https://networkx.lanl.gov/trac/browser/networkx/trunk/doc/examples/pygraphviz_attributes.py
 
 NetworkX-0.31
 -------------
 
 Release date: 20 July 2006
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -253,7 +250,7 @@ NetworkX-0.30
 
 Release date: 23 June 2006
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -283,7 +280,6 @@ Bug fixes
 Examples
 ~~~~~~~~
    - unicode node labels 
-     https://networkx.lanl.gov/file/networkx/trunk/doc/examples/unicode.py
 
 
 NetworkX-0.29
@@ -291,7 +287,7 @@ NetworkX-0.29
 
 Release date: 28 April 2006
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -322,7 +318,7 @@ NetworkX-0.28
 
 Release date: 13 March 2006
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -336,10 +332,8 @@ New features
 Examples
 ~~~~~~~~
   - Formation of giant component in binomial_graph:
-    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/binomial_giant.py
   - Chess masters matches:
-    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/chess_masters.py
-  - Gallery https://networkx.lanl.gov/wiki/gallery
+  - Gallery https://networkx.lanl.gov/gallery.html
   
 Bug fixes
 ~~~~~~~~~
@@ -365,7 +359,7 @@ NetworkX-0.27
 
 Release date: 5 February 2006
 
-See: https://networkx.lanl.gov/timeline
+See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
@@ -385,7 +379,6 @@ New features
 Examples
 ~~~~~~~~
   - Minard's data for Napoleon's Russian campaign
-    https://networkx.lanl.gov/file/networkx/trunk/doc/examples/minard.py
 
 Bug fixes
 ~~~~~~~~~
@@ -413,7 +406,6 @@ Examples
 ~~~~~~~~
   - Several new examples showing how draw to graphs with various
     properties of nodes, edges, and labels
-    https://networkx.lanl.gov/file/networkx/trunk/examples/
 
 Bug fixes
 ~~~~~~~~~
@@ -442,7 +434,6 @@ Examples
 ~~~~~~~~
   - Email example shows how to use XDiGraph with Python objects as
     edge data
-    https://networkx.lanl.gov/file/networkx/trunk/examples/unixemail.py
 
 
 Documentation
