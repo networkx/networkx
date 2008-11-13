@@ -1,6 +1,6 @@
 NetworkX
 
-NetworkX (NX) is a Python package for the creation, manipulation, and
+NetworkX is a Python package for the creation, manipulation, and
 study of the structure, dynamics, and functions of complex networks.  
 
 Copyright (C) 2004-2008 by 
@@ -10,4 +10,4 @@ Pieter Swart <swart@lanl.gov>
 Distributed under the terms of the GNU Lesser General Public License
 http://www.gnu.org/copyleft/lesser.html
 
-See the doc/Readme.txt for more information.
+See the http://networkx.lanl.gov/ for more information.
