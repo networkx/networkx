@@ -234,7 +234,7 @@ class TestGraph:
         G=self.K3.copy()
         G.add_edge(0,0)
         assert_equal(G.nodes_with_selfloops(),[0])
-        assert_equal(G.selfloop_edges(),[(0,0,1)])
+        assert_equal(G.selfloop_edges(data=True),[(0,0,1)])
         assert_equal(G.number_of_selfloops(),1)
         G.remove_node(0)
         assert_equal(G.order(),2)
