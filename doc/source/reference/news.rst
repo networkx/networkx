@@ -54,8 +54,7 @@ Bug fixes
 
 Examples
 ~~~~~~~~
- - Ubigraph examples showing 3D drawing at 
-   https://networkx.lanl.gov/trac/browser/networkx/trunk/doc/examples/ubigraph
+ - Ubigraph examples showing 3D drawing 
 
 
 NetworkX-0.36
@@ -200,7 +199,7 @@ New features
   - Generators and functions for bipartite graphs
   - Experimental classes for trees and forests
   - Support for new pygraphviz update (in nx_agraph.py) , see
-    https://networkx.lanl.gov/pygraphviz/ for pygraphviz details 
+    http://networkx.lanl.gov/pygraphviz/ for pygraphviz details 
 
 Bug fixes
 ~~~~~~~~~
@@ -327,7 +326,7 @@ New features
   - predecessor(G,n) function that returns dictionary of
     nodes with predecessors from breadth-first search of G 
     starting at node n.
-    https://networkx.lanl.gov/ticket/26
+    https://networkx.lanl.gov/trac/ticket/26
 
 Examples
 ~~~~~~~~
@@ -346,7 +345,7 @@ Bug fixes
     Erdős, and Rényi in UTF-8 encoding
   - Increased speed of connected_components and related functions
     by using faster BFS algorithm in networkx.paths
-    https://networkx.lanl.gov/ticket/27     
+    https://networkx.lanl.gov/trac/ticket/27     
   - XGraph and XDiGraph with multiedges=True produced error on delete_edge
   - Cleaned up docstring errors
   - Normalize names of some graphs to produce strings that represent
@@ -372,7 +371,7 @@ New features
     neighbors() and edges().  For digraphs edges=out_edges.
     Neighbors now returns a list of neighboring nodes with
     possible duplicates for graphs with parallel edges
-    See https://networkx.lanl.gov/ticket/24
+    See https://networkx.lanl.gov/trac/ticket/24
   - Addition of out_edges, in_edges and corresponding out_neighbors
     and in_neighbors for digraphs.  For digraphs edges=out_edges.
    
@@ -472,9 +471,9 @@ Release date: 14 July 2005
 
 The NetworkX web locations have changed:
 
-https://networkx.lanl.gov/     - main documentation site
-https://networkx.lanl.gov/svn  - subversion source code repository
-https://networkx.lanl.gov/wiki - bug tracking and info
+http://networkx.lanl.gov/     - main documentation site
+http://networkx.lanl.gov/svn/  - subversion source code repository
+https://networkx.lanl.gov/trac/ - bug tracking and info
 
 
 Important Change
