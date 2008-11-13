@@ -49,44 +49,10 @@ Please see the license for more information.
 Obtaining and Installing NetworkX
 ==================================
 
-You need Python. We recommend the latest stable release available
-from http://www.python.org/.  NetworkX requires 
-Python Release 2.4 or later. 
+.. toctree::
+   :maxdepth: 1
 
-The latest version of NetworkX can be found at
-http://networkx.lanl.gov/
- 
-NetworkX will work on multiple platforms.
-
-On Linux platforms, download the current tarball numbered, say,
-networkx-x.xx.tar.gz, to an appropriate directory, say /home/username/networks
-
-::
-
-   gzip -d -c networkx-x.xx.tar.gz|tar xvf-
-   cd networkxx-x.xx
-   # run the following with your preferred Python version
-   python setup.py build
-   # change to a user id that is allowed to do installation
-   python setup.py install
-
-This will install NetworkX in your Python site-packages directory.
-
-If you don't have permission to install software on your
-system, you can install into another directory using
-the --prefix or --home flags to setup.py.
-
-For example
-
-::  
-
-    python setup.py install --prefix=/home/username/python
-    or
-    python setup.py install --home=~
-
-If you didn't install in the standard Python site-packages directory
-you will need to set your PYTHONPATH variable to the alternate location.
-See http://docs.python.org/inst/search-path.html for further details.
+   ../install
 
 
 A Quick Tour
