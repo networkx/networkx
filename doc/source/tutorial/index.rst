@@ -8,7 +8,6 @@ Tutorial
    :maxdepth: 2
 
    introduction
-   ../install
    tour
    examples
    othertopics
