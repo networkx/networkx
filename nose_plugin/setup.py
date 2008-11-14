@@ -11,7 +11,7 @@ except ImportError:
 from setuptools import setup
 
 setup(
-    name='NetworkX nose plugin',
+    name='networkx nose plugin',
     version='0.1',
     author='Aric Hagberg',
     author_email = 'hagberg@lanl.gov',
