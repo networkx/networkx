@@ -1,9 +1,11 @@
 include MANIFEST.in
 include setup_egg.py
+include INSTALL.txt
 
-recursive-include doc *.txt *.rst *.html
-recursive-include examples *.py *.dat *.edgelist *.mbox
+recursive-include examples *.py *.edgelist *.mbox *.gz *.bz2
+recursive-include doc *.py *.rst Makefile *.html *.png *.txt
 
+include scripts/*
 include networkx/tests/*.txt
 include networkx/tests/*.py
 include networkx/*/tests/*.txt
@@ -14,3 +16,9 @@ include networkx/*/*/tests/*.py
 global-exclude *~
 global-exclude *.pyc
 global-exclude .svn
+
+prune doc/build
+prune doc/source/reference/generated
+prune doc/source/examples
+prune doc/source/static/examples
+prune doc/source/templates/gallery.html

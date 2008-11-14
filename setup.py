@@ -4,16 +4,15 @@
 Setup script for networkx
 
 """
-
 from glob import glob
 import os
 import sys
 if os.path.exists('MANIFEST'): os.remove('MANIFEST')
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+#try:
+#    from setuptools import setup
+#except ImportError:
+from distutils.core import setup
 
 if sys.argv[-1] == 'setup.py':
     print "To install, run 'python setup.py install'"
@@ -35,26 +34,33 @@ packages=["networkx",
           "networkx.drawing",
           "networkx.linalg",
           "networkx.readwrite",
-          "networkx.tests",
-          "networkx.algorithms.tests",
-          "networkx.algorithms.traversal.tests",
-          "networkx.algorithms.isomorphism.tests",
-          "networkx.classes.tests",
-          "networkx.generators.tests",
-          "networkx.drawing.tests",
-          "networkx.linalg.tests",
-          "networkx.readwrite.tests",
           ]
 
 docdirbase  = 'share/doc/networkx-%s' % version
-data = [(docdirbase, glob("doc/*.rst")),
-        (os.path.join(docdirbase, 'examples'),glob("examples/*/*.py")),
-        (os.path.join(docdirbase, 'examples'),glob("examples/*/*.dat")),
-        (os.path.join(docdirbase, 'examples'),glob("examples/*/*.edges")),
-        ]
+# add basic documentation 
+data = [(docdirbase, glob("*.txt"))]
+# add examples
+for d in ['advanced',
+          'algorithms',
+          'basic',
+          'drawing',
+          'graph',
+          'multigraph',
+          'pygraphviz',
+          'readwrite',
+          'ubigraph']:
+    dd=os.path.join(docdirbase,'examples',d)
+    pp=os.path.join('examples',d)
+    data.append((dd,glob(os.path.join(pp,"*.py"))))
+    data.append((dd,glob(os.path.join(pp,"*.bz2"))))
+    data.append((dd,glob(os.path.join(pp,"*.gz"))))
+    data.append((dd,glob(os.path.join(pp,"*.mbox"))))
+    data.append((dd,glob(os.path.join(pp,"*.edgelist"))))
 
-package_data     = {'': ['*.txt']} 
-
+# add the tests
+package_data     = {'': ['tests/*.py'],
+                    '': ['tests/*.txt'],
+                    }
 
 if __name__ == "__main__":
 

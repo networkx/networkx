@@ -10,7 +10,7 @@ you will get a python egg.
 
 Use
 
->>> python setup_egg.py test
+>>> python setup_egg.py nosetests
 
 to run the tests.
 
@@ -37,9 +37,10 @@ if __name__ == "__main__":
       data_files       = data,
       classifiers      = classifiers,
       package_data     = package_data,
-      include_package_data = True,
+#      include_package_data = True,
+      install_requires=['setuptools'],
       test_suite       = 'nose.collector', 
-      tests_require    = "NetworkX_nose_plugin>=0.1", 
+      tests_require    = ['nose >= 0.10.3','networkx-nose-plugin>=0.1'] 
       )
 
 
