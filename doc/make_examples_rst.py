@@ -142,10 +142,8 @@ NetworkX Examples
 
             pngname=base+".png"
             png=os.path.join(static_dir,pngname)
-            print os.getcwd(),png,os.path.exists(png)
             linkname = os.path.join('..', '..', 'static', 'examples')
             if os.path.exists(png):
-                print "adding link",os.path.join(linkname,pngname)
                 fh.write('.. image:: %s \n\n'%os.path.join(linkname,pngname))
             linkname = os.path.join('..', '..', '_static', 'examples')
             fh.write("[`source code <%s>`_]\n\n::\n\n" % os.path.join(linkname,fname))
