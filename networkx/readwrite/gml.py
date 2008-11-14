@@ -156,16 +156,16 @@ def write_gml(G, path):
     ---------
 
     >>> G=nx.path_graph(4)
-    >>> nx.write_gml(G,"file.gml")
+    >>> nx.write_gml(G,"test.gml")
 
     path can be a filehandle or a string with the name of the file.
 
-    >>> fh=open("file.gml",'w')
+    >>> fh=open("test.gml",'w')
     >>> nx.write_gml(G,fh)
 
     Filenames ending in .gz or .bz2 will be compressed.
 
-    >>> nx.write_gml(G,"file.gml.gz")
+    >>> nx.write_gml(G,"test.gml.gz")
 
     
     The output file will use the default text encoding on your system.
@@ -174,7 +174,7 @@ def write_gml(G, path):
     for hints.
 
     >>> import codecs
-    >>> fh=codecs.open("file.gml",'w',encoding='iso8859-1')# use iso8859-1
+    >>> fh=codecs.open("test.gml",'w',encoding='iso8859-1')# use iso8859-1
     >>> nx.write_gml(G,fh)
 
     GML specifications indicate that the file should only use

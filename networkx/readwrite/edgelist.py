@@ -47,12 +47,12 @@ def write_edgelist(G, path, comments="#", delimiter=' '):
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> nx.write_edgelist(G, "file.edgelist")
+    >>> nx.write_edgelist(G, "test.edgelist")
 
-    >>> fh=open("file.edgelist",'w')
+    >>> fh=open("test.edgelist",'w')
     >>> nx.write_edgelist(G,fh)
 
-    >>> nx.write_edgelist(G, "file.edgelist.gz")
+    >>> nx.write_edgelist(G, "test.edgelist.gz")
 
     Notes
     -----
@@ -62,7 +62,7 @@ def write_edgelist(G, path, comments="#", delimiter=' '):
     for hints.
 
     >>> import codecs
-    >>> fh=codecs.open("file.edgelist",'w',encoding='utf=8') # utf-8 encoding
+    >>> fh=codecs.open("test.edgelist",'w',encoding='utf=8') # utf-8 encoding
     >>> nx.write_edgelist(G,fh)
 
     See Also
@@ -118,15 +118,15 @@ def read_edgelist(path, comments="#", delimiter=' ',
 
     Examples
     --------
-    >>> nx.write_edgelist(nx.path_graph(4), "file.edgelist")
-    >>> G=nx.read_edgelist("file.edgelist")
+    >>> nx.write_edgelist(nx.path_graph(4), "test.edgelist")
+    >>> G=nx.read_edgelist("test.edgelist")
 
-    >>> fh=open("file.edgelist")
+    >>> fh=open("test.edgelist")
     >>> G=nx.read_edgelist(fh)
 
-    >>> G=nx.read_edgelist("file.edgelist", nodetype=int)
+    >>> G=nx.read_edgelist("test.edgelist", nodetype=int)
 
-    >>> G=nx.read_edgelist("file.edgelist",create_using=nx.DiGraph())
+    >>> G=nx.read_edgelist("test.edgelist",create_using=nx.DiGraph())
 
     Notes
     -----
