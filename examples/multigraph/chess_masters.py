@@ -29,7 +29,7 @@ where game_info is a dict describing each game.
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-from networkx import *
+import networkx as nx
 
 # tag names specifying what game info should be 
 # stored in the dict on each digraph edge
@@ -52,11 +52,11 @@ def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
     """
     try:# use networkx.utils._get_fh to uncompress
         # pgn file if required
-        datafile=utils._get_fh(pgn_file,mode='rb')
+        datafile=nx.utils._get_fh(pgn_file,mode='rb')
     except IOError:
         print "Could not read file %s."%(pgn_file)
         raise
-    G=MultiDiGraph()
+    G=nx.MultiDiGraph()
     game_info={}
     for line in datafile.read().splitlines():
         # check for tag pairs
@@ -80,13 +80,8 @@ def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
 
 
 if __name__ == '__main__':
-    from networkx import *
-    try:
-        import pylab as P
-    except:
-        print """pylab not found: 
-               see https://networkx.lanl.gov/Drawing.html for info"""
-        raise 
+    import networkx as nx
+    import matplotlib.pyplot as plt
 
     G=chess_pgn_graph()
     ngames=G.number_of_edges()
@@ -97,13 +92,14 @@ if __name__ == '__main__':
 
     # identify connected components
     # of the undirected version
-    Gcc=connected_component_subgraphs(G.to_undirected())
+    Gcc=nx.connected_component_subgraphs(G.to_undirected())
     if len(Gcc)>1:
         print "Note the disconnected component consisting of:"
         print Gcc[1].nodes()    
 
     # find all games with B97 opening (as described in ECO)
-    openings=set([game_info['ECO'] for (white,black,game_info) in G.edges(data=True)])
+    openings=set([game_info['ECO'] 
+                  for (white,black,game_info) in G.edges(data=True)])
     print "\nFrom a total of %d different openings,"%len(openings)
     print 'the following games used the Sicilian opening'
     print 'with the Najdorff 7...Qb6 "Poisoned Pawn" variation.\n'
@@ -116,72 +112,57 @@ if __name__ == '__main__':
            print "\n"
 
 
-    try: # drawing
-        P.figure(figsize=(8,8))
-        # make new undirected graph H without multi-edges
-        H=Graph(G)
+    plt.figure(figsize=(8,8))
+    # make new undirected graph H without multi-edges
+    H=nx.Graph(G)
 
-        # edge width is proportional number of games played
-        edgewidth=[]
-        for (u,v,d) in H.edges(data=True):
-            edgewidth.append(len(G.get_edge(u,v)))
+    # edge width is proportional number of games played
+    edgewidth=[]
+    for (u,v,d) in H.edges(data=True):
+        edgewidth.append(len(G.get_edge(u,v)))
 
-        # node size is proportional to number of games won
-        wins=dict.fromkeys(G.nodes(),0.0)
-        for (u,v,d) in G.edges(data=True):
-            r=d['Result'].split('-')
-            if r[0]=='1':
-                wins[u]+=1.0
-            elif r[0]=='1/2':
-                wins[u]+=0.5
-                wins[v]+=0.5
-            else:
-                wins[v]+=1.0
+    # node size is proportional to number of games won
+    wins=dict.fromkeys(G.nodes(),0.0)
+    for (u,v,d) in G.edges(data=True):
+        r=d['Result'].split('-')
+        if r[0]=='1':
+            wins[u]+=1.0
+        elif r[0]=='1/2':
+            wins[u]+=0.5
+            wins[v]+=0.5
+        else:
+            wins[v]+=1.0
 
-        pos=graphviz_layout(H)
-
-        draw_networkx_edges(H,pos,
-                      alpha=0.3,
-                      width=edgewidth,
-                      edge_color='m'
-                      )
-        draw_networkx_nodes(H,pos,
-                      node_size=[wins[v]*50 for v in H],
-                      node_color='w',
-                      alpha=0.4,
-                      )
-        draw_networkx_edges(H,pos,
-                         alpha=0.4,
-                         node_size=0,
-                         width=1,
-                         edge_color='k'
-                         )
-        draw_networkx_labels(H,pos,
-                             fontsize=14)
-        font = {'fontname'   : 'Helvetica',
-        'color'      : 'k',
-        'fontweight' : 'bold',
-        'fontsize'   : 14}
-        P.title("World Chess Championship Games: 1886 - 1985", font)
-
-        # change font and write text (using data coordinates)
-        font = {'fontname'   : 'Helvetica',
-        'color'      : 'r',
-        'fontweight' : 'bold',
-        'fontsize'   : 14}
-        xmin, xmax, ymin, ymax = P.axis()
-        dx = xmax - xmin
-        dy = ymax - ymin
-        x = 0.1*dx + xmin
-        y = 0.9*dy + ymin
-        P.text(x, y, "edge width = # games played")
-        y = 0.85*dy + ymin
-        P.text(x, y,  "node size = # games won")
-
-        P.axis('off')
-        P.savefig("chess_masters.png",dpi=75)
-        print "Wrote chess_masters.png"
-        P.show() # display
+    try:
+        pos=nx.graphviz_layout(H)
     except:
-        print "Unable to draw: problem with graphviz or pylab"
-        raise
+        pos=nx.spring_layout(H)
+
+    nx.draw_networkx_edges(H,pos,alpha=0.3,width=edgewidth, edge_color='m')
+    nodesize=[wins[v]*50 for v in H]
+    nx.draw_networkx_nodes(H,pos,node_size=nodesize,node_color='w',alpha=0.4)
+    nx.draw_networkx_edges(H,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
+    nx.draw_networkx_labels(H,pos,fontsize=14)
+    font = {'fontname'   : 'Helvetica',
+            'color'      : 'k',
+            'fontweight' : 'bold',
+            'fontsize'   : 14}
+    plt.title("World Chess Championship Games: 1886 - 1985", font)
+
+    # change font and write text (using data coordinates)
+    font = {'fontname'   : 'Helvetica',
+    'color'      : 'r',
+    'fontweight' : 'bold',
+    'fontsize'   : 14}
+
+    plt.text(0.5, 0.9, "edge width = # games played",
+             horizontalalignment='center',
+             transform=plt.gca().transAxes)
+    plt.text(0.5, 0.85,  "node size = # games won",
+             horizontalalignment='center',
+             transform=plt.gca().transAxes)
+
+    plt.axis('off')
+    plt.savefig("chess_masters.png",dpi=75)
+    print "Wrote chess_masters.png"
+    plt.show() # display
