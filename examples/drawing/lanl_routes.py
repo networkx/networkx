@@ -2,6 +2,8 @@
 """
 Routes to LANL from 186 sites on the Internet.
 
+This uses Graphviz for layout so you need PyGraphviz or Pydot.
+
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2004-2008
@@ -71,3 +73,6 @@ if __name__ == '__main__':
     except:
         print "This example could not find either matplotlib or pygraphviz."
         pass
+
+    A=nx.to_agraph(G)
+    A.write('lanl.dot')
