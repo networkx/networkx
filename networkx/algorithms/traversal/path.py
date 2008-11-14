@@ -43,7 +43,7 @@ def shortest_path_length(G,source,target):
     return len(path)-1
 
 def single_source_shortest_path_length(G,source,cutoff=None):
-    """Return the hortest path length from source to all reachable nodes.
+    """Return the shortest path length from source to all reachable nodes.
 
     Returns a dictionary of shortest path lengths keyed by target.
 
