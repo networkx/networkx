@@ -29,7 +29,6 @@ def get_svn_revision():
         return 'dev%s' % rev
     return None
 
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
 
 name = 'networkx'
 version = '0.99'
@@ -51,7 +50,7 @@ authors = {'Hagberg' : ('Aric Hagberg','hagberg@lanl.gov'),
            'Swart' : ('Pieter Swart','swart@lanl.gov')
            }
 url = 'http://networkx.lanl.gov/'
-download_url="http://networkx.lanl.gov/download"
+download_url="http://networkx.lanl.gov/download/networkx"
 platforms = ['Linux','Mac OSX','Windows XP/2000/NT']
 keywords = ['Networks', 'Graph Theory', 'Mathematics', 'network', 'graph', 'discrete mathematics', 'math']
 classifiers = [
