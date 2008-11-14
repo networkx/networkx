@@ -136,7 +136,7 @@ if __name__ == '__main__':
     try:
         pos=nx.graphviz_layout(H)
     except:
-        pos=nx.spring_layout(H)
+        pos=nx.spring_layout(H,iterations=20)
 
     nx.draw_networkx_edges(H,pos,alpha=0.3,width=edgewidth, edge_color='m')
     nodesize=[wins[v]*50 for v in H]
@@ -155,10 +155,10 @@ if __name__ == '__main__':
     'fontweight' : 'bold',
     'fontsize'   : 14}
 
-    plt.text(0.5, 0.9, "edge width = # games played",
+    plt.text(0.5, 0.97, "edge width = # games played",
              horizontalalignment='center',
              transform=plt.gca().transAxes)
-    plt.text(0.5, 0.85,  "node size = # games won",
+    plt.text(0.5, 0.94,  "node size = # games won",
              horizontalalignment='center',
              transform=plt.gca().transAxes)
 

@@ -21,6 +21,13 @@ except:
 import networkx as nx
 import math
 
+try:
+    from networkx import graphviz_layout
+    layout=nx.graphviz_layout
+except ImportError:
+    print "PyGraphviz not found; drawing with spring layout; will be slow."
+    layout=nx.spring_layout
+
 
 n=150  # 150 nodes
 # p value at which giant component (of size log(n) nodes) is expected
@@ -35,10 +42,7 @@ region=220 # for pylab 2x2 subplot layout
 plt.subplots_adjust(left=0,right=1,bottom=0,top=0.95,wspace=0.01,hspace=0.01)
 for p in pvals:    
     G=nx.binomial_graph(n,p)
-    try:
-        pos=nx.graphviz_layout(G)
-    except:
-        pos=nx.spring_layout(G)
+    pos=layout(G)
     region+=1
     plt.subplot(region)
     plt.title("p = %6.3f"%(p))
