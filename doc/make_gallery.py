@@ -36,7 +36,18 @@ if not os.path.exists(static_dir):
     os.makedirs(static_dir)
 
 os.chdir(examples_source_dir)
-for example in sorted(glob.glob("*.py")):
+all_examples=sorted(glob.glob("*.py"))
+
+# check for out of date examples
+stale_examples=[]
+for example in all_examples:
+    png=example.replace('py','png')                             
+    png_static=os.path.join(pwd,static_dir,png)
+    if (not os.path.exists(png_static) or 
+        os.stat(png_static).st_mtime < os.stat(example).st_mtime):
+        stale_examples.append(example)
+
+for example in stale_examples:
     print example
     png=example.replace('py','png')                             
     matplotlib.pyplot.figure(figsize=(6,6))
