@@ -45,6 +45,10 @@ if __name__ == '__main__':
 
     import networkx as nx
     import math
+    try:
+        from networkx import graphviz_layout
+    except ImportError:
+        raise ImportError("This example needs Graphviz and either PyGraphviz or Pydot")
 
     G=lanl_graph()
 
@@ -52,27 +56,21 @@ if __name__ == '__main__':
           %(nx.number_of_nodes(G),nx.number_of_edges(G))
     print nx.number_connected_components(G),"connected components"
 
-    try: # drawing
-        import matplotlib.pyplot as plt
-        plt.figure(figsize=(8,8))
-        # use graphviz to find radial layout
-        pos=nx.graphviz_layout(G,prog="twopi",root=0)
-        # draw nodes, coloring by rtt ping time
-        nx.draw(G,pos,
-                node_color=[G.rtt[v] for v in G],
-                with_labels=False,
-                alpha=0.5,
-                node_size=15)
-        # adjust the plot limits
-        xmax=1.02*max(xx for xx,yy in pos.values())
-        ymax=1.02*max(xx for xx,yy in pos.values())
-        plt.xlim(0,xmax)
-        plt.ylim(0,ymax)
-        plt.savefig("lanl_routes.png")
-        print "Wrote lanl_routes.png"
-    except:
-        print "This example could not find either matplotlib or pygraphviz."
-        pass
+    import matplotlib.pyplot as plt
+    plt.figure(figsize=(8,8))
+    # use graphviz to find radial layout
+    pos=nx.graphviz_layout(G,prog="twopi",root=0)
+    # draw nodes, coloring by rtt ping time
+    nx.draw(G,pos,
+            node_color=[G.rtt[v] for v in G],
+            with_labels=False,
+            alpha=0.5,
+            node_size=15)
+    # adjust the plot limits
+    xmax=1.02*max(xx for xx,yy in pos.values())
+    ymax=1.02*max(xx for xx,yy in pos.values())
+    plt.xlim(0,xmax)
+    plt.ylim(0,ymax)
+    plt.savefig("lanl_routes.png")
 
-    A=nx.to_agraph(G)
-    A.write('lanl.dot')
+
