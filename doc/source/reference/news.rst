@@ -6,18 +6,33 @@ Release Log
 Networkx-0.99
 -------------
 
-Release date: 
+Release date:  16 November 2008
 
 See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
+This release has sigificant changes to parts of the graph API.
+See http://networkx.lanl.gov//reference/api_changes.html
+
+ - Update Graph and DiGraph classes to use weighted graphs as default
+   Change in API for performance and code simplicity.
+ - New MultiGraph and MultiDiGraph classes (replace XGraph and XDiGraph)
+ - Update to use Sphinx documentation system http://networkx.lanl.gov/
+ - Developer site at https://networkx.lanl.gov/trac/
+ - Experimental LabeledGraph and LabeledDiGraph
+ - Moved package and file layout to subdirectories.
 
 Bug fixes
 ~~~~~~~~~
+ - handle root= option to draw_graphviz correctly 
 
 Examples
 ~~~~~~~~
+ - Update to work with networkx-0.99 API
+ - Drawing examples now use matplotlib.pyplot interface
+ - Improved drawings in many examples
+ - New examples - see http://networkx.lanl.gov/examples/
 
 
 NetworkX-0.37
