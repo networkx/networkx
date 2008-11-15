@@ -33,7 +33,7 @@ weighted graphs and to hold arbitrary information on edges.
 
   - The XGraph and XDiGraph classes are removed and replaced with 
     MultiGraph and MultiDiGraph. MultiGraph and MultiDiGraph
-    optinionally allow parallel (multiple) edges between two nodes.
+    optionally allow parallel (multiple) edges between two nodes.
 
 The mapping from old to new classes is as follows:
 
@@ -168,7 +168,7 @@ __getitem__()
    [1]
    
    This change allows algorithms to use the underlying dict-of-dict
-   representaion through G[v] for substantial performance gains.  
+   representation through G[v] for substantial performance gains.  
    Warning: The returned dictionary should not be modified as it may
    corrupt the graph data structure.  Make a copy G[v].copy() if you 
    wish to modify the dict.
@@ -285,4 +285,24 @@ prepare_nbunch
 --------------
 Used internally - now called nbunch_iter and returns an iterator.
 
+
+Converting your old code to Version 0.99
+========================================
+
+Mostly you can just run the code and python will raise an exception 
+for features that changed.  Common places for changes are
+
+    - Converting XGraph() to either Graph or MultiGraph
+    - Converting XGraph.edges()  to  Graph.edges(data=True)
+    - Switching some rarely used methods to attributes (e.g. directed)
+      or to functions (e.g. node_boundary)
+    - If you relied on the old default edge data being None, you will 
+      have to account for it now being 1.
+
+You may also want to look through your code for places which could 
+improve speed or readability.  The iterators are helpful with large
+graphs and getting edge data via G[u][v] is quite fast.   You may also
+want to change G.neighbors(n) to G[n] which returns the dict keyed by 
+neighbor nodes to the edge data.  It is faster for many purposes but
+does not work well when you are changing the graph.
 
