@@ -37,7 +37,8 @@ import sys
 import time
 
 from networkx.utils import is_string_like,_get_fh
-import networkx
+import pickle
+
 
 def write_gpickle(G, path):
     """
@@ -52,19 +53,19 @@ def write_gpickle(G, path):
     
     """
     fh=_get_fh(path,mode='wb')        
-    cPickle.dump(G,fh,cPickle.HIGHEST_PROTOCOL)
+    pickle.dump(G,fh,pickle.HIGHEST_PROTOCOL)
 
 def read_gpickle(path):
     """
     Read graph object in Python pickle format
 
 
-    >>> G=nx.path_graph(4)
-    >>> nx.write_gpickle(G,"test.gpickle")
-    >>> G=nx.read_gpickle("test.gpickle")
+    G=nx.path_graph(4)
+    nx.write_gpickle(G,"test.gpickle")
+    G=nx.read_gpickle("test.gpickle")
 
     See cPickle.
     
     """
     fh=_get_fh(path,'rb')
-    return cPickle.load(fh)
+    return pickle.load(fh)
