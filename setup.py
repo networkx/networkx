@@ -9,10 +9,10 @@ import os
 import sys
 if os.path.exists('MANIFEST'): os.remove('MANIFEST')
 
-#try:
-#    from setuptools import setup
-#except ImportError:
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 if sys.argv[-1] == 'setup.py':
     print "To install, run 'python setup.py install'"
@@ -34,6 +34,7 @@ packages=["networkx",
           "networkx.drawing",
           "networkx.linalg",
           "networkx.readwrite",
+          "networkx.tests",
           ]
 
 docdirbase  = 'share/doc/networkx-%s' % version

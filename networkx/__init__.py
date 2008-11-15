@@ -58,7 +58,7 @@ from readwrite import *
 from ubigraph import *
 
 import utils
-from tests.run import run as test
+from tests.test import run as test
 import algorithms
 import classes
 import convert

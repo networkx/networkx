@@ -6,62 +6,67 @@ import sys
 import doctest
 import unittest
 
+
 def all():
+    import networkx
+    testdirs=['.','algorithms','classes','drawing','generators',
+              'linalg','readwrite','algorithms/isomorphism',
+              'algorithms/traversal']
     try:
-        from pkg_resources import resource_filename, resource_listdir
-        tests=[resource_filename(__name__, t)
-              for t in resource_listdir("networkx",'tests') if t.endswith("txt")]
-        tests+=[resource_filename(__name__, 'generators/'+t)
-              for t in resource_listdir("networkx",'tests/generators') if t.endswith("txt")]
-        tests+=[resource_filename(__name__, 'readwrite/'+t)
-              for t in resource_listdir("networkx",'tests/readwrite') if t.endswith("txt")]
+        from pkg_resources import resource_filename, resource_listdirfoo
+        tests=[]
+        for d in testdirs:
+            
+            tests.extend([resource_filename(networkx.__name__, 
+                                            "%s/tests/%s"%(d,t))
+                          for t in resource_listdir("networkx","%s/tests"%d)
+                          if t.endswith("txt")])
     except:
         import networkx
-        base=os.path.dirname(networkx.__file__)+"/tests/"
-        tests=glob.glob(base+"*.txt") 
-        tests+=glob.glob(base+"generators/*.txt")
-        tests+=glob.glob(base+"readwrite/*.txt")
-        #tests+=glob.glob("drawing/*.txt")  
+        base=os.path.dirname(networkx.__file__)
+        tests=[]
+        for d in testdirs:
+            tests+=glob.glob(os.path.join(base,d,"tests","*.txt"))
+    skiplist=[]        
 
-    # tests depending on numpy
     try:
         import numpy
     except ImportError:
-        print "numpy not found: skipping tests of spectrum.py, threshold.py, convert.py (numpy)"
-        tests=[t for t in tests \
-               if 'spectrum.txt' not in t \
-               if 'threshold.txt' not in t\
-               if 'convert_numpy.txt' not in t\
-               ]
-
-    # tests depending on scipy        
+        print "numpy not found: skipping tests"
+        skiplist.extend(['spectrum.txt','threshold.txt','convert_numpy.txt'])
     try:
         import scipy
     except ImportError:
-        print "scipy not found: skipping tests of convert.py (scipy)"
-        tests=[t for t in tests \
-               if 'convert_scipy.txt' not in t\
-               ]
-    # tests depending on yaml        
+        print "scipy not found: skipping tests" 
+        skiplist.extend(['convert_scipy.txt'])
     try:
         import yaml
     except ImportError:
-        print "yaml not found: skipping tests of nx_yaml.py (yaml)"
-        tests=[t for t in tests \
-               if 'nx_yaml.txt' not in t\
-               ]
-    # tests depending on pyparsing
+        print "yaml not found: skipping tests"
+        skiplist.extend(['nx_yaml.txt'])
     try:
         import pyparsing
     except ImportError:
-        print "pyparsing not found: skipping tests of gml.py"
-        tests=[t for t in tests \
-               if 'gml.txt' not in t\
-               ]
+        print "pyparsing not found: skipping tests"
+        skiplist.extend(['gml.txt'])
+    try:
+        import pydot
+    except ImportError:
+        print "pydot not found: skipping tests"
+        skiplist.extend(['nx_pydot.txt'])
+    try:
+        import pygraphviz
+    except ImportError:
+        print "pygraphviz not found: skipping tests"
+        skiplist.extend(['nx_agraph.txt'])
+    try:
+        import matplotlib
+    except ImportError:
+        print "matplotlib not found: skipping tests"
+        skiplist.extend(['nx_pylab.txt'])
 
 
-
-
+    tests=[t for t in tests if os.path.basename(t) not in skiplist]
 
     suite = unittest.TestSuite()
     for t in tests:
@@ -70,19 +75,9 @@ def all():
     return suite
 
 def run():
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
     runner = unittest.TextTestRunner()
     runner.run(all())
     
 
 if __name__ == "__main__":
-    try:
-        import networkx
-    except:
-        print "Can't import networkx module, not in path"
-        print sys.path
-        raise
-    
     run()

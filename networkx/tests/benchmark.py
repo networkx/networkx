@@ -73,7 +73,7 @@ class Benchmark(object):
 
 if __name__ == "__main__":
     # set up for all routines:
-    classes=['Graph','XGraph','DiGraph','XDiGraph']
+    classes=['Graph','MultiGraph','DiGraph','MultiDiGraph']
     all_tests=['add_nodes','add_edges','delete_nodes','delete_edges',\
             'neighbors','edges','degree','dijkstra','shortest path',\
             'subgraph','laplacian']
@@ -121,9 +121,9 @@ if __name__ == "__main__":
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         b['DiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edge(u,v,1)' 
-        b['XGraph']=(test_string,setup)
+        b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['XDiGraph']=(test_string,setup)
+        b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'edges' in tests:
@@ -138,9 +138,9 @@ if __name__ == "__main__":
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         b['DiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edge(u,v,1)' 
-        b['XGraph']=(test_string,setup)
+        b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['XDiGraph']=(test_string,setup)
+        b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'degree' in tests:
@@ -155,9 +155,9 @@ if __name__ == "__main__":
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         b['DiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edge(u,v,1)' 
-        b['XGraph']=(test_string,setup)
+        b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['XDiGraph']=(test_string,setup)
+        b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'dijkstra' in tests:
@@ -172,9 +172,9 @@ if __name__ == "__main__":
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         b['DiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edge(u,v,1)' 
-        b['XGraph']=(test_string,setup)
+        b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['XDiGraph']=(test_string,setup)
+        b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'shortest path' in tests:
@@ -189,9 +189,9 @@ if __name__ == "__main__":
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         b['DiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edge(u,v,1)' 
-        b['XGraph']=(test_string,setup)
+        b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['XDiGraph']=(test_string,setup)
+        b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'subgraph' in tests:
@@ -206,9 +206,9 @@ if __name__ == "__main__":
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         b['DiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edge(u,v,1)' 
-        b['XGraph']=(test_string,setup)
+        b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['XDiGraph']=(test_string,setup)
+        b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'laplacian' in tests:
@@ -223,7 +223,7 @@ if __name__ == "__main__":
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         b['DiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edge(u,v,1)' 
-        b['XGraph']=(test_string,setup)
+        b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['XDiGraph']=(test_string,setup)
+        b['MultiDiGraph']=(test_string,setup)
         b.run()

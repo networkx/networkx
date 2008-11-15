@@ -1,33 +1,26 @@
-These files are for testing the methods and functions in NX.
+These files are for testing the methods and functions in NetworkX
 
-The tests use Python's docutils format and may be executed 
-using the Python doctest and unittest framework
-to verify the functionality of the package.
-You will need Python 2.4 or a later version.
+The tests also demonstrate the usage of many of the features of NetworkX.
 
-The tests also demonstrate the usage of many of the features of NX.
+There are a few ways to run the tests.
 
-There are three ways to run the entire test suite:
+The simplest way that will test most of the package is to
+import networkx and run the test() function.
 
-  - from the source package directory root
-    python setup.py test
+>>> import networkx
+>>> networkx.test()
 
-  - from the test directory in the source package
-    python test.py
+or::
 
-  - from anywhere (also works with an installed version)
-    >>> import networkx.tests
-    >>> networkx.tests.run()
+   python -c "import networkx; networkx.test()
 
-To run the tests for an individual module execute the module file
-directly.  E.g. to test the base.py module run (in the directory with base.py)
+If you have the source package and the nose testing package you
+can test the complete package with::
 
-python base.py
+   python setup_egg.py nosetests
 
-To produce formatted output of all of the tests run
-"make doc" and html format will be produced in the directory html/
-You must have rst2html.py installed to do this (rst2html is part of the python
-docutils package).
+This requires the networkx-nose-plugin package which is
+distributed in the networkx source.  
 
 
 The python module benchmark.py can be used to compare relative speed of small
