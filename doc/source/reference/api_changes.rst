@@ -47,6 +47,12 @@ The mapping from old to new classes is as follows:
 
 Methods changed
 ---------------
+edges()
+~~~~~~~
+   New keyword data=True|False keyword determines whether to return
+   two-tuples (u,v) (False) or three-tuples (u,v,d) (True)
+
+
 delete_node()
 ^^^^^^^^^^^^^
    The preferred name is now remove_node().        
