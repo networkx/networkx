@@ -9,6 +9,7 @@ NetworkX documentation
     :Date: |today|
 
     Download `PDF <http://networkx.lanl.gov/networkx.pdf>`_
+    `HTML <http://networkx.lanl.gov/networkx-documentation.zip>`_
 
 
 .. toctree::

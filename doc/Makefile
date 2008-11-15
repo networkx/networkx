@@ -32,7 +32,7 @@ dist: html
 	make -C build/latex all-pdf
 	-rm -rf build/dist
 	(cd build/html; cp -r . ../../build/dist)
-	(cd build/html && zip -9r ../dist/networkx-manual.zip .)
+	(cd build/html && zip -9r ../dist/networkx-documentation.zip .)
 	cp build/latex/*.pdf build/dist
 	(cd build/dist && tar czf ../dist.tar.gz .)
 
