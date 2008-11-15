@@ -20,8 +20,8 @@ setup(
     py_modules = ['networkxdoctest'],
     entry_points = {
         'nose.plugins.0.10': [
-            'example = networkxdoctest:NetworkXDoctest'
+            'networkxdoctest = networkxdoctest:NetworkXDoctest'
             ]
-        }
-
+        },
+    zip_safe=True
     )
