@@ -36,7 +36,14 @@ Source Archive File
 
   3. Run "python setup.py install" to build and install 
 
-  4. (optional) run "python setup_egg.py noststests" to execute the tests
+  4. (optional) Testing setup:  
+     install the nose testing environment from 
+     http://code.google.com/p/python-nose/
+     using verion 11.0 (available via svn).
+     Change directories to nose_plugin/ and 
+     run "python setup.py install".
+
+  5. (optional) Run "python setup_egg.py nosetests" to execute the tests
 
 
 SVN Repository
@@ -50,7 +57,14 @@ SVN Repository
 
   3.  Run "python setup.py install" to build and install 
 
-  4. (optional) run "python setup_egg.py nosetests" to execute the tests
+  4. (optional) Testing setup:  
+     install the nose testing environment from 
+     http://code.google.com/p/python-nose/
+     using verion 11.0 (available via svn).
+     Change directories to nose_plugin/ and 
+     run "python setup.py install".
+
+  4. (optional) Run "python setup_egg.py nosetests" to execute the tests
 
 
 If you don't have permission to install software on your
