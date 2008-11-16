@@ -29,13 +29,13 @@ weighted graphs and to hold arbitrary information on edges.
    (with default 1).  The Graph and DiGraph classes in earlier versions
    used the Python None as data (which is still allowed as edge data).
 
-  - The Graph and DiGraph classes now allow self loops.
+ - The Graph and DiGraph classes now allow self loops.
 
-  - The XGraph and XDiGraph classes are removed and replaced with 
-    MultiGraph and MultiDiGraph. MultiGraph and MultiDiGraph
-    optionally allow parallel (multiple) edges between two nodes.
+ - The XGraph and XDiGraph classes are removed and replaced with 
+   MultiGraph and MultiDiGraph. MultiGraph and MultiDiGraph
+   optionally allow parallel (multiple) edges between two nodes.
 
-The mapping from old to new classes is as follows:
+The mapping from old to new classes is as follows::
 
  - Graph -> Graph (self loops allowed now, default edge data is 1)
  - DiGraph -> DiGraph (self loops allowed now, default edge data is 1)
@@ -47,8 +47,9 @@ The mapping from old to new classes is as follows:
 
 Methods changed
 ---------------
+
 edges()
-~~~~~~~
+^^^^^^^
    New keyword data=True|False keyword determines whether to return
    two-tuples (u,v) (False) or three-tuples (u,v,d) (True)
 
@@ -183,7 +184,7 @@ __getitem__()
 Methods removed
 ---------------
 
-info() 
+info()
 ^^^^^^
    now a function
 
