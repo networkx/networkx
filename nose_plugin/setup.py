@@ -23,5 +23,4 @@ setup(
             'networkxdoctest = networkxdoctest:NetworkXDoctest'
             ]
         },
-    zip_safe=True
     )
