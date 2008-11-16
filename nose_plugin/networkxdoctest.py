@@ -13,7 +13,7 @@ import logging
 log = logging.getLogger(__name__)
 from nose.plugins import Plugin
 
-class NetworkXDoctest(Doctest):
+class NetworkXDoctest10(Doctest):
      name = 'networkx-doctest'
 
      def options(self, parser, env=os.environ):
@@ -117,3 +117,18 @@ class NetworkXDoctest11(Doctest):
          if cases:
              yield self.suiteClass(cases, context=module, can_split=False)
             
+class NetworkXDoctest(object):
+    def __new__(cls, *args, **kwds):
+        """
+        Return class based on version of nose installed.
+        """
+        from nose import __version__
+        #print __version__
+        #print '__new__',args,kwds
+        if __version__ >= '0.11':
+            return NetworkXDoctest11(*args, **kwds)
+        else:
+            return NetworkXDoctest10(*args, **kwds)
+
+
+

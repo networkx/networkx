@@ -40,7 +40,7 @@ if __name__ == "__main__":
 #      include_package_data = True,
       install_requires=['setuptools'],
       test_suite       = 'nose.collector', 
-      tests_require    = ['nose >= 0.10.3','networkx-nose-plugin>=0.1'] ,
+      tests_require    = ['nose >= 0.10.1','networkx-nose-plugin>=0.1'] ,
       zip_safe = True
       )
 
