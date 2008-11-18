@@ -42,4 +42,4 @@ References
    Addison Wesley Professional, 3rd ed., 2001.
 
 .. [West01] D. B. West, "Introduction to Graph Theory", Prentice Hall,
-    2nd ed., 2001.  
+    2nd ed., 2001.

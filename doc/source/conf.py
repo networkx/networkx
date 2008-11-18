@@ -27,16 +27,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath', 'numpydoc',
               'phantom_import', 'autosummary',
               'sphinx.ext.coverage',
               'only_directives',
-#              'plot_directive',
               ]
-#extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest','numpydoc']
-#extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest']
-#extensions = [#'mathmpl',
-#              'ipython_console_highlighting', 'sphinx.ext.autodoc',
-#              'inheritance_diagram', 'only_directives', 'plot_directive',
-#              'sphinx.ext.pngmath',
-#              ]
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['templates']
@@ -70,7 +61,7 @@ release = version
 #today_fmt = '%B %d, %Y'
 
 # List of documents that shouldn't be included in the build.
-#unused_docs = []
+# unused_docs = []
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True

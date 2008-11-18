@@ -1,8 +1,5 @@
-*********
-Downloads
-*********
-
-NetworkX
+--------
+Download
 --------
 
 Source and Binary Releases
@@ -21,23 +18,13 @@ svn checkout http://networkx.lanl.gov/svn/networkx/trunk networkx
 
 svn checkout https://networkx.lanl.gov/svn/networkx/trunk networkx
 
-PyGraphviz
-----------
 
-Source and Binary Releases
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Documentation
+~~~~~~~~~~~~~
+*PDF*
 
-http://cheeseshop.python.org/pypi/pygraphviz/
+http://networkx.lanl.gov/networkx/networkx.pdf
 
-http://networkx.lanl.gov/download/pygraphviz/
+*HTML in zip file*
 
-
-Subversion Source Code Repository
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*Anonymous*          
-
-svn checkout http://networkx.lanl.gov/svn/pygraphviz/trunk pygraphviz
-
-*Authenticated* 
-
-svn checkout https://networkx.lanl.gov/svn/pygraphviz/trunk pygraphviz
+http://networkx.lanl.gov/networkx/networkx-documentation.zip

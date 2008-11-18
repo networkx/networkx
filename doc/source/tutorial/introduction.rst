@@ -21,7 +21,7 @@ physicists, biologists, computer scientists, social scientists. The
 current state of the art of the (young and rapidly growing) science of
 complex networks is presented in Albert and Barabási [BA02]_, Newman
 [Newman03]_, and Dorogovtsev and Mendes [DM03]_. See also the classic
-texts [Bollobas01]_, [Diestel97]_ and [West01_] for graph theoretic
+texts [Bollobas01]_, [Diestel97]_ and [West01]_ for graph theoretic
 results and terminology. For basic graph algorithms, we recommend the
 texts of Sedgewick, e.g. [Sedgewick01]_ and [Sedgewick02]_ and the
 modern survey of Brandes and Erlebach [BE05]_.
