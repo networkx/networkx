@@ -6,7 +6,7 @@ Release Log
 Networkx-0.99
 -------------
 
-Release date:  16 November 2008
+Release date:  18 November 2008
 
 See: https://networkx.lanl.gov/trac/timeline
 
