@@ -31,8 +31,8 @@ Using
 # Add platform dependent shared library path to sys.path
 #
 import sys
-if sys.version_info[:2] < (2, 3):
-    print "Python version 2.3 or later is required for NetworkX (%d.%d detected)." %  sys.version_info[:2]
+if sys.version_info[:2] < (2, 4):
+    print "Python version 2.4 or later is required for NetworkX (%d.%d detected)." %  sys.version_info[:2]
     sys.exit(-1)
 del sys
 # Release data
