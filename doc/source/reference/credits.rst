@@ -1,6 +1,9 @@
 Credits
 -------
 
+NetworkX was originally written by Aric Hagberg, Dan Schult, and Pieter Swart
+with the help of many others.   
+
 Thanks to Guido van Rossum for the idea of using Python for
 implementing a graph data structure  
 http://www.python.org/doc/essays/graphs.html
