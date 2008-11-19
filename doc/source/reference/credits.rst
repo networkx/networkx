@@ -50,3 +50,5 @@ Thanks to the following people who have made contributions to NetworkX:
    DFS functions.
 
  - Sasha Gutfriend contributed edge betweenness algorithms
+
+ - Udi Weinsberg helped develop intersection and difference operators

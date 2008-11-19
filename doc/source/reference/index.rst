@@ -11,6 +11,7 @@ Reference
 
    overview
    classes
+   operators
    algorithms
    generators
    linalg

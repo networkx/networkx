@@ -6,7 +6,7 @@ Unit tests for graph operations in operators.py
 >>> from networkx import *
 >>> from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 >>> is_isomorphic=graph_could_be_isomorphic # fast but weak isomorphism checker
-
+>>> import networkx as nx
 
 subgraph
 --------
@@ -416,4 +416,50 @@ create_empty_copy
 ['A', 'B', 'C', 'D']
 >>> H.edges()
 []
+
+
+intersection
+------------
+>>> G=nx.Graph()
+>>> H=nx.Graph()
+>>> G.add_nodes_from([1,2,3,4])
+>>> G.add_edge(1,2)
+>>> G.add_edge(2,3)
+>>> H.add_nodes_from([1,2,3,4])
+>>> H.add_edge(2,3)
+>>> H.add_edge(3,4)
+
+
+>>> I=nx.intersection(G,H)
+>>> print I.nodes()
+[1, 2, 3, 4]
+>>> print I.edges()
+[(2, 3)]
+
+
+difference
+----------
+
+>>> D=nx.difference(G,H)
+>>> print D.nodes()
+[1, 2, 3, 4]
+>>> print D.edges()
+[(1, 2)]
+
+
+>>> D=nx.difference(H,G)
+>>> print D.nodes()
+[1, 2, 3, 4]
+>>> print D.edges()
+[(3, 4)]
+
+
+symmetric difference
+--------------------
+
+>>> D=nx.symmetric_difference(G,H)
+>>> print D.nodes()
+[1, 2, 3, 4]
+>>> print D.edges()
+[(1, 2), (3, 4)]
 

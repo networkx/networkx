@@ -1,5 +1,6 @@
 """
-Operations on graphs; including  union, complement, subgraph. 
+Operations on graphs; including  union, intersection, difference,
+complement, subgraph. 
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
@@ -11,26 +12,38 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 #    http://www.gnu.org/copyleft/lesser.html
 
 __all__ = ['union', 'cartesian_product', 'compose', 'complement',
-           'disjoint_union', 'create_empty_copy', 'subgraph', 
+           'disjoint_union', 'intersection', 'difference',
+           'symmetric_difference','create_empty_copy', 'subgraph', 
            'convert_node_labels_to_integers', 'relabel_nodes']
 
 import networkx
 from networkx.utils import is_string_like
 
 def subgraph(G, nbunch, copy=True):
-    """
-    Return the subgraph induced on nodes in nbunch.
+    """Return the subgraph induced on nodes in nbunch.
 
-    nbunch: can be a singleton node, a string (which is treated
-    as a singleton node), or any iterable container of
-    of nodes. (It can be an iterable or an iterator, e.g. a list,
-    set, graph, file, numeric array, etc.)
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
 
-    Setting copy=False will return the induced subgraph in the
-    original graph by deleting nodes not in nbunch. This overrides
-    create_using.  Warning: this can destroy the graph.
+    nbunch : list, iterable 
+       A container of nodes that will be iterated through once
+       (thus it should be an iterator or be iterable).  Each
+       element of the container should be a valid node type: any
+       hashable type except None.
+       If nbunch is None, return all edges data in the graph.
+       Nodes in nbunch that are not in the graph will be (quietly) ignored.
 
-    Note: subgraph(G) calls G.subgraph()
+    copy : bool (default True)
+        If True return a new graph holding the subgraph.
+        Otherwise, the subgraph is created in the original 
+        graph by deleting nodes not in nbunch.  
+        Warning: this can destroy the graph.
+
+    Notes
+    -----
+    subgraph(G) calls G.subgraph()
 
     """
     return G.subgraph(nbunch, copy)
@@ -40,22 +53,27 @@ def union(G,H,create_using=None,rename=False,name=None):
     
     Graphs G and H must be disjoint, otherwise an exception is raised.
 
-    Node names of G and H can be changed be specifying the tuple
-    rename=('G-','H-') (for example).
-    Node u in G is then renamed "G-u" and v in H is renamed "H-v".
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph 
 
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created.
+
+
+    rename : bool (default=False)         
+       Node names of G and H can be changed be specifying the tuple
+       rename=('G-','H-') (for example).
+       Node u in G is then renamed "G-u" and v in H is renamed "H-v".
+
+    name : string       
+       Specify name for union graph
+
+    Notes       
+    -----
     To force a disjoint union with node relabeling, use
     disjoint_union(G,H) or convert_node_labels_to integers().
-
-    Optional create_using=R returns graph R filled in with the
-    union of G and H.  Otherwise a new graph is created, of the
-    same class as G.  It is recommended that G and H be either
-    both directed or both undirected.
-
-    A new name can be specified in the form
-    X=union(G,H,name="new_name")
-
-    Implemented for Graph, DiGraph, XGraph, XDiGraph.        
 
     """
     if name is None:
@@ -106,11 +124,16 @@ def disjoint_union(G,H):
     """ Return the disjoint union of graphs G and H, forcing distinct integer
     node labels.
 
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph 
+
+    Notes
+    -----
     A new graph is created, of the same class as G.
     It is recommended that G and H be either both directed or both
     undirected.
-
-    Implemented for Graph, DiGraph, XGraph, XDiGraph.
 
     """
 
@@ -121,13 +144,157 @@ def disjoint_union(G,H):
     return R
 
 
+def intersection(G,H,create_using=None ):
+    """Return a new graph that contains only the edges that exist in 
+    both G and H.   
+
+    The node sets of H and G must be the same.
+
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph 
+
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created.
+
+    Notes
+    -----
+       
+    If you want an new graph of the intersection of node sets of
+    G and H with the edges from G use
+
+    >>> G=nx.path_graph(3)
+    >>> H=nx.path_graph(5)
+    >>> R=G.copy()
+    >>> R.delete_nodes_from(n for n in G if n not in H)
+
+    """
+    # create new graph         
+    if create_using is None:  # Graph object of the same type as G
+        R=create_empty_copy(G)
+    else:                     # user specified graph 
+        R=create_using 
+        R.clear() 
+
+    R.name="Intersection of (%s and %s)"%(G.name, H.name)
+
+    if set(G)!=set(H):
+        raise networkx.NetworkXError("Node sets of graphs not equal")        
+    
+    if G.number_of_edges()<=H.number_of_edges():
+        for e in G.edges():
+            if H.has_edge(*e):
+                R.add_edge(*e)
+    else:
+        for e in H.edges():
+            if G.has_edge(*e):
+                R.add_edge(*e)
+
+    return R
+
+def difference(G,H,create_using=None):
+    """Return a new graph that contains the edges that exist in 
+    in G but not in H.  
+
+    The node sets of H and G must be the same.
+
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph 
+
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created.
+
+    Notes
+    -----
+    If you want an new graph consisting of the difference of the node sets of
+    G and H with the edges from G use
+
+    >>> G=nx.path_graph(3)
+    >>> H=nx.path_graph(5)
+    >>> R=G.copy()
+    >>> R.delete_nodes_from(n for n in G if n in H)
+
+    """
+    # create new graph         
+    if create_using is None:  # Graph object of the same type as G
+        R=create_empty_copy(G)
+    else:                     # user specified graph 
+        R=create_using 
+        R.clear() 
+
+    R.name="Difference of (%s and %s)"%(G.name, H.name)
+
+    if set(G)!=set(H):
+        raise networkx.NetworkXError("Node sets of graphs not equal")        
+    
+    if G.number_of_edges()<=H.number_of_edges():
+        for e in G.edges():
+            if not H.has_edge(*e):
+                R.add_edge(*e)
+    else:
+        for e in H.edges():
+            if not G.has_edge(*e):
+                R.add_edge(*e)
+
+    return R
+
+def symmetric_difference(G,H,create_using=None ):
+    """Return new graph with edges that exist in 
+    in either G or H but not both.  
+
+    The node sets of H and G must be the same.
+
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph 
+
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created.
+
+    """
+    # create new graph         
+    if create_using is None:  # Graph object of the same type as G
+        R=create_empty_copy(G)
+    else:                     # user specified graph 
+        R=create_using 
+        R.clear() 
+
+    R.name="Symmetric difference of (%s and %s)"%(G.name, H.name)
+
+    if set(G)!=set(H):
+        raise networkx.NetworkXError("Node sets of graphs not equal")        
+    
+    gnodes=set(G) # set of nodes in G
+    hnodes=set(H) # set of nodes in H
+    nodes=gnodes.symmetric_difference(hnodes)
+    R.add_nodes_from(nodes)
+    
+    for e in G.edges():
+        if not H.has_edge(*e):
+            R.add_edge(*e)
+    for e in H.edges():
+        if not G.has_edge(*e):
+            R.add_edge(*e)
+    return R
+
+
 def cartesian_product(G,H):
     """ Return the Cartesian product of G and H.
 
-    Tested only on Graph class.
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph 
+
+    Notes
+    -----
+    Only tested with Graph class.
     
     """
-
     Prod=networkx.Graph()
 
     for v in G:
@@ -147,17 +314,22 @@ def compose(G,H,create_using=None, name=None):
     Composition is the simple union of the node sets and edge sets.
     The node sets of G and H need not be disjoint.
 
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph 
+
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created.
+
+    name : string       
+       Specify name for new graph
+
+    Notes
+    -----
     A new graph is returned, of the same class as G.
     It is recommended that G and H be either both directed or both
     undirected.
-
-    Optional create_using=R returns graph R filled in with the
-    compose(G,H).  Otherwise a new graph is created, of the
-    same class as G.  It is recommended that G and H be either
-    both directed or both undirected.
-
-    Implemented for Graph, DiGraph, XGraph, XDiGraph    
-
     """
     if name is None:
         name="compose( %s, %s )"%(G.name,H.name)
@@ -177,12 +349,19 @@ def compose(G,H,create_using=None, name=None):
 def complement(G,create_using=None,name=None):
     """ Return graph complement of G.
 
-    Unless otherwise specified, return a new graph of the same type as
-    self.  Use (optional) create_using=R to return the resulting
-    subgraph in R. R can be an existing graph-like object (to be
-    emptied) or R can be a call to a graph object,
-    e.g. create_using=DiGraph(). See documentation for empty_graph()
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
 
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created.
+
+    name : string       
+       Specify name for new graph
+
+    Notes
+    ------
     Note that complement() does not create self-loops and also 
     does not produce parallel edges for MultiGraphs.
 
@@ -204,6 +383,13 @@ def complement(G,create_using=None,name=None):
 def create_empty_copy(G,with_nodes=True):
     """Return a copy of the graph G with all of the edges removed.
 
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    with_nodes :  bool (default=True)
+       Include nodes. 
     """
     H=G.__class__()
 
@@ -216,10 +402,6 @@ def create_empty_copy(G,with_nodes=True):
 def convert_to_undirected(G):
     """Return a new undirected representation of the graph G.
 
-    Works for Graph, DiGraph, MultiGraph, MultiDiGraph.
-
-    Note: convert_to_undirected(G)=G.to_undirected()
-
     """
     return G.to_undirected()
 
@@ -227,10 +409,6 @@ def convert_to_undirected(G):
 def convert_to_directed(G):
     """Return a new directed representation of the graph G.
 
-    Works for Graph, DiGraph, MultiGraph, MultiDiGraph.
-
-    Note: convert_to_directed(G)=G.to_directed()
-    
     """
     return G.to_directed()
 
@@ -238,16 +416,19 @@ def convert_to_directed(G):
 def relabel_nodes(G,mapping):
     """Return a copy of G with node labels transformed by mapping.
 
-    mapping is either
-      - a dictionary with the old labels as keys and new labels as values
-      - a function transforming an old label with a new label
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
 
-    In either case, the new labels must be hashable Python objects.
-
-    mapping as dictionary:
+    mapping : ditionary or funcdtion
+       Either a dictionary with the old labels as keys and new labels as values
+       or a function transforming an old label with a new label
+       In either case, the new labels must be hashable Python objects.
 
     Examples
     --------
+    mapping as dictionary
 
     >>> G=nx.path_graph(3)  # nodes 0-1-2
     >>> mapping={0:'a',1:'b',2:'c'}
@@ -270,7 +451,9 @@ def relabel_nodes(G,mapping):
     >>> print H.nodes()
     [0, 1, 4]
 
-    Also see convert_node_labels_to_integers.
+    Also see
+    --------
+    convert_node_labels_to_integers()
 
     """
     H=G.__class__()
@@ -305,30 +488,27 @@ def relabel_nodes_with_function(G, func):
 def convert_node_labels_to_integers(G,first_label=0,
                                     ordering="default",
                                     discard_old_labels=True):
-    """ Return a copy of G, with n node labels replaced with integers,
-    starting at first_label.
+    """ Return a copy of G node labels replaced with integers.
 
-    first_label: (optional, default=0)
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
 
+    first_label : int, optional (default=0)       
        An integer specifying the offset in numbering nodes.
        The n new integer labels are numbered first_label, ..., n+first_label.
-    
-    ordering: (optional, default="default")
 
-       A string specifying how new node labels are ordered. 
-       Possible values are: 
+    ordering : string
+        "default" : inherit node ordering from G.nodes() 
+        "sorted"  : inherit node ordering from sorted(G.nodes())
+        "increasing degree" : nodes are sorted by increasing degree
+        "decreasing degree" : nodes are sorted by decreasing degree
 
-          "default" : inherit node ordering from G.nodes() 
-          "sorted"  : inherit node ordering from sorted(G.nodes())
-          "increasing degree" : nodes are sorted by increasing degree
-          "decreasing degree" : nodes are sorted by decreasing degree
-
-    *discard_old_labels*
+    discard_old_labels : bool, optional (default=True)
        if True (default) discard old labels
        if False, create a dict self.node_labels that maps new
        labels to old labels
-
-    Works for Graph, DiGraph, XGraph, XDiGraph
     """
 #    This function strips information attached to the nodes and/or
 #    edges of a graph, and returns a graph with appropriate integer
