@@ -1,19 +1,38 @@
 """
-Convert NetworkX graphs to and from other formats.
+*******
+Convert
+*******
 
-from_whatever attempts to guess the input format
+This module provides functions to convert 
+NetworkX graphs to and from other formats.
 
-Example: Create a 10 node random digraph
+When possible the preferred way of converting data
+to NetworkX graph is through the graph constuctor.  In that case the
+from_whatever() function is called to attempt to guess the
+input type and convert it automatically.
+
+Examples
+--------
+
+Create a 10 node random graph from a numpy matrix
 
 >>> import numpy
 >>> a=numpy.reshape(numpy.random.random_integers(0,1,size=100),(10,10))
->>> D=nx.from_whatever(a,create_using=nx.DiGraph()) 
-
-or
-
 >>> D=nx.DiGraph(a) 
 
-For graphviz formats see networkx.drawing.nx_pygraphviz
+or equivalently
+
+>>> D=nx.from_whatever(a,create_using=nx.DiGraph()) 
+
+Create a graph with a single edge from a dictionary of dictionaries
+
+>>> d={0: {1: 1}} # dict-of-dicts single edge (0,1)
+>>> G=nx.Graph(d)
+
+
+See Also
+--------
+For graphviz dot formats see networkx.drawing.nx_pygraphviz
 or networkx.drawing.nx_pydot.
 
 """
@@ -36,7 +55,7 @@ import networkx
 
 def _prep_create_using(create_using):
     """
-    Returns a graph object ready to be populated.
+    Return a graph object ready to be populated.
 
     If create_using is None return the default (just networkx.Graph())
     If create_using.clear() works, assume it returns a graph object.
@@ -55,22 +74,38 @@ def _prep_create_using(create_using):
 
 
 def from_whatever(thing,create_using=None,multigraph_input=False):
-    """Attempt to make a NetworkX graph from an known type.
+    """Make a NetworkX graph from an known type.
 
-    Current known types are:
+    The preferred way to call this is automatically
+    from the class constructor
 
-       any NetworkX graph
-       dict-of-dicts
-       dist-of-lists
-       numpy matrix
-       numpy ndarray
-       scipy sparse matrix
-       pygraphviz agraph
+    >>> d={0: {1: 1}} # dict-of-dicts single edge (0,1)
+    >>> G=nx.Graph(d)
+    
+    instead of the equivalent
 
-    If multigraph_input is True and thing is a dict_of_dicts,
-    try to create a multigraph assuming dict_of_dict_of_lists.
-    If thing and create_using are both multigraphs then create
-    a multigraph from a multigraph.
+    >>> G=nx.from_dict_of_dicts(d)
+
+    Parameters
+    ----------
+    thing : a object to be converted
+       Current known types are:
+         any NetworkX graph
+         dict-of-dicts
+         dist-of-lists
+         numpy matrix
+         numpy ndarray
+         scipy sparse matrix
+         pygraphviz agraph
+
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created.
+
+    multigraph_input : bool (default False)
+      If True and  thing is a dict_of_dicts,
+      try to create a multigraph assuming dict_of_dict_of_lists.
+      If thing and create_using are both multigraphs then create
+      a multigraph from a multigraph.
 
     """
     # NX graph
@@ -138,10 +173,18 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
 
 
 def to_dict_of_lists(G,nodelist=None):
-    """Return graph G as a Python dict of lists.
+    """Return adjacency representation of graph as a dictionary of lists
 
-    If nodelist is defined return a dict of lists with only those nodes.
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
 
+    nodelist : list       
+       Use only nodes specified in nodelist
+
+    Notes
+    -----
     Completely ignores edge data for MultiGraph and MultiDiGraph.
 
     """
@@ -154,7 +197,23 @@ def to_dict_of_lists(G,nodelist=None):
     return d            
 
 def from_dict_of_lists(d,create_using=None):
-    """Return a NetworkX graph G from a Python dict of lists.
+    """Return a graph from a dictionary of lists.
+
+    Parameters
+    ----------
+    d : dictionary of lists
+      A dictionary of lists adjacency representation.
+
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created.
+
+    Examples
+    --------
+    >>> dol= {0:[1]} # single edge (0,1)
+    >>> G=nx.from_dict_of_lists(dol)
+
+    or
+    >>> G=nx.Graph(dol) # use Graph constructor
 
     """
     G=_prep_create_using(create_using)
@@ -177,15 +236,22 @@ def from_dict_of_lists(d,create_using=None):
 
 
 def to_dict_of_dicts(G,nodelist=None,edge_data=None):
-    """Return graph G as a Python dictionary of dictionaries.
+    """Return adjacency representation of graph as a dictionary of dictionaries
 
-    If nodelist is defined return a dict of dicts with only those nodes.
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
 
-    If edge_data is given, the value of the dictionary will be
-    set to edge_data for all edges.  This is useful to make
-    an adjacency matrix type representation with 1 as the edge data.
-    If edgedata is None, the edgedata in G is used to fill the values.
-    If G is a multigraph, the edgedata is a list for each pair (u,v).
+    nodelist : list       
+       Use only nodes specified in nodelist
+
+    edge_data : list, optional       
+       If provided,  the value of the dictionary will be
+       set to edge_data for all edges.  This is useful to make
+       an adjacency matrix type representation with 1 as the edge data.
+       If edgedata is None, the edgedata in G is used to fill the values.
+       If G is a multigraph, the edgedata is a list for each pair (u,v).
     
     """
     dod={}
@@ -210,13 +276,28 @@ def to_dict_of_dicts(G,nodelist=None,edge_data=None):
     return dod
 
 def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
-    """Return a NetworkX graph G from a Python dictionary of dictionaries.
+    """Return a graph from a dictionary of dictionaries.
 
-    The value of the inner dict becomes the edge_data for the NetworkX graph.
+    Parameters
+    ----------
+    d : dictionary of dictionaries
+      A dictionary of dictionaries adjacency representation.
 
-    When multigraph_input is True, the values of the inner dict are assumed 
-    to be containers of edge data for multiple edges.
-    Otherwise this routine assumes the edgedata are singletons.
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created.
+
+    multigraph_input : bool (default False)
+       When True, the values of the inner dict are assumed 
+       to be containers of edge data for multiple edges.
+       Otherwise this routine assumes the edge data are singletons.
+
+    Examples
+    --------
+    >>> dod= {0: {1:1}} # single edge (0,1)
+    >>> G=nx.from_dict_of_dicts(dod)
+
+    or
+    >>> G=nx.Graph(dod) # use Graph constructor
 
     """
     G=_prep_create_using(create_using)
@@ -250,15 +331,22 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
 
 
 def to_numpy_matrix(G,nodelist=None):
-    """Return the adjacency matrix of graph G as a numpy matrix.
+    """Return the graph adjacency matrix as a numpy matrix. 
 
-    If nodelist is defined return adjacency matrix with nodes in nodelist
-    in the order specified.  All nodes must appear in nodelist or a KeyError
-    is raised.
-    If nodelist is None, the ordering is produced by G.nodes()
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
 
-    When G.weighted==False the value of the entry A[u,v] is one 
-    if there is an edge u-v and zero otherwise.
+    nodelist : list, optional       
+       Use the order of nodes in nodelist for the rows.
+       All nodes must appear in nodelist or a KeyError is raised.
+       If nodelist is None, the ordering is produced by G.nodes()
+
+    Notes
+    -----
+    When G.weighted==False the value of the entry A[u,v] is 1
+    if there is an edge u-v and 0 otherwise.
 
     Multiple edges and edge data are both ignored for MultiGraph/MultiDiGraph.
 
@@ -290,8 +378,18 @@ def to_numpy_matrix(G,nodelist=None):
     return A            
 
 def from_numpy_matrix(A,create_using=None):
-    """Return networkx graph G from numpy matrix adjacency list. 
+    """Return a graph from numpy matrix adjacency list. 
 
+    Parameters
+    ----------
+    A : numpy matrix
+      An adjacency matrix representation of a graph
+
+    create_using : NetworkX graph
+       Use specified graph for result.  The default is Graph()
+
+    Examples
+    --------
     >>> import numpy
     >>> A=numpy.matrix([[1,1],[2,1]])
     >>> G=nx.from_numpy_matrix(A)
@@ -321,23 +419,32 @@ def from_numpy_matrix(A,create_using=None):
 
 
 def to_scipy_sparse_matrix(G,nodelist=None):
-    """Return adjacency matrix of graph as a scipy sparse matrix.
+    """Return the graph adjacency matrix as a scipy sparse matrix.
 
-    Uses lil_matrix format.  To convert to other formats see
-    scipy.sparse documentation.
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
 
-    If nodelist is defined return adjacency matrix with nodes 
-    in the order specified by nodelist.  Otherwise the order
-    is produced by G.nodes().
+    nodelist : list, optional       
+       Use the order of nodes in nodelist for the rows.
+       All nodes must appear in nodelist or a KeyError is raised.
+       If nodelist is None, the ordering is produced by G.nodes()
 
-    If G.weighted is True and G is not a multigraph, the edgedata
-    is assumed to be numeric and becomes the value of A[u.v].
-    Otherwise A[u,v] is one if an edge u-v exists and zero otherwise.
-
+    Examples
+    --------
     >>> G=nx.path_graph(4)
     >>> A=nx.to_scipy_sparse_matrix(G)
     >>> C=A.tocsr() # convert to compressed row storage
 
+    Notes
+    -----
+    Uses lil_matrix format.  To convert to other formats see
+    scipy.sparse documentation.
+
+    If G.weighted is True and G is not a multigraph, the edgedata
+    is assumed to be numeric and becomes the value of A[u.v].
+    Otherwise A[u,v] is 1 if an edge u-v exists and 0 otherwise.
     """
     try:
         from scipy import sparse
@@ -368,9 +475,18 @@ def to_scipy_sparse_matrix(G,nodelist=None):
 
 
 def from_scipy_sparse_matrix(A,create_using=None):
-    """Return networkx graph G from scipy scipy sparse matrix
-    adjacency list. 
+    """Return a graph from scipy sparse matrix adjacency list. 
 
+    Parameters
+    ----------
+    A : scipy sparse matrix
+      An adjacency matrix representation of a graph
+
+    create_using : NetworkX graph
+       Use specified graph for result.  The default is Graph()
+
+    Examples
+    --------
     >>> import scipy.sparse
     >>> A=scipy.sparse.eye(2,2,1)
     >>> G=nx.from_scipy_sparse_matrix(A)
@@ -379,7 +495,6 @@ def from_scipy_sparse_matrix(A,create_using=None):
 
     G=_prep_create_using(create_using)
 
-    # is this a XGraph or XDiGraph?
     # FIXME
     # This is a bad way to check for whether edge data exists...
     # If someone ever creates a graph class with edge data and
@@ -407,46 +522,3 @@ def from_scipy_sparse_matrix(A,create_using=None):
            else:
                G.add_edge(i,j)
     return G
-
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/convert.txt',
-                                 package='networkx')
-    return suite
-
-def _test_suite_numpy():
-    import doctest
-    suite = doctest.DocFileSuite('tests/convert_numpy.txt',
-                                     package='networkx')
-    return suite
-
-def _test_suite_scipy():
-    import doctest
-    suite = doctest.DocFileSuite('tests/convert_scipy.txt',
-                                     package='networkx')
-    return suite
-
-
-
-
-if __name__ == "__main__":
-    import os 
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    try:
-        import numpy
-        unittest.TextTestRunner().run(_test_suite_numpy())
-    except ImportError: 
-        pass
-    try:
-        import scipy
-        unittest.TextTestRunner().run(_test_suite_scipy())
-    except ImportError: 
-        pass    
