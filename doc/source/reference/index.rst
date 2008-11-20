@@ -15,8 +15,11 @@ Reference
    algorithms
    generators
    linalg
+   convert
    readwrite
    drawing
+   exceptions
+   utils
    history
    credits      
    legal
