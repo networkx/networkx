@@ -1,5 +1,16 @@
 """
-Utilities for networkx package
+*********
+Utilities
+*********
+
+Helpers for NetworkX.
+
+These are not imported into the base networkx namespace but
+can be accessed, for example, as
+
+>>> import networkx
+>>> networkx.utils.is_string_like('spam')
+True
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
@@ -16,7 +27,7 @@ import random
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
 def is_singleton(obj):
-    """ Is string_like or not iterable. """
+    """Is string_like or not iterable."""
     return hasattr(obj,"capitalize") or not hasattr(obj,"__iter__")
 
 def is_string_like(obj): # from John Hunter, types-free version
@@ -31,7 +42,7 @@ def is_string_like(obj): # from John Hunter, types-free version
 
  
 def iterable(obj):
-    """ Return True if obj is iterable with a well-defined len()  """
+    """ Return True if obj is iterable with a well-defined len()"""
     if hasattr(obj,"__iter__"): return True
     try:
         len(obj)
@@ -40,7 +51,7 @@ def iterable(obj):
     return True
 
 def flatten(obj, result=None):
-    """ Return flattened version of (possibly nested) iterable obj. """
+    """ Return flattened version of (possibly nested) iterable object. """
     if not iterable(obj) or is_string_like(obj):
         return obj
     if result is None:
@@ -51,16 +62,6 @@ def flatten(obj, result=None):
         else:
             flatten(item, result)
     return obj.__class__(result)
-
-def iterable_to_string(obj, sep=''):
-    """
-    Return string obtained by concatenating the string representation
-    of each element of an iterable obj, with an optional internal string
-    separator specified.
-    """
-    if not iterable(obj):
-        return str(obj)
-    return sep.join([str(i) for i in obj])
 
 def is_list_of_ints( intlist ):
     """ Return True if list is a list of ints. """
@@ -196,84 +197,6 @@ def scipy_discrete_sequence(n,distribution=False):
     # choose from CDF
     seq=[bisect.bisect_left(cdf,s)-1 for s in inputseq]
     return seq
-
-
-# some helpers for choosing random sequences from distributions
-# uses pygsl: pygsl.sourceforge.org, but not all its functionality.
-# note: gsl's default number generator is the same as Python's
-# (Mersenne Twister)
-
-def gsl_pareto_sequence(n,exponent=1.0,scale=1.0,seed=None):
-    """
-    Return sample sequence of length n from a Pareto distribution.
-
-    """
-    try:
-        import pygsl.rng
-    except ImportError:
-        print "Import error: not able to import pygsl"
-        return
-    rng=pygsl.rng.rng()
-    random._inst = random.Random()
-    if seed is None:
-        seed=random.randint(1,2**32-1)
-    rng.set(seed)
-
-    return rng.pareto(exponent,scale,n)
-
-def gsl_powerlaw_sequence(n,exponent=2.0,scale=1.0,seed=None):
-    """
-    Return sample sequence of length n from a power law distribution.
-
-    """
-    try:
-        import pygsl.rng
-    except ImportError:
-        print "Import error: not able to import pygsl"
-        return
-    rng=pygsl.rng.rng()
-    random._inst = random.Random()
-    if seed is None:
-        seed=random.randint(1,2**32-1)
-    rng.set(seed)
-
-    return rng.pareto(exponent-1,scale,n)
-
-def gsl_poisson_sequence(n,mu=1.0,seed=None):
-    """
-    Return sample sequence of length n from a Poisson distribution.
-
-    """
-    try:
-        import pygsl.rng
-    except ImportError:
-        print "Import error: not able to import pygsl"
-        return
-    rng=pygsl.rng.rng()
-    random._inst = random.Random()
-    if seed is None:
-        seed=random.randint(1,2**32-1)
-    rng.set(seed)
-
-    return rng.poisson(mu,n)
-
-def gsl_uniform_sequence(n,seed=None):
-    """
-    Return sample sequence of length n from a uniform distribution.
-
-    """
-    try:
-        import pygsl.rng
-    except ImportError:
-        print "Import error: not able to import pygsl"
-        return
-    rng=pygsl.rng.rng()
-    random._inst = random.Random()
-    if seed is None:
-        seed=random.randint(1,2**32-1)
-    rng.set(seed)
-
-    return rng.uniform(n)
 
 
 # The same helpers for choosing random sequences from distributions
