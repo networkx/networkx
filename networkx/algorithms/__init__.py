@@ -5,6 +5,7 @@ from core import *
 from isomorphism import *
 from traversal import *
 from boundary import *
+from matching import *
 
 import traversal
 import isomorphism

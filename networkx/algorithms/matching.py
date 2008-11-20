@@ -1,5 +1,14 @@
 """
-Matching algorithms.
+********
+Matching
+********
+
+The algorithm is taken from "Efficient Algorithms for Finding Maximum
+Matching in Graphs" by Zvi Galil, ACM Computing Surveys, 1986.
+It is based on the "blossom" method for finding augmenting paths and
+the "primal-dual" method for finding a matching of maximum weight, both
+methods invented by Jack Edmonds.
+
 """
 __author__ = """Joris van Rantwijk"""
 #    Copyright (C) 2004-2008 by 
@@ -9,14 +18,13 @@ __author__ = """Joris van Rantwijk"""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 #
-
-
 from itertools import repeat
 
+_all__=['max_weight_matching']
 
 def max_weight_matching(G, maxcardinality=False):
-    """
-    Compute a maximum-weighted matching in the undirected, weighted graph G.
+    """Compute a maximum-weighted matching in the undirected, weighted graph G.
+    
     If maxcardinality is True, compute the maximum-cardinality matching
     with maximum weight among all maximum-cardinality matchings.
 
@@ -769,31 +777,4 @@ def max_weight_matching(G, maxcardinality=False):
         verifyOptimum()
 
     return mate
-
-
-def _test_suite():
-    import doctest
-    ## patch doctest module to make it work with coverage.py
-    #def hook_set_trace(self):
-    #    self.__debugger_used = True
-    #    doctest.pdb.Pdb.set_trace(self)
-    #def hook_set_continue(self):
-    #    if self.__debugger_used:
-    #        doctest.pdb.Pdb.set_continue(self)
-    #doctest._OutputRedirectingPdb.__debugger_used = False
-    #doctest._OutputRedirectingPdb.set_trace = hook_set_trace
-    #doctest._OutputRedirectingPdb.set_continue = hook_set_continue
-    suite = doctest.DocFileSuite('tests/matching.txt',package='networkx')
-    return suite
-
-
-if __name__ == "__main__":
-    import os, sys, unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." % sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
 
