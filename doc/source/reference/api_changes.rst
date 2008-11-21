@@ -65,15 +65,15 @@ delete_nodes_from()
    the graph.  The preferred name is now remove_nodes_from().
 
 
-delete_edges()
+delete_edge()
 ^^^^^^^^^^^^^^
    Now raises an exception on an attempt to delete an edge not in the graph.
-   The preferred name is now remove_edges().
+   The preferred name is now remove_edge().
 
 
 delete_edges_from()
 ^^^^^^^^^^^^^^^^^^^
-   The preferred name is now remove_edge().
+   The preferred name is now remove_edges_from().
 
 
 add_edge()
