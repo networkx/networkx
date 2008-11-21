@@ -61,7 +61,7 @@ Distance
    periphery
    center
 
-Paths
+Paths 
 -----
 .. automodule:: networkx.algorithms.traversal.path
 .. currentmodule:: networkx
@@ -69,19 +69,20 @@ Paths
 .. autosummary::
    :toctree: generated/
 
+   average_shortest_path_length
    shortest_path
    shortest_path_length
-   bidirectional_shortest_path
    single_source_shortest_path
    single_source_shortest_path_length
    all_pairs_shortest_path
    all_pairs_shortest_path_length
    dijkstra_path
    dijkstra_path_length
-   bidirectional_dijkstra
    single_source_dijkstra_path
    single_source_dijkstra_path_length
    single_source_dijkstra
+   bidirectional_dijkstra
+   bidirectional_shortest_path
    dijkstra_predecessor_and_distance
    predecessor
    floyd_warshall

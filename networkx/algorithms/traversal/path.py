@@ -10,7 +10,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-__all__ = ['shortest_path', 'shortest_path_length',
+__all__ = ['average_shortest_path_length',
+           'shortest_path', 'shortest_path_length',
            'bidirectional_shortest_path',
            'single_source_shortest_path', 
            'single_source_shortest_path_length',
@@ -129,6 +130,36 @@ def all_pairs_shortest_path_length(G,cutoff=None):
         paths[n]=single_source_shortest_path_length(G,n,cutoff=cutoff)
     return paths        
         
+
+def average_shortest_path_length(G,weighted=False):
+    """ Return the average shortest path length.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weighted : bool, optional, default=False 
+       If true use edge weights on path.  If False,
+       use 1 as the edge distance.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> print nx.average_shortest_path_length(G)
+    1.25
+
+    """
+    if weighted:
+        path_length=single_source_dijkstra_path_length
+    else:
+        path_length=single_source_shortest_path_length
+    avg=0.0
+    for n in G:
+        l=path_length(G,n).values()
+        avg+=float(sum(l))/len(l)
+    return avg/len(G)
+        
+
 def shortest_path(G,source,target):
     """Return a list of nodes in a shortest path between source and target.
 
