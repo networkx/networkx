@@ -624,7 +624,7 @@ def single_source_dijkstra_path_length(G,source):
     return length
 
 
-def single_source_dijkstra(G,source,target=None):
+def single_source_dijkstra(G,source,target=None,cutoff=None ):
     """Returns shortest paths and lengths in a weighted graph G.
 
     Uses Dijkstra's algorithm for shortest paths. 
@@ -641,6 +641,11 @@ def single_source_dijkstra(G,source,target=None):
 
     target : node label, optional
        Ending node for path 
+
+    cutoff : integer or float, optional
+        Depth to stop the search - only
+        paths of length <= cutoff are returned.
+
 
     Examples
     --------
@@ -684,6 +689,9 @@ def single_source_dijkstra(G,source,target=None):
         if v == target: break
         for w,edgedata in G[v].iteritems():
             vw_dist = dist[v] + edgedata
+            if cutoff is not None:
+                if vw_dist>cutoff: 
+                    continue
             if w in dist:
                 if vw_dist < dist[w]:
                     raise ValueError,\
