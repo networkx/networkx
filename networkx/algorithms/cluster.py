@@ -29,6 +29,16 @@ def triangles(G,nbunch=None,with_labels=False):
     out : list or dictionary
        Number of trianges
     
+    Examples
+    --------
+    >>> G=nx.complete_graph(5)
+    >>> print nx.triangles(G,0)
+    6
+    >>> print nx.triangles(G,with_labels=True)
+    {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}
+    >>> print nx.triangles(G,(0,1))
+    [6, 6]
+
     Notes
     -----
     When computing triangles for the entire graph 
@@ -78,6 +88,12 @@ def average_clustering(G):
     out : float
        Average clustering
     
+    Examples
+    --------
+    >>> G=nx.complete_graph(5)
+    >>> print nx.average_clustering(G)
+    1.0
+
     Notes
     -----
     This is a space saving routine; it might be faster
@@ -113,6 +129,15 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
     -------
     out : float, list, dictionary or tuple of dictionaries
        Clustering coefficient at specified nodes
+
+    Examples
+    --------
+    >>> G=nx.complete_graph(5)
+    >>> print nx.clustering(G,0)
+    1.0
+    >>> print nx.clustering(G,with_labels=True)
+    {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
+
 
     Notes
     -----
@@ -167,10 +192,13 @@ def transitivity(G):
     out : float
        Transitivity
 
-"""
-    G_has_edge=G.has_edge # cache function
-    G_neighbors=G.neighbors 
+    Examples
+    --------
+    >>> G=nx.complete_graph(5)
+    >>> print nx.transitivity(G)
+    1.0
 
+"""
     triangles=0 # 6 times number of triangles
     contri=0  # 2 times number of connected triples
     for v,d,t in _triangles_and_degree_iter(G):
