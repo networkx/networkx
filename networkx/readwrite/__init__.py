@@ -11,3 +11,4 @@ from graphml import *
 from leda import *
 from sparsegraph6 import *
 from gml import *
+from pajek import *

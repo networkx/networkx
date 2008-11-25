@@ -15,4 +15,4 @@ Reading and Writing
    readwrite.leda
    readwrite.yaml
    readwrite.sparsegraph6
-
+   readwrite.pajek

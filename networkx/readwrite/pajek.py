@@ -1,4 +1,8 @@
 """
+*****
+Pajek
+*****
+
 Read graphs in Pajek format.
 
 See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
@@ -18,8 +22,23 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 import networkx
 from networkx.utils import is_string_like,_get_fh
 
+__all__ = ['read_pajek', 'parse_pajek', 'write_pajek']
+
 def write_pajek(G, path):
-    """Write NetworkX graph in pajek format to path.
+    """Write in Pajek format to path.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+    path : file or string
+       File or filename to write.  
+       Filenames ending in .gz or .bz2 will be compressed.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> nx.write_pajek(G, "test.net")
     """
     fh=_get_fh(path,mode='w')
 
@@ -47,7 +66,7 @@ def write_pajek(G, path):
         fh.write("\n")                               
         
     # write edges with attributes         
-    if G.is_directed():
+    if G.directed:
         fh.write("*arcs\n")
     else:
         fh.write("*edges\n")
@@ -71,18 +90,45 @@ def write_pajek(G, path):
     fh.close()
 
 def read_pajek(path):
-    """Read graph in pajek format from path. Returns an XGraph or XDiGraph.
+    """Read graph in Pajek format from path. 
+
+    Returns a MultiGraph or MultiDiGraph.
+
+    Parameters
+    ----------
+    path : file or string
+       File or filename to write.  
+       Filenames ending in .gz or .bz2 will be compressed.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> nx.write_pajek(G, "test.net")
+    >>> G=nx.read_pajek("test.net")
+
+    To create a Graph use
+
+    >>> G1=nx.Graph(G)
+
     """
     fh=_get_fh(path,mode='r')        
     G=parse_pajek(fh)
     return G
 
 def parse_pajek(lines):
-    """Parse pajek format graph from string or iterable.."""
+    """Parse pajek format graph from string or iterable.
+
+    Primarily used as a helper for read_pajek().
+
+    See Also
+    --------
+    read_pajek()
+
+    """
     import shlex
     if is_string_like(lines): lines=iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines])
-    G=networkx.XDiGraph(selfloops=True) # are multiedges allowed in Pajek?
+    G=networkx.MultiDiGraph() # are multiedges allowed in Pajek?
     G.node_attr={} # dictionary to hold node attributes
     directed=True # assume this is a directed network for now
     while lines:
@@ -90,10 +136,10 @@ def parse_pajek(lines):
             l=lines.next()
         except: #EOF
             break
-        if l.startswith("*network"):
+        if l.lower().startswith("*network"):
             label,name=l.split()
             G.name=name
-        if l.startswith("*vertices"):
+        if l.lower().startswith("*vertices"):
             nodelabels={}
             l,nnodes=l.split()
             for i in range(int(nnodes)):
@@ -104,9 +150,10 @@ def parse_pajek(lines):
                 G.node_attr[label]={'id':id,'x':x,'y':y,'shape':shape}
                 extra_attr=zip(splitline[5::2],splitline[6::2])
                 G.node_attr[label].update(extra_attr)
-        if l.startswith("*edges") or l.startswith("*arcs"):
-            if l.startswith("*edge"):
-                G=networkx.XGraph(G) # switch from digraph to graph
+        if l.lower().startswith("*edges") or l.lower().startswith("*arcs"):
+            if l.lower().startswith("*edge"):
+               # switch from digraph to graph
+                G=networkx.MultiGraph(G)
             for l in lines:
                 splitline=shlex.split(l)
                 ui,vi,w=splitline[0:3]
@@ -118,19 +165,3 @@ def parse_pajek(lines):
                 G.add_edge(u,v,edge_data)
     return G
 
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/readwrite/pajek.txt',package='networkx')
-    return suite
-
-if __name__ == "__main__":
-    import os 
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
