@@ -144,10 +144,15 @@ def parse_pajek(lines):
             l,nnodes=l.split()
             for i in range(int(nnodes)):
                 splitline=shlex.split(lines.next())
-                id,label,x,y,shape=splitline[0:5]
+                id,label=splitline[0:2]
                 G.add_node(label)
                 nodelabels[id]=label
-                G.node_attr[label]={'id':id,'x':x,'y':y,'shape':shape}
+                G.node_attr[label]={'id':id}
+                try: 
+                    x,y,shape=splitline[2:5]
+                    G.node_attr[label].update({'x':x,'y':y,'shape':shape})
+                except:
+                    pass
                 extra_attr=zip(splitline[5::2],splitline[6::2])
                 G.node_attr[label].update(extra_attr)
         if l.lower().startswith("*edges") or l.lower().startswith("*arcs"):
@@ -156,10 +161,15 @@ def parse_pajek(lines):
                 G=networkx.MultiGraph(G)
             for l in lines:
                 splitline=shlex.split(l)
-                ui,vi,w=splitline[0:3]
+                ui,vi=splitline[0:2]
                 u=nodelabels.get(ui,ui)
                 v=nodelabels.get(vi,vi)
-                edge_data={'value':float(w)}
+                edge_data={}
+                try:
+                    w=splitline[2:3]
+                    edge_data.update({'value':float(w)})
+                except:
+                    pass
                 extra_attr=zip(splitline[3::2],splitline[4::2])
                 edge_data.update(extra_attr)
                 G.add_edge(u,v,edge_data)

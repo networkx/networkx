@@ -40,3 +40,12 @@ True
 >>> sorted(G.edges())==sorted(H.edges())
 True
 
+
+Example without node positions or shape
+
+>>> data="""*Vertices 2\n1 "1"\n2 "2"\n*Edges\n1 2\n2 1"""
+>>> G=parse_pajek(data)
+>>> print sorted(G.nodes())
+['1', '2']
+>>> print sorted(G.edges())
+[('1', '2'), ('1', '2')]
