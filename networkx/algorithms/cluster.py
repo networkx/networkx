@@ -10,6 +10,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 
 __all__= ['triangles', 'average_clustering', 'clustering', 'transitivity']
 
+from networkx import NetworkXError
+
 def triangles(G,nbunch=None,with_labels=False):
     """Compute the number of triangles.
 
@@ -44,6 +46,9 @@ def triangles(G,nbunch=None,with_labels=False):
     When computing triangles for the entire graph 
     each triangle is counted three times, once at each node.
     """
+    if G.directed:
+        raise(NetworkXError,
+              "triangles() is not defined for directed graphs.")
     if with_labels:
         return dict( (v,t/2) for v,d,t in _triangles_and_degree_iter(G,nbunch))
     elif nbunch in G: 
@@ -145,6 +150,9 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
     which include the keyed node.  Ths is useful for computing
     transitivity.
     """
+    if G.directed:
+        raise(NetworkXError,
+              "Clustering algorithms are not defined for directed graphs.")
     if with_labels and weights:
         clusterc={}
         weights={}
