@@ -18,7 +18,7 @@ time.sleep(2)
 s=networkx.shortest_path(G,0,8)
 print "shortest path between 0-8",s
 e=zip(s[0:-1],s[1:])
-epath=[(u,v,G.get_edge(u,v)) for u,v in e]
+epath=[(u,v,G[u][v][0]) for u,v in e]
 
 wideyellow=G.new_edge_style(color='#ffff00',width='6.0')
 for edge in epath:

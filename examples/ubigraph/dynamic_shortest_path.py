@@ -20,7 +20,7 @@ def vertex_callback(id):
         if start is not None:
             s=nx.shortest_path(G,G.idnode[start],G.idnode[id])
             e=zip(s[0:-1],s[1:])
-            epath=[(u,v,G.get_edge(u,v)) for u,v in e]
+            epath=[(u,v,G[u][v][0]) for u,v in e]
             print >> sys.stderr, s
             G.set_edge_attr(epath,style=wideyellow)
             start=None

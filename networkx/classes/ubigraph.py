@@ -60,8 +60,6 @@ Node and edge styles:
 ->>> G.set_node_attr(style=redtorus) # all nodes to redtorus style
 """
     def __init__(self, data=None, name='', 
-                 selfloops=False, 
-                 multiedges=False, 
                  ubigraph_server= 'http://127.0.0.1:20738/RPC2',
                  clear=True,
                  nextid=0):
@@ -96,8 +94,6 @@ Node and edge styles:
 
 
         self.adj={}      # adjacency list
-        self.selfloops=selfloops
-        self.multiedges=multiedges
         if data is not None:
             self=convert.from_whatever(data,create_using=self)
         self.name=name
@@ -122,55 +118,34 @@ Node and edge styles:
             self.add_node(n,**kwds)
 
 
-    def delete_node(self,n):
+    def remove_node(self,n):
         if n in self:
-            MultiGraph.delete_node(self,n)
+            MultiGraph.remove_node(self,n)
             self.ubigraph.remove_vertex(self.nodeid[n])
             id=self.nodeid[n]
             del self.nodeid[n]
             del self.idnode[id]
 
 
-    def delete_nodes_from(self,nlist):
+    def remove_nodes_from(self,nlist):
         for n in nlist:
-            self.delete_node(n)
+            self.remove_node(n)
 
 
-    def add_edge(self, u, v=None, x=None, **kwds):  
-        if v is None: # add_edge was called as add_edge(e), with  e=(u,v,x)
-            if len(u)==3: # case e=(u,v,x)
-                u,v,x=u
-            else:          # assume e=(u,v)
-                u,v=u   # x=None
-
-        # if edge exists, quietly return if multiple edges are not allowed
-        if not self.multiedges and self.has_edge(u,v):
-            return
-
+    def add_edge(self, u, v, x=None, **kwds):  
         # add nodes            
         self.add_node(u)
         self.add_node(v)
-
-        # self loop? quietly return if not allowed
-        if not self.selfloops and u==v: 
-            return
 
         # create ubigraph edge
         # build dictionary with edge id and user data to use as edge data
         e=self.ubigraph.new_edge(self.nodeid[u],self.nodeid[v])
         edata={'id':e,'data':x}
-
-        if self.multiedges: # add x to the end of the list of objects
                             # that defines the edges between u and v
-            self.adj[u][v]=self.adj[u].get(v,[])+ [edata]
-            if u!=v:
-                self.adj[v][u]=self.adj[v].get(u,[])+ [edata]
-        else:  # x is the new object assigned to single edge between u and v
-            self.adj[u][v]=edata
-            if u!=v:
-                self.adj[v][u]=edata # a copy would be required to avoid
-                                   # modifying both at the same time
-                                   # when doing a delete_edge
+        self.adj[u][v]=self.adj[u].get(v,[])+ [edata]
+        if u!=v:
+            self.adj[v][u]=self.adj[v].get(u,[])+ [edata]
+
         # add ubigraph attributes
         for (k,v) in kwds.items():
             ret=self.ubigraph.set_edge_attribute(e,k,v) 
@@ -183,50 +158,36 @@ Node and edge styles:
         for e in ebunch:
             self.add_edge(e,**kwds)
 
-    def delete_edge(self, u, v=None, x=None): 
-        if v is None:      # was called as delete_edge(e)
-            if len(u)==3:  # case e=(u,v,x)
-                u,v,x=u
-            else:           # assume e=(u,v), x unspecified, set to None
-                u,v=u    # x=None
+    def remove_edge(self, u, v, x=None): 
         try:
             xdata=x['data']
         except:
             xdata=x
 
-        if self.multiedges:
-            if (self.adj.has_key(u) and self.adj[u].has_key(v)):
-                x=None
-                for edata in self.adj[u][v]:
-                    if xdata == edata['data']:
-                        x=edata # (u,v,edata) is an edge
-                        eid=edata['id']
-                if x is None: 
-                    return # no edge
-                # remove the edge item from list
-                self.adj[u][v].remove(x)  
+        if (self.adj.has_key(u) and self.adj[u].has_key(v)):
+            x=None
+            for edata in self.adj[u][v]:
+                if xdata == edata['data']:
+                    x=edata # (u,v,edata) is an edge
+                    eid=edata['id']
+            if x is None: 
+                return # no edge
+            # remove the edge item from list
+            self.adj[u][v].remove(x)  
+            # and if not self loop remove v->u entry
+            if u!=v:                   
+                self.adj[v][u].remove(x) 
+            # if last edge between u and v was removed, remove all trace
+            if len(self.adj[u][v])==0:
+                del self.adj[u][v]      
                 # and if not self loop remove v->u entry
-                if u!=v:                   
-                    self.adj[v][u].remove(x) 
-                # if last edge between u and v was deleted, remove all trace
-                if len(self.adj[u][v])==0:
-                    del self.adj[u][v]      
-                    # and if not self loop remove v->u entry
-                    if u!=v:              
-                        del self.adj[v][u] 
-                self.ubigraph.remove_edge(eid)
-        else:  # delete single edge       
-            if self.has_neighbor(u,v):
-                eid=self.get_edge(u,v)['id']                    
-                self.ubigraph.remove_edge(eid)
-                del self.adj[u][v]
-                if u!=v:
-                    del self.adj[v][u]
+                if u!=v:              
+                    del self.adj[v][u] 
+            self.ubigraph.remove_edge(eid)
 
-
-    def delete_edges_from(self, ebunch): 
+    def remove_edges_from(self, ebunch): 
         for e in ebunch:
-            self.delete_edge(e)
+            self.remove_edge(e)
 
     def clear(self):
         if len(self)>0:
@@ -251,12 +212,12 @@ Node and edge styles:
             bunch=self.edges(data=True)
         else:
             try:
-                self.has_edge(ebunch)
+                self.has_edge(ebunch[0],ebunch[1])
                 bunch=[ebunch]
             except:
                 bunch=list(ebunch)
 
-        for (u,v,d) in bunch:
+        for u,v,d in bunch:
             if style is None:
                 for (k,v) in kwds.items():
                     ret=self.ubigraph.set_edge_attribute(d['id'],k,v) 
@@ -332,8 +293,6 @@ Node and edge styles:
 
 class UbiDiGraph(UbiGraph,MultiDiGraph):
     def __init__(self, data=None, name='', 
-                 selfloops=False, 
-                 multiedges=False, 
                  ubigraph_server= 'http://127.0.0.1:20738/RPC2',
                  clear=True):
 
@@ -343,8 +302,6 @@ class UbiDiGraph(UbiGraph,MultiDiGraph):
 
         UbiGraph.__init__(self,
                           data=data,name=name,
-                          selfloops=selfloops,
-                          multiedges=multiedges,
                           ubigraph_server=ubigraph_server,
                           clear=clear)
         self.ubigraph.set_edge_style_attribute(0, "arrow", "true")
@@ -365,44 +322,27 @@ class UbiDiGraph(UbiGraph,MultiDiGraph):
             if self.use_node_labels:
                 self.ubigraph.set_vertex_attribute(self.nodeid[n],'label',str(n))
 
-    def delete_node(self,n):
+    def remove_node(self,n):
         if n in self:
-            MultiDiGraph.delete_node(self,n)
+            MultiDiGraph.remove_node(self,n)
             self.ubigraph.remove_vertex(self.nodeid[n])
 
 
-    def add_edge(self, u, v=None, x=None, **kwds):  
-        if v is None: # add_edge was called as add_edge(e), with e a tuple
-            if len(u)==3: #case e=(u,v,x)
-                u,v,x=u
-            else:          # assume e=(u,v)
-                u,v=u   # x=None
-
-        # if edge exists, quietly return if multiple edges are not allowed
-        if not self.multiedges and self.has_edge(u,v,x):
-            return
-
+    def add_edge(self, u, v, x=None, **kwds):  
         # add nodes            
         self.add_node(u)
         self.add_node(v)
-
-        # self loop? quietly return if not allowed
-        if not self.selfloops and u==v: 
-            return
 
         # create ubigraph edge
         # build dictionary with edge id and user data to use as edge data
         e=self.ubigraph.new_edge(self.nodeid[u],self.nodeid[v])
         edata={'id':e,'data':x}
 
-        if self.multiedges: # append x to the end of the list of objects
+#        if self.multiedges: # append x to the end of the list of objects
                             # that defines the edges between u and v
-            self.succ[u][v]=self.succ[u].get(v,[])+ [edata]
-            self.pred[v][u]=self.pred[v].get(u,[])+ [edata]
-        else:  # x is the new object assigned to single edge between u and v
-            self.succ[u][v]=edata
-            self.pred[v][u]=edata # note that the same object is referred to
-                                # from both succ and pred
+        self.succ[u][v]=self.succ[u].get(v,[])+ [edata]
+        self.pred[v][u]=self.pred[v].get(u,[])+ [edata]
+
         for (k,v) in kwds.items():
             ret=self.ubigraph.set_edge_attribute(e,k,v) 
 
@@ -411,38 +351,26 @@ class UbiDiGraph(UbiGraph,MultiDiGraph):
             self.ubigraph.set_edge_attribute(e,'label',str(x))
 
 
-    def delete_edge(self, u, v=None, x=None): 
-        if v is None:      # was called as delete_edge(e)
-            if len(u)==3:  # case e=(u,v,x)
-                u,v,x=u
-            else:           # assume e=(u,v), x unspecified, set to None
-                u,v=u    # x=None
+    def remove_edge(self, u, v, x=None): 
         try:
             xdata=x['data']
         except:
             xdata=x
 
-        if self.multiedges:              # multiedges are stored as a list
-            if (self.succ.has_key(u) and self.succ[u].has_key(v)):
-                x=None
-                for edata in self.succ[u][v]:
-                    if xdata == edata['data']:
-                        x=edata # (u,v,edata) is an edge
-                        eid=edata['id']
-                if x is None: 
-                    return # no edge
-                self.succ[u][v].remove(x)  # remove the edge item from list
-                self.pred[v][u].remove(x)
-                if len(self.succ[u][v])==0: # if last edge between u and v
-                    del self.succ[u][v]     # was deleted, remove all trace
-                    del self.pred[v][u]
-                self.ubigraph.remove_edge(eid)
-        else:  # delete single edge
-            if self.has_successor(u,v):
-                eid=self.get_edge(u,v)['id']                    
-                self.ubigraph.remove_edge(eid)
-                del self.succ[u][v]
+        if (self.succ.has_key(u) and self.succ[u].has_key(v)):
+            x=None
+            for edata in self.succ[u][v]:
+                if xdata == edata['data']:
+                    x=edata # (u,v,edata) is an edge
+                    eid=edata['id']
+            if x is None: 
+                return # no edge
+            self.succ[u][v].remove(x)  # remove the edge item from list
+            self.pred[v][u].remove(x)
+            if len(self.succ[u][v])==0: # if last edge between u and v
+                del self.succ[u][v]     # was removed, remove all trace
                 del self.pred[v][u]
+            self.ubigraph.remove_edge(eid)
         return
 
     def clear(self):
