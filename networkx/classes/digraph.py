@@ -462,7 +462,14 @@ class DiGraph(Graph):
         The reverse is a graph with the same nodes and edges
         but with the directions of the edges reversed.
         """
-        H = self.__class__(name="Reverse of (%s)"%self.name)
-        H.add_nodes_from(self)
-        H.add_edges_from([(v,u,d) for (u,v,d) in self.edges_iter(data=True)])
+        if copy:
+            H = self.__class__(name="Reverse of (%s)"%self.name)
+            H.pred=self.succ.copy()
+            H.adj=self.pred.copy()
+            H.succ=H.adj
+        else:
+            self.pred,self.succ=self.succ,self.pred
+            self.adj=self.succ
+            H=self
         return H
+
