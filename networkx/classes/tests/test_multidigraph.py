@@ -45,10 +45,17 @@ class TestMultiDiGraph(TestMultiGraph):
     
     def test_add_edges_from(self):
         G=self.Graph()
-        G.add_edges_from([(0,1)])
-        assert_equal(G.adj,{0: {1: [1]}, 1: {}})
-        assert_equal(G.succ,{0: {1: [1]}, 1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:[1]}})
+        G.add_edges_from([(0,1),(0,1,3)])
+        assert_equal(G.adj,{0: {1: [1,3]}, 1: {}})
+        assert_equal(G.succ,{0: {1: [1,3]}, 1: {}})
+        assert_equal(G.pred,{0: {}, 1: {0:[1,3]}})
+        G.add_edges_from([(0,1),(0,1,3)],data=2)
+        assert_equal(G.succ,{0: {1: [1,3,2,3]}, 1: {}})
+        assert_equal(G.pred,{0: {}, 1: {0:[1,3,2,3]}})
+
+        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,)])  # too few in tuple
+        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,1,2,3)])  # too many in tuple
+        assert_raises(TypeError, G.add_edges_from,[0])  # not a tuple
 
 
     def test_remove_edge(self):

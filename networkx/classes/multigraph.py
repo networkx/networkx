@@ -81,11 +81,14 @@ class MultiGraph(Graph):
 
     def add_edges_from(self, ebunch, data=1):  
         for e in ebunch:
-            u,v = e[0:2]
-            if len(e)==3:
-                d = e[2]
-            else:
+            ne=len(e)
+            if ne==3:
+                u,v,d = e
+            elif ne==2:
+                u,v = e  
                 d = data
+            else: 
+                raise NetworkXError,"Edge tuple %s must be a 2-tuple or 3-tuple."%(e,)
             self.add_edge(u,v,d)                
 
     add_edges_from.__doc__ = Graph.add_edges_from.__doc__

@@ -102,15 +102,11 @@ class TestGraph:
     
     def test_add_edges_from(self):
         G=self.Graph()
-        G.add_edges_from([(0,1),(0,2)])
-        assert_equal(G.adj,{0: {1:1, 2:1}, 1: {0:1}, 2:{0:1}})
-        G=self.Graph()
-        G.add_edges_from([(0,1,3),(0,2)])
-        assert_equal(G.adj,{0: {1:3, 2:1}, 1: {0:3}, 2:{0:1}})
-        G=self.Graph()
+        G.add_edges_from([(0,1),(0,2,3)])
+        assert_equal(G.adj,{0: {1:1, 2:3}, 1: {0:1}, 2:{0:3}})
         G.add_edges_from([(0,1),(0,2,3)],data=2)
         assert_equal(G.adj,{0: {1:2, 2:3}, 1: {0:2}, 2:{0:3}})
-        G.add_edges_from([(0,1),(0,2,3)],data=2)
+
         assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,)])  # too few in tuple
         assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,1,2,3)])  # too many in tuple
         assert_raises(TypeError, G.add_edges_from,[0])  # not a tuple
