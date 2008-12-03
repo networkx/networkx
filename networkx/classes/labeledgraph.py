@@ -63,7 +63,7 @@ class LabeledGraph(Graph):
             data=self.label.get(n,None)            
         return data
             
-    def clear():
+    def clear(self):
         super(LabeledGraph,self).clear()
         self.label={}
 
