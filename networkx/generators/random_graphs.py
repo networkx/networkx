@@ -10,6 +10,7 @@ Generators for random graphs
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
+import itertools
 import random
 import math
 import networkx
@@ -279,8 +280,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     return G            
 
 def watts_strogatz_graph(n, k, p, seed=None):
-    """
-    Return a Watts-Strogatz small world graph.
+    """Return a Watts-Strogatz small world graph.
 
     First create a ring over n nodes.  Then each node in the ring is
     connected with its k nearest neighbors (k-1 neighbors if k is odd).  
@@ -325,34 +325,23 @@ def watts_strogatz_graph(n, k, p, seed=None):
     return G            
 
 
-
 def random_regular_graph(d, n, seed=None):
-    """Return a random regular graph of n nodes each with degree d, G_{n,d}.
-    Return False if unsuccessful.
+    """Return a random regular graph of n nodes each with degree d.
     
-    n*d must be even
+    The resulting graph G has no self-loops or parallel edges.
 
-    Nodes are numbered 0...n-1. 
-    To get a uniform sample from the space of random graphs
-    you should chose d<n^{1/3}.
-    
-    For algorith see Kim and Vu's paper.
+    Parameters
+    ----------
+    d : integer
+      Degree
 
-    Reference::
+    n : integer
+      Number of nodes. The nodes are numbered form 0 to n-1.
+      The value of n*d must be even.
 
-       @inproceedings{kim-2003-generating,
-       author = {Jeong Han Kim and Van H. Vu},
-       title = {Generating random regular graphs},
-       booktitle = {Proceedings of the thirty-fifth ACM symposium on Theory of computing},
-       year = {2003},
-       isbn = {1-58113-674-9},
-       pages = {213--222},
-       location = {San Diego, CA, USA},
-       doi = {http://doi.acm.org/10.1145/780542.780576},
-       publisher = {ACM Press},
-       }
-
-    The algorithm is based on an earlier paper::
+    Notes
+    -----
+    The algorithm is found in:: 
 
        @misc{ steger-1999-generating,
        author = "A. Steger and N. Wormald",
@@ -362,50 +351,94 @@ def random_regular_graph(d, n, seed=None):
        url = "citeseer.ist.psu.edu/steger99generating.html",
        }
 
-    """
-    # helper subroutine to check for suitable edges
-    def _suitable(stubs):
-        for s in stubs:
-            for t in stubs:
-                if not seen_edges[s].has_key(t) and s!=t:
-                    return True
+    Kim and Vu's paper shows that this algorithm samples in an
+    asymptotically uniform way from the space of random graphs when
+    d = O(n**(1/3-epsilon)).
 
-        # else no suitable possible edges
-        return False  
-    
-    if not n*d%2==0:
-        raise networkx.NetworkXError, "n * d must be even"
+    Reference::
+
+       @inproceedings{kim-2003-generating,
+       author = {Jeong Han Kim and Van H. Vu},
+       title = {Generating random regular graphs},
+       booktitle = {Proceedings of the thirty-fifth ACM symposium on
+                    Theory of computing},
+       year = {2003},
+       isbn = {1-58113-674-9},
+       pages = {213--222},
+       location = {San Diego, CA, USA},
+       doi = {http://doi.acm.org/10.1145/780542.780576},
+       publisher = {ACM Press},
+       }
+
+
+    """
+    if (n * d) % 2 != 0:
+        raise networkx.NetworkXError("n * d must be even")
+
+    if not 0 <= d < n:
+        raise networkx.NetworkXError("the 0 <= d < n inequality must be satisfied")
 
     if seed is not None:
-        random.seed(seed)    
+        random.seed(seed)
 
-        
-    G=empty_graph(n)
-    G.name="random_regular_graph(%s,%s)"%(d,n)
+    def _suitable(edges, potential_edges):
+    # Helper subroutine to check if there are suitable edges remaining 
+    # If False, the generation of the graph has failed         
+        if not potential_edges:
+            return True
+        for s1 in potential_edges:
+            for s2 in potential_edges:
+                # Two iterators on the same dictionary are guaranteed
+                # to visit it in the same order if there are no
+                # intervening modifications.
+                if s1 == s2:
+                    # Only need to consider s1-s2 pair one time
+                    break
+                if s1 > s2:
+                    s1, s2 = s2, s1
+                if (s1, s2) not in edges:
+                    return True
+        return False
 
-    # keep track of the edges we have seen
-    seen_edges={}
-    [seen_edges.setdefault(v,{}) for v in range(n)]
+    def _try_creation():
+        # Attempt to create an edge set
+        edges = set()
+        stubs = range(n) * d
+        potential_edges = dict((i, d) for i in range(n))
 
-    vv=[ [v]*d for v in range(n)]   # List of degree-repeated vertex numbers
-    stubs=reduce(lambda x,y: x+y ,vv)  # flatten the list of lists to a list
+        while potential_edges:
+            stubs = [node for node, potential in potential_edges.iteritems()
+                     for _ in xrange(potential)]
+            random.shuffle(stubs)
+            stubiter = iter(stubs)
+            for s1, s2 in itertools.izip(stubiter, stubiter):
+                if s1 > s2:
+                    s2, s1 = s1, s2
+                if (s1, s2) not in edges and s1 != s2:
+                    edges.add((s1, s2))
+                    potential_edges[s1] -= 1
+                    potential_edges[s2] -= 1
+                    if potential_edges[s1]==0:
+                        del potential_edges[s1]
+                    if potential_edges[s2]==0:
+                        del potential_edges[s2]
 
-    while len(stubs) > 0:
-        source=random.choice(stubs)
-        target=random.choice(stubs)
-        if source!=target and not seen_edges[source].has_key(target):
-            stubs.remove(source)
-            stubs.remove(target)
-            seen_edges[source][target]=1
-            seen_edges[target][source]=1
-            G.add_edge(source,target)
-        else:
-            # further check to see if suitable 
-            s=_suitable(stubs)
-            if not s:                   
-                return False
+            if not _suitable(edges, potential_edges):
+                return None # failed to find suitable edge set
+        return edges 
+
+    # Even though a suitable edge set exists, 
+    # the generation of such a set is not guaranteed. 
+    # Try repeatedly to find one.
+    edges = _try_creation()
+    while edges is None:
+        edges = _try_creation()
+    
+    G = networkx.Graph()
+    G.name = "random_regular_graph(%s, %s)" % (d, n)
+    G.add_edges_from(edges)
+
     return G
-
 
 
 def barabasi_albert_graph(n , m, seed=None):

@@ -55,3 +55,6 @@ Thanks to the following people who have made contributions to NetworkX:
  - Sasha Gutfriend contributed edge betweenness algorithms
 
  - Udi Weinsberg helped develop intersection and difference operators
+ 
+ - Matteo Dell'Amico wrote the random regular graph generator
+
