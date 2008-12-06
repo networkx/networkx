@@ -58,3 +58,6 @@ Thanks to the following people who have made contributions to NetworkX:
  
  - Matteo Dell'Amico wrote the random regular graph generator
 
+ - Andrew Conway contributed ego_graph()
+
+

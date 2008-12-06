@@ -15,7 +15,7 @@ __all__ = ['union', 'cartesian_product', 'compose', 'complement',
            'disjoint_union', 'intersection', 'difference',
            'symmetric_difference','create_empty_copy', 'subgraph', 
            'convert_node_labels_to_integers', 'relabel_nodes',
-           'line_graph']
+           'line_graph','ego_graph']
 
 import networkx
 from networkx.utils import is_string_like
@@ -568,6 +568,11 @@ def line_graph(G):
     The original node labels are kept as two-tuple node labels
     in the line graph.  
 
+    Parameters
+    ----------
+    G : graph
+       A NetworkX Graph or DiGraph
+
     Examples
     --------    
     >>> G=nx.star_graph(3)
@@ -605,3 +610,26 @@ def line_graph(G):
                 u=nodes.pop()
                 L.add_edges_from((u,v) for v in nodes)
     return L
+
+
+def ego_graph(G,n,center=True):
+    """Returns induced subgraph of neighbors centered at node n. 
+    
+    Parameters
+    ----------
+    G : graph
+      A NetworkX Graph or DiGraph
+
+    n : node 
+      A single node 
+
+    center : bool, optional
+      If False, do not include center node in graph 
+
+    """
+    nodes=set([n])  # add center node
+    nodes.update(G.neighbors(n)) # extend with neighbors
+    H=G.subgraph(nodes)
+    if not center:
+        H.remove_node(n)
+    return  H

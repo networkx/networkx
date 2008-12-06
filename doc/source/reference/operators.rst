@@ -18,6 +18,7 @@ Operators
    difference
    symmetric_difference
    line_graph
+   ego_graph
    convert_node_labels_to_integers
    relabel_nodes
 
