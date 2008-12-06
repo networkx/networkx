@@ -17,5 +17,7 @@ Operators
    intersection
    difference
    symmetric_difference
+   line_graph
    convert_node_labels_to_integers
    relabel_nodes
+

@@ -14,7 +14,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 __all__ = ['union', 'cartesian_product', 'compose', 'complement',
            'disjoint_union', 'intersection', 'difference',
            'symmetric_difference','create_empty_copy', 'subgraph', 
-           'convert_node_labels_to_integers', 'relabel_nodes']
+           'convert_node_labels_to_integers', 'relabel_nodes',
+           'line_graph']
 
 import networkx
 from networkx.utils import is_string_like
@@ -554,3 +555,53 @@ def convert_node_labels_to_integers(G,first_label=0,
     if not discard_old_labels:
         H.node_labels=mapping
     return H
+
+def line_graph(G):
+    """Return the line graph of the graph or digraph G.
+
+    The line graph of a graph G has a node for each edge 
+    in G and an edge between those nodes if the two edges
+    in G share a common node.
+
+    For DiGraphs an edge an edge represents a directed path of length 2.
+
+    The original node labels are kept as two-tuple node labels
+    in the line graph.  
+
+    Examples
+    --------    
+    >>> G=nx.star_graph(3)
+    >>> L=nx.line_graph(G)
+    >>> print sorted(L.edges()) # makes a clique, K3
+    [((0, 1), (0, 2)), ((0, 1), (0, 3)), ((0, 3), (0, 2))]
+
+    Notes
+    -----
+    Not implemented for MultiGraph or MultiDiGraph classes.
+
+    See Also
+    --------
+    convert_node_labels_to_integers()
+
+    """
+    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph():
+        raise Exception("Line graph not implemented for Multi(Di)Graphs")
+    L=G.__class__()
+    if G.directed:
+        for u,nlist in G.adjacency_iter():  # same as successors for digraph
+            # look for directed path of length two
+            for n in nlist:
+                nbrs=G[n] # successors 
+                for nbr in nbrs:
+                    if nbr!=u:
+                        L.add_edge((u,n),(n,nbr))
+    else:
+        for u,nlist in G.adjacency_iter():
+            # label nodes as tuple of edge endpoints in original graph
+            # "node tuple" must be in lexigraphical order
+            nodes=[tuple(sorted(n)) for n in zip([u]*len(nlist),nlist)]
+            # add clique of nodes to graph
+            while nodes:
+                u=nodes.pop()
+                L.add_edges_from((u,v) for v in nodes)
+    return L
