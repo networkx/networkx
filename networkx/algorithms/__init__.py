@@ -7,6 +7,7 @@ from traversal import *
 from boundary import *
 from matching import *
 from pagerank import *
+from hits import *
 
 import traversal
 import isomorphism

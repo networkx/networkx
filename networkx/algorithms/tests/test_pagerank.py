@@ -2,6 +2,11 @@
 from nose.tools import *
 import networkx
 
+# Example from
+# A. Langville and C. Meyer, "A survey of eigenvector methods of web
+# information retrieval."  http://citeseer.ist.psu.edu/713792.html
+
+
 class TestPageRank:
 
     def setUp(self):

@@ -18,5 +18,6 @@ Algorithms
    algorithms.matching
    algorithms.isomorphism
    algorithms.pagerank
+   algorithms.hits
    algorithms.traversal
 
