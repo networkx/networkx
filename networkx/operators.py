@@ -15,7 +15,7 @@ __all__ = ['union', 'cartesian_product', 'compose', 'complement',
            'disjoint_union', 'intersection', 'difference',
            'symmetric_difference','create_empty_copy', 'subgraph', 
            'convert_node_labels_to_integers', 'relabel_nodes',
-           'line_graph','ego_graph']
+           'line_graph','ego_graph','stochastic_graph']
 
 import networkx
 from networkx.utils import is_string_like
@@ -633,3 +633,39 @@ def ego_graph(G,n,center=True):
     if not center:
         H.remove_node(n)
     return  H
+
+def stochastic_graph(G,copy=True):
+    """Return a right-stochastic representation of G.
+
+    A right-stochastic graph is a weighted graph in which all of
+    the node (out) neighbors edge weights sum to 1.
+    
+    Parameters
+    -----------
+    G : graph
+      A networkx graph, must have valid edge weights
+
+    copy : bool, optional
+      If True make a copy of the graph, otherwise modify original graph
+
+    """        
+    if not G.weighted:
+        raise NetworkXError("Input to stochastic_graph() must be a weighted graph.")
+
+    if copy:
+        if G.directed:
+            W=networkx.DiGraph(G)
+        else:
+            W=networkx.Graph(G) 
+    else:
+        W=G # reference original graph, no copy
+
+    for n in W:
+        deg=float(sum(W[n].values()))
+        for p in W[n]: 
+            W[n][p]/=deg
+            # also adjust pred entry for consistency 
+            # though it is not used in pagerank algorithm
+            if G.directed:
+                W.pred[p][n]/=deg
+    return W

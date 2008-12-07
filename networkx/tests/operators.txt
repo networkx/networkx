@@ -508,3 +508,15 @@ True
 >>> H=nx.ego_graph(G,0)
 >>> print H.edges()
 [(0, 1)]
+
+
+stochastic graph
+----------------
+>>> G=nx.star_graph(2)
+>>> S=nx.stochastic_graph(G)
+>>> print nx.is_isomorphic(G,S)
+True
+>>> print sorted(S.edges(data=True))
+[(0, 1, 0.5), (0, 2, 0.5)]
+    
+

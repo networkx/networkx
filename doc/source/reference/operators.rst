@@ -19,6 +19,7 @@ Operators
    symmetric_difference
    line_graph
    ego_graph
+   stochastic_graph
    convert_node_labels_to_integers
    relabel_nodes
 
