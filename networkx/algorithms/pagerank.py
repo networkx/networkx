@@ -28,13 +28,13 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
       Parameter for PageRank, default=0.85
        
     max_iter : interger, optional
-      Maximum number of iterations in power method
+      Maximum number of iterations in power method.
 
     tol : float, optional
-      Error tolerance used to check convergence in power iteration method
+      Error tolerance used to check convergence in power method iteration.
 
     nstart : dictionary, optional
-      Starting value of PageRank iteration for each node 
+      Starting value of PageRank iteration for each node. 
 
     Returns
     -------
@@ -57,6 +57,10 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
     The PageRank algorithm was designed for directed graphs but this
     algorithm does not check if the input graph is directed and will
     execute on undirected graphs.
+
+    For an overview see:
+    A. Langville and C. Meyer, "A survey of eigenvector methods of web
+    information retrieval."  http://citeseer.ist.psu.edu/713792.html
 
     """
     if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph():
