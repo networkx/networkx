@@ -13,3 +13,4 @@ Centrality
    edge_betweenness
    degree_centrality   
    closeness_centrality
+   eigenvector_centrality

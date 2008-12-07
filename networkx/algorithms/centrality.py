@@ -18,7 +18,8 @@ __all__ = ['betweenness_centrality',
            'edge_betweenness',
            'edge_load',
            'degree_centrality',
-           'closeness_centrality']
+           'closeness_centrality',
+           'eigenvector_centrality']
 
 
 import heapq
@@ -26,23 +27,41 @@ from networkx.algorithms.traversal.path import predecessor, \
         single_source_shortest_path_length, \
         single_source_dijkstra_path_length, \
         dijkstra_predecessor_and_distance 
+import networkx
 
 
 def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
     """Compute betweenness centrality for nodes.
 
-    Betweenness centrality is
-    the fraction of number of shortests paths that pass through each node.
+    Betweenness centrality of a node is the fraction of all shortest 
+    paths that pass through that node.
 
-    The keyword normalized (default=True) specifies whether the 
-    betweenness values are normalized by b=b/(n-1)(n-2) where
-    n is the number of nodes in G.
+    Parameters
+    -----------
+    G : graph
+      A networkx graph 
 
-    The keyword weighted_edges (default=False) specifies whether
-    to use edge weights (otherwise weights are all assumed equal).
+    normalized : bool, optional
+      If True the betweenness values are normalized by b=b/(n-1)(n-2) where
+      n is the number of nodes in G.
+       
+    weighted_edges : bool, optional
+      Consider the edge weights in determining the shortest paths.
+      If False, all edge weights are considered equal.
 
-    The algorithm is from
-    Ulrik Brandes,
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of nodes with betweeness centrality as the value.
+
+        
+    See Also
+    --------
+    load_centrality()
+
+    Notes
+    -----
+    The algorithm is from Ulrik Brandes,
     A Faster Algorithm for Betweenness Centrality.
     Journal of Mathematical Sociology 25(2):163-177, 2001.
     http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
@@ -117,31 +136,50 @@ def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
 
     return betweenness            
 
+betweenness_centrality=brandes_betweenness_centrality
 
 
 def newman_betweenness_centrality(G,v=None,cutoff=None,
                            normalized=True,
                            weighted_edges=False):
-    """
-    Compute load centrality for nodes.
+    """Compute load centrality for nodes.
 
+    The load centrality of a node is the fraction of all shortest 
+    paths that pass through that node.
 
-    The fraction of number of shortests paths that go
-    through each node counted according to the algorithm in 
+    Parameters
+    -----------
+    G : graph
+      A networkx graph 
+
+    normalized : bool, optional
+      If True the betweenness values are normalized by b=b/(n-1)(n-2) where
+      n is the number of nodes in G.
+       
+    weighted_edges : bool, optional
+      Consider the edge weights in determining the shortest paths.
+      If False, all edge weights are considered equal.
+
+    cutoff : bool, optional
+      If specified, only consider paths of length <= cutoff.
+
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of nodes with centrality as the value.
+
+        
+    See Also
+    --------
+    betweenness_centrality() 
+
+    Notes
+    -----
+    Load centrality is slightly different than betweenness.
+    For this load algorithm see the reference
     Scientific collaboration networks: II.
     Shortest paths, weighted networks, and centrality,
     M. E. J. Newman, Phys. Rev. E 64, 016132 (2001).
-
-    This actually computes 'load' which is slightly 
-    diferent than betweenness.
-
-    Returns a dictionary of betweenness values keyed by node.
-    The betweenness is normalized to be between [0,1].
-
-    If normalized=False the resulting betweenness is not normalized.
-    
-    If weighted_edges is True then use Dijkstra for finding shortest paths.
-    
 
     """
     if v is not None:   # only one node
@@ -223,7 +261,6 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=False
                 between[v] *= scale
     return between
 
-betweenness_centrality=brandes_betweenness_centrality
 
 load_centrality=newman_betweenness_centrality
 
@@ -232,20 +269,40 @@ def betweenness_centrality_source(G,normalized=True,
                                   sources=None):
     """Compute betweenness centrality for a subgraph.
 
-
     Enchanced version of the method in centrality module that allows
     specifying a list of sources (subgraph).
 
-    weighted_edges:: consider edge weights by running Dijkstra's algorithm          (no effect on unweighted graphs).
 
-    sources:: list of nodes to consider as subgraph
+    Parameters
+    -----------
+    G : graph
+      A networkx graph 
 
+    normalized : bool, optional
+      If True the betweenness values are normalized by b=b/(n-1)(n-2) where
+      n is the number of nodes in G.
+       
+    weighted_edges : bool, optional
+      Consider the edge weights in determining the shortest paths.
+      If False, all edge weights are considered equal.
+
+    sources : node list 
+      A list of nodes to consider as sources for shortest paths.
+      
+
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of nodes with betweeness centrality as the value.
+
+
+    Notes
+    -----
     See Sec. 4 in 
     Ulrik Brandes,
     A Faster Algorithm for Betweenness Centrality.
     Journal of Mathematical Sociology 25(2):163-177, 2001.
     http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
-
 
     This algorithm does not count the endpoints, i.e.
     a path from s to t does not contribute to the betweenness of s and t.
@@ -277,12 +334,29 @@ def betweenness_centrality_source(G,normalized=True,
 
 
 def edge_betweenness(G,normalized=True,weighted_edges=False,sources=None):
-    """Compute betweenness centrality for edges. 
+    """Compute betweenness centrality for edges.
 
-    weighted_edges:: consider edge weights by running Dijkstra's algorithm          (no effect on unweighted graphs).
+    Parameters
+    -----------
+    G : graph
+      A networkx graph 
 
-    sources:: list of nodes to consider as subgraph
+    normalized : bool, optional
+      If True the betweenness values are normalized by b=b/(n-1)(n-2) where
+      n is the number of nodes in G.
+       
+    weighted_edges : bool, optional
+      Consider the edge weights in determining the shortest paths.
+      If False, all edge weights are considered equal.
 
+    sources : node list 
+      A list of nodes to consider as sources for shortest paths.
+      
+
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of edges with betweeness centrality as the value.
     """
     if sources is None:
         sources = G # only used to iterate over nodes
@@ -387,8 +461,6 @@ def _brandes_betweenness_helper(G,root,weighted_edges):
     return S, P, D, sigma
 
 
-
-
 def edge_load(G,nodes=None,cutoff=False):
     """Compute edge load.
 
@@ -436,14 +508,30 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
 
 
 def degree_centrality(G,v=None):
-    """Compute degree centrality for nodes.
+    """Compute the degree centrality for nodes.
 
     The degree centrality for a node v is the fraction of nodes it
     is connected to.
 
-    If v=None, returns a dict of degree centrality values keyed by node.
-    Otherwise, returns the degree centrality of the node v.
+    Parameters
+    -----------
+    G : graph
+      A networkx graph 
 
+    v : node, optional
+      Return only the value for node v.
+      
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of nodes with degree centrality as the value.
+
+    See Also
+    --------
+    betweenness_centrality(), load_centrality(), eigenvector_centrality() 
+
+    Notes
+    -----
     The degree centrality is normalized to the maximum possible degree
     in the graph G.  That is, G.degree(v)/(G.order()-1).
 
@@ -462,8 +550,36 @@ def closeness_centrality(G,v=None,weighted_edges=False):
 
     Closeness centrality at a node is 1/average distance to all 
     other nodes.
-    Returns a dictionary of closeness centrality values keyed by node.
-    The closeness centrality is normalized to be between 0 and 1.
+
+    Parameters
+    -----------
+    G : graph
+      A networkx graph 
+
+    v : node, optional
+      Return only the value for node v.
+
+    weighted_edges : bool, optional
+      Consider the edge weights in determining the shortest paths.
+      If False, all edge weights are considered equal.
+      
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of nodes with closeness centrality as the value.
+
+    See Also
+    --------
+    betweenness_centrality(), load_centrality(), eigenvector_centrality(),
+    degree_centrality()
+
+    Notes
+    -----
+    The closeness centrality is normalized to to n-1 where 
+    n is the number of nodes in the connected part of graph containing
+    the the node.  If the graph is not completely connected, this
+    algorithm computes the closeness centrality for each connected
+    part separately.  
 
     """
     if weighted_edges:
@@ -477,7 +593,8 @@ def closeness_centrality(G,v=None,weighted_edges=False):
             sp=path_length(G,n)
             totsp=sum(sp.values())
             if totsp > 0.0:                                            
-                s=(len(sp)-1.0)  # normalize to number of nodes-1 in connected part
+                # normalize to number of nodes-1 in connected part
+                s=(len(sp)-1.0) 
                 closeness_centrality[n]=s/totsp
             else:                                                                
                 closeness_centrality[n]=0.0           
@@ -486,7 +603,85 @@ def closeness_centrality(G,v=None,weighted_edges=False):
         sp=path_length(G,v)
         totsp=sum(sp.values())
         if totsp > 0.0:                                            
-            return (len(sp)-1.0)/totsp  # normalize to number of nodes-1 in connected part
+            # normalize to number of nodes-1 in connected part
+            return (len(sp)-1.0)/totsp  
         else:                                                                
             return 0.0
+
+def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
+    """Compute the eigenvector centrality for the graph G.
+
+    Uses the power method to find the eigenvector for the 
+    largest eigenvalue of the adjacency matrix of G.
+
+    Parameters
+    -----------
+    G : graph
+      A networkx graph 
+
+    max_iter : interger, optional
+      Maximum number of iterations in power method.
+
+    tol : float, optional
+      Error tolerance used to check convergence in power method iteration.
+
+    nstart : dictionary, optional
+      Starting value of PageRank iteration for each node. 
+
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of nodes with eigenvector centrality as the value.
+
+
+    Notes
+    ------
+    The eigenvector calculation is done by the power iteration method
+    and has no guarantee of convergence.  The iteration will stop
+    after max_iter iterations or an error tolerance of
+    number_of_nodes(G)*tol has been reached.
+
+    For directed graphs this is "right" eigevector centrality.  For
+    "left" eigenvector centrality, first reverse the graph with
+    G.reverse().
+
+    See Also
+    --------
+    pagerank()
+
+    """
+    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph():
+        raise Exception("eigenvector_centrality() not defined for graphs with multiedges.")
+
+    if not G.weighted:
+        raise Exception("eigenvector_centrality(): input graph must be weighted")
+
+    # choose random starting vector if not given
+    if nstart is None:
+        import random
+        x=dict([(n,random.random()) for n in G])
+    else:
+        x=nstart
+    # normalize starting vector
+    s=1.0/sum(x.values())
+    for k in x: x[k]*=s
+    nnodes=G.number_of_nodes()
+    # make up to max_iter iterations        
+    for i in range(max_iter):
+        xlast=x
+        x=dict.fromkeys(xlast.keys(),0)
+        # do the multiplication y=Ax
+        for n in x:
+            for nbr in G[n]:
+                x[n]+=xlast[nbr]*G[n][nbr]
+        # normalize vector
+        s=1.0/sum(x.values())
+        for n in x: x[n]*=s
+        # check convergence            
+        err=sum([abs(x[n]-xlast[n]) for n in x])
+        if err < n*tol:
+            return x
+
+    raise NetworkXError("eigenvector_centrality(): power iteration failed to converge in %d iterations."%(i+1))
+
 
