@@ -16,6 +16,47 @@ import math
 import networkx
 from networkx.generators.classic import empty_graph, path_graph, complete_graph
 
+# until we require python2.5 fall back to pure Python defaultdict 
+# from http://code.activestate.com/recipes/523034/
+try:
+    from collections import defaultdict
+except:
+    class defaultdict(dict):
+        def __init__(self, default_factory=None, *a, **kw):
+            if (default_factory is not None and
+                not hasattr(default_factory, '__call__')):
+                raise TypeError('first argument must be callable')
+            dict.__init__(self, *a, **kw)
+            self.default_factory = default_factory
+        def __getitem__(self, key):
+            try:
+                return dict.__getitem__(self, key)
+            except KeyError:
+                return self.__missing__(key)
+        def __missing__(self, key):
+            if self.default_factory is None:
+                raise KeyError(key)
+            self[key] = value = self.default_factory()
+            return value
+        def __reduce__(self):
+            if self.default_factory is None:
+                args = tuple()
+            else:
+                args = self.default_factory,
+            return type(self), args, None, None, self.items()
+        def copy(self):
+            return self.__copy__()
+        def __copy__(self):
+            return type(self)(self.default_factory, self)
+        def __deepcopy__(self, memo):
+            import copy
+            return type(self)(self.default_factory,
+                              copy.deepcopy(self.items()))
+        def __repr__(self):
+            return 'defaultdict(%s, %s)' % (self.default_factory,
+                                            dict.__repr__(self))
+
+
 __all__ = ['fast_gnp_random_graph',
            'gnp_random_graph',
            'dense_gnm_random_graph',
@@ -402,29 +443,28 @@ def random_regular_graph(d, n, seed=None):
 
     def _try_creation():
         # Attempt to create an edge set
+
         edges = set()
         stubs = range(n) * d
-        potential_edges = dict((i, d) for i in range(n))
 
-        while potential_edges:
-            stubs = [node for node, potential in potential_edges.iteritems()
-                     for _ in xrange(potential)]
+        while stubs:
+            potential_edges = defaultdict(itertools.repeat(0).next)
             random.shuffle(stubs)
             stubiter = iter(stubs)
             for s1, s2 in itertools.izip(stubiter, stubiter):
                 if s1 > s2:
-                    s2, s1 = s1, s2
-                if (s1, s2) not in edges and s1 != s2:
+                    s1, s2 = s2, s1
+                if s1 != s2 and ((s1, s2) not in edges):
                     edges.add((s1, s2))
-                    potential_edges[s1] -= 1
-                    potential_edges[s2] -= 1
-                    if potential_edges[s1]==0:
-                        del potential_edges[s1]
-                    if potential_edges[s2]==0:
-                        del potential_edges[s2]
+                else:
+                    potential_edges[s1] += 1
+                    potential_edges[s2] += 1
 
             if not _suitable(edges, potential_edges):
                 return None # failed to find suitable edge set
+
+            stubs = [node for node, potential in potential_edges.iteritems()
+                     for _ in xrange(potential)]
         return edges 
 
     # Even though a suitable edge set exists, 
