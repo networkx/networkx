@@ -107,7 +107,7 @@ def info(self, n=None):
         print ("Number of edges:").ljust(width_left), self.number_of_edges()
         if len(self) > 0:
             print ("Average degree:").ljust(width_left), \
-                  round( sum(self.degree_iter())/float(len(self)), 4)
+                  round( self.number_of_edges()/float(len(self)), 4)
     else:
         try:
             list_neighbors = self.neighbors(n)
