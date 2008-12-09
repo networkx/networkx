@@ -64,6 +64,7 @@ class MultiDiGraph(DiGraph):
     - add_edges_from
     - remove_edge
     - remove_edges_from
+    - has_edge
     - get_edge
     - edges_iter
     - degree_iter
@@ -178,6 +179,15 @@ class MultiDiGraph(DiGraph):
 
     remove_edges_from.__doc__ = DiGraph.remove_edges_from.__doc__
     delete_edges_from = remove_edges_from            
+
+    def has_edge(self, u, v, data=None):
+        try:
+            d=self.adj[u][v]
+        except KeyError:
+            return False
+        return data is None or data in d
+
+    has_edge.__doc__ = Graph.has_edge.__doc__
 
     def get_edge(self, u, v, no_edge=None):
         """Return a list of edge data for all edges between u and v.

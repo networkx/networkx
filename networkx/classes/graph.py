@@ -587,12 +587,20 @@ class Graph(object):
         except KeyError:
             return False
 
-    def has_edge(self, u, v):
-        """Return True if graph contains the edge (u,v), False otherwise. 
+    def has_edge(self, u, v, data=None):
+        """Return True if graph contains the edge (u,v,data), False otherwise. 
+
+        Parameters
+        ----------
+        u,v : nodes
+            If v is not a neighbor of u, return False.
+
+        data : Python object            
+            If data is not None, check if the edge data for edge (u,v)==data.
 
         See Also
         --------
-        Graph.has_neighbor()
+        Graph.has_neighbor() : check for edge ignoring data
 
         Examples
         --------
@@ -607,6 +615,8 @@ class Graph(object):
         >>> e=(0,1,'data')
         >>> G.has_edge(*e[:2])  # e is a 3-tuple (u,v,d)
         True
+        >>> G.has_edge(*e)      # edge is present but not (u,v,'data')
+        False
 
         The following syntax are all equivalent: 
         
@@ -619,9 +629,10 @@ class Graph(object):
         
         """
         try:
-            return v in self.adj[u]
+            d=self.adj[u][v]
         except KeyError:
             return False
+        return data is None or data == d
 
 
     def neighbors(self, n):

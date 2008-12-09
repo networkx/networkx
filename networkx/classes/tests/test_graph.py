@@ -128,6 +128,8 @@ class TestGraph:
         G=self.K3
         assert_equal(G.has_edge(0,1),True)
         assert_equal(G.has_edge(0,-1),False)
+        assert_equal(G.has_edge(0,1,1),True)
+        assert_equal(G.has_edge(0,1,2),False)
 
     def test_has_neighbor(self):
         G=self.K3

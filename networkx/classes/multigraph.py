@@ -50,6 +50,7 @@ class MultiGraph(Graph):
     - add_edges_from
     - remove_edge
     - remove_edges_from
+    - has_edge
     - edges_iter
     - get_edge
     - degree_iter
@@ -131,6 +132,15 @@ class MultiGraph(Graph):
 
     remove_edges_from.__doc__ = Graph.remove_edges_from.__doc__
     delete_edges_from = remove_edges_from            
+
+    def has_edge(self, u, v, data=None):
+        try:
+            d=self.adj[u][v]
+        except KeyError:
+            return False
+        return data is None or data in d
+
+    has_edge.__doc__ = Graph.has_edge.__doc__
 
     def edges_iter(self, nbunch=None, data=False):
         seen={}     # helper dict to keep track of multiply stored edges
