@@ -368,8 +368,7 @@ class Graph(object):
 
         See Also
         --------
-        Graph.order(), Graph.__len__()
-        
+        number_of_nodes, __len__ 
 
         """
         return len(self.adj)
@@ -438,7 +437,8 @@ class Graph(object):
 
         See Also
         --------
-        Parallel edges are allowed in the MultiGraph class. 
+        add_edges_from : add a collection of edges
+        MultiGraph.add_edge : the MultiGraph class allows parallel edges 
 
         """
         # add nodes            
@@ -468,7 +468,7 @@ class Graph(object):
 
         See Also
         --------
-        add_edge
+        add_edge : add a single edge
 
         Examples
         --------
@@ -539,7 +539,7 @@ class Graph(object):
 
         See Also
         --------
-        remove_edge
+        remove_edge : remove a single edge
             
         Examples
         --------
@@ -569,7 +569,7 @@ class Graph(object):
 
         See Also
         --------
-        has_edge
+        has_edge : check for an edge with optional data check
         
         Examples
         --------
@@ -600,7 +600,7 @@ class Graph(object):
 
         See Also
         --------
-        Graph.has_neighbor() : check for edge ignoring data
+        has_neighbor : check for edge ignoring data
 
         Examples
         --------
@@ -1094,7 +1094,7 @@ class Graph(object):
 
         See Also
         --------
-        Graph.number_of_edges()
+        number_of_edges
 
         """
 
@@ -1119,6 +1119,10 @@ class Graph(object):
         >>> e=(0,1)
         >>> G.number_of_edges(*e)
         1
+
+        See Also
+        --------
+        size : number of edges or option for sum of all edge weights
 
         """
         if u is None: return self.size()
