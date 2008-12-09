@@ -687,7 +687,13 @@ def single_source_dijkstra(G,source,target=None,cutoff=None ):
         if v in dist: continue # already searched this node.
         dist[v] = d
         if v == target: break
-        for w,edgedata in G[v].iteritems():
+        #for ignore,w,edgedata in G.edges_iter(v,data=True):
+        #is about 30% slower than the following
+        if G.multigraph:
+            edata=(  (w,min(edgedata)) for w,edgedata in G[v].iteritems() )
+        else:
+            edata=G[v].iteritems()
+        for w,edgedata in edata:
             vw_dist = dist[v] + edgedata
             if cutoff is not None:
                 if vw_dist>cutoff: 
@@ -733,7 +739,11 @@ def dijkstra_predecessor_and_distance(G,source):
         (d,v)=pop(fringe)
         if v in dist: continue # already searched this node.
         dist[v] = d
-        for w,edgedata in G[v].iteritems():
+        if G.multigraph:
+            edata=(  (w,min(edgedata)) for w,edgedata in G[v].iteritems() )
+        else:
+            edata=G[v].iteritems()
+        for w,edgedata in edata:
             vw_dist = dist[v] + edgedata
             if w in dist:
                 if vw_dist < dist[w]:
