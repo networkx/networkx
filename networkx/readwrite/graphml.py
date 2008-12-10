@@ -29,7 +29,7 @@ import networkx
 from networkx.exception import NetworkXException, NetworkXError
 from networkx.utils import _get_fh, is_string_like
 
-def write_graphml(G, path):
+def write_graphml(G, path, encoding='utf-8'):
     """Write graph G in GraphML format to path.
 
     This implementation supports attributes for nodes and edges,
@@ -142,7 +142,7 @@ def write_graphml(G, path):
             data.setAttribute("key", k)
             data.appendChild(doc.createTextNode(make_str(v)))
     
-    fh.write(doc.toprettyxml(encoding='UTF-8'))
+    fh.write(doc.toprettyxml(encoding=encoding))
     fh.close()
 
 def read_graphml(path):
@@ -197,6 +197,7 @@ def parse_graphml(lines):
 	
     import xml.parsers.expat
     p = xml.parsers.expat.ParserCreate()
+    p.returns_unicode=True
     p.StartElementHandler = start_element
     p.EndElementHandler = end_element
     for line in lines:
