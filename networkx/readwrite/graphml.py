@@ -3,8 +3,12 @@
 GraphML
 *******
 
-Read graphs in GraphML format.
+Read and write graphs in GraphML format.
 http://graphml.graphdrawing.org/
+
+The module currently supports simple graphs and not nested graphs or
+hypergraphs.
+
 
 """
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
@@ -134,7 +138,7 @@ def write_graphml(G, path):
             data.setAttribute("key", k)
             data.appendChild(doc.createTextNode(str(v)))
     
-    fh.write(doc.toprettyxml())
+    fh.write(doc.toprettyxml(encoding='UTF-8'))
     fh.close()
 
 def read_graphml(path):
