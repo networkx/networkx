@@ -34,7 +34,7 @@ def write_graphml(G, path):
 
     This implementation supports attributes for nodes and edges,
     with the limitation that it is assumed that all nodes (or all
-    edges) have the same attributes.
+    edges) have the same attributes and types.
 
     Parameters
     ----------
@@ -50,6 +50,10 @@ def write_graphml(G, path):
     >>> nx.write_graphml(G, "test.graphml")
     """
     from xml.dom.minidom import Document
+
+    def make_str(t):
+        if is_string_like(t): return t
+        return str(t)
 
     def new_element(name, parent):
         el = doc.createElement(name)
@@ -120,37 +124,41 @@ def write_graphml(G, path):
         graph.setAttribute("edgedefault", "undirected")
     for n in G:
         node = new_element("node", graph)
-        node.setAttribute("id", str(n))
+        node.setAttribute("id", make_str(n))
         for key in nodekeys:
             data = new_element("data", node)
             data.setAttribute("key", key)
-            data.appendChild(doc.createTextNode(str(G.node_attr[n][key])))
+            data.appendChild(doc.createTextNode(make_str(G.node_attr[n][key])))
     for (u,v,d) in G.edges(data=True):
         if d is None:
             d = {}
         if type(d) != type({}):
             d = {'data': d}
         edge = new_element("edge", graph)
-        edge.setAttribute("source", str(u))
-        edge.setAttribute("target", str(v))
+        edge.setAttribute("source", make_str(u))
+        edge.setAttribute("target", make_str(v))
         for k, v in d.items():
             data = new_element("data", edge)
             data.setAttribute("key", k)
-            data.appendChild(doc.createTextNode(str(v)))
+            data.appendChild(doc.createTextNode(make_str(v)))
     
     fh.write(doc.toprettyxml(encoding='UTF-8'))
     fh.close()
 
 def read_graphml(path):
     """Read graph in GraphML format from path.
-    Returns an Graph or DiGraph."""
+
+    Returns a Graph or DiGraph.
+
+    """
     fh=_get_fh(path,mode='r')        
     G=parse_graphml(fh)
     return G
 	
 def parse_graphml(lines):
     """Read graph in GraphML format from string.
-    Returns an Graph or DiGraph."""
+
+    Returns a Graph or DiGraph."""
     context = []
     G=networkx.DiGraph()
     defaultDirected = [True]
