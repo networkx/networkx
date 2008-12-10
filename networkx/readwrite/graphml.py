@@ -17,14 +17,126 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
 
-__all__ = ['read_graphml', 'parse_graphml']
+__all__ = ['write_graphml', 'read_graphml', 'parse_graphml']
 
 
 
 import networkx
 from networkx.exception import NetworkXException, NetworkXError
-from networkx.utils import _get_fh
-	
+from networkx.utils import _get_fh, is_string_like
+
+def write_graphml(G, path):
+    """Write graph G in GraphML format to path.
+
+    This implementation supports attributes for nodes and edges,
+    with the limitation that it is assumed that all nodes (or all
+    edges) have the same attributes.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+    path : file or string
+       File or filename to write.  
+       Filenames ending in .gz or .bz2 will be compressed.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> nx.write_graphml(G, "test.graphml")
+    """
+    from xml.dom.minidom import Document
+
+    def new_element(name, parent):
+        el = doc.createElement(name)
+        parent.appendChild(el)
+        return el
+
+    def graphml_datatype(val):
+        if val is None:
+            return "string"
+        if is_string_like(val):
+            return "string"
+        if type(val) == type(1):
+            return "int"
+        if type(val) == type(1.0):
+            return "double"
+        if type(val) == type(True):
+            return "boolean"
+        if type(val) == type(1L):
+            return "long"
+
+
+    def new_key(id, type, whatfor, parent):
+        key = new_element("key", parent)
+        key.setAttribute("id", id)
+        key.setAttribute("for", whatfor)
+        key.setAttribute("attr.name", id)
+        key.setAttribute("attr.type", type)
+        return key
+
+    fh = _get_fh(path, mode='w')
+
+    doc = Document()
+    root = doc.createElement("graphml")
+    doc.appendChild(root)
+    root.setAttribute("xmlns", "http://graphml.graphdrawing.org/xmlns")
+
+    # Create `key` elements for all node and edge attributes.
+    # We assume that the first node/edge has all the available attributes:
+    # it would probably be too expensive to loop over all nodes/edges.
+    nodekeys = {}
+    try:
+        for k, v in G.node_attr.values()[0].items():
+            nodekeys[k] = graphml_datatype(v)
+    except:
+        pass
+    for k, v in nodekeys.items():
+        new_key(k, v, "node", root)
+
+    # set up edge key elements
+    # use dictionary keys if edge data is a dictionary
+    # else use "data" as the key and the edge data as value        
+    edgekeys = {}
+    d = G.edges(data=True)[0][2] # data of first edge
+    if type(d) == type({}):
+        for k,v in d.items():
+            edgekeys[k] = graphml_datatype(v)
+    else:
+        edgekeys['data'] = graphml_datatype(d)
+    for k,v in edgekeys.items():
+        new_key(k, v, "edge", root)
+
+    # Create actual network description
+    graph = new_element("graph", root)
+    graph.setAttribute("id", G.name)
+    if G.directed:
+        graph.setAttribute("edgedefault", "directed")
+    else:
+        graph.setAttribute("edgedefault", "undirected")
+    for n in G:
+        node = new_element("node", graph)
+        node.setAttribute("id", str(n))
+        for key in nodekeys:
+            data = new_element("data", node)
+            data.setAttribute("key", key)
+            data.appendChild(doc.createTextNode(str(G.node_attr[n][key])))
+    for (u,v,d) in G.edges(data=True):
+        if d is None:
+            d = {}
+        if type(d) != type({}):
+            d = {'data': d}
+        edge = new_element("edge", graph)
+        edge.setAttribute("source", str(u))
+        edge.setAttribute("target", str(v))
+        for k, v in d.items():
+            data = new_element("data", edge)
+            data.setAttribute("key", k)
+            data.appendChild(doc.createTextNode(str(v)))
+    
+    fh.write(doc.toprettyxml())
+    fh.close()
+
 def read_graphml(path):
     """Read graph in GraphML format from path.
     Returns an Graph or DiGraph."""
@@ -50,7 +162,6 @@ def parse_graphml(lines):
                 raise GraphFormatError, \
                       'Required attribute edgedefault missing in GraphML'
             if attrs['edgedefault'] == 'undirected':
-                print "undirected"
                 defaultDirected[0] = False
         elif len(context) == 3 and context[1] == 'graph' and name == 'node':
             if 'id' not in attrs:
