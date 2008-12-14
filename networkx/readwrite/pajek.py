@@ -89,7 +89,7 @@ def write_pajek(G, path):
         fh.write("\n")                               
     fh.close()
 
-def read_pajek(path):
+def read_pajek(path,edge_attr=True):
     """Read graph in Pajek format from path. 
 
     Returns a MultiGraph or MultiDiGraph.
@@ -100,22 +100,28 @@ def read_pajek(path):
        File or filename to write.  
        Filenames ending in .gz or .bz2 will be compressed.
 
+    edge_attr : bool, optional
+       If True use a dictionary of attributes for edge data.
+       If False use the "value" read from the edge
+       data and ignore any other edge attributes.
+
     Examples
     --------
     >>> G=nx.path_graph(4)
     >>> nx.write_pajek(G, "test.net")
     >>> G=nx.read_pajek("test.net")
 
-    To create a Graph use
+    To create a Graph instead of a MultiGraph use
 
     >>> G1=nx.Graph(G)
 
+
     """
     fh=_get_fh(path,mode='r')        
-    G=parse_pajek(fh)
+    G=parse_pajek(fh,edge_attr=edge_attr)
     return G
 
-def parse_pajek(lines):
+def parse_pajek(lines,edge_attr=True):
     """Parse pajek format graph from string or iterable.
 
     Primarily used as a helper for read_pajek().
@@ -164,14 +170,23 @@ def parse_pajek(lines):
                 ui,vi=splitline[0:2]
                 u=nodelabels.get(ui,ui)
                 v=nodelabels.get(vi,vi)
+                # parse the data attached to this edge and
+                # put it in a dictionary 
                 edge_data={}
                 try:
+                    # there should always be a single value on the edge?
                     w=splitline[2:3]
-                    edge_data.update({'value':float(w)})
+                    edge_data.update({'value':float(w[0])})
                 except:
-                    pass
+                    # if there isn't, just assign a 1
+                    edge_data.update({'value':1})
                 extra_attr=zip(splitline[3::2],splitline[4::2])
                 edge_data.update(extra_attr)
-                G.add_edge(u,v,edge_data)
+                if edge_attr:
+                    G.add_edge(u,v,edge_data)
+                else:
+                # if edge_attr is False just use the "value" for
+                # the edge data,
+                    G.add_edge(u,v,edge_data['value'])
     return G
 
