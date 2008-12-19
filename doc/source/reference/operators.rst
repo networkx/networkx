@@ -22,4 +22,6 @@ Operators
    stochastic_graph
    convert_node_labels_to_integers
    relabel_nodes
+   freeze
+   is_frozen
 

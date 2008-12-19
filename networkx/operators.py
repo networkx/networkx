@@ -15,7 +15,8 @@ __all__ = ['union', 'cartesian_product', 'compose', 'complement',
            'disjoint_union', 'intersection', 'difference',
            'symmetric_difference','create_empty_copy', 'subgraph', 
            'convert_node_labels_to_integers', 'relabel_nodes',
-           'line_graph','ego_graph','stochastic_graph']
+           'line_graph','ego_graph','stochastic_graph',
+           'freeze','is_frozen']
 
 import networkx
 from networkx.utils import is_string_like
@@ -669,3 +670,68 @@ def stochastic_graph(G,copy=True):
             if G.directed:
                 W.pred[p][n]/=deg
     return W
+
+def freeze(G):
+    """Modify graph to prevent addition of nodes or edges.
+    
+    Parameters
+    -----------
+    G : graph
+      A NetworkX graph
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> G=nx.freeze(G)
+    >>> G.add_edge(4,5)
+    Traceback (most recent call last):
+    ...
+    NetworkXError: Frozen graph can't be modified
+
+    Notes
+    -----
+    This does not prevent modification of edge data.
+
+    To "unfreeze" a graph you must make a copy.
+
+    See Also
+    --------
+    is_frozen()
+
+    """        
+
+    def frozen(*args):    
+        raise networkx.NetworkXError("Frozen graph can't be modified")
+    G.add_node=frozen
+    G.add_nodes_from=frozen
+    G.remove_node=frozen
+    G.remove_nodes_from=frozen
+    G.add_edge=frozen
+    G.add_edges_from=frozen
+    G.remove_edge=frozen
+    G.remove_edges_from=frozen
+    G.clear=frozen
+    G.frozen=True
+    return G
+
+def is_frozen(G):
+    """Return True if graph is frozen"
+
+    Parameters
+    -----------
+    G : graph
+      A NetworkX graph
+
+    See Also
+    --------
+    freeze()
+      
+    """
+
+    try:
+        return G.frozen
+    except AttributeError:
+        return False
+
+
+        
