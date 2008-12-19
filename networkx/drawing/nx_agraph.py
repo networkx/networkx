@@ -92,12 +92,12 @@ def from_agraph(A,create_using=None,edge_attr=True):
     node_attr={}
     # add nodes, attributes to N.node_attr
     for n in A.nodes():
-        N.add_node(n)
-        node_attr[n]=n.attr
+        N.add_node(str(n))
+        node_attr[str(n)]=dict(n.attr)
 
     # add edges, assign edge data as dictionary of attributes
     for e in A.edges():
-        u,v=e
+        u,v=str(e[0]),str(e[1])
         attr=dict(e.attr)
         if e.key is not None:
             attr.update(key=e.key)
