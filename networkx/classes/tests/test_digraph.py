@@ -17,7 +17,10 @@ class TestDiGraph(TestGraph):
         self.K3.adj=self.k3adj
         self.K3.succ=self.k3adj
         self.K3.pred=copy.deepcopy(self.k3adj)
-
+        self.P3=self.Graph()
+        self.P3.adj={0: {1: 1}, 1: {2: 1}, 2: {}}
+        self.P3.succ=self.P3.adj
+        self.P3.pred={0: {}, 1: {0: 1}, 2: {1:1}}
 
     def test_data_input(self):
         G=self.Graph(data={1:[2],2:[1]}, name="test")
@@ -128,14 +131,50 @@ class TestDiGraph(TestGraph):
         G=self.K3
         assert_equal(sorted(G.edges()),[(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
         assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
-        assert_raises((KeyError,networkx.NetworkXError), G.neighbors,-1)
+        assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
 
     def test_edges_iter(self):
         G=self.K3
-        assert_equal(sorted(G.edges()),[(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
+        assert_equal(sorted(G.edges_iter()),
+                     [(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
         assert_equal(sorted(G.edges_iter(0)),[(0,1),(0,2)])
-        assert_raises((KeyError,networkx.NetworkXError), G.neighbors_iter,-1)
 
+    def test_out_edges(self):
+        G=self.K3
+        assert_equal(sorted(G.out_edges()),
+                     [(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
+        assert_equal(sorted(G.out_edges(0)),[(0,1),(0,2)])
+        assert_raises((KeyError,networkx.NetworkXError), G.out_edges,-1)
+
+    def test_out_edges_iter(self):
+        G=self.K3
+        assert_equal(sorted(G.out_edges_iter()),
+                     [(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
+        assert_equal(sorted(G.edges_iter(0)),[(0,1),(0,2)])
+
+    def test_out_edges_dir(self):
+        G=self.P3
+        assert_equal(sorted(G.out_edges()),[(0, 1), (1, 2)])
+        assert_equal(sorted(G.out_edges(0)),[(0, 1)])
+        assert_equal(sorted(G.out_edges(2)),[])
+
+    def test_out_edges_iter_dir(self):
+        G=self.P3
+        assert_equal(sorted(G.out_edges_iter()),[(0, 1), (1, 2)])
+        assert_equal(sorted(G.out_edges_iter(0)),[(0, 1)])
+        assert_equal(sorted(G.out_edges_iter(2)),[])
+
+    def test_in_edges_dir(self):
+        G=self.P3
+        assert_equal(sorted(G.in_edges()),[(0, 1), (1, 2)])
+        assert_equal(sorted(G.in_edges(0)),[])
+        assert_equal(sorted(G.in_edges(2)),[(1,2)])
+
+    def test_in_edges_iter_dir(self):
+        G=self.P3
+        assert_equal(sorted(G.in_edges_iter()),[(0, 1), (1, 2)])
+        assert_equal(sorted(G.in_edges_iter(0)),[])
+        assert_equal(sorted(G.in_edges_iter(2)),[(1,2)])
 
     def test_degree(self):
         G=self.K3

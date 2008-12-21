@@ -219,8 +219,28 @@ class MultiDiGraph(DiGraph):
                 for nbr,datalist in nbrs.iteritems():
                     for data in datalist:
                         yield (n,nbr)
-
     edges_iter.__doc__ = DiGraph.edges_iter.__doc__
+    # alias out_edges to edges
+    out_edges_iter=edges_iter
+
+    def in_edges_iter(self, nbunch=None, data=False):
+        if nbunch is None:
+            nodes_nbrs=self.pred.iteritems()
+        else:
+            nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
+        if data:
+            for n,nbrs in nodes_nbrs:
+                for nbr,datalist in nbrs.iteritems():
+                    for data in datalist:
+                        yield (nbr,n,data)
+        else:
+            for n,nbrs in nodes_nbrs:
+                for nbr,datalist in nbrs.iteritems():
+                    for data in datalist:
+                        yield (nbr,n)
+
+    in_edges_iter.__doc__ = DiGraph.in_edges_iter.__doc__
+
 
     def degree_iter(self, nbunch=None, weighted=False):
         if nbunch is None:

@@ -204,8 +204,6 @@ class DiGraph(Graph):
     neighbors.__doc__ = Graph.neighbors.__doc__
     neighbors_iter = successors_iter
     neighbors_iter.__doc__ = Graph.neighbors_iter.__doc__
-        
-
 
     def edges_iter(self, nbunch=None, data=False):
         if nbunch is None:
@@ -222,7 +220,60 @@ class DiGraph(Graph):
                     yield (n,nbr)
 
     edges_iter.__doc__ = Graph.edges_iter.__doc__   
-   
+    # alias out_edges to edges
+    out_edges_iter=edges_iter
+    out_edges=Graph.edges
+
+    def in_edges_iter(self, nbunch=None, data=False):
+        """Return an iterator over in-edges.
+        
+        Parameters
+        ----------
+        nbunch : list, iterable 
+            A container of nodes that will be iterated through once.
+            If nbunch is None, return all edges.
+            Nodes in nbunch that are not in the graph will be (quietly) ignored.
+
+        data : bool
+            Return two tuples (u,v) (False) or three-tuples (u,v,data) (True)
+
+        Returns
+        -------
+        An iterator over in-edges that are incident to any node in nbunch,
+        or over all in-edges if nbunch is not specified.
+        """
+        if nbunch is None:
+            nodes_nbrs=self.pred.iteritems()
+        else:
+            nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
+        if data:
+            for n,nbrs in nodes_nbrs:
+                for nbr,data in nbrs.iteritems():
+                    yield (nbr,n,data)
+        else:
+            for n,nbrs in nodes_nbrs:
+                for nbr in nbrs:
+                    yield (nbr,n)
+
+    def in_edges(self, nbunch=None, data=False):
+        """Return a list of in-edges.
+        
+        Parameters
+        ----------
+        nbunch : list, iterable 
+            A container of nodes that will be iterated through once.
+            If nbunch is None, return all in-edges.
+            Nodes in nbunch that are not in the graph will be (quietly) ignored.
+
+        data : bool
+            Return two tuples (u,v) (False) or three-tuples (u,v,data) (True)
+
+        Returns
+        -------
+        An a list of in-edges that are incident to any node in nbunch,
+        or a list of all in-edges if nbunch is not specified.
+        """
+        return list(self.in_edges_iter(nbunch, data))
 
     def degree_iter(self, nbunch=None, weighted=False):
         if nbunch is None:
