@@ -14,6 +14,10 @@ __all__ = ['random_geometric_graph']
 
 import networkx
 import random,sys
+try:
+    from functools import reduce # for Python2.6
+except:
+    pass # pre 2.6 uses builtin
 
 
 #---------------------------------------------------------------------------

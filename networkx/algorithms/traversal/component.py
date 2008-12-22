@@ -46,7 +46,7 @@ def connected_components(G):
             c=single_source_shortest_path_length(G,v)
             components.append(c.keys())
             seen.update(c)
-    components.sort(lambda x, y: cmp(len(y),len(x)))
+    components.sort(key=len,reverse=True)            
     return components            
 
 
@@ -162,7 +162,7 @@ def strongly_connected_components(G):
                         scc_list.append(scc)
                     else:
                         scc_queue.append(v)
-    scc_list.sort(lambda x, y: cmp(len(y),len(x)))
+    scc_list.sort(key=len,reverse=True)            
     return scc_list
 
 
@@ -182,7 +182,7 @@ def kosaraju_strongly_connected_components(G,source=None):
         new=[v for v in c if v not in seen]
         seen.update([(u,True) for u in new])
         components.append(new)
-    components.sort(lambda x, y: cmp(len(y),len(x)))
+    components.sort(key=len,reverse=True)            
     return components            
 
 
@@ -222,7 +222,7 @@ def strongly_connected_components_recursive(G):
         if source not in visited: 
             visit(source,cnt)
 
-    scc.sort(lambda x, y: cmp(len(y),len(x)))
+    scc.sort(key=len,reverse=True)            
     return scc
 
 

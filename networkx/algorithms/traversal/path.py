@@ -934,10 +934,10 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
 
     if target is not None:
         if return_seen:
-            if not pred.has_key(target): return ([],-1)  # No predecessor
+            if not target in pred: return ([],-1)  # No predecessor
             return (pred[target],seen[target])
         else:
-            if not pred.has_key(target): return []  # No predecessor
+            if not target in pred: return []  # No predecessor
             return pred[target]
     else:
         if return_seen:

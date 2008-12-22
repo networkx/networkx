@@ -496,10 +496,10 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
 
     while onodes:           # work through all paths
         v=onodes.pop()
-        if (pred.has_key(v)):
+        if v in pred:
             num_paths=len(pred[v])   # Discount betweenness if more than 
             for w in pred[v]:        # one shortest path.
-                if (pred.has_key(w)):
+                if w in pred:
                     num_paths=len(pred[w])  # Discount betweenness, mult path  
                     for x in pred[w]: 
                         between[(w,x)]+=between[(v,w)]/num_paths

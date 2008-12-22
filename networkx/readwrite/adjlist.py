@@ -410,11 +410,12 @@ def read_adjlist(path, comments="#", delimiter=' ',
                 raise TypeError("Failed to convert node (%s) to type %s"\
                                 %(u,nodetype))
         G.add_node(u)
-        try:
-            vlist=map(nodetype,vlist)
-        except:
-            raise TypeError("Failed to convert nodes (%s) to type %s"\
-                            %(','.join(vlist),nodetype))
+        if nodetype is not None:
+            try:
+                vlist=map(nodetype,vlist)
+            except:
+                raise TypeError("Failed to convert nodes (%s) to type %s"\
+                                    %(','.join(vlist),nodetype))
         for v in vlist:
             G.add_edge(u,v)
     return G

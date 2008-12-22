@@ -1256,13 +1256,14 @@ class Graph(object):
                         if n in adj:
                             yield n
                 except TypeError,e:
-                    print e.message
+                    message=e.args[0]
+                    print message
                     # capture error for non-sequence/iterator nbunch.
-                    if 'iterable' in e.message:  
+                    if 'iterable' in message:  
                         raise NetworkXError(
                             "nbunch is not a node or a sequence of nodes.")
                     # capture error for unhashable node.
-                    elif 'hashable' in e.message: 
+                    elif 'hashable' in message: 
                         raise NetworkXError(
                             "Node %s in the sequence nbunch is not a valid node."%n)
                     else: raise
