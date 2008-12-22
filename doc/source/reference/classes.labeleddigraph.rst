@@ -41,7 +41,7 @@ Iterating over nodes and edges
    LabeledDiGraph.__iter__
    LabeledDiGraph.edges
    LabeledDiGraph.edges_iter
-   LabeledDiGraph.get_edge
+   LabeledDiGraph.get_edge_data
    LabeledDiGraph.neighbors
    LabeledDiGraph.neighbors_iter
    LabeledDiGraph.__getitem__

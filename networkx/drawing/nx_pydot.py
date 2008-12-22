@@ -204,11 +204,10 @@ def to_pydot(N, graph_attr=None, node_attr=None, edge_attr=None,
             P.add_edge(edge)
         if len(e)==3:
             (u,v,x)=e
-            try:
-                N.allow_multiedges()==True
-                dlist=N.get_edge(u,v)
-            except:
-                dlist=[N.get_edge(u,v)]
+            if N.multiedges==True:
+                dlist=N[u][v]
+            else:
+                dlist=[N[u][v]]
             for d in dlist:
                 if hasattr(d,"__iter__"):
                     attr=d

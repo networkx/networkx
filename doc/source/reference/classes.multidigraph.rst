@@ -46,7 +46,7 @@ Iterating over nodes and edges
    MultiDiGraph.out_edges_iter
    MultiDiGraph.in_edges
    MultiDiGraph.in_edges_iter
-   MultiDiGraph.get_edge
+   MultiDiGraph.get_edge_data
    MultiDiGraph.neighbors
    MultiDiGraph.neighbors_iter
    MultiDiGraph.__getitem__

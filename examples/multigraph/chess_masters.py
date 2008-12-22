@@ -119,7 +119,7 @@ if __name__ == '__main__':
     # edge width is proportional number of games played
     edgewidth=[]
     for (u,v,d) in H.edges(data=True):
-        edgewidth.append(len(G.get_edge(u,v)))
+        edgewidth.append(len(G.get_edge_data(u,v)))
 
     # node size is proportional to number of games won
     wins=dict.fromkeys(G.nodes(),0.0)

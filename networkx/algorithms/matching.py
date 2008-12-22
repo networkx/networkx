@@ -180,7 +180,7 @@ def max_weight_matching(G, maxcardinality=False):
 
     # Return 2 * slack of edge (v, w) (does not work inside blossoms).
     def slack(v, w):
-        return dualvar[v] + dualvar[w] - 2 * G.get_edge(v, w)
+        return dualvar[v] + dualvar[w] - 2 * G[u][v]
 
     # Assign label t to the top-level blossom containing vertex w,
     # coming through an edge from vertex v.

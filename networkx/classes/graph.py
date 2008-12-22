@@ -567,6 +567,13 @@ class Graph(object):
 
         This returns True if there exists any edge (u,v,data) for some data.
 
+        Parameters
+        ----------
+        u,v : nodes
+            Nodes can be, for example, strings or numbers. 
+            Nodes must be hashable (and not None) Python objects.
+
+
         See Also
         --------
         has_edge : check for an edge with optional data check
@@ -587,20 +594,18 @@ class Graph(object):
         except KeyError:
             return False
 
-    def has_edge(self, u, v, data=None):
-        """Return True if graph contains the edge (u,v,data), False otherwise. 
+    def has_edge(self, u, v):
+        """Return True if the edge (u,v) is in the graph, False otherwise. 
 
         Parameters
         ----------
         u,v : nodes
-            If v is not a neighbor of u, return False.
-
-        data : Python object            
-            If data is not None, check if the edge data for edge (u,v)==data.
-
+            Nodes can be, for example, strings or numbers. 
+            Nodes must be hashable (and not None) Python objects.
+            
         See Also
         --------
-        has_neighbor : check for edge ignoring data
+        has_neighbor()
 
         Examples
         --------
@@ -615,8 +620,6 @@ class Graph(object):
         >>> e=(0,1,'data')
         >>> G.has_edge(*e[:2])  # e is a 3-tuple (u,v,d)
         True
-        >>> G.has_edge(*e)      # edge is present but not (u,v,'data')
-        False
 
         The following syntax are all equivalent: 
         
@@ -629,10 +632,9 @@ class Graph(object):
         
         """
         try:
-            d=self.adj[u][v]
+            return v in self.adj[u]
         except KeyError:
             return False
-        return data is None or data == d
 
 
     def neighbors(self, n):
@@ -761,26 +763,27 @@ class Graph(object):
         del seen
 
 
-    def get_edge(self, u, v, default=None):
+    def get_edge_data(self, u, v, default=None):
         """Return the data associated with the edge (u,v).
 
         Parameters
         ----------
         u,v : nodes
-            If u or v are not nodes in graph an exception is raised.
 
         default:  any Python object            
             Value to return if the edge (u,v) is not found.
-            If not specified, raise an exception.
+            The default is the Python None object.
 
         Examples
         --------
         >>> G=nx.path_graph(4) # path graph with edge data all set to 1
-        >>> G.get_edge(0,1) 
+        >>> G.get_edge_data(0,1) 
         1
         >>> e=(0,1)
-        >>> G.get_edge(*e) # tuple form
+        >>> G.get_edge_data(*e) # tuple form
         1
+        >>> G.get_edge_data('a','b',default=0) # edge not in graph, return 0
+        0
 
         Notes
         -----
@@ -793,9 +796,7 @@ class Graph(object):
         try:
             return self.adj[u][v]
         except KeyError:
-            if default is not None and u in self and v in self: return default
-            raise NetworkXError("edge (%s,%s) not in graph"%(u,v))
-
+            return default
 
     def adjacency_list(self):
         """Return an adjacency list as a Python list of lists

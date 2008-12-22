@@ -40,7 +40,7 @@ Iterating over nodes and edges
    Graph.__iter__
    Graph.edges
    Graph.edges_iter
-   Graph.get_edge
+   Graph.get_edge_data
    Graph.neighbors
    Graph.neighbors_iter
    Graph.__getitem__

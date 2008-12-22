@@ -41,7 +41,7 @@ Iterating over nodes and edges
    LabeledGraph.__iter__
    LabeledGraph.edges
    LabeledGraph.edges_iter
-   LabeledGraph.get_edge
+   LabeledGraph.get_edge_data
    LabeledGraph.neighbors
    LabeledGraph.neighbors_iter
    LabeledGraph.__getitem__

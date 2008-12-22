@@ -128,8 +128,8 @@ class TestGraph:
         G=self.K3
         assert_equal(G.has_edge(0,1),True)
         assert_equal(G.has_edge(0,-1),False)
-        assert_equal(G.has_edge(0,1,1),True)
-        assert_equal(G.has_edge(0,1,2),False)
+#        assert_equal(G.has_edge(0,1,1),True)
+#        assert_equal(G.has_edge(0,1,2),True)
 
     def test_has_neighbor(self):
         G=self.K3
@@ -158,11 +158,12 @@ class TestGraph:
         assert_equal(sorted(G.edges_iter(0)),[(0,1),(0,2)])
         assert_raises((KeyError,networkx.NetworkXError), G.neighbors_iter,-1)
 
-    def test_get_edge(self):
+    def test_get_edge_data(self):
         G=self.K3
-        assert_equal(G.get_edge(0,1),1)
+        assert_equal(G.get_edge_data(0,1),1)
         assert_equal(G[0][1],1)
-        assert_raises((KeyError,networkx.NetworkXError), G.get_edge,-1,0)
+        assert_equal(G.get_edge_data(10,20),None)
+#        assert_raises((KeyError,networkx.NetworkXError), G.get_edge_data,-1,0)
 
     def test_adjacency_list(self):
         G=self.K3

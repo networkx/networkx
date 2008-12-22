@@ -133,14 +133,14 @@ class MultiGraph(Graph):
     remove_edges_from.__doc__ = Graph.remove_edges_from.__doc__
     delete_edges_from = remove_edges_from            
 
-    def has_edge(self, u, v, data=None):
-        try:
-            d=self.adj[u][v]
-        except KeyError:
-            return False
-        return data is None or data in d
-
-    has_edge.__doc__ = Graph.has_edge.__doc__
+#    def has_edge(self, u, v, data=None):
+#        try:
+#            d=self.adj[u][v]
+#        except KeyError:
+#            return False
+#        return data is None or data in d
+#
+#    has_edge.__doc__ = Graph.has_edge.__doc__
 
     def edges_iter(self, nbunch=None, data=False):
         seen={}     # helper dict to keep track of multiply stored edges
@@ -166,20 +166,30 @@ class MultiGraph(Graph):
 
     edges_iter.__doc__ = Graph.edges_iter.__doc__
 
-    def get_edge(self, u, v, no_edge=None):
-        """Return a list of edge data for all edges between u and v.
+    def get_edge_data(self, u, v, default=None):
+        """Return the data associated with the edge (u,v).
 
-        If no_edge is specified and the edge (u,v) isn't found,
-        (and u and v are nodes), return the value of no_edge.  
-        If no_edge is None (or u or v aren't nodes) raise an exception.
+        For multigraphs this returns a list with data for all edges
+        (u,v).  Each element of the list is data for one of the 
+        edges. 
+
+        Parameters
+        ----------
+        u,v : nodes
+
+        default:  any Python object            
+            Value to return if the edge (u,v) is not found.
+            The default is the Python None object.
+
+        Notes
+        -----
+        It is faster to use G[u][v].
 
         """
         try:
-            return self.adj[u][v][:]
+            return self.adj[u][v]
         except KeyError:
-            if no_edge is not None and u in self and v in self: return no_edge
-            raise NetworkXError, "edge (%s,%s) not in graph"%(u,v)
-
+            return default
 
     def degree_iter(self, nbunch=None, weighted=False):
         if nbunch is None:

@@ -85,11 +85,12 @@ class TestMultiGraph(TestGraph):
         assert_equal(G.adj,{0:{2:[1]},1:{2:[1]},2:{0:[1],1:[1]}})
         G.remove_edges_from([(0,0)]) # silent fail
 
-    def test_get_edge(self):
+    def test_get_edge_data(self):
         G=self.K3
-        assert_equal(G.get_edge(0,1),[1])
+        assert_equal(G.get_edge_data(0,1),[1])
         assert_equal(G[0][1],[1])
-        assert_raises((KeyError,networkx.NetworkXError), G.get_edge,-1,0)
+        assert_equal(G.get_edge_data(10,20),None)
+#        assert_raises((KeyError,networkx.NetworkXError), G.get_edge,-1,0)
 
     def test_adjacency_iter(self):
         G=self.K3

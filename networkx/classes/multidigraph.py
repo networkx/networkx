@@ -180,29 +180,6 @@ class MultiDiGraph(DiGraph):
     remove_edges_from.__doc__ = DiGraph.remove_edges_from.__doc__
     delete_edges_from = remove_edges_from            
 
-    def has_edge(self, u, v, data=None):
-        try:
-            d=self.adj[u][v]
-        except KeyError:
-            return False
-        return data is None or data in d
-
-    has_edge.__doc__ = Graph.has_edge.__doc__
-
-    def get_edge(self, u, v, no_edge=None):
-        """Return a list of edge data for all edges between u and v.
-
-        If no_edge is specified and the edge (u,v) isn't found,
-        (and u and v are nodes), return the value of no_edge.  
-        If no_edge is None (or u or v aren't nodes) raise an exception.
-
-        """
-        try:
-            return self.adj[u][v][:]
-        except KeyError:
-            if no_edge is not None and u in self and v in self: return no_edge
-            raise NetworkXError, "edge (%s,%s) not in graph"%(u,v)
-
 
     def edges_iter(self, nbunch=None, data=False):
         if nbunch is None:
