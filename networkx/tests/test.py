@@ -61,6 +61,7 @@ def all():
         skiplist.extend(['nx_agraph.txt'])
     try:
         import matplotlib
+        import pylab
     except ImportError:
         print "matplotlib not found: skipping tests"
         skiplist.extend(['nx_pylab.txt'])
