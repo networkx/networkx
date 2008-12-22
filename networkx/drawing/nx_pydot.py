@@ -31,8 +31,6 @@ try:
 except ImportError:
     raise
 
-
-
 def write_dot(G,path):
     """Write NetworkX graph G to Graphviz dot format on path.
 
@@ -56,52 +54,53 @@ def read_dot(path):
     return from_pydot(P)
 
 
-def from_pydot(P):
-    """Return a NetworkX Graph or DiGraph from a pydot graph.
+def from_pydot(P,edge_attr=True):
+    """Return a NetworkX graph from a Pydot graph.
 
-    The Graph X will have a dictionary X.graph_attr containing
-    the default graphviz attributes for graphs, nodes and edges.
+    Parameters
+    ----------
+    P : Pydot graph
+      A graph created with Pydot
 
-    Default node attributes will be in the dictionary X.node_attr
-    which is keyed by node.
-
-    Edge attributes will be returned as edge data in the graph X.
+    edge_attr : bool, optional
+       If True use a dictionary of attributes for edge data.
+       If False use the Graphviz edge weight attribute or 
+       default 1 if the edge has no specified weight.
 
     Examples
-    ---------
+    --------
+    >>> K5=nx.complete_graph(5)
+    >>> A=nx.to_pydot(K5)
+    >>> G=nx.from_pydot(A)
+    >>> G=nx.from_pydot(A,edge_attr=False)
+    Notes
+    -----
+    The Graph G will have a dictionary G.graph_attr containing
+    the default graphviz attributes for graphs, nodes and edges.
 
-    >>> G=nx.complete_graph(5)
-    >>> P=nx.to_pydot(G)
-    >>> X=nx.from_pydot(P)
+    Default node attributes will be in the dictionary G.node_attr
+    which is keyed by node.
 
-    If you want a Graph with no attributes attached use
-
-    >>> G=nx.Graph(X)
-
-    Similarly to make a DiGraph without attributes
-
-    >>> D=nx.DiGraph(X)
-
+    Edge attributes will be returned as edge data in G.  With
+    edge_attr=False the edge data will be the Graphviz edge weight
     """
     import networkx
 
     if P.get_strict(None): # pydot bug: get_strict() shouldn't take argument 
         multiedges=False
-        selfloops=False
     else:
         multiedges=True
-        selfloops=True
         
     if P.get_type()=='graph': # undirected
-        if P.get_strict(None):
-            create_using=networkx.Graph()
-        else:
+        if multiedges:
             create_using=networkx.MultiGraph()
-    else:
-        if P.get_strict(None):
-            create_using=networkx.DiGraph()
         else:
+            create_using=networkx.Graph()
+    else:
+        if multiedges:
             create_using=networkx.MultiDiGraph()
+        else:
+            create_using=networkx.DiGraph()
 
     # assign defaults        
     N=networkx.empty_graph(0,create_using)
@@ -120,46 +119,55 @@ def from_pydot(P):
 
     # add edges
     for e in P.get_edge_list():
-        source=e.get_source()
-        dest=e.get_destination()
-        if hasattr(N,'allow_multiedges')==True: # XGraph or XDiGraph
-            N.add_edge(source,dest,e.get_attributes())
-        else: # Graph
-            N.add_edge(source,dest)
+        u=e.get_source()
+        v=e.get_destination()
+        attr=e.get_attributes()
+        if edge_attr:
+            N.add_edge(u,v,attr)
+        else:
+            N.add_edge(u,v,float(attr.get('weight',1)))
 
-    # add default attributes for graph, nodes, and edges       
+    # add default attributes for graph, nodes, edges
     # hang them on N.graph_attr
-    if hasattr(N,'allow_multiedges')==True: # XGraph
-        N.graph_attr={}
-        N.graph_attr['graph']=P.get_attributes()
-        # get atributes not working for these?
-        # get_node_defaults()
-        if 'node' in P.obj_dict['nodes']:
-            N.graph_attr['node']=P.obj_dict['nodes']['node'][0]['attributes']
-        # get_edge_defaults()
-        if 'edge' in P.obj_dict['nodes']:
-            N.graph_attr['edge']=P.obj_dict['nodes']['edge'][0]['attributes']
-        N.node_attr=node_attr
+    N.graph_attr={}
+    N.graph_attr['graph']=P.get_attributes()
+    # get atributes not working for these?
+    # get_node_defaults()
+    if 'node' in P.obj_dict['nodes']:
+        N.graph_attr['node']=P.obj_dict['nodes']['node'][0]['attributes']
+    # get_edge_defaults()
+    if 'edge' in P.obj_dict['nodes']:
+        N.graph_attr['edge']=P.obj_dict['nodes']['edge'][0]['attributes']
+    N.node_attr=node_attr
 
     return N        
 
-def to_pydot(N, graph_attr=None, node_attr=None, edge_attr=None,
-              strict=True):
+def to_pydot(N, graph_attr=None, node_attr=None, strict=True):
     """Return a pydot graph from a NetworkX graph N.
 
-    If N is a Graph or DiGraph, graphviz attributes can
-    be supplied through the keyword arguments
+    Parameters
+    ----------
+    N : NetworkX graph
+      A graph created with NetworkX
+      
+    graph_attr: dictionary,optional 
+       Dictionary with default attributes for graph, nodes, and edges
+       keyed by 'graph', 'node', and 'edge' to attribute dictionaries.
+       Example: graph_attr['graph']={'pack':'true','epsilon':0.01}
 
-    graph_attr:  dictionary with default attributes for graph, nodes, and edges
-                 keyed by 'graph', 'node', and 'edge' to attribute dictionaries
+    node_attr: dictionary, optional
+       Dictionary keyed by node to node attribute dictionary.
 
-    node_attr: dictionary keyed by node to node attribute dictionary
+    Examples
+    --------
+    >>> K5=nx.complete_graph(5)
+    >>> P=nx.to_pydot(K5)
 
-    edge_attr: dictionary keyed by edge tuple to edge attribute dictionary
-
-    If N is an XGraph or XDiGraph an attempt will be made first
-    to copy properties attached to the graph (see from_pydot)
-    and then updated with the calling arguments, if any.
+    Notes
+    -----
+    If N has an dict N.graph_attr an attempt will be made first
+    to copy properties attached to the graph
+    and then updated with the calling arguments if any.
 
     """
     if hasattr(N,'graph_attr'):
@@ -169,16 +177,12 @@ def to_pydot(N, graph_attr=None, node_attr=None, edge_attr=None,
     if graph_attr is not None:
         graph_attributes.update(graph_attr)
 
+    # set Graphviz graph type
     if N.directed:
         graph_type='digraph'
     else:
         graph_type='graph'
-    if hasattr(N,'allow_multiedges'):
-        if N.multiedges:
-            strict=False
-    if hasattr(N,'allow_selfloops'):
-        if N.selfloops:
-            strict=False
+    strict=N.number_of_selfloops()==0 and not N.multigraph 
 
     try:
         node_a=N.node_attr
@@ -197,28 +201,18 @@ def to_pydot(N, graph_attr=None, node_attr=None, edge_attr=None,
         p=pydot.Node(str(n),**attr)
         P.add_node(p)
 
-    for e in N.edges_iter():
-        if len(e)==2:
-            (u,v)=e
-            edge=pydot.Edge(str(u),str(v))
-            P.add_edge(edge)
-        if len(e)==3:
-            (u,v,x)=e
-            if N.multiedges==True:
-                dlist=N[u][v]
+    for u,v,d in N.edges_iter(data=True):
+        if N.multigraph==True:
+            dlist=N[u][v]
+        else:
+            dlist=[N[u][v]]
+        for d in dlist:
+            if hasattr(d,"__iter__"):
+                attr=d
             else:
-                dlist=[N[u][v]]
-            for d in dlist:
-                if hasattr(d,"__iter__"):
-                    attr=d
-                else:
-                    attr={'label':d}
-                try:
-                    attr.update(edge_attr[(u,v)])                    
-                except:
-                    pass
-                edge=pydot.Edge(str(u),str(v),**attr)
-                P.add_edge(edge)
+                attr={'weight':str(d)}
+            edge=pydot.Edge(str(u),str(v),**attr)
+            P.add_edge(edge)
 
     try:
         P.obj_dict['attributes'].update(graph_attributes['graph'])
@@ -237,26 +231,31 @@ def to_pydot(N, graph_attr=None, node_attr=None, edge_attr=None,
 
 
 def pydot_from_networkx(N):
-	"""Creates a pydot graph from an networkx graph N"""
+	"""Create a Pydot graph from a NetworkX graph."""
         from warnings import warn
         warn('pydot_from_networkx is replaced by to_pydot', DeprecationWarning)
         return to_pydot(N)
 
 def networkx_from_pydot(D, create_using=None):
-	"""Creates an networkx graph from an pydot graph D"""
+	"""Create a NetworkX graph from a Pydot graph."""
         from warnings import warn
         warn('networkx_from_pydot is replaced by from_pydot', 
              DeprecationWarning)
         return from_pydot(D)
 
 def graphviz_layout(G,prog='neato',root=None, **kwds):
-    """Create layout using pydot and graphviz.
+    """Create node positions using Pydot and Graphviz.
+
     Returns a dictionary of positions keyed by node.
 
+    Examples
+    --------
     >>> G=nx.complete_graph(4)
     >>> pos=nx.graphviz_layout(G)
     >>> pos=nx.graphviz_layout(G,prog='dot')
 
+    Notes
+    -----
     This is a wrapper for pydot_layout.
 
     """
@@ -264,10 +263,12 @@ def graphviz_layout(G,prog='neato',root=None, **kwds):
 
 
 def pydot_layout(G,prog='neato',root=None, **kwds):
-    """
-    Create layout using pydot and graphviz.
+    """Create node positions using Pydot and Graphviz.
+
     Returns a dictionary of positions keyed by node.
 
+    Examples
+    --------
     >>> G=nx.complete_graph(4)
     >>> pos=nx.pydot_layout(G)
     >>> pos=nx.pydot_layout(G,prog='dot')
