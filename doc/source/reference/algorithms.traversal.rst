@@ -61,8 +61,8 @@ Distance
    periphery
    center
 
-Paths 
------
+Shortest Paths 
+--------------
 .. automodule:: networkx.algorithms.traversal.path
 .. currentmodule:: networkx
 
@@ -87,6 +87,14 @@ Paths
    predecessor
    floyd_warshall
 
+.. automodule:: networkx.algorithms.traversal.astar
+.. currentmodule:: networkx
+
+.. autosummary::
+   :toctree: generated/
+
+   astar_path
+   astar_path_length   
 
 
 Search
