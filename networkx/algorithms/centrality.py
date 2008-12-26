@@ -104,12 +104,12 @@ def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
                 sigma[v]=sigma[v]+sigma[pred] # count paths
                 S.append(v)
                 D[v] = dist
-#                for w in G.adj[v]: # speed hack, exposes internals
                 for w,edgedata in G[v].iteritems():
                     vw_dist = D[v] + edgedata
                     if w not in D and (w not in seen or vw_dist < seen[w]):
                         seen[w] = vw_dist
                         push(Q,(vw_dist,v,w))
+                        sigma[w]=0
                         P[w]=[v]
                     elif vw_dist==seen[w]:  # handle equal paths
                         sigma[w]=sigma[w]+sigma[v]
