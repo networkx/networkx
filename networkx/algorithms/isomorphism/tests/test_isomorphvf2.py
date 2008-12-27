@@ -100,7 +100,8 @@ class TestVF2GraphDB(object):
         assert_true(gm.subgraph_is_isomorphic())
 
 def test_graph_atlas():
-    Atlas = nx.graph_atlas_g()[0:208] # 208, 6 nodes or less
+    #Atlas = nx.graph_atlas_g()[0:208] # 208, 6 nodes or less
+    Atlas = nx.graph_atlas_g()[0:100]
     alphabet = range(26)
     for graph in Atlas:
         nlist = graph.nodes()
@@ -126,7 +127,7 @@ def test_multiedge():
 
     for g1 in [nx.MultiGraph(), nx.MultiDiGraph()]:
         g1.add_edges_from(edges)
-        for _ in range(50):
+        for _ in range(10):
             new_nodes = list(nodes)
             random.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
@@ -155,4 +156,61 @@ def test_selfloop():
             else:
                 gm = vf2.DiGraphMatcher(g1,g2)
             assert_true(gm.is_isomorphic())
-                
+
+def test_isomorphism_iter1():
+    # As described in:
+    # http://groups.google.com/group/networkx-discuss/browse_thread/thread/2ff65c67f5e3b99f/d674544ebea359bb?fwc=1
+    g1 = nx.DiGraph()
+    g2 = nx.DiGraph()
+    g3 = nx.DiGraph()
+    g1.add_edge('A','B')
+    g1.add_edge('B','C')
+    g2.add_edge('Y','Z')
+    g3.add_edge('Z','Y')
+    gm12 = vf2.DiGraphMatcher(g1,g2)
+    gm13 = vf2.DiGraphMatcher(g1,g3)
+    x = list(gm12.subgraph_isomorphisms_iter())
+    y = list(gm13.subgraph_isomorphisms_iter())
+    assert_true({'A':'Y','B':'Z'} in x)
+    assert_true({'B':'Y','C':'Z'} in x)
+    assert_true({'A':'Z','B':'Y'} in y)
+    assert_true({'B':'Z','C':'Y'} in y)
+    assert_true(len(x)==len(y))
+    assert_true(len(x)==2)
+
+def test_isomorphism_iter2():
+    # Path
+    for L in range(2,10):
+        g1 = nx.path_graph(L)
+        gm = vf2.GraphMatcher(g1,g1)
+        s = len(list(gm.isomorphisms_iter()))
+        assert_true(s == 2, s)
+    # Cycle
+    for L in range(3,10):
+        g1 = nx.cycle_graph(L)
+        gm = vf2.GraphMatcher(g1,g1)
+        s = len(list(gm.isomorphisms_iter()))
+        assert_true(s == 2*L)
+
+def test_multiple():
+    # Verify that we can use the graph matcher multiple times
+    edges = [('A','B'),('B','A'),('B','C')]
+    for g1,g2 in [(nx.Graph(),nx.Graph()), (nx.DiGraph(),nx.DiGraph())]:
+        g1.add_edges_from(edges)
+        g2.add_edges_from(edges)
+        g3 = nx.subgraph(g2, ['A','B'])
+        if not g1.directed:
+            gmA = nx.GraphMatcher(g1,g2)
+            gmB = nx.GraphMatcher(g1,g3)
+        else:
+            gmA = nx.DiGraphMatcher(g1,g2)
+            gmB = nx.DiGraphMatcher(g1,g3)
+        assert_true(gmA.is_isomorphic())
+        g2.remove_node('C')
+        assert_true(gmA.subgraph_is_isomorphic())
+        assert_true(gmB.subgraph_is_isomorphic())
+        for m in [gmB.mapping, gmB.mapping]:
+            assert_true(m['A'] == 'A')
+            assert_true(m['B'] == 'B')
+            assert_true('C' not in m)
+
