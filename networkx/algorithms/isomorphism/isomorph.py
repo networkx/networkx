@@ -14,17 +14,22 @@ __author__ = """Pieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"
 import networkx
 from networkx.exception import NetworkXException, NetworkXError
 
-__all__ = ['graph_could_be_isomorphic',
-           'fast_graph_could_be_isomorphic',
-           'faster_graph_could_be_isomorphic',
+__all__ = ['could_be_isomorphic',
+           'fast_could_be_isomorphic',
+           'faster_could_be_isomorphic',
            'is_isomorphic']
 
-def graph_could_be_isomorphic(G1,G2):
-    """
-    Returns False if graphs G1 and G2 are definitely not isomorphic.
+def could_be_isomorphic(G1,G2):
+    """Returns False if graphs are definitely not isomorphic.
+    True does NOT guarantee isomorphism.
 
-    True does NOT garantee isomorphism.
-  
+    Parameters
+    ----------
+    G1, G2 : NetworkX graph instances
+       The two graphs G1 and G2 must be the same type.
+       
+    Notes
+    -----
     Checks for matching degree, triangle, and number of cliques sequences.
     """
   
@@ -52,11 +57,19 @@ def graph_could_be_isomorphic(G1,G2):
     # OK...
     return True
 
-def fast_graph_could_be_isomorphic(G1,G2):
-    """Returns False if graphs G1 and G2 are definitely not isomorphic.
+graph_could_be_isomorphic=could_be_isomorphic
 
-    True does NOT garantee isomorphism.
-  
+def fast_could_be_isomorphic(G1,G2):
+    """Returns False if graphs are definitely not isomorphic.
+    True does NOT guarantee isomorphism.
+
+    Parameters
+    ----------
+    G1, G2 : NetworkX graph instances
+       The two graphs G1 and G2 must be the same type.
+       
+    Notes
+    -----
     Checks for matching degree and triangle sequences.
     """
   
@@ -79,12 +92,20 @@ def fast_graph_could_be_isomorphic(G1,G2):
     # OK...
     return True
 
-def faster_graph_could_be_isomorphic(G1,G2):
-    """Returns False if graphs G1 and G2 are definitely not isomorphic.
+fast_graph_could_be_isomorphic=fast_could_be_isomorphic
 
-    True does NOT garantee isomorphism.
-  
-    Checks for matching degree sequences in G1 and G2.
+def faster_could_be_isomorphic(G1,G2):
+    """Returns False if graphs are definitely not isomorphic.
+    True does NOT guarantee isomorphism.
+
+    Parameters
+    ----------
+    G1, G2 : NetworkX graph instances
+       The two graphs G1 and G2 must be the same type.
+       
+    Notes
+    -----
+    Checks for matching degree sequences.
     """
   
     # Check global properties
@@ -101,11 +122,25 @@ def faster_graph_could_be_isomorphic(G1,G2):
     # OK...
     return True
 
+faster_graph_could_be_isomorphic=faster_could_be_isomorphic
+
 def is_isomorphic(G1,G2):
     """Returns True if the graphs G1 and G2 are isomorphic and False otherwise.
 
-    Uses the vf2 algorithm - see networkx.isomorphvf2
-        
+    Parameters
+    ----------
+    G1, G2 : NetworkX graph instances
+       The two graphs G1 and G2 must be the same type.
+       
+    Notes
+    -----
+    Uses the vf2 algorithm.
+    Works for Graph, DiGraph, MultiGraph, and MultiDiGraph
+
+    See Also
+    --------
+    isomorphvf2()
+
     """
     if G1.directed and G2.directed:
         return networkx.DiGraphMatcher(G1,G2).is_isomorphic()

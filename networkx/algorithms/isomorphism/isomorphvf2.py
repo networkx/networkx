@@ -1,38 +1,68 @@
 """
+*************
+VF2 Algorithm 
+*************
+
 An implementation of VF2 algorithm for graph ismorphism testing.
-"""
 
-#    Copyright (C) 2007-2009 by the NetworkX maintainers
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
+The simplest interface to use this module is to call networkx.is_isomorphic().
 
-#    This work was originally coded by Christopher Ellison
-#    as part of the Computational Mechanics Python (CMPy) project.
-#    James P. Crutchfield, principal investigator.
-#    Complexity Sciences Center and Physics Department, UC Davis.
+Introduction
+------------
 
-indent = 4 * ' '
+The GraphMatcher and DiGraphMatcher are responsible for matching 
+graphs or directed graphs in a 
+predetermined manner.  This usually
+means a check for an isomorphism, though other checks 
+are also possible.  For example, a subgraph of one graph 
+can be checked for isomorphism to a second graph.
 
-sources = \
-"""
-[1]   Luigi P. Cordella, Pasquale Foggia, Carlo Sansone, Mario Vento,
-      "A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs",
-      IEEE Transactions on Pattern Analysis and Machine Intelligence,
-      vol. 26,  no. 10,  pp. 1367-1372,  Oct.,  2004.
-      http://ieeexplore.ieee.org/iel5/34/29305/01323804.pdf
+Matching is done via syntactic feasibility. It is also possible 
+to check for semantic feasibility. Feasibility, then, is defined 
+as the logical AND of the two functions.
 
-[2]   L. P. Cordella, P. Foggia, C. Sansone, M. Vento, "An Improved 
-      Algorithm for Matching Large Graphs", 3rd IAPR-TC15 Workshop 
-      on Graph-based Representations in Pattern Recognition, Cuen, 
-      pp. 149-159, 2001.
-      http://amalfi.dis.unina.it/graph/db/papers/vf-algorithm.pdf
-        
-Modified to handle undirected graphs.
-Modified to handle multiple edges.
-"""
+To include a semantic check, the (Di)GraphMatcher class should be 
+subclassed, and the semantic_feasibility() function should be 
+redefined.  By default, the semantic feasibility function always 
+returns True.  The effect of this is that semantics are not 
+considered in the matching of G1 and G2. 
 
-subgraph = \
-"""
+Examples
+--------
+
+Suppose G1 and G2 are isomorphic graphs. Verification is as follows:
+
+
+>>> G1 = nx.path_graph(4)
+>>> G2 = nx.path_graph(4)
+>>> GM = nx.GraphMatcher(G1,G2)
+>>> GM.is_isomorphic()
+True
+
+GM.mapping stores the isomorphism mapping from G1 to G2.
+
+>>> GM.mapping
+{0: 0, 1: 1, 2: 2, 3: 3}
+
+
+Suppose G1 and G2 are isomorphic directed graphs
+graphs. Verification is as follows:
+
+>>> G1 = nx.path_graph(4, create_using=nx.DiGraph())
+>>> G2 = nx.path_graph(4, create_using=nx.DiGraph())
+>>> DiGM = nx.DiGraphMatcher(G1,G2)
+>>> DiGM.is_isomorphic()
+True
+
+DiGM.mapping stores the isomorphism mapping from G1 to G2.
+
+>>> DiGM.mapping
+{0: 0, 1: 1, 2: 2, 3: 3}
+
+
+
+Subgraph Isomorphism
+--------------------
 Graph theory literature can be ambiguious about the meaning of the
 above statement, and we seek to clarify it now.
 
@@ -53,10 +83,7 @@ able to perform the check by making use of nx.line_graph(). For
 subgraphs which are not induced, the term 'monomorphism' is preferred 
 over 'isomorphism'. Currently, it is not possible to check for 
 monomorphisms.
-"""
 
-subgraph_definitions = \
-"""
 Let G=(N,E) be a graph with a set of nodes N and set of edges E.
 
 If G'=(N',E') is a subgraph, then:
@@ -70,14 +97,51 @@ If G'=(N',E') is a node-induced subgraph, then:
 If G'=(N',E') is an edge-induced subgrpah, then:
     N' is the subset of nodes in N related by edges in E'
     E' is a subset of E
+
+References
+----------
+[1]   Luigi P. Cordella, Pasquale Foggia, Carlo Sansone, Mario Vento,
+      "A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs",
+      IEEE Transactions on Pattern Analysis and Machine Intelligence,
+      vol. 26,  no. 10,  pp. 1367-1372,  Oct.,  2004.
+      http://ieeexplore.ieee.org/iel5/34/29305/01323804.pdf
+
+[2]   L. P. Cordella, P. Foggia, C. Sansone, M. Vento, "An Improved 
+      Algorithm for Matching Large Graphs", 3rd IAPR-TC15 Workshop 
+      on Graph-based Representations in Pattern Recognition, Cuen, 
+      pp. 149-159, 2001.
+      http://amalfi.dis.unina.it/graph/db/papers/vf-algorithm.pdf
+        
+See Also
+--------
+syntactic_feasibliity(), semantic_feasibility()
+
+Notes
+-----
+Modified to handle undirected graphs.
+Modified to handle multiple edges.
+
+
+In general, this problem is NP-Complete.
+
+
+
 """
 
+#    Copyright (C) 2007-2009 by the NetworkX maintainers
+#    Distributed under the terms of the GNU Lesser General Public License
+#    http://www.gnu.org/copyleft/lesser.html
+
+#    This work was originally coded by Christopher Ellison
+#    as part of the Computational Mechanics Python (CMPy) project.
+#    James P. Crutchfield, principal investigator.
+#    Complexity Sciences Center and Physics Department, UC Davis.
 
 import sys
 
 __date__ = "$Date$"
 
-__doc__ += sources.replace('\n', '\n'+indent)
+#__doc__ += sources#.replace('\n', '\n'+indent)
 
 __all__ = ['GraphMatcher',
            'DiGraphMatcher']
@@ -85,51 +149,16 @@ __all__ = ['GraphMatcher',
 class GraphMatcher(object):
     """Implementation of VF2 algorithm for matching undirected graphs.
 
-    Suitable for nx.Graph and nx.MultiGraph instances.
-
-    A GraphMatcher is responsible for matching undirected graphs in a 
-    predetermined manner.  For graphs or multigraphs G1 and G2, this usually
-    means a check for an isomorphism between them, though other checks are 
-    also possible.  For example, the GraphMatcher class can check if a 
-    subgraph of G1 is isomorphic to G2.
-    
-    Matching is done via syntactic feasibility. It is also possible to check
-    for semantic feasibility. Feasibility, then, is defined as the logical AND 
-    of the two functions.  
-    
-    To include a semantic check, the GraphMatcher class should be subclassed,
-    and the semantic_feasibility() function should be redefined.  By default, 
-    the semantic feasibility function always returns True.  The effect of this
-    is that semantics are not considered in the matching of G1 and G2. 
-    
-    For more information, see the docmentation for:
-      syntactic_feasibliity()
-      semantic_feasibility()
-    
-    In general, this problem is NP-Complete.
-
-    Examples
-    --------
-    Suppose G1 and G2 are isomorphic graphs. Verification is as follows:
-    
-    >>> G1 = nx.path_graph(4)
-    >>> G2 = nx.path_graph(4)
-    >>> GM = nx.GraphMatcher(G1,G2)
-    >>> GM.is_isomorphic()
-    True
-
-    GM.mapping stores the isomorphism mapping from G1 to G2.
-
-    >>> GM.mapping
-    {0: 0, 1: 1, 2: 2, 3: 3}
+    Suitable for Graph and MultiGraph instances.
 
     """
-    __doc__ += "Notes\n%s-----" % (indent,) + sources.replace('\n','\n'+indent)
-
     def __init__(self, G1, G2):
         """Initialize GraphMatcher.
         
-        G1 and G2 should be nx.Graph or nx.MultiGraph instances.
+        Parameters
+        ----------
+        G1,G2: NetworkX Graph or MultiGraph instances.
+           The two graphs to check for isomorphism.
 
         Examples
         --------
@@ -298,7 +327,7 @@ class GraphMatcher(object):
         except StopIteration:
             return False
 
-    subgraph_is_isomorphic.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
+#    subgraph_is_isomorphic.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
     def subgraph_isomorphisms_iter(self):
         """Generator over isomorphisms between a subgraph of G1 and G2."""
@@ -308,7 +337,7 @@ class GraphMatcher(object):
         for mapping in self.match(self.state):
             yield mapping
 
-    subgraph_isomorphisms_iter.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
+#    subgraph_isomorphisms_iter.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
     def syntactic_feasibility(self, G1_node, G2_node):
         """Returns True if adding (G1_node, G2_node) is syntactically feasible.
@@ -420,47 +449,9 @@ class GraphMatcher(object):
 class DiGraphMatcher(GraphMatcher):
     """Implementation of VF2 algorithm for matching directed graphs.
 
-    Suitable for nx.DiGraph and nx.MultiDiGraph instances.
-
-    A DiGraphMatcher is responsible for matching directed graphs in a 
-    predetermined manner.  For directed graphs G1 and G2, this usually
-    means a check for an isomorphism between them, though other checks 
-    are also possible.  For example, the DiGraphMatcher class can check 
-    if a subgraph of G1 is isomorphic to G2.
-   
-    Matching is done via syntactic feasibility. It is also possible 
-    to check for semantic feasibility. Feasibility, then, is defined 
-    as the logical AND of the two functions.
-
-    To include a semantic check, the DiGraphMatcher class should be 
-    subclassed, and the semantic_feasibility() function should be 
-    redefined.  By default, the semantic feasibility function always 
-    returns True.  The effect of this is that semantics are not 
-    considered in the matching of G1 and G2. 
-    
-    For more information, see the docmentation for:
-      syntactic_feasibliity()
-      semantic_feasibility()
-    
-    In general, this problem is NP-Complete.
-
-    Examples
-    --------
-    Suppose G1 and G2 are isomorphic graphs. Verification is as follows:
-    
-    >>> G1 = nx.path_graph(4, create_using=nx.DiGraph)
-    >>> G2 = nx.path_graph(4, create_using=nx.DiGraph)
-    >>> DiGM = nx.DiGraphMatcher(G1,G2)
-    >>> DiGM.is_isomorphic()
-    True
-
-    DiGM.mapping stores the isomorphism mapping from G1 to G2.
-
-    >>> DiGM.mapping
-    {0: 0, 1: 1, 2: 2, 3: 3}
-    
+    Suitable for DiGraph and MultiDiGraph instances.
     """
-    __doc__ += "Notes\n%s-----" % (indent,) + sources.replace('\n','\n'+indent)
+#    __doc__ += "Notes\n%s-----" % (indent,) + sources.replace('\n','\n'+indent)
                       
     def __init__(self, G1, G2):
         """Initialize DiGraphMatcher.
@@ -471,8 +462,8 @@ class DiGraphMatcher(GraphMatcher):
         --------
         To create a GraphMatcher which checks for syntactic feasibility:
 
-        >>> G1 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph)
-        >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph)
+        >>> G1 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
+        >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
         >>> DiGM = nx.DiGraphMatcher(G1,G2)
                 
         """
