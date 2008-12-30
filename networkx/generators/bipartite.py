@@ -3,7 +3,7 @@
 Generators and functions for bipartite graphs.
 
 """
-#    Copyright (C) 2006 by 
+#    Copyright (C) 2006-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -11,40 +11,47 @@ Generators and functions for bipartite graphs.
 #    http://www.gnu.org/copyleft/lesser.html
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
  
-__all__=[]
+__all__=['bipartite_configuration_model',
+         'bipartite_havel_hakimi_graph',
+         'bipartite_reverse_havel_hakimi_graph',
+         'bipartite_alternating_havel_hakimi_graph',
+         'bipartite_preferential_attachment_graph',
+         'bipartite_random_regular_graph',
+         ]
 
 import random
 import sys
-import networkx as NX
+import networkx 
 
-def bipartite_configuration_model(aseq, bseq,
-                                  create_using=None,
-                                  seed=None,
-                                  ):
-    """
-    Return a random bipartite graph from two given degree sequences.
+def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
+    """Return a random bipartite graph from two given degree sequences.
 
-    :Parameters:
-       - `aseq`: degree sequence for node set A
-       - `bseq`: degree sequence for node set B
+    Parameters
+    ----------
+    aseq : list or iterator
+       Degree sequence for node set A.
+    bseq : list or iterator
+       Degree sequence for node set B.
+    create_using : NetworkX graph instance, optional
+       Return graph of this type.
+    seed : integer, optional
+       Seed for random number generator. 
 
     Nodes from the set A are connected to nodes in the set B by
     choosing randomly from the possible free stubs, one in A and
     one in B.
 
+    Notes
+    -----
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
-
     If no graph type is specified use MultiGraph with parallel edges.
-
     If you want a graph with no parallel edges use create_using=Graph()
     but then the resulting degree sequences might not be exact.
-
     """
-
     if create_using==None:
-        create_using=NX.MultiGraph()
+        create_using=networkx.MultiGraph()
 
-    G=NX.empty_graph(0,create_using)
+    G=networkx.empty_graph(0,create_using)
 
     if not seed is None:
         random.seed(seed)    
@@ -56,7 +63,7 @@ def bipartite_configuration_model(aseq, bseq,
     sumb=sum(bseq)
 
     if not suma==sumb:
-        raise NX.NetworkXError, \
+        raise networkx.NetworkXError, \
               'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'\
               %(suma,sumb)
 
@@ -85,27 +92,34 @@ def bipartite_configuration_model(aseq, bseq,
     return G
 
 
-def bipartite_havel_hakimi_graph(aseq, bseq,
-                                 create_using=None,
-                                 ):
-    """
-    Return a bipartite graph from two given degree sequences
+def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
+    """Return a bipartite graph from two given degree sequences
     using a Havel-Hakimi style construction.
 
-    :Parameters:
-       - `aseq`: degree sequence for node set A
-       - `bseq`: degree sequence for node set B
+    Parameters
+    ----------
+    aseq : list or iterator
+       Degree sequence for node set A.
+    bseq : list or iterator
+       Degree sequence for node set B.
+    create_using : NetworkX graph instance, optional
+       Return graph of this type.
 
     Nodes from the set A are connected to nodes in the set B by
     connecting the highest degree nodes in set A to
     the highest degree nodes in set B until all stubs are connected.
 
+    Notes
+    -----
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
+    If no graph type is specified use MultiGraph with parallel edges.
+    If you want a graph with no parallel edges use create_using=Graph()
+    but then the resulting degree sequences might not be exact.
     """
     if create_using==None:
-        create_using=NX.MultiGraph()
+        create_using=networkx.MultiGraph()
 
-    G=NX.empty_graph(0,create_using)
+    G=networkx.empty_graph(0,create_using)
 
     # length of the each sequence
     naseq=len(aseq)
@@ -115,7 +129,7 @@ def bipartite_havel_hakimi_graph(aseq, bseq,
     sumb=sum(bseq)
 
     if not suma==sumb:
-        raise NX.NetworkXError, \
+        raise networkx.NetworkXError, \
               'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'\
               %(suma,sumb)
 
@@ -143,27 +157,34 @@ def bipartite_havel_hakimi_graph(aseq, bseq,
     G.name="bipartite_havel_hakimi_graph"
     return G
 
-def bipartite_reverse_havel_hakimi_graph(aseq, bseq,
-                                         create_using=None,
-                                         ):
-    """
-    Return a bipartite graph from two given degree sequences
-    using a "reverse" Havel-Hakimi style construction.
+def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
+    """Return a bipartite graph from two given degree sequences
+    using a Havel-Hakimi style construction.
 
-    :Parameters:
-       - `aseq`: degree sequence for node set A
-       - `bseq`: degree sequence for node set B
+    Parameters
+    ----------
+    aseq : list or iterator
+       Degree sequence for node set A.
+    bseq : list or iterator
+       Degree sequence for node set B.
+    create_using : NetworkX graph instance, optional
+       Return graph of this type.
 
     Nodes from the set A are connected to nodes in the set B by
     connecting the highest degree nodes in set A to
     the lowest degree nodes in set B until all stubs are connected.
 
+    Notes
+    -----
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
+    If no graph type is specified use MultiGraph with parallel edges.
+    If you want a graph with no parallel edges use create_using=Graph()
+    but then the resulting degree sequences might not be exact.
     """
     if create_using==None:
-        create_using=NX.MultiGraph()
+        create_using=networkx.MultiGraph()
 
-    G=NX.empty_graph(0,create_using)
+    G=networkx.empty_graph(0,create_using)
 
 
     # length of the each sequence
@@ -173,7 +194,7 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq,
     sumb=sum(bseq)
 
     if not suma==sumb:
-        raise NX.NetworkXError, \
+        raise networkx.NetworkXError, \
               'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'\
               %(suma,sumb)
 
@@ -202,28 +223,35 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq,
     return G
 
 
-def bipartite_alternating_havel_hakimi_graph(aseq, bseq,
-                                            create_using=None,
-                                            ):
-    """
-    Return a bipartite graph from two given degree sequences
+def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
+    """Return a bipartite graph from two given degree sequences
     using a alternating Havel-Hakimi style construction.
 
-    :Parameters:
-       - `aseq`: degree sequence for node set A
-       - `bseq`: degree sequence for node set B
+    Parameters
+    ----------
+    aseq : list or iterator
+       Degree sequence for node set A.
+    bseq : list or iterator
+       Degree sequence for node set B.
+    create_using : NetworkX graph instance, optional
+       Return graph of this type.
 
     Nodes from the set A are connected to nodes in the set B by
     connecting the highest degree nodes in set A to
     alternatively the highest and the lowest degree nodes in set
     B until all stubs are connected.
 
+    Notes
+    -----
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
+    If no graph type is specified use MultiGraph with parallel edges.
+    If you want a graph with no parallel edges use create_using=Graph()
+    but then the resulting degree sequences might not be exact.
     """
     if create_using==None:
-        create_using=NX.MultiGraph()
+        create_using=networkx.MultiGraph()
 
-    G=NX.empty_graph(0,create_using)
+    G=networkx.empty_graph(0,create_using)
 
     # length of the each sequence
     naseq=len(aseq)
@@ -232,7 +260,7 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,
     sumb=sum(bseq)
 
     if not suma==sumb:
-        raise NX.NetworkXError, \
+        raise networkx.NetworkXError, \
               'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'\
               %(suma,sumb)
 
@@ -263,19 +291,21 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,
     G.name="bipartite_alternating_havel_hakimi_graph"
     return G
 
-def bipartite_preferential_attachment_graph(aseq,p,
-                                            create_using=None,
-                                            ):
-    """
-    Create a bipartite graph with a preferential attachment model
-    from a given single "top" degree sequence.
+def bipartite_preferential_attachment_graph(aseq,p,create_using=None):
+    """Create a bipartite graph with a preferential attachment model
+    from a given single degree sequence.
 
-    :Parameters:
-       - `aseq`: degree sequence for node set A (top)
-       - `p`:    probability that a new bottom node is added
+    Parameters
+    ----------
+    aseq : list or iterator
+       Degree sequence for node set A.
+    p :  float
+       Probability that a new bottom node is added.
+    create_using : NetworkX graph instance, optional
+       Return graph of this type.
 
-
-    Reference::
+    Notes
+    -----
 
      @article{guillaume-2004-bipartite,
        author = {Jean-Loup Guillaume and Matthieu Latapy},
@@ -293,12 +323,12 @@ def bipartite_preferential_attachment_graph(aseq,p,
 
     """
     if create_using==None:
-        create_using=NX.MultiGraph()
+        create_using=networkx.MultiGraph()
 
-    G=NX.empty_graph(0,create_using)
+    G=networkx.empty_graph(0,create_using)
 
     if p > 1: 
-        raise NX.NetworkXError, "probability %s > 1"%(p)
+        raise networkx.NetworkXError, "probability %s > 1"%(p)
 
     naseq=len(aseq)
     G.add_nodes_from(range(0,naseq))
@@ -322,21 +352,30 @@ def bipartite_preferential_attachment_graph(aseq,p,
     return G
 
 
-def bipartite_random_regular_graph(d, n,
-                                   create_using=None,
-                                   ):
-    """
-    UNTESTED:Generate a random bipartite graph of n nodes each with degree d.
+def bipartite_random_regular_graph(d, n, create_using=None):
+    """UNTESTED: Generate a random bipartite graph.
+
+    Parameters
+    ----------
+    d : integer
+      Degree of graph.
+    n : integer
+      Number of nodes in graph.
+    create_using : NetworkX graph instance, optional
+      Return graph of this type.
+
+    Notes
+    ------
+    Nodes are numbered 0...n-1. 
 
     Restrictions on n and d:
        -  n must be even
        -  n>=2*d
 
-    Nodes are numbered 0...n-1. 
-    
     Algorithm inspired by random_regular_graph()
 
     """
+    # This algorithm could be improved - see random_regular_graph()
     # helper subroutine to check for suitable edges
     def suitable(leftstubs,rightstubs):
         for s in leftstubs:
@@ -361,9 +400,9 @@ def bipartite_random_regular_graph(d, n,
 
 
     if create_using==None:
-        create_using=NX.MultiGraph()
+        create_using=networkx.MultiGraph()
 
-    G=NX.empty_graph(0,create_using)
+    G=networkx.empty_graph(0,create_using)
 
     nodes=range(0,n)
     G.add_nodes_from(nodes)
@@ -391,67 +430,4 @@ def bipartite_random_regular_graph(d, n,
            if suitable(leftstubs,rightstubs)==False: 
                return False
     return G
-
-
-def project(B,nodes,create_using=None):
-    """
-    Returns a graph that is the projection of the bipartite graph B
-    onto the set of nodes given in list nodes.
-    
-    The nodes retain their names and are connected if they share a
-    common node in the node set of {B not nodes }.
- 
-    No attempt is made to verify that the input graph B is bipartite.
-    """
-
-    if create_using==None:
-        create_using=NX.Graph()
-
-    G=NX.empty_graph(0,create_using)
-
-    for v in nodes:
-        G.add_node(v)
-        for cv in B.neighbors(v):
-            G.add_edges_from([(v,u) for u in B.neighbors(cv)])
-    return G
-
-
-def bipartite_color(G):
-    color={}
-    for n in G.nodes(): #handle disconnected graphs
-        if n in color: continue
-        queue=[n]  
-        color[n]=1 # nodes seen with color (1 or 0)
-        while queue:
-            v=queue.pop()
-            c=1-color[v] # opposite color of node v
-            for w in G.neighbors(v): 
-                if w in color: 
-                    if color[w]==color[v]:
-                        raise NX.NetworkXError, "graph is not bipartite"
-                else:
-                    color[w]=c
-                    queue.append(w)
-    return color
-
-def is_bipartite(G):
-    """ Returns True if graph G is bipartite, False if not.
-
-    Traverse the graph G with depth-first-search and color nodes.
-    """
-    try:
-        bipartite_color(G)
-        return True
-    except:
-        return False
-    
-def bipartite_sets(G):
-    """
-    Returns (X,Y) where X and Y are the nodes in each bipartite set
-    of graph G.  Fails with an error if graph is not bipartite.
-    """
-    color=bipartite_color(G)
-    X=[n for n in color if color[n]==1]
-    Y=[n for n in color if color[n]==0]
-    return (X,Y)
 

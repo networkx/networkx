@@ -20,4 +20,5 @@ Algorithms
    algorithms.pagerank
    algorithms.hits
    algorithms.traversal
+   algorithms.bipartite
 

@@ -8,6 +8,7 @@ from boundary import *
 from matching import *
 from pagerank import *
 from hits import *
+from bipartite import *
 
 import traversal
 import isomorphism

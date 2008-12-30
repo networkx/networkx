@@ -136,3 +136,15 @@ Hybrid
    kl_connected_subgraph
    is_kl_connected
 
+
+Bipartite
+---------
+.. autosummary::
+   :toctree: generated/
+
+   bipartite_configuration_model
+   bipartite_havel_hakimi_graph
+   bipartite_reverse_havel_hakimi_graph
+   bipartite_alternating_havel_hakimi_graph
+   bipartite_preferential_attachment_graph
+   bipartite_random_regular_graph

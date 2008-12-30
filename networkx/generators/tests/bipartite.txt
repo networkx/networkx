@@ -1,0 +1,171 @@
+Generators - Bipartite
+----------------------
+
+>>> from networkx import *
+>>> from networkx.generators.bipartite import *
+
+Configuration Model
+-------------------
+
+>>> aseq=[3,3,3,3]
+>>> bseq=[2,2,2,2,2] 
+>>> G=bipartite_configuration_model(aseq,bseq)
+Traceback (most recent call last):
+...
+NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
+
+>>> aseq=[3,3,3,3]
+>>> bseq=[2,2,2,2,2,2] 
+>>> G=bipartite_configuration_model(aseq,bseq)
+>>> sorted(G.degree())
+[2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+ 
+>>> aseq=[2,2,2,2,2,2] 
+>>> bseq=[3,3,3,3]
+>>> G=bipartite_configuration_model(aseq,bseq)
+>>> sorted(G.degree())
+[2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+
+ 
+>>> aseq=[2,2,2,1,1,1] 
+>>> bseq=[3,3,3]
+>>> G=bipartite_configuration_model(aseq,bseq)
+>>> sorted(G.degree())
+[1, 1, 1, 2, 2, 2, 3, 3, 3]
+
+>>> GU=project(G,range(len(aseq)))
+>>> GU.number_of_nodes()
+6
+
+>>> GD=project(G,range(len(aseq),len(aseq)+len(bseq)))
+>>> GD.number_of_nodes()
+3
+
+
+Havel-Hakimi Graph
+------------------
+
+>>> aseq=[3,3,3,3]
+>>> bseq=[2,2,2,2,2] 
+>>> G=bipartite_havel_hakimi_graph(aseq,bseq)
+Traceback (most recent call last):
+...
+NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
+
+>>> bseq=[2,2,2,2,2,2] 
+>>> G=bipartite_havel_hakimi_graph(aseq,bseq)
+>>> sorted(G.degree())
+[2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+ 
+ 
+>>> aseq=[2,2,2,2,2,2] 
+>>> bseq=[3,3,3,3]
+>>> G=bipartite_havel_hakimi_graph(aseq,bseq)
+>>> sorted(G.degree())
+[2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+
+
+>>> GU=project(G,range(len(aseq)))
+>>> GU.number_of_nodes()
+6
+
+>>> GD=project(G,range(len(aseq),len(aseq)+len(bseq)))
+>>> GD.number_of_nodes()
+4
+
+
+
+Reverse Havel-Hakimi Graph
+--------------------------
+
+>>> aseq=[3,3,3,3]
+>>> bseq=[2,2,2,2,2] 
+>>> G=bipartite_reverse_havel_hakimi_graph(aseq,bseq)
+Traceback (most recent call last):
+...
+NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
+
+>>> bseq=[2,2,2,2,2,2] 
+>>> G=bipartite_reverse_havel_hakimi_graph(aseq,bseq)
+>>> sorted(G.degree())
+[2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+
+ 
+>>> aseq=[2,2,2,2,2,2] 
+>>> bseq=[3,3,3,3]
+>>> G=bipartite_reverse_havel_hakimi_graph(aseq,bseq)
+>>> sorted(G.degree())
+[2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+
+ 
+>>> aseq=[2,2,2,1,1,1] 
+>>> bseq=[3,3,3]
+>>> G=bipartite_reverse_havel_hakimi_graph(aseq,bseq)
+>>> sorted(G.degree())
+[1, 1, 1, 2, 2, 2, 3, 3, 3]
+
+
+>>> GU=project(G,range(len(aseq)))
+>>> GU.number_of_nodes()
+6
+
+>>> GD=project(G,range(len(aseq),len(aseq)+len(bseq)))
+>>> GD.number_of_nodes()
+3
+
+
+
+Alternating Havel-Hakimi Graph
+------------------------------
+
+>>> aseq=[3,3,3,3]
+>>> bseq=[2,2,2,2,2] 
+>>> G=bipartite_alternating_havel_hakimi_graph(aseq,bseq)
+Traceback (most recent call last):
+...
+NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
+
+>>> bseq=[2,2,2,2,2,2] 
+>>> G=bipartite_alternating_havel_hakimi_graph(aseq,bseq)
+>>> sorted(G.degree())
+[2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+ 
+>>> aseq=[2,2,2,2,2,2] 
+>>> bseq=[3,3,3,3]
+>>> G=bipartite_alternating_havel_hakimi_graph(aseq,bseq)
+>>> sorted(G.degree())
+[2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+
+ 
+>>> aseq=[2,2,2,1,1,1] 
+>>> bseq=[3,3,3]
+>>> G=bipartite_alternating_havel_hakimi_graph(aseq,bseq)
+>>> sorted(G.degree())
+[1, 1, 1, 2, 2, 2, 3, 3, 3]
+
+
+>>> GU=project(G,range(len(aseq)))
+>>> GU.number_of_nodes()
+6
+
+>>> GD=project(G,range(len(aseq),len(aseq)+len(bseq)))
+>>> GD.number_of_nodes()
+3
+
+
+Preferential Attachment
+-----------------------
+
+>>> aseq=[3,2,1,1]
+>>> G=bipartite_preferential_attachment_graph(aseq,0.5)
+
+
+Random Regular Bipartite
+------------------------
+FIXME: test this somehow
+G=bipartite_random_regular_graph(2,12)
+G.degree()
+[4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+is_bipartite(G)
+True
+
