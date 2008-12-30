@@ -672,7 +672,8 @@ class Graph(object):
 
         Notes
         -----
-        It is faster to iterate over the using the idiom
+        It is faster to iterate over the nodes using the idiom
+
         >>> print [n for n in G[0]]
         [1]
         
