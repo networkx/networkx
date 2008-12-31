@@ -23,6 +23,7 @@ __all__ = ['draw',
            'draw_networkx_nodes',
            'draw_networkx_edges',
            'draw_networkx_labels',
+           'draw_networkx_edge_labels',
            'draw_circular',
            'draw_random',
            'draw_spectral',
@@ -40,7 +41,7 @@ try:
     import matplotlib.cbook as cb
     from matplotlib.colors import colorConverter,normalize,Colormap
     from matplotlib.collections import LineCollection
-    from matplotlib.numerix import sin, cos, pi, sqrt, arctan2, asarray
+    from matplotlib.numerix import sin, cos, pi, sqrt, arctan2, asarray, array
     from matplotlib.numerix.mlab import amin, amax, ravel
     import matplotlib.pylab
 except ImportError:
@@ -280,7 +281,7 @@ def draw_networkx_edges(G, pos,
 
     # set edge positions
     edge_pos=asarray([(pos[e[0]],pos[e[1]]) for e in edgelist])
-
+    
     if not cb.iterable(width):
         lw = (width,)
     else:
@@ -450,6 +451,77 @@ def draw_networkx_labels(G, pos,
         text_items[n]=t
 
     return text_items
+
+def draw_networkx_edge_labels(G, pos,
+                              edge_labels=None,
+                              font_size=10,
+                              font_color='k',
+                              font_family='sans-serif',
+                              font_weight='normal',
+                              alpha=1.0,
+                              bbox=None,
+                              ax=None,
+                              **kwds):
+    """Draw edge labels.
+
+    pos is a dictionary keyed by vertex with a two-tuple
+    of x-y positions as the value.
+    See networkx.layout for functions that compute node positions.
+
+    labels is an optional dictionary keyed by edge tuple with labels
+    as the values.  If provided only labels for the keys in the dictionary
+    are drawn.  If not provided the edge data is used as a label.
+   
+    See draw_networkx for the list of other optional parameters.
+
+    """
+    if ax is None:
+        ax=matplotlib.pylab.gca()
+    if edge_labels is None:
+        labels=dict(zip(G.edges(),[d for u,v,d in G.edges(data=True)]))
+    else:
+        labels = edge_labels
+    text_items={} 
+    for ((n1,n2),label) in labels.items():
+        (x1,y1)=pos[n1]
+        (x2,y2)=pos[n2]
+        (x,y) = ((x1+x2)/2, (y1+y2)/2)
+        angle=arctan2(y2-y1,x2-x1)/(2.0*pi)*360 # degrees
+        # make label orientation "right-side-up"
+        if angle > 90: 
+            angle-=180
+        if angle < - 90: 
+            angle+=180
+        # transform data coordinate angle to screen coordinate angle
+        xy=array((x,y))
+        trans_angle=ax.transData.transform_angles(array((angle,)),
+                                                  xy.reshape((1,2)))[0]
+        # use default box of white with white border
+        if bbox is None:
+            bbox = dict(boxstyle='round',
+                        ec=(1.0, 1.0, 1.0),
+                        fc=(1.0, 1.0, 1.0),
+                        )
+        if not cb.is_string_like(label):
+            label=str(label) # this will cause "1" and 1 to be labeled the same
+        t=ax.text(x, y,
+                  label,
+                  size=font_size,
+                  color=font_color,
+                  family=font_family,
+                  weight=font_weight,
+                  horizontalalignment='center',
+                  verticalalignment='center',
+                  rotation=trans_angle,
+                  transform = ax.transData,
+                  bbox = bbox,
+                  zorder = 1,
+                  )
+        text_items[(n1,n2)]=t
+
+    return text_items
+
+
 
 def draw_circular(G, **kwargs):
     """Draw the graph G with a circular layout"""

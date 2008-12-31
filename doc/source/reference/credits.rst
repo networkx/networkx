@@ -63,3 +63,6 @@ Thanks to the following people who have made contributions to NetworkX:
  - Raf Guns wrote the GraphML writer
 
  - Salim Fadhley and Matteo Dell'Amico contributed the A* algorithm.
+
+-  Fabrice Desclaux contributed the Matplotlib edge labeling code
+

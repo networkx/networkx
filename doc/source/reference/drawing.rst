@@ -17,6 +17,7 @@ Matplotlib
    draw_networkx_nodes
    draw_networkx_edges
    draw_networkx_labels
+   draw_networkx_edge_labels
    draw_circular
    draw_random
    draw_spectral
