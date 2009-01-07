@@ -23,6 +23,7 @@ __all__ = ['circular_layout',
 from math import pi,sin,cos,sqrt
 import sys
 from networkx.utils import uniform_sequence
+import networkx
 
 try:
     import Numeric as N
@@ -30,7 +31,7 @@ except:
     try:
         import numpy as N
     except:
-        raise ImportError,"numpy and/or Numeric can not be imported."    
+        raise ImportError("numpy and/or Numeric can not be imported.")    
 
 
 def circular_layout(G, dim=2):
@@ -216,7 +217,7 @@ def graph_low_ev_pi(uhat,G,eps=1.e-3,iterations=10000):
             ##normalize(vv)     vv=vv/|vv|
             norm=sqrt(sum([vals**2 for vals in vv.itervalues()]))
             if norm==0:
-                raise networkx.NetworkXError,"Eigenvector with zero eigenvalue given as input."
+                raise networkx.NetworkXError("Eigenvector has zero eigenvalue.")
             nn=1.0/norm
             for k in vv:
                 vv[k] *= nn
@@ -233,7 +234,7 @@ def graph_low_ev_pi(uhat,G,eps=1.e-3,iterations=10000):
             if iii==iterations: 
                 #print "Maximum iterations achieved."
                 break
-                raise NetworkXError, "Maximum number of iterations exceeded." 
+                raise NetworkXError("Maximum number of iterations exceeded.") 
 #            if iii%20==0: sys.stderr.write(".")
     return v 
     
