@@ -47,8 +47,7 @@ def triangles(G,nbunch=None,with_labels=False):
     each triangle is counted three times, once at each node.
     """
     if G.directed:
-        raise(NetworkXError,
-              "triangles() is not defined for directed graphs.")
+        raise NetworkXError("triangles() is not defined for directed graphs.")
     if with_labels:
         return dict( (v,t/2) for v,d,t in _triangles_and_degree_iter(G,nbunch))
     elif nbunch in G: 
@@ -151,8 +150,7 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
     transitivity.
     """
     if G.directed:
-        raise(NetworkXError,
-              "Clustering algorithms are not defined for directed graphs.")
+        raise NetworkXError("Clustering algorithms are not defined for directed graphs.")
     if with_labels and weights:
         clusterc={}
         weights={}
