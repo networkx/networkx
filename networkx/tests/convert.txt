@@ -312,6 +312,38 @@ True
 >>> sorted(G.edges())==sorted(GI.edges())
 True
 
+Edgelists
+~~~~~~~~~
+
+>>> P=path_graph(4)
+
+>>> e=[(0,1),(1,2),(2,3)]
+>>> G=Graph(e)
+>>> sorted(G.nodes())==sorted(P.nodes())
+True
+>>> sorted(G.edges())==sorted(P.edges())
+True
+>>> sorted(G.edges(data=True))==sorted(P.edges(data=True))
+True
+
+>>> e=[(0,1,1),(1,2,1),(2,3,1)]
+>>> G=Graph(e)
+>>> sorted(G.nodes())==sorted(P.nodes())
+True
+>>> sorted(G.edges())==sorted(P.edges())
+True
+>>> sorted(G.edges(data=True))==sorted(P.edges(data=True))
+True
+
+
+>>> e=((n,n+1) for n in range(3))
+>>> G=Graph(e)
+>>> sorted(G.nodes())==sorted(P.nodes())
+True
+>>> sorted(G.edges())==sorted(P.edges())
+True
+>>> sorted(G.edges(data=True))==sorted(P.edges(data=True))
+True
 
 
 

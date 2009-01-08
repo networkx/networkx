@@ -48,6 +48,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['from_whatever', 
            'from_dict_of_dicts', 'to_dict_of_dicts',
            'from_dict_of_lists', 'to_dict_of_lists',
+           'from_edgelist', 'to_edgelist',
            'from_numpy_matrix', 'to_numpy_matrix',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix']
 
@@ -93,6 +94,7 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
          any NetworkX graph
          dict-of-dicts
          dist-of-lists
+         list of edges
          numpy matrix
          numpy ndarray
          scipy sparse matrix
@@ -139,8 +141,15 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
             except:
                 raise TypeError("Input is not known type.")
 
-    # numpy matrix or ndarray 
+    # list or generator of edges
+    if isinstance(thing,list) or hasattr(thing,'next'): 
+        try:
+            return from_edgelist(thing,create_using=create_using)
+        except:
+            raise networkx.NetworkXError,\
+                  "Input is not a valid edge list"
 
+    # numpy matrix or ndarray 
     try:
         import numpy
         if isinstance(thing,numpy.core.defmatrix.matrix) or \
@@ -327,6 +336,47 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
                     if v not in seen:
                         G.add_edge(u,v,data)
                 seen[u]=1
+    return G                         
+
+def to_edgelist(G,nodelist=None):
+    """Return a list of edges in the graph.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    nodelist : list       
+       Use only nodes specified in nodelist
+
+    """
+    if nodelist is None:
+        return G.edges(data=True)
+    else:
+        return G.edges(nodelist,data=True)
+
+def from_edgelist(edgelist,create_using=None):
+    """Return a graph from a list of edges.
+
+    Parameters
+    ----------
+    edgelist : list or iterator
+      Edge tuples 
+
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created.
+
+    Examples
+    --------
+    >>> edgelist= [(0,1)] # single edge (0,1)
+    >>> G=nx.from_edgelist(edgelist)
+
+    or
+    >>> G=nx.Graph(edgelist) # use Graph constructor
+
+    """
+    G=_prep_create_using(create_using)
+    G.add_edges_from(edgelist)
     return G                         
 
 
