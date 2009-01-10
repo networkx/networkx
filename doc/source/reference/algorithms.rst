@@ -21,4 +21,5 @@ Algorithms
    algorithms.hits
    algorithms.traversal
    algorithms.bipartite
+   algorithms.mst
 

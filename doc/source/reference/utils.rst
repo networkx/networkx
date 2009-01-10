@@ -17,6 +17,12 @@ Helper functions
    is_list_of_ints
    _get_fh
 
+Data structures and Algorithms
+------------------------------
+.. autosummary::
+   :toctree: generated/
+
+   UnionFind
 
 Random sequence generators
 --------------------------

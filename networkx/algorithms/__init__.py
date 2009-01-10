@@ -9,6 +9,7 @@ from matching import *
 from pagerank import *
 from hits import *
 from bipartite import *
+from mst import *
 
 import traversal
 import isomorphism
