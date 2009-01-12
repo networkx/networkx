@@ -110,13 +110,13 @@ class MultiGraph(Graph):
                 if data in dlist: 
                     # remove the edge with specified data
                     dlist.remove(data)
-                if len(dlist)==1: 
+                if len(dlist)==0: 
                     # remove the key entries if last edge
                     del self.adj[u][v]
                     del self.adj[v][u]
             except KeyError: 
                 raise NetworkXError(
-                    "edge %s-%s with data %d not in graph"%(u,v,data))
+                    "edge %s-%s with data %s not in graph"%(u,v,data))
 
     delete_edge = remove_edge            
 

@@ -85,6 +85,16 @@ class TestMultiGraph(TestGraph):
         assert_equal(G.adj,{0:{2:[1]},1:{2:[1]},2:{0:[1],1:[1]}})
         G.remove_edges_from([(0,0)]) # silent fail
 
+    def test_remove_multiedge(self):
+        G=self.K3
+        G.add_edge(0,1,'parallel edge')
+        G.remove_edge(0,1,'parallel edge')
+        assert_equal(G.adj,{0:{1: [1],2:[1]},1:{0:[1],2:[1]},2:{0:[1],1:[1]}})
+        G.remove_edge(0,1)
+        assert_equal(G.adj,{0:{2:[1]},1:{2:[1]},2:{0:[1],1:[1]}})
+        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
+
+
     def test_get_edge_data(self):
         G=self.K3
         assert_equal(G.get_edge_data(0,1),[1])

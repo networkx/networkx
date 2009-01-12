@@ -156,14 +156,16 @@ class MultiDiGraph(DiGraph):
         else:
             try:
                 dlist=self.succ[u][v]
-                if d in dlist:
-                    dlist.remove(d)
-                if len(dlist)==1:
+                if data in dlist:
+                    # remove the edge with specified data
+                    dlist.remove(data)
+                if len(dlist)==0:
                     # remove the key entries if last edge
                     del self.succ[u][v]
                     del self.pred[v][u]
             except KeyError: 
-                raise NetworkXError("edge %s-%s not in graph"%(u,v))
+                raise NetworkXError(
+                    "edge %s-%s with data %s not in graph"%(u,v,data))
 
     delete_edge = remove_edge            
 
