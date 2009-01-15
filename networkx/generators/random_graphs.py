@@ -517,21 +517,25 @@ def barabasi_albert_graph(n , m, seed=None):
     if seed is not None:
         random.seed(seed)    
 
-    G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
+    # Add m initial nodes (m0 in barabasi-speak) 
+    G=empty_graph(m)  
     G.name="barabasi_albert_graph(%s,%s)"%(n,m)
-    edge_targets=range(m)  # possible targets for new edges
-    repeated_nodes=[]      # list of existing nodes,
-                           # with nodes repeated once for each adjacent edge 
-    source=m               # next node is m
-    while source<n:        # Now add the other n-m nodes
-        G.add_edges_from(zip([source]*m,edge_targets)) # add links to m nodes
-        repeated_nodes.extend(edge_targets) # add one node for each new link
-        repeated_nodes.extend([source]*m) # and new node "source" has m links
-        # choose m nodes randomly from existing nodes
-        # N.B. during each step of adding a new node the probabilities
-        # are fixed, is this correct? or should they be updated.
-        # Also, random sampling prevents some parallel edges. 
-        edge_targets=random.sample(repeated_nodes,m) 
+    # Target nodes for new edges
+    targets=range(m)  
+    # List of existing nodes, with nodes repeated once for each adjacent edge 
+    repeated_nodes=[]     
+    # Start adding the other n-m nodes. The first node is m.
+    source=m 
+    while source<n: 
+        # Add edges to m nodes from the source.
+        G.add_edges_from(zip([source]*m,targets)) 
+        # Add one node to the list for each new edge just created.
+        repeated_nodes.extend(targets)
+        # And the new node "source" has m edges to add to the list.
+        repeated_nodes.extend([source]*m) 
+        # Now choose m nodes randomly from existing nodes.
+        # Random sample produces m unique (non repeated) nodes.
+        targets=random.sample(repeated_nodes,m) 
         source += 1
     return G
 
