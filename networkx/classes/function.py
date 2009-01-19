@@ -97,7 +97,7 @@ def is_directed(G):
 def info(self, n=None):
     """Print short info summary for graph G or node n."""
     import textwrap
-    width_left = 18
+    width_left = 22
 
     if n is None:
         print ("Name:").ljust(width_left), self.name
@@ -106,8 +106,15 @@ def info(self, n=None):
         print ("Number of nodes:").ljust(width_left), self.number_of_nodes()
         print ("Number of edges:").ljust(width_left), self.number_of_edges()
         if len(self) > 0:
-            print ("Average degree:").ljust(width_left), \
-                  round( self.number_of_edges()/float(len(self)), 4)
+            if self.directed:
+                print ("Average in degree:").ljust(width_left), \
+                    round( sum(self.in_degree())/float(len(self)), 4)
+                print ("Average out degree:").ljust(width_left), \
+                    round( sum(self.out_degree())/float(len(self)), 4)
+            else:
+                print ("Average degree:").ljust(width_left), \
+                    round( sum(self.degree())/float(len(self)), 4)
+
     else:
         try:
             list_neighbors = self.neighbors(n)
