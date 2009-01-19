@@ -97,24 +97,23 @@ class MultiGraph(Graph):
     def remove_edge(self, u, v, data=None):
         """Remove the edge between (u,v).
 
-        If d is defined only remove the first edge found with 
-        edgedata == d.  
+        If data is defined only remove the first edge found with 
+        edge data == data.  
 
-        If d is None, remove all edges between u and v.
+        If data is None, remove all edges between u and v.
         """
         if data is None: 
             super(MultiGraph, self).remove_edge(u,v)
         else:
             try:
                 dlist=self.adj[u][v]
-                if data in dlist: 
-                    # remove the edge with specified data
-                    dlist.remove(data)
+                # remove the edge with specified data
+                dlist.remove(data)
                 if len(dlist)==0: 
                     # remove the key entries if last edge
                     del self.adj[u][v]
                     del self.adj[v][u]
-            except KeyError: 
+            except (KeyError,ValueError): 
                 raise NetworkXError(
                     "edge %s-%s with data %s not in graph"%(u,v,data))
 
