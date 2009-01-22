@@ -45,6 +45,9 @@ def triangles(G,nbunch=None,with_labels=False):
     -----
     When computing triangles for the entire graph 
     each triangle is counted three times, once at each node.
+
+    Self loops are ignored.
+
     """
     if G.directed:
         raise NetworkXError("triangles() is not defined for directed graphs.")
@@ -61,15 +64,26 @@ def _triangles_and_degree_iter(G,nbunch=None):
     See degree() and triangles() for definitions and details.
 
     """
+    if G.multigraph:
+        raise NetworkXError("Not defined for multigraphs.")
+
     if nbunch is None:
         nodes_nbrs = G.adj.iteritems()
     else:
         nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nbunch) )
 
     for v,v_nbrs in nodes_nbrs:
-        triangles= [ u for w in v_nbrs for u in G[w] if u in v_nbrs ]
-        ntriangles=len(triangles)
-        yield (v,len(v_nbrs),ntriangles)
+        vs=set(v_nbrs)
+        if v in vs:
+            vs.remove(v)
+        ntriangles=0
+        for w in vs:
+            ws=set(G[w])
+            if w in ws:
+                ws.remove(w)
+            ntriangles+=len(vs.intersection(ws))
+        yield (v,len(vs),ntriangles)
+
 
 def average_clustering(G):
     """Compute average clustering coefficient.
@@ -102,6 +116,9 @@ def average_clustering(G):
     -----
     This is a space saving routine; it might be faster
     to use clustering to get a list and then take the average.
+
+    Self loops are ignored.
+
     """
     order=G.order()
     s=sum(clustering(G))
@@ -148,6 +165,9 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
     The weights are the fraction of connected triples in the graph
     which include the keyed node.  Ths is useful for computing
     transitivity.
+
+    Self loops are ignored.
+
     """
     if G.directed:
         raise NetworkXError("Clustering algorithms are not defined for directed graphs.")
