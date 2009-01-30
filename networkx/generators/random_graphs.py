@@ -533,9 +533,12 @@ def barabasi_albert_graph(n , m, seed=None):
         repeated_nodes.extend(targets)
         # And the new node "source" has m edges to add to the list.
         repeated_nodes.extend([source]*m) 
-        # Now choose m nodes randomly from existing nodes.
-        # Random sample produces m unique (non repeated) nodes.
-        targets=random.sample(repeated_nodes,m) 
+        # Now choose m unique nodes from the existing nodes 
+        # Pick uniformly from repeated_nodes (preferential attachement) 
+        targets=set()
+        while len(targets)<m:
+            x=random.choice(repeated_nodes)
+            targets.add(x)
         source += 1
     return G
 
