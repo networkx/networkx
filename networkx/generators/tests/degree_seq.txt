@@ -7,7 +7,6 @@ Generators - Degree Sequence
 >>> from networkx import *
 >>> from networkx.generators.degree_seq import *
 >>> from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
->>> is_isomorphic=graph_could_be_isomorphic # use fast but weak isomorphism checker
 
 configuration_model
 -------------------
