@@ -65,6 +65,7 @@ __all__ = ['fast_gnp_random_graph',
            'binomial_graph',
            'newman_watts_strogatz_graph',
            'watts_strogatz_graph',
+           'connected_watts_strogatz_graph',
            'random_regular_graph',
            'barabasi_albert_graph',
            'powerlaw_cluster_graph',
@@ -320,48 +321,116 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
             G.add_edge(u,w)
     return G            
 
+
 def watts_strogatz_graph(n, k, p, seed=None):
-    """Return a Watts-Strogatz small world graph.
+    """Return a Watts-Strogatz small-world graph.
 
     First create a ring over n nodes.  Then each node in the ring is
     connected with its k nearest neighbors (k-1 neighbors if k is odd).  
-    Then shortcuts are created by rewiring existing edges as follows: 
+    Then shortcuts are created by adding new edges as follows: 
     for each edge u-v in the underlying "n-ring with k nearest neighbors" 
-    with probability p replace u-v with a new edge u-w with 
-    randomly-chosen existing node w. 
-    This algorithm does not enforce a connected graph structure.
-    
-    In contrast with newman_watts_strogatz_graph(), the random rewiring 
-    does not increase the number of edges.  
-    
+    with probability p add a new edge u-w with randomly-chosen existing 
+    node w.  
 
-    :Parameters:
-      - `n`: the number of nodes
-      - `k`: each node is connected to k neighbors in the ring topology
-      - `p`: the probability of rewiring an edge
-      - `seed`: seed for random number generator (default=None)
+    Parameters
+    ----------
+    n : int
+        The number of nodes
+        
+    k : int
+        Each node is connected to k nearest neighbors in ring topology
+
+    p : float 
+        The probability of rewiring each edge 
+            
+    seed : int        
+       seed for random number generator (default=None)
+
+
+    Notes
+    -----
+    @article{Watts_Strogatz_1998,
+       author  = {Duncan J. Watts and Steven H. Strogatz},
+       title   = {Collective dynamics of `small-world' networks},
+       journal = {Nature},
+       volume  = {393},
+       pages   = {440--442},
+       year    = {1998},
+       }
       
-    """
+    In contrast with newman_watts_strogatz_graph(), the random
+    rewiring does not increase the number of edges. The rewired graph
+    is not guaranteed to be connected as in  connected_watts_strogatz_graph().
+
+    See Also
+    --------
+    newman_watts_strogatz_graph()
+    connected_watts_strogatz_graph()
+"""
     if seed is not None:
         random.seed(seed)
-    G=empty_graph(n)
+    G=networkx.Graph()
     G.name="watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
-    fromv = range(n)
-    # connect the k/2 neighbors (ON EACH SIDE because undirected edges)
-    for dist in range(1, k/2+1):
-        tov = range(dist,n) + range(dist) # wrap around loop
-        G.add_edges_from( zip(fromv,tov) )
-    # for each edge, with probability p, randomly replace the 2nd node
-    e = G.edges()
-    for (u, v) in e:
-        if random.random() < p:
-            newv = random.choice(nlist)
-            # avoid self-loops and reject if edge u-newv exists
-            while newv == u or G.has_edge(u, newv): 
-                newv = random.choice(nlist)
-            G.delete_edge(u,v)  # conserve number of edges 
-            G.add_edge(u,newv)
+    nodes = range(n) # nodes are labeled 0 to n-1
+    # connect each node to k/2 neighbors
+    for j in range(1, k/2+1):
+        targets = nodes[j:] + nodes[0:j] # first j nodes are now last in list
+        G.add_edges_from(zip(nodes,targets))
+    # rewire edges from each node
+    # loop over all nodes in order (label) and neighbors in order (distance)
+    # no self loops or multiple edges allowed
+    for j in range(1, k/2+1): # outer loop is neighbors
+        targets = nodes[j:] + nodes[0:j] # first j nodes are now last in list
+        # inner loop in node order
+        for u,v in zip(nodes,targets): 
+            if random.random() < p:
+                w = random.choice(nodes)
+                # Enforce no self-loops or multiple edges
+                while w == u or G.has_edge(u, w): 
+                    w = random.choice(nodes)
+                G.delete_edge(u,v)  
+                G.add_edge(u,w)
     return G            
+
+def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
+    """Return a connected Watts-Strogatz small-world graph.
+
+    Attempt to generate a connected realization 
+    by repeated generation of Watts-Strogatz
+    Watts-Strogatz small-world graphs.  An exception is
+    raised if the maximum number of attempts is exceeded.
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes
+        
+    k : int
+        Each node is connected to k nearest neighbors in ring topology
+
+    p : float 
+        The probability of rewiring each edge 
+            
+    tries : int
+        Number of attempts to generate a connected graph.  
+
+    seed : int        
+       seed for random number generator (default=None)
+
+    See Also
+    --------
+    newman_watts_strogatz_graph()
+    watts_strogatz_graph()
+"""
+    from networkx.algorithms.traversal.component import is_connected
+    G = watts_strogatz_graph(n, k, p, seed)
+    t=1
+    while not is_connected(G):
+        G = watts_strogatz_graph(n, k, p, seed)
+        t=t+1
+        if t>tries:
+            raise networkx.NetworkXError("Maximum number of tries exceeded")
+    return G
 
 
 def random_regular_graph(d, n, seed=None):
