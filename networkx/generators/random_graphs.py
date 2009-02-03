@@ -327,10 +327,10 @@ def watts_strogatz_graph(n, k, p, seed=None):
 
     First create a ring over n nodes.  Then each node in the ring is
     connected with its k nearest neighbors (k-1 neighbors if k is odd).  
-    Then shortcuts are created by adding new edges as follows: 
+    Then shortcuts are created by replacing some edges as follows: 
     for each edge u-v in the underlying "n-ring with k nearest neighbors" 
-    with probability p add a new edge u-w with randomly-chosen existing 
-    node w.  
+    with probability p replace it with a new edge u-w with uniformly 
+    random choice of existing node w.  
 
     Parameters
     ----------
@@ -395,10 +395,9 @@ def watts_strogatz_graph(n, k, p, seed=None):
 def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
     """Return a connected Watts-Strogatz small-world graph.
 
-    Attempt to generate a connected realization 
-    by repeated generation of Watts-Strogatz
-    Watts-Strogatz small-world graphs.  An exception is
-    raised if the maximum number of attempts is exceeded.
+    Attempt to generate a connected realization by repeated 
+    generation of Watts-Strogatz small-world graphs.  
+    An exception is raised if the maximum number of tries is exceeded.
 
     Parameters
     ----------
