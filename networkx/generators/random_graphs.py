@@ -328,9 +328,11 @@ def watts_strogatz_graph(n, k, p, seed=None):
     Then shortcuts are created by rewiring existing edges as follows: 
     for each edge u-v in the underlying "n-ring with k nearest neighbors" 
     with probability p replace u-v with a new edge u-w with 
-    randomly-chosen existing node w. In contrast with
-    newman_watts_strogatz_graph(), the random rewiring does not
-    increase the number of edges.
+    randomly-chosen existing node w. 
+    This algorithm does not enforce a connected graph structure.
+    
+    In contrast with newman_watts_strogatz_graph(), the random rewiring 
+    does not increase the number of edges.  
     
 
     :Parameters:
@@ -344,21 +346,17 @@ def watts_strogatz_graph(n, k, p, seed=None):
         random.seed(seed)
     G=empty_graph(n)
     G.name="watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
-    nlist = G.nodes()
-    fromv = nlist
-    # connect the k/2 neighbors
-    for n in range(1, k/2+1):
-        tov = fromv[n:] + fromv[0:n] # the first n are now last
-        for i in range(len(fromv)):
-            G.add_edge(fromv[i], tov[i])
-    # for each edge u-v, with probability p, randomly replace with
-    # edge u-w
+    fromv = range(n)
+    # connect the k/2 neighbors (ON EACH SIDE because undirected edges)
+    for dist in range(1, k/2+1):
+        tov = range(dist,n) + range(dist) # wrap around loop
+        G.add_edges_from( zip(fromv,tov) )
+    # for each edge, with probability p, randomly replace the 2nd node
     e = G.edges()
     for (u, v) in e:
         if random.random() < p:
             newv = random.choice(nlist)
             # avoid self-loops and reject if edge u-newv exists
-            # is that the correct WS model?
             while newv == u or G.has_edge(u, newv): 
                 newv = random.choice(nlist)
             G.delete_edge(u,v)  # conserve number of edges 
