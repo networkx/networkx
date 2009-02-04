@@ -67,3 +67,7 @@ Thanks to the following people who have made contributions to NetworkX:
 -  Fabrice Desclaux contributed the Matplotlib edge labeling code
 
 -  Arpad Horvath fixed the barabasi_albert_graph() generator
+
+-  Minh Van Nguyen contributed the connected_watts_strogatz_graph()
+
+   

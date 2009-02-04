@@ -80,6 +80,7 @@ Random Graphs
    binomial_graph
    newman_watts_strogatz_graph
    watts_strogatz_graph
+   connected_watts_strogatz_graph
    random_regular_graph
    barabasi_albert_graph
    powerlaw_cluster_graph
