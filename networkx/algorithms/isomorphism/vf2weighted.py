@@ -5,53 +5,14 @@
 from copy import copy
 
 import networkx as nx
-import networkx.algorithms.isomorphism.isomorphvf2 as vf2
+from networkx.algorithms.isomorphism.isomorphvf2 \
+    import GraphMatcher,DiGraphMatcher,GMState,DiGMState
 
-def is_weighted_isomorphic(G1, G2, rtol, atol):
-    """Returns True if the weighted graphs G1 and G2 are isomorphic.
 
-    Parameters
-    ----------
-    G1, G2 : NetworkX graph instances
-       The two graphs G1 and G2 must be the same type.
-    rtol : float, optional
-        The relative tolerance used to compare weights.
-    atol : float, optional
-        The absolute tolerance used to compare weights.
-       
-    Notes
-    -----
-    Uses the vf2 algorithm.
-    Works for Graph, DiGraph, MultiGraph, and MultiDiGraph
-
-    See Also
-    --------
-    isomorphvf2
-
-    """
-
-    # The thought was that is_isomorphic() could check if the graphs
-    # were weighted and if so, call this function.  So the assertions
-    # below are not meant to be useful to the user.  If this function
-    # is being called as it is intended, these additional one-time checks
-    # will pass unnoticed.
-
-    assert(G1.weighted and G2.weighted)
-    
-    if not G1.directed and not G1.multigraph:
-        assert(not G2.directed and not G2.multigraph)
-        gm = WeightedGraphMatcher(G1,G2,rtol,atol)
-    elif not G1.directed and G1.multigraph:
-        assert(not G2.directed and G2.multigraph)
-        gm = WeightedMultiGraphMatcher(G1,G2,rtol,atol)
-    elif G1.directed and not G1.multigraph:
-        assert(G2.directed and not G2.multigraph)
-        gm = WeightedDiGraphMatcher(G1,G2,rtol,atol)
-    else:
-        assert(G2.directed and G2.multigraph)
-        gm = WeightedMultiDiGraphMatcher(G1,G2,rtol,atol)
-
-    return gm.is_isomorphic()  
+__all__ = ['WeightedGraphMatcher',
+           'WeightedDiGraphMatcher',
+           'WeightedMultiGraphMatcher',
+           'WeightedMultiDiGraphMatcher']
 
 ## VF2 is a recursive algorithm, so the call/lookup overhead is already high.
 ## Each implementation needs to be as fast as possible.
@@ -77,7 +38,7 @@ def close(x, y, rtol, atol):
     return abs(x-y) <= atol + rtol * abs(y)
 
 
-class WeightedGraphMatcher(nx.GraphMatcher):
+class WeightedGraphMatcher(GraphMatcher):
     """Implementation of VF2 algorithm for undirected, weighted graphs."""
     def __init__(self, G1, G2, rtol=1e-6, atol=1e-9):
         """Initialize WeightedGraphMatcher.
@@ -100,7 +61,7 @@ class WeightedGraphMatcher(nx.GraphMatcher):
         """Returns True if mapping G1_node to G2_node is semantically feasible."""
         G1_adj = self.G1.adj
         G2_adj = self.G2.adj
-        core_1 = vf2.GMState.core_1
+        core_1 = GMState.core_1
         rtol, atol = self.rtol, self.atol
         for neighbor in G1_adj[G1_node]:
             if neighbor is G1_node:
@@ -118,7 +79,7 @@ class WeightedGraphMatcher(nx.GraphMatcher):
         return True
            
 
-class WeightedDiGraphMatcher(nx.DiGraphMatcher):
+class WeightedDiGraphMatcher(DiGraphMatcher):
     """Implementation of VF2 algorithm for directed, weighted graphs."""
     def __init__(self, G1, G2, rtol=1e-6, atol=1e-9):
         """Initialize WeightedGraphMatcher.
@@ -143,7 +104,7 @@ class WeightedDiGraphMatcher(nx.DiGraphMatcher):
         G1_pred = self.G1.pred
         G2_succ = self.G2.succ
         G2_pred = self.G2.pred
-        core_1 = vf2.DiGMState.core_1
+        core_1 = DiGMState.core_1
         rtol, atol = self.rtol, self.atol
 
         for successor in G1_succ[G1_node]:
@@ -175,7 +136,7 @@ class WeightedDiGraphMatcher(nx.DiGraphMatcher):
         return True
 
 
-class WeightedMultiGraphMatcher(nx.GraphMatcher):
+class WeightedMultiGraphMatcher(GraphMatcher):
     """Implementation of VF2 algorithm for undirected, weighted multigraphs."""
     def __init__(self, G1, G2, rtol=1e-6, atol=1e-9):
         """Initialize WeightedGraphMatcher.
@@ -197,7 +158,7 @@ class WeightedMultiGraphMatcher(nx.GraphMatcher):
     def semantic_feasibility(self, G1_node, G2_node):
         G1_adj = self.G1.adj
         G2_adj = self.G2.adj
-        core_1 = vf2.GMState.core_1
+        core_1 = GMState.core_1
         rtol, atol = self.rtol, self.atol
 
         for neighbor in G1_adj[G1_node]:
@@ -219,7 +180,7 @@ class WeightedMultiGraphMatcher(nx.GraphMatcher):
 
         return True
 
-class WeightedMultiDiGraphMatcher(nx.DiGraphMatcher):
+class WeightedMultiDiGraphMatcher(DiGraphMatcher):
     """Implementation of VF2 algorithm for directed, weighted multigraphs."""
     def __init__(self, G1, G2, rtol=1e-6, atol=1e-9):
         """Initialize WeightedGraphMatcher.
@@ -244,7 +205,7 @@ class WeightedMultiDiGraphMatcher(nx.DiGraphMatcher):
         G1_pred = self.G1.pred
         G2_succ = self.G2.succ
         G2_pred = self.G2.pred
-        core_1 = vf2.DiGMState.core_1
+        core_1 = DiGMState.core_1
         rtol, atol = self.rtol, self.atol
 
         for successor in G1_succ[G1_node]:

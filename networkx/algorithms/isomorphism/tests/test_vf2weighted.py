@@ -20,7 +20,7 @@ def test_simple():
         print g1.__class__
         g1.add_edges_from(edges)
         g2 = g1.subgraph(g1.nodes())
-        assert_true( vf2weighted.is_weighted_isomorphic(g1,g2,rtol,atol) )
+        assert_true( nx.is_isomorphic(g1,g2,True,rtol,atol) )
 
         for mod1, mod2 in [(False, True), (True, False), (True, True)]:
             # mod1 tests a selfloop
@@ -43,6 +43,6 @@ def test_simple():
             if mod2:
                 g2.adj[0][0] = data2
 
-            assert_false(vf2weighted.is_weighted_isomorphic(g1,g2,rtol,atol))
+            assert_false(nx.is_isomorphic(g1,g2,True,rtol,atol))
 
     

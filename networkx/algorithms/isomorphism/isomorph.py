@@ -124,14 +124,24 @@ def faster_could_be_isomorphic(G1,G2):
 
 faster_graph_could_be_isomorphic=faster_could_be_isomorphic
 
-def is_isomorphic(G1,G2):
+def is_isomorphic(G1,G2,weighted=False,rtol=1e-6,atol=1e-9):
     """Returns True if the graphs G1 and G2 are isomorphic and False otherwise.
 
     Parameters
     ----------
-    G1, G2 : NetworkX graph instances
+    G1, G2: NetworkX graph instances
        The two graphs G1 and G2 must be the same type.
        
+    weighted: bool, optional
+       Optionally check isomorphism for weighted graphs.
+       G1 and G2 must be valid weighted graphs.
+
+    rtol: float, optional
+        The relative error tolerance when checking weighted edges
+
+    atol: float, optional
+        The absolute error tolerance when checking weighted edges
+    
     Notes
     -----
     Uses the vf2 algorithm.
@@ -142,14 +152,31 @@ def is_isomorphic(G1,G2):
     isomorphvf2()
 
     """
-    if G1.directed and G2.directed:
-        return networkx.DiGraphMatcher(G1,G2).is_isomorphic()
-    elif not (G1.directed and G2.directed):
-        return networkx.GraphMatcher(G1,G2).is_isomorphic()
+    gm=None
+    if weighted==True:
+        assert(G1.weighted and G2.weighted)
+        if not G1.directed and not G1.multigraph:
+            assert(not G2.directed and not G2.multigraph)
+            gm = networkx.WeightedGraphMatcher(G1,G2,rtol,atol)
+        elif not G1.directed and G1.multigraph:
+            assert(not G2.directed and G2.multigraph)
+            gm = networkx.WeightedMultiGraphMatcher(G1,G2,rtol,atol)
+        elif G1.directed and not G1.multigraph:
+            assert(G2.directed and not G2.multigraph)
+            gm = networkx.WeightedDiGraphMatcher(G1,G2,rtol,atol)
+        else:
+            assert(G2.directed and G2.multigraph)
+            gm = networkx.WeightedMultiDiGraphMatcher(G1,G2,rtol,atol)
     else:
-            # Graphs are of mixed type. We could just return False, 
-            # but then there is the case of completely disconnected graphs...
-            # which could be isomorphic.
-        raise NetworkXError, "Both graphs were not directed or both graphs were not undirected."
+        if G1.directed and G2.directed:
+            gm=  networkx.DiGraphMatcher(G1,G2)
+        elif not (G1.directed and G2.directed):
+            gm = networkx.GraphMatcher(G1,G2)
+    if gm==None:
+        # Graphs are of mixed type. We could just return False, 
+        # but then there is the case of completely disconnected graphs...
+        # which could be isomorphic.
+        raise NetworkXError("Graphs G1 and G2 are not of the same type.")
     
+    return gm.is_isomorphic()  
 
