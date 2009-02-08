@@ -48,6 +48,7 @@ Thanks to the following people who have made contributions to NetworkX:
    and helped test the pygraphviz interface
 
  - Christopher Ellison implemented the VF2 isomorphism algorithm
+   and contributed the code for matching all the graph types.
 
  - Eben Kennah contributed the strongly connected components and
    DFS functions.
