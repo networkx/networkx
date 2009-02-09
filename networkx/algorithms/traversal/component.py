@@ -245,9 +245,9 @@ def strongly_connected_component_subgraphs(G):
 
 
 def number_strongly_connected_components(G):
-    """Return the number of connected components in G.
+    """Return the number of strongly connected components in G.
 
-    For undirected graphs only. 
+    For directed graphs only. 
     """
     return len(strongly_connected_components(G))
 
