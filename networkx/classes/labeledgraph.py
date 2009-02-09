@@ -69,12 +69,12 @@ class LabeledGraph(Graph):
 
     def subgraph(self, nbunch, copy=True):
         H=super(LabeledGraph,self).subgraph(nbunch, copy)
-        H.label=dict( (k,v) for k,v in self.label if k in H)        
+        H.label=dict( (k,v) for k,v in self.label.items() if k in H)        
         return H
 
     def to_directed(self):
         H=super(LabeledGraph,self).to_directed()
-        H.label=dict( (k,v) for k,v in self.label if k in H)        
+        H.label=dict( (k,v) for k,v in self.label.items() if k in H)        
         return H
 
 
