@@ -75,6 +75,28 @@ methods to those of Graph:
 
 See networkx.DiGraph for more documentation. 
 
+Getting and setting edge data
+=============================
+
+The fastest way to get the data for an edge (n1,n2) is d=G[n1][n2].
+But setting G[n1][n2] can make the internal data structure inconsistent.  
+
+For Graph and DiGraph to set the edge data 
+just add an edge with the new data: G.add_edge(n1,n2,data)).  
+
+For MultiGraph and MultiDiGraph you must remove the old edge first,
+then add a new edge with the updated data. 
+
+There is one special case where you may be able to set the edge data
+directly: if the edge data is a container (like a list, dictionary or
+set).  For example
+
+>>> G=nx.DiGraph()
+>>> G.add_edge(0,1,['a','b','c']) # data is a list
+>>> G.edges(data=True)
+>>> G[0][1][0]='foo' # set first item in list is set to 'foo'
+
+
 
 Interfacing with other tools
 ============================

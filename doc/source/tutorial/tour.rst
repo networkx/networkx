@@ -114,7 +114,7 @@ e=(n1,n2), (n1,n2,x):
  
 e=(n1,n2,x): 
    The edge object x (or list of objects for multigraphs) associated 
-   with an edge can be obtained using G.get_edge(n1,n2). 
+   with an edge can be obtained using G.get_edge_data(n1,n2). 
    The default G.add_edge(n1,n2) is equivalent to G.add_edge(n1,n2,1). 
    In the case of multiple edges in multigraphs between nodes n1 and n2, 
    one can use G.remove_edge(n1,n2) to remove all edges between n1 and n2, or
@@ -166,7 +166,8 @@ with it. (You can use dir(G) to inspect the methods associated with object G.)
     - nbr in G[n],  G.has_edge(n1,n2), G.has_neighbor(n1,n2)
     - G.edges(), G.edges(n), G.edges(nbunch)      
     - G.edges_iter(), G.edges_iter(n), G.edges_iter(nbunch)
-    - G.get_edge(n1,n2)  # the object associated with this edge
+    - G.get_edge_data(n1,n2)  # the object associated with edge
+    - G[n1][n1]  # object associated with edge, faster than get_edge_data()
     - G.neighbors(n)     # list of neighbors of n
     - G.neighbors_iter(n) # iterator over neighbors
     - G[n]               # dictionary of neighbors of n keyed to edge object
@@ -210,4 +211,3 @@ G can be inspected interactively by typing "G" (without the quotes).
 This will reply something like <networkx.base.Graph object at 0x40179a0c>.
 (On Linux machines with CPython the hexadecimal address is the memory
 location of the object.) 
-

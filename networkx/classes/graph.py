@@ -793,6 +793,8 @@ class Graph(object):
         >>> G[0][1]
         1
 
+        Assigning G[u][v] may corrupt the graph data structure.
+
         """
         try:
             return self.adj[u][v]
