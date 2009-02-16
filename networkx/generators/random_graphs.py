@@ -351,7 +351,7 @@ def watts_strogatz_graph(n, k, p, seed=None):
     -----
     @article{Watts_Strogatz_1998,
        author  = {Duncan J. Watts and Steven H. Strogatz},
-       title   = {Collective dynamics of `small-world' networks},
+       title   = {Collective dynamics of small-world networks},
        journal = {Nature},
        volume  = {393},
        pages   = {440--442},
@@ -366,6 +366,7 @@ def watts_strogatz_graph(n, k, p, seed=None):
     --------
     newman_watts_strogatz_graph()
     connected_watts_strogatz_graph()
+
 """
     if seed is not None:
         random.seed(seed)
