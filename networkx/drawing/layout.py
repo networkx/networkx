@@ -7,7 +7,7 @@ Node positioning algorithms for graph drawing.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -18,272 +18,366 @@ __all__ = ['circular_layout',
            'random_layout',
            'shell_layout',
            'spring_layout',
-           'spectral_layout']
+           'spectral_layout',
+           'fruchterman_reingold_layout']
 
-from math import pi,sin,cos,sqrt
-import sys
-from networkx.utils import uniform_sequence
 import networkx
 
 try:
-    import Numeric as N
+    import numpy as np
 except:
-    try:
-        import numpy as N
-    except:
-        raise ImportError("numpy and/or Numeric can not be imported.")    
+    raise ImportError("Numpy is required for graph layout package.")    
 
 
-def circular_layout(G, dim=2):
+def random_layout(G,dim=2):
+    n=len(G)
+    pos=np.random.random((n,dim))
+    return dict(zip(G,pos))
+
+
+def circular_layout(G, dim=2, scale=1):
+    # dim=2 only
+    """Position nodes on a circle.
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+
+    dim : int 
+       Dimension of layout, currently only dim=2 is supported
+
+    scale : float
+        Scale factor for positions 
+
+    Returns
+    -------
+    dict : 
+       A dictionary of positions keyed by node
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> pos=nx.circular_layout(G)
+    
+    Notes
+    ------
+    This algorithm currently only works in two dimensions and does not
+    try to minimize edge crossings.
+
     """
-    Circular layout.
+    t=np.arange(0,2.0*np.pi,2.0*np.pi/len(G))
+    pos=np.transpose(np.array([np.cos(t),np.sin(t)]))
+    pos=_rescale_layout(pos,scale=scale)
+    return dict(zip(G,pos))
 
-    Crude version that doesn't try to minimize edge crossings.
+def shell_layout(G,nlist=None,dim=2,scale=1):
+    """Position nodes in concentric circles.
 
-    """
-    vpos={}
-    r=1.0  # radius of circle
-    t=0
-    dt=2.0*pi/G.order()
-    # should test for dim < 2 here
-    for v in G:
-        p=dim*[0.0]
-        p[0]=r*cos(t)
-        p[1]=r*sin(t)
-        vpos[v]=N.array(p)
-        t=t+dt
-    return vpos        
+    Parameters
+    ----------
+    G : NetworkX graph 
 
-def shell_layout(G, nlist=None, dim=2 ):
-    """
-    Shell layout.
-    Crude version that doesn't try to minimize edge crossings.
+    nlist : list of lists
+       List of node lists for each shell.
 
-    nlist is an optional list of lists of nodes to be drawn
-    at each shell level.  Only one shell with all nodes will
-    be drawn if not specified.
+    dim : int 
+       Dimension of layout, currently only dim=2 is supported
+
+    scale : float
+        Scale factor for positions 
+
+    Returns
+    -------
+    dict : 
+       A dictionary of positions keyed by node
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> shells=[[0],[1,2,3]]
+    >>> pos=nx.circular_layout(G,shells)
+    
+    Notes
+    ------
+    This algorithm currently only works in two dimensions and does not
+    try to minimize edge crossings.
 
     """
     if nlist==None:
         nlist=[G.nodes()] # draw the whole graph in one shell
 
     nshells=len(nlist)
-    vpos={}
     if len(nlist[0])==1:
-        initial_radius=0.0 # single node at center
+        radius=0.0 # single node at center
     else:
-        initial_radius=1.0
+        radius=1.0 # else start at r=1
 
-    for s in range(nshells):
-        r=float(s+initial_radius)  # radius of circle
-        t=0
-        slist=[n for n in nlist[s] if G.has_node(n)]
-        dt=2.0*pi/len(slist)
-        for n in slist:
-            p=dim*[0.0]
-            p[0]=r*cos(t)
-            p[1]=r*sin(t)
-            vpos[n]=N.array(p)
-            t=t+dt
-    return vpos        
-
-def random_layout(G, dim=2):
-    """ Random layout."""
-    import random
-    vpos={}
-    for v in G.nodes():
-        vpos[v]=N.array([random.random() for i in range(dim)])
-    return vpos        
-
-def spring_layout(G, iterations=50, dim=2, node_pos=None):
-    """Spring force model layout"""
-    if node_pos==None :  # set the initial positions randomly in 1x1 box
-        vpos=random_layout(G, dim=dim) 
-    else:
-        vpos=node_pos
-    if iterations==0:
-        return vpos
-    if G.order()==0:
-        k=1.0
-    else:
-        k=N.sqrt(1.0/G.order()) # optimal distance between nodes
-    disp={}         # displacements
-
-    # initial "temperature" (about .1 of domain area)
-    # this is the largest step allowed in the dynamics
-    # linearly step down by dt on each iteration so
-    # on last iteration it is size dt.
-    t=0.1
-    dt=0.1/float(iterations+1)
-    for i in range(0,iterations):
-        for v in G:
-            disp[v]=N.zeros(dim)
-            for u in G:
-                delta=vpos[v]-vpos[u]
-                dn=max(sqrt(N.dot(delta,delta)),0.01)
-                # repulsive force between all
-                deltaf=delta*k**2/dn**2
-                disp[v]=disp[v]+deltaf
-                # attractive force between neighbors
-                if G.has_edge(v,u):
-                    deltaf=-delta*dn**2/(k*dn)
-                    disp[v]=disp[v]+deltaf
-
-        # update positions
-        for v in G:
-            l=max(sqrt(N.dot(disp[v],disp[v])),0.01)
-            vpos[v]=vpos[v]+ disp[v]*t/l
-        t-=dt
-    return vpos
+    npos={}        
+    for nodes in nlist:
+        t=np.arange(0,2.0*np.pi,2.0*np.pi/len(nodes))
+        pos=np.transpose(np.array([radius*np.cos(t),radius*np.sin(t)]))
+        npos.update(dict(zip(nodes,pos)))
+        radius+=1.0
                    
+    return _rescale_layout(npos,scale=scale)
 
-def spectral_layout(G, dim=2, vpos=None, iterations=1000, eps=1.e-3):
-    """
-    Return the position vectors for drawing G using spectral layout.
-    """
-    # check silly cases
-    n=G.order()
-    if iterations==0 or n==0:
-        return vpos or {}
-    # create initial guesses for positions
-    if vpos is None:
-        # start with random positions
-        nodes=G.nodes()
-        uhat=[ ]
-        for p in range(dim):
-            rx=uniform_sequence(n)
-            uhat.append( dict( zip(nodes,rx) ) )
-    else:
-        # use given positions
-        uhat=[]
-        nodes = vpos.keys()
-        for p in range(dim):
-            rx=[(v,pos[p]) for (v,pos) in vpos.iteritems()]   
-            uhat.append( dict(rx) )
-    # Find lowest eigenvectors
-    vhat=graph_low_ev_pi(uhat,G,eps,iterations)
-    # form position dict
-    vpos={}
-    for n in nodes:
-        poslist=[ vhat[p].get(n,0) for p in range(dim) ]
-        vpos[n]=N.array( poslist )
-    return vpos
 
-def graph_low_ev_pi(uhat,G,eps=1.e-3,iterations=10000):
-    """ 
-    Power Iteration method to find smallest eigenvectors of Laplacian(G).
-    Note: constant eigenvector has eigenvalue=0 but is not included
-    in the count of smallest eigenvalues.
+def fruchterman_reingold_layout(G,dim=2,pos=None,iterations=50,
+                                weighted=True,scale=1):
+    """Position nodes using Fruchterman-Reingold force-directed algorithm. 
 
-    uhat -- list of p initial guesses (dicts) for the p eigenvectors.
-    G -- The Graph from which Laplacian is calculated.
-    eps -- tolerance for norm of change in eigenvalue estimate.
-    iterations -- maximum number of iterations to use.
-    """
-    # set up element value for constant eigenvector (squared)
-    constant=1.0/G.order()
-    # set up data for faster iteration
-    gg_data=_gershgorin_setup(G)
-    # 
-    v=[]  # setup v to hold eigenvectors
-    p=len(uhat)   # number of guesses is number of vectors to return 
-    for i in xrange(p):
-        vv=uhat[i]  # get initial guess
-        ##normalize(vv)
-        norm=sqrt(N.sum([vals**2 for vals in vv.itervalues()]))
-        nn=1.0/norm
-        for k in vv:
-            vv[k] *= nn
-        ##
-        v.append(vv)
+    Parameters
+    ----------
+    G : NetworkX graph 
 
-        difference=eps+1
-        iii=0
-#        sys.stderr.write("drawing")
-        while difference>eps:
-            vhat=v[i]
-            ## Orthogonal to constant vector
-            dotprod=constant*sum(vhat.itervalues())
-            for (k,val) in vhat.iteritems():
-                vhat[k]-=dotprod
-            ## Orthogonal to other already found eigenvectors
-            for j in range(i):  
-                ##  vhat= vhat- <vhat,v[j]> * v[j]
-                s_d=sum([vhat.get(k,0)*val for (k,val) in v[j].iteritems()])
-                for (k,value) in v[j].iteritems():
-                    vhat[k]=vhat.get(k,0)-value*s_d
-                ##
-            vv=_graph_gershgorin_dot_v(gg_data,vhat)
-            ##normalize(vv)     vv=vv/|vv|
-            norm=sqrt(sum([vals**2 for vals in vv.itervalues()]))
-            if norm==0:
-                raise networkx.NetworkXError("Eigenvector has zero eigenvalue.")
-            nn=1.0/norm
-            for k in vv:
-                vv[k] *= nn
-            ##
-            v[i]=vv
-            ##difference = |vhat-vv|
-            result=vhat.copy()
-            for (k,value) in vv.iteritems():
-                result[k]=result.get(k,0)-value
-            difference=sqrt(sum([vals**2 for vals in result.itervalues()]))
-            #print "difference on iteration %s is %s"%(iii,difference)
-            ##
-            iii += 1
-            if iii==iterations: 
-                #print "Maximum iterations achieved."
-                break
-                raise NetworkXError("Maximum number of iterations exceeded.") 
-#            if iii%20==0: sys.stderr.write(".")
-    return v 
+    dim : int 
+       Dimension of layout
+
+    iterations : int
+       Number of iterations of spring-force relaxation 
+
+    weighted : boolean
+        If True, use edge weights in layout 
+
+    scale : float
+        Scale factor for positions 
+
+    Returns
+    -------
+    dict : 
+       A dictionary of positions keyed by node
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> pos=nx.spring_layout(G)
+    # The same using longer function name
+    >>> pos=nx.fruchterman_reingold_layout(G)
     
-def _gershgorin_setup(G):
     """
-    Return a list of matrix properties to be used 
-    to iteratively multiply B*v where v is a vector
-    and B=g*I-L and g is the Gershgorin estimate of 
-    the largest eigenvalue of L=Laplacian(G).
+    A=networkx.to_numpy_matrix(G)
+    pos=_fruchterman_reingold(A,pos=pos,
+                              dim=dim,
+                              iterations=iterations,
+                              weighted=weighted)
+    pos=_rescale_layout(pos,scale=scale)
+    return dict(zip(G,pos))
 
-    Used as input to graph_gershgorin_dot_v()
+
+spring_layout=fruchterman_reingold_layout
+
+
+def _fruchterman_reingold(A,dim=2,pos=None,iterations=50,weighted=True):
+    # Position nodes in adjacency matrix A using Fruchterman-Reingold  
+    # Entry point for NetworkX graph is fruchterman_reingold_layout()
+    try:
+        nnodes,_=A.shape
+    except AttributeError:
+        raise networkx.NetworkXError(
+            "fruchterman_reingold() takes an adjacency matrix as input")
+    
+    A=np.asarray(A) # make sure we have an array instead of a matrix
+    if not weighted: # use 0/1 adjacency instead of weights
+        A=np.where(A==0,A,A/A)
+
+    # random initial positions
+    if pos==None:
+        pos=np.random.random((nnodes,dim))
+
+    # optimal distance between nodes
+    k=np.sqrt(1.0/nnodes) 
+    # the initial "temperature"  is about .1 of domain area (=1x1)
+    # this is the largest step allowed in the dynamics.
+    t=0.1
+    # simple cooling scheme.
+    # linearly step down by dt on each iteration so last iteration is size dt.
+    dt=t/float(iterations+1) 
+    delta = np.zeros((pos.shape[0],pos.shape[0],pos.shape[1]))
+    # the inscrutable (but fast) version
+    # this is still O(V^2)
+    # could use multilevel methods to speed this up significantly
+    for iteration in range(iterations):
+        # matrix of difference between points
+        for i in xrange(pos.shape[1]):
+            delta[:,:,i]= pos[:,i,None]-pos[:,i]
+        # distance between points
+        distance=np.sqrt((delta**2).sum(axis=-1))
+        # enforce minimum distance of 0.01
+        distance=np.where(distance<0.01,0.01,distance)
+        # displacement "force"
+        displacement=np.transpose(np.transpose(delta)*\
+                                  (k*k/distance**2-A*distance/k))\
+                                  .sum(axis=1)
+        # update positions            
+        length=np.sqrt((displacement**2).sum(axis=1))
+        length=np.where(length<0.01,0.1,length)
+        pos+=np.transpose(np.transpose(displacement)*t/length)
+        # cool temperature
+        t-=dt
+
+# the homework-problem spoiler (and slow) version
+#     for iteration in range(iterations):
+#         displacement=np.zeros((nnodes,dim))
+#         for i in range(A.shape[0]):
+#             for j in range(A.shape[0]):
+#                 delta=pos[i]-pos[j]
+#                 distance=max(np.sqrt((delta**2).sum()),0.01)
+#                 delta/=distance
+#                 repulsive=k*k/distance
+#                 displacement[i]+=delta*repulsive
+
+#         for i in range(A.shape[0]):
+#             for j in range(A.shape[0]):
+#                 if A[i][j]>0:
+#                     delta=pos[i]-pos[j]
+#                     distance=np.sqrt((delta**2).sum())
+#                     distance=max(np.sqrt((delta**2).sum()),0.01)
+#                     delta/=distance
+#                     # edge weight is in A[i]
+#                     attractive=-A[i][j]*distance**2/k
+#                     displacement[i]+=delta*attractive
+
+#         for i in range(A.shape[0]):
+#             length=np.sqrt((displacement[i]**2).sum())
+#             length=max(length,0.01)
+#             pos[i]+=displacement[i]*t/length
+#         t-=dt
+
+    return pos
+
+
+def spectral_layout(G,dim=2,pos=None,weighted=True,scale=1):
+    """Position nodes using the eigenvectors of the graph Laplacian. 
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+
+    dim : int 
+       Dimension of layout
+
+    weighted : boolean
+        If True, use edge weights in layout 
+
+    scale : float
+        Scale factor for positions 
+
+    Returns
+    -------
+    dict : 
+       A dictionary of positions keyed by node
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> pos=nx.spectral_layout(G)
+
+    Notes
+    -----
+    Directed graphs will be considered as unidrected graphs when
+    positioning the nodes.
+
+    For larger graphs (>500 nodes) this will use the SciPy sparse
+    eigenvalue solver (ARPACK).
     """
-    diag=G.degree(with_labels=True)
-    adj={}
-    g=max(diag.itervalues())
-    for (n,degree) in diag.iteritems():
-        diag[n]=g-degree
-        adj[n]=G.neighbors(n)
-    return [diag,adj]
+    # handle some special cases that break the eigensolvers
+    if len(G)<=2:
+        if len(G)==0:
+            pos=np.array([])
+        elif len(G)==1:
+            pos=np.array([[1,1]])
+        else:
+            pos=np.array([[0,0.5],[1,0.5]])
+        return dict(zip(G,pos))
+    try:
+        # Sparse matrix 
+        if len(G)< 500:  # dense solver is faster for small graphs
+            raise ValueError
+        import scipy.sparse.linalg
+        A=networkx.to_scipy_sparse_matrix(G)
+        # Symmetrize directed graphs
+        if G.directed:
+            A=A+np.transpose(A)
+        pos=_sparse_spectral(A,dim=dim,pos=pos,weighted=weighted)
+    except (ImportError,ValueError):
+        # Dense matrix
+        A=networkx.to_numpy_matrix(G)
+        # Symmetrize directed graphs
+        if G.directed:
+            A=A+np.transpose(A)
+        pos=_spectral(A,dim=dim,pos=pos,weighted=weighted)
 
-def _graph_gershgorin_dot_v(gg_data,v):
-    """
-    Returns B*v where B=g*I-L and g is the Gershgorin estimate of the 
-    largest eigenvalue of L.  (g=max( deg(n) + sum_u(\|w_(n,u)\|)
+    pos=_rescale_layout(pos,scale=scale)
+    return dict(zip(G,pos))
 
-    We use this to iterate and find the smallest eigenvectors of L.
-    """
-    (diag,adj)=gg_data
-    r={}
-    for (n,nbrs) in adj.iteritems():
-        rn=sum([ v.get(u,0) for u in nbrs ])
-        #rn=sum([ v.get(u,0)*w for (u,w) in nbrs.iteritems() ])#weighted adj matrix
-        r[n]=rn+v.get(n,0)*diag[n]
-    return r
 
-def _test_suite():
-    import doctest
-    suite = doctest.DocFileSuite('tests/drawing/layout.txt',package='networkx')
-    return suite
+def _spectral(A,dim=2,pos=None,iterations=50,weighted=True):
+    # Input adjacency matrix A
+    # Uses dense eigenvalue solver from numpy
+    try:
+        nnodes,_=A.shape
+    except AttributeError:
+        raise networkx.NetworkXError(\
+            "spectral() takes an adjacency matrix as input")
+    
+    # random initial positions
+    if pos==None:
+        pos=np.random.random((nnodes,dim))
+
+    # form Laplacian matrix
+    # make sure we have an array instead of a matrix
+    A=np.asarray(A) 
+    I=np.identity(nnodes)
+    D=I*np.sum(A,axis=1) # diagonal of degrees
+    L=D-A 
+
+    eigenvalues,eigenvectors=np.linalg.eig(L)
+    # sort and keep smallest nonzero 
+    index=np.argsort(eigenvalues)[1:dim+1] # 0 index is zero eigenvalue
+    return np.real(eigenvectors[:,index])
+
+def _sparse_spectral(A,dim=2,pos=None,iterations=50,weighted=True):
+    # Input adjacency matrix A
+    # Uses sparse eigenvalue solver from scipy
+    # Could use multilevel methods here, see Koren "On spectral graph drawing" 
+    from scipy.sparse import spdiags
+    from scipy.sparse.linalg import eigen_symmetric
+    try:
+        nnodes,_=A.shape
+    except AttributeError:
+        raise networkx.NetworkXError(\
+            "sparse_spectral() takes an adjacency matrix as input")
+    
+    # random initial positions
+    if pos==None:
+        pos=np.random.random((nnodes,dim))
+
+    # form Laplacian matrix
+    data=np.asarray(A.sum(axis=1).T)
+    D=spdiags(data,0,nnodes,nnodes)
+    L=D-A
+    # number of Lanczos vectors for ARPACK solver, what is the right scaling?
+    ncv=int(np.sqrt(nnodes)) 
+    # return smalest dim+1 eigenvalues and eigenvectors
+    eigenvalues,eigenvectors=eigen_symmetric(L,dim+1,which='SM',ncv=ncv)
+    index=np.argsort(eigenvalues)[1:dim+1] # 0 index is zero eigenvalue
+    return np.real(eigenvectors[:,index])
+
+
+def _rescale_layout(pos,scale=1):
+    # rescale to (0,pscale) in all axes
+
+    # shift origin to (0,0)
+    lim=0 # max coordinate for all axes
+    for i in xrange(pos.shape[1]):
+        pos[:,i]-=pos[:,i].min()
+        lim=max(pos[:,i].max(),lim)
+    # rescale to (0,scale) in all directions, preserves aspect
+    for i in xrange(pos.shape[1]):
+        pos[:,i]*=scale/lim
+    return pos
+
+
 
 if __name__ == "__main__":
-    import os
-    import sys
-    import unittest
-    if sys.version_info[:2] < (2, 4):
-        print "Python version 2.4 or later required for tests (%d.%d detected)." %  sys.version_info[:2]
-        sys.exit(-1)
-    # directory of networkx package (relative to this)
-    nxbase=sys.path[0]+os.sep+os.pardir
-    sys.path.insert(0,nxbase) # prepend to search path
-    unittest.TextTestRunner().run(_test_suite())
-    
+    import networkx
