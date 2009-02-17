@@ -11,9 +11,8 @@ Introduction
 ------------
 
 The GraphMatcher and DiGraphMatcher are responsible for matching 
-graphs or directed graphs in a 
-predetermined manner.  This usually
-means a check for an isomorphism, though other checks 
+graphs or directed graphs in a predetermined manner.  This 
+usually means a check for an isomorphism, though other checks 
 are also possible.  For example, a subgraph of one graph 
 can be checked for isomorphism to a second graph.
 
@@ -200,8 +199,8 @@ class GraphMatcher(object):
         G2_nodes = self.G2_nodes
 
         # First we compute the inout-terminal sets.
-        T1_inout = [node for node in G1_nodes if (node in GMState.inout_1) and (node not in GMState.core_1)]
-        T2_inout = [node for node in G2_nodes if (node in GMState.inout_2) and (node not in GMState.core_2)]
+        T1_inout = [node for node in G1_nodes if (node in self.inout_1) and (node not in self.core_1)]
+        T2_inout = [node for node in G2_nodes if (node in self.inout_2) and (node not in self.core_2)]
         
         # If T1_inout and T2_inout are both nonempty.
         # P(s) = T1_inout x {min T2_inout}
@@ -215,18 +214,43 @@ class GraphMatcher(object):
             ##if not (T1_inout or T2_inout):       # as suggested by  [2], incorrect
             if 1:                                  # as inferred from [1], correct
                 # First we determine the candidate node for G2
-                other_node = min(G2_nodes - set(GMState.core_2))
+                other_node = min(G2_nodes - set(self.core_2))
                 for node in self.G1:
-                    if node not in GMState.core_1:
+                    if node not in self.core_1:
                         yield node, other_node
 
         # For all other cases, we don't have any candidate pairs.        
 
     def initialize(self):
-        """Reinitializes the state of the algorithm."""
+        """Reinitializes the state of the algorithm.
+
+        This method should be redefined if using something other than GMState.
+        If only subclassing GraphMatcher, a redefinition is not necessary.
+
+        """
+
+        # core_1[n] contains the index of the node paired with n, which is m,
+        #           provided n is in the mapping.
+        # core_2[m] contains the index of the node paired with m, which is n,
+        #           provided m is in the mapping.
+        self.core_1 = {}
+        self.core_2 = {}
+        
+        # See the paper for definitions of M_x and T_x^{y}
+        
+        # inout_1[n]  is non-zero if n is in M_1 or in T_1^{inout}
+        # inout_2[m]  is non-zero if m is in M_2 or in T_2^{inout}
+        #
+        # The value stored is the depth of the SSR tree when the node became
+        # part of the corresponding set.
+        self.inout_1 = {}
+        self.inout_2 = {}
+        # Practically, these sets simply store the nodes in the subgraph.
+
         self.state = GMState(self)      
+
         # Provide a convienient way to access the isomorphism mapping.
-        self.mapping = GMState.core_1
+        self.mapping = self.core_1.copy()
                
     def is_isomorphic(self):
         """Returns True if G1 and G2 are isomorphic graphs."""
@@ -256,21 +280,21 @@ class GraphMatcher(object):
         # Declare that we are looking for a graph-graph isomorphism.
         self.test = 'graph'
         self.initialize()
-        for mapping in self.match(self.state):
+        for mapping in self.match():
             yield mapping
        
-    def match(self, state):
+    def match(self):
         """Extends the isomorphism mapping.
 
         This function is called recursively to determine if a complete
         isomorphism can be found between G1 and G2.  It cleans up the class
         variables after each recursive call. If an isomorphism is found,
-        we raise a StopIteration and jump immediately out of the recursion.
+        we yield the mapping.
 
         """
-        if len(GMState.core_1) == len(self.G2):
+        if len(self.core_1) == len(self.G2):
             # Save the final mapping, otherwise garbage collection deletes it.
-            self.mapping = GMState.core_1.copy()
+            self.mapping = self.core_1.copy()
             # The mapping is complete.
             yield self.mapping
         else:
@@ -278,10 +302,12 @@ class GraphMatcher(object):
                 if self.syntactic_feasibility(G1_node, G2_node):
                     if self.semantic_feasibility(G1_node, G2_node):
                         # Recursive call, adding the feasible state.
-                        for mapping in self.match(GMState(self, G1_node, G2_node)):
+                        newstate = self.state.__class__(self, G1_node, G2_node)
+                        for mapping in self.match():
                             yield mapping
-
-            # Garbage collection for GMState() will 'restore data structures'.
+                        # restore data structures
+                        # force delete now, waiting for GC causes trouble
+                        del newstate
     
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if adding (G1_node, G2_node) is symantically feasible.
@@ -334,7 +360,7 @@ class GraphMatcher(object):
         # Declare that we are looking for graph-subgraph isomorphism.
         self.test = 'subgraph'
         self.initialize()
-        for mapping in self.match(self.state):
+        for mapping in self.match():
             yield mapping
 
 #    subgraph_isomorphisms_iter.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
@@ -387,16 +413,16 @@ class GraphMatcher(object):
         # node m' is a neighbor of m, and vice versa. Also, the number of
         # edges must be equal.
         for neighbor in self.G1[G1_node]:
-            if neighbor in GMState.core_1:
-                if not (GMState.core_1[neighbor] in self.G2[G2_node]):
+            if neighbor in self.core_1:
+                if not (self.core_1[neighbor] in self.G2[G2_node]):
                     return False
-                elif self.G1.number_of_edges(neighbor, G1_node) != self.G2.number_of_edges(GMState.core_1[neighbor], G2_node):
+                elif self.G1.number_of_edges(neighbor, G1_node) != self.G2.number_of_edges(self.core_1[neighbor], G2_node):
                     return False
         for neighbor in self.G2[G2_node]:
-            if neighbor in GMState.core_2:
-                if not (GMState.core_2[neighbor] in self.G1[G1_node]):
+            if neighbor in self.core_2:
+                if not (self.core_2[neighbor] in self.G1[G1_node]):
                     return False
-                elif self.G1.number_of_edges(GMState.core_2[neighbor], G1_node) != self.G2.number_of_edges(neighbor, G2_node):
+                elif self.G1.number_of_edges(self.core_2[neighbor], G1_node) != self.G2.number_of_edges(neighbor, G2_node):
                     return False
         
         ### Look ahead 1
@@ -406,11 +432,11 @@ class GraphMatcher(object):
         # number of neighbors of m that are in T_2^{inout}, and vice versa.
         num1 = 0
         for neighbor in self.G1[G1_node]:
-            if (neighbor in GMState.inout_1) and (neighbor not in GMState.core_1):
+            if (neighbor in self.inout_1) and (neighbor not in self.core_1):
                 num1 += 1
         num2 = 0
         for neighbor in self.G2[G2_node]:
-            if (neighbor in GMState.inout_2) and (neighbor not in GMState.core_2):
+            if (neighbor in self.inout_2) and (neighbor not in self.core_2):
                 num2 += 1
         if self.test == 'graph':
             if not (num1 == num2):
@@ -429,11 +455,11 @@ class GraphMatcher(object):
         # that are neither in core_2 nor T_2^{inout}.
         num1 = 0
         for neighbor in self.G1[G1_node]:
-            if neighbor not in GMState.inout_1:
+            if neighbor not in self.inout_1:
                 num1 += 1
         num2 = 0
         for neighbor in self.G2[G2_node]:
-            if neighbor not in GMState.inout_2:
+            if neighbor not in self.inout_2:
                 num2 += 1
         if self.test == 'graph':
             if not (num1 == num2):
@@ -467,7 +493,7 @@ class DiGraphMatcher(GraphMatcher):
         >>> DiGM = nx.DiGraphMatcher(G1,G2)
                 
         """
-        GraphMatcher.__init__(self, G1, G2)
+        super(DiGraphMatcher, self).__init__(G1, G2)
 
     def candidate_pairs_iter(self):
         """Iterator over candidate pairs of nodes in G1 and G2."""
@@ -478,8 +504,8 @@ class DiGraphMatcher(GraphMatcher):
         G2_nodes = self.G2_nodes
 
         # First we compute the out-terminal sets.
-        T1_out = [node for node in G1_nodes if (node in DiGMState.out_1) and (node not in DiGMState.core_1)]
-        T2_out = [node for node in G2_nodes if (node in DiGMState.out_2) and (node not in DiGMState.core_2)]
+        T1_out = [node for node in G1_nodes if (node in self.out_1) and (node not in self.core_1)]
+        T2_out = [node for node in G2_nodes if (node in self.out_2) and (node not in self.core_2)]
         
         # If T1_out and T2_out are both nonempty.
         # P(s) = T1_out x {min T2_out}
@@ -493,8 +519,8 @@ class DiGraphMatcher(GraphMatcher):
 
         ##elif not (T1_out or T2_out):   # as suggested by [2], incorrect
         else:                            # as suggested by [1], correct
-            T1_in = [node for node in G1_nodes if (node in DiGMState.in_1) and (node not in DiGMState.core_1)]
-            T2_in = [node for node in G2_nodes if (node in DiGMState.in_2) and (node not in DiGMState.core_2)]
+            T1_in = [node for node in G1_nodes if (node in self.in_1) and (node not in self.core_1)]
+            T2_in = [node for node in G2_nodes if (node in self.in_2) and (node not in self.core_2)]
 
             # If T1_in and T2_in are both nonempty.
             # P(s) = T1_out x {min T2_out}
@@ -508,43 +534,48 @@ class DiGraphMatcher(GraphMatcher):
 
             ##elif not (T1_in or T2_in):   # as suggested by  [2], incorrect
             else:                          # as inferred from [1], correct
-                node_2 = min(G2_nodes - set(DiGMState.core_2))
+                node_2 = min(G2_nodes - set(self.core_2))
                 for node_1 in G1_nodes:
-                    if node_1 not in DiGMState.core_1:
+                    if node_1 not in self.core_1:
                         yield node_1, node_2
 
         # For all other cases, we don't have any candidate pairs.
         
     def initialize(self):
-        """Reinitializes the state of the algorithm."""
-        self.state = DiGMState(self)      
-        # Provide a convienient way to access the isomorphism mapping.
-        self.mapping = DiGMState.core_1
-               
-    def match(self, state):
-        """Extends the isomorphism mapping.
+        """Reinitializes the state of the algorithm.
 
-        This function is called recursively to determine if a complete
-        isomorphism can be found between G1 and G2.  It cleans up the class
-        variables after each recursive call. If an isomorphism is found,
-        we raise a StopIteration and jump immediately out of the recursion.
+        This method should be redefined if using something other than DiGMState.
+        If only subclassing GraphMatcher, a redefinition is not necessary.
 
         """
-        if len(DiGMState.core_1) == len(self.G2):
-            # Save the final mapping, otherwise garbage collection deletes it.
-            self.mapping = DiGMState.core_1.copy()
-            # The mapping is complete.
-            yield self.mapping
-        else:
-            for G1_node, G2_node in self.candidate_pairs_iter():
-                if self.syntactic_feasibility(G1_node, G2_node):
-                    if self.semantic_feasibility(G1_node, G2_node):
-                        # Recursive call, adding the feasible state.
-                        for mapping in self.match(DiGMState(self, G1_node, G2_node)):
-                            yield mapping
+        
+        # core_1[n] contains the index of the node paired with n, which is m,
+        #           provided n is in the mapping.
+        # core_2[m] contains the index of the node paired with m, which is n,
+        #           provided m is in the mapping.
+        self.core_1 = {}
+        self.core_2 = {}
+        
+        # See the paper for definitions of M_x and T_x^{y}
+        
+        # in_1[n]  is non-zero if n is in M_1 or in T_1^{in}
+        # out_1[n] is non-zero if n is in M_1 or in T_1^{out}
+        #
+        # in_2[m]  is non-zero if m is in M_2 or in T_2^{in}
+        # out_2[m] is non-zero if m is in M_2 or in T_2^{out}
+        #
+        # The value stored is the depth of the search tree when the node became
+        # part of the corresponding set.
+        self.in_1 = {}
+        self.in_2 = {}
+        self.out_1 = {}
+        self.out_2 = {}
 
-            # Garbage collection for DiGMState() will 'restore data structures'.
-                    
+        self.state = DiGMState(self)      
+
+        # Provide a convienient way to access the isomorphism mapping.
+        self.mapping = self.core_1.copy()
+                              
     def syntactic_feasibility(self, G1_node, G2_node):
         """Returns True if adding (G1_node, G2_node) is syntactically feasible.
 
@@ -587,16 +618,6 @@ class DiGraphMatcher(GraphMatcher):
         if self.G1.number_of_edges(G1_node,G1_node) != self.G2.number_of_edges(G2_node,G2_node):
             return False
 
-        ### predecessors_iter, successors_iter and neighbors_iter does not 
-        ### behave how we need it to. With multiedges, it returns the same
-        ### node multiple times.  The result is that we do the same check
-        ### repeatedly.  If NetworkX changes this behavior, we can go back to
-        ### predecessors_iter (etc), but for now, we must access the underlying
-        ### structure. For example, 
-        ###   self.G1.pred[G1_node] 
-        ### vs 
-        ###   self.G1.predecessors_iter(G1_node)
-
 
         # R_pred
         
@@ -604,17 +625,17 @@ class DiGraphMatcher(GraphMatcher):
         # corresponding node m' is a predecessor of m, and vice versa. Also,
         # the number of edges must be equal
         for predecessor in self.G1.pred[G1_node]:
-            if predecessor in DiGMState.core_1:
-                if not (DiGMState.core_1[predecessor] in self.G2.pred[G2_node]):
+            if predecessor in self.core_1:
+                if not (self.core_1[predecessor] in self.G2.pred[G2_node]):
                     return False
-                elif self.G1.number_of_edges(predecessor, G1_node) != self.G2.number_of_edges(DiGMState.core_1[predecessor], G2_node):
+                elif self.G1.number_of_edges(predecessor, G1_node) != self.G2.number_of_edges(self.core_1[predecessor], G2_node):
                     return False
                 
         for predecessor in self.G2.pred[G2_node]:
-            if predecessor in DiGMState.core_2:
-                if not (DiGMState.core_2[predecessor] in self.G1.pred[G1_node]):
+            if predecessor in self.core_2:
+                if not (self.core_2[predecessor] in self.G1.pred[G1_node]):
                     return False
-                elif self.G1.number_of_edges(DiGMState.core_2[predecessor], G1_node) != self.G2.number_of_edges(predecessor, G2_node):
+                elif self.G1.number_of_edges(self.core_2[predecessor], G1_node) != self.G2.number_of_edges(predecessor, G2_node):
                     return False
 
 
@@ -624,17 +645,17 @@ class DiGraphMatcher(GraphMatcher):
         # node m' is a successor of m, and vice versa. Also, the number of
         # edges must be equal.
         for successor in self.G1[G1_node]:
-            if successor in DiGMState.core_1:
-                if not (DiGMState.core_1[successor] in self.G2[G2_node]):
+            if successor in self.core_1:
+                if not (self.core_1[successor] in self.G2[G2_node]):
                     return False
-                elif self.G1.number_of_edges(G1_node, successor) != self.G2.number_of_edges(G2_node, DiGMState.core_1[successor]):
+                elif self.G1.number_of_edges(G1_node, successor) != self.G2.number_of_edges(G2_node, self.core_1[successor]):
                     return False
                                 
         for successor in self.G2[G2_node]:
-            if successor in DiGMState.core_2:
-                if not (DiGMState.core_2[successor] in self.G1[G1_node]):
+            if successor in self.core_2:
+                if not (self.core_2[successor] in self.G1[G1_node]):
                     return False
-                elif self.G1.number_of_edges(G1_node, DiGMState.core_2[successor]) != self.G2.number_of_edges(G2_node, successor):
+                elif self.G1.number_of_edges(G1_node, self.core_2[successor]) != self.G2.number_of_edges(G2_node, successor):
                     return False
 
         
@@ -645,11 +666,11 @@ class DiGraphMatcher(GraphMatcher):
         # number of predecessors of m that are in T_2^{in}.
         num1 = 0
         for predecessor in self.G1.pred[G1_node]:
-            if (predecessor in DiGMState.in_1) and (predecessor not in DiGMState.core_1):
+            if (predecessor in self.in_1) and (predecessor not in self.core_1):
                 num1 += 1
         num2 = 0
         for predecessor in self.G2.pred[G2_node]:
-            if (predecessor in DiGMState.in_2) and (predecessor not in DiGMState.core_2):
+            if (predecessor in self.in_2) and (predecessor not in self.core_2):
                 num2 += 1
         if self.test == 'graph':
             if not (num1 == num2):
@@ -662,11 +683,11 @@ class DiGraphMatcher(GraphMatcher):
         # number of successors of m that are in T_2^{in}.
         num1 = 0
         for successor in self.G1[G1_node]:
-            if (successor in DiGMState.in_1) and (successor not in DiGMState.core_1):
+            if (successor in self.in_1) and (successor not in self.core_1):
                 num1 += 1
         num2 = 0
         for successor in self.G2[G2_node]:
-            if (successor in DiGMState.in_2) and (successor not in DiGMState.core_2):
+            if (successor in self.in_2) and (successor not in self.core_2):
                 num2 += 1                
         if self.test == 'graph':
             if not (num1 == num2):
@@ -681,11 +702,11 @@ class DiGraphMatcher(GraphMatcher):
         # number of predecessors of m that are in T_2^{out}.
         num1 = 0
         for predecessor in self.G1.pred[G1_node]:
-            if (predecessor in DiGMState.out_1) and (predecessor not in DiGMState.core_1):
+            if (predecessor in self.out_1) and (predecessor not in self.core_1):
                 num1 += 1
         num2 = 0
         for predecessor in self.G2.pred[G2_node]:
-            if (predecessor in DiGMState.out_2) and (predecessor not in DiGMState.core_2):
+            if (predecessor in self.out_2) and (predecessor not in self.core_2):
                 num2 += 1
         if self.test == 'graph':
             if not (num1 == num2):
@@ -698,11 +719,11 @@ class DiGraphMatcher(GraphMatcher):
         # number of successors of m that are in T_2^{out}.
         num1 = 0
         for successor in self.G1[G1_node]:
-            if (successor in DiGMState.out_1) and (successor not in DiGMState.core_1):
+            if (successor in self.out_1) and (successor not in self.core_1):
                 num1 += 1
         num2 = 0
         for successor in self.G2[G2_node]:
-            if (successor in DiGMState.out_2) and (successor not in DiGMState.core_2):
+            if (successor in self.out_2) and (successor not in self.core_2):
                 num2 += 1                                
         if self.test == 'graph':
             if not (num1 == num2):
@@ -720,11 +741,11 @@ class DiGraphMatcher(GraphMatcher):
         # that are neither in core_2 nor T_2^{in} nor T_2^{out}.
         num1 = 0
         for predecessor in self.G1.pred[G1_node]:
-            if (predecessor not in DiGMState.in_1) and (predecessor not in DiGMState.out_1):
+            if (predecessor not in self.in_1) and (predecessor not in self.out_1):
                 num1 += 1
         num2 = 0
         for predecessor in self.G2.pred[G2_node]:
-            if (predecessor not in DiGMState.in_2) and (predecessor not in DiGMState.out_2):
+            if (predecessor not in self.in_2) and (predecessor not in self.out_2):
                 num2 += 1
         if self.test == 'graph':
             if not (num1 == num2):
@@ -738,11 +759,11 @@ class DiGraphMatcher(GraphMatcher):
         # that are neither in core_2 nor T_2^{in} nor T_2^{out}.
         num1 = 0
         for successor in self.G1[G1_node]:
-            if (successor not in DiGMState.in_1) and (successor not in DiGMState.out_1):
+            if (successor not in self.in_1) and (successor not in self.out_1):
                 num1 += 1
         num2 = 0
         for successor in self.G2[G2_node]:
-            if (successor not in DiGMState.in_2) and (successor not in DiGMState.out_2):
+            if (successor not in self.in_2) and (successor not in self.out_2):
                 num2 += 1
         if self.test == 'graph':
             if not (num1 == num2):
@@ -763,32 +784,7 @@ class GMState(object):
     these objects in memory at a time, due to the depth-first search
     strategy employed by the VF2 algorithm.
 
-    """
-    
-    ###
-    ### The following variables are class variables.
-    ### So they will be shared by all instances of the GMState class.
-    ### This is the improvement of the VF2 algorithm over the VF algorithm.
-    ###
-    
-    # core_1[n] contains the index of the node paired with n, which is m,
-    #           provided n is in the mapping.
-    # core_2[m] contains the index of the node paired with m, which is n,
-    #           provided m is in the mapping.
-    core_1 = {}
-    core_2 = {}
-    
-    # See the paper for definitions of M_x and T_x^{y}
-    
-    # inout_1[n]  is non-zero if n is in M_1 or in T_1^{inout}
-    # inout_2[m]  is non-zero if m is in M_2 or in T_2^{inout}
-    #
-    # The value stored is the depth of the SSR tree when the node became
-    # part of the corresponding set.
-    inout_1 = {}
-    inout_2 = {}
-    # Practically, these sets simply store the nodes in the subgraph.
-    
+    """    
     def __init__(self, GM, G1_node=None, G2_node=None):
         """Initializes GMState object.
         
@@ -796,23 +792,25 @@ class GMState(object):
         new node pair that will be added to the GraphMatcher's current
         isomorphism mapping.
         """
+        self.GM = GM
+
         # Initialize the last stored node pair.
         self.G1_node = None
         self.G2_node = None
-        self.depth = len(GMState.core_1)
+        self.depth = len(GM.core_1)
       
         if G1_node is None or G2_node is None:
             # Then we reset the class variables
-            DiGMState.core_1 = {}
-            DiGMState.core_2 = {}
-            DiGMState.inout_1 = {}
-            DiGMState.inout_2 = {}
+            GM.core_1 = {}
+            GM.core_2 = {}
+            GM.inout_1 = {}
+            GM.inout_2 = {}
 
         # Watch out! G1_node == 0 should evaluate to True.
         if G1_node is not None and G2_node is not None:
             # Add the node pair to the isomorphism mapping.
-            GMState.core_1[G1_node] = G2_node
-            GMState.core_2[G2_node] = G1_node
+            GM.core_1[G1_node] = G2_node
+            GM.core_2[G2_node] = G1_node
 
             # Store the node that was added last.
             self.G1_node = G1_node
@@ -820,31 +818,31 @@ class GMState(object):
             
             # Now we must update the other two vectors.
             # We will add only if it is not in there already!
-            self.depth = len(GMState.core_1)
+            self.depth = len(GM.core_1)
             
             # First we add the new nodes...
-            if G1_node not in GMState.inout_1:
-                GMState.inout_1[G1_node] = self.depth
-            if G2_node not in GMState.inout_2:
-                    GMState.inout_2[G2_node] = self.depth
+            if G1_node not in GM.inout_1:
+                GM.inout_1[G1_node] = self.depth
+            if G2_node not in GM.inout_2:
+                    GM.inout_2[G2_node] = self.depth
                     
             # Now we add every other node...
             
             # Updates for T_1^{inout}
             new_nodes = set([])
-            for node in GMState.core_1:
-                new_nodes.update([neighbor for neighbor in GM.G1[node] if neighbor not in GMState.core_1])
+            for node in GM.core_1:
+                new_nodes.update([neighbor for neighbor in GM.G1[node] if neighbor not in GM.core_1])
             for node in new_nodes:
-                if node not in GMState.inout_1:
-                    GMState.inout_1[node] = self.depth
+                if node not in GM.inout_1:
+                    GM.inout_1[node] = self.depth
 
             # Updates for T_2^{inout}
             new_nodes = set([])
-            for node in GMState.core_2:
-                new_nodes.update([neighbor for neighbor in GM.G2[node] if neighbor not in GMState.core_2])
+            for node in GM.core_2:
+                new_nodes.update([neighbor for neighbor in GM.G2[node] if neighbor not in GM.core_2])
             for node in new_nodes:
-                if node not in GMState.inout_2:
-                    GMState.inout_2[node] = self.depth
+                if node not in GM.inout_2:
+                    GM.inout_2[node] = self.depth
                 
     def __del__(self):
         """Deletes the GMState object and restores the class variables."""
@@ -852,12 +850,12 @@ class GMState(object):
         # First we remove the node that was added from the core vectors.
         # Watch out! G1_node == 0 should evaluate to True.
         if self.G1_node is not None and self.G2_node is not None:
-            del GMState.core_1[self.G1_node]
-            del GMState.core_2[self.G2_node]
+            del self.GM.core_1[self.G1_node]
+            del self.GM.core_2[self.G2_node]
 
         # Now we revert the other two vectors.        
         # Thus, we delete all entries which have this depth level.
-        for vector in (GMState.inout_1, GMState.inout_2):
+        for vector in (self.GM.inout_1, self.GM.inout_2):
             for node in vector.keys():
                 if vector[node] == self.depth:
                     del vector[node]
@@ -872,62 +870,35 @@ class DiGMState(object):
     these objects in memory at a time, due to the depth-first search
     strategy employed by the VF2 algorithm.
 
-    """
-    
-    ###
-    ### The following variables are class variables.
-    ### So they will be shared by all instances of the DiGMState class.
-    ### This is the improvement of the VF2 algorithm over the VF algorithm.
-    ###
-    
-    # core_1[n] contains the index of the node paired with n, which is m,
-    #           provided n is in the mapping.
-    # core_2[m] contains the index of the node paired with m, which is n,
-    #           provided m is in the mapping.
-    core_1 = {}
-    core_2 = {}
-    
-    # See the paper for definitions of M_x and T_x^{y}
-    
-    # in_1[n]  is non-zero if n is in M_1 or in T_1^{in}
-    # out_1[n] is non-zero if n is in M_1 or in T_1^{out}
-    #
-    # in_2[m]  is non-zero if m is in M_2 or in T_2^{in}
-    # out_2[m] is non-zero if m is in M_2 or in T_2^{out}
-    #
-    # The value stored is the depth of the search tree when the node became
-    # part of the corresponding set.
-    in_1 = {}
-    in_2 = {}
-    out_1 = {}
-    out_2 = {}
-    
-    def __init__(self, DiGM, G1_node=None, G2_node=None):
+    """   
+    def __init__(self, GM, G1_node=None, G2_node=None):
         """Initializes DiGMState object.
         
         Pass in the DiGraphMatcher to which this DiGMState belongs and the
         new node pair that will be added to the GraphMatcher's current
         isomorphism mapping.
         """
+        self.GM = GM
+
         # Initialize the last stored node pair.
         self.G1_node = None
         self.G2_node = None
-        self.depth = len(DiGMState.core_1)
+        self.depth = len(GM.core_1)
       
         if G1_node is None or G2_node is None:
             # Then we reset the class variables
-            DiGMState.core_1 = {}
-            DiGMState.core_2 = {}
-            DiGMState.in_1 = {}
-            DiGMState.in_2 = {}
-            DiGMState.out_1 = {}
-            DiGMState.out_2 = {}
+            GM.core_1 = {}
+            GM.core_2 = {}
+            GM.in_1 = {}
+            GM.in_2 = {}
+            GM.out_1 = {}
+            GM.out_2 = {}
 
         # Watch out! G1_node == 0 should evaluate to True.
         if G1_node is not None and G2_node is not None:
             # Add the node pair to the isomorphism mapping.
-            DiGMState.core_1[G1_node] = G2_node
-            DiGMState.core_2[G2_node] = G1_node
+            GM.core_1[G1_node] = G2_node
+            GM.core_2[G2_node] = G1_node
             
             # Store the node that was added last.
             self.G1_node = G1_node
@@ -935,13 +906,13 @@ class DiGMState(object):
             
             # Now we must update the other four vectors.
             # We will add only if it is not in there already!
-            self.depth = len(DiGMState.core_1)
+            self.depth = len(GM.core_1)
             
             # First we add the new nodes...
-            for vector in (DiGMState.in_1, DiGMState.out_1):
+            for vector in (GM.in_1, GM.out_1):
                 if G1_node not in vector:
                     vector[G1_node] = self.depth
-            for vector in (DiGMState.in_2, DiGMState.out_2):
+            for vector in (GM.in_2, GM.out_2):
                 if G2_node not in vector:
                     vector[G2_node] = self.depth
                     
@@ -949,35 +920,35 @@ class DiGMState(object):
             
             # Updates for T_1^{in}
             new_nodes = set([])
-            for node in DiGMState.core_1:
-                new_nodes.update([predecessor for predecessor in DiGM.G1.predecessors(node) if predecessor not in DiGMState.core_1])
+            for node in GM.core_1:
+                new_nodes.update([predecessor for predecessor in GM.G1.predecessors(node) if predecessor not in GM.core_1])
             for node in new_nodes:
-                if node not in DiGMState.in_1:
-                    DiGMState.in_1[node] = self.depth
+                if node not in GM.in_1:
+                    GM.in_1[node] = self.depth
                 
             # Updates for T_2^{in}
             new_nodes = set([])
-            for node in DiGMState.core_2:
-                new_nodes.update([predecessor for predecessor in DiGM.G2.predecessors(node) if predecessor not in DiGMState.core_2])
+            for node in GM.core_2:
+                new_nodes.update([predecessor for predecessor in GM.G2.predecessors(node) if predecessor not in GM.core_2])
             for node in new_nodes:
-                if node not in DiGMState.in_2:
-                    DiGMState.in_2[node] = self.depth
+                if node not in GM.in_2:
+                    GM.in_2[node] = self.depth
                 
             # Updates for T_1^{out}
             new_nodes = set([])        
-            for node in DiGMState.core_1:
-                new_nodes.update([successor for successor in DiGM.G1.successors(node) if successor not in DiGMState.core_1])
+            for node in GM.core_1:
+                new_nodes.update([successor for successor in GM.G1.successors(node) if successor not in GM.core_1])
             for node in new_nodes:
-                if node not in DiGMState.out_1:                
-                    DiGMState.out_1[node] = self.depth
+                if node not in GM.out_1:                
+                    GM.out_1[node] = self.depth
     
             # Updates for T_2^{out}
             new_nodes = set([])        
-            for node in DiGMState.core_2:
-                new_nodes.update([successor for successor in DiGM.G2.successors(node) if successor not in DiGMState.core_2])
+            for node in GM.core_2:
+                new_nodes.update([successor for successor in GM.G2.successors(node) if successor not in GM.core_2])
             for node in new_nodes:
-                if node not in DiGMState.out_2:
-                    DiGMState.out_2[node] = self.depth
+                if node not in GM.out_2:
+                    GM.out_2[node] = self.depth
 
     def __del__(self):
         """Deletes the DiGMState object and restores the class variables."""
@@ -985,12 +956,12 @@ class DiGMState(object):
         # First we remove the node that was added from the core vectors.
         # Watch out! G1_node == 0 should evaluate to True.
         if self.G1_node is not None and self.G2_node is not None:
-            del DiGMState.core_1[self.G1_node]
-            del DiGMState.core_2[self.G2_node]
+            del self.GM.core_1[self.G1_node]
+            del self.GM.core_2[self.G2_node]
 
         # Now we revert the other four vectors.        
         # Thus, we delete all entries which have this depth level.
-        for vector in (DiGMState.in_1, DiGMState.in_2, DiGMState.out_1, DiGMState.out_2):
+        for vector in (self.GM.in_1, self.GM.in_2, self.GM.out_1, self.GM.out_2):
             for node in vector.keys():
                 if vector[node] == self.depth:
                     del vector[node]
