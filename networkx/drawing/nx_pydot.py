@@ -26,10 +26,14 @@ __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
 
 import sys
 from networkx.utils import _get_fh
+
 try:
-    import pydot
-except ImportError:
-    raise
+    from peak.util.imports import lazyModule
+except:
+    from networkx.util.imports import lazyModule
+
+pydot=lazyModule('pydot')
+
 
 def write_dot(G,path):
     """Write NetworkX graph G to Graphviz dot format on path.
@@ -84,7 +88,6 @@ def from_pydot(P,edge_attr=True):
     Edge attributes will be returned as edge data in G.  With
     edge_attr=False the edge data will be the Graphviz edge weight
     """
-    import networkx
 
     if P.get_strict(None): # pydot bug: get_strict() shouldn't take argument 
         multiedges=False
@@ -274,12 +277,6 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     >>> pos=nx.pydot_layout(G,prog='dot')
     
     """
-    from networkx.drawing.nx_pydot import pydot_from_networkx
-    try:
-        import pydot
-    except:
-        print "Import Error: not able to import pydot."
-        raise
     P=to_pydot(G)
     if root is not None :
         P.set("root",str(root))

@@ -24,10 +24,14 @@ __all__ = ['circular_layout',
 import networkx
 
 try:
-    import numpy as np
+    from peak.util.imports import lazyModule
 except:
-    raise ImportError("Numpy is required for graph layout package.")    
+    from networkx.util.imports import lazyModule
 
+np=lazyModule('numpy')
+#linalg=lazyModule('scipy.sparse.linalg')
+spdiags=lazyModule('scipy.sparse.spdiags')
+eigen_symmetric=lazyModule('scipy.sparse.linalg.eigen_symmetric')
 
 def random_layout(G,dim=2):
     n=len(G)
@@ -293,7 +297,6 @@ def spectral_layout(G,dim=2,pos=None,weighted=True,scale=1):
         # Sparse matrix 
         if len(G)< 500:  # dense solver is faster for small graphs
             raise ValueError
-        import scipy.sparse.linalg
         A=networkx.to_scipy_sparse_matrix(G)
         # Symmetrize directed graphs
         if G.directed:
@@ -340,8 +343,6 @@ def _sparse_spectral(A,dim=2,pos=None,iterations=50,weighted=True):
     # Input adjacency matrix A
     # Uses sparse eigenvalue solver from scipy
     # Could use multilevel methods here, see Koren "On spectral graph drawing" 
-    from scipy.sparse import spdiags
-    from scipy.sparse.linalg import eigen_symmetric
     try:
         nnodes,_=A.shape
     except AttributeError:
@@ -378,6 +379,3 @@ def _rescale_layout(pos,scale=1):
     return pos
 
 
-
-if __name__ == "__main__":
-    import networkx

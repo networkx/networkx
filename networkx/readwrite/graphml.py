@@ -159,6 +159,9 @@ def parse_graphml(lines):
     """Read graph in GraphML format from string.
 
     Returns a Graph or DiGraph."""
+	
+    import xml.parsers.expat
+
     context = []
     G=networkx.DiGraph()
     defaultDirected = [True]
@@ -194,8 +197,7 @@ def parse_graphml(lines):
 		
     def end_element(name):
         context.pop()
-	
-    import xml.parsers.expat
+
     p = xml.parsers.expat.ParserCreate()
     p.returns_unicode=True
     p.StartElementHandler = start_element

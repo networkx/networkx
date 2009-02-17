@@ -30,11 +30,17 @@ __all__ = ['from_agraph', 'to_agraph',
 
 import os
 import sys
+import networkx
 from networkx.utils import _get_fh,is_string_like
+
+
 try:
-    import pygraphviz
-except ImportError:
-    raise
+    from peak.util.imports import lazyModule
+except:
+    from networkx.util.imports import lazyModule
+
+pygraphviz=lazyModule('pygraphviz')
+
 
 def from_agraph(A,create_using=None,edge_attr=True):
     """Return a NetworkX Graph or DiGraph from a PyGraphviz graph.
@@ -73,7 +79,6 @@ def from_agraph(A,create_using=None,edge_attr=True):
     attribute or the value 1 if no edge weight attribute is found.
 
     """
-    import networkx
     if create_using is None:        
         if A.is_directed():
             if A.is_strict():

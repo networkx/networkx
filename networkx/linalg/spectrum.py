@@ -13,14 +13,18 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 #    http://www.gnu.org/copyleft/lesser.html
 
 try:
-    import numpy as N
+    from peak.util.imports import lazyModule
 except:
-    raise ImportError, 'numpy not found'
+    from networkx.util.imports import lazyModule
+
+N=lazyModule('numpy')
+
+import networkx
 
 __all__ = ['adj_matrix', 'laplacian', 'generalized_laplacian',
            'laplacian_spectrum', 'adjacency_spectrum','normalized_laplacian']
 
-import networkx
+
 
 def adj_matrix(G,nodelist=None):
     """Return adjacency matrix of graph as a numpy matrix.

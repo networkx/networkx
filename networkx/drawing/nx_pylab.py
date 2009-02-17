@@ -11,7 +11,7 @@ References:
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -33,21 +33,8 @@ __all__ = ['draw',
 
 
 import networkx
-
-import sys
-
-try:
-    import matplotlib
-    import matplotlib.cbook as cb
-    from matplotlib.colors import colorConverter,normalize,Colormap
-    from matplotlib.collections import LineCollection
-    from matplotlib.numerix import sin, cos, pi, sqrt, arctan2, asarray, array
-    from matplotlib.numerix.mlab import amin, amax, ravel
-    import matplotlib.pylab
-except ImportError:
-    raise ImportError, "Import Error: not able to import matplotlib."
-except RuntimeError:
-    pass # unable to open display
+from networkx.drawing.layout import shell_layout,\
+    circular_layout,spectral_layout,spring_layout
 
 def draw(G, pos=None, ax=None, hold=None, **kwds):
     """Draw the graph G with matplotlib (pylab).
@@ -114,10 +101,17 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     >>> P.draw()    # pylab draw()
 
     """
+    try:
+        import matplotlib.pylab as pylab
+    except ImportError:
+        raise ImportError, "Matplotlib required for draw()"
+    except RuntimeError:
+        pass # unable to open display
+
     if pos is None:
         pos=networkx.drawing.spring_layout(G) # default to spring layout
 
-    cf=matplotlib.pylab.gcf()
+    cf=pylab.gcf()
     cf.set_facecolor('w')
     if ax is None:
         if cf._axstack() is None:
@@ -126,18 +120,18 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
             ax=cf.gca()
 
  # allow callers to override the hold state by passing hold=True|False
-    b = matplotlib.pylab.ishold()
+    b = pylab.ishold()
     h = kwds.pop('hold', None)
     if h is not None:
-        matplotlib.pylab.hold(h)
+        pylab.hold(h)
     try:
         draw_networkx(G,pos,ax=ax,**kwds)
         ax.set_axis_off()
-        matplotlib.pylab.draw_if_interactive()
+        pylab.draw_if_interactive()
     except:
-        matplotlib.pylab.hold(b)
+        pylab.hold(b)
         raise
-    matplotlib.pylab.hold(b)
+    pylab.hold(b)
     return
 
 
@@ -170,12 +164,18 @@ def draw_networkx(G, pos, with_labels=True, **kwds):
     draw_networkx_edges()
     draw_networkx_labels()
     """
-    from matplotlib.pylab import draw_if_interactive 
+    try:
+        import matplotlib.pylab as pylab
+    except ImportError:
+        raise ImportError, "Matplotlib required for draw()"
+    except RuntimeError:
+        pass # unable to open display
+
     node_collection=draw_networkx_nodes(G, pos, **kwds)
     edge_collection=draw_networkx_edges(G, pos, **kwds) 
     if with_labels:
         draw_networkx_labels(G, pos, **kwds)
-    draw_if_interactive()
+    pylab.draw_if_interactive()
 
 def draw_networkx_nodes(G, pos,
                         nodelist=None,
@@ -203,8 +203,16 @@ def draw_networkx_nodes(G, pos,
     see draw_networkx for the list of other optional parameters.
 
     """
+    try:
+        import matplotlib.pylab as pylab
+        import matplotlib.numerix as nmex
+    except ImportError:
+        raise ImportError, "Matplotlib required for draw()"
+    except RuntimeError:
+        pass # unable to open display
+
     if ax is None:
-        ax=matplotlib.pylab.gca()
+        ax=pylab.gca()
 
     if nodelist is None:
         nodelist=G.nodes()
@@ -213,7 +221,7 @@ def draw_networkx_nodes(G, pos,
         return None 
 
     try:
-        xy=asarray([pos[v] for v in nodelist])
+        xy=nmex.asarray([pos[v] for v in nodelist])
     except KeyError,e:
         raise networkx.NetworkXError('Node %s has no position.'%e)
     except ValueError:
@@ -230,7 +238,7 @@ def draw_networkx_nodes(G, pos,
                                alpha=alpha,
                                linewidths=linewidths)
                                
-    matplotlib.pylab.sci(node_collection)
+    pylab.sci(node_collection)
     node_collection.set_zorder(2)            
     return node_collection
 
@@ -270,8 +278,22 @@ def draw_networkx_edges(G, pos,
     See draw_networkx for the list of other optional parameters.
 
     """
+    try:
+        import matplotlib
+        import matplotlib.pylab as pylab
+        import matplotlib.numerix as nmex
+        import matplotlib.cbook as cb
+        from matplotlib.colors import colorConverter,Colormap
+        from matplotlib.collections import LineCollection
+        import matplotlib.numerix.mlab as mlab
+    except ImportError:
+        raise ImportError, "Matplotlib required for draw()"
+    except RuntimeError:
+        pass # unable to open display
+
+
     if ax is None:
-        ax=matplotlib.pylab.gca()
+        ax=pylab.gca()
 
     if edgelist is None:
         edgelist=G.edges()
@@ -280,7 +302,7 @@ def draw_networkx_edges(G, pos,
         return None
 
     # set edge positions
-    edge_pos=asarray([(pos[e[0]],pos[e[1]]) for e in edgelist])
+    edge_pos=nmex.asarray([(pos[e[0]],pos[e[1]]) for e in edgelist])
     
     if not cb.iterable(width):
         lw = (width,)
@@ -290,14 +312,14 @@ def draw_networkx_edges(G, pos,
     if not cb.is_string_like(edge_color) \
            and cb.iterable(edge_color) \
            and len(edge_color)==len(edge_pos):
-        if matplotlib.numerix.alltrue([cb.is_string_like(c) 
-                                       for c in edge_color]):
+        if nmex.alltrue([cb.is_string_like(c) 
+                         for c in edge_color]):
             # (should check ALL elements)
             # list of color letters such as ['k','r','k',...]
             edge_colors = tuple([colorConverter.to_rgba(c,alpha) 
                                  for c in edge_color])
-        elif matplotlib.numerix.alltrue([not cb.is_string_like(c) 
-                                         for c in edge_color]):
+        elif nmex.alltrue([not cb.is_string_like(c) 
+                           for c in edge_color]):
             # numbers (which are going to be mapped with a colormap)
             edge_colors = None
         else:
@@ -309,12 +331,12 @@ def draw_networkx_edges(G, pos,
             raise ValueError('edge_color must be a single color or list of exactly m colors where m is the number or edges')
 
     edge_collection = LineCollection(edge_pos,
-                                colors       = edge_colors,
-                                linewidths   = lw,
-                                antialiaseds = (1,),
-                                linestyle    = style,     
-                                transOffset = ax.transData,             
-                                )
+                                     colors       = edge_colors,
+                                     linewidths   = lw,
+                                     antialiaseds = (1,),
+                                     linestyle    = style,     
+                                     transOffset = ax.transData,             
+                                     )
     edge_collection.set_alpha(alpha)
 
     # need 0.87.7 or greater for edge colormaps
@@ -326,13 +348,13 @@ def draw_networkx_edges(G, pos,
     if map(int,mpl_version.split('.'))>=[0,87,7]:
         if edge_colors is None:
             if edge_cmap is not None: assert(isinstance(edge_cmap, Colormap))
-            edge_collection.set_array(asarray(edge_color))
+            edge_collection.set_array(nmex.asarray(edge_color))
             edge_collection.set_cmap(edge_cmap)
             if edge_vmin is not None or edge_vmax is not None:
                 edge_collection.set_clim(edge_vmin, edge_vmax)
             else:
                 edge_collection.autoscale()
-            matplotlib.pylab.sci(edge_collection)
+            pylab.sci(edge_collection)
 
 #    else:
 #        sys.stderr.write(\
@@ -357,7 +379,7 @@ def draw_networkx_edges(G, pos,
             x2,y2=dst
             dx=x2-x1 # x offset
             dy=y2-y1 # y offset
-            d=sqrt(float(dx**2+dy**2)) # length of edge
+            d=nmex.sqrt(float(dx**2+dy**2)) # length of edge
             if d==0: # source and target at same position
                 continue
             if dx==0: # vertical edge
@@ -367,9 +389,9 @@ def draw_networkx_edges(G, pos,
                 ya=y2
                 xa=dx*p+x1
             else:
-                theta=arctan2(dy,dx)
-                xa=p*d*cos(theta)+x1
-                ya=p*d*sin(theta)+y1
+                theta=nmex.arctan2(dy,dx)
+                xa=p*d*nmex.cos(theta)+x1
+                ya=p*d*nmex.sin(theta)+y1
                 
             a_pos.append(((xa,ya),(x2,y2)))
 
@@ -381,10 +403,10 @@ def draw_networkx_edges(G, pos,
                                 )
         
     # update view        
-    minx = amin(ravel(edge_pos[:,:,0]))
-    maxx = amax(ravel(edge_pos[:,:,0]))
-    miny = amin(ravel(edge_pos[:,:,1]))
-    maxy = amax(ravel(edge_pos[:,:,1]))
+    minx = mlab.amin(mlab.ravel(edge_pos[:,:,0]))
+    maxx = mlab.amax(mlab.ravel(edge_pos[:,:,0]))
+    miny = mlab.amin(mlab.ravel(edge_pos[:,:,1]))
+    maxy = mlab.amax(mlab.ravel(edge_pos[:,:,1]))
 
 
 
@@ -427,8 +449,16 @@ def draw_networkx_labels(G, pos,
     See draw_networkx for the list of other optional parameters.
 
     """
+    try:
+        import matplotlib.pylab as pylab
+        import matplotlib.cbook as cb
+    except ImportError:
+        raise ImportError, "Matplotlib required for draw()"
+    except RuntimeError:
+        pass # unable to open display
+
     if ax is None:
-        ax=matplotlib.pylab.gca()
+        ax=pylab.gca()
 
     if labels is None:
         labels=dict(zip(G.nodes(),G.nodes()))
@@ -439,15 +469,15 @@ def draw_networkx_labels(G, pos,
         if not cb.is_string_like(label):
             label=str(label) # this will cause "1" and 1 to be labeled the same
         t=ax.text(x, y,
-                label,
-                size=font_size,
-                color=font_color,
-                family=font_family,
-                weight=font_weight,
-                horizontalalignment='center',
-                verticalalignment='center',
-                transform = ax.transData,
-                )
+                  label,
+                  size=font_size,
+                  color=font_color,
+                  family=font_family,
+                  weight=font_weight,
+                  horizontalalignment='center',
+                  verticalalignment='center',
+                  transform = ax.transData,
+                  )
         text_items[n]=t
 
     return text_items
@@ -475,8 +505,17 @@ def draw_networkx_edge_labels(G, pos,
     See draw_networkx for the list of other optional parameters.
 
     """
+    try:
+        import matplotlib.pylab as pylab
+        import matplotlib.numerix as nmex
+        import matplotlib.cbook as cb
+    except ImportError:
+        raise ImportError, "Matplotlib required for draw()"
+    except RuntimeError:
+        pass # unable to open display
+
     if ax is None:
-        ax=matplotlib.pylab.gca()
+        ax=pylab.gca()
     if edge_labels is None:
         labels=dict(zip(G.edges(),[d for u,v,d in G.edges(data=True)]))
     else:
@@ -486,15 +525,15 @@ def draw_networkx_edge_labels(G, pos,
         (x1,y1)=pos[n1]
         (x2,y2)=pos[n2]
         (x,y) = ((x1+x2)/2, (y1+y2)/2)
-        angle=arctan2(y2-y1,x2-x1)/(2.0*pi)*360 # degrees
+        angle=nmex.arctan2(y2-y1,x2-x1)/(2.0*nmex.pi)*360 # degrees
         # make label orientation "right-side-up"
         if angle > 90: 
             angle-=180
         if angle < - 90: 
             angle+=180
         # transform data coordinate angle to screen coordinate angle
-        xy=array((x,y))
-        trans_angle=ax.transData.transform_angles(array((angle,)),
+        xy=nmex.array((x,y))
+        trans_angle=ax.transData.transform_angles(nmex.array((angle,)),
                                                   xy.reshape((1,2)))[0]
         # use default box of white with white border
         if bbox is None:
@@ -525,27 +564,22 @@ def draw_networkx_edge_labels(G, pos,
 
 def draw_circular(G, **kwargs):
     """Draw the graph G with a circular layout"""
-    from networkx.drawing.layout import circular_layout
     draw(G,circular_layout(G),**kwargs)
     
 def draw_random(G, **kwargs):
     """Draw the graph G with a random layout."""
-    from networkx.drawing.layout import random_layout
     draw(G,random_layout(G),**kwargs)
 
 def draw_spectral(G, **kwargs):
     """Draw the graph G with a spectral layout."""
-    from networkx.drawing.layout import spectral_layout
     draw(G,spectral_layout(G),**kwargs)
 
 def draw_spring(G, **kwargs):
     """Draw the graph G with a spring layout"""
-    from networkx.drawing.layout import spring_layout
     draw(G,spring_layout(G),**kwargs)
 
 def draw_shell(G, **kwargs):
     """Draw networkx graph with shell layout"""
-    from networkx.drawing.layout import shell_layout
     nlist = kwargs.get('nlist', None)
     if nlist != None:        
         del(kwargs['nlist'])
