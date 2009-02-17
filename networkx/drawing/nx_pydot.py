@@ -26,6 +26,7 @@ __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
 
 import sys
 from networkx.utils import _get_fh
+import networkx
 
 try:
     from peak.util.imports import lazyModule

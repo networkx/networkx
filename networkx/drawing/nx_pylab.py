@@ -34,7 +34,7 @@ __all__ = ['draw',
 
 import networkx
 from networkx.drawing.layout import shell_layout,\
-    circular_layout,spectral_layout,spring_layout
+    circular_layout,spectral_layout,spring_layout,random_layout
 
 def draw(G, pos=None, ax=None, hold=None, **kwds):
     """Draw the graph G with matplotlib (pylab).
