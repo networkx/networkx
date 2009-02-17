@@ -34,6 +34,7 @@ packages=["networkx",
           "networkx.drawing",
           "networkx.linalg",
           "networkx.readwrite",
+          "networkx.util",
           "networkx.tests",
           ]
 
