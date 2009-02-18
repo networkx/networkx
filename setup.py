@@ -23,7 +23,30 @@ if sys.version_info[:2] < (2, 4):
           sys.version_info[:2]
     sys.exit(-1)
 
+def write_versionfile():
+    """Creates a file containing version information."""
+    base = os.path.split(__file__)[0]
+    versionfile = os.path.join(base, 'networkx', 'version.py')
+    fh = open(versionfile, 'w')
+    text = '''"""
+Version information for NetworkX, created during installation.
+
+Do not add this file to the repository.
+
+"""
+
+__version__ = '%(version)s'
+__revision__ = '%(revision)s'
+__date__ = '%(date)s'
+'''
+    subs = {'version': version,
+            'revision': revision,
+            'date': date}
+    fh.write(text % subs)
+    fh.close()
+
 execfile(os.path.join('networkx','release.py'))
+write_versionfile()
 
 packages=["networkx",
           "networkx.algorithms",

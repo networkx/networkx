@@ -13,11 +13,10 @@ import re
 
 
 def get_svn_revision():
-    #import networkx
     rev = None
-    path ="."
-    entries_path = '%s/.svn/entries' % path
-    if os.path.exists(entries_path):
+    base = os.path.split(__file__)[0]
+    entries_path = os.path.join(base, '.svn', 'entries')
+    if os.path.isfile(entries_path):
         entries = open(entries_path, 'r').read()
         # Versions >= 7 of the entries file are flat text.  The first line is
         # the version number. The next set of digits after 'dir' is the revision.
@@ -26,15 +25,22 @@ def get_svn_revision():
             if rev_match:
                 rev = rev_match.groups()[0]
     if rev:
-        return 'dev%s' % rev
-    return None
+        return rev
+    else:
+        return None
 
 
 name = 'networkx'
 version = '1.0'
-revision = get_svn_revision()
-if revision is not None:
-    version+=".%s"%revision
+
+# change to True before tagging a release; then change back
+release = False 
+
+if not release:
+    version += '.dev'   
+    revision = get_svn_revision()
+    if revision is not None:
+        version += "%s" % revision
 
 description = "Python package for creating and manipulating graphs and networks"
 

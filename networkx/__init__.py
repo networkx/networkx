@@ -35,15 +35,33 @@ if sys.version_info[:2] < (2, 4):
     print "Python version 2.4 or later is required for NetworkX (%d.%d detected)." %  sys.version_info[:2]
     sys.exit(-1)
 del sys
+
 # Release data
 import release 
-__version__  = release.version
-__date__     = release.date
+
+if release.revision is None:
+    # we probably not running in an svn directory   
+    try:
+        # use release data stored at installatation time.
+        import version
+        __version__ = version.__version__
+        __revision__ = version.__revision__
+        __date__ = version.__date__
+    except ImportError:
+        # version.py was not created or no longer exists
+        __version__ = release.version
+        __revision__ = release.revision
+        __date__ = release.date
+else:
+    # use dynamic values, even if version.py exists
+    __version__ = release.version
+    __revision__ = release.revision
+    __date__ = release.date
+
 __author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
               ( release.authors['Hagberg'] + release.authors['Schult'] + \
                 release.authors['Swart'] )
 __license__  = release.license
-__revision__ = release.revision
 
 from exception import  NetworkXException, NetworkXError
 
