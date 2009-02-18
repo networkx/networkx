@@ -30,12 +30,12 @@ except:
 
 np=lazyModule('numpy')
 #linalg=lazyModule('scipy.sparse.linalg')
-spdiags=lazyModule('scipy.sparse.spdiags')
-eigen_symmetric=lazyModule('scipy.sparse.linalg.eigen_symmetric')
+#spdiags=lazyModule('scipy.sparse.spdiags')
+#eigen_symmetric=lazyModule('scipy.sparse.linalg.eigen_symmetric')
 
 def random_layout(G,dim=2):
     n=len(G)
-    pos=np.random.random((n,dim))
+    pos=np.asarray(np.random.random((n,dim)),dtype=np.float32)
     return dict(zip(G,pos))
 
 
@@ -69,7 +69,7 @@ def circular_layout(G, dim=2, scale=1):
     try to minimize edge crossings.
 
     """
-    t=np.arange(0,2.0*np.pi,2.0*np.pi/len(G))
+    t=np.arange(0,2.0*np.pi,2.0*np.pi/len(G),dtype=np.float32)
     pos=np.transpose(np.array([np.cos(t),np.sin(t)]))
     pos=_rescale_layout(pos,scale=scale)
     return dict(zip(G,pos))
@@ -118,12 +118,13 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
 
     npos={}        
     for nodes in nlist:
-        t=np.arange(0,2.0*np.pi,2.0*np.pi/len(nodes))
+        t=np.arange(0,2.0*np.pi,2.0*np.pi/len(nodes),dtype=np.float32)
         pos=np.transpose(np.array([radius*np.cos(t),radius*np.sin(t)]))
         npos.update(dict(zip(nodes,pos)))
         radius+=1.0
-                   
-    return _rescale_layout(npos,scale=scale)
+
+    # FIXME: rescale        
+    return npos        
 
 
 def fruchterman_reingold_layout(G,dim=2,pos=None,iterations=50,
@@ -186,7 +187,7 @@ def _fruchterman_reingold(A,dim=2,pos=None,iterations=50,weighted=True):
 
     # random initial positions
     if pos==None:
-        pos=np.random.random((nnodes,dim))
+        pos=np.asarray(np.random.random((nnodes,dim)),dtype=A.dtype)
 
     # optimal distance between nodes
     k=np.sqrt(1.0/nnodes) 
@@ -196,7 +197,7 @@ def _fruchterman_reingold(A,dim=2,pos=None,iterations=50,weighted=True):
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
     dt=t/float(iterations+1) 
-    delta = np.zeros((pos.shape[0],pos.shape[0],pos.shape[1]))
+    delta = np.zeros((pos.shape[0],pos.shape[0],pos.shape[1]),dtype=A.dtype)
     # the inscrutable (but fast) version
     # this is still O(V^2)
     # could use multilevel methods to speed this up significantly
@@ -325,12 +326,12 @@ def _spectral(A,dim=2,pos=None,iterations=50,weighted=True):
     
     # random initial positions
     if pos==None:
-        pos=np.random.random((nnodes,dim))
+        pos=np.asarray(np.random.random((nnodes,dim)),dtype=A.dtype)
 
     # form Laplacian matrix
     # make sure we have an array instead of a matrix
     A=np.asarray(A) 
-    I=np.identity(nnodes)
+    I=np.identity(nnodes,dtype=A.dtype)
     D=I*np.sum(A,axis=1) # diagonal of degrees
     L=D-A 
 
@@ -343,6 +344,8 @@ def _sparse_spectral(A,dim=2,pos=None,iterations=50,weighted=True):
     # Input adjacency matrix A
     # Uses sparse eigenvalue solver from scipy
     # Could use multilevel methods here, see Koren "On spectral graph drawing" 
+    from scipy.sparse import spdiags
+    from scipy.sparse.linalg import eigen_symmetric
     try:
         nnodes,_=A.shape
     except AttributeError:
@@ -351,11 +354,12 @@ def _sparse_spectral(A,dim=2,pos=None,iterations=50,weighted=True):
     
     # random initial positions
     if pos==None:
-        pos=np.random.random((nnodes,dim))
+        pos=np.asarray(np.random.random((nnodes,dim)),dtype=A.dtype)
 
     # form Laplacian matrix
     data=np.asarray(A.sum(axis=1).T)
     D=spdiags(data,0,nnodes,nnodes)
+    print D.dtype
     L=D-A
     # number of Lanczos vectors for ARPACK solver, what is the right scaling?
     ncv=int(np.sqrt(nnodes)) 
