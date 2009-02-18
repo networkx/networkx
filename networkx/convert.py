@@ -54,6 +54,15 @@ __all__ = ['from_whatever',
 
 import networkx
 
+try:
+    from peak.util.imports import lazyModule
+except:
+    from networkx.util.imports import lazyModule
+
+numpy=lazyModule('numpy')
+scipy=lazyModule('scipy')
+sparse=lazyModule('scipy.sparse')
+
 def _prep_create_using(create_using):
     """
     Return a graph object ready to be populated.
@@ -150,29 +159,29 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
                   "Input is not a valid edge list"
 
     # numpy matrix or ndarray 
-    try:
-        import numpy
-        if isinstance(thing,numpy.core.defmatrix.matrix) or \
-               isinstance(thing,numpy.ndarray):
-            try:
-                return from_numpy_matrix(thing,create_using=create_using)
-            except:
-                raise networkx.NetworkXError,\
-                      "Input is not a correct numpy matrix or array."
-    except ImportError:
-        pass # fail silently
+#    try:
+#        import numpy
+    if isinstance(thing,numpy.core.defmatrix.matrix) or \
+           isinstance(thing,numpy.ndarray):
+        try:
+            return from_numpy_matrix(thing,create_using=create_using)
+        except:
+            raise networkx.NetworkXError,\
+                  "Input is not a correct numpy matrix or array."
+#    except ImportError:
+#        pass # fail silently
 
     # scipy sparse matrix - any format
-    try:
-        import scipy
-        if hasattr(thing,"format"):
-            try:
-                return from_scipy_sparse_matrix(thing,create_using=create_using)
-            except:
-                raise networkx.NetworkXError, \
-                      "Input is not a correct scipy sparse matrix type."
-    except ImportError:
-        pass # fail silently
+#    try:
+#        import scipy
+    if hasattr(thing,"format"):
+        try:
+            return from_scipy_sparse_matrix(thing,create_using=create_using)
+        except:
+            raise networkx.NetworkXError, \
+                  "Input is not a correct scipy sparse matrix type."
+#    except ImportError:
+#        pass # fail silently
 
 
     raise networkx.NetworkXError, \
@@ -380,7 +389,7 @@ def from_edgelist(edgelist,create_using=None):
     return G                         
 
 
-def to_numpy_matrix(G,nodelist=None):
+def to_numpy_matrix(G,nodelist=None,dtype=numpy.float32):
     """Return the graph adjacency matrix as a numpy matrix. 
 
     Parameters
@@ -393,6 +402,9 @@ def to_numpy_matrix(G,nodelist=None):
        All nodes must appear in nodelist or a KeyError is raised.
        If nodelist is None, the ordering is produced by G.nodes()
 
+    dtype : numpy type
+       Data type for matrix entries.  Default is 4 byte float (single).
+
     Notes
     -----
     When G.weighted==False the value of the entry A[u,v] is 1
@@ -401,18 +413,20 @@ def to_numpy_matrix(G,nodelist=None):
     Multiple edges and edge data are both ignored for MultiGraph/MultiDiGraph.
 
     """
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError, \
-              "Import Error: not able to import numpy: http://numpy.scipy.org "
+#    try:
+#        import numpy
+#    except ImportError:
+#        raise ImportError, \
+#              "Import Error: not able to import numpy: http://numpy.scipy.org "
 
+#    if dtype is None:
+#        dtype=numpy.float32
 
     if nodelist is None:
         nodelist=G.nodes()
     nlen=len(nodelist)    
     index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
-    A = numpy.asmatrix(numpy.zeros((nlen,nlen)))
+    A = numpy.asmatrix(numpy.zeros((nlen,nlen),dtype=dtype))
     if G.weighted and not G.multigraph:
         for n,nbrdict in G.adjacency_iter():
             if n in index:
@@ -446,11 +460,11 @@ def from_numpy_matrix(A,create_using=None):
 
     """
     # This should never fail if you have created a numpy matrix with numpy...  
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError, \
-              "Import Error: not able to import numpy: http://numpy.scipy.org "
+#    try:
+#        import numpy
+#    except ImportError:
+#        raise ImportError, \
+#              "Import Error: not able to import numpy: http://numpy.scipy.org "
 
     G=_prep_create_using(create_using)
 
@@ -468,7 +482,7 @@ def from_numpy_matrix(A,create_using=None):
     return G
 
 
-def to_scipy_sparse_matrix(G,nodelist=None):
+def to_scipy_sparse_matrix(G,nodelist=None,dtype=numpy.float32):
     """Return the graph adjacency matrix as a scipy sparse matrix.
 
     Parameters
@@ -480,6 +494,9 @@ def to_scipy_sparse_matrix(G,nodelist=None):
        Use the order of nodes in nodelist for the rows.
        All nodes must appear in nodelist or a KeyError is raised.
        If nodelist is None, the ordering is produced by G.nodes()
+
+    dtype : numpy type
+       Data type for matrix entries.  Default is 4 byte float (single).
 
     Examples
     --------
@@ -496,19 +513,20 @@ def to_scipy_sparse_matrix(G,nodelist=None):
     is assumed to be numeric and becomes the value of A[u.v].
     Otherwise A[u,v] is 1 if an edge u-v exists and 0 otherwise.
     """
-    try:
-        from scipy import sparse
-    except ImportError:
-        raise ImportError, \
-              """Import Error: not able to import scipy sparse:
-              see http://scipy.org""" 
-
+#    try:
+#        from scipy import sparse
+#    except ImportError:
+#        raise ImportError, \
+#              """Import Error: not able to import scipy sparse:
+#              see http://scipy.org""" 
+#    if dtype is None:
+#        dtype=scipy.float32
 
     if nodelist is None:
         nodelist=G.nodes()
     nlen=len(nodelist)    
     index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
-    A = sparse.lil_matrix((nlen,nlen))
+    A = sparse.lil_matrix((nlen,nlen),dtype=dtype)
     if G.weighted and not G.multigraph:
         for n,nbrdict in G.adjacency_iter():
             if n in index:
