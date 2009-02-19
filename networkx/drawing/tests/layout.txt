@@ -4,10 +4,42 @@ Layout
 >>> from networkx import *
 >>> from networkx.generators.classic import *
 >>> from networkx.drawing.layout import *
->>> G=grid_2d_graph(5,5)
+>>> import networkx.drawing.layout
 
+# smoke test
+
+>>> G=grid_2d_graph(5,5)
 >>> vpos=random_layout(G)
 >>> vpos=circular_layout(G)
 >>> vpos=spring_layout(G)
+>>> vpos=fruchterman_reingold_layout(G)
 >>> vpos=spectral_layout(G)
+>>> vpos=shell_layout(G)
 
+# test with string data as nodes
+>>> G=Graph()
+>>> G.add_path('abcdef')
+>>> vpos=random_layout(G)
+>>> vpos=circular_layout(G)
+>>> vpos=spring_layout(G)
+>>> vpos=fruchterman_reingold_layout(G)
+>>> vpos=spectral_layout(G)
+>>> vpos=shell_layout(G)
+
+# test adjacency matrix interface
+
+>>> A=to_numpy_matrix(G)
+>>> pos=networkx.drawing.layout._fruchterman_reingold(A)
+>>> pos=networkx.drawing.layout._sparse_fruchterman_reingold(A)
+>>> A=to_scipy_sparse_matrix(G)
+>>> pos=networkx.drawing.layout._sparse_fruchterman_reingold(A)
+
+# dimensions
+>>> A=to_numpy_matrix(G)
+>>> pos=networkx.drawing.layout._fruchterman_reingold(A,dim=3)
+>>> pos.shape==(6,3)
+True
+>>> A=to_scipy_sparse_matrix(G)
+>>> pos=networkx.drawing.layout._sparse_fruchterman_reingold(A,dim=3)
+>>> pos.shape==(6,3)
+True
