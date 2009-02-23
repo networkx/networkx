@@ -21,7 +21,7 @@ class LabeledGraph(Graph):
         for nd in nbunch:
             try:
                 n,data=nd
-            except TypeError:
+            except (TypeError,ValueError):
                 n=nd
                 data=None
             self.add_node(n,data)
