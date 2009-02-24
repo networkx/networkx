@@ -3,4 +3,3 @@ from nx_pydot import *
 from nx_agraph import *
 from nx_pylab import *
 from layout import *
-from nx_pylab import *
