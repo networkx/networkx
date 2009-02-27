@@ -12,7 +12,11 @@ Thanks to David Eppstein for the idea of representing a graph G
 so that "for n in G" loops over the nodes in G and G[n] are node n's 
 neighbors.      
 
-Thanks to the following people who have made contributions to NetworkX:
+Thanks to all those who have improved NetworkX by contributing code,
+bug reports (and fixes), documentation, and input on design, featues,
+and the future of NetworkX.
+
+Thanks especially to the following contributors.
 
  - Katy Bold contributed the Karate Club graph 
 
@@ -71,4 +75,4 @@ Thanks to the following people who have made contributions to NetworkX:
 
 -  Minh Van Nguyen contributed the connected_watts_strogatz_graph()
 
-   
+

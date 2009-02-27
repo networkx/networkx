@@ -448,11 +448,11 @@ def _brandes_betweenness_helper(G,root,weighted_edges):
             sigma[v]=sigma[v]+sigma[pred] # count paths
             S.append(v)
             D[v] = dist
-#                for w in G.adj[v]: # speed hack, exposes internals
             for w,edgedata in G[v].iteritems(): 
                 vw_dist = D[v] + edgedata
                 if w not in D and (w not in seen or vw_dist < seen[w]):
                     seen[w] = vw_dist
+                    sigma[w] = 0
                     push(Q,(vw_dist,v,w))
                     P[w]=[v]
                 elif vw_dist==seen[w]:  # handle equal paths
