@@ -163,15 +163,15 @@ class WeightedMultiGraphMatcher(GraphMatcher):
 
         for neighbor in G1_adj[G1_node]:
             if neighbor is G1_node:
-                data1 = copy(G1_adj[G1_node][G1_node])
-                data2 = copy(G2_adj[G2_node][G2_node])
+                data1 = copy(G1_adj[G1_node][G1_node].values())
+                data2 = copy(G2_adj[G2_node][G2_node].values())
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):
                     if not close(x,y,rtol,atol): return False
             elif neighbor in core_1:
-                data1 = copy(G1_adj[G1_node][neighbor])
-                data2 = copy(G2_adj[G2_node][core_1[neighbor]])
+                data1 = copy(G1_adj[G1_node][neighbor].values())
+                data2 = copy(G2_adj[G2_node][core_1[neighbor]].values())
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):
@@ -210,15 +210,15 @@ class WeightedMultiDiGraphMatcher(DiGraphMatcher):
 
         for successor in G1_succ[G1_node]:
             if successor is G1_node:
-                data1 = copy(G1_succ[G1_node][G1_node])
-                data2 = copy(G2_succ[G2_node][G2_node])
+                data1 = copy(G1_succ[G1_node][G1_node].values())
+                data2 = copy(G2_succ[G2_node][G2_node].values())
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):
                     if not close(x,y,rtol,atol): return False
             elif successor in core_1:
-                data1 = copy(G1_succ[G1_node][successor])
-                data2 = copy(G2_succ[G2_node][core_1[successor]])
+                data1 = copy(G1_succ[G1_node][successor].values())
+                data2 = copy(G2_succ[G2_node][core_1[successor]].values())
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):
@@ -227,15 +227,15 @@ class WeightedMultiDiGraphMatcher(DiGraphMatcher):
 
         for predecessor in G1_pred[G1_node]:
             if predecessor is G1_node:
-                data1 = copy(G1_pred[G1_node][G1_node])
-                data2 = copy(G2_pred[G2_node][G2_node])
+                data1 = copy(G1_pred[G1_node][G1_node].values())
+                data2 = copy(G2_pred[G2_node][G2_node].values())
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):
                     if not close(x,y,rtol,atol): return False
             elif predecessor in core_1:
-                data1 = copy(G1_pred[G1_node][predecessor])
-                data2 = copy(G2_pred[G2_node][core_1[predecessor]])
+                data1 = copy(G1_pred[G1_node][predecessor].values())
+                data2 = copy(G2_pred[G2_node][core_1[predecessor]].values())
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):

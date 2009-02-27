@@ -91,7 +91,9 @@ def write_multiline_adjlist(G, path, delimiter=' ', comments='#'):
     if G.directed:
         if G.multigraph:
             for s,nbrs in G.adjacency_iter():
-                nbr_edges=[ (u,d) for u,dl in nbrs.iteritems() for d in dl]
+                nbr_edges=[ (u,data) 
+                            for u,datadict in nbrs.iteritems() 
+                            for key,data in datadict.items()]
                 deg=len(nbr_edges)
                 fh.write(make_str(s)+delimiter+"%i\n"%(deg))
                 for u,d in nbr_edges:
@@ -108,11 +110,14 @@ def write_multiline_adjlist(G, path, delimiter=' ', comments='#'):
                         fh.write(make_str(u)+'\n')
                     else:   
                         fh.write(make_str(u)+delimiter+make_str(d)+"\n")
-    else: #undirected
+    else: # undirected
         if G.multigraph:
-            seen={}  # helper dict used to avoid duplicate edges
+            seen=set()  # helper dict used to avoid duplicate edges
             for s,nbrs in G.adjacency_iter():
-                nbr_edges=[ (u,d) for u,dl in nbrs.iteritems() if u not in seen for d in dl]
+                nbr_edges=[ (u,data) 
+                            for u,datadict in nbrs.iteritems() 
+                            if u not in seen
+                            for key,data in datadict.items()]
                 deg=len(nbr_edges)
                 fh.write(make_str(s)+delimiter+"%i\n"%(deg))
                 for u,d in nbr_edges:
@@ -120,9 +125,9 @@ def write_multiline_adjlist(G, path, delimiter=' ', comments='#'):
                         fh.write(make_str(u)+'\n')
                     else:   
                         fh.write(make_str(u)+delimiter+make_str(d)+"\n")
-                seen[s]=1
+                seen.add(s)
         else: # undirected single edges
-            seen={}  # helper dict used to avoid duplicate edges
+            seen=set()  # helper dict used to avoid duplicate edges
             for s,nbrs in G.adjacency_iter():
                 nbr_edges=[ (u,d) for u,d in nbrs.iteritems() if u not in seen]
                 deg=len(nbr_edges)
@@ -132,7 +137,7 @@ def write_multiline_adjlist(G, path, delimiter=' ', comments='#'):
                         fh.write(make_str(u)+'\n')
                     else:   
                         fh.write(make_str(u)+delimiter+make_str(d)+"\n")
-                seen[s]=1
+                seen.add(s)
             
 def read_multiline_adjlist(path, comments="#", delimiter=' ',
                            create_using=None,
@@ -225,9 +230,6 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
     inp=_get_fh(path)        
 
     for line in inp:
-#        if line.startswith("#") or line.startswith("\n"):
-#            continue
-#        line=line.strip() #remove trailing \n 
         line = line[:line.find(comments)].strip()
         if not line: continue
         try:
@@ -315,19 +317,20 @@ def write_adjlist(G, path, comments="#", delimiter=' '):
         return str(t)
     directed=G.directed
 
-    seen={}
+    seen=set()
     for s,nbrs in G.adjacency_iter():
         fh.write(make_str(s)+delimiter)
         for t,data in nbrs.iteritems():
-            if not directed and t in seen: continue
+            if not directed and t in seen: 
+                continue
             if G.multigraph:
-                for d in data:
+                for d in data.values():
                     fh.write(make_str(t)+delimiter)
             else:
                 fh.write(make_str(t)+delimiter)
         fh.write("\n")            
         if not directed: 
-            seen[s]=1
+            seen.add(s)
 
 
 def read_adjlist(path, comments="#", delimiter=' ',

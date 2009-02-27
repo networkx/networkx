@@ -4,7 +4,7 @@ Base class for MultiDiGraph.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 
-#    Copyright (C) 2004-2006 by 
+#    Copyright (C) 2004-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -18,11 +18,12 @@ from networkx.classes.multigraph import MultiGraph
 from networkx.exception import NetworkXException, NetworkXError
 import networkx.convert as convert
 
-class MultiDiGraph(DiGraph):
+
+class MultiDiGraph(MultiGraph,DiGraph):
     """A directed graph that allows multiple (parallel) edges with arbitrary 
     data on the edges.
 
-    Subclass of DiGraph which is a subclass of Graph.
+    Subclass of MultiGraph and DiGraph (which are both subclasses of Graph).
 
     An empty multidigraph is created with
 
@@ -46,16 +47,17 @@ class MultiDiGraph(DiGraph):
     For graph coloring problems, one could use
     >>> G.add_edges_from([(1,2,"blue"),(1,3,"red")])
 
-
     A MultiDiGraph edge is uniquely specified by a 3-tuple
-    e=(u,v,x), where u and v are (hashable) objects (nodes) and x
-    is an arbitrary (and not necessarily unique) object associated with
-    that edge.
+    e=(u,v,k), where u and v are (hashable) objects (nodes) and k
+    is an arbitrary (and necessarily unique) key associated with
+    that edge that edge.  If the key is not specified one will
+    be assigned internally.
 
     The graph is directed and multiple edges between the same nodes are allowed.
 
-    MultiDiGraph inherits from DiGraph, with all purely node-specific methods
-    identical to those of DiGraph. MultiDiGraph edges are identical to MultiGraph
+    MultiDiGraph inherits all purely node-specific methods from DiGraph
+    and some edge methods from MultliGraph.
+    MultiDiGraph edges are identical to MultiGraph
     edges, except that they are directed rather than undirected.
 
     MultiDiGraph replaces the following DiGraph methods:
@@ -75,7 +77,6 @@ class MultiDiGraph(DiGraph):
     - subgraph
     - to_undirected
     
-    While MultiDiGraph does not inherit from MultiGraph, we compare them here.
     MultiDigraph adds the following methods to those of MultiGraph:
 
     - has_successor
@@ -88,13 +89,12 @@ class MultiDiGraph(DiGraph):
     - out_degree
     - in_degree_iter
     - out_degree_iter
-    - reverse
 
     """
     multigraph=True
     directed=True
 
-    def add_edge(self, u, v, data=1):  
+    def add_edge(self, u, v, data=1, key=None):  
         """Add a single directed edge to the digraph.
 
         x is an arbitrary (not necessarily hashable) object associated
@@ -122,28 +122,23 @@ class MultiDiGraph(DiGraph):
         # add data to the list of edgedata between u and v
         datalist = [data]
         if v in self.succ[u]:
-            # add data to the list of edgedata between u and v
-            self.succ[u][v] += datalist 
+            datadict=self.adj[u][v]
+            if key is None:
+                # find a unique integer key
+                # other methods might be better here?
+                key=0
+                while key in datadict:
+                    key+=1
+            datadict[key]=data
         else:
             # selfloops work this way without special treatment
-            self.succ[u][v] = datalist 
-            self.pred[v][u] = datalist 
+            if key is None:
+                key=0
+            datadict={key:data}
+            self.succ[u][v] = datadict
+            self.pred[v][u] = datadict
 
-    def add_edges_from(self, ebunch, data=1):  
-        for e in ebunch:
-            ne = len(e)
-            if ne==3:
-                u,v,d = e
-            elif ne==2:
-                u,v = e
-                d = data
-            else: 
-                raise NetworkXError,"Edge tuple %s must be a 2-tuple or 3-tuple."%(e,)
-            self.add_edge(u,v,d)                
-
-    add_edges_from.__doc__ = DiGraph.add_edges_from.__doc__
-
-    def remove_edge(self, u, v, data=None):
+    def remove_edge(self, u, v, key=None):
         """Remove the edge between (u,v).
 
         If data is defined only remove the first edge found with 
@@ -151,71 +146,70 @@ class MultiDiGraph(DiGraph):
 
         If data is None, remove all edges between u and v.
         """
-        if data is None: 
+        if key is None: 
             super(MultiDiGraph,self).remove_edge(u,v)
         else:
             try:
-                dlist=self.succ[u][v]
+                d=self.adj[u][v]
                 # remove the edge with specified data
-                dlist.remove(data)
-                if len(dlist)==0:
+                del d[key]   
+                if len(d)==0:
                     # remove the key entries if last edge
                     del self.succ[u][v]
                     del self.pred[v][u]
             except (KeyError,ValueError): 
                 raise NetworkXError(
-                    "edge %s-%s with data %s not in graph"%(u,v,data))
+                    "edge %s-%s with key %s not in graph"%(u,v,key))
 
     delete_edge = remove_edge            
 
-    def remove_edges_from(self, ebunch): 
-        for e in ebunch:
-            u,v = e[:2]
-            if u in self.adj and v in self.adj[u]:
-                try:
-                    data=e[2]
-                except IndexError:
-                    data=None
-                self.remove_edge(u,v,data)
 
-    remove_edges_from.__doc__ = DiGraph.remove_edges_from.__doc__
-    delete_edges_from = remove_edges_from            
-
-
-    def edges_iter(self, nbunch=None, data=False):
+    def edges_iter(self, nbunch=None, data=False, keys=False):
         if nbunch is None:
-            nodes_nbrs=self.adj.iteritems()
+            nodes_nbrs = self.adj.iteritems()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
         if data:
             for n,nbrs in nodes_nbrs:
-                for nbr,datalist in nbrs.iteritems():
-                    for data in datalist:
-                        yield (n,nbr,data)
+                for nbr,datadict in nbrs.iteritems():
+                    for key,data in datadict.iteritems():
+                        if keys:
+                            yield (n,nbr,key,data)
+                        else:
+                            yield (n,nbr,data)
         else:
             for n,nbrs in nodes_nbrs:
-                for nbr,datalist in nbrs.iteritems():
-                    for data in datalist:
-                        yield (n,nbr)
-    edges_iter.__doc__ = DiGraph.edges_iter.__doc__
+                for nbr,datadict in nbrs.iteritems():
+                    for key,data in datadict.iteritems():
+                        if keys:
+                            yield (n,nbr,key)
+                        else:
+                            yield (n,nbr)
+
     # alias out_edges to edges
     out_edges_iter=edges_iter
 
-    def in_edges_iter(self, nbunch=None, data=False):
+    def in_edges_iter(self, nbunch=None, data=False, keys=False):
         if nbunch is None:
             nodes_nbrs=self.pred.iteritems()
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
         if data:
             for n,nbrs in nodes_nbrs:
-                for nbr,datalist in nbrs.iteritems():
-                    for data in datalist:
-                        yield (nbr,n,data)
+                for nbr,datadict in nbrs.iteritems():
+                    for key,data in datadict.iteritems():
+                        if keys:
+                            yield (nbr,n,key,data)
+                        else:
+                            yield (nbr,n,data)
         else:
             for n,nbrs in nodes_nbrs:
-                for nbr,datalist in nbrs.iteritems():
-                    for data in datalist:
-                        yield (nbr,n)
+                for nbr,datadict in nbrs.iteritems():
+                    for key,data in datadict.iteritems():
+                        if keys:
+                            yield (nbr,n,key)
+                        else:
+                            yield (nbr,n)
 
     in_edges_iter.__doc__ = DiGraph.in_edges_iter.__doc__
 
@@ -229,8 +223,10 @@ class MultiDiGraph(DiGraph):
         if self.weighted and weighted:                        
         # edge weighted graph - degree is sum of nbr edge weights
             for n,nbrs in nodes_nbrs:
-                indeg = sum([sum(data) for data in self.pred[n].itervalues()])
-                outdeg = sum([sum(data) for data in nbrs.itervalues()])
+                indeg = sum([sum(data.values()) 
+                             for data in self.pred[n].itervalues()])
+                outdeg = sum([sum(data.values()) 
+                              for data in nbrs.itervalues()])
                 yield (n, indeg + outdeg  # double counted selfloop so subtract
                        - (n in nbrs and sum(nbrs[n])))
         else:
@@ -251,7 +247,8 @@ class MultiDiGraph(DiGraph):
         if self.weighted and weighted:                        
         # edge weighted graph - degree is sum of nbr edge weights
             for n,nbrs in nodes_nbrs:
-                yield (n, sum([sum(data) for data in nbrs.itervalues()]) )
+                yield (n, sum([sum(data.values()) 
+                               for data in nbrs.itervalues()]) )
         else:
             for n,nbrs in nodes_nbrs:
                 yield (n, sum([len(data) for data in nbrs.itervalues()]) )
@@ -267,24 +264,13 @@ class MultiDiGraph(DiGraph):
         if self.weighted and weighted:                        
         # edge weighted graph - degree is sum of nbr edge weights
             for n,nbrs in nodes_nbrs:
-                yield (n, sum([sum(data) for data in nbrs.itervalues()]) )
+                yield (n, sum([sum(data.values()) 
+                               for data in nbrs.itervalues()]) )
         else:
             for n,nbrs in nodes_nbrs:
                 yield (n, sum([len(data) for data in nbrs.itervalues()]) )
 
     out_degree_iter.__doc__ = DiGraph.out_degree_iter.__doc__
-
-
-    def selfloop_edges(self):
-        """Return a list of selfloop edges with data (3-tuples)."""
-        return [ (n,n,d) 
-                 for n,nbrs in self.adj.iteritems() 
-                 if n in nbrs for d in nbrs[n]]
-
-
-    def number_of_selfloops(self):
-        """Return the number of selfloop edges counting multiple edges."""
-        return len(self.selfloop_edges())
 
     def subgraph(self, nbunch, copy=True):
         bunch = set(self.nbunch_iter(nbunch))
@@ -306,7 +292,7 @@ class MultiDiGraph(DiGraph):
             for n in bunch:
                 for u,d in self_succ[n].iteritems():
                     if u in bunch:
-                        data=d[:] # copy of edge list
+                        data=d.copy() # copy of edge data dict
                         H_succ[n][u]=data
                         H_pred[u][n]=data
             return H
@@ -326,5 +312,36 @@ class MultiDiGraph(DiGraph):
         H=MultiGraph()
         H.name=self.name
         H.add_nodes_from(self)
-        H.add_edges_from([(v,u,d) for (u,v,d) in self.edges_iter(data=True)])
+        H.add_edges_from( ((u,v,data,key) 
+                           for u,nbrs in self.adjacency_iter() 
+                           for v,datadict in nbrs.iteritems() 
+                           for key,data in datadict.items()))
         return H
+    
+
+    def copy(self):
+        """Return a copy of the graph.
+
+        Notes
+        -----
+        This makes a complete of the graph but does not make copies
+        of any underlying node or edge data.  The node and edge data
+        in the copy still point to the same objects as in the original.
+        """
+        H=self.__class__()
+        H.name=self.name
+        H.succ={}
+        H.pred={}
+        H.adj=H.succ
+        for u,nbrs in self.adjacency_iter():
+            H.succ[u]={}
+            for v,d in nbrs.iteritems():
+                data=d.copy()
+                H.succ[u][v]=data
+                if not v in H.pred:
+                    H.pred[v]={}
+                H.pred[v][u]=data
+        return H
+
+    to_directed=copy
+

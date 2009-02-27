@@ -3,7 +3,7 @@ Base class for MultiGraph.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -12,8 +12,9 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 #
 
 from networkx.classes.graph import Graph
-from networkx.exception import NetworkXException, NetworkXError
+from networkx import NetworkXException, NetworkXError
 import networkx.convert as convert
+
 
 class MultiGraph(Graph):
     """
@@ -42,6 +43,11 @@ class MultiGraph(Graph):
 
     >>> G.add_edges_from([(1,2,0.776),(1,2,0.535)])
 
+    To distinguish between two edges connecting the same nodes you
+    can use a key attribute
+    
+    >>> G.add_edges_from([(1,2,0.776,'first'),(1,2,0.535,'second')])
+
     See also the MultiDiGraph class for a directed graph version.
 
     MultiGraph inherits from Graph, overriding the following methods:
@@ -59,63 +65,74 @@ class MultiGraph(Graph):
     - number_of_edges
     - to_directed
     - subgraph
+    - copy
 
     """
     multigraph=True
     directed=False
 
-    def add_edge(self, u, v, data=1):  
+    def add_edge(self, u, v, data=1, key=None):  
         if u not in self.adj: 
             self.adj[u] = {}
         if v not in self.adj: 
             self.adj[v] = {}
-        datalist = [data]
         if v in self.adj[u]:
-            # add data to the list of edgedata between u and v
-            self.adj[u][v] += datalist # both directions because same list
+            datadict=self.adj[u][v]
+            if key is None:
+                # find a unique integer key
+                # other methods might be better here?
+                key=0
+                while key in datadict:
+                    key+=1
+            datadict[key]=data
         else:
             # selfloops work this way without special treatment
-            self.adj[u][v] = datalist 
-            self.adj[v][u] = datalist 
+            if key is None:
+                key=0
+            datadict={key:data}
+            self.adj[u][v] = datadict
+            self.adj[v][u] = datadict
 
     add_edge.__doc__ = Graph.add_edge.__doc__
 
     def add_edges_from(self, ebunch, data=1):  
         for e in ebunch:
             ne=len(e)
-            if ne==3:
+            if ne==4:
+                u,v,d,k = e                
+            elif ne==3:
                 u,v,d = e
+                k=None
             elif ne==2:
                 u,v = e  
                 d = data
+                k=None
             else: 
-                raise NetworkXError,"Edge tuple %s must be a 2-tuple or 3-tuple."%(e,)
-            self.add_edge(u,v,d)                
+                raise NetworkXError(
+                    "Edge tuple %s must be a 2-tuple or 3-tuple."%(e,))
+            self.add_edge(u,v,data=d,key=k)                
 
     add_edges_from.__doc__ = Graph.add_edges_from.__doc__
 
-    def remove_edge(self, u, v, data=None):
+    def remove_edge(self, u, v, key=None):
         """Remove the edge between (u,v).
 
-        If data is defined only remove the first edge found with 
-        edge data == data.  
-
-        If data is None, remove all edges between u and v.
+        If key is not specified remove all edges between u and v.
         """
-        if data is None: 
+        if key is None: 
             super(MultiGraph, self).remove_edge(u,v)
         else:
             try:
-                dlist=self.adj[u][v]
+                d=self.adj[u][v]
                 # remove the edge with specified data
-                dlist.remove(data)
-                if len(dlist)==0: 
+                del d[key]
+                if len(d)==0: 
                     # remove the key entries if last edge
                     del self.adj[u][v]
                     del self.adj[v][u]
             except (KeyError,ValueError): 
                 raise NetworkXError(
-                    "edge %s-%s with data %s not in graph"%(u,v,data))
+                    "edge %s-%s with key %s not in graph"%(u,v,key))
 
     delete_edge = remove_edge            
 
@@ -124,24 +141,29 @@ class MultiGraph(Graph):
             u,v = e[:2]
             if u in self.adj and v in self.adj[u]:
                 try:
-                    data=e[2]
+                    key=e[2]
                 except IndexError:
-                    data=None
-                self.remove_edge(u,v,data)
+                    key=None
+                self.remove_edge(u,v,key=key)
 
     remove_edges_from.__doc__ = Graph.remove_edges_from.__doc__
     delete_edges_from = remove_edges_from            
 
-#    def has_edge(self, u, v, data=None):
-#        try:
-#            d=self.adj[u][v]
-#        except KeyError:
-#            return False
-#        return data is None or data in d
-#
+    def has_edge(self, u, v, key=None):
+        try:
+            if key is None:
+                return v in self.adj[u]
+            else:
+                return key in self.adj[u][v]
+        except KeyError:
+            return False
+
 #    has_edge.__doc__ = Graph.has_edge.__doc__
 
-    def edges_iter(self, nbunch=None, data=False):
+    def edges(self, nbunch=None, data=False, keys=False):
+        return list(self.edges_iter(nbunch, data=data,keys=keys))
+
+    def edges_iter(self, nbunch=None, data=False, keys=False):
         seen={}     # helper dict to keep track of multiply stored edges
         if nbunch is None:
             nodes_nbrs = self.adj.iteritems()
@@ -149,23 +171,30 @@ class MultiGraph(Graph):
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
         if data:
             for n,nbrs in nodes_nbrs:
-                for nbr,datalist in nbrs.iteritems():
+                for nbr,datadict in nbrs.iteritems():
                     if nbr not in seen:
-                        for data in datalist:
-                            yield (n,nbr,data)
+                        for key,data in datadict.iteritems():
+                            if keys:
+                                yield (n,nbr,key,data)
+                            else:
+                                yield (n,nbr,data)
                 seen[n]=1
         else:
             for n,nbrs in nodes_nbrs:
-                for nbr,datalist in nbrs.iteritems():
+                for nbr,datadict in nbrs.iteritems():
                     if nbr not in seen:
-                        for data in datalist:
-                            yield (n,nbr)
+                        for key,data in datadict.iteritems():
+                            if keys:
+                                yield (n,nbr,key)
+                            else:
+                                yield (n,nbr)
+
                 seen[n] = 1
         del seen
 
     edges_iter.__doc__ = Graph.edges_iter.__doc__
 
-    def get_edge_data(self, u, v, default=None):
+    def get_edge_data(self, u, v, key=None, default=None):
         """Return the data associated with the edge (u,v).
 
         For multigraphs this returns a list with data for all edges
@@ -186,7 +215,10 @@ class MultiGraph(Graph):
 
         """
         try:
-            return self.adj[u][v]
+            if key is None:
+                return self.adj[u][v]
+            else:
+                return self.adj[u][v][key]
         except KeyError:
             return default
 
@@ -208,11 +240,17 @@ class MultiGraph(Graph):
 
     degree_iter.__doc__ = Graph.degree_iter.__doc__
 
-    def selfloop_edges(self):
-        """Return a list of selfloop edges with data (3-tuples)."""
-        return [ (n,n,d) 
-                 for n,nbrs in self.adj.iteritems() 
-                 if n in nbrs for d in nbrs[n]]
+    def selfloop_edges(self,data=False):
+        """Return a list of selfloop edges"""
+        if data:
+            return [ (n,n,d) 
+                     for n,nbrs in self.adj.iteritems() 
+                     if n in nbrs for d in nbrs[n].values()]
+        else:
+            return [ (n,n)
+                     for n,nbrs in self.adj.iteritems() 
+                     if n in nbrs for d in nbrs[n].values()]
+
 
 
     def number_of_selfloops(self):
@@ -245,7 +283,8 @@ class MultiGraph(Graph):
             H_adj = H.adj # cache
             self_adj = self.adj # cache
             for n in bunch:
-                H_adj[n] = dict([(u,d[:]) for u,d in self_adj[n].iteritems() 
+                H_adj[n] = dict([(u,d.copy()) 
+                                 for u,d in self_adj[n].iteritems() 
                                  if u in bunch])
             return H
 
@@ -253,16 +292,55 @@ class MultiGraph(Graph):
 
     def to_directed(self):
         """Return a directed representation of the graph.
- 
+
         A new multidigraph is returned with the same name, same nodes and
         with each edge (u,v,data) replaced by two directed edges
         (u,v,data) and (v,u,data).
-        
+      
         """
-        from networkx import MultiDiGraph 
+        from multidigraph import MultiDiGraph
         G=MultiDiGraph()
         G.add_nodes_from(self)
-        G.add_edges_from( ((u,v,data) for u,nbrs in self.adjacency_iter() \
-                for v,datalist in nbrs.iteritems() for data in datalist) )
+        G.add_edges_from( ((u,v,data,key) 
+                           for u,nbrs in self.adjacency_iter() 
+                           for v,datadict in nbrs.iteritems() 
+                           for key,data in datadict.items()))
         return G
 
+    def copy(self):
+        """Return a copy of the graph.
+
+        Notes
+        -----
+        This makes a complete of the graph but does not make copies
+        of any underlying node or edge data.  The node and edge data
+        in the copy still point to the same objects as in the original.
+        """
+        H=self.__class__()
+        H.name=self.name
+        H.adj={}
+        for u,nbrs in self.adjacency_iter():
+            H.adj[u]={}
+            for v,d in nbrs.iteritems():
+                H.adj[u][v]=d.copy()
+        return H
+
+
+
+if __name__ == '__main__':
+
+    G=MultiGraph()
+    G.add_edge(1,2) 
+    G.add_edge(1,2,'data0')
+    G.add_edge(1,2,data='data1',key='key1')
+    G.add_edge(1,2,'data2','key2')
+    print G.edges()
+    print G.edges(data=True)
+    print G.edges(keys=True)
+    print G.edges(data=True,keys=True)
+    print G[1][2]
+    print G[1][2]['key1']
+    G[1][2]['key1']='spam' # OK to set here
+    print G[1][2]['key1']
+    print G.edges(data=True)
+    print G[1][2].keys()

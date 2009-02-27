@@ -690,7 +690,8 @@ def single_source_dijkstra(G,source,target=None,cutoff=None ):
         #for ignore,w,edgedata in G.edges_iter(v,data=True):
         #is about 30% slower than the following
         if G.multigraph:
-            edata=(  (w,min(edgedata)) for w,edgedata in G[v].iteritems() )
+            edata=(  (w,min(edgedata.values())) 
+                     for w,edgedata in G[v].iteritems() )
         else:
             edata=G[v].iteritems()
         for w,edgedata in edata:
@@ -740,7 +741,8 @@ def dijkstra_predecessor_and_distance(G,source):
         if v in dist: continue # already searched this node.
         dist[v] = d
         if G.multigraph:
-            edata=(  (w,min(edgedata)) for w,edgedata in G[v].iteritems() )
+            edata=(  (w,min(edgedata.values())) 
+                     for w,edgedata in G[v].iteritems() )
         else:
             edata=G[v].iteritems()
         for w,edgedata in edata:

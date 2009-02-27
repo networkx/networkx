@@ -269,7 +269,7 @@ def to_dict_of_dicts(G,nodelist=None,edge_data=None):
        set to edge_data for all edges.  This is useful to make
        an adjacency matrix type representation with 1 as the edge data.
        If edgedata is None, the edgedata in G is used to fill the values.
-       If G is a multigraph, the edgedata is a list for each pair (u,v).
+       If G is a multigraph, the edgedata is a dict for each pair (u,v).
     
     """
     dod={}
@@ -324,27 +324,56 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
     # is dict a MultiGraph or MultiDiGraph?
     if multigraph_input:
         # make a copy of the list of edge data (but not the edge data)
-        if G.directed:   # copy edge list
-            G.add_edges_from( ((u,v,data) for u,nbrs in d.iteritems() \
-                    for v,dl in nbrs.iteritems() for data in dl) )
+        if G.directed:  
+            if G.multigraph:
+                G.add_edges_from( ( (u,v,data,key) 
+                                    for u,nbrs in d.iteritems() 
+                                    for v,dl in nbrs.iteritems() 
+                                    for v,datadict in nbrs.iteritems() 
+                                    for key,data in datadict.items())
+                                  )
+            else:
+                G.add_edges_from( ( (u,v,data)
+                                    for u,nbrs in d.iteritems() 
+                                    for v,dl in nbrs.iteritems() 
+                                    for v,datadict in nbrs.iteritems() 
+                                    for key,data in datadict.items())
+                                  )
         else: # Undirected
-            seen={}   # don't add both directions of undirected graph
-            for u,nbrs in d.iteritems():
-                for v,datalist in nbrs.iteritems():
-                    if v not in seen:
-                        G.add_edges_from( ((u,v,data) for data in datalist) )
-                seen[u]=1  # don't allow reverse edge to show up 
+            if G.multigraph:
+                seen=set()   # don't add both directions of undirected graph
+                for u,nbrs in d.iteritems():
+                    for v,datadict in nbrs.iteritems():
+                        if v not in seen:
+                            G.add_edges_from( ((u,v,data,key) 
+                                               for data in datadict
+                                               for key,data in datadict.items())
+                                          )
+                    seen.add(u) 
+            else:
+                seen=set()   # don't add both directions of undirected graph
+                for u,nbrs in d.iteritems():
+                    for v,datadict in nbrs.iteritems():
+                        if v not in seen:
+                            G.add_edges_from( ((u,v,data)
+                                               for data in datadict
+                                               for key,data in datadict.items())
+                                          )
+                    seen.add(u) 
+
     else: # not a multigraph to multigraph transfer
         if G.directed:
-            G.add_edges_from( ((u,v,data) for u,nbrs in d.iteritems() \
-                    for v,data in nbrs.iteritems()) )
-        else:    # need this if G is multigraph and slightly faster if not multigraph
-            seen={}  
+            G.add_edges_from( ( (u,v,data) 
+                                for u,nbrs in d.iteritems() 
+                                for v,data in nbrs.iteritems()) )
+        # need this if G is multigraph and slightly faster if not multigraph
+        else:
+            seen=set()
             for u,nbrs in d.iteritems():
                 for v,data in nbrs.iteritems():
                     if v not in seen:
                         G.add_edge(u,v,data)
-                seen[u]=1
+                seen.add(u)
     return G                         
 
 def to_edgelist(G,nodelist=None):

@@ -23,14 +23,14 @@ def test_simple():
         assert_true( nx.is_isomorphic(g1,g2,True,rtol,atol) )
 
         for mod1, mod2 in [(False, True), (True, False), (True, True)]:
-            # mod1 tests a selfloop
-            # mod2 tests a regular edge
+            # mod1 tests a regular edge
+            # mod2 tests a selfloop
             print "Modification:", mod1, mod2
             if g2.multigraph:
                 if mod1:
-                    data1 = [10]
+                    data1 = {0:10}
                 if mod2:
-                    data2 = [1,2.5]
+                    data2 = {0:1,1:2.5}
             else:
                 if mod1:
                     data1 = 10
@@ -38,10 +38,19 @@ def test_simple():
                     data2 = 2.5
 
             g2 = g1.subgraph(g1.nodes())
-            if mod1:    
-                g2.adj[1][0] = data1
+            if mod1:
+                if not g1.directed:
+                    g2.adj[1][0] = data1
+                    g2.adj[0][1] = data1
+                else:
+                    g2.succ[1][0] = data1
+                    g2.pred[0][1] = data1
             if mod2:
-                g2.adj[0][0] = data2
+                if not g1.directed:
+                    g2.adj[0][0] = data2
+                else:
+                    g2.succ[0][0] = data2
+                    g2.pred[0][0] = data2
 
             assert_false(nx.is_isomorphic(g1,g2,True,rtol,atol))
 
