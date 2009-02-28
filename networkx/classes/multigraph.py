@@ -46,7 +46,8 @@ class MultiGraph(Graph):
     To distinguish between two edges connecting the same nodes you
     can use a key attribute
     
-    >>> G.add_edges_from([(1,2,0.776,'first'),(1,2,0.535,'second')])
+    >>> G.add_edge(1,2,data=0.7,key='first')
+    >>> G.add_edge(1,2,data=0.8,key='second')
 
     See also the MultiDiGraph class for a directed graph version.
 
@@ -93,7 +94,7 @@ class MultiGraph(Graph):
             self.adj[u][v] = datadict
             self.adj[v][u] = datadict
 
-    add_edge.__doc__ = Graph.add_edge.__doc__
+#    add_edge.__doc__ = Graph.add_edge.__doc__
 
     def add_edges_from(self, ebunch, data=1):  
         for e in ebunch:
@@ -112,7 +113,7 @@ class MultiGraph(Graph):
                     "Edge tuple %s must be a 2-tuple or 3-tuple."%(e,))
             self.add_edge(u,v,data=d,key=k)                
 
-    add_edges_from.__doc__ = Graph.add_edges_from.__doc__
+#    add_edges_from.__doc__ = Graph.add_edges_from.__doc__
 
     def remove_edge(self, u, v, key=None):
         """Remove the edge between (u,v).
@@ -146,7 +147,7 @@ class MultiGraph(Graph):
                     key=None
                 self.remove_edge(u,v,key=key)
 
-    remove_edges_from.__doc__ = Graph.remove_edges_from.__doc__
+#    remove_edges_from.__doc__ = Graph.remove_edges_from.__doc__
     delete_edges_from = remove_edges_from            
 
     def has_edge(self, u, v, key=None):
@@ -192,7 +193,7 @@ class MultiGraph(Graph):
                 seen[n] = 1
         del seen
 
-    edges_iter.__doc__ = Graph.edges_iter.__doc__
+#    edges_iter.__doc__ = Graph.edges_iter.__doc__
 
     def get_edge_data(self, u, v, key=None, default=None):
         """Return the data associated with the edge (u,v).
@@ -238,7 +239,7 @@ class MultiGraph(Graph):
                 deg = sum([len(data) for data in nbrs.itervalues()])
                 yield (n, deg+(n in nbrs and len(nbrs[n])))
 
-    degree_iter.__doc__ = Graph.degree_iter.__doc__
+#    degree_iter.__doc__ = Graph.degree_iter.__doc__
 
     def selfloop_edges(self,data=False):
         """Return a list of selfloop edges"""
