@@ -83,7 +83,7 @@ class AttrGraph(Graph):
     # edges 
     def add_edge(self, u, v, data=None, **attr):  
         # add edge with attribute, edge "data" is just another attribute
-        # but we have to specify it eplicitly here for compatibility 
+        # but we have to specify it explicitly here for compatibility 
         # with add_edge(u,v,data) call signature
         eattr={}            
         if attr is not None:
@@ -137,13 +137,19 @@ class AttrMultiGraph(AttrGraph,MultiGraph):
 
     # These methods are needed to handle the 'key' argument for MultiGraph
     # edges 
-    def add_edge(self, u, v, **attr):  
-        # add edge with attribute, edge "data" is just another attribute
+    def add_edge(self, u, v, data=None, key=None, **attr):  
+        # add edge with attribute, 'data' and key' are just attributes
+        # but we have to specify them explicitly here for compatibility 
+        # with add_edge(u,v,data,key) call signature
         eattr={}            
         if attr is not None:
             eattr.update(attr)
-        key=eattr.pop('key',None)
-        super(AttrGraph,self).add_edge(u,v,data=attr,key=key)
+        if data is not None:
+            try:
+                eattr.update(data) # dict-like
+            except:
+                eattr['data']=data 
+        super(AttrGraph,self).add_edge(u,v,data=eattr,key=key)
 
 
     def edges(self, nbunch=None, data=False, keys=False, attr=False):
