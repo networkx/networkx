@@ -81,12 +81,19 @@ class AttrGraph(Graph):
             return list(self.nodes_iter(nbunch))
 
     # edges 
-    def add_edge(self, u, v, **attr):  
+    def add_edge(self, u, v, data=None, **attr):  
         # add edge with attribute, edge "data" is just another attribute
+        # but we have to specify it eplicitly here for compatibility 
+        # with add_edge(u,v,data) call signature
         eattr={}            
         if attr is not None:
             eattr.update(attr)
-        super(AttrGraph,self).add_edge(u,v,data=attr)
+        if data is not None:
+            try:
+                eattr.update(data) # dict-like
+            except:
+                eattr['data']=data 
+        super(AttrGraph,self).add_edge(u,v,data=eattr)
 
     def add_edges_from(self, ebunch, **attr):  
          for e in ebunch:
