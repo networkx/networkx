@@ -26,10 +26,16 @@ class AttrGraph(Graph):
         self.node = defaultdict(dict)
         if hasattr(data,'node') and isinstance(data.node,'dict'):
             self.node.update(data.node)
+        self.adj = {}  # empty adjacency hash
         # edge attributes are stored as edge data
-        super(AttrGraph,self).__init__(data,name,weighted)
-        # alias e.g G.edge[u][v] = G[u][v]
         self.edge=self.adj
+        self.weighted = weighted
+        # attempt to load graph with data
+        if data is not None:
+            self=convert.from_whatever(data,create_using=self)
+        self.name = name
+
+
 
 
     # nodes and node attributes        
@@ -102,8 +108,8 @@ class AttrGraph(Graph):
     def clear(self):
         super(AttrGraph,self).clear()
         # clear node and graph attributes
-        self.graph={}
-        self.node={}
+        self.graph=defaultdict(dict)
+        self.node=defaultdict(dict)
 
     def subgraph(self, nbunch, copy=True):
         H=super(AttrGraph,self).subgraph(nbunch, copy)
