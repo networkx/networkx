@@ -20,11 +20,11 @@ class AttrGraph(Graph):
     def __init__(self, data=None, name='', weighted=False):
         # dictionary for graph attributes
         self.graph = defaultdict(dict)
-        if hasattr(data,'graph') and isinstance(data.graph,'dict'):
+        if hasattr(data,'graph') and isinstance(data.graph,dict):
             self.graph.update(data.graph)
         # dictionary for node attributes
         self.node = defaultdict(dict)
-        if hasattr(data,'node') and isinstance(data.node,'dict'):
+        if hasattr(data,'node') and isinstance(data.node,dict):
             self.node.update(data.node)
         self.adj = {}  # empty adjacency hash
         super(AttrGraph,self).__init__(data,name,weighted)
@@ -127,9 +127,26 @@ class AttrGraph(Graph):
         H.graph=dict( (k,v) for k,v in self.graph.items())
         return H
 
+    def to_weighted(self,weight='data'):
+        H=Graph(weighted=True)
+        H.add_nodes_from(self)
+        for u,nbrs in self.adjacency_iter():
+            for v,data in nbrs.iteritems():
+                d=data.get(weight,1) # get key or if missing set to 1
+                H.add_edge(u,v,d)
+        return H
+
 
 class AttrDiGraph(AttrGraph,DiGraph):
-    pass  # just use the inherited classes
+
+    def to_weighted(self,weight='data'):
+        H=DiGraph(weighted=True)
+        H.add_nodes_from(self)
+        for u,nbrs in self.adjacency_iter():
+            for v,data in nbrs.iteritems():
+                d=data.get(weight,1) # get key or if missing set to 1
+                H.add_edge(u,v,d)
+        return H
 
 
 # wait for updated MultiGraph and MultiDiGraph
@@ -161,10 +178,30 @@ class AttrMultiGraph(AttrGraph,MultiGraph):
         # use either data or attr keyword 
         return super(AttrGraph,self).edges_iter(nbunch=nbunch,keys=keys,
                                                 data=data|attr)
+
+    def to_weighted(self,weight='data'):
+        H=MultiGraph(weighted=True)
+        H.add_nodes_from(self)
+        for u,nbrs in self.adjacency_iter():
+            for v,datadict in nbrs.iteritems():
+                for key,data in datadict.items():
+                    d=data.get(weight,1) # get key or if missing set to 1
+                    H.add_edge(u,v,d)
+        return H
+
         
 
 class AttrMultiDiGraph(AttrMultiGraph,AttrGraph,MultiDiGraph):
-    pass  # just use the inherited classes
+
+    def to_weighted(self,weight='data'):
+        H=MultiDiGraph(weighted=True)
+        H.add_nodes_from(self)
+        for u,nbrs in self.adjacency_iter():
+            for v,datadict in nbrs.iteritems():
+                for key,data in datadict.items():
+                    d=data.get(weight,1) # get key or if missing set to 1
+                    H.add_edge(u,v,d)
+        return H
 
 
 # until we require python2.5 fall back to pure Python defaultdict 
