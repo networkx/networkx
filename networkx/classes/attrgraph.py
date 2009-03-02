@@ -57,7 +57,10 @@ class AttrGraph(Graph):
 
     def remove_nodes_from(self, nbunch):
         for n in nbunch:
-            self.remove_node(n)
+            try:
+                self.remove_node(n)
+            except NetworkXError:
+                pass
 
     def nodes_iter(self, nbunch=None, attr=False):
         # attr keyword True|False to return attribute dict
@@ -85,6 +88,7 @@ class AttrGraph(Graph):
         # add edge with attribute, edge "data" is just another attribute
         # but we have to specify it explicitly here for compatibility 
         # with add_edge(u,v,data) call signature
+        # FIXME: this means add_edge(2,3,4,data=5) raises an exception. Better way to handle?
         eattr={}            
         if attr is not None:
             eattr.update(attr)
@@ -97,15 +101,39 @@ class AttrGraph(Graph):
 
     def add_edges_from(self, ebunch, **attr):  
          for e in ebunch:
-             self.add_edge(*e,**attr)
+             if len(e)==3:   # have to avoid self.add_edge(2,3,4,data=2) call where data specified twice.
+                 self.add_edge(*e)
+             else:
+                 self.add_edge(*e,**attr)
 
     def edges(self, nbunch=None, data=False, attr=False):
-        # use either data or attr keyword 
-        return super(AttrGraph,self).edges(nbunch=nbunch,data=data|attr)
+        return list(self.edges_iter(nbunch, data, attr))
 
     def edges_iter(self, nbunch=None, data=False, attr=False):
         # use either data or attr keyword 
-        return super(AttrGraph,self).edges_iter(nbunch=nbunch,data=data|attr)
+        seen={}     # helper dict to keep track of multiply stored edges
+        if nbunch is None:
+            nodes_nbrs = self.adj.iteritems()
+        else:
+            nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
+        if data:
+            for n,nbrs in nodes_nbrs:
+                for nbr,attr in nbrs.iteritems():
+                    if nbr not in seen:
+                        yield (n,nbr,attr['data'])
+                seen[n]=1
+        elif attr:
+            for n,nbrs in nodes_nbrs:
+                for nbr,attr in nbrs.iteritems():
+                    if nbr not in seen:
+                        yield (n,nbr,attr)
+                seen[n]=1
+        else:
+            for n,nbrs in nodes_nbrs:
+                for nbr in nbrs:
+                    if nbr not in seen:
+                        yield (n,nbr)
+                seen[n] = 1
         
     def clear(self):
         super(AttrGraph,self).clear()
