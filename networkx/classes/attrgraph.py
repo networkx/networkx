@@ -62,13 +62,13 @@ class AttrGraph(Graph):
             except NetworkXError:
                 pass
 
-    def nodes_iter(self, nbunch=None, attr=False):
-        # attr keyword True|False to return attribute dict
+    def nodes_iter(self, nbunch=None, data=False):
+        # data keyword True|False to return attribute dict
         if nbunch is None:
             nbunch=self.adj.iterkeys()
         else:
             nbunch=self.nbunch_iter(nbunch)
-        if attr:
+        if data:
             for n in nbunch:
                 nattr=self.node.get(n,None)
                 yield (n,nattr)
@@ -76,68 +76,33 @@ class AttrGraph(Graph):
             for n in nbunch:            
                 yield n
 
-    def nodes(self, nbunch=None, attr=False):
-        # attr keyword True|False to return attribute dict
-        if attr:    
-            return dict(self.nodes_iter(nbunch,attr))
+    def nodes(self, nbunch=None, data=False):
+        # data keyword True|False to return attribute dict
+        if data:    
+            return dict(self.nodes_iter(nbunch,data))
         else:       
             return list(self.nodes_iter(nbunch))
 
     # edges 
     def add_edge(self, u, v, data=None, **attr):  
-        # add edge with attribute, edge "data" is just another attribute
-        # but we have to specify it explicitly here for compatibility 
-        # with add_edge(u,v,data) call signature
-        # FIXME: this means add_edge(2,3,4,data=5) raises an exception. Better way to handle?
-        eattr={}            
-        if attr is not None:
-            eattr.update(attr)
-        if data is not None:
-            try:
-                eattr.update(data) # dict-like
-            except:
-                eattr['data']=data 
-        else: # data is None
-            if self.weighted:
-                eattr['data']=1
-        super(AttrGraph,self).add_edge(u,v,data=eattr)
+        # would be more clear to use "weight" instead of "data" 
+        if G.weighted:
+            # weighted graph, use data as edge data
+            if data is None: 
+                data=1
+        else:
+            # dictionary as edge data
+            data={}            
+            if attr is not None:
+                data.update(attr)
+            if data is not None:
+                data['weight']=data
+        super(AttrGraph,self).add_edge(u,v,data=data)
 
     def add_edges_from(self, ebunch, **attr):  
          for e in ebunch:
-             if len(e)==3:   # have to avoid self.add_edge(2,3,4,data=2) call where data specified twice.
-                 self.add_edge(*e)
-             else:
-                 self.add_edge(*e,**attr)
+             self.add_edge(*e,**attr)
 
-    def edges(self, nbunch=None, data=False, attr=False):
-        return list(self.edges_iter(nbunch, data, attr))
-
-    def edges_iter(self, nbunch=None, data=False, attr=False):
-        # use either data or attr keyword 
-        seen={}     # helper dict to keep track of multiply stored edges
-        if nbunch is None:
-            nodes_nbrs = self.adj.iteritems()
-        else:
-            nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
-        if data:
-            for n,nbrs in nodes_nbrs:
-                for nbr,attr in nbrs.iteritems():
-                    if nbr not in seen:
-                        yield (n,nbr,attr['data'])
-                seen[n]=1
-        elif attr:
-            for n,nbrs in nodes_nbrs:
-                for nbr,attr in nbrs.iteritems():
-                    if nbr not in seen:
-                        yield (n,nbr,attr)
-                seen[n]=1
-        else:
-            for n,nbrs in nodes_nbrs:
-                for nbr in nbrs:
-                    if nbr not in seen:
-                        yield (n,nbr)
-                seen[n] = 1
-        
     def clear(self):
         super(AttrGraph,self).clear()
         # clear node and graph attributes
@@ -158,7 +123,7 @@ class AttrGraph(Graph):
         H.graph=dict( (k,v) for k,v in self.graph.items())
         return H
 
-    def to_weighted(self,weight='data'):
+    def to_weighted(self,weight='weight'):
         H=Graph(weighted=True)
         H.add_nodes_from(self)
         for u,nbrs in self.adjacency_iter():
@@ -170,7 +135,7 @@ class AttrGraph(Graph):
 
 class AttrDiGraph(AttrGraph,DiGraph):
 
-    def to_weighted(self,weight='data'):
+    def to_weighted(self,weight='weight'):
         H=DiGraph(weighted=True)
         H.add_nodes_from(self)
         for u,nbrs in self.adjacency_iter():
@@ -186,31 +151,22 @@ class AttrMultiGraph(AttrGraph,MultiGraph):
     # These methods are needed to handle the 'key' argument for MultiGraph
     # edges 
     def add_edge(self, u, v, data=None, key=None, **attr):  
-        # add edge with attribute, 'data' and key' are just attributes
-        # but we have to specify them explicitly here for compatibility 
-        # with add_edge(u,v,data,key) call signature
-        eattr={}            
-        if attr is not None:
-            eattr.update(attr)
-        if data is not None:
-            try:
-                eattr.update(data) # dict-like
-            except:
-                eattr['data']=data 
-        super(AttrGraph,self).add_edge(u,v,data=eattr,key=key)
+        if G.weighted:
+            # weighted graph, use data as edge data
+            if data is None: 
+                data=1
+            else:
+                data=data
+        else:
+            data={}            
+            if attr is not None:
+                data.update(attr)
+            if data is not None:
+                data['weight']=data
+        super(AttrGraph,self).add_edge(u,v,data=data,key=key)
 
 
-    def edges(self, nbunch=None, data=False, keys=False, attr=False):
-        # use either data or attr keyword 
-        return super(AttrGraph,self).edges(nbunch=nbunch,keys=keys, 
-                                           data=data|attr)
-
-    def edges_iter(self, nbunch=None, data=False, keys=False, attr=False):
-        # use either data or attr keyword 
-        return super(AttrGraph,self).edges_iter(nbunch=nbunch,keys=keys,
-                                                data=data|attr)
-
-    def to_weighted(self,weight='data'):
+    def to_weighted(self,weight='weight'):
         H=MultiGraph(weighted=True)
         H.add_nodes_from(self)
         for u,nbrs in self.adjacency_iter():
@@ -224,7 +180,7 @@ class AttrMultiGraph(AttrGraph,MultiGraph):
 
 class AttrMultiDiGraph(AttrMultiGraph,AttrGraph,MultiDiGraph):
 
-    def to_weighted(self,weight='data'):
+    def to_weighted(self,weight='weight'):
         H=MultiDiGraph(weighted=True)
         H.add_nodes_from(self)
         for u,nbrs in self.adjacency_iter():
@@ -289,22 +245,41 @@ if __name__ == '__main__':
     # node attributes
     G.add_node(1,foo='bar')
     print G.nodes()
-    print G.nodes(attr=True)
+    print G.nodes(data=True)
     G.node[1]['foo']='baz' # another way to set attribute
-    print G.nodes(attr=True)
+    print G.nodes(data=True)
 
     # edge attributes
     G.add_edge(1,2,foo='bar')
     print G.edges()
-    print G.edges(attr=True)
+    print G.edges(data=True)
     # edge 3-4 and 4-5 get same attribute
     G.add_edges_from(((3,4),(4,5)),foo='foo')
-    print G.edges(attr=True)
+    print G.edges(data=True)
     G.remove_edge(1,2)
     G.add_edge(1,2,data=7,foo='bar',bar='foo')
-    print G.edges(attr=True)
+    print G.edges(data=True)
     G[1][2]['data']=10 # OK to set data like this
-    print G.edges(attr=True)
+    print G.edges(data=True)
     G.edge[1][2]['data']=20 # another spelling, "edge"
     G.edge[1][2]['listdata']=[20,200] 
-    print G.edges(attr=True)
+    G.edge[1][2]['weight']=20 
+    print G.edges(data=True)
+    H=G.to_weighted()
+    print H.edges(data=True)
+    print 
+
+    G=AttrGraph(weighted=True)
+    # edge attributes
+    G.add_edge(1,2,foo='bar')
+    print G.edges()
+    print G.edges(data=True)
+    # edge 3-4 and 4-5 get same attribute
+    G.add_edges_from(((3,4),(4,5)),foo='foo')
+    print G.edges(data=True)
+    G.remove_edge(1,2)
+    G.add_edge(1,2,data=7,foo='bar',bar='foo')
+    print G.edges(data=True)
+    G[1][2]=10 # still not OK to set data like this!
+    print G.edges(data=True)
+    
