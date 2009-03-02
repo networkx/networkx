@@ -97,6 +97,9 @@ class AttrGraph(Graph):
                 eattr.update(data) # dict-like
             except:
                 eattr['data']=data 
+        else: # data is None
+            if self.weighted:
+                eattr['data']=1
         super(AttrGraph,self).add_edge(u,v,data=eattr)
 
     def add_edges_from(self, ebunch, **attr):  
