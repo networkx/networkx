@@ -86,7 +86,7 @@ class AttrGraph(Graph):
     # edges 
     def add_edge(self, u, v, data=None, **attr):  
         # would be more clear to use "weight" instead of "data" 
-        if G.weighted:
+        if self.weighted:
             # weighted graph, use data as edge data
             if data is None: 
                 data=1
@@ -101,7 +101,14 @@ class AttrGraph(Graph):
 
     def add_edges_from(self, ebunch, **attr):  
          for e in ebunch:
-             self.add_edge(*e,**attr)
+             if len(e) < 2 or len(e) > 3:
+                raise NetworkXError,"Edge tuple %s must be a 2-tuple or 3-tuple."%(e,)                 
+             if len(e)==3:   
+                 eattr=attr.copy()
+                 eattr['data']=e[2]
+                 self.add_edge(e[0],e[1],**eattr) 
+             else:
+                 self.add_edge(*e,**attr) 
 
     def clear(self):
         super(AttrGraph,self).clear()
@@ -151,7 +158,7 @@ class AttrMultiGraph(AttrGraph,MultiGraph):
     # These methods are needed to handle the 'key' argument for MultiGraph
     # edges 
     def add_edge(self, u, v, data=None, key=None, **attr):  
-        if G.weighted:
+        if self.weighted:
             # weighted graph, use data as edge data
             if data is None: 
                 data=1
