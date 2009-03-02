@@ -72,7 +72,50 @@ class MultiGraph(Graph):
     multigraph=True
     directed=False
 
-    def add_edge(self, u, v, data=1, key=None):  
+    def add_edge(self, u, v, data=1, key=None):
+        """Add an edge between u and v with optional data and key.
+
+        If the nodes u and v are not already in the multigraph, they will be
+        automatically added.
+
+        Parameters                                                      
+        ----------
+        u, v : nodes
+            Nodes can be any hashable Python objects such as strings or
+            numbers, but None is not allowed as a node object.
+
+        data : any hashable Python object (default: 1)
+            Data on an edge can be any arbitrary Python object.
+
+        key : any hashable Python object (default: None)
+            A key associated with an edge can be any arbitrary Python object.
+            It is used for distinguishing between edges with the same nodes. If
+            more than one edge share the same pair of nodes, then the keys
+            associated with those edges must each be unique.
+
+        Examples
+        --------
+        The following add multiple edges to the same pair of nodes. Each edge
+        has arbitrary data and a unique key.
+
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edge(1, 2)
+        >>> g.add_edge(1, 2, data="arbitrary data")
+        >>> g.add_edge(1, 2, data="more arbitrary data", key="specified key")
+        >>> g.edges()
+        [(1, 2), (1, 2), (1, 2)]
+        >>> g.edges(data=True)
+        [(1, 2, 1), (1, 2, 'arbitrary data'), (1, 2, 'more arbitrary data')]
+        >>> g.edges(keys=True)
+        [(1, 2, 0), (1, 2, 1), (1, 2, 'specified key')]
+        >>> g.edges(data=True, keys=True)
+        [(1, 2, 0, 1), (1, 2, 1, 'arbitrary data'), (1, 2, 'specified key', 'more arbitrary data')]
+
+        See Also
+        --------
+        add_edges_from : add a collection of edges
+        Graph.add_edge : the Graph class does *not* allow parallel edges
+        """
         if u not in self.adj: 
             self.adj[u] = {}
         if v not in self.adj: 
@@ -96,7 +139,39 @@ class MultiGraph(Graph):
 
 #    add_edge.__doc__ = Graph.add_edge.__doc__
 
-    def add_edges_from(self, ebunch, data=1):  
+    def add_edges_from(self, ebunch, data=1):
+        """Add all the edges in ebunch.
+
+        Parameters                                                      
+        ----------
+        ebunch : list or container of edges
+            The container must be iterable or an iterator. It is iterated
+            over once. Adding the same edges is in effect creating parallel
+            edges between a pair of nodes. The edges in ebunch must be
+            2-tuples (u,v), 3-tuples (u,v,d) or 4-tuples (u,v,d,k).
+
+        data : any hashable Python object (default: 1)
+            Data on an edge can be any arbitrary Python object.
+
+        Examples
+        --------
+        >>> edgeBunch = [(1, 2), (1, 2, "arbitrary data"), (1, 2, "more arbitrary data", "specified key")]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(edgeBunch)
+        >>> g.edges()
+        [(1, 2), (1, 2), (1, 2)]
+        >>> g.edges(data=True)
+        [(1, 2, 1), (1, 2, 'arbitrary data'), (1, 2, 'more arbitrary data')]
+        >>> g.edges(keys=True)
+        [(1, 2, 0), (1, 2, 1), (1, 2, 'specified key')]
+        >>> g.edges(data=True, keys=True)
+        [(1, 2, 0, 1), (1, 2, 1, 'arbitrary data'), (1, 2, 'specified key', 'more arbitrary data')]
+
+        See Also
+        --------
+        add_edge : add a single edge
+        Graph.add_edges_from : the Graph class does *not* allow parallel edges
+        """
         for e in ebunch:
             ne=len(e)
             if ne==4:
@@ -116,9 +191,41 @@ class MultiGraph(Graph):
 #    add_edges_from.__doc__ = Graph.add_edges_from.__doc__
 
     def remove_edge(self, u, v, key=None):
-        """Remove the edge between (u,v).
+        """Remove the edge between u and v.
 
-        If key is not specified remove all edges between u and v.
+        If key is not specified, remove all edges between u and v.
+
+        Parameters
+        ----------
+        u, v : nodes
+            Nodes can be any hashable Python objects such as strings or
+            numbers, but None is not allowed as a node object.
+
+        key : any hashable Python object (default: None)
+            A key associated with an edge can be any arbitrary Python object.
+            It is used for distinguishing between edges with the same nodes. If
+            more than one edge share the same pair of nodes, then the keys
+            associated with those edges must each be unique.
+
+        Examples
+        --------
+        >>> g = networkx.MultiGraph()
+        >>> eBunch = [(1, 2), (1, 2, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key")]
+        >>> g.add_edges_from(eBunch)
+        >>> g.edges()
+        [(1, 2), (1, 2), (1, 2), (3, 4)]
+        >>> g.remove_edge(1, 2)
+        >>> g.edges()
+        [(3, 4)]
+
+        Notes
+        -----
+        Will fail silently if the edge (u,v) is not in this multigraph.
+
+        See Also
+        --------
+        remove_edges_from : remove a collection of edges
+        Graph.remove_edge : the Graph class does *not* allow parallel edges
         """
         if key is None: 
             super(MultiGraph, self).remove_edge(u,v)
@@ -137,7 +244,54 @@ class MultiGraph(Graph):
 
     delete_edge = remove_edge            
 
-    def remove_edges_from(self, ebunch): 
+    def remove_edges_from(self, ebunch):
+        """Remove all edges specified in ebunch.
+
+        Parameters
+        ----------
+        ebunch: list or container of edge tuples
+            A container of edge 2-tuples (u,v) or edge 3-tuples(u,v,k). If an
+            edge 2-tuple (u,v) is specified in ebunch, all parallel edges (u,v)
+            are removed from this multigraph. Where an edge 3-tuple (u,v,k) is
+            among the list of edges to be removed, only the edge (u,v) with
+            unique key k will be removed.
+
+        Examples
+        --------
+        We can remove all parallel edges of a pair of nodes.
+
+        >>> ebunch = [(1, 2), (1, 3, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(ebunch)
+        >>> g.edges()
+        [(1, 2), (1, 2), (1, 3), (1, 4), (3, 4)]
+        >>> rbunch = [(1, 2), (1, 4)]
+        >>> g.remove_edges_from(rbunch)
+        >>> g.edges()
+        [(1, 3), (3, 4)]
+
+        If a pair of nodes has parallel edges, we can specify which of those
+        edges to remove.
+
+        >>> g = networkx.MultiGraph()
+        >>> ebunch = [(1, 2), (1, 3, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
+        >>> g.add_edges_from(ebunch)
+        >>> g.edges()
+        [(1, 2), (1, 2), (1, 3), (1, 4), (3, 4)]
+        >>> rbunch = [(1, 2, "specified key"), (1, 4)]
+        >>> g.remove_edges_from(rbunch)
+        >>> g.edges()
+        [(1, 2), (1, 3), (3, 4)]
+
+        Notes
+        -----
+        Will fail silently if the edge (u,v) is not in this multigraph.
+
+        See Also
+        --------
+        remove_edge : remove a single edge
+        Graph.remove_edges_from : the Graph class does *not* allow parallel edges
+        """
         for e in ebunch:
             u,v = e[:2]
             if u in self.adj and v in self.adj[u]:
@@ -151,6 +305,50 @@ class MultiGraph(Graph):
     delete_edges_from = remove_edges_from            
 
     def has_edge(self, u, v, key=None):
+        """Return True if the edge (u,v) is in the graph, False otherwise. 
+
+        Parameters
+        ----------
+        u, v : nodes
+            Nodes can be any hashable Python objects such as strings or
+            numbers, but None is not allowed as a node object.
+
+        key : any hashable Python object (default: None)
+            A key associated with an edge can be any arbitrary Python object.
+            It is used for distinguishing between edges with the same nodes. If
+            more than one edge share the same pair of nodes, then the keys
+            associated with those edges must each be unique.
+            
+        See Also
+        --------
+        Graph.has_neighbor()
+
+        Examples
+        --------
+        Can be called either using two nodes u and v, edge 2-tuple (u,v), or
+        edge and key 3-tuple (u,v,k).
+
+        >>> g = networkx.MultiGraph()
+        >>> ebunch = [(1, 2), (1, 3, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
+        >>> g.add_edges_from(ebunch)
+        >>> g.has_edge(1,3)
+        True
+        >>> e = (1, 2)
+        >>> g.has_edge(*e)
+        True
+        >>> e = (3, 4, "another key")
+        >>> g.has_edge(*e)
+        True
+
+        The following syntax are all equivalent: 
+
+        >>> g.has_neighbor(1, 2)
+        True
+        >>> g.has_edge(1, 2)
+        True
+        >>> 2 in g[1]
+        True
+        """
         try:
             if key is None:
                 return v in self.adj[u]
@@ -162,9 +360,112 @@ class MultiGraph(Graph):
 #    has_edge.__doc__ = Graph.has_edge.__doc__
 
     def edges(self, nbunch=None, data=False, keys=False):
+        """Return a list of edges.
+
+        Parameters
+        ----------
+        nbunch : list, iterable
+            A container of nodes that will be iterated through once (thus it
+            should be an iterator or be iterable). Each element of the
+            container should be a valid node type, i.e. any hashable type
+            except None. If nbunch is None, return all edges in the multigraph.
+            Nodes in nbunch that are not in the multigraph will be (quietly)
+            ignored.
+
+        data : bool (default: False)
+            Return 2-tuples (u,v) (False) or 3-tuples (u,v,data) (True). If
+            both of the arguments data and keys are True, then return
+            4-tuples (u,v,key,data).
+
+        keys : bool (default: False)
+            Return 2-tuples (u,v) (False) or 3-tuples (u,v,key) (True). If
+            both of the arguments data and keys are True, then return
+            4-tuples (u,v,key,data).
+
+        Returns
+        --------
+        Edges that are adjacent to any node in nbunch, or a list of all edges
+        if nbunch is not specified.
+
+        Examples
+        --------
+        Get all edges in a multigraph.
+
+        >>> g = networkx.MultiGraph() 
+        >>> ebunch = [(1, 2), (1, 3, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
+        >>> g.add_edges_from(ebunch)
+        >>> g.edges()
+        [(1, 2), (1, 2), (1, 3), (1, 4), (3, 4)]
+
+        All edges with data.
+
+        >>> g.edges(data=True)  # default edge data is 1
+        [(1, 2, 1), (1, 2, 'more arbitrary data'), (1, 3, 'arbitrary data'), (1, 4, 1), (3, 4, 'too much data')]
+
+        All edges with keys.
+
+        >>> g.edges(keys=True)
+        [(1, 2, 0), (1, 2, 'specified key'), (1, 3, 0), (1, 4, 0), (3, 4, 'another key')]
+
+        All edges with data and keys.
+
+        >>> g.edges(data=True, keys=True)  # default edge data is 1
+        [(1, 2, 0, 1), (1, 2, 'specified key', 'more arbitrary data'), (1, 3, 0, 'arbitrary data'), (1, 4, 0, 1), (3, 4, 'another key', 'too much data')]
+
+        See Also
+        --------
+        edges_iter : return an iterator over the edges
+        Graph.edges_iter : the Graph class does *not* allow parallel edges
+        """
         return list(self.edges_iter(nbunch, data=data,keys=keys))
 
     def edges_iter(self, nbunch=None, data=False, keys=False):
+        """Return an iterator over the edges.
+
+        Parameters
+        ----------
+        nbunch : list, iterable
+            A container of nodes that will be iterated through once (thus it
+            should be an iterator or be iterable). Each element of the
+            container should be a valid node type, i.e. any hashable type
+            except None. If nbunch is None, return all edges in the multigraph.
+            Nodes in nbunch that are not in the multigraph will be (quietly)
+            ignored.
+
+        data : bool (default: False)
+            Return 2-tuples (u,v) (False) or 3-tuples (u,v,data) (True). If
+            both of the arguments data and keys are True, then return
+            4-tuples (u,v,key,data).
+
+        keys : bool (default: False)
+            Return 2-tuples (u,v) (False) or 3-tuples (u,v,key) (True). If
+            both of the arguments data and keys are True, then return
+            4-tuples (u,v,key,data).
+
+        Returns
+        --------
+        Edges that are adjacent to any node in nbunch, or a list of all edges
+        if nbunch is not specified.
+
+        Examples
+        --------
+        Get all edges in a multigraph.
+
+        >>> g = networkx.MultiGraph()
+        >>> ebunch = [(1, 2), (1, 3, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
+        >>> g.add_edges_from(ebunch)
+        >>> g.edges()  # recommended way of getting all edges
+        [(1, 2), (1, 2), (1, 3), (1, 4), (3, 4)]
+        >>> [e for e in g.edges_iter()]  # another way to get all edges
+        [(1, 2), (1, 2), (1, 3), (1, 4), (3, 4)]
+        >>> list(g.edges_iter())  # still another way to get all edges
+        [(1, 2), (1, 2), (1, 3), (1, 4), (3, 4)]
+
+        See Also
+        --------
+        edges : return a list of edges
+        Graph.edges_iter : the Graph class does *not* allow parallel edges
+        """
         seen={}     # helper dict to keep track of multiply stored edges
         if nbunch is None:
             nodes_nbrs = self.adj.iteritems()
@@ -198,22 +499,47 @@ class MultiGraph(Graph):
     def get_edge_data(self, u, v, key=None, default=None):
         """Return the data associated with the edge (u,v).
 
-        For multigraphs this returns a list with data for all edges
+        For multigraphs, this returns a list with data for all edges
         (u,v).  Each element of the list is data for one of the 
         edges. 
 
         Parameters
         ----------
-        u,v : nodes
+        u, v : nodes
+            Nodes can be any hashable Python objects such as strings or
+            numbers, but None is not allowed as a node object.
 
-        default:  any Python object            
+        key : any hashable Python object (default: None)
+            A key associated with an edge can be any arbitrary Python object.
+            It is used for distinguishing between edges with the same nodes. If
+            more than one edge share the same pair of nodes, then the keys
+            associated with those edges must each be unique.
+
+        default: any hashable Python object (default: None)
             Value to return if the edge (u,v) is not found.
-            The default is the Python None object.
+
+        See Also
+        --------
+        Graph.get_edge_data : the Graph class does *not* allow parallel edges
+
+        Examples
+        --------
+        >>> g = networkx.MultiGraph()
+        >>> ebunch = [(1, 2), (1, 3, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
+        >>> g.add_edges_from(ebunch)
+        >>> g.get_edge_data(1, 2)
+        {0: 1, 'specified key': 'more arbitrary data'}
+        >>> g.get_edge_data(1, 2, key=0)
+        1
+        >>> g.get_edge_data(1, 2, key="specified key")
+        'more arbitrary data'
 
         Notes
         -----
-        It is faster to use G[u][v].
+        It is faster to use g[u][v].
 
+        >>> g[1][2]
+        {0: 1, 'specified key': 'more arbitrary data'}
         """
         try:
             if key is None:
@@ -224,6 +550,38 @@ class MultiGraph(Graph):
             return default
 
     def degree_iter(self, nbunch=None, weighted=False):
+        """Return an iterator for (node, degree).
+
+        The node degree is the number of edges adjacent to that node.
+
+        Parameters
+        ----------
+        nbunch : list, iterable
+            A container of nodes that will be iterated through once (thus it
+            should be an iterator or be iterable). Each element of the
+            container should be a valid node type, i.e. any hashable type
+            except None. If nbunch is None, return all edges in the multigraph.
+            Nodes in nbunch that are not in the multigraph will be (quietly)
+            ignored.
+
+        weighted : bool (default: False)
+            If the multigraph is weighted, return the weighted degree
+            (the sum of edge weights).
+
+        Examples
+        --------
+        >>> ebunch = [(1, 2), (1, 3, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(ebunch)
+        >>> list(g.degree_iter())  # get degree iterators
+        [(1, 4), (2, 2), (3, 2), (4, 2)]
+        >>> [d for d in g.degree_iter()]  # another way to get degree iterators
+        [(1, 4), (2, 2), (3, 2), (4, 2)]
+
+        See Also
+        --------
+        Graph.degree_iter : the Graph class does *not* allow parallel edges
+        """
         if nbunch is None:
             nodes_nbrs = self.adj.iteritems()
         else:
@@ -241,8 +599,46 @@ class MultiGraph(Graph):
 
 #    degree_iter.__doc__ = Graph.degree_iter.__doc__
 
-    def selfloop_edges(self,data=False):
-        """Return a list of selfloop edges"""
+    def selfloop_edges(self, data=False):
+        """Return a list of selfloop edges.
+
+        Parameters
+        ----------
+        data : bool (default: False)
+            If True then return the selfloop edges together with their edge
+            data (if any); otherwise return the 2-tuples that make up selfloop
+            edges.
+
+        Returns
+        -------
+        A list of selfloop edges together with (optionally) their data,
+        if any. An empty list is returned if the multigraph has no selfloop
+        edges.
+
+        Examples
+        --------
+        Selfloop edges of a multigraph together with edge data (if any).
+
+        >>> ebunch = [(1, 1), (1, 3, "arbitrary data"), (1, 1, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(ebunch)
+        >>> g.selfloop_edges()
+        [(1, 1), (1, 1)]
+        >>> g.selfloop_edges(data=True)
+        [(1, 1, 1), (1, 1, 'more arbitrary data')]
+
+        Return an empty list if the multigraph has no selfloop edges.
+
+        >>> ebunch = [(1, 2), (1, 3, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(ebunch)
+        >>> g.selfloop_edges()
+        []
+
+        See Also
+        --------
+        Graph.selfloop_edges : the Graph class does *not* permit parallel edges
+        """
         if data:
             return [ (n,n,d) 
                      for n,nbrs in self.adj.iteritems() 
@@ -255,11 +651,47 @@ class MultiGraph(Graph):
 
 
     def number_of_selfloops(self):
-        """Return the number of selfloop edges counting multiple edges."""
+        """Return the number of selfloop edges counting multiple edges.
+
+        Examples
+        --------
+        >>> ebunch = [(1, 2), (1, 1), (1, 2, "some data"), (3, 2), (4, 4), (4, 4, "more data")]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(ebunch)
+        >>> g.number_of_selfloops()
+        3
+
+        See Also
+        --------
+        Graph.number_of_selfloops : the Graph class does *not* allow parallel edges
+        """
         return len(self.selfloop_edges())
 
 
     def number_of_edges(self, u=None, v=None):
+        """Return the number of edges between two nodes.
+
+        Parameters
+        ----------
+        u, v : nodes
+            Nodes can be any hashable Python objects such as strings or
+            numbers, but None is not allowed as a node object.
+
+        Examples
+        --------
+        >>> ebunch = [(1, 2), (1, 1), (1, 2, "some data"), (3, 2), (4, 2)]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(ebunch)
+        >>> g.number_of_edges()
+        5
+        >>> g.number_of_edges(1, 2)
+        2
+
+        See Also
+        --------
+        Graph.size : number of edges or option for sum of all edge weights
+        Graph.number_of_edges : the Graph class does *not* permit parallel edges
+        """
         if u is None: return self.size()
         try:
             edgedata=self.adj[u][v]
@@ -270,6 +702,40 @@ class MultiGraph(Graph):
     number_of_edges.__doc__ = Graph.number_of_edges.__doc__
 
     def subgraph(self, nbunch, copy=True):
+        """Return the subgraph induced on nodes in nbunch.
+
+        Parameters
+        ----------
+        nbunch : list, iterable 
+            A container of nodes that will be iterated through once (thus it
+            should be an iterator or be iterable). Each element of the
+            container should be a valid node type, i.e. any hashable type
+            except None. If nbunch is None, return all edges data in the
+            multigraph. Nodes in nbunch that are not in the multigraph will be
+            (quietly) ignored.
+
+        copy : bool (default: True)
+            If True then return a new multigraph holding the subgraph.
+            Otherwise, the subgraph is created in the original multigraph by
+            deleting nodes not in nbunch. Warning: this can destroy the
+            multigraph.
+
+        Examples
+        --------
+        >>> ebunch = [(1, 2), (1, 1), (1, 2, "some data"), (3, 2), (4, 4), (4, 4, "more data")]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(ebunch)
+        >>> g.edges()
+        [(1, 1), (1, 2), (1, 2), (2, 3), (4, 4), (4, 4)]
+        >>> nbunch = [1, 2, 3]
+        >>> sg = g.subgraph(nbunch)  # get subgraph induced by nodes 1, 2, 3
+        >>> sg.edges()
+        [(1, 1), (1, 2), (1, 2), (2, 3)]
+
+        See Also
+        --------
+        Graph.subgraph : the Graph class does *not* allow parallel edges
+        """
         bunch = set(self.nbunch_iter(nbunch))
         if not copy: 
             # demolish all nodes (and attached edges) not in nbunch
@@ -297,7 +763,23 @@ class MultiGraph(Graph):
         A new multidigraph is returned with the same name, same nodes and
         with each edge (u,v,data) replaced by two directed edges
         (u,v,data) and (v,u,data).
-      
+
+        Examples
+        --------
+        >>> ebunch = [(1, 2), (1, 1), (1, 2, "some data"), (3, 2), (4, 4), (4, 4, "more data")]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(ebunch)
+        >>> g.edges()
+        [(1, 1), (1, 2), (1, 2), (2, 3), (4, 4), (4, 4)]
+        >>> g.edges()
+        [(1, 1), (1, 2), (1, 2), (2, 3), (4, 4), (4, 4)]
+        >>> dig = g.to_directed()  # get a directed representation of g
+        >>> dig.edges()
+        [(1, 1), (1, 2), (1, 2), (2, 1), (2, 1), (2, 3), (3, 2), (4, 4), (4, 4)]
+
+        See Also
+        --------
+        Graph.to_directed : the Graph class does *not* allow parallel edges
         """
         from multidigraph import MultiDiGraph
         G=MultiDiGraph()
@@ -311,11 +793,28 @@ class MultiGraph(Graph):
     def copy(self):
         """Return a copy of the graph.
 
+        Examples
+        --------
+        >>> ebunch = [(1, 2), (1, 1), (1, 2, "some data"), (3, 2), (4, 4, "more data")]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(ebunch)
+        >>> g.edges()
+        [(1, 1), (1, 2), (1, 2), (2, 3), (4, 4)]
+        >>> h = g.copy()
+        >>> h.edges()
+        [(1, 1), (1, 2), (1, 2), (2, 3), (4, 4)]
+        >>> h == g
+        False
+
         Notes
         -----
-        This makes a complete of the graph but does not make copies
-        of any underlying node or edge data.  The node and edge data
-        in the copy still point to the same objects as in the original.
+        This makes a complete copy of the multigraph but does not make copies
+        of any underlying node or edge data.  The node and edge data in the
+        copy still point to the same objects as in the original.
+
+        See Also
+        --------
+        Graph.copy : the Graph class does *not* allow parallel edges
         """
         H=self.__class__()
         H.name=self.name

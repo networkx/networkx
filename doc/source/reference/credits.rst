@@ -74,5 +74,6 @@ Thanks especially to the following contributors.
 -  Arpad Horvath fixed the barabasi_albert_graph() generator
 
 -  Minh Van Nguyen contributed the connected_watts_strogatz_graph()
+   and documentation for the Graph and MultiGraph classes
 
 

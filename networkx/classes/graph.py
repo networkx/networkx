@@ -469,6 +469,7 @@ class Graph(object):
         See Also
         --------
         add_edge : add a single edge
+        MultiGraph.add_edges_from : the MultiGraph class allows for parallel edges to be added
 
         Examples
         --------
@@ -496,7 +497,7 @@ class Graph(object):
 
 
     def remove_edge(self, u, v): 
-        """Remove the edge between (u,v).
+        """Remove the edge between u and v.
 
         Parameters
         ----------
@@ -506,6 +507,7 @@ class Graph(object):
         See Also
         --------
         remove_edges_from : remove a collection of edges
+        MultiGraph.remove_edge : the MultiGraph class allows for parallel edges to be removed
 
         Examples
         --------
@@ -540,6 +542,7 @@ class Graph(object):
         See Also
         --------
         remove_edge : remove a single edge
+        MultiGraph.remove_edges_from : the MultiGraph allows for parallel edges to be removed
             
         Examples
         --------
@@ -696,7 +699,7 @@ class Graph(object):
             If nbunch is None, return all edges in the graph.
             Nodes in nbunch that are not in the graph will be (quietly) ignored.
 
-        data : bool
+        data : bool (default: False)
             Return two tuples (u,v) (False) or three-tuples (u,v,data) (True)
 
 
@@ -712,6 +715,11 @@ class Graph(object):
         [(0, 1), (1, 2), (2, 3)]
         >>> G.edges(data=True) # default edge data is 1
         [(0, 1, 1), (1, 2, 1), (2, 3, 1)]
+
+        See Also
+        --------
+        edges_iter : return an iterator over the edges
+        MultiGraph.edges_iter : the MultiGraph class allows parallel edges
         """
         return list(self.edges_iter(nbunch, data))
 
@@ -735,6 +743,11 @@ class Graph(object):
         -------
         An iterator over edges that are adjacent to any node in nbunch,
         or over all edges if nbunch is not specified.
+
+        See Also
+        --------
+        edges : return a list of edges
+        MultiGraph.edges_iter : the MultiGraph class allows parallel edges
 
         Examples
         --------
@@ -910,6 +923,10 @@ class Graph(object):
         [(0, 1)]
         >>> list(G.degree_iter([0,1]))
         [(0, 1), (1, 2)]
+
+        See Also
+        --------
+        MultiGraph.degree_iter : the MultiGraph class allows parallel edges
         """
         if nbunch is None:
             nodes_nbrs = self.adj.iteritems()
@@ -949,9 +966,13 @@ class Graph(object):
 
         Notes
         -----
-        This makes a complete of the graph but does not make copies
+        This makes a complete copy of the graph but does not make copies
         of any underlying node or edge data.  The node and edge data
         in the copy still point to the same objects as in the original.
+
+        See Also
+        --------
+        MultiGraph.copy : the MultiGraph class allows parallel edges
         """
         H=self.__class__(self)
         H.name=self.name
@@ -963,7 +984,10 @@ class Graph(object):
         A new directed graph  is returned with the same name, same nodes, 
         and with each edge (u,v,data) replaced by two directed edges
         (u,v,data) and (v,u,data).
-        
+
+        See Also
+        --------
+        MultiGraph.to_directed : the MultiGraph class allows parallel edges
         """
         from networkx import DiGraph 
         G=DiGraph()
@@ -995,8 +1019,9 @@ class Graph(object):
             graph by deleting nodes not in nbunch.  
             Warning: this can destroy the graph.
 
-            
-
+        See Also
+        --------
+        MultiGraph.subgraph : the MultiGraph class allows parallel edges
         """
         bunch =set(self.nbunch_iter(nbunch))
 
@@ -1050,6 +1075,9 @@ class Graph(object):
         >>> G.selfloop_edges(data=True)
         [(1, 1, 1)]
 
+        See Also
+        --------
+        MultiGraph.selfloop_edges : the MultiGraph class allows parallel edges
         """
         if data:
             return [ (n,n,nbrs[n]) 
@@ -1071,6 +1099,9 @@ class Graph(object):
         >>> G.number_of_selfloops()
         1
 
+        See Also
+        --------
+        MultiGraph.number_of_selfloops : the MultiGraph class allows parallel edges
         """
         return len(self.nodes_with_selfloops())
 
@@ -1127,7 +1158,7 @@ class Graph(object):
         See Also
         --------
         size : number of edges or option for sum of all edge weights
-
+        MultiGraph.number_of_edges : the MultiGraph class does *not* allow parallel edges
         """
         if u is None: return self.size()
         if v in self.adj[u]:
