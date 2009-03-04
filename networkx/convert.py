@@ -418,7 +418,7 @@ def from_edgelist(edgelist,create_using=None):
     return G                         
 
 
-def to_numpy_matrix(G,nodelist=None,dtype=numpy.float32):
+def to_numpy_matrix(G,nodelist=None,dtype=None):
     """Return the graph adjacency matrix as a numpy matrix. 
 
     Parameters
@@ -448,8 +448,8 @@ def to_numpy_matrix(G,nodelist=None,dtype=numpy.float32):
 #        raise ImportError, \
 #              "Import Error: not able to import numpy: http://numpy.scipy.org "
 
-#    if dtype is None:
-#        dtype=numpy.float32
+    if dtype is None:
+        dtype=numpy.float32
 
     if nodelist is None:
         nodelist=G.nodes()
@@ -511,7 +511,7 @@ def from_numpy_matrix(A,create_using=None):
     return G
 
 
-def to_scipy_sparse_matrix(G,nodelist=None,dtype=numpy.float32):
+def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):
     """Return the graph adjacency matrix as a scipy sparse matrix.
 
     Parameters
@@ -548,8 +548,8 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=numpy.float32):
 #        raise ImportError, \
 #              """Import Error: not able to import scipy sparse:
 #              see http://scipy.org""" 
-#    if dtype is None:
-#        dtype=scipy.float32
+    if dtype is None:
+        dtype=scipy.float32
 
     if nodelist is None:
         nodelist=G.nodes()
