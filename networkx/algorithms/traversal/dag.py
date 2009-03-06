@@ -4,7 +4,7 @@ Algorithms for directed acyclic graphs (DAGs).
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 ___revision__ = ""
-#    Copyright (C) 2006 by 
+#    Copyright (C) 2006-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -15,36 +15,48 @@ __all__ = ['topological_sort',
            'topological_sort_recursive',
            'is_directed_acyclic_graph']
 
-
 import networkx
 
 def is_directed_acyclic_graph(G):
-    """Return True if the graph G is a directed acyclic graph (DAG).
-
-    Otherwise return False.
+    """Return True if the graph G is a directed acyclic graph (DAG)
+    or False if not.
     
+    Parameters
+    ----------
+    G : NetworkX graph
+
     """
     if topological_sort(G) is None:
         return False
     else:
         return True
 
-def topological_sort(G):
-    """
-    Return a list of nodes of the digraph G in topological sort order.
+def topological_sort(G,nbunch=None):
+    """Return a list of nodes in topological sort order.
 
     A topological sort is a nonunique permutation of the nodes
     such that an edge from u to v implies that u appears before v in the
     topological sort order.
 
-    If G is not a directed acyclic graph no topological sort exists
+    Parameters
+    ----------
+    G : NetworkX digraph
+
+    nbunch : container of nodes (optional)
+       Explore graph in specified order
+
+    Notes
+    -----
+    If G is not a directed acyclic graph (DAG) no topological sort exists
     and the Python keyword None is returned.
 
     This algorithm is based on a description and proof at
     http://www2.toki.or.id/book/AlgDesignManual/book/book2/node70.htm
 
-    See also is_directed_acyclic_graph()
-    
+    See also
+    --------
+    is_directed_acyclic_graph()
+
     """
     # nonrecursive version
 
@@ -52,6 +64,8 @@ def topological_sort(G):
     order_explored=[] # provide order and 
     explored={}       # fast search without more general priorityDictionary
                      
+    if nbunch is None:
+        nbunch = G.nodes_iter() 
     for v in G:     # process all vertices in G
         if v in explored: 
             continue
@@ -76,16 +90,36 @@ def topological_sort(G):
                 fringe.pop()    # done considering this node
     return order_explored
 
-def topological_sort_recursive(G):
-    """
-    Return a list of nodes of the digraph G in topological sort order.
+def topological_sort_recursive(G,nbunch=None):
+    """Return a list of nodes in topological sort order.
+
+    A topological sort is a nonunique permutation of the nodes such
+    that an edge from u to v implies that u appears before v in the
+    topological sort order.
+
+    Parameters
+    ----------
+    G : NetworkX digraph
+
+    nbunch : container of nodes (optional)
+       Explore graph in specified order
+
+    Notes
+    -----
+    If G is not a directed acyclic graph (DAG) no topological sort exists
+    and the Python keyword None is returned.
 
     This is a recursive version of topological sort.
-    
+
+    See also
+    --------
+    topological_sort()
+    is_directed_acyclic_graph()
+
     """
     # function for recursive dfs
     def _dfs(G,seen,explored,v):
-        seen[v]=1
+        seen.add(v)
         for w in G[v]:
             if w not in seen: 
                 if not _dfs(G,seen,explored,w):
@@ -96,10 +130,12 @@ def topological_sort_recursive(G):
         explored.insert(0,v) # inverse order of when explored 
         return v
 
-    seen={}
+    seen=set()
     explored=[]
 
-    for v in G:  # process all nodes
+    if nbunch is None:
+        nbunch = G.nodes_iter() 
+    for v in nbunch:  # process all nodes
         if v not in explored:
             if not _dfs(G,seen,explored,v): 
                 return 
