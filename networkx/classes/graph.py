@@ -909,7 +909,7 @@ class Graph(object):
             (thus it should be an iterator or be iterable).  Each
             element of the container should be a valid node type: any
             hashable type except None.
-            If nbunch is None, return all edges data in the graph.
+            If nbunch is None, return degree iterator of all nodes in the graph.
             Nodes in nbunch that are not in the graph will be (quietly) ignored.
 
         weighted : False|True

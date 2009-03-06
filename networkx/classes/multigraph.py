@@ -424,7 +424,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        nbunch : list, iterable
+        nbunch : list, iterable (default: None)
             A container of nodes that will be iterated through once (thus it
             should be an iterator or be iterable). Each element of the
             container should be a valid node type, i.e. any hashable type
@@ -556,13 +556,13 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        nbunch : list, iterable
+        nbunch : list, iterable (default: None)
             A container of nodes that will be iterated through once (thus it
             should be an iterator or be iterable). Each element of the
             container should be a valid node type, i.e. any hashable type
-            except None. If nbunch is None, return all edges in the multigraph.
-            Nodes in nbunch that are not in the multigraph will be (quietly)
-            ignored.
+            except None. If nbunch is None, return degree iterator of all
+            nodes in the multigraph. Nodes in nbunch that are not in the
+            multigraph will be (quietly) ignored.
 
         weighted : bool (default: False)
             If the multigraph is weighted, return the weighted degree
@@ -570,13 +570,24 @@ class MultiGraph(Graph):
 
         Examples
         --------
+        Get the degree iterator through all nodes.
+
         >>> ebunch = [(1, 2), (1, 3, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
         >>> g = networkx.MultiGraph()
         >>> g.add_edges_from(ebunch)
-        >>> list(g.degree_iter())  # get degree iterators
+        >>> list(g.degree_iter())  # get degree iterator through all nodes
         [(1, 4), (2, 2), (3, 2), (4, 2)]
-        >>> [d for d in g.degree_iter()]  # another way to get degree iterators
+        >>> [d for d in g.degree_iter()]  # another way
         [(1, 4), (2, 2), (3, 2), (4, 2)]
+
+        Only get degree iterator through specified nodes.
+
+        >>> ebunch = [(1, 2), (1, 3, "arbitrary data"), (1, 2, "more arbitrary data", "specified key"), (3, 4, "too much data", "another key"), (1, 4)]
+        >>> g = networkx.MultiGraph()
+        >>> g.add_edges_from(ebunch)
+        >>> nbunch = [1, 3, 5]  # get degree iterator through nodes 1, 3, 5
+        >>> list(g.degree_iter(nbunch))
+        [(1, 4), (3, 2)]
 
         See Also
         --------
