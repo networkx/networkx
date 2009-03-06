@@ -66,8 +66,6 @@ def find_cliques(G):
    clique=[]
    cliques=[]
    _extend(all_nodes,0,num_nodes,G,clique,cliques)
-   if len(cliques)==0:
-      raise networkx.NetworkXError("No cliques found")
    return cliques
 
 def _extend(old_nodes,num_not,num_left,G,clique,cliques):
