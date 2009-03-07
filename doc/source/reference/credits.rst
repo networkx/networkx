@@ -57,23 +57,26 @@ Thanks especially to the following contributors.
  - Eben Kennah contributed the strongly connected components and
    DFS functions.
 
- - Sasha Gutfriend contributed edge betweenness algorithms
+ - Sasha Gutfriend contributed edge betweenness algorithms.
 
- - Udi Weinsberg helped develop intersection and difference operators
+ - Udi Weinsberg helped develop intersection and difference operators.
  
- - Matteo Dell'Amico wrote the random regular graph generator
+ - Matteo Dell'Amico wrote the random regular graph generator.
 
- - Andrew Conway contributed ego_graph()
+ - Andrew Conway contributed ego_graph().
 
- - Raf Guns wrote the GraphML writer
+ - Raf Guns wrote the GraphML writer.
 
  - Salim Fadhley and Matteo Dell'Amico contributed the A* algorithm.
 
--  Fabrice Desclaux contributed the Matplotlib edge labeling code
+-  Fabrice Desclaux contributed the Matplotlib edge labeling code.
 
--  Arpad Horvath fixed the barabasi_albert_graph() generator
+-  Arpad Horvath fixed the barabasi_albert_graph() generator.
 
 -  Minh Van Nguyen contributed the connected_watts_strogatz_graph()
-   and documentation for the Graph and MultiGraph classes
+   and documentation for the Graph and MultiGraph classes.
+
+-  Willem Ligtenberg contributed the directed scale free graph
+   generator.
 
 

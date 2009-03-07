@@ -11,4 +11,5 @@ Smoke test the random graphs
 >>> G=gn_graph(100)
 >>> G=gnr_graph(100,0.5)
 >>> G=gnc_graph(100)
+>>> G=scale_free_graph(100)
 

@@ -4,23 +4,25 @@ Generators for some directed graphs.
 gn_graph: growing network 
 gnc_graph: growing network with copying
 gnr_graph: growing network with redirection
+scal_
 
 """
-#    Copyright (C) 2006 by 
+#    Copyright (C) 2006-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    Distributed under the terms of the GNU Lesser General Public License
 #    http://www.gnu.org/copyleft/lesser.html
-__author__ ="""Aric Hagberg (hagberg@lanl.gov)"""
+__author__ ="""Aric Hagberg (hagberg@lanl.gov)\nWillem Ligtenberg (W.P.A.Ligtenberg@tue.nl)"""
 
-__all__ = ['gn_graph', 'gnc_graph', 'gnr_graph']
+__all__ = ['gn_graph', 'gnc_graph', 'gnr_graph','scale_free_graph']
 
 import math
 import random
 
 import networkx
-from networkx.generators.classic import empty_graph
+from networkx.generators.classic import empty_graph, cycle_graph
+from networkx import MultiDiGraph
 from networkx.utils import discrete_sequence
 
 
@@ -159,5 +161,127 @@ def gnc_graph(n,seed=None):
             G.add_edge(source,succ)
         G.add_edge(source,target)
 
+    return G
+
+
+def scale_free_graph(n, G=None,
+                     alpha=0.41,
+                     beta=0.54,
+                     gamma=0.05,
+                     delta_in=0.2,
+                     delta_out=0,
+                     seed=None):
+    """Return a scale free directed graph
+
+    Parameters
+    ----------
+    n : integer
+       Number of nodes in graph
+
+    G : NetworkX graph (optional)
+       Use as starting graph in algorithm
+
+    alpha : float 
+       Probability for adding a new node conecgted to an existing node
+       chosen randomly according to the in-degree distribution.
+
+    beta : float
+       Probability for adding an edge between two existing nodes.
+       One existing node is chosen randomly according the in-degree 
+       distribution and the other chosen randomly according to the out-degree 
+       distribution.
+       
+    gamma : float
+       Probability for adding a new node conecgted to an existing node
+       chosen randomly according to the out-degree distribution.
+        
+    delta_in : float
+       Bias for choosing ndoes from in-degree distribution.
+
+    delta_out : float
+       Bias for choosing ndoes from out-degree distribution.
+
+    delta_out : float
+       Bias for choosing ndoes from out-degree distribution.
+
+    seed : integer (optional)
+       Seed for random number generator
+
+    Examples
+    --------
+    >>> G=nx.scale_free_graph(100)
+
+    
+    Notes
+    -----
+    The sum of alpha, beta, and gamma must be 1.
+
+    Algorithm from
+    
+    @article{bollobas2003dsf,
+    title={{Directed scale-free graphs}},
+    author={Bollob{\'a}s, B. and Borgs, C. and Chayes, J. and Riordan, O.},
+    journal={Proceedings of the fourteenth annual ACM-SIAM symposium on Discrete algorithms},
+    pages={132--139},
+    year={2003},
+    publisher={Society for Industrial and Applied Mathematics Philadelphia, PA, USA}
+    }
+
+"""
+
+    def _choose_node(G,distribution,delta):
+        cumsum=0.0
+        # normalization 
+        psum=float(sum(distribution.values()))+float(delta)*len(distribution)
+        r=random.random()
+        for i in range(0,len(distribution)):
+            cumsum+=(distribution[i]+delta)/psum
+            if r < cumsum:  
+                break
+        return i
+
+    if G is None:
+        # start with 3-cycle
+        G=MultiDiGraph()
+        G.add_edges_from([(0,1),(1,2),(2,0)])
+
+    if alpha <= 0:
+        raise ValueError('alpha must be >= 0.')
+    if beta <= 0:
+        raise ValueError('beta must be >= 0.')
+    if gamma <= 0:
+        raise ValueError('beta must be >= 0.')
+
+    if alpha+beta+gamma !=1.0:
+        raise ValueError('alpha+beta+gamma must equal 1.')
+        
+    G.name="directed_scale_free_graph(%s,alpha=%s,beta=%s,gamma=%s,delta_in=%s,delta_out=%s)"%(n,alpha,beta,gamma,delta_in,delta_out)
+
+    # seed random number generated (uses None as default)
+    random.seed(seed)
+
+    while len(G)<n:
+        r = random.random()
+        # random choice in alpha,beta,gamma ranges
+        if r<alpha:
+            # alpha
+            # add new node v
+            v = len(G) 
+            # choose w according to in-degree and delta_in
+            w = _choose_node(G, G.in_degree(with_labels=True),delta_in)
+        elif r < alpha+beta:
+            # beta
+            # choose v according to out-degree and delta_out
+            v = _choose_node(G, G.out_degree(with_labels=True),delta_out)
+            # choose w according to in-degree and delta_in
+            w = _choose_node(G, G.in_degree(with_labels=True),delta_in)
+        else:
+            # gamma
+            # choose v according to out-degree and delta_out
+            v = _choose_node(G, G.out_degree(with_labels=True),delta_out)
+            # add new node w
+            w = len(G) 
+        G.add_edge(v,w)
+        
     return G
 
