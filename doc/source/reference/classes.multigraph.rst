@@ -1,8 +1,8 @@
 .. _multigraph:
 
-==========
-MultiGraph
-==========
+=================================================================
+MultiGraph - Undirected graphs with self loops and parallel edges
+=================================================================
 
 Overview
 --------

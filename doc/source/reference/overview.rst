@@ -1,41 +1,33 @@
 Overview
 ~~~~~~~~
-NetworkX is built to allow easy creation, manipulation and measurement
-on large graph theoretic structures which we call networks.  The graph
-theory literature defines a graph as a set of nodes(vertices) and
-edges(links) where each edge is associated with two nodes.  In
-practical settings there are often properties associated with each
-node or edge.  These structures are fully captured by NetworkX in a
-flexible and easy to learn environment.
+NetworkX provides data structures for graphs (or networks)
+along with graph algorithms, generators, and drawing tools.
 
 Graphs
 =======
-The basic object in NetworkX is a Graph.  A simple type of 
-Graph has undirected edges and does not allow multiple edges
-between nodes.  The NetworkX 
-Graph class contains this data structure.  Other classes allow
-directed graphs (DiGraph) and multiple edges (MultiGraph/MultiDiGraph).
-All these classes allow nodes and edges to be associated with objects or data.
+Simple graphs, graphs with a maximum of one undirected edge between
+any two nodes, are stored in NetworkX with the Graph class.  Other
+classes allow directed graphs (DiGraph) and multiple edges
+(MultiGraph/MultiDiGraph).  
 
-We will discuss the Graph class first.
-
-Empty graphs are created by default.
+Simple graphs are constructed by creating a Graph() object.
 
 >>> import networkx as nx
 >>> G=nx.Graph()
 
-At this point, the graph G has no nodes or edges and has the
-name "".  The name can be set through the variable G.name
-or through an optional argument such as
+At this point, the graph G has no nodes or edges and the
+name is the empty string.  Optional arguments to the graph constructor
+allow building the graph from existing data structures or providing
+a name
 
->>> G=nx.Graph(name="I have a name!")
+>>> G=nx.Graph(name="My Graph")
 >>> print G.name
-I have a name!
+My Graph
 
 Graph Manipulation
 ==================
 
-Basic graph manipulation is provided through methods to add or 
+Basic graph operations are provided through methods to add or 
 remove nodes or edges.
 
 >>> G.add_node(1)

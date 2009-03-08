@@ -1,9 +1,9 @@
 .. _multidigraph:
 
 
-============
-MultiDiGraph
-============
+=================================================================
+MultiDiGraph - Directed graphs with self loops and parallel edges
+=================================================================
 
 Overview
 --------

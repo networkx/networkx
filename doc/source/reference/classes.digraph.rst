@@ -1,8 +1,8 @@
 .. _digraph:
 
-=======
-DiGraph
-=======
+=========================================
+DiGraph - Directed graphs with self loops
+=========================================
 
 Overview
 --------
