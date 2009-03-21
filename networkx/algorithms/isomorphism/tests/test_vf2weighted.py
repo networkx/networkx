@@ -4,7 +4,6 @@
 
 from nose.tools import assert_true, assert_false
 import networkx as nx
-import networkx.algorithms.isomorphism.vf2weighted as vf2weighted
 
 def test_simple():
     # 16 simple tests
