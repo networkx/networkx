@@ -682,6 +682,6 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
         if err < nnodes*tol:
             return x
 
-    raise NetworkXError("eigenvector_centrality(): power iteration failed to converge in %d iterations."%(i+1))
+    raise networkx.NetworkXError("eigenvector_centrality(): power iteration failed to converge in %d iterations."%(i+1))
 
 
