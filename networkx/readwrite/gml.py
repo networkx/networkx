@@ -206,6 +206,8 @@ def write_gml(G, path):
     node_id={}
 
     fh.write("graph [\n")
+    if G.directed:
+        fh.write(indent+"directed 1\n")
     # write graph attributes 
     for k,v in graph_attr.items():
         if is_string_like(v):
@@ -229,22 +231,17 @@ def write_gml(G, path):
               fh.write(2*indent+"%s %s\n"%(k,v))
         fh.write(indent+"]\n")
     # write edges
-    for e in G.edges_iter():
-        if len(e)==3:
-            u,v,d=e
-            # try to guess what is on the edge and do something reasonable
-            edgedata={}
-            if d is None:  # no data 
-                pass
-            elif hasattr(d,'iteritems'): # try dict-like
-                edgedata=dict(d.iteritems())
-            elif hasattr(d,'__iter__'): # some kind of container
-                edgedata['data']=d.__repr__()
-            else: # something else - string, number
-                edgedata['data']=d
-        else:
-            u,v=e
-            edgedata={}
+    for u,v,d in G.edges_iter(data=True):
+        # try to guess what is on the edge and do something reasonable
+        edgedata={}
+        if d is None:  # no data 
+            pass
+        elif hasattr(d,'iteritems'): # try dict-like
+            edgedata=dict(d.iteritems())
+        elif hasattr(d,'__iter__'): # some kind of container
+            edgedata['data']=d.__repr__()
+        else: # something else - string, number
+            edgedata['data']=d
         fh.write(indent+"edge [\n")
         fh.write(2*indent+"source %s\n"%node_id[u])
         fh.write(2*indent+"target %s\n"%node_id[v])
