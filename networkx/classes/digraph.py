@@ -427,7 +427,10 @@ class DiGraph(Graph):
         return (u in self.pred and v in self.pred[u])    
 
     def successors_iter(self,n):
-        """Return an iterator over successor nodes of n."""
+        """Return an iterator over successor nodes of n.
+        
+        neighbors_iter() and successors_iter() are the same.
+        """
         try:
             return self.succ[n].iterkeys()
         except KeyError:
@@ -441,7 +444,10 @@ class DiGraph(Graph):
             raise NetworkXError, "node %s not in digraph"%(n,)
 
     def successors(self, n):
-        """Return a list of sucessor nodes of n."""
+        """Return a list of sucessor nodes of n.
+        
+        neighbors() and successors() are the same function.
+        """
         return list(self.successors_iter(n))
 
     def predecessors(self, n):
