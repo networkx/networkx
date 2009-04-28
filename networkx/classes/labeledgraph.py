@@ -7,7 +7,7 @@ class LabeledGraph(Graph):
     def __init__(self, data=None, name='', weighted=True):
         super(LabeledGraph,self).__init__(data,name,weighted)
         # node labels
-        if hasattr(data,'label') and isinstance(data.label,'dict'):
+        if hasattr(data,'label') and isinstance(data.label,dict):
             self.label=data.label.copy()
         else:
             self.label = {} 
