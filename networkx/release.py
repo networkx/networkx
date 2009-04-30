@@ -12,6 +12,29 @@ import os
 import re
 
 
+def write_versionfile():
+    """Creates a file containing version information."""
+    base = os.path.split(__file__)[0]
+    versionfile = os.path.join(base, 'version.py')
+    fh = open(versionfile, 'w')
+    text = '''"""
+Version information for NetworkX, created during installation.
+
+Do not add this file to the repository.
+
+"""
+
+__version__ = '%(version)s'
+__revision__ = '%(revision)s'
+__date__ = '%(date)s'
+
+'''
+    subs = {'version': version,
+            'revision': revision,
+            'date': date}
+    fh.write(text % subs)
+    fh.close()
+
 def get_svn_revision():
     rev = None
     base = os.path.split(__file__)[0]
@@ -33,10 +56,11 @@ def get_svn_revision():
 name = 'networkx'
 version = '1.0'
 
-# change to True before tagging a release; then change back
-release = False 
+# Declare current release as a development release.
+# Change to False before tagging a release; then change back.
+dev = True 
 
-if not release:
+if dev:
     version += '.dev'   
     revision = get_svn_revision()
     if revision is not None:
@@ -77,4 +101,8 @@ classifiers = [
 import time
 date = time.asctime()
 del time
+
+if __name__ == '__main__':
+    # Write versionfile for nightly snapshots.
+    write_versionfile()
 

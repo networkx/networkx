@@ -23,30 +23,11 @@ if sys.version_info[:2] < (2, 4):
           sys.version_info[:2]
     sys.exit(-1)
 
-def write_versionfile():
-    """Creates a file containing version information."""
-    base = os.path.split(__file__)[0]
-    versionfile = os.path.join(base, 'networkx', 'version.py')
-    fh = open(versionfile, 'w')
-    text = '''"""
-Version information for NetworkX, created during installation.
-
-Do not add this file to the repository.
-
-"""
-
-__version__ = '%(version)s'
-__revision__ = '%(revision)s'
-__date__ = '%(date)s'
-'''
-    subs = {'version': version,
-            'revision': revision,
-            'date': date}
-    fh.write(text % subs)
-    fh.close()
-
-execfile(os.path.join('networkx','release.py'))
-write_versionfile()
+# Write the version information.
+sys.path.insert(0, 'networkx')
+import release
+release.write_versionfile()
+sys.path.pop(0)
 
 packages=["networkx",
           "networkx.algorithms",
@@ -61,7 +42,7 @@ packages=["networkx",
           "networkx.tests",
           ]
 
-docdirbase  = 'share/doc/networkx-%s' % version
+docdirbase  = 'share/doc/networkx-%s' % release.version
 # add basic documentation 
 data = [(docdirbase, glob("*.txt"))]
 # add examples
@@ -89,20 +70,20 @@ package_data     = {'': ['tests/*.py'],
 
 if __name__ == "__main__":
 
-    setup(name             = name,
-      version          = version,
-      author           = authors['Hagberg'][0],
-      author_email     = authors['Hagberg'][1],
-      description      = description,
-      keywords         = keywords,
-      long_description = long_description,
-      license          = license,
-      platforms        = platforms,
-      url              = url,      
-      download_url     = download_url,
+    setup(name         = release.name,
+      version          = release.version,
+      author           = release.authors['Hagberg'][0],
+      author_email     = release.authors['Hagberg'][1],
+      description      = release.description,
+      keywords         = release.keywords,
+      long_description = release.long_description,
+      license          = release.license,
+      platforms        = release.platforms,
+      url              = release.url,      
+      download_url     = release.download_url,
+      classifiers      = release.classifiers,
       packages         = packages,
       data_files       = data,
-      package_data     = package_data, 
-      classifiers      = classifiers,
+      package_data     = package_data
       )
 
