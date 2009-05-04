@@ -179,10 +179,6 @@ class GraphMatcher(object):
         if self.old_recursion_limit < 1.5 * expected_max_recursion_level:
             # Give some breathing room.
             sys.setrecursionlimit(int(1.5 * expected_max_recursion_level))
-
-        # cyclic references are used. this prevents gc from working on the
-        # the GraphMatcherircular references are used. so if we 
-
         
         # Declare that we will be searching for a graph-graph isomorphism.
         self.test = 'graph'
@@ -858,7 +854,6 @@ class GMState(object):
                     GM.inout_2[node] = self.depth
 
     def restore(self):
-        print "restore called"
         """Deletes the GMState object and restores the class variables."""        
         # First we remove the node that was added from the core vectors.
         # Watch out! G1_node == 0 should evaluate to True.
