@@ -179,6 +179,10 @@ class GraphMatcher(object):
         if self.old_recursion_limit < 1.5 * expected_max_recursion_level:
             # Give some breathing room.
             sys.setrecursionlimit(int(1.5 * expected_max_recursion_level))
+
+        # cyclic references are used. this prevents gc from working on the
+        # the GraphMatcherircular references are used. so if we 
+
         
         # Declare that we will be searching for a graph-graph isomorphism.
         self.test = 'graph'
@@ -186,8 +190,17 @@ class GraphMatcher(object):
         # Initialize state
         self.initialize()
 
-    def __del__(self):
-        # Restore the recursion limit
+    def reset_recursion_limit(self):
+        """Restores the recursion limit."""
+        ### TODO:
+        ###     Currently, we use recursion and set the recursion level higher.
+        ###     It would be nice to restore the level, but because the 
+        ###     (Di)GraphMatcher classes make use of cyclic references, garbage 
+        ###     collection will never happen when we define __del__() to 
+        ###     restore the recursion level. The result is a memory leak.  
+        ###     So for now, we do not automatically restore the recursion level,
+        ###     and instead provide a method to do this manually. Eventually,
+        ###     we should turn this into a non-recursive implementation.
         sys.setrecursionlimit(self.old_recursion_limit)
                 
     def candidate_pairs_iter(self):
@@ -305,9 +318,9 @@ class GraphMatcher(object):
                         newstate = self.state.__class__(self, G1_node, G2_node)
                         for mapping in self.match():
                             yield mapping
+
                         # restore data structures
-                        # force delete now, waiting for GC causes trouble
-                        del newstate
+                        newstate.restore()
     
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if adding (G1_node, G2_node) is symantically feasible.
@@ -843,10 +856,10 @@ class GMState(object):
             for node in new_nodes:
                 if node not in GM.inout_2:
                     GM.inout_2[node] = self.depth
-                
-    def __del__(self):
-        """Deletes the GMState object and restores the class variables."""
-        
+
+    def restore(self):
+        print "restore called"
+        """Deletes the GMState object and restores the class variables."""        
         # First we remove the node that was added from the core vectors.
         # Watch out! G1_node == 0 should evaluate to True.
         if self.G1_node is not None and self.G2_node is not None:
@@ -859,8 +872,7 @@ class GMState(object):
             for node in vector.keys():
                 if vector[node] == self.depth:
                     del vector[node]
-                    
-    
+   
 
 class DiGMState(object):
     """Internal representation of state for the DiGraphMatcher class.
@@ -950,7 +962,7 @@ class DiGMState(object):
                 if node not in GM.out_2:
                     GM.out_2[node] = self.depth
 
-    def __del__(self):
+    def restore(self):
         """Deletes the DiGMState object and restores the class variables."""
         
         # First we remove the node that was added from the core vectors.
@@ -965,4 +977,4 @@ class DiGMState(object):
             for node in vector.keys():
                 if vector[node] == self.depth:
                     del vector[node]
-                    
+                   
