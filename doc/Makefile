@@ -40,7 +40,7 @@ generate: build/generate-stamp
 
 build/generate-stamp:
 	mkdir -p build
-	./sphinxext/numpyext/autosummary_generate.py source/reference/*.rst \
+	./sphinxext/autosummary_generate.py source/reference/*.rst \
 		-p dump.xml -o source/reference/generated 
 	./make_gallery.py 
 	./make_examples_rst.py ../examples source

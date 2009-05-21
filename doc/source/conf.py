@@ -82,7 +82,7 @@ pygments_style = 'friendly'
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-html_style = 'sphinxdoc.css'
+#html_style = 'sphinxdoc.css'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -137,8 +137,12 @@ latex_documents = [('contents', 'networkx.tex', 'NetworkX Documentation',
 
 # Additional stuff for the LaTeX preamble.
 latex_elements = {
-    'fontpkg': '\\usepackage{palatino}'
+    'fontpkg': '\\usepackage{palatino}',
+    'inputenc':'\\usepackage[utf8x]{inputenc}'
 }
+#latex_preamble = """\usepackage{ucs}
+
+
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []
@@ -196,3 +200,5 @@ def setup(app):
     app.add_description_unit('role', 'role', 'pair: %s; role', parse_role)
     app.add_description_unit('confval', 'confval', 'pair: %s; configuration value')
     app.add_description_unit('event', 'event', 'pair: %s; event', parse_event)
+#    from sphinx.util.texescape import tex_replacements
+#    tex_replacements[u'X'] = u'foo' 

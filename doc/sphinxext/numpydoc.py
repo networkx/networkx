@@ -12,7 +12,7 @@ It will:
 - Renumber references.
 - Extract the signature from the docstring, if it can't be determined otherwise.
 
-.. [1] http://projects.scipy.org/scipy/numpy/wiki/CodingStyleGuidelines#docstring-standard
+.. [1] http://projects.scipy.org/numpy/wiki/CodingStyleGuidelines#docstring-standard
 
 """
 
@@ -22,42 +22,47 @@ import inspect
 
 def mangle_docstrings(app, what, name, obj, options, lines,
                       reference_offset=[0]):
-    
+
     if what == 'module':
-        # Strip top title 
-#        title_re = re.compile(r'^\s*[#*=]{4,}\n[a-z0-9 -]+\n[#*=]{4,}\s*',
-#        lines[:] = title_re.sub('', "\n".join(lines)).split("\n")
-        pass # not sure what the bug is here - but this strips too many lines
+        # Strip top title
+        title_re = re.compile(r'^\s*[#*=]{4,}\n[a-z0-9 -]+\n[#*=]{4,}\s*',
+                              re.I|re.S)
+        lines[:] = title_re.sub('', "\n".join(lines)).split("\n")
     else:
-        doc = get_doc_object(obj, what)
+        doc = get_doc_object(obj, what, "\n".join(lines))
         lines[:] = doc.__str__().split("\n")
 
     if app.config.numpydoc_edit_link and hasattr(obj, '__name__') and \
            obj.__name__:
-        v = dict(full_name=obj.__name__)
-        lines += [''] + (app.config.numpydoc_edit_link % v).split("\n")
+        if hasattr(obj, '__module__'):
+            v = dict(full_name="%s.%s" % (obj.__module__, obj.__name__))
+        else:
+            v = dict(full_name=obj.__name__)
+        lines += ['', '.. htmlonly::', '']
+        lines += ['    %s' % x for x in
+                  (app.config.numpydoc_edit_link % v).split("\n")]
 
     # replace reference numbers so that there are no duplicates
     references = []
-    for l in lines:
-        l = l.strip()
-        if l.startswith('.. ['):
-            try:
-                references.append(int(l[len('.. ['):l.index(']')]))
-            except ValueError:
-                print "WARNING: invalid reference in %s docstring" % name
+    for line in lines:
+        line = line.strip()
+        m = re.match(r'^.. \[([a-z0-9_.-])\]', line, re.I)
+        if m:
+            references.append(m.group(1))
 
-    # Start renaming from the biggest number, otherwise we may
-    # overwrite references.
-    references.sort()
+    # start renaming from the longest string, to avoid overwriting parts
+    references.sort(key=lambda x: -len(x))
     if references:
         for i, line in enumerate(lines):
             for r in references:
-                new_r = reference_offset[0] + r
-                lines[i] = lines[i].replace('[%d]_' % r,
-                                            '[%d]_' % new_r)
-                lines[i] = lines[i].replace('.. [%d]' % r,
-                                            '.. [%d]' % new_r)
+                if re.match(r'^\d+$', r):
+                    new_r = "R%d" % (reference_offset[0] + int(r))
+                else:
+                    new_r = "%s%d" % (r, reference_offset[0])
+                lines[i] = lines[i].replace('[%s]_' % r,
+                                            '[%s]_' % new_r)
+                lines[i] = lines[i].replace('.. [%s]' % r,
+                                            '.. [%s]' % new_r)
 
     reference_offset[0] += len(references)
 

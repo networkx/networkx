@@ -9,12 +9,6 @@ import pydoc
 from StringIO import StringIO
 from warnings import warn
 
-from sphinx.ext.autodoc import get_module_charset
-_charset_re = re.compile(r'coding[:=]\s*([-\w.]+)')
-_module_charsets = {}
-
-
-
 class Reader(object):
     """A line-based string reader.
 
@@ -90,37 +84,30 @@ class Reader(object):
 
 
 class NumpyDocString(object):
+#    def __init__(self,docstring):
     def __init__(self,obj):
         docstring=inspect.getdoc(obj) or ''
         charset = None
         module = getattr(obj, '__module__', None)
-        if module is not None:
-            charset = get_module_charset(module)
+#        if module is not None:
+#            charset = get_module_charset(module)
         if isinstance(docstring, str):
-            if charset:
-                docstring = docstring.decode(charset)
-            else:
-                try:
+#            if charset:
+#                docstring = docstring.decode(charset)
+#            else:
+            try:
                     # try decoding with utf-8, should only work for real UTF-8
-                    docstring = docstring.decode('utf-8')
-                except UnicodeError:
-                    # last resort -- can't fail
-                    docstring = docstring.decode('latin1')
-        docstring = docstring.split('\n')
-        # De-indent paragraph
-        try:
-            indent = min(len(s) - len(s.lstrip()) for s in docstring
-                         if s.strip())
-        except ValueError:
-            indent = 0
+                docstring = docstring.decode('utf-8')
+            except UnicodeError:
+                # last resort -- can't fail
+                docstring = docstring.decode('latin1')
 
-        for n,line in enumerate(docstring):
-            docstring[n] = docstring[n][indent:]
+        docstring = textwrap.dedent(docstring).split('\n')
 
         self._doc = Reader(docstring)
         self._parsed_data = {
             'Signature': '',
-            'Summary': '',
+            'Summary': [''],
             'Extended Summary': [],
             'Parameters': [],
             'Returns': [],
@@ -207,9 +194,7 @@ class NumpyDocString(object):
                 arg_name, arg_type = header, ''
 
             desc = r.read_to_next_unindented_line()
-            for n,line in enumerate(desc):
-                desc[n] = line.strip()
-            desc = desc #'\n'.join(desc)
+            desc = dedent_lines(desc)
 
             params.append((arg_name,arg_type,desc))
 
@@ -429,16 +414,22 @@ def indent(str,indent=4):
     lines = str.split('\n')
     return '\n'.join(indent_str + l for l in lines)
 
+def dedent_lines(lines):
+    """Deindent a list of lines maximally"""
+    return textwrap.dedent("\n".join(lines)).split("\n")
+
 def header(text, style='-'):
     return text + '\n' + style*len(text) + '\n'
 
 
 class FunctionDoc(NumpyDocString):
-    def __init__(self, func, role='func'):
+    def __init__(self, func, role='func', doc=None):
         self._f = func
         self._role = role # e.g. "func" or "meth"
+#        if doc is None:
+#            doc = inspect.getdoc(func) or ''
         try:
-            NumpyDocString.__init__(self,func)
+            NumpyDocString.__init__(self, func)
         except ValueError, e:
             print '*'*78
             print "ERROR: '%s' while parsing `%s`" % (e, self._f)
@@ -452,9 +443,6 @@ class FunctionDoc(NumpyDocString):
             try:
                 # try to read signature
                 argspec = inspect.getargspec(func)
-		if role in ('meth') and argspec[0] and \
-                           argspec[0][0] in ('cls', 'self'):
-                        del argspec[0][0]
                 argspec = inspect.formatargspec(*argspec)
                 argspec = argspec.replace('*','\*')
                 signature = '%s%s' % (func_name, argspec)
@@ -490,7 +478,7 @@ class FunctionDoc(NumpyDocString):
 
 
 class ClassDoc(NumpyDocString):
-    def __init__(self,cls,modulename='',func_doc=FunctionDoc):
+    def __init__(self,cls,modulename='',func_doc=FunctionDoc,doc=None):
         if not inspect.isclass(cls):
             raise ValueError("Initialise using a class. Got %r" % cls)
         self._cls = cls
@@ -501,6 +489,10 @@ class ClassDoc(NumpyDocString):
         self._name = cls.__name__
         self._func_doc = func_doc
 
+#        if doc is None:
+#            doc = pydoc.getdoc(cls)
+
+#        NumpyDocString.__init__(self, doc)
         NumpyDocString.__init__(self, cls)
 
     @property
