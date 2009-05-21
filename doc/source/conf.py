@@ -78,6 +78,12 @@ pygments_style = 'friendly'
 
 # Options for HTML output
 # -----------------------
+html_theme = "sphinxdoc"
+#html_theme_options = {
+#    "rightsidebar": "true",
+#    "relbarbgcolor: "black"
+#}
+
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
