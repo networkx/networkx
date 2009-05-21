@@ -13,7 +13,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu
 _all__ = ['kl_connected_subgraph', 'is_kl_connected']
 
 import copy
-import sets
 from networkx import shortest_path
 
 def kl_connected_subgraph(G,k,l,low_memory=False,same_as_graph=False):
@@ -38,7 +37,7 @@ def kl_connected_subgraph(G,k,l,low_memory=False,same_as_graph=False):
             (u,v)=edge
             ### Get copy of graph needed for this search
             if low_memory:
-                verts=sets.Set([u,v])
+                verts=set([u,v])
                 for i in range(k):
                     [verts.update(G.neighbors(w)) for w in verts.copy()]
                 G2=G.subgraph(list(verts))
