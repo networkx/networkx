@@ -373,7 +373,7 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
                 for v,data in nbrs.iteritems():
                     if v not in seen:
                         G.add_edge(u,v,data)
-                seen.add(u)
+            seen.add(u)
     return G                         
 
 def to_edgelist(G,nodelist=None):
