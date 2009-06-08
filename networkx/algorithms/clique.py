@@ -171,6 +171,7 @@ def find_cliques_recursive(G):
     nnbrs={}
     for n,nbrs in G.adjacency_iter():
         nnbrs[n]=set(nbrs)
+    if not nnbrs: return [] # empty graph
     cand=set(nnbrs)
     done=set()
     clique_so_far=[]
@@ -440,3 +441,4 @@ def cliques_containing_node(G,nodes=None,cliques=None,with_labels=False):
     if with_labels: return vcliques
     if len(vcliques)==1: return vcliques[v]
     return vcliques.values()
+
