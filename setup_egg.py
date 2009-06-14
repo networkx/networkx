@@ -16,8 +16,12 @@ to run the tests.
 
 
 """
-from setuptools import setup
+# local import, might need modification for 2.6/3.0
 from setup import *
+
+# must occur after local import to override distutils.core.setup
+from setuptools import setup
+
 
 if __name__ == "__main__":
 
