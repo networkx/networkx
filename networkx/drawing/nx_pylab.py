@@ -248,7 +248,7 @@ def draw_networkx_edges(G, pos,
                         width=1.0,
                         edge_color='k',
                         style='solid',
-                        alpha=1.0,
+                        alpha=None,
                         edge_cmap=None,
                         edge_vmin=None,
                         edge_vmax=None, 
@@ -270,7 +270,10 @@ def draw_networkx_edges(G, pos,
     'b' that lists the color of each edge; the list must be ordered in
     the same way as the edge list. Alternatively, this list can contain
     numbers and those number are mapped to a color scale using the color
-    map edge_cmap.
+    map edge_cmap.  Finally, it can also be a list of (r,g,b) or (r,g,b,a)
+    tuples, in which case these will be used directly to color the edges.  If
+    the latter mode is used, you should not provide a value for alpha, as it
+    would be applied globally to all lines.
     
     For directed graphs, "arrows" (actually just thicker stubs) are drawn
     at the head end.  Arrows can be turned off with keyword arrows=False.
@@ -290,7 +293,6 @@ def draw_networkx_edges(G, pos,
         raise ImportError, "Matplotlib required for draw()"
     except RuntimeError:
         pass # unable to open display
-
 
     if ax is None:
         ax=pylab.gca()
@@ -320,8 +322,13 @@ def draw_networkx_edges(G, pos,
                                  for c in edge_color])
         elif nmex.alltrue([not cb.is_string_like(c) 
                            for c in edge_color]):
-            # numbers (which are going to be mapped with a colormap)
-            edge_colors = None
+            # If color specs are given as (rgb) or (rgba) tuples, we're OK
+            if nmex.alltrue([cb.iterable(c) and len(c) in (3,4)
+                             for c in edge_color]):
+                edge_colors = tuple(edge_color)
+            else:
+                # numbers (which are going to be mapped with a colormap)
+                edge_colors = None
         else:
             raise ValueError('edge_color must consist of either color names or numbers')
     else:
@@ -337,7 +344,14 @@ def draw_networkx_edges(G, pos,
                                      linestyle    = style,     
                                      transOffset = ax.transData,             
                                      )
-    edge_collection.set_alpha(alpha)
+
+    # Note: there was a bug in mpl regarding the handling of alpha values for
+    # each line in a LineCollection.  It was fixed in matplotlib in r7184 and
+    # r7189 (June 6 2009).  We should then not set the alpha value globally,
+    # since the user can instead provide per-edge alphas now.  Only set it
+    # globally if provided as a scalar.
+    if cb.is_numlike(alpha):
+        edge_collection.set_alpha(alpha)
 
     # need 0.87.7 or greater for edge colormaps
     mpl_version=matplotlib.__version__
@@ -408,8 +422,6 @@ def draw_networkx_edges(G, pos,
     miny = mlab.amin(mlab.ravel(edge_pos[:,:,1]))
     maxy = mlab.amax(mlab.ravel(edge_pos[:,:,1]))
 
-
-
     w = maxx-minx
     h = maxy-miny
     padx, pady = 0.05*w, 0.05*h
@@ -422,7 +434,6 @@ def draw_networkx_edges(G, pos,
     if arrow_collection:
         arrow_collection.set_zorder(1) # edges go behind nodes            
         ax.add_collection(arrow_collection)
-
 
     return edge_collection
 
