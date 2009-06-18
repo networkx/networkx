@@ -57,7 +57,7 @@ for example in stale_examples:
         execfile(example)
         sys.stdout=stdout
         print " OK"
-    except ImportError as (strerr):
+    except ImportError,strerr:
         sys.stdout=stdout
         sys.stdout.write(" FAIL: %s\n"%strerr)
         pass
