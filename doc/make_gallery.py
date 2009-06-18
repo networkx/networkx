@@ -48,15 +48,20 @@ for example in all_examples:
         stale_examples.append(example)
 
 for example in stale_examples:
-    print example
+    print example,
     png=example.replace('py','png')                             
     matplotlib.pyplot.figure(figsize=(6,6))
     stdout=sys.stdout
     sys.stdout=open('/dev/null','w')
-    execfile(example)
-    sys.stdout=stdout
+    try:
+        execfile(example)
+        sys.stdout=stdout
+        print " OK"
+    except ImportError as (strerr):
+        sys.stdout=stdout
+        sys.stdout.write(" FAIL: %s\n"%strerr)
+        pass
     matplotlib.pyplot.clf()
-
     im=matplotlib.image.imread(png)
     fig = Figure(figsize=(3.0, 3.0))
     canvas = FigureCanvas(fig)
