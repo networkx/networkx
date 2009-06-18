@@ -56,7 +56,7 @@ def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
     except IOError:
         print "Could not read file %s."%(pgn_file)
         raise
-    G=nx.MultiDiGraph()
+    G=nx.MultiDiGraph(weighted=False)
     game_info={}
     for line in datafile.read().splitlines():
         # check for tag pairs
@@ -115,7 +115,6 @@ if __name__ == '__main__':
     plt.figure(figsize=(8,8))
     # make new undirected graph H without multi-edges
     H=nx.Graph(G)
-
     # edge width is proportional number of games played
     edgewidth=[]
     for (u,v,d) in H.edges(data=True):
@@ -133,6 +132,8 @@ if __name__ == '__main__':
         else:
             wins[v]+=1.0
 
+    print H.edges(data=True)            
+    A=nx.to_numpy_matrix(H)
     try:
         pos=nx.graphviz_layout(H)
     except:
