@@ -25,7 +25,7 @@ help:
 	@echo "  linkcheck to check all external links for integrity"
 
 clean:
-	-rm -rf build/* source/reference/generated source/examples/* source/static/examples
+	-rm -rf build/* source/reference/generated/* source/examples/* source/static/examples
 
 dist: html
 	test -d build/latex || make latex
