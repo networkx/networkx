@@ -7,8 +7,6 @@ Tutorial
 .. toctree::
    :maxdepth: 2
 
-   introduction
-   tour
-   examples
-   othertopics
+   overview
+   tutorial
    references

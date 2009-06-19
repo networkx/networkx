@@ -1,0 +1,395 @@
+..  -*- coding: utf-8 -*-
+
+A Brief Tour
+============
+
+Create an empty graph with no nodes and no edges.
+
+>>> G=nx.Graph()
+
+By definition, a Graph is a collection of nodes (vertices)
+along with identified pairs of nodes (called edges, links, etc).
+In NetworkX, nodes can be any hashable object e.g. a text string, an
+image, an XML object, another Graph, a customized node object, etc.
+(Note: Python's None object should not be used as a node as it
+determines whether optional function arguments have been assigned 
+in many functions.)
+
+Nodes
+-----
+
+The graph G can be grown in several ways.
+NetworkX includes many graph generator functions 
+and facilities to read and write graphs in many formats.
+To get started though we'll look at simple manipulations.
+You can add one node at a time,
+
+>>> G.add_node(1)
+
+add a list of nodes,
+
+>>> G.add_nodes_from([2,3])
+
+or add any *nbunch* of nodes.
+An *nbunch* is any iterable container
+of nodes that is not itself a node 
+in the graph. (e.g. a list, set, graph, file, etc..)
+
+>>> H=nx.path_graph(10)
+>>> G.add_nodes_from(H)
+
+Note that G now contains the nodes of H as nodes of G.
+In contrast, you could use the graph H as a node in G. 
+
+>>> G.add_node(H)
+
+The graph G now contains H as a node.  This flexibility
+is very powerful as it allows graphs of graphs, graphs of
+files, graphs of functions and much more.  It is worth
+thinking about how to structure your application so that
+the nodes are useful entities.  Of course you can always
+use a unique identifier in G and have a separate dictionary
+keyed by identifier to the node information if you prefer.
+(Note: You should not change the node object if the hash 
+depends on its contents.)
+
+Edges
+-----
+
+G can also be grown by adding one edge at a time,
+
+>>> G.add_edge(1,2)
+>>> e=(2,3)
+>>> G.add_edge(*e) # unpack edge tuple*
+
+by adding a list of edges, 
+
+>>> G.add_edges_from([(1,2),(1,3)])
+
+or by adding any *ebunch* of edges,
+An *ebunch* is any iterable container
+of edge-tuples.  An edge-tuple can be a 2-tuple
+of nodes or a 3-tuple with 2 nodes followed by 
+an edge data object, e.g. (2,3,3.1415).
+Edge data is discussed further below
+
+>>> G.add_edges_from(H.edges())
+
+One can demolish the graph in a similar fashion; using remove_node,
+remove_nodes_from, remove_edge and remove_edges_from, e.g.
+
+>>> G.remove_node(H)
+
+There are no complaints when adding existing nodes or edges. For example,
+after removing all nodes and edges,
+
+>>> G.clear()
+
+we add new nodes/edges and NetworkX quietly ignores any that are
+already present.
+
+>>> G.add_edges_from([(1,2),(1,3)])
+>>> G.add_node(1)
+>>> G.add_edge(1,2)
+>>> G.add_node("spam")       # adds node "spam"
+>>> G.add_nodes_from("spam") # adds 4 nodes: 's', 'p', 'a', 'm'
+
+At this stage the graph G consists of 8 nodes and 2 edges, as can be seen by:
+
+>>> G.number_of_nodes()
+8
+>>> G.number_of_edges()
+2
+
+We can examine them with
+
+>>> G.nodes()
+[1, 2, 3, 'spam', 's', 'p', 'a', 'm']
+>>> G.edges()
+[(1, 2), (1, 3)]
+>>> G.neighbors(1)
+[2]
+
+Removing nodes has similar syntax to adding:
+
+>>> G.remove_nodes_from("spam")
+>>> G.nodes()
+[1, 2, 3, 'spam']
+
+You can specify graph data upon instantiation if an appropriate structure exists.
+
+>>> H=nx.DiGraph(G)   # create a DiGraph using the connections from G
+>>> H.edges()
+[(1, 2), (1, 3), (2, 1), (3, 1)]
+>>> H=nx.Graph( {0: [1,2,3], 1: [0,3], 2: [0], 3:[0]} )  # a dict-of-lists adjacency
+
+
+Edge Objects
+------------
+
+Edge data/weights/labels/objects can also be associated with an edge.
+By default, edge data is set to 1.
+
+>>> H=nx.Graph()
+>>> H.add_edge(1,2,'red')
+>>> H.add_edges_from([(1,3,'blue'), (2,0,'red'), (0,3)])
+>>> H.edges()
+[(0, 2), (0, 3), (1, 2), (1, 3)]
+>>> H.edges(data=True)
+[(0, 2, 'red'), (0, 3, 1), (1, 2, 'red'), (1, 3, 'blue')]
+
+While the edge data is often a number for weighted
+graph settings, it can be any object such as a string,
+a custom edge object, a file, a function, etc.
+The 3-tuple (n1,n2,x) represents an edge between 
+nodes n1 and n2 that is decorated with the object x 
+(not necessarily hashable).  
+
+To replace the edge data for an existing edge, add the
+edge again with the new value. (Note: with MultiGraph
+you need to delete the old edge before adding the new value).
+
+>>> H.add_edge(0,2,'blue')
+>>> H.edges(data=True)
+[(0, 2, 'blue'), (0, 3, 1), (1, 2, 'red'), (1, 3, 'blue')]
+
+You might notice that nodes and edges are not NetworkX objects.  
+This leaves you free to use your existing node and edge
+objects, or more typically, use numerical values or strings where appropriate.
+A node can be any hashable object (except None), and an edge can be associated 
+with any object x using G.add_edge(n1,n2,x).
+
+As an example, n1 and n2 could be protein objects from the RCSB Protein 
+Data Bank, and x could refer to an XML record of publications detailing 
+experimental observations of their interaction. 
+
+We have found this power quite useful, but its abuse
+can lead to unexpected surprises unless one is familiar with Python. 
+If in doubt, consider using nx.convert_node_labels_to_integers() to obtain
+a more traditional graph with integer labels.
+
+
+Accessing Edges/Neighbors
+-------------------------
+
+In addition to the methods nodes(), edges(), and neighbors(),
+iterator versions (e.g. edges_iter()) can save you from
+creating large lists when you are just going to iterate 
+through them anyway.
+
+Fast direct access to the graph data structure is also possible
+using subscript notation.
+Warning: do not change the resulting dict--it is part of 
+the graph data structure and direct manipulation may leave the 
+graph in an inconsistent state.
+
+>>> G[1]  # Warning: do not change the resulting dict
+{2: 1}
+>>> G[1][2]
+1
+
+Fast examination of all edges is achieved using adjacency iterators:
+
+>>> for n,nbrs in G.adjacency_iter():
+...    for nbr,data in nbrs.iteritems():
+...        if data<0.5: print (n,nbr,data)
+
+
+Directed Graphs
+---------------
+
+The DiGraph class provides additional methods specific to directed
+edges, e.g. G.out_edges(), G.in_degree(), G.predecessors(), G.successors() etc.  
+To allow algorithms to work with both classes easily, the directed 
+versions of neighbors() and degree() are equivalent to successors() 
+and the sum of in_degree() and out_degree() respectively even though 
+that may feel inconsistent at times.
+
+>>> DG=nx.DiGraph()
+>>> DG.add_edges_from([(1,2,0.5), (3,1,0.75)])
+>>> DG.out_degree(1)
+0.5
+>>> DG.degree(1)
+1.25
+>>> DG.successors(1)
+[2]
+>>> DG.neighbors(1)
+[2]
+
+Some algorithms work only for directed graphs and others are not well
+defined for directed graphs.  Indeed the tendency to lump directed
+and undirected graphs together is dangerous.  If you want to treat
+a directed graph as undirected for some measurement you should probably
+convert it using G.to_undirected() or nx.Graph(G).
+
+
+MultiGraph and MultiDiGraph
+---------------------------
+
+NetworkX provides classes for graphs which allow multiple edges between
+any pair of nodes.  The MultiGraph and MultiDiGraph classes allow you 
+to add the same edge twice, possibly with different edge data.  This 
+can be powerful for some applications, but many algorithms are not well
+defined on such graphs.  Shortest path is one example.  Where results
+are well defined, e.g. degree() we provide the function.  Otherwise
+you should convert to a standard graph in a way that makes the measurement
+well defined.
+
+>>> MG=nx.MultiGraph()
+>>> MG.add_edges_from([(1,2,.5), (1,2,.75), (2,3,.5)])
+>>> MG.degree(weighted=True, with_labels=True)
+{1: 1.25, 2: 1.75, 3: 0.5}
+>>> GG=nx.Graph()
+>>> for n,nbrs in MG.adjacency_iter():
+...    for nbr,datalist in nbrs.iteritems():
+...        GG.add_edge(n,nbr,min(datalist))
+
+>>> nx.shortest_path(GG,1,3)
+[1, 2, 3]
+
+
+Graph generators and graph operations
+-------------------------------------
+
+In addition to constructing graphs node-by-node or edge-by-edge, they
+can also be generated by
+
+1. Applying classic graph operations, such as::
+
+    subgraph(G, nbunch)      - induce subgraph of G on nodes in nbunch
+    union(G1,G2)             - graph union
+    disjoint_union(G1,G2)    - graph union assuming all nodes are different
+    cartesian_product(G1,G2) - return Cartesian product graph
+    compose(G1,G2)           - combine graphs identifying nodes common to both
+    complement(G)            - graph complement 
+    create_empty_copy(G)     - return an empty copy of the same graph class
+    convert_to_undirected(G) - return an undirected representation of G
+    convert_to_directed(G)   - return a directed representation of G
+
+
+2. Using a call to one of the classic small graphs, e.g.
+
+>>> petersen=nx.petersen_graph()
+>>> tutte=nx.tutte_graph()
+>>> maze=nx.sedgewick_maze_graph()
+>>> tet=nx.tetrahedral_graph()
+
+3. Using a (constructive) generator for a classic graph, e.g.
+
+>>> K_5=nx.complete_graph(5)
+>>> K_3_5=nx.complete_bipartite_graph(3,5)
+>>> barbell=nx.barbell_graph(10,10)
+>>> lollipop=nx.lollipop_graph(10,20)
+ 
+4. Using a stochastic graph generator, e.g.
+
+>>> er=nx.erdos_renyi_graph(100,0.15)
+>>> ws=nx.watts_strogatz_graph(30,3,0.1)
+>>> ba=nx.barabasi_albert_graph(100,5)
+>>> red=nx.random_lobster(100,0.9,0.9)
+
+5. Reading a graph stored in a file using common graph formats, 
+   such as edge lists, adjacency lists, GML, GraphML, pickle, LEDA and others.
+
+>>> mygraph=nx.read_graphml("path/to/file")
+>>> fh=open("path/to/file")
+>>> mygraph=nx.read_graphml(fh)
+
+See http://networkx.lanl.gov/reference/readwrite.html for
+a complete list of currently supported graph formats available for read/write.
+
+See http://networkx.lanl.gov/reference/generators.html for
+a complete list of currently supported graph generator functions.
+
+
+Analyzing graphs 
+----------------
+
+The structure of G can be analyzed using various graph-theoretic 
+functions such as:
+ 
+>>> nx.connected_components(G)
+[[1, 2, 3], ['spam']]
+
+>>> sorted(nx.degree(G))
+[0, 1, 1, 2]
+
+>>> nx.clustering(G)
+[0.0, 0.0, 0.0, 0.0]
+
+With no nodes specified, functions that return Node Properties will return
+a list of values in an arbitrary order determined by the internal python 
+dictionary structure of the graph (which is returned by G.nodes() though it 
+can change if the dictionary is resized).
+
+The keyword argument with_labels=True returns a dict keyed by nodes
+to the node values.
+
+>>> nx.degree(G, with_labels=True)
+{1: 1, 2: 2, 3: 1, 'spam': 0}
+
+Functions that return Node Properties, e.g. degree(), clustering(), etc, can
+For values of specific nodes, you can provide a single node or an nbunch 
+of nodes as argument.  If a single node is specified, then a single value 
+is returned.  If an nbunch is specified, then the function will 
+return a list of values.  
+ 
+>>> degree(G,1)
+2
+>>> G.degree(1)
+2
+>>> sorted(G.degree([1,2]))
+[1, 2]
+>>> sorted(G.degree())
+[0, 1, 1, 2]
+>>> G.degree([1,2],with_labels=True)
+{1: 2, 2: 1}
+
+See http://networkx.lanl.gov/reference/algorithms.html for
+a complete list of graph algorithms currently supported.
+
+
+Drawing Graphs
+--------------
+
+NetworkX is not primarily a graph drawing package but 
+basic drawing with Matplotlib as well as an interface to use the
+open source Graphviz software package are included.  
+These are part of the networkx.drawing package
+and will be imported if possible. 
+See http://networkx.lanl.gov/reference/drawing.html for details.
+
+First import Matplotlib's plot interface (pylab works too)
+
+>>> import matplotlib.pyplot as plt
+
+You may find it useful to interactively test code using "ipython -pylab", 
+which combines the power of ipython and matplotlib and provides a convenient
+interactive mode.
+
+To test if the import of networkx.drawing was successful 
+draw G using one of
+
+>>> nx.draw(G)
+>>> nx.draw_random(G)
+>>> nx.draw_circular(G)
+>>> nx.draw_spectral(G)
+
+when drawing to an interactive display. 
+Note that you may need to issue a Matplotlib 
+
+>>> plt.show() 
+
+command if you are not using matplotlib in interactive mode
+http://matplotlib.sourceforge.net/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-with-plot
+
+To save drawings to a file, use, for example
+
+>>> nx.draw(G)
+>>> plt.savefig("path.png")
+
+writes to the file "path.png" in the local directory. If Graphviz
+and PyGraphviz, or pydot, are available on your system, you can also use
+
+>>> nx.draw_graphviz(G)
+>>> nx.write_dot(G,'file.dot')
