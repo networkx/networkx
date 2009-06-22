@@ -26,7 +26,6 @@ sys.path.append(os.path.abspath('../sphinxext/numpyext'))
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath', 'numpydoc',
               'phantom_import', 'autosummary',
               'sphinx.ext.coverage',
-              'only_directives',
               ]
 
 # Add any paths that contain templates here, relative to this directory.
