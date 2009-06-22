@@ -15,7 +15,7 @@ Varoquaux, Travis Vaught, and Jarrod Millman (Eds), (Pasadena, CA
 USA), pp. 11--15, Aug 2008
 
 
-.. htmlonly::
+. only:: html
 
    `PDF <http://math.lanl.gov/~hagberg/Papers/hagberg-2008-exploring.pdf>`_
    `BibTeX <http://math.lanl.gov/~hagberg/Publications/hagberg-2008-exploring.shtml>`_

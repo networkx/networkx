@@ -57,7 +57,7 @@ def main(exampledir,sourcedir):
 NetworkX Examples
 *****************
 
-.. htmlonly::
+. only:: html
 
     :Release: |version|
     :Date: |today|
@@ -92,7 +92,7 @@ NetworkX Examples
 %s
 ##############################################
 
-.. htmlonly::
+. only:: html
 
     :Release: |version|
     :Date: |today|

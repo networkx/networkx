@@ -21,11 +21,11 @@ NetworkX documentation
    download
 
 
-.. htmlonly::
+. only:: html
    - `Examples <examples/index.html>`_
 
 
-.. htmlonly::
+. only:: html
    - `Gallery <gallery/index.html>`_
 
 
