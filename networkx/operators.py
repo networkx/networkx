@@ -453,7 +453,7 @@ def relabel_nodes(G,mapping):
     >>> print H.nodes()
     [0, 1, 4]
 
-    Also See
+    See Also
     --------
     convert_node_labels_to_integers()
 
