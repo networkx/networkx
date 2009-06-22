@@ -1,12 +1,9 @@
-************************************
-Converting to and from other formats
-************************************
+********************************
+Converting to/from Other Formats
+********************************
 
 .. automodule:: networkx.convert
 .. currentmodule:: networkx
-
-
-
 .. autosummary::
    :toctree: generated/
 

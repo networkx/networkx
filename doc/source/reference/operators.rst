@@ -4,6 +4,12 @@ Operators
 
 .. automodule:: networkx.operators
 .. currentmodule:: networkx
+
+The following operator functions provide standard relabeling and combining operations for networks.
+
+Graph Manipulation
+==================
+
 .. autosummary::
    :toctree: generated/
 
@@ -20,8 +26,22 @@ Operators
    line_graph
    ego_graph
    stochastic_graph
+
+Node Relabeling
+===============
+
+.. autosummary::
+   :toctree: generated/
+
    convert_node_labels_to_integers
    relabel_nodes
+
+Freezing
+========
+
+.. autosummary::
+   :toctree: generated/
+
    freeze
    is_frozen
 

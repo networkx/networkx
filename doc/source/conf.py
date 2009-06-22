@@ -75,6 +75,8 @@ show_authors = True
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'friendly'
 
+# A list of prefixs that are ignored when creating the module index. (new in Sphinx 0.6)
+modindex_common_prefix=['networkx.']
 
 # Options for HTML output
 # -----------------------

@@ -361,7 +361,7 @@ basic drawing with Matplotlib as well as an interface to use the
 open source Graphviz software package are included.  
 These are part of the networkx.drawing package
 and will be imported if possible. 
-See http://networkx.lanl.gov/reference/drawing.html for details.
+See :doc:`/reference/drawing` for details.
 
 First import Matplotlib's plot interface (pylab works too)
 
@@ -384,8 +384,9 @@ Note that you may need to issue a Matplotlib
 
 >>> plt.show() 
 
-command if you are not using matplotlib in interactive mode
-http://matplotlib.sourceforge.net/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-with-plot
+command if you are not using matplotlib in interactive mode: (See 
+`Matplotlib FAQ <http://matplotlib.sourceforge.net/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-with-plot>`_
+)
 
 To save drawings to a file, use, for example
 

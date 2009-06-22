@@ -27,7 +27,8 @@ NetworkX is intended to:
 
 History:
 
--  NetworkX was inspired by Guido's 1998 Python graph representation essay. 
+-  NetworkX was inspired by Guido van Rossum's 1998 Python 
+  :ref:`graph representation essay<references>`. 
 
 -  First public release in April 2005.  Version 1.0 released in 2009.
 
@@ -46,7 +47,8 @@ It also makes it easier for newcomers to learn about the package in stages.
 The source code for each module is meant to be easy to read and reading 
 this Python code is actually a good way to learn more about network algorithms, 
 but we have put a lot of effort into making the documentation sufficient and friendly. 
-If you have suggestions or questions please contact us by joining the Google group.
+If you have suggestions or questions please contact us by joining the 
+`NetworkX Google group <http://groups.google.com/group/networkx-discuss>`_.
 
 Classes are named using CamelCase (capital letters at the start of each word).
 functions, methods and variable names are lower_case_underscore (lowercase with
@@ -71,9 +73,10 @@ the network:
    We provide a standard data structure and interface for this type of graph 
    using the prefix "Multi", e.g. MultiGraph().
 
-The basic graph classes are named:  :class:`Graph <_graph>`
-:ref:`Graph <reference.classes.graph>`
-Graph_, DiGraph_, MultiGraph_, and MultiDiGraph_
+The basic graph classes are named:  
+:doc:`Graph </reference/classes.graph>`, :doc:`DiGraph</reference/classes.digraph>`, 
+:doc:`MultiGraph </reference/classes.multigraph>`, and 
+:doc:`MultiDiGraph </reference/classes.multidigraph>`
 
 A third graph attribute (**weighted**) signifies whether the edge data is numeric.
 Some algorithms depend on numeric edge data.  By default this attribute is True,
@@ -103,7 +106,7 @@ representing each edge.  Edge data is arbitrary in NetworkX so you can make it
 anything from a tuple to a customized object for your application.  
 
 To help standardize complex edge information, we provide the AttrGraph family
-of classes (AttrGraph_, AttrDiGraph_, etc). 
+of classes (:ref:`AttrGraph<attrgraph>`, AttrDiGraph_, etc). 
 which stores each edge as a dictionary of "name"<-->"value" associations.  
 This seems to work well in most applications where multiple edge attributes are desired.
 
@@ -134,15 +137,15 @@ Each graph object supplies methods to manipulate the graph.  For example,
        ('a','c',0.5),('c','d',1.2)]
 >>> G.add_edges_from(elist)  # add multiple edges at once
 
-You can see the tutorial for more examples.
+You can see the :doc:`/tutorial/index` for more examples.
 Some basic graph operations such as union and intersection
 are described in the operators module documentation.
 
 Graph generators such as binomial_graph and powerlaw_graph are provided in the
-generators_ subpackage.
+:doc:`generators` subpackage.
 
 For importing network data from formats such as GML, GraphML, edge list text files
-see the readwrite_ subpackage.
+see the :doc:`readwrite` subpackage.
 
 
 Graph Reporting
@@ -167,7 +170,7 @@ while G.neighbors(n) or G[n] is slightly faster but doesn't remove duplicates.
 Any properties that are more complicated than edges, neighbors and degree are
 provided by functions.  For example nx.triangles(G,n) gives the number of triangles
 which include node n as a vertex.  These functions are grouped in the code and 
-documentation under the term algorithms_.
+documentation under the term :ref:`algorithms<algorithms>`.
 
 
 Algorithms
@@ -197,7 +200,7 @@ We interface to the excellent Graphviz layout tools like dot and neato
 with the (suggested) pygraphviz package or the pydot interface.
 Drawing can be done using external programs or the Matplotlib Python
 package.  Interactive GUI interfaces are possible though not provided.
-The drawing tools are provided in the module drawing_.
+The drawing tools are provided in the module :ref:`drawing<drawing>`.
 
 The basic drawing functions essentially place the nodes on a scatterplot
 using the positions in a dict or computed with a layout function.  The
@@ -254,11 +257,16 @@ dict storing "name-value" relationships for that edge.
 >>> print G[1][2].size
 300
 
-The dict-of-dict data structure is based on the following:
+The dict-of-dict data structure is based on the following
+
+References
+----------
+
+.. _references:
 
 Guido van Rossum.
-Python {P}atterns - {I}mplementing {G}raphs, 1998.
-\url{http://www.python.org/doc/essays/graphs/}
+Python Patterns - Implementing Graphs, 1998.
+http://www.python.org/doc/essays/graphs/
 
 David Eppstein.
 {PADS}, a library of {P}ython {A}lgorithms and {D}ata {S}tructures,

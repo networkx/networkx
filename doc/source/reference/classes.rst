@@ -14,15 +14,13 @@ graph class depends on the structure of the graph you want to represent.
 Basic graph types
 =================
 
-.. currentmodule:: networkx
+   :doc:`classes.graph`
 
-.. toctree::
-   :maxdepth: 1
+   :doc:`classes.digraph`
+   
+   :doc:`classes.multigraph`
 
-   classes.graph
-   classes.digraph
-   classes.multigraph
-   classes.multidigraph
+   :doc:`classes.multidigraph`
 
 Graphs with attributes
 ======================
@@ -34,10 +32,7 @@ The following classes provide explicit methods for adding, modifying,
 and removing attributes for graphs, nodes, and edges.
 
 
-.. toctree::
-   :maxdepth: 1
-
-   classes.attrgraph
+   :doc:`classes.attrgraph`
 
 .. warning::
    

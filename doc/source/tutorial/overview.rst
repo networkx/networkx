@@ -40,7 +40,7 @@ version 2.1 of the License, or (at your option) any later version.
 Please see the license for more information. 
 
 NetworkX Basics
-===============
+---------------
 
 We assume you can start an interactive Python session..
 We will assume that you are familiar with Python terminology 
@@ -242,3 +242,12 @@ G can be inspected interactively by typing "G" (without the quotes).
 This will reply something like <networkx.base.Graph object at 0x40179a0c>.
 (On Linux machines with CPython the hexadecimal address is the memory
 location of the object.) 
+
+What Next
+---------
+
+ - :doc:`A Brief Tour <tutorial>`
+
+ - :doc:`Reference </reference/index>`
+
+ - :doc:`Examples </examples/index>`

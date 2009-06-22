@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-generate the rst files for the examples by iterating over the pylab examples
+generate the rst files for the examples by iterating over the networkx examples
 """
 # This code was developed from the Matplotlib gen_rst.py module
 # and is distributed with the same license as Matplotlib
@@ -163,4 +163,17 @@ NetworkX Examples
 
 if __name__ == '__main__':
     import sys
-    main(sys.argv[1],sys.argv[2])
+    try:
+        arg0,arg1,arg2=sys.argv[:3]
+    except:
+        arg0=sys.argv[0]
+        print """
+Usage:  %s exampledir sourcedir 
+
+    exampledir: a directory containing the python code for the examples.
+    sourcedir: a directory to put the generated documentation source for these examples.
+
+        """%arg0
+    else:
+        main(arg1,arg2)
+
