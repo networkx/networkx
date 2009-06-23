@@ -5,9 +5,10 @@ Matplotlib
 
 Draw networks with matplotlib (pylab).
 
-References:
- - matplotlib:     http://matplotlib.sourceforge.net/
- - pygraphviz:     http://networkx.lanl.gov/pygraphviz/
+See Also
+--------
+matplotlib:     http://matplotlib.sourceforge.net/
+pygraphviz:     http://networkx.lanl.gov/pygraphviz/
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""

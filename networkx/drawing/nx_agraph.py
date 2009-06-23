@@ -5,12 +5,14 @@ Graphviz AGraph
 
 Interface to pygraphviz AGraph class.
 
-Usage 
+Examples
+--------
+>>> G=nx.complete_graph(5)
+>>> A=nx.to_agraph(G)
+>>> H=nx.from_agraph(A)
 
- >>> G=nx.complete_graph(5)
- >>> A=nx.to_agraph(G)
- >>> H=nx.from_agraph(A)
-
+See Also
+--------
 Pygraphviz: http://networkx.lanl.gov/pygraphviz
 
 
