@@ -1,14 +1,14 @@
 """
-*******
+-------
 Convert
-*******
+-------
 
 This module provides functions to convert 
 NetworkX graphs to and from other formats.
 
-When possible the preferred way of converting data
-to NetworkX graph is through the graph constuctor.  In that case the
-from_whatever() function is called to attempt to guess the
+The preferred way of converting data to a NetworkX graph 
+is through the graph constuctor.  The constructor calls
+the from_whatever() function which attempts to guess the
 input type and convert it automatically.
 
 Examples
