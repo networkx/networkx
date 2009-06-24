@@ -575,9 +575,9 @@ def closeness_centrality(G,v=None,weighted_edges=False):
 
     Notes
     -----
-    The closeness centrality is normalized to to n-1 where 
+    The closeness centrality is normalized to to n-1 / |G|-1 where 
     n is the number of nodes in the connected part of graph containing
-    the the node.  If the graph is not completely connected, this
+    the node.  If the graph is not completely connected, this
     algorithm computes the closeness centrality for each connected
     part separately.  
 
@@ -592,20 +592,20 @@ def closeness_centrality(G,v=None,weighted_edges=False):
         for n in G:
             sp=path_length(G,n)
             totsp=sum(sp.values())
-            if totsp > 0.0:                                            
+            if totsp > 0.0 and len(G) > 1:
                 # normalize to number of nodes-1 in connected part
-                s=(len(sp)-1.0) 
-                closeness_centrality[n]=s/totsp
+                s=(len(sp)-1.0) / ( len(G) - 1 )
+                closeness_centrality[n]= s / (totsp/(len(sp)-1.0))
             else:                                                                
                 closeness_centrality[n]=0.0           
         return closeness_centrality
     else: # only compute for v
         sp=path_length(G,v)
         totsp=sum(sp.values())
-        if totsp > 0.0:                                            
+        if totsp > 0.0 and len(G) > 1:                                            
             # normalize to number of nodes-1 in connected part
-            return (len(sp)-1.0)/totsp  
-        else:                                                                
+            return ( (len(sp)-1.0)/(len(G) - 1) )/ ( totsp / (len(sp) - 1.0) )
+        else:
             return 0.0
 
 def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
