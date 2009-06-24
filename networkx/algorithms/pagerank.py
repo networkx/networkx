@@ -63,7 +63,8 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
     information retrieval."  http://citeseer.ist.psu.edu/713792.html
 
     """
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph():
+    import networkx
+    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
         raise Exception("pagerank() not defined for graphs with multiedges.")
 
     # create a copy in (right) stochastic form        
@@ -107,6 +108,7 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
 
 def google_matrix(G,alpha=0.85,nodelist=None):
     import numpy
+    import networkx
     M=networkx.to_numpy_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     # add constant to dangling nodes' row
@@ -124,7 +126,8 @@ def pagerank_numpy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
     """Return a NumPy array of the PageRank of G.
     """
     import numpy
-    M=google_matrix(G,alpha,nodelist)   
+    import networkx
+    M=networkx.google_matrix(G,alpha,nodelist)   
     (n,m)=M.shape # should be square
     x=numpy.ones((n))/n
     for i in range(max_iter):
@@ -144,6 +147,7 @@ def pagerank_scipy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
 
     """
     import scipy.sparse
+    import networkx
     M=networkx.to_scipy_sparse_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     S=scipy.array(M.sum(axis=1)).flatten()

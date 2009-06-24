@@ -13,7 +13,6 @@ Minimum Spanning Trees
 __all__ = ['mst', 'kruskal_mst']
 
 import networkx
-from networkx.utils import UnionFind
 
 def kruskal_mst(G):
     """Generate a minimum spanning tree of an undirected graph.
@@ -53,6 +52,7 @@ def kruskal_mst(G):
     # We use Kruskal's algorithm, first because it is very simple to
     # implement once UnionFind exists, and second, because the only slow
     # part (the sort) is sped up by being built in to Python.
+    from networkx.utils import UnionFind
     subtrees = UnionFind()
     edges = sorted((G[u][v],u,v) for u in G for v in G[u])
     for W,u,v in edges:

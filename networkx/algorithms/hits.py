@@ -103,11 +103,13 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
 
 def authority_matrix(G,nodelist=None):
     """Return the HITS authority matrix."""
+    import networkx
     M=networkx.to_numpy_matrix(G,nodelist=nodelist)
     return M.T*M
 
 def hub_matrix(G,nodelist=None):
     """Return the HITS hub matrix."""
+    import networkx
     M=networkx.to_numpy_matrix(G,nodelist=nodelist)
     return M*M.T
 
@@ -115,6 +117,7 @@ def hub_matrix(G,nodelist=None):
 def hits_numpy(G,max_iter=100,tol=1.0e-6,nodelist=None):
     """Return a NumPy array of the hubs and authorities."""
     import numpy
+    import networkx
     M=networkx.to_numpy_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     A=M.T*M # authority matrix
@@ -140,6 +143,7 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,nodelist=None):
     """Return a SciPy sparse array of the hubs and authorities."""
     import numpy
     import scipy.sparse
+    import networkx
     M=networkx.to_scipy_sparse_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     A=M.T*M # authority matrix
