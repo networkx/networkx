@@ -56,9 +56,9 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
     A. Langville and C. Meyer, "A survey of eigenvector methods of web
     information retrieval."  http://citeseer.ist.psu.edu/713792.html
 
-
     """
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph():
+    import networkx
+    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
         raise Exception("hits() not defined for graphs with multiedges.")
 
     if not G.weighted:
