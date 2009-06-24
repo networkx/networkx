@@ -46,14 +46,15 @@ def write_gpickle(G, path):
 
     This will preserve Python objects used as nodes or edges.
 
-    >>> G=nx.path_graph(4)
-    >>> nx.write_gpickle(G,"test.gpickle")
+    G=nx.path_graph(4)
+    nx.write_gpickle(G,"test.gpickle")
 
     See cPickle.
     
     """
     fh=_get_fh(path,mode='wb')        
     pickle.dump(G,fh,pickle.HIGHEST_PROTOCOL)
+    fh.close()
 
 def read_gpickle(path):
     """
