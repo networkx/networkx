@@ -60,7 +60,7 @@ for example in stale_examples:
     except ImportError,strerr:
         sys.stdout=stdout
         sys.stdout.write(" FAIL: %s\n"%strerr)
-        pass
+        continue
     matplotlib.pyplot.clf()
     im=matplotlib.image.imread(png)
     fig = Figure(figsize=(3.0, 3.0))
