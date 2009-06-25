@@ -3,7 +3,7 @@
 NetworkX documentation
 ======================
 
-. only:: html
+.. only:: html
 
     :Release: |version|
     :Date: |today|
@@ -21,11 +21,11 @@ NetworkX documentation
    download
 
 
-. only:: html
+.. only:: html
    - `Examples <examples/index.html>`_
 
 
-. only:: html
+.. only:: html
    - `Gallery <gallery/index.html>`_
 
 
