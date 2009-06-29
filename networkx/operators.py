@@ -423,9 +423,9 @@ def relabel_nodes(G,mapping):
     G : graph
        A NetworkX graph 
 
-    mapping : ditionary or funcdtion
+    mapping : dictionary or function
        Either a dictionary with the old labels as keys and new labels as values
-       or a function transforming an old label with a new label
+       or a function transforming an old label with a new label.
        In either case, the new labels must be hashable Python objects.
 
     Examples

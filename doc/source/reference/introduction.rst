@@ -131,7 +131,7 @@ Each graph object supplies methods to manipulate the graph.  For example,
 >>> G.add_edge(2,3,0.9)  # you can specify the data
 >>> import math
 >>> G.add_edge('y','x',math.cos) # edges can be anything
->>> G.add_node(math.cos) # any hashable cna be a node
+>>> G.add_node(math.cos) # any hashable can be a node
 
 >>> elist=[('a','b',0.3),('b','c',0.9),
        ('a','c',0.5),('c','d',1.2)]
@@ -208,7 +208,7 @@ edges are then lines between those dots.
 
 >>> G=nx.cubical_graph()
 >>> nx.draw(G)   # default spring_layout
->>> nx.draw(G,pos=nx.spectral_layout(G),nodecolor='r',edge_color='b')
+>>> nx.draw(G,pos=nx.spectral_layout(G),node_color='r',edge_color='b')
 
 See the examples for more ideas.
 
@@ -232,7 +232,7 @@ Advantages of "dict of dict" data structure
  - ``for nbr in G[n]:`` iterates through neighbors.
 
 As an example, here is a representation of an undirected graph with the 
-edges $A-B$, $B-C$
+edges A-B, B-C
 
 >>> G=nx.Graph()
 >>> G.add_edge('A','B')
