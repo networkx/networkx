@@ -124,6 +124,7 @@ def pyparse_gml():
           "Import Error: not able to import pyparsing: http://pyparsing.wikispaces.com/"
 
     if not graph:
+        creator = Literal("Creator")+ Optional( restOfLine )
         graphkey = Literal("graph").suppress()
         lbrack = Literal("[").suppress()
         rbrack = Literal("]").suppress()
@@ -143,7 +144,8 @@ def pyparse_gml():
                    +value+OneOrMore(white).suppress()))
         node = Group(Literal("node") + lbrack + OneOrMore(keyvalue) + rbrack)
         edge = Group(Literal("edge") + lbrack + OneOrMore(keyvalue) + rbrack)
-        graph = graphkey + lbrack + OneOrMore(edge|node|keyvalue) + rbrack
+        graph = Optional(creator)+\
+            graphkey + lbrack + OneOrMore(edge|node|keyvalue) + rbrack
         graph.ignore(comment)
         
     return graph
