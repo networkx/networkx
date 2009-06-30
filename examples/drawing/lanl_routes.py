@@ -68,7 +68,7 @@ if __name__ == '__main__':
             node_size=15)
     # adjust the plot limits
     xmax=1.02*max(xx for xx,yy in pos.values())
-    ymax=1.02*max(xx for xx,yy in pos.values())
+    ymax=1.02*max(yy for xx,yy in pos.values())
     plt.xlim(0,xmax)
     plt.ylim(0,ymax)
     plt.savefig("lanl_routes.png")
