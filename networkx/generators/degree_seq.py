@@ -2,7 +2,7 @@
 Generate graphs with a given degree sequence or expected degree sequence.
 
 """
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -34,49 +34,68 @@ import heapq
 #---------------------------------------------------------------------------
 
 def configuration_model(deg_sequence,seed=None):
-    """Return a random pseudograph with the given degree sequence.
+    """Return a random graph with the given degree sequence.
 
-      - `deg_sequence`: degree sequence, a list of integers with each entry
-                        corresponding to the degree of a node (need not be
-                        sorted). A non-graphical degree sequence (i.e. one
-                        not realizable by some simple graph) will raise an
-                        Exception.
-      - `seed`: seed for random number generator (default=None)
+    The configuration model generates a random pseudograph (graph with
+    parallel edges and self loops) by randomly assigning edges to
+    match the given degree sequence.
 
+    Parameters
+    ----------
+    deg_sequence :  list of integers 
+        Each list entry corresponds to the degree of a node.
+    seed : hashable object (default=None)
+        Seed for random number generator.   
 
+    Returns
+    -------
+    G : MultiGraph
+        A graph with the specified degree sequence.
+        Nodes are labeled 0,.., len(deg_sequence)-1,
+        corresponding to the position in deg_sequence.
+
+    Raises
+    ------
+    NetworkXError
+        If the degree sequence does not have an even sum.
+
+    See Also
+    --------
+    is_valid_degree_sequence
+    
+    Notes
+    -----
+    As described by Newman [1]_.
+
+    A non-graphical degree sequence (not realizable by some simple
+    graph) is allowed since this function returns graphs with self
+    loops and parallel edges.  An exception is raised if the degree
+    sequence does not have an even sum.
+
+    This configuration model construction process can lead to
+    duplicate edges and loops.  You can remove the self-loops and
+    parallel edges (see above) which will likely result in a graph
+    that doesn't have the exact degree sequence specified.  This
+    "finite-size effect" decreases as the size of the graph increases.
+
+    References
+    ----------
+    .. [1] M.E.J. Newman, "The structure and function
+           of complex networks", SIAM REVIEW 45-2, pp 167-256, 2003.
+        
+    Examples
+    --------
     >>> from networkx.utils import powerlaw_sequence
     >>> z=nx.create_degree_sequence(100,powerlaw_sequence)
     >>> G=nx.configuration_model(z)
-
-    The pseudograph G is a networkx.MultiGraph that allows multiple (parallel) 
-    edges between nodes and self-loops (edges from a node to itself).
 
     To remove parallel edges:
 
     >>> G=nx.Graph(G)
 
-    Steps:
-
-     - Check if deg_sequence is a valid degree sequence.
-     - Create N nodes with stubs for attaching edges
-     - Randomly select two available stubs and connect them with an edge.
-
-    As described by Newman [newman-2003-structure].
+    To remove self loops:
     
-    Nodes are labeled 1,.., len(deg_sequence),
-    corresponding to their position in deg_sequence.
-
-    This process can lead to duplicate edges and loops, and therefore
-    returns a pseudograph type.  You can remove the self-loops and
-    parallel edges (see above) with the likely result of
-    not getting the exat degree sequence specified.
-    This "finite-size effect" decreases as the size of the graph increases.
-
-    References:
-    
-    [newman-2003-structure]  M.E.J. Newman, "The structure and function
-    of complex networks", SIAM REVIEW 45-2, pp 167-256, 2003.
-        
+    >>> G.remove_edges_from(G.selfloop_edges())
     """
     if not sum(deg_sequence)%2 ==0:
         raise networkx.NetworkXError, 'Invalid degree sequence'
@@ -86,7 +105,6 @@ def configuration_model(deg_sequence,seed=None):
 
     # start with empty N-node graph
     N=len(deg_sequence)
-#    G=networkx.empty_graph(N,create_using=networkx.Graph()) # no multiedges or selfloops
 
     # allow multiedges and selfloops
     G=networkx.empty_graph(N,create_using=networkx.MultiGraph())
