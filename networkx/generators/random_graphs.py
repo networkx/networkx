@@ -549,32 +549,35 @@ def random_regular_graph(d, n, seed=None):
 
 
 def barabasi_albert_graph(n , m, seed=None):
-    """Return random graph using Barabási-Albert preferential attachment model.
+    """Return random graph using Barabási-Albert preferential
+    attachment model.
     
-    A graph of n nodes is grown by attaching new nodes
-    each with m edges that are preferentially attached
-    to existing nodes with high degree.
     
-    :Parameters:
-      - `n`: the number of nodes
-      - `m`: number of edges to attach from a new node to existing nodes
-      - `seed`: seed for random number generator (default=None)
+    A graph of n nodes is grown by attaching new nodes each with m
+    edges that are preferentially attached to existing nodes with high
+    degree.
+    
+    Parameters
+    ----------
+    n : int
+        Number of nodes
+    m : int
+        Number of edges to attach from a new node to existing nodes
+    seed : hashable object (optional, default=None)
+        Seed for random number generator.   
 
+    Returns
+    -------
+    G : Graph
+        
+    Notes
+    -----
     The initialization is a graph with with m nodes and no edges.
 
-    Reference::
-
-      @article{barabasi-1999-emergence,
-      title   = {Emergence of scaling in random networks},
-      author  = {A. L. Barabási and R. Albert},
-      journal = {Science},
-      volume  = {286},
-      number  = {5439},
-      pages   = {509 -- 512},
-      year = {1999},
-      }
-
-
+    References
+    ----------
+    .. [1] A. L. Barabási and R. Albert "Emergence of scaling in
+       random networks", Science 286, pp 509-512, 1999.
     """
         
     if m < 1 or  m >=n:
