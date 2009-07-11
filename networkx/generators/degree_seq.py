@@ -118,7 +118,7 @@ def configuration_model(deg_sequence,seed=None):
     # i.e., node 1 has degree=3 and is repeated 3 times, etc.
     stublist=[]
     for n in G:
-        for i in range(deg_sequence[n-1]):
+        for i in range(deg_sequence[n]):
             stublist.append(n)
 
     # shuffle stublist and assign pairs by removing 2 elements at a time      
