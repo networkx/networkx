@@ -16,6 +16,11 @@ def write_versionfile():
     """Creates a file containing version information."""
     base = os.path.split(__file__)[0]
     versionfile = os.path.join(base, 'version.py')
+    if revision is None and os.path.isfile(versionfile):
+        # Unable to get revision info, so probably not in an SVN directory
+        # If a version.py already exists, let's not overwrite it.
+        # Useful mostly for nightly tarballs.
+        return
     fh = open(versionfile, 'w')
     text = '''"""
 Version information for NetworkX, created during installation.
