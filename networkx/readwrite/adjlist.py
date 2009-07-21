@@ -245,7 +245,10 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
                       %(u,nodetype))
         G.add_node(u)
         for i in range(deg):
-            line=inp.next().strip()
+            while True:
+                line = inp.next()
+                line = line[:line.find(comments)].strip()
+                if line: break
             vlist=line.split(delimiter)
             numb=len(vlist)
             if numb>0:
