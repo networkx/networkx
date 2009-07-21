@@ -246,7 +246,11 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
         G.add_node(u)
         for i in range(deg):
             while True:
-                line = inp.next()
+                try:
+                    line = inp.next()
+                except StopIteration:
+                    msg = "Failed to find neighbor for node (%s)" % (u,)
+                    raise TypeError(msg)
                 line = line[:line.find(comments)].strip()
                 if line: break
             vlist=line.split(delimiter)
