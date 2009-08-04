@@ -99,12 +99,7 @@ def max_weight_matching(G, maxcardinality=False):
     # Find the maximum edge weight.
     maxweight = 0
     allinteger = True
-    for k in G.edges_iter():
-        if len(k) == 2:
-            (i, j) = k
-            wt = 1
-        else:
-            (i, j, wt) = k
+    for i,j,wt in G.edges_iter(data=True):
         if i != j and wt > maxweight:
             maxweight = wt
         allinteger = allinteger and (type(wt) in (int, long))
@@ -521,12 +516,7 @@ def max_weight_matching(G, maxcardinality=False):
         assert len(blossomdual) == 0 or min(blossomdual.values()) >= 0
         # 0. all edges have non-negative slack and
         # 1. all matched edges have zero slack;
-        for k in G.edges_iter():
-            if len(k) == 2:
-                (i, j) = k
-                wt = 1
-            else:
-                (i, j, wt) = k
+        for i,j,wt in G.edges_iter(data=True):
             if i == j:
                 continue # ignore self-loops
             s = dualvar[i] + dualvar[j] - 2 * wt
