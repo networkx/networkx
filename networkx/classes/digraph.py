@@ -193,14 +193,14 @@ class DiGraph(Graph):
             
         Examples
         --------
-        >>> G = nx.DiGraph()
-        >>> G = nx.DiGraph(name='my graph')
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.Graph(name='my graph')
         >>> e = [(1,2),(2,3),(3,4)] # list of edges
-        >>> G = nx.DiGraph(e)
+        >>> G = nx.Graph(e)
 
         Arbitrary graph attribute pairs (key=value) may be assigned
 
-        >>> G=nx.DiGraph(e, day="Friday")
+        >>> G=nx.Graph(e, day="Friday")
         >>> G.graph
         {'day': 'Friday'}
 
@@ -243,10 +243,10 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.DiGraph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_node(1)
         >>> G.add_node('Hello')
-        >>> K3 = nx.complete_graph(3)
+        >>> K3 = nx.Graph([(0,1),(1,2),(2,0)])
         >>> G.add_node(K3)
         >>> G.number_of_nodes()
         3
@@ -299,9 +299,9 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.DiGraph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_nodes_from('Hello')
-        >>> K3 = nx.complete_graph(3)
+        >>> K3 = nx.Graph([(0,1),(1,2),(2,0)])
         >>> G.add_nodes_from(K3)
         >>> sorted(G.nodes())
         [0, 1, 2, 'H', 'e', 'l', 'o']
@@ -343,12 +343,13 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.DiGraph(nx.complete_graph(3))  
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2])
         >>> G.edges()
-        [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
+        [(0, 1), (1, 2)]
         >>> G.remove_node(1)
         >>> G.edges()
-        [(0, 2), (2, 0)]
+        []
 
         """
         try:
@@ -381,7 +382,8 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.DiGraph(nx.complete_graph(3))  
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2])
         >>> e = G.nodes()
         >>> e
         [0, 1, 2]
@@ -443,7 +445,7 @@ class DiGraph(Graph):
         --------
         The following all add the edge e=(1,2) to graph G:
         
-        >>> G = nx.DiGraph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> e = (1,2)
         >>> G.add_edge(1, 2)           # explicit two-node form
         >>> G.add_edge(*e)             # single edge as tuple of two nodes
@@ -509,7 +511,7 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.DiGraph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edges_from([(0,1),(1,2)]) # using a list of edge tuples
         >>> e = zip(range(0,3),range(1,4))
         >>> G.add_edges_from(e) # Add the path graph 0-1-2-3
@@ -574,7 +576,8 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.DiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.remove_edge(0,1)
         >>> e = (1,2)
         >>> G.remove_edge(*e) # unpacks e from an edge tuple
@@ -610,7 +613,8 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.DiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> ebunch=[(1,2),(2,3)]
         >>> G.remove_edges_from(ebunch) 
 
@@ -698,7 +702,8 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.DiGraph())
+        >>> G = nx.DiGraph()   # or MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
@@ -792,7 +797,8 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.DiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> list(G.degree_iter(0)) # node 0 with degree 1
         [(0, 1)]
         >>> list(G.degree_iter([0,1]))
@@ -873,7 +879,8 @@ class DiGraph(Graph):
         
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.DiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.clear()
         >>> G.nodes()
         []
@@ -913,7 +920,16 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(2,create_using=nx.DiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1])
+        >>> H = G.to_directed()
+        >>> H.edges()
+        [(0, 1), (1, 0)]
+
+        If already directed, return a (deep) copy
+
+        >>> G = nx.DiGraph()   # or MultiDiGraph, etc
+        >>> G.add_path([0,1])
         >>> H = G.to_directed()
         >>> H.edges()
         [(0, 1)]
@@ -925,7 +941,7 @@ class DiGraph(Graph):
  
         Returns
         -------
-        G : DiGraph
+        G : Graph
             An undirected graph with the same name and nodes and 
             with edge (u,v,data) if either (u,v,data) or (v,u,data)
             is in the digraph.  If both edges exist in digraph and
@@ -1009,7 +1025,8 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.DiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
         >>> print H.edges()
         [(0, 1), (1, 2)]

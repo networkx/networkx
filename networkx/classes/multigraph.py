@@ -218,7 +218,7 @@ class MultiGraph(Graph):
         --------
         The following all add the edge e=(1,2) to graph G:
         
-        >>> G = nx.MultiGraph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> e = (1,2)
         >>> G.add_edge(1, 2)           # explicit two-node form
         >>> G.add_edge(*e)             # single edge as tuple of two nodes
@@ -298,7 +298,7 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.MultiGraph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edges_from([(0,1),(1,2)]) # using a list of edge tuples
         >>> e = zip(range(0,3),range(1,4))
         >>> G.add_edges_from(e) # Add the path graph 0-1-2-3
@@ -367,7 +367,8 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.MultiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.remove_edge(0,1)
         >>> e = (1,2)
         >>> G.remove_edge(*e) # unpacks e from an edge tuple
@@ -411,7 +412,8 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G=nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> ebunch=[(1,2),(2,3)]
         >>> G.remove_edges_from(ebunch) 
 
@@ -449,7 +451,8 @@ class MultiGraph(Graph):
         --------
         Can be called either using two nodes u,v or edge tuple (u,v)
 
-        >>> G = nx.path_graph(4,create_using=nx.MultiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.has_edge(0,1)  # using two nodes
         True
         >>> e = (0,1)
@@ -504,7 +507,8 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.MultiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.edges()
         [(0, 1), (1, 2), (2, 3)]
         >>> G.edges(data=True) # default edge data is {} (empty dictionary)
@@ -548,7 +552,8 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.MultiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
@@ -604,9 +609,10 @@ class MultiGraph(Graph):
 
         Notes
         -----
-        It is faster to use G[u][v].
+        It is faster to use G[u][v][key].
 
-        >>> G = nx.path_graph(4,create_using=nx.MultiGraph()) 
+        >>> G = nx.MultiGraph()
+        >>> G.add_path([0,1,2,3])
         >>> G[0][1][0]
         {}
 
@@ -621,7 +627,8 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.MultiGraph()) 
+        >>> G = nx.MultiGraph()
+        >>> G.add_path([0,1,2,3])
         >>> G.get_edge_data(0,1) 
         {0: {}}
         >>> e = (0,1)
@@ -662,7 +669,8 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G=nx.path_graph(4,create_using=nx.MultiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> list(G.degree_iter(0)) # node 0 with degree 1
         [(0, 1)]
         >>> list(G.degree_iter([0,1]))
@@ -714,7 +722,8 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.path_graph(2,create_using=nx.MultiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1])
         >>> H = G.to_directed()
         >>> H.edges()
         [(0, 1), (1, 0)]
@@ -753,7 +762,7 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.MultiGraph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge(1,1)
         >>> G.add_edge(1,2)
         >>> G.selfloop_edges()
@@ -792,7 +801,8 @@ class MultiGraph(Graph):
             
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.MultiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.number_of_edges()
         3
         >>> G.number_of_edges(0,1) 

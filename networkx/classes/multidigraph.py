@@ -220,7 +220,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         --------
         The following all add the edge e=(1,2) to graph G:
         
-        >>> G = nx.MultiDiGraph()
+        >>> G = nx.MultiDiGraph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> e = (1,2)
         >>> G.add_edge(1, 2)           # explicit two-node form
         >>> G.add_edge(*e)             # single edge as tuple of two nodes
@@ -289,7 +289,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.MultiDiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.remove_edge(0,1)
         >>> e = (1,2)
         >>> G.remove_edge(*e) # unpacks e from an edge tuple
@@ -346,7 +347,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Examples
         --------
-        >>> G = nx.path_graph(4,create_using=nx.MultiDiGraph())
+        >>> G = nx.DiGraph()   # or MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
@@ -428,7 +430,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Examples
         --------
-        >>> G=nx.path_graph(4,create_using=nx.MultiDiGraph())
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> list(G.degree_iter(0)) # node 0 with degree 1
         [(0, 1)]
         >>> list(G.degree_iter([0,1]))
@@ -524,7 +527,16 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Examples
         --------
-        >>> G = nx.path_graph(2,create_using=nx.MultiDiGraph())
+        >>> G = nx.Graph()   # or MultiGraph, etc
+        >>> G.add_path([0,1])
+        >>> H = G.to_directed()
+        >>> H.edges()
+        [(0, 1), (1, 0)]
+
+        If already directed, return a (deep) copy
+
+        >>> G = nx.DiGraph()   # or MultiDiGraph, etc
+        >>> G.add_path([0,1])
         >>> H = G.to_directed()
         >>> H.edges()
         [(0, 1)]
@@ -532,6 +544,24 @@ class MultiDiGraph(MultiGraph,DiGraph):
         return deepcopy(self)
 
     def to_undirected(self):
+        """Return an undirected representation of the digraph.
+ 
+        Returns
+        -------
+        G : MultiGraph
+            An undirected graph with the same name and nodes and 
+            with edge (u,v,data) if either (u,v,data) or (v,u,data)
+            is in the digraph.  If both edges exist in digraph and
+            their edge data is different, only one edge is created
+            with an arbitrary choice of which edge data to use.
+            You must check and correct for this manually if desired.
+
+        Notes
+        -----
+        This is similar to MultiGraph(self) which returns a shallow copy.  
+        self.to_undirected() returns a deepcopy of edge, node and
+        graph attributes.
+        """
         H=MultiGraph()
         H.name=self.name
         H.add_nodes_from(self)

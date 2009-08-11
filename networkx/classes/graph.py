@@ -202,7 +202,7 @@ class Graph(object):
             
         Examples
         --------
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G = nx.Graph(name='my graph')
         >>> e = [(1,2),(2,3),(3,4)] # list of edges
         >>> G = nx.Graph(e)
@@ -251,7 +251,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> for n in G:
         ...     print n,
         0 1 2 3
@@ -264,7 +265,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G=nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> print 1 in G
         True
         """
@@ -283,7 +285,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> print len(G)
         4
 
@@ -313,7 +316,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> print G[0]
         {1: {}}
         """
@@ -339,10 +343,10 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_node(1)
         >>> G.add_node('Hello')
-        >>> K3 = nx.complete_graph(3)
+        >>> K3 = nx.Graph([(0,1),(1,2),(2,0)])
         >>> G.add_node(K3)
         >>> G.number_of_nodes()
         3
@@ -395,9 +399,9 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_nodes_from('Hello')
-        >>> K3 = nx.complete_graph(3)
+        >>> K3 = nx.Graph([(0,1),(1,2),(2,0)])
         >>> G.add_nodes_from(K3)
         >>> sorted(G.nodes())
         [0, 1, 2, 'H', 'e', 'l', 'o']
@@ -437,12 +441,13 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.complete_graph(3)  # complete graph on 3 nodes, K3
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2])
         >>> G.edges()
-        [(0, 1), (0, 2), (1, 2)]
+        [(0, 1), (1, 2)]
         >>> G.remove_node(1)
         >>> G.edges()
-        [(0, 2)]
+        []
 
         """
         adj = self.adj
@@ -473,7 +478,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.complete_graph(3)  # complete graph on 3 nodes, K3
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2])
         >>> e = G.nodes()
         >>> e
         [0, 1, 2]
@@ -514,7 +520,8 @@ class Graph(object):
         If the node data is not required it is simpler and equivalent 
         to use the expression 'for n in G'.
 
-        >>> G=nx.path_graph(3)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2])
         >>> for n in G:
         ...     print n,
         0 1 2
@@ -522,7 +529,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(3)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2])
         >>> for n in G.nodes_iter():
         ...     print n,
         0 1 2
@@ -552,7 +560,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(3)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2])
         >>> print G.nodes()
         [0, 1, 2]
         >>> G.add_node(1, time='5pm')
@@ -575,9 +584,10 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2])
         >>> print len(G)
-        4
+        3
 
         """
         return len(self.adj)
@@ -606,7 +616,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G=nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2])
         >>> print G.has_node(0)
         True
 
@@ -659,7 +670,7 @@ class Graph(object):
         --------
         The following all add the edge e=(1,2) to graph G:
         
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> e = (1,2)
         >>> G.add_edge(1, 2)           # explicit two-node form
         >>> G.add_edge(*e)             # single edge as tuple of two nodes
@@ -724,7 +735,7 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edges_from([(0,1),(1,2)]) # using a list of edge tuples
         >>> e = zip(range(0,3),range(1,4))
         >>> G.add_edges_from(e) # Add the path graph 0-1-2-3
@@ -794,7 +805,7 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_weighted_edges_from([(0,1,3.0),(1,2,7.5)]) 
         """
         self.add_edges_from(((u,v,{'weight':d}) for u,v,d in ebunch),**attr)
@@ -818,7 +829,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.remove_edge(0,1)
         >>> e = (1,2)
         >>> G.remove_edge(*e) # unpacks e from an edge tuple
@@ -856,7 +868,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G=nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> ebunch=[(1,2),(2,3)]
         >>> G.remove_edges_from(ebunch) 
 
@@ -893,7 +906,8 @@ class Graph(object):
         --------
         Can be called either using two nodes u,v or edge tuple (u,v)
 
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.has_edge(0,1)  # using two nodes
         True
         >>> e = (0,1)
@@ -952,14 +966,15 @@ class Graph(object):
         It is usually more convenient (and faster) to access the
         adjacency dictionary as G[n]:
 
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge('a','b',weight=7)
         >>> G['a']
         {'b': {'weight': 7}}
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.neighbors(0)
         [1]
 
@@ -974,7 +989,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G=nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> print [n for n in G.neighbors_iter(0)]
         [1]
 
@@ -1017,7 +1033,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.edges()
         [(0, 1), (1, 2), (2, 3)]
         >>> G.edges(data=True) # default edge data is {} (empty dictionary)
@@ -1056,7 +1073,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
@@ -1105,7 +1123,8 @@ class Graph(object):
         -----
         It is faster to use G[u][v].
 
-        >>> G = nx.path_graph(4) 
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G[0][1]
         {}
 
@@ -1120,8 +1139,9 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4) # path graph with edge data all set to {}
-        >>> G.get_edge_data(0,1) 
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
+        >>> G.get_edge_data(0,1) # default edge data is {}
         {}
         >>> e = (0,1)
         >>> G.get_edge_data(*e) # tuple form
@@ -1151,7 +1171,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G=nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.adjacency_list() # in order given by G.nodes()
         [[1], [0, 2], [1, 3], [2]]
 
@@ -1176,7 +1197,8 @@ class Graph(object):
            
         Examples   
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> [(n,nbrdict) for n,nbrdict in G.adjacency_iter()]
         [(0, {1: {}}), (1, {0: {}, 2: {}}), (2, {1: {}, 3: {}}), (3, {2: {}})]
 
@@ -1206,7 +1228,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.degree(0)
         1
         >>> G.degree([0,1])
@@ -1246,7 +1269,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G=nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> list(G.degree_iter(0)) # node 0 with degree 1
         [(0, 1)]
         >>> list(G.degree_iter([0,1]))
@@ -1275,7 +1299,8 @@ class Graph(object):
         
         Examples
         --------
-        >>> G=nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.clear()
         >>> G.nodes()
         []
@@ -1307,7 +1332,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> H = G.copy()
 
         """
@@ -1338,7 +1364,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(2)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1])
         >>> H = G.to_directed()
         >>> H.edges()
         [(0, 1), (1, 0)]
@@ -1378,7 +1405,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(2)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1])
         >>> H = G.to_directed()
         >>> H.edges()
         [(0, 1), (1, 0)]
@@ -1420,7 +1448,8 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
         >>> print H.edges()
         [(0, 1), (1, 2)]
@@ -1472,7 +1501,7 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge(1,1)
         >>> G.add_edge(1,2)
         >>> G.nodes_with_selfloops()
@@ -1502,7 +1531,7 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge(1,1)
         >>> G.add_edge(1,2)
         >>> G.selfloop_edges()
@@ -1534,7 +1563,7 @@ class Graph(object):
 
         Examples
         --------
-        >>> G=nx.Graph()
+        >>> G=nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge(1,1)
         >>> G.add_edge(1,2)
         >>> G.number_of_selfloops()
@@ -1562,11 +1591,12 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.size()
         3
 
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge('a','b',weight=2)
         >>> G.add_edge('b','c',weight=4)
         >>> G.size()
@@ -1598,7 +1628,8 @@ class Graph(object):
             
         Examples
         --------
-        >>> G = nx.path_graph(4)
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
         >>> G.number_of_edges()
         3
         >>> G.number_of_edges(0,1) 
@@ -1633,7 +1664,7 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.Graph()
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_star([0,1,2,3])
         >>> G.add_star([10,11,12],weight=2)
 
@@ -1659,7 +1690,7 @@ class Graph(object):
 
         Examples
         --------
-        >>> G=nx.Graph()
+        >>> G=nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> G.add_path([10,11,12],weight=7)
 
@@ -1684,7 +1715,7 @@ class Graph(object):
 
         Examples
         --------
-        >>> G=nx.Graph()
+        >>> G=nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_cycle([0,1,2,3])
         >>> G.add_cycle([10,11,12],weight=7)
 
