@@ -12,7 +12,7 @@ class TestEigenvectorCentrality:
                    (4,5),(4,6),(4,7),(5,7),(6,0),(6,4),\
                    (6,7),(7,5),(7,6)]
 
-        G.add_edges_from(edges)
+        G.add_edges_from(edges,weight=1.0)
         self.G=G
         self.G.evc=[0.09539322, 0.07361262, 0.12340075,  0.15203039,
                     0.18124403, 0.05912812, 0.19307497,  0.12211591]

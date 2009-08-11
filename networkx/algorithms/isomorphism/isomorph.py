@@ -154,23 +154,23 @@ def is_isomorphic(G1,G2,weighted=False,rtol=1e-6,atol=1e-9):
     """
     gm=None
     if weighted==True:
-        assert(G1.weighted and G2.weighted)
-        if not G1.directed and not G1.multigraph:
-            assert(not G2.directed and not G2.multigraph)
+#        assert(G1.weighted and G2.weighted)
+        if not G1.is_directed() and not G1.is_multigraph():
+            assert(not G2.is_directed() and not G2.is_multigraph())
             gm = networkx.WeightedGraphMatcher(G1,G2,rtol,atol)
-        elif not G1.directed and G1.multigraph:
-            assert(not G2.directed and G2.multigraph)
+        elif not G1.is_directed() and G1.is_multigraph():
+            assert(not G2.is_directed() and G2.is_multigraph())
             gm = networkx.WeightedMultiGraphMatcher(G1,G2,rtol,atol)
-        elif G1.directed and not G1.multigraph:
-            assert(G2.directed and not G2.multigraph)
+        elif G1.is_directed() and not G1.is_multigraph():
+            assert(G2.is_directed() and not G2.is_multigraph())
             gm = networkx.WeightedDiGraphMatcher(G1,G2,rtol,atol)
         else:
-            assert(G2.directed and G2.multigraph)
+            assert(G2.is_directed() and G2.is_multigraph())
             gm = networkx.WeightedMultiDiGraphMatcher(G1,G2,rtol,atol)
     else:
-        if G1.directed and G2.directed:
+        if G1.is_directed() and G2.is_directed():
             gm=  networkx.DiGraphMatcher(G1,G2)
-        elif not (G1.directed and G2.directed):
+        elif not (G1.is_directed() and G2.is_directed()):
             gm = networkx.GraphMatcher(G1,G2)
     if gm==None:
         # Graphs are of mixed type. We could just return False, 

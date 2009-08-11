@@ -14,7 +14,7 @@ hypergraphs.
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2007 by 
+#    Copyright (C) 2004-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -95,7 +95,7 @@ def write_graphml(G, path, encoding='utf-8'):
     # it would probably be too expensive to loop over all nodes/edges.
     nodekeys = {}
     try:
-        for k, v in G.node_attr.values()[0].items():
+        for k, v in G.node[G.nodes()[0]].items():
             nodekeys[k] = graphml_datatype(v)
     except:
         pass
@@ -118,7 +118,7 @@ def write_graphml(G, path, encoding='utf-8'):
     # Create actual network description
     graph = new_element("graph", root)
     graph.setAttribute("id", G.name)
-    if G.directed:
+    if G.is_directed():
         graph.setAttribute("edgedefault", "directed")
     else:
         graph.setAttribute("edgedefault", "undirected")
@@ -128,12 +128,8 @@ def write_graphml(G, path, encoding='utf-8'):
         for key in nodekeys:
             data = new_element("data", node)
             data.setAttribute("key", key)
-            data.appendChild(doc.createTextNode(make_str(G.node_attr[n][key])))
+            data.appendChild(doc.createTextNode(make_str(G.node[n][key])))
     for (u,v,d) in G.edges(data=True):
-        if d is None:
-            d = {}
-        if type(d) != type({}):
-            d = {'data': d}
         edge = new_element("edge", graph)
         edge.setAttribute("source", make_str(u))
         edge.setAttribute("target", make_str(v))
@@ -150,6 +146,9 @@ def read_graphml(path):
 
     Returns a Graph or DiGraph.
 
+    Does not implement full GraphML specification.
+
+
     """
     fh=_get_fh(path,mode='r')        
     G=parse_graphml(fh)
@@ -158,12 +157,15 @@ def read_graphml(path):
 def parse_graphml(lines):
     """Read graph in GraphML format from string.
 
-    Returns a Graph or DiGraph."""
+    Returns a Graph or DiGraph.
+
+    Does not implement full GraphML specification.
+    """
 	
     import xml.parsers.expat
 
     context = []
-    G=networkx.DiGraph()
+    G=networkx.MultiDiGraph()
     defaultDirected = [True]
 	
     def start_element(name,attrs):
@@ -187,13 +189,13 @@ def parse_graphml(lines):
                 raise GraphFormatError, 'Edge without source in GraphML'
             if 'target' not in attrs:
                 raise GraphFormatError, 'Edge without target in GraphML'
-            G.add_edge(attrs['source'], attrs['target'],attrs.get('id'))  
+            G.add_edge(attrs['source'], attrs['target'],key=attrs.get('id'))
             # no mixed graphs in NetworkX
             # handle mixed graphs by adding two directed
             # edges for an undirected edge in a directed graph 
             if attrs.get('directed')=='false':
                 if defaultDirected[0]:
-                    G.add_edge(attrs['target'], attrs['source'],attrs.get('id'))
+                    G.add_edge(attrs['target'], attrs['source'],key=attrs.get('id'))
 		
     def end_element(name):
         context.pop()
@@ -209,5 +211,5 @@ def parse_graphml(lines):
     if defaultDirected[0]:
         return G
     else:
-        return networkx.Graph(G)
+        return networkx.MultiGraph(G)
 

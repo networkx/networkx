@@ -61,8 +61,8 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
     if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
         raise Exception("hits() not defined for graphs with multiedges.")
 
-    if not G.weighted:
-        raise Exception("hits(): input graph must be weighted")
+#    if not G.weighted:
+#        raise Exception("hits(): input graph must be weighted")
 
     # choose fixed starting vector if not given
     if nstart is None:
@@ -82,11 +82,11 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
         # doing a left multiply a^T=hlast^T*G 
         for n in h:
             for nbr in G[n]:
-                a[nbr]+=hlast[n]*G[n][nbr]
+                a[nbr]+=hlast[n]*G[n][nbr].get('weight',1)
         # now multiply h=Ga
         for n in h:
             for nbr in G[n]:
-                h[n]+=a[nbr]*G[n][nbr]
+                h[n]+=a[nbr]*G[n][nbr].get('weight',1)
         # normalize vector 
         s=1.0/sum(h.values())
         for n in h: h[n]*=s

@@ -7,16 +7,16 @@ class TestAStar:
 
     def setUp(self):
         self.XG=nx.DiGraph()
-        self.XG.add_edges_from([('s','u',10),
-                                ('s','x',5),
-                                ('u','v',1),
-                                ('u','x',2),
-                                ('v','y',1),
-                                ('x','u',3),
-                                ('x','v',5),
-                                ('x','y',2),
-                                ('y','s',7),
-                                ('y','v',6)])
+        self.XG.add_edges_from([('s','u',{'weight':10}),
+                                ('s','x',{'weight':5}),
+                                ('u','v',{'weight':1}),
+                                ('u','x',{'weight':2}),
+                                ('v','y',{'weight':1}),
+                                ('x','u',{'weight':3}),
+                                ('x','v',{'weight':5}),
+                                ('x','y',{'weight':2}),
+                                ('y','s',{'weight':7}),
+                                ('y','v',{'weight':6})])
 
     def test_random_graph(self):        
 
@@ -29,12 +29,12 @@ class TestAStar:
 
         # Build a path from points[0] to points[-1] to be sure it exists
         for p1, p2 in zip(points[:-1], points[1:]):
-            G.add_edge(p1, p2, dist(p1, p2))
+            G.add_edge(p1, p2, weight=dist(p1, p2))
 
         # Add other random edges
         for _ in xrange(100):
             p1, p2 = choice(points), choice(points)
-            G.add_edge(p1, p2, dist(p1, p2))
+            G.add_edge(p1, p2, weight=dist(p1, p2))
 
         path = nx.astar_path(G, points[0], points[-1], dist)
         assert path == nx.dijkstra_path(G, points[0], points[-1])
@@ -58,22 +58,37 @@ class TestAStar:
 
     def test_astar_directed2(self):
         XG2=nx.DiGraph()
-        XG2.add_edges_from([[1,4,1],[4,5,1],[5,6,1],[6,3,1],
-                            [1,3,50],[1,2,100],[2,3,100]])
+        XG2.add_edges_from([[1,4,{'weight':1}],
+                            [4,5,{'weight':1}],
+                            [5,6,{'weight':1}],
+                            [6,3,{'weight':1}],
+                            [1,3,{'weight':50}],
+                            [1,2,{'weight':100}],
+                            [2,3,{'weight':100}]])
         assert nx.astar_path(XG2,1,3)==[1, 4, 5, 6, 3]
 
     def test_astar_undirected2(self):
         XG3=nx.Graph()
-        XG3.add_edges_from([ [0,1,2],[1,2,12],[2,3,1],
-                             [3,4,5],[4,5,1],[5,0,10] ])
+        XG3.add_edges_from([ [0,1,{'weight':2}],
+                             [1,2,{'weight':12}],
+                             [2,3,{'weight':1}],
+                             [3,4,{'weight':5}],
+                             [4,5,{'weight':1}],
+                             [5,0,{'weight':10}] ])
         assert nx.astar_path(XG3,0,3)==[0, 1, 2, 3]
         assert nx.astar_path_length(XG3,0,3)==15
 
 
     def test_astar_undirected3(self):
         XG4=nx.Graph()
-        XG4.add_edges_from([ [0,1,2],[1,2,2],[2,3,1],[3,4,1],
-                             [4,5,1],[5,6,1],[6,7,1],[7,0,1] ])
+        XG4.add_edges_from([ [0,1,{'weight':2}],
+                             [1,2,{'weight':2}],
+                             [2,3,{'weight':1}],
+                             [3,4,{'weight':1}],
+                             [4,5,{'weight':1}],
+                             [5,6,{'weight':1}],
+                             [6,7,{'weight':1}],
+                             [7,0,{'weight':1}] ])
         assert nx.astar_path(XG4,0,2)==[0, 1, 2]
         assert nx.astar_path_length(XG4,0,2)==4
 

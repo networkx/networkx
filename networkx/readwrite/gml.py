@@ -12,7 +12,7 @@ http://www-personal.umich.edu/~mejn/netdata/
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2008 by 
+#    Copyright (C) 2008-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -85,22 +85,15 @@ def parse_gml(lines):
             else:
                 label[id]=id
                 del d['id']
-            G.add_node(label[id])
-            if len(d)==0:
-                d=None
-            G.node_attr[label[id]]=d
+            G.add_node(label[id],**d)
 
     # second pass, edges            
     for item in tokens:
         if item[0]=='edge':
             d=item.asDict()
-            source=d['source']
-            target=d['target']
-            del d['source']
-            del d['target']
-            if len(d)==0:
-                d=None
-            G.add_edge(label[source],label[target],d)
+            source=d.pop('source')
+            target=d.pop('target')
+            G.add_edge(label[source],label[target],**d)
     return G
             
 graph = None
@@ -208,10 +201,10 @@ def write_gml(G, path):
     node_id={}
 
     fh.write("graph [\n")
-    if G.directed:
+    if G.is_directed():
         fh.write(indent+"directed 1\n")
     # write graph attributes 
-    for k,v in graph_attr.items():
+    for k,v in G.graph.items():
         if is_string_like(v):
             v='"'+v+'"'
         fh.write(indent+"%s %s\n"%(k,v))
@@ -219,31 +212,19 @@ def write_gml(G, path):
     for n in G:
         fh.write(indent+"node [\n")
         # get id or assign number
-        if n in node_attr:
-            nid=node_attr[n].get('id',count.next())
-        else:
-            nid=count.next()
+        nid=G.node[n].get('id',count.next())
         node_id[n]=nid
         fh.write(2*indent+"id %s\n"%nid)
         fh.write(2*indent+"label \"%s\"\n"%n)
-        if n in node_attr:
-          for k,v in node_attr[n].items():
+        if n in G:
+          for k,v in G.node[n].items():
               if is_string_like(v): v='"'+v+'"'
               if k=='id': continue
               fh.write(2*indent+"%s %s\n"%(k,v))
         fh.write(indent+"]\n")
     # write edges
-    for u,v,d in G.edges_iter(data=True):
+    for u,v,edgedata in G.edges_iter(data=True):
         # try to guess what is on the edge and do something reasonable
-        edgedata={}
-        if d is None:  # no data 
-            pass
-        elif hasattr(d,'iteritems'): # try dict-like
-            edgedata=dict(d.iteritems())
-        elif hasattr(d,'__iter__'): # some kind of container
-            edgedata['data']=d.__repr__()
-        else: # something else - string, number
-            edgedata['data']=d
         fh.write(indent+"edge [\n")
         fh.write(2*indent+"source %s\n"%node_id[u])
         fh.write(2*indent+"target %s\n"%node_id[v])

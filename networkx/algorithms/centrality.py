@@ -37,7 +37,7 @@ def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
     paths that pass through that node.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A networkx graph 
 
@@ -105,7 +105,7 @@ def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
                 S.append(v)
                 D[v] = dist
                 for w,edgedata in G[v].iteritems():
-                    vw_dist = D[v] + edgedata
+                    vw_dist = D[v] + edgedata['weight']
                     if w not in D and (w not in seen or vw_dist < seen[w]):
                         seen[w] = vw_dist
                         push(Q,(vw_dist,v,w))
@@ -148,7 +148,7 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
     paths that pass through that node.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A networkx graph 
 
@@ -274,7 +274,7 @@ def betweenness_centrality_source(G,normalized=True,
 
 
     Parameters
-    -----------
+    ----------
     G : graph
       A networkx graph 
 
@@ -337,7 +337,7 @@ def edge_betweenness(G,normalized=True,weighted_edges=False,sources=None):
     """Compute betweenness centrality for edges.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A networkx graph 
 
@@ -362,7 +362,7 @@ def edge_betweenness(G,normalized=True,weighted_edges=False,sources=None):
         sources = G # only used to iterate over nodes
 
     betweenness=dict.fromkeys(G.edges(),0.0)
-    if G.directed:
+    if G.is_directed():
         for s in sources:
             S, P, D, sigma =_brandes_betweenness_helper(G,s,weighted_edges)
             delta=dict.fromkeys(G,0.0)
@@ -449,7 +449,7 @@ def _brandes_betweenness_helper(G,root,weighted_edges):
             S.append(v)
             D[v] = dist
             for w,edgedata in G[v].iteritems(): 
-                vw_dist = D[v] + edgedata
+                vw_dist = D[v] + edgedata['weight']
                 if w not in D and (w not in seen or vw_dist < seen[w]):
                     seen[w] = vw_dist
                     sigma[w] = 0
@@ -514,7 +514,7 @@ def degree_centrality(G,v=None):
     is connected to.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A networkx graph 
 
@@ -552,7 +552,7 @@ def closeness_centrality(G,v=None,weighted_edges=False):
     other nodes.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A networkx graph 
 
@@ -575,7 +575,7 @@ def closeness_centrality(G,v=None,weighted_edges=False):
 
     Notes
     -----
-    The closeness centrality is normalized to to n-1 / |G|-1 where 
+    The closeness centrality is normalized to to n-1 / size(G)-1 where 
     n is the number of nodes in the connected part of graph containing
     the node.  If the graph is not completely connected, this
     algorithm computes the closeness centrality for each connected
@@ -615,7 +615,7 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
     largest eigenvalue of the adjacency matrix of G.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A networkx graph 
 
@@ -650,11 +650,11 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
     pagerank()
 
     """
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph():
+    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
         raise Exception("eigenvector_centrality() not defined for graphs with multiedges.")
 
-    if not G.weighted:
-        raise Exception("eigenvector_centrality(): input graph must be weighted")
+#    if not G.weighted:
+#        raise Exception("eigenvector_centrality(): input graph must be weighted")
 
     # choose random starting vector if not given
     if nstart is None:
@@ -673,7 +673,7 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
         # do the multiplication y=Ax
         for n in x:
             for nbr in G[n]:
-                x[n]+=xlast[nbr]*G[n][nbr]
+                x[n]+=xlast[nbr]*G[n][nbr]['weight']
         # normalize vector
         s=1.0/sum(x.values())
         for n in x: x[n]*=s

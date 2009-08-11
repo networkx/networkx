@@ -54,7 +54,7 @@ Thanks especially to the following contributors.
  - Christopher Ellison implemented the VF2 isomorphism algorithm
    and contributed the code for matching all the graph types.
 
- - Eben Kennah contributed the strongly connected components and
+ - Eben Kenah contributed the strongly connected components and
    DFS functions.
 
  - Sasha Gutfriend contributed edge betweenness algorithms.

@@ -5,9 +5,12 @@ Graph -- Undirected graphs with self loops
 ==========================================
 
 Overview
---------
+========
 .. currentmodule:: networkx
-.. autoclass:: Graph
+.. autofunction:: Graph
+
+Methods
+=======
 
 Adding and Removing Nodes and Edges
 -----------------------------------
@@ -15,12 +18,14 @@ Adding and Removing Nodes and Edges
 .. autosummary::
    :toctree: generated/
 
+   Graph.__init__
    Graph.add_node
    Graph.add_nodes_from
    Graph.remove_node
    Graph.remove_nodes_from
    Graph.add_edge
    Graph.add_edges_from
+   Graph.add_weighted_edges_from
    Graph.remove_edge
    Graph.remove_edges_from
    Graph.add_star

@@ -84,24 +84,7 @@ class Reader(object):
 
 
 class NumpyDocString(object):
-#    def __init__(self,docstring):
-    def __init__(self,obj):
-        docstring=inspect.getdoc(obj) or ''
-        charset = None
-        module = getattr(obj, '__module__', None)
-#        if module is not None:
-#            charset = get_module_charset(module)
-        if isinstance(docstring, str):
-#            if charset:
-#                docstring = docstring.decode(charset)
-#            else:
-            try:
-                    # try decoding with utf-8, should only work for real UTF-8
-                docstring = docstring.decode('utf-8')
-            except UnicodeError:
-                # last resort -- can't fail
-                docstring = docstring.decode('latin1')
-
+    def __init__(self,docstring):
         docstring = textwrap.dedent(docstring).split('\n')
 
         self._doc = Reader(docstring)
@@ -403,6 +386,8 @@ class NumpyDocString(object):
         out += self._str_see_also(func_role)
         for s in ('Notes','References','Examples'):
             out += self._str_section(s)
+        for param_list in ('Attributes', 'Methods'):
+            out += self._str_param_list(param_list)
         out += self._str_index()
         return '\n'.join(out)
 
@@ -426,10 +411,10 @@ class FunctionDoc(NumpyDocString):
     def __init__(self, func, role='func', doc=None):
         self._f = func
         self._role = role # e.g. "func" or "meth"
-#        if doc is None:
-#            doc = inspect.getdoc(func) or ''
+        if doc is None:
+            doc = inspect.getdoc(func) or ''
         try:
-            NumpyDocString.__init__(self, func)
+            NumpyDocString.__init__(self, doc)
         except ValueError, e:
             print '*'*78
             print "ERROR: '%s' while parsing `%s`" % (e, self._f)
@@ -489,27 +474,24 @@ class ClassDoc(NumpyDocString):
         self._name = cls.__name__
         self._func_doc = func_doc
 
-#        if doc is None:
-#            doc = pydoc.getdoc(cls)
+        if doc is None:
+            doc = pydoc.getdoc(cls)
 
-#        NumpyDocString.__init__(self, doc)
-        NumpyDocString.__init__(self, cls)
+        NumpyDocString.__init__(self, doc)
+
+        if not self['Methods']:
+            self['Methods'] = [(name, '', '') for name in sorted(self.methods)]
+
+        if not self['Attributes']:
+            self['Attributes'] = [(name, '', '')
+                                  for name in sorted(self.properties)]
 
     @property
     def methods(self):
         return [name for name,func in inspect.getmembers(self._cls)
                 if not name.startswith('_') and callable(func)]
 
-    def __str__(self):
-        out = ''
-        out += super(ClassDoc, self).__str__()
-        out += "\n\n"
-
-        #for m in self.methods:
-        #    print "Parsing `%s`" % m
-        #    out += str(self._func_doc(getattr(self._cls,m), 'meth')) + '\n\n'
-        #    out += '.. index::\n   single: %s; %s\n\n' % (self._name, m)
-
-        return out
-
-
+    @property
+    def properties(self):
+        return [name for name,func in inspect.getmembers(self._cls)
+                if not name.startswith('_') and func is None]

@@ -56,7 +56,7 @@ def astar_path(G, source, target, heuristic=None):
     shortest_path(), dijkstra_path()
 
     """
-    if G.multigraph==True:
+    if G.is_multigraph():
         raise NetworkXError("astar_path() not implemented for Multi(Di)Graphs")
 
     if heuristic is None:
@@ -94,7 +94,7 @@ def astar_path(G, source, target, heuristic=None):
         for neighbor, w in G[curnode].iteritems():
             if neighbor in explored:
                 continue
-            ncost = dist + w
+            ncost = dist + w.get('weight',1)
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
                 # if qcost < ncost, a longer path to neighbor remains
@@ -136,5 +136,5 @@ def astar_path_length(G, source, target, heuristic=None):
 """
     # FIXME: warn if G.weighted==False
     path=astar_path(G,source,target,heuristic)
-    return sum(G[u][v] for u,v in zip(path[:-1],path[1:]))
+    return sum(G[u][v].get('weight',1) for u,v in zip(path[:-1],path[1:]))
     

@@ -103,7 +103,7 @@ True
 >>> G.delete_node('j') # NetworkXError
 Traceback (most recent call last):
 ...
-NetworkXError: node j not in graph
+NetworkXError: The node j is not in the graph.
 >>> G.delete_node('m')
 >>> G.nodes()
 []
@@ -495,7 +495,7 @@ Neighbors
 >>> sorted(G.neighbors('j'))
 Traceback (most recent call last):
 ...
-NetworkXError: node j not in graph
+NetworkXError: The node j is not in the graph.
 
 
 Iterators
@@ -516,7 +516,7 @@ sorted(G.degree_iter())
 >>> sorted(G.neighbors_iter('X'))
 Traceback (most recent call last):
 ...
-NetworkXError: node X not in graph
+NetworkXError: The node X is not in the graph.
 
 >>> G.clear()
 >>> number_of_nodes(G)
@@ -617,16 +617,16 @@ Test error handling of tuple as a node
 >>> H.delete_node((1,2))
 Traceback (most recent call last):
 ...
-NetworkXError: node (1, 2) not in graph
+NetworkXError: The node (1, 2) is not in the graph.
 
 >>> H.delete_nodes_from([(1,2)])
 
 was
 Traceback (most recent call last):
 ...
-NetworkXError: node (1, 2) not in graph
+NetworkXError: The node (1, 2) is not in the graph.
 
 >>> H.neighbors((1,2))
 Traceback (most recent call last):
 ...
-NetworkXError: node (1, 2) not in graph
+NetworkXError: The node (1, 2) is not in the graph.

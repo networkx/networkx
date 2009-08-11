@@ -69,11 +69,11 @@ if __name__ == '__main__':
         all_recipients = getaddresses(tos + ccs + resent_tos + resent_ccs)
         # now add the edges for this mail message
         for (target_name,target_addr) in all_recipients:
-            G.add_edge(source_addr,target_addr,msg)  
+            G.add_edge(source_addr,target_addr,message=msg)  
 
     # print edges with message subject
-    for (u,v,m) in G.edges_iter(data=True):
-        print "From: %s To: %s Subject: %s"%(u,v,m["Subject"])
+    for (u,v,d) in G.edges_iter(data=True):
+        print "From: %s To: %s Subject: %s"%(u,v,d['message']["Subject"])
     
 
     try: # draw

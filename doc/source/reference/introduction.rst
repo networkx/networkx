@@ -28,7 +28,7 @@ NetworkX is intended to:
 History:
 
 -  NetworkX was inspired by Guido van Rossum's 1998 Python 
-  :ref:`graph representation essay<references>`. 
+   graph representation essay:ref:`[1]<references>`. 
 
 -  First public release in April 2005.  Version 1.0 released in 2009.
 
@@ -105,10 +105,6 @@ it may make more sense to create a single graph object with more complicated dat
 representing each edge.  Edge data is arbitrary in NetworkX so you can make it  
 anything from a tuple to a customized object for your application.  
 
-To help standardize complex edge information, we provide the AttrGraph family
-of classes (:ref:`AttrGraph<attrgraph>`, AttrDiGraph_, etc). 
-which stores each edge as a dictionary of "name"<-->"value" associations.  
-This seems to work well in most applications where multiple edge attributes are desired.
 
 Once you've decided how to encode the nodes and edges, and whether you have
 an undirected/directed graph with or without multiedges you are ready to build 
@@ -128,18 +124,17 @@ Each graph object supplies methods to manipulate the graph.  For example,
 >>> import networkx as nx
 >>> G=nx.Graph()
 >>> G.add_edge(1,2)      # default edge data=1
->>> G.add_edge(2,3,0.9)  # you can specify the data
+>>> G.add_edge(2,3,weight=0.9)  # you can specify edge data
 >>> import math
->>> G.add_edge('y','x',math.cos) # edges can be anything
+>>> G.add_edge('y','x',function=math.cos) # edge attributes can be anything
 >>> G.add_node(math.cos) # any hashable can be a node
 
->>> elist=[('a','b',0.3),('b','c',0.9),
-       ('a','c',0.5),('c','d',1.2)]
->>> G.add_edges_from(elist)  # add multiple edges at once
+>>> elist=[('a','b',0.3),('b','c',0.9),('a','c',0.5),('c','d',1.2)]
+>>> G.add_weighted_edges_from(elist)  # add multiple edges at once
 
 You can see the :doc:`/tutorial/index` for more examples.
 Some basic graph operations such as union and intersection
-are described in the operators module documentation.
+are described in the :ref:`operators module<operators>` documentation.
 
 Graph generators such as binomial_graph and powerlaw_graph are provided in the
 :doc:`generators` subpackage.
@@ -186,10 +181,9 @@ As an example here is code to use Dijkstra's algorithm to
 find the shortest weighted path: 
 
 >>> G=nx.Graph()
->>> e=[('a','b',0.3),('b','c',0.9),
-       ('a','c',0.5),('c','d',1.2)]
->>> G.add_edges_from(e)
->>> print dijsktra_path(G,'a','d')
+>>> e=[('a','b',0.3),('b','c',0.9),('a','c',0.5),('c','d',1.2)]
+>>> G.add_weighted_edges_from(e)
+>>> print nx.dijkstra_path(G,'a','d')
 ['a', 'c', 'd']
 
 Drawing
@@ -208,56 +202,57 @@ edges are then lines between those dots.
 
 >>> G=nx.cubical_graph()
 >>> nx.draw(G)   # default spring_layout
->>> nx.draw(G,pos=nx.spectral_layout(G),node_color='r',edge_color='b')
+>>> nx.draw(G,pos=nx.spectral_layout(G),nodecolor='r',edge_color='b')
 
 See the examples for more ideas.
 
 Data Structure
 ==============
-NetworkX uses a "dictionary of dictionaries" as the basic network data structure.
-This allows fast lookup with reasonable storage for large sparse networks.  The
-keys are nodes so G[u] returns an adjacency dict keyed by neighbor to the edge data.
-And G[u][v] provides the edge data itself.
-A dictionary of lists would have also been possible, but not allowed fast edge
-detection nor convenient storage of edge data.
+NetworkX uses a "dictionary of dictionaries of dictionaries" as the basic network 
+data structure.  This allows fast lookup with reasonable storage for large sparse 
+networks.  The keys are nodes so G[u] returns an adjacency dict keyed by neighbor 
+to the edge attribute dict.   The expression G[u][v] returns the edge attribute
+dictionary itself.  A dictionary of lists would have also been possible, but 
+not allowed fast edge detection nor convenient storage of edge data.
 
-Advantages of "dict of dict" data structure
+Advantages of dict-of-dicts-of-dicts data structure
   
  - Find edges and remove edges with two dictionary look-ups 
  - Prefer to "lists" because of fast lookup with sparse storage.
  - Prefer to "sets" since data can be attached to edge
- - G[u][v] returns the edge object
+ - G[u][v] returns the edge attribute dictionary
  - ``n in G`` tests if node ``n`` is in graph G
  - ``for n in G:`` iterates through the graph.
  - ``for nbr in G[n]:`` iterates through neighbors.
 
 As an example, here is a representation of an undirected graph with the 
-edges A-B, B-C
+edges $A-B$, $B-C$
 
 >>> G=nx.Graph()
 >>> G.add_edge('A','B')
 >>> G.add_edge('B','C')
 >>> print G.adj
-{'A': {'B': 1}, 
- 'B': {'A': 1, 'C': 1}, 
- 'C': {'B': 1}}
+{'A': {'B': {}}, 
+ 'B': {'A': {}, 'C': {}}, 
+ 'C': {'B': {}}}
 
 The data structure gets morphed slightly for each base graph class.
-For MultiGraph/MultiDiGraph we use a dict-of-dicts-of-lists where the inner
-list conatins the edge data for each edge between the two nodes.
-For DiGraph two dict-of-dict structures are provided, one for successors
-and one for predecessors.
+For DiGraph two dict-of-dicts-of-dicts structures are provided, one 
+for successors and one for predecessors.
+For MultiGraph/MultiDiGraph we use a dict-of-dicts-of-dicts-of-dicts 
+where the third dict is keyed by an edge key identifier to the fourth 
+dict which contains the edge attributes for that edge between the two nodes.
 
-For AttrGraph provides a dictionary of attributes for each edge.
+Graphs use a dictionary of attributes for each edge.
 We use a dict-of-dicts-of-dicts data structure with the inner 
 dict storing "name-value" relationships for that edge.
 
->>> G=nx.AttrGraph()
+>>> G=nx.Graph()
 >>> G.add_edge(1,2,color='red',weight=0.84,size=300)
->>> print G[1][2].size
+>>> print G[1][2]['size']
 300
 
-The dict-of-dict data structure is based on the following
+The dict-of-dicts data structure is based on the following
 
 References
 ----------

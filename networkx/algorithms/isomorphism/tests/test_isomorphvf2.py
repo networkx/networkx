@@ -132,7 +132,7 @@ def test_multiedge():
             random.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
-            if not g1.directed:
+            if not g1.is_directed():
                 gm = vf2.GraphMatcher(g1,g2)
             else:
                 gm = vf2.DiGraphMatcher(g1,g2)
@@ -151,7 +151,7 @@ def test_selfloop():
             random.shuffle(new_nodes)
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
-            if not g1.directed:
+            if not g1.is_directed():
                 gm = vf2.GraphMatcher(g1,g2)
             else:
                 gm = vf2.DiGraphMatcher(g1,g2)
@@ -199,7 +199,7 @@ def test_multiple():
         g1.add_edges_from(edges)
         g2.add_edges_from(edges)
         g3 = nx.subgraph(g2, ['A','B'])
-        if not g1.directed:
+        if not g1.is_directed():
             gmA = nx.GraphMatcher(g1,g2)
             gmB = nx.GraphMatcher(g1,g3)
         else:

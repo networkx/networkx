@@ -19,7 +19,7 @@ class TestHITS:
            (5,4),(5,3),\
            (6,5)]
            
-        G.add_edges_from(edges)
+        G.add_edges_from(edges,weight=1)
         self.G=G
         self.G.h=[0.000000, 0.000000, 0.211325, 
                   0.211325, 0.211325, 0.366025]

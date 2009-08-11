@@ -14,9 +14,7 @@
 import sys, os, re
 
 # If your extensions are in another directory, add it here.
-#sys.path.append(os.path.dirname(__file__))
 sys.path.append(os.path.abspath('../sphinxext'))
-sys.path.append(os.path.abspath('../sphinxext/numpyext'))
 
 # General configuration
 # ---------------------
@@ -24,10 +22,11 @@ sys.path.append(os.path.abspath('../sphinxext/numpyext'))
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.addons.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath', 'numpydoc',
-              'phantom_import',# 'autosummary',
-#              'sphinx.ext.coverage',
-              'sphinx.ext.autosummary',
-              ]
+              'sphinx.ext.coverage',
+              'sphinx.ext.autosummary','sphinx.ext.todo','sphinx.ext.doctest']
+
+# generate autosummary pages
+autosummary_generate=True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['templates']
@@ -43,7 +42,7 @@ master_doc = 'contents'
 
 # General substitutions.
 project = 'NetworkX'
-copyright = '2008, Aric Hagberg'
+copyright = '2009, Aric Hagberg'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -61,22 +60,27 @@ release = version
 #today_fmt = '%B %d, %Y'
 
 # List of documents that shouldn't be included in the build.
-# unused_docs = []
+#unused_docs = ['examples/index']
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
+
 add_module_names = False
 
-show_authors = True
+# show_authors = True
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'friendly'
+#pygments_style = 'friendly'
+pygments_style = 'sphinx'
 
 # A list of prefixs that are ignored when creating the module index. (new in Sphinx 0.6)
 modindex_common_prefix=['networkx.']
+
+doctest_global_setup="import networkx as nx"
+
 
 # Options for HTML output
 # -----------------------
@@ -139,74 +143,3 @@ latex_paper_size = 'letter'
 latex_documents = [('contents', 'networkx.tex', 'NetworkX Documentation',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'manual', 1)]
 
-#latex_logo = 'static/networkx.png'
-
-#latex_use_parts = True
-
-# Additional stuff for the LaTeX preamble.
-latex_elements = {
-    'fontpkg': '\\usepackage{palatino}',
-    'inputenc':'\\usepackage[utf8x]{inputenc}'
-}
-#latex_preamble = """\usepackage{ucs}
-
-
-
-# Documents to append as an appendix to all manuals.
-#latex_appendices = []
-
-
-# Extension interface
-# -------------------
-
-from sphinx import addnodes
-
-dir_sig_re = re.compile(r'\.\. ([^:]+)::(.*)$')
-
-def parse_directive(env, sig, signode):
-    if not sig.startswith('.'):
-        dec_sig = '.. %s::' % sig
-        signode += addnodes.desc_name(dec_sig, dec_sig)
-        return sig
-    m = dir_sig_re.match(sig)
-    if not m:
-        signode += addnodes.desc_name(sig, sig)
-        return sig
-    name, args = m.groups()
-    dec_name = '.. %s::' % name
-    signode += addnodes.desc_name(dec_name, dec_name)
-    signode += addnodes.desc_addname(args, args)
-    return name
-
-
-def parse_role(env, sig, signode):
-    signode += addnodes.desc_name(':%s:' % sig, ':%s:' % sig)
-    return sig
-
-
-event_sig_re = re.compile(r'([a-zA-Z-]+)\s*\((.*)\)')
-
-def parse_event(env, sig, signode):
-    m = event_sig_re.match(sig)
-    if not m:
-        signode += addnodes.desc_name(sig, sig)
-        return sig
-    name, args = m.groups()
-    signode += addnodes.desc_name(name, name)
-    plist = addnodes.desc_parameterlist()
-    for arg in args.split(','):
-        arg = arg.strip()
-        plist += addnodes.desc_parameter(arg, arg)
-    signode += plist
-    return name
-
-
-def setup(app):
-    from sphinx.ext.autodoc import cut_lines
-    app.connect('autodoc-process-docstring', cut_lines(4, what=['module']))
-    app.add_description_unit('directive', 'dir', 'pair: %s; directive', parse_directive)
-    app.add_description_unit('role', 'role', 'pair: %s; role', parse_role)
-    app.add_description_unit('confval', 'confval', 'pair: %s; configuration value')
-    app.add_description_unit('event', 'event', 'pair: %s; event', parse_event)
-#    from sphinx.util.texescape import tex_replacements
-#    tex_replacements[u'X'] = u'foo' 

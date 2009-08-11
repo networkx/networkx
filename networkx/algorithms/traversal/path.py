@@ -234,7 +234,7 @@ def _bidirectional_pred_succ(G, source, target):
     if target == source:  return ({1:None},{1:None},1)
 
     # handle either directed or undirected
-    if G.directed:
+    if G.is_directed():
         Gpred=G.predecessors_iter
         Gsucc=G.successors_iter
     else:
@@ -497,7 +497,7 @@ def bidirectional_dijkstra(G, source, target):
     heapq.heappush(fringe[0], (0, source)) 
     heapq.heappush(fringe[1], (0, target))
     #neighs for extracting correct neighbor information
-    if G.directed:
+    if G.is_directed():
         neighs = [G.successors_iter, G.predecessors_iter]
     else:
         neighs = [G.neighbors_iter, G.neighbors_iter]
@@ -522,9 +522,9 @@ def bidirectional_dijkstra(G, source, target):
             return (finaldist,finalpath)
         for w in neighs[dir](v):
             if(dir==0): #forward
-                vwLength = dists[dir][v] + G[v][w]
+                vwLength = dists[dir][v] + G[v][w].get('weight',1)
             else: #back, must remember to change v,w->w,v
-                vwLength = dists[dir][v] + G[w][v]
+                vwLength = dists[dir][v] + G[w][v].get('weight',1)
             
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
@@ -689,13 +689,18 @@ def single_source_dijkstra(G,source,target=None,cutoff=None ):
         if v == target: break
         #for ignore,w,edgedata in G.edges_iter(v,data=True):
         #is about 30% slower than the following
-        if G.multigraph:
-            edata=(  (w,min(edgedata.values())) 
-                     for w,edgedata in G[v].iteritems() )
+        if G.is_multigraph():
+            edata=[]
+            for w,keydata in G[v].items():
+                edata.append((w,
+                             {'weight':min((dd.get('weight',1)
+                                            for k,dd in keydata.iteritems()))}))
         else:
             edata=G[v].iteritems()
+
+
         for w,edgedata in edata:
-            vw_dist = dist[v] + edgedata
+            vw_dist = dist[v] + edgedata.get('weight',1)
             if cutoff is not None:
                 if vw_dist>cutoff: 
                     continue
@@ -740,13 +745,13 @@ def dijkstra_predecessor_and_distance(G,source):
         (d,v)=pop(fringe)
         if v in dist: continue # already searched this node.
         dist[v] = d
-        if G.multigraph:
+        if G.is_multigraph():
             edata=(  (w,min(edgedata.values())) 
                      for w,edgedata in G[v].iteritems() )
         else:
             edata=G[v].iteritems()
         for w,edgedata in edata:
-            vw_dist = dist[v] + edgedata
+            vw_dist = dist[v] + edgedata.get('weight',1)
             if w in dist:
                 if vw_dist < dist[w]:
                     raise ValueError,\
@@ -869,7 +874,7 @@ def floyd_warshall(G,huge=1e30000):
         unbrs=G[u]
         for v in G:
             if v in unbrs:
-                dist[u][v]=unbrs[v]
+                dist[u][v]=unbrs[v].get('weight',1)
                 pred[u][v]=u
             else:
                 dist[u][v]=huge

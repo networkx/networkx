@@ -12,15 +12,15 @@ import networkx as nx
 
 G=nx.Graph()
 
-G.add_edge('a','b',0.6)
-G.add_edge('a','c',0.2)
-G.add_edge('c','d',0.1)
-G.add_edge('c','e',0.7)
-G.add_edge('c','f',0.9)
-G.add_edge('a','d',0.3)
+G.add_edge('a','b',weight=0.6)
+G.add_edge('a','c',weight=0.2)
+G.add_edge('c','d',weight=0.1)
+G.add_edge('c','e',weight=0.7)
+G.add_edge('c','f',weight=0.9)
+G.add_edge('a','d',weight=0.3)
 
-elarge=[(u,v) for (u,v,d) in G.edges(data=True) if d >0.5]
-esmall=[(u,v) for (u,v,d) in G.edges(data=True) if d <=0.5]
+elarge=[(u,v) for (u,v,d) in G.edges(data=True) if d['weight'] >0.5]
+esmall=[(u,v) for (u,v,d) in G.edges(data=True) if d['weight'] <=0.5]
 
 pos=nx.spring_layout(G) # positions for all nodes
 

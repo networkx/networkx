@@ -49,7 +49,7 @@ def triangles(G,nbunch=None,with_labels=False):
     Self loops are ignored.
 
     """
-    if G.directed:
+    if G.is_directed():
         raise NetworkXError("triangles() is not defined for directed graphs.")
     if with_labels:
         return dict( (v,t/2) for v,d,t in _triangles_and_degree_iter(G,nbunch))
@@ -64,7 +64,7 @@ def _triangles_and_degree_iter(G,nbunch=None):
     See degree() and triangles() for definitions and details.
 
     """
-    if G.multigraph:
+    if G.is_multigraph():
         raise NetworkXError("Not defined for multigraphs.")
 
     if nbunch is None:
@@ -169,7 +169,7 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
     Self loops are ignored.
 
     """
-    if G.directed:
+    if G.is_directed():
         raise NetworkXError("Clustering algorithms are not defined for directed graphs.")
     if with_labels and weights:
         clusterc={}

@@ -143,7 +143,7 @@ Graph
 >>> dest=[v for u,v in e]
 >>> ex=zip(source,dest,source)
 >>> G=Graph()
->>> G.add_edges_from(ex)
+>>> G.add_weighted_edges_from(ex)
 
 Dict of dicts
 ~~~~~~~~~~~~~
@@ -173,7 +173,7 @@ Dict of lists
 >>> GG=from_dict_of_lists(dol,create_using=Graph())
 
 dict of lists throws away edge data so set it to none
->>> enone=[(u,v,1) for (u,v,d) in G.edges(data=True)]
+>>> enone=[(u,v,{}) for (u,v,d) in G.edges(data=True)]
 >>> sorted(G.nodes())==sorted(GG.nodes())
 True
 >>> enone==sorted(GG.edges(data=True))
@@ -197,13 +197,13 @@ with multiedges and self loops
 >>> source,dest = zip(*e)
 >>> ex=zip(source,dest,source)
 >>> XG=Graph()
->>> XG.add_edges_from(ex)
+>>> XG.add_weighted_edges_from(ex)
 >>> XGM=MultiGraph()
->>> XGM.add_edges_from(ex)
->>> XGM.add_edge(0,1,2) # multiedge
+>>> XGM.add_weighted_edges_from(ex)
+>>> XGM.add_edge(0,1,weight=2) # multiedge
 >>> XGS=Graph()
->>> XGS.add_edges_from(ex)
->>> XGS.add_edge(0,0,100) # self loop
+>>> XGS.add_weighted_edges_from(ex)
+>>> XGS.add_edge(0,0,weight=100) # self loop
 
 
 Dict of dicts
@@ -237,7 +237,7 @@ with self loops, OK
 >>> GG=from_dict_of_lists(dol,create_using=Graph())
 
 dict of lists throws away edge data so set it to none
->>> enone=[(u,v,1) for (u,v,d) in XGS.edges(data=True)]
+>>> enone=[(u,v,{}) for (u,v,d) in XGS.edges(data=True)]
 >>> sorted(XGS.nodes())==sorted(GG.nodes())
 True
 >>> enone==sorted(GG.edges(data=True))
@@ -326,7 +326,7 @@ True
 >>> sorted(G.edges(data=True))==sorted(P.edges(data=True))
 True
 
->>> e=[(0,1,1),(1,2,1),(2,3,1)]
+>>> e=[(0,1,{}),(1,2,{}),(2,3,{})]
 >>> G=Graph(e)
 >>> sorted(G.nodes())==sorted(P.nodes())
 True

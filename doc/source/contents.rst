@@ -20,10 +20,8 @@ NetworkX documentation
    reference/index
    download
 
-
 .. only:: html
    - `Examples <examples/index.html>`_
-
 
 .. only:: html
    - `Gallery <gallery/index.html>`_
@@ -38,4 +36,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+* :ref:`glossary`
 

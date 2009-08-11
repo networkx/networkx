@@ -9,7 +9,7 @@ Read and write NetworkX graphs as edge lists.
 """
 
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -109,7 +109,7 @@ def read_edgelist(path, comments="#", delimiter=' ',
     nodetype : int, float, str, Python type, optional
        Convert node data from strings to specified type
     edgetype : int, float, str, Python type, optional
-       Convert edge data from strings to specified type
+       Convert edge data from strings to specified type and use as 'weight'
 
     Returns
     ----------
@@ -165,37 +165,28 @@ def read_edgelist(path, comments="#", delimiter=' ',
     for line in fh.readlines():
         line = line[:line.find(comments)].strip()
         if not len(line): continue
-#        if line.startswith("#") or line.startswith("\n"):
-#            continue
-#        line=line.strip() #remove trailing \n 
-        # split line, should have 2 or three items
+        # split line, should have 2 or more
         s=line.split(delimiter)
-        if len(s)==2:
-            if nodetype is not None:
-                try:
-                    (u,v)=map(nodetype,s)
-                except:
-                    raise TypeError("Failed to convert edge %s to type %s"\
-                          %(s,nodetype))
-            else:
-                (u,v)=s
-            G.add_edge(u,v) 
-        elif len(s)==3:
-            (u,v,d)=s
-            if nodetype is not None:
-                try:
-                    (u,v)=map(nodetype,(u,v))
-                except:
-                    raise TypeError("Failed to convert edge (%s, %s) to type %s"\
+        u=s.pop(0)
+        v=s.pop(0)
+        data=' '.join(s)
+        if nodetype is not None:
+            try:
+                u=nodetype(u)
+                v=nodetype(v)
+            except:
+                raise TypeError("Failed to nodes %s,%s to type %s"\
                           %(u,v,nodetype))
-            if d is not None and edgetype is not None:
-                try:
-                   d=edgetype(d)
-                except:
-                    raise TypeError("Failed to convert edge data (%s) to type %s"\
-                                    %(d, edgetype))
-            G.add_edge(u,v,d)  # XGraph or XDiGraph
+        if edgetype is not None:
+            try:
+                edgedata={'weight':edgetype(data)}
+            except:
+                raise TypeError("Failed to convert edge data (%s) to type %s"\
+                                    %(data, edgetype))
         else:
-            raise TypeError("Failed to read line: %s"%line)
+            edgedata=eval(data,{},{})
+        G.add_edge(u,v,**edgedata)  
+#        else:
+#            raise TypeError("Failed to read line: %s"%line)
     return G
 

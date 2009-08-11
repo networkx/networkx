@@ -89,7 +89,7 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
     The preferred way to call this is automatically
     from the class constructor
 
-    >>> d={0: {1: 1}} # dict-of-dicts single edge (0,1)
+    >>> d={0: {1: {'weight':1}}} # dict-of-dicts single edge (0,1)
     >>> G=nx.Graph(d)
     
     instead of the equivalent
@@ -124,12 +124,15 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
         try:
             result= from_dict_of_dicts(thing.adj,\
                     create_using=create_using,\
-                    multigraph_input=thing.multigraph)
-            result.weighted=thing.weighted
+                    multigraph_input=thing.is_multigraph())
+            if hasattr(thing,'graph') and isinstance(thing.graph,dict):
+                result.graph=thing.graph.copy()
+            if hasattr(thing,'node') and isinstance(thing.node,dict):
+                result.node=dict( (n,dd.copy()) for n,dd in thing.node.iteritems() )
             return result
         except:
             raise networkx.NetworkXError,\
-                  "Input is not a correct NetworkX graph."
+                "Input is not a correct NetworkX graph."
 
     # pygraphviz  agraph
     if hasattr(thing,"is_strict"):
@@ -237,7 +240,7 @@ def from_dict_of_lists(d,create_using=None):
     G=_prep_create_using(create_using)
     G.add_nodes_from(d)        
 
-    if G.multigraph and not G.directed:
+    if G.is_multigraph() and not G.is_directed():
         # a dict_of_lists can't show multiedges.  BUT for undirected graphs,
         # each edge shows up twice in the dict_of_lists.  
         # So we need to treat this case separately.
@@ -311,7 +314,7 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
 
     Examples
     --------
-    >>> dod= {0: {1:1}} # single edge (0,1)
+    >>> dod= {0: {1:{'weight':1}}} # single edge (0,1)
     >>> G=nx.from_dict_of_dicts(dod)
 
     or
@@ -324,29 +327,27 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
     # is dict a MultiGraph or MultiDiGraph?
     if multigraph_input:
         # make a copy of the list of edge data (but not the edge data)
-        if G.directed:  
-            if G.multigraph:
-                G.add_edges_from( ( (u,v,data,key) 
-                                    for u,nbrs in d.iteritems() 
-                                    for v,dl in nbrs.iteritems() 
-                                    for v,datadict in nbrs.iteritems() 
-                                    for key,data in datadict.items())
-                                  )
+        if G.is_directed():  
+            if G.is_multigraph():
+                G.add_edges_from( (u,v,key,data)
+                                  for u,nbrs in d.iteritems() 
+                                  for v,datadict in nbrs.iteritems() 
+                                  for key,data in datadict.items()
+                                )
             else:
-                G.add_edges_from( ( (u,v,data)
-                                    for u,nbrs in d.iteritems() 
-                                    for v,dl in nbrs.iteritems() 
-                                    for v,datadict in nbrs.iteritems() 
-                                    for key,data in datadict.items())
-                                  )
+                G.add_edges_from( (u,v,data)
+                                  for u,nbrs in d.iteritems() 
+                                  for v,datadict in nbrs.iteritems() 
+                                  for key,data in datadict.items()
+                                )
         else: # Undirected
-            if G.multigraph:
+            if G.is_multigraph():
                 seen=set()   # don't add both directions of undirected graph
                 for u,nbrs in d.iteritems():
                     for v,datadict in nbrs.iteritems():
                         if v not in seen:
-                            G.add_edges_from( ((u,v,data,key) 
-                                               for key,data in datadict.items())
+                            G.add_edges_from( (u,v,key,data) 
+                                               for key,data in datadict.items()
                                           )
                     seen.add(u) 
             else:
@@ -354,13 +355,12 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
                 for u,nbrs in d.iteritems():
                     for v,datadict in nbrs.iteritems():
                         if v not in seen:
-                            G.add_edges_from( ((u,v,data)
-                                               for key,data in datadict.items())
-                                          )
+                            G.add_edges_from( (u,v,data)
+                                        for key,data in datadict.items() )
                     seen.add(u) 
 
     else: # not a multigraph to multigraph transfer
-        if G.directed:
+        if G.is_directed():
             G.add_edges_from( ( (u,v,data) 
                                 for u,nbrs in d.iteritems() 
                                 for v,data in nbrs.iteritems()) )
@@ -370,7 +370,7 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
             for u,nbrs in d.iteritems():
                 for v,data in nbrs.iteritems():
                     if v not in seen:
-                        G.add_edge(u,v,data)
+                        G.add_edge(u,v,attr_dict=data)
                 seen.add(u)
     return G                         
 
@@ -434,7 +434,7 @@ def to_numpy_matrix(G,nodelist=None,dtype=None):
 
     Notes
     -----
-    When G.weighted==False the value of the entry A[u,v] is 1
+    When no weights are specified the value of the entry A[u,v] is 1
     if there is an edge u-v and 0 otherwise.
 
     Multiple edges and edge data are both ignored for MultiGraph/MultiDiGraph.
@@ -454,19 +454,26 @@ def to_numpy_matrix(G,nodelist=None,dtype=None):
     nlen=len(nodelist)    
     index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
     A = numpy.asmatrix(numpy.zeros((nlen,nlen),dtype=dtype))
-    if G.weighted and not G.multigraph:
-        for n,nbrdict in G.adjacency_iter():
-            if n in index:
-                for nbr,data in nbrdict.iteritems():
-                    if nbr in index:
-                        A[index[n],index[nbr]]=data
-    else: # ignore edge data
-        for n,nbrdict in G.adjacency_iter():
-            if n in index:
-                for nbr in nbrdict:
-                    if nbr in index:
-                        A[index[n],index[nbr]]=1
-    return A            
+    for n,nbrdict in G.adjacency_iter():
+        if n in index:
+            for nbr,data in nbrdict.iteritems():
+                if nbr in index:
+                    A[index[n],index[nbr]]=data.get('weight',1)
+    return A
+
+#     if G.is_multigraph():
+#         for n,nbrdict in G.adjacency_iter():
+#             if n in index:
+#                 for nbr,data in nbrdict.iteritems():
+#                     if nbr in index:
+#                         A[index[n],index[nbr]]=data
+#     else: # ignore edge data
+#         for n,nbrdict in G.adjacency_iter():
+#             if n in index:
+#                 for nbr in nbrdict:
+#                     if nbr in index:
+#                         A[index[n],index[nbr]]=1
+#     return A            
 
 def from_numpy_matrix(A,create_using=None):
     """Return a graph from numpy matrix adjacency list. 
@@ -505,7 +512,7 @@ def from_numpy_matrix(A,create_using=None):
 
     # get a list of edges
     x,y=numpy.asarray(A).nonzero()         
-    G.add_edges_from( ((u,v,A[u,v]) for (u,v) in zip(x,y)) )
+    G.add_edges_from( ((u,v,{'weight':A[u,v]}) for (u,v) in zip(x,y)) )
     return G
 
 
@@ -554,19 +561,26 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):
     nlen=len(nodelist)    
     index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
     A = sparse.lil_matrix((nlen,nlen),dtype=dtype)
-    if G.weighted and not G.multigraph:
-        for n,nbrdict in G.adjacency_iter():
-            if n in index:
-                for nbr,data in nbrdict.iteritems():
-                    if nbr in index:
-                        A[index[n],index[nbr]]=data
-    else: # ignore edge data
-        for n,nbrdict in G.adjacency_iter():
-            if n in index:
-                for nbr in nbrdict:
-                    if nbr in index:
-                        A[index[n],index[nbr]]=1
-    return A            
+    for n,nbrdict in G.adjacency_iter():
+        if n in index:
+            for nbr,data in nbrdict.iteritems():
+                if nbr in index:
+                    A[index[n],index[nbr]]=data.get('weight',1)
+    return A
+
+#     if G.weighted and not G.multigraph:
+#         for n,nbrdict in G.adjacency_iter():
+#             if n in index:
+#                 for nbr,data in nbrdict.iteritems():
+#                     if nbr in index:
+#                         A[index[n],index[nbr]]=data
+#     else: # ignore edge data
+#         for n,nbrdict in G.adjacency_iter():
+#             if n in index:
+#                 for nbr in nbrdict:
+#                     if nbr in index:
+#                         A[index[n],index[nbr]]=1
+#     return A            
 
 
 def from_scipy_sparse_matrix(A,create_using=None):
@@ -590,15 +604,6 @@ def from_scipy_sparse_matrix(A,create_using=None):
 
     G=_prep_create_using(create_using)
 
-    # FIXME
-    # This is a bad way to check for whether edge data exists...
-    # If someone ever creates a graph class with edge data and
-    # without an allow_multiedges method, it won't work.
-    if hasattr(G,'allow_multiedges'):
-        xgraph=True
-    else:
-        xgraph=False
-
     # convert all formats to lil - not the most efficient way       
     AA=A.tolil()
     nx,ny=AA.shape
@@ -612,8 +617,5 @@ def from_scipy_sparse_matrix(A,create_using=None):
 
     for i,row in enumerate(AA.rows):
         for pos,j in enumerate(row):
-           if xgraph:
-               G.add_edge(i,j,AA.data[i][pos])
-           else:
-               G.add_edge(i,j)
+            G.add_edge(i,j,**{'weight':AA.data[i][pos]})
     return G

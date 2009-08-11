@@ -44,7 +44,7 @@ except:
 pygraphviz=lazyModule('pygraphviz')
 
 
-def from_agraph(A,create_using=None,edge_attr=True):
+def from_agraph(A,create_using=None):
     """Return a NetworkX Graph or DiGraph from a PyGraphviz graph.
 
     Parameters
@@ -55,17 +55,12 @@ def from_agraph(A,create_using=None,edge_attr=True):
     create_using : NetworkX graph class instance      
       The output is created using the given graph class instance
 
-    edge_attr : bool, optional
-       If True use a dictionary of attributes for edge data.
-       If False use the Graphviz edge weight attribute or 
-       default 1 if the edge has no specified weight.
-
     Examples
     --------
     >>> K5=nx.complete_graph(5)
     >>> A=nx.to_agraph(K5)
     >>> G=nx.from_agraph(A)
-    >>> G=nx.from_agraph(A,edge_attr=False)
+    >>> G=nx.from_agraph(A)
 
 
     Notes
@@ -99,8 +94,7 @@ def from_agraph(A,create_using=None,edge_attr=True):
     node_attr={}
     # add nodes, attributes to N.node_attr
     for n in A.nodes():
-        N.add_node(str(n))
-        node_attr[str(n)]=dict(n.attr)
+        N.add_node(str(n),**dict(n.attr))
 
     # add edges, assign edge data as dictionary of attributes
     for e in A.edges():
@@ -108,21 +102,16 @@ def from_agraph(A,create_using=None,edge_attr=True):
         attr=dict(e.attr)
         if e.key is not None:
             attr.update(key=e.key)
-        if edge_attr:
-            N.add_edge(u,v,attr)
-        else:
-            N.add_edge(u,v,float(attr.get('weight',1)))
+        N.add_edge(u,v,attr)
         
     # add default attributes for graph, nodes, and edges       
     # hang them on N.graph_attr
-    N.graph_attr={}
-    N.graph_attr['graph']=A.graph_attr
-    N.graph_attr['node']=A.node_attr
-    N.graph_attr['edge']=A.edge_attr
-    N.node_attr=node_attr
+    N.graph['graph']=A.graph_attr
+    N.graph['node']=A.node_attr
+    N.graph['edge']=A.edge_attr
     return N        
 
-def to_agraph(N, graph_attr=None, node_attr=None):
+def to_agraph(N):
     """Return a pygraphviz graph from a NetworkX graph N.
 
     Parameters
@@ -130,14 +119,6 @@ def to_agraph(N, graph_attr=None, node_attr=None):
     N : NetworkX graph
       A graph created with NetworkX
       
-    graph_attr: dictionary,optional 
-       Dictionary with default attributes for graph, nodes, and edges
-       keyed by 'graph', 'node', and 'edge' to attribute dictionaries.
-       Example: graph_attr['graph']={'pack':'true','epsilon':0.01}
-
-    node_attr: dictionary, optional
-       Dictionary keyed by node to node attribute dictionary.
-
     Examples
     --------
     >>> K5=nx.complete_graph(5)
@@ -150,72 +131,31 @@ def to_agraph(N, graph_attr=None, node_attr=None):
     and then updated with the calling arguments if any.
 
     """
-    directed=N.directed
-    strict=N.number_of_selfloops()==0 and not N.multigraph 
+    directed=N.is_directed()
+    strict=N.number_of_selfloops()==0 and not N.is_multigraph() 
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
 
     # default graph attributes            
-    try:             
-        A.graph_attr.update(N.graph_attr['graph'])
-    except:
-        pass
-    try:
-        A.graph_attr.update(graph_attr['graph'])
-    except:
-        pass
-    # default node attributes            
-    try:        
-        A.node_attr.update(N.graph_attr['node'])
-    except:
-        pass
-    try:
-        A.node_attr.update(graph_attr['node'])
-    except:
-        pass
-    # default edge attributes            
-    try:        
-        A.edge_attr.update(N.graph_attr['edge'])
-    except:
-        pass
-    try:
-        A.edge_attr.update(graph_attr['edge'])
-    except:
-        pass
+    A.graph_attr.update(N.graph.get('graph',{}))
+    A.node_attr.update(N.graph.get('node',{}))
+    A.edge_attr.update(N.graph.get('edge',{}))
 
     # add nodes
-    for n in N:
+    for n,nodedata in N.nodes(data=True):
         A.add_node(n)
         node=pygraphviz.Node(A,n)
-        # try node attributes attached to graph
-        try:
-            if n in N.node_attr:
-                node.attr.update(N.node_attr[n])
-        except:
-            pass
-        # update with attributes from calling parameters
-        try:
-            if n in node_attr:
-                node.attr.update(node_attr[n])
-        except:
-            pass
+        node.attr.update(nodedata)
 
     # loop over edges
-    for u,v,d in N.edges_iter(data=True):
-        # Try to guess what to do with the data on the edge.
-        # If it is a dictionary assign the key,value pairs
-        # as Graphviz attributes.
-        if isinstance(d,dict):
-            data=d
-        elif is_string_like(d):
-            data={'label':d}
-        else:
-            try: # a number?
-                data={'weight':str(float(d))}
-            except: # punt and hope for repr()
-                data={'label':repr(d)}
-        # check for user assigned key, and remove it from d
-        key=data.pop('key',None)
-        A.add_edge(u,v,key=key,**data)
+
+    if N.is_multigraph():
+        for u,v,key,edgedata in N.edges_iter(data=True):
+            A.add_edge(u,v,key=key,**edgedata)
+    else:
+        for u,v,edgedata in N.edges_iter(data=True):
+            A.add_edge(u,v,**edgedata)
+
+
     return A
 
 def write_dot(G,path):

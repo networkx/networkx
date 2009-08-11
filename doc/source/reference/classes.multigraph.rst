@@ -5,9 +5,12 @@ MultiGraph - Undirected graphs with self loops and parallel edges
 =================================================================
 
 Overview
---------
+========
 .. currentmodule:: networkx
-.. autoclass:: MultiGraph
+.. autofunction:: MultiGraph
+
+Methods
+=======
 
 Adding and Removing Nodes and Edges
 -----------------------------------
@@ -15,12 +18,14 @@ Adding and Removing Nodes and Edges
 .. autosummary::
    :toctree: generated/
 
+   MultiGraph.__init__
    MultiGraph.add_node
    MultiGraph.add_nodes_from
    MultiGraph.remove_node
    MultiGraph.remove_nodes_from
    MultiGraph.add_edge
    MultiGraph.add_edges_from
+   MultiGraph.add_weighted_edges_from
    MultiGraph.remove_edge
    MultiGraph.remove_edges_from
    MultiGraph.add_star

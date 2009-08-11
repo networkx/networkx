@@ -96,7 +96,7 @@ Graph
 >>> weight=[s+10 for s in source]
 >>> ex=zip(source,dest,weight)
 >>> XG=Graph()
->>> XG.add_edges_from(ex)
+>>> XG.add_weighted_edges_from(ex)
 
 
 Numpy matrix
@@ -130,7 +130,7 @@ DiGraph
 >>> weight=[s+10 for s in source]
 >>> ex=zip(source,dest,weight)
 >>> XG=DiGraph()
->>> XG.add_edges_from(ex)
+>>> XG.add_weighted_edges_from(ex)
 
 
 Numpy matrix

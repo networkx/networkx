@@ -14,10 +14,11 @@ def test_simple():
     for g1 in [nx.Graph(weighted=w), 
                nx.DiGraph(weighted=w),
                nx.MultiGraph(weighted=w),
-               nx.MultiDiGraph(weighted=w)]:
+               nx.MultiDiGraph(weighted=w)
+               ]:
 
         print g1.__class__
-        g1.add_edges_from(edges)
+        g1.add_weighted_edges_from(edges)
         g2 = g1.subgraph(g1.nodes())
         assert_true( nx.is_isomorphic(g1,g2,True,rtol,atol) )
 
@@ -25,27 +26,27 @@ def test_simple():
             # mod1 tests a regular edge
             # mod2 tests a selfloop
             print "Modification:", mod1, mod2
-            if g2.multigraph:
+            if g2.is_multigraph():
                 if mod1:
-                    data1 = {0:10}
+                    data1 = {0:{'weight':10}}
                 if mod2:
-                    data2 = {0:1,1:2.5}
+                    data2 = {0:{'weight':1},1:{'weight':2.5}}
             else:
                 if mod1:
-                    data1 = 10
+                    data1 = {'weight':10}
                 if mod2:
-                    data2 = 2.5
+                    data2 = {'weight':2.5}
 
             g2 = g1.subgraph(g1.nodes())
             if mod1:
-                if not g1.directed:
+                if not g1.is_directed():
                     g2.adj[1][0] = data1
                     g2.adj[0][1] = data1
                 else:
                     g2.succ[1][0] = data1
                     g2.pred[0][1] = data1
             if mod2:
-                if not g1.directed:
+                if not g1.is_directed():
                     g2.adj[0][0] = data2
                 else:
                     g2.succ[0][0] = data2

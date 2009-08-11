@@ -4,14 +4,10 @@
 VF2 Algorithm 
 *************
 
-.. automodule:: networkx.algorithms.isomorphism.isomorphvf2
-
-
 Graph Matcher
 -------------
 
 .. currentmodule:: networkx
-.. autoclass:: GraphMatcher
 
 .. autosummary::
    :toctree: generated/
@@ -31,8 +27,6 @@ Graph Matcher
 DiGraph Matcher
 ---------------
 
-.. autoclass:: DiGraphMatcher
-
 .. autosummary::
    :toctree: generated/
 
@@ -49,8 +43,6 @@ DiGraph Matcher
 
 Weighted Graph Matcher
 ----------------------
-
-.. autoclass:: WeightedGraphMatcher
 
 .. autosummary::
    :toctree: generated/
@@ -70,8 +62,6 @@ Weighted Graph Matcher
 Weighted DiGraph Matcher
 ------------------------
 
-.. autoclass:: WeightedDiGraphMatcher
-
 .. autosummary::
    :toctree: generated/
 
@@ -88,8 +78,6 @@ Weighted DiGraph Matcher
 
 Weighted MultiGraph Matcher
 ---------------------------
-
-.. autoclass:: WeightedMultiGraphMatcher
 
 .. autosummary::
    :toctree: generated/
@@ -108,8 +96,6 @@ Weighted MultiGraph Matcher
 
 Weighted MultiDiGraph Matcher
 -----------------------------
-
-.. autoclass:: WeightedMultiDiGraphMatcher
 
 .. autosummary::
    :toctree: generated/

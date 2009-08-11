@@ -14,31 +14,14 @@ graph class depends on the structure of the graph you want to represent.
 Basic graph types
 =================
 
-   :doc:`classes.graph`
-
-   :doc:`classes.digraph`
-   
-   :doc:`classes.multigraph`
-
-   :doc:`classes.multidigraph`
-
-Graphs with attributes
-======================
-
-The basic graph classes listed above allow arbitrary data to
-be stored as nodes or edges.  In some cases (e.g. graph drawing)
-a more specific interface to graph, node, and edges is useful.
-The following classes provide explicit methods for adding, modifying,
-and removing attributes for graphs, nodes, and edges.
-
-
-   :doc:`classes.attrgraph`
-
-.. warning::
-   
-   The attribute graph classes are experimental.  The functionality
-   and API are subject to change.
-
+.. toctree::
+   :maxdepth: 3
+	
+   classes.graph
+   classes.digraph
+   classes.multigraph
+   classes.multidigraph
+		
 
 Which graph class should I use?
 ===============================

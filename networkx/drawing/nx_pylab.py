@@ -381,7 +381,7 @@ def draw_networkx_edges(G, pos,
 
     arrow_collection=None
 
-    if G.directed and arrows:
+    if G.is_directed() and arrows:
 
         # a directed graph hack
         # draw thick line segments at head end of edge

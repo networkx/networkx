@@ -22,7 +22,7 @@ Data structures and Algorithms
 .. autosummary::
    :toctree: generated/
 
-   UnionFind
+   UnionFind.union
 
 Random sequence generators
 --------------------------

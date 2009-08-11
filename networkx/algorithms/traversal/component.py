@@ -2,7 +2,7 @@
 """
 Connected components and strongly connected components.
 """
-__authors__ = """Eben Kennah (ekenah@t7.lanl.gov)\nAric Hagberg (hagberg@lanl.gov)"""
+__authors__ = """Eben Kenah\nAric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -35,7 +35,7 @@ def connected_components(G):
     The list is ordered from largest connected component to smallest.
     For undirected graphs only. 
     """
-    if G.directed:
+    if G.is_directed():
         raise networkx.NetworkXError,\
               """Not allowed for directed graph G.
               Use UG=G.to_undirected() to create an undirected graph."""
@@ -61,7 +61,7 @@ def is_connected(G):
     """Return True if G is connected.
     For undirected graphs only. 
     """
-    if G.directed:
+    if G.is_directed():
         raise networkx.NetworkXError,\
               """Not allowed for directed graph G.
               Use UG=G.to_undirected() to create an undirected graph."""
@@ -98,7 +98,7 @@ def node_connected_component(G,n):
     For undirected graphs only. 
 
     """
-    if G.directed:
+    if G.is_directed():
         raise networkx.NetworkXError,\
               """Not allowed for directed graph G.
               Use UG=G.to_undirected() to create an undirected graph."""
@@ -254,7 +254,7 @@ def number_strongly_connected_components(G):
 def is_strongly_connected(G):
     """Return True if G is strongly connected.
     """
-    if not G.directed:
+    if not G.is_directed():
         raise networkx.NetworkXError,\
               """Not allowed for undirected graph G.
               See is_connected() for connectivity test."""

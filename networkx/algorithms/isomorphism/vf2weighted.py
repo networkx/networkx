@@ -65,13 +65,13 @@ class WeightedGraphMatcher(GraphMatcher):
         rtol, atol = self.rtol, self.atol
         for neighbor in G1_adj[G1_node]:
             if neighbor is G1_node:
-                if not close(G1_adj[G1_node][G1_node],
-                             G2_adj[G2_node][G2_node],  
+                if not close(G1_adj[G1_node][G1_node].get('weight',1),
+                             G2_adj[G2_node][G2_node].get('weight',1),  
                              rtol, atol):
                     return False
             elif neighbor in core_1:
-                if not close(G1_adj[G1_node][neighbor], 
-                             G2_adj[G2_node][core_1[neighbor]],
+                if not close(G1_adj[G1_node][neighbor].get('weight',1), 
+                             G2_adj[G2_node][core_1[neighbor]].get('weight',1),
                              rtol, atol):
                     return False
         # syntactic check has already verified that neighbors are symmetric
@@ -109,26 +109,26 @@ class WeightedDiGraphMatcher(DiGraphMatcher):
 
         for successor in G1_succ[G1_node]:
             if successor is G1_node:
-                if not close(G1_succ[G1_node][G1_node],
-                             G2_succ[G2_node][G2_node],  
+                if not close(G1_succ[G1_node][G1_node].get('weight',1),
+                             G2_succ[G2_node][G2_node].get('weight',1),  
                              rtol, atol):
                     return False
             elif successor in core_1:
-                if not close(G1_succ[G1_node][successor], 
-                             G2_succ[G2_node][core_1[successor]],
+                if not close(G1_succ[G1_node][successor].get('weight',1), 
+                             G2_succ[G2_node][core_1[successor]].get('weight',1),
                              rtol, atol):
                     return False
         # syntactic check has already verified that successors are symmetric
 
         for predecessor in G1_pred[G1_node]:
             if predecessor is G1_node:
-                if not close(G1_pred[G1_node][G1_node],
-                             G2_pred[G2_node][G2_node],  
+                if not close(G1_pred[G1_node][G1_node].get('weight',1),
+                             G2_pred[G2_node][G2_node].get('weight',1),  
                              rtol, atol):
                     return False
             elif predecessor in core_1:
-                if not close(G1_pred[G1_node][predecessor], 
-                             G2_pred[G2_node][core_1[predecessor]],
+                if not close(G1_pred[G1_node][predecessor].get('weight',1), 
+                             G2_pred[G2_node][core_1[predecessor]].get('weight',1),
                              rtol, atol):
                   return False
         # syntactic check has already verified that predecessors are symmetric
@@ -163,15 +163,19 @@ class WeightedMultiGraphMatcher(GraphMatcher):
 
         for neighbor in G1_adj[G1_node]:
             if neighbor is G1_node:
-                data1 = copy(G1_adj[G1_node][G1_node].values())
-                data2 = copy(G2_adj[G2_node][G2_node].values())
+                data1 = [d.get('weight',1) 
+                         for k,d in G1_adj[G1_node][G1_node].items()]
+                data2 = [d.get('weight',1) 
+                         for k,d in G2_adj[G2_node][G2_node].items()]
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):
                     if not close(x,y,rtol,atol): return False
             elif neighbor in core_1:
-                data1 = copy(G1_adj[G1_node][neighbor].values())
-                data2 = copy(G2_adj[G2_node][core_1[neighbor]].values())
+                data1 = [d.get('weight',1) 
+                         for k,d in G1_adj[G1_node][neighbor].items()]
+                data2 = [d.get('weight',1) 
+                         for k,d in G2_adj[G2_node][core_1[neighbor]].items()]
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):
@@ -210,15 +214,21 @@ class WeightedMultiDiGraphMatcher(DiGraphMatcher):
 
         for successor in G1_succ[G1_node]:
             if successor is G1_node:
-                data1 = copy(G1_succ[G1_node][G1_node].values())
-                data2 = copy(G2_succ[G2_node][G2_node].values())
+                data1 = [d.get('weight',1) 
+                         for k,d in G1_succ[G1_node][G1_node].items()]
+                data2 = [d.get('weight',1) 
+                         for k,d in G2_succ[G2_node][G2_node].items()]
+
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):
                     if not close(x,y,rtol,atol): return False
             elif successor in core_1:
-                data1 = copy(G1_succ[G1_node][successor].values())
-                data2 = copy(G2_succ[G2_node][core_1[successor]].values())
+                data1 = [d.get('weight',1) 
+                         for k,d in G1_succ[G1_node][successor].items()]
+                data2 = [d.get('weight',1) 
+                         for k,d in G2_succ[G2_node][core_1[successor]].items()]
+
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):
@@ -227,15 +237,21 @@ class WeightedMultiDiGraphMatcher(DiGraphMatcher):
 
         for predecessor in G1_pred[G1_node]:
             if predecessor is G1_node:
-                data1 = copy(G1_pred[G1_node][G1_node].values())
-                data2 = copy(G2_pred[G2_node][G2_node].values())
+                data1 = [d.get('weight',1) 
+                         for k,d in G1_pred[G1_node][G1_node].items()]
+                data2 = [d.get('weight',1) 
+                         for k,d in G2_pred[G2_node][G2_node].items()]
+
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):
                     if not close(x,y,rtol,atol): return False
             elif predecessor in core_1:
-                data1 = copy(G1_pred[G1_node][predecessor].values())
-                data2 = copy(G2_pred[G2_node][core_1[predecessor]].values())
+                data1 = [d.get('weight',1) 
+                         for k,d in G1_pred[G1_node][predecessor].items()]
+                data2 = [d.get('weight',1) 
+                         for k,d in G2_pred[G2_node][core_1[predecessor]].items()]
+
                 data1.sort()
                 data2.sort()
                 for x,y in zip(data1,data2):

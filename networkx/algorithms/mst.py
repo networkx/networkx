@@ -31,14 +31,14 @@ def kruskal_mst(G):
     Examples
     --------
     >>> G=nx.cycle_graph(4)
-    >>> G.add_edge(0,3,2) # assign weight 2 to edge 0-3
+    >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
     >>> mst=nx.kruskal_mst(G) # a generator of MST edges
     >>> edgelist=list(mst) # make a list of the edges
     >>> print sorted(edgelist)
-    [(0, 1, 1), (1, 2, 1), (2, 3, 1)]
+    [(0, 1, {'weight': 1}), (1, 2, {'weight': 1}), (2, 3, {'weight': 1})]
     >>> T=nx.Graph(edgelist)  # build a graph of the MST.
     >>> print sorted(T.edges(data=True))
-    [(0, 1, 1), (1, 2, 1), (2, 3, 1)]
+    [(0, 1, {'weight': 1}), (1, 2, {'weight': 1}), (2, 3, {'weight': 1})]
 
     Notes
     -----
@@ -54,10 +54,10 @@ def kruskal_mst(G):
     # part (the sort) is sped up by being built in to Python.
     from networkx.utils import UnionFind
     subtrees = UnionFind()
-    edges = sorted((G[u][v],u,v) for u in G for v in G[u])
+    edges = sorted((G[u][v].get('weight',1),u,v) for u in G for v in G[u])
     for W,u,v in edges:
         if subtrees[u] != subtrees[v]:
-            yield (u,v,W)
+            yield (u,v,{'weight':W})
             subtrees.union(u,v)
 
 mst=kruskal_mst

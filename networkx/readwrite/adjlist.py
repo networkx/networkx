@@ -26,7 +26,7 @@ Useful for connected or unconnected graphs with or without edge data.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -88,8 +88,8 @@ def write_multiline_adjlist(G, path, delimiter=' ', comments='#'):
         if is_string_like(t): return t
         return str(t)
 
-    if G.directed:
-        if G.multigraph:
+    if G.is_directed():
+        if G.is_multigraph():
             for s,nbrs in G.adjacency_iter():
                 nbr_edges=[ (u,data) 
                             for u,datadict in nbrs.iteritems() 
@@ -111,7 +111,7 @@ def write_multiline_adjlist(G, path, delimiter=' ', comments='#'):
                     else:   
                         fh.write(make_str(u)+delimiter+make_str(d)+"\n")
     else: # undirected
-        if G.multigraph:
+        if G.is_multigraph():
             seen=set()  # helper dict used to avoid duplicate edges
             for s,nbrs in G.adjacency_iter():
                 nbr_edges=[ (u,data) 
@@ -174,7 +174,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
 
     edgetype is a function to convert edge data strings to edgetype
 
-    >>> G=nx.read_multiline_adjlist("test.adjlist", edgetype=int)
+    >>> G=nx.read_multiline_adjlist("test.adjlist")
 
     create_using is an optional networkx graph type, the default is
     Graph(), a simple undirected graph 
@@ -255,28 +255,29 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
                 if line: break
             vlist=line.split(delimiter)
             numb=len(vlist)
-            if numb>0:
-                v=vlist[0]
-                if nodetype is not None:
-                    try:
-                        v=nodetype(v)
-                    except:
-                        raise TypeError("Failed to convert node (%s) to type %s"\
-                                        %(v,nodetype))
-            if numb==1:
-                G.add_edge(u,v)
-            elif numb==2:
-                d=vlist[1]
-                if edgetype is not None:
-                    try:
-                        d=edgetype(d)
-                    except:
-                        raise TypeError\
-                              ("Failed to convert edge data (%s) to type %s"\
-                                %(d, edgetype))
-                G.add_edge(u,v,d)
+            if numb<1:
+                continue # isolated node
+            v=vlist.pop(0)
+            data=''.join(vlist)
+            if nodetype is not None:
+                try:
+                    v=nodetype(v)
+                except:
+                    raise \
+                        TypeError("Failed to convert node (%s) to type %s"\
+                                       %(v,nodetype))
+            if edgetype is not None:
+                try:
+                    edgedata={'weight':edgetype(data)}
+                except:
+                    raise TypeError("Failed to convert edge data (%s) to type %s"\
+                                    %(data, edgetype))
             else:
-                raise TypeError("Failed to read line: %s"%vlist)
+                edgedata=eval(data,{},{})
+
+            G.add_edge(u,v,**edgedata)  
+#            else:
+#                raise TypeError("Failed to read line: %s"%vlist)
     return G
 
 
@@ -322,7 +323,7 @@ def write_adjlist(G, path, comments="#", delimiter=' '):
     def make_str(t):
         if is_string_like(t): return t
         return str(t)
-    directed=G.directed
+    directed=G.is_directed()
 
     seen=set()
     for s,nbrs in G.adjacency_iter():
@@ -330,7 +331,7 @@ def write_adjlist(G, path, comments="#", delimiter=' '):
         for t,data in nbrs.iteritems():
             if not directed and t in seen: 
                 continue
-            if G.multigraph:
+            if G.is_multigraph():
                 for d in data.values():
                     fh.write(make_str(t)+delimiter)
             else:

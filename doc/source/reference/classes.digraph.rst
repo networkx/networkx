@@ -5,10 +5,12 @@ DiGraph - Directed graphs with self loops
 =========================================
 
 Overview
---------
+========
 .. currentmodule:: networkx
-.. autoclass:: DiGraph
+.. autofunction:: DiGraph
 
+Methods
+=======
 
 Adding and Removing Nodes and Edges
 -----------------------------------
@@ -16,12 +18,14 @@ Adding and Removing Nodes and Edges
 .. autosummary::
    :toctree: generated/
 
+   DiGraph.__init__
    DiGraph.add_node
    DiGraph.add_nodes_from
    DiGraph.remove_node
    DiGraph.remove_nodes_from
    DiGraph.add_edge
    DiGraph.add_edges_from
+   DiGraph.add_weighted_edges_from
    DiGraph.remove_edge
    DiGraph.remove_edges_from
    DiGraph.add_star

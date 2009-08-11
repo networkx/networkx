@@ -57,7 +57,7 @@ def miles_graph():
         if numfind.match(line): # this line is distances
             dist=line.split()
             for d in dist:
-                G.add_edge(city,cities[i],int(d))
+                G.add_edge(city,cities[i],weight=int(d))
                 i=i+1
         else: # this line is a city, position, population
             i=1
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     for v in G:
         H.add_node(v)
     for (u,v,d) in G.edges(data=True):
-        if d < 300:
+        if d['weight'] < 300:
             H.add_edge(u,v)
 
     # draw with matplotlib/pylab            

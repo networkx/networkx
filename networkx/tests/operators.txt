@@ -512,12 +512,14 @@ True
 
 stochastic graph
 ----------------
->>> G=nx.star_graph(2)
+>>> G=nx.DiGraph()
+>>> G.add_edge(0,1)
+>>> G.add_edge(0,2)
 >>> S=nx.stochastic_graph(G)
 >>> print nx.is_isomorphic(G,S)
 True
 >>> print sorted(S.edges(data=True))
-[(0, 1, 0.5), (0, 2, 0.5)]
+[(0, 1, {'weight': 0.5}), (0, 2, {'weight': 0.5})]
     
 
 frozen graph

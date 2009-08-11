@@ -74,7 +74,7 @@ def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
         # we finished reading game info
         elif len(line)==0:
              if len(game_info)>0: 
-                 G.add_edge(white, black, game_info)
+                 G.add_edge(white, black, **game_info)
                  game_info={}
     return G
 

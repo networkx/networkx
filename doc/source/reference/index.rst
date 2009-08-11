@@ -24,3 +24,5 @@ Reference
    credits      
    legal
    citing
+   glossary
+

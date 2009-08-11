@@ -6,10 +6,12 @@ MultiDiGraph - Directed graphs with self loops and parallel edges
 =================================================================
 
 Overview
---------
+========
 .. currentmodule:: networkx
-.. autoclass:: MultiDiGraph
+.. autofunction:: MultiDiGraph
 
+Methods
+=======
 
 Adding and Removing Nodes and Edges
 -----------------------------------
@@ -17,12 +19,14 @@ Adding and Removing Nodes and Edges
 .. autosummary::
    :toctree: generated/
 
+   MultiDiGraph.__init__
    MultiDiGraph.add_node
    MultiDiGraph.add_nodes_from
    MultiDiGraph.remove_node
    MultiDiGraph.remove_nodes_from
    MultiDiGraph.add_edge
    MultiDiGraph.add_edges_from
+   MultiDiGraph.add_weighted_edges_from
    MultiDiGraph.remove_edge
    MultiDiGraph.remove_edges_from
    MultiDiGraph.add_star

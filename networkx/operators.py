@@ -590,10 +590,10 @@ def line_graph(G):
     convert_node_labels_to_integers()
 
     """
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph():
+    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
         raise Exception("Line graph not implemented for Multi(Di)Graphs")
     L=G.__class__()
-    if G.directed:
+    if G.is_directed():
         for u,nlist in G.adjacency_iter():  # same as successors for digraph
             # look for directed path of length two
             for n in nlist:
@@ -644,31 +644,36 @@ def stochastic_graph(G,copy=True):
     Parameters
     -----------
     G : graph
-      A networkx graph, must have valid edge weights
+      A NetworkX graph, must have valid edge weights
 
-    copy : bool, optional
+    copy : boolean, optional
       If True make a copy of the graph, otherwise modify original graph
 
     """        
-    if not G.weighted:
-        raise NetworkXError("Input to stochastic_graph() must be a weighted graph.")
+    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
+        raise Exception("stochastic_graph not implemented for Multi(Di)Graphs")
+
+    if not G.is_directed():
+        raise Exception("stochastic_graph not implemented for undirected graphs")
 
     if copy:
-        if G.directed:
-            W=networkx.DiGraph(G)
-        else:
-            W=networkx.Graph(G) 
+        W=networkx.DiGraph(G)
     else:
         W=G # reference original graph, no copy
 
-    for n in W:
-        deg=float(sum(W[n].values()))
-        for p in W[n]: 
-            W[n][p]/=deg
-            # also adjust pred entry for consistency 
-            # though it is not used in pagerank algorithm
-            if G.directed:
-                W.pred[p][n]/=deg
+    try:        
+        degree=W.out_degree(weighted=True,with_labels=True)
+    except:
+        degree=W.out_degree(with_labels=True)
+#    for n in W:
+#        for p in W[n]:
+#            weight=G[n][p].get('weight',1.0)
+#            W[n][p]['weight']=weight/degree[n]        
+
+    for (u,v,d) in W.edges(data=True):
+        d['weight']=d.get('weight',1.0)/degree[u]
+
+
     return W
 
 def freeze(G):

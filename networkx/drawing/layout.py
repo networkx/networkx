@@ -398,14 +398,14 @@ def spectral_layout(G,dim=2,weighted=True,scale=1):
             raise ValueError
         A=networkx.to_scipy_sparse_matrix(G)
         # Symmetrize directed graphs
-        if G.directed:
+        if G.is_directed():
             A=A+np.transpose(A)
         pos=_sparse_spectral(A,dim=dim,weighted=weighted)
     except (ImportError,ValueError):
         # Dense matrix
         A=networkx.to_numpy_matrix(G)
         # Symmetrize directed graphs
-        if G.directed:
+        if G.is_directed():
             A=A+np.transpose(A)
         pos=_spectral(A,dim=dim,weighted=weighted)
 

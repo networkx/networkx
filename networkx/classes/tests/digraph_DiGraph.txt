@@ -100,7 +100,7 @@ True
 >>> G.delete_node('j') # NetworkXError
 Traceback (most recent call last):
 ...
-NetworkXError: node j not in digraph
+NetworkXError: The node j is not in the digraph.
 >>> G.delete_node('m')
 >>> G.nodes()
 []
@@ -474,9 +474,9 @@ False
 >>> UG=G.to_undirected()       # to_undirected
 >>> UG==G
 False
->>> UG.directed
+>>> UG.is_directed()
 False
->>> G.directed
+>>> G.is_directed()
 True
 >>> UG.name==G.name
 True
@@ -547,27 +547,27 @@ sorted(G.in_neighbors('C'))
 >>> sorted(G.neighbors('j'))  
 Traceback (most recent call last):
 ...
-NetworkXError: node j not in digraph
+NetworkXError: The node j is not in the digraph.
 >>> sorted(G.predecessors('j'))  
 Traceback (most recent call last):
 ...
-NetworkXError: node j not in digraph
+NetworkXError: The node j is not in the digraph.
 >>> sorted(G.successors('j'))  
 Traceback (most recent call last):
 ...
-NetworkXError: node j not in digraph
+NetworkXError: The node j is not in the digraph.
 >>> sorted(G.neighbors_iter('j'))  
 Traceback (most recent call last):
 ...
-NetworkXError: node j not in digraph
+NetworkXError: The node j is not in the digraph.
 >>> sorted(G.predecessors_iter('j'))  
 Traceback (most recent call last):
 ...
-NetworkXError: node j not in digraph
+NetworkXError: The node j is not in the digraph.
 >>> sorted(G.successors_iter('j'))  
 Traceback (most recent call last):
 ...
-NetworkXError: node j not in digraph
+NetworkXError: The node j is not in the digraph.
 
 
 Functional interface
@@ -616,7 +616,7 @@ Iterators
 >>> sorted(G.neighbors_iter('X'))
 Traceback (most recent call last):
 ...
-NetworkXError: node X not in digraph
+NetworkXError: The node X is not in the digraph.
 
 >>> G.clear()
 >>> number_of_nodes(G)
@@ -738,11 +738,11 @@ Test error handling of tuple as a node
 >>> H.delete_node((1,2))
 Traceback (most recent call last):
 ...
-NetworkXError: node (1, 2) not in digraph
+NetworkXError: The node (1, 2) is not in the digraph.
 
 >>> H.delete_nodes_from([(1,2)])
 
 >>> H.neighbors((1,2))
 Traceback (most recent call last):
 ...
-NetworkXError: node (1, 2) not in digraph
+NetworkXError: The node (1, 2) is not in the digraph.

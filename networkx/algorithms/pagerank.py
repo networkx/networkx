@@ -44,7 +44,7 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G=nx.DiGraph(nx.path_graph(4))
     >>> pr=nx.pagerank(G,alpha=0.9)
 
     Notes
@@ -81,7 +81,9 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
 
     nnodes=W.number_of_nodes()
     # "dangling" nodes, no links out from them
-    dangle=[n for n in W if sum(W[n].values())==0.0]  
+    out_degree=W.out_degree(with_labels=True)
+#    dangle=[n for n in W if sum(W[n].values())==0.0]  
+    dangle=[n for n in W if out_degree[n]==0.0]  
     # pagerank power iteration: make up to max_iter iterations        
     for i in range(max_iter):
         xlast=x
@@ -92,7 +94,7 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
             for nbr in W[n]:
-                x[nbr]+=alpha*xlast[n]*W[n][nbr] 
+                x[nbr]+=alpha*xlast[n]*W[n][nbr]['weight']
             x[n]+=danglesum+teleportsum
         # normalize vector to 1                
         s=1.0/sum(x.values())

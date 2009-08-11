@@ -1,4 +1,5 @@
-*********
+.. _operators:
+
 Operators
 *********
 

@@ -4,7 +4,7 @@ Search algorithms.
 See also networkx.path.
 
 """
-__authors__ = """Eben Kenah (ekenah@t7.lanl.gov)\nAric Hagberg (hagberg@lanl.gov)"""
+__authors__ = """Eben Kenah\nAric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>

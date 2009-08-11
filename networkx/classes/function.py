@@ -92,7 +92,7 @@ def degree_histogram(G):
 
 def is_directed(G):
     """ Return True if graph is directed."""
-    return G.directed
+    return G.is_directed()
 
 def info(self, n=None):
     """Print short info summary for graph G or node n."""
