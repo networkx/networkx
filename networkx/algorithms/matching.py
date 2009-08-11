@@ -99,7 +99,8 @@ def max_weight_matching(G, maxcardinality=False):
     # Find the maximum edge weight.
     maxweight = 0
     allinteger = True
-    for i,j,wt in G.edges_iter(data=True):
+    for i,j,d in G.edges_iter(data=True):
+        wt=d.get('weight',1)
         if i != j and wt > maxweight:
             maxweight = wt
         allinteger = allinteger and (type(wt) in (int, long))
@@ -175,7 +176,7 @@ def max_weight_matching(G, maxcardinality=False):
 
     # Return 2 * slack of edge (v, w) (does not work inside blossoms).
     def slack(v, w):
-        return dualvar[v] + dualvar[w] - 2 * G[v][w]
+        return dualvar[v] + dualvar[w] - 2 * G[v][w].get('weight',1)
 
     # Assign label t to the top-level blossom containing vertex w,
     # coming through an edge from vertex v.
@@ -516,7 +517,8 @@ def max_weight_matching(G, maxcardinality=False):
         assert len(blossomdual) == 0 or min(blossomdual.values()) >= 0
         # 0. all edges have non-negative slack and
         # 1. all matched edges have zero slack;
-        for i,j,wt in G.edges_iter(data=True):
+        for i,j,d in G.edges_iter(data=True):
+            wt=d.get('weight',1)
             if i == j:
                 continue # ignore self-loops
             s = dualvar[i] + dualvar[j] - 2 * wt
