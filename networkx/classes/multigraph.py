@@ -391,7 +391,6 @@ class MultiGraph(Graph):
                 raise NetworkXError(
                     "The edge %s-%s with key %s not in the graph."%(u,v,key))
 
-    delete_edge = remove_edge            
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -427,7 +426,6 @@ class MultiGraph(Graph):
                     key=None
                 self.remove_edge(u,v,key=key)
 
-    delete_edges_from = remove_edges_from            
 
     def has_edge(self, u, v, key=None):
         """Return True if the edge (u,v) is in the graph.
@@ -442,10 +440,6 @@ class MultiGraph(Graph):
         -------
         edge_ind : bool
             True if edge is in the graph, False otherwise.
-
-        See Also
-        --------
-        has_neighbor
 
         Examples
         --------
@@ -464,8 +458,6 @@ class MultiGraph(Graph):
 
         The following syntax are all equivalent: 
         
-        >>> G.has_neighbor(0,1)
-        True
         >>> G.has_edge(0,1)
         True
         >>> 1 in G[0]  # though this gives KeyError if 0 not in G

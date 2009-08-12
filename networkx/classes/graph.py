@@ -460,7 +460,6 @@ class Graph(object):
             del adj[u][n]   # remove all edges n-u in graph
         del adj[n]          # now remove node
 
-    delete_node = remove_node        
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -498,7 +497,6 @@ class Graph(object):
             except KeyError:
                 pass
 
-    delete_nodes_from = remove_nodes_from
 
     def nodes_iter(self, data=False):
         """Return an iterator over the nodes.
@@ -846,8 +844,6 @@ class Graph(object):
             raise NetworkXError("The edge %s-%s not in graph"%(u,v))
 
 
-    delete_edge=remove_edge
-
 
     def remove_edges_from(self, ebunch): 
         """Remove all edges specified in ebunch.
@@ -878,11 +874,9 @@ class Graph(object):
             u,v = e[:2]  # ignore edge data if present
             if u in self.adj and v in self.adj[u]:
                 del self.adj[u][v]   
-                if u != v:  # self loop needs only one entry deleted
+                if u != v:  # self loop needs only one entry removed
                     del self.adj[v][u]   
 
-
-    delete_edges_from = remove_edges_from
 
     def has_edge(self, u, v):
         """Return True if the edge (u,v) is in the graph.
@@ -898,9 +892,6 @@ class Graph(object):
         edge_ind : bool
             True if edge is in the graph, False otherwise.
 
-        See Also
-        --------
-        has_neighbor
 
         Examples
         --------
@@ -919,8 +910,6 @@ class Graph(object):
 
         The following syntax are all equivalent: 
         
-        >>> G.has_neighbor(0,1)
-        True
         >>> G.has_edge(0,1)
         True
         >>> 1 in G[0]  # though this gives KeyError if 0 not in G
@@ -931,16 +920,6 @@ class Graph(object):
             return v in self.adj[u]
         except KeyError:
             return False
-
-    has_neighbor=has_edge
-#    def has_neighbor(self, u, v):
-#        # same as has edge? (But not for multigraphs where has_edge allows a "key")
-#        # could patch this has_neighbor=has_edge, but then error messages all say has_edge...
-#        try:
-#            return v in self.adj[u]
-#        except KeyError:
-#            return False
-
 
 
     def neighbors(self, n):

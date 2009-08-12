@@ -364,7 +364,6 @@ class DiGraph(Graph):
             del self.succ[u][n] # remove all edges n-u in digraph
         del self.pred[n]          # remove node from pred
 
-    delete_node = remove_node        
 
     def remove_nodes_from(self, nbunch):
         """Remove multiple nodes.
@@ -405,7 +404,6 @@ class DiGraph(Graph):
             except KeyError:
                 pass # silent failure on remove
 
-    delete_nodes_from = remove_nodes_from        
 
     def add_edge(self, u, v, attr_dict=None, **attr):  
         """Add an edge between u and v.
@@ -591,8 +589,6 @@ class DiGraph(Graph):
         except KeyError: 
             raise NetworkXError("The edge %s-%s not in graph."%(u,v))
 
-    delete_edge = remove_edge            
-
 
     def remove_edges_from(self, ebunch): 
         """Remove all edges specified in ebunch.
@@ -624,9 +620,6 @@ class DiGraph(Graph):
             if u in self.succ and v in self.succ[u]:
                 del self.succ[u][v]   
                 del self.pred[v][u]        
-
-
-    delete_edges_from = remove_edges_from            
 
 
     def has_successor(self, u, v):

@@ -313,8 +313,6 @@ class MultiDiGraph(MultiGraph,DiGraph):
                 raise NetworkXError(
                     "The edge %s-%s with key %s is not in the graph"%(u,v,key))
 
-    delete_edge = remove_edge
-
 
     def edges_iter(self, nbunch=None, data=False, keys=False):
         """Return an iterator over the edges.
