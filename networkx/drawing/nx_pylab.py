@@ -206,7 +206,7 @@ def draw_networkx_nodes(G, pos,
     """
     try:
         import matplotlib.pylab as pylab
-        import matplotlib.numerix as nmex
+        import numpy
     except ImportError:
         raise ImportError, "Matplotlib required for draw()"
     except RuntimeError:
@@ -222,7 +222,7 @@ def draw_networkx_nodes(G, pos,
         return None 
 
     try:
-        xy=nmex.asarray([pos[v] for v in nodelist])
+        xy=numpy.asarray([pos[v] for v in nodelist])
     except KeyError,e:
         raise networkx.NetworkXError('Node %s has no position.'%e)
     except ValueError:
@@ -285,11 +285,10 @@ def draw_networkx_edges(G, pos,
     try:
         import matplotlib
         import matplotlib.pylab as pylab
-        import matplotlib.numerix as nmex
         import matplotlib.cbook as cb
         from matplotlib.colors import colorConverter,Colormap
         from matplotlib.collections import LineCollection
-        import matplotlib.numerix.mlab as mlab
+        import numpy
     except ImportError:
         raise ImportError, "Matplotlib required for draw()"
     except RuntimeError:
@@ -305,7 +304,7 @@ def draw_networkx_edges(G, pos,
         return None
 
     # set edge positions
-    edge_pos=nmex.asarray([(pos[e[0]],pos[e[1]]) for e in edgelist])
+    edge_pos=numpy.asarray([(pos[e[0]],pos[e[1]]) for e in edgelist])
     
     if not cb.iterable(width):
         lw = (width,)
@@ -315,16 +314,16 @@ def draw_networkx_edges(G, pos,
     if not cb.is_string_like(edge_color) \
            and cb.iterable(edge_color) \
            and len(edge_color)==len(edge_pos):
-        if nmex.alltrue([cb.is_string_like(c) 
+        if numpy.alltrue([cb.is_string_like(c) 
                          for c in edge_color]):
             # (should check ALL elements)
             # list of color letters such as ['k','r','k',...]
             edge_colors = tuple([colorConverter.to_rgba(c,alpha) 
                                  for c in edge_color])
-        elif nmex.alltrue([not cb.is_string_like(c) 
+        elif numpy.alltrue([not cb.is_string_like(c) 
                            for c in edge_color]):
             # If color specs are given as (rgb) or (rgba) tuples, we're OK
-            if nmex.alltrue([cb.iterable(c) and len(c) in (3,4)
+            if numpy.alltrue([cb.iterable(c) and len(c) in (3,4)
                              for c in edge_color]):
                 edge_colors = tuple(edge_color)
             else:
@@ -363,7 +362,7 @@ def draw_networkx_edges(G, pos,
     if map(int,mpl_version.split('.'))>=[0,87,7]:
         if edge_colors is None:
             if edge_cmap is not None: assert(isinstance(edge_cmap, Colormap))
-            edge_collection.set_array(nmex.asarray(edge_color))
+            edge_collection.set_array(numpy.asarray(edge_color))
             edge_collection.set_cmap(edge_cmap)
             if edge_vmin is not None or edge_vmax is not None:
                 edge_collection.set_clim(edge_vmin, edge_vmax)
@@ -394,7 +393,7 @@ def draw_networkx_edges(G, pos,
             x2,y2=dst
             dx=x2-x1 # x offset
             dy=y2-y1 # y offset
-            d=nmex.sqrt(float(dx**2+dy**2)) # length of edge
+            d=numpy.sqrt(float(dx**2+dy**2)) # length of edge
             if d==0: # source and target at same position
                 continue
             if dx==0: # vertical edge
@@ -404,9 +403,9 @@ def draw_networkx_edges(G, pos,
                 ya=y2
                 xa=dx*p+x1
             else:
-                theta=nmex.arctan2(dy,dx)
-                xa=p*d*nmex.cos(theta)+x1
-                ya=p*d*nmex.sin(theta)+y1
+                theta=numpy.arctan2(dy,dx)
+                xa=p*d*numpy.cos(theta)+x1
+                ya=p*d*numpy.sin(theta)+y1
                 
             a_pos.append(((xa,ya),(x2,y2)))
 
@@ -418,10 +417,10 @@ def draw_networkx_edges(G, pos,
                                 )
         
     # update view        
-    minx = mlab.amin(mlab.ravel(edge_pos[:,:,0]))
-    maxx = mlab.amax(mlab.ravel(edge_pos[:,:,0]))
-    miny = mlab.amin(mlab.ravel(edge_pos[:,:,1]))
-    maxy = mlab.amax(mlab.ravel(edge_pos[:,:,1]))
+    minx = numpy.amin(numpy.ravel(edge_pos[:,:,0]))
+    maxx = numpy.amax(numpy.ravel(edge_pos[:,:,0]))
+    miny = numpy.amin(numpy.ravel(edge_pos[:,:,1]))
+    maxy = numpy.amax(numpy.ravel(edge_pos[:,:,1]))
 
     w = maxx-minx
     h = maxy-miny
@@ -519,8 +518,8 @@ def draw_networkx_edge_labels(G, pos,
     """
     try:
         import matplotlib.pylab as pylab
-        import matplotlib.numerix as nmex
         import matplotlib.cbook as cb
+        import numpy
     except ImportError:
         raise ImportError, "Matplotlib required for draw()"
     except RuntimeError:
@@ -537,15 +536,15 @@ def draw_networkx_edge_labels(G, pos,
         (x1,y1)=pos[n1]
         (x2,y2)=pos[n2]
         (x,y) = ((x1+x2)/2, (y1+y2)/2)
-        angle=nmex.arctan2(y2-y1,x2-x1)/(2.0*nmex.pi)*360 # degrees
+        angle=numpy.arctan2(y2-y1,x2-x1)/(2.0*numpy.pi)*360 # degrees
         # make label orientation "right-side-up"
         if angle > 90: 
             angle-=180
         if angle < - 90: 
             angle+=180
         # transform data coordinate angle to screen coordinate angle
-        xy=nmex.array((x,y))
-        trans_angle=ax.transData.transform_angles(nmex.array((angle,)),
+        xy=numpy.array((x,y))
+        trans_angle=ax.transData.transform_angles(numpy.array((angle,)),
                                                   xy.reshape((1,2)))[0]
         # use default box of white with white border
         if bbox is None:
