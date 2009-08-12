@@ -28,7 +28,7 @@ def atlas6():
     for G in Atlas: 
         zerodegree=[n for n in G if G.degree(n)==0]
         for n in zerodegree:
-            G.delete_node(n)
+            G.remove_node(n)
         U=nx.disjoint_union(U,G)
 
     # list of graphs of all connected components        
