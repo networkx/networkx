@@ -94,30 +94,30 @@ def is_directed(G):
     """ Return True if graph is directed."""
     return G.is_directed()
 
-def info(self, n=None):
+def info(G, n=None):
     """Print short info summary for graph G or node n."""
     import textwrap
     width_left = 22
 
     if n is None:
-        print ("Name:").ljust(width_left), self.name
-        type_name = [type(self).__name__]
+        print ("Name:").ljust(width_left), G.name
+        type_name = [type(G).__name__]
         print ("Type:").ljust(width_left), ",".join(type_name)
-        print ("Number of nodes:").ljust(width_left), self.number_of_nodes()
-        print ("Number of edges:").ljust(width_left), self.number_of_edges()
-        if len(self) > 0:
-            if self.directed:
+        print ("Number of nodes:").ljust(width_left), G.number_of_nodes()
+        print ("Number of edges:").ljust(width_left), G.number_of_edges()
+        if len(G) > 0:
+            if G.is_directed():
                 print ("Average in degree:").ljust(width_left), \
-                    round( sum(self.in_degree())/float(len(self)), 4)
+                    round( sum(G.in_degree())/float(len(G)), 4)
                 print ("Average out degree:").ljust(width_left), \
-                    round( sum(self.out_degree())/float(len(self)), 4)
+                    round( sum(G.out_degree())/float(len(G)), 4)
             else:
                 print ("Average degree:").ljust(width_left), \
-                    round( sum(self.degree())/float(len(self)), 4)
+                    round( sum(G.degree())/float(len(G)), 4)
 
     else:
         try:
-            list_neighbors = self.neighbors(n)
+            list_neighbors = G.neighbors(n)
         except (KeyError, TypeError):
             raise NetworkXError, "node %s not in graph"%(n,)
         print "\nNode", n, "has the following properties:"
