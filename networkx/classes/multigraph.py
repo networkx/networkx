@@ -40,7 +40,7 @@ class MultiGraph(Graph):
         graph is created.  The data can be an edge list, or any
         NetworkX graph object.  If the corresponding optional Python
         packages are installed the data can also be a NumPy matrix
-        or 2d ndarray, a SciPy spare matrix, or a PyGraphviz graph.
+        or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
     name : string, optional (default='')
         An optional name for the graph.
     attr : keyword arguments, optional (default= no attributes)
