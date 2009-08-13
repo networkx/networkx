@@ -232,9 +232,7 @@ edges $A-B$, $B-C$
 >>> G.add_edge('A','B')
 >>> G.add_edge('B','C')
 >>> print G.adj
-{'A': {'B': {}}, 
- 'B': {'A': {}, 'C': {}}, 
- 'C': {'B': {}}}
+{'A': {'B': {}}, 'C': {'B': {}}, 'B': {'A': {}, 'C': {}}}
 
 The data structure gets morphed slightly for each base graph class.
 For DiGraph two dict-of-dicts-of-dicts structures are provided, one 

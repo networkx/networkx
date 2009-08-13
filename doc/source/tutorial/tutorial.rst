@@ -5,6 +5,7 @@ A Brief Tour
 
 Create an empty graph with no nodes and no edges.
 
+>>> import networkx as nx
 >>> G=nx.Graph()
 
 By definition, a Graph is a collection of nodes (vertices)
@@ -70,8 +71,8 @@ or by adding any *ebunch* of edges,
 An *ebunch* is any iterable container
 of edge-tuples.  An edge-tuple can be a 2-tuple
 of nodes or a 3-tuple with 2 nodes followed by 
-an edge data object, e.g. (2,3,3.1415).
-Edge data is discussed further below
+an edge attribute dictionary, e.g. (2,3,{'weight':3.1415}).
+Edge attributes are discussed further below
 
 >>> G.add_edges_from(H.edges())
 
@@ -104,23 +105,24 @@ At this stage the graph G consists of 8 nodes and 2 edges, as can be seen by:
 We can examine them with
 
 >>> G.nodes()
-[1, 2, 3, 'spam', 's', 'p', 'a', 'm']
+['a', 1, 2, 3, 'spam', 'm', 'p', 's']
 >>> G.edges()
 [(1, 2), (1, 3)]
 >>> G.neighbors(1)
-[2]
+[2, 3]
 
-Removing nodes has similar syntax to adding:
+Removing nodes or edges has similar syntax to adding:
 
 >>> G.remove_nodes_from("spam")
 >>> G.nodes()
 [1, 2, 3, 'spam']
+>>> G.remove_edge(1,3)
 
 You can specify graph data upon instantiation if an appropriate structure exists.
 
 >>> H=nx.DiGraph(G)   # create a DiGraph using the connections from G
 >>> H.edges()
-[(1, 2), (1, 3), (2, 1), (3, 1)]
+[(1, 2), (2, 1)]
 >>> H=nx.Graph({0:[1,2,3], 1:[0,3], 2:[0], 3:[0]})  # dict-of-lists adjacency
 
 
@@ -128,36 +130,32 @@ Edge Objects
 ------------
 
 Edge data/weights/labels/objects can also be associated with an edge.
-By default, edge data is set to 1.
+Each edge has an attribute dictionary associated with it.  Arbitrary
+key=value attributes can be assigned.  The special attribute 'weight'
+should be numeric and holds values used by algorithms requiring 
+weighted edges.
 
 >>> H=nx.Graph()
->>> H.add_edge(1,2,'red')
->>> H.add_edges_from([(1,3,'blue'), (2,0,'red'), (0,3)])
+>>> H.add_edge(1,2,color='red')
+>>> H.add_edges_from([(1,3,{'color':'blue'}), (2,0,{'color':'red'}), (0,3)])
 >>> H.edges()
 [(0, 2), (0, 3), (1, 2), (1, 3)]
 >>> H.edges(data=True)
-[(0, 2, 'red'), (0, 3, 1), (1, 2, 'red'), (1, 3, 'blue')]
+[(0, 2, {'color': 'red'}), (0, 3, {}), (1, 2, {'color': 'red'}), (1, 3, {'color': 'blue'})]
 
-While the edge data is often a number for weighted
-graph settings, it can be any object such as a string,
-a custom edge object, a file, a function, etc.
-The 3-tuple (n1,n2,x) represents an edge between 
-nodes n1 and n2 that is decorated with the object x 
-(not necessarily hashable).  
-
-To replace the edge data for an existing edge, add the
+To update the edge attributes for an existing edge, add the
 edge again with the new value. (Note: with MultiGraph
-you need to delete the old edge before adding the new value).
+you need to keep track of the edge key for the edge you want to update.)
 
->>> H.add_edge(0,2,'blue')
+>>> H.add_edge(0,2,color='blue')
 >>> H.edges(data=True)
-[(0, 2, 'blue'), (0, 3, 1), (1, 2, 'red'), (1, 3, 'blue')]
+[(0, 2, {'color': 'blue'}), (0, 3, {}), (1, 2, {'color': 'red'}), (1, 3, {'color': 'blue'})]
 
 You might notice that nodes and edges are not NetworkX objects.  
 This leaves you free to use your existing node and edge
 objects, or more typically, use numerical values or strings where appropriate.
 A node can be any hashable object (except None), and an edge can be associated 
-with any object x using G.add_edge(n1,n2,x).
+with any object x using G.add_edge(n1,n2,object=x).
 
 As an example, n1 and n2 could be protein objects from the RCSB Protein 
 Data Bank, and x could refer to an XML record of publications detailing 
@@ -179,27 +177,34 @@ through them anyway.
 
 Fast direct access to the graph data structure is also possible
 using subscript notation.
-Warning: do not change the resulting dict--it is part of 
+Warning: do not change the returned dict--it is part of 
 the graph data structure and direct manipulation may leave the 
 graph in an inconsistent state.
 
 >>> G[1]  # Warning: do not change the resulting dict
-{2: 1}
+{2: {}}
 >>> G[1][2]
-1
+{}
+
+You can safely set the attributes of an edge using subscript notation
+if the edge aleady exists.
+
+>>> G.add_edge(1,3)
+>>> G[1][3]['color']='blue'
 
 Fast examination of all edges is achieved using adjacency iterators.
 Note that for undirected graphs this actually looks at each edge twice.
 
 >>> FG=nx.Graph()
->>> FG.add_edges_from([(1,2,0.125),(1,3,0.75),(2,4,1.2),(3,4,0.375)])
+>>> FG.add_weighted_edges_from([(1,2,0.125),(1,3,0.75),(2,4,1.2),(3,4,0.375)])
 >>> for n,nbrs in FG.adjacency_iter():
-...    for nbr,data in nbrs.iteritems():
+...    for nbr,eattr in nbrs.iteritems():
+...        data=eattr['weight']
 ...        if data<0.5: print (n,nbr,data)
-(1,2,0.125)
-(1,2,0.125)
-(3,4,0.375)
-(3,4,0.375)
+(1, 2, 0.125)
+(2, 1, 0.125)
+(3, 4, 0.375)
+(4, 3, 0.375)
 
 
 Directed Graphs
@@ -213,10 +218,10 @@ and the sum of in_degree() and out_degree() respectively even though
 that may feel inconsistent at times.
 
 >>> DG=nx.DiGraph()
->>> DG.add_edges_from([(1,2,0.5), (3,1,0.75)])
->>> DG.out_degree(1)
+>>> DG.add_weighted_edges_from([(1,2,0.5), (3,1,0.75)])
+>>> DG.out_degree(1,weighted=True)
 0.5
->>> DG.degree(1)
+>>> DG.degree(1,weighted=True)
 1.25
 >>> DG.successors(1)
 [2]
@@ -243,13 +248,14 @@ you should convert to a standard graph in a way that makes the measurement
 well defined.
 
 >>> MG=nx.MultiGraph()
->>> MG.add_edges_from([(1,2,.5), (1,2,.75), (2,3,.5)])
+>>> MG.add_weighted_edges_from([(1,2,.5), (1,2,.75), (2,3,.5)])
 >>> MG.degree(weighted=True, with_labels=True)
 {1: 1.25, 2: 1.75, 3: 0.5}
 >>> GG=nx.Graph()
 >>> for n,nbrs in MG.adjacency_iter():
-...    for nbr,datalist in nbrs.iteritems():
-...        GG.add_edge(n,nbr,min(datalist))
+...    for nbr,edict in nbrs.iteritems():
+...        minvalue=min(edict.values())
+...        GG.add_edge(n,nbr,minvalue)
 
 >>> nx.shortest_path(GG,1,3)
 [1, 2, 3]
@@ -331,7 +337,7 @@ The keyword argument with_labels=True returns a dict keyed by nodes
 to the node values.
 
 >>> nx.degree(G, with_labels=True)
-{1: 1, 2: 2, 3: 1, 'spam': 0}
+{1: 2, 2: 1, 3: 1, 'spam': 0}
 
 Functions that return Node Properties, e.g. degree(), clustering(), etc, can
 For values of specific nodes, you can provide a single node or an nbunch 
@@ -339,7 +345,7 @@ of nodes as argument.  If a single node is specified, then a single value
 is returned.  If an nbunch is specified, then the function will 
 return a list of values.  
  
->>> degree(G,1)
+>>> nx.degree(G,1)
 2
 >>> G.degree(1)
 2

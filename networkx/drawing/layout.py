@@ -167,6 +167,7 @@ def fruchterman_reingold_layout(G,dim=2,
     --------
     >>> G=nx.path_graph(4)
     >>> pos=nx.spring_layout(G)
+
     # The same using longer function name
     >>> pos=nx.fruchterman_reingold_layout(G)
     
