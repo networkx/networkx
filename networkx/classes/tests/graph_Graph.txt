@@ -59,13 +59,13 @@ False
 >>> G.has_node({'A':1})
 False
 
->>> G.delete_node('A')
+>>> G.remove_node('A')
 >>> G.has_node('A')
 False
 >>> G.add_nodes_from(list("ABCDEFGHIJKL"))
 >>> G.has_node("L")
 True
->>> G.delete_nodes_from(['H','I','J','K','L'])
+>>> G.remove_nodes_from(['H','I','J','K','L'])
 >>> G.add_nodes_from([1,2,3,4])
 >>> sorted(G.nodes())
 [1, 2, 3, 4, 'A', 'B', 'C', 'D', 'E', 'F', 'G']
@@ -94,17 +94,17 @@ test node portion of clear()
 >>> G.nodes()
 []
 
-Test add_node and delete_node acting for various nbunch
+Test add_node and remove_node acting for various nbunch
 
 >>> G.add_node('m')
 >>> G.has_node('m')
 True
 >>> G.add_node('m')   # no complaints
->>> G.delete_node('j') # NetworkXError
+>>> G.remove_node('j') # NetworkXError
 Traceback (most recent call last):
 ...
 NetworkXError: The node j is not in the graph.
->>> G.delete_node('m')
+>>> G.remove_node('m')
 >>> G.nodes()
 []
 
@@ -114,7 +114,7 @@ nbunch is a list.
 >>> G.add_nodes_from(P3) # add nbunch of nodes (nbunch=Graph)
 >>> sorted(G.nodes())
 [1, 2, 3, 'A', 'B', 'C', 'D']
->>> G.delete_nodes_from(P3) # delete nbunch of nodes (nbunch=Graph)
+>>> G.remove_nodes_from(P3) # remove nbunch of nodes (nbunch=Graph)
 >>> sorted(G.nodes())
 ['A', 'B', 'C', 'D']
 
@@ -128,7 +128,7 @@ True
 nbunch is a dict with nodes as keys
 
 >>> nbunch={'I':"foo",'J':2,'K':True,'L':"spam"}
->>> G.delete_nodes_from(nbunch)
+>>> G.remove_nodes_from(nbunch)
 >>> sorted(G.nodes())
 ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 
@@ -139,7 +139,7 @@ nbunch is an iterator
 >>> sorted(G.nodes())
 [1, 2, 3, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 >>> n_iter=P3.nodes_iter() # rebuild same iterator
->>> G.delete_nodes_from(n_iter) # delete nbunch of nodes (nbunch=iterator)
+>>> G.remove_nodes_from(n_iter) # remove nbunch of nodes (nbunch=iterator)
 >>> sorted(G.nodes())
 ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 
@@ -170,14 +170,10 @@ False
 True
 >>> G.has_edge('B','A') # G is undirected, so B->A is an edge
 True
->>> G.has_neighbor('A','C')  # same as has_edge
-False
->>> G.has_neighbor('A','B')  
-True
 
 >>> G.add_edge('A','C')  # test directedness
 >>> G.add_edge('C','A')
->>> G.delete_edge('C','A')
+>>> G.remove_edge('C','A')
 >>> G.has_edge('A','C') # G is undirected
 False
 >>> G.has_edge('C','A') 
@@ -187,12 +183,12 @@ False
 >>> G.add_edge('A','A') # test self loops
 >>> G.has_edge('A','A') # should have edge
 True
->>> G.delete_edge('A','A')
+>>> G.remove_edge('A','A')
 
 >>> G.add_edge('X','X')
 >>> G.has_node('X')  # added node but not self loop
 True
->>> G.delete_node('X')
+>>> G.remove_node('X')
 
 
 >>> G.add_edge('A','Z') # should add the node silently
@@ -231,12 +227,12 @@ False
 True
 >>> G.has_edge('P','M')
 True
->>> G.delete_node('P')    # tests delete_node()'s handling of edges.
+>>> G.remove_node('P')    # tests remove_node()'s handling of edges.
 >>> G.has_edge('P','M')
 False
 
 
->>> G.delete_edge('M')       # test delete_edge()
+>>> G.remove_edge('M')       # test remove_edge()
 Traceback (most recent call last):
 ...
 TypeError: remove_edge() takes exactly 3 arguments (2 given)
@@ -244,23 +240,23 @@ TypeError: remove_edge() takes exactly 3 arguments (2 given)
 >>> G.add_edge('N','M')  
 >>> G.has_edge('M','N')
 True
->>> G.delete_edge('M','N')
+>>> G.remove_edge('M','N')
 >>> G.has_edge('M','N')
 False
 >>> G.has_edge('N','M')  # undirected
 False
->>> G.delete_edges_from([list('HI'),list('DF'),tuple('KK'),tuple('JK')]) # self loop fails silently
+>>> G.remove_edges_from([list('HI'),list('DF'),tuple('KK'),tuple('JK')]) # self loop fails silently
 >>> G.has_edge('H','I')
 False
 >>> G.has_edge('J','K')
 False
->>> G.delete_edges_from([list('IJ'),list('KK'),list('JK')])
+>>> G.remove_edges_from([list('IJ'),list('KK'),list('JK')])
 >>> G.has_edge('I','J')
 False
->>> G.delete_nodes_from(set('ZEFHIMNO'))
+>>> G.remove_nodes_from(set('ZEFHIMNO'))
 >>> sorted(G.nodes())
 [1, 2, 3, 'A', 'B', 'C', 'D', 'G', 'J', 'K']
->>> G.delete_nodes_from([1,2,3])
+>>> G.remove_nodes_from([1,2,3])
 >>> sorted(G.nodes())
 ['A', 'B', 'C', 'D', 'G', 'J', 'K']
 >>> sorted(G.edges())
@@ -471,8 +467,8 @@ DG.adj==G.adj
 True
 sorted(DG.out_edges(list('AB')))
 [('A', 'B'), ('A', 'C'), ('B', 'A'), ('B', 'C'), ('B', 'D')]
-DG.delete_edge('A','B')
-DG.has_edge('B','A') # this deletes B-A but not  A-B
+DG.remove_edge('A','B')
+DG.has_edge('B','A') # this removes B-A but not  A-B
 True
 DG.has_edge('A','B')
 False
@@ -614,12 +610,12 @@ Test for no error when nbunch has node not in G.nodes()
 True
 
 Test error handling of tuple as a node
->>> H.delete_node((1,2))
+>>> H.remove_node((1,2))
 Traceback (most recent call last):
 ...
 NetworkXError: The node (1, 2) is not in the graph.
 
->>> H.delete_nodes_from([(1,2)])
+>>> H.remove_nodes_from([(1,2)])
 
 was
 Traceback (most recent call last):
