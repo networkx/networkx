@@ -29,7 +29,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
     Multiedges are multiple edges between two nodes.  Each edge
     can hold optional data or attributes.
 
-    A MultiDiGraph hold directed edges.  Self loops are allowed.
+    A MultiDiGraph holds directed edges.  Self loops are allowed.
 
     Nodes can be arbitrary (hashable) Python objects with optional
     key/value attributes.
@@ -45,9 +45,9 @@ class MultiDiGraph(MultiGraph,DiGraph):
         NetworkX graph object.  If the corresponding optional Python
         packages are installed the data can also be a NumPy matrix
         or 2d ndarray, a SciPy spare matrix, or a PyGraphviz graph.
-    name : string, optional
+    name : string, optional (default='')
         An optional name for the graph.
-    attr : keyword arguments, optional
+    attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
 
     See Also
@@ -104,6 +104,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
     If some edges connect nodes not yet in the graph, the nodes 
     are added automatically.  If an edge already exists, an additional
     edge is created and stored using a key to identify the edge.
+    By default the key is the lowest unused integer.
 
     >>> G.add_edges_from([(4,5,dict(route=282)), (4,5,dict(route=37))])
     >>> G[4]
@@ -166,7 +167,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
     ...                print (n,nbr,eattr['weight'])
     (1, 2, 4)
     (2, 3, 8)
-    >>> print [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True)  if 'weight' in edata ]
+    >>> print [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
     [(1, 2, 4), (2, 3, 8)]
 
     **Reporting:**
@@ -192,16 +193,14 @@ class MultiDiGraph(MultiGraph,DiGraph):
         u,v : nodes
             Nodes can be, for example, strings or numbers. 
             Nodes must be hashable (and not None) Python objects.
-        key : hashable identifier, optional
-            Used to distinguish multiedges edges between a pair 
-            of nodes.  By default the lowest unused integer is used.
-        attr_dict : dictionary, optional
+        key : hashable identifier, optional (default=lowest unused integer)
+            Used to distinguish multiedges between a pair of nodes.  
+        attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
-            update any existing data associated with the edge.
+            update existing data associated with the edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
-            keyword arguments.   The default edge data is the
-            empty dictionary {}.
+            keyword arguments.   
 
         See Also
         --------
@@ -209,7 +208,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Notes 
         -----
-        To replace edge data, you must remove and then add the edge.
+        To replace/update edge data, use the optional key argument
+        to identify a unique edge.  Otherwise a new edge will be created.
 
         NetworkX algorithms designed for weighted graphs cannot use
         multigraphs directly because it is not clear how to handle
@@ -220,7 +220,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         --------
         The following all add the edge e=(1,2) to graph G:
         
-        >>> G = nx.MultiDiGraph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> e = (1,2)
         >>> G.add_edge(1, 2)           # explicit two-node form
         >>> G.add_edge(*e)             # single edge as tuple of two nodes
@@ -229,6 +229,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Associate data to edges using keywords:
 
         >>> G.add_edge(1, 2, weight=3)
+        >>> G.add_edge(1, 2, key=0, weight=4)   # update data for key=0
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
         """
         # set up attribute dict
@@ -276,12 +277,15 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Parameters
         ----------
         u,v: nodes 
-            Remove the edge between nodes u and v.
+            Remove edge or edges between nodes u and v.
+        key : hashable identifier, optional (default= None)
+            Used to distinguish multiedges between a pair of nodes.  
+            If None, remove all edges between u and v.
 
         Raises
         ------
         NetworkXError
-           If nodes u or v are not in the graph.
+           If there is not an edge between u and v.
 
         See Also
         --------
@@ -289,14 +293,12 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.MultiGraph()   # or MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> G.remove_edge(0,1)
         >>> e = (1,2)
         >>> G.remove_edge(*e) # unpacks e from an edge tuple
-        >>> e = (2,3,{'weight':7}) # an edge with attribute data
-        >>> G.remove_edge(*e[:2]) # select first part of edge tuple
-
+        >>> G.remove_edge(2,3,key=0) # identify an individual edge with key
         """
         if key is None:
             super(MultiDiGraph,self).remove_edge(u,v)
@@ -333,7 +335,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Returns
         -------
         edge_iter : iterator
-            An iterator of edge tuples.
+            An iterator of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
 
         See Also
         --------
@@ -382,6 +384,27 @@ class MultiDiGraph(MultiGraph,DiGraph):
     out_edges_iter=edges_iter
 
     def in_edges_iter(self, nbunch=None, data=False, keys=False):
+        """Return an iterator over the incoming edges.
+        
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default= all nodes)
+            A container of nodes.  The container will be iterated
+            through once.
+        data : bool, optional (default=False)
+            If True, return edge attribute dict with each edge.
+        keys : bool, optional (default=False)
+            If True, return edge keys with each edge.
+
+        Returns
+        -------
+        in_edge_iter : iterator
+            An iterator of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+
+        See Also
+        --------
+        edges_iter : return an iterator of edges
+        """
         if nbunch is None:
             nodes_nbrs=self.pred.iteritems()
         else:
@@ -510,18 +533,24 @@ class MultiDiGraph(MultiGraph,DiGraph):
         return True
 
     def to_directed(self):
-        """Return a directed representation of the graph.
+        """Return a directed copy of the graph.
  
         Returns
         -------
-        G : DiGraph
-            A directed graph with the same name, same nodes, and with
-            each edge (u,v,data) replaced by two directed edges
-            (u,v,data) and (v,u,data).
+        G : MultiDiGraph
+            A deepcopy of the graph.
 
-        See Also
-        --------
-        copy
+        Notes
+        -----
+        If edges in both directions (u,v) and (v,u) exist in the
+        graph, attributes for the new undirected edge will be a combination of
+        the attributes of the directed edges.  The edge data is updated
+        in the (arbitrary) order that the edges are encountered.  For
+        more customized control of the edge attributes use add_edge().
+
+        This is similar to MultiDiGraph(self) which returns a shallow copy.  
+        self.to_undirected() returns a deepcopy of edge, node and
+        graph attributes.
 
         Examples
         --------

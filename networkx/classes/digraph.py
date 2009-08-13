@@ -41,9 +41,9 @@ class DiGraph(Graph):
         NetworkX graph object.  If the corresponding optional Python
         packages are installed the data can also be a NumPy matrix
         or 2d ndarray, a SciPy spare matrix, or a PyGraphviz graph.
-    name : string, optional
+    name : string, optional (default='')
         An optional name for the graph.
-    attr : keyword arguments, optional
+    attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
 
     See Also
@@ -72,7 +72,7 @@ class DiGraph(Graph):
 
     >>> G.add_nodes_from([2,3])
     >>> G.add_nodes_from(range(100,110))
-    >>> H = nx.path_graph(10,create_using=nx.DiGraph())
+    >>> H=nx.path_graph(10)
     >>> G.add_nodes_from(H)
 
     In addition to strings and integers any hashable Python object
@@ -157,9 +157,7 @@ class DiGraph(Graph):
     ...            print (n,nbr,eattr['weight'])
     (1, 2, 4)
     (2, 3, 8)
-    >>> print [ (u,v,edata['weight']) \
-                for u,v,edata in G.edges(data=True) \
-                if 'weight' in edata ]
+    >>> print [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
     [(1, 2, 4), (2, 3, 8)]
 
     **Reporting:**
@@ -182,9 +180,9 @@ class DiGraph(Graph):
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a NumPy matrix
             or 2d ndarray, a SciPy spare matrix, or a PyGraphviz graph.
-        name : string, optional
+        name : string, optional (default='')
             An optional name for the graph.
-        attr : keyword arguments, optional
+        attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
 
         See Also
@@ -231,9 +229,9 @@ class DiGraph(Graph):
         ----------
         n : node
             A node can be any hashable Python object except None.
-        attr_dict : dictionary, optional
+        attr_dict : dictionary, optional (default= no attributes)
             Dictionary of node attributes.  Key/value pairs will
-            update any existing data associated with the node.
+            update existing data associated with the node.
         attr : keyword arguments, optional
             Set or change attributes using key=value.
 
@@ -290,7 +288,7 @@ class DiGraph(Graph):
         nodes : iterable container
             A container of nodes (list, dict, set, etc.).  The
             container will be iterated through once.
-        attr : keyword arguments, optional
+        attr : keyword arguments, optional (default= no attributes)
             Update attributes for all nodes in nodes.
 
         See Also
@@ -419,13 +417,12 @@ class DiGraph(Graph):
         u,v : nodes
             Nodes can be, for example, strings or numbers. 
             Nodes must be hashable (and not None) Python objects.
-        attr_dict : dictionary, optional
+        attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
-            update any existing data associated with the edge.
+            update existing data associated with the edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
-            keyword arguments.   The default edge data is the
-            empty dictionary {}.
+            keyword arguments.   
 
         See Also
         --------
@@ -488,13 +485,12 @@ class DiGraph(Graph):
             graph. The edges must be given as as 2-tuples (u,v) or
             3-tuples (u,v,d) where d is a dictionary containing edge
             data.
-        attr_dict : dictionary, optional
+        attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
-            update any existing data associated with the edge.
+            update existing data associated with each edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
-            keyword arguments.   The default edge data is the
-            empty dictionary {}.
+            keyword arguments.   
 
 
         See Also
@@ -566,7 +562,7 @@ class DiGraph(Graph):
         Raises
         ------
         NetworkXError
-           If nodes u or v are not in the graph.
+           If there is not an edge between u and v.
 
         See Also
         --------
@@ -574,14 +570,13 @@ class DiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.Graph()   # or DiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> G.remove_edge(0,1)
         >>> e = (1,2)
         >>> G.remove_edge(*e) # unpacks e from an edge tuple
         >>> e = (2,3,{'weight':7}) # an edge with attribute data
         >>> G.remove_edge(*e[:2]) # select first part of edge tuple
-
         """
         try:
             del self.succ[u][v]   
@@ -596,8 +591,10 @@ class DiGraph(Graph):
         Parameters
         ----------
         ebunch: list or container of edge tuples
-            A container of edge 2-tuples (u,v) or edge 3-tuples(u,v,d) 
-            though d is ignored unless we are a multigraph.
+            Each edge given in the list or container will be removed 
+            from the graph. The edges can be:
+                - 2-tuples (u,v) edge between u and v.
+                - 3-tuples (u,v,k) where k is ignored.
 
         See Also
         --------
@@ -605,7 +602,7 @@ class DiGraph(Graph):
             
         Notes
         -----
-        Will fail silently if the edge (u,v) in ebunch is not in the graph.
+        Will fail silently if an edge in ebunch is not in the graph.
 
         Examples
         --------
@@ -613,7 +610,6 @@ class DiGraph(Graph):
         >>> G.add_path([0,1,2,3])
         >>> ebunch=[(1,2),(2,3)]
         >>> G.remove_edges_from(ebunch) 
-
         """
         for e in ebunch:
             (u,v)=e[:2]  # ignore edge data
@@ -672,13 +668,16 @@ class DiGraph(Graph):
     def edges_iter(self, nbunch=None, data=False):
         """Return an iterator over the edges.
         
+        Edges are returned as tuples with optional data 
+        in the order (node, neighbor, data).
+
         Parameters
         ----------
         nbunch : iterable container, optional (default= all nodes)
             A container of nodes.  The container will be iterated
             through once.
         data : bool, optional (default=False)
-            Return two tuples (u,v) (False) or three-tuples (u,v,data) (True).
+            If True, return edge attribute dict in 3-tuple (u,v,data).
 
         Returns
         -------
@@ -733,7 +732,7 @@ class DiGraph(Graph):
             A container of nodes.  The container will be iterated
             through once.
         data : bool, optional (default=False)
-            Return two tuples (u,v) (False) or three-tuples (u,v,data) (True).
+            If True, return edge attribute dict in 3-tuple (u,v,data).
 
         Returns
         -------
@@ -898,22 +897,22 @@ class DiGraph(Graph):
         return True
 
     def to_directed(self):
-        """Return a directed representation of the graph.
+        """Return a directed copy of the graph.
  
         Returns
         -------
         G : DiGraph
-            A directed graph with the same name, same nodes, and with
-            each edge (u,v,data) replaced by two directed edges
-            (u,v,data) and (v,u,data).
+            A deepcopy of the graph.
 
-        See Also
-        --------
-        copy
+        Notes
+        -----
+        This is similar to DiGraph(self) which returns a shallow copy.  
+        self.to_undirected() returns a deepcopy of edge, node and
+        graph attributes.
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
         >>> H.edges()
@@ -944,6 +943,14 @@ class DiGraph(Graph):
 
         Notes
         -----
+        Notes
+        -----
+        If edges in both directions (u,v) and (v,u) exist in the
+        graph, attributes for the new undirected edge will be a combination of
+        the attributes of the directed edges.  The edge data is updated
+        in the (arbitrary) order that the edges are encountered.  For
+        more customized control of the edge attributes use add_edge().
+
         This is similar to Graph(self) which returns a shallow copy.  
         self.to_undirected() returns a deepcopy of edge, node and
         graph attributes.

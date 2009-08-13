@@ -156,11 +156,6 @@ class TestGraph:
 #        assert_equal(G.has_edge(0,1,1),True)
 #        assert_equal(G.has_edge(0,1,2),True)
 
-    def test_has_neighbor(self):
-        G=self.K3
-        assert_equal(G.has_neighbor(0,1),True)
-        assert_equal(G.has_neighbor(0,-1),False)
-
     def test_neighbors(self):
         G=self.K3
         assert_equal(sorted(G.neighbors(0)),[1,2])
@@ -366,13 +361,14 @@ class TestGraph:
         assert_equal(G.nodes_with_selfloops(),[0])
         assert_equal(G.selfloop_edges(data=True),[(0,0,{})])
         assert_equal(G.number_of_selfloops(),1)
-        G.remove_node(0)
-        assert_equal(G.order(),2)
-        G=self.K3
+        G.remove_edge(0,0)
+        G.add_edge(0,0)
+        G.remove_edges_from([(0,0)])
+        G.add_edge(1,1)
+        G.remove_node(1)
         G.add_edge(0,0)
         G.add_edge(1,1)
         G.remove_nodes_from([0,1])
-        assert_equal(G.order(),1)
 
     def test_size(self):
         G=self.K3
