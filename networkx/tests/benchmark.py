@@ -74,7 +74,7 @@ class Benchmark(object):
 if __name__ == "__main__":
     # set up for all routines:
     classes=['Graph','MultiGraph','DiGraph','MultiDiGraph']
-    all_tests=['add_nodes','add_edges','delete_nodes','delete_edges',\
+    all_tests=['add_nodes','add_edges','remove_nodes','remove_edges',\
             'neighbors','edges','degree','dijkstra','shortest path',\
             'subgraph','laplacian']
     # Choose which tests to run
@@ -95,17 +95,17 @@ if __name__ == "__main__":
         b=Benchmark(classes,title,test_string,runs=3,reps=1000)
         b.run()
 
-    if 'delete_nodes' in tests:
+    if 'remove_nodes' in tests:
         title='Benchmark: Adding and Deleting nodes'
         setup='nlist=range(%i)'%N
-        test_string=('G.add_nodes_from(nlist)\nG.delete_nodes_from(nlist)',setup)
+        test_string=('G.add_nodes_from(nlist)\nG.remove_nodes_from(nlist)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=1000)
         b.run()
 
-    if 'delete_edges' in tests:
+    if 'remove_edges' in tests:
         title='Benchmark: Adding and Deleting edges'
         setup='elist=[(i,i+3) for i in range(%s-3)]'%N
-        test_string=('G.add_edges_from(elist)\nG.delete_edges_from(elist)',setup)
+        test_string=('G.add_edges_from(elist)\nG.remove_edges_from(elist)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=1000)
         b.run()
 

@@ -56,13 +56,13 @@ def kl_connected_subgraph(G,k,l,low_memory=False,same_as_graph=False):
                 prev=u
                 for w in path:
                     if prev!=w:
-                        G2.delete_edge(prev,w)
+                        G2.remove_edge(prev,w)
                         prev=w
 #                path=shortest_path(G2,u,v,k) # ??? should "Cutoff" be k+1?
                 path=shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
             # No Other Paths
             if accept==0:
-                H.delete_edge(u,v)
+                H.remove_edge(u,v)
                 deleted_some=True
                 if graphOK: graphOK=False
     # We looked through all edges and removed none of them.
@@ -97,7 +97,7 @@ def is_kl_connected(G,k,l,low_memory=False):
             prev=u
             for w in path:
                 if w!=prev:
-                    G2.delete_edge(prev,w)
+                    G2.remove_edge(prev,w)
                     prev=w
 #            path=shortest_path(G2,u,v,k) # ??? should "Cutoff" be k+1?
             path=shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?

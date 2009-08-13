@@ -194,7 +194,7 @@ with it. (You can use dir(G) to inspect the methods associated with object G.)
     - for nbr in G[n]:  # loop through the neighbors of n in G
     - G.nodes()        # list of nodes
     - G.nodes_iter()   # iterator over nodes
-    - nbr in G[n],  G.has_edge(n1,n2), G.has_neighbor(n1,n2)
+    - nbr in G[n],  G.has_edge(n1,n2)
     - G.edges(), G.edges(n), G.edges(nbunch)      
     - G.edges_iter(), G.edges_iter(n), G.edges_iter(nbunch)
     - G.get_edge_data(n1,n2)  # the object associated with edge

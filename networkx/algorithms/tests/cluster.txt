@@ -74,7 +74,7 @@ Cluster
 >>> transitivity(G)
 1.0
 
->>> G.delete_edge(1,2)
+>>> G.remove_edge(1,2)
 
 >>> triangles(G)
 [5, 3, 3, 5, 5]

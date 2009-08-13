@@ -70,7 +70,6 @@ Information about graph structure
    DiGraph.has_node
    DiGraph.__contains__
    DiGraph.has_edge
-   DiGraph.has_neighbor
    DiGraph.nodes_with_selfloops
    DiGraph.selfloop_edges
    DiGraph.order

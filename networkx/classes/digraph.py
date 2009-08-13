@@ -943,8 +943,6 @@ class DiGraph(Graph):
 
         Notes
         -----
-        Notes
-        -----
         If edges in both directions (u,v) and (v,u) exist in the
         graph, attributes for the new undirected edge will be a combination of
         the attributes of the directed edges.  The edge data is updated

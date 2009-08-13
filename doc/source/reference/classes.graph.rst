@@ -63,7 +63,6 @@ Information about graph structure
    Graph.has_node
    Graph.__contains__
    Graph.has_edge
-   Graph.has_neighbor
    Graph.nodes_with_selfloops
    Graph.selfloop_edges
    Graph.order

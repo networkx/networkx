@@ -29,7 +29,7 @@ strings
 >>> H2=read_edgelist(fname)
 >>> H is not H2  # they should be different graphs
 True
->>> G.delete_node('g') # isolated nodes are not written in edgelist
+>>> G.remove_node('g') # isolated nodes are not written in edgelist
 >>> sorted(H.nodes())==sorted(G.nodes())
 True
 >>> sorted(H.edges())==sorted(G.edges())
@@ -42,7 +42,7 @@ digraph
 >>> H2=read_edgelist(fname,create_using=DiGraph());
 >>> H is not H2  # they should be different graphs
 True
->>> DG.delete_node('g') # isolated nodes are not written in edgelist
+>>> DG.remove_node('g') # isolated nodes are not written in edgelist
 >>> sorted(H.nodes())==sorted(DG.nodes())
 True
 >>> sorted(H.edges())==sorted(DG.edges())

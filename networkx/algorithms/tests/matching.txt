@@ -90,7 +90,7 @@ Create S-blossom, relabel as T-blossom, use for augmentation:
 >>> G.add_edge(1, 6, weight=4)
 >>> sortdict(max_weight_matching(G))
 {1: 6, 2: 3, 3: 2, 4: 5, 5: 4, 6: 1}
->>> G.delete_edge(1, 6)
+>>> G.remove_edge(1, 6)
 >>> G.add_edge(3, 6, weight=4)
 >>> sortdict(max_weight_matching(G))
 {1: 2, 2: 1, 3: 6, 4: 5, 5: 4, 6: 3}

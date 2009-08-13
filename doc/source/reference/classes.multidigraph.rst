@@ -71,7 +71,6 @@ Information about graph structure
    MultiDiGraph.has_node
    MultiDiGraph.__contains__
    MultiDiGraph.has_edge
-   MultiDiGraph.has_neighbor
    MultiDiGraph.nodes_with_selfloops
    MultiDiGraph.selfloop_edges
    MultiDiGraph.order

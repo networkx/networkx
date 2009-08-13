@@ -369,7 +369,7 @@ def degree_sequence_tree(deg_sequence):
         
     # in case we added one too many 
     if len(G.degree())>len(deg_sequence): 
-        G.delete_node(0)
+        G.remove_node(0)
     return G
         
 
@@ -502,8 +502,8 @@ def double_edge_swap(G, nswap=1):
         if (x not in G[u]) and (y not in G[v]):
             G.add_edge(u,x)
             G.add_edge(v,y)
-            G.delete_edge(u,v)
-            G.delete_edge(x,y)
+            G.remove_edge(u,v)
+            G.remove_edge(x,y)
             swapcount+=1
         n+=1
     return swapcount
@@ -567,8 +567,8 @@ def connected_double_edge_swap(G, nswap=1):
             y=random.choice(G.neighbors(x)) # Note: dan't use G[u] because choice can't use dict 
             if v==y: continue # same target, skip
             if (not G.has_edge(u,x)) and (not G.has_edge(v,y)):
-                G.delete_edge(u,v)
-                G.delete_edge(x,y)
+                G.remove_edge(u,v)
+                G.remove_edge(x,y)
                 G.add_edge(u,x)
                 G.add_edge(v,y)
                 swapped.append((u,v,x,y))
@@ -582,8 +582,8 @@ def connected_double_edge_swap(G, nswap=1):
                 (u,v,x,y)=swapped.pop()
                 G.add_edge(u,v)
                 G.add_edge(x,y)
-                G.delete_edge(u,x)
-                G.delete_edge(v,y)
+                G.remove_edge(u,x)
+                G.remove_edge(v,y)
                 swapcount-=1
             window = int(math.ceil(float(window)/2))
         assert G.degree() == ideg

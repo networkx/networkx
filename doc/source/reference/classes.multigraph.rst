@@ -63,7 +63,6 @@ Information about graph structure
    MultiGraph.has_node
    MultiGraph.__contains__
    MultiGraph.has_edge
-   MultiGraph.has_neighbor
    MultiGraph.nodes_with_selfloops
    MultiGraph.selfloop_edges
    MultiGraph.order

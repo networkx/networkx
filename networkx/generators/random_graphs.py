@@ -389,7 +389,7 @@ def watts_strogatz_graph(n, k, p, seed=None):
                 # Enforce no self-loops or multiple edges
                 while w == u or G.has_edge(u, w): 
                     w = random.choice(nodes)
-                G.delete_edge(u,v)  
+                G.remove_edge(u,v)  
                 G.add_edge(u,w)
     return G            
 

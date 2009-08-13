@@ -17,7 +17,7 @@ Topological Sort
 True
 >>> NX.topological_sort_recursive(DG) is None
 True
->>> DG.delete_edge(2,3)
+>>> DG.remove_edge(2,3)
 >>> NX.topological_sort(DG)
 [1, 3, 2]
 >>> NX.topological_sort_recursive(DG)
@@ -30,7 +30,7 @@ True
 True
 >>> NX.is_directed_acyclic_graph(DG)
 False
->>> DG.delete_edge(1,2)
+>>> DG.remove_edge(1,2)
 >>> NX.topological_sort_recursive(DG)
 [11, 12, 13, 14, 15, 2, 3, 4, 5, 1]
 >>> NX.topological_sort(DG)

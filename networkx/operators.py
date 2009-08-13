@@ -169,7 +169,7 @@ def intersection(G,H,create_using=None ):
     >>> G=nx.path_graph(3)
     >>> H=nx.path_graph(5)
     >>> R=G.copy()
-    >>> R.delete_nodes_from(n for n in G if n not in H)
+    >>> R.remove_nodes_from(n for n in G if n not in H)
 
     """
     # create new graph         
@@ -217,7 +217,7 @@ def difference(G,H,create_using=None):
     >>> G=nx.path_graph(3)
     >>> H=nx.path_graph(5)
     >>> R=G.copy()
-    >>> R.delete_nodes_from(n for n in G if n in H)
+    >>> R.remove_nodes_from(n for n in G if n in H)
 
     """
     # create new graph         

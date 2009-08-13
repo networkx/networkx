@@ -238,10 +238,10 @@ True
 >>> DG=DiGraph(UG)
 >>> DG.adj==UG.adj
 True
->>> DG.delete_edge('A','B')
+>>> DG.remove_edge('A','B')
 >>> number_of_edges(DG)
 5
->>> UG.delete_edge('A','B')
+>>> UG.remove_edge('A','B')
 >>> number_of_edges(UG)
 2
 
