@@ -276,9 +276,11 @@ class MultiGraph(Graph):
         ebunch : container of edges
             Each edge given in the container will be added to the
             graph. The edges can be:
+
                 - 2-tuples (u,v) or
                 - 3-tuples (u,v,d) for an edge attribute dict d, or
                 - 4-tuples (u,v,k,d) for an edge identified by key k
+
         attr_dict : dictionary, optional  (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
             update existing data associated with each edge.
@@ -363,7 +365,7 @@ class MultiGraph(Graph):
         Raises
         ------
         NetworkXError
-           If there is not an edge between u and v.
+            If there is not an edge between u and v.
 
         See Also
         --------
@@ -403,6 +405,7 @@ class MultiGraph(Graph):
         ebunch: list or container of edge tuples
             Each edge given in the list or container will be removed 
             from the graph. The edges can be:
+
                 - 2-tuples (u,v) All edges between u and v are removed.
                 - 3-tuples (u,v,key) The edge identified by key is removed.
 

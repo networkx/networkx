@@ -285,7 +285,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Raises
         ------
         NetworkXError
-           If there is not an edge between u and v.
+            If there is not an edge between u and v.
 
         See Also
         --------

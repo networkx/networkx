@@ -25,9 +25,11 @@ NetworkX documentation
    download
 
 .. only:: html
+
    - `Examples <examples/index.html>`_
 
 .. only:: html
+
    - `Gallery <gallery/index.html>`_
 
 

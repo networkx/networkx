@@ -813,7 +813,7 @@ class Graph(object):
         Raises
         ------
         NetworkXError
-           If there is not an edge between u and v.
+            If there is not an edge between u and v.
 
         See Also
         --------
@@ -846,6 +846,7 @@ class Graph(object):
         ebunch: list or container of edge tuples
             Each edge given in the list or container will be removed 
             from the graph. The edges can be:
+
                 - 2-tuples (u,v) edge between u and v.
                 - 3-tuples (u,v,k) where k is ignored.
 
