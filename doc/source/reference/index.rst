@@ -20,9 +20,5 @@ Reference
    drawing
    exceptions
    utils
-   history
-   credits      
-   legal
-   citing
    glossary
 

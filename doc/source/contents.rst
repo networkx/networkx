@@ -18,6 +18,10 @@ NetworkX documentation
    install
    tutorial/index
    reference/index
+   reference/history
+   reference/credits      
+   reference/legal
+   reference/citing
    download
 
 .. only:: html

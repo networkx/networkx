@@ -3,6 +3,29 @@
 Release Log
 ===========
 
+
+Networkx-1.0
+------------
+
+Release date:  TBD August 2009
+
+See: https://networkx.lanl.gov/trac/timeline
+
+New features
+~~~~~~~~~~~~
+This release has sigificant changes to parts of the graph API
+to allow graph, node, and edge attributes.
+See http://networkx.lanl.gov//reference/api_changes.html
+
+ - Update Graph, DiGraph, and MultiGraph classes to allow attributes.
+ - Default edge data is now an empty dictionary (was the integer 1)   
+ - Many more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.0
+
+Examples
+~~~~~~~~
+ - Update to work with networkx-1.0 API
+
+
 Networkx-0.99
 -------------
 

@@ -1,10 +1,6 @@
 History
 *******
 
-
-
-NetworkX = Network "X"  = NX (for short)
-
 Original Creators::
 
 	 Aric Hagberg, hagberg@lanl.gov
