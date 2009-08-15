@@ -244,7 +244,7 @@ is_multigraph()
 
 
 Classes Removed
-===============
+---------------
 
 LabeledGraph, LabeledDiGraph
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -263,29 +263,34 @@ GraphML writer, freeze, is_frozen, A* algorithm,
 directed scale-free generator, random clustered graph.
 
 
-Other possible incompatibilities with existing code
-===================================================
-
-
 Converting your existing code to networkx-1.0
 =============================================
 
-Since edge information is now stored as a dict, all such info
-should be given a key to identify it.  One standard key is
-'weight' which is used by routines that require weighted edges.
-The associated value should be numeric.  All other keys are
-available.
+Weighted edges
+--------------
 
-Similarly, if you directly access the edge data, you will now
-need to identify the key of the edge data to retrieve it.
+Edge information is now stored in an attribution dictionary
+so all edge data must be given a key to identify it.  
 
->>> G.add_edge(u,v,weight=3.1415)
->>> G[u][v]['weight']=2.3
->>> G[u][v]['object']=MyEdgeObject()
+There is currently only one standard/reserved key, 'weight', which is
+used by algorithms and functions that use weighted edges.  The
+associated value should be numeric.  All other keys are available for
+users to assign as needed.
 
+>>> G.add_edge(1,2,weight=3.1415) # add the edge 1-2 with a weight
+>>> G[1][2]['weight']=2.3 # set the weight to 2.3
 
-All NetworkX algorithms that require/use weighted edges now
-look to the 'weight' edge attribute for the weight.  If you
-wrote homemade algorithms that assumed the edge data was numeric,
-you should replace G[u][v] and G.get_edge(u,v) with G[u][v]['weight'].
+Similarly, for direct access the edge data, use 
+the key of the edge data to retrieve it.
 
+>>> w = G[1][2]['weight']
+
+All NetworkX algorithms that require/use weighted edges now use the
+'weight' edge attribute.  If you have existing algorithms that assumed
+the edge data was numeric, you should replace G[u][v] and
+G.get_edge(u,v) with G[u][v]['weight'].
+
+An idiom for getting a weight for graphs with or without an assigned
+weight key is
+
+>>> w= G[u][v].get('weight',1)  # set w to 1 if there is no 'weight' key
