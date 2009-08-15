@@ -35,6 +35,19 @@ graph classes now allow optional graph, node, and edge attributes.  Those
 attributes are stored internally in the graph classes as dictionaries
 and can be accessed simply like Python dictionaries in most cases.
 
+Graph attributes
+----------------
+Each graph keeps a dictionary of key=value attributes
+in the member G.graph.  These attributes can be accessed
+directly using G.graph or added at instantiation using 
+keyword arguments.
+
+>>> G=nx.Graph(region='Africa')
+>>> G.graph['color']='green'
+>>> G.graph
+{'region': 'Africa', 'color': 'green'}
+
+
 Node attributes
 ---------------
 Each node has a corresponding dictionary of attributes.
@@ -90,7 +103,8 @@ add_node()
 
 add_nodes_from()
 ^^^^^^^^^^^^^^^^	
-   Now takes optional keyword=value attributes or a dictionary of attributes.
+   Now takes optional keyword=value attributes or a dictionary of 
+   attributes applied to all affected nodes.
 
    >>> G.add_nodes_from([1,2],time='2pm')  # all nodes have same attribute 
 
@@ -102,7 +116,8 @@ add_edge()
 
 add_edges_from()
 ^^^^^^^^^^^^^^^^	
-   Now takes optional keyword=value attributes or a dictionary of attributes.
+   Now takes optional keyword=value attributes or a dictionary of 
+   attributes applied to all affected edges.
 
    >>> G.add_edges_from([(3,4),(4,5)], color='red')
    >>> G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
@@ -150,7 +165,8 @@ subgraph()
 
 add_cycle(), add_path(), add_star()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   Now take optional keyword=value attributes or a dictionary of attributes.
+   Now take optional keyword=value attributes or a dictionary of 
+   attributes which are applied to all edges affected by the method.
 
    >>> G=Graph()
    >>> G.add_path([0,1,2,3],width=3.2)
@@ -171,7 +187,7 @@ delete_nodes_from()
 
 
 delete_edge()
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^
    Now raises an exception on an attempt to delete an edge not in the graph.
    The preferred name is now remove_edge().
 
@@ -186,10 +202,20 @@ has_neighbor():
 
 get_edge()
 ^^^^^^^^^^
-   Renamed to get_edge_data().	
+   Renamed to get_edge_data().	Returns the edge attribute dictionary.
 
    The fastest way to get edge data for edge (u,v) is to use G[u][v]
    instead of G.get_edge_data(u,v)
+
+
+Members removed
+---------------
+
+directed, multigraph, weighted
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    Use methods G.is_directed() and G.is_multigraph().
+    All graphs are weighted graphs now if they have numeric
+    values in the 'weight' edge attribute.
 
 
 Methods added
@@ -200,7 +226,6 @@ add_weighted edges_from()
    Convenience method to add weighted edges to graph using a list of
    3-tuples (u,v,weight).
 
-
 get_edge_data()
 ^^^^^^^^^^^^^^^
    Renamed from get_edge().	
@@ -208,6 +233,34 @@ get_edge_data()
    The fastest way to get edge data for edge (u,v) is to use G[u][v]
    instead of G.get_edge_data(u,v)
 
+is_directed()
+^^^^^^^^^^^^^
+    replaces member G.directed
+
+is_multigraph()
+^^^^^^^^^^^^^^^
+    replaces member G.multigraph
+
+
+
+Classes Removed
+===============
+
+LabeledGraph, LabeledDiGraph
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    These classes have been folded into the regular classes.
+
+UbiGraph
+^^^^^^^^
+    Removed as the ubigraph platform is no longer being supported.
+
+
+Additional functions/generators
+===============================
+
+ego_graph, stochastic_graph, PageRank algorithm, HITS algorithm, 
+GraphML writer, freeze, is_frozen, A* algorithm, 
+directed scale-free generator, random clustered graph.
 
 
 Other possible incompatibilities with existing code
@@ -217,4 +270,22 @@ Other possible incompatibilities with existing code
 Converting your existing code to networkx-1.0
 =============================================
 
+Since edge information is now stored as a dict, all such info
+should be given a key to identify it.  One standard key is
+'weight' which is used by routines that require weighted edges.
+The associated value should be numeric.  All other keys are
+available.
+
+Similarly, if you directly access the edge data, you will now
+need to identify the key of the edge data to retrieve it.
+
+>>> G.add_edge(u,v,weight=3.1415)
+>>> G[u][v]['weight']=2.3
+>>> G[u][v]['object']=MyEdgeObject()
+
+
+All NetworkX algorithms that require/use weighted edges now
+look to the 'weight' edge attribute for the weight.  If you
+wrote homemade algorithms that assumed the edge data was numeric,
+you should replace G[u][v] and G.get_edge(u,v) with G[u][v]['weight'].
 
