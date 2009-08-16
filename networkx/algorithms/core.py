@@ -2,7 +2,7 @@
 Find and manipulate the k-cores of a graph
 
 """
-__author__ = """Dan Schult(dschult@colgate.edu)"""
+__author__ = """Dan Schult(dschult@colgate.edu)\nJason Grout(jason-sage@creativetrax.com)"""
 #    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
