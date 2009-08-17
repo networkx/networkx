@@ -30,12 +30,16 @@ Do not add this file to the repository.
 """
 
 __version__ = '%(version)s'
-__revision__ = '%(revision)s'
+__revision__ = %(revision)s
 __date__ = '%(date)s'
 
 '''
+    if revision is not None:
+        rev = "'%s'" % (revision,)
+    else:
+        rev = revision
     subs = {'version': version,
-            'revision': revision,
+            'revision': rev,
             'date': date}
     fh.write(text % subs)
     fh.close()
@@ -65,6 +69,7 @@ version = '1.0'
 # Change to False before tagging a release; then change back.
 dev = True 
 
+revision = None
 if dev:
     version += '.dev'   
     revision = get_svn_revision()
