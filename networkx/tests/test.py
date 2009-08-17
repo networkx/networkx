@@ -33,12 +33,7 @@ def all():
         import numpy
     except ImportError:
         print "numpy not found: skipping tests"
-        skiplist.extend(['spectrum.txt','threshold.txt','convert_numpy.txt'])
-    try:
-        import scipy
-    except ImportError:
-        print "scipy not found: skipping tests" 
-        skiplist.extend(['convert_scipy.txt'])
+        skiplist.extend(['spectrum.txt','threshold.txt'])
     try:
         import yaml
     except ImportError:

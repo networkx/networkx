@@ -64,8 +64,7 @@ scipy=lazyModule('scipy')
 sparse=lazyModule('scipy.sparse')
 
 def _prep_create_using(create_using):
-    """
-    Return a graph object ready to be populated.
+    """Return a graph object ready to be populated.
 
     If create_using is None return the default (just networkx.Graph())
     If create_using.clear() works, assume it returns a graph object.
@@ -82,6 +81,55 @@ def _prep_create_using(create_using):
             raise TypeError("Input graph is not a networkx graph type")
     return G
 
+def _edge_value(G, edge_attr):
+    """Return function which returns edge value from edge attribute dictionary.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    edge_attr : None, str
+       Specification of how edge value should be obtained from edge
+       attribue dictionary.
+
+    Returns
+    -------
+    value : function
+       A function accepting an edge attribute dictionary as its sole argument.
+       The function returns a value to be used as the edge data.
+
+    """
+    if edge_attr is None:
+        # number of edges
+        if G.is_multigraph():
+            value = lambda x: len(x)
+        else:
+            value = lambda x: 1
+    elif not hasattr(edge_attr, '__call__'):
+        # assume it is a key for the edge attribute dictionary
+        if G.is_multigraph():
+            value = lambda x: sum([d.get(edge_attr, 1) for d in x.values()])
+        else:
+            value = lambda x: x.get(edge_attr, 1)
+    else:
+        # Advanced:  Allow users to specify something else.
+        #
+        # Alternative default value:  
+        #     edge_attr=lambda x: x.get('thickness', .5)
+        #
+        # Function on an attribute:
+        #     edge_attr=lambda x: abs(x['weight'])
+        #
+        # Handle Multi(Di)Graphs differently:
+        #     edge_attr=lambda x: numpy.prod([d['size'] for d in x.values()])
+        #
+        # Ignore multiple edges
+        #     edge_attr=lambda x: 1 if len(x) else 0
+        #
+        value = edge_attr
+
+    return value
 
 def from_whatever(thing,create_using=None,multigraph_input=False):
     """Make a NetworkX graph from an known type.
@@ -191,7 +239,6 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
           "Input is not a known data type for conversion."
 
     return 
-
 
 def to_dict_of_lists(G,nodelist=None):
     """Return adjacency representation of graph as a dictionary of lists
@@ -416,64 +463,60 @@ def from_edgelist(edgelist,create_using=None):
     return G                         
 
 
-def to_numpy_matrix(G,nodelist=None,dtype=None):
-    """Return the graph adjacency matrix as a numpy matrix. 
+def to_numpy_matrix(G,edge_attr='weight',nodelist=None,dtype=None):
+    """Return the graph adjacency matrix as a NumPy matrix. 
 
     Parameters
     ----------
     G : graph
        A NetworkX graph 
 
+    edge_attr : None | str, optional
+       The attribute to use when populating the matrix.  If None, then the
+       values will appear as 1 or 0, depending on if the edge exists or not.
+       For multigraphs, the value is represented by the sum of the edge
+       attributes for each edge between the nodes.  Thus, when edge_attr is 
+       None, the matrix elements represent the number of edges between the 
+       two nodes.
+
     nodelist : list, optional       
        Use the order of nodes in nodelist for the rows.
-       All nodes must appear in nodelist or a KeyError is raised.
        If nodelist is None, the ordering is produced by G.nodes()
 
     dtype : numpy type
        Data type for matrix entries.  Default is 4 byte float (single).
 
-    Notes
-    -----
-    When no weights are specified the value of the entry A[u,v] is 1
-    if there is an edge u-v and 0 otherwise.
+    Returns
+    -------
+    A : NumPy matrix
+       Matrix constructed from edge_attr.
 
-    Multiple edges and edge data are both ignored for MultiGraph/MultiDiGraph.
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> A=nx.to_numpy_matrix(G)
 
     """
-#    try:
-#        import numpy
-#    except ImportError:
-#        raise ImportError, \
-#              "Import Error: not able to import numpy: http://numpy.scipy.org "
+    value = _edge_value(G, edge_attr)
+
+    if nodelist is None:
+        nodelist=G.nodes()
 
     if dtype is None:
         dtype=numpy.float32
 
-    if nodelist is None:
-        nodelist=G.nodes()
     nlen=len(nodelist)    
-    index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
-    A = numpy.asmatrix(numpy.zeros((nlen,nlen),dtype=dtype))
+    index=dict(zip(nodelist,range(nlen))) # dict mapping vertex name to position
+
+    A = numpy.zeros((nlen,nlen), dtype=dtype)
     for n,nbrdict in G.adjacency_iter():
         if n in index:
             for nbr,data in nbrdict.iteritems():
-                if nbr in index:
-                    A[index[n],index[nbr]]=data.get('weight',1)
-    return A
+                if nbr in index:              
+                    A[index[n],index[nbr]]=value(data)
 
-#     if G.is_multigraph():
-#         for n,nbrdict in G.adjacency_iter():
-#             if n in index:
-#                 for nbr,data in nbrdict.iteritems():
-#                     if nbr in index:
-#                         A[index[n],index[nbr]]=data
-#     else: # ignore edge data
-#         for n,nbrdict in G.adjacency_iter():
-#             if n in index:
-#                 for nbr in nbrdict:
-#                     if nbr in index:
-#                         A[index[n],index[nbr]]=1
-#     return A            
+    A = numpy.asmatrix(A)
+    return A
 
 def from_numpy_matrix(A,create_using=None):
     """Return a graph from numpy matrix adjacency list. 
@@ -516,21 +559,33 @@ def from_numpy_matrix(A,create_using=None):
     return G
 
 
-def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):
-    """Return the graph adjacency matrix as a scipy sparse matrix.
+def to_scipy_sparse_matrix(G,edge_attr='weight',nodelist=None,dtype=None):
+    """Return the graph adjacency matrix as a SciPy sparse matrix. 
 
     Parameters
     ----------
     G : graph
        A NetworkX graph 
 
+    edge_attr : None | str, optional
+       The attribute to use when populating the matrix.  If None, then the
+       values will appear as 1 or 0, depending on if the edge exists or not.
+       For multigraphs, the value is represented by the sum of the edge
+       attributes for each edge between the nodes.  Thus, when edge_attr is 
+       None, the matrix elements represent the number of edges between the 
+       two nodes.
+
     nodelist : list, optional       
        Use the order of nodes in nodelist for the rows.
-       All nodes must appear in nodelist or a KeyError is raised.
        If nodelist is None, the ordering is produced by G.nodes()
 
     dtype : numpy type
        Data type for matrix entries.  Default is 4 byte float (single).
+
+    Returns
+    -------
+    m : SciPy sparse matrix
+       Matrix constructed from edge_attr.
 
     Examples
     --------
@@ -543,45 +598,26 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):
     Uses lil_matrix format.  To convert to other formats see
     scipy.sparse documentation.
 
-    If G.weighted is True and G is not a multigraph, the edgedata
-    is assumed to be numeric and becomes the value of A[u.v].
-    Otherwise A[u,v] is 1 if an edge u-v exists and 0 otherwise.
     """
-#    try:
-#        from scipy import sparse
-#    except ImportError:
-#        raise ImportError, \
-#              """Import Error: not able to import scipy sparse:
-#              see http://scipy.org""" 
-    if dtype is None:
-        dtype=scipy.float32
+    value = _edge_value(G, edge_attr)
 
     if nodelist is None:
         nodelist=G.nodes()
+
+    if dtype is None:
+        dtype=scipy.float32
+
     nlen=len(nodelist)    
-    index=dict(zip(nodelist,range(nlen)))# dict mapping vertex name to position
-    A = sparse.lil_matrix((nlen,nlen),dtype=dtype)
+    index=dict(zip(nodelist,range(nlen))) # dict mapping vertex name to position
+
+    A = sparse.lil_matrix((nlen,nlen), dtype=dtype)
     for n,nbrdict in G.adjacency_iter():
         if n in index:
             for nbr,data in nbrdict.iteritems():
-                if nbr in index:
-                    A[index[n],index[nbr]]=data.get('weight',1)
+                if nbr in index:              
+                    A[index[n],index[nbr]]=value(data)
+
     return A
-
-#     if G.weighted and not G.multigraph:
-#         for n,nbrdict in G.adjacency_iter():
-#             if n in index:
-#                 for nbr,data in nbrdict.iteritems():
-#                     if nbr in index:
-#                         A[index[n],index[nbr]]=data
-#     else: # ignore edge data
-#         for n,nbrdict in G.adjacency_iter():
-#             if n in index:
-#                 for nbr in nbrdict:
-#                     if nbr in index:
-#                         A[index[n],index[nbr]]=1
-#     return A            
-
 
 def from_scipy_sparse_matrix(A,create_using=None):
     """Return a graph from scipy sparse matrix adjacency list. 
