@@ -68,7 +68,6 @@ table.progress td :hover { background: none }
 
 /* Main navigation bar */
 #mainnav {
- background: #fff url(../topbar_gradient.png) 0 0;
  border: 1px solid #000;
  font: normal 10px verdana,'Bitstream Vera Sans',helvetica,arial,sans-serif;
  margin: .66em 0 .33em;
@@ -76,7 +75,6 @@ table.progress td :hover { background: none }
 }
 #mainnav li { border-right: none; padding: .25em 0 }
 #mainnav :link, #mainnav :visited {
- background: url(../dots.gif) 0 0 no-repeat;
  border-right: 1px solid #fff;
  border-bottom: none;
  border-left: 1px solid #555;
@@ -89,11 +87,10 @@ table.progress td :hover { background: none }
  border-right: 1px solid #ddd;
 }
 #mainnav .active :link, #mainnav .active :visited {
- background:  #BFD1D4 url(../topbar_gradient2.png) 0 0 repeat-x;
  border-top: none;
  border-right: 1px solid #000;
  border-left: 1px solid #000;
- color:  #000; /*#11557C; */ /* #CA7900; */
+ color:  #CA7900; 
  font-weight: normal; 
 }
 #mainnav .active :link:hover, #mainnav .active :visited:hover {
