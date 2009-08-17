@@ -9,10 +9,11 @@ from nose import SkipTest
 from nose.tools import assert_true
 
 import networkx as nx
-from networkx.drawing import nx_pydot
+import networkx.drawing.nx_pydot as nx_pydot
 
 class TestPydot(object):
-    def setUp(self):
+    @classmethod
+    def setupClass(cls):
         global pydot
         try:
             import pydot
@@ -21,9 +22,6 @@ class TestPydot(object):
             pydot.__file__
         except ImportError:
             raise SkipTest('pydot not available.')
-
-        self.H1, self.P1 = self.build_graph(nx.Graph())
-        self.H2, self.P2 = self.build_graph(nx.DiGraph())
 
     def build_graph(self, G):
         G.add_edge('A','B')
@@ -37,7 +35,11 @@ class TestPydot(object):
         assert_true( sorted(G1.nodes())==sorted(G2.nodes()) )
         assert_true( sorted(G1.edges())==sorted(G2.edges()) )
 
-    def pydot_checks(self, H, P):
+    def pydot_checks(self, G):
+        H, P = self.build_graph(G)
+        G2 = H.__class__(nx_pydot.from_pydot(P))
+        self.assert_equal(H, G2)
+
         fname = tempfile.mktemp()
         assert_true( P.write_raw(fname) )
 
@@ -56,13 +58,9 @@ class TestPydot(object):
         os.unlink(fname)
 
     def testUndirected(self):
-        G = nx.Graph(nx_pydot.from_pydot(self.P1))
-        self.assert_equal(self.H1, G)
-        self.pydot_checks(self.H1, self.P1)
+        self.pydot_checks(nx.Graph())
 
     def testDirected(self):
-        G = nx.DiGraph(nx_pydot.from_pydot(self.P2))
-        self.assert_equal(self.H2, G)
-        self.pydot_checks(self.H2, self.P2)
+        self.pydot_checks(nx.DiGraph())
 
 
