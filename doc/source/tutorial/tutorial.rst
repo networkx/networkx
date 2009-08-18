@@ -1,7 +1,8 @@
 ..  -*- coding: utf-8 -*-
 
-A Brief Tour
-============
+
+Creating a graph
+----------------
 
 Create an empty graph with no nodes and no edges.
 
@@ -167,8 +168,8 @@ If in doubt, consider using nx.convert_node_labels_to_integers() to obtain
 a more traditional graph with integer labels.
 
 
-Accessing Edges/Neighbors
--------------------------
+Accessing edges
+---------------
 
 In addition to the methods nodes(), edges(), and neighbors(),
 iterator versions (e.g. edges_iter()) can save you from
@@ -207,7 +208,7 @@ Note that for undirected graphs this actually looks at each edge twice.
 (4, 3, 0.375)
 
 
-Directed Graphs
+Directed graphs
 ---------------
 
 The DiGraph class provides additional methods specific to directed
@@ -235,8 +236,8 @@ a directed graph as undirected for some measurement you should probably
 convert it using G.to_undirected() or nx.Graph(G).
 
 
-MultiGraph and MultiDiGraph
----------------------------
+Multigraphs
+-----------
 
 NetworkX provides classes for graphs which allow multiple edges between
 any pair of nodes.  The MultiGraph and MultiDiGraph classes allow you 
@@ -358,7 +359,7 @@ return a list of values.
 Details on graph algorithms supported: :doc:`/reference/algorithms`
 
 
-Drawing Graphs
+Drawing graphs
 --------------
 
 NetworkX is not primarily a graph drawing package but 
@@ -408,7 +409,7 @@ Details on drawing graphs: :doc:`/reference/drawing`
 
 
 What Next
----------
+^^^^^^^^^
 
 Now that you have an idea of what the NetworkX package provides,
 you should investigate the parts of the package most useful for

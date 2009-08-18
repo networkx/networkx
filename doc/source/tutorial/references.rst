@@ -1,7 +1,7 @@
 ..  -*- coding: utf-8 -*-
 
-References
-==========
+Bibliography
+============
 
 .. [BA02] R. Albert and A.-L. Barabási, "Statistical mechanics of complex
    networks", Reviews of Modern Physics, 74, pp. 47-97, 2002.
