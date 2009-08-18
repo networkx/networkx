@@ -30,7 +30,7 @@ NetworkX documentation
 
 .. only:: html
 
-   - `Gallery <gallery/index.html>`_
+   - `Gallery <gallery.html>`_
 
 
 

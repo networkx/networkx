@@ -9,11 +9,9 @@ Overview
 .. currentmodule:: networkx
 .. autofunction:: DiGraph
 
-Methods
-=======
 
-Adding and Removing Nodes and Edges
------------------------------------
+Adding and removing nodes and edges
+===================================
 
 .. autosummary::
    :toctree: generated/
@@ -36,7 +34,7 @@ Adding and Removing Nodes and Edges
 
 
 Iterating over nodes and edges
-------------------------------
+==============================
 .. autosummary::
    :toctree: generated/
 
@@ -63,7 +61,7 @@ Iterating over nodes and edges
 
 
 Information about graph structure
----------------------------------
+=================================
 .. autosummary::
    :toctree: generated/
 
@@ -83,7 +81,7 @@ Information about graph structure
 
 
 Making copies and subgraphs
----------------------------
+===========================
 .. autosummary::
    :toctree: generated/
 
