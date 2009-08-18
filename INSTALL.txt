@@ -104,7 +104,7 @@ Windows
 ~~~~~~~
  - Official Python site version:  http://www.python.org/download/
 
- - ActiveState version:  http://activestate.com/Products/ActivePython/
+ - ActiveState version: http://www.activestate.com/activepython/
 
 OSX
 ~~~
@@ -135,7 +135,7 @@ NetworkX will work without the following optional packages.
 
 NumPy
 -----
-  - Download: http://scipy.org/download
+  - Download: http://scipy.org/Download
         
 
 
@@ -175,5 +175,4 @@ Other Packages
 These are extra packages you may consider using with NetworkX
 
       - IPython, interactive Python shell, http://ipython.scipy.org/
-      - sAsync, persistent storage with SQL, http://foss.eepatents.com/sAsync  
       - PyYAML, structured output format, http://pyyaml.org/

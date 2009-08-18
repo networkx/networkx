@@ -17,7 +17,7 @@ References
 
 .. [Diestel97] R. Diestel, "Graph Theory", Springer-Verlag, 1997.
    (A free electronic version is available at
-   http://www.math.uni-hamburg.de/home/diestel/books/graph.theory/download.html)
+   http://diestel-graph-theory.com/GrTh.html)
 
 .. [DM03] S.N. Dorogovtsev and J.F.F. Mendes, "Evolution of Networks",
    Oxford University Press, 2003.

@@ -11,7 +11,7 @@ See Also
 --------
 Pydot: http://www.dkbza.org/pydot.html
 Graphviz:	   http://www.research.att.com/sw/tools/graphviz/
-DOT Language:   http://www.research.att.com/~erg/graphviz/info/lang.html
+DOT Language:  http://www.graphviz.org/doc/info/lang.html
 
 
 """

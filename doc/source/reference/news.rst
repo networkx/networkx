@@ -252,9 +252,6 @@ Examples
 ~~~~~~~~
   - Expected degree sequence
   - New pygraphviz interface
-    https://networkx.lanl.gov/trac/browser/networkx/trunk/doc/examples/pygraphviz_simple.py
-    https://networkx.lanl.gov/trac/browser/networkx/trunk/doc/examples/pygraphviz_miles.py
-    https://networkx.lanl.gov/trac/browser/networkx/trunk/doc/examples/pygraphviz_attributes.py
 
 NetworkX-0.31
 -------------
