@@ -7,13 +7,18 @@ import networkx as nx
 from networkx.generators.classic import barbell_graph,cycle_graph,path_graph
 
 class TestConvertNumpy(object):
-    def setUp(self):
+    @classmethod
+    def setupClass(cls):
         global numpy
         try:
             import numpy
+            # NetworkX uses a lazy import for NumPy.
+            # To test it, we really need to use it.
+            numpy.__file__
         except ImportError:
             raise SkipTest('NumPy not available.')
 
+    def __init__(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph())
 

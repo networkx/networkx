@@ -7,15 +7,21 @@ import networkx as nx
 from networkx.generators.classic import barbell_graph,cycle_graph,path_graph
 
 class TestConvertNumpy(object):
-    def setUp(self):
-        global scipy, numpy
+    @classmethod
+    def setupClass(cls):
+        global numpy, scipy
         try:
-            import scipy
             import numpy
+            import scipy
             import scipy.sparse
+            # NetworkX uses a lazy import, so we need to use it to test it.
+            numpy.__file__
+            scipy.__file__
+            scipy.sparse.__file__
         except ImportError:
-            raise SkipTest('SciPy sparse library not available.')
+            raise SkipTest('NumPy not available.')
 
+    def __init__(self):
         self.G1 = barbell_graph(10, 3)
         self.G2 = cycle_graph(10, create_using=nx.DiGraph())
 
