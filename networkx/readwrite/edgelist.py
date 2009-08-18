@@ -49,8 +49,9 @@ def write_edgelist(G, path, comments="#", delimiter=' '):
     >>> G=nx.path_graph(4)
     >>> nx.write_edgelist(G, "test.edgelist")
 
+    >>> G=nx.path_graph(4)
     >>> fh=open("test.edgelist",'w')
-    >>> nx.write_edgelist(G,fh)
+    >>> nx.write_edgelist(G, fh)
 
     >>> nx.write_edgelist(G, "test.edgelist.gz")
 
@@ -61,6 +62,7 @@ def write_edgelist(G, path, comments="#", delimiter=' '):
     the file with the codecs module.  See doc/examples/unicode.py
     for hints.
 
+    >>> G=nx.path_graph(4)
     >>> import codecs
     >>> fh=codecs.open("test.edgelist",'w',encoding='utf=8') # utf-8 encoding
     >>> nx.write_edgelist(G,fh)

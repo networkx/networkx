@@ -45,7 +45,7 @@ keyword arguments.
 >>> G=nx.Graph(region='Africa')
 >>> G.graph['color']='green'
 >>> G.graph
-{'region': 'Africa', 'color': 'green'}
+{'color': 'green', 'region': 'Africa'}
 
 
 Node attributes
@@ -58,7 +58,7 @@ Add node attributes using add_node(), add_nodes_from() or G.node
 >>> G.add_node(1, time='5pm')
 >>> G.add_nodes_from([3], time='2pm')
 >>> G.node[1]
- {'time': '5pm'}
+{'time': '5pm'}
 >>> G.node[1]['room'] = 714
 >>> G.nodes(data=True)
 [(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
@@ -92,7 +92,7 @@ Graph(), DiGraph(), MultiGraph(), MultiDiGraph()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    Now takes optional keyword=value attributes on initialization.
 
-   >>> G=Graph(year='2009',city='New York')
+   >>> G=nx.Graph(year='2009',city='New York')
 
 add_node()
 ^^^^^^^^^^
@@ -128,7 +128,7 @@ nodes() and nodes_iter()
    New keyword data=True|False keyword determines whether to return
    two-tuples (n,dict) (True) with node attribution dictionary
 
-   >>> G=Graph([(1,2),(3,4)]
+   >>> G=nx.Graph([(1,2),(3,4)])
    >>> G.nodes(data=True)
    [(1, {}), (2, {}), (3, {}), (4, {})]
 
@@ -138,8 +138,8 @@ copy()
    data and attributes for nodes and edges).  Use the class
    initializer to make a shallow copy:
 
-   >>> G=Graph()
-   >>> G_shallow=Graph(G) # shallow copy
+   >>> G=nx.Graph()
+   >>> G_shallow=nx.Graph(G) # shallow copy
    >>> G_deep=G.copy() # deep copy
 
 to_directed(), to_undirected()
@@ -148,8 +148,8 @@ to_directed(), to_undirected()
    data and attributes for nodes and edges).  Use the class
    initializer to make a shallow copy:
 
-   >>> G=Graph()
-   >>> D_shallow=DiGraph(G) # shallow copy
+   >>> G=nx.Graph()
+   >>> D_shallow=nx.DiGraph(G) # shallow copy
    >>> D_deep=G.to_directed() # deep copy
 
 subgraph()
@@ -158,8 +158,8 @@ subgraph()
    With copy=True now returns a deep copy of the graph 
    (copies all underlying data and attributes for nodes and edges).
 
-   >>> G=Graph()
-   >>> H=G.subgraph(copy=True) # deep copy of all data
+   >>> G=nx.Graph()
+   >>> H=G.subgraph([],copy=True) # deep copy of all data
 
 
 
@@ -168,7 +168,7 @@ add_cycle(), add_path(), add_star()
    Now take optional keyword=value attributes or a dictionary of 
    attributes which are applied to all edges affected by the method.
 
-   >>> G=Graph()
+   >>> G=nx.Graph()
    >>> G.add_path([0,1,2,3],width=3.2)
 
 
@@ -277,6 +277,7 @@ used by algorithms and functions that use weighted edges.  The
 associated value should be numeric.  All other keys are available for
 users to assign as needed.
 
+>>> G=nx.Graph()
 >>> G.add_edge(1,2,weight=3.1415) # add the edge 1-2 with a weight
 >>> G[1][2]['weight']=2.3 # set the weight to 2.3
 
@@ -293,4 +294,4 @@ G.get_edge(u,v) with G[u][v]['weight'].
 An idiom for getting a weight for graphs with or without an assigned
 weight key is
 
->>> w= G[u][v].get('weight',1)  # set w to 1 if there is no 'weight' key
+>>> w= G[1][2].get('weight',1)  # set w to 1 if there is no 'weight' key

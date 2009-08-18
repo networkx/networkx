@@ -101,8 +101,8 @@ add_edge()
    a data keyword parameter for setting the default (data=1) edge
    data.
    
-   >>> G.add_edge('a','b','foo')  # add edge with string "foo" as data
-   >>> G.add_edge(1,2,5.0)  # add edge with float 5 as data
+   >>> # G.add_edge('a','b','foo')  # add edge with string "foo" as data
+   >>> # G.add_edge(1,2,5.0)  # add edge with float 5 as data
    
 
 
@@ -165,8 +165,8 @@ __getitem__()
    a dictionary.
 
    >>> G=nx.path_graph(5)
-   >>>  G[0]
-   {1: 1}
+   >>> # G[0]
+   #  {1: 1}
 
    To get a list of neighbors you can either use the keys of that
    dictionary or use
@@ -190,10 +190,10 @@ info()
 
    >>> G=nx.Graph(name='test me')
    >>> nx.info(G)
-   Name:              test me
-   Type:              Graph
-   Number of nodes:   0
-   Number of edges:   0
+   Name:                  test me
+   Type:                  Graph
+   Number of nodes:       0
+   Number of edges:       0
 
 
 node_boundary()
@@ -208,9 +208,9 @@ is_directed()
 ^^^^^^^^^^^^^
    use the directed attribute 
 
-   >>> G=nx DiGraph()
-   >>> G.directed
-   True
+   >>> G=nx.DiGraph()
+   >>> # G.directed
+   #  True
 
 G.out_edges()
 ^^^^^^^^^^^^^
