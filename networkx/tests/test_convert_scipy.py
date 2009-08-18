@@ -19,7 +19,7 @@ class TestConvertNumpy(object):
             scipy.__file__
             scipy.sparse.__file__
         except ImportError:
-            raise SkipTest('NumPy not available.')
+            raise SkipTest('SciPy sparse library not available.')
 
     def __init__(self):
         self.G1 = barbell_graph(10, 3)
