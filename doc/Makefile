@@ -44,12 +44,15 @@ dist: html
 	make -C build/latex all-pdf
 	-rm -rf build/dist
 	(cd build/html; cp -r . ../../build/dist)
-	(cd build/html && zip -9r ../dist/networkx-documentation.zip .)
-	cp build/latex/*.pdf build/dist
+	-rm -f build/dist/_downloads/*
+	(cd build/html && zip -9r ../dist/_downloads/networkx-documentation.zip .)
+	cp build/latex/*.pdf build/dist/_downloads
 	(cd build/dist && tar czf ../dist.tar.gz .)
 
 
 html: generate
+	touch source/networkx.pdf	
+	touch source/networkx-documentation.zip
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."

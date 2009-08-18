@@ -8,9 +8,9 @@ NetworkX documentation
     :Release: |version|
     :Date: |today|
 
-    Download `PDF <http://networkx.lanl.gov/networkx.pdf>`_
-    `HTML <http://networkx.lanl.gov/networkx-documentation.zip>`_
-
+    Download 
+    :download:`PDF <networkx.pdf>`
+    :download:`HTML <networkx-documentation.zip>`
 
 .. toctree::
    :maxdepth: 2
