@@ -80,7 +80,7 @@ History
 What Next
 ^^^^^^^^^
 
- - :doc:`A Brief Tour <tutorial>`
+ - :doc:`A Brief Tour </tutorial/tutorial>`
 
  - :doc:`Installing </install>`
 

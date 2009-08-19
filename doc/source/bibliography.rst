@@ -1,7 +1,5 @@
 ..  -*- coding: utf-8 -*-
 
-.. only:: html
-
 Bibliography
 ============
 
