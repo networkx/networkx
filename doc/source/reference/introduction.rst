@@ -182,7 +182,7 @@ Edge attributes can be anything:
 
 You can add many edges at one time:
 
->>> elist=[('a','b'),('b','c'),('a','c'),('c','d')]
+>>> elist=[('a','b',5.0),('b','c',3.0),('a','c',1.0),('c','d',7.3)]
 >>> G.add_weighted_edges_from(elist) 
 
 See the :doc:`/tutorial/index` for more examples.
@@ -238,7 +238,7 @@ As an example here is code to use Dijkstra's algorithm to
 find the shortest weighted path: 
 
 >>> G=nx.Graph()
->>> e=[('a','b',weight=0.3),('b','c',weight=0.9),('a','c',weight=0.5),('c','d',weight=1.2)]
+>>> e=[('a','b',0.3),('b','c',0.9),('a','c',0.5),('c','d',1.2)]
 >>> G.add_weighted_edges_from(e)
 >>> print nx.dijkstra_path(G,'a','d')
 ['a', 'c', 'd']
