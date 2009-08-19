@@ -4,6 +4,7 @@
 
 import os,tempfile
 from nose import SkipTest
+from nose.tools import assert_true
 
 import networkx as nx
 
@@ -19,6 +20,7 @@ class TestYaml(object):
         except ImportError:
             raise SkipTest('yaml not available.')
 
+    def setUp(self):
         self.build_graphs()
 
     def build_graphs(self):
@@ -27,15 +29,15 @@ class TestYaml(object):
         self.G.add_edges_from(e)
         self.G.add_node('g')    
 
-        self.DG = nx.DiGraph(G)
+        self.DG = nx.DiGraph(self.G)
 
-        self.XG = nx.MultiGraph()
-        self.XG.add_weighted_edges_from([(1,2,5),(1,2,5),(1,2,1),(3,3,42)])
+        self.MG = nx.MultiGraph()
+        self.MG.add_weighted_edges_from([(1,2,5),(1,2,5),(1,2,1),(3,3,42)])
 
     def assert_equal(self, G, data=False):
         (fd, fname) = tempfile.mkstemp()
         nx.write_yaml(G, fname)
-        Gin = read_yaml(fname);
+        Gin = nx.read_yaml(fname);
 
         assert_true( sorted(G.nodes())==sorted(Gin.nodes()) )
         assert_true( sorted(G.edges(data=data))==sorted(Gin.edges(data=data)) )
