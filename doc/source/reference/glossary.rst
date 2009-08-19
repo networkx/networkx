@@ -10,6 +10,9 @@ Glossary
       Edges are either two-tuples of nodes (u,v) or three tuples
       of nodes with an edge attribute dictionary (u,v,dict).
      
+   ebunch
+      An iteratable container of edge tuples like a list, iterator,
+      or file.
 
    edge attribute
       Edges can have arbitrary Python objects assigned as attributes

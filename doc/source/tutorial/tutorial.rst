@@ -1,5 +1,8 @@
 ..  -*- coding: utf-8 -*-
 
+.. currentmodule:: networkx
+
+
 
 Creating a graph
 ----------------
@@ -9,7 +12,7 @@ Create an empty graph with no nodes and no edges.
 >>> import networkx as nx
 >>> G=nx.Graph()
 
-By definition, a Graph is a collection of nodes (vertices)
+By definition, a :class:`Graph` is a collection of nodes (vertices)
 along with identified pairs of nodes (called edges, links, etc).
 In NetworkX, nodes can be any hashable object e.g. a text string, an
 image, an XML object, another Graph, a customized node object, etc.
@@ -32,7 +35,7 @@ add a list of nodes,
 
 >>> G.add_nodes_from([2,3])
 
-or add any *nbunch* of nodes.
+or add any :term:`nbunch` of nodes.
 An *nbunch* is any iterable container
 of nodes that is not itself a node 
 in the graph. (e.g. a list, set, graph, file, etc..)
@@ -68,7 +71,7 @@ by adding a list of edges,
 
 >>> G.add_edges_from([(1,2),(1,3)])
 
-or by adding any *ebunch* of edges,
+or by adding any :term:`ebunch` of edges,
 An *ebunch* is any iterable container
 of edge-tuples.  An edge-tuple can be a 2-tuple
 of nodes or a 3-tuple with 2 nodes followed by 
@@ -77,8 +80,12 @@ Edge attributes are discussed further below
 
 >>> G.add_edges_from(H.edges())
 
-One can demolish the graph in a similar fashion; using remove_node,
-remove_nodes_from, remove_edge and remove_edges_from, e.g.
+One can demolish the graph in a similar fashion; using 
+:meth:`Graph.remove_node`,
+:meth:`Graph.remove_nodes_from`, 
+:meth:`Graph.remove_edge`
+and 
+:meth:`Graph.remove_edges_from`, e.g.
 
 >>> G.remove_node(H)
 
@@ -145,7 +152,7 @@ weighted edges.
 [(0, 2, {'color': 'red'}), (0, 3, {}), (1, 2, {'color': 'red'}), (1, 3, {'color': 'blue'})]
 
 To update the edge attributes for an existing edge, add the
-edge again with the new value. (Note: with MultiGraph
+edge again with the new value. (Note: with :class:`MultiGraph`
 you need to keep track of the edge key for the edge you want to update.)
 
 >>> H.add_edge(0,2,color='blue')
@@ -164,23 +171,28 @@ experimental observations of their interaction.
 
 We have found this power quite useful, but its abuse
 can lead to unexpected surprises unless one is familiar with Python. 
-If in doubt, consider using nx.convert_node_labels_to_integers() to obtain
+If in doubt, consider using :func:`convert_node_labels_to_integers` to obtain
 a more traditional graph with integer labels.
 
 
 Accessing edges
 ---------------
 
-In addition to the methods nodes(), edges(), and neighbors(),
-iterator versions (e.g. edges_iter()) can save you from
+In addition to the methods 
+:meth:`Graph.nodes`, 
+:meth:`Graph.edges`, and 
+:meth:`Graph.neighbors`,
+iterator versions (e.g. :meth:`Graph.edges_iter`) can save you from
 creating large lists when you are just going to iterate 
 through them anyway.
 
 Fast direct access to the graph data structure is also possible
 using subscript notation.
-Warning: do not change the returned dict--it is part of 
-the graph data structure and direct manipulation may leave the 
-graph in an inconsistent state.
+
+.. Warning::
+   Do not change the returned dict--it is part of 
+   the graph data structure and direct manipulation may leave the 
+   graph in an inconsistent state.
 
 >>> G[1]  # Warning: do not change the resulting dict
 {2: {}}
@@ -212,7 +224,11 @@ Directed graphs
 ---------------
 
 The DiGraph class provides additional methods specific to directed
-edges, e.g. G.out_edges(), G.in_degree(), G.predecessors(), G.successors() etc.  
+edges, e.g. 
+:meth:`DiGraph.out_edges`, 
+:meth:`DiGraph.in_degree`, 
+:meth:`DiGraph.predecessors`, 
+:meth:`DiGraph.successors` etc.  
 To allow algorithms to work with both classes easily, the directed 
 versions of neighbors() and degree() are equivalent to successors() 
 and the sum of in_degree() and out_degree() respectively even though 
@@ -233,19 +249,23 @@ Some algorithms work only for directed graphs and others are not well
 defined for directed graphs.  Indeed the tendency to lump directed
 and undirected graphs together is dangerous.  If you want to treat
 a directed graph as undirected for some measurement you should probably
-convert it using G.to_undirected() or nx.Graph(G).
+convert it using :meth:`Graph.to_undirected` or with
+
+>>> H= nx.Graph(G) # convert H to undirected graph
 
 
 Multigraphs
 -----------
 
-NetworkX provides classes for graphs which allow multiple edges between
-any pair of nodes.  The MultiGraph and MultiDiGraph classes allow you 
-to add the same edge twice, possibly with different edge data.  This 
-can be powerful for some applications, but many algorithms are not well
-defined on such graphs.  Shortest path is one example.  Where results
-are well defined, e.g. degree() we provide the function.  Otherwise
-you should convert to a standard graph in a way that makes the measurement
+NetworkX provides classes for graphs which allow multiple edges
+between any pair of nodes.  The :class:`MultiGraph` and
+:class:`MultiDiGraph`
+classes allow you to add the same edge twice, possibly with different
+edge data.  This can be powerful for some applications, but many
+algorithms are not well defined on such graphs.  Shortest path is one
+example.  Where results are well defined,
+e.g. :meth:`MultiGraph.degree` we provide the function.  Otherwise you
+should convert to a standard graph in a way that makes the measurement
 well defined.
 
 >>> MG=nx.MultiGraph()
@@ -329,9 +349,9 @@ functions such as:
 [0.0, 0.0, 0.0, 0.0]
 
 With no nodes specified, functions that return Node Properties will return
-a list of values in an arbitrary order determined by the internal python 
-dictionary structure of the graph (which is returned by G.nodes() though it 
-can change if the dictionary is resized).
+a list of values in an arbitrary order determined by the internal Python 
+dictionary structure of the graph (which is returned by :meth:`Graph.nodes` 
+though it  can change if the dictionary is resized).
 
 The keyword argument with_labels=True returns a dict keyed by nodes
 to the node values.
@@ -339,7 +359,7 @@ to the node values.
 >>> nx.degree(G, with_labels=True)
 {1: 2, 2: 1, 3: 1, 'spam': 0}
 
-Functions that return Node Properties, e.g. degree(), clustering(), etc, can
+Functions that return node properties, e.g. :meth:`Graph.degree`, :func:`clustering`, etc, can
 For values of specific nodes, you can provide a single node or an nbunch 
 of nodes as argument.  If a single node is specified, then a single value 
 is returned.  If an nbunch is specified, then the function will 
