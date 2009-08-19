@@ -1,8 +1,8 @@
 .. _readwrite:
 
-*******************
-Reading and Writing
-*******************
+**************************
+Reading and writing graphs
+**************************
 
 .. toctree::
    :maxdepth: 2

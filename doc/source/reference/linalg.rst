@@ -1,7 +1,7 @@
 .. _linalg:
 
 
-Linear Algebra
+Linear algebra
 **************
 
 .. currentmodule:: networkx

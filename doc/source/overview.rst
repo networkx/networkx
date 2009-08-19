@@ -37,7 +37,7 @@ Equally important, Python is free, well-supported and a joy to use.
 Among the many guides to Python, we recommend the documentation at
 http://www.python.org and the text by Alex Martelli [Martelli03]_.
 
-Free Software
+Free software
 -------------
 
 NetworkX is free software; you can redistribute it and/or

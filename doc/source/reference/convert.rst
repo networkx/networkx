@@ -1,6 +1,6 @@
-********************************
-Converting to/from Other Formats
-********************************
+************************************
+Converting to and from other formats
+************************************
 
 .. automodule:: networkx.convert
 .. currentmodule:: networkx

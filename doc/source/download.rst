@@ -2,13 +2,13 @@
 Download
 --------
 
-Source and Binary Releases
+Source and binary releases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 http://cheeseshop.python.org/pypi/networkx/
 
 http://networkx.lanl.gov/download/networkx/
 
-Subversion Source Code Repository
+Subversion source code repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 *Anonymous*          
 
