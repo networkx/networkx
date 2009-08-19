@@ -43,3 +43,10 @@ Bibliography
 
 .. [West01] D. B. West, "Introduction to Graph Theory", Prentice Hall,
     2nd ed., 2001.
+
+.. [vanRossum98] Guido van Rossum. Python Patterns - Implementing Graphs, 1998.
+   http://www.python.org/doc/essays/graphs/
+
+.. [EppsteinPads David Eppstein.
+   PADS, A library of Python Algorithms and Data Structures, 
+   http://www.ics.uci.edu/~eppstein/PADS/

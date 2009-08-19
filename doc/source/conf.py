@@ -42,7 +42,7 @@ master_doc = 'contents'
 
 # General substitutions.
 project = 'NetworkX'
-copyright = '2009, Aric Hagberg'
+copyright = '2009, NetworkX Developers'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
