@@ -51,7 +51,8 @@ dist: html
 
 
 html: generate
-	touch source/networkx.pdf	
+	touch source/networkx_tutorial.pdf	
+	touch source/networkx_reference.pdf	
 	touch source/networkx-documentation.zip
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
 	@echo

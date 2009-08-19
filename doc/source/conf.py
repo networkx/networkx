@@ -141,5 +141,14 @@ latex_paper_size = 'letter'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [('contents', 'networkx.tex', 'NetworkX Documentation',
+                    'Aric Hagberg, Dan Schult, Pieter Swart', 'manual', 1),
+                   ('tutorial/index', 'networkx_tutorial.tex', 
+                    'NetworkX Tutorial',
+                    'Aric Hagberg, Dan Schult, Pieter Swart', 'howto', 1),
+                   ('reference/index', 'networkx_reference.tex',
+                    'NetworkX Reference',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'manual', 1)]
 
+#latex_appendices = ['installing']#,'legal'],'citing','credits','history']
+
+#latex_appendices = ['credits']

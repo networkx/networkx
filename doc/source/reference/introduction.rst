@@ -3,35 +3,6 @@ Introduction
 NetworkX provides data structures for graphs (or networks)
 along with graph algorithms, generators, and drawing tools.
 
-History and goals
-=================
-NetworkX is intended to:
-
--  Be a tool to study the structure and
-   dynamics of social, biological, and infrastructure networks
-
--  Provide ease-of-use and rapid
-   development in a collaborative, multidisciplinary environment 
-
--  Be an Open-source software package that can provide functionality
-   to a diverse community of active and easily participating users
-   and developers. 
-
--  Provide an easy interface to 
-   existing code bases written in C, C++, and FORTRAN 
-
--  Painlessly slurp in large nonstandard data sets 
-
--  Provide a standard API and/or graph implementation that is 
-   suitable for many applications. 
-
-History:
-
--  NetworkX was inspired by Guido van Rossum's 1998 Python 
-   graph representation essay [vanRossum98]_.
-
--  First public release in April 2005.  Version 1.0 released in 2009.
-
 
 Overview
 ========

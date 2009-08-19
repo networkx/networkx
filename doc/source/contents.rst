@@ -9,7 +9,8 @@ NetworkX documentation
     :Date: |today|
 
     Download 
-    :download:`PDF <networkx.pdf>`
+    :download:`PDF Tutorial <networkx_tutorial.pdf>`
+    :download:`PDF Reference <networkx_reference.pdf>`
     :download:`HTML <networkx-documentation.zip>`
 
 .. toctree::
@@ -18,13 +19,11 @@ NetworkX documentation
    tutorial/overview
    tutorial/index
    reference/index
+   download
    install
    reference/history
-   reference/credits      
-   reference/legal
-   reference/citing
-   download
-   tutorial/references
+   reference/references
+
 
 .. only:: html
 
