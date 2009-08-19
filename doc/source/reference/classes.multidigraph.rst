@@ -78,6 +78,13 @@ Information about graph structure
    MultiDiGraph.number_of_selfloops
    MultiDiGraph.degree
    MultiDiGraph.degree_iter
+   MultiDiGraph.in_degree
+   MultiDiGraph.in_degree_iter
+   MultiDiGraph.out_degree
+   MultiDiGraph.out_degree_iter
+
+
+
 
 
 Making copies and subgraphs

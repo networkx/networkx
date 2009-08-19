@@ -78,6 +78,10 @@ Information about graph structure
    DiGraph.number_of_selfloops
    DiGraph.degree
    DiGraph.degree_iter
+   DiGraph.in_degree
+   DiGraph.in_degree_iter
+   DiGraph.out_degree
+   DiGraph.out_degree_iter
 
 
 Making copies and subgraphs
