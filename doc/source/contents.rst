@@ -16,13 +16,13 @@ NetworkX documentation
 .. toctree::
    :maxdepth: 2
 
-   tutorial/overview
+   overview
    tutorial/index
    reference/index
    download
    install
    reference/history
-   reference/references
+   bibliography
 
 
 .. only:: html
