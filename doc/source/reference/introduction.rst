@@ -1,11 +1,11 @@
-Introduction
-~~~~~~~~~~~~
-NetworkX provides data structures for graphs (or networks)
-along with graph algorithms, generators, and drawing tools.
-
-
 Overview
-========
+~~~~~~~~
+.. only:: html
+
+   NetworkX provides data structures for graphs (or networks)
+   along with graph algorithms, generators, and drawing tools.
+
+
 The structure of NetworkX can be seen by the organization of its source code.
 The package provides classes for graph objects, generators to create standard
 graphs, IO routines for reading in existing datasets, algorithms to analyse
