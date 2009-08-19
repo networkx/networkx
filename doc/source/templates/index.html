@@ -5,8 +5,6 @@
 
 <h2>High productivity software for complex networks</a></h2>
 
-<img align="right" src="{{ pathto("_static/art1.png", 1) }}" alt="NetworkX art" />
-
 <blockquote>
 <p>NetworkX is a Python package for the creation, manipulation, and
 study of the structure, dynamics, and functions of complex networks.</p>
@@ -15,21 +13,22 @@ study of the structure, dynamics, and functions of complex networks.</p>
 <h2>Quick Example</h2>
 
 
-<table align="center" style="margin-left: 0px"><tr>
+
+<table align="center" style="margin-left: 20px"><tr>
     <td width="50%">
-<blockquote>
-<pre>
-&gt;&gt;&gt; import networkx as nx
-&gt;&gt;&gt; G=nx.Graph()
-&gt;&gt;&gt; G.add_edge(1,2)
-&gt;&gt;&gt; G.add_node(&quot;spam&quot;)
-&gt;&gt;&gt; print G.nodes()
-[1, 2, 'spam']
-&gt;&gt;&gt; print G.edges()
-[(1, 2)]
-</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s">&quot;spam&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="go">[1, 2, &#39;spam&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">[(1, 2)]</span>
+</pre></div>
     </td>
     <td width="50%">
+<img align="right" src="{{ pathto("_static/art1.png", 1) }}" alt="NetworkX art" />
 </td></tr>
 </blockquote>
 </table>
@@ -61,32 +60,30 @@ study of the structure, dynamics, and functions of complex networks.</p>
   </td></tr>
 </table>
 
-<h2>Features:</h2>
-<blockquote>
+<h2>Features</h2>
 <ul class="simple">
-<li>Includes standard graph-theoretic and statistical physics functions</li>
+<li> Standard graph-theoretic and statistical physics functions</li>
 <li>Easy exchange of network algorithms between applications,
 disciplines, and platforms</li>
-<li>Includes many classic graphs and synthetic networks</li>
-<li>Nodes and edges can be &quot;anything&quot;
+<li> Many classic graphs and synthetic networks</li>
+<li> Nodes and edges can be &quot;anything&quot;
 (e.g. time-series, text, images, XML records)</li>
 
 <li>Exploits existing code from high-quality legacy software in C,
 C++, Fortran, etc.</li>
 <li>Open source (encourages community input)</li>
-<li>Unit-tested</li>
+<li>Unit-tested </li>
 </ul>
 
-<p>Additional benefits due to Python:</p>
+<p><em>Additional benefits from Python</em></p>
 
 <ul class="simple">
-<li>Allows fast prototyping of new algorithms</li>
+<li>Fast prototyping of new algorithms</li>
 <li>Easy to teach</li>
 <li>Multi-platform</li>
 
 <li>Allows easy access to almost any database</li>
 </ul>
-</blockquote>
 
   <h2>Get NetworkX</h2>
 <blockquote>
