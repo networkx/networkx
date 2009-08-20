@@ -1,5 +1,7 @@
 Overview
 ~~~~~~~~
+.. currentmodule:: networkx
+
 .. only:: html
 
    NetworkX provides data structures for graphs (or networks)
@@ -34,32 +36,30 @@ After starting Python, import the networkx module with (the recommended way)
 >>> import networkx as nx
 
 To save repetition, in the documentation we assume that 
-NX has been imported this way.
+NetworkX has been imported this way.
 
 If importing networkx fails, it means that Python cannot find the installed
 module. Check your installation and your PYTHONPATH.
 
 The following basic graph types are provided as Python classes:
 
-Graph
+:class:`Graph`
    This class implements an undirected graph. It ignores
    multiple edges between two nodes.  It does allow self-loop
    edges between a node and itself.
 
-DiGraph
+:class:`DiGraph`
    Directed graphs, that is, graphs with directed edges.
    Operations common to directed graphs, 
-   (A subclass of Graph.)
+   (a subclass of Graph).
 
-MultiGraph
+:class:`MultiGraph`
    A flexible graph class that allows multiple undirected edges between 
    pairs of nodes.  The additional flexibility leads to some degradation 
    in performance, though usually not significant.
-   (A subclass of Graph.)
 
-MultiDiGraph
+:class:`MultiDiGraph`
    A directed version of a MultiGraph.  
-   (A subclass of DiGraph.)
 
 Empty graph-like objects are created with
 
@@ -68,28 +68,20 @@ Empty graph-like objects are created with
 >>> G=nx.MultiGraph()
 >>> G=nx.MultiDiGraph()
 
-When called with no arguments you get a graph without
-any nodes or edges (empty graph).  In NX every graph or network is a Python
-"object", and in Python the functions associated with an "object" are
-known as methods.
-
-All graph classes allow any hashable object as a node.   Hashable
+All graph classes allow any :term:`hashable` object as a node.   Hashable
 objects include strings, tuples, integers, and more.
-Arbitrary edge data/weights/labels can be associated with an edge.  
+Arbitrary edge attributes such as weights and labels 
+can be associated with an edge.  
 
-All graph classes have boolean attributes to describe the nature of the
-graph:  directed, weighted, multigraph.
-The weighted attribute means that the edge weights are numerical, though
-that is not enforced.  Some functions will not work on graphs that do
-not have weighted==True (the default), so it can be used to protect yourself
-against using a routine that requires numerical edge data.
 
-The graph classes data structures are based on an
-adjacency list and implemented as a Python dictionary of
-dictionaries. The outer dictionary is keyed by nodes to values that are
+The graph internal data structures are based on an
+adjacency list representation and implemented using
+Python :term:`dictionary` datastructures.
+The graph adjaceny structure is 
+implemented as a Python dictionary of
+dictionaries; the outer dictionary is keyed by nodes to values that are
 themselves dictionaries keyed by neighboring node to the
-edge object (default 1) associated with that edge (or a list of edge
-objects for MultiGraph/MultiDiGraph).  This "dict-of-dicts" structure
+edge attributes associated with that edge.  This "dict-of-dicts" structure
 allows fast addition, deletion, and lookup of nodes and neighbors in 
 large graphs.  The underlying datastructure is accessed directly 
 by methods (the programming interface "API") in the class definitions.  
@@ -102,11 +94,11 @@ same methods.
 
 Graphs
 =======
-The first choice to be made when using NetworkX is what type of graph object to use.
-A graph (network) is a collection of nodes together with a collection of edges
-that are pairs of nodes.  Attributes are often associated with nodes and/or edges.
-Our graph objects come in different flavors depending on two main properties of
-the network:
+The first choice to be made when using NetworkX is what type of graph
+object to use.  A graph (network) is a collection of nodes together
+with a collection of edges that are pairs of nodes.  Attributes are
+often associated with nodes and/or edges.  NetworkX graph objects come in
+different flavors depending on two main properties of the network:
 
  - Directed: Are the edges **directed**?  Does the order of the edge
    pairs (u,v) matter?  A directed graph is specified by the "Di"

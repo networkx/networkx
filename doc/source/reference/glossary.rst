@@ -52,6 +52,7 @@ Glossary
    node
       A node can be any hashable Python object except None.
       
-       
+   dictionary
+      FIXME	       
 
 

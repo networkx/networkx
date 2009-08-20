@@ -2,7 +2,7 @@
 Installing
 **********
 
-Quick Install
+Quick install
 =============
 
 Get NetworkX from the Python Package Index at
@@ -17,7 +17,7 @@ that matches your operating system and Python version.
 
 More download options are at http://networkx.lanl.gov/download.html
 
-Installing from Source
+Installing from source
 ======================
 
 You can install from source by downloading a source archive file
@@ -27,7 +27,7 @@ Subversion repository.
 NetworkX is a pure Python package; you don't need a compiler to build
 or install it.
 
-Source Archive File
+Source archive file
 -------------------
 
   1. Download the source (tar.gz or zip file).
@@ -39,7 +39,7 @@ Source Archive File
   4. (optional) Run "python setup_egg.py nosetests" to execute the tests
 
 
-SVN Repository
+SVN repository
 --------------
 
   1. Check out the networkx trunk::
@@ -70,7 +70,7 @@ you will need to set your PYTHONPATH variable to the alternate location.
 See http://docs.python.org/inst/search-path.html for further details.
 
 
-Installing Pre-built Packages
+Installing pre-built packages
 ======================================
 
 Windows
@@ -169,7 +169,7 @@ provides graph drawing and graph layout algorithms.
   - Download: http://graphviz.org/
 
 
-Other Packages 
+Other packages 
 ---------------
 
 These are extra packages you may consider using with NetworkX
