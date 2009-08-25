@@ -16,8 +16,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
+#    All rights reserved.
+#    BSD license.
 
 __all__ = ['draw',
            'draw_networkx',
@@ -345,6 +345,10 @@ def draw_networkx_edges(G, pos,
                                      transOffset = ax.transData,             
                                      )
 
+
+    edge_collection.set_zorder(1) # edges go behind nodes            
+    ax.add_collection(edge_collection)
+
     # Note: there was a bug in mpl regarding the handling of alpha values for
     # each line in a LineCollection.  It was fixed in matplotlib in r7184 and
     # r7189 (June 6 2009).  We should then not set the alpha value globally,
@@ -416,6 +420,10 @@ def draw_networkx_edges(G, pos,
                                 transOffset = ax.transData,             
                                 )
         
+        arrow_collection.set_zorder(1) # edges go behind nodes            
+        ax.add_collection(arrow_collection)
+
+
     # update view        
     minx = numpy.amin(numpy.ravel(edge_pos[:,:,0]))
     maxx = numpy.amax(numpy.ravel(edge_pos[:,:,0]))
@@ -429,11 +437,7 @@ def draw_networkx_edges(G, pos,
     ax.update_datalim( corners)
     ax.autoscale_view()
 
-    edge_collection.set_zorder(1) # edges go behind nodes            
-    ax.add_collection(edge_collection)
-    if arrow_collection:
-        arrow_collection.set_zorder(1) # edges go behind nodes            
-        ax.add_collection(arrow_collection)
+#    if arrow_collection:
 
     return edge_collection
 
