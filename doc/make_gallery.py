@@ -63,7 +63,7 @@ for example in stale_examples:
         continue
     matplotlib.pyplot.clf()
     im=matplotlib.image.imread(png)
-    fig = Figure(figsize=(3.0, 3.0))
+    fig = Figure(figsize=(2.5, 2.5))
     canvas = FigureCanvas(fig)
     ax = fig.add_axes([0,0,1,1], aspect='auto', frameon=False, xticks=[], yticks
 =[])
