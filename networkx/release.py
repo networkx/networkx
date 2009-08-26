@@ -4,8 +4,8 @@
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
+#    All rights reserved.
+#    BSD license.
 
 
 import os
@@ -84,20 +84,22 @@ NetworkX is a Python package for the creation, manipulation, and
 study of the structure, dynamics, and functions of complex networks.  
 
 """
-license = 'LGPL'
+license = 'BSD'
 authors = {'Hagberg' : ('Aric Hagberg','hagberg@lanl.gov'),
            'Schult' : ('Dan Schult','dschult@colgate.edu'),
            'Swart' : ('Pieter Swart','swart@lanl.gov')
            }
+maintainer = "NetworkX Developers",
+maintainer_email = "networkx-discuss@googlegroups.com",
 url = 'http://networkx.lanl.gov/'
 download_url="http://networkx.lanl.gov/download/networkx"
-platforms = ['Linux','Mac OSX','Windows XP/2000/NT']
+platforms = ['Linux','Mac OSX','Windows','Unix']
 keywords = ['Networks', 'Graph Theory', 'Mathematics', 'network', 'graph', 'discrete mathematics', 'math']
 classifiers = [
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
+        'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules',

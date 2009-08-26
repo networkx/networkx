@@ -16,7 +16,7 @@ setup(
     author='Aric Hagberg',
     author_email = 'hagberg@lanl.gov',
     description = 'NetworkX nose plugin',
-    license = 'GNU LGPL',
+    license = 'BSD',
     py_modules = ['networkxdoctest'],
     entry_points = {
         'nose.plugins.0.10': [

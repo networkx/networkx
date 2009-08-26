@@ -6,8 +6,8 @@ Generate graphs with a given degree sequence or expected degree sequence.
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
+#    All rights reserved.
+#    BSD license.
 
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)\nJoel Miller (joel.c.miller.research@gmail.com)"""
 

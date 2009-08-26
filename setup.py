@@ -67,20 +67,23 @@ package_data     = {'': ['tests/*.py'],
 
 if __name__ == "__main__":
 
-    setup(name         = release.name,
-      version          = release.version,
-      author           = release.authors['Hagberg'][0],
-      author_email     = release.authors['Hagberg'][1],
-      description      = release.description,
-      keywords         = release.keywords,
-      long_description = release.long_description,
-      license          = release.license,
-      platforms        = release.platforms,
-      url              = release.url,      
-      download_url     = release.download_url,
-      classifiers      = release.classifiers,
-      packages         = packages,
-      data_files       = data,
-      package_data     = package_data
+    setup(
+        name             = release.name,
+        version          = release.version,
+        maintainer       = release.maintainer,
+        maintainer_email = release.maintainer_email,
+        author           = release.authors['Hagberg'][0],
+        author_email     = release.authors['Hagberg'][1],
+        description      = release.description,
+        keywords         = release.keywords,
+        long_description = release.long_description,
+        license          = release.license,
+        platforms        = release.platforms,
+        url              = release.url,      
+        download_url     = release.download_url,
+        classifiers      = release.classifiers,
+        packages         = packages,
+        data_files       = data,
+        package_data     = package_data
       )
 

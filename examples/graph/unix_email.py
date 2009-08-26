@@ -20,8 +20,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
+#    All rights reserved.
+#    BSD license.
 
 import email
 from email.Utils import getaddresses,parseaddr

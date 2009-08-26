@@ -128,8 +128,8 @@ In general, this problem is NP-Complete.
 """
 
 #    Copyright (C) 2007-2009 by the NetworkX maintainers
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
+#    All rights reserved.
+#    BSD license.
 
 #    This work was originally coded by Christopher Ellison
 #    as part of the Computational Mechanics Python (CMPy) project.

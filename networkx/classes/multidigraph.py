@@ -10,8 +10,8 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
+#    All rights reserved.
+#    BSD license.
 #
 
 from networkx.classes.graph import Graph  # for doctests

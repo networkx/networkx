@@ -8,8 +8,8 @@ __author__ = """Pieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
+#    All rights reserved.
+#    BSD license.
 
 import networkx
 from networkx.exception import NetworkXException, NetworkXError
