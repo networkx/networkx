@@ -131,13 +131,12 @@ Python is included in all major Linux distributions
 Optional packages 
 =================
 
-NetworkX will work without the following optional packages.
+NetworkX will work without the following optional packages
+but they may be added for additional functionality.
 
 NumPy
 -----
   - Download: http://scipy.org/Download
-        
-
 
 SciPy
 -----
@@ -158,7 +157,7 @@ GraphViz
 
 In conjunction with either
       
-      - pygraphviz:  http://networkx.lanl.gov/pygraphviz/
+      - PyGraphviz:  http://networkx.lanl.gov/pygraphviz/
 
       or
 
@@ -167,6 +166,20 @@ In conjunction with either
 provides graph drawing and graph layout algorithms.
 
   - Download: http://graphviz.org/
+
+Pyparsing
+---------
+
+http://pyparsing.wikispaces.com/
+
+Required for pydot, GML file reading.
+
+PyYAML
+------
+
+http://pyyaml.org/
+
+Required for YAML format reading and writing.
 
 
 Other packages 
