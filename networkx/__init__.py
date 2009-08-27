@@ -84,5 +84,4 @@ import generators
 import linalg
 import operators
 import readwrite
-import util
 

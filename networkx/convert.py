@@ -53,15 +53,7 @@ __all__ = ['from_whatever',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix']
 
 import networkx
-
-try:
-    from peak.util.imports import lazyModule
-except:
-    from networkx.util.imports import lazyModule
-
-numpy=lazyModule('numpy')
-scipy=lazyModule('scipy')
-sparse=lazyModule('scipy.sparse')
+import warnings
 
 def _prep_create_using(create_using):
     """Return a graph object ready to be populated.
@@ -210,29 +202,31 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
                   "Input is not a valid edge list"
 
     # numpy matrix or ndarray 
-#    try:
-#        import numpy
-    if isinstance(thing,numpy.core.defmatrix.matrix) or \
-           isinstance(thing,numpy.ndarray):
-        try:
-            return from_numpy_matrix(thing,create_using=create_using)
-        except:
-            raise networkx.NetworkXError,\
+    try:
+        import numpy
+        if isinstance(thing,numpy.core.defmatrix.matrix) or \
+               isinstance(thing,numpy.ndarray):
+            try:
+                return from_numpy_matrix(thing,create_using=create_using)
+            except:
+                raise networkx.NetworkXError,\
                   "Input is not a correct numpy matrix or array."
-#    except ImportError:
-#        pass # fail silently
+    except ImportError:
+        warnings.warn('numpy not found, skipping conversion test.',
+                      ImportWarning)
 
     # scipy sparse matrix - any format
-#    try:
-#        import scipy
-    if hasattr(thing,"format"):
-        try:
-            return from_scipy_sparse_matrix(thing,create_using=create_using)
-        except:
-            raise networkx.NetworkXError, \
-                  "Input is not a correct scipy sparse matrix type."
-#    except ImportError:
-#        pass # fail silently
+    try:
+        import scipy
+        if hasattr(thing,"format"):
+            try:
+                return from_scipy_sparse_matrix(thing,create_using=create_using)
+            except:
+                raise networkx.NetworkXError, \
+                      "Input is not a correct scipy sparse matrix type."
+    except ImportError:
+        warnings.warn('scipy not found, skipping conversion test.',
+                      ImportWarning)
 
 
     raise networkx.NetworkXError, \
@@ -497,25 +491,31 @@ def to_numpy_matrix(G,edge_attr='weight',nodelist=None,dtype=None):
     >>> A=nx.to_numpy_matrix(G)
 
     """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "to_numpy_matrix() requires numpy: http://scipy.org/ "
+
     value = _edge_value(G, edge_attr)
 
     if nodelist is None:
         nodelist=G.nodes()
 
     if dtype is None:
-        dtype=numpy.float32
+        dtype=np.float32
 
     nlen=len(nodelist)    
     index=dict(zip(nodelist,range(nlen))) # dict mapping vertex name to position
 
-    A = numpy.zeros((nlen,nlen), dtype=dtype)
+    A = np.zeros((nlen,nlen), dtype=dtype)
     for n,nbrdict in G.adjacency_iter():
         if n in index:
             for nbr,data in nbrdict.iteritems():
                 if nbr in index:              
                     A[index[n],index[nbr]]=value(data)
 
-    A = numpy.asmatrix(A)
+    A = np.asmatrix(A)
     return A
 
 def from_numpy_matrix(A,create_using=None):
@@ -537,11 +537,12 @@ def from_numpy_matrix(A,create_using=None):
 
     """
     # This should never fail if you have created a numpy matrix with numpy...  
-#    try:
-#        import numpy
-#    except ImportError:
-#        raise ImportError, \
-#              "Import Error: not able to import numpy: http://numpy.scipy.org "
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "from_numpy_matrix() requires numpy: http://scipy.org/ "
+
 
     G=_prep_create_using(create_using)
 
@@ -554,7 +555,7 @@ def from_numpy_matrix(A,create_using=None):
     G.add_nodes_from(range(nx)) # make sure we get isolated nodes
 
     # get a list of edges
-    x,y=numpy.asarray(A).nonzero()         
+    x,y=np.asarray(A).nonzero()         
     G.add_edges_from( ((u,v,{'weight':A[u,v]}) for (u,v) in zip(x,y)) )
     return G
 
@@ -599,6 +600,13 @@ def to_scipy_sparse_matrix(G,edge_attr='weight',nodelist=None,dtype=None):
     scipy.sparse documentation.
 
     """
+    try:
+        import scipy
+        from scipy import sparse
+    except ImportError:
+        raise ImportError, \
+          "to_scipy_sparse_matrix() requires scipy: http://scipy.org/ "
+
     value = _edge_value(G, edge_attr)
 
     if nodelist is None:
@@ -637,7 +645,6 @@ def from_scipy_sparse_matrix(A,create_using=None):
     >>> G=nx.from_scipy_sparse_matrix(A)
 
     """
-
     G=_prep_create_using(create_using)
 
     # convert all formats to lil - not the most efficient way       

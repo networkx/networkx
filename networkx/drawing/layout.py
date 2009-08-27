@@ -23,17 +23,13 @@ __all__ = ['circular_layout',
 
 import networkx
 
-try:
-    from peak.util.imports import lazyModule
-except:
-    from networkx.util.imports import lazyModule
-
-np=lazyModule('numpy')
-#linalg=lazyModule('scipy.sparse.linalg')
-#spdiags=lazyModule('scipy.sparse.spdiags')
-#eigen_symmetric=lazyModule('scipy.sparse.linalg.eigen_symmetric')
 
 def random_layout(G,dim=2):
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "random_layout() requires numpy: http://scipy.org/ "
     n=len(G)
     pos=np.asarray(np.random.random((n,dim)),dtype=np.float32)
     return dict(zip(G,pos))
@@ -69,6 +65,11 @@ def circular_layout(G, dim=2, scale=1):
     try to minimize edge crossings.
 
     """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "circular_layout() requires numpy: http://scipy.org/ "
     t=np.arange(0,2.0*np.pi,2.0*np.pi/len(G),dtype=np.float32)
     pos=np.transpose(np.array([np.cos(t),np.sin(t)]))
     pos=_rescale_layout(pos,scale=scale)
@@ -99,7 +100,7 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
     --------
     >>> G=nx.path_graph(4)
     >>> shells=[[0],[1,2,3]]
-    >>> pos=nx.circular_layout(G,shells)
+    >>> pos=nx.shell_layout(G,shells)
     
     Notes
     ------
@@ -107,6 +108,11 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
     try to minimize edge crossings.
 
     """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "shell_layout() requires numpy: http://scipy.org/ "
     if nlist==None:
         nlist=[G.nodes()] # draw the whole graph in one shell
 
@@ -172,6 +178,11 @@ def fruchterman_reingold_layout(G,dim=2,
     >>> pos=nx.fruchterman_reingold_layout(G)
     
     """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "fruchterman_reingold_layout() requires numpy: http://scipy.org/ "
     if fixed is not None:
         nfixed=dict(zip(G,range(len(G))))
         fixed=np.asarray([nfixed[v] for v in fixed])
@@ -222,6 +233,12 @@ def _fruchterman_reingold(A,dim=2,
                           weighted=True):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold  
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "_fruchterman_reingold() requires numpy: http://scipy.org/ "
+
     try:
         nnodes,_=A.shape
     except AttributeError:
@@ -286,12 +303,21 @@ def _sparse_fruchterman_reingold(A,dim=2,
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
     try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "_sparse_fruchterman_reingold() requires numpy: http://scipy.org/ "
+    try:
         nnodes,_=A.shape
     except AttributeError:
         raise networkx.NetworkXError(
             "fruchterman_reingold() takes an adjacency matrix as input")
     
-    from scipy.sparse import spdiags,coo_matrix
+    try:
+        from scipy.sparse import spdiags,coo_matrix
+    except ImportError:
+        raise ImportError, \
+          "_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ "
     
     # make sure we have a LIst of Lists representation
     try:
@@ -385,6 +411,11 @@ def spectral_layout(G,dim=2,weighted=True,scale=1):
     eigenvalue solver (ARPACK).
     """
     # handle some special cases that break the eigensolvers
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "spectral_layout() requires numpy: http://scipy.org/ "
     if len(G)<=2:
         if len(G)==0:
             pos=np.array([])
@@ -418,6 +449,11 @@ def _spectral(A,dim=2,weighted=True):
     # Input adjacency matrix A
     # Uses dense eigenvalue solver from numpy
     try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "spectral_layout() requires numpy: http://scipy.org/ "
+    try:
         nnodes,_=A.shape
     except AttributeError:
         raise networkx.NetworkXError(\
@@ -439,8 +475,13 @@ def _sparse_spectral(A,dim=2,weighted=True):
     # Input adjacency matrix A
     # Uses sparse eigenvalue solver from scipy
     # Could use multilevel methods here, see Koren "On spectral graph drawing" 
-    from scipy.sparse import spdiags
-    from scipy.sparse.linalg import eigen_symmetric
+    
+    try:
+        from scipy.sparse import spdiags
+        from scipy.sparse.linalg import eigen_symmetric
+    except ImportError:
+        raise ImportError, \
+          "_sparse_spectral() scipy numpy: http://scipy.org/ "
     try:
         nnodes,_=A.shape
     except AttributeError:

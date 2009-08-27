@@ -35,15 +35,6 @@ import sys
 import networkx
 from networkx.utils import _get_fh,is_string_like
 
-
-try:
-    from peak.util.imports import lazyModule
-except:
-    from networkx.util.imports import lazyModule
-
-pygraphviz=lazyModule('pygraphviz')
-
-
 def from_agraph(A,create_using=None):
     """Return a NetworkX Graph or DiGraph from a PyGraphviz graph.
 
@@ -131,6 +122,11 @@ def to_agraph(N):
     and then updated with the calling arguments if any.
 
     """
+    try:
+        import pygraphviz
+    except ImportError:
+        raise ImportError, \
+          "to_agraph() requires pygraphviz: http://networkx.lanl.gov/pygraphviz"
     directed=N.is_directed()
     strict=N.number_of_selfloops()==0 and not N.is_multigraph() 
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
@@ -185,6 +181,11 @@ def read_dot(path,create_using=None):
        nx.Graph().
 
     """
+    try:
+        import pygraphviz
+    except ImportError:
+        raise ImportError, \
+          "read_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz"
     A=pygraphviz.AGraph(file=path)
     return from_agraph(A)
 
@@ -243,6 +244,11 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     >>> pos=nx.graphviz_layout(G,prog='dot')
     
     """
+    try:
+        import pygraphviz
+    except ImportError:
+        raise ImportError, \
+          "pygraphviz_layout() requires pygraphviz: http://networkx.lanl.gov/pygraphviz"
     A=to_agraph(G)
     if root is not None:
         args+="-Groot=%s"%root

@@ -27,19 +27,17 @@ import time
 from networkx.utils import is_string_like, _get_fh
 import networkx
 
-try:
-    from peak.util.imports import lazyModule
-except:
-    from networkx.util.imports import lazyModule
-
-yaml=lazyModule('yaml')
-
 def write_yaml(G, path, default_flow_style=False, **kwds):
     """Write graph G in YAML text format to path. 
 
     See http://www.yaml.org
 
     """
+    try:
+        import yaml
+    except ImportError:
+        raise ImportError, \
+          "write_yaml() requires PyYAML: http://pyyaml.org/ "
     fh=_get_fh(path,mode='w')        
     yaml.dump(G,fh,default_flow_style=default_flow_style,**kwds)
     
@@ -50,6 +48,12 @@ def read_yaml(path):
     See http://www.yaml.org
 
     """
+    try:
+        import yaml
+    except ImportError:
+        raise ImportError, \
+          "read_yaml() requires PyYAML: http://pyyaml.org/ "
+
     fh=_get_fh(path,mode='r')        
     return yaml.load(fh)
 

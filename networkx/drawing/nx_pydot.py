@@ -30,13 +30,6 @@ import sys
 from networkx.utils import _get_fh
 import networkx
 
-try:
-    from peak.util.imports import lazyModule
-except:
-    from networkx.util.imports import lazyModule
-
-pydot=lazyModule('pydot')
-
 
 def write_dot(G,path):
     """Write NetworkX graph G to Graphviz dot format on path.
@@ -55,6 +48,12 @@ def read_dot(path):
     Path can be a string or a file handle.
 
     """
+    try:
+        import pydot
+    except ImportError:
+        raise ImportError, \
+          "read_dot() requires pydot http://dkbza.org/pydot.html/"
+
     fh=_get_fh(path,'r')
     data=fh.read()        
     P=pydot.graph_from_dot_data(data)
@@ -147,6 +146,12 @@ def to_pydot(N, strict=True):
     -----
 
     """
+    try:
+        import pydot
+    except ImportError:
+        raise ImportError, \
+          "to_pydot() requires pydot http://dkbza.org/pydot.html/"
+
     # set Graphviz graph type
     if N.is_directed():
         graph_type='digraph'
@@ -230,6 +235,12 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     >>> pos=nx.pydot_layout(G,prog='dot')
     
     """
+    try:
+        import pydot
+    except ImportError:
+        raise ImportError, \
+          "pydot_layout() requires pydot http://dkbza.org/pydot.html/"
+
     P=to_pydot(G)
     if root is not None :
         P.set("root",str(root))

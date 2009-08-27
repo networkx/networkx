@@ -12,12 +12,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 #    All rights reserved.
 #    BSD license.
 
-try:
-    from peak.util.imports import lazyModule
-except:
-    from networkx.util.imports import lazyModule
-
-N=lazyModule('numpy')
 
 import networkx
 
@@ -50,10 +44,16 @@ def laplacian(G,nodelist=None):
 
     """
     # this isn't the most efficient way to do this...
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "laplacian() requires numpy: http://scipy.org/ "
+
     n=G.order()
-    I=N.identity(n)
-    A=N.asarray(networkx.to_numpy_matrix(G,nodelist=nodelist))
-    D=I*N.sum(A,axis=1)
+    I=np.identity(n)
+    A=np.asarray(networkx.to_numpy_matrix(G,nodelist=nodelist))
+    D=I*np.sum(A,axis=1)
     L=D-A
     return L
 
@@ -67,25 +67,40 @@ def normalized_laplacian(G,nodelist=None):
 
     """
     # FIXME: this isn't the most efficient way to do this...
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "normalized_laplacian() requires numpy: http://scipy.org/ "
     n=G.order()
-    I=N.identity(n)
-    A=N.asarray(networkx.to_numpy_matrix(G,nodelist=nodelist))
-    d=N.sum(A,axis=1)
+    I=np.identity(n)
+    A=np.asarray(networkx.to_numpy_matrix(G,nodelist=nodelist))
+    d=np.sum(A,axis=1)
     L=I*d-A
-    osd=N.zeros(len(d))
+    osd=np.zeros(len(d))
     for i in range(len(d)):
-        if d[i]>0: osd[i]=N.sqrt(1.0/d[i])
+        if d[i]>0: osd[i]=np.sqrt(1.0/d[i])
     T=I*osd
-    L=N.dot(T,N.dot(L,T))
+    L=np.dot(T,np.dot(L,T))
     return L
 
 def laplacian_spectrum(G):
     """Return eigenvalues of the Laplacian of G""" 
-    return N.linalg.eigvals(laplacian(G))
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "laplacian_spectrum() requires numpy: http://scipy.org/ "
+    return np.linalg.eigvals(laplacian(G))
 
 def adjacency_spectrum(G):
     """Return eigenvalues of the adjacency matrix of G""" 
-    return N.linalg.eigvals(adj_matrix(G))
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "adjacency_spectrum() requires numpy: http://scipy.org/ "
+    return np.linalg.eigvals(adj_matrix(G))
 
 
 combinatorial_laplacian=laplacian
