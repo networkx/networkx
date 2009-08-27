@@ -12,9 +12,6 @@ class TestConvertNumpy(object):
         global numpy
         try:
             import numpy
-            # NetworkX uses a lazy import for NumPy.
-            # To test it, we really need to use it.
-            numpy.__file__
         except ImportError:
             raise SkipTest('NumPy not available.')
 

@@ -17,9 +17,6 @@ class TestPydot(object):
         global pydot
         try:
             import pydot
-            # Because NetworkX uses a lazy import, this might work.
-            # To really test it, we need to use it.
-            pydot.__file__
         except ImportError:
             raise SkipTest('pydot not available.')
 

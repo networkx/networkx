@@ -14,10 +14,6 @@ class TestConvertNumpy(object):
             import numpy
             import scipy
             import scipy.sparse
-            # NetworkX uses a lazy import, so we need to use it to test it.
-            numpy.__file__
-            scipy.__file__
-            scipy.sparse.__file__
         except ImportError:
             raise SkipTest('SciPy sparse library not available.')
 

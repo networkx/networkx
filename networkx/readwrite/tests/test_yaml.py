@@ -14,9 +14,6 @@ class TestYaml(object):
         global yaml
         try:
             import yaml
-            # Because NetworkX uses a lazy import, this might work.
-            # To really test it, we need to use it.
-            yaml.__file__
         except ImportError:
             raise SkipTest('yaml not available.')
 
