@@ -375,7 +375,7 @@ class Graph(object):
                     "The attr_dict argument must be a dictionary.")
         if n not in self.adj:
             self.adj[n] = {}
-            self.node[n] = attr
+            self.node[n] = attr_dict
         else: # update attr even if node already exists            
             self.node[n].update(attr_dict)
 

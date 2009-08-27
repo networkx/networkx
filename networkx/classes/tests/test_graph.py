@@ -457,6 +457,15 @@ class TestGraph:
         G.node[1]['foo']='baz'
         assert_equal(G.nodes(data=True), [(0,{}),(1,{'foo':'baz'}),(2,{})])
 
+
+    def test_node_attr2(self):
+        G=self.K3
+        a={'foo':'bar'}
+        G.add_node(3,attr_dict=a)
+        assert_equal(G.nodes(), [0,1,2,3])
+        assert_equal(G.nodes(data=True),
+                     [(0,{}),(1,{}),(2,{}),(3,{'foo':'bar'})])
+
     def test_edge_attr(self):
         G=self.Graph()
         G.add_edge(1,2,foo='bar')
