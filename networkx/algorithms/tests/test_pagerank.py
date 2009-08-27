@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose import SkipTest
 import networkx
 
 # Example from
@@ -30,37 +31,39 @@ class TestPageRank:
             assert_almost_equal(a,b)
 
     def test_numpy_pagerank(self):
-        G=self.G
         try:
-            p=networkx.pagerank_numpy(G,alpha=0.9,
-                                                           tol=1.e-08)
-            for (a,b) in zip(p,self.G.pagerank):
-                assert_almost_equal(a,b)
+            import numpy
         except ImportError:
-            print "Skipping pagerank_numpy test"
+            raise SkipTest('numpy not available.')
+        G=self.G
+        p=networkx.pagerank_numpy(G,alpha=0.9,tol=1.e-08)
+        for (a,b) in zip(p,self.G.pagerank):
+            assert_almost_equal(a,b)
 
 
     def test_google_matrix(self):
-        G=self.G
         try:
             import numpy.linalg
-            M=networkx.google_matrix(G,alpha=0.9)
-            e,ev=numpy.linalg.eig(M.T)
-            p=numpy.array(ev[:,0]/ev[:,0].sum())[:,0]
-            for (a,b) in zip(p,self.G.pagerank):
-                assert_almost_equal(a,b)
         except ImportError:
-            print "Skipping google_matrix test"
+            raise SkipTest('numpy not available.')
+        G=self.G
+        M=networkx.google_matrix(G,alpha=0.9)
+        e,ev=numpy.linalg.eig(M.T)
+        p=numpy.array(ev[:,0]/ev[:,0].sum())[:,0]
+        for (a,b) in zip(p,self.G.pagerank):
+            assert_almost_equal(a,b)
+
 
     def test_scipy_pagerank(self):
         G=self.G
         try:
-            p=networkx.pagerank_scipy(G,alpha=0.9,
-                                                           tol=1.e-08)
-            for (a,b) in zip(p,self.G.pagerank):
-                assert_almost_equal(a,b)
+            import scipy
         except ImportError:
-            print "Skipping pagerank_scipy test"
+            raise SkipTest('scipy not available.')
+        p=networkx.pagerank_scipy(G,alpha=0.9,tol=1.e-08)
+        for (a,b) in zip(p,self.G.pagerank):
+            assert_almost_equal(a,b)
+
 
 
 
