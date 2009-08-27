@@ -1,14 +1,13 @@
 """
-***
-GML
-***
-
 Read graphs in GML format.
 See http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
 for format specification.
 
 Example graphs in GML format:
 http://www-personal.umich.edu/~mejn/netdata/
+
+Requires pyparsing: http://pyparsing.wikispaces.com/
+
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
@@ -30,10 +29,42 @@ from networkx.utils import _get_fh, is_string_like
 	
 def read_gml(path):
     """Read graph in GML format from path.
-    Returns an Graph or DiGraph.
 
+    Parameters
+    ----------
+    path : filename or filehandle
+       The filename or filehandle to read from.
+
+    Returns
+    -------
+    G : Graph or DiGraph
+
+    Raises
+    ------
+    ImportError
+        If the pyparsing module is not available.
+
+    See Also
+    --------
+    write_gml, parse_gml
+    
+    Notes
+    -----
     This doesn't implement the complete GML specification for
     nested attributes for graphs, edges, and nodes. 
+
+    Requires pyparsing: http://pyparsing.wikispaces.com/
+
+    References
+    ----------
+    GML specification:
+    http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> nx.write_gml(G,'test.gml')
+    >>> H=nx.read_gml('test.gml')
 
     """
     fh=_get_fh(path,mode='r')        
@@ -42,11 +73,44 @@ def read_gml(path):
 
 
 def parse_gml(lines):
-    """Parse GML format from string or iterable.
-    Returns an Graph or DiGraph.
+    """Parse GML graph from a string or iterable.
 
+    Parameters
+    ----------
+    lines : string or iterable
+       Data in GML format.
+
+    Returns
+    -------
+    G : Graph or DiGraph
+
+    Raises
+    ------
+    ImportError
+        If the pyparsing module is not available.
+
+    See Also
+    --------
+    write_gml, read_gml
+    
+    Notes
+    -----
     This doesn't implement the complete GML specification for
     nested attributes for graphs, edges, and nodes. 
+
+    Requires pyparsing: http://pyparsing.wikispaces.com/
+
+    References
+    ----------
+    GML specification:
+    http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> nx.write_gml(G,'test.gml')
+    >>> fh=open('test.gml')
+    >>> H=nx.read_gml(fh)
     """
     try:
         from pyparsing import ParseException
@@ -98,8 +162,16 @@ def parse_gml(lines):
             
 graph = None
 def pyparse_gml():
-    """pyparser tokenizer for GML graph format
+    """A pyparsing tokenizer for GML graph format.
 
+    This is not indented to be called directly.
+
+    See Also
+    --------
+    write_gml, read_gml, parse_gml
+
+    Notes
+    -----
     This doesn't implement the complete GML specification for
     nested attributes for graphs, edges, and nodes. 
 
@@ -138,7 +210,7 @@ def pyparse_gml():
         node = Group(Literal("node") + lbrack + OneOrMore(keyvalue) + rbrack)
         edge = Group(Literal("edge") + lbrack + OneOrMore(keyvalue) + rbrack)
         graph = Optional(creator)+\
-            graphkey + lbrack + OneOrMore(edge|node|keyvalue) + rbrack
+            graphkey + lbrack + ZeroOrMore(edge|node|keyvalue) + rbrack
         graph.ignore(comment)
         
     return graph
@@ -147,9 +219,36 @@ def write_gml(G, path):
     """
     Write the graph G in GML format to the file or file handle path.
 
+    Parameters
+    ----------
+    path : filename or filehandle
+       The filename or filehandle to write.  Filenames ending in
+       .gz or .gz2 will be compressed.
+
+    See Also
+    --------
+    read_gml, parse_gml
+
+    Notes
+    -----
+    The output file will use the default text encoding on your system.
+    It is possible to write files in other encodings by opening
+    the file with the codecs module.  See doc/examples/unicode.py
+    for hints.
+
+    >>> G=nx.path_graph(4)
+    >>> import codecs
+    >>> fh=codecs.open('test.gml','w',encoding='iso8859-1')# use iso8859-1
+    >>> nx.write_gml(G,fh)
+
+    GML specifications indicate that the file should only use
+    7bit ASCII text encoding.iso8859-1 (latin-1). 
+
+    Only a single level of attributes for graphs, nodes, and edges,
+    is supported.
+
     Examples
     ---------
-
     >>> G=nx.path_graph(4)
     >>> nx.write_gml(G,"test.gml")
 
@@ -161,23 +260,6 @@ def write_gml(G, path):
     Filenames ending in .gz or .bz2 will be compressed.
 
     >>> nx.write_gml(G,"test.gml.gz")
-
-    
-    The output file will use the default text encoding on your system.
-    It is possible to write files in other encodings by opening
-    the file with the codecs module.  See doc/examples/unicode.py
-    for hints.
-
-    >>> import codecs
-    >>> fh=codecs.open("test.gml",'w',encoding='iso8859-1')# use iso8859-1
-    >>> nx.write_gml(G,fh)
-
-    GML specifications indicate that the file should only use
-    7bit ASCII text encoding.iso8859-1 (latin-1). 
-
-    Only a single level of attributes for graphs, nodes, and edges,
-    is supported.
-
     """
     fh=_get_fh(path,mode='w')        
 #    comments="#"
