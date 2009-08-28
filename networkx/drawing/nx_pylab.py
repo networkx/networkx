@@ -49,11 +49,8 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
 
     Usage:
 
-    >>> from networkx import *
-    >>> G=dodecahedral_graph()
-    >>> draw(G)
-    >>> pos=graphviz_layout(G)
-    >>> draw(G,pos)
+    >>> G=nx.dodecahedral_graph()
+    >>> nx.draw(G)
     >>> draw(G,pos=spring_layout(G))
 
     Also see doc/examples/draw_*
@@ -91,12 +88,12 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     A good alternative is to use
 
     >>> import pylab as P
-    >>> import networkx as NX
-    >>> G=NX.dodecahedral_graph()
+    >>> import networkx as nx
+    >>> G=nx.dodecahedral_graph()
 
     and then use
 
-    >>> NX.draw(G)  # networkx draw()
+    >>> nx.draw(G)  # networkx draw()
 
     and
     >>> P.draw()    # pylab draw()
@@ -141,12 +138,9 @@ def draw_networkx(G, pos, with_labels=True, **kwds):
 
     Usage:
 
-    >>> from networkx import *
-    >>> import pylab as P
-    >>> ax=P.subplot(111)
-    >>> G=dodecahedral_graph()
-    >>> pos=spring_layout(G)
-    >>> draw_networkx(G,pos,ax=ax)
+    >>> G=nx.dodecahedral_graph()
+    >>> pos=nx.spring_layout(G)
+    >>> nx.draw_networkx(G,pos,ax=ax)
 
     This is same as 'draw' but the node positions *must* be
     specified in the variable pos.

@@ -27,11 +27,11 @@ class TestPylab(object):
 #         hold(False)
         N=self.G
         nx.draw_spring(N)
-        savefig("test.png")
-        draw_random(N)
-        savefig("test.ps")
-        draw_circular(N)
-        savefig("test.png")
-        draw_spectral(N)
-        savefig("test.png")
+        pylab.savefig("test.png")
+        nx.draw_random(N)
+        pylab.savefig("test.ps")
+        nx.draw_circular(N)
+        pylab.savefig("test.png")
+        nx.draw_spectral(N)
+        pylab.savefig("test.png")
 
