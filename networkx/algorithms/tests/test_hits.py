@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose import SkipTest
 import networkx
 
 # Example from
@@ -40,49 +41,52 @@ class TestHITS:
     def test_numpy_hits(self):
         G=self.G
         try:
-            h,a=networkx.hits_numpy(G,tol=1.e-08)
-            for (x,y) in zip(sorted(h),self.G.h):
-                assert_almost_equal(x,y,places=5)
-            for (x,y) in zip(sorted(a),self.G.a):
-                assert_almost_equal(x,y,places=5)
+            import numpy
         except ImportError:
-            print "Skipping hits_numpy test"
-
+            raise SkipTest('numpy not available.')
+        
+        h,a=networkx.hits_numpy(G,tol=1.e-08)
+        for (x,y) in zip(sorted(h),self.G.h):
+            assert_almost_equal(x,y,places=5)
+        for (x,y) in zip(sorted(a),self.G.a):
+            assert_almost_equal(x,y,places=5)
 
     def test_hubs_authority_matrix(self):
         G=self.G
         try:
             import numpy
             import numpy.linalg
-            H=networkx.hub_matrix(G,nodelist=None)
-            e,ev=numpy.linalg.eig(H)
-            m=e.argsort()[-1] # index of maximum eigenvalue
-            h=numpy.array(ev[:,m]).flatten()
-
-            A=networkx.authority_matrix(G,nodelist=None)
-            e,ev=numpy.linalg.eig(A)
-            m=e.argsort()[-1] # index of maximum eigenvalue
-            a=numpy.array(ev[:,m]).flatten()
-            h=h/h.sum()
-            a=a/a.sum()
-            h,a=networkx.hits_scipy(G,tol=1.e-08)
-            for (x,y) in zip(sorted(h),self.G.h):
-                assert_almost_equal(x,y,places=5)
-            for (x,y) in zip(sorted(a),self.G.a):
-                assert_almost_equal(x,y,places=5)
         except ImportError:
-            print "Skipping hub_authority_matrix test"
+            raise SkipTest('numpy not available.')
+
+        H=networkx.hub_matrix(G,nodelist=None)
+        e,ev=numpy.linalg.eig(H)
+        m=e.argsort()[-1] # index of maximum eigenvalue
+        h=numpy.array(ev[:,m]).flatten()
+
+        A=networkx.authority_matrix(G,nodelist=None)
+        e,ev=numpy.linalg.eig(A)
+        m=e.argsort()[-1] # index of maximum eigenvalue
+        a=numpy.array(ev[:,m]).flatten()
+        h=h/h.sum()
+        a=a/a.sum()
+        h,a=networkx.hits_scipy(G,tol=1.e-08)
+        for (x,y) in zip(sorted(h),self.G.h):
+            assert_almost_equal(x,y,places=5)
+        for (x,y) in zip(sorted(a),self.G.a):
+            assert_almost_equal(x,y,places=5)
 
     def test_scipy_hits(self):
         G=self.G
         try:
-            h,a=networkx.hits_scipy(G,tol=1.e-08)
-            for (x,y) in zip(sorted(h),self.G.h):
-                assert_almost_equal(x,y,places=5)
-            for (x,y) in zip(sorted(a),self.G.a):
-                assert_almost_equal(x,y,places=5)
+            import scipy
         except ImportError:
-            print "Skipping scipy_numpy test"
+            raise SkipTest('scipy not available.')
+        h,a=networkx.hits_scipy(G,tol=1.e-08)
+        for (x,y) in zip(sorted(h),self.G.h):
+            assert_almost_equal(x,y,places=5)
+        for (x,y) in zip(sorted(a),self.G.a):
+            assert_almost_equal(x,y,places=5)
 
 
 
