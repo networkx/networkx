@@ -51,7 +51,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
 
     >>> G=nx.dodecahedral_graph()
     >>> nx.draw(G)
-    >>> draw(G,pos=spring_layout(G))
+    >>> nx.draw(G,pos=nx.spring_layout(G))
 
     Also see doc/examples/draw_*
 
@@ -140,7 +140,7 @@ def draw_networkx(G, pos, with_labels=True, **kwds):
 
     >>> G=nx.dodecahedral_graph()
     >>> pos=nx.spring_layout(G)
-    >>> nx.draw_networkx(G,pos,ax=ax)
+    >>> nx.draw_networkx(G,pos)
 
     This is same as 'draw' but the node positions *must* be
     specified in the variable pos.
