@@ -786,11 +786,11 @@ class DiGraph(Graph):
         
         See Also
         --------
-        degree
+        degree, in_degree, out_degree, in_degree_iter, out_degree_iter
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.DiGraph()   # or MultiDiGraph
         >>> G.add_path([0,1,2,3])
         >>> list(G.degree_iter(0)) # node 0 with degree 1
         [(0, 1)]
@@ -817,6 +817,37 @@ class DiGraph(Graph):
                 yield (n,len(succ)+len(pred)) 
 
     def in_degree_iter(self, nbunch=None, weighted=False):
+        """Return an iterator for (node, in-degree). 
+
+        The node in-degree is the number of edges pointing in to the node.
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default=all nodes)
+            A container of nodes.  The container will be iterated
+            through once.    
+        weighted : bool, optional (default=False)
+           If True return the sum of edge weights adjacent to the node.  
+
+        Returns
+        -------
+        nd_iter : an iterator 
+            The iterator returns two-tuples of (node, in-degree).
+        
+        See Also
+        --------
+        degree, in_degree, out_degree, out_degree_iter
+
+        Examples
+        --------
+        >>> G = nx.DiGraph()   
+        >>> G.add_path([0,1,2,3])
+        >>> list(G.in_degree_iter(0)) # node 0 with degree 0
+        [(0, 0)]
+        >>> list(G.in_degree_iter([0,1]))
+        [(0, 0), (1, 1)]
+
+        """
         if nbunch is None:
             nodes_nbrs=self.pred.iteritems()
         else:
@@ -832,6 +863,37 @@ class DiGraph(Graph):
 
 
     def out_degree_iter(self, nbunch=None, weighted=False):
+        """Return an iterator for (node, out-degree). 
+
+        The node out-degree is the number of edges pointing out of the node.
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default=all nodes)
+            A container of nodes.  The container will be iterated
+            through once.    
+        weighted : bool, optional (default=False)
+           If True return the sum of edge weights adjacent to the node.  
+
+        Returns
+        -------
+        nd_iter : an iterator 
+            The iterator returns two-tuples of (node, out-degree).
+        
+        See Also
+        --------
+        degree, in_degree, out_degree, in_degree_iter
+
+        Examples
+        --------
+        >>> G = nx.DiGraph()
+        >>> G.add_path([0,1,2,3])
+        >>> list(G.out_degree_iter(0)) # node 0 with degree 1
+        [(0, 1)]
+        >>> list(G.out_degree_iter([0,1]))
+        [(0, 1), (1, 1)]
+
+        """
         if nbunch is None:
             nodes_nbrs=self.succ.iteritems()
         else:
@@ -847,6 +909,42 @@ class DiGraph(Graph):
 
 
     def in_degree(self, nbunch=None, with_labels=False, weighted=False):
+        """Return the in-degree of a node or nodes.
+
+        The node in-degree is the number of edges pointing in to the node.
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default=all nodes)
+            A container of nodes.  The container will be iterated
+            through once.    
+        with_labels : bool, optional (default=False)
+            If True return a dictionary of degrees keyed by node.
+        weighted : bool, optional (default=False)
+           If True return the sum of edge weights adjacent to the node.  
+
+        Returns
+        -------
+        nd : list, or dictionary
+            A list of node in-degrees or a dictionary with nodes as
+            keys and in-degree as values if with_labels=True).
+
+        See Also
+        --------
+        degree, out_degree, in_degree_iter
+
+        Examples
+        --------
+        >>> G = nx.DiGraph()   # or MultiDiGraph
+        >>> G.add_path([0,1,2,3])
+        >>> G.in_degree(0)
+        0
+        >>> G.in_degree([0,1])
+        [0, 1]
+        >>> G.in_degree([0,1],with_labels=True)
+        {0: 0, 1: 1}
+
+        """
         if with_labels:           # return a dict
             return dict(self.in_degree_iter(nbunch,weighted=weighted))
         elif nbunch in self:      # return a single node
@@ -857,6 +955,38 @@ class DiGraph(Graph):
 
 
     def out_degree(self, nbunch=None, with_labels=False, weighted=False):
+        """Return the out-degree of a node or nodes.
+
+        The node out-degree is the number of edges pointing out of the node.
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default=all nodes)
+            A container of nodes.  The container will be iterated
+            through once.    
+        with_labels : bool, optional (default=False)
+            If True return a dictionary of degrees keyed by node.
+        weighted : bool, optional (default=False)
+           If True return the sum of edge weights adjacent to the node.  
+
+        Returns
+        -------
+        nd : list, or dictionary
+            A list of node out-degrees or a dictionary with nodes as
+            keys and out-degree as values if with_labels=True).
+
+        Examples
+        --------
+        >>> G = nx.DiGraph()   # or MultiDiGraph
+        >>> G.add_path([0,1,2,3])
+        >>> G.out_degree(0)
+        1
+        >>> G.out_degree([0,1])
+        [1, 1]
+        >>> G.out_degree([0,1],with_labels=True)
+        {0: 1, 1: 1}
+
+        """
         if with_labels:           # return a dict
             return dict(self.out_degree_iter(nbunch,weighted=weighted))
         elif nbunch in self:      # return a single node

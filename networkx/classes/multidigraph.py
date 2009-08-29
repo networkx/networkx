@@ -491,6 +491,37 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
 
     def in_degree_iter(self, nbunch=None, weighted=False):
+        """Return an iterator for (node, in-degree). 
+
+        The node in-degree is the number of edges pointing in to the node.
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default=all nodes)
+            A container of nodes.  The container will be iterated
+            through once.    
+        weighted : bool, optional (default=False)
+           If True return the sum of edge weights adjacent to the node.  
+
+        Returns
+        -------
+        nd_iter : an iterator 
+            The iterator returns two-tuples of (node, in-degree).
+        
+        See Also
+        --------
+        degree, in_degree, out_degree, out_degree_iter
+
+        Examples
+        --------
+        >>> G = nx.MultiDiGraph()  
+        >>> G.add_path([0,1,2,3])
+        >>> list(G.in_degree_iter(0)) # node 0 with degree 0
+        [(0, 0)]
+        >>> list(G.in_degree_iter([0,1]))
+        [(0, 0), (1, 1)]
+
+        """
         if nbunch is None:
             nodes_nbrs=self.pred.iteritems()
         else:
@@ -509,6 +540,37 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
 
     def out_degree_iter(self, nbunch=None, weighted=False):
+        """Return an iterator for (node, out-degree). 
+
+        The node out-degree is the number of edges pointing out of the node.
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default=all nodes)
+            A container of nodes.  The container will be iterated
+            through once.    
+        weighted : bool, optional (default=False)
+           If True return the sum of edge weights adjacent to the node.  
+
+        Returns
+        -------
+        nd_iter : an iterator 
+            The iterator returns two-tuples of (node, out-degree).
+        
+        See Also
+        --------
+        degree, in_degree, out_degree, in_degree_iter
+
+        Examples
+        --------
+        >>> G = nx.MultiDiGraph()
+        >>> G.add_path([0,1,2,3])
+        >>> list(G.out_degree_iter(0)) # node 0 with degree 1
+        [(0, 1)]
+        >>> list(G.out_degree_iter([0,1]))
+        [(0, 1), (1, 1)]
+
+        """
         if nbunch is None:
             nodes_nbrs=self.succ.iteritems()
         else:
