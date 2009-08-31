@@ -145,8 +145,8 @@ def to_agraph(N):
     # loop over edges
 
     if N.is_multigraph():
-        for u,v,key,edgedata in N.edges_iter(data=True):
-            A.add_edge(u,v,key=key,**edgedata)
+        for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
+            A.add_edge(u,v,key=str(key),**edgedata)
     else:
         for u,v,edgedata in N.edges_iter(data=True):
             A.add_edge(u,v,**edgedata)
