@@ -143,7 +143,7 @@ latex_paper_size = 'letter'
 latex_documents = [('tutorial/index', 'networkx_tutorial.tex', 
                     'NetworkX Tutorial',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'howto', 1),
-                   ('reference/index', 'networkx_reference.tex',
+                   ('reference/pdf_reference', 'networkx_reference.tex',
                     'NetworkX Reference',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'manual', 1)]
 

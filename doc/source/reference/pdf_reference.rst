@@ -10,6 +10,7 @@ Reference
 .. toctree::
    :maxdepth: 2
 
+   ../overview	
    introduction
    classes
    operators
