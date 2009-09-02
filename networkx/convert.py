@@ -447,7 +447,7 @@ def to_numpy_matrix(G,nodelist=None,dtype=None,order=None):
     >>> G = nx.MultiDiGraph()
     >>> G.add_edge(0,1,weight=2)
     >>> G.add_edge(1,0)
-    >>> G.add_edge(2,2,'weight'=3)
+    >>> G.add_edge(2,2,weight=3)
     >>> G.add_edge(2,2)
     >>> nx.to_numpy_matrix(G, nodelist=[0,1,2])
     matrix([[ 0.,  2.,  0.],
