@@ -354,9 +354,11 @@ def draw_networkx_edges(G, pos,
 
     # need 0.87.7 or greater for edge colormaps
     mpl_version=matplotlib.__version__
-    if mpl_version.endswith('svn'):
+    if mpl_version.endswith('.svn'):
         mpl_version=matplotlib.__version__[0:-4]
-    if mpl_version.endswith('pre'):
+    elif mpl_version.endswith('svn'):
+        mpl_version=matplotlib.__version__[0:-3]
+    elif mpl_version.endswith('pre'):
         mpl_version=matplotlib.__version__[0:-3]
     if map(int,mpl_version.split('.'))>=[0,87,7]:
         if edge_colors is None:
