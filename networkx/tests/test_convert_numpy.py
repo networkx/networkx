@@ -9,9 +9,9 @@ from networkx.generators.classic import barbell_graph,cycle_graph,path_graph
 class TestConvertNumpy(object):
     @classmethod
     def setupClass(cls):
-        global numpy
+        global np
         try:
-            import numpy
+            import numpy as np
         except ImportError:
             raise SkipTest('NumPy not available.')
 
@@ -46,7 +46,7 @@ class TestConvertNumpy(object):
 
     def test_shape(self):
         "Conversion from non-square array."
-        A=numpy.array([[1,2,3],[4,5,6]])
+        A=np.array([[1,2,3],[4,5,6]])
         assert_raises(nx.NetworkXError, nx.from_numpy_matrix, A)
 
     def test_identity_graph_matrix(self):
@@ -57,7 +57,7 @@ class TestConvertNumpy(object):
     def test_identity_graph_array(self):
         "Conversion from graph to array to graph."
         A = nx.to_numpy_matrix(self.G1)
-        A = numpy.asarray(A)
+        A = np.asarray(A)
         self.identity_conversion(self.G1, A, nx.Graph())
 
     def test_identity_digraph_matrix(self):
@@ -68,7 +68,7 @@ class TestConvertNumpy(object):
     def test_identity_digraph_array(self):
         """Conversion from digraph to array to digraph."""
         A = nx.to_numpy_matrix(self.G2)
-        A = numpy.asarray(A)
+        A = np.asarray(A)
         self.identity_conversion(self.G2, A, nx.DiGraph())
 
     def test_identity_weighted_graph_matrix(self):
@@ -79,7 +79,7 @@ class TestConvertNumpy(object):
     def test_identity_weighted_graph_array(self):
         """Conversion from weighted graph to array to weighted graph."""
         A = nx.to_numpy_matrix(self.G3)
-        A = numpy.asarray(A)
+        A = np.asarray(A)
         self.identity_conversion(self.G3, A, nx.Graph())
 
     def test_identity_weighted_digraph_matrix(self):
@@ -90,48 +90,19 @@ class TestConvertNumpy(object):
     def test_identity_weighted_digraph_array(self):
         """Conversion from weighted digraph to array to weighted digraph."""
         A = nx.to_numpy_matrix(self.G4)
-        A = numpy.asarray(A)
+        A = np.asarray(A)
         self.identity_conversion(self.G4, A, nx.DiGraph())
 
     def test_nodelist(self):
         """Conversion from graph to matrix to graph with nodelist."""
         P4 = path_graph(4)
         P3 = path_graph(3)
-        A = nx.to_numpy_matrix(P4, nodelist=[0,1,2])
+        nodelist = P3.nodes()
+        A = nx.to_numpy_matrix(P4, nodelist=nodelist)
         GA = nx.Graph(A)
         self.assert_equal(GA, P3)
 
-    def test_altquery(self):
-        """Conversion to matrix using other edge attributes."""
-        a = nx.MultiDiGraph()
-        a.add_edge(1,1)
-        a.add_edge(1,1,weight=.5)
-        a.add_edge(1,2,height=30)
-        a.add_edge(1,3)
-        m = nx.to_numpy_matrix(a)
-        m_ = numpy.matrix([[ 1.5 ,  1. ,  1.],
-                           [ 0. ,  0. ,  0. ],
-                           [ 0. ,  0. ,  0. ]], dtype=numpy.float32)
-        assert_true(numpy.allclose(m, m_))
-
-        m = nx.to_numpy_matrix(a, edge_attr=None)
-        m_ = numpy.matrix([[ 2.,  1.,  1.],
-                           [ 0.,  0.,  0.],
-                           [ 0.,  0.,  0.]], dtype=numpy.float32)
-        assert_true(numpy.allclose(m, m_))
-
-        func = lambda x: sum([d.get('height',0) for d in x.values()])
-        m = nx.to_numpy_matrix(a, edge_attr=func)
-        m_ = numpy.matrix([[ 0.,  30.,  0.],
-                           [ 0.,  0.,  0.],
-                           [ 0.,  0.,  0.]], dtype=numpy.float32)
-        assert_true(numpy.allclose(m, m_))
-
-        func = lambda x: 1 if len(x) else 0
-        m = nx.to_numpy_matrix(a, edge_attr=func)
-        m_ = numpy.matrix([[ 1.,  1.,  1.],
-                           [ 0.,  0.,  0.],
-                           [ 0.,  0.,  0.]], dtype=numpy.float32)
-        assert_true(numpy.allclose(m, m_))
-
+        # Make nodelist ambiguous by containing duplicates.
+        nodelist += [nodelist[0]]
+        assert_raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=nodelist)
 

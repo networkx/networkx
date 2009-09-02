@@ -9,11 +9,11 @@ from networkx.generators.classic import barbell_graph,cycle_graph,path_graph
 class TestConvertNumpy(object):
     @classmethod
     def setupClass(cls):
-        global numpy, scipy
+        global np, sp, sparse
         try:
-            import numpy
-            import scipy
-            import scipy.sparse
+            import numpy as np
+            import scipy as sp
+            import scipy.sparse as sparse
         except ImportError:
             raise SkipTest('SciPy sparse library not available.')
 
@@ -70,7 +70,7 @@ class TestConvertNumpy(object):
 
     def test_shape(self):
         "Conversion from non-square sparse array."
-        A = scipy.sparse.lil_matrix([[1,2,3],[4,5,6]])
+        A = sp.sparse.lil_matrix([[1,2,3],[4,5,6]])
         assert_raises(nx.NetworkXError, nx.from_scipy_sparse_matrix, A)
 
     def test_identity_graph_matrix(self):
@@ -97,42 +97,14 @@ class TestConvertNumpy(object):
         """Conversion from graph to sparse matrix to graph with nodelist."""
         P4 = path_graph(4)
         P3 = path_graph(3)
-        A = nx.to_scipy_sparse_matrix(P4, nodelist=[0,1,2])
+        nodelist = P3.nodes()
+        A = nx.to_scipy_sparse_matrix(P4, nodelist=nodelist)
         GA = nx.Graph(A)    
         self.assert_equal(GA, P3)
 
-    def test_altquery(self):
-        """Conversion to sparse matrix using other edge attributes."""
-        a = nx.MultiDiGraph()
-        a.add_edge(1,1)
-        a.add_edge(1,1,weight=.5)
-        a.add_edge(1,2,height=30)
-        a.add_edge(1,3)
-        m = nx.to_scipy_sparse_matrix(a)
-        m_ = numpy.matrix([[ 1.5 ,  1. ,  1.],
-                           [ 0. ,  0. ,  0. ],
-                           [ 0. ,  0. ,  0. ]], dtype=numpy.float32)
-        assert_true(numpy.allclose(m.todense(), m_))
-
-        m = nx.to_scipy_sparse_matrix(a, edge_attr=None)
-        m_ = numpy.matrix([[ 2.,  1.,  1.],
-                           [ 0.,  0.,  0.],
-                           [ 0.,  0.,  0.]], dtype=numpy.float32)
-        assert_true(numpy.allclose(m.todense(), m_))
-
-        func = lambda x: sum([d.get('height',0) for d in x.values()])
-        m = nx.to_scipy_sparse_matrix(a, edge_attr=func)
-        m_ = numpy.matrix([[ 0.,  30.,  0.],
-                           [ 0.,  0.,  0.],
-                           [ 0.,  0.,  0.]], dtype=numpy.float32)
-        assert_true(numpy.allclose(m.todense(), m_))
-
-        func = lambda x: 1 if len(x) else 0
-        m = nx.to_scipy_sparse_matrix(a, edge_attr=func)
-        m_ = numpy.matrix([[ 1.,  1.,  1.],
-                           [ 0.,  0.,  0.],
-                           [ 0.,  0.,  0.]], dtype=numpy.float32)
-        assert_true(numpy.allclose(m.todense(), m_))
+        # Make nodelist ambiguous by containing duplicates.
+        nodelist += [nodelist[0]]
+        assert_raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=nodelist)
 
 
 
