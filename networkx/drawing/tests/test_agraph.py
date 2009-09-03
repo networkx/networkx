@@ -22,6 +22,7 @@ class TestAGraph(object):
     def build_graph(self, G):
         G.add_edge('A','B')
         G.add_edge('A','C')
+        G.add_edge('A','C')
         G.add_edge('B','C')
         G.add_edge('A','D')
         G.add_node('E')
@@ -63,5 +64,11 @@ class TestAGraph(object):
 
     def testDirected(self):
         self.agraph_checks(nx.DiGraph())
+
+    def testMultiUndirected(self):
+        self.agraph_checks(nx.MultiGraph())
+
+    def testMultiDirected(self):
+        self.agraph_checks(nx.MultiDiGraph())
 
 

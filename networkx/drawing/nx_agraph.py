@@ -91,9 +91,15 @@ def from_agraph(A,create_using=None):
     for e in A.edges():
         u,v=str(e[0]),str(e[1])
         attr=dict(e.attr)
-        if e.key is not None:
-            attr.update(key=e.key)
-        N.add_edge(u,v,attr)
+        if N.is_multigraph():
+            if e.key is not None:
+                attr[key]=e.key
+            N.add_edge(u,v,**attr)
+        else:
+            if e.key is not None:
+                N.add_edge(u,v,e.key,**attr)
+            else:
+                N.add_edge(u,v,**attr)
         
     # add default attributes for graph, nodes, and edges       
     # hang them on N.graph_attr
