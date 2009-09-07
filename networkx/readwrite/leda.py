@@ -46,7 +46,7 @@ def parse_leda(lines):
     n =int(lines.next())	# number of vertices
     node={}
     for i in range(1,n+1):  # LEDA counts from 1 to n
-        symbol=lines.next()[2:-3]  # strip out data from |{data}|
+        symbol=lines.next().rstrip().strip('|{}|  ')
         if symbol=="": symbol=str(i) # use int if no label - could be trouble
         node[i]=symbol
 
