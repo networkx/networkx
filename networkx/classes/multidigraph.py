@@ -220,7 +220,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         --------
         The following all add the edge e=(1,2) to graph G:
         
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.MultiDiGraph()
         >>> e = (1,2)
         >>> G.add_edge(1, 2)           # explicit two-node form
         >>> G.add_edge(*e)             # single edge as tuple of two nodes
@@ -293,7 +293,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Examples
         --------
-        >>> G = nx.MultiGraph()   # or MultiDiGraph, etc
+        >>> G = nx.MultiDiGraph()  
         >>> G.add_path([0,1,2,3])
         >>> G.remove_edge(0,1)
         >>> e = (1,2)
@@ -347,7 +347,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Examples
         --------
-        >>> G = nx.DiGraph()   # or MultiDiGraph, etc
+        >>> G = nx.MultiDiGraph()  
         >>> G.add_path([0,1,2,3])
         >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
@@ -451,7 +451,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.MultiDiGraph() 
         >>> G.add_path([0,1,2,3])
         >>> list(G.degree_iter(0)) # node 0 with degree 1
         [(0, 1)]
@@ -624,7 +624,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         If already directed, return a (deep) copy
 
-        >>> G = nx.DiGraph()   # or MultiDiGraph, etc
+        >>> G = nx.MultiDiGraph()   
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
         >>> H.edges()
