@@ -43,7 +43,7 @@ if __name__ == "__main__":
         classifiers      = release.classifiers,
         packages         = packages,
         data_files       = data,
-        package_data     = package_data
+        package_data     = package_data,
         install_requires=['setuptools'],
         test_suite       = 'nose.collector', 
         tests_require    = ['nose >= 0.10.1','networkx-nose-plugin>=0.1'] ,
