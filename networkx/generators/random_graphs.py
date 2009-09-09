@@ -850,7 +850,7 @@ def random_powerlaw_tree(n, gamma=3, create_using=None, seed=None, tries=100):
     return G
 
 
-def random_powerlaw_tree_sequence(n, gamma=3, create_using=None, seed=None, tries=100):
+def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     """
     Return a degree sequence for a tree with a powerlaw distribution.
 

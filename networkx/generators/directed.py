@@ -219,7 +219,7 @@ def scale_free_graph(n,
     n : integer
         Number of nodes in graph
     alpha : float 
-        Probability for adding a new node conecgted to an existing node
+        Probability for adding a new node connected to an existing node
         chosen randomly according to the in-degree distribution.
     beta : float
         Probability for adding an edge between two existing nodes.
@@ -234,7 +234,7 @@ def scale_free_graph(n,
     delta_out : float
         Bias for choosing ndoes from out-degree distribution.
     create_using : graph instance, optional
-        Return graph of this type. The instance will be cleared.
+        Use this graph instance to start the process (default=3-cycle).
     seed : integer, optional
         Seed for random number generator
 
