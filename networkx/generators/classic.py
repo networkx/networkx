@@ -45,7 +45,7 @@ __all__ = [ 'balanced_tree',
 import networkx
 
 
-def balanced_tree(r,h):
+def balanced_tree(r,h,create_using=None):
     """Return the perfectly balanced r-tree of height h.
 
     For r>=2, h>=1, this is the rooted tree where all leaves
@@ -66,7 +66,7 @@ def balanced_tree(r,h):
         raise networkx.NetworkXError, \
               "Invalid graph description, h should be >=1"
     
-    G=empty_graph()
+    G=empty_graph(0,create_using)
     G.name="balanced_tree(%d,%d)"%(r,h)
 
     # Grow tree of increasing height by repeatedly adding a layer
@@ -96,7 +96,7 @@ def balanced_tree(r,h):
         height=height+1
     return G
 
-def barbell_graph(m1,m2):
+def barbell_graph(m1,m2,create_using=None):
     """Return the Barbell Graph: two complete graphs connected by a path.
 
     For m1 > 1 and m2 >= 0.
@@ -124,7 +124,7 @@ def barbell_graph(m1,m2):
               "Invalid graph description, m2 should be >=0"
 
     # left barbell
-    G=complete_graph(m1)
+    G=complete_graph(m1,create_using)
     G.name="barbell_graph(%d,%d)"%(m1,m2)
     
     # connecting path
@@ -152,7 +152,7 @@ def complete_graph(n,create_using=None):
             G.add_edge(u,v)
     return G
 
-def complete_bipartite_graph(n1,n2):
+def complete_bipartite_graph(n1,n2,create_using=None):
     """Return the complete bipartite graph K_{n1_n2}.
     
     Composed of two partitions with n1 nodes in the first 
@@ -162,14 +162,14 @@ def complete_bipartite_graph(n1,n2):
     Node labels are the integers 0 to n1+n2-1
     
     """
-    G=empty_graph(n1+n2)
+    G=empty_graph(n1+n2,create_using)
     G.name="complete_bipartite_graph(%d,%d)"%(n1,n2)
     for v1 in xrange(n1):
         for v2 in xrange(n2):
             G.add_edge(v1,n1+v2)
     return G
 
-def circular_ladder_graph(n):
+def circular_ladder_graph(n,create_using=None):
     """Return the circular ladder graph CL_n of length n.
 
     CL_n consists of two concentric n-cycles in which
@@ -178,7 +178,7 @@ def circular_ladder_graph(n):
     Node labels are the integers 0 to n-1
     
     """
-    G=ladder_graph(n)
+    G=ladder_graph(n,create_using)
     G.name="circular_ladder_graph(%d)"%n
     G.add_edge(0,n-1)
     G.add_edge(n,2*n-1)
@@ -198,14 +198,14 @@ def cycle_graph(n,create_using=None):
     if n>1: G.add_edge(n-1,0)
     return G
 
-def dorogovtsev_goltsev_mendes_graph(n):
+def dorogovtsev_goltsev_mendes_graph(n,create_using=None):
     """Return the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
 
     n is the generation.
     See: arXiv:/cond-mat/0112143 by Dorogovtsev, Goltsev and Mendes.
     
     """
-    G=networkx.Graph()
+    G=empty_graph(0,create_using)
     G.name="Dorogovtsev-Goltsev-Mendes Graph"
     G.add_edge(0,1)
     if n==0:
@@ -268,13 +268,13 @@ def empty_graph(n=0,create_using=None):
     G.name="empty_graph(%d)"%n 
     return G
 
-def grid_2d_graph(m,n,periodic=False):
+def grid_2d_graph(m,n,periodic=False,create_using=None):
     """ Return the 2d grid graph of mxn nodes,
         each connected to its nearest neighbors.
         Optional argument periodic=True will connect
         boundary nodes via periodic boundary conditions.
     """
-    G=empty_graph()
+    G=empty_graph(0,create_using)
     G.name="grid_2d_graph"
     rows=range(m)
     columns=range(n)
@@ -292,7 +292,7 @@ def grid_2d_graph(m,n,periodic=False):
     return G
 
 
-def grid_graph(dim,periodic=False):
+def grid_graph(dim,periodic=False,create_using=None):
     """ Return the n-dimensional grid graph.
 
     The dimension is the length of the list 'dim' and the
@@ -306,7 +306,7 @@ def grid_graph(dim,periodic=False):
     from networkx.utils import is_list_of_ints
     dlabel="%s"%dim
     if dim==[]:
-        G=networkx.Graph()
+        G=empty_graph(0,create_using)
         G.name="grid_graph(%s)"%dim
         return G
     if not is_list_of_ints(dim):
@@ -320,30 +320,33 @@ def grid_graph(dim,periodic=False):
         func=path_graph
 
     current_dim=dim.pop()
-    G=func(current_dim)
+    G=func(current_dim,create_using)
     while len(dim)>0:
         current_dim=dim.pop() 
-        Gnew=func(current_dim)
-        Gold=G.copy()
-        G=networkx.operators.cartesian_product(Gnew,Gold)
+        # order matters: copy before it is cleared during the creation of Gnew
+        Gold=G.copy() 
+        Gnew=func(current_dim,create_using)
+        # explicit: create_using=None 
+        # This is so that we get a new graph of Gnew's class.
+        G=networkx.operators.cartesian_product(Gnew,Gold,create_using=None)
     # graph G is done but has labels of the form (1,(2,(3,1)))
     # so relabel
     H=networkx.operators.relabel_nodes(G, networkx.utils.flatten)
     H.name="grid_graph(%s)"%dlabel
     return H
 
-def hypercube_graph(n):
+def hypercube_graph(n,create_using=None):
     """Return the n-dimensional hypercube.
 
     Node labels are the integers 0 to 2**n - 1.
 
     """
     dim=n*[2]
-    G=grid_graph(dim)
+    G=grid_graph(dim,create_using=create_using)
     G.name="hypercube_graph_(%d)"%n
     return G
 
-def ladder_graph(n):
+def ladder_graph(n,create_using=None):
     """Return the Ladder graph of length n.
 
     This is two rows of n nodes, with
@@ -352,14 +355,14 @@ def ladder_graph(n):
     Node labels are the integers 0 to 2*n - 1.
     
     """
-    G=empty_graph(2*n)
+    G=empty_graph(2*n,create_using)
     G.name="ladder_graph_(%d)"%n 
     G.add_edges_from([(v,v+1) for v in xrange(n-1)])
     G.add_edges_from([(v,v+1) for v in xrange(n,2*n-1)])
     G.add_edges_from([(v,v+n) for v in xrange(n)])
     return G
 
-def lollipop_graph(m,n):
+def lollipop_graph(m,n,create_using=None):
     """Return the Lollipop Graph; K_m connected to P_n.
 
     This is the Barbell Graph without the right barbell.
@@ -383,7 +386,7 @@ def lollipop_graph(m,n):
         raise networkx.NetworkXError, \
               "Invalid graph description, n should be >=0"
     # the ball
-    G=complete_graph(m)
+    G=complete_graph(m,create_using)
     # the stick
     G.add_nodes_from([v for v in xrange(m,m+n)])
     if n>1:
@@ -417,34 +420,34 @@ def path_graph(n,create_using=None):
     G.add_edges_from([(v,v+1) for v in xrange(n-1)])
     return G
 
-def star_graph(n):
+def star_graph(n,create_using=None):
     """ Return the Star graph with n+1 nodes:
     one center node, connected to n outer nodes.
 
    Node labels are the integers 0 to n.
 
     """
-    G=complete_bipartite_graph(1,n)
+    G=complete_bipartite_graph(1,n,create_using)
     G.name="star_graph(%d)"%n
     return G
 
-def trivial_graph():
+def trivial_graph(create_using=None):
     """ Return the Trivial graph with one node (with integer label 0)
     and no edges.
 
     """
-    G=empty_graph(1)
+    G=empty_graph(1,create_using)
     G.name="trivial_graph()"
     return G
 
-def wheel_graph(n):
+def wheel_graph(n,create_using=None):
     """ Return the wheel graph: a single hub node connected
     to each node of the (n-1)-node cycle graph. 
 
    Node labels are the integers 0 to n - 1.
 
     """
-    G=star_graph(n-1)
+    G=star_graph(n-1,create_using)
     G.name="wheel_graph(%d)"%n
     G.add_edges_from([(v,v+1) for v in xrange(1,n-1)])
     if n>2:

@@ -26,43 +26,59 @@ from networkx import MultiDiGraph
 from networkx.utils import discrete_sequence
 
 
-def gn_graph(n,kernel=lambda x:x ,seed=None):
-    """Return the GN (growing network) digraph with n nodes.
+def gn_graph(n,kernel=None,create_using=None,seed=None):
+    """Return the GN digraph with n nodes.
 
-    The graph is built by adding nodes one at a time with a link
-    to one previously added node.  The target node for the link is chosen
-    with probability based on degree.  The default attachment kernel is
+    The GN (growing network) graph is built by adding nodes one at a time with
+    a link to one previously added node.  The target node for the link is 
+    chosen with probability based on degree.  The default attachment kernel is
     a linear function of degree.
 
     The graph is always a (directed) tree.
 
-    Example:
+    Parameters
+    ----------
+    n : int
+        The number of nodes for the generated graph.
+    kernel : function
+        The attachment kernel.
+    create_using : graph instance, optional
+        Return graph of this type. The instance will be cleared.
+    seed : hashable object, optional
+        The seed for the random number generator.
 
-    >>> D=nx.gn_graph(10)       # the GN graph
+    Examples
+    --------
+    >>> D=nx.gn_graph(10)    # the GN graph
     >>> G=D.to_undirected()  # the undirected version
 
     To specify an attachment kernel use the kernel keyword
 
     >>> D=nx.gn_graph(10,kernel=lambda x:x**1.5) # A_k=k^1.5
 
-    Reference::
-
-      @article{krapivsky-2001-organization,
+    References
+    ----------
+    @article{krapivsky-2001-organization,
       title   = {Organization of Growing Random Networks},
       author  = {P. L. Krapivsky and S. Redner},
       journal = {Phys. Rev. E},
       volume  = {63},
       pages   = {066123},
       year    = {2001},
-      }
-
+    }
 
     """
-    G=empty_graph(1,create_using=networkx.DiGraph())
-    G.name="gn_graph(%s)"%(n)
+    if create_using is None:
+        create_using = networkx.DiGraph()
+
+    if kernel is None:
+        kernel = lambda x: x
 
     if seed is not None:
         random.seed(seed)
+
+    G=empty_graph(1,create_using)
+    G.name="gn_graph(%s)"%(n)
 
     if n==1:
         return G
@@ -81,38 +97,51 @@ def gn_graph(n,kernel=lambda x:x ,seed=None):
     return G
 
 
-def gnr_graph(n,p,seed=None):
-    """Return the GNR (growing network with redirection) digraph with n nodes
-    and redirection probability p.
+def gnr_graph(n,p,create_using=None,seed=None):
+    """Return the GNR digraph with n nodes and redirection probability p.
 
-    The graph is built by adding nodes one at a time with a link
-    to one previously added node.  The previous target node is chosen
-    uniformly at random.  With probabiliy p the link is instead "redirected"
-    to the successor node of the target.  The graph is always a (directed)
-    tree.
+    The GNR (growing network with redirection) graph is built by adding nodes 
+    one at a time with a link to one previously added node.  The previous 
+    target node is chosen uniformly at random.  With probabiliy p the link is 
+    instead "redirected" to the successor node of the target.  The graph is 
+    always a (directed) tree.
 
-    Example:
+    Parameters
+    ----------
+    n : int
+        The number of nodes for the generated graph.
+    p : float
+        The redirection probability.
+    create_using : graph instance, optional
+        Return graph of this type. The instance will be cleared.
+    seed : hashable object, optional
+        The seed for the random number generator.
 
+    Examples
+    --------
     >>> D=nx.gnr_graph(10,0.5)  # the GNR graph
     >>> G=D.to_undirected()  # the undirected version
 
-    Reference::
-
-      @article{krapivsky-2001-organization,
+    References
+    ----------
+    @article{krapivsky-2001-organization,
       title   = {Organization of Growing Random Networks},
       author  = {P. L. Krapivsky and S. Redner},
       journal = {Phys. Rev. E},
       volume  = {63},
       pages   = {066123},
       year    = {2001},
-      }
+    }
 
     """
-    G=empty_graph(1,create_using=networkx.DiGraph())
-    G.name="gnr_graph(%s,%s)"%(n,p)
+    if create_using is None:
+        create_using = networkx.DiGraph()
 
     if not seed is None:
         random.seed(seed)
+
+    G=empty_graph(1,create_using)
+    G.name="gnr_graph(%s,%s)"%(n,p)
 
     if n==1:
         return G
@@ -126,31 +155,42 @@ def gnr_graph(n,p,seed=None):
     return G
 
 
+def gnc_graph(n,create_using=None,seed=None):
+    """Return the GNC digraph with n nodes.
 
-def gnc_graph(n,seed=None):
-    """Return the GNC (growing network with copying) digraph with n nodes.
+    The GNC (growing network with copying) graph is built by adding nodes one 
+    at a time with a links to one previously added node (chosen uniformly at 
+    random) and to all of that node's successors.
 
-    The graph is built by adding nodes one at a time with a links
-    to one previously added node (chosen uniformly at random)
-    and to all of that node's successors.
+    Parameters
+    ----------
+    n : int
+        The number of nodes for the generated graph.
+    create_using : graph instance, optional
+        Return graph of this type. The instance will be cleared.
+    seed : hashable object, optional
+        The seed for the random number generator.
 
-    Reference::
-
-      @article{krapivsky-2005-network,
+    References
+    ----------
+    @article{krapivsky-2005-network,
       title   = {Network Growth by Copying},
       author  = {P. L. Krapivsky and S. Redner},
       journal = {Phys. Rev. E},
       volume  = {71},
       pages   = {036118},
       year    = {2005},
-      }
+    }
 
     """
-    G=empty_graph(1,create_using=networkx.DiGraph())
-    G.name="gnc_graph(%s)"%(n)
+    if create_using is None:
+        create_using = networkx.DiGraph()
 
     if not seed is None:
         random.seed(seed)
+
+    G=empty_graph(1,create_using)
+    G.name="gnc_graph(%s)"%(n)
 
     if n==1:
         return G
@@ -164,70 +204,60 @@ def gnc_graph(n,seed=None):
     return G
 
 
-def scale_free_graph(n, G=None,
+def scale_free_graph(n,
                      alpha=0.41,
                      beta=0.54,
                      gamma=0.05,
                      delta_in=0.2,
                      delta_out=0,
+                     create_using=None,
                      seed=None):
-    """Return a scale free directed graph
+    """Return a scale free directed graph.
 
     Parameters
     ----------
     n : integer
-       Number of nodes in graph
-
-    G : NetworkX graph (optional)
-       Use as starting graph in algorithm
-
+        Number of nodes in graph
     alpha : float 
-       Probability for adding a new node conecgted to an existing node
-       chosen randomly according to the in-degree distribution.
-
+        Probability for adding a new node conecgted to an existing node
+        chosen randomly according to the in-degree distribution.
     beta : float
-       Probability for adding an edge between two existing nodes.
-       One existing node is chosen randomly according the in-degree 
-       distribution and the other chosen randomly according to the out-degree 
-       distribution.
-       
+        Probability for adding an edge between two existing nodes.
+        One existing node is chosen randomly according the in-degree 
+        distribution and the other chosen randomly according to the out-degree 
+        distribution.     
     gamma : float
-       Probability for adding a new node conecgted to an existing node
-       chosen randomly according to the out-degree distribution.
-        
+        Probability for adding a new node conecgted to an existing node
+        chosen randomly according to the out-degree distribution.
     delta_in : float
-       Bias for choosing ndoes from in-degree distribution.
-
+        Bias for choosing ndoes from in-degree distribution.
     delta_out : float
-       Bias for choosing ndoes from out-degree distribution.
-
-    delta_out : float
-       Bias for choosing ndoes from out-degree distribution.
-
-    seed : integer (optional)
-       Seed for random number generator
+        Bias for choosing ndoes from out-degree distribution.
+    create_using : graph instance, optional
+        Return graph of this type. The instance will be cleared.
+    seed : integer, optional
+        Seed for random number generator
 
     Examples
     --------
     >>> G=nx.scale_free_graph(100)
-
-    
+  
     Notes
     -----
     The sum of alpha, beta, and gamma must be 1.
 
-    Algorithm from
-    
+    References
+    ----------  
     @article{bollobas2003dsf,
-    title={{Directed scale-free graphs}},
-    author={Bollob{\'a}s, B. and Borgs, C. and Chayes, J. and Riordan, O.},
-    journal={Proceedings of the fourteenth annual ACM-SIAM symposium on Discrete algorithms},
-    pages={132--139},
-    year={2003},
-    publisher={Society for Industrial and Applied Mathematics Philadelphia, PA, USA}
+        title={{Directed scale-free graphs}},
+        author={Bollob{\'a}s, B. and Borgs, C. and Chayes, J. and Riordan, O.},
+        journal={Proceedings of the fourteenth annual ACM-SIAM symposium on Discrete algorithms},
+        pages={132--139},
+        year={2003},
+        publisher={Society for Industrial and Applied Mathematics Philadelphia, PA, USA}
     }
 
-"""
+    """
 
     def _choose_node(G,distribution,delta):
         cumsum=0.0
@@ -240,10 +270,13 @@ def scale_free_graph(n, G=None,
                 break
         return i
 
-    if G is None:
+    if create_using is None:
         # start with 3-cycle
-        G=MultiDiGraph()
+        G = networkx.MultiDiGraph()
         G.add_edges_from([(0,1),(1,2),(2,0)])
+    else:
+        # keep existing graph structure?
+        G = create_using
 
     if alpha <= 0:
         raise ValueError('alpha must be >= 0.')

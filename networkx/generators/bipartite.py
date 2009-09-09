@@ -48,7 +48,7 @@ def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
     If you want a graph with no parallel edges use create_using=Graph()
     but then the resulting degree sequences might not be exact.
     """
-    if create_using==None:
+    if create_using is None:
         create_using=networkx.MultiGraph()
 
     G=networkx.empty_graph(0,create_using)
@@ -116,7 +116,7 @@ def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
     If you want a graph with no parallel edges use create_using=Graph()
     but then the resulting degree sequences might not be exact.
     """
-    if create_using==None:
+    if create_using is None:
         create_using=networkx.MultiGraph()
 
     G=networkx.empty_graph(0,create_using)
@@ -181,7 +181,7 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     If you want a graph with no parallel edges use create_using=Graph()
     but then the resulting degree sequences might not be exact.
     """
-    if create_using==None:
+    if create_using is None:
         create_using=networkx.MultiGraph()
 
     G=networkx.empty_graph(0,create_using)
@@ -248,7 +248,7 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
     If you want a graph with no parallel edges use create_using=Graph()
     but then the resulting degree sequences might not be exact.
     """
-    if create_using==None:
+    if create_using is None:
         create_using=networkx.MultiGraph()
 
     G=networkx.empty_graph(0,create_using)
@@ -322,7 +322,7 @@ def bipartite_preferential_attachment_graph(aseq,p,create_using=None):
        }
 
     """
-    if create_using==None:
+    if create_using is None:
         create_using=networkx.MultiGraph()
 
     G=networkx.empty_graph(0,create_using)
@@ -399,7 +399,7 @@ def bipartite_random_regular_graph(d, n, create_using=None):
         return False
 
 
-    if create_using==None:
+    if create_using is None:
         create_using=networkx.MultiGraph()
 
     G=networkx.empty_graph(0,create_using)

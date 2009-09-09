@@ -284,7 +284,7 @@ def symmetric_difference(G,H,create_using=None ):
     return R
 
 
-def cartesian_product(G,H):
+def cartesian_product(G,H,create_using=None):
     """ Return the Cartesian product of G and H.
 
     Parameters
@@ -297,7 +297,11 @@ def cartesian_product(G,H):
     Only tested with Graph class.
     
     """
-    Prod=networkx.Graph()
+    if create_using is None:
+        Prod=G.__class__()
+    else:
+        Prod=create_using
+        Prod.clear()
 
     for v in G:
         for w in H:
@@ -704,7 +708,6 @@ def freeze(G):
     is_frozen()
 
     """        
-
     def frozen(*args):    
         raise networkx.NetworkXError("Frozen graph can't be modified")
     G.add_node=frozen
@@ -720,7 +723,7 @@ def freeze(G):
     return G
 
 def is_frozen(G):
-    """Return True if graph is frozen"
+    """Return True if graph is frozen."
 
     Parameters
     -----------
@@ -732,7 +735,6 @@ def is_frozen(G):
     freeze()
       
     """
-
     try:
         return G.frozen
     except AttributeError:

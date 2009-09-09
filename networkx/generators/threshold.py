@@ -262,7 +262,7 @@ def weights_to_creation_sequence(weights,threshold=1,with_labels=False,compact=F
 
 
 # Manipulating NetworkX.Graphs in context of threshold graphs
-def threshold_graph(creation_sequence):
+def threshold_graph(creation_sequence, create_using=None):
     """
     Create a threshold graph from the creation sequence or compact
     creation_sequence.
@@ -291,7 +291,12 @@ def threshold_graph(creation_sequence):
         print "not a valid creation sequence type"
         return None
         
-    G=networkx.Graph()
+    if create_using is None:
+        G = networkx.Graph()
+    else:
+        G = create_using
+        G.clear()
+
     G.name="Threshold Graph"
 
     # add nodes and edges
@@ -323,13 +328,13 @@ def find_alternating_4_cycle(G):
 
 
 
-def find_threshold_graph(G):
+def find_threshold_graph(G, create_using=None):
     """
     Return a threshold subgraph that is close to largest in G.
     The threshold graph will contain the largest degree node in G.
     
     """
-    return threshold_graph(find_creation_sequence(G))
+    return threshold_graph(find_creation_sequence(G),create_using)
 
 
 def find_creation_sequence(G):

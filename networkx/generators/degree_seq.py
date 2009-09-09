@@ -34,7 +34,7 @@ import heapq
 #  Generating Graphs with a given degree sequence
 #---------------------------------------------------------------------------
 
-def configuration_model(deg_sequence,seed=None):
+def configuration_model(deg_sequence,create_using=None,seed=None):
     """Return a random graph with the given degree sequence.
 
     The configuration model generates a random pseudograph (graph with
@@ -45,7 +45,9 @@ def configuration_model(deg_sequence,seed=None):
     ----------
     deg_sequence :  list of integers 
         Each list entry corresponds to the degree of a node.
-    seed : hashable object (default=None)
+    create_using : graph instance, optional
+       Return graph of this type. The instance will be cleared.
+    seed : hashable object, optional
         Seed for random number generator.   
 
     Returns
@@ -101,6 +103,9 @@ def configuration_model(deg_sequence,seed=None):
     if not sum(deg_sequence)%2 ==0:
         raise networkx.NetworkXError, 'Invalid degree sequence'
 
+    if create_using is None:
+        create_using = networkx.MultiGraph()
+
     if not seed is None:
         random.seed(seed)
 
@@ -108,7 +113,7 @@ def configuration_model(deg_sequence,seed=None):
     N=len(deg_sequence)
 
     # allow multiedges and selfloops
-    G=networkx.empty_graph(N,create_using=networkx.MultiGraph())
+    G=networkx.empty_graph(N,create_using)
 
     if N==0 or max(deg_sequence)==0: # done if no edges
         return G 
@@ -133,35 +138,40 @@ def configuration_model(deg_sequence,seed=None):
     return G
 
 
-def expected_degree_graph(w, seed=None):
+def expected_degree_graph(w, create_using=None, seed=None):
     """Return a random graph G(w) with expected degrees given by w.
 
-    :Parameters:
-       - `w`: a list of expected degrees
-       - `seed`: seed for random number generator (default=None)
+    Parameters
+    ----------
+    w : list 
+        The list of expected degrees.
+    create_using : graph instance, optional
+        Return graph of this type. The instance will be cleared.
+    seed : hashable object, optional
+        The seed for the random number generator.
 
+    Examples
+    --------
     >>> z=[10 for i in range(100)]
     >>> G=nx.expected_degree_graph(z)
 
 
-    Reference::
-
-      @Article{connected-components-2002,
+    References
+    ----------
+    @Article{connected-components-2002,
         author =	{Fan Chung and L. Lu},
         title = 	{Connected components in random graphs
-        with given expected degree sequences},
+                     with given expected degree sequences},
         journal = 	{Ann. Combinatorics},
         year = 		{2002},
         volume = 	{6},
         pages = 	{125-145},
-        }
-
+    }
 
 	"""
-
     n = len(w)
     # allow self loops
-    G=networkx.empty_graph(n,create_using=networkx.Graph())
+    G=networkx.empty_graph(n,create_using)
     G.name="random_expected_degree_graph"
 
     if n==0 or max(w)==0: # done if no edges
@@ -185,7 +195,7 @@ def expected_degree_graph(w, seed=None):
     return G 
 
 
-def havel_hakimi_graph(deg_sequence):
+def havel_hakimi_graph(deg_sequence,create_using=None):
     """Return a simple graph with given degree sequence, constructed using the
     Havel-Hakimi algorithm.
 
@@ -216,7 +226,7 @@ def havel_hakimi_graph(deg_sequence):
 
 
     N=len(deg_sequence)
-    G=networkx.empty_graph(N) # always return a simple graph
+    G=networkx.empty_graph(N,create_using) # always return a simple graph
 
     if N==0 or max(deg_sequence)==0: # done if no edges
         return G 
@@ -242,7 +252,7 @@ def havel_hakimi_graph(deg_sequence):
     G.name="havel_hakimi_graph %d nodes %d edges"%(G.order(),G.size())
     return G
 
-def random_clustered_graph(joint_degree_sequence, seed = None):
+def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
     """Generate a random graph with the given joint degree and triangle
     degree sequence.
 	
@@ -256,6 +266,10 @@ def random_clustered_graph(joint_degree_sequence, seed = None):
     joint_degree_sequence : list of integer pairs
         Each list entry corresponds to the independent edge degree and
         triangle degree of a node.
+    create_using : graph instance, optional
+        Return graph of this type. The instance will be cleared.
+    seed : hashable object, optional
+        The seed for the random number generator.
 
     Returns
     -------
@@ -304,11 +318,16 @@ def random_clustered_graph(joint_degree_sequence, seed = None):
 	
     To remove self loops:
     >>> G.remove_edges_from(G.selfloop_edges())
-"""
+
+    """
+    if create_using is None:
+        create_using = networkx.MultiGraph()
+
     if not seed is None:
         random.seed(seed)
+
     N = len(joint_degree_sequence)
-    G = networkx.empty_graph(N,create_using=networkx.MultiGraph())
+    G = networkx.empty_graph(N,create_using)
 
     ilist = []
     tlist = []
@@ -336,7 +355,7 @@ def random_clustered_graph(joint_degree_sequence, seed = None):
 
 
 
-def degree_sequence_tree(deg_sequence):
+def degree_sequence_tree(deg_sequence,create_using=None):
     """
     Make a tree for the given degree sequence.
 
@@ -348,16 +367,18 @@ def degree_sequence_tree(deg_sequence):
     if not len(deg_sequence)-sum(deg_sequence)/2.0 == 1.0:
         raise networkx.NetworkXError,"Degree sequence invalid"
 
-    G=empty_graph(0)
     # single node tree
     if len(deg_sequence)==1:
+        G=empty_graph(0,create_using)
         return G
-    deg=[s for s in deg_sequence if s>1] # all degrees greater than 1
+
+    # all degrees greater than 1
+    deg=[s for s in deg_sequence if s>1] 
     deg.sort(reverse=True)
 
     # make path graph as backbone
     n=len(deg)+2
-    G=networkx.path_graph(n)
+    G=networkx.path_graph(n,create_using)
     last=n
 
     # add the leaves
@@ -591,7 +612,7 @@ def connected_double_edge_swap(G, nswap=1):
 
 
 
-def li_smax_graph(degree_seq):
+def li_smax_graph(degree_seq, create_using=None):
     """Generates a graph based with a given degree sequence and maximizing
     the s-metric.  Experimental implementation.
 
@@ -656,13 +677,17 @@ def li_smax_graph(degree_seq):
     Several optimizations are included in this code and it may be hard to read.
     Commented code to come.
     """
+    if create_using is None:
+        create_using = networkx.Graph()
     
     if not is_valid_degree_sequence(degree_seq):
         raise networkx.NetworkXError, 'Invalid degree sequence'
+
     degree_seq.sort() # make sure it's sorted
     degree_seq.reverse()
     degrees_left = degree_seq[:]
-    A_graph = networkx.Graph()
+
+    A_graph = empty_graph(0,create_using)
     A_graph.add_node(0)
     a_list = [False]*len(degree_seq)
     b_set = set(range(1,len(degree_seq)))
@@ -765,7 +790,7 @@ def li_smax_graph(degree_seq):
                                         -degrees_left[j], (i,j)])
     return A_graph 
 
-def connected_smax_graph(degree_seq):
+def connected_smax_graph(degree_seq, create_using=None):
     """
     Not implemented.
     """
@@ -779,25 +804,36 @@ def connected_smax_graph(degree_seq):
     degree_seq.reverse()
     ddict=dict(zip(xrange(len(degree_seq)),degree_seq))
 
-    G=empty_graph(1) # start with single node
+    G=empty_graph(1,create_using) # start with single node
 
     return False
 
 def s_metric(G):
-    """
-    Return the "s-Metric" of graph G:
-    the sum of the product deg(u)*deg(v) for every edge u-v in G
-    
-    Reference::
+    """Return the s-metric of graph.
 
-     @unpublished{li-2005,
-      author = {Lun Li and David Alderson and
-               John C. Doyle and Walter Willinger},
-      title = {Towards a Theory of Scale-Free Graphs:
-               Definition, Properties, and  Implications (Extended Version)},
-      url = {http://arxiv.org/abs/cond-mat/0501169},
-      year = {2005}
-      }
+    The s-metric is defined as the sum of the products deg(u)*deg(v)
+    for every edge (u,v) in G.
+
+    Parameters
+    ----------
+    G : graph
+        The graph used to compute the s-metric.
+
+    Returns
+    -------       
+    s : float
+        The s-metric of `G'.
+
+    References
+    ----------
+    @unpublished{li-2005,
+     author = {Lun Li and David Alderson and
+              John C. Doyle and Walter Willinger},
+     title = {Towards a Theory of Scale-Free Graphs:
+              Definition, Properties, and  Implications (Extended Version)},
+     url = {http://arxiv.org/abs/cond-mat/0501169},
+     year = {2005}
+    }
 
     """
     # this function doesn't belong in this module

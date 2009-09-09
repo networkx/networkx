@@ -95,7 +95,7 @@ def make_small_graph(graph_description, create_using=None):
     return G
 
 
-def LCF_graph(n,shift_list,repeats):
+def LCF_graph(n,shift_list,repeats,create_using=None):
     """
     Return the cubic graph specified in LCF notation.
 
@@ -133,10 +133,10 @@ def LCF_graph(n,shift_list,repeats):
     """
 
     if n <= 0:
-        return empty_graph()
+        return empty_graph(0, create_using)
 
     # start with the n-cycle
-    G=cycle_graph(n)
+    G=cycle_graph(n, create_using)
     G.name="LCF_graph"
     nodes=G.nodes()
 
@@ -158,7 +158,7 @@ def LCF_graph(n,shift_list,repeats):
 #   Various small and named graphs
 #-------------------------------------------------------------------------------
 
-def bull_graph():
+def bull_graph(create_using=None):
     """Return the Bull graph. """
     description=[
         "adjacencylist",
@@ -166,10 +166,10 @@ def bull_graph():
         5,
         [[2,3],[1,3,4],[1,2,5],[2],[3]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
 
-def chvatal_graph():
+def chvatal_graph(create_using=None):
     """Return the Chvatal graph."""
     description=[
         "adjacencylist",
@@ -179,10 +179,10 @@ def chvatal_graph():
          [6,9],[11,12],[11,12],[9,12],
          [11],[11,12],[],[]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
 
-def cubical_graph():
+def cubical_graph(create_using=None):
     """Return the 3-regular Platonic Cubical graph."""
     description=[
         "adjacencylist",
@@ -191,16 +191,16 @@ def cubical_graph():
         [[2,4,5],[1,3,8],[2,4,7],[1,3,6],
          [1,6,8],[4,5,7],[3,6,8],[2,5,7]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
 
-def desargues_graph():
+def desargues_graph(create_using=None):
     """ Return the Desargues graph."""
-    G=LCF_graph(20,[5,-5,9,-9],5)
+    G=LCF_graph(20, [5,-5,9,-9], 5, create_using)
     G.name="Desargues Graph"
     return G
 
-def diamond_graph():
+def diamond_graph(create_using=None):
     """Return the Diamond graph. """
     description=[
         "adjacencylist",
@@ -208,36 +208,36 @@ def diamond_graph():
         4,
         [[2,3],[1,3,4],[1,2,4],[2,3]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
 
-def dodecahedral_graph():
+def dodecahedral_graph(create_using=None):
     """ Return the Platonic Dodecahedral graph. """
-    G=LCF_graph(20,[10,7,4,-4,-7,10,-4,7,-7,4],2)
+    G=LCF_graph(20, [10,7,4,-4,-7,10,-4,7,-7,4], 2, create_using)
     G.name="Dodecahedral Graph"
     return G
 
-def frucht_graph():
+def frucht_graph(create_using=None):
     """Return the Frucht Graph.
 
     The Frucht Graph is the smallest cubical graph whose
     automorphism group consists only of the identity element.
 
     """
-    G=cycle_graph(7)
+    G=cycle_graph(7, create_using)
     G.add_edges_from([[0,7],[1,7],[2,8],[3,9],[4,9],[5,10],[6,10],
                 [7,11],[8,11],[8,9],[10,11]])
 
     G.name="Frucht Graph"
     return G
 
-def heawood_graph():
+def heawood_graph(create_using=None):
     """ Return the Heawood graph, a (3,6) cage. """
-    G=LCF_graph(14,[5,-5],7)
+    G=LCF_graph(14, [5,-5], 7, create_using)
     G.name="Heawood Graph"
     return G
 
-def house_graph():
+def house_graph(create_using=None):
     """Return the House graph (square with triangle on top)."""
     description=[
         "adjacencylist",
@@ -245,10 +245,10 @@ def house_graph():
         5,
         [[2,3],[1,4],[1,4,5],[2,3,5],[3,4]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
 
-def house_x_graph():
+def house_x_graph(create_using=None):
     """Return the House graph with a cross inside the house square."""
     description=[
         "adjacencylist",
@@ -256,10 +256,10 @@ def house_x_graph():
         5,
         [[2,3,4],[1,3,4],[1,2,4,5],[1,2,3,5],[3,4]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
 
-def icosahedral_graph():
+def icosahedral_graph(create_using=None):
     """Return the Platonic Icosahedral graph."""
     description=[
         "adjacencylist",
@@ -269,11 +269,11 @@ def icosahedral_graph():
          [6,7,11,12],[7,12],[],[9,10,11,12],
          [10],[11],[12],[]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
     
 
-def krackhardt_kite_graph():
+def krackhardt_kite_graph(create_using=None):
     """
     Return the Krackhardt Kite Social Network.
  
@@ -291,16 +291,16 @@ def krackhardt_kite_graph():
         [[2,3,4,6],[1,4,5,7],[1,4,6],[1,2,3,5,6,7],[2,4,7],
          [1,3,4,7,8],[2,4,5,6,8],[6,7,9],[8,10],[9]]
          ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
 
-def moebius_kantor_graph():
+def moebius_kantor_graph(create_using=None):
     """Return the Moebius-Kantor graph."""
-    G=LCF_graph(16,[5,-5],8)
+    G=LCF_graph(16, [5,-5], 8, create_using)
     G.name="Moebius-Kantor Graph"
     return G    
 
-def octahedral_graph():
+def octahedral_graph(create_using=None):
     """Return the Platonic Octahedral graph."""
     description=[
         "adjacencylist",
@@ -308,7 +308,7 @@ def octahedral_graph():
         6,
         [[2,3,4,5],[3,4,6],[5,6],[5,6],[6],[]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
     
 def pappus_graph():
@@ -317,7 +317,7 @@ def pappus_graph():
     G.name="Pappus Graph"
     return G
 
-def petersen_graph():
+def petersen_graph(create_using=None):
     """Return the Petersen graph."""
     description=[
         "adjacencylist",
@@ -326,11 +326,11 @@ def petersen_graph():
         [[2,5,6],[1,3,7],[2,4,8],[3,5,9],[4,1,10],[1,8,9],[2,9,10],
          [3,6,10],[4,6,7],[5,7,8]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
 
 
-def sedgewick_maze_graph():
+def sedgewick_maze_graph(create_using=None):
     """
     Return a small maze with a cycle.
 
@@ -338,7 +338,7 @@ def sedgewick_maze_graph():
     Algorithms, Chapter 18, e.g. Figure 18.2 and following.
     Nodes are numbered 0,..,7
     """ 
-    G=empty_graph(0)
+    G=empty_graph(0, create_using)
     G.add_nodes_from(range(8))
     G.add_edges_from([[0,2],[0,7],[0,5]])
     G.add_edges_from([[1,7],[2,6]])
@@ -347,13 +347,13 @@ def sedgewick_maze_graph():
     G.name="Sedgewick Maze"
     return G
 
-def tetrahedral_graph():
+def tetrahedral_graph(create_using=None):
     """ Return the 3-regular Platonic Tetrahedral graph."""
-    G=complete_graph(4)
+    G=complete_graph(4, create_using)
     G.name="Platonic Tetrahedral graph"
     return G
 
-def truncated_cube_graph():
+def truncated_cube_graph(create_using=None):
     """Return the skeleton of the truncated cube."""
     description=[
         "adjacencylist",
@@ -366,18 +366,18 @@ def truncated_cube_graph():
          [18,19],[21],[20],[24],
          [22],[23],[24],[]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
 
-def truncated_tetrahedron_graph():
+def truncated_tetrahedron_graph(create_using=None):
     """Return the skeleton of the truncated Platonic tetrahedron."""
-    G=path_graph(12)
+    G=path_graph(12, create_using)
 #    G.add_edges_from([(1,3),(1,10),(2,7),(4,12),(5,12),(6,8),(9,11)])
     G.add_edges_from([(0,2),(0,9),(1,6),(3,11),(4,11),(5,7),(8,10)])
     G.name="Truncated Tetrahedron Graph"
     return G
 
-def tutte_graph():
+def tutte_graph(create_using=None):
     """Return the Tutte graph."""
     description=[
         "adjacencylist",
@@ -393,6 +393,6 @@ def tutte_graph():
          [37],[38,40],[39],[],[],
          [42,45],[43],[44,46],[45],[],[]]
         ]
-    G=make_small_graph(description)
+    G=make_small_graph(description, create_using)
     return G
 

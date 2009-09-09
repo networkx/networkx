@@ -80,7 +80,7 @@ __all__ = ['fast_gnp_random_graph',
 #-------------------------------------------------------------------------
 
 
-def fast_gnp_random_graph(n, p, seed=None):
+def fast_gnp_random_graph(n, p, create_using=None, seed=None):
     """
     Return a random graph G_{n,p}.
 
@@ -92,6 +92,7 @@ def fast_gnp_random_graph(n, p, seed=None):
     :Parameters:
       - `n`: the number of nodes
       - `p`: probability for edge creation
+      - `create_using' : graph instance to build from
       - `seed`: seed for random number generator (default=None)
       
     This algorithm is O(n+m) where m is the expected number of
@@ -106,7 +107,7 @@ def fast_gnp_random_graph(n, p, seed=None):
     Phys. Rev. E, 71, 036113, 2005.
 
     """
-    G=empty_graph(n)
+    G=empty_graph(n,create_using)
     G.name="fast_gnp_random_graph(%s,%s)"%(n,p)
 
     if not seed is None:
@@ -127,7 +128,7 @@ def fast_gnp_random_graph(n, p, seed=None):
     return G
 
 
-def gnp_random_graph(n, p, seed=None):
+def gnp_random_graph(n, p, create_using=None, seed=None):
     """
     Return a random graph G_{n,p}.
 
@@ -139,6 +140,7 @@ def gnp_random_graph(n, p, seed=None):
     :Parameters:
       - `n`: the number of nodes
       - `p`: probability for edge creation
+      - `create_using' : graph instance to build from
       - `seed`: seed for random number generator (default=None)
       
     This is an O(n^2) algorithm.  For sparse graphs (small p) see
@@ -148,7 +150,7 @@ def gnp_random_graph(n, p, seed=None):
     E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
 
     """
-    G=empty_graph(n)
+    G=empty_graph(n,create_using)
     G.name="gnp_random_graph(%s,%s)"%(n,p)
 
     if not seed is None:
@@ -164,7 +166,7 @@ def gnp_random_graph(n, p, seed=None):
 binomial_graph=gnp_random_graph
 erdos_renyi_graph=gnp_random_graph
 
-def dense_gnm_random_graph(n, m, seed=None):
+def dense_gnm_random_graph(n, m, create_using=None, seed=None):
     """
     Return the random graph G_{n,m}.
 
@@ -175,6 +177,7 @@ def dense_gnm_random_graph(n, m, seed=None):
     :Parameters:
       - `n`: the number of nodes
       - `m`: the number of edges
+      - `create_using' : graph instance to build from
       - `seed`: seed for random number generator (default=None)
 
 
@@ -189,9 +192,9 @@ def dense_gnm_random_graph(n, m, seed=None):
     """
     mmax=n*(n-1)/2
     if m>=mmax:
-        G=complete_graph(n)
+        G=complete_graph(n,create_using)
     else:
-        G=empty_graph(n)
+        G=empty_graph(n,create_using)
 
         G.name="dense_gnm_random_graph(%s,%s)"%(n,m)
   
@@ -216,7 +219,7 @@ def dense_gnm_random_graph(n, m, seed=None):
             u+=1
             v=u+1
 
-def gnm_random_graph(n, m, seed=None):
+def gnm_random_graph(n, m, create_using=None, seed=None):
     """
     Return the random graph G_{n,m}.
 
@@ -226,9 +229,10 @@ def gnm_random_graph(n, m, seed=None):
     :Parameters:
         - `n`: the number of nodes
         - `m`: the number of edges
+        - `create_using' : graph instance to build from
         - `seed`: seed for random number generator (default=None)
     """
-    G=empty_graph(n)
+    G=empty_graph(n,create_using)
     G.name="gnm_random_graph(%s,%s)"%(n,m)
 
     if seed is not None:
@@ -238,7 +242,7 @@ def gnm_random_graph(n, m, seed=None):
         return G
 
     if m>=n*(n-1)/2:
-        return complete_graph(n)
+        return complete_graph(n,create_using)
 
     nlist=G.nodes()
     edge_count=0
@@ -257,7 +261,7 @@ def gnm_random_graph(n, m, seed=None):
             edge_count=edge_count+1
     return G
 
-def newman_watts_strogatz_graph(n, k, p, seed=None):
+def newman_watts_strogatz_graph(n, k, p, create_using=None, seed=None):
     """
     Return a Newman-Watts-Strogatz small world graph.
 
@@ -279,27 +283,28 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     p : float 
         The probability of adding a new edge for each edge
             
+    create_using : graph
+        The graph instance used to build the graph.
+
     seed : int        
        seed for random number generator (default=None)
 
-
-    Notes
-    -----
-
+    References
+    ----------
     @ARTICLE{newman-1999-263,
-    author = {M.~E.~J. Newman and D.~J. Watts},
-    title = {Renormalization group analysis of the small-world network model},
-    journal = {Physics Letters A},
-    volume = {263},
-    pages = {341},
-    url = {http://www.citebase.org/abstract?id=oai:arXiv.org:cond-mat/9903357},
-    year = {1999}
+      author = {M.~E.~J. Newman and D.~J. Watts},
+      title = {Renormalization group analysis of the small-world network model},
+      journal = {Physics Letters A},
+      volume = {263},
+      pages = {341},
+      url = {http://dx.doi.org/10.1016/S0375-9601(99)00757-4},
+      year = {1999}
     }
       
     """
     if seed is not None:
         random.seed(seed)
-    G=empty_graph(n)
+    G=empty_graph(n,create_using)
     G.name="newman_watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
     nlist = G.nodes()
     fromv = nlist
@@ -322,7 +327,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     return G            
 
 
-def watts_strogatz_graph(n, k, p, seed=None):
+def watts_strogatz_graph(n, k, p, create_using=None, seed=None):
     """Return a Watts-Strogatz small-world graph.
 
     First create a ring over n nodes.  Then each node in the ring is
@@ -343,12 +348,15 @@ def watts_strogatz_graph(n, k, p, seed=None):
     p : float 
         The probability of rewiring each edge 
             
+    create_using : graph
+        The graph instance used to build the graph.
+
     seed : int        
        seed for random number generator (default=None)
 
 
-    Notes
-    -----
+    References
+    ----------
     @article{Watts_Strogatz_1998,
        author  = {Duncan J. Watts and Steven H. Strogatz},
        title   = {Collective dynamics of small-world networks},
@@ -358,6 +366,8 @@ def watts_strogatz_graph(n, k, p, seed=None):
        year    = {1998},
        }
       
+    Notes
+    -----
     In contrast with newman_watts_strogatz_graph(), the random
     rewiring does not increase the number of edges. The rewired graph
     is not guaranteed to be connected as in  connected_watts_strogatz_graph().
@@ -367,10 +377,16 @@ def watts_strogatz_graph(n, k, p, seed=None):
     newman_watts_strogatz_graph()
     connected_watts_strogatz_graph()
 
-"""
+    """
+    if create_using is None:
+        G = networkx.Graph()
+    else:
+        G = create_using
+        G.clear()
+
     if seed is not None:
         random.seed(seed)
-    G=networkx.Graph()
+
     G.name="watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
     nodes = range(n) # nodes are labeled 0 to n-1
     # connect each node to k/2 neighbors
@@ -393,7 +409,7 @@ def watts_strogatz_graph(n, k, p, seed=None):
                 G.add_edge(u,w)
     return G            
 
-def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
+def connected_watts_strogatz_graph(n, k, p, tries=100, create_using=None, seed=None):
     """Return a connected Watts-Strogatz small-world graph.
 
     Attempt to generate a connected realization by repeated 
@@ -414,26 +430,30 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
     tries : int
         Number of attempts to generate a connected graph.  
 
-    seed : int        
-       seed for random number generator (default=None)
+    create_using : graph
+        The graph instance used to build the graph.
+
+    seed : hashable object        
+        The seed for random number generator.
 
     See Also
     --------
     newman_watts_strogatz_graph()
     watts_strogatz_graph()
-"""
+
+    """
     from networkx.algorithms.traversal.component import is_connected
-    G = watts_strogatz_graph(n, k, p, seed)
+    G = watts_strogatz_graph(n, k, p, create_using, seed)
     t=1
     while not is_connected(G):
-        G = watts_strogatz_graph(n, k, p, seed)
+        G = watts_strogatz_graph(n, k, p, create_using, seed)
         t=t+1
         if t>tries:
             raise networkx.NetworkXError("Maximum number of tries exceeded")
     return G
 
 
-def random_regular_graph(d, n, seed=None):
+def random_regular_graph(d, n, create_using=None, seed=None):
     """Return a random regular graph of n nodes each with degree d.
     
     The resulting graph G has no self-loops or parallel edges.
@@ -446,6 +466,13 @@ def random_regular_graph(d, n, seed=None):
     n : integer
       Number of nodes. The nodes are numbered form 0 to n-1.
       The value of n*d must be even.
+
+    create_using : graph
+        The graph instance used to build the graph.
+
+    seed : hashable object
+        The seed for random number generator.
+
 
     Notes
     -----
@@ -541,18 +568,21 @@ def random_regular_graph(d, n, seed=None):
     while edges is None:
         edges = _try_creation()
     
-    G = networkx.Graph()
+    if create_using is None:
+        G = networkx.Graph()
+    else:
+        G = create_using
+        G.clear()
+
     G.name = "random_regular_graph(%s, %s)" % (d, n)
     G.add_edges_from(edges)
 
     return G
 
 
-def barabasi_albert_graph(n , m, seed=None):
-    """Return random graph using Barabási-Albert preferential
-    attachment model.
-    
-    
+def barabasi_albert_graph(n, m, create_using=None, seed=None):
+    """Return random graph using Barabási-Albert preferential attachment model.
+        
     A graph of n nodes is grown by attaching new nodes each with m
     edges that are preferentially attached to existing nodes with high
     degree.
@@ -563,6 +593,8 @@ def barabasi_albert_graph(n , m, seed=None):
         Number of nodes
     m : int
         Number of edges to attach from a new node to existing nodes
+    create_using : graph
+        The graph instance used to build the graph.
     seed : hashable object (optional, default=None)
         Seed for random number generator.   
 
@@ -588,7 +620,7 @@ def barabasi_albert_graph(n , m, seed=None):
         random.seed(seed)    
 
     # Add m initial nodes (m0 in barabasi-speak) 
-    G=empty_graph(m)  
+    G=empty_graph(m,create_using)  
     G.name="barabasi_albert_graph(%s,%s)"%(n,m)
     # Target nodes for new edges
     targets=range(m)  
@@ -612,7 +644,7 @@ def barabasi_albert_graph(n , m, seed=None):
         source += 1
     return G
 
-def powerlaw_cluster_graph(n, m, p, seed=None):
+def powerlaw_cluster_graph(n, m, p, create_using=None, seed=None):
     """
     Holme and Kim algorithm for growing graphs with powerlaw
     degree distribution and approximate average clustering. 
@@ -621,6 +653,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
       - `n`: the number of nodes
       - `m`: the number of random edges to add for each new node
       - `p`: probability of adding a triangle after adding a random edge
+      - `create_using` : graph instance from which the graph is constructed
       - `seed`: seed for random number generator (default=None)
       
     Reference::
@@ -665,7 +698,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
     if seed is not None:
         random.seed(seed)    
 
-    G=empty_graph(m)       # add m initial nodes (m0 in barabasi-speak)
+    G=empty_graph(m,create_using) # add m initial nodes (m0 in barabasi-speak)
     G.name="Powerlaw-Cluster Graph"
     repeated_nodes=G.nodes()  # list of existing nodes to sample from
                            # with nodes repeated once for each adjacent edge 
@@ -698,7 +731,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
         source += 1
     return G
 
-def random_lobster(n, p1, p2, seed=None):
+def random_lobster(n, p1, p2, create_using=None, seed=None):
     """Return a random lobster.
 
      A caterpillar is a tree that reduces to a path graph when pruning
@@ -710,6 +743,7 @@ def random_lobster(n, p1, p2, seed=None):
       - `n`: the expected number of nodes in the backbone
       - `p1`: probability of adding an edge to the backbone
       - `p2`: probability of adding an edge one level beyond backbone
+      - `create_using` : graph instance from which the graph is constructed
       - `seed`: seed for random number generator (default=None)
 
     """
@@ -717,7 +751,7 @@ def random_lobster(n, p1, p2, seed=None):
     if seed is not None:
         random.seed(seed)
     llen=int(2*random.random()*n + 0.5)
-    L=path_graph(llen)
+    L=path_graph(llen,create_using)
     L.name="random_lobster(%d,%s,%s)"%(n,p1,p2)
     # build caterpillar: add edges to path graph with probability p1
     current_node=llen-1
@@ -730,7 +764,7 @@ def random_lobster(n, p1, p2, seed=None):
                 L.add_edge(current_node-1,current_node)
     return L # voila, un lobster!
 
-def random_shell_graph(constructor, seed=None):
+def random_shell_graph(constructor, create_using=None, seed=None):
     """
     Return a random shell graph for the constructor given.
 
@@ -741,13 +775,14 @@ def random_shell_graph(constructor, seed=None):
       - d : the ratio of inter (next) shell edges to intra shell edges.
               d=0 means no intra shell edges.
               d=1 for the last shell
+      - `create_using` : graph instance from which the graph is constructed
       - `seed`: seed for random number generator (default=None)
       
     >>> constructor=[(10,20,0.8),(20,40,0.8)]
     >>> G=nx.random_shell_graph(constructor)        
 
     """
-    G=empty_graph(0)
+    G=empty_graph(0,create_using)
     G.name="random_shell_graph(constructor)"
 
     if seed is not None:
@@ -784,7 +819,7 @@ def random_shell_graph(constructor, seed=None):
     return G
 
 
-def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
+def random_powerlaw_tree(n, gamma=3, create_using=None, seed=None, tries=100):
     """
     Return a tree with a powerlaw degree distribution.
 
@@ -795,6 +830,7 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
     :Parameters:
       - `n`: the number of nodes
       - `gamma`: exponent of power law is gamma
+      - `create_using` : graph instance from which the graph is constructed
       - `tries`: number of attempts to adjust sequence to make a tree 
       - `seed`: seed for random number generator (default=None)
       
@@ -803,17 +839,18 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
     try:
         s=random_powerlaw_tree_sequence(n,
                                         gamma=gamma,
+                                        create_using=create_using,
                                         seed=seed,
                                         tries=tries)
     except:
         raise networkx.NetworkXError,\
               "Exceeded max (%d) attempts for a valid tree sequence."%tries
-    G=degree_sequence_tree(s)
+    G=degree_sequence_tree(s,create_using)
     G.name="random_powerlaw_tree(%s,%s)"%(n,gamma)
     return G
 
 
-def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
+def random_powerlaw_tree_sequence(n, gamma=3, create_using=None, seed=None, tries=100):
     """
     Return a degree sequence for a tree with a powerlaw distribution.
 
