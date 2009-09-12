@@ -186,7 +186,10 @@ def read_edgelist(path, comments="#", delimiter=' ',
                 raise TypeError("Failed to convert edge data (%s) to type %s"\
                                     %(data, edgetype))
         else:
-            edgedata=eval(data,{},{})
+            try: # try to evaluate 
+                edgedata=eval(data,{},{})
+            except:
+                edgedata={}
         G.add_edge(u,v,**edgedata)  
 #        else:
 #            raise TypeError("Failed to read line: %s"%line)
