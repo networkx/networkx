@@ -218,6 +218,11 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
     >>> fh=codecs.open("test.adjlist",'r',encoding='utf=8') # utf-8 encoding
     >>> G=nx.read_multiline_adjlist(fh)
     """
+    try:
+        from ast import literal_eval as eval
+    except:
+        pass # use potentially unsafe built-in eval 
+
     if create_using is None:
         G=networkx.Graph()
     else:
@@ -273,11 +278,12 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
                     raise TypeError("Failed to convert edge data (%s) to type %s"\
                                     %(data, edgetype))
             else:
-                edgedata=eval(data,{},{})
-
+                try: # try to evaluate 
+                    edgedata=eval(data)
+                except:
+                    edgedata={}
             G.add_edge(u,v,**edgedata)  
-#            else:
-#                raise TypeError("Failed to read line: %s"%vlist)
+
     return G
 
 
