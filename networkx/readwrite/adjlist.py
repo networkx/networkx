@@ -36,12 +36,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu
 __all__ = ['read_multiline_adjlist', 'write_multiline_adjlist',
            'read_adjlist', 'write_adjlist']
 
-import cPickle 
-import codecs
-import locale
-import string
-import sys
-import time
 
 from networkx.utils import is_string_like,_get_fh
 import networkx
@@ -78,8 +72,11 @@ def write_multiline_adjlist(G, path, delimiter=' ', comments='#'):
     >>> nx.write_multiline_adjlist(G,fh)
 
     """
+    import sys
+    import time
+
     fh=_get_fh(path,mode='w')        
-    pargs=comments+" "+string.join(sys.argv,' ')
+    pargs=comments+" ".join(sys.argv)
     fh.write("%s\n" % (pargs))
     fh.write(comments+" GMT %s\n" % (time.asctime(time.gmtime())))
     fh.write(comments+" %s\n" % (G.name))
@@ -320,8 +317,10 @@ def write_adjlist(G, path, comments="#", delimiter=' '):
     Does not handle edge data. 
     Use 'write_edgelist' or 'write_multiline_adjlist'
     """
+    import sys
+    import time
     fh=_get_fh(path,mode='w')        
-    pargs=comments+" "+string.join(sys.argv,' ')
+    pargs=comments+" ".join(sys.argv)
     fh.write("%s\n" % (pargs))
     fh.write(comments+" GMT %s\n" % (time.asctime(time.gmtime())))
     fh.write(comments+" %s\n" % (G.name))
