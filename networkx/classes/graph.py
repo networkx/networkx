@@ -834,7 +834,7 @@ class Graph(object):
             if u != v:  # self-loop needs only one entry removed
                 del self.adj[v][u]   
         except KeyError: 
-            raise NetworkXError("The edge %s-%s not in graph"%(u,v))
+            raise NetworkXError("The edge %s-%s is not in the graph"%(u,v))
 
 
 
