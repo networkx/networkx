@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Generators for random graphs
+Generators for random graphs.
 
 """
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -81,31 +81,37 @@ __all__ = ['fast_gnp_random_graph',
 
 
 def fast_gnp_random_graph(n, p, create_using=None, seed=None):
-    """
-    Return a random graph G_{n,p}.
+    """Return a random graph G_{n,p}.
 
     The G_{n,p} graph choses each of the possible [n(n-1)]/2 edges
     with probability p.
 
     Sometimes called Erdős-Rényi graph, or binomial graph.
 
-    :Parameters:
-      - `n`: the number of nodes
-      - `p`: probability for edge creation
-      - `create_using' : graph instance to build from
-      - `seed`: seed for random number generator (default=None)
+    Parameters
+    ----------
+    n : int
+        The number of nodes.
+    p : float
+        Probability for edge creation.
+    create_using :  NetworkX Graph, optional
+        Use specified graph as a container.
+    seed : int, optional
+        Seed for random number generator (default=None). 
       
+    Notes
+    -----
     This algorithm is O(n+m) where m is the expected number of
     edges m=p*n*(n-1)/2.
     
     It should be faster than gnp_random_graph when p is small, and
     the expected number of edges is small, (sparse graph).
 
-    See:
-
-    Batagelj and Brandes, "Efficient generation of large random networks",
-    Phys. Rev. E, 71, 036113, 2005.
-
+    References
+    ----------
+    .. [1] Batagelj and Brandes,
+       "Efficient generation of large random networks",
+       Phys. Rev. E, 71, 036113, 2005.
     """
     G=empty_graph(n,create_using)
     G.name="fast_gnp_random_graph(%s,%s)"%(n,p)
@@ -129,25 +135,37 @@ def fast_gnp_random_graph(n, p, create_using=None, seed=None):
 
 
 def gnp_random_graph(n, p, create_using=None, seed=None):
-    """
-    Return a random graph G_{n,p}.
+    """Return a random graph G_{n,p}.
 
     Choses each of the possible [n(n-1)]/2 edges with probability p.
     This is the same as binomial_graph and erdos_renyi_graph. 
 
     Sometimes called Erdős-Rényi graph, or binomial graph.
 
-    :Parameters:
-      - `n`: the number of nodes
-      - `p`: probability for edge creation
-      - `create_using' : graph instance to build from
-      - `seed`: seed for random number generator (default=None)
+    Parameters
+    ----------
+    n : int
+        The number of nodes.
+    p : float
+        Probability for edge creation.
+    create_using :  NetworkX Graph, optional
+        Use specified graph as a container.
+    seed : int, optional
+        Seed for random number generator (default=None). 
       
+    See Also
+    --------
+    fast_gnp_random_graph()
+
+    Notes
+    -----
     This is an O(n^2) algorithm.  For sparse graphs (small p) see
     fast_gnp_random_graph. 
 
-    P. Erdős and A. Rényi, On Random Graphs, Publ. Math. 6, 290 (1959).
-    E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
+    References
+    ----------
+    .. [1] P. Erdős and A. Rényi, On Random Graphs, Publ. Math. 6, 290 (1959).
+    .. [2] E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
 
     """
     G=empty_graph(n,create_using)
@@ -167,27 +185,39 @@ binomial_graph=gnp_random_graph
 erdos_renyi_graph=gnp_random_graph
 
 def dense_gnm_random_graph(n, m, create_using=None, seed=None):
-    """
-    Return the random graph G_{n,m}.
+    """Return the random graph G_{n,m}.
 
     Gives a graph picked randomly out of the set of all graphs
     with n nodes and m edges.
     This algorithm should be faster than gnm_random_graph for dense graphs.
 
-    :Parameters:
-      - `n`: the number of nodes
-      - `m`: the number of edges
-      - `create_using' : graph instance to build from
-      - `seed`: seed for random number generator (default=None)
+    Parameters
+    ----------
+    n : int
+        The number of nodes.
+    m : int
+        The number of edges.
+    create_using :  NetworkX Graph, optional
+        Use specified graph as a container.
+    seed : int, optional
+        Seed for random number generator (default=None). 
+      
+    See Also
+    --------
+    gnm_random_graph()
 
-
+    Notes
+    -----
     Algorithm by Keith M. Briggs Mar 31, 2006.
     Inspired by Knuth's Algorithm S (Selection sampling technique),
     in section 3.4.2 of
 
-    The Art of Computer Programming by Donald E. Knuth
-    Volume 2 / Seminumerical algorithms
-    Third Edition, Addison-Wesley, 1997.
+    References
+    ----------
+    .. [1] Donald E. Knuth,
+        The Art of Computer Programming,
+        Volume 2 / Seminumerical algorithms
+        Third Edition, Addison-Wesley, 1997.
  
     """
     mmax=n*(n-1)/2
@@ -220,17 +250,22 @@ def dense_gnm_random_graph(n, m, create_using=None, seed=None):
             v=u+1
 
 def gnm_random_graph(n, m, create_using=None, seed=None):
-    """
-    Return the random graph G_{n,m}.
+    """Return the random graph G_{n,m}.
 
     Gives a graph picked randomly out of the set of all graphs
     with n nodes and m edges.
 
-    :Parameters:
-        - `n`: the number of nodes
-        - `m`: the number of edges
-        - `create_using' : graph instance to build from
-        - `seed`: seed for random number generator (default=None)
+    Parameters
+    ----------
+    n : int
+        The number of nodes.
+    m : int
+        The number of edges.
+    create_using :  NetworkX Graph, optional
+        Use specified graph as a container.
+    seed : int, optional
+        Seed for random number generator (default=None). 
+      
     """
     G=empty_graph(n,create_using)
     G.name="gnm_random_graph(%s,%s)"%(n,m)
@@ -262,9 +297,23 @@ def gnm_random_graph(n, m, create_using=None, seed=None):
     return G
 
 def newman_watts_strogatz_graph(n, k, p, create_using=None, seed=None):
-    """
-    Return a Newman-Watts-Strogatz small world graph.
+    """Return a Newman-Watts-Strogatz small world graph.
 
+    Parameters
+    ----------
+    n : int
+        The number of nodes
+    k : int
+        Each node is connected to k nearest neighbors in ring topology
+    p : float 
+        The probability of adding a new edge for each edge
+    create_using : graph, optional
+        The graph instance used to build the graph.
+    seed : int, optional        
+       seed for random number generator (default=None)
+
+    Notes
+    -----
     First create a ring over n nodes.  Then each node in the ring is
     connected with its k nearest neighbors (k-1 neighbors if k is odd).  
     Then shortcuts are created by adding new edges as follows: 
@@ -272,35 +321,16 @@ def newman_watts_strogatz_graph(n, k, p, create_using=None, seed=None):
     with probability p add a new edge u-w with randomly-chosen existing 
     node w.  In contrast with watts_strogatz_graph(), no edges are removed.
 
-    Parameters
-    ----------
-    n : int
-        The number of nodes
-        
-    k : int
-        Each node is connected to k nearest neighbors in ring topology
-
-    p : float 
-        The probability of adding a new edge for each edge
-            
-    create_using : graph
-        The graph instance used to build the graph.
-
-    seed : int        
-       seed for random number generator (default=None)
+    See Also
+    --------
+    watts_strogatz_graph()
 
     References
     ----------
-    @ARTICLE{newman-1999-263,
-      author = {M.~E.~J. Newman and D.~J. Watts},
-      title = {Renormalization group analysis of the small-world network model},
-      journal = {Physics Letters A},
-      volume = {263},
-      pages = {341},
-      url = {http://dx.doi.org/10.1016/S0375-9601(99)00757-4},
-      year = {1999}
-    }
-      
+    .. [1] M. E. J. Newman and D. J. Watts,
+       Renormalization group analysis of the small-world network model,
+       Physics Letters A, 263, 341, 1999.
+       http://dx.doi.org/10.1016/S0375-9601(99)00757-4
     """
     if seed is not None:
         random.seed(seed)
@@ -330,6 +360,27 @@ def newman_watts_strogatz_graph(n, k, p, create_using=None, seed=None):
 def watts_strogatz_graph(n, k, p, create_using=None, seed=None):
     """Return a Watts-Strogatz small-world graph.
 
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes
+    k : int
+        Each node is connected to k nearest neighbors in ring topology
+    p : float 
+        The probability of rewiring each edge 
+    create_using : graph, optional
+        The graph instance used to build the graph.
+    seed : int, optional        
+        Seed for random number generator (default=None)
+
+    See Also
+    --------
+    newman_watts_strogatz_graph()
+    connected_watts_strogatz_graph()
+
+    Notes
+    -----
     First create a ring over n nodes.  Then each node in the ring is
     connected with its k nearest neighbors (k-1 neighbors if k is odd).  
     Then shortcuts are created by replacing some edges as follows: 
@@ -337,46 +388,15 @@ def watts_strogatz_graph(n, k, p, create_using=None, seed=None):
     with probability p replace it with a new edge u-w with uniformly 
     random choice of existing node w.  
 
-    Parameters
-    ----------
-    n : int
-        The number of nodes
-        
-    k : int
-        Each node is connected to k nearest neighbors in ring topology
-
-    p : float 
-        The probability of rewiring each edge 
-            
-    create_using : graph
-        The graph instance used to build the graph.
-
-    seed : int        
-       seed for random number generator (default=None)
-
-
-    References
-    ----------
-    @article{Watts_Strogatz_1998,
-       author  = {Duncan J. Watts and Steven H. Strogatz},
-       title   = {Collective dynamics of small-world networks},
-       journal = {Nature},
-       volume  = {393},
-       pages   = {440--442},
-       year    = {1998},
-       }
-      
-    Notes
-    -----
     In contrast with newman_watts_strogatz_graph(), the random
     rewiring does not increase the number of edges. The rewired graph
     is not guaranteed to be connected as in  connected_watts_strogatz_graph().
 
-    See Also
-    --------
-    newman_watts_strogatz_graph()
-    connected_watts_strogatz_graph()
-
+    References
+    ----------
+    .. [1] Duncan J. Watts and Steven H. Strogatz,
+       Collective dynamics of small-world networks,
+       Nature, 393, pp. 440--442, 1998.
     """
     if create_using is None:
         G = networkx.Graph()
@@ -420,21 +440,16 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, create_using=None, seed=N
     ----------
     n : int
         The number of nodes
-        
     k : int
         Each node is connected to k nearest neighbors in ring topology
-
     p : float 
         The probability of rewiring each edge 
-            
     tries : int
         Number of attempts to generate a connected graph.  
-
-    create_using : graph
+    create_using : graph, optional
         The graph instance used to build the graph.
-
-    seed : hashable object        
-        The seed for random number generator.
+    seed : int, optional
+         The seed for random number generator.
 
     See Also
     --------
@@ -460,52 +475,36 @@ def random_regular_graph(d, n, create_using=None, seed=None):
 
     Parameters
     ----------
-    d : integer
+    d : int
       Degree
-
     n : integer
-      Number of nodes. The nodes are numbered form 0 to n-1.
-      The value of n*d must be even.
-
-    create_using : graph
+      Number of nodes. The value of n*d must be even.
+    create_using : NetworkX graph, optional
         The graph instance used to build the graph.
-
     seed : hashable object
         The seed for random number generator.
 
-
     Notes
     -----
-    The algorithm is found in:: 
+    The nodes are numbered form 0 to n-1.
 
-       @misc{ steger-1999-generating,
-       author = "A. Steger and N. Wormald",
-       title = "Generating random regular graphs quickly",
-       text = "Probability and Computing 8 (1999), 377-396.",
-       year = "1999",
-       url = "citeseer.ist.psu.edu/steger99generating.html",
-       }
 
-    Kim and Vu's paper shows that this algorithm samples in an
+    Kim and Vu's paper [2]_ shows that this algorithm samples in an
     asymptotically uniform way from the space of random graphs when
     d = O(n**(1/3-epsilon)).
 
-    Reference::
+    References
+    ----------
+    .. [1] A. Steger and N. Wormald,
+       Generating random regular graphs quickly,
+       Probability and Computing 8 (1999), 377-396, 1999.
+       http://citeseer.ist.psu.edu/steger99generating.html
 
-       @inproceedings{kim-2003-generating,
-       author = {Jeong Han Kim and Van H. Vu},
-       title = {Generating random regular graphs},
-       booktitle = {Proceedings of the thirty-fifth ACM symposium on
-                    Theory of computing},
-       year = {2003},
-       isbn = {1-58113-674-9},
-       pages = {213--222},
-       location = {San Diego, CA, USA},
-       doi = {http://doi.acm.org/10.1145/780542.780576},
-       publisher = {ACM Press},
-       }
-
-
+    .. [2] Jeong Han Kim and Van H. Vu,
+       Generating random regular graphs,
+       Proceedings of the thirty-fifth ACM symposium on Theory of computing,
+       San Diego, CA, USA, pp 213--222, 2003.
+       http://doi.acm.org/10.1145/780542.780576
     """
     if (n * d) % 2 != 0:
         raise networkx.NetworkXError("n * d must be even")
@@ -593,10 +592,10 @@ def barabasi_albert_graph(n, m, create_using=None, seed=None):
         Number of nodes
     m : int
         Number of edges to attach from a new node to existing nodes
-    create_using : graph
+    create_using : graph, optional
         The graph instance used to build the graph.
-    seed : hashable object (optional, default=None)
-        Seed for random number generator.   
+    seed : int, optional
+        Seed for random number generator (default=None).   
 
     Returns
     -------
@@ -645,35 +644,30 @@ def barabasi_albert_graph(n, m, create_using=None, seed=None):
     return G
 
 def powerlaw_cluster_graph(n, m, p, create_using=None, seed=None):
-    """
-    Holme and Kim algorithm for growing graphs with powerlaw
+    """Holme and Kim algorithm for growing graphs with powerlaw
     degree distribution and approximate average clustering. 
 
-    :Parameters:
-      - `n`: the number of nodes
-      - `m`: the number of random edges to add for each new node
-      - `p`: probability of adding a triangle after adding a random edge
-      - `create_using` : graph instance from which the graph is constructed
-      - `seed`: seed for random number generator (default=None)
+    Parameters
+    ----------
+    n : int
+        the number of nodes
+    m : int
+        the number of random edges to add for each new node
+    p : float,
+        Probability of adding a triangle after adding a random edge
+    create_using : graph, optional
+        The graph instance used to build the graph.
+    seed : int, optional
+        Seed for random number generator (default=None).   
       
-    Reference::
-
-       @Article{growing-holme-2002,
-       author = 	 {P. Holme and B. J. Kim},
-       title = 	 {Growing scale-free networks with tunable clustering},
-       journal = 	 {Phys. Rev. E},
-       year = 	 {2002},
-       volume = 	 {65},
-       number = 	 {2},
-       pages = 	 {026107},
-       }
-
+    Notes
+    -----
     The average clustering has a hard time getting above 
     a certain cutoff that depends on m.  This cutoff is often quite low.
     Note that the transitivity (fraction of triangles to possible
     triangles) seems to go down with network size. 
 
-    It is essentially the Barabási-Albert growth model with an
+    It is essentially the Barabási-Albert (B-A) growth model with an
     extra step that each random edge is followed by a chance of
     making an edge to one of its neighbors too (and thus a triangle).
     
@@ -682,8 +676,13 @@ def powerlaw_cluster_graph(n, m, p, create_using=None, seed=None):
 
     It seems possible to have a disconnected graph with this algorithm
     since the initial m nodes may not be all linked to a new node
-    on the first iteration like the BA model.
+    on the first iteration like the B-A model.
 
+    References
+    ----------
+    .. [1] P. Holme and B. J. Kim,
+       "Growing scale-free networks with tunable clustering",
+       Phys. Rev. E, 65, 026107, 2002.
     """
 
     if m < 1 or n < m:
@@ -734,18 +733,24 @@ def powerlaw_cluster_graph(n, m, p, create_using=None, seed=None):
 def random_lobster(n, p1, p2, create_using=None, seed=None):
     """Return a random lobster.
 
-     A caterpillar is a tree that reduces to a path graph when pruning
-     all leaf nodes (p2=0).
      A lobster is a tree that reduces to a caterpillar when pruning all
      leaf nodes.
-     
-    :Parameters:
-      - `n`: the expected number of nodes in the backbone
-      - `p1`: probability of adding an edge to the backbone
-      - `p2`: probability of adding an edge one level beyond backbone
-      - `create_using` : graph instance from which the graph is constructed
-      - `seed`: seed for random number generator (default=None)
 
+     A caterpillar is a tree that reduces to a path graph when pruning
+     all leaf nodes (p2=0).
+     
+    Parameters
+    ----------
+    n : int
+        The expected number of nodes in the backbone
+    p1 : float
+        Probability of adding an edge to the backbone
+    p2 : float
+        Probability of adding an edge one level beyond backbone
+    create_using : graph, optional
+        The graph instance used to build the graph.
+    seed : int, optional
+        Seed for random number generator (default=None).   
     """
     # a necessary ingredient in any self-respecting graph library
     if seed is not None:
@@ -765,19 +770,26 @@ def random_lobster(n, p1, p2, create_using=None, seed=None):
     return L # voila, un lobster!
 
 def random_shell_graph(constructor, create_using=None, seed=None):
-    """
-    Return a random shell graph for the constructor given.
+    """Return a random shell graph for the constructor given.
 
-      - constructor: a list of three-tuples [(n1,m1,d1),(n2,m2,d2),..]
-        one for each shell, starting at the center shell.
-      - n : the number of nodes in the shell
-      - m : the number or edges in the shell
-      - d : the ratio of inter (next) shell edges to intra shell edges.
-              d=0 means no intra shell edges.
-              d=1 for the last shell
-      - `create_using` : graph instance from which the graph is constructed
-      - `seed`: seed for random number generator (default=None)
+    Parameters
+    ----------
+    constructor: a list of three-tuples 
+        (n,m,d) for each shell starting at the center shell.
+    n : int
+        The number of nodes in the shell
+    m : int
+        The number or edges in the shell
+    d : float
+        The ratio of inter-shell (next) edges to intra-shell edges.
+        d=0 means no intra shell edges, d=1 for the last shell
+    create_using : graph, optional
+        The graph instance used to build the graph.
+    seed : int, optional
+        Seed for random number generator (default=None).   
       
+    Examples
+    --------
     >>> constructor=[(10,20,0.8),(20,40,0.8)]
     >>> G=nx.random_shell_graph(constructor)        
 
@@ -820,20 +832,16 @@ def random_shell_graph(constructor, create_using=None, seed=None):
 
 
 def random_powerlaw_tree(n, gamma=3, create_using=None, seed=None, tries=100):
-    """
-    Return a tree with a powerlaw degree distribution.
+    """Return a tree with a powerlaw degree distribution.
 
+    Parameters
+    ----------
+    Notes
+    -----
     A trial powerlaw degree sequence is chosen and then elements are
     swapped with new elements from a powerlaw distribution until
     the sequence makes a tree (#edges=#nodes-1).  
 
-    :Parameters:
-      - `n`: the number of nodes
-      - `gamma`: exponent of power law is gamma
-      - `create_using` : graph instance from which the graph is constructed
-      - `tries`: number of attempts to adjust sequence to make a tree 
-      - `seed`: seed for random number generator (default=None)
-      
     """
     from networkx.generators.degree_seq import degree_sequence_tree
     try:
@@ -851,19 +859,26 @@ def random_powerlaw_tree(n, gamma=3, create_using=None, seed=None, tries=100):
 
 
 def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
-    """
-    Return a degree sequence for a tree with a powerlaw distribution.
+    """ Return a degree sequence for a tree with a powerlaw distribution.
 
+    Parameters
+    ----------
+    n : int,
+        The number of nodes
+    gamma : float
+        Exponent of the power-law
+    seed : int, optional
+        Seed for random number generator (default=None).   
+    tries : int
+        Number of attempts to adjust sequence to make a tree 
+
+    Notes
+    -----
     A trial powerlaw degree sequence is chosen and then elements are
     swapped with new elements from a powerlaw distribution until
     the sequence makes a tree (#edges=#nodes-1).  
 
-    :Parameters:
-      - `n`: the number of nodes
-      - `gamma`: exponent of power law is gamma
-      - `tries`: number of attempts to adjust sequence to make a tree 
-      - `seed`: seed for random number generator (default=None)
-      
+
     """
     if seed is not None:
         random.seed(seed)
