@@ -836,6 +836,17 @@ def random_powerlaw_tree(n, gamma=3, create_using=None, seed=None, tries=100):
 
     Parameters
     ----------
+    n : int,
+        The number of nodes
+    gamma : float
+        Exponent of the power-law
+    create_using : graph, optional
+        The graph instance used to build the graph.
+    seed : int, optional
+        Seed for random number generator (default=None).   
+    tries : int
+        Number of attempts to adjust sequence to make a tree 
+
     Notes
     -----
     A trial powerlaw degree sequence is chosen and then elements are
