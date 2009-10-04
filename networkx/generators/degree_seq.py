@@ -145,7 +145,7 @@ def expected_degree_graph(w, create_using=None, seed=None):
     ----------
     w : list 
         The list of expected degrees.
-    create_using : graph instance, optional
+    create_using : graph, optional
         Return graph of this type. The instance will be cleared.
     seed : hashable object, optional
         The seed for the random number generator.
@@ -155,19 +155,11 @@ def expected_degree_graph(w, create_using=None, seed=None):
     >>> z=[10 for i in range(100)]
     >>> G=nx.expected_degree_graph(z)
 
-
     References
     ----------
-    @Article{connected-components-2002,
-        author =	{Fan Chung and L. Lu},
-        title = 	{Connected components in random graphs
-                     with given expected degree sequences},
-        journal = 	{Ann. Combinatorics},
-        year = 		{2002},
-        volume = 	{6},
-        pages = 	{125-145},
-    }
-
+    .. [1] Fan Chung and L. Lu,
+        Connected components in random graphs with given expected
+        degree sequences, Ann. Combinatorics, 6, pp. 125-145, 2002.
 	"""
     n = len(w)
     # allow self loops
@@ -199,11 +191,22 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
     """Return a simple graph with given degree sequence, constructed using the
     Havel-Hakimi algorithm.
 
-      - `deg_sequence`: degree sequence, a list of integers with each entry
-         corresponding to the degree of a node (need not be sorted).
-         A non-graphical degree sequence (not sorted).
-         A non-graphical degree sequence (i.e. one
-         not realizable by some simple graph) raises an Exception.    
+    Parameters
+    ----------
+    deg_sequence: list of integers
+        Each integer corresponds to the degree of a node (need not be sorted).
+    create_using : graph, optional
+        Return graph of this type. The instance will be cleared.
+
+
+    Raises
+    ------
+    NetworkXException
+        For a non-graphical degree sequence (i.e. one
+        not realizable by some simple graph).
+
+    Notes
+    -----
 
     The Havel-Hakimi algorithm constructs a simple graph by
     successively connecting the node of highest degree to other nodes
@@ -215,11 +218,10 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
     See Theorem 1.4 in [chartrand-graphs-1996].
     This algorithm is also used in the function is_valid_degree_sequence.
 
-    References:
-
-    [chartrand-graphs-1996] G. Chartrand and L. Lesniak, "Graphs and Digraphs",
-                            Chapman and Hall/CRC, 1996.
-
+    References
+    ----------
+    .. [1] G. Chartrand and L. Lesniak, "Graphs and Digraphs",
+           Chapman and Hall/CRC, 1996.
     """
     if not is_valid_degree_sequence(deg_sequence):
         raise networkx.NetworkXError, 'Invalid degree sequence'
@@ -403,14 +405,13 @@ def is_valid_degree_sequence(deg_sequence):
          A non-graphical degree sequence (i.e. one not realizable by some
          simple graph) will raise an exception.
                         
-    See Theorem 1.4 in [chartrand-graphs-1996]. This algorithm is also used
+    See Theorem 1.4 in [1]_. This algorithm is also used
     in havel_hakimi_graph()
 
-    References:
-
-    [chartrand-graphs-1996] G. Chartrand and L. Lesniak, "Graphs and Digraphs",
-                            Chapman and Hall/CRC, 1996.
-
+    References
+    ----------
+    .. [1] G. Chartrand and L. Lesniak, "Graphs and Digraphs",
+           Chapman and Hall/CRC, 1996.
     """
     # some simple tests 
     if deg_sequence==[]:
@@ -450,12 +451,18 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
     """ Attempt to create a valid degree sequence of length n using
     specified function sfunction(n,**kwds).
 
-      - `n`: length of degree sequence = number of nodes
-      - `sfunction`: a function, called as "sfunction(n,**kwds)",
-         that returns a list of n real or integer values.
-      - `max_tries`: max number of attempts at creating valid degree
-         sequence.
+    Parameters
+    ----------
+    n : int
+        Length of degree sequence = number of nodes
+    sfunction: function
+        Function which returns a list of n real or integer values.
+        Called as "sfunction(n,**kwds)".
+    max_tries: int
+        Max number of attempts at creating valid degree sequence.
 
+    Notes
+    -----
     Repeatedly create a degree sequence by calling sfunction(n,**kwds)
     until achieving a valid degree sequence. If unsuccessful after
     max_tries attempts, raise an exception.
@@ -463,9 +470,10 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
     For examples of sfunctions that return sequences of random numbers,
     see networkx.Utils.
 
+    Examples
+    --------
     >>> from networkx.utils import uniform_sequence
     >>> seq=nx.create_degree_sequence(10,uniform_sequence)
-
     """
     tries=0
     max_deg=n
@@ -535,6 +543,8 @@ def connected_double_edge_swap(G, nswap=1):
     Returns count of successful swaps.  Enforces connectivity.
     The graph G is modified in place.
 
+    Notes
+    -----
     A double-edge swap removes two randomly choseen edges u-v and x-y
     and creates the new edges u-x and v-y::
 
@@ -548,17 +558,12 @@ def connected_double_edge_swap(G, nswap=1):
 
     The initial graph G must be connected and the resulting graph is connected.
 
-    Reference::
-
-     @misc{gkantsidis-03-markov,
-      author = "C. Gkantsidis and M. Mihail and E. Zegura",
-      title = "The Markov chain simulation method for generating connected
-               power law random graphs",
-      year = "2003",
-      url = "http://citeseer.ist.psu.edu/gkantsidis03markov.html"
-     }
-
-
+    References
+    ----------
+    .. [1] C. Gkantsidis and M. Mihail and E. Zegura,
+           The Markov chain simulation method for generating connected
+           power law random graphs, 2003.
+           http://citeseer.ist.psu.edu/gkantsidis03markov.html
     """
     import math
     if not networkx.is_connected(G):
@@ -822,19 +827,14 @@ def s_metric(G):
     Returns
     -------       
     s : float
-        The s-metric of `G'.
+        The s-metric of the graph.
 
     References
     ----------
-    @unpublished{li-2005,
-     author = {Lun Li and David Alderson and
-              John C. Doyle and Walter Willinger},
-     title = {Towards a Theory of Scale-Free Graphs:
-              Definition, Properties, and  Implications (Extended Version)},
-     url = {http://arxiv.org/abs/cond-mat/0501169},
-     year = {2005}
-    }
-
+    .. [1] Lun Li, David Alderson, John C. Doyle, and Walter Willinger,
+           Towards a Theory of Scale-Free Graphs:
+           Definition, Properties, and  Implications (Extended Version), 2005.
+           http://arxiv.org/abs/cond-mat/0501169
     """
     # this function doesn't belong in this module
     return sum([G.degree(u)*G.degree(v) for (u,v) in G.edges_iter()])
