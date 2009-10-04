@@ -58,15 +58,9 @@ def gn_graph(n,kernel=None,create_using=None,seed=None):
 
     References
     ----------
-    @article{krapivsky-2001-organization,
-      title   = {Organization of Growing Random Networks},
-      author  = {P. L. Krapivsky and S. Redner},
-      journal = {Phys. Rev. E},
-      volume  = {63},
-      pages   = {066123},
-      year    = {2001},
-    }
-
+    .. [1] P. L. Krapivsky and S. Redner,
+           Organization of Growing Random Networks,
+           Phys. Rev. E, 63, 066123, 2001.
     """
     if create_using is None:
         create_using = networkx.DiGraph()
@@ -124,15 +118,9 @@ def gnr_graph(n,p,create_using=None,seed=None):
 
     References
     ----------
-    @article{krapivsky-2001-organization,
-      title   = {Organization of Growing Random Networks},
-      author  = {P. L. Krapivsky and S. Redner},
-      journal = {Phys. Rev. E},
-      volume  = {63},
-      pages   = {066123},
-      year    = {2001},
-    }
-
+    .. [1] P. L. Krapivsky and S. Redner,
+           Organization of Growing Random Networks,
+           Phys. Rev. E, 63, 066123, 2001.
     """
     if create_using is None:
         create_using = networkx.DiGraph()
@@ -173,15 +161,9 @@ def gnc_graph(n,create_using=None,seed=None):
 
     References
     ----------
-    @article{krapivsky-2005-network,
-      title   = {Network Growth by Copying},
-      author  = {P. L. Krapivsky and S. Redner},
-      journal = {Phys. Rev. E},
-      volume  = {71},
-      pages   = {036118},
-      year    = {2005},
-    }
-
+    .. [1] P. L. Krapivsky and S. Redner,
+           Network Growth by Copying,
+           Phys. Rev. E, 71, 036118, 2005k.},
     """
     if create_using is None:
         create_using = networkx.DiGraph()
@@ -248,15 +230,10 @@ def scale_free_graph(n,
 
     References
     ----------  
-    @article{bollobas2003dsf,
-        title={{Directed scale-free graphs}},
-        author={Bollob{\'a}s, B. and Borgs, C. and Chayes, J. and Riordan, O.},
-        journal={Proceedings of the fourteenth annual ACM-SIAM symposium on Discrete algorithms},
-        pages={132--139},
-        year={2003},
-        publisher={Society for Industrial and Applied Mathematics Philadelphia, PA, USA}
-    }
-
+    .. [1] B. Bollob{\'a}s, C. Borgs, J. Chayes, and O. Riordan,
+           Directed scale-free graphs,
+           Proceedings of the fourteenth annual ACM-SIAM symposium on
+           Discrete algorithms, 132--139, 2003.
     """
 
     def _choose_node(G,distribution,delta):
