@@ -858,7 +858,6 @@ def random_powerlaw_tree(n, gamma=3, create_using=None, seed=None, tries=100):
     try:
         s=random_powerlaw_tree_sequence(n,
                                         gamma=gamma,
-                                        create_using=create_using,
                                         seed=seed,
                                         tries=tries)
     except:
