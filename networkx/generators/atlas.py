@@ -21,7 +21,7 @@ __all__ = ['graph_atlas_g']
 
 from networkx.generators.small import make_small_graph
 
-def graph_atlas_g(create_using=None):
+def graph_atlas_g():
     """
     Return the list [G0,G1,...,G1252] of graphs as named in the Graph Atlas.
     G0,G1,...,G1252 are all graphs with up to 7 nodes.
@@ -12329,7 +12329,7 @@ def graph_atlas_g(create_using=None):
     GAG=[]
 
     for i in range(1253):
-        g=make_small_graph(descr_list[i], create_using)
+        g=make_small_graph(descr_list[i])
         GAG.append(g)
 
     return GAG
