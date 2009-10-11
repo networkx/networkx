@@ -92,6 +92,14 @@ Traceback (most recent call last):
 ...
 NetworkXError: Invalid graph description, h should be >=1
 
+>>> dt=balanced_tree(10, 1, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> mt=balanced_tree(10, 1, create_using=MultiGraph())
+>>> mt.edges()==t.edges()
+True
+
 barbell_graph
 -------------
 
@@ -158,6 +166,13 @@ True
 >>> is_isomorphic(b, path_graph(m2+4))
 True
 
+>>> db=barbell_graph(m1, m2, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> mb=barbell_graph(m1, m2, create_using=MultiGraph())
+>>> mb.edges()==b.edges()
+True
 
 
 complete_graph
@@ -192,6 +207,14 @@ True
 >>> number_of_nodes(g)==m
 True
 >>> number_of_edges(g)==m*(m-1)/2
+True
+
+>>> dg=complete_graph(m, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> mg=complete_graph(m, create_using=MultiGraph())
+>>> mg.edges()==g.edges()
 True
 
 complete_bipartite_graph
@@ -242,11 +265,27 @@ m1+m2 nodes and  m1*m2 edges
 >>> number_of_edges(G)
 21
 
+>>> DG=complete_bipartite_graph(7, 3, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> mG=complete_bipartite_graph(7, 3, create_using=MultiGraph())
+>>> mG.edges()==G.edges()
+True
+
 
 circular_ladder_graph
 ---------------------
 
 >>> G=circular_ladder_graph(5) 
+>>> DG=circular_ladder_graph(5, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> mG=circular_ladder_graph(5, create_using=MultiGraph())
+>>> mG.edges()==G.edges()
+True
+
 
 cycle_graph
 -----------
@@ -255,6 +294,9 @@ cycle_graph
 >>> sorted(G.edges())
 [(0, 1), (0, 3), (1, 2), (2, 3)]
 
+>>> mG=cycle_graph(4, create_using=MultiGraph())
+>>> sorted(mG.edges())
+[(0, 1), (0, 3), (1, 2), (2, 3)]
 >>> G=cycle_graph(4, create_using=DiGraph())
 >>> G.has_edge(2,1)
 False
@@ -288,6 +330,15 @@ dorogovtsev_goltsev_mendes_graph
 >>> G.degree(2) 
 1024
 
+>>> G=dorogovtsev_goltsev_mendes_graph(7, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> G=dorogovtsev_goltsev_mendes_graph(7, create_using=MultiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Multigraph not supported
+
 empty_graph
 -----------
 
@@ -311,11 +362,22 @@ create empty digraph
 42
 >>> number_of_edges(G)
 0
->>> G.name # name was cleared, so nothing
+>>> G.name 
 'empty_graph(42)'
 >>> isinstance(G,DiGraph)
 True
 
+create empty multigraph
+
+>>> G=empty_graph(42,create_using=MultiGraph(name="duh")) 
+>>> number_of_nodes(G)
+42
+>>> number_of_edges(G)
+0
+>>> G.name 
+'empty_graph(42)'
+>>> isinstance(G,MultiGraph)
+True
 
 create empty graph from another
 
@@ -335,14 +397,29 @@ True
 grid_2d_graph
 -------------
 
->>> G=grid_2d_graph(5,6)
+>>> n=5;m=6
+>>> G=grid_2d_graph(n,m)
+>>> number_of_nodes(G)==n*m
+True
+>>> degree_histogram(G)==[0,0,4,2*(n+m)-8,(n-2)*(m-2)]
+True
+
+>>> DG=grid_2d_graph(n,m, create_using=DiGraph())
+>>> DG.succ==G.adj
+True
+>>> DG.pred==G.adj
+True
+>>> MG=grid_2d_graph(n,m, create_using=MultiGraph())
+>>> MG.edges()==G.edges()
+True
+
 
 grid_graph
 ----------
 
 grid_graph([n,m]) is a connected simple graph with the following properties:
 number_of_nodes=n*m
-degree_histogram=[0,0,4,2*(n+m)-8,(n-2)*(m-2)
+degree_histogram=[0,0,4,2*(n+m)-8,(n-2)*(m-2)]
 
 >>> n=3; m=5
 >>> g=grid_graph([n,m])
@@ -386,6 +463,14 @@ True
 >>> is_isomorphic(g,path_graph(n))
 True
 
+>>> dg=grid_graph([n,m], create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> mg=grid_graph([n,m], create_using=MultiGraph())
+>>> mg.edges()==g.edges()
+True
+
 
 hypercube_graph
 ---------------
@@ -418,6 +503,14 @@ True
 >>> degree_histogram(g)
 [0, 0, 0, 0, 0, 0, 64]
 
+>>> g=hypercube_graph(6, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> mg=hypercube_graph(6, create_using=MultiGraph())
+>>> mg.edges()==g.edges()
+True
+
 
 ladder_graph
 ------------
@@ -435,6 +528,14 @@ True
 True
 
 >>> is_isomorphic( ladder_graph(10), grid_graph([2,10]))
+True
+
+>>> dg=ladder_graph(2, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> mg=ladder_graph(2, create_using=MultiGraph())
+>>> mg.edges()==g.edges()
 True
 
 lollipop_graph
@@ -503,6 +604,14 @@ True
 >>> is_isomorphic(b, path_graph(m2+2))
 True
 
+>>> db=lollipop_graph(m1, m2, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> mb=lollipop_graph(m1, m2, create_using=MultiGraph())
+>>> mb.edges()==b.edges()
+True
+
 
 
 
@@ -535,11 +644,14 @@ True
 >>> p.order()-1==p.size()
 True
 
->>> p=path_graph(3, create_using=DiGraph())
->>> p.has_edge(0,1)
+>>> dp=path_graph(3, create_using=DiGraph())
+>>> dp.has_edge(0,1)
 True
->>> p.has_edge(1,0)
+>>> dp.has_edge(1,0)
 False
+>>> mp=path_graph(10, create_using=MultiGraph())
+>>> mp.edges()==p.edges()
+True
 
 periodic_grid_2d_graph
 ----------------------
@@ -572,8 +684,16 @@ True
 >>> g=grid_2d_graph(4,2, periodic=True)
 >>> is_isomorphic( g, cubical_graph() )
 True
-
  
+>>> DG=grid_2d_graph(4, 2, periodic=True, create_using=DiGraph())
+>>> DG.succ==g.adj
+True
+>>> DG.pred==g.adj
+True
+>>> MG=grid_2d_graph(4, 2, periodic=True, create_using=MultiGraph())
+>>> MG.edges()==g.edges()
+True
+
 star_graph
 ----------
 
@@ -588,6 +708,14 @@ True
 
 >>> s=star_graph(10)
 >>> s.degree()==[10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+True
+
+>>> ds=star_graph(10, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> ms=star_graph(10, create_using=MultiGraph())
+>>> ms.edges()==s.edges()
 True
 
 
@@ -625,4 +753,12 @@ True
 >>> g=wheel_graph(10)
 >>> sorted(g.degree())
 [3, 3, 3, 3, 3, 3, 3, 3, 3, 9]
+
+>>> dg=wheel_graph(10, create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> mg=wheel_graph(10, create_using=MultiGraph())
+>>> mg.edges()==g.edges()
+True
 

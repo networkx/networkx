@@ -60,12 +60,14 @@ def balanced_tree(r,h,create_using=None):
     
     """
     if r<2:
-        raise networkx.NetworkXError, \
-              "Invalid graph description, r should be >=2"
+        raise networkx.NetworkXError(\
+              "Invalid graph description, r should be >=2")
     if h<1:
-        raise networkx.NetworkXError, \
-              "Invalid graph description, h should be >=1"
+        raise networkx.NetworkXError(\
+              "Invalid graph description, h should be >=1")
     
+    if create_using is not None and create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
     G=empty_graph(0,create_using)
     G.name="balanced_tree(%d,%d)"%(r,h)
 
@@ -117,11 +119,11 @@ def barbell_graph(m1,m2,create_using=None):
 
     """
     if m1<2:
-        raise networkx.NetworkXError, \
-              "Invalid graph description, m1 should be >=2"
+        raise networkx.NetworkXError(\
+              "Invalid graph description, m1 should be >=2")
     if m2<0:
-        raise networkx.NetworkXError, \
-              "Invalid graph description, m2 should be >=0"
+        raise networkx.NetworkXError(\
+              "Invalid graph description, m2 should be >=0")
 
     # left barbell
     G=complete_graph(m1,create_using)
@@ -145,6 +147,8 @@ def complete_graph(n,create_using=None):
     Node labels are the integers 0 to n-1.
 
     """
+    if create_using is not None and create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n,create_using)
     G.name="complete_graph(%d)"%n
     for u in xrange(n):
@@ -162,6 +166,8 @@ def complete_bipartite_graph(n1,n2,create_using=None):
     Node labels are the integers 0 to n1+n2-1
     
     """
+    if create_using is not None and create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n1+n2,create_using)
     G.name="complete_bipartite_graph(%d,%d)"%(n1,n2)
     for v1 in xrange(n1):
@@ -205,6 +211,11 @@ def dorogovtsev_goltsev_mendes_graph(n,create_using=None):
     See: arXiv:/cond-mat/0112143 by Dorogovtsev, Goltsev and Mendes.
     
     """
+    if create_using is not None:
+        if create_using.is_directed():
+            raise networkx.NetworkXError("Directed Graph not supported")
+        if create_using.is_multigraph():
+            raise networkx.NetworkXError("Multigraph not supported")
     G=empty_graph(0,create_using)
     G.name="Dorogovtsev-Goltsev-Mendes Graph"
     G.add_edge(0,1)
@@ -280,14 +291,19 @@ def grid_2d_graph(m,n,periodic=False,create_using=None):
     columns=range(n)
     G.add_nodes_from( (i,j) for i in rows for j in columns )
     G.add_edges_from( ((i,j),(i-1,j)) for i in rows for j in columns if i>0 )
-    G.add_edges_from( ((i,j),(i+1,j)) for i in rows for j in columns if i<m-1 )
     G.add_edges_from( ((i,j),(i,j-1)) for i in rows for j in columns if j>0 )
-    G.add_edges_from( ((i,j),(i,j+1)) for i in rows for j in columns if j<n-1 )
+    if G.is_directed():
+        G.add_edges_from( ((i,j),(i+1,j)) for i in rows for j in columns if i<m-1 )
+        G.add_edges_from( ((i,j),(i,j+1)) for i in rows for j in columns if j<n-1 )
     if periodic:
-        if n>1:
+        if n>2:
             G.add_edges_from( ((i,0),(i,n-1)) for i in rows )
-        if m>1:
+            if G.is_directed():
+                G.add_edges_from( ((i,n-1),(i,0)) for i in rows )
+        if m>2:
             G.add_edges_from( ((0,j),(m-1,j)) for j in columns )
+            if G.is_directed():
+                G.add_edges_from( ((m-1,j),(0,j)) for j in columns )
         G.name="periodic_grid_2d_graph(%d,%d)"%(m,n)
     return G
 
@@ -304,16 +320,18 @@ def grid_graph(dim,periodic=False,create_using=None):
 
     """    
     from networkx.utils import is_list_of_ints
+    if create_using is not None and create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
     dlabel="%s"%dim
     if dim==[]:
         G=empty_graph(0,create_using)
         G.name="grid_graph(%s)"%dim
         return G
     if not is_list_of_ints(dim):
-        raise networkx.NetworkXError,"dim is not a list of integers"
+        raise networkx.NetworkXError("dim is not a list of integers")
     if min(dim)<=0:
-        raise networkx.NetworkXError,\
-              "dim is not a list of strictly positive integers"       
+        raise networkx.NetworkXError(\
+              "dim is not a list of strictly positive integers")      
     if periodic:
         func=cycle_graph
     else:
@@ -355,6 +373,8 @@ def ladder_graph(n,create_using=None):
     Node labels are the integers 0 to 2*n - 1.
     
     """
+    if create_using is not None and create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
     G=empty_graph(2*n,create_using)
     G.name="ladder_graph_(%d)"%n 
     G.add_edges_from([(v,v+1) for v in xrange(n-1)])
@@ -380,11 +400,11 @@ def lollipop_graph(m,n,create_using=None):
     
     """
     if m<2:
-        raise networkx.NetworkXError, \
-              "Invalid graph description, m should be >=2"
+        raise networkx.NetworkXError(\
+              "Invalid graph description, m should be >=2")
     if n<0:
-        raise networkx.NetworkXError, \
-              "Invalid graph description, n should be >=0"
+        raise networkx.NetworkXError(\
+              "Invalid graph description, n should be >=0")
     # the ball
     G=complete_graph(m,create_using)
     # the stick
@@ -453,4 +473,4 @@ def wheel_graph(n,create_using=None):
     if n>2:
         G.add_edge(1,n-1)
     return G
-                        
+
