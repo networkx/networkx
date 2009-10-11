@@ -42,7 +42,7 @@ def gn_graph(n,kernel=None,create_using=None,seed=None):
         The number of nodes for the generated graph.
     kernel : function
         The attachment kernel.
-    create_using : graph instance, optional
+    create_using : graph, optional (default DiGraph)
         Return graph of this type. The instance will be cleared.
     seed : hashable object, optional
         The seed for the random number generator.
@@ -64,6 +64,8 @@ def gn_graph(n,kernel=None,create_using=None,seed=None):
     """
     if create_using is None:
         create_using = networkx.DiGraph()
+    elif not create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph required in create_using")
 
     if kernel is None:
         kernel = lambda x: x
@@ -106,7 +108,7 @@ def gnr_graph(n,p,create_using=None,seed=None):
         The number of nodes for the generated graph.
     p : float
         The redirection probability.
-    create_using : graph instance, optional
+    create_using : graph, optional (default DiGraph)
         Return graph of this type. The instance will be cleared.
     seed : hashable object, optional
         The seed for the random number generator.
@@ -124,6 +126,8 @@ def gnr_graph(n,p,create_using=None,seed=None):
     """
     if create_using is None:
         create_using = networkx.DiGraph()
+    elif not create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph required in create_using")
 
     if not seed is None:
         random.seed(seed)
@@ -154,7 +158,7 @@ def gnc_graph(n,create_using=None,seed=None):
     ----------
     n : int
         The number of nodes for the generated graph.
-    create_using : graph instance, optional
+    create_using : graph, optional (default DiGraph)
         Return graph of this type. The instance will be cleared.
     seed : hashable object, optional
         The seed for the random number generator.
@@ -167,6 +171,8 @@ def gnc_graph(n,create_using=None,seed=None):
     """
     if create_using is None:
         create_using = networkx.DiGraph()
+    elif not create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph required in create_using")
 
     if not seed is None:
         random.seed(seed)
@@ -215,7 +221,7 @@ def scale_free_graph(n,
         Bias for choosing ndoes from in-degree distribution.
     delta_out : float
         Bias for choosing ndoes from out-degree distribution.
-    create_using : graph instance, optional
+    create_using : graph, optional (default MultiDiGraph)
         Use this graph instance to start the process (default=3-cycle).
     seed : integer, optional
         Seed for random number generator
@@ -254,6 +260,9 @@ def scale_free_graph(n,
     else:
         # keep existing graph structure?
         G = create_using
+        if not (G.is_directed() and G.is_multigraph()):
+            raise networkx.NetworkXError(\
+                  "MultiDiGraph required in create_using")
 
     if alpha <= 0:
         raise ValueError('alpha must be >= 0.')
