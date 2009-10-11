@@ -290,3 +290,14 @@ True
 69
 >>> G.degree()==46*[3]
 True
+
+
+Test create_using with directed or multigraphs on small graphs
+
+>>> DG=tutte_graph(create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+>>> MG=tutte_graph(create_using=MultiGraph())
+>>> MG.edges()==G.edges()
+True

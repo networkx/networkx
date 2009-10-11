@@ -40,6 +40,16 @@ from networkx.exception import NetworkXError
 #------------------------------------------------------------------------------
 #   Tools for creating small graphs
 #------------------------------------------------------------------------------
+def make_small_undirected_graph(graph_description, create_using=None):
+    """
+    Return a small undirected graph described by graph_description.
+
+    See make_small_graph.
+    """
+    if create_using is not None and create_using.is_directed():
+        raise NetworkXError("Directed Graph not supported")
+    return make_small_graph(graph_description, create_using)
+
 def make_small_graph(graph_description, create_using=None):
     """
     Return the small graph described by graph_description.
@@ -48,7 +58,7 @@ def make_small_graph(graph_description, create_using=None):
 
     Here ltype is one of "adjacencylist" or "edgelist",
     name is the name of the graph and n the number of nodes.
-    This constructs a graph of  n nodes with integer labels 1,..,n.
+    This constructs a graph of n nodes with integer labels 0,..,n-1.
     
     If ltype="adjacencylist"  then xlist is an adjacency list
     with exactly n entries, in with the j'th entry (which can be empty)
@@ -131,6 +141,8 @@ def LCF_graph(n,shift_list,repeats,create_using=None):
     and references.
     
     """
+    if create_using is not None and create_using.is_directed():
+        raise NetworkXError("Directed Graph not supported")
 
     if n <= 0:
         return empty_graph(0, create_using)
@@ -166,7 +178,7 @@ def bull_graph(create_using=None):
         5,
         [[2,3],[1,3,4],[1,2,5],[2],[3]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
 
 def chvatal_graph(create_using=None):
@@ -179,7 +191,7 @@ def chvatal_graph(create_using=None):
          [6,9],[11,12],[11,12],[9,12],
          [11],[11,12],[],[]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
 
 def cubical_graph(create_using=None):
@@ -191,7 +203,7 @@ def cubical_graph(create_using=None):
         [[2,4,5],[1,3,8],[2,4,7],[1,3,6],
          [1,6,8],[4,5,7],[3,6,8],[2,5,7]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
 
 def desargues_graph(create_using=None):
@@ -208,7 +220,7 @@ def diamond_graph(create_using=None):
         4,
         [[2,3],[1,3,4],[1,2,4],[2,3]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
 
 def dodecahedral_graph(create_using=None):
@@ -245,7 +257,7 @@ def house_graph(create_using=None):
         5,
         [[2,3],[1,4],[1,4,5],[2,3,5],[3,4]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
 
 def house_x_graph(create_using=None):
@@ -256,7 +268,7 @@ def house_x_graph(create_using=None):
         5,
         [[2,3,4],[1,3,4],[1,2,4,5],[1,2,3,5],[3,4]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
 
 def icosahedral_graph(create_using=None):
@@ -269,7 +281,7 @@ def icosahedral_graph(create_using=None):
          [6,7,11,12],[7,12],[],[9,10,11,12],
          [10],[11],[12],[]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
     
 
@@ -291,7 +303,7 @@ def krackhardt_kite_graph(create_using=None):
         [[2,3,4,6],[1,4,5,7],[1,4,6],[1,2,3,5,6,7],[2,4,7],
          [1,3,4,7,8],[2,4,5,6,8],[6,7,9],[8,10],[9]]
          ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
 
 def moebius_kantor_graph(create_using=None):
@@ -308,7 +320,7 @@ def octahedral_graph(create_using=None):
         6,
         [[2,3,4,5],[3,4,6],[5,6],[5,6],[6],[]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
     
 def pappus_graph():
@@ -326,7 +338,7 @@ def petersen_graph(create_using=None):
         [[2,5,6],[1,3,7],[2,4,8],[3,5,9],[4,1,10],[1,8,9],[2,9,10],
          [3,6,10],[4,6,7],[5,7,8]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
 
 
@@ -366,7 +378,7 @@ def truncated_cube_graph(create_using=None):
          [18,19],[21],[20],[24],
          [22],[23],[24],[]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
 
 def truncated_tetrahedron_graph(create_using=None):
@@ -393,6 +405,6 @@ def tutte_graph(create_using=None):
          [37],[38,40],[39],[],[],
          [42,45],[43],[44,46],[45],[],[]]
         ]
-    G=make_small_graph(description, create_using)
+    G=make_small_undirected_graph(description, create_using)
     return G
 

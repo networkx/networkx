@@ -293,6 +293,8 @@ def threshold_graph(creation_sequence, create_using=None):
         
     if create_using is None:
         G = networkx.Graph()
+    elif create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
     else:
         G = create_using
         G.clear()
@@ -306,7 +308,7 @@ def threshold_graph(creation_sequence, create_using=None):
         (v,node_type)=ci.pop(0)
         if node_type=='d': # dominating type, connect to all existing nodes
             for u in G.nodes(): 
-                G.add_edge(v,u) # will silently ignore self loop
+                G.add_edge(v,u) 
         G.add_node(v)
     return G
 
