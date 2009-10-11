@@ -41,11 +41,17 @@ True
 >>> is_valid_degree_sequence(z)
 True
 
+>>> DG=configuration_model(z,create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+
 >>> G=havel_hakimi_graph(z)
 >>> G=configuration_model(z)
 >>> z=[1000,3,3,3,3,2,2,2,1,1,1]
 >>> is_valid_degree_sequence(z)
 False
+
 
 expected_degree_graph
 ---------------------
@@ -67,6 +73,10 @@ True
 >>> is_isomorphic(G1,G2)
 True
 
+>>> DG=expected_degree_graph(z,create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
 
 
 Havel-Hakimi Construction
@@ -99,6 +109,17 @@ NetworkXError: Invalid degree sequence
 True
 >>> G=havel_hakimi_graph(z)
 
+>>> G=havel_hakimi_graph(z,create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+
+>>> G=havel_hakimi_graph(z,create_using=MultiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Havel-Hakimi requires simple graph
+
+
 Degree Sequence Tree
 --------------------
 
@@ -110,6 +131,11 @@ True
 True
 >>> len(G.edges())==sum(z)/2
 True
+
+>>> G=degree_sequence_tree(z,create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
 
 >>> z=[1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
 >>> is_valid_degree_sequence(z)
@@ -186,6 +212,11 @@ True
 >>> degs.reverse()
 >>> degs == z
 True
+
+>>> DG=li_smax_graph(z,create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
 
 
 S-metric

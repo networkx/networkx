@@ -45,7 +45,7 @@ def configuration_model(deg_sequence,create_using=None,seed=None):
     ----------
     deg_sequence :  list of integers 
         Each list entry corresponds to the degree of a node.
-    create_using : graph instance, optional
+    create_using : graph, optional (default MultiGraph)
        Return graph of this type. The instance will be cleared.
     seed : hashable object, optional
         Seed for random number generator.   
@@ -101,10 +101,12 @@ def configuration_model(deg_sequence,create_using=None,seed=None):
     >>> G.remove_edges_from(G.selfloop_edges())
     """
     if not sum(deg_sequence)%2 ==0:
-        raise networkx.NetworkXError, 'Invalid degree sequence'
+        raise networkx.NetworkXError('Invalid degree sequence')
 
     if create_using is None:
         create_using = networkx.MultiGraph()
+    elif create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
 
     if not seed is None:
         random.seed(seed)
@@ -145,7 +147,7 @@ def expected_degree_graph(w, create_using=None, seed=None):
     ----------
     w : list 
         The list of expected degrees.
-    create_using : graph, optional
+    create_using : graph, optional (default Graph)
         Return graph of this type. The instance will be cleared.
     seed : hashable object, optional
         The seed for the random number generator.
@@ -163,6 +165,8 @@ def expected_degree_graph(w, create_using=None, seed=None):
 	"""
     n = len(w)
     # allow self loops
+    if create_using is not None and create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
     G=networkx.empty_graph(n,create_using)
     G.name="random_expected_degree_graph"
 
@@ -173,9 +177,9 @@ def expected_degree_graph(w, create_using=None, seed=None):
     rho = 1.0 / float(d) # Vol(G)
     for i in xrange(n):
         if (w[i])**2 > d:
-            raise networkx.NetworkXError,\
+            raise networkx.NetworkXError(\
                   "NetworkXError w[i]**2 must be <= sum(w)\
-                  for all i, w[%d] = %f, sum(w) = %f" % (i,w[i],d)
+                  for all i, w[%d] = %f, sum(w) = %f" % (i,w[i],d))
 
     if seed is not None:
         random.seed(seed)
@@ -195,9 +199,9 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
     ----------
     deg_sequence: list of integers
         Each integer corresponds to the degree of a node (need not be sorted).
-    create_using : graph, optional
+    create_using : graph, optional (default Graph)
         Return graph of this type. The instance will be cleared.
-
+        Multigraphs and directed graphs are not allowed.
 
     Raises
     ------
@@ -224,11 +228,15 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
            Chapman and Hall/CRC, 1996.
     """
     if not is_valid_degree_sequence(deg_sequence):
-        raise networkx.NetworkXError, 'Invalid degree sequence'
-
+        raise networkx.NetworkXError('Invalid degree sequence')
+    if create_using is not None:
+        if create_using.is_directed():
+            raise networkx.NetworkXError("Directed Graph not supported")
+        if create_using.is_multigraph():
+            raise networkx.NetworkXError("Havel-Hakimi requires simple graph")
 
     N=len(deg_sequence)
-    G=networkx.empty_graph(N,create_using) # always return a simple graph
+    G=networkx.empty_graph(N,create_using) 
 
     if N==0 or max(deg_sequence)==0: # done if no edges
         return G 
@@ -268,7 +276,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
     joint_degree_sequence : list of integer pairs
         Each list entry corresponds to the independent edge degree and
         triangle degree of a node.
-    create_using : graph instance, optional
+    create_using : graph, optional (default MultiGraph)
         Return graph of this type. The instance will be cleared.
     seed : hashable object, optional
         The seed for the random number generator.
@@ -324,6 +332,8 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
     """
     if create_using is None:
         create_using = networkx.MultiGraph()
+    elif create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
 
     if not seed is None:
         random.seed(seed)
@@ -341,7 +351,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
             tlist.append(n)
 
     if len(ilist)%2 != 0 or len(tlist)%3 != 0:
-        raise networkx.NetworkXError, 'Invalid degree sequence'
+        raise networkx.NetworkXError('Invalid degree sequence')
 
     random.shuffle(ilist)
     random.shuffle(tlist)
@@ -367,7 +377,9 @@ def degree_sequence_tree(deg_sequence,create_using=None):
     """
 
     if not len(deg_sequence)-sum(deg_sequence)/2.0 == 1.0:
-        raise networkx.NetworkXError,"Degree sequence invalid"
+        raise networkx.NetworkXError("Degree sequence invalid")
+    if create_using is not None and create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
 
     # single node tree
     if len(deg_sequence)==1:
@@ -485,8 +497,8 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
         if is_valid_degree_sequence(seq):
             return seq
         tries+=1
-    raise networkx.NetworkXError, \
-          "Exceeded max (%d) attempts at a valid sequence."%max_tries
+    raise networkx.NetworkXError(\
+          "Exceeded max (%d) attempts at a valid sequence."%max_tries)
 
 def double_edge_swap(G, nswap=1):
     """Attempt nswap double-edge swaps on the graph G.
@@ -515,8 +527,7 @@ def double_edge_swap(G, nswap=1):
     dk=deg.keys() # key labels 
     cdf=networkx.utils.cumulative_distribution(deg.values())  # cdf of degree
     if len(cdf)<4:
-        raise networkx.NetworkXError, \
-          "Graph has less than four nodes."
+        raise networkx.NetworkXError("Graph has less than four nodes.")
     while n < nswap:
 #        if random.random() < 0.5: continue # trick to avoid periodicities?
         # pick two randon edges without creating edge list
@@ -576,8 +587,7 @@ def connected_double_edge_swap(G, nswap=1):
     ideg=G.degree()
     cdf=networkx.utils.cumulative_distribution(G.degree()) 
     if len(cdf)<4:
-        raise networkx.NetworkXError, \
-          "Graph has less than four nodes."
+        raise networkx.NetworkXError("Graph has less than four nodes.")
     window=1
     while n < nswap:
         wcount=0
@@ -682,11 +692,10 @@ def li_smax_graph(degree_seq, create_using=None):
     Several optimizations are included in this code and it may be hard to read.
     Commented code to come.
     """
-    if create_using is None:
-        create_using = networkx.Graph()
-    
     if not is_valid_degree_sequence(degree_seq):
-        raise networkx.NetworkXError, 'Invalid degree sequence'
+        raise networkx.NetworkXError('Invalid degree sequence')
+    if create_using is not None and create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
 
     degree_seq.sort() # make sure it's sorted
     degree_seq.reverse()
@@ -768,7 +777,8 @@ def li_smax_graph(degree_seq, create_using=None):
                 #print "removing because tree condition    "
                 continue
             elif db < 2*bsize -wa:
-                raise networkx.NetworkXError, "THIS SHOULD NOT HAPPEN! - not graphable"
+                raise networkx.NetworkXError(\
+                        "THIS SHOULD NOT HAPPEN!-not graphable")
                 continue
             elif wa == 2 and bsize > 0:
                 #print "removing because disconnected  cluster"
@@ -802,7 +812,9 @@ def connected_smax_graph(degree_seq, create_using=None):
     # incomplete implementation
     
     if not is_valid_degree_sequence(degree_seq):
-        raise networkx.NetworkXError, 'Invalid degree sequence'
+        raise networkx.NetworkXError('Invalid degree sequence')
+    if create_using is not None and create_using.is_directed():
+        raise networkx.NetworkXError("Directed Graph not supported")
    
     # build dictionary of node id and degree, sorted by degree, largest first
     degree_seq.sort() 

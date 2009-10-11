@@ -50,6 +50,10 @@ def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
     """
     if create_using is None:
         create_using=networkx.MultiGraph()
+    elif create_using.is_directed():
+        raise networkx.NetworkXError(\
+                "Directed Graph not supported")
+        
 
     G=networkx.empty_graph(0,create_using)
 
@@ -63,9 +67,9 @@ def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
     sumb=sum(bseq)
 
     if not suma==sumb:
-        raise networkx.NetworkXError, \
+        raise networkx.NetworkXError(\
               'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'\
-              %(suma,sumb)
+              %(suma,sumb))
 
     G.add_nodes_from(range(0,lena+lenb))
 
@@ -118,6 +122,9 @@ def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
     """
     if create_using is None:
         create_using=networkx.MultiGraph()
+    elif create_using.is_directed():
+        raise networkx.NetworkXError(\
+                "Directed Graph not supported")
 
     G=networkx.empty_graph(0,create_using)
 
@@ -129,9 +136,9 @@ def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb=sum(bseq)
 
     if not suma==sumb:
-        raise networkx.NetworkXError, \
+        raise networkx.NetworkXError(\
               'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'\
-              %(suma,sumb)
+              %(suma,sumb))
 
     G.add_nodes_from(range(0,naseq)) # one vertex type (a)
     G.add_nodes_from(range(naseq,naseq+nbseq)) # the other type (b)
@@ -183,6 +190,9 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     """
     if create_using is None:
         create_using=networkx.MultiGraph()
+    elif create_using.is_directed():
+        raise networkx.NetworkXError(\
+                "Directed Graph not supported")
 
     G=networkx.empty_graph(0,create_using)
 
@@ -194,9 +204,9 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     sumb=sum(bseq)
 
     if not suma==sumb:
-        raise networkx.NetworkXError, \
+        raise networkx.NetworkXError(\
               'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'\
-              %(suma,sumb)
+              %(suma,sumb))
 
     G.add_nodes_from(range(0,lena+lenb))
     
@@ -250,6 +260,9 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
     """
     if create_using is None:
         create_using=networkx.MultiGraph()
+    elif create_using.is_directed():
+        raise networkx.NetworkXError(\
+                "Directed Graph not supported")
 
     G=networkx.empty_graph(0,create_using)
 
@@ -260,9 +273,9 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
     sumb=sum(bseq)
 
     if not suma==sumb:
-        raise networkx.NetworkXError, \
+        raise networkx.NetworkXError(\
               'invalid degree sequences, sum(aseq)!=sum(bseq),%s,%s'\
-              %(suma,sumb)
+              %(suma,sumb))
 
     G.add_nodes_from(range(0,naseq)) # one vertex type (a)
     G.add_nodes_from(range(naseq,naseq+nbseq)) # the other type (b)
@@ -291,7 +304,7 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
     G.name="bipartite_alternating_havel_hakimi_graph"
     return G
 
-def bipartite_preferential_attachment_graph(aseq,p,create_using=None):
+def bipartite_preferential_attachment_graph(aseq,p,create_using=None,seed=None):
     """Create a bipartite graph with a preferential attachment model
     from a given single degree sequence.
 
@@ -303,6 +316,8 @@ def bipartite_preferential_attachment_graph(aseq,p,create_using=None):
        Probability that a new bottom node is added.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
+    seed : integer, optional
+       Seed for random number generator. 
 
     Notes
     -----
@@ -324,11 +339,17 @@ def bipartite_preferential_attachment_graph(aseq,p,create_using=None):
     """
     if create_using is None:
         create_using=networkx.MultiGraph()
+    elif create_using.is_directed():
+        raise networkx.NetworkXError(\
+                "Directed Graph not supported")
+
+    if p > 1: 
+        raise networkx.NetworkXError("probability %s > 1"%(p))
 
     G=networkx.empty_graph(0,create_using)
 
-    if p > 1: 
-        raise networkx.NetworkXError, "probability %s > 1"%(p)
+    if not seed is None:
+        random.seed(seed)    
 
     naseq=len(aseq)
     G.add_nodes_from(range(0,naseq))
@@ -352,7 +373,7 @@ def bipartite_preferential_attachment_graph(aseq,p,create_using=None):
     return G
 
 
-def bipartite_random_regular_graph(d, n, create_using=None):
+def bipartite_random_regular_graph(d, n, create_using=None,seed=None):
     """UNTESTED: Generate a random bipartite graph.
 
     Parameters
@@ -363,6 +384,8 @@ def bipartite_random_regular_graph(d, n, create_using=None):
       Number of nodes in graph.
     create_using : NetworkX graph instance, optional
       Return graph of this type.
+    seed : integer, optional
+       Seed for random number generator. 
 
     Notes
     ------
@@ -401,6 +424,12 @@ def bipartite_random_regular_graph(d, n, create_using=None):
 
     if create_using is None:
         create_using=networkx.MultiGraph()
+    elif create_using.is_directed():
+        raise networkx.NetworkXError(\
+                "Directed Graph not supported")
+
+    if not seed is None:
+        random.seed(seed)    
 
     G=networkx.empty_graph(0,create_using)
 

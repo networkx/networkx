@@ -41,6 +41,10 @@ NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
 >>> GD.number_of_nodes()
 3
 
+>>> DG=bipartite_configuration_model(aseq,bseq,create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
 
 Havel-Hakimi Graph
 ------------------
@@ -73,6 +77,10 @@ NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
 >>> GD.number_of_nodes()
 4
 
+>>> DG=bipartite_havel_hakimi_graph(aseq,bseq,create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
 
 
 Reverse Havel-Hakimi Graph
@@ -113,6 +121,10 @@ NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
 >>> GD.number_of_nodes()
 3
 
+>>> DG=bipartite_reverse_havel_hakimi_graph(aseq,bseq,create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
 
 
 Alternating Havel-Hakimi Graph
@@ -152,12 +164,22 @@ NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
 >>> GD.number_of_nodes()
 3
 
+>>> DG=bipartite_alternating_havel_hakimi_graph(aseq,bseq,create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
+
 
 Preferential Attachment
 -----------------------
 
 >>> aseq=[3,2,1,1]
 >>> G=bipartite_preferential_attachment_graph(aseq,0.5)
+
+>>> DG=bipartite_preferential_attachment_graph(aseq,0.5,create_using=DiGraph())
+Traceback (most recent call last):
+...
+NetworkXError: Directed Graph not supported
 
 
 Random Regular Bipartite
