@@ -216,8 +216,9 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
     >>> G=nx.read_multiline_adjlist(fh)
     """
     try:
-        from ast import literal_eval as eval
+        from ast import literal_eval 
     except:
+        literal_eval=eval
         pass # use potentially unsafe built-in eval 
 
     if create_using is None:
@@ -276,7 +277,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
                                     %(data, edgetype))
             else:
                 try: # try to evaluate 
-                    edgedata=eval(data)
+                    edgedata=literal_eval(data)
                 except:
                     edgedata={}
             G.add_edge(u,v,**edgedata)  

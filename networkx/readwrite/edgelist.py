@@ -150,9 +150,9 @@ def read_edgelist(path, comments="#", delimiter=' ',
 
     """
     try:
-        from ast import literal_eval as eval
+        from ast import literal_eval
     except:
-        pass # use potentially unsafe built-in eval 
+        literal_eval=eval # use potentially unsafe built-in eval 
     if create_using is None:
         G=networkx.Graph()
     else:
@@ -187,7 +187,7 @@ def read_edgelist(path, comments="#", delimiter=' ',
                                     %(data, edgetype))
         else:
             try: # try to evaluate 
-                edgedata=eval(data)
+                edgedata=literal_eval(data)
             except:
                 edgedata={}
         G.add_edge(u,v,**edgedata)  
