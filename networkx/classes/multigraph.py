@@ -401,11 +401,12 @@ class MultiGraph(Graph):
                 "The edge %s-%s is not in the graph."%(u,v))
         # remove the edge with specified data
         if key is None:
-            key=d.keys()[0] # first edge key in dictionary
-        try:
-            del d[key]
-        except (KeyError):
-            raise NetworkXError(
+            d.popitem() 
+        else:
+            try:
+                del d[key]
+            except (KeyError):
+                raise NetworkXError(
                 "The edge %s-%s with key %s is not in the graph."%(u,v,key))
         if len(d)==0: 
             # remove the key entries if last edge
@@ -453,13 +454,10 @@ class MultiGraph(Graph):
         []
         """
         for e in ebunch:
-            u,v = e[:2]
-            if u in self.adj and v in self.adj[u]:
-                try:
-                    key=e[2]
-                except IndexError:
-                    key=None
-                self.remove_edge(u,v,key=key)
+            try:
+                self.remove_edge(*e)
+            except NetworkXError:
+                pass
 
 
     def has_edge(self, u, v, key=None):
