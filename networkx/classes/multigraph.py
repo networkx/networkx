@@ -352,15 +352,15 @@ class MultiGraph(Graph):
 
 
     def remove_edge(self, u, v, key=None):
-        """Remove the edge between u and v.
+        """Remove an edge between u and v.  
 
         Parameters
         ----------
         u,v: nodes 
-            Remove edge or edges between nodes u and v.
-        key : hashable identifier, optional (default= None)
-            Used to distinguish multiedges between a pair of nodes.  
-            If None, remove all edges between u and v.
+            Remove an edge between nodes u and v.
+        key : hashable identifier, optional (default=None)
+            Used to distinguish multiple edges between a pair of nodes.  
+            If None remove a single (abritrary) edge between u and v.
 
         Raises
         ------
@@ -373,12 +373,25 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.MultiGraph()   # or MultiDiGraph, etc
+        >>> G = nx.MultiGraph()  
         >>> G.add_path([0,1,2,3])
         >>> G.remove_edge(0,1)
         >>> e = (1,2)
         >>> G.remove_edge(*e) # unpacks e from an edge tuple
-        >>> G.remove_edge(2,3,key=0) # identify an individual edge with key
+
+        For multiple edges
+
+        >>> G = nx.MultiGraph()   # or MultiDiGraph, etc
+        >>> G.add_edges_from([(1,2),(1,2),(1,2)])
+        >>> G.remove_edge(1,2) # remove a single (arbitrary) edge
+        
+        For edges with keys
+
+        >>> G = nx.MultiGraph()   # or MultiDiGraph, etc        
+        >>> G.add_edge(1,2,key='first')
+        >>> G.add_edge(1,2,key='second')
+        >>> G.remove_edge(1,2,key='second')
+
         """
         try:
             d=self.adj[u][v]
@@ -422,10 +435,21 @@ class MultiGraph(Graph):
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G = nx.MultiGraph() # or MultiDiGraph
         >>> G.add_path([0,1,2,3])
         >>> ebunch=[(1,2),(2,3)]
         >>> G.remove_edges_from(ebunch) 
+
+        Removing multiple copies of edges
+
+        >>> G = nx.MultiGraph() 
+        >>> G.add_edges_from([(1,2),(1,2),(1,2)])
+        >>> G.remove_edges_from([(1,2),(1,2)])
+        >>> print G.edges()
+        [(1, 2)]
+        >>> G.remove_edges_from([(1,2),(1,2)]) # silently ignore extra copy
+        >>> print G.edges() # now empty graph
+        []
         """
         for e in ebunch:
             u,v = e[:2]

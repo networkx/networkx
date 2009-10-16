@@ -199,17 +199,21 @@ class TestMultiGraph(TestGraph):
         assert_equal(G.selfloop_edges(),[(0,0)])
         assert_equal(G.selfloop_edges(data=True),[(0,0,{})])
         assert_equal(G.number_of_selfloops(),1)
+
+    def test_selfloops2(self):
+        G=self.K3
+        G.add_edge(0,0)
         G.add_edge(0,0)
         G.add_edge(0,0,key='parallel edge')
         G.remove_edge(0,0,key='parallel edge')
         assert_equal(G.number_of_edges(0,0),2)
         G.remove_edge(0,0)
-        assert_equal(G.number_of_edges(0,0),0)
-        G.add_edge(1,1)
-        G.remove_node(1)
-        G.add_edge(0,0)
-        G.add_edge(1,1)
-        G.remove_nodes_from([0,1])
+        assert_equal(G.number_of_edges(0,0),1)
+#         G.add_edge(1,1)
+#         G.remove_node(1)
+#         G.add_edge(0,0)
+#         G.add_edge(1,1)
+#         G.remove_nodes_from([0,1])
 
     def test_edge_attr4(self):
         G=self.Graph()
