@@ -365,7 +365,8 @@ class MultiGraph(Graph):
         Raises
         ------
         NetworkXError
-            If there is not an edge between u and v.
+            If there is not an edge between u and v, or
+            if there is no edge with the specified key.
 
         See Also
         --------
