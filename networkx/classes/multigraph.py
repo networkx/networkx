@@ -380,21 +380,24 @@ class MultiGraph(Graph):
         >>> G.remove_edge(*e) # unpacks e from an edge tuple
         >>> G.remove_edge(2,3,key=0) # identify an individual edge with key
         """
-        if key is None: 
-            super(MultiGraph, self).remove_edge(u,v)
-        else:
-            try:
-                d=self.adj[u][v]
-                # remove the edge with specified data
-                del d[key]
-                if len(d)==0: 
-                    # remove the key entries if last edge
-                    del self.adj[u][v]
-                    if u!=v:  # check for selfloop 
-                        del self.adj[v][u]
-            except (KeyError,ValueError): 
-                raise NetworkXError(
-                    "The edge %s-%s with key %s not in the graph."%(u,v,key))
+        try:
+            d=self.adj[u][v]
+        except (KeyError):
+            raise NetworkXError(
+                "The edge %s-%s is not in the graph."%(u,v))
+        # remove the edge with specified data
+        if key is None:
+            key=d.keys()[0] # first edge key in dictionary
+        try:
+            del d[key]
+        except (KeyError):
+            raise NetworkXError(
+                "The edge %s-%s with key %s is not in the graph."%(u,v,key))
+        if len(d)==0: 
+            # remove the key entries if last edge
+            del self.adj[u][v]
+            if u!=v:  # check for selfloop 
+                del self.adj[v][u]
 
 
     def remove_edges_from(self, ebunch):
