@@ -152,10 +152,12 @@ def to_agraph(N):
 
     if N.is_multigraph():
         for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
-            A.add_edge(u,v,key=str(key),**edgedata)
+            str_edgedata=dict((k,str(v)) for k,v in edgedata.iteritems())
+            A.add_edge(u,v,key=str(key),**str_edgedata)
     else:
         for u,v,edgedata in N.edges_iter(data=True):
-            A.add_edge(u,v,**edgedata)
+            str_edgedata=dict((k,str(v)) for k,v in edgedata.iteritems())
+            A.add_edge(u,v,**str_edgedata)
 
 
     return A
