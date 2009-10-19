@@ -182,12 +182,11 @@ def read_edgelist(path, comments="#", delimiter=' ',
                 raise TypeError("Failed to nodes %s,%s to type %s"\
                           %(u,v,nodetype))
         if edgetype is not None:
-#            try:
-            print u,v,data
-            edgedata={'weight':edgetype(data)}
-#            except:
-#                raise TypeError("Failed to convert edge data (%s) to type %s"\
-#                                    %(data, edgetype))
+            try:
+                edgedata={'weight':edgetype(data)}
+            except:
+                raise TypeError("Failed to convert edge data (%s) to type %s"\
+                                    %(data, edgetype))
         else:
             try: # try to evaluate 
                 edgedata=literal_eval(data)
