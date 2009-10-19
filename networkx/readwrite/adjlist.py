@@ -233,10 +233,12 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
     inp=_get_fh(path)        
 
     for line in inp:
-        line = line[:line.find(comments)].strip()
+        p=line.find(comments)
+        if p>=0:
+            line = line[:line.find(comments)]
         if not line: continue
         try:
-            (u,deg)=line.split(delimiter)
+            (u,deg)=line.strip().split(delimiter)
             deg=int(deg)
         except:
             raise TypeError("Failed to read node and degree on line (%s)"%line)
@@ -254,9 +256,11 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
                 except StopIteration:
                     msg = "Failed to find neighbor for node (%s)" % (u,)
                     raise TypeError(msg)
-                line = line[:line.find(comments)].strip()
+                p=line.find(comments)
+                if p>=0:
+                    line = line[:line.find(comments)]
                 if line: break
-            vlist=line.split(delimiter)
+            vlist=line.strip().split(delimiter)
             numb=len(vlist)
             if numb<1:
                 continue # isolated node
@@ -412,12 +416,11 @@ def read_adjlist(path, comments="#", delimiter=' ',
     fh=_get_fh(path)        
 
     for line in fh.readlines():
-        line = line[:line.find(comments)].strip()
+        p=line.find(comments)
+        if p>=0:
+            line = line[:line.find(comments)]
         if not len(line): continue
-#        if line.startswith("#") or line.startswith("\n"):
-#            continue
-#        line=line.strip() #remove trailing \n 
-        vlist=line.split(delimiter)
+        vlist=line.strip().split(delimiter)
         u=vlist.pop(0)
         # convert types
         if nodetype is not None:

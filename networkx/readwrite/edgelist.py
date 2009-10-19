@@ -165,10 +165,12 @@ def read_edgelist(path, comments="#", delimiter=' ',
     fh=_get_fh(path)
 
     for line in fh.readlines():
-        line = line[:line.find(comments)].strip()
+        p=line.find(comments)
+        if p>=0:
+            line = line[:line.find(comments)]
         if not len(line): continue
         # split line, should have 2 or more
-        s=line.split(delimiter)
+        s=line.strip().split(delimiter)
         u=s.pop(0)
         v=s.pop(0)
         data=' '.join(s)
@@ -180,11 +182,12 @@ def read_edgelist(path, comments="#", delimiter=' ',
                 raise TypeError("Failed to nodes %s,%s to type %s"\
                           %(u,v,nodetype))
         if edgetype is not None:
-            try:
-                edgedata={'weight':edgetype(data)}
-            except:
-                raise TypeError("Failed to convert edge data (%s) to type %s"\
-                                    %(data, edgetype))
+#            try:
+            print u,v,data
+            edgedata={'weight':edgetype(data)}
+#            except:
+#                raise TypeError("Failed to convert edge data (%s) to type %s"\
+#                                    %(data, edgetype))
         else:
             try: # try to evaluate 
                 edgedata=literal_eval(data)
