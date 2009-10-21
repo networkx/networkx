@@ -673,7 +673,7 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
         # do the multiplication y=Ax
         for n in x:
             for nbr in G[n]:
-                x[n]+=xlast[nbr]*G[n][nbr]['weight']
+                x[n]+=xlast[nbr]*G[n][nbr].get('weight',1)
         # normalize vector
         s=1.0/sum(x.values())
         for n in x: x[n]*=s
