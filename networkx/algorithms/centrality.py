@@ -105,7 +105,7 @@ def brandes_betweenness_centrality(G,normalized=True,weighted_edges=False):
                 S.append(v)
                 D[v] = dist
                 for w,edgedata in G[v].iteritems():
-                    vw_dist = D[v] + edgedata['weight']
+                    vw_dist = D[v] + edgedata.get('weight',1)
                     if w not in D and (w not in seen or vw_dist < seen[w]):
                         seen[w] = vw_dist
                         push(Q,(vw_dist,v,w))
@@ -449,7 +449,7 @@ def _brandes_betweenness_helper(G,root,weighted_edges):
             S.append(v)
             D[v] = dist
             for w,edgedata in G[v].iteritems(): 
-                vw_dist = D[v] + edgedata['weight']
+                vw_dist = D[v] + edgedata.get('weight',1)
                 if w not in D and (w not in seen or vw_dist < seen[w]):
                     seen[w] = vw_dist
                     sigma[w] = 0
