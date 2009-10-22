@@ -162,17 +162,20 @@ def to_pydot(N, strict=True):
     P = pydot.Dot(graph_type=graph_type,strict=strict)
 
     for n,nodedata in N.nodes_iter(data=True):
-        p=pydot.Node(str(n),**nodedata)
+        str_nodedata=dict((k,str(v)) for k,v in nodedata.iteritems())
+        p=pydot.Node(str(n),**str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
         for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
-            edge=pydot.Edge(str(u),str(v),key=key,**edgedata)
+            str_edgedata=dict((k,str(v)) for k,v in edgedata.iteritems())
+            edge=pydot.Edge(str(u),str(v),key=str(key),**str_edgedata)
             P.add_edge(edge)
         
     else:
         for u,v,edgedata in N.edges_iter(data=True):
-            edge=pydot.Edge(str(u),str(v),**edgedata)
+            str_edgedata=dict((k,str(v)) for k,v in edgedata.iteritems())
+            edge=pydot.Edge(str(u),str(v),**str_edgedata)
             P.add_edge(edge)
 
     try:
