@@ -24,3 +24,9 @@ class NetworkXException(Exception):
 class NetworkXError(NetworkXException):
     """Exception for a serious error in NetworkX"""
 
+class NetworkXPointlessConcept(NetworkXException):
+    """Harary, F. and Read, R. "Is the Null Graph a Pointless Concept?" 
+In Graphs and Combinatorics Conference, George Washington University.
+New York: Springer-Verlag, 1973.
+"""
+

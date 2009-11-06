@@ -63,7 +63,7 @@ __author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
                 release.authors['Swart'] )
 __license__  = release.license
 
-from exception import  NetworkXException, NetworkXError
+from exception import  *
 
 from algorithms import *
 from classes import *
