@@ -18,6 +18,8 @@ __all__ = ['betweenness_centrality',
            'edge_betweenness',
            'edge_load',
            'degree_centrality',
+           'in_degree_centrality',
+           'out_degree_centrality',
            'closeness_centrality',
            'eigenvector_centrality']
 
@@ -507,6 +509,19 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
     return between
 
 
+def _degree_centrality(degree,degree_iter,G,v=None):
+    """Internal function to consolidate *-degree centrality functions."""
+    if v is not None:
+        d = G.__getattribute__(degree)
+        return d(v)/(G.order()-1.0)
+    centrality={}
+    s=1.0/(G.order()-1.0)
+    d_iter = G.__getattribute__(degree_iter)
+    for n,deg in d_iter():
+        centrality[n]=deg*s
+    return centrality
+ 
+
 def degree_centrality(G,v=None):
     """Compute the degree centrality for nodes.
 
@@ -536,13 +551,61 @@ def degree_centrality(G,v=None):
     in the graph G.  That is, G.degree(v)/(G.order()-1).
 
     """
-    if v is not None:
-        return G.degree(v)/(G.order()-1.0)
-    degree_centrality={}
-    s=1.0/(G.order()-1.0)
-    for n,deg in G.degree_iter():
-        degree_centrality[n]=deg*s
-    return degree_centrality
+    return _degree_centrality('degree', 'degree_iter', G, v)
+
+
+def in_degree_centrality(G,v=None):
+    """Compute the in-degree centrality for nodes.
+
+    The in-degree centrality for a node v is the fraction of nodes its 
+    incoming edges are connected to.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph
+
+    v : node, optional
+        Return only the value for node `v'.
+
+    Returns
+    -------
+    nodes : dictionary
+        Dictionary of nodes with in-degree centrality as values.
+
+    See Also
+    --------
+    degree_centrality(), out_degree_centrality()
+
+    """
+    return _degree_centrality('in_degree', 'in_degree_iter', G, v)
+
+
+def out_degree_centrality(G,v=None):
+    """Compute the out-degree centrality for nodes.
+
+    The out-degree centrality for a node v is the fraction of nodes its 
+    outgoing edges are connected to.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph
+
+    v : node, optional
+        Return only the value for node `v'.
+
+    Returns
+    -------
+    nodes : dictionary
+        Dictionary of nodes with out-degree centrality as values.
+
+    See Also
+    --------
+    degree_centrality(), in_degree_centrality()
+
+    """
+    return _degree_centrality('out_degree', 'out_degree_iter', G, v)
 
 
 def closeness_centrality(G,v=None,weighted_edges=False):
