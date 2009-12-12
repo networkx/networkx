@@ -197,7 +197,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
      d 1
      e
 
-     Wiht edge data::
+     With edge data::
 
      # source target for XGraph or XDiGraph with edge data
      a 2
