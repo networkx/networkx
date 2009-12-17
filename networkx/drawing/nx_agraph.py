@@ -171,6 +171,12 @@ def write_dot(G,path):
        Filename or file handle to write.  
 
     """
+    try:
+        import pygraphviz
+    except ImportError:
+        raise ImportError, \
+          "write_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz"
+
     A=to_agraph(G)
     A.write(path)
     return

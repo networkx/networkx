@@ -36,6 +36,11 @@ def write_dot(G,path):
 
     Path can be a string or a file handle.
     """
+    try:
+        import pydot
+    except ImportError:
+        raise ImportError, \
+          "write_dot() requires pydot http://dkbza.org/pydot.html/"
     fh=_get_fh(path,'w')
     P=to_pydot(G)
     fh.write(P.to_string())

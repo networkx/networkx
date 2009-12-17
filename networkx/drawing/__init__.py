@@ -1,9 +1,23 @@
 # graph drawing and interface to graphviz
-from nx_pydot import *
-from nx_agraph import *
 from nx_pylab import *
+import nx_pylab
 from layout import *
 import layout
-import nx_pydot
+
+# graphviz interface
+# prefer pygraphviz/agraph (it's faster)
+from nx_agraph import *
 import nx_agraph
-import nx_pylab
+try:
+    import pydot
+    import nx_pydot    
+    from nx_pydot import *
+except:
+    pass
+
+try:
+    import pygraphviz
+    from nx_agraph import *
+except:    
+    pass 
+
