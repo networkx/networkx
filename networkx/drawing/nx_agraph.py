@@ -144,9 +144,7 @@ def to_agraph(N):
 
     # add nodes
     for n,nodedata in N.nodes(data=True):
-        A.add_node(n)
-        node=pygraphviz.Node(A,n)
-        node.attr.update(nodedata)
+        A.add_node(n,**nodedata)
 
     # loop over edges
 
