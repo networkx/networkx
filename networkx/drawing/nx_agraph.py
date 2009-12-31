@@ -181,17 +181,13 @@ def write_dot(G,path):
     A.write(path)
     return
 
-def read_dot(path,create_using=None):
+def read_dot(path):
     """Return a NetworkX graph from a dot file on path.
 
     Parameters
     ----------
     path : file or string
        File name or file handle to read.
-    create_using : Graph container, optional       
-       Use specified Graph container to build graph.  The default is
-       nx.Graph().
-
     """
     try:
         import pygraphviz
