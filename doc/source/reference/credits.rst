@@ -36,7 +36,8 @@ Thanks especially to the following contributors.
    labeling and associated routines, and reported bugs
 
  - Joel Miller tested and improved the connected components methods
-   and bugs and typos in the graph generators
+   fixed bugs and typos in the graph generators, and contributed
+   the random clustered graph generator.
 
  - Keith Briggs sorted out naming issues for random graphs and
    wrote dense_gnm_random_graph
@@ -63,20 +64,22 @@ Thanks especially to the following contributors.
  
  - Matteo Dell'Amico wrote the random regular graph generator.
 
- - Andrew Conway contributed ego_graph().
+ - Andrew Conway contributed ego_graph, eigenvector centrality,
+   line graph and much more.
 
  - Raf Guns wrote the GraphML writer.
 
  - Salim Fadhley and Matteo Dell'Amico contributed the A* algorithm.
 
--  Fabrice Desclaux contributed the Matplotlib edge labeling code.
+ - Fabrice Desclaux contributed the Matplotlib edge labeling code.
 
--  Arpad Horvath fixed the barabasi_albert_graph() generator.
+ - Arpad Horvath fixed the barabasi_albert_graph() generator.
 
--  Minh Van Nguyen contributed the connected_watts_strogatz_graph()
+ - Minh Van Nguyen contributed the connected_watts_strogatz_graph()
    and documentation for the Graph and MultiGraph classes.
 
--  Willem Ligtenberg contributed the directed scale free graph
+ - Willem Ligtenberg contributed the directed scale free graph
    generator.
+
 
 
