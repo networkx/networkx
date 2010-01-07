@@ -387,7 +387,7 @@ def draw_networkx_edges(G, pos,
         # a directed graph hack
         # draw thick line segments at head end of edge
         # waiting for someone else to implement arrows that will work 
-        arrow_colors = ( colorConverter.to_rgba('k', alpha), )
+        arrow_colors = edge_colors
         a_pos=[]
         p=1.0-0.25 # make head segment 25 percent of edge length
         for src,dst in edge_pos:
