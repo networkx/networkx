@@ -4,7 +4,7 @@ Release Log
 ===========
 
 Networkx-1.0.1
-------------
+--------------
 
 Release date:  11 Jan 2010
 
