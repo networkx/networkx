@@ -3,6 +3,15 @@
 Release Log
 ===========
 
+Networkx-1.0.1
+------------
+
+Release date:  11 Jan 2010
+
+See: https://networkx.lanl.gov/trac/timeline
+
+Bug fix release for missing setup.py in manifest.
+
 
 Networkx-1.0
 ------------
