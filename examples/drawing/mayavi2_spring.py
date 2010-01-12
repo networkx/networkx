@@ -34,4 +34,4 @@ tube = mlab.pipeline.tube(pts, tube_radius=0.01)
 mlab.pipeline.surface(tube, color=(0.8, 0.8, 0.8))
 
 mlab.savefig('mayavi2_spring.png')
-mlab.show()
+# mlab.show() # interactive window
