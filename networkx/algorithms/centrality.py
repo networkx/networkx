@@ -2,7 +2,7 @@
 Centrality measures.
 
 """
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -665,7 +665,7 @@ def closeness_centrality(G,v=None,weighted_edges=False):
     else: # only compute for v
         sp=path_length(G,v)
         totsp=sum(sp.values())
-        if totsp > 0.0 and len(G) > 1:                                            
+        if totsp > 0.0 and len(G) > 1: 
             # normalize to number of nodes-1 in connected part
             return ( (len(sp)-1.0)/(len(G) - 1) )/ ( totsp / (len(sp) - 1.0) )
         else:
@@ -689,13 +689,19 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
       Error tolerance used to check convergence in power method iteration.
 
     nstart : dictionary, optional
-      Starting value of PageRank iteration for each node. 
+      Starting value of eigenvector iteration for each node. 
 
     Returns
     -------
     nodes : dictionary
        Dictionary of nodes with eigenvector centrality as the value.
 
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> centrality=nx.eigenvector_centrality(G)
+    >>> print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
+    ['0 0.19', '1 0.31', '2 0.31', '3 0.19']
 
     Notes
     ------
@@ -719,10 +725,9 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
 #    if not G.weighted:
 #        raise Exception("eigenvector_centrality(): input graph must be weighted")
 
-    # choose random starting vector if not given
     if nstart is None:
-        import random
-        x=dict([(n,random.random()) for n in G])
+        # choose starting vector with entries of 1/len(G) 
+        x=dict([(n,1.0/len(G)) for n in G])
     else:
         x=nstart
     # normalize starting vector
