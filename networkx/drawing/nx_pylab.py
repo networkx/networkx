@@ -206,6 +206,7 @@ def draw_networkx_nodes(G, pos,
     except RuntimeError:
         pass # unable to open display
 
+
     if ax is None:
         ax=pylab.gca()
 
@@ -223,6 +224,7 @@ def draw_networkx_nodes(G, pos,
         raise networkx.NetworkXError('Bad value in node positions.')
 
 
+
     node_collection=ax.scatter(xy[:,0], xy[:,1],
                                s=node_size,
                                c=node_color,
@@ -233,7 +235,7 @@ def draw_networkx_nodes(G, pos,
                                alpha=alpha,
                                linewidths=linewidths)
                                
-    pylab.axes(ax)
+#    pylab.axes(ax)
     pylab.sci(node_collection)
     node_collection.set_zorder(2)            
     return node_collection
@@ -369,7 +371,7 @@ def draw_networkx_edges(G, pos,
                 edge_collection.set_clim(edge_vmin, edge_vmax)
             else:
                 edge_collection.autoscale()
-            pylab.axes(ax)
+#            pylab.axes(ax)
             pylab.sci(edge_collection)
 
 #    else:
