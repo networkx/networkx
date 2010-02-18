@@ -63,7 +63,6 @@ def union(G,H,create_using=None,rename=False,name=None):
     create_using : NetworkX graph
        Use specified graph for result.  Otherwise a new graph is created.
 
-
     rename : bool (default=False)         
        Node names of G and H can be changed be specifying the tuple
        rename=('G-','H-') (for example).
@@ -114,11 +113,22 @@ def union(G,H,create_using=None,rename=False,name=None):
     if Gnames & Hnames:
             raise networkx.NetworkXError,\
             "node sets of G and H are not disjoint. Use appropriate rename=('Gprefix','Hprefix')"
+
     # node names OK, now build union
     R.add_nodes_from(Gnames)
     R.add_edges_from( ( (Gname[u],Gname[v],x) for u,v,x in G.edges_iter(data=True) ))
     R.add_nodes_from(Hnames)
     R.add_edges_from( ( (Hname[u],Hname[v],x) for u,v,x in H.edges_iter(data=True) ))
+
+    # update node attributes too
+    # for large dicts, this is faster than:  dict([(Hnames[k], H.node[k]) for k in H.node)
+    R.node = dict(zip( map(Hname.__getitem__, H.node.keys()), H.node.values() ))
+    R.node.update( dict(zip( map(Gname.__getitem__, G.node.keys()), G.node.values() )) )
+
+    # update graph attributes into tuples using None if attribute is not present
+    R.graph = dict(( (k, (G.graph.get(k), H.graph.get(k))) for k in G.graph ))
+    R.graph.update(( (k, (G.graph.get(k), H.graph.get(k))) for k in H.graph ))
+    
     return R
 
 
@@ -739,6 +749,3 @@ def is_frozen(G):
         return G.frozen
     except AttributeError:
         return False
-
-
-        
