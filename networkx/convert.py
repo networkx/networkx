@@ -154,7 +154,7 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
     # numpy matrix or ndarray 
     try:
         import numpy
-        if isinstance(thing,numpy.core.defmatrix.matrix) or \
+        if isinstance(thing,numpy.matrix) or \
                isinstance(thing,numpy.ndarray):
             try:
                 return from_numpy_matrix(thing,create_using=create_using)
