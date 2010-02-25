@@ -15,6 +15,7 @@ Algorithms
    algorithms.clique
    algorithms.clustering
    algorithms.core
+   algorithms.cycles
    algorithms.matching
    algorithms.isomorphism
    algorithms.pagerank
