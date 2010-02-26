@@ -48,26 +48,49 @@ def cycle_basis(G,root=None):
     cycles of a graph. Comm. ACM 12, 9 (Sept 1969), 514-518.
 
     """
-    if root is None:
-        root=G.nodes_iter().next()
-    ST=networkx.Graph({root:G[root]}) # spanning tree
+    if G.is_multigraph() or G.is_directed():
+        raise Exception("cycle_basis() not implemented for directed or multiedge graphs.")
+
+    gnodes=set(G.nodes())
     cycles=[]
-    stack=list(ST)
-    pred=dict.fromkeys(stack,[]) # all nodes have pred that is root
-    
-    while stack:
-        z=stack.pop()
-        for nbr in G[z]:
-            if nbr in ST: 
-                if nbr not in ST[z]:
-                    cycle=pred[z]
-                    cycle.reverse()
-                    cycle=[root]+pred[nbr]+[nbr,z]+cycle
+    while gnodes:  # loop over connected components
+        if root is None:
+            root=gnodes.pop()
+        stack=[root]
+        pred={root:root} 
+        used={root:set()}
+        while stack:  # walk the spanning tree finding cycles
+            z=stack.pop()  # use last-in so cycles easier to find
+            zused=used[z]
+            for nbr in G[z]:
+                if nbr not in used:   # new node 
+                    pred[nbr]=z
+                    stack.append(nbr)
+                    used[nbr]=set([z])
+                elif nbr is z:        # self loops
+                    cycles.append([z]) 
+                elif nbr not in zused:# found a cycle
+                    pn=used[nbr]
+                    cycle=[nbr,z]
+                    p=pred[z]
+                    while p not in pn:
+                        cycle.append(p)
+                        p=pred[p]
+                    cycle.append(p)
                     cycles.append(cycle)
-                    ST.add_edge(z,nbr)
-            else:
-                ST.add_edge(z,nbr)
-                pred[nbr]=pred[z]+[z]
-                stack.append(nbr)
+                    used[nbr].add(z)
+        gnodes-=set(pred)
+        root=None
     return cycles
 
+if __name__ == "__main__":
+    G=networkx.Graph()
+    G.add_cycle(range(0,3))
+    G.add_cycle(range(3,7))
+    G.add_cycle(range(5,9))
+    G.add_path([5,9])
+    print sorted([ sorted(c) for c in cycle_basis(G,1)])
+    print sorted([ sorted(c) for c in cycle_basis(G,3)])
+    print sorted([ sorted(c) for c in cycle_basis(G,5)])
+    print sorted([ sorted(c) for c in cycle_basis(G,9)])
+    print cycle_basis(G,9)
