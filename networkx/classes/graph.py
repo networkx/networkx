@@ -1439,10 +1439,11 @@ class Graph(object):
         >>> print H.edges()
         [(0, 1), (1, 2)]
         """
-        bunch =set(self.nbunch_iter(nbunch))
+        bunch =self.nbunch_iter(nbunch)
 
         if not copy: 
             # remove all nodes (and attached edges) not in nbunch
+            bunch=set(bunch)
             self.remove_nodes_from([n for n in self if n not in bunch])
             self.name = "Subgraph of (%s)"%(self.name)
             return self
@@ -1450,22 +1451,30 @@ class Graph(object):
             # create new graph and copy subgraph into it       
             H = self.__class__()
             H.name = "Subgraph of (%s)"%(self.name)
-            # add nodes
-            H.add_nodes_from(bunch)
-            # add edges
-            seen=set()
-            for u,nbrs in self.adjacency_iter():
-                if u in bunch:
-                    for v,datadict in nbrs.iteritems():
-                        if v in bunch and v not in seen:
-                            dd=deepcopy(datadict)
-                            H.adj[u][v]=dd
-                            H.adj[v][u]=dd
-                    seen.add(u)
+            # shortcuts for speed
+            H_adj=H.adj
+            self_adj=self.adj
+            # add nodes and edges (undirected method)
+            for n in bunch:
+                H_adj[n]=Hnbrs={}
+                for nbr,d in self_adj[n].iteritems():
+                    if nbr in H_adj:
+                        if d:
+                            dd=deepcopy(d)
+                        else:
+                            dd={}
+                        Hnbrs[nbr]=dd
+                        H_adj[nbr][n]=dd
             # copy node and graph attr dicts
-            H.node=dict( (n,deepcopy(d)) 
-                         for (n,d) in self.node.iteritems() if n in H)
-            H.graph=deepcopy(self.graph)
+            self_node=self.node
+            H_node=H.node
+            for n in H:
+                d=self_node[n]
+                if d:
+                    H_node[n]=deepcopy(d)
+                else:
+                    H_node[n]={}
+            if self.graph: H.graph=deepcopy(self.graph)
             return H
 
 
