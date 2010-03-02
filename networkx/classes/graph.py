@@ -1451,21 +1451,27 @@ class Graph(object):
             # create new graph and copy subgraph into it       
             H = self.__class__()
             H.name = "Subgraph of (%s)"%(self.name)
-            # shortcuts for speed
+            # namespace shortcuts for speed
             H_adj=H.adj
             self_adj=self.adj
             # add nodes and edges (undirected method)
+            #
+            # the deepcopy call required to copy all edge and node
+            # attributes is expensive, so we check and skip the
+            # deepcopy if the attribute dictionary is empty
             for n in bunch:
                 H_adj[n]=Hnbrs={}
                 for nbr,d in self_adj[n].iteritems():
                     if nbr in H_adj:
+                        # only copy if there is edge data
                         if d:
                             dd=deepcopy(d)
                         else:
                             dd={}
+                        # add both representations of edge: n-nbr and nbr-n
                         Hnbrs[nbr]=dd
                         H_adj[nbr][n]=dd
-            # copy node and graph attr dicts
+            # copy node attribute dictionary, skipping copy of empty dicts
             self_node=self.node
             H_node=H.node
             for n in H:
@@ -1474,7 +1480,9 @@ class Graph(object):
                     H_node[n]=deepcopy(d)
                 else:
                     H_node[n]={}
-            if self.graph: H.graph=deepcopy(self.graph)
+            # copy graph attribute dictionary if it is not empty
+            if self.graph:
+                H.graph=deepcopy(self.graph)
             return H
 
 
