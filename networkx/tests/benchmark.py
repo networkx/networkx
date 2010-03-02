@@ -76,9 +76,10 @@ if __name__ == "__main__":
     classes=['Graph','MultiGraph','DiGraph','MultiDiGraph']
     all_tests=['add_nodes','add_edges','remove_nodes','remove_edges',\
             'neighbors','edges','degree','dijkstra','shortest path',\
-            'subgraph','laplacian']
+            'subgraph','edgedata_subgraph','laplacian']
     # Choose which tests to run
     tests=all_tests
+    tests=['subgraph','edgedata_subgraph']
     #tests=all_tests[-1:]
     N=100
 
@@ -117,13 +118,13 @@ if __name__ == "__main__":
         test_string='for n in G:\n for nbr in G.neighbors(n):\n  pass'
         all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
         setup=all_setup+'G.add_edge(u,v)\n'
-        b['Graph']=(test_string,setup)
+        if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v,1)' 
-        b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['MultiDiGraph']=(test_string,setup)
+        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v)' 
+        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'edges' in tests:
@@ -134,13 +135,13 @@ if __name__ == "__main__":
         test_string='for n in G:\n for e in G.edges(n):\n  pass'
         all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
         setup=all_setup+'G.add_edge(u,v)\n'
-        b['Graph']=(test_string,setup)
+        if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v,1)' 
-        b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['MultiDiGraph']=(test_string,setup)
+        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v)' 
+        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'degree' in tests:
@@ -151,13 +152,13 @@ if __name__ == "__main__":
         test_string='for d in G.degree():\n  pass'
         all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
         setup=all_setup+'G.add_edge(u,v)\n'
-        b['Graph']=(test_string,setup)
+        if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v,1)' 
-        b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['MultiDiGraph']=(test_string,setup)
+        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v)' 
+        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'dijkstra' in tests:
@@ -168,13 +169,13 @@ if __name__ == "__main__":
         test_string='p=NX.single_source_dijkstra(G,i)'
         all_setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
         setup=all_setup+'G.add_edge(u,v)'
-        b['Graph']=(test_string,setup)
+        if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v,1)' 
-        b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['MultiDiGraph']=(test_string,setup)
+        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v)' 
+        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'shortest path' in tests:
@@ -185,13 +186,13 @@ if __name__ == "__main__":
         test_string='p=NX.single_source_shortest_path(G,i)'
         all_setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
         setup=all_setup+'G.add_edge(u,v)'
-        b['Graph']=(test_string,setup)
+        if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v,1)' 
-        b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['MultiDiGraph']=(test_string,setup)
+        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v)' 
+        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'subgraph' in tests:
@@ -202,13 +203,30 @@ if __name__ == "__main__":
         test_string='G.subgraph(nlist)'
         all_setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
         setup=all_setup+'G.add_edge(u,v)'
-        b['Graph']=(test_string,setup)
+        if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v,1)' 
-        b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['MultiDiGraph']=(test_string,setup)
+        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v)' 
+        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
+        b.run()
+
+    if 'edgedata_subgraph' in tests:
+        N=500
+        p=0.3
+        title='subgraph method with edge data present'
+        b=Benchmark(classes,title,runs=3,reps=1)
+        test_string='G.subgraph(nlist)'
+        all_setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
+        setup=all_setup+'G.add_edge(u,v,hi=3)'
+        if 'Graph' in classes: b['Graph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)],hi=2)'
+        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v,hi=1)' 
+        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)],hi=2)'
+        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
         b.run()
 
     if 'laplacian' in tests:
@@ -219,11 +237,11 @@ if __name__ == "__main__":
         test_string='NX.laplacian(G)'
         all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
         setup=all_setup+'G.add_edge(u,v)'
-        b['Graph']=(test_string,setup)
+        if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v,1)' 
-        b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v,1),(v,u,1)])'
-        b['MultiDiGraph']=(test_string,setup)
+        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edge(u,v)' 
+        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
+        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
+        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
         b.run()

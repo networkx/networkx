@@ -680,3 +680,95 @@ class MultiDiGraph(MultiGraph,DiGraph):
         H.node=deepcopy(self.node)
         return H
 
+    def subgraph(self, nbunch, copy=True):
+        """Return the subgraph induced on nodes in nbunch.
+
+        The induced subgraph of the graph has the nodes in nbunch 
+        as its node set and the edges adjacent to those nodes as 
+        its edge set.
+        
+        Parameters
+        ----------
+        nbunch : list, iterable
+            A container of nodes.  The container will be iterated
+            through once.    
+        copy : bool, optional (default=True) 
+            If True return a new graph holding the subgraph including
+            copies of all edge and node properties.  If False the
+            subgraph is created using the original graph by deleting
+            all nodes not in nbunch (this changes the original graph).
+
+        Returns
+        -------
+        G : Graph
+            A subgraph of the graph.  If copy=True a new graph is
+            returned with copies of graph, node, and edge data.  If
+            copy=False the subgraph is created in place by modifying
+            the original graph.
+
+        Notes
+        -----
+        If copy=True, nodes and edges are copied using copy.deepcopy.
+
+        Examples
+        --------
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
+        >>> H = G.subgraph([0,1,2])
+        >>> print H.edges()
+        [(0, 1), (1, 2)]
+        """
+        bunch = self.nbunch_iter(nbunch)
+
+        if not copy: 
+            # demolish all nodes (and attached edges) not in nbunch
+            bunch=set(bunch)
+            self.remove_nodes_from([n for n in self if n not in bunch])
+            self.name = "Subgraph of (%s)"%(self.name)
+            return self
+        else:
+            # create new graph and copy subgraph into it       
+            H = self.__class__()
+            H.name = "Subgraph of (%s)"%(self.name)
+            # namespace shortcuts for speed
+            H_succ=H.succ
+            H_pred=H.pred
+            self_succ=self.succ
+            self_pred=self.pred
+            # add nodes
+            for n in bunch:
+                H_succ[n]={}
+                H_pred[n]={}
+            # add edges
+            #
+            # the deepcopy call required to copy all edge and node
+            # attributes is expensive, so we check and skip the
+            # deepcopy if the attribute dictionary is empty
+            for u in H_succ:
+                Hnbrs=H_succ[u]
+                for v,edgedict in self_succ[u].iteritems():
+                    if v in H_succ:
+                        # add both representations of edge: n-nbr and nbr-n
+                        # they share the same edgedict, so only update Huv
+                        Hnbrs[v]=Huv={}
+                        H_pred[v][u]=Huv
+                        for key,datadict in edgedict.iteritems():
+                            # only copy if there is edge data
+                            if datadict:
+                                dd=deepcopy(datadict)
+                            else:
+                                dd={}
+                            Huv[key]=dd
+            # copy node attribute dictionary, skipping copy of empty dicts
+            H_node=H.node
+            self_node=self.node
+            for n in H_succ:
+                d=self_node[n]
+                if d:
+                    H_node[n]=deepcopy(d)
+                else:
+                    H_node[n]={}
+            # copy graph attribute dictionary if it is not empty
+            if self.graph:
+                H.graph=deepcopy(self.graph)
+            return H

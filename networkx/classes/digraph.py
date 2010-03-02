@@ -1160,10 +1160,11 @@ class DiGraph(Graph):
         >>> print H.edges()
         [(0, 1), (1, 2)]
         """
-        bunch = set(self.nbunch_iter(nbunch))
+        bunch = self.nbunch_iter(nbunch)
 
         if not copy: 
             # demolish all nodes (and attached edges) not in nbunch
+            bunch=set(bunch)
             self.remove_nodes_from([n for n in self if n not in bunch])
             self.name = "Subgraph of (%s)"%(self.name)
             return self
@@ -1171,18 +1172,42 @@ class DiGraph(Graph):
             # create new graph and copy subgraph into it       
             H = self.__class__()
             H.name = "Subgraph of (%s)"%(self.name)
+            # namespace shortcuts for speed
+            H_succ=H.succ
+            H_pred=H.pred
+            self_succ=self.succ
+            self_pred=self.pred
             # add nodes
-            H.add_nodes_from(bunch)
+            for n in bunch:
+                H_succ[n]={}
+                H_pred[n]={}
             # add edges
-            for u,nbrs in self.adjacency_iter():
-                if u in bunch:
-                    for v,datadict in nbrs.iteritems():
-                        if v in bunch:
+            #
+            # the deepcopy call required to copy all edge and node
+            # attributes is expensive, so we check and skip the
+            # deepcopy if the attribute dictionary is empty
+            for u in H_succ:
+                Hnbrs=H_succ[u]
+                for v,datadict in self_succ[u].iteritems():
+                    if v in H_succ:
+                        # only copy if there is edge data
+                        if datadict:
                             dd=deepcopy(datadict)
-                            H.succ[u][v]=dd
-                            H.pred[v][u]=dd
-            # node and graph attr dicts
-            H.node=dict( (n,deepcopy(d))
-                         for (n,d) in self.node.iteritems() if n in H)
-            H.graph=deepcopy(self.graph)
+                        else:
+                            dd={}
+                        # add both representations of edge: n-nbr and nbr-n
+                        Hnbrs[v]=dd
+                        H_pred[v][u]=dd
+            # copy node attribute dictionary, skipping copy of empty dicts
+            H_node=H.node
+            self_node=self.node
+            for n in H_succ:
+                d=self_node[n]
+                if d:
+                    H_node[n]=deepcopy(d)
+                else:
+                    H_node[n]={}
+            # copy graph attribute dictionary if it is not empty
+            if self.graph:
+                H.graph=deepcopy(self.graph)
             return H
