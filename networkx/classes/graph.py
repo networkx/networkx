@@ -1415,7 +1415,7 @@ class Graph(object):
             through once.    
         copy : bool, optional (default=True) 
             If True return a new graph holding the subgraph including
-            copies of all edge and node properties.  If False the
+            shallow copies of all edge and node properties.  If False the
             subgraph is created using the original graph by deleting
             all nodes not in nbunch (this changes the original graph).
 
@@ -1429,7 +1429,12 @@ class Graph(object):
 
         Notes
         -----
-        If copy=True, nodes and edges are copied using copy.deepcopy.
+        If copy=True, new node and edge attrbutes are shallow copies
+        so if attributes include containers they will be the same
+        container in both the subgraph and the original graph.
+        The copy method does a complete "deepcopy", so if you want
+        attributes that are containers to be copied too use:
+        G.copy().subgraph(nbunch,copy=False)
 
         Examples
         --------
@@ -1455,34 +1460,20 @@ class Graph(object):
             H_adj=H.adj
             self_adj=self.adj
             # add nodes and edges (undirected method)
-            #
-            # the deepcopy call required to copy all edge and node
-            # attributes is expensive, so we check and skip the
-            # deepcopy if the attribute dictionary is empty
             for n in bunch:
                 H_adj[n]=Hnbrs={}
                 for nbr,d in self_adj[n].iteritems():
                     if nbr in H_adj:
-                        # only copy if there is edge data
-                        if d:
-                            dd=deepcopy(d)
-                        else:
-                            dd={}
                         # add both representations of edge: n-nbr and nbr-n
+                        dd=d.copy()
                         Hnbrs[nbr]=dd
                         H_adj[nbr][n]=dd
             # copy node attribute dictionary, skipping copy of empty dicts
             self_node=self.node
             H_node=H.node
             for n in H:
-                d=self_node[n]
-                if d:
-                    H_node[n]=deepcopy(d)
-                else:
-                    H_node[n]={}
-            # copy graph attribute dictionary if it is not empty
-            if self.graph:
-                H.graph=deepcopy(self.graph)
+                H_node[n]=self_node[n].copy()
+            H.graph=self.graph.copy()
             return H
 
 
