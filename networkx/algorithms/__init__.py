@@ -11,6 +11,7 @@ from pagerank import *
 from hits import *
 from bipartite import *
 from mst import *
+from block import *
 
 import traversal
 import isomorphism
