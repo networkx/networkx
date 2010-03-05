@@ -139,10 +139,6 @@ In general, this problem is NP-Complete.
 
 import sys
 
-__date__ = "$Date$"
-
-#__doc__ += sources#.replace('\n', '\n'+indent)
-
 __all__ = ['GraphMatcher',
            'DiGraphMatcher']
 
