@@ -14,7 +14,7 @@ import networkx
 def blockmodel(G,partitions,multigraph=False):
     """Generates a new graph using the generalized block modeling technique.
 
-    The technique collpases nodes into blocks based on a given partitioning
+    The technique collapses nodes into blocks based on a given partitioning
     of the node set.  Each partition of nodes (block) is represented
     as a single node in the reduced graph.  
 
@@ -83,7 +83,7 @@ def blockmodel(G,partitions,multigraph=False):
     # Label them with integers starting at 0
     for i,p in zip(range(len(part)),part):
         M.add_node(i)
-        # the node-induced sugraph is an stored as the 'graph' attribute 
+        # the node-induced subgraph is stored as the 'graph' attribute 
         SG=G.subgraph(p)
         M.node[i]['graph']=SG        
         M.node[i]['nnodes']=SG.number_of_nodes()
