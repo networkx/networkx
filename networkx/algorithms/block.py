@@ -37,6 +37,12 @@ def blockmodel(G,partitions,multigraph=False):
     -------
     blockmodel : a Networkx graph object
     
+    Examples
+    --------
+    >>> G=networkx.path_graph(6)
+    >>> partition=[[0,1],[2,3],[4,5]]
+    >>> M=blockmodel(G,partition)
+
     Notes
     -----
     For reference see:
@@ -92,7 +98,7 @@ def blockmodel(G,partitions,multigraph=False):
         if bmu==bmv: # no self loops
             continue
         if multigraph:
-            M.add_edge(bmu,bmv,data=d)
+            M.add_edge(bmu,bmv,attr_dict=d)
         else:
             weight=d.get('weight',1.0) # default to 1 if no weight specified
             if M.has_edge(bmu,bmv):
@@ -107,5 +113,5 @@ if __name__=='__main__':
     G=networkx.path_graph(6)
 #    G=networkx.complete_graph(6)
     partition=[[0,1],[2,3],[4,5]]
-    M=blockmodel(G,partition)
+    M=blockmodel(G,partition,multigraph=True)
     
