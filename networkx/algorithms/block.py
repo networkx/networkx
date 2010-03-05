@@ -1,6 +1,6 @@
 # encoding: utf-8
 """
-Functions for creating network blockmodels from node partitions
+Functions for creating network blockmodels from node partitions.
 
 Created by Drew Conway <drew.conway@nyu.edu> 
 Copyright (c) 2010. All rights reserved.
@@ -15,23 +15,28 @@ def blockmodel(G,partitions,multigraph=False):
     """Generates a new graph using the generalized block modeling technique.
 
     The technique collpases nodes into blocks based on a given partitioning
-    of the node set.  Each partition of nodes (block) is a single node in
-    the new graph consiting of a Graph containing the node-induced
-    subgraph.  
+    of the node set.  Each partition of nodes (block) is represented
+    as a single node in the reduced graph.  
 
-    Edges between nodes in the block graph are added for each edge
-    between nodes in the corresponding partition.
+    Edges between nodes in the block graph are added according to
+    the edges in the original graph.  If the parameter multigraph is False
+    (the default) a single edge is added with a weight equal to
+    the sum of the edge weights between nodes in the original graph
+    (default of weight=1 if not weights are specified).  If the
+    parameter multigraph is True then multiple edges are added between
+    the block nodes each with the edge data from the original graph.
 
     Parameters
     ----------
     G : graph
         A networkx Graph or DiGraph
-    partitions : list of containers
+    partitions : list of lists or list of sets
         The partition of the nodes.  Must be non-overlapping.
     multigraph: bool (optional)
-        If True return a MultiGraph with original edge data, if False
-        return a Graph with the sum of the edge weights or count
-        of the edges if the original graph is unweighted.
+        If True return a MultiGraph with the edge data of the original
+        graph applied to each corresponding edge in the new graph.
+        If False return a Graph with the sum of the edge weights or a
+        count of the edges if the original graph is unweighted.
 
     Returns
     -------
