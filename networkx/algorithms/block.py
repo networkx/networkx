@@ -12,19 +12,20 @@ __all__=['blockmodel']
 import networkx
 
 def blockmodel(G,partitions,multigraph=False):
-    """Generates a new graph using the generalized block modeling technique.
+    """Returns a reduced graph constructed using the generalized block modeling
+    technique.
 
-    The technique collapses nodes into blocks based on a given partitioning
-    of the node set.  Each partition of nodes (block) is represented
-    as a single node in the reduced graph.  
+    The blockmodel technique collapses nodes into blocks based on a
+    given partitioning of the node set.  Each partition of nodes
+    (block) is represented as a single node in the reduced graph.
 
-    Edges between nodes in the block graph are added according to
-    the edges in the original graph.  If the parameter multigraph is False
-    (the default) a single edge is added with a weight equal to
-    the sum of the edge weights between nodes in the original graph
-    (default of weight=1 if not weights are specified).  If the
-    parameter multigraph is True then multiple edges are added between
-    the block nodes each with the edge data from the original graph.
+    Edges between nodes in the block graph are added according to the
+    edges in the original graph.  If the parameter multigraph is False
+    (the default) a single edge is added with a weight equal to the
+    sum of the edge weights between nodes in the original graph
+    The default is a weight of 1 if weights are not specified.  If the
+    parameter multigraph is True then multiple edges are added each
+    with the edge data from the original graph.
 
     Parameters
     ----------
@@ -35,7 +36,7 @@ def blockmodel(G,partitions,multigraph=False):
     multigraph: bool (optional)
         If True return a MultiGraph with the edge data of the original
         graph applied to each corresponding edge in the new graph.
-        If False return a Graph with the sum of the edge weights or a
+        If False return a Graph with the sum of the edge weights, or a
         count of the edges if the original graph is unweighted.
 
     Returns
@@ -60,13 +61,17 @@ def blockmodel(G,partitions,multigraph=False):
     	year = {2004}
     }
     """
-    part=map(set,partitions) # create sets of node partitions
+    # Create sets of node partitions
+    part=map(set,partitions) 
+
+    # Check for overlapping node partitions
     u=set()
     for p1,p2 in zip(part[:-1],part[1:]):
         u.update(p1)
         if not u.isdisjoint(p2):
             raise networkx.NetworkXException("Overlapping node partitions.")
 
+    # Initialize blockmodel graph
     if multigraph:
         if G.is_directed():
             M=networkx.MultiDiGraph() 
@@ -78,19 +83,19 @@ def blockmodel(G,partitions,multigraph=False):
         else:
             M=networkx.Graph() 
         
-
-    # Nodes in new graph are are node-induced subgraphs of G
+    # Add nodes and properties to blockmodel            
+    # The blockmodel nodes are node-induced subgraphs of G
     # Label them with integers starting at 0
     for i,p in zip(range(len(part)),part):
         M.add_node(i)
-        # the node-induced subgraph is stored as the 'graph' attribute 
+        # The node-induced subgraph is stored as the node 'graph' attribute 
         SG=G.subgraph(p)
         M.node[i]['graph']=SG        
         M.node[i]['nnodes']=SG.number_of_nodes()
         M.node[i]['nedges']=SG.number_of_edges()
         M.node[i]['density']=networkx.density(SG)
         
-    # Make mapping between original nodes and new block nodes
+    # Create mapping between original node labels and new blockmodel node labels
     block_mapping={}
     for n in M:
         nodes_in_block=M.node[n]['graph'].nodes()
@@ -102,9 +107,11 @@ def blockmodel(G,partitions,multigraph=False):
         bmv=block_mapping[v]
         if bmu==bmv: # no self loops
             continue
-        if multigraph:
+        if multigraph: 
+            # For multigraphs add an edge for each edge in original graph
             M.add_edge(bmu,bmv,attr_dict=d)
         else:
+            # For graphs and digraphs add single weighted edge
             weight=d.get('weight',1.0) # default to 1 if no weight specified
             if M.has_edge(bmu,bmv):
                 M[bmu][bmv]['weight']+=weight
@@ -112,11 +119,3 @@ def blockmodel(G,partitions,multigraph=False):
                 M.add_edge(bmu,bmv,weight=weight)
     return M
 
-
-if __name__=='__main__':
-    import networkx
-    G=networkx.path_graph(6)
-#    G=networkx.complete_graph(6)
-    partition=[[0,1],[2,3],[4,5]]
-    M=blockmodel(G,partition,multigraph=True)
-    
