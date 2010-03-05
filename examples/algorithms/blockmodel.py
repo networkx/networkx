@@ -19,35 +19,34 @@ Example of creating a block model using the blockmodel function in NX.  Data use
 
 """
 
-__author__="""Drew Conway (drew.conway@nyu.edu)"""
+__author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
+                            'Aric Hagberg <hagberg@lanl.gov>'])
 
+from collections import defaultdict
 import networkx as nx
-from numpy import zeros
+import numpy
 from scipy.cluster import hierarchy
 from scipy.spatial import distance
 import matplotlib.pyplot as plt
 
+
 def create_hc(G):
     """Creates hierarchical cluster of graph G from distance matrix"""
-    v=G.nodes()
-    distances=zeros((len(v),len(v)))
-    # Generate matrix of geodesic distance
-    for n in v:
-        for m in v:
-            if n!=m:
-                distances[n][m]=nx.shortest_path_length(G,m,n)
+    path_length=nx.all_pairs_shortest_path_length(G)
+    distances=numpy.zeros((len(G),len(G)))
+    for u,p in path_length.iteritems():
+        for v,d in p.iteritems():
+            distances[u][v]=d
     # Create hierarchical cluster
     Y=distance.squareform(distances)
     Z=hierarchy.complete(Y)  # Creates HC using farthest point linkage
-    membership=list(hierarchy.fcluster(Z,t=1.15)) #Partition selection is arbitrary, for illustrive purposes
+    # This partition selection is arbitrary, for illustrive purposes
+    membership=list(hierarchy.fcluster(Z,t=1.15)) 
     # Create collection of lists for blockmodel 
-    partitions=[]
-    for i in range(0,max(membership)):
-        partitions.append([])
-        for j in range(0,len(membership)):
-            if membership[j]==i+1:
-                partitions[i].append(j)
-    return partitions
+    partition=defaultdict(list)
+    for n,p in zip(range(len(G)),membership):
+        partition[p].append(n)
+    return partition.values()
 
 if __name__ == '__main__':
     try:
@@ -55,26 +54,38 @@ if __name__ == '__main__':
     except IOError:
         raise "hartford_drug.edgelist not found"
     
-    # Extract largest connected component
-    drug_main=nx.connected_component_subgraphs(G)[0]
-    drug_main=nx.convert_node_labels_to_integers(drug_main) # Makes life easier
-    partitions=create_hc(drug_main)
-    bm=nx.blockmodel(drug_main,partitions)
+    # Extract largest connected component into graph H
+    H=nx.connected_component_subgraphs(G)[0]
+    # Makes life easier to have consecutively labeled integer nodes
+    H=nx.convert_node_labels_to_integers(H) 
+    # Create parititions with hierarchical clustering
+    partitions=create_hc(H)
+    # Build blockmodel graph
+    BM=nx.blockmodel(H,partitions)
     
-    # Draw block model with weighted edges and nodes sized by internal density
-    pos=nx.spring_layout(bm)
-    ns=map(lambda x: bm.node[x]['nnodes']*10,bm.nodes())
-    el=[(u,v) for (u,v,d) in bm.edges(data=True)]
-    es=[(2*d['weight']) for (u,v,d) in bm.edges(data=True)]
-    # Plot and save
+
+    # Draw original graph
+    pos=nx.spring_layout(H,iterations=100)
     fig=plt.figure(1,figsize=(6,10))
     ax=fig.add_subplot(211)
-    nx.draw(drug_main,with_labels=False,node_size=10)
+    nx.draw(H,pos,with_labels=False,node_size=10)
+    plt.xlim(0,1)
+    plt.ylim(0,1)
+
+    # Draw block model with weighted edges and nodes sized by number of internal nodes
+    node_size=map(lambda x: BM.node[x]['nnodes']*10,BM.nodes())
+    edge_width=[(2*d['weight']) for (u,v,d) in BM.edges(data=True)]
+    # Set positions to mean of positions of internal nodes from original graph
+    posBM={}
+    for n in BM:
+        xy=numpy.array([pos[u] for u in BM.node[n]['graph']])
+        posBM[n]=xy.mean(axis=0)
     ax=fig.add_subplot(212)
-    nx.draw_networkx_nodes(bm,pos,node_size=ns)
-    nx.draw_networkx_edges(bm,pos,edgelist=el,width=es,alpha=1.0)
+    nx.draw(BM,posBM,node_size=node_size,width=edge_width,with_labels=False)
+    plt.xlim(0,1)
+    plt.ylim(0,1)
     plt.axis('off')
-    plt.savefig('drug_block_model.png')
+    plt.savefig('hartford_drug_block_model.png')
     
     
     
