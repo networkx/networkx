@@ -23,4 +23,5 @@ Algorithms
    algorithms.traversal
    algorithms.bipartite
    algorithms.mst
+   algorithms.block
 
