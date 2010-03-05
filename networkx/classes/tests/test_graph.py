@@ -258,36 +258,80 @@ class TestGraph:
         self.is_shallow_copy(H,G)
 
     def is_deepcopy(self,H,G):
-        self.graphs_equal_but_different(H,G)
-        # graph
+        self.graphs_equal(H,G)
+        self.different_attrdict(H,G)
+        self.deep_copy_attrdict(H,G)
+
+    def deep_copy_attrdict(self,H,G):
+        self.deepcopy_graph_attr(H,G)
+        self.deepcopy_node_attr(H,G)
+        self.deepcopy_edge_attr(H,G)
+
+    def deepcopy_graph_attr(self,H,G):
         assert_equal(G.graph['foo'],H.graph['foo'])
         G.graph['foo'].append(1)
         assert_not_equal(G.graph['foo'],H.graph['foo'])
-        # node
+
+    def deepcopy_node_attr(self,H,G):
         assert_equal(G.node[0]['foo'],H.node[0]['foo'])
         G.node[0]['foo'].append(1)
         assert_not_equal(G.node[0]['foo'],H.node[0]['foo'])
-        # edge
+
+    def deepcopy_edge_attr(self,H,G):
         assert_equal(G[1][2]['foo'],H[1][2]['foo'])
         G[1][2]['foo'].append(1)
         assert_not_equal(G[1][2]['foo'],H[1][2]['foo'])
 
     def is_shallow_copy(self,H,G):
-        self.graphs_equal_but_different(H,G)
-        # graph
+        self.graphs_equal(H,G)
+        self.different_attrdict(H,G)
+        self.shallow_copy_attrdict(H,G)
+
+    def shallow_copy_attrdict(self,H,G):
+        self.shallow_copy_graph_attr(H,G)
+        self.shallow_copy_node_attr(H,G)
+        self.shallow_copy_edge_attr(H,G)
+
+    def shallow_copy_graph_attr(self,H,G):
         assert_equal(G.graph['foo'],H.graph['foo'])
         G.graph['foo'].append(1)
         assert_equal(G.graph['foo'],H.graph['foo'])
-        # node
+
+    def shallow_copy_node_attr(self,H,G):
         assert_equal(G.node[0]['foo'],H.node[0]['foo'])
         G.node[0]['foo'].append(1)
         assert_equal(G.node[0]['foo'],H.node[0]['foo'])
-        # edge
+
+    def shallow_copy_edge_attr(self,H,G):
         assert_equal(G[1][2]['foo'],H[1][2]['foo'])
         G[1][2]['foo'].append(1)
         assert_equal(G[1][2]['foo'],H[1][2]['foo'])
 
-    def graphs_equal_but_different(self,H,G):
+    def same_attrdict(self, H, G):
+        old_foo=H[1][2]['foo']
+        H.add_edge(1,2,foo='baz')
+        assert_equal(G.edge,H.edge)
+        H.add_edge(1,2,foo=old_foo)
+        assert_equal(G.edge,H.edge)
+        old_foo=H.node[0]['foo']
+        H.node[0]['foo']='baz'
+        assert_equal(G.node,H.node)
+        H.node[0]['foo']=old_foo
+        assert_equal(G.node,H.node)
+
+    def different_attrdict(self, H, G):
+        old_foo=H[1][2]['foo']
+        H.add_edge(1,2,foo='baz')
+        assert_not_equal(G.edge,H.edge)
+        H.add_edge(1,2,foo=old_foo)
+        assert_equal(G.edge,H.edge)
+        old_foo=H.node[0]['foo']
+        H.node[0]['foo']='baz'
+        assert_not_equal(G.node,H.node)
+        H.node[0]['foo']=old_foo
+        assert_equal(G.node,H.node)
+
+    def graphs_equal(self,H,G):
         assert_equal(G.adj,H.adj)
         assert_equal(G.edge,H.edge)
         assert_equal(G.node,H.node)
@@ -307,20 +351,6 @@ class TestGraph:
             assert_equal(G.succ,H.succ)
             assert_true(H.succ[1][2] is H.pred[2][1])
             assert_true(G.succ[1][2] is G.pred[2][1])
-        #test changing data structure
-        self.change_attr(H,G)
-
-    def change_attr(self, H, G):
-        old_foo=H[1][2]['foo']
-        H.add_edge(1,2,foo='baz')
-        assert_not_equal(G.edge,H.edge)
-        H.add_edge(1,2,foo=old_foo)
-        assert_equal(G.edge,H.edge)
-        old_foo=H.node[0]['foo']
-        H.node[0]['foo']='baz'
-        assert_not_equal(G.node,H.node)
-        H.node[0]['foo']=old_foo
-        assert_equal(G.node,H.node)
 
     def test_to_undirected(self):
         G=self.K3
@@ -344,16 +374,15 @@ class TestGraph:
         H=G.subgraph([0,1,2,5])
         assert_equal(H.name, 'Subgraph of ('+G.name+')')
         H.name=G.name
-        self.is_deepcopy(H,G)
+        self.graphs_equal(H,G)
+        self.same_attrdict(H,G)
+        self.shallow_copy_attrdict(H,G)
 
         H=G.subgraph(0)
         assert_equal(H.adj,{0:{}})
         H=G.subgraph([])
         assert_equal(H.adj,{})
         assert_not_equal(G.adj,{})
-        H=G.subgraph([],copy=False)
-        assert_true(H.adj is G.adj)
-        assert_equal(G.adj,{})
 
     def test_selfloops(self):
         G=self.K3.copy()

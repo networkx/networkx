@@ -129,37 +129,34 @@ class TestMultiGraph(TestGraph):
                            1: {0: {0:{}}, 2: {0:{}}},
                            2: {0: {0:{}}, 1: {0:{}}}})
                         
-    def is_deepcopy(self,H,G):
-        self.graphs_equal_but_different(H,G)
-        # graph
-        assert_equal(G.graph['foo'],H.graph['foo'])
-        G.graph['foo'].append(1)
-        assert_not_equal(G.graph['foo'],H.graph['foo'])
-        # node
-        assert_equal(G.node[0]['foo'],H.node[0]['foo'])
-        G.node[0]['foo'].append(1)
-        assert_not_equal(G.node[0]['foo'],H.node[0]['foo'])
-        # edge
+    def deepcopy_edge_attr(self,H,G):
         assert_equal(G[1][2][0]['foo'],H[1][2][0]['foo'])
         G[1][2][0]['foo'].append(1)
         assert_not_equal(G[1][2][0]['foo'],H[1][2][0]['foo'])
 
-    def is_shallow_copy(self,H,G):
-        self.graphs_equal_but_different(H,G)
-        # graph
-        assert_equal(G.graph['foo'],H.graph['foo'])
-        G.graph['foo'].append(1)
-        assert_equal(G.graph['foo'],H.graph['foo'])
-        # node
-        assert_equal(G.node[0]['foo'],H.node[0]['foo'])
-        G.node[0]['foo'].append(1)
-        assert_equal(G.node[0]['foo'],H.node[0]['foo'])
-        # edge
+    def shallow_copy_edge_attr(self,H,G):
         assert_equal(G[1][2][0]['foo'],H[1][2][0]['foo'])
         G[1][2][0]['foo'].append(1)
         assert_equal(G[1][2][0]['foo'],H[1][2][0]['foo'])
 
-    def change_attr(self, H, G):
+    def same_attrdict(self, H, G):
+        # same attrdict in the edgedata
+        old_foo=H[1][2][0]['foo']
+        H.add_edge(1,2,0,foo='baz')
+        assert_equal(G.edge,H.edge)
+        H.add_edge(1,2,0,foo=old_foo)
+        assert_equal(G.edge,H.edge)
+        # but not same edgedata dict
+        H.add_edge(1,2,foo='baz')
+        assert_not_equal(G.edge,H.edge)
+
+        old_foo=H.node[0]['foo']
+        H.node[0]['foo']='baz'
+        assert_equal(G.node,H.node)
+        H.node[0]['foo']=old_foo
+        assert_equal(G.node,H.node)
+
+    def different_attrdict(self, H, G):
         # used by graph_equal_but_different
         old_foo=H[1][2][0]['foo']
         H.add_edge(1,2,0,foo='baz')

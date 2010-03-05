@@ -21,7 +21,7 @@ __all__ = ['union', 'cartesian_product', 'compose', 'complement',
 import networkx
 from networkx.utils import is_string_like
 
-def subgraph(G, nbunch, copy=True):
+def subgraph(G, nbunch):
     """Return the subgraph induced on nodes in nbunch.
 
     Parameters
@@ -37,18 +37,12 @@ def subgraph(G, nbunch, copy=True):
        If nbunch is None, return all edges data in the graph.
        Nodes in nbunch that are not in the graph will be (quietly) ignored.
 
-    copy : bool (default True)
-        If True return a new graph holding the subgraph.
-        Otherwise, the subgraph is created in the original 
-        graph by deleting nodes not in nbunch.  
-        Warning: this can destroy the graph.
-
     Notes
     -----
     subgraph(G) calls G.subgraph()
 
     """
-    return G.subgraph(nbunch, copy)
+    return G.subgraph(nbunch)
                                                                                 
 def union(G,H,create_using=None,rename=False,name=None):
     """ Return the union of graphs G and H.

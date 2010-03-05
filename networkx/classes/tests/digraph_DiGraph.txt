@@ -659,23 +659,11 @@ Test G.subgraph(nbunch), where nbunch is a single node
 >>> H=K5.subgraph(1)
 >>> is_isomorphic(H,K1)
 True
->>> J5=K5.copy()
->>> H=J5.subgraph(1,copy=False)
->>> is_isomorphic(H,K1)
-True
->>> is_isomorphic(J5,K1)
-True
 
 Test G.subgraph(nbunch), where nbunch is a set
 
 >>> H=K5.subgraph(set([1]))
 >>> is_isomorphic(H,K1)
-True
->>> J5=K5.copy()
->>> H=J5.subgraph(set([1]),copy=False)
->>> is_isomorphic(H,K1)
-True
->>> is_isomorphic(J5,K1)
 True
 
 Test G.subgraph(nbunch), where nbunch is an iterator
@@ -683,23 +671,11 @@ Test G.subgraph(nbunch), where nbunch is an iterator
 >>> H=K5.subgraph(iter(K3))
 >>> is_isomorphic(H,K3)
 True
->>> J5=K5.copy()
->>> H=J5.subgraph(iter(K3),copy=False)
->>> is_isomorphic(H,K3)
-True
->>> is_isomorphic(J5,K3)
-True
 
 Test G.subgraph(nbunch), where nbunch is another graph
 
 >>> H=K5.subgraph(K3)
 >>> is_isomorphic(H,K3)
-True
->>> J5=K5.copy()
->>> H=J5.subgraph(K3,copy=False)
->>> is_isomorphic(H,K3)
-True
->>> is_isomorphic(J5,K3)
 True
 
 Test for no error when nbunch has node not in G.nodes()

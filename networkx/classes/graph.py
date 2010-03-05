@@ -1401,40 +1401,36 @@ class Graph(object):
         """
         return deepcopy(self)
 
-    def subgraph(self, nbunch, copy=True):
+    def subgraph(self, nbunch):
         """Return the subgraph induced on nodes in nbunch.
 
-        The induced subgraph of the graph has the nodes in nbunch 
-        as its node set and the edges adjacent to those nodes as 
-        its edge set.
+        The induced subgraph of the graph contains the nodes in nbunch 
+        and the edges between those nodes.  
         
         Parameters
         ----------
         nbunch : list, iterable
-            A container of nodes.  The container will be iterated
-            through once.    
-        copy : bool, optional (default=True) 
-            If True return a new graph holding the subgraph including
-            shallow copies of all edge and node properties.  If False the
-            subgraph is created using the original graph by deleting
-            all nodes not in nbunch (this changes the original graph).
+            A container of nodes which will be iterated through once.    
 
         Returns
         -------
         G : Graph
-            A subgraph of the graph.  If copy=True a new graph is
-            returned with copies of graph, node, and edge data.  If
-            copy=False the subgraph is created in place by modifying
-            the original graph.
+            A subgraph of the graph with the same edge attributes.  
 
         Notes
         -----
-        If copy=True, new node and edge attrbutes are shallow copies
-        so if attributes include containers they will be the same
-        container in both the subgraph and the original graph.
-        The copy method does a complete "deepcopy", so if you want
-        attributes that are containers to be copied too use:
-        G.copy().subgraph(nbunch,copy=False)
+        The edge and node attributes just point to the original graph. 
+        So changes to the node or edge structure will not be reflected in
+        the original graph while changes to the node or edge attributes will.
+
+        To create a subgraph with its own copy of the edge/node attributes use:
+        nx.Graph(G.subgraph(nbunch))
+
+        If edge attributes are containers, a deep copy can be obtained using:
+        G.subgraph(nbunch).copy()
+
+        For an inplace reduction of a graph to a subgraph you can remove nodes:
+        G.remove_nodes_from([ n in G if n not in set(nbunch)])  
 
         Examples
         --------
@@ -1445,36 +1441,25 @@ class Graph(object):
         [(0, 1), (1, 2)]
         """
         bunch =self.nbunch_iter(nbunch)
-
-        if not copy: 
-            # remove all nodes (and attached edges) not in nbunch
-            bunch=set(bunch)
-            self.remove_nodes_from([n for n in self if n not in bunch])
-            self.name = "Subgraph of (%s)"%(self.name)
-            return self
-        else:
-            # create new graph and copy subgraph into it       
-            H = self.__class__()
-            H.name = "Subgraph of (%s)"%(self.name)
-            # namespace shortcuts for speed
-            H_adj=H.adj
-            self_adj=self.adj
-            # add nodes and edges (undirected method)
-            for n in bunch:
-                H_adj[n]=Hnbrs={}
-                for nbr,d in self_adj[n].iteritems():
-                    if nbr in H_adj:
-                        # add both representations of edge: n-nbr and nbr-n
-                        dd=d.copy()
-                        Hnbrs[nbr]=dd
-                        H_adj[nbr][n]=dd
-            # copy node attribute dictionary, skipping copy of empty dicts
-            self_node=self.node
-            H_node=H.node
-            for n in H:
-                H_node[n]=self_node[n].copy()
-            H.graph=self.graph.copy()
-            return H
+        # create new graph and copy subgraph into it       
+        H = self.__class__()
+        H.name = "Subgraph of (%s)"%(self.name)
+        # namespace shortcuts for speed
+        H_adj=H.adj
+        self_adj=self.adj
+        # add nodes and edges (undirected method)
+        for n in bunch:
+            Hnbrs={}
+            H_adj[n]=Hnbrs
+            for nbr,d in self_adj[n].iteritems():
+                if nbr in H_adj:
+                    # add both representations of edge: n-nbr and nbr-n
+                    Hnbrs[nbr]=d
+                    H_adj[nbr][n]=d
+        # copy node and attribute dictionaries
+        H.node=self.node.copy()
+        H.graph=self.graph.copy()
+        return H
 
 
     def nodes_with_selfloops(self):
