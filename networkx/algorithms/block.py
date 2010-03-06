@@ -47,7 +47,7 @@ def blockmodel(G,partitions,multigraph=False):
     --------
     >>> G=networkx.path_graph(6)
     >>> partition=[[0,1],[2,3],[4,5]]
-    >>> M=blockmodel(G,partition)
+    >>> M=nx.blockmodel(G,partition)
 
     Notes
     -----
