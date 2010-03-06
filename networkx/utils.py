@@ -87,7 +87,7 @@ def _get_fh(path, mode='r'):
             fh = bz2.BZ2File(path,mode=mode)
         else:
             fh = file(path,mode=mode)
-    elif hasattr(path, 'seek'):
+    elif hasattr(path, 'read'):
         fh = path
     else:
         raise ValueError('path must be a string or file handle')
