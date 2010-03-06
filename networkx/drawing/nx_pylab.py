@@ -492,6 +492,7 @@ def draw_networkx_labels(G, pos,
                   horizontalalignment='center',
                   verticalalignment='center',
                   transform = ax.transData,
+                  clip_on=True,
                   )
         text_items[n]=t
 
@@ -570,6 +571,7 @@ def draw_networkx_edge_labels(G, pos,
                   transform = ax.transData,
                   bbox = bbox,
                   zorder = 1,
+                  clip_on=True,
                   )
         text_items[(n1,n2)]=t
 
