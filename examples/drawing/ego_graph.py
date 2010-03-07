@@ -26,5 +26,5 @@ if __name__ == '__main__':
     nx.draw(hub_ego,pos,node_color='b',node_size=50,with_labels=False)
     # Draw ego as large and red
     nx.draw_networkx_nodes(hub_ego,pos,nodelist=[largest_hub],node_size=300,node_color='r')
-    plt.savefig('main_ego.png')
+    plt.savefig('ego_graph.png')
     plt.show()
