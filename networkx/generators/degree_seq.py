@@ -580,6 +580,13 @@ def connected_double_edge_swap(G, nswap=1):
     if not networkx.is_connected(G):
        raise networkx.NetworkXException("Graph not connected")
 
+    def has_path(G,source,target):
+        try:
+            l=networkx.shortest_path_length(G,source,target)
+            return True
+        except networkx.NetworkXError:
+            return False
+
     n=0
     swapcount=0
     deg=G.degree(with_labels=True)
@@ -611,11 +618,10 @@ def connected_double_edge_swap(G, nswap=1):
                 swapcount+=1
             n+=1
             wcount+=1
-
-        try:
-            l=networkx.shortest_path_length(G,u,v)
+#        if networkx.is_connected(G):
+        if has_path(G,u,v):
             window+=1
-        except nx.NetworkXError:
+        else:
             # not connected
             # undo changes from previous window, decrease window
             while swapped:
