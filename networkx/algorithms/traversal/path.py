@@ -251,22 +251,26 @@ def _bidirectional_pred_succ(G, source, target):
     reverse_fringe=[target]  
 
     while forward_fringe and reverse_fringe:
-        this_level=forward_fringe
-        forward_fringe=[]
-        for v in this_level:
-            for w in Gsucc(v):
-                if w not in pred:
-                    forward_fringe.append(w)
-                    pred[w]=v
-                if w in succ:  return pred,succ,w # found path
-        this_level=reverse_fringe
-        reverse_fringe=[]
-        for v in this_level:
-            for w in Gpred(v):
-                if w not in succ:
-                    succ[w]=v
-                    reverse_fringe.append(w)
-                if w in pred:  return pred,succ,w # found path
+        if len(forward_fringe) <= len(reverse_fringe):
+            this_level=forward_fringe
+            forward_fringe=[]
+            for v in this_level:
+                for w in Gsucc(v):
+                    if w not in pred:
+                        forward_fringe.append(w)
+                        pred[w]=v
+                    if w in succ:  return pred,succ,w # found path
+        else:
+            this_level=reverse_fringe
+            reverse_fringe=[]
+            for v in this_level:
+                for w in Gpred(v):
+                    if w not in succ:
+                        succ[w]=v
+                        reverse_fringe.append(w)
+                    if w in pred:  return pred,succ,w # found path
+
+
 
     return False  # no path found
 
