@@ -104,17 +104,15 @@ def from_pydot(P):
 
     # add nodes, attributes to N.node_attr
     for p in P.get_node_list():
-        n=p.get_name()
-        if n.startswith('"'):
-            n=n[1:-1]
+        n=p.get_name().strip('"')
         if n in ('node','graph','edge'):
             continue
         N.add_node(n,**p.get_attributes())
 
     # add edges
     for e in P.get_edge_list():
-        u=e.get_source()
-        v=e.get_destination()
+        u=e.get_source().strip('"')
+        v=e.get_destination().strip('"')
         attr=e.get_attributes()
         N.add_edge(u,v,**attr)
 
