@@ -551,7 +551,7 @@ def double_edge_swap(G, nswap=1):
 def connected_double_edge_swap(G, nswap=1):
     """Attempt nswap double-edge swaps on the graph G.
 
-    Returns count of successful swaps.  Enforces connectivity.
+    Returns the count of successful swaps.  Enforces connectivity.
     The graph G is modified in place.
 
     Notes
@@ -580,17 +580,10 @@ def connected_double_edge_swap(G, nswap=1):
     if not networkx.is_connected(G):
        raise networkx.NetworkXException("Graph not connected")
 
-    def has_path(G,source,target):
-        try:
-            l=networkx.shortest_path_length(G,source,target)
-            return True
-        except networkx.NetworkXError:
-            return False
-
     n=0
     swapcount=0
     deg=G.degree(with_labels=True)
-    dk=deg.keys() # key labels 
+    dk=deg.keys() # Label key for nodes
     ideg=G.degree()
     cdf=networkx.utils.cumulative_distribution(G.degree()) 
     if len(cdf)<4:
@@ -600,14 +593,15 @@ def connected_double_edge_swap(G, nswap=1):
         wcount=0
         swapped=[]
         while wcount < window and n < nswap:
-            # pick two randon edges without creating edge list
-            # chose source nodes from discrete distribution
+            # Pick two random edges without creating edge list
+            # Choose source nodes from discrete degree distribution
             (ui,xi)=networkx.utils.discrete_sequence(2,cdistribution=cdf) 
             if ui==xi: continue # same source, skip
             u=dk[ui] # convert index to label
             x=dk[xi] 
-            v=random.choice(G.neighbors(u)) # choose target uniformly from nbrs
-            y=random.choice(G.neighbors(x)) # Note: dan't use G[u] because choice can't use dict 
+            # Choose targets uniformly from neighbors
+            v=random.choice(G.neighbors(u)) 
+            y=random.choice(G.neighbors(x)) #
             if v==y: continue # same target, skip
             if (not G.has_edge(u,x)) and (not G.has_edge(v,y)):
                 G.remove_edge(u,v)
@@ -618,12 +612,10 @@ def connected_double_edge_swap(G, nswap=1):
                 swapcount+=1
             n+=1
             wcount+=1
-#        if networkx.is_connected(G):
-        if has_path(G,u,v):
+        if networkx.is_connected(G):
             window+=1
         else:
-            # not connected
-            # undo changes from previous window, decrease window
+            # not connected, undo changes from previous window, decrease window
             while swapped:
                 (u,v,x,y)=swapped.pop()
                 G.add_edge(u,v)
