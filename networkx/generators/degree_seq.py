@@ -611,9 +611,13 @@ def connected_double_edge_swap(G, nswap=1):
                 swapcount+=1
             n+=1
             wcount+=1
-        if networkx.is_connected(G): # increase window
+
+        try:
+            l=networkx.shortest_path_length(G,u,v)
             window+=1
-        else: # undo changes from previous window, decrease window
+        except nx.NetworkXError:
+            # not connected
+            # undo changes from previous window, decrease window
             while swapped:
                 (u,v,x,y)=swapped.pop()
                 G.add_edge(u,v)
