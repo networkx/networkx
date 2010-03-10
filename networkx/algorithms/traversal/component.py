@@ -70,7 +70,7 @@ def is_connected(G):
         raise networkx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
-    return len(single_source_shortest_path(G, G.nodes_iter().next()))==len(G)
+    return len(single_source_shortest_path_length(G, G.nodes_iter().next()))==len(G)
 
 
 def connected_component_subgraphs(G):
