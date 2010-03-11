@@ -17,7 +17,9 @@ __all__ = ['number_connected_components', 'connected_components',
            'strongly_connected_components',
            'is_strongly_connected', 'strongly_connected_component_subgraphs',
            'strongly_connected_components_recursive',
-           'kosaraju_strongly_connected_components']
+           'kosaraju_strongly_connected_components',
+           'contract_strongly_connected_components',
+           ]
 
 
 import networkx
@@ -270,3 +272,18 @@ def is_strongly_connected(G):
 
     return len(strongly_connected_components(G)[0])==len(G)
 
+def contract_strongly_connected_components(G):
+    """Returns a new digraph of G with all strongly connected components
+    contracted to a single node.
+
+    After contracting all strongly connected components to a single node,
+    the resulting graph is a directed acyclic graph.
+    """
+    scc = strongly_connected_components(G)
+    mapping = dict([(n,tuple(sorted(c))) for c in scc for n in c])
+    cG = networkx.DiGraph()
+    for u in mapping:
+        for _,v,d in G.edges_iter(u, data=True):
+            if v not in mapping[u]:
+                cG.add_edge(mapping[u], mapping[v])
+    return cG
