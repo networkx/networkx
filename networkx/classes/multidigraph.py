@@ -743,6 +743,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
                     Hnbrs[v]=ed
                     H_pred[v][u]=ed
         # copy node and attribute dictionaries
-        H.node=self.node.copy()
+        for n in H:
+            H.node[n]=self.node[n]
         H.graph=self.graph.copy()
         return H
