@@ -8,3 +8,5 @@ Edge List
 
    read_edgelist
    write_edgelist
+   read_weighted_edgelist
+   write_weighted_edgelist
