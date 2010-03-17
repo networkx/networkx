@@ -126,6 +126,7 @@ def parse_gml(lines):
         print err.line
         print " "*(err.column-1) + "^"
         print err
+        raise
 
     graph_attr=tokens.asDict()
     # determine directed or undirected and init corresponding NX class
