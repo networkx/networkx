@@ -30,12 +30,12 @@ def subgraph(G, nbunch):
        A NetworkX graph 
 
     nbunch : list, iterable 
-       A container of nodes that will be iterated through once
-       (thus it should be an iterator or be iterable).  Each
-       element of the container should be a valid node type: any
-       hashable type except None.
-       If nbunch is None, return all edges data in the graph.
-       Nodes in nbunch that are not in the graph will be (quietly) ignored.
+       A container of nodes that will be iterated through once (thus
+       it should be an iterator or be iterable).  Each element of the
+       container should be a valid node type: any hashable type except
+       None.  If nbunch is None, return all edges data in the graph.
+       Nodes in nbunch that are not in the graph will be (quietly)
+       ignored.
 
     Notes
     -----
@@ -55,7 +55,8 @@ def union(G,H,create_using=None,rename=False,name=None):
        A NetworkX graph 
 
     create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created.
+       Use specified graph for result.  Otherwise a new graph is created
+       with the same type as G.
 
     rename : bool (default=False)         
        Node names of G and H can be changed be specifying the tuple
@@ -63,12 +64,15 @@ def union(G,H,create_using=None,rename=False,name=None):
        Node u in G is then renamed "G-u" and v in H is renamed "H-v".
 
     name : string       
-       Specify name for union graph
+       Specify the name for the union graph
 
     Notes       
     -----
     To force a disjoint union with node relabeling, use
     disjoint_union(G,H) or convert_node_labels_to integers().
+
+    Graph, edge, and node attributes are propagated from G and H
+    to the union graph.
 
     """
     if name is None:
@@ -105,19 +109,24 @@ def union(G,H,create_using=None,rename=False,name=None):
     Hnames=set(Hname.values())
     Gnames=set(Gname.values())
     if Gnames & Hnames:
-            raise networkx.NetworkXError,\
-            "node sets of G and H are not disjoint. Use appropriate rename=('Gprefix','Hprefix')"
-
+        raise networkx.NetworkXError(\
+            """The node sets of G and H are not disjoint. 
+Use appropriate rename=('Gprefix','Hprefix') or use disjoint_union(G,H).
+""")
     # node names OK, now build union
     R.add_nodes_from(Gnames)
-    R.add_edges_from( ( (Gname[u],Gname[v],x) for u,v,x in G.edges_iter(data=True) ))
+    R.add_edges_from( ( (Gname[u],Gname[v],x) 
+                        for u,v,x in G.edges_iter(data=True) ))
     R.add_nodes_from(Hnames)
-    R.add_edges_from( ( (Hname[u],Hname[v],x) for u,v,x in H.edges_iter(data=True) ))
+    R.add_edges_from( ( (Hname[u],Hname[v],x) 
+                        for u,v,x in H.edges_iter(data=True) ))
 
     # update node attributes too
-    # for large dicts, this is faster than:  dict([(Hnames[k], H.node[k]) for k in H.node)
+    # for large dicts, this is faster than:  
+    # dict([(Hnames[k], H.node[k]) for k in H.node)
     R.node = dict(zip( map(Hname.__getitem__, H.node.keys()), H.node.values() ))
-    R.node.update( dict(zip( map(Gname.__getitem__, G.node.keys()), G.node.values() )) )
+    R.node.update( dict(zip( map(Gname.__getitem__, G.node.keys()), 
+                             G.node.values() )) )
 
     # update graph attributes into tuples using None if attribute is not present
     R.graph = dict(( (k, (G.graph.get(k), H.graph.get(k))) for k in G.graph ))
@@ -144,7 +153,7 @@ def disjoint_union(G,H):
     """
 
     R1=convert_node_labels_to_integers(G)
-    R2=convert_node_labels_to_integers(H,first_label=networkx.number_of_nodes(R1))
+    R2=convert_node_labels_to_integers(H,first_label=len(R1))
     R=union(R1,R2)
     R.name="disjoint_union( %s, %s )"%(G.name,H.name)
     return R
