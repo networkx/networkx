@@ -4,7 +4,7 @@ complement, subgraph.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -159,16 +159,18 @@ def intersection(G,H,create_using=None ):
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph 
+       A NetworkX graph.  G and H must have the same node sets. 
 
     create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created.
+       Use specified graph for result.  Otherwise a new graph is created
+       with the same type as G.
 
     Notes
     -----
-       
-    If you want an new graph of the intersection of node sets of
-    G and H with the edges from G use
+    Data from the graph, nodes, and edges are not copied to the new
+    graph.  If you want a new graph of the intersection of G and H
+    with the data (including edge data) from G use remove_nodes_from()
+    as follows
 
     >>> G=nx.path_graph(3)
     >>> H=nx.path_graph(5)
@@ -186,14 +188,22 @@ def intersection(G,H,create_using=None ):
     R.name="Intersection of (%s and %s)"%(G.name, H.name)
 
     if set(G)!=set(H):
-        raise networkx.NetworkXError("Node sets of graphs not equal")        
+        raise networkx.NetworkXError("Node sets of graphs are not equal")     
     
     if G.number_of_edges()<=H.number_of_edges():
-        for e in G.edges():
+        if G.is_multigraph():
+            edges=G.edges_iter(keys=True)
+        else:
+            edges=G.edges_iter()
+        for e in edges:
             if H.has_edge(*e):
                 R.add_edge(*e)
     else:
-        for e in H.edges():
+        if H.is_multigraph():
+            edges=H.edges_iter(keys=True)
+        else:
+            edges=H.edges_iter()
+        for e in edges:
             if G.has_edge(*e):
                 R.add_edge(*e)
 
@@ -208,15 +218,18 @@ def difference(G,H,create_using=None):
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph 
+       A NetworkX graph.  G and H must have the same node sets. 
 
     create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created.
+       Use specified graph for result.  Otherwise a new graph is created
+       with the same type as G.
 
     Notes
     -----
-    If you want an new graph consisting of the difference of the node sets of
-    G and H with the edges from G use
+    Data from the graph, nodes, and edges are not copied to the new
+    graph.  If you want a new graph of the difference of G and H with
+    with the data (including edge data) from G use remove_nodes_from()
+    as follows
 
     >>> G=nx.path_graph(3)
     >>> H=nx.path_graph(5)
@@ -237,30 +250,43 @@ def difference(G,H,create_using=None):
         raise networkx.NetworkXError("Node sets of graphs not equal")        
     
     if G.number_of_edges()<=H.number_of_edges():
-        for e in G.edges():
+        if G.is_multigraph():
+            edges=G.edges_iter(keys=True)
+        else:
+            edges=G.edges_iter()
+        for e in edges:
             if not H.has_edge(*e):
                 R.add_edge(*e)
     else:
-        for e in H.edges():
+        if H.is_multigraph():
+            edges=H.edges_iter(keys=True)
+        else:
+            edges=H.edges_iter()
+        for e in edges:
             if not G.has_edge(*e):
                 R.add_edge(*e)
 
     return R
 
 def symmetric_difference(G,H,create_using=None ):
-    """Return new graph with edges that exist in 
-    in either G or H but not both.  
+    """Return new graph with edges that exist in in either G or H but
+    not both.
 
     The node sets of H and G must be the same.
 
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph 
+       A NetworkX graph.  G and H must have the same node sets. 
 
     create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created.
+       Use specified graph for result.  Otherwise a new graph is created
+       with the same type as G.
 
+    Notes
+    -----
+    Data from the graph, nodes, and edges are not copied to the new
+    graph. 
     """
     # create new graph         
     if create_using is None:  # Graph object of the same type as G
@@ -279,14 +305,24 @@ def symmetric_difference(G,H,create_using=None ):
     nodes=gnodes.symmetric_difference(hnodes)
     R.add_nodes_from(nodes)
     
-    for e in G.edges():
+    if G.is_multigraph():
+        edges=G.edges_iter(keys=True)
+    else:
+        edges=G.edges_iter()
+    # we could copy the data here but then this function doesn't
+    # match intersection and difference
+    for e in edges:
         if not H.has_edge(*e):
             R.add_edge(*e)
-    for e in H.edges():
+
+    if H.is_multigraph():
+        edges=H.edges_iter(keys=True)
+    else:
+        edges=H.edges_iter()
+    for e in edges:
         if not G.has_edge(*e):
             R.add_edge(*e)
     return R
-
 
 def cartesian_product(G,H,create_using=None):
     """ Return the Cartesian product of G and H.
