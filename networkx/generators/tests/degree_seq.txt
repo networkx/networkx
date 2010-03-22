@@ -218,15 +218,3 @@ Traceback (most recent call last):
 ...
 NetworkXError: Directed Graph not supported
 
-
-S-metric
---------
-
->>> g = Graph()
->>> g.add_edge(1,2)
->>> g.add_edge(2,3)
->>> g.add_edge(2,4)
->>> g.add_edge(1,4)
->>> s_metric(g)
-19
-
