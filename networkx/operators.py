@@ -60,8 +60,8 @@ def union(G,H,create_using=None,rename=False,name=None):
 
     rename : bool (default=False)         
        Node names of G and H can be changed be specifying the tuple
-       rename=('G-','H-') (for example).
-       Node u in G is then renamed "G-u" and v in H is renamed "H-v".
+       rename=('G-','H-') (for example).  Node u in G is then renamed
+       "G-u" and v in H is renamed "H-v".
 
     name : string       
        Specify the name for the union graph
@@ -146,12 +146,10 @@ def disjoint_union(G,H):
 
     Notes
     -----
-    A new graph is created, of the same class as G.
-    It is recommended that G and H be either both directed or both
-    undirected.
+    A new graph is created, of the same class as G.  It is recommended
+    that G and H be either both directed or both undirected.
 
     """
-
     R1=convert_node_labels_to_integers(G)
     R2=convert_node_labels_to_integers(H,first_label=len(R1))
     R=union(R1,R2)
@@ -176,9 +174,9 @@ def intersection(G,H,create_using=None ):
 
     Notes
     -----
-    Data from the graph, nodes, and edges are not copied to the new
+    Attributes from the graph, nodes, and edges are not copied to the new
     graph.  If you want a new graph of the intersection of G and H
-    with the data (including edge data) from G use remove_nodes_from()
+    with the attributes (including edge data) from G use remove_nodes_from()
     as follows
 
     >>> G=nx.path_graph(3)
@@ -235,9 +233,9 @@ def difference(G,H,create_using=None):
 
     Notes
     -----
-    Data from the graph, nodes, and edges are not copied to the new
+    Attributes from the graph, nodes, and edges are not copied to the new
     graph.  If you want a new graph of the difference of G and H with
-    with the data (including edge data) from G use remove_nodes_from()
+    with the attributes (including edge data) from G use remove_nodes_from()
     as follows
 
     >>> G=nx.path_graph(3)
@@ -294,7 +292,7 @@ def symmetric_difference(G,H,create_using=None ):
 
     Notes
     -----
-    Data from the graph, nodes, and edges are not copied to the new
+    Attributes from the graph, nodes, and edges are not copied to the new
     graph. 
     """
     # create new graph         
@@ -343,9 +341,14 @@ def cartesian_product(G,H,create_using=None):
 
     Notes
     -----
-    Only tested with Graph class.
+    Only tested with Graph class.  Graph, node, and edge attributes
+    are not copied to the new graph.
+
     
     """
+    if G.is_multigraph():
+        raise Exception(
+            """cartesian_product() not implemented for Multi(Di)Graphs""")
     if create_using is None:
         Prod=G.__class__()
     else:
@@ -356,8 +359,12 @@ def cartesian_product(G,H,create_using=None):
         for w in H:
             Prod.add_node((v,w)) 
 
-    Prod.add_edges_from( (((v,w1),(v,w2),d) for w1,w2,d in H.edges_iter(data=True) for v in G) )
-    Prod.add_edges_from( (((v1,w),(v2,w),d) for v1,v2,d in G.edges_iter(data=True) for w in H) )
+    Prod.add_edges_from( (((v,w1),(v,w2),d) 
+                          for w1,w2,d in H.edges_iter(data=True) 
+                          for v in G) )
+    Prod.add_edges_from( (((v1,w),(v2,w),d) 
+                          for v1,v2,d in G.edges_iter(data=True) 
+                          for w in H) )
 
     Prod.name="Cartesian Product("+G.name+","+H.name+")"
     return Prod
@@ -375,16 +382,18 @@ def compose(G,H,create_using=None, name=None):
        A NetworkX graph 
 
     create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created.
+       Use specified graph for result.  Otherwise a new graph is created
+       with the same type as G
 
     name : string       
        Specify name for new graph
 
     Notes
     -----
-    A new graph is returned, of the same class as G.
-    It is recommended that G and H be either both directed or both
+    A new graph is returned, of the same class as G.  It is
+    recommended that G and H be either both directed or both
     undirected.
+
     """
     if name is None:
         name="compose( %s, %s )"%(G.name,H.name)
@@ -394,10 +403,17 @@ def compose(G,H,create_using=None, name=None):
         R=create_using
         R.clear()
     R.name=name
-    R.add_nodes_from(G)
-    R.add_edges_from(G.edges_iter(data=True))
-    R.add_nodes_from(H)
-    R.add_edges_from(H.edges_iter(data=True))
+    R.add_nodes_from(H.nodes(data=True))
+    R.add_nodes_from(G,nodes(data=True))
+    if H.is_multigraph():
+        R.add_edges_from(H.edges_iter(keys=True,data=True))
+    else:
+        R.add_edges_from(H.edges_iter(data=True))
+    if G.is_multigraph():
+        R.add_edges_from(G.edges_iter(keys=True,data=True))
+    else:
+        R.add_edges_from(G.edges_iter(data=True))
+
     return R
 
 
@@ -419,6 +435,8 @@ def complement(G,create_using=None,name=None):
     ------
     Note that complement() does not create self-loops and also 
     does not produce parallel edges for MultiGraphs.
+
+    Graph, node, and edge data is not propagated to the new graph.
 
     """
     if name is None:
@@ -445,6 +463,10 @@ def create_empty_copy(G,with_nodes=True):
 
     with_nodes :  bool (default=True)
        Include nodes. 
+
+    Notes
+    -----
+    Graph, node, and edge data is not propagated to the new graph.
     """
     H=G.__class__()
 
@@ -530,7 +552,12 @@ def relabel_nodes(G,mapping):
     #    u=map_func(n1)
     #    v=map_func(n2)
     #    H.add_edge(u,v,d)
-    H.add_edges_from( (map_func(n1),map_func(n2),d) for (n1,n2,d) in G.edges_iter(data=True)) 
+    if G.is_multigraph():
+        H.add_edges_from( (map_func(n1),map_func(n2),k,d) 
+                          for (n1,n2,k,d) in G.edges_iter(keys=True,data=True)) 
+    else:
+        H.add_edges_from( (map_func(n1),map_func(n2),d) 
+                          for (n1,n2,d) in G.edges_iter(data=True)) 
 
     return H        
     
@@ -637,6 +664,8 @@ def line_graph(G):
     Notes
     -----
     Not implemented for MultiGraph or MultiDiGraph classes.
+
+    Graph, node, and edge data are not propagated to the new graph.
 
     See Also
     --------

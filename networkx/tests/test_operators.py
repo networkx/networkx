@@ -110,4 +110,17 @@ def test_symmetric_difference_multigraph():
     assert_equal( set(gh.nodes()) , set(g.nodes()) )
     assert_equal( set(gh.nodes()) , set(h.nodes()) )
     assert_equal( sorted(gh.edges()) , 3*[(0,1)] )
-    assert_equal( sorted(sorted(e) for e in gh.edges(keys=True)), [[0,1,1],[0,1,2],[0,1,3]] )
+    assert_equal( sorted(sorted(e) for e in gh.edges(keys=True)), 
+                  [[0,1,1],[0,1,2],[0,1,3]] )
+
+def test_relabel_nodes():
+    pass
+
+def test_compose():
+    pass
+
+def test_cartesian_product():
+    pass
+
+def test_create_empty_copy():
+    pass
