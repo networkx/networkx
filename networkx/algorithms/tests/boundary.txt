@@ -5,7 +5,7 @@ Boundary
 >>> import networkx
 >>> from networkx.algorithms.boundary import *
 >>> from networkx import null_graph, path_graph, complete_graph, petersen_graph
->>> from networkx.operators import convert_node_labels_to_integers as cnlti
+>>> from networkx import convert_node_labels_to_integers as cnlti
 
 Some small graphs
 -----------------

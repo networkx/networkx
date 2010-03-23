@@ -7,7 +7,7 @@ Unit tests for Graph Class in base.py
 >>> from networkx import *
 >>> import networkx
 >>> is_isomorphic=networkx.algorithms.isomorphism.isomorph.graph_could_be_isomorphic
->>> from networkx.operators import convert_node_labels_to_integers as cnlti
+>>> from networkx import convert_node_labels_to_integers as cnlti
 
 Some small graphs
 -----------------

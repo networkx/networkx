@@ -48,6 +48,7 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 
 
 __all__ = ['to_networkx_graph','from_whatever', 
+           'convert_node_labels_to_integers', 'relabel_nodes',
            'from_dict_of_dicts', 'to_dict_of_dicts',
            'from_dict_of_lists', 'to_dict_of_lists',
            'from_edgelist', 'to_edgelist',
@@ -199,6 +200,167 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
     return to_networkx_graph(thing,
                              create_using=create_using,
                              multigraph_input=multigraph_input)
+
+def convert_to_undirected(G):
+    """Return a new undirected representation of the graph G.
+
+    """
+    return G.to_undirected()
+
+
+def convert_to_directed(G):
+    """Return a new directed representation of the graph G.
+
+    """
+    return G.to_directed()
+
+
+def relabel_nodes(G,mapping):
+    """Return a copy of G with node labels transformed by mapping.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    mapping : dictionary or function
+       Either a dictionary with the old labels as keys and new labels as values
+       or a function transforming an old label with a new label.
+       In either case, the new labels must be hashable Python objects.
+
+    Examples
+    --------
+    mapping as dictionary
+
+    >>> G=nx.path_graph(3)  # nodes 0-1-2
+    >>> mapping={0:'a',1:'b',2:'c'}
+    >>> H=nx.relabel_nodes(G,mapping)
+    >>> print H.nodes()
+    ['a', 'c', 'b']
+
+    >>> G=nx.path_graph(26) # nodes 0..25
+    >>> mapping=dict(zip(G.nodes(),"abcdefghijklmnopqrstuvwxyz"))
+    >>> H=nx.relabel_nodes(G,mapping) # nodes a..z
+    >>> mapping=dict(zip(G.nodes(),xrange(1,27)))
+    >>> G1=nx.relabel_nodes(G,mapping) # nodes 1..26
+
+    mapping as function
+
+    >>> G=nx.path_graph(3)
+    >>> def mapping(x):
+    ...    return x**2
+    >>> H=nx.relabel_nodes(G,mapping)
+    >>> print H.nodes()
+    [0, 1, 4]
+
+    See Also
+    --------
+    convert_node_labels_to_integers()
+
+    """
+    H=G.__class__()
+    H.name="(%s)" % G.name
+
+    if hasattr(mapping,"__getitem__"):   # if we are a dict
+        map_func=mapping.__getitem__   # call as a function
+    else:
+        map_func=mapping
+
+    for node in G:
+        try:
+            H.add_node(map_func(node))
+        except:
+            raise networkx.NetworkXError,\
+                  "relabeling function cannot be applied to node %s" % node
+
+    #for n1,n2,d in G.edges_iter(data=True):
+    #    u=map_func(n1)
+    #    v=map_func(n2)
+    #    H.add_edge(u,v,d)
+    if G.is_multigraph():
+        H.add_edges_from( (map_func(n1),map_func(n2),k,d) 
+                          for (n1,n2,k,d) in G.edges_iter(keys=True,data=True)) 
+    else:
+        H.add_edges_from( (map_func(n1),map_func(n2),d) 
+                          for (n1,n2,d) in G.edges_iter(data=True)) 
+
+    H.node.update(dict((map_func(n),d) for n,d in G.node.iteritems()))
+    H.graph.update(G.graph)
+
+    return H        
+    
+
+def convert_node_labels_to_integers(G,first_label=0,
+                                    ordering="default",
+                                    discard_old_labels=True):
+    """ Return a copy of G node labels replaced with integers.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    first_label : int, optional (default=0)       
+       An integer specifying the offset in numbering nodes.
+       The n new integer labels are numbered first_label, ..., n+first_label.
+
+    ordering : string
+        "default" : inherit node ordering from G.nodes() 
+        "sorted"  : inherit node ordering from sorted(G.nodes())
+        "increasing degree" : nodes are sorted by increasing degree
+        "decreasing degree" : nodes are sorted by decreasing degree
+
+    discard_old_labels : bool, optional (default=True)
+       if True (default) discard old labels
+       if False, create a dict self.node_labels that maps new
+       labels to old labels
+    """
+#    This function strips information attached to the nodes and/or
+#    edges of a graph, and returns a graph with appropriate integer
+#    labels. One can view this as a re-labeling of the nodes. Be
+#    warned that the term "labeled graph" has a loaded meaning
+#    in graph theory. The fundamental issue is whether the names
+#    (labels) of the nodes (and edges) matter in deciding when two
+#    graphs are the same. For example, in problems of graph enumeration
+#    there is a distinct difference in techniques required when
+#    counting labeled vs. unlabeled graphs.
+
+#    When implementing graph
+#    algorithms it is often convenient to strip off the original node
+#    and edge information and appropriately relabel the n nodes with
+#    the integer values 1,..,n. This is the purpose of this function,
+#    and it provides the option (see discard_old_labels variable) to either
+#    preserve the original labels in separate dicts (these are not
+#    returned but made an attribute of the new graph.
+
+    N=G.number_of_nodes()+first_label
+    if ordering=="default":
+        mapping=dict(zip(G.nodes(),range(first_label,N)))
+    elif ordering=="sorted":
+        nlist=G.nodes()
+        nlist.sort()
+        mapping=dict(zip(nlist,range(first_label,N)))
+    elif ordering=="increasing degree":
+        dv_pairs=[(d,n) for (n,d) in G.degree_iter()]
+        dv_pairs.sort() # in-place sort from lowest to highest degree
+        mapping=dict(zip([n for d,n in dv_pairs],range(first_label,N)))
+    elif ordering=="decreasing degree":
+        dv_pairs=[(d,n) for (n,d) in G.degree_iter()]
+        dv_pairs.sort() # in-place sort from lowest to highest degree
+        dv_pairs.reverse()
+        mapping=dict(zip([n for d,n in dv_pairs],range(first_label,N)))
+    else:
+        raise networkx.NetworkXError,\
+              "unknown value of node ordering variable: ordering"
+
+    H=relabel_nodes(G,mapping)
+
+    H.name="("+G.name+")_with_int_labels"
+    if not discard_old_labels:
+        H.node_labels=mapping
+    return H
+
+
 
 def to_dict_of_lists(G,nodelist=None):
     """Return adjacency representation of graph as a dictionary of lists

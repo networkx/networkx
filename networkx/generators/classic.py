@@ -346,10 +346,10 @@ def grid_graph(dim,periodic=False,create_using=None):
         Gnew=func(current_dim,create_using)
         # explicit: create_using=None 
         # This is so that we get a new graph of Gnew's class.
-        G=networkx.operators.cartesian_product(Gnew,Gold,create_using=None)
+        G=networkx.cartesian_product(Gnew,Gold,create_using=None)
     # graph G is done but has labels of the form (1,(2,(3,1)))
     # so relabel
-    H=networkx.operators.relabel_nodes(G, networkx.utils.flatten)
+    H=networkx.relabel_nodes(G, networkx.utils.flatten)
     H.name="grid_graph(%s)"%dlabel
     return H
 

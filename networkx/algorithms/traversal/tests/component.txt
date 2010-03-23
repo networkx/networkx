@@ -2,7 +2,7 @@ component
 ==========
 
 >>> import networkx as NX
->>> from networkx.operators import convert_node_labels_to_integers as cnlti
+>>> from networkx import convert_node_labels_to_integers as cnlti
 >>> G=cnlti(NX.grid_2d_graph(4,4),first_label=1,ordering="sorted")
 
     .. image:: paths_G.png

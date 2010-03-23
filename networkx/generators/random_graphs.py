@@ -830,9 +830,9 @@ def random_shell_graph(constructor, create_using=None, seed=None):
     for (n,m,d) in constructor:
         inter_edges=int(m*d)
         intra_edges.append(m-inter_edges)
-        g=networkx.operators.convert_node_labels_to_integers(
-                     gnm_random_graph(n,inter_edges),
-                     first_label=nnodes)
+        g=networkx.convert_node_labels_to_integers(
+            gnm_random_graph(n,inter_edges),
+            first_label=nnodes)
         glist.append(g)
         nnodes+=n                     
         G=networkx.operators.union(G,g)

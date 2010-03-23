@@ -16,7 +16,7 @@ we use: P1di, P2di, etc. where Xdi=to_directed(X)
      H -- copy of G with extra int nodes from P3 and K3
  
 
->>> from networkx.operators import convert_node_labels_to_integers as cnlti
+>>> from networkx import convert_node_labels_to_integers as cnlti
 
 Some small Graphs
 -----------------
