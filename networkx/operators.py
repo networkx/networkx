@@ -327,8 +327,6 @@ def cartesian_product(G,H,create_using=None):
     -----
     Only tested with Graph class.  Graph, node, and edge attributes
     are not copied to the new graph.
-
-    
     """
     if G.is_multigraph():
         raise Exception(
@@ -376,7 +374,8 @@ def compose(G,H,create_using=None, name=None):
     -----
     A new graph is returned, of the same class as G.  It is
     recommended that G and H be either both directed or both
-    undirected.
+    undirected.  Attributes from G take precedent over attributes
+    from H.
 
     """
     if name is None:
@@ -397,6 +396,13 @@ def compose(G,H,create_using=None, name=None):
         R.add_edges_from(G.edges_iter(keys=True,data=True))
     else:
         R.add_edges_from(G.edges_iter(data=True))
+
+    # add node attributes, G attributes take precedent over H attributes
+    R.node.update(H.node)
+    R.node.update(G.node)
+    # add graph attributes, G attributes take precedent over H attributes
+    R.graph.update(H.graph)
+    R.graph.update(G.graph)
 
     return R
 
@@ -421,7 +427,6 @@ def complement(G,create_using=None,name=None):
     does not produce parallel edges for MultiGraphs.
 
     Graph, node, and edge data is not propagated to the new graph.
-
     """
     if name is None:
         name="complement(%s)"%(G.name) 
