@@ -1,8 +1,4 @@
 """
--------
-Convert
--------
-
 This module provides functions to convert 
 NetworkX graphs to and from other formats.
 
@@ -76,7 +72,7 @@ def _prep_create_using(create_using):
     return G
 
 def to_networkx_graph(data,create_using=None,multigraph_input=False):
-    """Make a NetworkX graph from an known type.
+    """Make a NetworkX graph from a known data structure.
 
     The preferred way to call this is automatically
     from the class constructor

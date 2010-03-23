@@ -51,8 +51,9 @@ def blockmodel(G,partitions,multigraph=False):
 
     Notes
     -----
-    For reference see:
-    @book{doreian_generalized_2004,
+    For reference see::
+
+        @book{doreian_generalized_2004,
     	title = {Generalized Blockmodeling},
     	isbn = {0521840856},
     	publisher = {Cambridge University Press},
