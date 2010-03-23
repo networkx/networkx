@@ -99,10 +99,10 @@ complement
 complement of the complete graph is empty
 
 >>> G=complement(K3)
->>> is_isomorphic(G,E3)
+>>> is_isomorphic(G,empty_graph(3))
 True
 >>> G=complement(K5)
->>> is_isomorphic(G,E5)
+>>> is_isomorphic(G,empty_graph(5))
 True
 
 for any G, G=complement(complement(G))

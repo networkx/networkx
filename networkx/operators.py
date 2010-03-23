@@ -1,17 +1,16 @@
 """
 Operations on graphs; including  union, intersection, difference,
 complement, subgraph. 
-
 """
-__author__ = """\n""".join('Aric Hagberg (hagberg@lanl.gov)',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)')
 #    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
+                           'Pieter Swart (swart@lanl.gov)',
+                           'Dan Schult(dschult@colgate.edu)'])
 
 __all__ = ['union', 'cartesian_product', 
            'compose', 'complement',
@@ -21,7 +20,6 @@ __all__ = ['union', 'cartesian_product',
 
 import networkx
 from networkx.utils import is_string_like
-
                                                                                 
 
 def union(G,H,create_using=None,rename=False,name=None):
@@ -150,7 +148,7 @@ def intersection(G,H,create_using=None ):
     """
     # create new graph         
     if create_using is None:  # Graph object of the same type as G
-        R=create_empty_copy(G)
+        R=networkx.create_empty_copy(G)
     else:                     # user specified graph 
         R=create_using 
         R.clear() 
@@ -209,7 +207,7 @@ def difference(G,H,create_using=None):
     """
     # create new graph         
     if create_using is None:  # Graph object of the same type as G
-        R=create_empty_copy(G)
+        R=networkx.create_empty_copy(G)
     else:                     # user specified graph 
         R=create_using 
         R.clear() 
@@ -260,7 +258,7 @@ def symmetric_difference(G,H,create_using=None ):
     """
     # create new graph         
     if create_using is None:  # Graph object of the same type as G
-        R=create_empty_copy(G)
+        R=networkx.create_empty_copy(G)
     else:                     # user specified graph 
         R=create_using 
         R.clear() 
@@ -428,28 +426,6 @@ def complement(G,create_using=None,name=None):
         if n2 not in nbrs if n is not n2) )
     return R
 
-
-def create_empty_copy(G,with_nodes=True):
-    """Return a copy of the graph G with all of the edges removed.
-
-    Parameters
-    ----------
-    G : graph
-       A NetworkX graph 
-
-    with_nodes :  bool (default=True)
-       Include nodes. 
-
-    Notes
-    -----
-    Graph, node, and edge data is not propagated to the new graph.
-    """
-    H=G.__class__()
-
-    H.name='empty '+G.name
-    if with_nodes:
-        H.add_nodes_from(G)
-    return H
 
 
 def convert_to_undirected(G):

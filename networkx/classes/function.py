@@ -2,9 +2,9 @@
 Functional interface to graph methods and assorted utilities.
     
 """
-__author__ = """\n""".join('Aric Hagberg (hagberg@lanl.gov)',
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)')
+                           'Dan Schult(dschult@colgate.edu)'])
 #    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -215,3 +215,26 @@ def subgraph(G, nbunch):
 
     """
     return G.subgraph(nbunch)
+
+def create_empty_copy(G,with_nodes=True):
+    """Return a copy of the graph G with all of the edges removed.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    with_nodes :  bool (default=True)
+       Include nodes. 
+
+    Notes
+    -----
+    Graph, node, and edge data is not propagated to the new graph.
+    """
+    H=G.__class__()
+
+    H.name='empty '+G.name
+    if with_nodes:
+        H.add_nodes_from(G)
+    return H
+
