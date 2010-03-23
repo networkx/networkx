@@ -1,4 +1,4 @@
-.. _reference:
+.. _pdf_reference:
 
 Reference
 *********

@@ -2,7 +2,7 @@
 Functions
 *********
 
-.. automodule:: networkx.classes.functions
+.. automodule:: networkx.classes.function
 .. currentmodule:: networkx
 
 Graph functions

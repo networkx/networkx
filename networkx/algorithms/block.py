@@ -49,18 +49,10 @@ def blockmodel(G,partitions,multigraph=False):
     >>> partition=[[0,1],[2,3],[4,5]]
     >>> M=nx.blockmodel(G,partition)
 
-    Notes
-    -----
-    For reference see::
-
-        @book{doreian_generalized_2004,
-    	title = {Generalized Blockmodeling},
-    	isbn = {0521840856},
-    	publisher = {Cambridge University Press},
-    	author = {Patrick Doreian and Vladimir Batagelj and Anuska Ferligoj},
-    	month = nov,
-    	year = {2004}
-    }
+    References
+    ----------
+    .. [1] Patrick Doreian, Vladimir Batagelj, and Anuska Ferligoj
+    	"Generalized Blockmodeling",Cambridge University Press, 2004.
     """
     # Create sets of node partitions
     part=map(set,partitions) 
