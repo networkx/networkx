@@ -150,3 +150,26 @@ Bipartite
    bipartite_alternating_havel_hakimi_graph
    bipartite_preferential_attachment_graph
    bipartite_random_regular_graph
+
+
+Line Graph
+----------
+.. autosummary::
+   :toctree: generated/
+
+   line_graph
+
+
+Ego Graph
+---------
+.. autosummary::
+   :toctree: generated/
+
+   ego_graph
+
+Stochastic
+----------
+.. autosummary::
+   :toctree: generated/
+
+   stochastic_graph

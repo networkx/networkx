@@ -1,6 +1,6 @@
-************************************
-Converting to and from other formats
-************************************
+*****************************************
+Converting to and from other data formats
+*****************************************
 
 .. automodule:: networkx.convert
 .. currentmodule:: networkx
@@ -11,7 +11,9 @@ Functions
 .. autosummary::
    :toctree: generated/
 
-   from_whatever
+   to_networkx_graph
+   convert_node_labels_to_integers
+   relabel_nodes
    to_dict_of_lists
    from_dict_of_lists
    to_dict_of_dicts

@@ -10,19 +10,21 @@ Algorithms
 .. toctree::
    :maxdepth: 2
 
+   algorithms.bipartite
+   algorithms.block
    algorithms.boundary
    algorithms.centrality
    algorithms.clique
    algorithms.clustering
    algorithms.core
    algorithms.cycles
-   algorithms.matching
-   algorithms.isomorphism
-   algorithms.pagerank
    algorithms.hits
-   algorithms.traversal
-   algorithms.bipartite
+   algorithms.isomorphism
+   algorithms.matching
    algorithms.mst
-   algorithms.block
    algorithms.operators
+   algorithms.pagerank
+   algorithms.traversal
+
+
 
