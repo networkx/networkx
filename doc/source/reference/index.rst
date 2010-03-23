@@ -13,6 +13,7 @@ Reference
    introduction
    classes
    algorithms
+   functions
    generators
    linalg
    convert

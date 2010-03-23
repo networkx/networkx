@@ -13,8 +13,8 @@ Reference
    ../overview	
    introduction
    classes
-   operators
    algorithms
+   functions
    generators
    linalg
    convert

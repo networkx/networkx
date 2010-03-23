@@ -6,7 +6,6 @@ Algorithms
 
 .. currentmodule:: networkx
 
-
 .. toctree::
    :maxdepth: 2
 

@@ -5,9 +5,6 @@ Converting to and from other data formats
 .. automodule:: networkx.convert
 .. currentmodule:: networkx
 
-Functions
----------
-
 .. autosummary::
    :toctree: generated/
 
