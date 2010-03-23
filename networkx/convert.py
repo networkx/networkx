@@ -32,8 +32,7 @@ Create a graph with a single edge from a dictionary of dictionaries
 
 See Also
 --------
-For graphviz dot formats see networkx.drawing.nx_pygraphviz
-or networkx.drawing.nx_pydot.
+nx_pygraphviz, nx_pydot
 
 """
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
@@ -76,7 +75,7 @@ def _prep_create_using(create_using):
             raise TypeError("Input graph is not a networkx graph type")
     return G
 
-def to_networkx_graph(thing,create_using=None,multigraph_input=False):
+def to_networkx_graph(data,create_using=None,multigraph_input=False):
     """Make a NetworkX graph from an known type.
 
     The preferred way to call this is automatically
@@ -91,7 +90,7 @@ def to_networkx_graph(thing,create_using=None,multigraph_input=False):
 
     Parameters
     ----------
-    thing : a object to be converted
+    data : a object to be converted
        Current known types are:
          any NetworkX graph
          dict-of-dicts
@@ -106,50 +105,50 @@ def to_networkx_graph(thing,create_using=None,multigraph_input=False):
        Use specified graph for result.  Otherwise a new graph is created.
 
     multigraph_input : bool (default False)
-      If True and  thing is a dict_of_dicts,
+      If True and  data is a dict_of_dicts,
       try to create a multigraph assuming dict_of_dict_of_lists.
-      If thing and create_using are both multigraphs then create
+      If data and create_using are both multigraphs then create
       a multigraph from a multigraph.
 
     """
     # NX graph
-    if hasattr(thing,"adj"):
+    if hasattr(data,"adj"):
         try:
-            result= from_dict_of_dicts(thing.adj,\
+            result= from_dict_of_dicts(data.adj,\
                     create_using=create_using,\
-                    multigraph_input=thing.is_multigraph())
-            if hasattr(thing,'graph') and isinstance(thing.graph,dict):
-                result.graph=thing.graph.copy()
-            if hasattr(thing,'node') and isinstance(thing.node,dict):
-                result.node=dict( (n,dd.copy()) for n,dd in thing.node.iteritems() )
+                    multigraph_input=data.is_multigraph())
+            if hasattr(data,'graph') and isinstance(data.graph,dict):
+                result.graph=data.graph.copy()
+            if hasattr(data,'node') and isinstance(data.node,dict):
+                result.node=dict( (n,dd.copy()) for n,dd in data.node.iteritems() )
             return result
         except:
             raise networkx.NetworkXError,\
                 "Input is not a correct NetworkX graph."
 
     # pygraphviz  agraph
-    if hasattr(thing,"is_strict"):
+    if hasattr(data,"is_strict"):
         try:
-            return networkx.from_agraph(thing,create_using=create_using)
+            return networkx.from_agraph(data,create_using=create_using)
         except:
             raise networkx.NetworkXError,\
                   "Input is not a correct pygraphviz graph."
 
     # dict of dicts/lists
-    if isinstance(thing,dict):
+    if isinstance(data,dict):
         try:
-            return from_dict_of_dicts(thing,create_using=create_using,\
+            return from_dict_of_dicts(data,create_using=create_using,\
                     multigraph_input=multigraph_input)
         except:
             try:
-                return from_dict_of_lists(thing,create_using=create_using)
+                return from_dict_of_lists(data,create_using=create_using)
             except:
                 raise TypeError("Input is not known type.")
 
     # list or generator of edges
-    if isinstance(thing,list) or hasattr(thing,'next'): 
+    if isinstance(data,list) or hasattr(data,'next'): 
         try:
-            return from_edgelist(thing,create_using=create_using)
+            return from_edgelist(data,create_using=create_using)
         except:
             raise networkx.NetworkXError,\
                   "Input is not a valid edge list"
@@ -157,10 +156,10 @@ def to_networkx_graph(thing,create_using=None,multigraph_input=False):
     # numpy matrix or ndarray 
     try:
         import numpy
-        if isinstance(thing,numpy.matrix) or \
-               isinstance(thing,numpy.ndarray):
+        if isinstance(data,numpy.matrix) or \
+               isinstance(data,numpy.ndarray):
             try:
-                return from_numpy_matrix(thing,create_using=create_using)
+                return from_numpy_matrix(data,create_using=create_using)
             except:
                 raise networkx.NetworkXError,\
                   "Input is not a correct numpy matrix or array."
@@ -171,9 +170,9 @@ def to_networkx_graph(thing,create_using=None,multigraph_input=False):
     # scipy sparse matrix - any format
     try:
         import scipy
-        if hasattr(thing,"format"):
+        if hasattr(data,"format"):
             try:
-                return from_scipy_sparse_matrix(thing,create_using=create_using)
+                return from_scipy_sparse_matrix(data,create_using=create_using)
             except:
                 raise networkx.NetworkXError, \
                       "Input is not a correct scipy sparse matrix type."
@@ -189,7 +188,7 @@ def to_networkx_graph(thing,create_using=None,multigraph_input=False):
 
     
 
-def from_whatever(thing,create_using=None,multigraph_input=False):
+def from_whatever(data,create_using=None,multigraph_input=False):
     """Deprecated. Use to_networkx_graph.
 
     See Also
@@ -197,7 +196,7 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
     to_networkx_graph()
     """
 
-    return to_networkx_graph(thing,
+    return to_networkx_graph(data,
                              create_using=create_using,
                              multigraph_input=multigraph_input)
 
