@@ -13,6 +13,8 @@ from hits import *
 from bipartite import *
 from mst import *
 from block import *
+from operators import *
+
 
 import traversal
 import isomorphism

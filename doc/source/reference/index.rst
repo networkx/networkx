@@ -12,7 +12,6 @@ Reference
 
    introduction
    classes
-   operators
    algorithms
    generators
    linalg

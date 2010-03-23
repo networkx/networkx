@@ -2,7 +2,6 @@ p2g
 ===
 
 >>> from networkx import *
->>> from networkx.operators import *
 >>> import os,tempfile
 
 

@@ -24,4 +24,5 @@ Algorithms
    algorithms.bipartite
    algorithms.mst
    algorithms.block
+   algorithms.operators
 

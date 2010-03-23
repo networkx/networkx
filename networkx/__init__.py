@@ -71,7 +71,6 @@ from convert import *
 from drawing import *
 from generators import *
 from linalg import *
-from operators import *
 from readwrite import *
 
 import utils
@@ -82,6 +81,5 @@ import convert
 import drawing
 import generators
 import linalg
-import operators
 import readwrite
 
