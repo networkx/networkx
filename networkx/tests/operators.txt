@@ -186,7 +186,8 @@ False
 >>> G=union(K3,P3)
 Traceback (most recent call last):
 ...
-NetworkXError: node sets of G and H are not disjoint. Use appropriate rename=('Gprefix','Hprefix')
+NetworkXError: The node sets of G and H are not disjoint. 
+Use appropriate rename=('Gprefix','Hprefix') or use disjoint_union(G,H).
 
 >>> H1=union(H,G1,rename=('H','G1'))
 >>> sorted(H1.nodes())

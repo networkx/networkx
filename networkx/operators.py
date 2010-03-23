@@ -44,6 +44,7 @@ def subgraph(G, nbunch):
     """
     return G.subgraph(nbunch)
                                                                                 
+
 def union(G,H,create_using=None,rename=False,name=None):
     """ Return the union of graphs G and H.
     
@@ -72,7 +73,8 @@ def union(G,H,create_using=None,rename=False,name=None):
     disjoint_union(G,H) or convert_node_labels_to integers().
 
     Graph, edge, and node attributes are propagated from G and H
-    to the union graph.
+    to the union graph.  If a graph attribute is present in both
+    G and H the value from G is used.
 
     """
     if name is None:
@@ -85,53 +87,35 @@ def union(G,H,create_using=None,rename=False,name=None):
     R.name=name
 
     # rename graph to obtain disjoint node labels
-    # note that for objects w/o succinct __name__,
-    # the new labels can be quite verbose
-    # See also disjoint_union
     if rename: # create new string labels
-        Gname={}
-        Hname={}
-        for v in G:
-            if is_string_like(v):
-                Gname[v]=rename[0]+v
+        import functools
+        def add_prefix(x,prefix=''):
+            if is_string_like(x):
+                name=prefix+x
             else:
-                Gname[v]=rename[0]+repr(v)
-        for v in H:
-            if is_string_like(v):
-                Hname[v]=rename[1]+v
-            else:
-                Hname[v]=rename[1]+repr(v)
-    else:
-        Gname=dict( ((v,v) for v in G) )
-        Hname=dict( ((v,v) for v in H) )
+                name=prefix+repr(x)
+            return name
+        mapping=functools.partial(add_prefix,prefix=rename[0])
+        G=relabel_nodes(G,mapping)
+        mapping=functools.partial(add_prefix,prefix=rename[1])
+        H=relabel_nodes(H,mapping)
 
-    # node name check
-    Hnames=set(Hname.values())
-    Gnames=set(Gname.values())
-    if Gnames & Hnames:
+    if set(G) & set(H):
         raise networkx.NetworkXError(\
             """The node sets of G and H are not disjoint. 
-Use appropriate rename=('Gprefix','Hprefix') or use disjoint_union(G,H).
-""")
+Use appropriate rename=('Gprefix','Hprefix') or use disjoint_union(G,H).""")
     # node names OK, now build union
-    R.add_nodes_from(Gnames)
-    R.add_edges_from( ( (Gname[u],Gname[v],x) 
-                        for u,v,x in G.edges_iter(data=True) ))
-    R.add_nodes_from(Hnames)
-    R.add_edges_from( ( (Hname[u],Hname[v],x) 
-                        for u,v,x in H.edges_iter(data=True) ))
+    R.add_nodes_from(G)
+    R.add_edges_from(e for e in G.edges_iter(data=True))
+    R.add_nodes_from(H)
+    R.add_edges_from(e for e in H.edges_iter(data=True))
 
-    # update node attributes too
-    # for large dicts, this is faster than:  
-    # dict([(Hnames[k], H.node[k]) for k in H.node)
-    R.node = dict(zip( map(Hname.__getitem__, H.node.keys()), H.node.values() ))
-    R.node.update( dict(zip( map(Gname.__getitem__, G.node.keys()), 
-                             G.node.values() )) )
-
-    # update graph attributes into tuples using None if attribute is not present
-    R.graph = dict(( (k, (G.graph.get(k), H.graph.get(k))) for k in G.graph ))
-    R.graph.update(( (k, (G.graph.get(k), H.graph.get(k))) for k in H.graph ))
-    
+    # add node attributes
+    R.node.update(G.node)
+    R.node.update(H.node)
+    # add graph attributes, G attributes take precedent over H attributes
+    R.graph.update(H.graph)
+    R.graph.update(G.graph)
     return R
 
 
@@ -403,8 +387,8 @@ def compose(G,H,create_using=None, name=None):
         R=create_using
         R.clear()
     R.name=name
-    R.add_nodes_from(H.nodes(data=True))
-    R.add_nodes_from(G,nodes(data=True))
+    R.add_nodes_from(H.nodes())
+    R.add_nodes_from(G.nodes())
     if H.is_multigraph():
         R.add_edges_from(H.edges_iter(keys=True,data=True))
     else:
@@ -558,6 +542,9 @@ def relabel_nodes(G,mapping):
     else:
         H.add_edges_from( (map_func(n1),map_func(n2),d) 
                           for (n1,n2,d) in G.edges_iter(data=True)) 
+
+    H.node.update(dict((map_func(n),d) for n,d in G.node.iteritems()))
+    H.graph.update(G.graph)
 
     return H        
     

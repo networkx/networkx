@@ -23,8 +23,8 @@ def test_union():
         graph, node = n
         assert_equal( gh.node[n], eval(graph).node[int(node)] )
 
-    for k,v in gh.graph.items():
-        assert_equal( v, (g.graph.get(k), h.graph.get(k)) )
+    assert_equal(gh.graph['attr'],'attr')
+    assert_equal(gh.graph['name'],'g') # g graph attributes take precendent
 
 
 def test_intersection():
