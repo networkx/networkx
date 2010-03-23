@@ -15,7 +15,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
-           'nodes_iter', 'edges_iter', 'is_directed','info']
+           'nodes_iter', 'edges_iter', 'is_directed','info',
+           'freeze','is_frozen']
 
 def nodes(G):
     """Return a copy of the graph nodes in a list."""
@@ -128,3 +129,63 @@ def info(G, n=None):
         print ("Neighbors:").ljust(width_left), wrapped_neighbors[0]
         for i in wrapped_neighbors[1:]:
             print "".ljust(width_left), i
+
+def freeze(G):
+    """Modify graph to prevent addition of nodes or edges.
+    
+    Parameters
+    -----------
+    G : graph
+      A NetworkX graph
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> G=nx.freeze(G)
+    >>> G.add_edge(4,5)
+    Traceback (most recent call last):
+    ...
+    NetworkXError: Frozen graph can't be modified
+
+    Notes
+    -----
+    This does not prevent modification of edge data.
+
+    To "unfreeze" a graph you must make a copy.
+
+    See Also
+    --------
+    is_frozen()
+
+    """        
+    def frozen(*args):    
+        raise networkx.NetworkXError("Frozen graph can't be modified")
+    G.add_node=frozen
+    G.add_nodes_from=frozen
+    G.remove_node=frozen
+    G.remove_nodes_from=frozen
+    G.add_edge=frozen
+    G.add_edges_from=frozen
+    G.remove_edge=frozen
+    G.remove_edges_from=frozen
+    G.clear=frozen
+    G.frozen=True
+    return G
+
+def is_frozen(G):
+    """Return True if graph is frozen."
+
+    Parameters
+    -----------
+    G : graph
+      A NetworkX graph
+
+    See Also
+    --------
+    freeze()
+      
+    """
+    try:
+        return G.frozen
+    except AttributeError:
+        return False
