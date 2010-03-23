@@ -1,0 +1,18 @@
+ego graph
+---------
+>>> import networkx as nx
+>>> G=nx.star_graph(3)
+>>> H=nx.ego_graph(G,0)
+>>> print nx.is_isomorphic(G,H)
+True
+>>> G.add_edge(1,11)
+>>> G.add_edge(2,22)
+>>> G.add_edge(3,33)
+>>> H=nx.ego_graph(G,0)
+>>> print nx.is_isomorphic(nx.star_graph(3),H)
+True
+>>> G=nx.path_graph(3)
+>>> H=nx.ego_graph(G,0)
+>>> print H.edges()
+[(0, 1)]
+

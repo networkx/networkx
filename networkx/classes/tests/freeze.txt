@@ -1,0 +1,17 @@
+frozen graph
+------------
+>>> import networkx as nx
+>>> G=nx.star_graph(2)
+>>> nx.is_frozen(G)
+False
+>>> G=nx.freeze(G)
+>>> nx.is_frozen(G)
+True
+>>> G.add_node(1)
+Traceback (most recent call last):
+...
+NetworkXError: Frozen graph can't be modified
+>>> G.add_edge(1,2)
+Traceback (most recent call last):
+...
+NetworkXError: Frozen graph can't be modified

@@ -14,8 +14,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 __all__ = ['union', 'cartesian_product', 'compose', 'complement',
            'disjoint_union', 'intersection', 'difference',
            'symmetric_difference','create_empty_copy', 'subgraph', 
-           'convert_node_labels_to_integers', 'relabel_nodes',
-           'line_graph','ego_graph','stochastic_graph']
+           'convert_node_labels_to_integers', 'relabel_nodes']
+
 
 
 import networkx
@@ -328,9 +328,6 @@ def cartesian_product(G,H,create_using=None):
     Only tested with Graph class.  Graph, node, and edge attributes
     are not copied to the new graph.
     """
-    if G.is_multigraph():
-        raise Exception(
-            """cartesian_product() not implemented for Multi(Di)Graphs""")
     if create_using is None:
         Prod=G.__class__()
     else:
@@ -341,12 +338,23 @@ def cartesian_product(G,H,create_using=None):
         for w in H:
             Prod.add_node((v,w)) 
 
-    Prod.add_edges_from( (((v,w1),(v,w2),d) 
-                          for w1,w2,d in H.edges_iter(data=True) 
-                          for v in G) )
-    Prod.add_edges_from( (((v1,w),(v2,w),d) 
-                          for v1,v2,d in G.edges_iter(data=True) 
-                          for w in H) )
+    if G.is_multigraph():
+        Prod.add_edges_from( (((v,w1),(v,w2),k,d) 
+                              for w1,w2,k,d 
+                              in H.edges_iter(keys=True,data=True) 
+                              for v in G) )
+        Prod.add_edges_from( (((v1,w),(v2,w),k,d) 
+                              for v1,v2,k,d 
+                              in G.edges_iter(keys=True,data=True) 
+                              for w in H) )
+
+    else:
+        Prod.add_edges_from( (((v,w1),(v,w2),d) 
+                              for w1,w2,d in H.edges_iter(data=True) 
+                              for v in G) )
+        Prod.add_edges_from( (((v1,w),(v2,w),d) 
+                              for v1,v2,d in G.edges_iter(data=True) 
+                              for w in H) )
 
     Prod.name="Cartesian Product("+G.name+","+H.name+")"
     return Prod
@@ -629,124 +637,6 @@ def convert_node_labels_to_integers(G,first_label=0,
         H.node_labels=mapping
     return H
 
-def line_graph(G):
-    """Return the line graph of the graph or digraph G.
-
-    The line graph of a graph G has a node for each edge 
-    in G and an edge between those nodes if the two edges
-    in G share a common node.
-
-    For DiGraphs an edge an edge represents a directed path of length 2.
-
-    The original node labels are kept as two-tuple node labels
-    in the line graph.  
-
-    Parameters
-    ----------
-    G : graph
-       A NetworkX Graph or DiGraph
-
-    Examples
-    --------    
-    >>> G=nx.star_graph(3)
-    >>> L=nx.line_graph(G)
-    >>> print sorted(L.edges()) # makes a clique, K3
-    [((0, 1), (0, 2)), ((0, 1), (0, 3)), ((0, 3), (0, 2))]
-
-    Notes
-    -----
-    Not implemented for MultiGraph or MultiDiGraph classes.
-
-    Graph, node, and edge data are not propagated to the new graph.
-
-    See Also
-    --------
-    convert_node_labels_to_integers()
-
-    """
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
-        raise Exception("Line graph not implemented for Multi(Di)Graphs")
-    L=G.__class__()
-    if G.is_directed():
-        for u,nlist in G.adjacency_iter():  # same as successors for digraph
-            # look for directed path of length two
-            for n in nlist:
-                nbrs=G[n] # successors 
-                for nbr in nbrs:
-                    if nbr!=u:
-                        L.add_edge((u,n),(n,nbr))
-    else:
-        for u,nlist in G.adjacency_iter():
-            # label nodes as tuple of edge endpoints in original graph
-            # "node tuple" must be in lexigraphical order
-            nodes=[tuple(sorted(n)) for n in zip([u]*len(nlist),nlist)]
-            # add clique of nodes to graph
-            while nodes:
-                u=nodes.pop()
-                L.add_edges_from((u,v) for v in nodes)
-    return L
 
 
-def ego_graph(G,n,center=True):
-    """Returns induced subgraph of neighbors centered at node n. 
-    
-    Parameters
-    ----------
-    G : graph
-      A NetworkX Graph or DiGraph
-
-    n : node 
-      A single node 
-
-    center : bool, optional
-      If False, do not include center node in graph 
-
-    """
-    nodes=set([n])  # add center node
-    nodes.update(G.neighbors(n)) # extend with neighbors
-    H=G.subgraph(nodes)
-    if not center:
-        H.remove_node(n)
-    return  H
-
-def stochastic_graph(G,copy=True):
-    """Return a right-stochastic representation of G.
-
-    A right-stochastic graph is a weighted graph in which all of
-    the node (out) neighbors edge weights sum to 1.
-    
-    Parameters
-    -----------
-    G : graph
-      A NetworkX graph, must have valid edge weights
-
-    copy : boolean, optional
-      If True make a copy of the graph, otherwise modify original graph
-
-    """        
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
-        raise Exception("stochastic_graph not implemented for Multi(Di)Graphs")
-
-    if not G.is_directed():
-        raise Exception("stochastic_graph not implemented for undirected graphs")
-
-    if copy:
-        W=networkx.DiGraph(G)
-    else:
-        W=G # reference original graph, no copy
-
-    try:        
-        degree=W.out_degree(weighted=True,with_labels=True)
-    except:
-        degree=W.out_degree(with_labels=True)
-#    for n in W:
-#        for p in W[n]:
-#            weight=G[n][p].get('weight',1.0)
-#            W[n][p]['weight']=weight/degree[n]        
-
-    for (u,v,d) in W.edges(data=True):
-        d['weight']=d.get('weight',1.0)/degree[u]
-
-
-    return W
 

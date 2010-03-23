@@ -12,3 +12,6 @@ from random_graphs import *
 from small import *
 from threshold import *
 from atlas import *
+from line import *
+from ego import *
+from stochastic import *
