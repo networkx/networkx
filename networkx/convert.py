@@ -8,7 +8,7 @@ NetworkX graphs to and from other formats.
 
 The preferred way of converting data to a NetworkX graph 
 is through the graph constuctor.  The constructor calls
-the from_whatever() function which attempts to guess the
+the to_networkx_graph() function which attempts to guess the
 input type and convert it automatically.
 
 Examples
@@ -22,7 +22,7 @@ Create a 10 node random graph from a numpy matrix
 
 or equivalently
 
->>> D=nx.from_whatever(a,create_using=nx.DiGraph()) 
+>>> D=nx.to_networkx_graph(a,create_using=nx.DiGraph()) 
 
 Create a graph with a single edge from a dictionary of dictionaries
 
@@ -36,8 +36,10 @@ For graphviz dot formats see networkx.drawing.nx_pygraphviz
 or networkx.drawing.nx_pydot.
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2006-2008 by 
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
+                           'Pieter Swart (swart@lanl.gov)',
+                           'Dan Schult(dschult@colgate.edu)'])
+#    Copyright (C) 2006-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -45,7 +47,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    BSD license.
 
 
-__all__ = ['from_whatever', 
+__all__ = ['to_networkx_graph','from_whatever', 
            'from_dict_of_dicts', 'to_dict_of_dicts',
            'from_dict_of_lists', 'to_dict_of_lists',
            'from_edgelist', 'to_edgelist',
@@ -73,7 +75,7 @@ def _prep_create_using(create_using):
             raise TypeError("Input graph is not a networkx graph type")
     return G
 
-def from_whatever(thing,create_using=None,multigraph_input=False):
+def to_networkx_graph(thing,create_using=None,multigraph_input=False):
     """Make a NetworkX graph from an known type.
 
     The preferred way to call this is automatically
@@ -183,6 +185,20 @@ def from_whatever(thing,create_using=None,multigraph_input=False):
           "Input is not a known data type for conversion."
 
     return 
+
+    
+
+def from_whatever(thing,create_using=None,multigraph_input=False):
+    """Deprecated. Use to_networkx_graph.
+
+    See Also
+    --------
+    to_networkx_graph()
+    """
+
+    return to_networkx_graph(thing,
+                             create_using=create_using,
+                             multigraph_input=multigraph_input)
 
 def to_dict_of_lists(G,nodelist=None):
     """Return adjacency representation of graph as a dictionary of lists
