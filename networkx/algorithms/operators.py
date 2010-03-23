@@ -52,6 +52,11 @@ def union(G,H,create_using=None,rename=False,name=None):
     to the union graph.  If a graph attribute is present in both
     G and H the value from G is used.
 
+
+    See Also
+    --------
+    disjoint_union
+
     """
     if name is None:
         name="union( %s, %s )"%(G.name,H.name)
@@ -299,6 +304,10 @@ def cartesian_product(G,H,create_using=None):
     G,H : graph
        A NetworkX graph 
 
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created
+       with the same type as G.
+
     Notes
     -----
     Only tested with Graph class.  Graph, node, and edge attributes
@@ -410,7 +419,7 @@ def complement(G,create_using=None,name=None):
     Note that complement() does not create self-loops and also 
     does not produce parallel edges for MultiGraphs.
 
-    Graph, node, and edge data is not propagated to the new graph.
+    Graph, node, and edge data are not propagated to the new graph.
     """
     if name is None:
         name="complement(%s)"%(G.name) 
@@ -421,8 +430,10 @@ def complement(G,create_using=None,name=None):
         R.clear()
     R.name=name
     R.add_nodes_from(G)
-    R.add_edges_from( ((n,n2) for n,nbrs in G.adjacency_iter() for n2 in G 
-        if n2 not in nbrs if n is not n2) )
+    R.add_edges_from( ((n,n2) 
+                       for n,nbrs in G.adjacency_iter() 
+                       for n2 in G if n2 not in nbrs 
+                       if n is not n2) )
     return R
 
 

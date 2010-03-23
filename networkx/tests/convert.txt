@@ -506,3 +506,24 @@ relabel
 >>> sorted(H.nodes())
 [65, 66, 67, 68]
 
+
+convert_data_structure
+----------------------
+
+>>> G1.has_edge('B', 'A')
+False
+>>> UG=Graph(G1)
+>>> sorted(UG.edges())
+[('A', 'B'), ('A', 'C'), ('A', 'D')]
+>>> UG.has_edge('B', 'A')
+True
+>>> DG=DiGraph(UG)
+>>> DG.adj==UG.adj
+True
+>>> DG.remove_edge('A','B')
+>>> number_of_edges(DG)
+5
+>>> UG.remove_edge('A','B')
+>>> number_of_edges(UG)
+2
+
