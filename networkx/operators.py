@@ -3,7 +3,9 @@ Operations on graphs; including  union, intersection, difference,
 complement, subgraph. 
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
+__author__ = """\n""".join('Aric Hagberg (hagberg@lanl.gov)',
+                           'Pieter Swart (swart@lanl.gov)',
+                           'Dan Schult(dschult@colgate.edu)')
 #    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -11,38 +13,15 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['union', 'cartesian_product', 'compose', 'complement',
-           'disjoint_union', 'intersection', 'difference',
-           'symmetric_difference','create_empty_copy', 'subgraph', 
+__all__ = ['union', 'cartesian_product', 
+           'compose', 'complement',
+           'disjoint_union', 'intersection', 
+           'difference', 'symmetric_difference',
            'convert_node_labels_to_integers', 'relabel_nodes']
-
-
 
 import networkx
 from networkx.utils import is_string_like
 
-def subgraph(G, nbunch):
-    """Return the subgraph induced on nodes in nbunch.
-
-    Parameters
-    ----------
-    G : graph
-       A NetworkX graph 
-
-    nbunch : list, iterable 
-       A container of nodes that will be iterated through once (thus
-       it should be an iterator or be iterable).  Each element of the
-       container should be a valid node type: any hashable type except
-       None.  If nbunch is None, return all edges data in the graph.
-       Nodes in nbunch that are not in the graph will be (quietly)
-       ignored.
-
-    Notes
-    -----
-    subgraph(G) calls G.subgraph()
-
-    """
-    return G.subgraph(nbunch)
                                                                                 
 
 def union(G,H,create_using=None,rename=False,name=None):

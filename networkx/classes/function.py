@@ -1,9 +1,11 @@
 """
-Functional interface to graph properties.
+Functional interface to graph methods and assorted utilities.
     
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by 
+__author__ = """\n""".join('Aric Hagberg (hagberg@lanl.gov)',
+                           'Pieter Swart (swart@lanl.gov)',
+                           'Dan Schult(dschult@colgate.edu)')
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -17,7 +19,7 @@ import networkx
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
            'nodes_iter', 'edges_iter', 'is_directed','info',
-           'freeze','is_frozen']
+           'freeze','is_frozen','subgraph','create_empty_copy']
 
 def nodes(G):
     """Return a copy of the graph nodes in a list."""
@@ -190,3 +192,26 @@ def is_frozen(G):
         return G.frozen
     except AttributeError:
         return False
+
+def subgraph(G, nbunch):
+    """Return the subgraph induced on nodes in nbunch.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    nbunch : list, iterable 
+       A container of nodes that will be iterated through once (thus
+       it should be an iterator or be iterable).  Each element of the
+       container should be a valid node type: any hashable type except
+       None.  If nbunch is None, return all edges data in the graph.
+       Nodes in nbunch that are not in the graph will be (quietly)
+       ignored.
+
+    Notes
+    -----
+    subgraph(G) calls G.subgraph()
+
+    """
+    return G.subgraph(nbunch)

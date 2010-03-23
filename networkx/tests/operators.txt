@@ -8,47 +8,6 @@ Unit tests for graph operations in operators.py
 >>> is_isomorphic=graph_could_be_isomorphic # fast but weak isomorphism checker
 >>> import networkx as nx
 
-subgraph
---------
-subgraph of a null graph is a null graph
-
->>> null=null_graph()
->>> H=subgraph(null,[])
->>> is_isomorphic(H,null)
-True
-
-subgraph of an empty graph is an empty graph 
-
->>> E3=empty_graph(3)
->>> E5=empty_graph(5)
->>> E10=empty_graph(10)
->>> H=subgraph(E10,[])
->>> is_isomorphic(H,null)
-True
-
-subgraph of an  empty graph is an empty graph 
-
->>> H=subgraph(E10,[1,2,3,4,5])
->>> is_isomorphic(H,E5)
-True
-
-subgraph of a complete graph is a complete graph
-
->>> K3=complete_graph(3)
->>> K5=complete_graph(5)
->>> H=subgraph(K5,[1,2,3])
->>> is_isomorphic(H,K3)
-True
-
-test subgraph(G,nlist), where nlist is another graph
-
->>> H=subgraph(K5,K3)
->>> is_isomorphic(H,K3)
-True
-
->>> H=subgraph(K5,[9]) # no error when inducing subgraph on nonexisting node
->>> is_isomorphic(H,null)
-True
 
 
 cartesian_product
@@ -406,17 +365,6 @@ relabel
 >>> H=relabel_nodes(G,mapping)
 >>> sorted(H.nodes())
 [65, 66, 67, 68]
-
-
-create_empty_copy
------------------
->>> G=empty_graph()
->>> G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
->>> H=create_empty_copy(G)
->>> sorted(H.nodes())
-['A', 'B', 'C', 'D']
->>> H.edges()
-[]
 
 
 intersection

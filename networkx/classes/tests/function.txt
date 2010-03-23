@@ -4,3 +4,4 @@ Function
 Functional interface to Graph methods
 
 Not tested
+
