@@ -6,9 +6,6 @@ from nose.tools import assert_raises, assert_true, assert_false, assert_equal
 import networkx as nx
 from networkx import *    
 
-def test_union():
-    pass
-
 
 def test_union_attributes():
     g = nx.Graph()
@@ -203,6 +200,31 @@ def test_union_and_compose():
     assert_equal(sorted(E.nodes()),[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
 
 
+def test_union_multigraph():
+    G=nx.MultiGraph()
+    G.add_edge(1,2,key=0)
+    G.add_edge(1,2,key=1)
+    H=nx.MultiGraph()
+    H.add_edge(3,4,key=0)
+    H.add_edge(3,4,key=1)
+    GH=nx.union(G,H)
+    assert_equal( set(GH) , set(G)|set(H))
+    assert_equal( set(GH.edges(keys=True)) , 
+                  set(G.edges(keys=True))|set(H.edges(keys=True)))
+
+def test_disjoint_union_multigraph():
+    G=nx.MultiGraph()
+    G.add_edge(0,1,key=0)
+    G.add_edge(0,1,key=1)
+    H=nx.MultiGraph()
+    H.add_edge(2,3,key=0)
+    H.add_edge(2,3,key=1)
+    GH=nx.disjoint_union(G,H)
+    assert_equal( set(GH) , set(G)|set(H))
+    assert_equal( set(GH.edges(keys=True)) , 
+                  set(G.edges(keys=True))|set(H.edges(keys=True)))
+
+
 def test_complement():
     null=null_graph()
     empty1=empty_graph(1)
@@ -300,4 +322,34 @@ def test_cartesian_product():
     assert_true(is_isomorphic(G,grid_2d_graph(3,3)))
 
 
+def test_cartesian_product_multigraph():
+    G=nx.MultiGraph()
+    G.add_edge(1,2,key=0)
+    G.add_edge(1,2,key=1)
+    H=nx.MultiGraph()
+    H.add_edge(3,4,key=0)
+    H.add_edge(3,4,key=1)
+    GH=nx.cartesian_product(G,H)
+    assert_equal( set(GH) , set([(1, 3), (2, 3), (2, 4), (1, 4)]))
+    assert_equal( set(GH.edges(keys=True)) ,
+                  set([((1, 3), (2, 3), 0), ((1, 3), (2, 3), 1), 
+                       ((1, 3), (1, 4), 0), ((1, 3), (1, 4), 1), 
+                       ((2, 3), (2, 4), 0), ((2, 3), (2, 4), 1), 
+                       ((2, 4), (1, 4), 0), ((2, 4), (1, 4), 1)]))
 
+def test_compose_multigraph():
+    G=nx.MultiGraph()
+    G.add_edge(1,2,key=0)
+    G.add_edge(1,2,key=1)
+    H=nx.MultiGraph()
+    H.add_edge(3,4,key=0)
+    H.add_edge(3,4,key=1)
+    GH=nx.compose(G,H)
+    assert_equal( set(GH) , set(G)|set(H))
+    assert_equal( set(GH.edges(keys=True)) , 
+                  set(G.edges(keys=True))|set(H.edges(keys=True)))
+    H.add_edge(1,2,key=2)
+    GH=nx.compose(G,H)
+    assert_equal( set(GH) , set(G)|set(H))
+    assert_equal( set(GH.edges(keys=True)) , 
+                  set(G.edges(keys=True))|set(H.edges(keys=True)))    

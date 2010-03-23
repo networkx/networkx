@@ -87,9 +87,15 @@ def union(G,H,create_using=None,rename=False,name=None):
 Use appropriate rename=('Gprefix','Hprefix') or use disjoint_union(G,H).""")
     # node names OK, now build union
     R.add_nodes_from(G)
-    R.add_edges_from(e for e in G.edges_iter(data=True))
+    if G.is_multigraph():
+        R.add_edges_from(e for e in G.edges_iter(keys=True,data=True))
+    else:
+        R.add_edges_from(e for e in G.edges_iter(data=True))
     R.add_nodes_from(H)
-    R.add_edges_from(e for e in H.edges_iter(data=True))
+    if H.is_multigraph():
+        R.add_edges_from(e for e in H.edges_iter(keys=True,data=True))
+    else:
+        R.add_edges_from(e for e in H.edges_iter(data=True))
 
     # add node attributes
     R.node.update(G.node)
