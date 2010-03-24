@@ -15,6 +15,7 @@ Algorithms
    algorithms.centrality
    algorithms.clique
    algorithms.clustering
+   algorithms.component
    algorithms.core
    algorithms.cycles
    algorithms.dag
