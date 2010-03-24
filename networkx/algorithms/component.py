@@ -23,7 +23,7 @@ __all__ = ['number_connected_components', 'connected_components',
 
 
 import networkx
-from networkx.algorithms.shortest_paths.path import \
+from networkx.algorithms.shortest_paths.unweighted import \
      single_source_shortest_path,\
      single_source_shortest_path_length
 from networkx.algorithms.traversal.depth_first_search import \

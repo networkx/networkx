@@ -25,10 +25,6 @@ __all__ = ['betweenness_centrality',
 
 
 import heapq
-from networkx.algorithms.shortest_paths.path import predecessor, \
-        single_source_shortest_path_length, \
-        single_source_dijkstra_path_length, \
-        dijkstra_predecessor_and_distance 
 import networkx
 
 
@@ -231,9 +227,9 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=False
 
     # get the predecessor and path length data
     if weighted_edges:
-        (pred,length)=dijkstra_predecessor_and_distance(G,source) 
+        (pred,length)=networkx.dijkstra_predecessor_and_distance(G,source) 
     else:
-        (pred,length)=predecessor(G,source,cutoff=cutoff,return_seen=True) 
+        (pred,length)=networkx.predecessor(G,source,cutoff=cutoff,return_seen=True) 
 
     # order the nodes by path length
     onodes = [ (l,vert) for (vert,l) in length.items() ]
@@ -488,7 +484,7 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
     between={}
     # get the predecessor data
     #(pred,length)=_fast_predecessor(G,source,cutoff=cutoff) 
-    (pred,length)=predecessor(G,source,cutoff=cutoff,return_seen=True) 
+    (pred,length)=networkx.predecessor(G,source,cutoff=cutoff,return_seen=True) 
     # order the nodes by path length
     onodes = [ nn for dd,nn in sorted( (dist,n) for n,dist in length.iteritems() )]
     # intialize betweenness, doesn't account for any edge weights
@@ -646,9 +642,9 @@ def closeness_centrality(G,v=None,weighted_edges=False):
 
     """
     if weighted_edges:
-        path_length=single_source_dijkstra_path_length
+        path_length=networkx.single_source_dijkstra_path_length
     else:
-        path_length=single_source_shortest_path_length
+        path_length=networkx.single_source_shortest_path_length
 
     if v is None:
         closeness_centrality={}
