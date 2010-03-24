@@ -23,11 +23,6 @@ __all__ = ['number_connected_components', 'connected_components',
 
 
 import networkx
-from networkx.algorithms.shortest_paths.unweighted import \
-     single_source_shortest_path,\
-     single_source_shortest_path_length
-from networkx.algorithms.traversal.depth_first_search import \
-     dfs_postorder,dfs_preorder
 
 
 def connected_components(G):
@@ -45,7 +40,7 @@ def connected_components(G):
     components=[]
     for v in G:      
         if v not in seen:
-            c=single_source_shortest_path_length(G,v)
+            c=networkx.single_source_shortest_path_length(G,v)
             components.append(c.keys())
             seen.update(c)
     components.sort(key=len,reverse=True)            
@@ -72,7 +67,7 @@ def is_connected(G):
         raise networkx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
-    return len(single_source_shortest_path_length(G, G.nodes_iter().next()))==len(G)
+    return len(networkx.single_source_shortest_path_length(G, G.nodes_iter().next()))==len(G)
 
 
 def connected_component_subgraphs(G):
@@ -109,7 +104,7 @@ def node_connected_component(G,n):
         raise networkx.NetworkXError,\
               """Not allowed for directed graph G.
               Use UG=G.to_undirected() to create an undirected graph."""
-    return single_source_shortest_path_length(G,n).keys()
+    return networkx.single_source_shortest_path_length(G,n).keys()
 
 
 
@@ -179,13 +174,13 @@ def kosaraju_strongly_connected_components(G,source=None):
      Uses Kosaraju's algorithm.
      """
     components=[]
-    post=dfs_postorder(G,source=source,reverse_graph=True)
+    post=networkx.dfs_postorder(G,source=source,reverse_graph=True)
     seen={}
     while post:
         r=post.pop()
         if r in seen:
             continue
-        c=dfs_preorder(G,r)
+        c=networkx.dfs_preorder(G,r)
         new=[v for v in c if v not in seen]
         seen.update([(u,True) for u in new])
         components.append(new)
