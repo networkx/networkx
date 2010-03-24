@@ -3,7 +3,7 @@ from unweighted import *
 from weighted import *
 from astar import *
 
-import generic
-import unweighted
-import weighted
-import astar
+#import generic
+#import unweighted
+#import weighted
+#import astar
