@@ -17,6 +17,8 @@ Algorithms
    algorithms.clustering
    algorithms.core
    algorithms.cycles
+   algorithms.dag
+   algorithms.distance_measures
    algorithms.hits
    algorithms.isomorphism
    algorithms.matching

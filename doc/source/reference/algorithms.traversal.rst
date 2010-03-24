@@ -34,19 +34,6 @@ Directed Graphs
    strongly_connected_components_recursive
    kosaraju_strongly_connected_components
 
-DAGs
-----
-.. automodule:: networkx.algorithms.traversal.dag
-.. currentmodule:: networkx
-
-.. autosummary::
-   :toctree: generated/
-
-   topological_sort
-   topological_sort_recursive
-   is_directed_acyclic_graph
-
-
 
 Shortest Paths 
 --------------
