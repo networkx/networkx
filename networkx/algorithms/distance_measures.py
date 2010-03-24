@@ -2,8 +2,9 @@
 """
 Shortest paths, diameter, radius, eccentricity, and related methods.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by 
+__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
+                        'Dan Schult(dschult@colgate.edu)'])
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -13,8 +14,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)
 __all__ = ['eccentricity', 'diameter', 'radius', 'periphery', 'center']
 
 import networkx
-from networkx.algorithms.traversal.path \
-    import single_source_shortest_path_length
 
 def eccentricity(G, v=None, sp=None, with_labels=False):
     """Return the eccentricity of node v in G (or all nodes if v is None).
@@ -40,7 +39,7 @@ def eccentricity(G, v=None, sp=None, with_labels=False):
     e={}
     for v in nodes:
         if sp is None:
-            length=single_source_shortest_path_length(G,v)
+            length=networkx.single_source_shortest_path_length(G,v)
         else:
             length=sp[v]
         try:

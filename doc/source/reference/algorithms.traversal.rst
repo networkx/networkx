@@ -47,19 +47,6 @@ DAGs
    is_directed_acyclic_graph
 
 
-Distance
---------
-.. automodule:: networkx.algorithms.traversal.distance
-.. currentmodule:: networkx
-
-.. autosummary::
-   :toctree: generated/
-
-   eccentricity
-   diameter
-   radius
-   periphery
-   center
 
 Shortest Paths 
 --------------

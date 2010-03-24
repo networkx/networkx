@@ -3,6 +3,7 @@ from clique import *
 from cluster import *
 from core import *
 from cycles import *
+from distance_measures import *
 from isomorphism import *
 from traversal import *
 from boundary import *
