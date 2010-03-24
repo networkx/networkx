@@ -1,3 +1,1 @@
-from path import *
-from search import *
-from astar import *
+from depth_first_search import *

@@ -26,6 +26,7 @@ Algorithms
    algorithms.mst
    algorithms.operators
    algorithms.pagerank
+   algorithms.shortest_paths
    algorithms.traversal
 
 

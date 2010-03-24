@@ -17,7 +17,8 @@ from bipartite import *
 from mst import *
 from block import *
 from operators import *
-
+from shortest_paths import *
 
 import traversal
 import isomorphism
+import shortest_paths

@@ -25,7 +25,7 @@ __all__ = ['betweenness_centrality',
 
 
 import heapq
-from networkx.algorithms.traversal.path import predecessor, \
+from networkx.algorithms.shortest_paths.path import predecessor, \
         single_source_shortest_path_length, \
         single_source_dijkstra_path_length, \
         dijkstra_predecessor_and_distance 
