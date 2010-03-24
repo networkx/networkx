@@ -118,7 +118,8 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     except ImportError:
         raise ImportError, "Matplotlib required for draw()"
     except RuntimeError:
-        pass # unable to open display
+        print "Matplotlib unable to open display"
+        raise
 
     cf=pylab.gcf()
     cf.set_facecolor('w')
@@ -262,7 +263,8 @@ def draw_networkx(G, pos=None, ax=None, with_labels=True, **kwds):
     except ImportError:
         raise ImportError, "Matplotlib required for draw()"
     except RuntimeError:
-        pass # unable to open display
+        print "Matplotlib unable to open display"
+        raise
 
     if pos is None:
         pos=networkx.drawing.spring_layout(G) # default to spring layout
@@ -366,7 +368,8 @@ def draw_networkx_nodes(G, pos,
     except ImportError:
         raise ImportError, "Matplotlib required for draw()"
     except RuntimeError:
-        pass # unable to open display
+        print "Matplotlib unable to open display"
+        raise
 
 
     if ax is None:
@@ -487,7 +490,8 @@ def draw_networkx_edges(G, pos,
     except ImportError:
         raise ImportError, "Matplotlib required for draw()"
     except RuntimeError:
-        pass # unable to open display
+        print "Matplotlib unable to open display"
+        raise
 
     if ax is None:
         ax=pylab.gca()
@@ -706,7 +710,8 @@ def draw_networkx_labels(G, pos,
     except ImportError:
         raise ImportError, "Matplotlib required for draw()"
     except RuntimeError:
-        pass # unable to open display
+        print "Matplotlib unable to open display"
+        raise
 
     if ax is None:
         ax=pylab.gca()
@@ -809,7 +814,8 @@ def draw_networkx_edge_labels(G, pos,
     except ImportError:
         raise ImportError, "Matplotlib required for draw()"
     except RuntimeError:
-        pass # unable to open display
+        print "Matplotlib unable to open display"
+        raise
 
     if ax is None:
         ax=pylab.gca()
