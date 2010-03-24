@@ -26,7 +26,7 @@ import networkx
 from networkx.algorithms.shortest_paths.path import \
      single_source_shortest_path,\
      single_source_shortest_path_length
-from networkx.algorithms.traversal.search import \
+from networkx.algorithms.traversal.depth_first_search import \
      dfs_postorder,dfs_preorder
 
 
