@@ -20,12 +20,11 @@ Algorithms
    algorithms.cycles
    algorithms.dag
    algorithms.distance_measures
-   algorithms.hits
    algorithms.isomorphism
+   algorithms.link_analysis
    algorithms.matching
    algorithms.mst
    algorithms.operators
-   algorithms.pagerank
    algorithms.shortest_paths
    algorithms.traversal
 
