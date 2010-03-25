@@ -1,5 +1,5 @@
 """
-Centrality measures.
+Betweenness centrality and similar centrality measures.
 
 """
 #    Copyright (C) 2004-2010 by 
@@ -8,7 +8,9 @@ Centrality measures.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nSasha Gutfraind (ag362@cornell.edu)"""
+__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
+                        'Pieter Swart (swart@lanl.gov)',
+                        'Sasha Gutfraind (ag362@cornell.edu)'])
 
 __all__ = ['betweenness_centrality',
            'betweenness_centrality_source',
@@ -16,13 +18,7 @@ __all__ = ['betweenness_centrality',
            'newman_betweenness_centrality',
            'brandes_betweenness_centrality',
            'edge_betweenness',
-           'edge_load',
-           'degree_centrality',
-           'in_degree_centrality',
-           'out_degree_centrality',
-           'closeness_centrality',
-           'eigenvector_centrality']
-
+           'edge_load']
 
 import heapq
 import networkx
@@ -503,252 +499,5 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
                         between[(w,x)]+=between[(v,w)]/num_paths
                         between[(x,w)]+=between[(w,v)]/num_paths
     return between
-
-
-def _degree_centrality(degree,degree_iter,G,v=None):
-    """Internal function to consolidate *-degree centrality functions."""
-    if v is not None:
-        d = G.__getattribute__(degree)
-        return d(v)/(G.order()-1.0)
-    centrality={}
-    s=1.0/(G.order()-1.0)
-    d_iter = G.__getattribute__(degree_iter)
-    for n,deg in d_iter():
-        centrality[n]=deg*s
-    return centrality
- 
-
-def degree_centrality(G,v=None):
-    """Compute the degree centrality for nodes.
-
-    The degree centrality for a node v is the fraction of nodes it
-    is connected to.
-
-    Parameters
-    ----------
-    G : graph
-      A networkx graph 
-
-    v : node, optional
-      Return only the value for node v.
-      
-    Returns
-    -------
-    nodes : dictionary
-       Dictionary of nodes with degree centrality as the value.
-
-    See Also
-    --------
-    betweenness_centrality(), load_centrality(), eigenvector_centrality() 
-
-    Notes
-    -----
-    The degree centrality is normalized to the maximum possible degree
-    in the graph G.  That is, G.degree(v)/(G.order()-1).
-
-    """
-    return _degree_centrality('degree', 'degree_iter', G, v)
-
-
-def in_degree_centrality(G,v=None):
-    """Compute the in-degree centrality for nodes.
-
-    The in-degree centrality for a node v is the fraction of nodes its 
-    incoming edges are connected to.
-
-    Parameters
-    ----------
-    G : graph
-        A NetworkX graph
-
-    v : node, optional
-        Return only the value for node `v'.
-
-    Returns
-    -------
-    nodes : dictionary
-        Dictionary of nodes with in-degree centrality as values.
-
-    See Also
-    --------
-    degree_centrality(), out_degree_centrality()
-
-    """
-    return _degree_centrality('in_degree', 'in_degree_iter', G, v)
-
-
-def out_degree_centrality(G,v=None):
-    """Compute the out-degree centrality for nodes.
-
-    The out-degree centrality for a node v is the fraction of nodes its 
-    outgoing edges are connected to.
-
-    Parameters
-    ----------
-    G : graph
-        A NetworkX graph
-
-    v : node, optional
-        Return only the value for node `v'.
-
-    Returns
-    -------
-    nodes : dictionary
-        Dictionary of nodes with out-degree centrality as values.
-
-    See Also
-    --------
-    degree_centrality(), in_degree_centrality()
-
-    """
-    return _degree_centrality('out_degree', 'out_degree_iter', G, v)
-
-
-def closeness_centrality(G,v=None,weighted_edges=False):
-    """Compute closeness centrality for nodes.
-
-    Closeness centrality at a node is 1/average distance to all 
-    other nodes.
-
-    Parameters
-    ----------
-    G : graph
-      A networkx graph 
-
-    v : node, optional
-      Return only the value for node v.
-
-    weighted_edges : bool, optional
-      Consider the edge weights in determining the shortest paths.
-      If False, all edge weights are considered equal.
-      
-    Returns
-    -------
-    nodes : dictionary
-       Dictionary of nodes with closeness centrality as the value.
-
-    See Also
-    --------
-    betweenness_centrality(), load_centrality(), eigenvector_centrality(),
-    degree_centrality()
-
-    Notes
-    -----
-    The closeness centrality is normalized to to n-1 / size(G)-1 where 
-    n is the number of nodes in the connected part of graph containing
-    the node.  If the graph is not completely connected, this
-    algorithm computes the closeness centrality for each connected
-    part separately.  
-
-    """
-    if weighted_edges:
-        path_length=networkx.single_source_dijkstra_path_length
-    else:
-        path_length=networkx.single_source_shortest_path_length
-
-    if v is None:
-        closeness_centrality={}
-        for n in G:
-            sp=path_length(G,n)
-            totsp=sum(sp.values())
-            if totsp > 0.0 and len(G) > 1:
-                # normalize to number of nodes-1 in connected part
-                s=(len(sp)-1.0) / ( len(G) - 1 )
-                closeness_centrality[n]= s / (totsp/(len(sp)-1.0))
-            else:                                                                
-                closeness_centrality[n]=0.0           
-        return closeness_centrality
-    else: # only compute for v
-        sp=path_length(G,v)
-        totsp=sum(sp.values())
-        if totsp > 0.0 and len(G) > 1: 
-            # normalize to number of nodes-1 in connected part
-            return ( (len(sp)-1.0)/(len(G) - 1) )/ ( totsp / (len(sp) - 1.0) )
-        else:
-            return 0.0
-
-def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
-    """Compute the eigenvector centrality for the graph G.
-
-    Uses the power method to find the eigenvector for the 
-    largest eigenvalue of the adjacency matrix of G.
-
-    Parameters
-    ----------
-    G : graph
-      A networkx graph 
-
-    max_iter : interger, optional
-      Maximum number of iterations in power method.
-
-    tol : float, optional
-      Error tolerance used to check convergence in power method iteration.
-
-    nstart : dictionary, optional
-      Starting value of eigenvector iteration for each node. 
-
-    Returns
-    -------
-    nodes : dictionary
-       Dictionary of nodes with eigenvector centrality as the value.
-
-    Examples
-    --------
-    >>> G=nx.path_graph(4)
-    >>> centrality=nx.eigenvector_centrality(G)
-    >>> print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
-    ['0 0.19', '1 0.31', '2 0.31', '3 0.19']
-
-    Notes
-    ------
-    The eigenvector calculation is done by the power iteration method
-    and has no guarantee of convergence.  The iteration will stop
-    after max_iter iterations or an error tolerance of
-    number_of_nodes(G)*tol has been reached.
-
-    For directed graphs this is "right" eigevector centrality.  For
-    "left" eigenvector centrality, first reverse the graph with
-    G.reverse().
-
-    See Also
-    --------
-    pagerank()
-
-    """
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
-        raise Exception("eigenvector_centrality() not defined for graphs with multiedges.")
-
-#    if not G.weighted:
-#        raise Exception("eigenvector_centrality(): input graph must be weighted")
-
-    if nstart is None:
-        # choose starting vector with entries of 1/len(G) 
-        x=dict([(n,1.0/len(G)) for n in G])
-    else:
-        x=nstart
-    # normalize starting vector
-    s=1.0/sum(x.values())
-    for k in x: x[k]*=s
-    nnodes=G.number_of_nodes()
-    # make up to max_iter iterations        
-    for i in range(max_iter):
-        xlast=x
-        x=dict.fromkeys(xlast.keys(),0)
-        # do the multiplication y=Ax
-        for n in x:
-            for nbr in G[n]:
-                x[n]+=xlast[nbr]*G[n][nbr].get('weight',1)
-        # normalize vector
-        try:
-            s=1.0/sum(x.values())
-        except ZeroDivisionError:
-            s=1.0
-        for n in x: x[n]*=s
-        # check convergence            
-        err=sum([abs(x[n]-xlast[n]) for n in x])
-        if err < nnodes*tol:
-            return x
-
-    raise networkx.NetworkXError("eigenvector_centrality(): power iteration failed to converge in %d iterations."%(i+1))
 
 
