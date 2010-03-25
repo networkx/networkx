@@ -26,21 +26,22 @@ import heapq
 
 
 def single_source_shortest_path_length(G,source,cutoff=None):
-    """Return the shortest path length from source to all reachable nodes.
-
-    Returns a dictionary of shortest path lengths keyed by target.
+    """Compute the shortest path lengths from source to all reachable nodes.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    source : node label
+    source : node
        Starting node for path
 
     cutoff : integer, optional
-        Depth to stop the search - only
-        paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= cutoff are returned.
 
+    Returns
+    -------
+    lengths : dictionary
+        Dictionary of shortest path lengths keyed by target.
 
     Examples
     --------
@@ -51,6 +52,9 @@ def single_source_shortest_path_length(G,source,cutoff=None):
     >>> print length
     {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
 
+    See Also
+    --------
+    shortest_path_length
     """
     seen={}                  # level (number of hops) when seen in BFS
     level=0                  # the current level
@@ -68,17 +72,23 @@ def single_source_shortest_path_length(G,source,cutoff=None):
 
 
 def all_pairs_shortest_path_length(G,cutoff=None):
-    """ Return dictionary of shortest path lengths between all nodes in G.
-
-    The dictionary only has keys for reachable node pairs.
+    """ Compute the shortest path lengths between all nodes in G.
 
     Parameters
     ----------
     G : NetworkX graph
 
     cutoff : integer, optional
-        depth to stop the search - only
-        paths of length <= cutoff are returned.
+        depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    lengths : dictionary
+        Dictionary of shortest path lengths keyed by source and target.
+
+    Notes
+    -----
+    The dictionary returned only has keys for reachable node pairs.
 
     Examples
     --------
@@ -101,8 +111,6 @@ def all_pairs_shortest_path_length(G,cutoff=None):
 def bidirectional_shortest_path(G,source,target):
     """Return a list of nodes in a shortest path between source and target.
 
-    Also known as shortest_path()
-
     Parameters
     ----------
     G : NetworkX graph
@@ -112,6 +120,19 @@ def bidirectional_shortest_path(G,source,target):
 
     target : node label
        ending node for path 
+
+    Returns
+    -------
+    path: list
+       List of nodes in a path from source to target.
+
+    See Also
+    --------
+    shortest_path
+
+    Notes
+    -----
+    This algorithm is used by shortest_path(G,source,target).
     """
     # call helper to do the real work
     results=_bidirectional_pred_succ(G,source,target)
@@ -189,24 +210,23 @@ def _bidirectional_pred_succ(G, source, target):
 
 
 def single_source_shortest_path(G,source,cutoff=None):
-    """Return list of nodes in a shortest path between source
+    """Compute shortest path between source
     and all other nodes reachable from source.
-
-    There may be more than one shortest path between the
-    source and target nodes - this routine returns only one.
-
-    Returns a dictionary of shortest path lengths keyed by target.
 
     Parameters
     ----------
     G : NetworkX graph
 
     source : node label
-       starting node for path
+       Starting node for path
 
     cutoff : integer, optional
-        depth to stop the search - only
-        paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    lengths : dictionary
+        Dictionary, keyed by target, of shortest paths.
 
     Examples
     --------
@@ -215,9 +235,15 @@ def single_source_shortest_path(G,source,cutoff=None):
     >>> path[4]
     [0, 1, 2, 3, 4]
 
+    Notes
+    -----
+    There may be more than one shortest path between the
+    source and target nodes. This function returns only one
+    of them.
+
     See Also
     --------
-    shortest_path()
+    shortest_path
     """
     level=0                  # the current level
     nextlevel={source:1}       # list of nodes to check at next level
@@ -238,17 +264,19 @@ def single_source_shortest_path(G,source,cutoff=None):
 
 
 def all_pairs_shortest_path(G,cutoff=None):
-    """ Return shortest paths between all nodes.
-
-    Returns a dictionary with keys for all reachable node pairs.
+    """ Compute shortest paths between all nodes.
 
     Parameters
     ----------
     G : NetworkX graph
 
     cutoff : integer, optional
-        depth to stop the search - only
-        paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    lengths : dictionary
+        Dictionary, keyed by source and target, of shortest paths.
 
     Examples
     --------
@@ -268,56 +296,19 @@ def all_pairs_shortest_path(G,cutoff=None):
     return paths        
 
 
-def dijkstra_path(G,source,target):
-    """Returns the shortest path from source to target in a weighted
-    graph G.  
-
-    Uses a bidirectional version of Dijkstra's algorithm.
-    
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    source : node label
-       starting node for path
-
-    target : node label
-       ending node for path 
-
-    Examples
-    --------
-    >>> G=nx.path_graph(5)
-    >>> print nx.dijkstra_path(G,0,4)
-    [0, 1, 2, 3, 4]
-
-
-    Notes
-    ------
-    Edge data must be numerical values for Graph and DiGraphs.
-
-    See Also
-    --------
-    bidirectional_dijkstra()
-    """
-#    (length,path)=bidirectional_dijkstra(G,source,target) # faster, needs test
-#     return path
-    (length,path)=single_source_dijkstra(G,source)
-    try:
-        return path[target]
-    except KeyError:
-        raise networkx.NetworkXError, \
-              "node %s not reachable from %s"%(source,target)
-
-
 def floyd_warshall_array(G):
     """The Floyd-Warshall algorithm for all pairs shortest paths.
  
-    Returns a tuple (distance,path) containing two arrays of shortest
-    distance and paths as a predecessor matrix.
 
     Parameters
     ----------
     G : NetworkX graph
+
+    Returns
+    -------
+    distance,pred : dictionaries
+       A dictionary, keyed by source and target, of shortest path
+       distance and predecessors in the shortest path.
 
     Notes
     ------
@@ -381,15 +372,18 @@ def floyd_warshall_array(G):
     return dist_prev, pred_prev
 ######################################################################
 
-def floyd_warshall(G,huge=1e30000):
+def floyd_warshall(G):
     """The Floyd-Warshall algorithm for all pairs shortest paths.
     
-    Returns a tuple (distance,path) containing two dictionaries of shortest
-    distance and predecessor paths.
-
     Parameters
     ----------
     G : NetworkX graph
+
+    Returns
+    -------
+    distance,pred : dictionaries
+       A dictionary, keyed by source and target, of shortest path
+       distance and predecessors in the shortest path.
 
     Notes
     -----
@@ -403,6 +397,7 @@ def floyd_warshall(G,huge=1e30000):
     all_pairs_shortest_path_length()
 
     """
+    huge=1e30000 # sentinal value
     # dictionary-of-dictionaries representation for dist and pred
     dist={} 
     # initialize path distance dictionary to be the adjacency matrix
@@ -449,9 +444,13 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
        source and target are returned
 
     cutoff : integer, optional
-        Depth to stop the search - only
-        paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= cutoff are returned.
 
+
+    Returns
+    -------
+    pred : dictionary
+        Dictionary, keyed by node, of predecessors in the shortest path.
 
     Examples
     --------

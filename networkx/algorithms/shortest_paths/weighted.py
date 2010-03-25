@@ -32,17 +32,20 @@ def dijkstra_path(G,source,target):
     """Returns the shortest path from source to target in a weighted
     graph G.  
 
-    Uses a bidirectional version of Dijkstra's algorithm.
-    
     Parameters
     ----------
     G : NetworkX graph
 
-    source : node label
-       starting node for path
+    source : node 
+       Starting node
 
-    target : node label
-       ending node for path 
+    target : node 
+       Ending node
+
+    Returns
+    -------
+    path : list
+       List of nodes in a shortest path.
 
     Examples
     --------
@@ -50,10 +53,10 @@ def dijkstra_path(G,source,target):
     >>> print nx.dijkstra_path(G,0,4)
     [0, 1, 2, 3, 4]
 
-
     Notes
     ------
-    Edge data must be numerical values for Graph and DiGraphs.
+    Uses a bidirectional version of Dijkstra's algorithm.
+    Edge weight attributes must be numerical.
 
     See Also
     --------
@@ -70,11 +73,9 @@ def dijkstra_path(G,source,target):
 
 
 def dijkstra_path_length(G,source,target):
-    """
-    Returns the shortest path length from source to target in a weighted
+    """Returns the shortest path length from source to target in a weighted
     graph G.  
 
-    Raise an exception if no path exists.
 
     Parameters
     ----------
@@ -86,6 +87,16 @@ def dijkstra_path_length(G,source,target):
     target : node label
        ending node for path 
 
+    Returns
+    -------
+    length : number
+        Shortest path length.
+       
+    Raises
+    ------
+    NetworkXError
+        If no path exists between source and target.
+
     Examples
     --------
     >>> G=nx.path_graph(5) # a weighted graph by default
@@ -94,7 +105,7 @@ def dijkstra_path_length(G,source,target):
     
     Notes
     -----
-    Edge data must be numerical values for Graph and DiGraphs.
+    Edge weight attributes must be numerical.
 
     See Also
     --------
@@ -116,21 +127,32 @@ def dijkstra_path_length(G,source,target):
 def bidirectional_dijkstra(G, source, target):
     """Dijkstra's algorithm for shortest paths using bidirectional search. 
 
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node
+       Starting node.
+
+    target : node
+       Ending node.
+
+    Returns
+    -------
+    length : number
+        Shortest path length.
+
     Returns a tuple of two dictionaries keyed by node.
     The first dicdtionary stores distance from the source.
     The second stores the path from the source to that node.
 
     Raise an exception if no path exists.
 
-    Parameters
-    ----------
-    G : NetworkX graph
 
-    source : node label
-       Starting node for path
-
-    target : node label
-       Ending node for path 
+    Raises
+    ------
+    NetworkXError
+        If no path exists between source and target.
 
     Examples
     --------
@@ -143,9 +165,8 @@ def bidirectional_dijkstra(G, source, target):
     
     Notes
     -----
+    Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
-
-    Edges must hold numerical values for Graph and DiGraphs.
 
     In practice  bidirectional Dijkstra is much more than twice as fast as 
     ordinary Dijkstra.
@@ -161,6 +182,10 @@ def bidirectional_dijkstra(G, source, target):
     are negative or are floating point numbers
     (overflows and roundoff errors can cause problems). 
 
+    See Also
+    --------
+    shortest_path
+    shortest_path_length
     """
     if source is None or target is None:
         raise NetworkXException(
@@ -230,17 +255,20 @@ def bidirectional_dijkstra(G, source, target):
 
 
 def single_source_dijkstra_path(G,source):
-    """Return list of nodes in a shortest path between source
-    and all other nodes reachable from source for a weighted graph.
-
-    Returns a dictionary of shortest path lengths keyed by target.
+    """Compute shortest path between source
+    and all other reachable nodes for a weighted graph.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    source : node label
-       starting node for path
+    source : node
+       Starting node for path. 
+
+    Returns
+    -------
+    paths : dictionary
+       Dictionary of shortest path lengths keyed by target.
 
     Examples
     --------
@@ -249,10 +277,9 @@ def single_source_dijkstra_path(G,source):
     >>> path[4]
     [0, 1, 2, 3, 4]
 
-
     Notes
     -----
-    Edge data must be numerical values for Graph and DiGraphs.
+    Edge weight attributes must be numerical.
 
     See Also
     --------
@@ -264,13 +291,8 @@ def single_source_dijkstra_path(G,source):
 
 
 def single_source_dijkstra_path_length(G,source):
-    """
-    Returns the shortest path lengths from source to all other
-    reachable nodes in a weighted graph G.  
-
-    Returns a dictionary of shortest path lengths keyed by target.
-    Uses Dijkstra's algorithm.
-
+    """Compute shortest path length between source
+    and all other reachable nodes for a weighted graph.
 
     Parameters
     ----------
@@ -278,6 +300,11 @@ def single_source_dijkstra_path_length(G,source):
 
     source : node label
        Starting node for path
+
+    Returns
+    -------
+    paths : dictionary
+       Dictionary of shortest paths keyed by target.
 
     Examples
     --------
@@ -303,12 +330,9 @@ def single_source_dijkstra_path_length(G,source):
 
 
 def single_source_dijkstra(G,source,target=None,cutoff=None ):
-    """Returns shortest paths and lengths in a weighted graph G.
+    """Compute shortest paths and lengths in a weighted graph G.
 
     Uses Dijkstra's algorithm for shortest paths. 
-    Returns a tuple of two dictionaries keyed by node.
-    The first dicdtionary stores distance from the source.
-    The second stores the path from the source to that node.
 
     Parameters
     ----------
@@ -321,8 +345,14 @@ def single_source_dijkstra(G,source,target=None,cutoff=None ):
        Ending node for path 
 
     cutoff : integer or float, optional
-        Depth to stop the search - only
-        paths of length <= cutoff are returned.
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    distance,path : dictionaries
+       Returns a tuple of two dictionaries keyed by node.
+       The first dicdtionary stores distance from the source.
+       The second stores the path from the source to that node.
 
 
     Examples
@@ -393,8 +423,8 @@ def single_source_dijkstra(G,source,target=None,cutoff=None ):
     return (dist,paths)
 
 def dijkstra_predecessor_and_distance(G,source):
-    """Returns two dictionaries representing a list of predecessors 
-    of a node and the distance to each node respectively.  
+    """Compute shorest path length and predecessors on shortest paths
+    in weighted graphs.
 
     Parameters
     ----------
@@ -403,14 +433,16 @@ def dijkstra_predecessor_and_distance(G,source):
     source : node label
        Starting node for path
 
+    Returns
+    -------
+    pred,distance : dictionaries
+       Returns two dictionaries representing a list of predecessors 
+       of a node and the distance to each node.
+
     Notes
     -----
-    The list of predecessors
-    contains more than one element only when there are more than one
-    shortest paths to the key node.
-
-    This routine is intended for use with the betweenness centrality
-    algorithms in centrality.py.
+    The list of predecessors contains more than one element only when
+    there are more than one shortest paths to the key node.
     """
     push=heapq.heappush
     pop=heapq.heappop
@@ -443,17 +475,19 @@ def dijkstra_predecessor_and_distance(G,source):
     return (pred,dist)
 
 def all_pairs_dijkstra_path_length(G):
-    """ Return dictionary of shortest path lengths between all nodes in G.
-
-    The dictionary only has keys for reachable node pairs.
+    """ Compute shortest path lengths between all nodes in a weighted graph.
 
     Parameters
     ----------
     G : NetworkX graph
 
     cutoff : integer, optional
-        depth to stop the search - only
-        paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    distance : dictionary
+       Dictionary, keyed by source and target, of shortest path lengths.
 
     Examples
     --------
@@ -464,6 +498,9 @@ def all_pairs_dijkstra_path_length(G):
     >>> length[1]
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
 
+    Notes
+    -----
+    The dictionary returned only has keys for reachable node pairs.
     """
     paths={}
     for n in G:
@@ -471,17 +508,19 @@ def all_pairs_dijkstra_path_length(G):
     return paths        
 
 def all_pairs_dijkstra_path(G):
-    """ Return shortest paths between all nodes.
-
-    Returns a dictionary with keys for all reachable node pairs.
+    """ Compute shortest paths between all nodes in a weighted graph.
 
     Parameters
     ----------
     G : NetworkX graph
 
     cutoff : integer, optional
-        depth to stop the search - only
-        paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    distance : dictionary
+       Dictionary, keyed by source and target, of shortest paths.
 
     Examples
     --------

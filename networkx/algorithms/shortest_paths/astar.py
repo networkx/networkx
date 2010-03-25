@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Shortest paths using A* ("A star") algorithm.
+Shortest paths and path lengths using A* ("A star") algorithm.
 
 """
 __author__ =\

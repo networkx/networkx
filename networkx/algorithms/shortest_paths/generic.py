@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Shortest paths.
+Compute the shortest paths and path lengths between nodes in the graph.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2004-2010 by 
@@ -22,32 +22,53 @@ import heapq
 
 
 def shortest_path(G,source=None,target=None,weighted=False):
-    """Compute the shortest path.
+    """Compute shortest paths in the graph.
 
-    There may be more than one shortest path.  This returns only one.
-    
     Parameters
     ----------
     G : NetworkX graph
 
     source : node, optional
-       Starting node for path
+       Starting node for path.  
+       If not specified compute shortest paths for all connected node pairs.
 
     target : node, optional 
-       Ending node for path 
+       Ending node for path.  
+       If not specified compute shortest paths for every node reachable 
+       from the source.
 
     weighted : bool, optional
        If True consider weighted edges when finding shortest path.
 
     Returns
     -------
+    path: list or dictionary
+        If the source and target are both specified return a single list
+        of nodes in a shortest path.
+        If only the source is specified return a dictionary keyed by
+        targets with a list of nodes in a shortest path.
+        If neither the source or target is specified return a dictionary 
+        of dictionaries with path[source][target]=[list of nodes in path].
 
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> print nx.shortest_path(G,0,4)
+    >>> print nx.shortest_path(G,source=0,target=4)
+    [0, 1, 2, 3, 4]
+    >>> p=nx.shortest_path(G,source=0) # target not specified
+    >>> p[4]
+    [0, 1, 2, 3, 4]
+    >>> p=nx.shortest_path(G) # source,target not specified
+    >>> p[0][4]
     [0, 1, 2, 3, 4]
 
+    Notes
+    -----
+    There may be more than one shortest path between a source and target.
+    This returns only one of them.
+
+    If weighted=True and the graph has no 'weight' edge attribute
+    the value 1 will be used.
     """
     if source is None:
         if target is None:
@@ -56,7 +77,8 @@ def shortest_path(G,source=None,target=None,weighted=False):
             else:
                 paths=networkx.all_pairs_shortest_path(G)
         else:
-            raise networkx.NetworkXError("Target given but no source specified.")
+            raise networkx.NetworkXError(\
+                "Target given but no source specified.")
     else: # source specified
         if target is None:
             if weighted:
@@ -74,26 +96,39 @@ def shortest_path(G,source=None,target=None,weighted=False):
 
 
 def shortest_path_length(G,source=None,target=None,weighted=False):
-    """Compute the shortest path length.
-
-    Raise an exception if no path exists.
+    """Compute shortest path lengths in the graph.
+    
+    This function can compute the single source shortest path
+    lengths by specifying only the source or all pairs shortest
+    path lengths by specifying neither the source or target.
 
     Parameters
     ----------
     G : NetworkX graph
 
     source : node, optional
-       Starting node for path
+       Starting node for path.  
+       If not specified compute shortest pats lenghts for all 
+       connected node pairs.
 
     target : node, optional 
-       Ending node for path 
+       Ending node for path.  
+       If not specified compute shortest path lenghts for every 
+       node reachable from the source.
 
     weighted : bool, optional
-       If True consider weighted edges when finding shortest path.
+       If True consider weighted edges when finding shortest path length.
 
     Returns
     -------
-   
+    length : number, or container of numbers
+        If the source and target are both specified return a
+        single number for the shortest path.
+        If only the source is specified return a dictionary keyed by
+        targets with a the shortest path as keys.
+        If neither the source or target is specified return a dictionary 
+        of dictionaries with length[source][target]=value.
+
     Raises
     ------
     NetworkXError
@@ -102,11 +137,19 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> print nx.shortest_path_length(G,0,4)
+    >>> print nx.shortest_path_length(G,source=0,target=4)
     4
-    
+    >>> p=nx.shortest_path_length(G,source=0) # target not specified
+    >>> p[4]
+    4
+    >>> p=nx.shortest_path_length(G) # source,target not specified
+    >>> p[0][4]
+    4
+
     Notes
     -----
+    If weighted=True and the graph has no 'weight' edge attribute
+    the value 1 will be used.
 
     """
     if source is None:
@@ -116,7 +159,8 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
             else:
                 paths=networkx.all_pairs_shortest_path_length(G)
         else:
-            raise networkx.NetworkXError("Target given but no source specified.")
+            raise networkx.NetworkXError(\
+                "Target given but no source specified.")
     else: # source specified
         if target is None:
             if weighted:
@@ -130,7 +174,8 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
             else:
                 p=networkx.bidirectional_shortest_path(G,source,target)
                 if p is False:
-                    raise networkx.NetworkXError("no path from %s to %s"%(source,target))
+                    raise networkx.NetworkXError(\
+                        "No path from %s to %s."%(source,target))
                 paths=len(p)-1
     return paths
 
@@ -138,6 +183,11 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
 
 def average_shortest_path_length(G,weighted=False):
     """ Return the average shortest path length.
+
+    The average shortest path length is the sum of path lengths d(u,v)
+    between all pairs of nodes (assuming the length is zero if v is
+    not reachable from v) normalized by n*(n-1) where n is the number
+    of nodes in G.
 
     Parameters
     ----------
@@ -151,6 +201,11 @@ def average_shortest_path_length(G,weighted=False):
     >>> G=nx.path_graph(5)
     >>> print nx.average_shortest_path_length(G)
     2.0
+
+    Notes
+    -----
+    If weighted=True and the graph has no 'weight' edge attribute
+    the value 1 will be used.
 
     """
     if weighted:
