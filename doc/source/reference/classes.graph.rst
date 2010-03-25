@@ -60,16 +60,16 @@ Information about graph structure
    Graph.has_node
    Graph.__contains__
    Graph.has_edge
-   Graph.nodes_with_selfloops
-   Graph.selfloop_edges
    Graph.order
    Graph.number_of_nodes
    Graph.__len__
-   Graph.size
-   Graph.number_of_edges
-   Graph.number_of_selfloops
    Graph.degree
    Graph.degree_iter
+   Graph.size
+   Graph.number_of_edges
+   Graph.nodes_with_selfloops
+   Graph.selfloop_edges
+   Graph.number_of_selfloops
 
 
 Making copies and subgraphs
@@ -78,6 +78,7 @@ Making copies and subgraphs
    :toctree: generated/
 
    Graph.copy
+   Graph.to_undirected
    Graph.to_directed
    Graph.subgraph
 

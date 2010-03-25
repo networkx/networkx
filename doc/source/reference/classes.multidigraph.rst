@@ -68,20 +68,20 @@ Information about graph structure
    MultiDiGraph.has_node
    MultiDiGraph.__contains__
    MultiDiGraph.has_edge
-   MultiDiGraph.nodes_with_selfloops
-   MultiDiGraph.selfloop_edges
    MultiDiGraph.order
    MultiDiGraph.number_of_nodes
    MultiDiGraph.__len__
-   MultiDiGraph.size
-   MultiDiGraph.number_of_edges
-   MultiDiGraph.number_of_selfloops
    MultiDiGraph.degree
    MultiDiGraph.degree_iter
    MultiDiGraph.in_degree
    MultiDiGraph.in_degree_iter
    MultiDiGraph.out_degree
    MultiDiGraph.out_degree_iter
+   MultiDiGraph.size
+   MultiDiGraph.number_of_edges
+   MultiDiGraph.nodes_with_selfloops
+   MultiDiGraph.selfloop_edges
+   MultiDiGraph.number_of_selfloops
 
 
 
@@ -94,6 +94,7 @@ Making copies and subgraphs
 
    MultiDiGraph.copy
    MultiDiGraph.to_undirected
+   MultiDiGraph.to_directed
    MultiDiGraph.subgraph
    MultiDiGraph.reverse
 

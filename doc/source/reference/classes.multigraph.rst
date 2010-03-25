@@ -60,16 +60,16 @@ Information about graph structure
    MultiGraph.has_node
    MultiGraph.__contains__
    MultiGraph.has_edge
-   MultiGraph.nodes_with_selfloops
-   MultiGraph.selfloop_edges
    MultiGraph.order
    MultiGraph.number_of_nodes
    MultiGraph.__len__
-   MultiGraph.size
-   MultiGraph.number_of_edges
-   MultiGraph.number_of_selfloops
    MultiGraph.degree
    MultiGraph.degree_iter
+   MultiGraph.size
+   MultiGraph.number_of_edges
+   MultiGraph.nodes_with_selfloops
+   MultiGraph.selfloop_edges
+   MultiGraph.number_of_selfloops
 
 
 Making copies and subgraphs
@@ -78,6 +78,7 @@ Making copies and subgraphs
    :toctree: generated/
 
    MultiGraph.copy
+   MultiGraph.to_undirected
    MultiGraph.to_directed
    MultiGraph.subgraph
 

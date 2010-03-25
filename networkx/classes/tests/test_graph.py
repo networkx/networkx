@@ -71,12 +71,30 @@ class TestGraph:
         G=self.Graph()
         G.add_node(0)
         assert_equal(G.adj,{0:{}})
+        # test add attributes
+        G.add_node(1,c='red')
+        G.add_node(2,{'c':'blue'})
+        G.add_node(3,{'c':'blue'},c='red')
+        #assert_raises((TypeError,networkx.NetworkXError), G.add_node, 4, [])
+        #assert_raises((TypeError,networkx.NetworkXError), G.add_node, 4, 4)
+        assert_raises(networkx.NetworkXError, G.add_node, 4, [])
+        assert_raises(networkx.NetworkXError, G.add_node, 4, 4)
+        assert_equal(G.node[1]['c'],'red')
+        assert_equal(G.node[2]['c'],'blue')
+        assert_equal(G.node[3]['c'],'red')
+        # test updating attributes
+        G.add_node(1,c='blue')
+        G.add_node(2,{'c':'red'})
+        G.add_node(3,{'c':'red'},c='blue')
+        assert_equal(G.node[1]['c'],'blue')
+        assert_equal(G.node[2]['c'],'red')
+        assert_equal(G.node[3]['c'],'blue')
     
     def test_add_nodes_from(self):
         G=self.Graph()
         G.add_nodes_from([0,1,2])
         assert_equal(G.adj,{0:{},1:{},2:{}})
-        # test new attributes
+        # test add attributes
         G.add_nodes_from([0,1,2],c='red')
         assert_equal(G.node[0]['c'],'red')
         assert_equal(G.node[2]['c'],'red')
