@@ -66,7 +66,7 @@ def shortest_path(G,source=None,target=None,weighted=False):
         else:
             # shortest source-target path
             if weighted:
-                paths=networkx.dijkstra_shortest_path(G,source,target)
+                paths=networkx.dijkstra_path(G,source,target)
             else:
                 paths=networkx.bidirectional_shortest_path(G,source,target)
 
@@ -126,7 +126,7 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
         else:
             # shortest source-target path
             if weighted:
-                paths=networkx.dijkstra_shortest_path_length(G,source,target)
+                paths=networkx.dijkstra_path_length(G,source,target)
             else:
                 p=networkx.bidirectional_shortest_path(G,source,target)
                 if p is False:
@@ -148,9 +148,9 @@ def average_shortest_path_length(G,weighted=False):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G=nx.path_graph(5)
     >>> print nx.average_shortest_path_length(G)
-    1.25
+    2.0
 
     """
     if weighted:
@@ -161,6 +161,6 @@ def average_shortest_path_length(G,weighted=False):
     for n in G:
         l=path_length(G,n).values()
         avg+=float(sum(l))/len(l)
-    return avg/len(G)
+    return avg/(len(G)-1)
         
 
