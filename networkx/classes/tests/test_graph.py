@@ -76,6 +76,29 @@ class TestGraph:
         G=self.Graph()
         G.add_nodes_from([0,1,2])
         assert_equal(G.adj,{0:{},1:{},2:{}})
+        # test new attributes
+        G.add_nodes_from([0,1,2],c='red')
+        assert_equal(G.node[0]['c'],'red')
+        assert_equal(G.node[2]['c'],'red')
+        # test that attribute dicts are not the same
+        assert(G.node[0] is not G.node[1])
+        # test updating attributes
+        G.add_nodes_from([0,1,2],c='blue')
+        assert_equal(G.node[0]['c'],'blue')
+        assert_equal(G.node[2]['c'],'blue')
+        assert(G.node[0] is not G.node[1])
+        # test tuple input
+        H=self.Graph()
+        H.add_nodes_from(G.nodes(data=True))
+        assert_equal(H.node[0]['c'],'blue')
+        assert_equal(H.node[2]['c'],'blue')
+        assert(H.node[0] is not H.node[1])
+        # specific overrides general
+        H.add_nodes_from([0,(1,{'c':'green'}),(3,{'c':'cyan'})],c='red')
+        assert_equal(H.node[0]['c'],'red')
+        assert_equal(H.node[1]['c'],'green')
+        assert_equal(H.node[2]['c'],'blue')
+        assert_equal(H.node[3]['c'],'cyan')
 
     def test_remove_node(self):
         G=self.K3

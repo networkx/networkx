@@ -386,10 +386,14 @@ class Graph(object):
         Parameters
         ----------
         nodes : iterable container
-            A container of nodes (list, dict, set, etc.).  The
-            container will be iterated through once.
+            A container of nodes (list, dict, set, etc.).  
+            OR
+            A container of (node, attribute dict) tuples.
+            Node attributes are updated using the attribute dict.
         attr : keyword arguments, optional (default= no attributes)
             Update attributes for all nodes in nodes.
+            Node attributes specified in nodes as a tuple
+            take precedence over attributes specified generally.
 
         See Also
         --------
@@ -409,9 +413,34 @@ class Graph(object):
         >>> G.add_nodes_from([1,2], size=10)
         >>> G.add_nodes_from([3,4], weight=0.4)
 
+        Use (node, attrdict) tuples to update attributes for specific
+        nodes.
+
+        >>> G.add_nodes_from([(1,dict(size=11)), (2,{'color':'blue'})])
+        >>> G.node[1]['size']
+        11
+        >>> H = nx.Graph()
+        >>> H.add_nodes_from(G.nodes(data=True))
+        >>> H.node[1]['size']
+        11
+
         """
         for n in nodes:
-            if n not in self.adj:
+            try:
+                newnode=n not in self.adj
+            except TypeError:
+                nn,ndict = n
+                if nn not in self.adj:
+                    self.adj[nn] = {}
+                    newdict = attr.copy()
+                    newdict.update(ndict)
+                    self.node[nn] = newdict
+                else:
+                    olddict = self.node[nn]
+                    olddict.update(attr)
+                    olddict.update(ndict)
+                continue
+            if newnode:
                 self.adj[n] = {}
                 self.node[n] = attr.copy()
             else:
