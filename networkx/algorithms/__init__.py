@@ -18,8 +18,10 @@ from mst import *
 from block import *
 from operators import *
 from shortest_paths import *
+from link_analysis import *
 
 import centrality
 import traversal
 import isomorphism
 import shortest_paths
+import link_analysis
