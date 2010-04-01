@@ -42,7 +42,7 @@ def betweenness_centrality(G,normalized=True,
     Returns
     -------
     nodes : dictionary
-       Dictionary of nodes with betweeness centrality as the value.
+       Dictionary of nodes with betweenness centrality as the value.
 
     See Also
     --------
@@ -64,10 +64,10 @@ def betweenness_centrality(G,normalized=True,
     for s in G:
         # single source shortest paths
         if weighted_edges:  # use Dijkstra's algorithm
-            betweeness,S,P,sigma=\
+            betweenness,S,P,sigma=\
                 _single_source_dijkstra_path_basic(G,s,betweenness)
         else:  # use BFS
-            betweeness,S,P,sigma=\
+            betweenness,S,P,sigma=\
                 _single_source_shortest_path_basic(G,s,betweenness)
         # accumulation
         if endpoints: 
@@ -85,7 +85,7 @@ def edge_betweenness_centrality(G,normalized=True,
                                 weighted_edges=False):
     """Compute betweenness centrality for edges.
 
-    Betweenness centrality of a node is the fraction of all shortest 
+    Betweenness centrality of an edge is the fraction of all shortest 
     paths that pass through that edge.
 
     Parameters
@@ -103,8 +103,8 @@ def edge_betweenness_centrality(G,normalized=True,
 
     Returns
     -------
-    nodes : dictionary
-       Dictionary of nodes with betweeness centrality as the value.
+    edges : dictionary
+       Dictionary of edges with betweenness centrality as the value.
         
     See Also
     --------
@@ -128,10 +128,10 @@ def edge_betweenness_centrality(G,normalized=True,
     for s in G:
         # single source shortest paths
         if weighted_edges:  # use Dijkstra's algorithm
-            betweeness,S,P,sigma=\
+            betweenness,S,P,sigma=\
                 _single_source_dijkstra_path_basic(G,s,betweenness)
         else:  # use BFS
-            betweeness,S,P,sigma=\
+            betweenness,S,P,sigma=\
                 _single_source_shortest_path_basic(G,s,betweenness)
         # accumulation
         betweenness=_accumulate_edges(betweenness,S,P,sigma,s)

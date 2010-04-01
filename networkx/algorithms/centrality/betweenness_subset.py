@@ -53,7 +53,7 @@ def betweenness_centrality_subset(G,sources,targets,
     Returns
     -------
     nodes : dictionary
-       Dictionary of nodes with betweeness centrality as the value.
+       Dictionary of nodes with betweenness centrality as the value.
 
     See Also
     --------
@@ -108,7 +108,6 @@ def edge_betweenness_centrality_subset(G,sources,targets,
     targets: list of nodes
       Nodes to use as targets for shortest paths in betweenness
 
-
     normalized : bool, optional
       If True the betweenness values are normalized by 
       b=b/(n-1)(n-2) where n is the number of nodes in G.
@@ -120,7 +119,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
     Returns
     -------
     edges : dictionary
-       Dictionary of edges with betweeness centrality as the value.
+       Dictionary of edges with Betweenness centrality as the value.
         
     See Also
     --------
