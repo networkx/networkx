@@ -213,7 +213,8 @@ class TestNeighborhoodConnectivity():
         self.S=networkx.Graph()
         self.S.add_edges_from([(0,0),(1,1)])
 
-    def test_neighborhood_connectivity(self):
-        d=nx.neighbor_connectivity(P4)
-#        assert_equal()
-
+    def test_neighbor_connectivity(self):
+        d=networkx.neighbor_connectivity(self.P4)
+        assert_equal(d,{1:2.0/3,2:1.0})
+        d=networkx.neighbor_connectivity(networkx.complete_graph(4))
+        assert_equal(d,{3:3.0})
