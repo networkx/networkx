@@ -2,7 +2,7 @@
 from nose.tools import *
 import networkx
 
-class TestBetweennessCentrality:
+class TestLoadCentrality:
 
     def setUp(self):
 
@@ -21,9 +21,9 @@ class TestBetweennessCentrality:
         self.exact_weighted={0: 4.0, 1: 0.0, 2: 8.0, 3: 6.0, 4: 8.0, 5: 0.0}
 
 
-    def test_brandes_betweenness(self):
-        b=networkx.betweenness_centrality(self.G,weighted_edges=True,
-                                          normalized=False)
+    def test_load(self):
+        b=networkx.load_centrality(self.G,weighted_edges=True,
+                                   normalized=False)
         for n in sorted(self.G):
             assert_equal(b[n],self.exact_weighted[n])
 
