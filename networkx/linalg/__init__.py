@@ -1,6 +1,2 @@
-
-# need numpy for spectrum
-try:
-    from spectrum import *
-except ImportError:
-    pass
+from spectrum import *
+from attrmatrix import *
