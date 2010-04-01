@@ -261,7 +261,6 @@ def _rescale(betweenness,normalized,directed=False):
     else: # rescale by 2 for undirected graphs
         if not directed:
             scale=1.0/2.0
-#            scale=1.0/1.0
         else:
             scale=None
     if scale is not None:
