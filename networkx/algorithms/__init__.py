@@ -17,6 +17,7 @@ from block import *
 from operators import *
 from shortest_paths import *
 from link_analysis import *
+from mixing import *
 
 import centrality
 import traversal

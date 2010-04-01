@@ -23,6 +23,7 @@ Algorithms
    algorithms.isomorphism
    algorithms.link_analysis
    algorithms.matching
+   algorithms.mixing
    algorithms.mst
    algorithms.operators
    algorithms.shortest_paths
