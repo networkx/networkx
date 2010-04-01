@@ -11,9 +11,15 @@ Betweenness
    :toctree: generated/
 
    betweenness_centrality 
-   betweenness_centrality_source 
+   edge_betweenness_centrality
+
+Load
+----
+.. autosummary::
+   :toctree: generated/
+
    load_centrality
-   edge_betweenness
+   edge_load
 
 Degree
 ------
