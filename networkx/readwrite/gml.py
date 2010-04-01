@@ -132,9 +132,9 @@ def parse_gml(lines):
     # determine directed or undirected and init corresponding NX class
     directed=graph_attr.get('directed',0)
     if directed==1:
-        G=networkx.DiGraph()
+        G=networkx.MultiDiGraph()
     else:
-        G=networkx.Graph()
+        G=networkx.MultiGraph()
     G.node_attr={} # store node attributes here
     G.graph_attr=graph_attr
 
