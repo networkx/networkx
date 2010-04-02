@@ -18,20 +18,7 @@ __all__ = ['degree_centrality',
 
 import networkx
 
-def _degree_centrality(degree,degree_iter,G,v=None):
-    """Internal function to consolidate *-degree centrality functions."""
-    if v is not None:
-        d = G.__getattribute__(degree)
-        return d(v)/(G.order()-1.0)
-    centrality={}
-    s=1.0/(G.order()-1.0)
-    d_iter = G.__getattribute__(degree_iter)
-    for n,deg in d_iter():
-        centrality[n]=deg*s
-    return centrality
- 
-
-def degree_centrality(G,v=None):
+def degree_centrality(G):
     """Compute the degree centrality for nodes.
 
     The degree centrality for a node v is the fraction of nodes it
@@ -42,9 +29,6 @@ def degree_centrality(G,v=None):
     G : graph
       A networkx graph 
 
-    v : node, optional
-      Return only the value for node v.
-      
     Returns
     -------
     nodes : dictionary
@@ -56,14 +40,19 @@ def degree_centrality(G,v=None):
 
     Notes
     -----
-    The degree centrality is normalized to the maximum possible degree
-    in the graph G.  That is, G.degree(v)/(G.order()-1).
+    The degree centrality values are normalized by dividing by the maximum 
+    possible degree in a simple graph n-1 where n is the number of nodes in G.
 
+    For multigraphs or graphs with self loops the maximum degree might
+    be higher than n-1 and values of degree centrality greater than 1
+    are possible.
     """
-    return _degree_centrality('degree', 'degree_iter', G, v)
+    centrality={}
+    s=1.0/(len(G)-1.0)
+    centrality=dict((n,d*s) for n,d in G.degree_iter())
+    return centrality
 
-
-def in_degree_centrality(G,v=None):
+def in_degree_centrality(G):
     """Compute the in-degree centrality for nodes.
 
     The in-degree centrality for a node v is the fraction of nodes its 
@@ -74,9 +63,6 @@ def in_degree_centrality(G,v=None):
     G : graph
         A NetworkX graph
 
-    v : node, optional
-        Return only the value for node.
-
     Returns
     -------
     nodes : dictionary
@@ -85,12 +71,25 @@ def in_degree_centrality(G,v=None):
     See Also
     --------
     degree_centrality, out_degree_centrality
+    Notes
+    -----
+    The degree centrality values are normalized by dividing by the maximum 
+    possible degree in a simple graph n-1 where n is the number of nodes in G.
 
+    For multigraphs or graphs with self loops the maximum degree might
+    be higher than n-1 and values of degree centrality greater than 1
+    are possible.
     """
-    return _degree_centrality('in_degree', 'in_degree_iter', G, v)
+    if not G.is_directed():
+        raise networkx.NetworkXError(\
+            "in_degree_centrality() not defined for undirected graphs.")
+    centrality={}
+    s=1.0/(len(G)-1.0)
+    centrality=dict((n,d*s) for n,d in G.in_degree_iter())
+    return centrality
 
 
-def out_degree_centrality(G,v=None):
+def out_degree_centrality(G):
     """Compute the out-degree centrality for nodes.
 
     The out-degree centrality for a node v is the fraction of nodes its 
@@ -101,9 +100,6 @@ def out_degree_centrality(G,v=None):
     G : graph
         A NetworkX graph
 
-    v : node, optional
-        Return only the value for node.
-
     Returns
     -------
     nodes : dictionary
@@ -113,7 +109,22 @@ def out_degree_centrality(G,v=None):
     --------
     degree_centrality, in_degree_centrality
 
+    Notes
+    -----
+    The degree centrality values are normalized by dividing by the maximum 
+    possible degree in a simple graph n-1 where n is the number of nodes in G.
+
+    For multigraphs or graphs with self loops the maximum degree might
+    be higher than n-1 and values of degree centrality greater than 1
+    are possible.
     """
-    return _degree_centrality('out_degree', 'out_degree_iter', G, v)
+    if not G.is_directed():
+        raise networkx.NetworkXError(\
+            "out_degree_centrality() not defined for undirected graphs.")
+    centrality={}
+    s=1.0/(len(G)-1.0)
+    centrality=dict((n,d*s) for n,d in G.out_degree_iter())
+    return centrality
+
 
 
