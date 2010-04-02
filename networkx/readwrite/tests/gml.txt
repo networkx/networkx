@@ -1,7 +1,46 @@
 >>> from networkx import *
+>>> import networkx.utils
 >>> import os,tempfile
 
->>> data="""graph [\n  comment "This is a sample graph"\n  directed 1\n  IsPlanar 1\n  node [\n    id 1\n    label\n    "Node 1"\n  ]\n  node [\n    id 2\n    label\n    "Node 2" ]\n  node [\n    id 3\n    label\n    "Node 3"\n  ]\n  edge [\n    source 1\n    target 2\n    label "Edge from node 1 to node 2"\n  ]\n  edge [\n    source 2\n    target 3\n    label "Edge from node 2 to node 3"\n  ]\n  edge [\n    source 3\n    target 1 label\n    "Edge from node 3 to node 1"\n  ]\n]"""
+>>> data="""Creator me
+... graph [
+...  comment "This is a sample graph"
+...  directed 1
+...  IsPlanar 1
+...  pos  [ x 0 y 1 ]
+...  node [
+...    id 1
+...    label "Node 1"
+...    pos [ x 1 y 1 ] 
+...  ]
+...  node [
+...     id 2
+...     pos [ x 1 y 2 ] 
+...     label "Node 2" 
+...     ]
+...   node [
+...     id 3
+...     label "Node 3"
+...     pos [ x 1 y 3 ] 
+...   ]
+...   edge [
+...     source 1
+...     target 2
+...     label "Edge from node 1 to node 2"
+...     color [ line 'blue'   thickness 3 ] 
+...   ]
+...   edge [
+...     source 2
+...     target 3
+...     label "Edge from node 2 to node 3"
+...   ]
+...   edge [
+...     source 3
+...     target 1 label
+...     "Edge from node 3 to node 1"
+...   ]
+... ]
+... """
 
 >>> G=parse_gml(data)
 
@@ -9,7 +48,7 @@
 ['Node 1', 'Node 2', 'Node 3']
 
 >>> print [e for e in sorted(G.edges(data=True))]
-[('Node 1', 'Node 2', {'label': 'Edge from node 1 to node 2'}), ('Node 2', 'Node 3', {'label': 'Edge from node 2 to node 3'}), ('Node 3', 'Node 1', {'label': 'Edge from node 3 to node 1'})]
+[('Node 1', 'Node 2', {'color': {'line': 'blue', 'thickness': 3}, 'label': 'Edge from node 1 to node 2'}), ('Node 2', 'Node 3', {'label': 'Edge from node 2 to node 3'}), ('Node 3', 'Node 1', {'label': 'Edge from node 3 to node 1'})]
 
 
 >>> (fd,fname)=tempfile.mkstemp()

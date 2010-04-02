@@ -37,7 +37,7 @@ def read_gml(path):
 
     Returns
     -------
-    G : Graph or DiGraph
+    G : MultiGraph or MultiDiGraph
 
     Raises
     ------
@@ -82,7 +82,7 @@ def parse_gml(lines):
 
     Returns
     -------
-    G : Graph or DiGraph
+    G : MultiGraph or MultiDiGraph
 
     Raises
     ------
@@ -95,8 +95,8 @@ def parse_gml(lines):
     
     Notes
     -----
-    This doesn't implement the complete GML specification for
-    nested attributes for graphs, edges, and nodes. 
+    This stores nested GML attributes as dicts in the 
+    NetworkX Graph attribute structures.
 
     Requires pyparsing: http://pyparsing.wikispaces.com/
 
@@ -128,44 +128,56 @@ def parse_gml(lines):
         print err
         raise
 
-    graph_attr=tokens.asDict()
-    # determine directed or undirected and init corresponding NX class
-    directed=graph_attr.get('directed',0)
-    if directed==1:
+    # function to recursively make dicts of key/value pairs
+    def wrap(tok):
+        listtype=type(tok)
+        result={}
+        for k,v in tok:
+            if type(v)==listtype:
+                result[k]=wrap(v)
+            else:
+                result[k]=v
+        return result
+    # storage areas
+    node_labels={}
+    graphs=[]
+    nodes=[]
+    edges=[]
+    directed=False
+    # process parsed info
+    tokenlist=tokens.asList()
+    for k,v in tokenlist:
+        if k=="node":
+            vdict=wrap(v)
+            id=vdict['id']
+            label=vdict['label']
+            node_labels[id]=label
+            nodes.append((label,vdict))
+        elif k=="edge":
+            vdict=wrap(v)
+            edges.append((vdict.pop('source'), vdict.pop('target'), vdict))
+        else:
+            if type(v)==type(tokenlist):
+                graphs.append((k,wrap(v)))
+            else:
+                graphs.append((k,v))
+            if k=="directed" and v==1:
+                directed=True
+    # Now create the Graph
+    if directed:
         G=networkx.MultiDiGraph()
     else:
         G=networkx.MultiGraph()
-    G.node_attr={} # store node attributes here
-    G.graph_attr=graph_attr
-
-    # first pass, nodes and labels
-    label={}
-    for item in tokens:
-        if item[0]=='node':
-            d=item.asDict()
-            id=d['id']
-            if 'label'in d:
-                label[id]=d['label']
-                del d['label']
-            else:
-                label[id]=id
-                del d['id']
-            G.add_node(label[id],**d)
-
-    # second pass, edges            
-    for item in tokens:
-        if item[0]=='edge':
-            d=item.asDict()
-            source=d.pop('source')
-            target=d.pop('target')
-            G.add_edge(label[source],label[target],**d)
-    return G
+    G.graph.update(graphs)
+    G.add_nodes_from(nodes)
+    G.add_edges_from( (node_labels[s],node_labels[t],d) for s,t,d in edges)
+    return G 
             
 graph = None
 def pyparse_gml():
     """A pyparsing tokenizer for GML graph format.
 
-    This is not indented to be called directly.
+    This is not intended to be called directly.
 
     See Also
     --------
@@ -181,17 +193,15 @@ def pyparse_gml():
     
     try:
         from pyparsing import \
-             Literal, CaselessLiteral,Word,\
+             Literal, CaselessLiteral, Word, Forward,\
              ZeroOrMore, Group, Dict, Optional, Combine,\
-             ParseException, restOfLine, White, alphanums, nums,\
+             ParseException, restOfLine, White, alphas, alphanums, nums,\
              OneOrMore,quotedString,removeQuotes,dblQuotedString
     except ImportError:
         raise ImportError, \
           "Import Error: not able to import pyparsing: http://pyparsing.wikispaces.com/"
 
     if not graph:
-        creator = Literal("Creator")+ Optional( restOfLine )
-        graphkey = Literal("graph").suppress()
         lbrack = Literal("[").suppress()
         rbrack = Literal("]").suppress()
         pound = ("#")
@@ -204,14 +214,21 @@ def pyparse_gml():
                         Optional(point+Optional(Word(nums)))+
                         Optional(e+Word("+-"+nums, nums))).setParseAction(
                                         lambda s,l,t:[ float(t[0]) ])
-        key=Word(alphanums)
-        value=integer^real^Word(alphanums)^quotedString.setParseAction(removeQuotes)
-        keyvalue = Dict(Group(key+OneOrMore(white).suppress()\
-                   +value+OneOrMore(white).suppress()))
-        node = Group(Literal("node") + lbrack + OneOrMore(keyvalue) + rbrack)
-        edge = Group(Literal("edge") + lbrack + OneOrMore(keyvalue) + rbrack)
-        graph = Optional(creator)+\
-            graphkey + lbrack + ZeroOrMore(edge|node|keyvalue) + rbrack
+        key = Word(alphas,alphanums+'_')
+        value_atom = integer^real^Word(alphanums)^quotedString.setParseAction(removeQuotes)
+
+        value = Forward()   # to be defined later with << operator
+        keyvalue = Group(key+value)
+        value << (value_atom | Group( lbrack + ZeroOrMore(keyvalue) + rbrack ))
+        node = Group(Literal("node") + lbrack + Group(OneOrMore(keyvalue)) + rbrack)
+        edge = Group(Literal("edge") + lbrack + Group(OneOrMore(keyvalue)) + rbrack)
+
+        creator = Group(Literal("Creator")+ Optional( restOfLine ))
+        version = Group(Literal("Version")+ Optional( restOfLine ))
+        graphkey = Literal("graph").suppress()
+
+        graph = Optional(creator)+Optional(version)+\
+            graphkey + lbrack + ZeroOrMore( (node|edge|keyvalue) ) + rbrack
         graph.ignore(comment)
         
     return graph
@@ -245,8 +262,8 @@ def write_gml(G, path):
     GML specifications indicate that the file should only use
     7bit ASCII text encoding.iso8859-1 (latin-1). 
 
-    Only a single level of attributes for graphs, nodes, and edges,
-    is supported.
+    For nested attributes for graphs, nodes, and edges you should
+    use dicts for the value of the attribute.  
 
     Examples
     ---------
@@ -282,6 +299,17 @@ def write_gml(G, path):
     indent=2*' '
     count=iter(range(G.number_of_nodes()))
     node_id={}
+    dicttype=type({})
+
+    # recursively make dicts into gml brackets
+    def listify(d,indent,indentlevel):
+        result='[ \n'
+        dicttype=type({})
+        for k,v in d.iteritems():
+            if type(v)==dicttype:
+                v=listify(v,indent,indentlevel+1)
+            result += indentlevel*indent+"%s %s\n"%(k,v)
+        return result+indentlevel*indent+"]"
 
     fh.write("graph [\n")
     if G.is_directed():
@@ -290,6 +318,8 @@ def write_gml(G, path):
     for k,v in G.graph.items():
         if is_string_like(v):
             v='"'+v+'"'
+        elif type(v)==dicttype:
+            v=listify(v,indent,1)
         fh.write(indent+"%s %s\n"%(k,v))
     # write nodes        
     for n in G:
@@ -302,6 +332,7 @@ def write_gml(G, path):
         if n in G:
           for k,v in G.node[n].items():
               if is_string_like(v): v='"'+v+'"'
+              if type(v)==dicttype: v=listify(v,indent,2)
               if k=='id': continue
               fh.write(2*indent+"%s %s\n"%(k,v))
         fh.write(indent+"]\n")
@@ -315,6 +346,7 @@ def write_gml(G, path):
             if k=='source': continue
             if k=='target': continue
             if is_string_like(v): v='"'+v+'"'
+            if type(v)==dicttype: v=listify(v,indent,2)
             fh.write(2*indent+"%s %s\n"%(k,v))
         fh.write(indent+"]\n")
-    fh.write("]\n")
+    fh.write("]")
