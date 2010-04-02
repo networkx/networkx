@@ -1,17 +1,16 @@
 """
 Laplacian, adjacency matrix, and spectrum of graphs.
 
-Needs numpy array package: numpy.scipy.org.
-
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by 
+__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
+                        'Pieter Swart (swart@lanl.gov)',
+                        'Dan Schult(dschult@colgate.edu)'])
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
 
 import networkx
 
@@ -19,37 +18,68 @@ __all__ = ['adj_matrix', 'laplacian', 'generalized_laplacian',
            'laplacian_spectrum', 'adjacency_spectrum','normalized_laplacian']
 
 
-
 def adj_matrix(G,nodelist=None):
-    """Return adjacency matrix of graph as a numpy matrix.
+    """Return adjacency matrix of G.
 
-    This just calls networkx.convert.to_numpy_matrix.
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
 
-    If you want a pure python adjacency matrix represntation try
-    networkx.convert.to_dict_of_dicts with weighted=False,
-    which will return a dictionary-of-dictionaries format that
-    can be addressed as a sparse matrix.
+    nodelist : list, optional       
+       The rows and columns are ordered according to the nodes in nodelist.
+       If nodelist is None, then the ordering is produced by G.nodes().
 
+    Returns
+    -------
+    A : numpy matrix
+      Adjacency matrix representation of G.
+
+    Notes
+    -----
+    If you want a pure Python adjacency matrix representation try
+    networkx.convert.to_dict_of_dicts which will return a
+    dictionary-of-dictionaries format that can be addressed as a
+    sparse matrix.
+
+    See Also
+    --------
+    to_numpy_matrix
+    to_dict_of_dicts
     """
     return networkx.to_numpy_matrix(G,nodelist=nodelist)
 
 
 def laplacian(G,nodelist=None):
-    """Return standard combinatorial Laplacian of G as a numpy matrix.
+    """Return the Laplacian matrix of G.
 
-    Return the matrix L = D - A, where
+    The graph Laplacian is the matrix L = D - A, where
+    A is the adjacency matrix and D is the diagonal matrix of node degrees.
 
-       D is the diagonal matrix in which the i'th entry is the degree of node i
-       A is the adjacency matrix.
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
 
+    nodelist : list, optional       
+       The rows and columns are ordered according to the nodes in nodelist.
+       If nodelist is None, then the ordering is produced by G.nodes().
+
+    Returns
+    -------
+    L : NumPy matrix
+      Laplacian of G.
+
+    See Also
+    --------
+    normalized_laplacian
     """
-    # this isn't the most efficient way to do this...
     try:
         import numpy as np
     except ImportError:
         raise ImportError, \
           "laplacian() requires numpy: http://scipy.org/ "
-
+    # this isn't the most efficient way to do this...
     n=G.order()
     I=np.identity(n)
     A=np.asarray(networkx.to_numpy_matrix(G,nodelist=nodelist))
@@ -59,12 +89,33 @@ def laplacian(G,nodelist=None):
 
 
 def normalized_laplacian(G,nodelist=None):
-    """Return normalized Laplacian of G as a numpy matrix.
+    """Return the normalized Laplacian matrix of G.
 
-    See Spectral Graph Theory by Fan Chung-Graham.
-    CBMS Regional Conference Series in Mathematics, Number 92,
-    1997.
+    The normalized graph Laplacian is the matrix NL=D^(-1/2) L D^(-1/2)
+    L is the graph Laplacian and D is the diagonal matrix of node degrees.
 
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    nodelist : list, optional       
+       The rows and columns are ordered according to the nodes in nodelist.
+       If nodelist is None, then the ordering is produced by G.nodes().
+
+    Returns
+    -------
+    L : NumPy matrix
+      Normalized Laplacian of G.
+
+    See Also
+    --------
+    laplacian
+
+    References
+    ----------
+    .. [1] Fan Chung-Graham, Spectral Graph Theory, 
+       CBMS Regional Conference Series in Mathematics, Number 92, 1997.
     """
     # FIXME: this isn't the most efficient way to do this...
     try:
@@ -72,10 +123,9 @@ def normalized_laplacian(G,nodelist=None):
     except ImportError:
         raise ImportError, \
           "normalized_laplacian() requires numpy: http://scipy.org/ "
-    n=G.order()
-    I=np.identity(n)
     A=np.asarray(networkx.to_numpy_matrix(G,nodelist=nodelist))
     d=np.sum(A,axis=1)
+    I=np.identity(len(d))
     L=I*d-A
     osd=np.zeros(len(d))
     for i in range(len(d)):
@@ -85,21 +135,52 @@ def normalized_laplacian(G,nodelist=None):
     return L
 
 def laplacian_spectrum(G):
-    """Return eigenvalues of the Laplacian of G""" 
+    """Return eigenvalues of the Laplacian of G
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    Returns
+    -------
+    evals : NumPy array
+      Eigenvalues
+
+    See Also
+    --------
+    laplacian
+    """
+
     try:
         import numpy as np
     except ImportError:
         raise ImportError, \
-          "laplacian_spectrum() requires numpy: http://scipy.org/ "
+          "laplacian_spectrum() requires NumPy: http://scipy.org/ "
     return np.linalg.eigvals(laplacian(G))
 
 def adjacency_spectrum(G):
-    """Return eigenvalues of the adjacency matrix of G""" 
+    """Return eigenvalues of the adjacency matrix of G.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    Returns
+    -------
+    evals : NumPy array
+      Eigenvalues
+
+    See Also
+    --------
+    adj_matrix
+    """
     try:
         import numpy as np
     except ImportError:
         raise ImportError, \
-          "adjacency_spectrum() requires numpy: http://scipy.org/ "
+          "adjacency_spectrum() requires NumPy: http://scipy.org/ "
     return np.linalg.eigvals(adj_matrix(G))
 
 

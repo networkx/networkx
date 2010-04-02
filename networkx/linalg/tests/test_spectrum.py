@@ -40,21 +40,21 @@ class TestSpectrum(object):
 
     def test_generalized_laplacian(self):
         "Generalized Graph Laplacian"
-        GL=numpy.array([[ 1.00, -0.41, -0.41, -0.58,  0.00],
-                        [-0.41,  1.00, -0.50,  0.00 , 0.00], 
-                        [-0.41, -0.50,  1.00,  0.00,  0.00], 
-                        [-0.58,  0.00,  0.00,  1.00,  0.00],
+        GL=numpy.array([[ 1.00, -0.408, -0.408, -0.577,  0.00],
+                        [-0.408,  1.00, -0.50,  0.00 , 0.00], 
+                        [-0.408, -0.50,  1.00,  0.00,  0.00], 
+                        [-0.577,  0.00,  0.00,  1.00,  0.00],
                         [ 0.00,  0.00,  0.00,  0.00,  0.00]]) 
-        assert_almost_equal(nx.generalized_laplacian(self.G),GL,decimal=2)
+        assert_almost_equal(nx.generalized_laplacian(self.G),GL,decimal=3)
                        
     def test_normalized_laplacian(self):
         "Generalized Graph Laplacian"
-        GL=numpy.array([[ 1.00, -0.41, -0.41, -0.58,  0.00],
-                        [-0.41,  1.00, -0.50,  0.00 , 0.00], 
-                        [-0.41, -0.50,  1.00,  0.00,  0.00], 
-                        [-0.58,  0.00,  0.00,  1.00,  0.00],
+        GL=numpy.array([[ 1.00, -0.408, -0.408, -0.577,  0.00],
+                        [-0.408,  1.00, -0.50,  0.00 , 0.00], 
+                        [-0.408, -0.50,  1.00,  0.00,  0.00], 
+                        [-0.577,  0.00,  0.00,  1.00,  0.00],
                         [ 0.00,  0.00,  0.00,  0.00,  0.00]]) 
-        assert_almost_equal(nx.normalized_laplacian(self.G),GL,decimal=2)
+        assert_almost_equal(nx.normalized_laplacian(self.G),GL,decimal=3)
                        
 
 
