@@ -49,7 +49,7 @@ def current_flow_closeness_centrality(G,normalized=True):
     If the edges have a 'weight' attribute they will be used as 
     weights in this algorithm.  Unspecified weights are set to 1.
 
-    See also [2]_ for the orginal definition of information centrality.
+    See also [2]_ for the original definition of information centrality.
 
     References
     ----------
@@ -59,10 +59,10 @@ def current_flow_closeness_centrality(G,normalized=True):
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005. 
        http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
 
-   .. [2] Stephenson, K. and Zelen, M.
-      Rethinking centrality: Methods and examples.
-      Social Networks. Volume 11, Issue 1, March 1989, pp. 1-37
-      http://dx.doi.org/10.1016/0378-8733(89)90016-6
+    .. [2] Stephenson, K. and Zelen, M.
+       Rethinking centrality: Methods and examples.
+       Social Networks. Volume 11, Issue 1, March 1989, pp. 1-37
+       http://dx.doi.org/10.1016/0378-8733(89)90016-6
     """
     try:
         import numpy as np
