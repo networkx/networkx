@@ -167,7 +167,6 @@ http://scipy.org/""")
         nb=(n-1.0)*(n-2.0) # normalization factor
     else:
         nb=2.0
-    reverse_mapping=dict(zip(range(n),G))  # map integers to nodes
     for (ei,e) in izip(range(m),G.edges_iter()): 
         # ei is index of edge
         Fe=F[ei,:] # ei row of F
