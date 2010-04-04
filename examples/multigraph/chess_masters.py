@@ -83,6 +83,8 @@ if __name__ == '__main__':
     import networkx as nx
     import matplotlib.pyplot as plt
 
+    plt.rcParams['text.usetex'] = False
+
     G=chess_pgn_graph()
     ngames=G.number_of_edges()
     nplayers=G.number_of_nodes()
