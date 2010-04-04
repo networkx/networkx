@@ -3,6 +3,49 @@
 Release Log
 ===========
 
+
+Networkx-1.1
+------------
+
+Release date:  Release date:  XX April 2010
+
+See: https://networkx.lanl.gov/trac/timeline
+
+New features
+~~~~~~~~~~~~
+ - Algorithm for finding a basis for graph cycles
+ - Blockmodeling 
+ - Assortativity and mixing matrices
+ - In-degree and out-degree centrality
+ - Contract strongly connected components
+ - Simpler interface to shortest path algorithms
+ - Edgelist format to read and write data with attributes
+ - Attribute matrices
+ - GML reader for nested attributes
+ - Current-flow (random walk) betweeness and closeness
+ - Improved documentation of drawing, shortest paths, and other algorithms
+ - Many more tests
+ - and much more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.1
+
+
+Examples
+~~~~~~~~
+ - Mayvi2 drawing http://networkx.lanl.gov/examples/drawing/mayavi2_spring.html
+ - Blockmodel http://networkx.lanl.gov/examples/algorithms/blockmodel.html
+ - Sampson's monastery http://networkx.lanl.gov/examples/drawing/sampson.html
+ - Ego graph http://networkx.lanl.gov/examples/drawing/ego_graph.html
+
+Bug fixes
+~~~~~~~~~
+ - Support graph attributes with union, intersection, graph operations
+ - Improve subgraph speed (and related algorithms such as 
+   connected_components_subgraphs())
+ - Handle multigraphs in more operators (e.g. union)   
+ - Handle double-quoted labels with pydot
+ - Normalize betweeness for undirected graphs correctly 
+ - add_nodes_from() now accepts (node,attrdict) two-tuples
+ - read_gml() now returns multigraphs
+
 Networkx-1.0.1
 --------------
 
