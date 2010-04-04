@@ -23,7 +23,8 @@ sys.path.append(os.path.abspath('../sphinxext'))
 # coming with Sphinx (named 'sphinx.addons.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath', 'numpydoc',
               'sphinx.ext.coverage',
-              'sphinx.ext.autosummary','sphinx.ext.todo','sphinx.ext.doctest']
+              'sphinx.ext.autosummary','sphinx.ext.todo','sphinx.ext.doctest',
+              'sphinx.ext.intersphinx']
 
 # generate autosummary pages
 autosummary_generate=True
@@ -150,3 +151,9 @@ latex_documents = [('tutorial/index', 'networkx_tutorial.tex',
 #latex_appendices = ['installing']#,'legal'],'citing','credits','history']
 
 #latex_appendices = ['credits']
+
+# Intersphinx mapping
+intersphinx_mapping = {'http://docs.python.org/': None,
+                       'http://docs.scipy.org/doc/numpy/': None,
+                      }
+
