@@ -8,4 +8,4 @@ Minimum Spanning Tree
 .. autosummary::
    :toctree: generated/
 
-   mst
+   minimum_spanning_tree

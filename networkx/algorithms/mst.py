@@ -1,7 +1,6 @@
 """
-======================
-Minimum Spanning Trees
-======================
+Computes minimum spanning tree of a weighted graph.
+
 """
 #    Copyright (C) 2009 by 
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -10,14 +9,15 @@ Minimum Spanning Trees
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['mst', 'kruskal_mst']
+__all__ = ['mst', 'kruskal_mst','minimum_spanning_tree']
 
 import networkx
 
-def kruskal_mst(G):
-    """Generate a minimum spanning tree of an undirected graph.
+def minimum_spanning_tree(G):
+    """Generate a minimum spanning tree of an undirected weighted graph.
 
-    Uses Kruskal's algorithm.
+    A minimum spanning tree is a subgraph of the graph (a tree)
+    with the minimum sum of edge weights.
 
     Parameters
     ----------
@@ -25,14 +25,15 @@ def kruskal_mst(G):
     
     Returns
     -------
-    A generator that produces edges in the minimum spanning tree.
-    The edges are three-tuples (u,v,w) where w is the weight.
+    edges : iterator
+       A generator that produces edges in the minimum spanning tree.
+       The edges are three-tuples (u,v,w) where w is the weight.
     
     Examples
     --------
     >>> G=nx.cycle_graph(4)
     >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
-    >>> mst=nx.kruskal_mst(G) # a generator of MST edges
+    >>> mst=nx.minimum_spanning_tree(G) # a generator of MST edges
     >>> edgelist=list(mst) # make a list of the edges
     >>> print sorted(edgelist)
     [(0, 1, {'weight': 1}), (1, 2, {'weight': 1}), (2, 3, {'weight': 1})]
@@ -42,9 +43,13 @@ def kruskal_mst(G):
 
     Notes
     -----
+    Uses Kruskal's algorithm.
+
+    If the graph edges do not have a weight attribute a default weight of 1
+    will be assigned.
+
     Modified code from David Eppstein, April 2006
     http://www.ics.uci.edu/~eppstein/PADS/
-
     """
     # Modified code from David Eppstein, April 2006
     # http://www.ics.uci.edu/~eppstein/PADS/
@@ -60,5 +65,6 @@ def kruskal_mst(G):
             yield (u,v,{'weight':W})
             subtrees.union(u,v)
 
-mst=kruskal_mst
+kruskal_mst=minimum_spanning_tree
+mst=minimum_spanning_tree
 
