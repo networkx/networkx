@@ -5,4 +5,5 @@ from degree import *
 from eigenvector import *
 from load import *
 from current_flow_closeness import *
+from current_flow_betweenness import *
 import betweenness

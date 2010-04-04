@@ -1,0 +1,211 @@
+"""
+Current-flow betweenness centrality measures.
+
+"""
+#    Copyright (C) 2010 by 
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+
+__all__ = ['current_flow_betweenness_centrality',
+           'edge_current_flow_betweenness_centrality']
+
+import networkx
+import numpy as np
+
+def current_flow_betweenness_centrality(G,normalized=True):
+    """Compute current-flow betweenness centrality for nodes.
+
+    Current-flow betweenness centrality uses an electrical current
+    model for information spreading in contrast to betweenness
+    centrality which uses shortest paths.
+
+    Current-flow betweenness centrality is also known as
+    random-walk betweenness centrality [2]_.
+
+    Parameters
+    ----------
+    G : graph
+      A networkx graph 
+
+    normalized : bool, optional
+      If True the betweenness values are normalized by b=b/(n-1)(n-2) where
+      n is the number of nodes in G.
+
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of nodes with betweenness centrality as the value.
+        
+    See Also
+    --------
+    betweenness_centrality
+    edge_betweenness_centrality
+    edge_current_flow_betweenness_centrality
+
+    Notes
+    -----
+    The algorithm is from Brandes [1]_.
+
+    If the edges have a 'weight' attribute they will be used as 
+    weights in this algorithm.  Unspecified weights are set to 1.
+
+    References
+    ----------
+    .. [1] Centrality Measures Based on Current Flow. 
+       Ulrik Brandes and Daniel Fleischer,
+       Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05). 
+       LNCS 3404, pp. 533-544. Springer-Verlag, 2005. 
+       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+
+    .. [2] A measure of betweenness centrality based on random walks,
+       M. E. J. Newman, Social Networks 27, 39-54 (2005).
+    """
+    from itertools import izip
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+            """current_flow_betweenness_centrality() requires NumPy 
+http://scipy.org/""")
+
+    if G.is_directed():
+        raise networkx.NetworkXError(\
+            "current_flow_betweenness_centrality() not defined for digraphs.")
+    if not networkx.is_connected(G):
+        raise networkx.NetworkXError("Graph not connected.")
+    betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
+    F=_compute_F(G) # Current-flow matrix
+    m,n=F.shape # m edges and n nodes
+    reverse_mapping=dict(zip(range(n),G))  # map integers to nodes
+    for (ei,(s,t)) in izip(range(m),G.edges_iter()): 
+        # ei is index of edge
+        Fe=F[ei,:] # ei row of F
+        # rank of F[ei,v] in row Fe sorted in non-increasing order
+        pos=dict(zip(Fe.argsort()[::-1],range(1,n+1)))
+        for i in range(n):
+            betweenness[s]+=(i+1-pos[i])*Fe[i]
+            betweenness[t]+=(n-i-pos[i])*Fe[i]
+    if normalized:
+        nb=(n-1.0)*(n-2.0) # normalization factor
+    else:
+        nb=2.0
+    for i in range(n):
+        vi=reverse_mapping[i]
+        betweenness[vi]=(betweenness[vi]-i)*2.0/nb
+    return betweenness            
+
+
+def edge_current_flow_betweenness_centrality(G,normalized=True):
+    """Compute current-flow betweenness centrality for edges.
+
+    Current-flow betweenness centrality uses an electrical current
+    model for information spreading in contrast to betweenness
+    centrality which uses shortest paths.
+
+    Current-flow betweenness centrality is also known as
+    random-walk betweenness centrality [2]_.
+
+    Parameters
+    ----------
+    G : graph
+      A networkx graph 
+
+    normalized : bool, optional
+      If True the betweenness values are normalized by b=b/(n-1)(n-2) where
+      n is the number of nodes in G.
+
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of edge tuples with betweenness centrality as the value.
+        
+    See Also
+    --------
+    betweenness_centrality
+    edge_betweenness_centrality
+    current_flow_betweenness_centrality
+
+    Notes
+    -----
+    The algorithm is from Brandes [1]_.
+
+    If the edges have a 'weight' attribute they will be used as 
+    weights in this algorithm.  Unspecified weights are set to 1.
+
+    References
+    ----------
+    .. [1] Centrality Measures Based on Current Flow. 
+       Ulrik Brandes and Daniel Fleischer,
+       Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05). 
+       LNCS 3404, pp. 533-544. Springer-Verlag, 2005. 
+       http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf
+
+    .. [2] A measure of betweenness centrality based on random walks, 
+       M. E. J. Newman, Social Networks 27, 39-54 (2005).
+    """
+    from itertools import izip
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+            """current_flow_betweenness_centrality() requires NumPy 
+http://scipy.org/""")
+
+    if G.is_directed():
+        raise networkx.NetworkXError(\
+            "current_flow_closeness_centrality() not defined for digraphs.")
+    if not networkx.is_connected(G):
+        raise networkx.NetworkXError("Graph not connected.")
+    betweenness=(dict.fromkeys(G.edges(),0.0)) 
+    F=_compute_F(G) # Current-flow matrix
+    m,n=F.shape # m edges and n nodes
+    if normalized:
+        nb=(n-1.0)*(n-2.0) # normalization factor
+    else:
+        nb=2.0
+    reverse_mapping=dict(zip(range(n),G))  # map integers to nodes
+    for (ei,e) in izip(range(m),G.edges_iter()): 
+        # ei is index of edge
+        Fe=F[ei,:] # ei row of F
+        # rank of F[ei,v] in row Fe sorted in non-increasing order
+        pos=dict(zip(Fe.argsort()[::-1],range(1,n+1)))
+        for i in range(n):
+            betweenness[e]+=(i+1-pos[i])*Fe[i]
+            betweenness[e]+=(n-i-pos[i])*Fe[i]
+        betweenness[e]/=nb
+    return betweenness            
+
+
+
+def _compute_C(G):
+    """Inverse of Laplacian."""
+    L=networkx.laplacian(G) # use ordering of G.nodes() 
+    # remove first row and column
+    LR=L[1:,1:]
+    LRinv=np.linalg.inv(LR)
+    C=np.zeros(L.shape)
+    C[1:,1:]=LRinv
+    return C
+
+def _compute_F(G):
+    """Current flow matrix."""
+    C=np.asmatrix(_compute_C(G))
+    n=G.number_of_nodes()
+    m=G.number_of_edges()
+    B=np.zeros((n,m))
+    # use G.nodes() and G.edges() ordering of edges for B  
+    mapping=dict(zip(G,range(n)))  # map nodes to integers
+    for (ei,(v,w,d)) in zip(range(m),G.edges_iter(data=True)): 
+        c=d.get('weight',1.0)
+        vi=mapping[v]
+        wi=mapping[w]
+        B[vi,ei]=c
+        B[wi,ei]=-c
+    return np.asarray(B.T*C)
+
+
+
