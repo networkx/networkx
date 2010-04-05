@@ -61,6 +61,7 @@ def blockmodel(G,partitions,multigraph=False):
     u=set()
     for p1,p2 in zip(part[:-1],part[1:]):
         u.update(p1)
+        #if not u.isdisjoint(p2):  # Python 2.6 required
         if len (u.intersection(p2))>0:
             raise networkx.NetworkXException("Overlapping node partitions.")
 
