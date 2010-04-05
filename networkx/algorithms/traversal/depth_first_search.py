@@ -1,8 +1,5 @@
 """
 Search algorithms.
-
-See also networkx.path.
-
 """
 __authors__ = """Eben Kenah\nAric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2004-2008 by 
