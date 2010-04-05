@@ -3,7 +3,7 @@
 Operators
 *********
 
-.. automodule:: networkx.algorithms.core
+.. automodule:: networkx.algorithms.operators
 .. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/

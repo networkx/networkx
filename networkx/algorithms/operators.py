@@ -1,5 +1,5 @@
 """
-Operations on graphs; including  union, intersection, difference,
+Operations on graphs including union, intersection, difference,
 complement, subgraph. 
 """
 #    Copyright (C) 2004-2010 by 
