@@ -47,18 +47,18 @@ def find_cliques(G):
     
     See Also
     --------
-    find_cliques_recursive : A recursive version of the same algorithm
+    find_cliques_recursive : 
+    A recursive version of the same algorithm
 
-    Reference::
- 
+    References
+    ----------
     Based on the algorithm published by Bron & Kerbosch (1973)
         http://doi.acm.org/10.1145/362342.362367
     as adapated by Tomita, Tanaka and Takahashi (2006)
         http://dx.doi.org/10.1016/j.tcs.2006.06.015
     and discussed in Cazals and Karande (2008)
         http://dx.doi.org/10.1016/j.tcs.2008.05.010
- 
-    """
+     """
     # Cache nbrs and find first pivot (highest degree)
     maxconn=-1
     nnbrs={}

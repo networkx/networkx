@@ -23,28 +23,45 @@ from itertools import repeat
 _all__=['max_weight_matching']
 
 def max_weight_matching(G, maxcardinality=False):
-    """Compute a maximum-weighted matching in the undirected, weighted graph G.
-    
-    If maxcardinality is True, compute the maximum-cardinality matching
-    with maximum weight among all maximum-cardinality matchings.
-
-    The matching is returned as a dictionary, mate, such that
-    mate[v] == w if node v is matched to node w.  Unmatched nodes do not
-    occur as a key in mate.
+    """Compute a maximum-weighted matching of G.
 
     A matching is a subset of edges in which no node occurs more than once.
     The cardinality of a matching is the number of matched edges.
     The weight of a matching is the sum of the weights of its edges.
 
-    If G is an XGraph, the edge data are used as weight values;
-    if G is a Graph, all edge weights are taken to be 1.
-    Directed graphs and multi-edge graphs are not supported.
+    Parameters
+    ----------
+    G : NetworkX graph
+      Undirected graph
+      
+    maxcardinality: bool, optional
+       If maxcardinality is True, compute the maximum-cardinality matching
+       with maximum weight among all maximum-cardinality matchings.
+
+    Returns
+    -------
+    mate : dictionary
+       The matching is returned as a dictionary, mate, such that
+       mate[v] == w if node v is matched to node w.  Unmatched nodes do not
+       occur as a key in mate.
+       
+
+    Notes
+    ------
+    If G has edges with 'weight' attribute the edge data are used as
+    weight values else the weights are assumed to be 1.
 
     This function takes time O(number_of_nodes ** 3).
 
     If all edge weights are integers, the algorithm uses only integer
-    computations.  If floating point weights are used, the algorithm could
-    return a slightly suboptimal matching due to numeric precision errors.
+    computations.  If floating point weights are used, the algorithm
+    could return a slightly suboptimal matching due to numeric
+    precision errors.
+
+    References
+    ----------
+    .. [1] "Efficient Algorithms for Finding Maximum
+       Matching in Graphs" by Zvi Galil, ACM Computing Surveys, 1986.
     """
 
     #
