@@ -35,7 +35,6 @@ def edges(G,nbunch=None):
     Return all edges if nbunch is unspecified or nbunch=None.
 
     For digraphs, edges=out_edges
-
     """
     return G.edges(nbunch)
 
@@ -45,7 +44,6 @@ def edges_iter(G,nbunch=None):
     Return all edges if nbunch is unspecified or nbunch=None.
 
     For digraphs, edges=out_edges
-    
     """
     return G.edges_iter(nbunch)
 
@@ -60,11 +58,11 @@ def neighbors(G,n):
     return G.neighbors(n)
 
 def number_of_nodes(G):
-    """Return the order of a graph = number of nodes."""
+    """Return the number of nodes in the graph."""
     return G.number_of_nodes()
 
 def number_of_edges(G):
-    """Return the size of a graph = number of edges. """
+    """Return the number of edges in the graph. """
     return G.number_of_edges()
     
 def density(G):
@@ -106,7 +104,19 @@ def density(G):
 def degree_histogram(G):
     """Return a list of the frequency of each degree value.
     
-    The degree values are the index in the list.
+    Parameters
+    ----------
+    G : Networkx graph
+       A graph
+
+    Returns
+    -------
+    hist : list
+       A list of frequencies of degrees.
+       The degree values are the index in the list.
+    
+    Notes
+    -----
     Note: the bins are width one, hence len(list) can be large
     (Order(number_of_edges))
     """
@@ -122,7 +132,7 @@ def is_directed(G):
     return G.is_directed()
 
 def info(G, n=None):
-    """Print short info summary for graph G or node n."""
+    """Print short summary of information for graph G or node n."""
     import textwrap
     width_left = 22
 
