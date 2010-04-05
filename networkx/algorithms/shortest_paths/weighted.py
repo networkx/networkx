@@ -22,8 +22,6 @@ __all__ = ['dijkstra_path',
 
 
 import networkx
-#use deque only if networkx requires python 2.4
-#from collections import deque 
 import heapq
 
 

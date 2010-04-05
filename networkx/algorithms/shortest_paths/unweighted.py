@@ -20,9 +20,6 @@ __all__ = ['bidirectional_shortest_path',
 
 
 import networkx
-#use deque only if networkx requires python 2.4
-#from collections import deque 
-import heapq
 
 
 def single_source_shortest_path_length(G,source,cutoff=None):

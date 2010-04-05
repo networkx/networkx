@@ -16,9 +16,6 @@ __all__ = ['shortest_path',
 
 
 import networkx
-#use deque only if networkx requires python 2.4
-#from collections import deque 
-import heapq
 
 
 def shortest_path(G,source=None,target=None,weighted=False):
