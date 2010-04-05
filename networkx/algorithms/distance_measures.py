@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Shortest paths, diameter, radius, eccentricity, and related methods.
+Graph diameter, radius, eccentricity and other properties.
 """
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)'])
@@ -16,16 +16,30 @@ __all__ = ['eccentricity', 'diameter', 'radius', 'periphery', 'center']
 import networkx
 
 def eccentricity(G, v=None, sp=None, with_labels=False):
-    """Return the eccentricity of node v in G (or all nodes if v is None).
+    """Return the eccentricity of nodes in G.
 
-    The eccentricity is the maximum of shortest paths to all other nodes. 
+    The eccentricity of a node v is the maximum distance from v to
+    all other nodes in G.
 
-    The optional keyword sp must be a dict of dicts of
-    shortest_path_length keyed by source and target.
-    That is, sp[v][t] is the length from v to t.
-       
-    If with_labels=True 
-    return dict of eccentricities keyed by vertex.
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    v : node, optional
+       Return value of specified node       
+
+    sp : dict of dicts, optional       
+       All pairs shortest path lenghts as a dictionary of dictionaries
+   
+    with_labels : bool, optionals
+       Return a dictionary keyed by node with eccentricity values
+
+    Returns
+    -------
+    ecc : list or dictionary
+       A list (with_labels=False) or dictionary (with_labels=True)
+       of eccentricity values.
     """
     nodes=[]
     if v is None:                # none, use entire graph 
@@ -45,8 +59,8 @@ def eccentricity(G, v=None, sp=None, with_labels=False):
         try:
             assert len(length)==order
         except:
-            raise networkx.NetworkXError,\
-                  "Graph not connected: infinite path length"
+            raise networkx.NetworkXError(\
+                  "Graph not connected: infinite path length")
             
         e[v]=max(length.values())
 
@@ -59,7 +73,24 @@ def eccentricity(G, v=None, sp=None, with_labels=False):
 def diameter(G, e=None):
     """Return the diameter of the graph G.
 
-    The diameter is the maximum of all pairs shortest path.
+    The diameter is the maximum eccentricity.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    e : eccentricity dictionary, optional
+      A precomputed dictionary of eccentricities.
+
+    Returns
+    -------
+    d : integer
+       Diameter of graph
+
+    See Also
+    --------
+    eccentricity
     """
     if e is None:
         e=eccentricity(G,with_labels=True)
@@ -69,6 +100,19 @@ def periphery(G, e=None):
     """Return the periphery of the graph G. 
 
     The periphery is the set of nodes with eccentricity equal to the diameter. 
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    e : eccentricity dictionary, optional
+      A precomputed dictionary of eccentricities.
+
+    Returns
+    -------
+    p : list
+       List of nodes in periphery
     """
     if e is None:
         e=eccentricity(G,with_labels=True)
@@ -78,18 +122,44 @@ def periphery(G, e=None):
 
 
 def radius(G, e=None):
-    """Return the radius of the  graph G.
+    """Return the radius of the graph G.
 
-    The radius is the minimum of all pairs shortest path.
-       """
+    The radius is the minimum eccentricity.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    e : eccentricity dictionary, optional
+      A precomputed dictionary of eccentricities.
+
+    Returns
+    -------
+    r : integer
+       Radius of graph
+    """
     if e is None:
         e=eccentricity(G,with_labels=True)
     return min(e.values())
 
 def center(G, e=None):
-    """Return the center of graph G.
+    """Return the periphery of the graph G. 
 
     The center is the set of nodes with eccentricity equal to radius. 
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    e : eccentricity dictionary, optional
+      A precomputed dictionary of eccentricities.
+
+    Returns
+    -------
+    c : list
+       List of nodes in center
     """
     if e is None:
         e=eccentricity(G,with_labels=True)
