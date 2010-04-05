@@ -24,7 +24,12 @@ def is_directed_acyclic_graph(G):
     Parameters
     ----------
     G : NetworkX graph
+      A graph
 
+    Returns
+    -------
+    is_dag : bool
+       True if G is a DAG, false otherwise
     """
     if topological_sort(G) is None:
         return False
@@ -41,9 +46,10 @@ def topological_sort(G,nbunch=None):
     Parameters
     ----------
     G : NetworkX digraph
+       A directed graph
 
     nbunch : container of nodes (optional)
-       Explore graph in specified order
+       Explore graph in specified order given in nbunch
 
     Notes
     -----
@@ -55,20 +61,14 @@ def topological_sort(G,nbunch=None):
 
     See also
     --------
-    is_directed_acyclic_graph()
+    is_directed_acyclic_graph
 
     References
     ----------
     .. [1] Skiena, S. S. The Algorithm Design Manual  (Springer-Verlag, 1998). 
         http://www.amazon.com/exec/obidos/ASIN/0387948600/ref=ase_thealgorithmrepo/
-
-
-
-
-
     """
     # nonrecursive version
-
     seen={}
     order_explored=[] # provide order and 
     explored={}       # fast search without more general priorityDictionary
@@ -111,7 +111,7 @@ def topological_sort_recursive(G,nbunch=None):
     G : NetworkX digraph
 
     nbunch : container of nodes (optional)
-       Explore graph in specified order
+       Explore graph in specified order given in nbunch
 
     Notes
     -----
@@ -122,8 +122,8 @@ def topological_sort_recursive(G,nbunch=None):
 
     See also
     --------
-    topological_sort()
-    is_directed_acyclic_graph()
+    topological_sort
+    is_directed_acyclic_graph
 
     """
     # function for recursive dfs
