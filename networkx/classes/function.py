@@ -69,16 +69,39 @@ def number_of_edges(G):
     
 def density(G):
     """Return the density of a graph.
+
+    The density for undirected graphs is
     
-    density = size/(order*(order-1)/2)
-    density()=0.0 for an edge-less graph and 1.0 for a complete graph.
+    .. math::
+
+       d = \\frac{2m}{n(n-1)},
+       
+    and for directed graphs is        
+
+    .. math::
+
+       d = \\frac{m}{n(n-1)},
+
+    where :math:`n` is the number of nodes and :math:`m` 
+    is the number of edges in :math:`G`.
+
+    Notes
+    -----
+    The density is 0 for an graph without edges and 1.0 for a complete graph.
+
+    The density of multigraphs can be higher than 1.
+
     """
     n=number_of_nodes(G)
-    e=number_of_edges(G)
-    if e==0: # includes cases n==0 and n==1
-        return 0.0
+    m=number_of_edges(G)
+    if m==0: # includes cases n==0 and n==1
+        d=0.0
     else:
-        return e*2.0/float(n*(n-1))
+        if G.is_directed():
+            d=m/float(n*(n-1))
+        else:
+            d= m*2.0/float(n*(n-1))
+    return d
 
 def degree_histogram(G):
     """Return a list of the frequency of each degree value.
@@ -158,7 +181,7 @@ def freeze(G):
 
     See Also
     --------
-    is_frozen()
+    is_frozen
 
     """        
     def frozen(*args):    
@@ -176,7 +199,7 @@ def freeze(G):
     return G
 
 def is_frozen(G):
-    """Return True if graph is frozen."
+    """Return True if graph is frozen.
 
     Parameters
     -----------
@@ -185,8 +208,7 @@ def is_frozen(G):
 
     See Also
     --------
-    freeze()
-      
+    freeze
     """
     try:
         return G.frozen
