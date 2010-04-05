@@ -1787,7 +1787,7 @@ class Graph(object):
                     message=e.args[0]
                     print message
                     # capture error for non-sequence/iterator nbunch.
-                    if 'iterable' in message:  
+                    if 'iter' in message:  
                         raise NetworkXError(
                             "nbunch is not a node or a sequence of nodes.")
                     # capture error for unhashable node.
