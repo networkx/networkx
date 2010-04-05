@@ -21,14 +21,27 @@ __all__ = ['number_connected_components', 'connected_components',
            'contract_strongly_connected_components',
            ]
 
-
 import networkx
 
-
 def connected_components(G):
-    """
-    Return a list of lists of nodes in each connected component of G.
+    """Return nodes in connected components of graph.
 
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An undirected graph.
+
+    Returns
+    -------
+    comp : list of lists
+       A list of nodes for each component of G.
+
+    See Also       
+    --------
+    strongly_connected_components
+
+    Notes
+    -----
     The list is ordered from largest connected component to smallest.
     For undirected graphs only. 
     """
@@ -48,43 +61,98 @@ def connected_components(G):
 
 
 def number_connected_components(G):
-    """Return the number of connected components in G.
+    """Return number of connected components in graph.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An undirected graph.
+
+    Returns
+    -------
+    n : integer
+       Number of connected components
+
+    See Also       
+    --------
+    connected_components
+
+    Notes
+    -----
     For undirected graphs only. 
     """
     return len(connected_components(G))
 
 
 def is_connected(G):
-    """Return True if G is connected.
+    """Test graph connectivity
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An undirected graph.
+
+    Returns
+    -------
+    connected : bool
+      True if the graph is connected, false otherwise.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> print nx.is_connected(G)
+    True
+
+    See Also
+    --------
+    connected_components
+
+    Notes
+    -----
     For undirected graphs only. 
     """
     if G.is_directed():
-        raise networkx.NetworkXError,\
-              """Not allowed for directed graph G.
-              Use UG=G.to_undirected() to create an undirected graph."""
+        raise networkx.NetworkXError(\
+            """Not allowed for directed graph G.
+Use UG=G.to_undirected() to create an undirected graph.""")
 
     if len(G)==0:
         raise networkx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
-    return len(networkx.single_source_shortest_path_length(G, G.nodes_iter().next()))==len(G)
+    return len(networkx.single_source_shortest_path_length(G,
+                                              G.nodes_iter().next()))==len(G)
 
 
 def connected_component_subgraphs(G):
-    """
-    Return a list of graphs of each connected component of G.
+    """Return connected components as subgraphs.
 
-    The list is ordered from largest connected component to smallest.
-    For undirected graphs only. 
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An undirected graph.
+
+    Returns
+    -------
+    glist : list
+      A list of graphs, one for each connected component of G.
 
     Examples
     --------
-    Get largest connected component
+    Get largest connected component as subgraph
 
     >>> G=nx.path_graph(4)
     >>> G.add_edge(5,6)
     >>> H=nx.connected_component_subgraphs(G)[0]
 
+    See Also
+    --------
+    connected_components
+
+    Notes
+    -----
+    The list is ordered from largest connected component to smallest.
+    For undirected graphs only. 
     """
     cc=connected_components(G)
     graph_list=[]
@@ -94,11 +162,28 @@ def connected_component_subgraphs(G):
 
 
 def node_connected_component(G,n):
-    """
-    Return a list of nodes of the connected component containing node n.
+    """Return nodes in connected components of graph containing node n.
 
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An undirected graph.
+
+    n : node label       
+       A node in G
+
+    Returns
+    -------
+    comp : lists
+       A list of nodes in component of G containing node n.
+
+    See Also       
+    --------
+    connected_components
+
+    Notes
+    -----
     For undirected graphs only. 
-
     """
     if G.is_directed():
         raise networkx.NetworkXError,\
@@ -109,21 +194,37 @@ def node_connected_component(G,n):
 
 
 def strongly_connected_components(G):
-    """Returns a list of strongly connected components in G.
+    """Return nodes in strongly connected components of graph.
 
-     Uses Tarjan's algorithm with Nuutila's modifications.
-     Nonrecursive version of algorithm.
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An directed graph.
 
-     References:
+    Returns
+    -------
+    comp : list of lists
+       A list of nodes for each component of G.
+       The list is ordered from largest connected component to smallest.
 
-      R. Tarjan (1972). Depth-first search and linear graph algorithms.
-      SIAM Journal of Computing 1(2):146-160.
+    See Also       
+    --------
+    connected_components
 
-      E. Nuutila and E. Soisalon-Soinen (1994).
-      On finding the strongly connected components in a directed graph.
-      Information Processing Letters 49(1): 9-14.
+    Notes
+    -----
+    Uses Tarjan's algorithm with Nuutila's modifications.
+    Nonrecursive version of algorithm.
 
-     """
+    References
+    ----------
+    .. [1] Depth-first search and linear graph algorithms, R. Tarjan
+       SIAM Journal of Computing 1(2):146-160, (1972).
+
+    .. [2] On finding the strongly connected components in a directed graph.
+       E. Nuutila and E. Soisalon-Soinen 
+       Information Processing Letters 49(1): 9-14, (1994)..
+    """
     preorder={}
     lowlink={}    
     scc_found={}
@@ -169,10 +270,27 @@ def strongly_connected_components(G):
 
 
 def kosaraju_strongly_connected_components(G,source=None):
-    """Returns list of strongly connected components in G.
+    """Return nodes in strongly connected components of graph.
 
-     Uses Kosaraju's algorithm.
-     """
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An directed graph.
+
+    Returns
+    -------
+    comp : list of lists
+       A list of nodes for each component of G.
+       The list is ordered from largest connected component to smallest.
+
+    See Also       
+    --------
+    connected_components
+
+    Notes
+    -----
+    Uses Kosaraju's algorithm.
+    """
     components=[]
     post=networkx.dfs_postorder(G,source=source,reverse_graph=True)
     seen={}
@@ -189,13 +307,38 @@ def kosaraju_strongly_connected_components(G,source=None):
 
 
 def strongly_connected_components_recursive(G):
-    """Returns list of strongly connected components in G.
+    """Return nodes in strongly connected components of graph.
 
-     Uses Tarjan's algorithm with Nuutila's modifications.
-     this recursive version of the algorithm will hit the
-     Python stack limit for large graphs.
-     
-     """
+    Recursive version of algorithm.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An directed graph.
+
+    Returns
+    -------
+    comp : list of lists
+       A list of nodes for each component of G.
+       The list is ordered from largest connected component to smallest.
+
+    See Also       
+    --------
+    connected_components
+
+    Notes
+    -----
+    Uses Tarjan's algorithm with Nuutila's modifications.
+
+    References
+    ----------
+    .. [1] Depth-first search and linear graph algorithms, R. Tarjan
+       SIAM Journal of Computing 1(2):146-160, (1972).
+
+    .. [2] On finding the strongly connected components in a directed graph.
+       E. Nuutila and E. Soisalon-Soinen 
+       Information Processing Letters 49(1): 9-14, (1994)..
+    """
     def visit(v,cnt):
         root[v]=cnt
         visited[v]=cnt
@@ -229,15 +372,26 @@ def strongly_connected_components_recursive(G):
 
 
 def strongly_connected_component_subgraphs(G):
-    """
-    Return a list of graphs of each strongly connected component of G.
+    """Return strongly connected components as subgraphs.
 
+    Parameters
+    ----------
+    G : NetworkX Graph
+       A graph.
+
+    Returns
+    -------
+    glist : list
+      A list of graphs, one for each strongly connected component of G.
+
+    See Also
+    --------
+    connected_component_subgraphs
+
+    Notes
+    -----
     The list is ordered from largest connected component to smallest.
-
-    For example, to get the largest strongly connected component:
-    >>> G=nx.path_graph(4)
-    >>> H=nx.strongly_connected_component_subgraphs(G)[0]
-
+    For undirected graphs only. 
     """
     cc=strongly_connected_components(G)
     graph_list=[]
@@ -247,14 +401,48 @@ def strongly_connected_component_subgraphs(G):
 
 
 def number_strongly_connected_components(G):
-    """Return the number of strongly connected components in G.
+    """Return number of strongly connected components in graph.
 
+    Parameters
+    ----------
+    G : NetworkX graph
+       A directed graph.
+
+    Returns
+    -------
+    n : integer
+       Number of strongly connected components
+
+    See Also       
+    --------
+    connected_components
+
+    Notes
+    -----
     For directed graphs only. 
     """
     return len(strongly_connected_components(G))
 
 def is_strongly_connected(G):
-    """Return True if G is strongly connected.
+    """Test directed graph for strong connectivity
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+       A directed graph.
+
+    Returns
+    -------
+    connected : bool
+      True if the graph is strongly connected, false otherwise.
+
+    See Also
+    --------
+    strongly_connected_components
+
+    Notes
+    -----
+    For directed graphs only. 
     """
     if not G.is_directed():
         raise networkx.NetworkXError,\
@@ -271,6 +459,19 @@ def contract_strongly_connected_components(G):
     """Returns a new digraph of G with all strongly connected components
     contracted to a single node.
 
+    Parameters
+    ----------
+    G : NetworkX Graph
+       A directed graph.
+
+    Returns
+    -------
+    D : NetworkX DiGraph
+       A directed graph with all strongly connected components
+       contracted to a single node.
+
+    Notes
+    -----
     After contracting all strongly connected components to a single node,
     the resulting graph is a directed acyclic graph.
     """
