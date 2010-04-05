@@ -17,6 +17,8 @@ Isomorphism
    fast_could_be_isomorphic
    faster_could_be_isomorphic
 
+Advanced Interface to VF2 Algorithm
+-----------------------------------
 .. toctree::
    :maxdepth: 2
 
