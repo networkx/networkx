@@ -224,13 +224,3 @@ def _compute_F(G):
     return np.asarray(B.T*C)
 
 
-
-if __name__=='__main__':
-    import networkx as nx
-    G=nx.complete_graph(4)
-    G=nx.gnp_random_graph(8,0.5)
-#    print nx.edge_current_flow_betweenness_centrality(G,normalized=True)
-#    print edge_current_flow_betweenness_centrality_subset(G,G.nodes(),G.nodes(),normalized=True)
-#    print edge_current_flow_betweenness_centrality_subset(G,G.nodes(),[0],normalized=True)
-    print nx.current_flow_betweenness_centrality(G,normalized=True)
-    print current_flow_betweenness_centrality_subset(G,G.nodes(),G.nodes(),normalized=True)
