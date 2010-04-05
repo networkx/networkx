@@ -1,4 +1,6 @@
 """
+Algorithms to characterize the number of triangles in a graph.
+
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
 #    Copyright (C) 2004-2008 by 
