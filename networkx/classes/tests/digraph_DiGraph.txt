@@ -585,7 +585,7 @@ Functional interface
 7
 >>> number_of_edges(G)
 5
->>> density(G)==5/(7*(7-1)*0.5)
+>>> density(G)==5.0/(7*(7-1))
 True
 >>> degree_histogram(G)
 [3, 0, 2, 2]
