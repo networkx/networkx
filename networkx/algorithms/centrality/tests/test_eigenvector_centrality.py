@@ -41,6 +41,19 @@ class TestEigenvectorCentralityDirected:
         self.G.evc=[0.25368793,  0.19576478,  0.32817092,  0.40430835,  
                     0.48199885, 0.15724483,  0.51346196,  0.32475403]
 
+        H=networkx.DiGraph()
+
+        edges=[(1,2),(1,3),(2,4),(3,2),(3,5),(4,2),(4,5),(4,6),\
+               (5,6),(5,7),(5,8),(6,8),(7,1),(7,5),\
+               (7,8),(8,6),(8,7)]
+
+        G.add_edges_from(edges)
+        self.H=G
+        self.H.evc=[0.25368793,  0.19576478,  0.32817092,  0.40430835,  
+                    0.48199885, 0.15724483,  0.51346196,  0.32475403]
+
+
+
     def test_eigenvector_centrality_weighted(self):
         G=self.G
         p=networkx.eigenvector_centrality_numpy(G)
