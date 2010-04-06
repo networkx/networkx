@@ -47,7 +47,7 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
     >>> G=nx.path_graph(4)
     >>> centrality=nx.eigenvector_centrality(G)
     >>> print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
-    ['0 0.19', '1 0.31', '2 0.31', '3 0.19']
+    ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
 
     Notes
     ------
@@ -119,7 +119,7 @@ def eigenvector_centrality_numpy(G):
     >>> G=nx.path_graph(4)
     >>> centrality=nx.eigenvector_centrality_numpy(G)
     >>> print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
-    ['0 0.19', '1 0.31', '2 0.31', '3 0.19']
+    ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
 
     Notes
     ------
@@ -160,4 +160,8 @@ def eigenvector_centrality_numpy(G):
     return dict((n,v/norm) for n,v in centrality.items())                  
     
 
-
+if __name__=='__main__':
+    import networkx
+    G=networkx.path_graph(4)
+    print eigenvector_centrality(G)
+    print eigenvector_centrality_numpy(G)
