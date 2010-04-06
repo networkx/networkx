@@ -64,11 +64,9 @@ def betweenness_centrality(G,normalized=True,
     for s in G:
         # single source shortest paths
         if weighted_edges:  # use Dijkstra's algorithm
-            betweenness,S,P,sigma=\
-                _single_source_dijkstra_path_basic(G,s,betweenness)
+            S,P,sigma=_single_source_dijkstra_path_basic(G,s)
         else:  # use BFS
-            betweenness,S,P,sigma=\
-                _single_source_shortest_path_basic(G,s,betweenness)
+            S,P,sigma=_single_source_shortest_path_basic(G,s)
         # accumulation
         if endpoints: 
             betweenness=_accumulate_endpoints(betweenness,S,P,sigma,s)        
@@ -128,11 +126,9 @@ def edge_betweenness_centrality(G,normalized=True,
     for s in G:
         # single source shortest paths
         if weighted_edges:  # use Dijkstra's algorithm
-            betweenness,S,P,sigma=\
-                _single_source_dijkstra_path_basic(G,s,betweenness)
+            S,P,sigma=_single_source_dijkstra_path_basic(G,s)
         else:  # use BFS
-            betweenness,S,P,sigma=\
-                _single_source_shortest_path_basic(G,s,betweenness)
+            S,P,sigma=_single_source_shortest_path_basic(G,s)
         # accumulation
         betweenness=_accumulate_edges(betweenness,S,P,sigma,s)
     # rescaling
@@ -157,7 +153,7 @@ use edge_betweenness_centrality()""",
 
 # helpers for betweenness centrality
 
-def _single_source_shortest_path_basic(G,s,betweenness):
+def _single_source_shortest_path_basic(G,s):
     S=[]
     P={}
     for v in G:
@@ -177,11 +173,11 @@ def _single_source_shortest_path_basic(G,s,betweenness):
             if D[w]==D[v]+1:   # this is a shortest path, count paths
                 sigma[w]=sigma[w]+sigma[v]
                 P[w].append(v) # predecessors 
-    return betweenness,S,P,sigma
+    return S,P,sigma
 
 
 
-def _single_source_dijkstra_path_basic(G,s,betweenness):
+def _single_source_dijkstra_path_basic(G,s):
     # modified from Eppstein
     S=[]
     P={}
@@ -212,7 +208,7 @@ def _single_source_dijkstra_path_basic(G,s,betweenness):
             elif vw_dist==seen[w]:  # handle equal paths
                 sigma[w]=sigma[w]+sigma[v]
                 P[w].append(v)
-    return betweenness,S,P,sigma
+    return S,P,sigma
 
 def _accumulate_basic(betweenness,S,P,sigma,s):
     delta=dict.fromkeys(S,0) 

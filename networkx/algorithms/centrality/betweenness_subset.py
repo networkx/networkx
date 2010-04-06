@@ -81,9 +81,9 @@ def betweenness_centrality_subset(G,sources,targets,
     for s in sources:
         # single source shortest paths
         if weighted_edges:  # use Dijkstra's algorithm
-            b,S,P,sigma=dijkstra(G,s,b)
+            S,P,sigma=dijkstra(G,s)
         else:  # use BFS
-            b,S,P,sigma=shortest_path(G,s,b)
+            S,P,sigma=shortest_path(G,s)
         b=_accumulate_subset(b,S,P,sigma,s,targets)
     b=_rescale(b,normalized=normalized,directed=G.is_directed())
     return b
@@ -148,9 +148,9 @@ def edge_betweenness_centrality_subset(G,sources,targets,
     for s in sources:
         # single source shortest paths
         if weighted_edges:  # use Dijkstra's algorithm
-            b,S,P,sigma=dijkstra(G,s,b)
+            S,P,sigma=dijkstra(G,s)
         else:  # use BFS
-            b,S,P,sigma=shortest_path(G,s,b)
+            S,P,sigma=shortest_path(G,s)
         b=_accumulate_edges_subset(b,S,P,sigma,s,targets)
     for n in G: # remove nodes to only return edges 
         del b[n]
