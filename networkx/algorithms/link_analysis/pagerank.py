@@ -141,19 +141,21 @@ def google_matrix(G,alpha=0.85,nodelist=None):
     A : NumPy matrix
        Google matrix of the graph
     """
-
-    import numpy
-    import networkx
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(\
+            "eigenvector_centrality_numpy() requires NumPy: http://scipy.org/")
     M=networkx.to_numpy_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     # add constant to dangling nodes' row
-    dangling=numpy.where(M.sum(axis=1)==0)
+    dangling=np.where(M.sum(axis=1)==0)
     for d in dangling[0]:
         M[d]=1.0/n
     # normalize        
     M=M/M.sum(axis=1)
     # add "teleportation"
-    P=alpha*M+(1-alpha)*numpy.ones((n,n))/n
+    P=alpha*M+(1-alpha)*np.ones((n,n))/n
     return P
     
 
