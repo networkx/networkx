@@ -1,5 +1,8 @@
+"""
+PageRank analysis of graph structure.
+"""
 #!/usr/bin/env python
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -15,23 +18,23 @@ __all__ = ['pagerank','pagerank_numpy','pagerank_scipy','google_matrix']
 def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
     """Return the PageRank of the nodes in the graph.
 
-    PageRank computes the largest eigenvector of the stochastic
-    adjacency matrix of G.  
+    PageRank computes a ranking of the nodes in the graph G based on
+    the structure of the incoming links. It was originally designed as
+    an algorithm to rank web pages.
     
-
     Parameters
     -----------
     G : graph
-      A networkx graph 
+      A NetworkX graph 
 
     alpha : float, optional
-      Parameter for PageRank, default=0.85
+      Damping parameter for PageRank, default=0.85
        
-    max_iter : interger, optional
-      Maximum number of iterations in power method.
+    max_iter : integer, optional
+      Maximum number of iterations in power method eigenvalue solver.
 
     tol : float, optional
-      Error tolerance used to check convergence in power method iteration.
+      Error tolerance used to check convergence in power method solver.
 
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node. 
@@ -56,19 +59,28 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
 
     The PageRank algorithm was designed for directed graphs but this
     algorithm does not check if the input graph is directed and will
-    execute on undirected graphs.
-
-    For an overview see:
-    A. Langville and C. Meyer, "A survey of eigenvector methods of web
-    information retrieval."  http://citeseer.ist.psu.edu/713792.html
-
+    execute on undirected graphs by converting each oriented edge in the
+    directed graph to two edges.
+    
+    References
+    ----------
+    .. [1] A. Langville and C. Meyer, 
+       "A survey of eigenvector methods of web information retrieval."  
+       http://citeseer.ist.psu.edu/713792.html
+    .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry, 
+       The PageRank citation ranking: Bringing order to the Web. 1999
+       http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    import networkx
     if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
         raise Exception("pagerank() not defined for graphs with multiedges.")
 
+    if not G.is_directed():
+        D=G.to_directed()
+    else:
+        D=G
+
     # create a copy in (right) stochastic form        
-    W=networkx.stochastic_graph(G)        
+    W=networkx.stochastic_graph(D)
 
     # choose fixed starting vector if not given
     if nstart is None:
@@ -82,10 +94,9 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
     nnodes=W.number_of_nodes()
     # "dangling" nodes, no links out from them
     out_degree=W.out_degree(with_labels=True)
-#    dangle=[n for n in W if sum(W[n].values())==0.0]  
     dangle=[n for n in W if out_degree[n]==0.0]  
-    # pagerank power iteration: make up to max_iter iterations        
-    for i in range(max_iter):
+    i=0
+    while True: # power iteration: make up to max_iter iterations
         xlast=x
         x=dict.fromkeys(xlast.keys(),0)
         danglesum=alpha/nnodes*sum(xlast[n] for n in dangle)
@@ -102,13 +113,35 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
         # check convergence, l1 norm            
         err=sum([abs(x[n]-xlast[n]) for n in x])
         if err < tol:
-            return x
-
-    raise NetworkXError("pagerank: power iteration failed to converge in %d iterations."%(i+1))
-
+            break
+        if i>max_iter:
+            raise NetworkXError(\
+        "pagerank: power iteration failed to converge in %d iterations."%(i+1))
+        i+=1
+    return x
 
 
 def google_matrix(G,alpha=0.85,nodelist=None):
+    """Return the Google matrix of the graph.
+
+    Parameters
+    -----------
+    G : graph
+      A NetworkX graph 
+
+    alpha : float
+      The damping factor
+
+    nodelist : list, optional       
+      The rows and columns are ordered according to the nodes in nodelist.
+      If nodelist is None, then the ordering is produced by G.nodes().
+
+    Returns
+    -------
+    A : NumPy matrix
+       Google matrix of the graph
+    """
+
     import numpy
     import networkx
     M=networkx.to_numpy_matrix(G,nodelist=nodelist)
@@ -124,32 +157,111 @@ def google_matrix(G,alpha=0.85,nodelist=None):
     return P
     
 
-def pagerank_numpy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
-    """Return a NumPy array of the PageRank of G.
+
+def pagerank_numpy(G,alpha=0.85):
+    """Return the PageRank of the nodes in the graph.
+
+    PageRank computes a ranking of the nodes in the graph G based on
+    the structure of the incoming links. It was originally designed as
+    an algorithm to rank web pages.
+    
+    Parameters
+    -----------
+    G : graph
+      A NetworkX graph 
+
+    alpha : float, optional
+      Damping parameter for PageRank, default=0.85
+       
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of nodes with value as PageRank 
+
+    Examples
+    --------
+    >>> G=nx.DiGraph(nx.path_graph(4))
+    >>> pr=nx.pagerank_numpy(G,alpha=0.9)
+
+    Notes
+    -----
+    The eigenvector calculation uses NumPy's interface to the LAPACK
+    eigenvalue solvers.  
+
+    This implementation works with Multi(Di)Graphs.
+    
+    References
+    ----------
+    .. [1] A. Langville and C. Meyer, 
+       "A survey of eigenvector methods of web information retrieval."  
+       http://citeseer.ist.psu.edu/713792.html
+    .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry, 
+       The PageRank citation ranking: Bringing order to the Web. 1999
+       http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    import numpy
-    import networkx
-    M=networkx.google_matrix(G,alpha,nodelist)   
-    (n,m)=M.shape # should be square
-    x=numpy.ones((n))/n
-    for i in range(max_iter):
-        xlast=x
-        x=numpy.dot(x,M)
-        # check convergence, l1 norm            
-        err=numpy.abs(x-xlast).sum()
-        if err < n*tol:
-            return numpy.asarray(x).flatten()
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(\
+            "eigenvector_centrality_numpy() requires NumPy: http://scipy.org/")
 
-    raise NetworkXError("pagerank: power iteration failed to converge in %d iterations."%(i+1))
-
+    M=google_matrix(G,alpha,nodelist=G.nodes())
+    # use numpy LAPACK solver
+    eigenvalues,eigenvectors=np.linalg.eig(M.T)
+    ind=eigenvalues.argsort()[::-1]
+    # eigenvector of largest eigenvalue at ind[0], normalized
+    largest=np.array(eigenvectors[:,ind[0]]).flatten()
+    norm=largest.sum()
+    centrality=dict(zip(G.nodes(),largest/norm))
+    return centrality
 
 
 def pagerank_scipy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
-    """Return a SciPy sparse array of the PageRank of G.
+    """Return the PageRank of the nodes in the graph.
 
+    PageRank computes a ranking of the nodes in the graph G based on
+    the structure of the incoming links. It was originally designed as
+    an algorithm to rank web pages.
+    
+    Parameters
+    -----------
+    G : graph
+      A NetworkX graph 
+
+    alpha : float, optional
+      Damping parameter for PageRank, default=0.85
+       
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of nodes with value as PageRank 
+
+    Examples
+    --------
+    >>> G=nx.DiGraph(nx.path_graph(4))
+    >>> pr=nx.pagerank_numpy(G,alpha=0.9)
+
+    Notes
+    -----
+    The eigenvector calculation uses power iteration with a SciPy
+    sparse matrix representation.
+    
+    References
+    ----------
+    .. [1] A. Langville and C. Meyer, 
+       "A survey of eigenvector methods of web information retrieval."  
+       http://citeseer.ist.psu.edu/713792.html
+    .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry, 
+       The PageRank citation ranking: Bringing order to the Web. 1999
+       http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    import scipy.sparse
-    import networkx
+    try:
+        import scipy.sparse
+    except ImportError:
+        raise ImportError(\
+            "pagerank_scipy() requires SciPy: http://scipy.org/")
+    if nodelist is None:
+        nodelist=G.nodes()
     M=networkx.to_scipy_sparse_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     S=scipy.array(M.sum(axis=1)).flatten()
@@ -158,12 +270,17 @@ def pagerank_scipy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
         M[i,:]*=1.0/S[i]
     x=scipy.ones((n))/n  # initial guess
     dangle=scipy.array(scipy.where(M.sum(axis=1)==0,1.0/n,0)).flatten()
-    for i in range(max_iter):
+    i=0
+    while True: # power iteration: make up to max_iter iterations
         xlast=x
         x=alpha*(x*M+scipy.dot(dangle,xlast))+(1-alpha)*xlast.sum()/n
         # check convergence, l1 norm            
         err=scipy.absolute(x-xlast).sum()
         if err < n*tol:
-            return x
-    raise NetworkXError("pagerank_scipy: power iteration failed to converge in %d iterations."%(i+1))
-
+            break
+        if i>max_iter:
+            raise NetworkXError(\
+        "pagerank: power iteration failed to converge in %d iterations."%(i+1))
+        i+=1
+    centrality=dict(zip(G.nodes(),x))
+    return centrality
