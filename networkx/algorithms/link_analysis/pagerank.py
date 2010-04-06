@@ -145,7 +145,7 @@ def google_matrix(G,alpha=0.85,nodelist=None):
         import numpy as np
     except ImportError:
         raise ImportError(\
-            "eigenvector_centrality_numpy() requires NumPy: http://scipy.org/")
+            "google_matrix() requires NumPy: http://scipy.org/")
     M=networkx.to_numpy_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     # add constant to dangling nodes' row
@@ -205,7 +205,7 @@ def pagerank_numpy(G,alpha=0.85):
         import numpy as np
     except ImportError:
         raise ImportError(\
-            "eigenvector_centrality_numpy() requires NumPy: http://scipy.org/")
+            "pagerank_numpy() requires NumPy: http://scipy.org/")
 
     M=google_matrix(G,alpha,nodelist=G.nodes())
     # use numpy LAPACK solver
