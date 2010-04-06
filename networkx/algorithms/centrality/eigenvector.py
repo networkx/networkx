@@ -62,12 +62,18 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
 
     See Also
     --------
-    pagerank, hits
+    eigenvector_centrality_numpy
+    pagerank
+    hits
     """
     from math import sqrt
     if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
         raise Exception(\
             "eigenvector_centrality() not defined for multigraphs.")
+
+    if len(G)==0:
+        raise networkx.NetworkXException(\
+            "eigenvector_centrality_numpy(): empty graph.")
 
     if nstart is None:
         # choose starting vector with entries of 1/len(G) 
@@ -129,11 +135,11 @@ def eigenvector_centrality_numpy(G):
     "left" eigenvector centrality, first reverse the graph with
     G.reverse().
 
-    Handles disconnected graphs by computing centrality for each component. 
-
     See Also
     --------
-    pagerank, hits
+    eigenvector_centrality
+    pagerank
+    hits
     """
     try:
         import numpy as np
@@ -145,21 +151,16 @@ def eigenvector_centrality_numpy(G):
         raise Exception(\
             "eigenvector_centrality_numpy() not defined for multigraphs.")
 
+    if len(G)==0:
+        raise networkx.NetworkXException(\
+            "eigenvector_centrality_numpy(): empty graph.")
 
-
-    centrality=dict.fromkeys(G.nodes(),0)
-    # handle multiple connected components by computing centrality
-    # of each component individually
-    # Can you normalize the result in that case so it makes sense?
-    for nodes in networkx.connected_components(G):
-        A=networkx.adj_matrix(G,nodelist=nodes)
-        eigenvalues,eigenvectors=np.linalg.eig(A)
-        # eigenvalue indices in reverse sorted order
-        ind=eigenvalues.argsort()[::-1]
-        # eigenvector of largest eigenvalue at ind[0], normalized
-        largest=np.array(eigenvectors[:,ind[0]])
-        sign=np.sign(largest.max())
-        centrality.update(zip(nodes,largest*sign))
-    norm=np.linalg.norm(centrality.values())
-    return dict((n,float(v/norm)) for n,v in centrality.items())           
-    
+    A=networkx.adj_matrix(G,nodelist=G.nodes())
+    eigenvalues,eigenvectors=np.linalg.eig(A)
+    # eigenvalue indices in reverse sorted order
+    ind=eigenvalues.argsort()[::-1]
+    # eigenvector of largest eigenvalue at ind[0], normalized
+    largest=np.array(eigenvectors[:,ind[0]]).flatten()
+    norm=np.sign(largest.sum())*np.linalg.norm(largest)
+    centrality=dict(zip(G,largest/norm))
+    return centrality
