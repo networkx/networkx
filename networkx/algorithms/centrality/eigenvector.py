@@ -100,7 +100,7 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
 power iteration failed to converge in %d iterations."%(i+1))""")
 
 
-def eigenvector_centrality_numpy(G,max_iter=100,tol=1.0e-6,nstart=None):
+def eigenvector_centrality_numpy(G):
     """Compute the eigenvector centrality for the graph G.
 
     Parameters
