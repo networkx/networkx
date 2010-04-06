@@ -64,7 +64,6 @@ def current_flow_betweenness_centrality(G,normalized=True):
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    from itertools import izip
     try:
         import numpy as np
     except ImportError:
@@ -80,21 +79,19 @@ http://scipy.org/""")
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     F=_compute_F(G) # Current-flow matrix
     m,n=F.shape # m edges and n nodes
-    reverse_mapping=dict(zip(range(n),G))  # map integers to nodes
-    for (ei,(s,t)) in izip(range(m),G.edges_iter()): 
+    for (ei,(s,t)) in enumerate(G.edges_iter()): 
         # ei is index of edge
         Fe=F[ei,:] # ei row of F
         # rank of F[ei,v] in row Fe sorted in non-increasing order
-        pos=dict(zip(Fe.argsort()[::-1],range(1,n+1)))
-        for i in range(n):
+        pos=dict(zip(Fe.argsort()[::-1],xrange(1,n+1)))
+        for i in xrange(n):
             betweenness[s]+=(i+1-pos[i])*Fe[i]
             betweenness[t]+=(n-i-pos[i])*Fe[i]
     if normalized:
         nb=(n-1.0)*(n-2.0) # normalization factor
     else:
         nb=2.0
-    for i in range(n):
-        vi=reverse_mapping[i]
+    for i,vi in enumerate(G): # map integers to nodes
         betweenness[vi]=(betweenness[vi]-i)*2.0/nb
     return betweenness            
 
@@ -167,12 +164,12 @@ http://scipy.org/""")
         nb=(n-1.0)*(n-2.0) # normalization factor
     else:
         nb=2.0
-    for (ei,e) in izip(range(m),G.edges_iter()): 
+    for (ei,e) in enumerate(G.edges_iter()): 
         # ei is index of edge
         Fe=F[ei,:] # ei row of F
         # rank of F[ei,v] in row Fe sorted in non-increasing order
-        pos=dict(zip(Fe.argsort()[::-1],range(1,n+1)))
-        for i in range(n):
+        pos=dict(zip(Fe.argsort()[::-1],xrange(1,n+1)))
+        for i in xrange(n):
             betweenness[e]+=(i+1-pos[i])*Fe[i]
             betweenness[e]+=(n-i-pos[i])*Fe[i]
         betweenness[e]/=nb
@@ -197,8 +194,8 @@ def _compute_F(G):
     m=G.number_of_edges()
     B=np.zeros((n,m))
     # use G.nodes() and G.edges() ordering of edges for B  
-    mapping=dict(zip(G,range(n)))  # map nodes to integers
-    for (ei,(v,w,d)) in zip(range(m),G.edges_iter(data=True)): 
+    mapping=dict(zip(G,xrange(n)))  # map nodes to integers
+    for (ei,(v,w,d)) in enumerate(G.edges_iter(data=True)): 
         c=d.get('weight',1.0)
         vi=mapping[v]
         wi=mapping[w]

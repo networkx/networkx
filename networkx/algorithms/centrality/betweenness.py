@@ -166,12 +166,14 @@ def _single_source_shortest_path_basic(G,s):
     while Q:   # use BFS to find shortest paths
         v=Q.pop(0)
         S.append(v)
+        Dv=D[v]
+        sigmav=sigma[v]
         for w in G[v]:
             if w not in D:
                 Q.append(w)
-                D[w]=D[v]+1
-            if D[w]==D[v]+1:   # this is a shortest path, count paths
-                sigma[w]=sigma[w]+sigma[v]
+                D[w]=Dv+1
+            if D[w]==Dv+1:   # this is a shortest path, count paths
+                sigma[w] += sigmav
                 P[w].append(v) # predecessors 
     return S,P,sigma
 
@@ -195,18 +197,18 @@ def _single_source_dijkstra_path_basic(G,s):
         (dist,pred,v)=pop(Q)
         if v in D:
             continue # already searched this node.
-        sigma[v]=sigma[v]+sigma[pred] # count paths
+        sigma[v] += sigma[pred] # count paths
         S.append(v)
         D[v] = dist
         for w,edgedata in G[v].iteritems():
-            vw_dist = D[v] + edgedata.get('weight',1)
+            vw_dist = dist + edgedata.get('weight',1)
             if w not in D and (w not in seen or vw_dist < seen[w]):
                 seen[w] = vw_dist
                 push(Q,(vw_dist,v,w))
                 sigma[w]=0.0
                 P[w]=[v]
             elif vw_dist==seen[w]:  # handle equal paths
-                sigma[w]=sigma[w]+sigma[v]
+                sigma[w] += sigma[v]
                 P[w].append(v)
     return S,P,sigma
 
@@ -214,8 +216,9 @@ def _accumulate_basic(betweenness,S,P,sigma,s):
     delta=dict.fromkeys(S,0) 
     while S:
         w=S.pop()
+        coeff=(1.0+delta[w])/sigma[w]
         for v in P[w]:
-            delta[v]+=(sigma[v]/sigma[w])*(1.0+delta[w])
+            delta[v] += sigma[v]*coeff
         if w != s:
             betweenness[w]+=delta[w]
     return betweenness
@@ -225,19 +228,20 @@ def _accumulate_endpoints(betweenness,S,P,sigma,s):
     delta=dict.fromkeys(S,0) 
     while S:
         w=S.pop()
+        coeff=(1.0+delta[w])/sigma[w]
         for v in P[w]:
-            delta[v]=delta[v]+\
-                      (float(sigma[v])/float(sigma[w]))*(1.0+delta[w])
+            delta[v] += sigma[v]*coeff
         if w != s:
-            betweenness[w]=betweenness[w]+delta[w] + 1
+            betweenness[w] += delta[w]+1
     return betweenness
 
 def _accumulate_edges(betweenness,S,P,sigma,s):
     delta=dict.fromkeys(S,0) 
     while S:
         w=S.pop()
+        coeff=(1.0+delta[w])/sigma[w]
         for v in P[w]:
-            c=(sigma[v]/sigma[w])*(1.0+delta[w])
+            c=sigma[v]*coeff
             if (v,w) not in betweenness:
                 betweenness[(w,v)]+=c
             else:

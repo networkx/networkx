@@ -71,7 +71,6 @@ def current_flow_betweenness_centrality_subset(G,sources,targets,
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    from itertools import izip
     try:
         import numpy as np
     except ImportError:
@@ -87,8 +86,8 @@ http://scipy.org/""")
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     F=_compute_F(G) # Current-flow matrix
     m,n=F.shape # m edges and n nodes
-    mapping=dict(zip(G,range(n)))  # map nodes to integers
-    for (ei,e) in izip(range(m),G.edges_iter()): 
+    mapping=dict(zip(G,xrange(n)))  # map nodes to integers
+    for (ei,e) in enumerate(G.edges_iter()): 
         u,v=e
         # ei is index of edge
         Fe=F[ei,:] # ei row of F
@@ -163,7 +162,6 @@ def edge_current_flow_betweenness_centrality_subset(G,sources,targets,
     .. [2] A measure of betweenness centrality based on random walks, 
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    from itertools import izip
     try:
         import numpy as np
     except ImportError:
@@ -183,8 +181,8 @@ http://scipy.org/""")
         nb=(n-1.0)*(n-2.0) # normalization factor
     else:
         nb=2.0
-    mapping=dict(zip(G,range(n)))  # map nodes to integers
-    for (ei,e) in izip(range(m),G.edges_iter()): 
+    mapping=dict(zip(G,xrange(n)))  # map nodes to integers
+    for (ei,e) in enumerate(G.edges_iter()): 
         # ei is index of edge
         Fe=F[ei,:] # ei row of F
         for s in sources:
@@ -214,8 +212,8 @@ def _compute_F(G):
     m=G.number_of_edges()
     B=np.zeros((n,m))
     # use G.nodes() and G.edges() ordering of edges for B  
-    mapping=dict(zip(G,range(n)))  # map nodes to integers
-    for (ei,(v,w,d)) in zip(range(m),G.edges_iter(data=True)): 
+    mapping=dict(zip(G,xrange(n)))  # map nodes to integers
+    for (ei,(v,w,d)) in enumerate(G.edges_iter(data=True)): 
         c=d.get('weight',1.0)
         vi=mapping[v]
         wi=mapping[w]
