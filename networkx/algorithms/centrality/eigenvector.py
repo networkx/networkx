@@ -12,11 +12,10 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Sasha Gutfraind (ag362@cornell.edu)'])
 
-__all__ = ['eigenvector_centrality']
-
+__all__ = ['eigenvector_centrality',
+           'eigenvector_centrality_numpy']
 
 import networkx
-
 
 def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
     """Compute the eigenvector centrality for the graph G.
@@ -64,13 +63,10 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
     See Also
     --------
     pagerank, hits
-
     """
     if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
-        raise Exception("eigenvector_centrality() not defined for graphs with multiedges.")
-
-#    if not G.weighted:
-#        raise Exception("eigenvector_centrality(): input graph must be weighted")
+        raise Exception(\
+            "eigenvector_centrality() not defined for multigraphs.")
 
     if nstart is None:
         # choose starting vector with entries of 1/len(G) 
@@ -100,6 +96,59 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
         if err < nnodes*tol:
             return x
 
-    raise networkx.NetworkXError("eigenvector_centrality(): power iteration failed to converge in %d iterations."%(i+1))
+    raise networkx.NetworkXError("""eigenvector_centrality(): 
+power iteration failed to converge in %d iterations."%(i+1))""")
+
+
+def eigenvector_centrality_numpy(G,max_iter=100,tol=1.0e-6,nstart=None):
+    """Compute the eigenvector centrality for the graph G.
+
+    Parameters
+    ----------
+    G : graph
+      A networkx graph 
+
+    Returns
+    -------
+    nodes : dictionary
+       Dictionary of nodes with eigenvector centrality as the value.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> centrality=nx.eigenvector_centrality_numpy(G)
+    >>> print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
+    ['0 0.19', '1 0.31', '2 0.31', '3 0.19']
+
+    Notes
+    ------
+    This algorithm uses the NumPy eigenvalue solver.
+
+    For directed graphs this is "right" eigevector centrality.  For
+    "left" eigenvector centrality, first reverse the graph with
+    G.reverse().
+
+    See Also
+    --------
+    pagerank, hits
+    """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(\
+            "eigenvector_centrality_numpy() requires NumPy: http://scipy.org/")
+
+    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
+        raise Exception(\
+            "eigenvector_centrality_numpy() not defined for multigraphs.")
+
+    A=networkx.adj_matrix(G,nodelist=G.nodes())
+    eigenvalues,eigenvectors=np.linalg.eig(A)
+    ind=eigenvalues.argsort()[::-1] # eigenvalue indices in reverse sorted order
+    # eigenvector of largest eigenvalue at ind[0], normalized
+    largest_eigenvector=np.array(eigenvectors[:,ind[0]]/
+                                 eigenvectors[:,ind[0]].sum())
+    return dict(zip(G.nodes(),largest_eigenvector))
+    
 
 

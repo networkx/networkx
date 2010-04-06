@@ -51,6 +51,7 @@ Eigenvector
    :toctree: generated/
 
    eigenvector_centrality
+   eigenvector_centrality_numpy
 
 
 Load
