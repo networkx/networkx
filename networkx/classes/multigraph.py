@@ -767,9 +767,16 @@ class MultiGraph(Graph):
 
         Notes
         -----
-        This is similar to MultiDiGraph(self) which returns a shallow copy.  
-        self.to_undirected() returns a deepcopy of edge, node and
-        graph attributes.
+        This returns a "deepcopy" of the edge, node, and 
+        graph attributes which attempts to completely copy
+        all of the data and references.
+
+        This is in contrast to the similar D=DiGraph(G) which returns a 
+        shallow copy of the data. 
+
+        See the Python copy module for more information on shallow
+        and deep copies, http://docs.python.org/library/copy.html.
+
 
         Examples
         --------
