@@ -145,9 +145,12 @@ def eigenvector_centrality_numpy(G):
         raise Exception(\
             "eigenvector_centrality_numpy() not defined for multigraphs.")
 
+
+
     centrality=dict.fromkeys(G.nodes(),0)
     # handle multiple connected components by computing centrality
     # of each component individually
+    # Can you normalize the result in that case so it makes sense?
     for nodes in networkx.connected_components(G):
         A=networkx.adj_matrix(G,nodelist=nodes)
         eigenvalues,eigenvectors=np.linalg.eig(A)
@@ -155,13 +158,8 @@ def eigenvector_centrality_numpy(G):
         ind=eigenvalues.argsort()[::-1]
         # eigenvector of largest eigenvalue at ind[0], normalized
         largest=np.array(eigenvectors[:,ind[0]])
-        centrality.update(zip(nodes,largest*np.sign(largest.max())))
+        sign=np.sign(largest.max())
+        centrality.update(zip(nodes,largest*sign))
     norm=np.linalg.norm(centrality.values())
-    return dict((n,v/norm) for n,v in centrality.items())                  
+    return dict((n,float(v/norm)) for n,v in centrality.items())           
     
-
-if __name__=='__main__':
-    import networkx
-    G=networkx.path_graph(4)
-    print eigenvector_centrality(G)
-    print eigenvector_centrality_numpy(G)
