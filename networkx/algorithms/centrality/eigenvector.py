@@ -64,6 +64,7 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
     --------
     pagerank, hits
     """
+    from math import sqrt
     if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
         raise Exception(\
             "eigenvector_centrality() not defined for multigraphs.")
@@ -87,7 +88,7 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
                 x[n]+=xlast[nbr]*G[n][nbr].get('weight',1)
         # normalize vector
         try:
-            s=1.0/sum(x.values())
+            s=1.0/sqrt(sum(v**2 for v in x.values()))
         except ZeroDivisionError:
             s=1.0
         for n in x: x[n]*=s
@@ -128,6 +129,8 @@ def eigenvector_centrality_numpy(G):
     "left" eigenvector centrality, first reverse the graph with
     G.reverse().
 
+    Handles disconnected graphs by computing centrality for each component. 
+
     See Also
     --------
     pagerank, hits
@@ -142,13 +145,19 @@ def eigenvector_centrality_numpy(G):
         raise Exception(\
             "eigenvector_centrality_numpy() not defined for multigraphs.")
 
-    A=networkx.adj_matrix(G,nodelist=G.nodes())
-    eigenvalues,eigenvectors=np.linalg.eig(A)
-    ind=eigenvalues.argsort()[::-1] # eigenvalue indices in reverse sorted order
-    # eigenvector of largest eigenvalue at ind[0], normalized
-    largest_eigenvector=np.array(eigenvectors[:,ind[0]]/
-                                 eigenvectors[:,ind[0]].sum())
-    return dict(zip(G.nodes(),largest_eigenvector))
+    centrality=dict.fromkeys(G.nodes(),0)
+    # handle multiple connected components by computing centrality
+    # of each component individually
+    for nodes in networkx.connected_components(G):
+        A=networkx.adj_matrix(G,nodelist=nodes)
+        eigenvalues,eigenvectors=np.linalg.eig(A)
+        # eigenvalue indices in reverse sorted order
+        ind=eigenvalues.argsort()[::-1]
+        # eigenvector of largest eigenvalue at ind[0], normalized
+        largest=np.array(eigenvectors[:,ind[0]])
+        centrality.update(zip(nodes,largest*np.sign(largest.max())))
+    norm=np.linalg.norm(centrality.values())
+    return dict((n,v/norm) for n,v in centrality.items())                  
     
 
 
