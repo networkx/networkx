@@ -12,7 +12,7 @@ class TestDistance:
 
     def test_eccentricity(self):
         assert_equal(networkx.eccentricity(self.G,1),6)
-        e=networkx.eccentricity(self.G,with_labels=True)
+        e=networkx.eccentricity(self.G)
         assert_equal(e[1],6) 
         
     def test_diameter(self):

@@ -15,7 +15,7 @@ __all__ = ['eccentricity', 'diameter', 'radius', 'periphery', 'center']
 
 import networkx
 
-def eccentricity(G, v=None, sp=None, with_labels=False):
+def eccentricity(G, v=None, sp=None):
     """Return the eccentricity of nodes in G.
 
     The eccentricity of a node v is the maximum distance from v to
@@ -31,15 +31,11 @@ def eccentricity(G, v=None, sp=None, with_labels=False):
 
     sp : dict of dicts, optional       
        All pairs shortest path lenghts as a dictionary of dictionaries
-   
-    with_labels : bool, optionals
-       Return a dictionary keyed by node with eccentricity values
 
     Returns
     -------
-    ecc : list or dictionary
-       A list (with_labels=False) or dictionary (with_labels=True)
-       of eccentricity values.
+    ecc : dictionary
+       A dictionary of eccentricity values keyed by node.
     """
     nodes=[]
     if v is None:                # none, use entire graph 
@@ -64,11 +60,10 @@ def eccentricity(G, v=None, sp=None, with_labels=False):
             
         e[v]=max(length.values())
 
-    if with_labels:
-        return e
+    if len(e)==1: return e.values()[0] # return single value
     else:
-        if len(e)==1: return e.values()[0] # return single value
-        return e.values()
+        return e
+
 
 def diameter(G, e=None):
     """Return the diameter of the graph G.
@@ -93,7 +88,7 @@ def diameter(G, e=None):
     eccentricity
     """
     if e is None:
-        e=eccentricity(G,with_labels=True)
+        e=eccentricity(G)
     return max(e.values())
 
 def periphery(G, e=None):
@@ -115,7 +110,7 @@ def periphery(G, e=None):
        List of nodes in periphery
     """
     if e is None:
-        e=eccentricity(G,with_labels=True)
+        e=eccentricity(G)
     diameter=max(e.values())
     p=[v for v in e if e[v]==diameter]
     return p
@@ -140,7 +135,7 @@ def radius(G, e=None):
        Radius of graph
     """
     if e is None:
-        e=eccentricity(G,with_labels=True)
+        e=eccentricity(G)
     return min(e.values())
 
 def center(G, e=None):
@@ -162,7 +157,7 @@ def center(G, e=None):
        List of nodes in center
     """
     if e is None:
-        e=eccentricity(G,with_labels=True)
+        e=eccentricity(G)
     # order the nodes by path length
     radius=min(e.values())
     p=[v for v in e if e[v]==radius]
