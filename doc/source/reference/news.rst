@@ -27,6 +27,10 @@ New features
  - Many more tests
  - and much more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.1
 
+API Changes
+-----------
+ - pagerank() and hits() now return dictionaries keyed by node
+ - add_nodes_from() now accepts (node,attrdict) two-tuples
 
 Examples
 ~~~~~~~~
@@ -42,8 +46,8 @@ Bug fixes
    connected_components_subgraphs())
  - Handle multigraphs in more operators (e.g. union)   
  - Handle double-quoted labels with pydot
- - Normalize betweeness for undirected graphs correctly 
- - add_nodes_from() now accepts (node,attrdict) two-tuples
+ - Normalize betweeness_centrality for undirected graphs correctly 
+ - Normalize eigenvector_centrality by l2 norm
  - read_gml() now returns multigraphs
 
 Networkx-1.0.1
