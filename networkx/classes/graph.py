@@ -215,9 +215,8 @@ class Graph(object):
         self.graph = {}   # dictionary for graph attributes
         self.node = {}    # empty node dict (created before convert)
         self.adj = {}     # empty adjacency dict
-        # attempt to load graph with data
-        if data is not None:
-            convert.from_whatever(data,create_using=self)
+        if data is not None:  # attempt to load graph with data
+            convert.to_networkx_graph(data,create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
         self.name = name
