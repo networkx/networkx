@@ -31,6 +31,7 @@ API Changes
 -----------
  - pagerank() and hits() now return dictionaries keyed by node
  - add_nodes_from() now accepts (node,attrdict) two-tuples
+ - eccentricity() now returns a dictionary keyed by node
 
 Examples
 ~~~~~~~~

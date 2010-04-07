@@ -42,7 +42,7 @@ for d in verts:
 
 print "radius: ",radius(G)
 print "diameter: ",diameter(G)
-print "eccentricity: ",eccentricity(G,with_labels=True)
+print "eccentricity: ",eccentricity(G)
 print "center: ",center(G)
 print "periphery: ",periphery(G)
 print "density: ", density(G)
