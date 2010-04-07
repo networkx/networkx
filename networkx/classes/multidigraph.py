@@ -279,7 +279,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
             Remove an edge between nodes u and v.
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.  
-            If None remove a single (abritrary) edge between u and v.
+            If None remove a single (arbitrary) edge between u and v.
 
         Raises
         ------
@@ -719,7 +719,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         If edge attributes are containers, a deep copy can be obtained using:
         G.subgraph(nbunch).copy()
 
-        For an inplace reduction of a graph to a subgraph you can remove nodes:
+        For an in-place reduction of a graph to a subgraph you can remove nodes:
         G.remove_nodes_from([ n in G if n not in set(nbunch)])  
 
         Examples

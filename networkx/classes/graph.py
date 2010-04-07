@@ -1469,7 +1469,7 @@ class Graph(object):
         If edge attributes are containers, a deep copy can be obtained using:
         G.subgraph(nbunch).copy()
 
-        For an inplace reduction of a graph to a subgraph you can remove nodes:
+        For an in-place reduction of a graph to a subgraph you can remove nodes:
         G.remove_nodes_from([ n in G if n not in set(nbunch)])  
 
         Examples
