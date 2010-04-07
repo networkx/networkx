@@ -14,7 +14,7 @@ __all__= ['triangles', 'average_clustering', 'clustering', 'transitivity']
 
 from networkx import NetworkXError
 
-def triangles(G,nbunch=None,with_labels=False):
+def triangles(G,nbunch=None):
     """Compute the number of triangles.
 
     Finds the number of triangles that include a node as one of the vertices.
@@ -25,22 +25,20 @@ def triangles(G,nbunch=None,with_labels=False):
        A networkx graph
     nbunch : container of nodes, optional
        Compute triangles for nodes in nbunch. The default is all nodes in G.
-    with_labels: bool, optional
-        If True return a dictionary keyed by node label.
 
     Returns
     -------
-    out : list or dictionary
-       Number of trianges
+    out : dictionary
+       Number of trianges keyed by node label.
     
     Examples
     --------
     >>> G=nx.complete_graph(5)
     >>> print nx.triangles(G,0)
     6
-    >>> print nx.triangles(G,with_labels=True)
+    >>> print nx.triangles(G)
     {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}
-    >>> print nx.triangles(G,(0,1))
+    >>> print nx.triangles(G,(0,1)).values()
     [6, 6]
 
     Notes
@@ -53,11 +51,9 @@ def triangles(G,nbunch=None,with_labels=False):
     """
     if G.is_directed():
         raise NetworkXError("triangles() is not defined for directed graphs.")
-    if with_labels:
-        return dict( (v,t/2) for v,d,t in _triangles_and_degree_iter(G,nbunch))
-    elif nbunch in G: 
+    if nbunch in G: 
         return _triangles_and_degree_iter(G,nbunch).next()[2]/2 # return single value
-    return [t/2 for n,d,t in _triangles_and_degree_iter(G,nbunch)]
+    return dict( (v,t/2) for v,d,t in _triangles_and_degree_iter(G,nbunch))
 
 def _triangles_and_degree_iter(G,nbunch=None):
     """ Return an iterator of (node, degree, triangles).  
@@ -123,10 +119,10 @@ def average_clustering(G):
 
     """
     order=G.order()
-    s=sum(clustering(G))
+    s=sum(clustering(G).values())
     return s/float(order)
 
-def clustering(G,nbunch=None,with_labels=False,weights=False):
+def clustering(G,nbunch=None,weights=False):
     """ Compute the clustering coefficient for nodes.
 
     For each node find the fraction of possible triangles that exist,
@@ -143,14 +139,12 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
        A networkx graph
     nbunch : container of nodes, optional
        Limit to specified nodes. Default is entire graph.
-    with_labels: bool, optional
-        If True return a dictionary keyed by node label.
     weights : bool, optional
         If True return fraction of connected triples as dictionary
         
     Returns
     -------
-    out : float, list, dictionary or tuple of dictionaries
+    out : float, dictionary or tuple of dictionaries
        Clustering coefficient at specified nodes
 
     Examples
@@ -158,7 +152,7 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
     >>> G=nx.complete_graph(5)
     >>> print nx.clustering(G,0)
     1.0
-    >>> print nx.clustering(G,with_labels=True)
+    >>> print nx.clustering(G)
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
 
 
@@ -173,7 +167,7 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
     """
     if G.is_directed():
         raise NetworkXError("Clustering algorithms are not defined for directed graphs.")
-    if with_labels and weights:
+    if weights:
         clusterc={}
         weights={}
         for v,d,t in _triangles_and_degree_iter(G,nbunch):
@@ -194,11 +188,9 @@ def clustering(G,nbunch=None,with_labels=False,weights=False):
         else:
             clusterc[v]=t/float(d*(d-1))
 
-    if with_labels:
-        return clusterc
-    elif nbunch in G: 
+    if nbunch in G: 
         return clusterc.values()[0] # return single value
-    return clusterc.values()
+    return clusterc
 
 def transitivity(G):
     """Compute transitivity.

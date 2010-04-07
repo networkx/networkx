@@ -38,13 +38,13 @@ def could_be_isomorphic(G1,G2):
     
     # Check local properties
     d1=G1.degree(with_labels=True)
-    t1=networkx.triangles(G1,with_labels=True)
+    t1=networkx.triangles(G1)
     c1=networkx.number_of_cliques(G1,with_labels=True)
     props1=[ [d1[v], t1[v], c1[v]] for v in d1 ]
     props1.sort()
     
     d2=G2.degree(with_labels=True)
-    t2=networkx.triangles(G2,with_labels=True)
+    t2=networkx.triangles(G2)
     c2=networkx.number_of_cliques(G2,with_labels=True)
     props2=[ [d2[v], t2[v], c2[v]] for v in d2 ]
     props2.sort()
@@ -78,12 +78,12 @@ def fast_could_be_isomorphic(G1,G2):
     
     # Check local properties
     d1=G1.degree(with_labels=True)
-    t1=networkx.triangles(G1,with_labels=True)
+    t1=networkx.triangles(G1)
     props1=[ [d1[v], t1[v]] for v in d1 ]
     props1.sort()
     
     d2=G2.degree(with_labels=True)
-    t2=networkx.triangles(G2,with_labels=True)
+    t2=networkx.triangles(G2)
     props2=[ [d2[v], t2[v]] for v in d2 ]
     props2.sort()
 
