@@ -13,23 +13,18 @@ __author__ = "\n".join(['Dan Schult(dschult@colgate.edu)',
 
 __all__ = ['find_cores']
 
-def find_cores(G,with_labels=True):
+def find_cores(G):
     """Return the core number for each vertex.
     
     Parameters
     ----------
     G : NetworkX graph
        A graph
-
-    with_labels : bool, optional       
-       If True return a dictionary, else return a list.
   
     Returns
     -------
-    core_number : dictionary or list
-       If with_labels is True a dict is returned keyed by node 
-       to the core number. If with_labels is False a list of the core 
-       numbers is returned.
+    core_number : dictionary 
+       A ditionary keyed by node to the core number. 
 
     References
     ----------
@@ -63,8 +58,5 @@ def find_cores(G,with_labels=True):
                 verts[bin_start],verts[pos]=verts[pos],verts[bin_start]
                 bin_boundaries[core[u]]+=1
                 core[u] -= 1
-    if with_labels:
-        return core
-    else:
-        return core.values()
+    return core
 

@@ -34,6 +34,7 @@ API Changes
    The with_labels keyword is removed. 
  - add_nodes_from() now accepts (node,attrdict) two-tuples
  - eccentricity() now returns a dictionary keyed by node
+ - find_cores() now returns a dictionary keyed by node
  - node_clique_number(), number_of_cliques(), and cliques_containing_node() 
    now return a dictionary keyed by node.  The with_labels keyword is removed. 
 
