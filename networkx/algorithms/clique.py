@@ -371,74 +371,90 @@ def graph_number_of_cliques(G,cliques=None):
     return   len(cliques)
 
  
-def node_clique_number(G,nodes=None,with_labels=False,cliques=None):
+def node_clique_number(G,nodes=None,cliques=None):
     """ Returns the size of the largest maximal clique containing
         each given node.  
 
         Returns a single or list depending on input nodes.
-        Returns a dict keyed by node if "with_labels=True".
         Optional list of cliques can be input if already computed.
 
     """
-    if nodes is None:                 # none, use entire graph
-        nodes=G.nodes()
-    elif  not isinstance(nodes, list):    # check for a list
-        nodes=[nodes]             # assume it is a single value
-
     if cliques is None:
         cliques=list(find_cliques(G))
-    d={}
-    for v in nodes:
-        d[v]=max([len(c) for c in cliques if v in c])
+
+    if nodes is None:
+        nodes=G.nodes()   # none, get entire graph
+
+    if not isinstance(nodes, list):   # check for a list
+        v=nodes
+        # assume it is a single value
+        d=max([len(c) for c in cliques if v in c])
+    else:
+        d={}
+        for v in nodes:
+            d[v]=max([len(c) for c in cliques if v in c])
+    return d
+
+    # if nodes is None:                 # none, use entire graph
+    #     nodes=G.nodes()
+    # elif  not isinstance(nodes, list):    # check for a list
+    #     nodes=[nodes]             # assume it is a single value
+
+    # if cliques is None:
+    #     cliques=list(find_cliques(G))
+    # d={}
+    # for v in nodes:
+    #     d[v]=max([len(c) for c in cliques if v in c])
     
-    if with_labels: return d
-    if len(d)==1: return d[v] #return single value
-    return d.values()
+    # if nodes in G:
+    #     return d[v] #return single value
+    # return d
 
 
-def number_of_cliques(G,nodes=None,cliques=None,with_labels=False):
+def number_of_cliques(G,nodes=None,cliques=None):
     """ Returns the number of maximal cliques for each node.
 
         Returns a single or list depending on input nodes.
-        Returns a dict keyed by node if "with_labels=True".
         Optional list of cliques can be input if already computed.
 
     """
-    if nodes is None:
-        nodes=G.nodes()   # none, get entire graph
-    elif  not isinstance(nodes, list):    # check for a list
-        nodes=[nodes]             # assume it is a single value
-
     if cliques is None:
         cliques=list(find_cliques(G))
-    numcliq={}
-    for v in nodes:
-        numcliq[v]=len([1 for c in cliques if v in c])
 
-    if with_labels: return numcliq
-    if len(numcliq)==1: return numcliq[v]
-    return numcliq.values()
+    if nodes is None:
+        nodes=G.nodes()   # none, get entire graph
+
+    if not isinstance(nodes, list):   # check for a list
+        v=nodes
+        # assume it is a single value
+        numcliq=len([1 for c in cliques if v in c])
+    else:
+        numcliq={}
+        for v in nodes:
+            numcliq[v]=len([1 for c in cliques if v in c])
+    return numcliq
+
     
-def cliques_containing_node(G,nodes=None,cliques=None,with_labels=False):
+def cliques_containing_node(G,nodes=None,cliques=None):
     """ Returns a list of cliques containing the given node.
 
         Returns a single list or list of lists depending on input nodes.
-        Returns a dict keyed by node if "with_labels=True".
         Optional list of cliques can be input if already computed.
 
     """
-    if nodes is None:
-        nodes=G.nodes()   # none, get entire graph
-    elif  not isinstance(nodes, list):    # check for a list
-        nodes=[nodes]             # assume it is a single value
-
     if cliques is None:
         cliques=list(find_cliques(G))
-    vcliques={}
-    for v in nodes:
-        vcliques[v]=[c for c in cliques if v in c]
 
-    if with_labels: return vcliques
-    if len(vcliques)==1: return vcliques[v]
-    return vcliques.values()
+    if nodes is None:
+        nodes=G.nodes()   # none, get entire graph
+
+    if not isinstance(nodes, list):   # check for a list
+        v=nodes
+        # assume it is a single value
+        vcliques=[c for c in cliques if v in c]
+    else:
+        vcliques={}
+        for v in nodes:
+            vcliques[v]=[c for c in cliques if v in c]
+    return vcliques
 
