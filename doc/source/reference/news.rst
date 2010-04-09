@@ -23,6 +23,7 @@ New features
  - Attribute matrices
  - GML reader for nested attributes
  - Current-flow (random walk) betweeness and closeness
+ - Directed configuration model and directed random graph model
  - Improved documentation of drawing, shortest paths, and other algorithms
  - Many more tests
  - and much more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.1

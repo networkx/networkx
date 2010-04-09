@@ -9,7 +9,9 @@ Generators for random graphs.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
+__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
+                        'Pieter Swart (swart@lanl.gov)',
+                        'Dan Schult (dschult@colgate.edu)'])
 import itertools
 import random
 import math
@@ -59,6 +61,7 @@ except:
 
 __all__ = ['fast_gnp_random_graph',
            'gnp_random_graph',
+           'directed_gnp_random_graph',
            'dense_gnm_random_graph',
            'gnm_random_graph',
            'erdos_renyi_graph',
@@ -184,9 +187,58 @@ def gnp_random_graph(n, p, create_using=None, seed=None):
                 G.add_edge(u,v)
     return G
 
+
 # add some aliases to common names
 binomial_graph=gnp_random_graph
 erdos_renyi_graph=gnp_random_graph
+
+def directed_gnp_random_graph(n, p, create_using=None, seed=None):
+    """Return a directed random graph.
+
+    Chooses each of the possible n(n-1) edges with probability p.
+
+    This is a directed version of G_np.
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes.
+    p : float
+        Probability for edge creation.
+    create_using :  graph, optional (default DiGraph)
+        Use specified graph as a container.
+    seed : int, optional
+        Seed for random number generator (default=None). 
+      
+    See Also
+    --------
+    gnp_random_graph()
+    fast_gnp_random_graph()
+
+    Notes
+    -----
+    This is an O(n^2) algorithm.  
+
+    References
+    ----------
+    .. [1] P. Erdős and A. Rényi, On Random Graphs, Publ. Math. 6, 290 (1959).
+    .. [2] E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
+
+    """
+    if create_using is None:
+        create_using=networkx.DiGraph()
+    G=empty_graph(n,create_using)
+    G.name="directed gnp_random_graph(%s,%s)"%(n,p)
+
+    if not seed is None:
+        random.seed(seed)
+
+    for u in xrange(n):
+        for v in xrange(n):
+            if u==v: continue
+            if random.random() < p:
+                G.add_edge(u,v)
+    return G
 
 def dense_gnm_random_graph(n, m, create_using=None, seed=None):
     """Return the random graph G_{n,m}.
