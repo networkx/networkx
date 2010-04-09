@@ -159,7 +159,10 @@ subgraph()
    (copies all underlying data and attributes for nodes and edges).
 
    >>> G=nx.Graph()
-   >>> H=G.subgraph([],copy=True) # deep copy of all data
+   >>> # note: copy keyword deprecated in networkx>1.0
+   >>> # H=G.subgraph([],copy=True) # deep copy of all data
+   
+
 
 
 

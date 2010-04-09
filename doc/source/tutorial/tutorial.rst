@@ -346,7 +346,7 @@ functions such as:
 [0, 1, 1, 2]
 
 >>> nx.clustering(G)
-[0.0, 0.0, 0.0, 0.0]
+{1: 0.0, 2: 0.0, 3: 0.0, 'spam': 0.0}
 
 With no nodes specified, functions that return Node Properties will return
 a list of values in an arbitrary order determined by the internal Python 

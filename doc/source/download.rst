@@ -23,7 +23,8 @@ Documentation
 ~~~~~~~~~~~~~
 *PDF*
 
-http://networkx.lanl.gov/networkx.pdf
+http://networkx.lanl.gov/networkx_reference.pdf
+http://networkx.lanl.gov/networkx_tutorial.pdf
 
 *HTML in zip file*
 
