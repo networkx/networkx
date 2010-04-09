@@ -222,6 +222,7 @@ def read_edgelist(path,
         if not len(line): continue
         # split line, should have 2 or more
         s=line.strip().split(delimiter)
+        if len(s)<2: continue
         u=s.pop(0)
         v=s.pop(0)
         d=s
