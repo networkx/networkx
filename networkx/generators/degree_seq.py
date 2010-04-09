@@ -148,9 +148,9 @@ def directed_configuration_model(in_degree_sequence,
                                  create_using=None,seed=None):
     """Return a directed_random graph with the given degree sequences.
 
-    The configuration model generates a random pseudograph (graph with
-    parallel edges and self loops) by randomly assigning edges to
-    match the given degree sequences.
+    The configuration model generates a random directed pseudograph
+    (graph with parallel edges and self loops) by randomly assigning
+    edges to match the given degree sequences.
 
     Parameters
     ----------
@@ -165,7 +165,7 @@ def directed_configuration_model(in_degree_sequence,
 
     Returns
     -------
-    G : MultiGraph
+    G : MultiDiGraph
         A graph with the specified degree sequences.
         Nodes are labeled starting at 0 with an index
         corresponding to the position in deg_sequence.
@@ -223,8 +223,6 @@ def directed_configuration_model(in_degree_sequence,
 
     if create_using is None:
         create_using = networkx.MultiDiGraph()
-    elif create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
 
     if not seed is None:
         random.seed(seed)
