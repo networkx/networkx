@@ -98,6 +98,7 @@ Degree Sequence
    :toctree: generated/
 
    configuration_model
+   directed_configuration_model
    expected_degree_graph
    havel_hakimi_graph
    degree_sequence_tree
