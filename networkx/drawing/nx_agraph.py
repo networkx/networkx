@@ -28,10 +28,13 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['from_agraph', 'to_agraph', 
            'write_dot', 'read_dot', 
            'graphviz_layout',
-           'pygraphviz_layout']
+           'pygraphviz_layout',
+           'view_pygraphviz']
 
 import os
 import sys
+import tempfile
+import subprocess
 import networkx
 from networkx.utils import _get_fh,is_string_like
 
@@ -271,4 +274,76 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
             print "no position for node",n
             node_pos[n]=(0.0,0.0)
     return node_pos
+
+def view_pygraphviz(G, edgelabel=None, prog='neato', suffix='', filename=None):
+    """Views the graph G using the specified layout algorithm.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The machine to draw.
+    edgelabel : str, callable, None
+        If a string, then it specifes the edge attribute to be displayed
+        on the edge labels. If a callable, then it is called for each 
+        edge and it should return the string to be displayed on the edges.
+        The function signature of `edgelabel` should be edgelabel(data),
+        where `data` is the edge attribute dictionary.
+    prog : string
+        Name of Graphviz layout program.
+    suffix : str
+        If `filename` is None, we save to a temporary file.  The value of
+        `suffix` will appear at the tail end of the temporary filename.
+    filename : str, None
+        The filename used to save the image.  If None, save to a temporary
+        file.  File formats are the same as those from pygraphviz.agraph.draw.
+
+    Notes
+    -----
+    If this function is called in succession too quickly, sometimes the 
+    image is not displayed. So you might consider time.sleep(.5) between
+    calls if you experience problems.
+    
+    """
+    if not len(G):
+        raise networkx.NetworkXException("An empty graph cannot be drawn.")
+
+    import pygraphviz
+
+    A = to_agraph(G)
+    # set up drawing attributes
+    A.edge_attr['fontsize'] = '10'
+    A.node_attr['style'] = 'filled'
+    A.node_attr['fillcolor'] = '#0000FF40'
+    A.node_attr['height'] = '0.75'
+    A.node_attr['width'] = '0.75'
+    A.node_attr['shape'] = 'circle'
+
+    if edgelabel is not None:
+        if not callable(edgelabel):
+            edgelabel = lambda data: ''.join("  ", str(data[edgelabel]), "  ")
+
+        # update all the edge labels
+        if G.is_multigraph():
+            for u,v,key in N.edges_iter(keys=True):
+                edge = A.get_edge(u,v,key)
+                edge.attr['label'] = edgelabel(data)
+        else:
+            for u,v in N.edges_iter():
+                edge = A.get_edge(u,v)
+                edge.attr['label'] = edgelabel(data)
+
+    # save to a file and display in the default viewer
+    cmds = {'darwin': 'open', 'linux2': 'xdg-open', 'win32': 'start'}
+    if filename is None:
+        if suffix:
+            suffix = '_%s.png' % tempname
+        else:
+            suffix = '.png'
+        _, filename = tempfile.mkstemp(suffix=suffix)
+    A.draw(filename, prog=prog)
+    subprocess.call([cmds[sys.platform], filename])
+    #if sys.platform == 'linux2':
+    #    time.sleep(.5)
+
+    return filename
 
