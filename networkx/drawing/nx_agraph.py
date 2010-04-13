@@ -338,7 +338,7 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', suffix='', filename=None):
     cmds = {'darwin': 'open', 'linux2': 'xdg-open', 'win32': 'start'}
     if filename is None:
         if suffix:
-            suffix = '_%s.png' % tempname
+            suffix = '_%s.png' % suffix
         else:
             suffix = '.png'
         _, filename = tempfile.mkstemp(suffix=suffix)
