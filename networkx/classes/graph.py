@@ -1441,6 +1441,44 @@ class Graph(object):
         """
         return deepcopy(self)
 
+    def subgraphview(self, nbunch):
+        """Return a GraphView object which is essentially a read-only
+        view into the subgraph induced by the nodes in nbunch.
+
+        The induced subgraph of the graph contains the nodes in nbunch 
+        and the edges between those nodes.  
+        
+        Parameters
+        ----------
+        nbunch : list, iterable
+            A container of nodes which will be iterated through once.    
+
+        Returns
+        -------
+        G : GraphView
+            A read-only subgraph of the graph with the same attributes.  
+
+        Notes
+        -----
+        All attributes (graph/node/edge) just point to the original graph,
+        so changes in attributes occur in the original graph as well as 
+        the view.  Changes in the graph structure cannot be made in 
+        a GraphView.
+
+        See Also
+        --------
+        subgraph()
+
+        Examples
+        --------
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
+        >>> H = G.subgraphview([0,1,2])
+        >>> print H.edges()
+        [(0, 1), (1, 2)]
+        """
+        return GraphView(self, nbunch)
+
     def subgraph(self, nbunch):
         """Return the subgraph induced on nodes in nbunch.
 
@@ -1808,3 +1846,78 @@ class Graph(object):
                     else: raise
             bunch=bunch_iter(nbunch,self.adj)
         return bunch
+
+
+
+class GraphView(Graph):
+    def __init__(self, graph, nbunch):
+        self.G = graph    # original graph
+        self.name = graph.name
+        self.node = graph.node
+        self.graph = graph.graph
+        adj={}
+        for n in graph.nbunch_iter(nbunch):
+            adj[n] = nbrs = {}
+            for nbr,d in graph[n].iteritems():
+                if nbr in adj:
+                    nbrs[nbr]=d
+                    adj[nbr][n]=d
+        self.adj=adj
+        self.edge=adj
+    def nodes_iter(self, data=False):
+        if data:
+            return ( (n,self.G.node[n]) for n in self.adj )
+        return self.adj.iterkeys()
+
+    def add_node(self, n, attr_dict=None, **attr):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def add_nodes_from(self, nodes, **attr):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def remove_node(self,n):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def remove_nodes_from(self, nodes):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def add_edge(self, u, v, attr_dict=None, **attr):  
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def add_edges_from(self, ebunch, attr_dict=None, **attr):  
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def add_weighted_edges_from(self, ebunch, **attr):  
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def remove_edge(self, u, v): 
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def remove_edges_from(self, ebunch): 
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def clear(self):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def add_star(self, nlist, **attr):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def add_path(self, nlist, **attr):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def add_cycle(self, nlist, **attr):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support changing the graph')
+    def copy(self):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support copy()')
+    def to_directed(self):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support to_directed()')
+    def to_undirected(self):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support to_directed()')
+    def subgraph(self, nbunch):
+        """This method is not supported for GraphView"""
+        raise NetworkXError('GraphView class does not support subgraph()')
+
