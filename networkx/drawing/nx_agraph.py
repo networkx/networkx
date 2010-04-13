@@ -320,17 +320,19 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', suffix='', filename=None):
 
     if edgelabel is not None:
         if not callable(edgelabel):
-            edgelabel = lambda data: ''.join("  ", str(data[edgelabel]), "  ")
+            func = lambda data: ''.join(["  ", str(data[edgelabel]), "  "])
+        else:
+            func = edgelabel
 
         # update all the edge labels
         if G.is_multigraph():
-            for u,v,key in N.edges_iter(keys=True):
-                edge = A.get_edge(u,v,key)
-                edge.attr['label'] = edgelabel(data)
+            for u,v,key,data in G.edges_iter(keys=True, data=True):
+                edge = A.get_edge(str(u),str(v),str(key))
+                edge.attr['label'] = str(func(data))
         else:
-            for u,v in N.edges_iter():
-                edge = A.get_edge(u,v)
-                edge.attr['label'] = edgelabel(data)
+            for u,v,data in G.edges_iter(data=True):
+                edge = A.get_edge(str(u),str(v))
+                edge.attr['label'] = str(func(data))
 
     # save to a file and display in the default viewer
     cmds = {'darwin': 'open', 'linux2': 'xdg-open', 'win32': 'start'}
