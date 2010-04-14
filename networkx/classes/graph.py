@@ -1459,9 +1459,9 @@ class Graph(object):
 
         Notes
         -----
-        The edge and node attributes just point to the original graph. 
+        The graph, edge or node attributes just point to the original graph.
         So changes to the node or edge structure will not be reflected in
-        the original graph while changes to the node or edge attributes will.
+        the original graph while changes to the attributes will.
 
         To create a subgraph with its own copy of the edge/node attributes use:
         nx.Graph(G.subgraph(nbunch))
@@ -1499,7 +1499,7 @@ class Graph(object):
         # copy node and attribute dictionaries
         for n in H:
             H.node[n]=self.node[n]
-        H.graph=self.graph.copy()
+        H.graph=self.graph
         return H
 
 
