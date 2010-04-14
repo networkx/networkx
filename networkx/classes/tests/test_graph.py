@@ -251,7 +251,7 @@ class TestGraph:
         assert_raises((KeyError,networkx.NetworkXError), G.degree,-1)
 
     def test_selfloop_degree(self):
-        G=self.Graph()
+        G=networkx.Graph()
         G.add_edge(1,1)
         assert_equal(G.degree(),[2])
         assert_equal(G.degree(with_labels=True),{1:2})
@@ -260,7 +260,7 @@ class TestGraph:
 
 
     def test_weighted_degree(self):
-        G=self.Graph()
+        G=networkx.Graph()
         G.add_edge(1,2,weight=2)
         G.add_edge(2,3,weight=3)
         assert_equal(G.degree(weighted=True),[2,5,3])
