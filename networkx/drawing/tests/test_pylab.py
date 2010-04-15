@@ -34,4 +34,5 @@ class TestPylab(object):
         pylab.savefig("test.png")
         nx.draw_spectral(N)
         pylab.savefig("test.png")
-
+        os.unlink('test.png')
+        os.unlink('test.ps')
