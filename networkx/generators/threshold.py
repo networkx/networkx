@@ -20,7 +20,7 @@ def is_threshold_graph(G):
     """
     Returns True if G is a threshold graph.
     """
-    return is_threshold_sequence(G.degree())
+    return is_threshold_sequence(G.degree().values())
     
 def is_threshold_sequence(degree_sequence):
     """
@@ -349,7 +349,7 @@ def find_creation_sequence(G):
     H=G
     while H.order()>0:
         # get new degree sequence on subgraph
-        dsdict=H.degree(with_labels=True)
+        dsdict=H.degree()
         ds=[ [d,v] for v,d in dsdict.iteritems() ]
         ds.sort()
         # Update threshold graph nodes

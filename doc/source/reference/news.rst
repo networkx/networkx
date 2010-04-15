@@ -30,6 +30,8 @@ New features
 
 API Changes
 -----------
+ - The degree() method now returns a dictionary (instead of a list).
+   Calling degree(u) with a single node still returns a single value.
  - pagerank() and hits() now return dictionaries keyed by node
  - clustering() and triangles() now return dictionaries keyed by node.
    The with_labels keyword is removed. 

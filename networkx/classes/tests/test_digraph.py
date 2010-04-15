@@ -167,10 +167,10 @@ class TestDiGraph(TestGraph):
 
     def test_degree(self):
         G=self.K3
-        assert_equal(G.degree(),[4,4,4])
-        assert_equal(G.degree(with_labels=True),{0:4,1:4,2:4})
+        assert_equal(G.degree().values(),[4,4,4])
+        assert_equal(G.degree(),{0:4,1:4,2:4})
         assert_equal(G.degree(0),4)
-        assert_equal(G.degree(0,with_labels=True),{0:4})
+        assert_equal(G.degree([0]),{0:4})
         assert_raises((KeyError,networkx.NetworkXError), G.degree,-1)
 
     def test_degree_iter(self):
@@ -182,10 +182,10 @@ class TestDiGraph(TestGraph):
 
     def test_in_degree(self):
         G=self.K3
-        assert_equal(G.in_degree(),[2,2,2])
-        assert_equal(G.in_degree(with_labels=True),{0:2,1:2,2:2})
+        assert_equal(G.in_degree().values(),[2,2,2])
+        assert_equal(G.in_degree(),{0:2,1:2,2:2})
         assert_equal(G.in_degree(0),2)
-        assert_equal(G.in_degree(0,with_labels=True),{0:2})
+        assert_equal(G.in_degree([0]),{0:2})
         assert_raises((KeyError,networkx.NetworkXError), G.in_degree,-1)
 
     def test_in_degree_iter(self):
@@ -196,10 +196,10 @@ class TestDiGraph(TestGraph):
 
     def test_out_degree(self):
         G=self.K3
-        assert_equal(G.out_degree(),[2,2,2])
-        assert_equal(G.out_degree(with_labels=True),{0:2,1:2,2:2})
+        assert_equal(G.out_degree().values(),[2,2,2])
+        assert_equal(G.out_degree(),{0:2,1:2,2:2})
         assert_equal(G.out_degree(0),2)
-        assert_equal(G.out_degree(0,with_labels=True),{0:2})
+        assert_equal(G.out_degree([0]),{0:2})
         assert_raises((KeyError,networkx.NetworkXError), G.out_degree,-1)
 
     def test_out_degree_iter(self):

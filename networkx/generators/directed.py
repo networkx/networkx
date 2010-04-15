@@ -287,17 +287,17 @@ def scale_free_graph(n,
             # add new node v
             v = len(G) 
             # choose w according to in-degree and delta_in
-            w = _choose_node(G, G.in_degree(with_labels=True),delta_in)
+            w = _choose_node(G, G.in_degree(),delta_in)
         elif r < alpha+beta:
             # beta
             # choose v according to out-degree and delta_out
-            v = _choose_node(G, G.out_degree(with_labels=True),delta_out)
+            v = _choose_node(G, G.out_degree(),delta_out)
             # choose w according to in-degree and delta_in
-            w = _choose_node(G, G.in_degree(with_labels=True),delta_in)
+            w = _choose_node(G, G.in_degree(),delta_in)
         else:
             # gamma
             # choose v according to out-degree and delta_out
-            v = _choose_node(G, G.out_degree(with_labels=True),delta_out)
+            v = _choose_node(G, G.out_degree(),delta_out)
             # add new node w
             w = len(G) 
         G.add_edge(v,w)

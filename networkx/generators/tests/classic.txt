@@ -639,8 +639,8 @@ True
 >>> p=path_graph(10)
 >>> is_connected(p)
 True
->>> p.degree()
-[1, 2, 2, 2, 2, 2, 2, 2, 2, 1]
+>>> sorted(p.degree().values())
+[1, 1, 2, 2, 2, 2, 2, 2, 2, 2]
 >>> p.order()-1==p.size()
 True
 
@@ -657,7 +657,7 @@ periodic_grid_2d_graph
 ----------------------
 
 >>> g=grid_2d_graph(0,0, periodic=True)
->>> g.degree()==[]
+>>> g.degree()=={}
 True
 
 >>> g=grid_2d_graph(2,2, periodic=True)
@@ -707,7 +707,7 @@ True
 True
 
 >>> s=star_graph(10)
->>> s.degree()==[10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+>>> sorted(s.degree().values())==[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10]
 True
 
 >>> ds=star_graph(10, create_using=DiGraph())
@@ -751,7 +751,7 @@ True
 'wheel_graph(4)'
 
 >>> g=wheel_graph(10)
->>> sorted(g.degree())
+>>> sorted(g.degree().values())
 [3, 3, 3, 3, 3, 3, 3, 3, 3, 9]
 
 >>> dg=wheel_graph(10, create_using=DiGraph())

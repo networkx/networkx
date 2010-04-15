@@ -17,20 +17,20 @@ NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
 >>> aseq=[3,3,3,3]
 >>> bseq=[2,2,2,2,2,2] 
 >>> G=bipartite_configuration_model(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
  
 >>> aseq=[2,2,2,2,2,2] 
 >>> bseq=[3,3,3,3]
 >>> G=bipartite_configuration_model(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
  
 >>> aseq=[2,2,2,1,1,1] 
 >>> bseq=[3,3,3]
 >>> G=bipartite_configuration_model(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
 >>> GU=project(G,range(len(aseq)))
@@ -58,14 +58,14 @@ NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
 
 >>> bseq=[2,2,2,2,2,2] 
 >>> G=bipartite_havel_hakimi_graph(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
  
  
 >>> aseq=[2,2,2,2,2,2] 
 >>> bseq=[3,3,3,3]
 >>> G=bipartite_havel_hakimi_graph(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
 
@@ -95,21 +95,21 @@ NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
 
 >>> bseq=[2,2,2,2,2,2] 
 >>> G=bipartite_reverse_havel_hakimi_graph(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
  
 >>> aseq=[2,2,2,2,2,2] 
 >>> bseq=[3,3,3,3]
 >>> G=bipartite_reverse_havel_hakimi_graph(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
  
 >>> aseq=[2,2,2,1,1,1] 
 >>> bseq=[3,3,3]
 >>> G=bipartite_reverse_havel_hakimi_graph(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
 
@@ -139,20 +139,20 @@ NetworkXError: invalid degree sequences, sum(aseq)!=sum(bseq),12,10
 
 >>> bseq=[2,2,2,2,2,2] 
 >>> G=bipartite_alternating_havel_hakimi_graph(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
  
 >>> aseq=[2,2,2,2,2,2] 
 >>> bseq=[3,3,3,3]
 >>> G=bipartite_alternating_havel_hakimi_graph(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 
  
 >>> aseq=[2,2,2,1,1,1] 
 >>> bseq=[3,3,3]
 >>> G=bipartite_alternating_havel_hakimi_graph(aseq,bseq)
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [1, 1, 1, 2, 2, 2, 3, 3, 3]
 
 
@@ -186,7 +186,7 @@ Random Regular Bipartite
 ------------------------
 FIXME: test this somehow
 G=bipartite_random_regular_graph(2,12)
-G.degree()
+G.degree().values()
 [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
 is_bipartite(G)
 True

@@ -203,8 +203,8 @@ def directed_configuration_model(in_degree_sequence,
     Examples
     --------
     >>> D=nx.DiGraph([(0,1),(1,2),(2,3)]) # directed path graph
-    >>> din=D.in_degree()
-    >>> dout=D.out_degree()
+    >>> din=D.in_degree().values()
+    >>> dout=D.out_degree().values()
     >>> din.append(1) 
     >>> dout[0]=2
     >>> D=nx.directed_configuration_model(din,dout)
@@ -655,7 +655,7 @@ def double_edge_swap(G, nswap=1):
     # choosing nonuniformly from the set nodes (probability weighted by degree)
     n=0
     swapcount=0
-    deg=G.degree(with_labels=True)
+    deg=G.degree()
     dk=deg.keys() # key labels 
     cdf=networkx.utils.cumulative_distribution(deg.values())  # cdf of degree
     if len(cdf)<4:
@@ -714,10 +714,10 @@ def connected_double_edge_swap(G, nswap=1):
 
     n=0
     swapcount=0
-    deg=G.degree(with_labels=True)
+    deg=G.degree()
     dk=deg.keys() # Label key for nodes
-    ideg=G.degree()
-    cdf=networkx.utils.cumulative_distribution(G.degree()) 
+    ideg=G.degree().values()
+    cdf=networkx.utils.cumulative_distribution(G.degree().values()) 
     if len(cdf)<4:
         raise networkx.NetworkXError("Graph has less than four nodes.")
     window=1
@@ -756,7 +756,7 @@ def connected_double_edge_swap(G, nswap=1):
                 G.remove_edge(v,y)
                 swapcount-=1
             window = int(math.ceil(float(window)/2))
-        assert G.degree() == ideg
+        assert G.degree().values() == ideg
     return swapcount
 
 

@@ -33,7 +33,7 @@ def find_cores(G):
        http://arxiv.org/abs/cs.DS/0310049 
     """
     # compute the degrees of each vertex
-    degrees=G.degree(with_labels=True)
+    degrees=G.degree()
     # sort verticies by degree
     verts= sorted( degrees.keys(), key=lambda x: degrees[x])
     bin_boundaries=[0]

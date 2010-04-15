@@ -269,9 +269,9 @@ class GraphMatcher(object):
         if self.G1.order() != self.G2.order(): return False
     
         # Check local properties
-        d1=self.G1.degree()
+        d1=self.G1.degree().values()
         d1.sort()
-        d2=self.G2.degree()
+        d2=self.G2.degree().values()
         d2.sort()
         if d1 != d2: return False
 

@@ -20,7 +20,7 @@ nx.is_valid_degree_sequence(z)
 print "Configuration model"
 G=nx.configuration_model(z)  # configuration model
 
-degree_sequence=sorted(nx.degree(G),reverse=True) # degree sequence
+degree_sequence=sorted(nx.degree(G).values(),reverse=True) # degree sequence
 #print "Degree sequence", degree_sequence
 dmax=max(degree_sequence)
 

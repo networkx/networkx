@@ -401,22 +401,22 @@ test that empty graph converts fine for all options
 >>> G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
 >>> G.name="paw"
 >>> H=convert_node_labels_to_integers(G)
->>> degH=H.degree()
->>> degG=G.degree()
+>>> degH=H.degree().values()
+>>> degG=G.degree().values()
 >>> print degH.sort()==degG.sort()
 True
 
 >>> H=convert_node_labels_to_integers(G,1000)
->>> degH=H.degree()
->>> degG=G.degree()
+>>> degH=H.degree().values()
+>>> degG=G.degree().values()
 >>> print degH.sort()==degG.sort()
 True
 >>> H.nodes()
 [1000, 1001, 1002, 1003]
 
 >>> H=convert_node_labels_to_integers(G,ordering="increasing degree")
->>> degH=H.degree()
->>> degG=G.degree()
+>>> degH=H.degree().values()
+>>> degG=G.degree().values()
 >>> print degH.sort()==degG.sort()
 True
 >>> degree(H,0)==1
@@ -429,8 +429,8 @@ True
 True
 
 >>> H=convert_node_labels_to_integers(G,ordering="decreasing degree")
->>> degH=H.degree()
->>> degG=G.degree()
+>>> degH=H.degree().values()
+>>> degG=G.degree().values()
 >>> print degH.sort()==degG.sort()
 True
 >>> degree(H,0)==3
@@ -443,8 +443,8 @@ True
 True
 
 >>> H=convert_node_labels_to_integers(G,ordering="increasing degree",discard_old_labels=False)
->>> degH=H.degree()
->>> degG=G.degree()
+>>> degH=H.degree().values()
+>>> degG=G.degree().values()
 >>> print degH.sort()==degG.sort()
 True
 >>> degree(H,0)==1
@@ -469,8 +469,8 @@ True
 >>> G.add_edges_from([('C','D'),('A','B'),('A','C'),('B','C')])
 >>> G.name="paw"
 >>> H=convert_node_labels_to_integers(G,ordering="sorted")
->>> degH=H.degree()
->>> degG=G.degree()
+>>> degH=H.degree().values()
+>>> degG=G.degree().values()
 >>> print degH.sort()==degG.sort()
 True
 

@@ -1,8 +1,8 @@
 Graph
 =====
 
-Unit tests for Graph Class in base.py
--------------------------------------
+Unit tests for Graph Class
+--------------------------
 
 >>> from networkx import *
 >>> import networkx
@@ -366,22 +366,20 @@ degree of single node must return single int
 >>> G.degree('A')
 2
 
-degree of single node in iterable container must return list
+degree of single node in iterable container must return dict
 
->>> G.degree(['A'])
+>>> G.degree(['A']).values()
 [2]
 
-with_labels=True always return a dict
-
->>> G.degree('A',with_labels=True)
+>>> G.degree(['A'])
 {'A': 2}
 
->>> G.degree(['A','B'])
+>>> G.degree(['A','B']).values()
 [2, 3]
->>> G.degree(['A','B'],with_labels=True)
+>>> G.degree(['A','B'])
 {'A': 2, 'B': 3}
 
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [0, 0, 0, 2, 2, 3, 3]
 
 sorted(list(G.degree_iter()))
@@ -389,19 +387,19 @@ sorted(list(G.degree_iter()))
 
 >>> H=Graph()
 >>> H.add_edges_from([(1,24),(1,2)])
->>> H.degree([1,24])
-[2, 1]
+>>> sorted(H.degree([1,24]).values())
+[1, 2]
 
 >>> P3=path_graph(3)
 >>> P5=path_graph(5)
 >>> P3.degree(['A','B']) # silently ignore nodes not in P3
-[]
->>> sorted(P5.degree(P3)) # nbunch can be a graph
+{}
+>>> sorted(P5.degree(P3).values()) # nbunch can be a graph
 [1, 2, 2]
->>> sorted(P3.degree(P5)) # nbunch can be a graph thats way to big
+>>> sorted(P3.degree(P5).values()) # nbunch can be a graph thats way to big
 [1, 1, 2]
 >>> P5.degree([])
-[]
+{}
 >>> list(P5.degree_iter([]))
 []
 >>> dict( P5.degree_iter([]) )
@@ -411,8 +409,6 @@ sorted(list(G.degree_iter()))
 
 >>> null=null_graph()
 >>> null.degree()
-[]
->>> null.degree(with_labels=True)
 {}
 >>> list(null.degree_iter())
 []

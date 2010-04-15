@@ -21,7 +21,7 @@ is_valid_degree_sequence(z)
 
 print "Configuration model"
 G=configuration_model(z)  # configuration model
-degree_sequence=degree(G) # degree sequence
+degree_sequence=degree(G).values() # degree sequence
 print "Degree sequence", degree_sequence
 print "Degree histogram"
 hist={}

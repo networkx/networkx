@@ -3,8 +3,8 @@ DiGraph
 
 >>> from networkx import *
 
-Unit tests for DiGraph Class in base.py
----------------------------------------
+Unit tests for DiGraph Class
+----------------------------
 
 
 In addition to the usual suspects (P1, P2, P3, K1, K2, null, etc.)
@@ -360,28 +360,26 @@ degree of single node must return single int
 
 degree of single node in iterable container must return list
 
->>> G.degree(['A'])
+>>> G.degree(['A']).values()
 [2]
 
-with_labels=True always return a dict
-
->>> G.degree('A',with_labels=True)
+>>> G.degree(['A'])
 {'A': 2}
 
->>> G.degree(['A','B'])
+>>> sorted(G.degree(['A','B']).values())
 [2, 3]
->>> G.degree(['A','B'],with_labels=True)
+>>> G.degree(['A','B'])
 {'A': 2, 'B': 3}
 
->>> sorted(G.in_degree())
+>>> sorted(G.in_degree().values())
 [0, 0, 0, 0, 1, 2, 2]
->>> G.in_degree(with_labels=True)
+>>> G.in_degree()
 {'A': 0, 'C': 2, 'B': 1, 'D': 2, 'G': 0, 'K': 0, 'J': 0}
->>> sorted(G.out_degree())
+>>> sorted(G.out_degree().values())
 [0, 0, 0, 0, 1, 2, 2]
->>> G.out_degree(with_labels=True)
+>>> G.out_degree()
 {'A': 2, 'C': 1, 'B': 2, 'D': 0, 'G': 0, 'K': 0, 'J': 0}
->>> sorted(G.degree())
+>>> sorted(G.degree().values())
 [0, 0, 0, 2, 2, 3, 3]
 
 sorted(list(G.in_degree_iter()))
@@ -401,23 +399,23 @@ sorted(list(G.degree_iter()))
 
 >>> H=DiGraph()
 >>> H.add_edges_from([(1,24),(1,2)])
->>> H.in_degree([1,24])
+>>> sorted(H.in_degree([1,24]).values())
 [0, 1]
->>> H.out_degree([1,24])
-[2, 0]
->>> H.degree([1,24])
-[2, 1]
+>>> sorted(H.out_degree([1,24]).values())
+[0, 2]
+>>> sorted(H.degree([1,24]).values())
+[1, 2]
 
 >>> P3=path_graph(3)
 >>> P5=path_graph(5)
 >>> P3.degree(['A','B']) # silently ignore nodes not in P3
-[]
->>> sorted(P5.degree(P3)) # nbunch can be a graph
+{}
+>>> sorted(P5.degree(P3).values()) # nbunch can be a graph
 [1, 2, 2]
->>> sorted(P3.degree(P5)) # nbunch can be a graph thats way to big
+>>> sorted(P3.degree(P5).values()) # nbunch can be a graph thats way to big
 [1, 1, 2]
 >>> P5.degree([])
-[]
+{}
 >>> list(P5.degree_iter([]))
 []
 >>> dict( P5.degree_iter([]) )
@@ -427,8 +425,6 @@ sorted(list(G.degree_iter()))
 
 >>> null=null_graph()
 >>> null.degree()
-[]
->>> null.degree(with_labels=True)
 {}
 >>> list(null.degree_iter())
 []
@@ -577,7 +573,7 @@ Functional interface
 [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D'), ('C', 'D')]
 >>> sorted(edges_iter(G))
 [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D'), ('C', 'D')]
->>> sorted(degree(G))
+>>> sorted(degree(G).values())
 [0, 0, 0, 2, 2, 3, 3]
 >>> sorted(neighbors(G,'A'))
 ['B', 'C']

@@ -1212,7 +1212,7 @@ class Graph(object):
         """
         return self.adj.iteritems()
 
-    def degree(self, nbunch=None, with_labels=False, weighted=False):
+    def degree(self, nbunch=None, weighted=False):
         """Return the degree of a node or nodes.
 
         The node degree is the number of edges adjacent to that node. 
@@ -1222,16 +1222,14 @@ class Graph(object):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.    
-        with_labels : bool, optional (default=False)
-            If True return a dictionary of degrees keyed by node.
         weighted : bool, optional (default=False)
            If True return the sum of edge weights adjacent to the node.  
 
         Returns
         -------
-        nd : list, or dictionary
-            A list of node degrees or a dictionary with nodes as
-            keys and degree as values if with_labels=True).
+        nd : dictionary, or number
+            A dictionary with nodes as keys and degree as values or
+            a number if a single node is specified.
 
         Examples
         --------
@@ -1240,17 +1238,15 @@ class Graph(object):
         >>> G.degree(0)
         1
         >>> G.degree([0,1])
-        [1, 2]
-        >>> G.degree([0,1],with_labels=True)
         {0: 1, 1: 2}
+        >>> G.degree([0,1]).values()
+        [1, 2]
 
         """
-        if with_labels:           # return a dict
-            return dict(self.degree_iter(nbunch,weighted=weighted))
-        elif nbunch in self:      # return a single node
+        if nbunch in self:      # return a single node
             return self.degree_iter(nbunch,weighted=weighted).next()[1]
-        else:                     # return a list
-            return [d for (n,d) in self.degree_iter(nbunch,weighted=weighted)]
+        else:           # return a dict
+            return dict(self.degree_iter(nbunch,weighted=weighted))
 
     def degree_iter(self, nbunch=None, weighted=False):
         """Return an iterator for (node, degree). 
@@ -1624,7 +1620,7 @@ class Graph(object):
         6
         """
 
-        return sum(self.degree(weighted=weighted))/2
+        return sum(self.degree(weighted=weighted).values())/2
 
     def number_of_edges(self, u=None, v=None):
         """Return the number of edges between two nodes.

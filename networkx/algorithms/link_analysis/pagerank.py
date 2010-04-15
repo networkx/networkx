@@ -93,14 +93,14 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
 
     nnodes=W.number_of_nodes()
     # "dangling" nodes, no links out from them
-    out_degree=W.out_degree(with_labels=True)
+    out_degree=W.out_degree()
     dangle=[n for n in W if out_degree[n]==0.0]  
     i=0
     while True: # power iteration: make up to max_iter iterations
         xlast=x
         x=dict.fromkeys(xlast.keys(),0)
         danglesum=alpha/nnodes*sum(xlast[n] for n in dangle)
-        teleportsum=(1.0-alpha)/nnodes*sum(xlast.values())
+        teleportsum=(1.0-alpha)/nnodes*sum(xlast.values()
         for n in x:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W

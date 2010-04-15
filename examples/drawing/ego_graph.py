@@ -17,7 +17,7 @@ if __name__ == '__main__':
     m=2
     G=nx.generators.barabasi_albert_graph(n,m)
     # find node with largest degree
-    node_and_degree=G.degree(with_labels=True)
+    node_and_degree=G.degree()
     (largest_hub,degree)=sorted(node_and_degree.items(),key=itemgetter(1))[-1]
     # Create ego graph of main hub
     hub_ego=nx.ego_graph(G,largest_hub)

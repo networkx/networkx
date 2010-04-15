@@ -68,8 +68,8 @@ Test properties of named small graphs
 5
 >>> G.number_of_edges() 
 5
->>> G.degree()
-[2, 3, 3, 1, 1]
+>>> sorted(G.degree().values())
+[1, 1, 2, 3, 3]
 >>> diameter(G)
 3
 >>> radius(G)
@@ -80,7 +80,7 @@ Test properties of named small graphs
 12
 >>> G.number_of_edges() 
 24
->>> G.degree()==12*[4]
+>>> G.degree().values()==12*[4]
 True
 >>> diameter(G)
 2
@@ -92,7 +92,7 @@ True
 8
 >>> G.number_of_edges() 
 12
->>> G.degree()==8*[3]
+>>> G.degree().values()==8*[3]
 True
 >>> diameter(G)
 3
@@ -105,14 +105,14 @@ True
 >>> 
 G.number_of_edges()
 30
->>> G.degree()== 20*[3]
+>>> G.degree().values()== 20*[3]
 True
 
 >>> G=diamond_graph()
 >>> G.number_of_nodes()  
 4
->>> G.degree()
-[2, 3, 3, 2]
+>>> sorted(G.degree().values())
+[2, 2, 3, 3]
 >>> diameter(G) 
 2
 >>> radius(G) 
@@ -123,7 +123,7 @@ True
 20
 >>> G.number_of_edges()  
 30
->>> G.degree()==20*[3]  
+>>> G.degree().values()==20*[3]  
 True
 >>> diameter(G) 
 5
@@ -135,7 +135,7 @@ True
 12
 >>> G.number_of_edges()  
 18
->>> G.degree()==12*[3]  
+>>> G.degree().values()==12*[3]  
 True
 >>> diameter(G) 
 4
@@ -147,7 +147,7 @@ True
 14
 >>> G.number_of_edges()  
 21
->>> G.degree()==14*[3]  
+>>> G.degree().values()==14*[3]  
 True
 >>> diameter(G) 
 3
@@ -160,8 +160,8 @@ True
 5
 >>> G.number_of_edges()  
 6
->>> G.degree()
-[2, 2, 3, 3, 2]
+>>> sorted(G.degree().values())
+[2, 2, 2, 3, 3]
 >>> diameter(G) 
 2
 >>> radius(G) 
@@ -172,8 +172,8 @@ True
 5
 >>> G.number_of_edges()  
 8
->>> G.degree()
-[3, 3, 4, 4, 2]
+>>> sorted(G.degree().values())
+[2, 3, 3, 4, 4]
 >>> diameter(G) 
 2
 >>> radius(G) 
@@ -184,7 +184,7 @@ True
 12
 >>> G.number_of_edges()  
 30
->>> G.degree()
+>>> G.degree().values()
 [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
 >>> diameter(G) 
 3
@@ -196,15 +196,15 @@ True
 10
 >>> G.number_of_edges()  
 18
->>> G.degree()
-[4, 4, 3, 6, 3, 5, 5, 3, 2, 1]
+>>> sorted(G.degree().values())
+[1, 2, 3, 3, 3, 4, 4, 5, 5, 6]
 
 >>> G=moebius_kantor_graph()
 >>> G.number_of_nodes()  
 16
 >>> G.number_of_edges()  
 24
->>> G.degree()==16*[3]
+>>> G.degree().values()==16*[3]
 True
 >>> diameter(G) 
 4
@@ -214,7 +214,7 @@ True
 6
 >>> G.number_of_edges()  
 12
->>> G.degree()==6*[4]
+>>> G.degree().values()==6*[4]
 True
 >>> diameter(G) 
 2
@@ -226,7 +226,7 @@ True
 18
 >>> G.number_of_edges()  
 27
->>> G.degree()==18*[3]
+>>> G.degree().values()==18*[3]
 True
 >>> diameter(G) 
 4
@@ -237,7 +237,7 @@ True
 10
 >>> G.number_of_edges()  
 15
->>> G.degree()==10*[3]
+>>> G.degree().values()==10*[3]
 True
 >>> diameter(G) 
 2
@@ -249,15 +249,15 @@ True
 8
 >>> G.number_of_edges()  
 10
->>> G.degree()
-[3, 1, 2, 2, 4, 3, 2, 3]
+>>> sorted(G.degree().values())
+[1, 2, 2, 2, 3, 3, 3, 4]
 
 >>> G=tetrahedral_graph()
 >>> G.number_of_nodes()  
 4
 >>> G.number_of_edges()  
 6
->>> G.degree()
+>>> G.degree().values()
 [3, 3, 3, 3]
 >>> diameter(G) 
 1
@@ -269,7 +269,7 @@ True
 24
 >>> G.number_of_edges()  
 36
->>> G.degree()==24*[3]
+>>> G.degree().values()==24*[3]
 True
 
 
@@ -278,7 +278,7 @@ True
 12
 >>> G.number_of_edges()  
 18
->>> G.degree()==12*[3]
+>>> G.degree().values()==12*[3]
 True
 
 
@@ -288,7 +288,7 @@ True
 46
 >>> G.number_of_edges()  
 69
->>> G.degree()==46*[3]
+>>> G.degree().values()==46*[3]
 True
 
 

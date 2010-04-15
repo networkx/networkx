@@ -270,7 +270,7 @@ well defined.
 
 >>> MG=nx.MultiGraph()
 >>> MG.add_weighted_edges_from([(1,2,.5), (1,2,.75), (2,3,.5)])
->>> MG.degree(weighted=True, with_labels=True)
+>>> MG.degree(weighted=True)
 {1: 1.25, 2: 1.75, 3: 0.5}
 >>> GG=nx.Graph()
 >>> for n,nbrs in MG.adjacency_iter():
@@ -342,39 +342,33 @@ functions such as:
 >>> nx.connected_components(G)
 [[1, 2, 3], ['spam']]
 
->>> sorted(nx.degree(G))
+>>> sorted(nx.degree(G).values())
 [0, 1, 1, 2]
 
 >>> nx.clustering(G)
 {1: 0.0, 2: 0.0, 3: 0.0, 'spam': 0.0}
 
-With no nodes specified, functions that return Node Properties will return
-a list of values in an arbitrary order determined by the internal Python 
-dictionary structure of the graph (which is returned by :meth:`Graph.nodes` 
-though it  can change if the dictionary is resized).
+Functions that return node properties return dictionaries keyed by node label.
 
-The keyword argument with_labels=True returns a dict keyed by nodes
-to the node values.
-
->>> nx.degree(G, with_labels=True)
+>>> nx.degree(G)
 {1: 2, 2: 1, 3: 1, 'spam': 0}
 
-Functions that return node properties, e.g. :meth:`Graph.degree`, :func:`clustering`, etc, can
 For values of specific nodes, you can provide a single node or an nbunch 
 of nodes as argument.  If a single node is specified, then a single value 
 is returned.  If an nbunch is specified, then the function will 
-return a list of values.  
+return a dictionary.
  
 >>> nx.degree(G,1)
 2
 >>> G.degree(1)
 2
->>> sorted(G.degree([1,2]))
-[1, 2]
->>> sorted(G.degree())
-[0, 1, 1, 2]
->>> G.degree([1,2],with_labels=True)
+>>> G.degree([1,2])
 {1: 2, 2: 1}
+>>> sorted(G.degree([1,2]).values())
+[1, 2]
+>>> sorted(G.degree().values())
+[0, 1, 1, 2]
+
 
 Details on graph algorithms supported: :doc:`/reference/algorithms`
 

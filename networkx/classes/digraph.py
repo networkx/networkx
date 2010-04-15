@@ -935,7 +935,7 @@ class DiGraph(Graph):
                 yield (n,len(nbrs))
 
 
-    def in_degree(self, nbunch=None, with_labels=False, weighted=False):
+    def in_degree(self, nbunch=None, weighted=False):
         """Return the in-degree of a node or nodes.
 
         The node in-degree is the number of edges pointing in to the node.
@@ -945,16 +945,14 @@ class DiGraph(Graph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.    
-        with_labels : bool, optional (default=False)
-            If True return a dictionary of degrees keyed by node.
         weighted : bool, optional (default=False)
            If True return the sum of edge weights adjacent to the node.  
 
         Returns
         -------
-        nd : list, or dictionary
-            A list of node in-degrees or a dictionary with nodes as
-            keys and in-degree as values if with_labels=True).
+        nd : dictionary, or number
+            A dictionary with nodes as keys and in-degree as values or
+            a number if a single node is specified.
 
         See Also
         --------
@@ -967,21 +965,16 @@ class DiGraph(Graph):
         >>> G.in_degree(0)
         0
         >>> G.in_degree([0,1])
-        [0, 1]
-        >>> G.in_degree([0,1],with_labels=True)
         {0: 0, 1: 1}
-
+        >>> G.in_degree([0,1]).values()
+        [0, 1]
         """
-        if with_labels:           # return a dict
-            return dict(self.in_degree_iter(nbunch,weighted=weighted))
-        elif nbunch in self:      # return a single node
+        if nbunch in self:      # return a single node
             return self.in_degree_iter(nbunch,weighted=weighted).next()[1]
-        else:                     # return a list
-            return [d
-                    for (n,d) in self.in_degree_iter(nbunch,weighted=weighted)]
+        else:           # return a dict
+            return dict(self.in_degree_iter(nbunch,weighted=weighted))
 
-
-    def out_degree(self, nbunch=None, with_labels=False, weighted=False):
+    def out_degree(self, nbunch=None, weighted=False):
         """Return the out-degree of a node or nodes.
 
         The node out-degree is the number of edges pointing out of the node.
@@ -991,16 +984,14 @@ class DiGraph(Graph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.    
-        with_labels : bool, optional (default=False)
-            If True return a dictionary of degrees keyed by node.
         weighted : bool, optional (default=False)
            If True return the sum of edge weights adjacent to the node.  
 
         Returns
         -------
-        nd : list, or dictionary
-            A list of node out-degrees or a dictionary with nodes as
-            keys and out-degree as values if with_labels=True).
+        nd : dictionary, or number
+            A dictionary with nodes as keys and out-degree as values or
+            a number if a single node is specified.
 
         Examples
         --------
@@ -1009,18 +1000,16 @@ class DiGraph(Graph):
         >>> G.out_degree(0)
         1
         >>> G.out_degree([0,1])
-        [1, 1]
-        >>> G.out_degree([0,1],with_labels=True)
         {0: 1, 1: 1}
+        >>> G.out_degree([0,1]).values()
+        [1, 1]
+
 
         """
-        if with_labels:           # return a dict
-            return dict(self.out_degree_iter(nbunch,weighted=weighted))
-        elif nbunch in self:      # return a single node
+        if nbunch in self:      # return a single node
             return self.out_degree_iter(nbunch,weighted=weighted).next()[1]
-        else:                     # return a list
-            return [d for
-                    (n,d) in self.out_degree_iter(nbunch,weighted=weighted)]
+        else:           # return a dict
+            return dict(self.out_degree_iter(nbunch,weighted=weighted))
 
     def clear(self):
         """Remove all nodes and edges from the graph.

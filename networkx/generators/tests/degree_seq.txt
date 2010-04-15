@@ -15,13 +15,13 @@ empty graph has empty degree sequence
 >>> deg_seq=[]
 >>> G=configuration_model(deg_seq)
 >>> G.degree()
-[]
+{}
 
 >>> deg_seq=[5,3,3,3,3,2,2,2,1,1,1]
 >>> G=configuration_model(deg_seq,seed=12345678)
->>> sorted(G.degree(),reverse=True)
+>>> sorted(G.degree().values(),reverse=True)
 [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
->>> sorted(G.degree(range(len(deg_seq))),reverse=True)
+>>> sorted(G.degree(range(len(deg_seq))).values(),reverse=True)
 [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
 
 test that fixed seed delivers the same graph
@@ -59,7 +59,7 @@ empty graph has empty degree sequence
 >>> deg_seq=[]
 >>> G=expected_degree_graph(deg_seq)
 >>> G.degree()
-[]
+{}
 
 test that fixed seed delivers the same graph
 
@@ -188,7 +188,7 @@ NetworkXError: Invalid degree sequence
 >>> G=li_smax_graph(z)
 >>> is_connected(G)
 True
->>> degs = degree(G)
+>>> degs = degree(G).values()
 >>> degs.sort()
 >>> degs.reverse()
 >>> degs == z
@@ -207,7 +207,7 @@ True
 >>> G=li_smax_graph(z)
 >>> is_connected(G)
 True
->>> degs = degree(G)
+>>> degs = degree(G).values()
 >>> degs.sort()
 >>> degs.reverse()
 >>> degs == z
