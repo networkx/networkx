@@ -1,8 +1,8 @@
 ..  -*- coding: utf-8 -*-
+.. currentmodule:: networkx
 
 Release Log
 ===========
-
 
 Networkx-1.1
 ------------
@@ -13,51 +13,91 @@ See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
- - Algorithm for finding a basis for graph cycles
- - Blockmodeling 
- - Assortativity and mixing matrices
- - In-degree and out-degree centrality
- - Contract strongly connected components
- - Simpler interface to shortest path algorithms
- - Edgelist format to read and write data with attributes
- - Attribute matrices
- - GML reader for nested attributes
- - Current-flow (random walk) betweeness and closeness
- - Directed configuration model and directed random graph model
+ - :mod:`Algorithm for finding a basis for graph cycles <networkx.algorithms.cycles>` 
+ - :mod:`Blockmodeling <networkx.algorithms.block>` 
+ - :mod:`Assortativity and mixing matrices <networkx.algorithms.mixing>` 
+ - :mod:`In-degree and out-degree centrality <networkx.algorithms.centrality.degree>` 
+ - :mod:`Attracting components and condensation <networkx.algorithms.component>`
+ - :mod:`Simpler interface to shortest path algorithms <networkx.algorithms.shortest_paths.generic>` 
+ - :mod:`Edgelist format to read and write data with attributes <networkx.readwrite.edgelist>` 
+ - :mod:`Attribute matrices <networkx.linalg.attrmatrix>` 
+ - :mod:`GML reader for nested attributes <networkx.readwrite.gml>` 
+ - Current-flow (random walk) 
+   :mod:`betweenness <networkx.algorithms.centrality.current_flow_betweenness>` 
+   betweeness and 
+   :mod:`closeness <networkx.algorithms.centrality.current_flow_closeness>`. 
+ - :mod:`Directed configuration model <networkx.generators.degree_seq>`,
+   and  :mod:`directed random graph model <networkx.generators.random_graphs>`.
  - Improved documentation of drawing, shortest paths, and other algorithms
  - Many more tests
  - and much more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.1
 
 API Changes
------------
- - The degree() method now returns a dictionary (instead of a list).
-   Calling degree(u) with a single node still returns a single value.
- - pagerank() and hits() now return dictionaries keyed by node
- - clustering() and triangles() now return dictionaries keyed by node.
-   The with_labels keyword is removed. 
- - add_nodes_from() now accepts (node,attrdict) two-tuples
- - eccentricity() now returns a dictionary keyed by node
- - find_cores() now returns a dictionary keyed by node
- - node_clique_number(), number_of_cliques(), and cliques_containing_node() 
-   now return a dictionary keyed by node.  The with_labels keyword is removed. 
+~~~~~~~~~~~
+Returning dictionaries
+**********************
+Several of the algorithms and the degree() method now return dictionaries
+keyed by node instead of lists.  In some cases there was a with_labels
+keyword which is no longer necessary.  For example,
+ 
+>>> G=nx.Graph()
+>>> G.add_edge('a','b')
+>>> G.degree() # returns dictionary of degree keyed by node
+{'a': 1, 'b': 1}
+ 
+Asking for the degree of a single node still returns a single number
+ 
+>>> G.degree('a')
+1
+
+The following now return dictionaries by default (instead of lists)
+and the with_labels keyword has been removed:
+ 
+ - :meth:`Graph.degree`, 
+   :meth:`MultiGraph.degree`,
+   :meth:`DiGraph.degree`, 
+   :meth:`DiGraph.in_degree`, 
+   :meth:`DiGraph.out_degree`,
+   :meth:`MultiDiGraph.degree`, 
+   :meth:`MultiDiGraph.in_degree`, 
+   :meth:`MultiDiGraph.out_degree`.
+ - :func:`clustering`, :func:`triangles`
+ - :func:`node_clique_number`, 
+   :func:`number_of_cliques`, 
+   :func:`cliques_containing_node`
+ - :func:`eccentricity`
+   
+
+The following now return dictionaries by default (instead of lists)
+
+ - :func:`pagerank`
+ - :func:`hits`
+
+
+Adding nodes
+************
+add_nodes_from now accepts (node,attrdict) two-tuples
+
+>>> G=nx.Graph()
+>>> G.add_nodes_from([(1,{'color':'red'})])
 
 Examples
 ~~~~~~~~
- - Mayvi2 drawing http://networkx.lanl.gov/examples/drawing/mayavi2_spring.html
- - Blockmodel http://networkx.lanl.gov/examples/algorithms/blockmodel.html
- - Sampson's monastery http://networkx.lanl.gov/examples/drawing/sampson.html
- - Ego graph http://networkx.lanl.gov/examples/drawing/ego_graph.html
+ - `Mayvi2 drawing <http://networkx.lanl.gov/examples/drawing/mayavi2_spring.html>`_
+ - `Blockmodel <http://networkx.lanl.gov/examples/algorithms/blockmodel.html>`_
+ - `Sampson's monastery <http://networkx.lanl.gov/examples/drawing/sampson.html>`_
+ - `Ego graph <http://networkx.lanl.gov/examples/drawing/ego_graph.html>`_
 
 Bug fixes
 ~~~~~~~~~
- - Support graph attributes with union, intersection, graph operations
+ - Support graph attributes with union, intersection, and other graph operations
  - Improve subgraph speed (and related algorithms such as 
    connected_components_subgraphs())
  - Handle multigraphs in more operators (e.g. union)   
  - Handle double-quoted labels with pydot
  - Normalize betweeness_centrality for undirected graphs correctly 
  - Normalize eigenvector_centrality by l2 norm
- - read_gml() now returns multigraphs
+ - :func:`read_gml` now returns multigraphs
 
 Networkx-1.0.1
 --------------
