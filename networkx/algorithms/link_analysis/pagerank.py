@@ -100,7 +100,7 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
         xlast=x
         x=dict.fromkeys(xlast.keys(),0)
         danglesum=alpha/nnodes*sum(xlast[n] for n in dangle)
-        teleportsum=(1.0-alpha)/nnodes*sum(xlast.values()
+        teleportsum=(1.0-alpha)/nnodes*sum(xlast.values())
         for n in x:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
