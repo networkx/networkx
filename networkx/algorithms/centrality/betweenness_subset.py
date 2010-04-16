@@ -48,6 +48,7 @@ def betweenness_centrality_subset(G,sources,targets,
        
     weighted_edges : bool, optional
       Consider the edge weights in determining the shortest paths.
+      The edge weights must be greater than zero.
       If False, all edge weights are considered equal.
 
     Returns
@@ -63,6 +64,10 @@ def betweenness_centrality_subset(G,sources,targets,
     Notes
     -----
     The basic algorithm is from Ulrik Brandes [1]_.
+
+    For weighted graphs the edge weights must be greater than zero.
+    Zero edge weights can produce an infinite number of equal length 
+    paths between pairs of nodes.
 
     The normalization might seem a little strange but it is the same
     as in betweenness_centrality() and is designed to make
@@ -114,6 +119,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
        
     weighted_edges : bool, optional
       Consider the edge weights in determining the shortest paths.
+      The edge weights must be greater than zero.
       If False, all edge weights are considered equal.
 
     Returns
@@ -129,6 +135,10 @@ def edge_betweenness_centrality_subset(G,sources,targets,
     Notes
     -----
     The basic algorithm is from Ulrik Brandes [1]_.
+
+    For weighted graphs the edge weights must be greater than zero.
+    Zero edge weights can produce an infinite number of equal length 
+    paths between pairs of nodes.
 
     The normalization might seem a little strange but it is the same
     as in edge_betweenness_centrality() and is designed to make
