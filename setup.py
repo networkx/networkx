@@ -29,6 +29,7 @@ sys.path.pop(0)
 packages=["networkx",
           "networkx.algorithms",
           "networkx.algorithms.centrality",
+          "networkx.algorithms.components",
           "networkx.algorithms.traversal",
           "networkx.algorithms.isomorphism",
           "networkx.algorithms.shortest_paths",
