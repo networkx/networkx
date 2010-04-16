@@ -4,7 +4,7 @@ Generators for some directed graphs.
 gn_graph: growing network 
 gnc_graph: growing network with copying
 gnr_graph: growing network with redirection
-scal_
+scale_free_graph: scale free directed graph 
 
 """
 #    Copyright (C) 2006-2009 by 
