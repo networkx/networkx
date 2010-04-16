@@ -2,11 +2,12 @@
 Components
 **********
 
-.. automodule:: networkx.algorithms.component
+.. automodule:: networkx.algorithms.components
 .. currentmodule:: networkx
 
-Undirected Graphs
-^^^^^^^^^^^^^^^^^
+Connectivity
+^^^^^^^^^^^^
+.. automodule:: networkx.algorithms.components.connected
 .. autosummary::
    :toctree: generated/
 
@@ -16,8 +17,9 @@ Undirected Graphs
    connected_component_subgraphs
    node_connected_component
 
-Directed Graphs
-^^^^^^^^^^^^^^^
+Strong connectivity
+^^^^^^^^^^^^^^^^^^^
+.. automodule:: networkx.algorithms.components.strongly_connected
 .. autosummary::
    :toctree: generated/
 
@@ -27,6 +29,30 @@ Directed Graphs
    strongly_connected_component_subgraphs
    strongly_connected_components_recursive
    kosaraju_strongly_connected_components
+   condensation
+
+
+Weak connectivity
+^^^^^^^^^^^^^^^^^
+.. automodule:: networkx.algorithms.components.weakly_connected
+.. autosummary::
+   :toctree: generated/
+
+   is_weakly_connected
+   number_weakly_connected_components
+   weakly_connected_components
+   weakly_connected_component_subgraphs
+
+Atrracting components
+^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: networkx.algorithms.components.attracting
+.. autosummary::
+   :toctree: generated/
+
+   is_attracting_component
+   number_attracting_components
+   attracting_components
+   attracting_component_subgraphs
 
 
 

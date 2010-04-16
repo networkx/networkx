@@ -1,7 +1,7 @@
 from centrality import *
 from clique import *
 from cluster import *
-from component import *
+from components import *
 from core import *
 from cycles import *
 from dag import *
@@ -25,3 +25,4 @@ import isomorphism
 import shortest_paths
 import link_analysis
 import mixing
+import components
