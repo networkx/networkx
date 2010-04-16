@@ -8,6 +8,7 @@ Graph generators
 
 Atlas
 -----
+.. automodule:: networkx.generators.atlas
 .. autosummary::
    :toctree: generated/
 
@@ -15,6 +16,7 @@ Atlas
 
 Classic
 -------
+.. automodule:: networkx.generators.classic
 .. autosummary::
    :toctree: generated/
    
@@ -39,6 +41,7 @@ Classic
 
 Small
 -----
+.. automodule:: networkx.generators.small
 .. autosummary::
    :toctree: generated/
 
@@ -69,6 +72,7 @@ Small
 
 Random Graphs
 -------------
+.. automodule:: networkx.generators.random_graphs
 .. autosummary::
    :toctree: generated/
 
@@ -93,7 +97,7 @@ Random Graphs
 
 Degree Sequence
 ---------------
-
+.. automodule:: networkx.generators.degree_seq
 
 .. autosummary::
    :toctree: generated/
@@ -108,12 +112,10 @@ Degree Sequence
    double_edge_swap
    connected_double_edge_swap
    li_smax_graph
-   s_metric
-
 
 Directed
 --------
-
+.. automodule:: networkx.generators.directed
 .. autosummary::
    :toctree: generated/
 
@@ -125,7 +127,7 @@ Directed
 
 Geometric
 ---------
-
+.. automodule:: networkx.generators.geometric
 .. autosummary::
    :toctree: generated/
 
@@ -134,6 +136,7 @@ Geometric
 
 Hybrid
 ------
+.. automodule:: networkx.generators.hybrid
 .. autosummary::
    :toctree: generated/
 
@@ -143,6 +146,7 @@ Hybrid
 
 Bipartite
 ---------
+.. automodule:: networkx.generators.bipartite
 .. autosummary::
    :toctree: generated/
 
@@ -156,6 +160,7 @@ Bipartite
 
 Line Graph
 ----------
+.. automodule:: networkx.generators.line
 .. autosummary::
    :toctree: generated/
 
@@ -164,6 +169,7 @@ Line Graph
 
 Ego Graph
 ---------
+.. automodule:: networkx.generators.ego
 .. autosummary::
    :toctree: generated/
 
@@ -171,6 +177,7 @@ Ego Graph
 
 Stochastic
 ----------
+.. automodule:: networkx.generators.stochastic
 .. autosummary::
    :toctree: generated/
 

@@ -16,15 +16,17 @@ New features
  - :mod:`Algorithm for finding a basis for graph cycles <networkx.algorithms.cycles>` 
  - :mod:`Blockmodeling <networkx.algorithms.block>` 
  - :mod:`Assortativity and mixing matrices <networkx.algorithms.mixing>` 
- - :mod:`In-degree and out-degree centrality <networkx.algorithms.centrality.degree>` 
- - :mod:`Attracting components and condensation <networkx.algorithms.component>`
+ - :mod:`in-degree and out-degree centrality <networkx.algorithms.centrality.degree>` 
+ - :mod:`Attracting components <networkx.algorithms.components.attracting>` 
+   and  :mod:`condensation <networkx.algorithms.components.strongly_connected>`.
+ - :mod:`Weakly connected components <networkx.algorithms.components.weakly_connected>`
  - :mod:`Simpler interface to shortest path algorithms <networkx.algorithms.shortest_paths.generic>` 
  - :mod:`Edgelist format to read and write data with attributes <networkx.readwrite.edgelist>` 
- - :mod:`Attribute matrices <networkx.linalg.attrmatrix>` 
+ - :mod:`Attribute matrices <networkx.linalg.spectrum>` 
  - :mod:`GML reader for nested attributes <networkx.readwrite.gml>` 
  - Current-flow (random walk) 
    :mod:`betweenness <networkx.algorithms.centrality.current_flow_betweenness>` 
-   betweeness and 
+   and 
    :mod:`closeness <networkx.algorithms.centrality.current_flow_closeness>`. 
  - :mod:`Directed configuration model <networkx.generators.degree_seq>`,
    and  :mod:`directed random graph model <networkx.generators.random_graphs>`.

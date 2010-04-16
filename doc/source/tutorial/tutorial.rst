@@ -134,8 +134,8 @@ You can specify graph data upon instantiation if an appropriate structure exists
 >>> H=nx.Graph({0:[1,2,3], 1:[0,3], 2:[0], 3:[0]})  # dict-of-lists adjacency
 
 
-Edge Objects
-------------
+Edge Attributes
+---------------
 
 Edge data/weights/labels/objects can also be associated with an edge.
 Each edge has an attribute dictionary associated with it.  Arbitrary

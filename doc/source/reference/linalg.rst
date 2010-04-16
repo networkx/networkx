@@ -8,7 +8,7 @@ Linear algebra
 
 Spectrum
 ---------
-
+.. automodule:: networkx.linalg.spectrum
 .. autosummary::
    :toctree: generated/
 
@@ -22,6 +22,7 @@ Spectrum
 Attribute Matrices
 ------------------
 
+.. automodule:: networkx.linalg.attrmatrix
 .. autosummary::
    :toctree: generated/
 
