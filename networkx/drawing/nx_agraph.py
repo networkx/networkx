@@ -319,15 +319,56 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
 
     import pygraphviz
 
-    A = to_agraph(G)
-    # set up drawing attributes
-    A.edge_attr['fontsize'] = '10'
-    A.node_attr['style'] = 'filled'
-    A.node_attr['fillcolor'] = '#0000FF40'
-    A.node_attr['height'] = '0.75'
-    A.node_attr['width'] = '0.75'
-    A.node_attr['shape'] = 'circle'
+    # If we are providing default values for graphviz, these must be set
+    # before any nodes or edges are added to the PyGraphviz graph object.
+    # The reason for this is that default values only affect incoming objects.
+    # If you change the default values after the objects have been added,
+    # then they inherit no value and are set only if explicitly set.
 
+    # to_agraph() uses these values.
+    attrs = ['edge', 'node', 'graph']
+    for attr in attrs:
+        if attr not in G.graph:
+            G.graph[attr] = {}
+    
+    # These are the default values.
+    edge_attrs = {'fontsize': '10'}
+    node_attrs = {'style': 'filled',
+                  'fillcolor': '#0000FF40',
+                  'height': '0.75',
+                  'width': '0.75',
+                  'shape': 'circle'}
+    graph_attrs = {}
+
+    def update_attrs(which, attrs):
+        # Update graph attributes. Return list of those which were added.
+        added = []
+        for k,v in attrs.iteritems():
+            if k not in G.graph[which]:
+                G.graph[which][k] = v
+                added.append(k)
+
+    def clean_attrs(which, added):
+        # Remove added attributes
+        for attr in added:
+            del G.graph[which][attr]
+        if not G.graph[which]:
+            del G.graph[which]
+
+    # Update all default values
+    added_edge = update_attrs('edge', edge_attrs)
+    added_node = update_attrs('node', node_attrs)
+    added_graph = update_attrs('graph', graph_attrs)
+
+    # Convert to agraph, so we inherit default values
+    A = to_agraph(G)
+
+    # Remove the default values we added to the original graph.
+    clean_attrs('edge', edge_attrs)
+    clean_attrs('node', node_attrs)
+    clean_attrs('graph', graph_attrs)
+
+    # If the user passed in an edgelabel, we update the labels for all edges.
     if edgelabel is not None:
         if not hasattr(edgelabel, '__call__'):
             def func(data):
