@@ -2,6 +2,7 @@
 
 .. currentmodule:: networkx
 
+Start here to begin working with NetworkX.
 
 
 Creating a graph
@@ -126,43 +127,21 @@ Removing nodes or edges has similar syntax to adding:
 [1, 2, 3, 'spam']
 >>> G.remove_edge(1,3)
 
-You can specify graph data upon instantiation if an appropriate structure exists.
+When creating a graph structure (by instantiating one of the graph
+classes you can specify data in several formts.  
 
 >>> H=nx.DiGraph(G)   # create a DiGraph using the connections from G
 >>> H.edges()
 [(1, 2), (2, 1)]
->>> H=nx.Graph({0:[1,2,3], 1:[0,3], 2:[0], 3:[0]})  # dict-of-lists adjacency
+>>> edgelist=[(0,1),(1,2),(2,3)]
+>>> H=nx.Graph(edgelist) 
 
-
-Edge Attributes
----------------
-
-Edge data/weights/labels/objects can also be associated with an edge.
-Each edge has an attribute dictionary associated with it.  Arbitrary
-key=value attributes can be assigned.  The special attribute 'weight'
-should be numeric and holds values used by algorithms requiring 
-weighted edges.
-
->>> H=nx.Graph()
->>> H.add_edge(1,2,color='red')
->>> H.add_edges_from([(1,3,{'color':'blue'}), (2,0,{'color':'red'}), (0,3)])
->>> H.edges()
-[(0, 2), (0, 3), (1, 2), (1, 3)]
->>> H.edges(data=True)
-[(0, 2, {'color': 'red'}), (0, 3, {}), (1, 2, {'color': 'red'}), (1, 3, {'color': 'blue'})]
-
-To update the edge attributes for an existing edge, add the
-edge again with the new value. (Note: with :class:`MultiGraph`
-you need to keep track of the edge key for the edge you want to update.)
-
->>> H.add_edge(0,2,color='blue')
->>> H.edges(data=True)
-[(0, 2, {'color': 'blue'}), (0, 3, {}), (1, 2, {'color': 'red'}), (1, 3, {'color': 'blue'})]
-
-You might notice that nodes and edges are not NetworkX objects.  
-This leaves you free to use your existing node and edge
-objects, or more typically, use numerical values or strings where appropriate.
-A node can be any hashable object (except None), and an edge can be associated 
+What to use as nodes and edges
+------------------------------
+You might notice that nodes and edges are not specified as NetworkX
+objects.  This leaves you free to use meaningful items as nodes and
+edges. The most common choices are numbers or strings, buut a node can
+be any hashable object (except None), and an edge can be associated
 with any object x using G.add_edge(n1,n2,object=x).
 
 As an example, n1 and n2 could be protein objects from the RCSB Protein 
@@ -218,6 +197,66 @@ Note that for undirected graphs this actually looks at each edge twice.
 (2, 1, 0.125)
 (3, 4, 0.375)
 (4, 3, 0.375)
+
+
+Adding attributes to graphs, nodes, and edges
+---------------------------------------------
+Attributes such as weights, labels, colors, or whatever
+Python object you like, can be attached to graphs, nodes, or edges.
+
+Each graph, node, and edge can hold key/value attribute pairs
+in an associated attribute dictionary (the keys must be hashable).
+By default these are empty, but attributes can be added or changed using
+add_edge, add_node or direct manipulation of the attribute 
+dictionaries named G.graph, g.node and G.edge for a graph G.
+
+
+Graph attributes
+~~~~~~~~~~~~~~~~
+Assign graph attributes when creating a new graph
+
+>>> G = nx.Graph(day="Friday")
+>>> G.graph
+{'day': 'Friday'}
+
+Or you can modify attriubutes later
+
+>>> G.graph['day']='Monday'
+>>> G.graph
+{'day': 'Monday'}
+
+
+
+Node attributes
+~~~~~~~~~~~~~~~
+
+Add node attributes using add_node(), add_nodes_from() or G.node
+
+>>> G.add_node(1, time='5pm')
+>>> G.add_nodes_from([3], time='2pm')
+>>> G.node[1]
+{'time': '5pm'}
+>>> G.node[1]['room'] = 714
+>>> G.nodes(data=True)
+[(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
+
+Note that adding a node to G.node does not add it to the graph,
+use G.add_node() to add new nodes.
+
+
+Edge Attributes
+~~~~~~~~~~~~~~~
+Add edge attributes using add_edge(), add_edges_from(), subscript
+notation, or G.edge.
+
+>>> G.add_edge(1, 2, weight=4.7 )
+>>> G.add_edges_from([(3,4),(4,5)], color='red')
+>>> G.add_edges_from([(1,2,{'color':'blue'}), (2,3,{'weight':8})])
+>>> G[1][2]['weight'] = 4.7
+>>> G.edge[1][2]['weight'] = 4
+
+The special attribute 'weight'
+should be numeric and holds values used by algorithms requiring weighted edges.
 
 
 Directed graphs
