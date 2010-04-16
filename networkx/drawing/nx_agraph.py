@@ -275,7 +275,8 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
             node_pos[n]=(0.0,0.0)
     return node_pos
 
-def view_pygraphviz(G, edgelabel=None, prog='neato', suffix='', filename=None):
+def view_pygraphviz(G, edgelabel=None, prog='neato', args='', 
+                       suffix='', filename=None):
     """Views the graph G using the specified layout algorithm.
 
     Parameters
@@ -290,12 +291,21 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', suffix='', filename=None):
         where `data` is the edge attribute dictionary.
     prog : string
         Name of Graphviz layout program.
+    args : str
+        Additional arguments to pass to the Graphviz layout program.
     suffix : str
         If `filename` is None, we save to a temporary file.  The value of
         `suffix` will appear at the tail end of the temporary filename.
     filename : str, None
         The filename used to save the image.  If None, save to a temporary
         file.  File formats are the same as those from pygraphviz.agraph.draw.
+
+    Returns
+    -------
+    filename : str
+        The filename of the generated image.
+    A : PyGraphviz graph
+        The PyGraphviz graph instance used to generate the image.
 
     Notes
     -----
@@ -319,33 +329,82 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', suffix='', filename=None):
     A.node_attr['shape'] = 'circle'
 
     if edgelabel is not None:
-        if not callable(edgelabel):
-            func = lambda data: ''.join(["  ", str(data[edgelabel]), "  "])
+        if not hasattr(edgelabel, '__call__'):
+            def func(data):
+                return ''.join(["  ", str(data[edgelabel]), "  "])
         else:
             func = edgelabel
 
         # update all the edge labels
         if G.is_multigraph():
             for u,v,key,data in G.edges_iter(keys=True, data=True):
-                edge = A.get_edge(str(u),str(v),str(key))
+                # PyGraphviz doesn't convert the key to a string. See #339
+                edge = A.get_edge(u,v,str(key))
                 edge.attr['label'] = str(func(data))
         else:
             for u,v,data in G.edges_iter(data=True):
-                edge = A.get_edge(str(u),str(v))
+                edge = A.get_edge(u,v)
                 edge.attr['label'] = str(func(data))
 
-    # save to a file and display in the default viewer
-    cmds = {'darwin': 'open', 'linux2': 'xdg-open', 'win32': 'start'}
     if filename is None:
+        ext = 'png'
         if suffix:
-            suffix = '_%s.png' % suffix
+            suffix = '_%s.%s' % (suffix, ext)
         else:
-            suffix = '.png'
-        _, filename = tempfile.mkstemp(suffix=suffix)
-    A.draw(filename, prog=prog)
-    subprocess.call([cmds[sys.platform], filename])
-    #if sys.platform == 'linux2':
-    #    time.sleep(.5)
+            suffix = '.%s' % (ext,)
+        fd, filename = tempfile.mkstemp(suffix=suffix)
+        path = (fd, filename)
+    else:
+        path = (filename,)
 
-    return filename
+    display_pygraphviz(A, path=path, prog=prog, args=args)
+
+    return filename, A
+
+def display_pygraphviz(graph, path, format=None, prog=None, args=''):
+    """Internal function to display a graph in OS dependent manner.
+
+    Parameters
+    ----------
+    graph : PyGraphviz graph
+        A PyGraphviz AGraph instance.
+    path : tuple
+        For temporary files, path is a 2-tuple containing the file descriptor
+        as returned by os.open and the filename. If `path` is a 1-tuple, then
+        the only element is the filename.
+    format : str, None
+        An attempt is made to guess the output format based on the extension
+        of the filename. If that fails, the value of `format` is used.
+    prog : string
+        Name of Graphviz layout program.
+    args : str
+        Additional arguments to pass to the Graphviz layout program.
+
+    Notes
+    -----
+    If this function is called in succession too quickly, sometimes the 
+    image is not displayed. So you might consider time.sleep(.5) between
+    calls if you experience problems.
+    
+    """
+    # This would be more useful as part of PyGraphviz.
+
+    if len(path) == 2:
+        fd, filename = path
+        path = os.fdopen(fd, "w+b")  # grab file-object associated to fd
+    else:
+        filename = path[0]
+        path = filename              # graph.draw() will open the file-object
+
+    # If we are using a temporary file, the file-object does not contain the
+    # name of the file. This means that graph.draw() will fail to detect the 
+    # format and will set it to 'dot' by default. Since we have the filename,
+    # we explicitly set the format.
+    if format is None:
+        format = os.path.splitext(filename)[-1].lower()[1:]
+    
+    # Save to a file and display in the default viewer.
+    cmds = {'darwin': 'open', 'linux2': 'xdg-open', 'win32': 'start'}
+    graph.draw(path, format, prog, args)
+    subprocess.call([cmds[sys.platform], filename])
 
