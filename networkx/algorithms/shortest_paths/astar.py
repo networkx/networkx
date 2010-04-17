@@ -15,6 +15,7 @@ Matteo Dell'Amico <matteodellamico@gmail.com>"""
 
 from heapq import heappush, heappop
 from networkx import NetworkXError
+import networkx as nx
 
 __all__ = ['astar_path','astar_path_length']
 

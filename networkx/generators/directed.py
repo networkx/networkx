@@ -20,7 +20,7 @@ __all__ = ['gn_graph', 'gnc_graph', 'gnr_graph','scale_free_graph']
 import math
 import random
 
-import networkx
+import networkx as nx
 from networkx.generators.classic import empty_graph, cycle_graph
 from networkx import MultiDiGraph
 from networkx.utils import discrete_sequence
@@ -63,9 +63,9 @@ def gn_graph(n,kernel=None,create_using=None,seed=None):
            Phys. Rev. E, 63, 066123, 2001.
     """
     if create_using is None:
-        create_using = networkx.DiGraph()
+        create_using = nx.DiGraph()
     elif not create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph required in create_using")
+        raise nx.NetworkXError("Directed Graph required in create_using")
 
     if kernel is None:
         kernel = lambda x: x
@@ -125,9 +125,9 @@ def gnr_graph(n,p,create_using=None,seed=None):
            Phys. Rev. E, 63, 066123, 2001.
     """
     if create_using is None:
-        create_using = networkx.DiGraph()
+        create_using = nx.DiGraph()
     elif not create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph required in create_using")
+        raise nx.NetworkXError("Directed Graph required in create_using")
 
     if not seed is None:
         random.seed(seed)
@@ -170,9 +170,9 @@ def gnc_graph(n,create_using=None,seed=None):
            Phys. Rev. E, 71, 036118, 2005k.},
     """
     if create_using is None:
-        create_using = networkx.DiGraph()
+        create_using = nx.DiGraph()
     elif not create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph required in create_using")
+        raise nx.NetworkXError("Directed Graph required in create_using")
 
     if not seed is None:
         random.seed(seed)
@@ -255,13 +255,13 @@ def scale_free_graph(n,
 
     if create_using is None:
         # start with 3-cycle
-        G = networkx.MultiDiGraph()
+        G = nx.MultiDiGraph()
         G.add_edges_from([(0,1),(1,2),(2,0)])
     else:
         # keep existing graph structure?
         G = create_using
         if not (G.is_directed() and G.is_multigraph()):
-            raise networkx.NetworkXError(\
+            raise nx.NetworkXError(\
                   "MultiDiGraph required in create_using")
 
     if alpha <= 0:

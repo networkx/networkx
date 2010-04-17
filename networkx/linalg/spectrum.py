@@ -12,7 +12,7 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
 #    All rights reserved.
 #    BSD license.
 
-import networkx
+import networkx as nx
 
 __all__ = ['adj_matrix', 'laplacian', 'generalized_laplacian',
            'laplacian_spectrum', 'adjacency_spectrum','normalized_laplacian']
@@ -47,7 +47,7 @@ def adj_matrix(G,nodelist=None):
     to_numpy_matrix
     to_dict_of_dicts
     """
-    return networkx.to_numpy_matrix(G,nodelist=nodelist)
+    return nx.to_numpy_matrix(G,nodelist=nodelist)
 
 
 def laplacian(G,nodelist=None):
@@ -82,7 +82,7 @@ def laplacian(G,nodelist=None):
     # this isn't the most efficient way to do this...
     n=G.order()
     I=np.identity(n)
-    A=np.asarray(networkx.to_numpy_matrix(G,nodelist=nodelist))
+    A=np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist))
     D=I*np.sum(A,axis=1)
     L=D-A
     return L
@@ -123,7 +123,7 @@ def normalized_laplacian(G,nodelist=None):
     except ImportError:
         raise ImportError, \
           "normalized_laplacian() requires numpy: http://scipy.org/ "
-    A=np.asarray(networkx.to_numpy_matrix(G,nodelist=nodelist))
+    A=np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist))
     d=np.sum(A,axis=1)
     I=np.identity(len(d))
     L=I*d-A

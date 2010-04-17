@@ -9,7 +9,7 @@ __author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
                             'Aric Hagberg <hagberg@lanl.gov>'])
 __all__=['blockmodel']
 
-import networkx
+import networkx as nx
 
 def blockmodel(G,partitions,multigraph=False):
     """Returns a reduced graph constructed using the generalized block modeling
@@ -63,19 +63,19 @@ def blockmodel(G,partitions,multigraph=False):
         u.update(p1)
         #if not u.isdisjoint(p2):  # Python 2.6 required
         if len (u.intersection(p2))>0:
-            raise networkx.NetworkXException("Overlapping node partitions.")
+            raise nx.NetworkXException("Overlapping node partitions.")
 
     # Initialize blockmodel graph
     if multigraph:
         if G.is_directed():
-            M=networkx.MultiDiGraph() 
+            M=nx.MultiDiGraph() 
         else:
-            M=networkx.MultiGraph() 
+            M=nx.MultiGraph() 
     else:
         if G.is_directed():
-            M=networkx.DiGraph() 
+            M=nx.DiGraph() 
         else:
-            M=networkx.Graph() 
+            M=nx.Graph() 
         
     # Add nodes and properties to blockmodel            
     # The blockmodel nodes are node-induced subgraphs of G
@@ -87,7 +87,7 @@ def blockmodel(G,partitions,multigraph=False):
         M.node[i]['graph']=SG        
         M.node[i]['nnodes']=SG.number_of_nodes()
         M.node[i]['nedges']=SG.number_of_edges()
-        M.node[i]['density']=networkx.density(SG)
+        M.node[i]['density']=nx.density(SG)
         
     # Create mapping between original node labels and new blockmodel node labels
     block_mapping={}

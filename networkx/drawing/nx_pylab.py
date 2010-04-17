@@ -35,7 +35,7 @@ __all__ = ['draw',
            'draw_graphviz']
 
 
-import networkx
+import networkx as nx
 from networkx.drawing.layout import shell_layout,\
     circular_layout,spectral_layout,spring_layout,random_layout
 
@@ -267,7 +267,7 @@ def draw_networkx(G, pos=None, ax=None, with_labels=True, **kwds):
         raise
 
     if pos is None:
-        pos=networkx.drawing.spring_layout(G) # default to spring layout
+        pos=nx.drawing.spring_layout(G) # default to spring layout
 
     node_collection=draw_networkx_nodes(G, pos, **kwds)
     edge_collection=draw_networkx_edges(G, pos, **kwds) 
@@ -384,9 +384,9 @@ def draw_networkx_nodes(G, pos,
     try:
         xy=numpy.asarray([pos[v] for v in nodelist])
     except KeyError,e:
-        raise networkx.NetworkXError('Node %s has no position.'%e)
+        raise nx.NetworkXError('Node %s has no position.'%e)
     except ValueError:
-        raise networkx.NetworkXError('Bad value in node positions.')
+        raise nx.NetworkXError('Bad value in node positions.')
 
 
 
@@ -891,7 +891,7 @@ def draw_shell(G, **kwargs):
 
 def draw_graphviz(G, prog="neato", **kwargs):
     """Draw networkx graph with graphviz layout"""
-    pos=networkx.drawing.graphviz_layout(G,prog)
+    pos=nx.drawing.graphviz_layout(G,prog)
     draw(G,pos,**kwargs)
 
 def draw_nx(G,pos,**kwds):

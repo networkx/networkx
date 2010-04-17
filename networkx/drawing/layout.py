@@ -21,7 +21,7 @@ __all__ = ['circular_layout',
            'spectral_layout',
            'fruchterman_reingold_layout']
 
-import networkx
+import networkx as nx
 
 
 def random_layout(G,dim=2):
@@ -200,7 +200,7 @@ def fruchterman_reingold_layout(G,dim=2,
         # Sparse matrix 
         if len(G) < 500:  # sparse solver for large graphs
             raise ValueError
-        A=networkx.to_scipy_sparse_matrix(G)
+        A=nx.to_scipy_sparse_matrix(G)
         pos=_sparse_fruchterman_reingold(A,
                                          pos=pos_arr,
                                          fixed=fixed,
@@ -208,7 +208,7 @@ def fruchterman_reingold_layout(G,dim=2,
                                          iterations=iterations,
                                          weighted=weighted)
     except:
-        A=networkx.to_numpy_matrix(G)
+        A=nx.to_numpy_matrix(G)
         pos=_fruchterman_reingold(A,
                                   pos=pos_arr,
                                   fixed=fixed,
@@ -242,7 +242,7 @@ def _fruchterman_reingold(A,dim=2,
     try:
         nnodes,_=A.shape
     except AttributeError:
-        raise networkx.NetworkXError(
+        raise nx.NetworkXError(
             "fruchterman_reingold() takes an adjacency matrix as input")
     
     A=np.asarray(A) # make sure we have an array instead of a matrix
@@ -310,7 +310,7 @@ def _sparse_fruchterman_reingold(A,dim=2,
     try:
         nnodes,_=A.shape
     except AttributeError:
-        raise networkx.NetworkXError(
+        raise nx.NetworkXError(
             "fruchterman_reingold() takes an adjacency matrix as input")
     
     try:
@@ -428,14 +428,14 @@ def spectral_layout(G,dim=2,weighted=True,scale=1):
         # Sparse matrix 
         if len(G)< 500:  # dense solver is faster for small graphs
             raise ValueError
-        A=networkx.to_scipy_sparse_matrix(G)
+        A=nx.to_scipy_sparse_matrix(G)
         # Symmetrize directed graphs
         if G.is_directed():
             A=A+np.transpose(A)
         pos=_sparse_spectral(A,dim=dim,weighted=weighted)
     except (ImportError,ValueError):
         # Dense matrix
-        A=networkx.to_numpy_matrix(G)
+        A=nx.to_numpy_matrix(G)
         # Symmetrize directed graphs
         if G.is_directed():
             A=A+np.transpose(A)
@@ -456,7 +456,7 @@ def _spectral(A,dim=2,weighted=True):
     try:
         nnodes,_=A.shape
     except AttributeError:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
             "spectral() takes an adjacency matrix as input")
     
     # form Laplacian matrix
@@ -485,7 +485,7 @@ def _sparse_spectral(A,dim=2,weighted=True):
     try:
         nnodes,_=A.shape
     except AttributeError:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
             "sparse_spectral() takes an adjacency matrix as input")
     
     # form Laplacian matrix

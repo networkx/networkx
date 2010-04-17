@@ -16,8 +16,7 @@ __all__ = ['load_centrality',
            'edge_load']
 
 import heapq
-import networkx
-
+import networkx as nx
 
 def newman_betweenness_centrality(G,v=None,cutoff=None,
                            normalized=True,
@@ -109,9 +108,9 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=False
 
     # get the predecessor and path length data
     if weighted_edges:
-        (pred,length)=networkx.dijkstra_predecessor_and_distance(G,source) 
+        (pred,length)=nx.dijkstra_predecessor_and_distance(G,source) 
     else:
-        (pred,length)=networkx.predecessor(G,source,cutoff=cutoff,return_seen=True) 
+        (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True) 
 
     # order the nodes by path length
     onodes = [ (l,vert) for (vert,l) in length.items() ]
@@ -170,7 +169,7 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
     between={}
     # get the predecessor data
     #(pred,length)=_fast_predecessor(G,source,cutoff=cutoff) 
-    (pred,length)=networkx.predecessor(G,source,cutoff=cutoff,return_seen=True) 
+    (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True) 
     # order the nodes by path length
     onodes = [ nn for dd,nn in sorted( (dist,n) for n,dist in length.iteritems() )]
     # intialize betweenness, doesn't account for any edge weights

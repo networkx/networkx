@@ -14,8 +14,7 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
 
 __all__ = ['closeness_centrality']
 
-
-import networkx
+import networkx as nx
 
 def closeness_centrality(G,v=None,weighted_edges=False):
     """Compute closeness centrality for nodes.
@@ -55,9 +54,9 @@ def closeness_centrality(G,v=None,weighted_edges=False):
 
     """
     if weighted_edges:
-        path_length=networkx.single_source_dijkstra_path_length
+        path_length=nx.single_source_dijkstra_path_length
     else:
-        path_length=networkx.single_source_shortest_path_length
+        path_length=nx.single_source_shortest_path_length
 
     if v is None:
         closeness_centrality={}

@@ -38,7 +38,7 @@ __all__ = ['read_multiline_adjlist', 'write_multiline_adjlist',
 
 
 from networkx.utils import is_string_like,_get_fh
-import networkx
+import networkx as nx
 
 def write_multiline_adjlist(G, path, delimiter=' ', comments='#'):
     """
@@ -222,7 +222,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
         pass # use potentially unsafe built-in eval 
 
     if create_using is None:
-        G=networkx.Graph()
+        G=nx.Graph()
     else:
         try:
             G=create_using
@@ -405,7 +405,7 @@ def read_adjlist(path, comments="#", delimiter=' ',
 
     """
     if create_using is None:
-        G=networkx.Graph()
+        G=nx.Graph()
     else:
         try:
             G=create_using

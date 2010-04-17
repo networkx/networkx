@@ -37,7 +37,7 @@ __all__ = ['read_edgelist',
            ]
 
 from networkx.utils import is_string_like,_get_fh
-import networkx
+import networkx as nx
 
 
 def write_edgelist(G, path, comments="#", delimiter=' ', data=True):
@@ -205,7 +205,7 @@ def read_edgelist(path,
     except:
         literal_eval=eval # use potentially unsafe built-in eval 
     if create_using is None:
-        G=networkx.Graph()
+        G=nx.Graph()
     else:
         try:
             G=create_using

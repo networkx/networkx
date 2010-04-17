@@ -16,7 +16,7 @@ __all__ = ['degree_centrality',
            'in_degree_centrality',
            'out_degree_centrality']
 
-import networkx
+import networkx as nx
 
 def degree_centrality(G):
     """Compute the degree centrality for nodes.
@@ -81,7 +81,7 @@ def in_degree_centrality(G):
     are possible.
     """
     if not G.is_directed():
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
             "in_degree_centrality() not defined for undirected graphs.")
     centrality={}
     s=1.0/(len(G)-1.0)
@@ -119,7 +119,7 @@ def out_degree_centrality(G):
     are possible.
     """
     if not G.is_directed():
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
             "out_degree_centrality() not defined for undirected graphs.")
     centrality={}
     s=1.0/(len(G)-1.0)

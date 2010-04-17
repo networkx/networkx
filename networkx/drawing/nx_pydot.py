@@ -28,7 +28,7 @@ __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
 
 import sys
 from networkx.utils import _get_fh
-import networkx
+import networkx as nx
 
 
 def write_dot(G,path):
@@ -88,17 +88,17 @@ def from_pydot(P):
         
     if P.get_type()=='graph': # undirected
         if multiedges:
-            create_using=networkx.MultiGraph()
+            create_using=nx.MultiGraph()
         else:
-            create_using=networkx.Graph()
+            create_using=nx.Graph()
     else:
         if multiedges:
-            create_using=networkx.MultiDiGraph()
+            create_using=nx.MultiDiGraph()
         else:
-            create_using=networkx.DiGraph()
+            create_using=nx.DiGraph()
 
     # assign defaults        
-    N=networkx.empty_graph(0,create_using)
+    N=nx.empty_graph(0,create_using)
     N.name=P.get_name()
     node_attr={}
 

@@ -12,6 +12,7 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 #    BSD license.
 #
 
+import networkx as nx
 from networkx.classes.graph import Graph
 from networkx import NetworkXException, NetworkXError
 from copy import deepcopy

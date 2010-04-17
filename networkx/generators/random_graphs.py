@@ -15,7 +15,7 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
 import itertools
 import random
 import math
-import networkx
+import networkx as nx
 from networkx.generators.classic import empty_graph, path_graph, complete_graph
 
 # until we require python2.5 fall back to pure Python defaultdict 
@@ -117,7 +117,7 @@ def fast_gnp_random_graph(n, p, create_using=None, seed=None):
        Phys. Rev. E, 71, 036113, 2005.
     """
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n,create_using)
     G.name="fast_gnp_random_graph(%s,%s)"%(n,p)
 
@@ -174,7 +174,7 @@ def gnp_random_graph(n, p, create_using=None, seed=None):
 
     """
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n,create_using)
     G.name="gnp_random_graph(%s,%s)"%(n,p)
 
@@ -226,7 +226,7 @@ def directed_gnp_random_graph(n, p, create_using=None, seed=None):
 
     """
     if create_using is None:
-        create_using=networkx.DiGraph()
+        create_using=nx.DiGraph()
     G=empty_graph(n,create_using)
     G.name="directed gnp_random_graph(%s,%s)"%(n,p)
 
@@ -281,7 +281,7 @@ def dense_gnm_random_graph(n, m, create_using=None, seed=None):
         G=complete_graph(n,create_using)
     else:
         if create_using is not None and create_using.is_directed():
-            raise networkx.NetworkXError("Directed Graph not supported")
+            raise nx.NetworkXError("Directed Graph not supported")
         G=empty_graph(n,create_using)
 
         G.name="dense_gnm_random_graph(%s,%s)"%(n,m)
@@ -326,7 +326,7 @@ def gnm_random_graph(n, m, create_using=None, seed=None):
       
     """
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n,create_using)
     G.name="gnm_random_graph(%s,%s)"%(n,m)
 
@@ -395,7 +395,7 @@ def newman_watts_strogatz_graph(n, k, p, create_using=None, seed=None):
     if seed is not None:
         random.seed(seed)
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n,create_using)
     G.name="newman_watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
     nlist = G.nodes()
@@ -461,9 +461,9 @@ def watts_strogatz_graph(n, k, p, create_using=None, seed=None):
        Nature, 393, pp. 440--442, 1998.
     """
     if create_using is None:
-        G = networkx.Graph()
+        G = nx.Graph()
     elif create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     else:
         G = create_using
         G.clear()
@@ -521,14 +521,14 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, create_using=None, seed=N
     watts_strogatz_graph()
 
     """
-    from networkx.algorithms.traversal.component import is_connected
+    from nx.algorithms.traversal.component import is_connected
     G = watts_strogatz_graph(n, k, p, create_using, seed)
     t=1
     while not is_connected(G):
         G = watts_strogatz_graph(n, k, p, create_using, seed)
         t=t+1
         if t>tries:
-            raise networkx.NetworkXError("Maximum number of tries exceeded")
+            raise nx.NetworkXError("Maximum number of tries exceeded")
     return G
 
 
@@ -571,15 +571,15 @@ def random_regular_graph(d, n, create_using=None, seed=None):
        http://doi.acm.org/10.1145/780542.780576
     """
     if (n * d) % 2 != 0:
-        raise networkx.NetworkXError("n * d must be even")
+        raise nx.NetworkXError("n * d must be even")
 
     if not 0 <= d < n:
-        raise networkx.NetworkXError("the 0 <= d < n inequality must be satisfied")
+        raise nx.NetworkXError("the 0 <= d < n inequality must be satisfied")
 
     if create_using is None:
-        G = networkx.Graph()
+        G = nx.Graph()
     elif create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     else:
         G = create_using
         G.clear()
@@ -678,11 +678,11 @@ def barabasi_albert_graph(n, m, create_using=None, seed=None):
     """
         
     if m < 1 or  m >=n:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "Barabási-Albert network must have m>=1 and m<n, m=%d,n=%d"%(m,n))
 
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
 
     if seed is not None:
         random.seed(seed)    
@@ -755,15 +755,15 @@ def powerlaw_cluster_graph(n, m, p, create_using=None, seed=None):
     """
 
     if m < 1 or n < m:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "NetworkXError must have m>1 and m<n, m=%d,n=%d"%(m,n))
 
     if p > 1 or p < 0:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "NetworkXError p must be in [0,1], p=%f"%(p))
 
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
 
     if seed is not None:
         random.seed(seed)    
@@ -828,7 +828,7 @@ def random_lobster(n, p1, p2, create_using=None, seed=None):
         random.seed(seed)
     llen=int(2*random.random()*n + 0.5)
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     L=path_graph(llen,create_using)
     L.name="random_lobster(%d,%s,%s)"%(n,p1,p2)
     # build caterpillar: add edges to path graph with probability p1
@@ -868,7 +868,7 @@ def random_shell_graph(constructor, create_using=None, seed=None):
 
     """
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(0,create_using)
     G.name="random_shell_graph(constructor)"
 
@@ -882,12 +882,12 @@ def random_shell_graph(constructor, create_using=None, seed=None):
     for (n,m,d) in constructor:
         inter_edges=int(m*d)
         intra_edges.append(m-inter_edges)
-        g=networkx.convert_node_labels_to_integers(
+        g=nx.convert_node_labels_to_integers(
             gnm_random_graph(n,inter_edges),
             first_label=nnodes)
         glist.append(g)
         nnodes+=n                     
-        G=networkx.operators.union(G,g)
+        G=nx.operators.union(G,g)
 
     # connect the shells randomly         
     for gi in range(len(glist)-1):
@@ -929,14 +929,14 @@ def random_powerlaw_tree(n, gamma=3, create_using=None, seed=None, tries=100):
     the sequence makes a tree (#edges=#nodes-1).  
 
     """
-    from networkx.generators.degree_seq import degree_sequence_tree
+    from nx.generators.degree_seq import degree_sequence_tree
     try:
         s=random_powerlaw_tree_sequence(n,
                                         gamma=gamma,
                                         seed=seed,
                                         tries=tries)
     except:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "Exceeded max (%d) attempts for a valid tree sequence."%tries)
     G=degree_sequence_tree(s,create_using)
     G.name="random_powerlaw_tree(%s,%s)"%(n,gamma)
@@ -969,12 +969,12 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
         random.seed(seed)
 
     # get trial sequence        
-    z=networkx.utils.powerlaw_sequence(n,exponent=gamma)
+    z=nx.utils.powerlaw_sequence(n,exponent=gamma)
     # round to integer values in the range [0,n]
     zseq=[min(n, max( int(round(s)),0 )) for s in z]
     
     # another sequence to swap values from
-    z=networkx.utils.powerlaw_sequence(tries,exponent=gamma)
+    z=nx.utils.powerlaw_sequence(tries,exponent=gamma)
     # round to integer values in the range [0,n]
     swap=[min(n, max( int(round(s)),0 )) for s in z]
 
@@ -984,7 +984,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
         index=random.randint(0,n-1)
         zseq[index]=swap.pop()
         
-    raise networkx.NetworkXError(\
+    raise nx.NetworkXError(\
           "Exceeded max (%d) attempts for a valid tree sequence."%tries)
     return False
 

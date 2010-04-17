@@ -12,10 +12,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['current_flow_closeness_centrality']
 
-import networkx
+import networkx as nx
 import numpy as np
-
-
 
 def current_flow_closeness_centrality(G,normalized=True):
     """Compute current-flow closeness centrality for nodes.
@@ -72,11 +70,11 @@ def current_flow_closeness_centrality(G,normalized=True):
     from itertools import izip
 
     if G.is_directed():
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
             "current_flow_closeness_centrality() not defined for digraphs.")
 
-    if not networkx.is_connected(G):
-        raise networkx.NetworkXError("Graph not connected.")
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("Graph not connected.")
 
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     n=len(G)
@@ -101,7 +99,7 @@ def current_flow_closeness_centrality(G,normalized=True):
 
 def _compute_C(G):
     """Compute inverse of Laplacian."""
-    L=networkx.laplacian(G) # use ordering of G.nodes()
+    L=nx.laplacian(G) # use ordering of G.nodes()
     # remove first row and column
     LR=L[1:,1:]
     LRinv=np.linalg.inv(LR)

@@ -11,7 +11,7 @@ Computes minimum spanning tree of a weighted graph.
 
 __all__ = ['mst', 'kruskal_mst','minimum_spanning_tree']
 
-import networkx
+import networkx as nx
 
 def minimum_spanning_tree(G):
     """Generate a minimum spanning tree of an undirected weighted graph.

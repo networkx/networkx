@@ -17,7 +17,7 @@ __all__ = ['union', 'cartesian_product',
            'disjoint_union', 'intersection', 
            'difference', 'symmetric_difference']
 
-import networkx
+import networkx as nx
 from networkx.utils import is_string_like
                                                                                 
 
@@ -77,12 +77,12 @@ def union(G,H,create_using=None,rename=False,name=None):
                 name=prefix+repr(x)
             return name
         mapping=functools.partial(add_prefix,prefix=rename[0])
-        G=networkx.relabel_nodes(G,mapping)
+        G=nx.relabel_nodes(G,mapping)
         mapping=functools.partial(add_prefix,prefix=rename[1])
-        H=networkx.relabel_nodes(H,mapping)
+        H=nx.relabel_nodes(H,mapping)
 
     if set(G) & set(H):
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
             """The node sets of G and H are not disjoint. 
 Use appropriate rename=('Gprefix','Hprefix') or use disjoint_union(G,H).""")
     # node names OK, now build union
@@ -121,8 +121,8 @@ def disjoint_union(G,H):
     that G and H be either both directed or both undirected.
 
     """
-    R1=networkx.convert_node_labels_to_integers(G)
-    R2=networkx.convert_node_labels_to_integers(H,first_label=len(R1))
+    R1=nx.convert_node_labels_to_integers(G)
+    R2=nx.convert_node_labels_to_integers(H,first_label=len(R1))
     R=union(R1,R2)
     R.name="disjoint_union( %s, %s )"%(G.name,H.name)
     return R
@@ -158,7 +158,7 @@ def intersection(G,H,create_using=None ):
     """
     # create new graph         
     if create_using is None:  # Graph object of the same type as G
-        R=networkx.create_empty_copy(G)
+        R=nx.create_empty_copy(G)
     else:                     # user specified graph 
         R=create_using 
         R.clear() 
@@ -166,7 +166,7 @@ def intersection(G,H,create_using=None ):
     R.name="Intersection of (%s and %s)"%(G.name, H.name)
 
     if set(G)!=set(H):
-        raise networkx.NetworkXError("Node sets of graphs are not equal")     
+        raise nx.NetworkXError("Node sets of graphs are not equal")     
     
     if G.number_of_edges()<=H.number_of_edges():
         if G.is_multigraph():
@@ -217,7 +217,7 @@ def difference(G,H,create_using=None):
     """
     # create new graph         
     if create_using is None:  # Graph object of the same type as G
-        R=networkx.create_empty_copy(G)
+        R=nx.create_empty_copy(G)
     else:                     # user specified graph 
         R=create_using 
         R.clear() 
@@ -225,7 +225,7 @@ def difference(G,H,create_using=None):
     R.name="Difference of (%s and %s)"%(G.name, H.name)
 
     if set(G)!=set(H):
-        raise networkx.NetworkXError("Node sets of graphs not equal")        
+        raise nx.NetworkXError("Node sets of graphs not equal")        
     
     if G.number_of_edges()<=H.number_of_edges():
         if G.is_multigraph():
@@ -268,7 +268,7 @@ def symmetric_difference(G,H,create_using=None ):
     """
     # create new graph         
     if create_using is None:  # Graph object of the same type as G
-        R=networkx.create_empty_copy(G)
+        R=nx.create_empty_copy(G)
     else:                     # user specified graph 
         R=create_using 
         R.clear() 
@@ -276,7 +276,7 @@ def symmetric_difference(G,H,create_using=None ):
     R.name="Symmetric difference of (%s and %s)"%(G.name, H.name)
 
     if set(G)!=set(H):
-        raise networkx.NetworkXError("Node sets of graphs not equal")        
+        raise nx.NetworkXError("Node sets of graphs not equal")        
     
     gnodes=set(G) # set of nodes in G
     hnodes=set(H) # set of nodes in H

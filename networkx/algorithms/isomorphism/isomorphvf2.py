@@ -138,6 +138,7 @@ In general, this problem is NP-Complete.
 #    Complexity Sciences Center and Physics Department, UC Davis.
 
 import sys
+import networkx as nx
 
 __all__ = ['GraphMatcher',
            'DiGraphMatcher']

@@ -15,7 +15,7 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
 __all__ = ['eigenvector_centrality',
            'eigenvector_centrality_numpy']
 
-import networkx
+import networkx as nx
 
 def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
     """Compute the eigenvector centrality for the graph G.
@@ -67,12 +67,12 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
     hits
     """
     from math import sqrt
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
+    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception(\
             "eigenvector_centrality() not defined for multigraphs.")
 
     if len(G)==0:
-        raise networkx.NetworkXException(\
+        raise nx.NetworkXException(\
             "eigenvector_centrality_numpy(): empty graph.")
 
     if nstart is None:
@@ -103,7 +103,7 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
         if err < nnodes*tol:
             return x
 
-    raise networkx.NetworkXError("""eigenvector_centrality(): 
+    raise nx.NetworkXError("""eigenvector_centrality(): 
 power iteration failed to converge in %d iterations."%(i+1))""")
 
 
@@ -147,15 +147,15 @@ def eigenvector_centrality_numpy(G):
         raise ImportError(\
             "eigenvector_centrality_numpy() requires NumPy: http://scipy.org/")
 
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
+    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception(\
             "eigenvector_centrality_numpy() not defined for multigraphs.")
 
     if len(G)==0:
-        raise networkx.NetworkXException(\
+        raise nx.NetworkXException(\
             "eigenvector_centrality_numpy(): empty graph.")
 
-    A=networkx.adj_matrix(G,nodelist=G.nodes())
+    A=nx.adj_matrix(G,nodelist=G.nodes())
     eigenvalues,eigenvectors=np.linalg.eig(A)
     # eigenvalue indices in reverse sorted order
     ind=eigenvalues.argsort()[::-1]

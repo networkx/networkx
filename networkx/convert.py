@@ -50,8 +50,9 @@ __all__ = ['to_networkx_graph','from_whatever',
            'from_numpy_matrix', 'to_numpy_matrix',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix']
 
-import networkx
 import warnings
+import networkx as nx
+
 
 def _prep_create_using(create_using):
     """Return a graph object ready to be populated.
@@ -62,7 +63,7 @@ def _prep_create_using(create_using):
 
     """
     if create_using is None:
-        G=networkx.Graph()
+        G=nx.Graph()
     else:
         G=create_using
         try:
@@ -119,15 +120,15 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
                 result.node=dict( (n,dd.copy()) for n,dd in data.node.iteritems() )
             return result
         except:
-            raise networkx.NetworkXError,\
+            raise nx.NetworkXError,\
                 "Input is not a correct NetworkX graph."
 
     # pygraphviz  agraph
     if hasattr(data,"is_strict"):
         try:
-            return networkx.from_agraph(data,create_using=create_using)
+            return nx.from_agraph(data,create_using=create_using)
         except:
-            raise networkx.NetworkXError,\
+            raise nx.NetworkXError,\
                   "Input is not a correct pygraphviz graph."
 
     # dict of dicts/lists
@@ -146,7 +147,7 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
         try:
             return from_edgelist(data,create_using=create_using)
         except:
-            raise networkx.NetworkXError,\
+            raise nx.NetworkXError,\
                   "Input is not a valid edge list"
 
     # numpy matrix or ndarray 
@@ -157,7 +158,7 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
             try:
                 return from_numpy_matrix(data,create_using=create_using)
             except:
-                raise networkx.NetworkXError,\
+                raise nx.NetworkXError,\
                   "Input is not a correct numpy matrix or array."
     except ImportError:
         warnings.warn('numpy not found, skipping conversion test.',
@@ -170,14 +171,14 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
             try:
                 return from_scipy_sparse_matrix(data,create_using=create_using)
             except:
-                raise networkx.NetworkXError, \
+                raise nx.NetworkXError, \
                       "Input is not a correct scipy sparse matrix type."
     except ImportError:
         warnings.warn('scipy not found, skipping conversion test.',
                       ImportWarning)
 
 
-    raise networkx.NetworkXError, \
+    raise nx.NetworkXError, \
           "Input is not a known data type for conversion."
 
     return 
@@ -265,7 +266,7 @@ def relabel_nodes(G,mapping):
         try:
             H.add_node(map_func(node))
         except:
-            raise networkx.NetworkXError,\
+            raise nx.NetworkXError,\
                   "relabeling function cannot be applied to node %s" % node
 
     #for n1,n2,d in G.edges_iter(data=True):
@@ -345,7 +346,7 @@ def convert_node_labels_to_integers(G,first_label=0,
         dv_pairs.reverse()
         mapping=dict(zip([n for d,n in dv_pairs],range(first_label,N)))
     else:
-        raise networkx.NetworkXError,\
+        raise nx.NetworkXError,\
               "unknown value of node ordering variable: ordering"
 
     H=relabel_nodes(G,mapping)
@@ -640,7 +641,7 @@ def to_numpy_matrix(G,nodelist=None,dtype=None,order=None):
     nodeset = set(nodelist)
     if len(nodelist) != len(nodeset):
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
-        raise networkx.NetworkXError(msg)
+        raise nx.NetworkXError(msg)
 
     nlen=len(nodelist)
     undirected = not G.is_directed()
@@ -685,13 +686,13 @@ def from_numpy_matrix(A,create_using=None):
 
     G=_prep_create_using(create_using)
 
-    nx,ny=A.shape
+    n,m=A.shape
 
-    if nx!=ny:
-        raise networkx.NetworkXError, \
-              "Adjacency matrix is not square. nx,ny=%s"%(A.shape,)
+    if n!=m:
+        raise nx.NetworkXError, \
+              "Adjacency matrix is not square. n,m=%s"%(A.shape,)
 
-    G.add_nodes_from(range(nx)) # make sure we get isolated nodes
+    G.add_nodes_from(range(n)) # make sure we get isolated nodes
 
     # get a list of edges
     x,y=np.asarray(A).nonzero()         
@@ -759,7 +760,7 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):
     nodeset = set(nodelist)
     if len(nodelist) != len(nodeset):
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
-        raise networkx.NetworkXError(msg)
+        raise nx.NetworkXError(msg)
 
     nlen=len(nodelist)
     undirected = not G.is_directed()
@@ -797,14 +798,14 @@ def from_scipy_sparse_matrix(A,create_using=None):
 
     # convert all formats to lil - not the most efficient way       
     AA=A.tolil()
-    nx,ny=AA.shape
+    n,m=AA.shape
 
-    if nx!=ny:
-        raise networkx.NetworkXError, \
-              "Adjacency matrix is not square. nx,ny=%s"%(A.shape,)
+    if n!=m:
+        raise nx.NetworkXError, \
+              "Adjacency matrix is not square. n,m=%s"%(A.shape,)
 
 
-    G.add_nodes_from(range(nx)) # make sure we get isolated nodes
+    G.add_nodes_from(range(n)) # make sure we get isolated nodes
 
     for i,row in enumerate(AA.rows):
         for pos,j in enumerate(row):

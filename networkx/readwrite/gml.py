@@ -20,9 +20,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['read_gml', 'parse_gml', 'write_gml']
 
-import sys
-import time
-import networkx
+import networkx as nx
 from networkx.exception import NetworkXException, NetworkXError
 from networkx.utils import _get_fh, is_string_like
 
@@ -165,9 +163,9 @@ def parse_gml(lines):
                 directed=True
     # Now create the Graph
     if directed:
-        G=networkx.MultiDiGraph()
+        G=nx.MultiDiGraph()
     else:
-        G=networkx.MultiGraph()
+        G=nx.MultiGraph()
     G.graph.update(graphs)
     G.add_nodes_from(nodes)
     G.add_edges_from( (node_labels[s],node_labels[t],d) for s,t,d in edges)
@@ -280,11 +278,6 @@ def write_gml(G, path):
     >>> nx.write_gml(G,"test.gml.gz")
     """
     fh=_get_fh(path,mode='w')        
-#    comments="#"
-#    pargs=comments+" "+' '.join(sys.argv)
-#    fh.write("%s\n" % (pargs))
-#    fh.write(comments+" GMT %s\n" % (time.asctime(time.gmtime())))
-#    fh.write(comments+" %s\n" % (G.name))
 
     # check for attributes or assign empty dict
     if hasattr(G,'graph_attr'):

@@ -13,8 +13,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['current_flow_betweenness_centrality_subset',
            'edge_current_flow_betweenness_centrality_subset']
 
-import networkx
-import numpy as np
+import networkx as nx
 
 def current_flow_betweenness_centrality_subset(G,sources,targets,
                                                normalized=True):
@@ -79,10 +78,10 @@ def current_flow_betweenness_centrality_subset(G,sources,targets,
 http://scipy.org/""")
 
     if G.is_directed():
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
             "current_flow_betweenness_centrality_subset() not defined for digraphs.")
-    if not networkx.is_connected(G):
-        raise networkx.NetworkXError("Graph not connected.")
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("Graph not connected.")
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     F=_compute_F(G) # Current-flow matrix
     m,n=F.shape # m edges and n nodes
@@ -170,10 +169,10 @@ def edge_current_flow_betweenness_centrality_subset(G,sources,targets,
 http://scipy.org/""")
 
     if G.is_directed():
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
             "edge_current_flow_closeness_centrality_subset() not defined for digraphs.")
-    if not networkx.is_connected(G):
-        raise networkx.NetworkXError("Graph not connected.")
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("Graph not connected.")
     betweenness=(dict.fromkeys(G.edges(),0.0)) 
     F=_compute_F(G) # Current-flow matrix
     m,n=F.shape # m edges and n nodes
@@ -197,7 +196,14 @@ http://scipy.org/""")
 
 def _compute_C(G):
     """Inverse of Laplacian."""
-    L=networkx.laplacian(G) # use ordering of G.nodes() 
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+            """current_flow_betweenness_centrality_subset() requires NumPy 
+http://scipy.org/""")
+
+    L=nx.laplacian(G) # use ordering of G.nodes() 
     # remove first row and column
     LR=L[1:,1:]
     LRinv=np.linalg.inv(LR)
@@ -207,6 +213,12 @@ def _compute_C(G):
 
 def _compute_F(G):
     """Current flow matrix."""
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+            """current_flow_betweenness_centrality_subset() requires NumPy 
+http://scipy.org/""")
     C=np.asmatrix(_compute_C(G))
     n=G.number_of_nodes()
     m=G.number_of_edges()

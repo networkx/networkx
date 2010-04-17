@@ -13,8 +13,9 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 #    BSD license.
 #
 
+import networkx as nx
 # functional style helpers
-import networkx
+
 
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
@@ -195,7 +196,7 @@ def freeze(G):
 
     """        
     def frozen(*args):    
-        raise networkx.NetworkXError("Frozen graph can't be modified")
+        raise nx.NetworkXError("Frozen graph can't be modified")
     G.add_node=frozen
     G.add_nodes_from=frozen
     G.remove_node=frozen

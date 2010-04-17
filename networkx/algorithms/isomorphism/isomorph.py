@@ -11,7 +11,7 @@ __author__ = """Pieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"
 #    All rights reserved.
 #    BSD license.
 
-import networkx
+import networkx as nx
 from networkx.exception import NetworkXException, NetworkXError
 
 __all__ = ['could_be_isomorphic',
@@ -38,14 +38,14 @@ def could_be_isomorphic(G1,G2):
     
     # Check local properties
     d1=G1.degree()
-    t1=networkx.triangles(G1)
-    c1=networkx.number_of_cliques(G1)
+    t1=nx.triangles(G1)
+    c1=nx.number_of_cliques(G1)
     props1=[ [d1[v], t1[v], c1[v]] for v in d1 ]
     props1.sort()
     
     d2=G2.degree()
-    t2=networkx.triangles(G2)
-    c2=networkx.number_of_cliques(G2)
+    t2=nx.triangles(G2)
+    c2=nx.number_of_cliques(G2)
     props2=[ [d2[v], t2[v], c2[v]] for v in d2 ]
     props2.sort()
 
@@ -78,12 +78,12 @@ def fast_could_be_isomorphic(G1,G2):
     
     # Check local properties
     d1=G1.degree()
-    t1=networkx.triangles(G1)
+    t1=nx.triangles(G1)
     props1=[ [d1[v], t1[v]] for v in d1 ]
     props1.sort()
     
     d2=G2.degree()
-    t2=networkx.triangles(G2)
+    t2=nx.triangles(G2)
     props2=[ [d2[v], t2[v]] for v in d2 ]
     props2.sort()
 
@@ -157,21 +157,21 @@ def is_isomorphic(G1,G2,weighted=False,rtol=1e-6,atol=1e-9):
 #        assert(G1.weighted and G2.weighted)
         if not G1.is_directed() and not G1.is_multigraph():
             assert(not G2.is_directed() and not G2.is_multigraph())
-            gm = networkx.WeightedGraphMatcher(G1,G2,rtol,atol)
+            gm = nx.WeightedGraphMatcher(G1,G2,rtol,atol)
         elif not G1.is_directed() and G1.is_multigraph():
             assert(not G2.is_directed() and G2.is_multigraph())
-            gm = networkx.WeightedMultiGraphMatcher(G1,G2,rtol,atol)
+            gm = nx.WeightedMultiGraphMatcher(G1,G2,rtol,atol)
         elif G1.is_directed() and not G1.is_multigraph():
             assert(G2.is_directed() and not G2.is_multigraph())
-            gm = networkx.WeightedDiGraphMatcher(G1,G2,rtol,atol)
+            gm = nx.WeightedDiGraphMatcher(G1,G2,rtol,atol)
         else:
             assert(G2.is_directed() and G2.is_multigraph())
-            gm = networkx.WeightedMultiDiGraphMatcher(G1,G2,rtol,atol)
+            gm = nx.WeightedMultiDiGraphMatcher(G1,G2,rtol,atol)
     else:
         if G1.is_directed() and G2.is_directed():
-            gm=  networkx.DiGraphMatcher(G1,G2)
+            gm=  nx.DiGraphMatcher(G1,G2)
         elif not (G1.is_directed() and G2.is_directed()):
-            gm = networkx.GraphMatcher(G1,G2)
+            gm = nx.GraphMatcher(G1,G2)
     if gm==None:
         # Graphs are of mixed type. We could just return False, 
         # but then there is the case of completely disconnected graphs...

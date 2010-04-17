@@ -18,9 +18,7 @@ __all__ = ['bidirectional_shortest_path',
            'predecessor', 
            'floyd_warshall']
 
-
-import networkx
-
+import networkx as nx
 
 def single_source_shortest_path_length(G,source,cutoff=None):
     """Compute the shortest path lengths from source to all reachable nodes.

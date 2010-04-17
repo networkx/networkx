@@ -42,7 +42,8 @@ __all__ = [ 'balanced_tree',
 #-------------------------------------------------------------------
 #   Some Classic Graphs
 #-------------------------------------------------------------------
-import networkx
+import networkx as nx
+from networkx import utils
 
 
 def balanced_tree(r,h,create_using=None):
@@ -60,14 +61,14 @@ def balanced_tree(r,h,create_using=None):
     
     """
     if r<2:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "Invalid graph description, r should be >=2")
     if h<1:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "Invalid graph description, h should be >=1")
     
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(0,create_using)
     G.name="balanced_tree(%d,%d)"%(r,h)
 
@@ -119,10 +120,10 @@ def barbell_graph(m1,m2,create_using=None):
 
     """
     if m1<2:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "Invalid graph description, m1 should be >=2")
     if m2<0:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "Invalid graph description, m2 should be >=0")
 
     # left barbell
@@ -148,7 +149,7 @@ def complete_graph(n,create_using=None):
 
     """
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n,create_using)
     G.name="complete_graph(%d)"%n
     for u in xrange(n):
@@ -167,7 +168,7 @@ def complete_bipartite_graph(n1,n2,create_using=None):
     
     """
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n1+n2,create_using)
     G.name="complete_bipartite_graph(%d,%d)"%(n1,n2)
     for v1 in xrange(n1):
@@ -213,9 +214,9 @@ def dorogovtsev_goltsev_mendes_graph(n,create_using=None):
     """
     if create_using is not None:
         if create_using.is_directed():
-            raise networkx.NetworkXError("Directed Graph not supported")
+            raise nx.NetworkXError("Directed Graph not supported")
         if create_using.is_multigraph():
-            raise networkx.NetworkXError("Multigraph not supported")
+            raise nx.NetworkXError("Multigraph not supported")
     G=empty_graph(0,create_using)
     G.name="Dorogovtsev-Goltsev-Mendes Graph"
     G.add_edge(0,1)
@@ -270,7 +271,7 @@ def empty_graph(n=0,create_using=None):
     """
     if create_using is None:
         # default empty graph is a simple graph
-        G=networkx.Graph()
+        G=nx.Graph()
     else:
         G=create_using
         G.clear()
@@ -321,16 +322,16 @@ def grid_graph(dim,periodic=False,create_using=None):
     """    
     from networkx.utils import is_list_of_ints
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     dlabel="%s"%dim
     if dim==[]:
         G=empty_graph(0,create_using)
         G.name="grid_graph(%s)"%dim
         return G
     if not is_list_of_ints(dim):
-        raise networkx.NetworkXError("dim is not a list of integers")
+        raise nx.NetworkXError("dim is not a list of integers")
     if min(dim)<=0:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "dim is not a list of strictly positive integers")      
     if periodic:
         func=cycle_graph
@@ -346,10 +347,10 @@ def grid_graph(dim,periodic=False,create_using=None):
         Gnew=func(current_dim,create_using)
         # explicit: create_using=None 
         # This is so that we get a new graph of Gnew's class.
-        G=networkx.cartesian_product(Gnew,Gold,create_using=None)
+        G=nx.cartesian_product(Gnew,Gold,create_using=None)
     # graph G is done but has labels of the form (1,(2,(3,1)))
     # so relabel
-    H=networkx.relabel_nodes(G, networkx.utils.flatten)
+    H=nx.relabel_nodes(G, utils.flatten)
     H.name="grid_graph(%s)"%dlabel
     return H
 
@@ -374,7 +375,7 @@ def ladder_graph(n,create_using=None):
     
     """
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(2*n,create_using)
     G.name="ladder_graph_(%d)"%n 
     G.add_edges_from([(v,v+1) for v in xrange(n-1)])
@@ -400,10 +401,10 @@ def lollipop_graph(m,n,create_using=None):
     
     """
     if m<2:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "Invalid graph description, m should be >=2")
     if n<0:
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
               "Invalid graph description, n should be >=0")
     # the ball
     G=complete_graph(m,create_using)

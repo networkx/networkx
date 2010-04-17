@@ -27,6 +27,9 @@ def all():
         tests=[]
         for d in testdirs:
             tests+=glob.glob(os.path.join(base,d,"tests","*.txt"))
+
+    print tests
+
     skiplist=[]        
 
     try:

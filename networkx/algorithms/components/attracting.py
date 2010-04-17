@@ -16,7 +16,7 @@ __all__ = ['number_attracting_components',
            'attracting_component_subgraphs',
            ]
 
-import networkx
+import networkx as nx
 
 def attracting_components(G):
     """Returns a list of attracting components in `G`.
@@ -47,7 +47,7 @@ def attracting_components(G):
     attracting_component_subgraphs
 
     """
-    cG = networkx.condensation(G)
+    cG = nx.condensation(G)
     attractors = [scc for scc in cG if cG.out_degree(scc) == 0]
     attractors.sort(key=len,reverse=True)
     return attractors

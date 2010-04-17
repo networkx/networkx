@@ -34,6 +34,7 @@ __all__ = ['make_small_graph',
            'truncated_tetrahedron_graph',
            'tutte_graph']
 
+import networkx as nx
 from networkx.generators.classic import empty_graph, cycle_graph, path_graph, complete_graph
 from networkx.exception import NetworkXError
 

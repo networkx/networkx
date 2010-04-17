@@ -23,9 +23,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['write_graphml', 'read_graphml', 'parse_graphml']
 
-
-
-import networkx
+import networkx as nx
 from networkx.exception import NetworkXException, NetworkXError
 from networkx.utils import _get_fh, is_string_like
 
@@ -165,7 +163,7 @@ def parse_graphml(lines):
     import xml.parsers.expat
 
     context = []
-    G=networkx.MultiDiGraph()
+    G=nx.MultiDiGraph()
     defaultDirected = [True]
 	
     def start_element(name,attrs):
@@ -211,5 +209,5 @@ def parse_graphml(lines):
     if defaultDirected[0]:
         return G
     else:
-        return networkx.MultiGraph(G)
+        return nx.MultiGraph(G)
 

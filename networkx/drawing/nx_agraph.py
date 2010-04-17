@@ -35,7 +35,7 @@ import os
 import sys
 import tempfile
 import subprocess
-import networkx
+import networkx as nx
 from networkx.utils import _get_fh,is_string_like
 
 def from_agraph(A,create_using=None):
@@ -73,17 +73,17 @@ def from_agraph(A,create_using=None):
     if create_using is None:        
         if A.is_directed():
             if A.is_strict():
-                create_using=networkx.DiGraph()
+                create_using=nx.DiGraph()
             else:
-                create_using=networkx.MultiDiGraph()
+                create_using=nx.MultiDiGraph()
         else:
             if A.is_strict():
-                create_using=networkx.Graph()
+                create_using=nx.Graph()
             else:
-                create_using=networkx.MultiGraph()
+                create_using=nx.MultiGraph()
 
     # assign defaults        
-    N=networkx.empty_graph(0,create_using)
+    N=nx.empty_graph(0,create_using)
     N.name=str(A)
     node_attr={}
     # add nodes, attributes to N.node_attr
@@ -135,7 +135,7 @@ def to_agraph(N):
         import pygraphviz
     except ImportError:
         raise ImportError, \
-          "to_agraph() requires pygraphviz: http://networkx.lanl.gov/pygraphviz"
+          "to_agraph() requires pygraphviz: http://nx.lanl.gov/pygraphviz"
     directed=N.is_directed()
     strict=N.number_of_selfloops()==0 and not N.is_multigraph() 
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
@@ -315,7 +315,7 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
     
     """
     if not len(G):
-        raise networkx.NetworkXException("An empty graph cannot be drawn.")
+        raise nx.NetworkXException("An empty graph cannot be drawn.")
 
     import pygraphviz
 

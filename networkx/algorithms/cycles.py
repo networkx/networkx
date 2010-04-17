@@ -9,7 +9,7 @@ Cycle finding algorithms
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-import networkx
+import networkx as nx
 
 __all__ = ['cycle_basis']
 
@@ -83,14 +83,3 @@ def cycle_basis(G,root=None):
         root=None
     return cycles
 
-if __name__ == "__main__":
-    G=networkx.Graph()
-    G.add_cycle(range(0,3))
-    G.add_cycle(range(3,7))
-    G.add_cycle(range(5,9))
-    G.add_path([5,9])
-    print sorted([ sorted(c) for c in cycle_basis(G,1)])
-    print sorted([ sorted(c) for c in cycle_basis(G,3)])
-    print sorted([ sorted(c) for c in cycle_basis(G,5)])
-    print sorted([ sorted(c) for c in cycle_basis(G,9)])
-    print cycle_basis(G,9)

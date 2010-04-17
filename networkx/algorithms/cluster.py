@@ -12,6 +12,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 
 __all__= ['triangles', 'average_clustering', 'clustering', 'transitivity']
 
+import networkx as nx
 from networkx import NetworkXError
 
 def triangles(G,nbunch=None):

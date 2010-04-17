@@ -19,7 +19,7 @@ __all__ = ['number_connected_components',
            'node_connected_component',
            ]
 
-import networkx
+import networkx as nx
 
 def connected_components(G):
     """Return nodes in connected components of graph.
@@ -44,14 +44,14 @@ def connected_components(G):
     For undirected graphs only. 
     """
     if G.is_directed():
-        raise networkx.NetworkXError,\
+        raise nx.NetworkXError,\
               """Not allowed for directed graph G.
               Use UG=G.to_undirected() to create an undirected graph."""
     seen={}
     components=[]
     for v in G:      
         if v not in seen:
-            c=networkx.single_source_shortest_path_length(G,v)
+            c=nx.single_source_shortest_path_length(G,v)
             components.append(c.keys())
             seen.update(c)
     components.sort(key=len,reverse=True)            
@@ -110,15 +110,15 @@ def is_connected(G):
     For undirected graphs only. 
     """
     if G.is_directed():
-        raise networkx.NetworkXError(\
+        raise nx.NetworkXError(\
             """Not allowed for directed graph G.
 Use UG=G.to_undirected() to create an undirected graph.""")
 
     if len(G)==0:
-        raise networkx.NetworkXPointlessConcept(
+        raise nx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
-    return len(networkx.single_source_shortest_path_length(G,
+    return len(nx.single_source_shortest_path_length(G,
                                               G.nodes_iter().next()))==len(G)
 
 
@@ -184,9 +184,9 @@ def node_connected_component(G,n):
     For undirected graphs only. 
     """
     if G.is_directed():
-        raise networkx.NetworkXError,\
+        raise nx.NetworkXError,\
               """Not allowed for directed graph G.
               Use UG=G.to_undirected() to create an undirected graph."""
-    return networkx.single_source_shortest_path_length(G,n).keys()
+    return nx.single_source_shortest_path_length(G,n).keys()
 
 

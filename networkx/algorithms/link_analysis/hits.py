@@ -10,9 +10,11 @@ Hubs and authorities analysis of graph structure.
 #    BSD license.
 #    NetworkX:http://networkx.lanl.gov/ 
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-import networkx
-from networkx.exception import NetworkXError
 __all__ = ['hits','hits_numpy','hits_scipy','authority_matrix','hub_matrix']
+
+import networkx as nx
+from networkx.exception import NetworkXError
+
 
 def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
     """Return HITS hubs and authorities values for nodes.
@@ -68,7 +70,7 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
        doi:10.1145/324133.324140. 
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
+    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception("hits() not defined for graphs with multiedges.")
 
     # choose fixed starting vector if not given
@@ -113,12 +115,12 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
 
 def authority_matrix(G,nodelist=None):
     """Return the HITS authority matrix."""
-    M=networkx.to_numpy_matrix(G,nodelist=nodelist)
+    M=nx.to_numpy_matrix(G,nodelist=nodelist)
     return M.T*M
 
 def hub_matrix(G,nodelist=None):
     """Return the HITS hub matrix."""
-    M=networkx.to_numpy_matrix(G,nodelist=nodelist)
+    M=nx.to_numpy_matrix(G,nodelist=nodelist)
     return M*M.T
 
 
@@ -169,11 +171,11 @@ def hits_numpy(G):
     except ImportError:
         raise ImportError(\
             "hits_numpy() requires NumPy: http://scipy.org/")
-    H=networkx.hub_matrix(G,G.nodes())
+    H=nx.hub_matrix(G,G.nodes())
     e,ev=np.linalg.eig(H)
     m=e.argsort()[-1] # index of maximum eigenvalue
     h=np.array(ev[:,m]).flatten()
-    A=networkx.authority_matrix(G,G.nodes())
+    A=nx.authority_matrix(G,G.nodes())
     e,ev=np.linalg.eig(A)
     m=e.argsort()[-1] # index of maximum eigenvalue
     a=np.array(ev[:,m]).flatten()
@@ -244,7 +246,7 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
     except ImportError:
         raise ImportError(\
             "hits_scipy() requires SciPy: http://scipy.org/")
-    M=networkx.to_scipy_sparse_matrix(G,nodelist=G.nodes())
+    M=nx.to_scipy_sparse_matrix(G,nodelist=G.nodes())
     (n,m)=M.shape # should be square
     A=M.T*M # authority matrix
     x=scipy.ones((n,1))/n  # initial guess

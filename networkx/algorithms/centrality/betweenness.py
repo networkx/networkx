@@ -16,7 +16,7 @@ __all__ = ['betweenness_centrality',
            ]
 
 import heapq
-import networkx
+import networkx as nx
 
 def betweenness_centrality(G,normalized=True,
                            weighted_edges=False,

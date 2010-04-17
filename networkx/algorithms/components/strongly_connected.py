@@ -21,7 +21,7 @@ __all__ = ['number_strongly_connected_components',
            'condensation',
            ]
 
-import networkx
+import networkx as nx
 
 def strongly_connected_components(G):
     """Return nodes in strongly connected components of graph.
@@ -122,13 +122,13 @@ def kosaraju_strongly_connected_components(G,source=None):
     Uses Kosaraju's algorithm.
     """
     components=[]
-    post=networkx.dfs_postorder(G,source=source,reverse_graph=True)
+    post=nx.dfs_postorder(G,source=source,reverse_graph=True)
     seen={}
     while post:
         r=post.pop()
         if r in seen:
             continue
-        c=networkx.dfs_preorder(G,r)
+        c=nx.dfs_preorder(G,r)
         new=[v for v in c if v not in seen]
         seen.update([(u,True) for u in new])
         components.append(new)
@@ -276,12 +276,12 @@ def is_strongly_connected(G):
     For directed graphs only. 
     """
     if not G.is_directed():
-        raise networkx.NetworkXError,\
+        raise nx.NetworkXError,\
               """Not allowed for undirected graph G.
               See is_connected() for connectivity test."""
 
     if len(G)==0:
-        raise networkx.NetworkXPointlessConcept(
+        raise nx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
     return len(strongly_connected_components(G)[0])==len(G)
@@ -311,7 +311,7 @@ def condensation(G):
     """
     scc = strongly_connected_components(G)
     mapping = dict([(n,tuple(sorted(c))) for c in scc for n in c])
-    cG = networkx.DiGraph()
+    cG = nx.DiGraph()
     for u in mapping:
         cG.add_node(mapping[u])
         for _,v,d in G.edges_iter(u, data=True):

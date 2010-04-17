@@ -12,7 +12,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    BSD license.
 
 __all__=['project','is_bipartite','bipartite_color','bipartite_sets']
-import networkx
+
+import networkx as nx
 
 def project(B,nodes,create_using=None):
     """Return the projection of the graph onto a subset of nodes.
@@ -55,9 +56,9 @@ def project(B,nodes,create_using=None):
     """
 
     if create_using==None:
-        create_using=networkx.Graph()
+        create_using=nx.Graph()
 
-    G=networkx.empty_graph(0,create_using)
+    G=nx.empty_graph(0,create_using)
 
     for v in nodes:
         G.add_node(v)
@@ -99,7 +100,7 @@ def bipartite_color(G):
             for w in G[v]: 
                 if w in color: 
                     if color[w]==color[v]:
-                        raise networkx.NetworkXError("Graph is not bipartite.")
+                        raise nx.NetworkXError("Graph is not bipartite.")
                 else:
                     color[w]=c
                     queue.append(w)

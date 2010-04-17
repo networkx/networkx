@@ -4,6 +4,8 @@
 
 __all__ = ['attr_matrix', 'attr_sparse_matrix']
 
+import networkx as nx
+
 def _node_value(G, node_attr):
     """Returns a function that returns a value from G.node[u].
     

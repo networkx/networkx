@@ -15,6 +15,7 @@ __all__ = ['degree_assortativity',
            'attribute_mixing_dict',
            ]
 
+import networkx as nx
 
 def degree_assortativity(G):
     """Compute degree assortativity of graph.

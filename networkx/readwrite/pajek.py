@@ -19,7 +19,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-import networkx
+import networkx as nx
 from networkx.utils import is_string_like,_get_fh
 
 __all__ = ['read_pajek', 'parse_pajek', 'write_pajek']
@@ -123,7 +123,7 @@ def parse_pajek(lines,edge_attr=True):
     import shlex
     if is_string_like(lines): lines=iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines])
-    G=networkx.MultiDiGraph() # are multiedges allowed in Pajek?
+    G=nx.MultiDiGraph() # are multiedges allowed in Pajek?
     directed=True # assume this is a directed network for now
     while lines:
         try:
@@ -152,7 +152,7 @@ def parse_pajek(lines,edge_attr=True):
         if l.lower().startswith("*edges") or l.lower().startswith("*arcs"):
             if l.lower().startswith("*edge"):
                # switch from digraph to graph
-                G=networkx.MultiGraph(G)
+                G=nx.MultiGraph(G)
             for l in lines:
                 splitline=shlex.split(l)
                 ui,vi=splitline[0:2]

@@ -14,9 +14,7 @@ __all__ = ['shortest_path',
            'shortest_path_length',
            'average_shortest_path_length']
 
-
-import networkx
-
+import networkx as nx
 
 def shortest_path(G,source=None,target=None,weighted=False):
     """Compute shortest paths in the graph.
@@ -70,24 +68,24 @@ def shortest_path(G,source=None,target=None,weighted=False):
     if source is None:
         if target is None:
             if weighted:
-                paths=networkx.all_pairs_dijkstra_path(G)
+                paths=nx.all_pairs_dijkstra_path(G)
             else:
-                paths=networkx.all_pairs_shortest_path(G)
+                paths=nx.all_pairs_shortest_path(G)
         else:
-            raise networkx.NetworkXError(\
+            raise nx.NetworkXError(\
                 "Target given but no source specified.")
     else: # source specified
         if target is None:
             if weighted:
-                paths=networkx.single_source_dijkstra_path(G,source)
+                paths=nx.single_source_dijkstra_path(G,source)
             else:
-                paths=networkx.single_source_shortest_path(G,source)
+                paths=nx.single_source_shortest_path(G,source)
         else:
             # shortest source-target path
             if weighted:
-                paths=networkx.dijkstra_path(G,source,target)
+                paths=nx.dijkstra_path(G,source,target)
             else:
-                paths=networkx.bidirectional_shortest_path(G,source,target)
+                paths=nx.bidirectional_shortest_path(G,source,target)
 
     return paths
 
@@ -152,26 +150,26 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
     if source is None:
         if target is None:
             if weighted:
-                paths=networkx.all_pairs_dijkstra_path_length(G)
+                paths=nx.all_pairs_dijkstra_path_length(G)
             else:
-                paths=networkx.all_pairs_shortest_path_length(G)
+                paths=nx.all_pairs_shortest_path_length(G)
         else:
-            raise networkx.NetworkXError(\
+            raise nx.NetworkXError(\
                 "Target given but no source specified.")
     else: # source specified
         if target is None:
             if weighted:
-                paths=networkx.single_source_dijkstra_path_length(G,source)
+                paths=nx.single_source_dijkstra_path_length(G,source)
             else:
-                paths=networkx.single_source_shortest_path_length(G,source)
+                paths=nx.single_source_shortest_path_length(G,source)
         else:
             # shortest source-target path
             if weighted:
-                paths=networkx.dijkstra_path_length(G,source,target)
+                paths=nx.dijkstra_path_length(G,source,target)
             else:
-                p=networkx.bidirectional_shortest_path(G,source,target)
+                p=nx.bidirectional_shortest_path(G,source,target)
                 if p is False:
-                    raise networkx.NetworkXError(\
+                    raise nx.NetworkXError(\
                         "No path from %s to %s."%(source,target))
                 paths=len(p)-1
     return paths
@@ -206,9 +204,9 @@ def average_shortest_path_length(G,weighted=False):
 
     """
     if weighted:
-        path_length=networkx.single_source_dijkstra_path_length
+        path_length=nx.single_source_dijkstra_path_length
     else:
-        path_length=networkx.single_source_shortest_path_length
+        path_length=nx.single_source_shortest_path_length
     avg=0.0
     for n in G:
         l=path_length(G,n).values()

@@ -11,7 +11,7 @@ PageRank analysis of graph structure.
 #    NetworkX:http://networkx.lanl.gov/. 
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
-import networkx
+import networkx as nx
 from networkx.exception import NetworkXError
 __all__ = ['pagerank','pagerank_numpy','pagerank_scipy','google_matrix']
 
@@ -71,7 +71,7 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
+    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception("pagerank() not defined for graphs with multiedges.")
 
     if not G.is_directed():
@@ -80,7 +80,7 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
         D=G
 
     # create a copy in (right) stochastic form        
-    W=networkx.stochastic_graph(D)
+    W=nx.stochastic_graph(D)
 
     # choose fixed starting vector if not given
     if nstart is None:
@@ -146,7 +146,7 @@ def google_matrix(G,alpha=0.85,nodelist=None):
     except ImportError:
         raise ImportError(\
             "google_matrix() requires NumPy: http://scipy.org/")
-    M=networkx.to_numpy_matrix(G,nodelist=nodelist)
+    M=nx.to_numpy_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     # add constant to dangling nodes' row
     dangling=np.where(M.sum(axis=1)==0)
@@ -264,7 +264,7 @@ def pagerank_scipy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
             "pagerank_scipy() requires SciPy: http://scipy.org/")
     if nodelist is None:
         nodelist=G.nodes()
-    M=networkx.to_scipy_sparse_matrix(G,nodelist=nodelist)
+    M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     S=scipy.array(M.sum(axis=1)).flatten()
     index=scipy.where(S<>0)[0]

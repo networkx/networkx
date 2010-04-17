@@ -12,7 +12,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\n
 
 __all__ = ['line_graph']
 
-import networkx
+import networkx as nx
 
 def line_graph(G):
     """Return the line graph of the graph or digraph G.
@@ -45,7 +45,7 @@ def line_graph(G):
     Graph, node, and edge data are not propagated to the new graph.
 
     """
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
+    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception("Line graph not implemented for Multi(Di)Graphs")
     L=G.__class__()
     if G.is_directed():

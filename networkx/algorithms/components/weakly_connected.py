@@ -17,14 +17,13 @@ __all__ = ['number_weakly_connected_components',
            'is_weakly_connected' 
            ]
 
-import networkx
-
+import networkx as nx
 
 def weakly_connected_components(G):
     """Return weakly connected components of G.
     """
     if not G.is_directed():
-        raise networkx.NetworkXError,\
+        raise nx.NetworkXError,\
               """Not allowed for undirected graph G. 
               Use connected_components() """
     seen={}
@@ -75,12 +74,12 @@ def is_weakly_connected(G):
     For directed graphs only. 
     """
     if not G.is_directed():
-        raise networkx.NetworkXError,\
+        raise nx.NetworkXError,\
               """Not allowed for undirected graph G.
               See is_connected() for connectivity test."""
 
     if len(G)==0:
-        raise networkx.NetworkXPointlessConcept(
+        raise nx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
     return len(weakly_connected_components(G)[0])==len(G)

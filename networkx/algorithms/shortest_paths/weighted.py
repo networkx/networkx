@@ -21,10 +21,8 @@ __all__ = ['dijkstra_path',
            'dijkstra_predecessor_and_distance']
 
 
-import networkx
 import heapq
-
-
+import networkx as nx
 
 def dijkstra_path(G,source,target):
     """Returns the shortest path from source to target in a weighted
@@ -66,7 +64,7 @@ def dijkstra_path(G,source,target):
     try:
         return path[target]
     except KeyError:
-        raise networkx.NetworkXError, \
+        raise nx.NetworkXError, \
               "node %s not reachable from %s"%(source,target)
 
 
@@ -117,7 +115,7 @@ def dijkstra_path_length(G,source,target):
     try:
         return length[target]
     except KeyError:
-        raise networkx.NetworkXError, \
+        raise nx.NetworkXError, \
               "node %s not reachable from %s"%(source,target)
 
 

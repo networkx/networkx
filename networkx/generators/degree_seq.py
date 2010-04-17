@@ -29,7 +29,7 @@ __all__ = ['configuration_model',
 
 
 import random
-import networkx
+import networkx as nx
 import networkx.utils
 from networkx.generators.classic import empty_graph
 import heapq
@@ -104,12 +104,12 @@ def configuration_model(deg_sequence,create_using=None,seed=None):
     >>> G.remove_edges_from(G.selfloop_edges())
     """
     if not sum(deg_sequence)%2 ==0:
-        raise networkx.NetworkXError('Invalid degree sequence')
+        raise nx.NetworkXError('Invalid degree sequence')
 
     if create_using is None:
-        create_using = networkx.MultiGraph()
+        create_using = nx.MultiGraph()
     elif create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
 
     if not seed is None:
         random.seed(seed)
@@ -118,7 +118,7 @@ def configuration_model(deg_sequence,create_using=None,seed=None):
     N=len(deg_sequence)
 
     # allow multiedges and selfloops
-    G=networkx.empty_graph(N,create_using)
+    G=nx.empty_graph(N,create_using)
 
     if N==0 or max(deg_sequence)==0: # done if no edges
         return G 
@@ -218,11 +218,11 @@ def directed_configuration_model(in_degree_sequence,
     >>> D.remove_edges_from(D.selfloop_edges())
     """
     if not sum(in_degree_sequence) == sum(in_degree_sequence):
-        raise networkx.NetworkXError(
+        raise nx.NetworkXError(
             'Invalid degree sequences. Sequences must have equal sums.')
 
     if create_using is None:
-        create_using = networkx.MultiDiGraph()
+        create_using = nx.MultiDiGraph()
 
     if not seed is None:
         random.seed(seed)
@@ -240,7 +240,7 @@ def directed_configuration_model(in_degree_sequence,
     N=len(in_degree_sequence)
 
     # allow multiedges and selfloops
-    G=networkx.empty_graph(N,create_using)
+    G=nx.empty_graph(N,create_using)
 
     if N==0 or max(in_degree_sequence)==0: # done if no edges
         return G 
@@ -298,8 +298,8 @@ def expected_degree_graph(w, create_using=None, seed=None):
     n = len(w)
     # allow self loops
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
-    G=networkx.empty_graph(n,create_using)
+        raise nx.NetworkXError("Directed Graph not supported")
+    G=nx.empty_graph(n,create_using)
     G.name="random_expected_degree_graph"
 
     if n==0 or max(w)==0: # done if no edges
@@ -309,7 +309,7 @@ def expected_degree_graph(w, create_using=None, seed=None):
     rho = 1.0 / float(d) # Vol(G)
     for i in xrange(n):
         if (w[i])**2 > d:
-            raise networkx.NetworkXError(\
+            raise nx.NetworkXError(\
                   "NetworkXError w[i]**2 must be <= sum(w)\
                   for all i, w[%d] = %f, sum(w) = %f" % (i,w[i],d))
 
@@ -360,15 +360,15 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
            Chapman and Hall/CRC, 1996.
     """
     if not is_valid_degree_sequence(deg_sequence):
-        raise networkx.NetworkXError('Invalid degree sequence')
+        raise nx.NetworkXError('Invalid degree sequence')
     if create_using is not None:
         if create_using.is_directed():
-            raise networkx.NetworkXError("Directed Graph not supported")
+            raise nx.NetworkXError("Directed Graph not supported")
         if create_using.is_multigraph():
-            raise networkx.NetworkXError("Havel-Hakimi requires simple graph")
+            raise nx.NetworkXError("Havel-Hakimi requires simple graph")
 
     N=len(deg_sequence)
-    G=networkx.empty_graph(N,create_using) 
+    G=nx.empty_graph(N,create_using) 
 
     if N==0 or max(deg_sequence)==0: # done if no edges
         return G 
@@ -463,15 +463,15 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
 
     """
     if create_using is None:
-        create_using = networkx.MultiGraph()
+        create_using = nx.MultiGraph()
     elif create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
 
     if not seed is None:
         random.seed(seed)
 
     N = len(joint_degree_sequence)
-    G = networkx.empty_graph(N,create_using)
+    G = nx.empty_graph(N,create_using)
 
     ilist = []
     tlist = []
@@ -483,7 +483,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
             tlist.append(n)
 
     if len(ilist)%2 != 0 or len(tlist)%3 != 0:
-        raise networkx.NetworkXError('Invalid degree sequence')
+        raise nx.NetworkXError('Invalid degree sequence')
 
     random.shuffle(ilist)
     random.shuffle(tlist)
@@ -509,9 +509,9 @@ def degree_sequence_tree(deg_sequence,create_using=None):
     """
 
     if not len(deg_sequence)-sum(deg_sequence)/2.0 == 1.0:
-        raise networkx.NetworkXError("Degree sequence invalid")
+        raise nx.NetworkXError("Degree sequence invalid")
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
 
     # single node tree
     if len(deg_sequence)==1:
@@ -524,7 +524,7 @@ def degree_sequence_tree(deg_sequence,create_using=None):
 
     # make path graph as backbone
     n=len(deg)+2
-    G=networkx.path_graph(n,create_using)
+    G=nx.path_graph(n,create_using)
     last=n
 
     # add the leaves
@@ -560,7 +560,7 @@ def is_valid_degree_sequence(deg_sequence):
     # some simple tests 
     if deg_sequence==[]:
         return True # empty sequence = empty graph 
-    if not networkx.utils.is_list_of_ints(deg_sequence):
+    if not nx.utils.is_list_of_ints(deg_sequence):
         return False   # list of ints
     if min(deg_sequence)<0:
         return False      # each int not negative
@@ -629,7 +629,7 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
         if is_valid_degree_sequence(seq):
             return seq
         tries+=1
-    raise networkx.NetworkXError(\
+    raise nx.NetworkXError(\
           "Exceeded max (%d) attempts at a valid sequence."%max_tries)
 
 def double_edge_swap(G, nswap=1):
@@ -657,14 +657,14 @@ def double_edge_swap(G, nswap=1):
     swapcount=0
     deg=G.degree()
     dk=deg.keys() # key labels 
-    cdf=networkx.utils.cumulative_distribution(deg.values())  # cdf of degree
+    cdf=nx.utils.cumulative_distribution(deg.values())  # cdf of degree
     if len(cdf)<4:
-        raise networkx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has less than four nodes.")
     while n < nswap:
 #        if random.random() < 0.5: continue # trick to avoid periodicities?
         # pick two randon edges without creating edge list
         # choose source node indices from discrete distribution
-        (ui,xi)=networkx.utils.discrete_sequence(2,cdistribution=cdf) 
+        (ui,xi)=nx.utils.discrete_sequence(2,cdistribution=cdf) 
         if ui==xi: continue # same source, skip
         u=dk[ui] # convert index to label
         x=dk[xi] 
@@ -709,17 +709,17 @@ def connected_double_edge_swap(G, nswap=1):
            http://citeseer.ist.psu.edu/gkantsidis03markov.html
     """
     import math
-    if not networkx.is_connected(G):
-       raise networkx.NetworkXException("Graph not connected")
+    if not nx.is_connected(G):
+       raise nx.NetworkXException("Graph not connected")
 
     n=0
     swapcount=0
     deg=G.degree()
     dk=deg.keys() # Label key for nodes
     ideg=G.degree().values()
-    cdf=networkx.utils.cumulative_distribution(G.degree().values()) 
+    cdf=nx.utils.cumulative_distribution(G.degree().values()) 
     if len(cdf)<4:
-        raise networkx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has less than four nodes.")
     window=1
     while n < nswap:
         wcount=0
@@ -727,7 +727,7 @@ def connected_double_edge_swap(G, nswap=1):
         while wcount < window and n < nswap:
             # Pick two random edges without creating edge list
             # Choose source nodes from discrete degree distribution
-            (ui,xi)=networkx.utils.discrete_sequence(2,cdistribution=cdf) 
+            (ui,xi)=nx.utils.discrete_sequence(2,cdistribution=cdf) 
             if ui==xi: continue # same source, skip
             u=dk[ui] # convert index to label
             x=dk[xi] 
@@ -744,7 +744,7 @@ def connected_double_edge_swap(G, nswap=1):
                 swapcount+=1
             n+=1
             wcount+=1
-        if networkx.is_connected(G):
+        if nx.is_connected(G):
             window+=1
         else:
             # not connected, undo changes from previous window, decrease window
@@ -827,9 +827,9 @@ def li_smax_graph(degree_seq, create_using=None):
     Commented code to come.
     """
     if not is_valid_degree_sequence(degree_seq):
-        raise networkx.NetworkXError('Invalid degree sequence')
+        raise nx.NetworkXError('Invalid degree sequence')
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
 
     degree_seq.sort() # make sure it's sorted
     degree_seq.reverse()
@@ -911,7 +911,7 @@ def li_smax_graph(degree_seq, create_using=None):
                 #print "removing because tree condition    "
                 continue
             elif db < 2*bsize -wa:
-                raise networkx.NetworkXError(\
+                raise nx.NetworkXError(\
                         "THIS SHOULD NOT HAPPEN!-not graphable")
                 continue
             elif wa == 2 and bsize > 0:
@@ -946,9 +946,9 @@ def connected_smax_graph(degree_seq, create_using=None):
     # incomplete implementation
     
     if not is_valid_degree_sequence(degree_seq):
-        raise networkx.NetworkXError('Invalid degree sequence')
+        raise nx.NetworkXError('Invalid degree sequence')
     if create_using is not None and create_using.is_directed():
-        raise networkx.NetworkXError("Directed Graph not supported")
+        raise nx.NetworkXError("Directed Graph not supported")
    
     # build dictionary of node id and degree, sorted by degree, largest first
     degree_seq.sort() 
