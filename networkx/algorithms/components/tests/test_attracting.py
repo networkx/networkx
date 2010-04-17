@@ -2,34 +2,6 @@
 from nose.tools import *
 import networkx as nx
 
-class TestComponent:
-
-    def test_contract_scc1(self):
-        G = nx.DiGraph()
-        G.add_edges_from([(1,2),(2,3),(2,11),(2,12),(3,4),(4,3),(4,5),
-                          (5,6),(6,5),(6,7),(7,8),(7,9),(7,10),(8,9),
-                          (9,7),(10,6),(11,2),(11,4),(11,6),(12,6),(12,11)])
-        cG = nx.condensation(G)
-        # nodes
-        assert_true((1,) in cG)
-        assert_true((2,11,12) in cG)
-        assert_true((3,4) in cG)
-        assert_true((5,6,7,8,9,10) in cG)
-        assert_true((2,11,12) in cG[(1,)])
-        # edges
-        assert_true((3,4) in cG[(2,11,12)])
-        assert_true((5,6,7,8,9,10) in cG[(2,11,12)])
-        assert_true((5,6,7,8,9,10) in cG[(3,4)])
-        # DAG
-        assert_true(nx.is_directed_acyclic_graph(cG))
-
-    def test_contract_scc2(self):
-        # Bug found and fixed in [1687].
-        G = nx.DiGraph()
-        G.add_edge(1,2)
-        G.add_edge(2,1)
-        cG = nx.condensation(G)
-        assert_true((1,2) in cG)
 
 class TestAttractingComponents(object):
     def setUp(self):
