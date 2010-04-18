@@ -1152,7 +1152,7 @@ class DiGraph(Graph):
         return H
 
 
-    def subgraph(self, nbunch, copy=True):
+    def subgraph(self, nbunch):
         """Return the subgraph induced on nodes in nbunch.
 
         The induced subgraph of the graph contains the nodes in nbunch 
