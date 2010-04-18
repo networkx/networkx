@@ -21,6 +21,7 @@ NetworkX documentation
    reference/index
    download
    install
+   test
    reference/history
    bibliography
 
