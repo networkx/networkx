@@ -53,8 +53,7 @@ for d in ['advanced',
           'graph',
           'multigraph',
           'pygraphviz',
-          'readwrite',
-          'ubigraph']:
+          'readwrite']:
     dd=os.path.join(docdirbase,'examples',d)
     pp=os.path.join('examples',d)
     data.append((dd,glob(os.path.join(pp,"*.py"))))
@@ -64,9 +63,22 @@ for d in ['advanced',
     data.append((dd,glob(os.path.join(pp,"*.edgelist"))))
 
 # add the tests
-package_data     = {'': ['tests/*.py'],
-                    '': ['tests/*.txt'],
-                    }
+package_data     = {
+    'networkx': ['tests/*.py'],
+    'networkx.algorithms': ['tests/*.py'],
+    'networkx.algorithms.centrality': ['tests/*.py'],
+    'networkx.algorithms.components': ['tests/*.py'],
+    'networkx.algorithms.traversal': ['tests/*.py'],
+    'networkx.algorithms.isomorphism': ['tests/*.py','tests/*.*99'],
+    'networkx.algorithms.link_analysis': ['tests/*.py'],
+    'networkx.algorithms.shortest_paths': ['tests/*.py'],
+    'networkx.algorithms.traversal': ['tests/*.py'],
+    'networkx.classes': ['tests/*.py'],
+    'networkx.generators': ['tests/*.py'],
+    'networkx.drawing': ['tests/*.py'],
+    'networkx.linalg': ['tests/*.py'],
+    'networkx.readwrite': ['tests/*.py'],
+    }
 
 if __name__ == "__main__":
 

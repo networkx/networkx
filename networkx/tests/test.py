@@ -11,11 +11,13 @@ def run():
 
     print "Running NetworkX tests:"
     
-    nx_install_dir=path.join(path.dirname(__file__), path.pardir,path.pardir)
-    argv=[' ','--verbosity=1',
+#    nx_install_dir=path.join(path.dirname(__file__), path.pardir,path.pardir)
+    nx_install_dir=path.join(path.dirname(__file__), path.pardir)
+    argv=[' ','--verbosity=2',
           '-w',nx_install_dir,
           '--with-doctest',
-          '--doctest-extension=txt']
+          '--doctest-extension=txt',
+          '--exe']
     nose.run(argv=argv)
 
 if __name__=="__main__":

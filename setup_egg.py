@@ -47,7 +47,7 @@ if __name__ == "__main__":
         install_requires=['setuptools'],
         test_suite       = 'nose.collector', 
         tests_require    = ['nose >= 0.10.1'] ,
-        zip_safe = True
+        zip_safe = False
       )
 
 
