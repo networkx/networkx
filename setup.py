@@ -3,6 +3,9 @@
 """
 Setup script for networkx
 
+You can install networkx with
+
+python setup_egg.py install
 """
 from glob import glob
 import os

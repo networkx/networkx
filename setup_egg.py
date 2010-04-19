@@ -1,17 +1,21 @@
 
 #!/usr/bin/env python
 """
-An alternate setup.py script for setuptools.
+An alternate setup.py script that uses setuptools.
+
+You can install networkx with
+
+python setup_egg.py install
 
 If you have setuptools and run this as 
 
->>> python setup_egg.py bdist_egg
+python setup_egg.py bdist_egg
 
 you will get a Python egg.
 
 Use
 
->>> python setup_egg.py nosetests
+python setup_egg.py nosetests
 
 to run the tests.
 
