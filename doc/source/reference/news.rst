@@ -31,7 +31,7 @@ New features
  - :mod:`Directed configuration model <networkx.generators.degree_seq>`,
    and  :mod:`directed random graph model <networkx.generators.random_graphs>`.
  - Improved documentation of drawing, shortest paths, and other algorithms
- - Many more tests
+ - Many more tests, can be run with "import networkx; networkx.test()"
  - and much more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.1
 
 API Changes
@@ -63,7 +63,8 @@ and the with_labels keyword has been removed:
    :meth:`MultiDiGraph.degree`, 
    :meth:`MultiDiGraph.in_degree`, 
    :meth:`MultiDiGraph.out_degree`.
- - :func:`clustering`, :func:`triangles`
+ - :func:`clustering`, 
+   :func:`triangles`
  - :func:`node_clique_number`, 
    :func:`number_of_cliques`, 
    :func:`cliques_containing_node`
