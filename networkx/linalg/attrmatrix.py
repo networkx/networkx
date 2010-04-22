@@ -183,8 +183,8 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
         However, if `rc_order` was None, then the ordering used to construct 
         the matrix is returned as well.
 
-    Example
-    -------
+    Examples
+    --------
     Construct an adjacency matrix:
 
     >>> G = nx.Graph()
@@ -339,8 +339,8 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
         However, if `rc_order` was None, then the ordering used to construct 
         the matrix is returned as well.
 
-    Example
-    -------
+    Examples
+    --------
     Construct an adjacency matrix:
 
     >>> G = nx.Graph()
