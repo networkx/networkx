@@ -1,2 +1,2 @@
-from pagerank import *
-from hits import *
+from pagerank_alg import *
+from hits_alg import *
