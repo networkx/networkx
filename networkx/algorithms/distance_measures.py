@@ -53,10 +53,13 @@ def eccentricity(G, v=None, sp=None):
         else:
             length=sp[v]
         try:
-            assert len(length)==order
-        except:
-            raise networkx.NetworkXError(\
-                  "Graph not connected: infinite path length")
+            L = len(length)
+        except TypeError:
+            raise networkx.NetworkXError('Format of "sp" is invalid.')
+        else:
+            if L != order:
+                msg = "Graph not connected: infinite path length"
+                raise networkx.NetworkXError(msg)
             
         e[v]=max(length.values())
 
