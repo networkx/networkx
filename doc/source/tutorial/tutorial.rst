@@ -377,7 +377,11 @@ Analyzing graphs
 
 The structure of G can be analyzed using various graph-theoretic 
 functions such as:
- 
+
+>>> G=nx.Graph()
+>>> G.add_edges_from([(1,2),(1,3)])
+>>> G.add_node("spam")       # adds node "spam"
+
 >>> nx.connected_components(G)
 [[1, 2, 3], ['spam']]
 
