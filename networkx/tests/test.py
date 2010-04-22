@@ -2,7 +2,14 @@
 import sys
 from os import path
 
-def run():
+def run(verbosity=1):
+    """Run NetworkX tests.
+
+    Parameters
+    ----------
+    verbosity: integer, optional
+      Level of detail in test reports.  Higher numbers provide  more detail.  
+    """
     try:
         import nose
     except ImportError:
@@ -12,7 +19,7 @@ def run():
     print "Running NetworkX tests:"
     
     nx_install_dir=path.join(path.dirname(__file__), path.pardir)
-    argv=[' ','--verbosity=2',
+    argv=[' ','--verbosity=%d'%verbosity,
           '-w',nx_install_dir,
           '--with-doctest',
           '--doctest-extension=txt',
