@@ -16,7 +16,7 @@ def run(verbosity=1):
         raise ImportError(\
             "The nose package is needed to run the NetworkX tests.")
 
-    print "Running NetworkX tests:"
+    sys.stderr.write("Running NetworkX tests:")
     
     nx_install_dir=path.join(path.dirname(__file__), path.pardir)
     argv=[' ','--verbosity=%d'%verbosity,
