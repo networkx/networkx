@@ -2,7 +2,7 @@
 import sys
 from os import path
 
-def run(verbosity=1):
+def run(verbosity=1,doctest=False):
     """Run NetworkX tests.
 
     Parameters
@@ -21,9 +21,10 @@ def run(verbosity=1):
     nx_install_dir=path.join(path.dirname(__file__), path.pardir)
     argv=[' ','--verbosity=%d'%verbosity,
           '-w',nx_install_dir,
-          '--with-doctest',
-          '--doctest-extension=txt',
-          '--exe']
+          '-exe']
+    if doctest:
+        argv.extend(['--with-doctest','--doctest-extension=txt'])
+
     nose.run(argv=argv)
 
 if __name__=="__main__":

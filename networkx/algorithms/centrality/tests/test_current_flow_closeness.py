@@ -1,8 +1,17 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose import SkipTest
 import networkx
 
-class TestFlowClosenessCentrality():
+class TestFlowClosenessCentrality(object):
+    @classmethod
+    def setupClass(cls):
+        global np
+        try:
+            import numpy as np
+        except ImportError:
+            raise SkipTest('NumPy not available.')
+        
         
     def test_K4(self):
         """Closeness centrality: K4"""
@@ -41,5 +50,5 @@ class TestFlowClosenessCentrality():
 
 
 
-class TestWeightedFlowClosenessCentrality():
+class TestWeightedFlowClosenessCentrality(object):
     pass

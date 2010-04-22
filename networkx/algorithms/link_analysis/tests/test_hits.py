@@ -37,6 +37,12 @@ class TestHITS:
             assert_almost_equal(a[n],G.a[n],places=4)
 
     def test_hits_numpy(self):
+        try:
+            import numpy as np
+        except ImportError:
+            raise SkipTest('NumPy not available.')
+
+
         G=self.G
         h,a=networkx.hits_numpy(G)
         for n in G:
@@ -46,6 +52,11 @@ class TestHITS:
 
 
     def test_hits_scipy(self):
+        try:
+            import scipy as sp
+        except ImportError:
+            raise SkipTest('SciPy not available.')
+
         G=self.G
         h,a=networkx.hits_scipy(G,tol=1.e-08)
         for n in G:

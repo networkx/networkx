@@ -1,9 +1,17 @@
 #!/usr/bin/env python
 import math
+from nose import SkipTest
 from nose.tools import *
 import networkx
 
-class TestEigenvectorCentrality():
+class TestEigenvectorCentrality(object):
+    @classmethod
+    def setupClass(cls):
+        global np
+        try:
+            import numpy as np
+        except ImportError:
+            raise SkipTest('NumPy not available.')
         
     def test_K5(self):
         """Eigenvector centrality: K5"""
@@ -26,7 +34,14 @@ class TestEigenvectorCentrality():
             assert_almost_equal(b[n],b_answer[n],places=4)
 
 
-class TestEigenvectorCentralityDirected:
+class TestEigenvectorCentralityDirected(object):
+    @classmethod
+    def setupClass(cls):
+        global np
+        try:
+            import numpy as np
+        except ImportError:
+            raise SkipTest('NumPy not available.')
 
     def setUp(self):
     

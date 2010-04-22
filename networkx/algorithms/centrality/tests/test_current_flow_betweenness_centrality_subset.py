@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose import SkipTest
 import networkx
 
 from networkx import edge_current_flow_betweenness_centrality \
@@ -8,7 +9,15 @@ from networkx import edge_current_flow_betweenness_centrality \
 from networkx import edge_current_flow_betweenness_centrality_subset \
     as edge_current_flow_subset
 
-class TestFlowBetweennessCentrality():
+class TestFlowBetweennessCentrality(object):
+    @classmethod
+    def setupClass(cls):
+        global np
+        try:
+            import numpy as np
+        except ImportError:
+            raise SkipTest('NumPy not available.')
+
         
     def test_K4_normalized(self):
         """Betweenness centrality: K4"""
@@ -75,7 +84,14 @@ class TestFlowBetweennessCentrality():
 #     pass
 
 
-class TestEdgeFlowBetweennessCentrality():
+class TestEdgeFlowBetweennessCentrality(object):
+    @classmethod
+    def setupClass(cls):
+        global np
+        try:
+            import numpy as np
+        except ImportError:
+            raise SkipTest('NumPy not available.')
       
     def test_K4_normalized(self):
         """Betweenness centrality: K4"""

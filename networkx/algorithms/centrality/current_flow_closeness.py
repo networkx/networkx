@@ -13,7 +13,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['current_flow_closeness_centrality']
 
 import networkx as nx
-import numpy as np
 
 def current_flow_closeness_centrality(G,normalized=True):
     """Compute current-flow closeness centrality for nodes.
@@ -99,6 +98,11 @@ def current_flow_closeness_centrality(G,normalized=True):
 
 def _compute_C(G):
     """Compute inverse of Laplacian."""
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError, \
+          "flow_closeness_centrality() requires NumPy: http://scipy.org/ "
     L=nx.laplacian(G) # use ordering of G.nodes()
     # remove first row and column
     LR=L[1:,1:]

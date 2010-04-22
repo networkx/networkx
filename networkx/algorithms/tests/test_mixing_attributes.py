@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose import SkipTest
 import networkx
 import networkx.algorithms.mixing as mixing
 
