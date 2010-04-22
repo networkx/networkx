@@ -203,7 +203,7 @@ class TestDegreeMixingMatrixPearsonr(object):
         npt.assert_almost_equal(r,-1.0/7.0,decimal=4)
 
 
-class TestNeighborhoodConnectivity():
+class TestNeighborhoodConnectivity(object):
     def setUp(self):
         self.P4=networkx.path_graph(4)
         self.D=networkx.DiGraph() 

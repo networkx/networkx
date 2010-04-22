@@ -43,7 +43,7 @@ def weighted_G():
     return G
 
 
-class TestBetweennessCentrality():
+class TestBetweennessCentrality(object):
         
     def test_K5(self):
         """Betweenness centrality: K5"""
@@ -220,7 +220,7 @@ class TestBetweennessCentrality():
 
 
 
-class TestWeightedBetweennessCentrality():
+class TestWeightedBetweennessCentrality(object):
         
     def test_K5(self):
         """Weighted betweenness centrality: K5"""
@@ -355,7 +355,7 @@ class TestWeightedBetweennessCentrality():
             assert_almost_equal(b[n],b_answer[n])
 
 
-class TestEdgeBetweennessCentrality():
+class TestEdgeBetweennessCentrality(object):
         
     def test_K5(self):
         """Edge betweenness centrality: K5"""
@@ -398,7 +398,7 @@ class TestEdgeBetweennessCentrality():
         for n in sorted(G.edges()):
             assert_almost_equal(b[n],b_answer[n])
 
-class TestWeightedEdgeBetweennessCentrality():
+class TestWeightedEdgeBetweennessCentrality(object):
         
     def test_K5(self):
         """Edge betweenness centrality: K5"""

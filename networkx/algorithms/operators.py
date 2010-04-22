@@ -69,17 +69,22 @@ def union(G,H,create_using=None,rename=False,name=None):
 
     # rename graph to obtain disjoint node labels
     if rename: # create new string labels
-        import functools
-        def add_prefix(x,prefix=''):
+        def add_prefix0(x):
+            prefix=rename[0]
             if is_string_like(x):
                 name=prefix+x
             else:
                 name=prefix+repr(x)
             return name
-        mapping=functools.partial(add_prefix,prefix=rename[0])
-        G=nx.relabel_nodes(G,mapping)
-        mapping=functools.partial(add_prefix,prefix=rename[1])
-        H=nx.relabel_nodes(H,mapping)
+        def add_prefix1(x):
+            prefix=rename[1]
+            if is_string_like(x):
+                name=prefix+x
+            else:
+                name=prefix+repr(x)
+            return name
+        G=nx.relabel_nodes(G,add_prefix0)
+        H=nx.relabel_nodes(H,add_prefix1)
 
     if set(G) & set(H):
         raise nx.NetworkXError(\
