@@ -186,3 +186,12 @@ def adjacency_spectrum(G):
 
 combinatorial_laplacian=laplacian
 generalized_laplacian=normalized_laplacian
+
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")

@@ -272,3 +272,15 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
     authorities=dict(zip(G.nodes(),a/a.sum()))
     return hubs,authorities
 
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
+    try:
+        import scipy
+    except:
+        raise SkipTest("SciPy not available")

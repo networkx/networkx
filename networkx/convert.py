@@ -811,3 +811,16 @@ def from_scipy_sparse_matrix(A,create_using=None):
         for pos,j in enumerate(row):
             G.add_edge(i,j,**{'weight':AA.data[i][pos]})
     return G
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
+    try:
+        import scipy
+    except:
+        raise SkipTest("SciPy not available")
+

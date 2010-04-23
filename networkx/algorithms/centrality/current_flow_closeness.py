@@ -111,3 +111,10 @@ def _compute_C(G):
     C[1:,1:]=LRinv
     return C
 
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")

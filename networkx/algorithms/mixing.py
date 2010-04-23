@@ -530,4 +530,10 @@ def node_degree_xy(G):
                 degv=in_degree(v)
                 yield degu,degv
 
-
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")

@@ -58,3 +58,10 @@ def read_yaml(path):
     return yaml.load(fh)
 
 
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import yaml
+    except:
+        raise SkipTest("yaml not available")

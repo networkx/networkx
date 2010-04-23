@@ -897,3 +897,11 @@ def draw_graphviz(G, prog="neato", **kwargs):
 def draw_nx(G,pos,**kwds):
     """For backward compatibility; use draw or draw_networkx"""
     draw(G,pos,**kwds)
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import pylab
+    except:
+        raise SkipTest("matplotlib not available")

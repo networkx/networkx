@@ -273,3 +273,10 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
             node_pos[n]=(float(xx),float(yy))
     return node_pos
 
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import pydot
+    except:
+        raise SkipTest("pydot not available")

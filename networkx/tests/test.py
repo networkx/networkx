@@ -2,7 +2,7 @@
 import sys
 from os import path
 
-def run(verbosity=1,doctest=False):
+def run(verbosity=1,doctest=True):
     """Run NetworkX tests.
 
     Parameters

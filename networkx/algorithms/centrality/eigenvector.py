@@ -164,3 +164,12 @@ def eigenvector_centrality_numpy(G):
     norm=np.sign(largest.sum())*np.linalg.norm(largest)
     centrality=dict(zip(G,largest/norm))
     return centrality
+
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import pyparsing
+    except:
+        raise SkipTest("pyparsing not available")

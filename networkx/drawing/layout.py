@@ -514,3 +514,10 @@ def _rescale_layout(pos,scale=1):
     return pos
 
 
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")

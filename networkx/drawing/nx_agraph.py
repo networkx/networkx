@@ -38,6 +38,7 @@ import subprocess
 import networkx as nx
 from networkx.utils import _get_fh,is_string_like
 
+
 def from_agraph(A,create_using=None):
     """Return a NetworkX Graph or DiGraph from a PyGraphviz graph.
 
@@ -449,3 +450,10 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     graph.draw(path, format, prog, args)
     subprocess.call([cmds[sys.platform], filename])
 
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import pygraphviz
+    except:
+        raise SkipTest("pygraphviz not available")

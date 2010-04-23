@@ -343,3 +343,11 @@ def write_gml(G, path):
             fh.write(2*indent+"%s %s\n"%(k,v))
         fh.write(indent+"]\n")
     fh.write("]")
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import pyparsing
+    except:
+        raise SkipTest("pyparsing not available")
