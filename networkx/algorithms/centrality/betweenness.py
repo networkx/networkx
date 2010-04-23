@@ -155,11 +155,6 @@ def edge_betweenness_centrality(G,normalized=True,
 
 # obsolete name
 def edge_betweenness(G,normalized=True,weighted_edges=False):
-    import warnings
-    warnings.warn("""edge_betweenness() is deprecated, 
-use edge_betweenness_centrality()""", 
-                      DeprecationWarning)
-
     return edge_betweenness_centrality(G,
                                        normalized=normalized,
                                        weighted_edges=weighted_edges)

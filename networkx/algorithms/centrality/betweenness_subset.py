@@ -170,11 +170,6 @@ def edge_betweenness_centrality_subset(G,sources,targets,
 def betweenness_centrality_source(G,normalized=True,
                                   weighted_edges=False,
                                   sources=None):
-    import warnings
-    warnings.warn("""betweenness_centrality_source() is deprecated, 
-use betweenness_centrality_subset()""", 
-                  DeprecationWarning)
-
     if sources is None:
         sources=G.nodes()
     targets=G.nodes()
