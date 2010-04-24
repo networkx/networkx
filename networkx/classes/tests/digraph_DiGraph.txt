@@ -78,9 +78,9 @@ False
 True
 >>> G.remove_nodes_from(['H','I','J','K','L'])
 >>> G.add_nodes_from([1,2,3,4])
->>> sorted(G.nodes())
+>>> sorted(G.nodes(),key=str)
 [1, 2, 3, 4, 'A', 'B', 'C', 'D', 'E', 'F', 'G']
->>> sorted(G)   # test __iter__
+>>> sorted(G,key=str)   # test __iter__
 [1, 2, 3, 4, 'A', 'B', 'C', 'D', 'E', 'F', 'G']
 >>> 'A' in G    # test __contains__
 True
@@ -109,10 +109,10 @@ nbunch is a list.
 
 >>> G.add_nodes_from(list("ABCD")) 
 >>> G.add_nodes_from(P3) # add nbunch of nodes (nbunch=Graph)
->>> sorted(G.nodes())
+>>> sorted(G.nodes(),key=str)
 [1, 2, 3, 'A', 'B', 'C', 'D']
 >>> G.remove_nodes_from(P3) # remove nbunch of nodes (nbunch=Graph)
->>> sorted(G.nodes())
+>>> sorted(G.nodes(),key=str)
 ['A', 'B', 'C', 'D']
 
 nbunch is a set
@@ -144,7 +144,7 @@ nbunch is a graph
 
 >>> nbunch=K3
 >>> G.add_nodes_from(nbunch)
->>> sorted(G.nodes())
+>>> sorted(G.nodes(),key=str)
 [1, 2, 3, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 
 Edges
@@ -247,7 +247,7 @@ False
 >>> G.has_edge('J','K')
 False
 >>> G.remove_nodes_from(set('ZEFHIMNO'))
->>> sorted(G.nodes())
+>>> sorted(G.nodes(),key=str)
 [1, 2, 3, 'A', 'B', 'C', 'D', 'G', 'J', 'K']
 >>> G.remove_nodes_from([1,2,3])
 >>> sorted(G.nodes())
@@ -601,7 +601,7 @@ Iterators
  sorted(G.degree_iter())
 [0, 0, 0, 2, 2, 3, 3]
 
->>> sorted(G.degree_iter())
+>>> sorted(G.degree_iter(),key=str)
 [('A', 2), ('B', 3), ('C', 3), ('D', 2), ('G', 0), ('J', 0), ('K', 0)]
 >>> sorted(G.neighbors_iter('A'))
 ['B', 'C']
