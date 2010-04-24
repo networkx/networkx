@@ -5,7 +5,7 @@ include INSTALL.txt
 include LICENSE.txt
 include README.txt
 
-recursive-include examples *.py *.edgelist *.mbox *.gz *.bz2
+recursive-include examples *.py *.edgelist *.mbox *.gz *.bz2 *.zip
 recursive-include doc *.py *.rst Makefile *.html *.png *.txt
 
 include scripts/*
