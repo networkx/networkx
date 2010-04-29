@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Compute the shortest paths and path lengths between nodes in the graph.
+
+These algorithms work with undirected and directed graphs.
+
+For directed graphs the paths can be computed in the reverse
+order by first flipping the edge orientation using R=G.reverse(copy=False).
+
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2004-2010 by 
@@ -64,6 +70,10 @@ def shortest_path(G,source=None,target=None,weighted=False):
 
     If weighted=True and the graph has no 'weight' edge attribute
     the value 1 will be used.
+
+    For digraphs this returns a shortest directed path.  
+    To find paths in the reverse direction use G.reverse(copy=False)
+    first to flip the edge orientation.
     """
     if source is None:
         if target is None:
@@ -146,6 +156,9 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
     If weighted=True and the graph has no 'weight' edge attribute
     the value 1 will be used.
 
+    For digraphs this returns the shortest directed path.
+    To find path lengths in the reverse direction use G.reverse(copy=False)
+    first to flip the edge orientation.
     """
     if source is None:
         if target is None:
