@@ -5,7 +5,7 @@ Link Analysis
 PageRank
 --------
 
-.. automodule:: networkx.algorithms.link_analysis.pagerank
+.. automodule:: networkx.algorithms.link_analysis.pagerank_alg
 .. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
@@ -18,7 +18,7 @@ PageRank
 Hits
 ----
 
-.. automodule:: networkx.algorithms.link_analysis.hits
+.. automodule:: networkx.algorithms.link_analysis.hits_alg
 .. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
