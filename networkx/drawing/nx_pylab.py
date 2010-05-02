@@ -145,7 +145,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     return
 
 
-def draw_networkx(G, pos=None, ax=None, with_labels=True, **kwds):
+def draw_networkx(G, pos=None, with_labels=True, **kwds):
     """Draw the graph G using Matplotlib.
 
     Draw the graph with Matplotlib with options for node positions,
