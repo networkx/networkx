@@ -1,7 +1,7 @@
 """
 Base class for undirected graphs.
 
-The Graph class allows any hashable object as a node 
+The Graph class allows any hashable object as a node
 and can associate key/value attribute pairs with each undirected edge.
 
 Self-loops are allowed but multiple edges are not (see MultiGraph).
@@ -12,7 +12,7 @@ For directed graphs see DiGraph and MultiDiGraph.
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
                             'Dan Schult(dschult@colgate.edu)'])
-#    Copyright (C) 2004-2009 by 
+#    Copyright (C) 2004-2009 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -60,10 +60,10 @@ class Graph(object):
     DiGraph
     MultiGraph
     MultiDiGraph
-    
+
     Examples
     --------
-    Create an empty graph structure (a "null graph") with no nodes and 
+    Create an empty graph structure (a "null graph") with no nodes and
     no edges.
 
     >>> G = nx.Graph()
@@ -71,12 +71,12 @@ class Graph(object):
     G can be grown in several ways.
 
     **Nodes:**
-  
+
     Add one node at a time:
 
     >>> G.add_node(1)
 
-    Add the nodes from any container (a list, dict, set or 
+    Add the nodes from any container (a list, dict, set or
     even the lines from a file or the nodes from another graph).
 
     >>> G.add_nodes_from([2,3])
@@ -91,31 +91,31 @@ class Graph(object):
     >>> G.add_node(H)
 
     **Edges:**
-    
+
     G can also be grown by adding edges.
 
     Add one edge,
 
     >>> G.add_edge(1, 2)
 
-    a list of edges, 
+    a list of edges,
 
     >>> G.add_edges_from([(1,2),(1,3)])
 
     or a collection of edges,
-    
+
     >>> G.add_edges_from(H.edges())
 
-    If some edges connect nodes not yet in the graph, the nodes 
-    are added automatically.  There are no errors when adding 
-    nodes or edges that already exist. 
+    If some edges connect nodes not yet in the graph, the nodes
+    are added automatically.  There are no errors when adding
+    nodes or edges that already exist.
 
     **Attributes:**
-    
+
     Each graph, node, and edge can hold key/value attribute pairs
     in an associated attribute dictionary (the keys must be hashable).
     By default these are empty, but can be added or changed using
-    add_edge, add_node or direct manipulation of the attribute 
+    add_edge, add_node or direct manipulation of the attribute
     dictionaries named graph, node and edge respectively.
 
     >>> G = nx.Graph(day="Friday")
@@ -157,10 +157,10 @@ class Graph(object):
     ...            # Note: you should not change this dict manually!
     {2: {'color': 'blue', 'weight': 4}}
 
-    The fastest way to traverse all edges of a graph is via 
+    The fastest way to traverse all edges of a graph is via
     adjacency_iter(), but the edges() method is often more convenient.
 
-    >>> for n,nbrsdict in G.adjacency_iter(): 
+    >>> for n,nbrsdict in G.adjacency_iter():
     ...     for nbr,eattr in nbrsdict.iteritems():
     ...        if 'weight' in eattr:
     ...            print (n,nbr,eattr['weight'])
@@ -172,12 +172,12 @@ class Graph(object):
     [(1, 2, 4), (2, 3, 8)]
 
     **Reporting:**
-    
+
     Simple graph information is obtained using methods.
     Iterator versions of many reporting methods exist for efficiency.
     Methods exist for reporting nodes(), edges(), neighbors() and degree()
     as well as the number of nodes and edges.
-    
+
     For details on these and other miscellaneous methods, see below.
     """
     def __init__(self, data=None, name='', **attr):
@@ -199,7 +199,7 @@ class Graph(object):
         See Also
         --------
         convert
-            
+
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -234,7 +234,7 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)        
+        >>> G = nx.path_graph(4)
         >>> print G
         path_graph(4)
         """
@@ -273,7 +273,7 @@ class Graph(object):
             return n in self.adj
         except TypeError:
             return False
-        
+
     def __len__(self):
         """Return the number of nodes. Use the expression 'len(G)'.
 
@@ -321,7 +321,7 @@ class Graph(object):
         {1: {}}
         """
         return self.adj[n]
-    
+
 
     def add_node(self, n, attr_dict=None, **attr):
         """Add a single node n and update node attributes.
@@ -377,7 +377,7 @@ class Graph(object):
         if n not in self.adj:
             self.adj[n] = {}
             self.node[n] = attr_dict
-        else: # update attr even if node already exists            
+        else: # update attr even if node already exists
             self.node[n].update(attr_dict)
 
 
@@ -387,7 +387,7 @@ class Graph(object):
         Parameters
         ----------
         nodes : iterable container
-            A container of nodes (list, dict, set, etc.).  
+            A container of nodes (list, dict, set, etc.).
             OR
             A container of (node, attribute dict) tuples.
             Node attributes are updated using the attribute dict.
@@ -484,7 +484,7 @@ class Graph(object):
             del self.node[n]
         except KeyError: # NetworkXError if n not in self
             raise NetworkXError("The node %s is not in the graph."%(n,))
-        for u in nbrs:  
+        for u in nbrs:
             del adj[u][n]   # remove all edges n-u in graph
         del adj[n]          # now remove node
 
@@ -517,9 +517,9 @@ class Graph(object):
         """
         adj = self.adj
         for n in nodes:
-            try: 
+            try:
                 del self.node[n]
-                for u in adj[n].keys():   # keys() handles self-loops 
+                for u in adj[n].keys():   # keys() handles self-loops
                     del adj[u][n]         #(allows mutation of dict in loop)
                 del adj[n]
             except KeyError:
@@ -538,12 +538,12 @@ class Graph(object):
         Returns
         -------
         niter : iterator
-            An iterator over nodes.  If data=True the iterator gives 
-            two-tuples containing (node, node data, dictionary) 
+            An iterator over nodes.  If data=True the iterator gives
+            two-tuples containing (node, node data, dictionary)
 
         Notes
         -----
-        If the node data is not required it is simpler and equivalent 
+        If the node data is not required it is simpler and equivalent
         to use the expression 'for n in G'.
 
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -574,7 +574,7 @@ class Graph(object):
 
         Parameters
         ----------
-        data : boolean, optional (default=False) 
+        data : boolean, optional (default=False)
                If False return a list of nodes.  If True return a
                two-tuple of node and node data dictionary
 
@@ -582,7 +582,7 @@ class Graph(object):
         -------
         nlist : list
             A list of nodes.  If data=True a list of two-tuples containing
-            (node, node data dictionary). 
+            (node, node data dictionary).
 
         Examples
         --------
@@ -606,7 +606,7 @@ class Graph(object):
 
         See Also
         --------
-        order, __len__  which are identical 
+        order, __len__  which are identical
 
         Examples
         --------
@@ -628,7 +628,7 @@ class Graph(object):
 
         See Also
         --------
-        number_of_nodes, __len__  which are identical 
+        number_of_nodes, __len__  which are identical
 
         """
         return len(self.adj)
@@ -651,18 +651,18 @@ class Graph(object):
 
         >>> 0 in G
         True
-        
+
         """
         try:
             return n in self.adj
         except TypeError:
             return False
 
-    def add_edge(self, u, v, attr_dict=None, **attr):  
+    def add_edge(self, u, v, attr_dict=None, **attr):
         """Add an edge between u and v.
 
-        The nodes u and v will be automatically added if they are 
-        not already in the graph.  
+        The nodes u and v will be automatically added if they are
+        not already in the graph.
 
         Edge attributes can be specified with keywords or by providing
         a dictionary with key/value pairs.  See examples below.
@@ -670,20 +670,20 @@ class Graph(object):
         Parameters
         ----------
         u,v : nodes
-            Nodes can be, for example, strings or numbers. 
+            Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
         attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
             update existing data associated with the edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
-            keyword arguments.   
+            keyword arguments.
 
         See Also
         --------
         add_edges_from : add a collection of edges
 
-        Notes 
+        Notes
         -----
         Adding an edge that already exists updates the edge data.
 
@@ -694,7 +694,7 @@ class Graph(object):
         Examples
         --------
         The following all add the edge e=(1,2) to graph G:
-        
+
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> e = (1,2)
         >>> G.add_edge(1, 2)           # explicit two-node form
@@ -715,11 +715,11 @@ class Graph(object):
             except AttributeError:
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
-        # add nodes            
-        if u not in self.adj: 
+        # add nodes
+        if u not in self.adj:
             self.adj[u] = {}
             self.node[u] = {}
-        if v not in self.adj: 
+        if v not in self.adj:
             self.adj[v] = {}
             self.node[v] = {}
         # add the edge
@@ -729,7 +729,7 @@ class Graph(object):
         self.adj[v][u] = datadict
 
 
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):  
+    def add_edges_from(self, ebunch, attr_dict=None, **attr):
         """Add all the edges in ebunch.
 
         Parameters
@@ -744,7 +744,7 @@ class Graph(object):
             update existing data associated with each edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
-            keyword arguments.   
+            keyword arguments.
 
 
         See Also
@@ -763,7 +763,7 @@ class Graph(object):
         >>> G.add_edges_from([(0,1),(1,2)]) # using a list of edge tuples
         >>> e = zip(range(0,3),range(1,4))
         >>> G.add_edges_from(e) # Add the path graph 0-1-2-3
-  
+
         Associate data to edges
 
         >>> G.add_edges_from([(1,2),(2,3)], weight=3)
@@ -784,25 +784,25 @@ class Graph(object):
             if ne==3:
                 u,v,dd = e
             elif ne==2:
-                u,v = e  
+                u,v = e
                 dd = {}
-            else: 
+            else:
                 raise NetworkXError(\
                     "Edge tuple %s must be a 2-tuple or 3-tuple."%(e,))
-            if u not in self.adj: 
+            if u not in self.adj:
                 self.adj[u] = {}
                 self.node[u] = {}
-            if v not in self.adj: 
+            if v not in self.adj:
                 self.adj[v] = {}
                 self.node[v] = {}
             datadict=self.adj[u].get(v,{})
-            datadict.update(attr_dict) 
+            datadict.update(attr_dict)
             datadict.update(dd)
             self.adj[u][v] = datadict
             self.adj[v][u] = datadict
 
 
-    def add_weighted_edges_from(self, ebunch, **attr):  
+    def add_weighted_edges_from(self, ebunch, **attr):
         """Add all the edges in ebunch as weighted edges with specified
         weights.
 
@@ -828,16 +828,16 @@ class Graph(object):
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_weighted_edges_from([(0,1,3.0),(1,2,7.5)]) 
+        >>> G.add_weighted_edges_from([(0,1,3.0),(1,2,7.5)])
         """
         self.add_edges_from(((u,v,{'weight':d}) for u,v,d in ebunch),**attr)
 
-    def remove_edge(self, u, v): 
+    def remove_edge(self, u, v):
         """Remove the edge between u and v.
 
         Parameters
         ----------
-        u,v: nodes 
+        u,v: nodes
             Remove the edge between nodes u and v.
 
         Raises
@@ -860,21 +860,21 @@ class Graph(object):
         >>> G.remove_edge(*e[:2]) # select first part of edge tuple
         """
         try:
-            del self.adj[u][v]   
+            del self.adj[u][v]
             if u != v:  # self-loop needs only one entry removed
-                del self.adj[v][u]   
-        except KeyError: 
+                del self.adj[v][u]
+        except KeyError:
             raise NetworkXError("The edge %s-%s is not in the graph"%(u,v))
 
 
 
-    def remove_edges_from(self, ebunch): 
+    def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
 
         Parameters
         ----------
         ebunch: list or container of edge tuples
-            Each edge given in the list or container will be removed 
+            Each edge given in the list or container will be removed
             from the graph. The edges can be:
 
                 - 2-tuples (u,v) edge between u and v.
@@ -883,7 +883,7 @@ class Graph(object):
         See Also
         --------
         remove_edge : remove a single edge
-            
+
         Notes
         -----
         Will fail silently if an edge in ebunch is not in the graph.
@@ -893,14 +893,14 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> ebunch=[(1,2),(2,3)]
-        >>> G.remove_edges_from(ebunch) 
+        >>> G.remove_edges_from(ebunch)
         """
         for e in ebunch:
             u,v = e[:2]  # ignore edge data if present
             if u in self.adj and v in self.adj[u]:
-                del self.adj[u][v]   
+                del self.adj[u][v]
                 if u != v:  # self loop needs only one entry removed
-                    del self.adj[v][u]   
+                    del self.adj[v][u]
 
 
     def has_edge(self, u, v):
@@ -909,9 +909,9 @@ class Graph(object):
         Parameters
         ----------
         u,v : nodes
-            Nodes can be, for example, strings or numbers. 
+            Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
-            
+
         Returns
         -------
         edge_ind : bool
@@ -932,13 +932,13 @@ class Graph(object):
         >>> G.has_edge(*e[:2])  # e is a 3-tuple (u,v,data_dictionary)
         True
 
-        The following syntax are all equivalent: 
-        
+        The following syntax are all equivalent:
+
         >>> G.has_edge(0,1)
         True
         >>> 1 in G[0]  # though this gives KeyError if 0 not in G
         True
-        
+
         """
         try:
             return v in self.adj[u]
@@ -958,11 +958,11 @@ class Graph(object):
         -------
         nlist : list
             A list of nodes that are adjacent to n.
-        
+
         Raises
         ------
         NetworkXError
-            If the node n is not in the graph.  
+            If the node n is not in the graph.
 
         Notes
         -----
@@ -1012,7 +1012,7 @@ class Graph(object):
     def edges(self, nbunch=None, data=False):
         """Return a list of edges.
 
-        Edges are returned as tuples with optional data 
+        Edges are returned as tuples with optional data
         in the order (node, neighbor, data).
 
         Parameters
@@ -1055,8 +1055,8 @@ class Graph(object):
 
     def edges_iter(self, nbunch=None, data=False):
         """Return an iterator over the edges.
-        
-        Edges are returned as tuples with optional data 
+
+        Edges are returned as tuples with optional data
         in the order (node, neighbor, data).
 
         Parameters
@@ -1120,9 +1120,9 @@ class Graph(object):
         Parameters
         ----------
         u,v : nodes
-        default:  any Python object (default=None)           
-            Value to return if the edge (u,v) is not found.  
-            
+        default:  any Python object (default=None)
+            Value to return if the edge (u,v) is not found.
+
         Returns
         -------
         edge_dict : dictionary
@@ -1167,7 +1167,7 @@ class Graph(object):
         """Return an adjacency list representation of the graph.
 
         The output adjacency list is in the order of G.nodes().
-        For directed graphs, only outgoing adjacencies are included. 
+        For directed graphs, only outgoing adjacencies are included.
 
         Returns
         -------
@@ -1187,11 +1187,11 @@ class Graph(object):
 
         """
         return map(list,self.adj.itervalues())
-        
+
     def adjacency_iter(self):
         """Return an iterator of (node, adjacency dict) tuples for all nodes.
 
-        This is the fastest way to look at every edge. 
+        This is the fastest way to look at every edge.
         For directed graphs, only outgoing adjacencies are included.
 
         Returns
@@ -1203,8 +1203,8 @@ class Graph(object):
         See Also
         --------
         adjacency_list
-           
-        Examples   
+
+        Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
@@ -1217,15 +1217,15 @@ class Graph(object):
     def degree(self, nbunch=None, weighted=False):
         """Return the degree of a node or nodes.
 
-        The node degree is the number of edges adjacent to that node. 
+        The node degree is the number of edges adjacent to that node.
 
         Parameters
         ----------
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
-            through once.    
+            through once.
         weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.  
+           If True return the sum of edge weights adjacent to the node.
 
         Returns
         -------
@@ -1251,23 +1251,23 @@ class Graph(object):
             return dict(self.degree_iter(nbunch,weighted=weighted))
 
     def degree_iter(self, nbunch=None, weighted=False):
-        """Return an iterator for (node, degree). 
+        """Return an iterator for (node, degree).
 
-        The node degree is the number of edges adjacent to the node. 
+        The node degree is the number of edges adjacent to the node.
 
         Parameters
         ----------
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
-            through once.    
+            through once.
         weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.  
+           If True return the sum of edge weights adjacent to the node.
 
         Returns
         -------
-        nd_iter : an iterator 
+        nd_iter : an iterator
             The iterator returns two-tuples of (node, degree).
-        
+
         See Also
         --------
         degree
@@ -1286,8 +1286,8 @@ class Graph(object):
             nodes_nbrs = self.adj.iteritems()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
-  
-        if weighted:                        
+
+        if weighted:
         # edge weighted graph - degree is sum of nbr edge weights
             for n,nbrs in nodes_nbrs:
                 yield (n, sum((nbrs[nbr].get('weight',1) for nbr in nbrs)) +
@@ -1301,7 +1301,7 @@ class Graph(object):
         """Remove all nodes and edges from the graph.
 
         This also removes the name, and all graph, node, and edge attributes.
-        
+
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -1314,7 +1314,7 @@ class Graph(object):
 
         """
         self.name = ''
-        self.adj.clear() 
+        self.adj.clear()
         self.node.clear()
         self.graph.clear()
 
@@ -1324,7 +1324,7 @@ class Graph(object):
         Returns
         -------
         G : Graph
-            A copy of the graph.   
+            A copy of the graph.
 
         See Also
         --------
@@ -1332,8 +1332,8 @@ class Graph(object):
 
         Notes
         -----
-        This makes a complete copy of the graph including all of the 
-        node or edge attributes. 
+        This makes a complete copy of the graph including all of the
+        node or edge attributes.
 
         Examples
         --------
@@ -1355,7 +1355,7 @@ class Graph(object):
 
     def to_directed(self):
         """Return a directed representation of the graph.
- 
+
         Returns
         -------
         G : DiGraph
@@ -1365,12 +1365,12 @@ class Graph(object):
 
         Notes
         -----
-        This returns a "deepcopy" of the edge, node, and 
+        This returns a "deepcopy" of the edge, node, and
         graph attributes which attempts to completely copy
         all of the data and references.
 
-        This is in contrast to the similar D=DiGraph(G) which returns a 
-        shallow copy of the data. 
+        This is in contrast to the similar D=DiGraph(G) which returns a
+        shallow copy of the data.
 
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
@@ -1391,20 +1391,20 @@ class Graph(object):
         >>> H.edges()
         [(0, 1)]
         """
-        from networkx import DiGraph 
+        from networkx import DiGraph
         G=DiGraph()
         G.name=self.name
         G.add_nodes_from(self)
-        G.add_edges_from( ((u,v,deepcopy(data)) 
-                           for u,nbrs in self.adjacency_iter() 
+        G.add_edges_from( ((u,v,deepcopy(data))
+                           for u,nbrs in self.adjacency_iter()
                            for v,data in nbrs.iteritems()) )
         G.graph=deepcopy(self.graph)
         G.node=deepcopy(self.node)
         return G
 
     def to_undirected(self):
-        """Return an undirected copy of the graph. 
- 
+        """Return an undirected copy of the graph.
+
         Returns
         -------
         G : Graph/MultiGraph
@@ -1416,12 +1416,12 @@ class Graph(object):
 
         Notes
         -----
-        This returns a "deepcopy" of the edge, node, and 
+        This returns a "deepcopy" of the edge, node, and
         graph attributes which attempts to completely copy
         all of the data and references.
 
-        This is in contrast to the similar G=DiGraph(D) which returns a 
-        shallow copy of the data. 
+        This is in contrast to the similar G=DiGraph(D) which returns a
+        shallow copy of the data.
 
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
@@ -1442,18 +1442,18 @@ class Graph(object):
     def subgraph(self, nbunch):
         """Return the subgraph induced on nodes in nbunch.
 
-        The induced subgraph of the graph contains the nodes in nbunch 
-        and the edges between those nodes.  
-        
+        The induced subgraph of the graph contains the nodes in nbunch
+        and the edges between those nodes.
+
         Parameters
         ----------
         nbunch : list, iterable
-            A container of nodes which will be iterated through once.    
+            A container of nodes which will be iterated through once.
 
         Returns
         -------
         G : Graph
-            A subgraph of the graph with the same edge attributes.  
+            A subgraph of the graph with the same edge attributes.
 
         Notes
         -----
@@ -1468,7 +1468,7 @@ class Graph(object):
         G.subgraph(nbunch).copy()
 
         For an in-place reduction of a graph to a subgraph you can remove nodes:
-        G.remove_nodes_from([ n in G if n not in set(nbunch)])  
+        G.remove_nodes_from([ n in G if n not in set(nbunch)])
 
         Examples
         --------
@@ -1479,7 +1479,7 @@ class Graph(object):
         [(0, 1), (1, 2)]
         """
         bunch =self.nbunch_iter(nbunch)
-        # create new graph and copy subgraph into it       
+        # create new graph and copy subgraph into it
         H = self.__class__()
         H.name = "Subgraph of (%s)"%(self.name)
         # namespace shortcuts for speed
@@ -1557,10 +1557,10 @@ class Graph(object):
         [(1, 1, {})]
         """
         if data:
-            return [ (n,n,nbrs[n]) 
+            return [ (n,n,nbrs[n])
                      for n,nbrs in self.adj.iteritems() if n in nbrs ]
         else:
-            return [ (n,n) 
+            return [ (n,n)
                      for n,nbrs in self.adj.iteritems() if n in nbrs ]
 
 
@@ -1572,7 +1572,7 @@ class Graph(object):
         Returns
         -------
         nloops : int
-            The number of selfloops.   
+            The number of selfloops.
 
         See Also
         --------
@@ -1630,9 +1630,9 @@ class Graph(object):
         Parameters
         ----------
         u,v : nodes, optional (default=all edges)
-            If u and v are specified, return the number of edges between 
+            If u and v are specified, return the number of edges between
             u and v. Otherwise return the total number of all edges.
-            
+
         Returns
         -------
         nedges : int
@@ -1642,14 +1642,14 @@ class Graph(object):
         See Also
         --------
         size
-            
+
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> G.number_of_edges()
         3
-        >>> G.number_of_edges(0,1) 
+        >>> G.number_of_edges(0,1)
         1
         >>> e = (0,1)
         >>> G.number_of_edges(*e)
@@ -1665,13 +1665,13 @@ class Graph(object):
     def add_star(self, nlist, **attr):
         """Add a star.
 
-        The first node in nlist is the middle of the star.  It is connected 
+        The first node in nlist is the middle of the star.  It is connected
         to all other nodes in nlist.
 
         Parameters
         ----------
-        nlist : list 
-            A list of nodes. 
+        nlist : list
+            A list of nodes.
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to every edge in star.
 
@@ -1692,10 +1692,10 @@ class Graph(object):
 
     def add_path(self, nlist, **attr):
         """Add a path.
-        
+
         Parameters
         ----------
-        nlist : list 
+        nlist : list
             A list of nodes.  A path will be constructed from
             the nodes (in order) and added to the graph.
         attr : keyword arguments, optional (default= no attributes)
@@ -1717,10 +1717,10 @@ class Graph(object):
 
     def add_cycle(self, nlist, **attr):
         """Add a cycle.
-        
+
         Parameters
         ----------
-        nlist : list 
+        nlist : list
             A list of nodes.  A cycle will be constructed from
             the nodes (in order) and added to the graph.
         attr : keyword arguments, optional (default= no attributes)
@@ -1742,7 +1742,7 @@ class Graph(object):
 
 
     def nbunch_iter(self, nbunch=None):
-        """Return an iterator of nodes contained in nbunch that are 
+        """Return an iterator of nodes contained in nbunch that are
         also in the graph.
 
         The nodes in nbunch are checked for membership in the graph
@@ -1752,7 +1752,7 @@ class Graph(object):
         ----------
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
-            through once.    
+            through once.
 
         Returns
         -------
@@ -1770,25 +1770,25 @@ class Graph(object):
         --------
         Graph.__iter__
 
-        Notes 
+        Notes
         -----
-        When nbunch is an iterator, the returned iterator yields values 
+        When nbunch is an iterator, the returned iterator yields values
         directly from nbunch, becoming exhausted when nbunch is exhausted.
-        
-        To test whether nbunch is a single node, one can use 
+
+        To test whether nbunch is a single node, one can use
         "if nbunch in self:", even after processing with this routine.
-        
+
         If nbunch is not a node or a (possibly empty) sequence/iterator
         or None, a NetworkXError is raised.  Also, if any object in
         nbunch is not hashable, a NetworkXError is raised.
         """
         if nbunch is None:   # include all nodes via iterator
             bunch=self.adj.iterkeys()
-        elif nbunch in self: # if nbunch is a single node 
+        elif nbunch in self: # if nbunch is a single node
             bunch=[nbunch].__iter__()
         else:                # if nbunch is a sequence of nodes
             def bunch_iter(nlist,adj):
-                try:    
+                try:
                     for n in nlist:
                         if n in adj:
                             yield n
@@ -1796,11 +1796,11 @@ class Graph(object):
                     message=e.args[0]
                     print message
                     # capture error for non-sequence/iterator nbunch.
-                    if 'iter' in message:  
+                    if 'iter' in message:
                         raise NetworkXError(
                             "nbunch is not a node or a sequence of nodes.")
                     # capture error for unhashable node.
-                    elif 'hashable' in message: 
+                    elif 'hashable' in message:
                         raise NetworkXError(
                             "Node %s in the sequence nbunch is not a valid node."%n)
                     else: raise

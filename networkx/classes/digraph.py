@@ -5,7 +5,7 @@ Base class for directed graphs.
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
                             'Dan Schult(dschult@colgate.edu)'])
-#    Copyright (C) 2004-2009 by 
+#    Copyright (C) 2004-2009 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -52,10 +52,10 @@ class DiGraph(Graph):
     Graph
     MultiGraph
     MultiDiGraph
-    
+
     Examples
     --------
-    Create an empty graph structure (a "null graph") with no nodes and 
+    Create an empty graph structure (a "null graph") with no nodes and
     no edges.
 
     >>> G = nx.DiGraph()
@@ -63,12 +63,12 @@ class DiGraph(Graph):
     G can be grown in several ways.
 
     **Nodes:**
-  
+
     Add one node at a time:
 
     >>> G.add_node(1)
 
-    Add the nodes from any container (a list, dict, set or 
+    Add the nodes from any container (a list, dict, set or
     even the lines from a file or the nodes from another graph).
 
     >>> G.add_nodes_from([2,3])
@@ -83,31 +83,31 @@ class DiGraph(Graph):
     >>> G.add_node(H)
 
     **Edges:**
-    
+
     G can also be grown by adding edges.
 
     Add one edge,
 
     >>> G.add_edge(1, 2)
 
-    a list of edges, 
+    a list of edges,
 
     >>> G.add_edges_from([(1,2),(1,3)])
 
     or a collection of edges,
-    
+
     >>> G.add_edges_from(H.edges())
 
-    If some edges connect nodes not yet in the graph, the nodes 
-    are added automatically.  There are no errors when adding 
-    nodes or edges that already exist. 
+    If some edges connect nodes not yet in the graph, the nodes
+    are added automatically.  There are no errors when adding
+    nodes or edges that already exist.
 
     **Attributes:**
-    
+
     Each graph, node, and edge can hold key/value attribute pairs
     in an associated attribute dictionary (the keys must be hashable).
     By default these are empty, but can be added or changed using
-    add_edge, add_node or direct manipulation of the attribute 
+    add_edge, add_node or direct manipulation of the attribute
     dictionaries named graph, node and edge respectively.
 
     >>> G = nx.DiGraph(day="Friday")
@@ -149,10 +149,10 @@ class DiGraph(Graph):
     ...            # Note: you should not change this dict manually!
     {2: {'color': 'blue', 'weight': 4}}
 
-    The fastest way to traverse all edges of a graph is via 
+    The fastest way to traverse all edges of a graph is via
     adjacency_iter(), but the edges() method is often more convenient.
 
-    >>> for n,nbrsdict in G.adjacency_iter(): 
+    >>> for n,nbrsdict in G.adjacency_iter():
     ...     for nbr,eattr in nbrsdict.iteritems():
     ...        if 'weight' in eattr:
     ...            print (n,nbr,eattr['weight'])
@@ -162,12 +162,12 @@ class DiGraph(Graph):
     [(1, 2, 4), (2, 3, 8)]
 
     **Reporting:**
-    
+
     Simple graph information is obtained using methods.
     Iterator versions of many reporting methods exist for efficiency.
     Methods exist for reporting nodes(), edges(), neighbors() and degree()
     as well as the number of nodes and edges.
-    
+
     For details on these and other miscellaneous methods, see below.
     """
     def __init__(self, data=None, name='', **attr):
@@ -189,7 +189,7 @@ class DiGraph(Graph):
         See Also
         --------
         convert
-            
+
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -220,7 +220,7 @@ class DiGraph(Graph):
         self.name=name
         self.edge=self.adj
 
-        
+
     def add_node(self, n, attr_dict=None, **attr):
         """Add a single node n and update node attributes.
 
@@ -276,7 +276,7 @@ class DiGraph(Graph):
             self.succ[n] = {}
             self.pred[n] = {}
             self.node[n] = attr_dict
-        else: # update attr even if node already exists            
+        else: # update attr even if node already exists
             self.node[n].update(attr_dict)
 
     def add_nodes_from(self, nodes, **attr):
@@ -285,7 +285,7 @@ class DiGraph(Graph):
         Parameters
         ----------
         nodes : iterable container
-            A container of nodes (list, dict, set, etc.).  
+            A container of nodes (list, dict, set, etc.).
             OR
             A container of (node, attribute dict) tuples.
             Node attributes are updated using the attribute dict.
@@ -386,7 +386,7 @@ class DiGraph(Graph):
         for u in nbrs:
             del self.pred[u][n] # remove all edges n-u in digraph
         del self.succ[n]          # remove node from succ
-        for u in self.pred[n]:  
+        for u in self.pred[n]:
             del self.succ[u][n] # remove all edges n-u in digraph
         del self.pred[n]          # remove node from pred
 
@@ -417,25 +417,25 @@ class DiGraph(Graph):
         []
 
         """
-        for n in nbunch: 
+        for n in nbunch:
             try:
                 succs=self.succ[n]
                 del self.node[n]
-                for u in succs:  
+                for u in succs:
                     del self.pred[u][n] # remove all edges n-u in digraph
                 del self.succ[n]          # now remove node
-                for u in self.pred[n]:  
+                for u in self.pred[n]:
                     del self.succ[u][n] # remove all edges n-u in digraph
                 del self.pred[n]          # now remove node
             except KeyError:
                 pass # silent failure on remove
 
 
-    def add_edge(self, u, v, attr_dict=None, **attr):  
+    def add_edge(self, u, v, attr_dict=None, **attr):
         """Add an edge between u and v.
 
-        The nodes u and v will be automatically added if they are 
-        not already in the graph.  
+        The nodes u and v will be automatically added if they are
+        not already in the graph.
 
         Edge attributes can be specified with keywords or by providing
         a dictionary with key/value pairs.  See examples below.
@@ -443,20 +443,20 @@ class DiGraph(Graph):
         Parameters
         ----------
         u,v : nodes
-            Nodes can be, for example, strings or numbers. 
+            Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
         attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
             update existing data associated with the edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
-            keyword arguments.   
+            keyword arguments.
 
         See Also
         --------
         add_edges_from : add a collection of edges
 
-        Notes 
+        Notes
         -----
         Adding an edge that already exists updates the edge data.
 
@@ -467,7 +467,7 @@ class DiGraph(Graph):
         Examples
         --------
         The following all add the edge e=(1,2) to graph G:
-        
+
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> e = (1,2)
         >>> G.add_edge(1, 2)           # explicit two-node form
@@ -488,12 +488,12 @@ class DiGraph(Graph):
             except AttributeError:
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
-        # add nodes            
-        if u not in self.succ: 
+        # add nodes
+        if u not in self.succ:
             self.succ[u]={}
             self.pred[u]={}
             self.node[u] = {}
-        if v not in self.succ: 
+        if v not in self.succ:
             self.succ[v]={}
             self.pred[v]={}
             self.node[v] = {}
@@ -503,7 +503,7 @@ class DiGraph(Graph):
         self.succ[u][v]=datadict
         self.pred[v][u]=datadict
 
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):  
+    def add_edges_from(self, ebunch, attr_dict=None, **attr):
         """Add all the edges in ebunch.
 
         Parameters
@@ -518,7 +518,7 @@ class DiGraph(Graph):
             update existing data associated with each edge.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
-            keyword arguments.   
+            keyword arguments.
 
 
         See Also
@@ -537,7 +537,7 @@ class DiGraph(Graph):
         >>> G.add_edges_from([(0,1),(1,2)]) # using a list of edge tuples
         >>> e = zip(range(0,3),range(1,4))
         >>> G.add_edges_from(e) # Add the path graph 0-1-2-3
-  
+
         Associate data to edges
 
         >>> G.add_edges_from([(1,2),(2,3)], weight=3)
@@ -561,19 +561,19 @@ class DiGraph(Graph):
             elif ne==2:
                 u,v = e
                 dd = {}
-            else: 
+            else:
                 raise NetworkXError(\
                     "Edge tuple %s must be a 2-tuple or 3-tuple."%(e,))
-            if u not in self.succ: 
+            if u not in self.succ:
                 self.succ[u] = {}
                 self.pred[u] = {}
                 self.node[u] = {}
-            if v not in self.succ: 
+            if v not in self.succ:
                 self.succ[v] = {}
                 self.pred[v] = {}
                 self.node[v] = {}
             datadict=self.adj[u].get(v,{})
-            datadict.update(attr_dict) 
+            datadict.update(attr_dict)
             datadict.update(dd)
             self.succ[u][v] = datadict
             self.pred[v][u] = datadict
@@ -584,7 +584,7 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        u,v: nodes 
+        u,v: nodes
             Remove the edge between nodes u and v.
 
         Raises
@@ -607,19 +607,19 @@ class DiGraph(Graph):
         >>> G.remove_edge(*e[:2]) # select first part of edge tuple
         """
         try:
-            del self.succ[u][v]   
-            del self.pred[v][u]   
-        except KeyError: 
+            del self.succ[u][v]
+            del self.pred[v][u]
+        except KeyError:
             raise NetworkXError("The edge %s-%s not in graph."%(u,v))
 
 
-    def remove_edges_from(self, ebunch): 
+    def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
 
         Parameters
         ----------
         ebunch: list or container of edge tuples
-            Each edge given in the list or container will be removed 
+            Each edge given in the list or container will be removed
             from the graph. The edges can be:
 
                 - 2-tuples (u,v) edge between u and v.
@@ -628,7 +628,7 @@ class DiGraph(Graph):
         See Also
         --------
         remove_edge : remove a single edge
-            
+
         Notes
         -----
         Will fail silently if an edge in ebunch is not in the graph.
@@ -638,13 +638,13 @@ class DiGraph(Graph):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> ebunch=[(1,2),(2,3)]
-        >>> G.remove_edges_from(ebunch) 
+        >>> G.remove_edges_from(ebunch)
         """
         for e in ebunch:
             (u,v)=e[:2]  # ignore edge data
             if u in self.succ and v in self.succ[u]:
-                del self.succ[u][v]   
-                del self.pred[v][u]        
+                del self.succ[u][v]
+                del self.pred[v][u]
 
 
     def has_successor(self, u, v):
@@ -659,11 +659,11 @@ class DiGraph(Graph):
 
         This is true if graph has the edge u<-v.
         """
-        return (u in self.pred and v in self.pred[u])    
+        return (u in self.pred and v in self.pred[u])
 
     def successors_iter(self,n):
         """Return an iterator over successor nodes of n.
-        
+
         neighbors_iter() and successors_iter() are the same.
         """
         try:
@@ -680,7 +680,7 @@ class DiGraph(Graph):
 
     def successors(self, n):
         """Return a list of successor nodes of n.
-        
+
         neighbors() and successors() are the same function.
         """
         return list(self.successors_iter(n))
@@ -690,14 +690,14 @@ class DiGraph(Graph):
         return list(self.predecessors_iter(n))
 
 
-    # digraph definitions 
+    # digraph definitions
     neighbors = successors
     neighbors_iter = successors_iter
 
     def edges_iter(self, nbunch=None, data=False):
         """Return an iterator over the edges.
-        
-        Edges are returned as tuples with optional data 
+
+        Edges are returned as tuples with optional data
         in the order (node, neighbor, data).
 
         Parameters
@@ -754,7 +754,7 @@ class DiGraph(Graph):
 
     def in_edges_iter(self, nbunch=None, data=False):
         """Return an iterator over the incoming edges.
-        
+
         Parameters
         ----------
         nbunch : iterable container, optional (default= all nodes)
@@ -795,23 +795,23 @@ class DiGraph(Graph):
         return list(self.in_edges_iter(nbunch, data))
 
     def degree_iter(self, nbunch=None, weighted=False):
-        """Return an iterator for (node, degree). 
+        """Return an iterator for (node, degree).
 
-        The node degree is the number of edges adjacent to the node. 
+        The node degree is the number of edges adjacent to the node.
 
         Parameters
         ----------
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
-            through once.    
+            through once.
         weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.  
+           If True return the sum of edge weights adjacent to the node.
 
         Returns
         -------
-        nd_iter : an iterator 
+        nd_iter : an iterator
             The iterator returns two-tuples of (node, degree).
-        
+
         See Also
         --------
         degree, in_degree, out_degree, in_degree_iter, out_degree_iter
@@ -834,18 +834,18 @@ class DiGraph(Graph):
                 ((n,self.succ[n]) for n in self.nbunch_iter(nbunch)),
                 ((n,self.pred[n]) for n in self.nbunch_iter(nbunch)))
 
-        if weighted:                        
+        if weighted:
         # edge weighted graph - degree is sum of edge weights
             for (n,succ),(n2,pred) in nodes_nbrs:
-               yield (n, 
+               yield (n,
                       sum((succ[nbr].get('weight',1) for nbr in succ))+
                       sum((pred[nbr].get('weight',1) for nbr in pred)))
         else:
             for (n,succ),(n2,pred) in nodes_nbrs:
-                yield (n,len(succ)+len(pred)) 
+                yield (n,len(succ)+len(pred))
 
     def in_degree_iter(self, nbunch=None, weighted=False):
-        """Return an iterator for (node, in-degree). 
+        """Return an iterator for (node, in-degree).
 
         The node in-degree is the number of edges pointing in to the node.
 
@@ -853,22 +853,22 @@ class DiGraph(Graph):
         ----------
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
-            through once.    
+            through once.
         weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.  
+           If True return the sum of edge weights adjacent to the node.
 
         Returns
         -------
-        nd_iter : an iterator 
+        nd_iter : an iterator
             The iterator returns two-tuples of (node, in-degree).
-        
+
         See Also
         --------
         degree, in_degree, out_degree, out_degree_iter
 
         Examples
         --------
-        >>> G = nx.DiGraph()   
+        >>> G = nx.DiGraph()
         >>> G.add_path([0,1,2,3])
         >>> list(G.in_degree_iter(0)) # node 0 with degree 0
         [(0, 0)]
@@ -880,8 +880,8 @@ class DiGraph(Graph):
             nodes_nbrs=self.pred.iteritems()
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
-  
-        if weighted:                        
+
+        if weighted:
         # edge weighted graph - degree is sum of edge weights
             for n,nbrs in nodes_nbrs:
                 yield (n, sum((nbrs[nbr].get('weight',1) for nbr in nbrs)))
@@ -891,7 +891,7 @@ class DiGraph(Graph):
 
 
     def out_degree_iter(self, nbunch=None, weighted=False):
-        """Return an iterator for (node, out-degree). 
+        """Return an iterator for (node, out-degree).
 
         The node out-degree is the number of edges pointing out of the node.
 
@@ -899,15 +899,15 @@ class DiGraph(Graph):
         ----------
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
-            through once.    
+            through once.
         weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.  
+           If True return the sum of edge weights adjacent to the node.
 
         Returns
         -------
-        nd_iter : an iterator 
+        nd_iter : an iterator
             The iterator returns two-tuples of (node, out-degree).
-        
+
         See Also
         --------
         degree, in_degree, out_degree, in_degree_iter
@@ -926,8 +926,8 @@ class DiGraph(Graph):
             nodes_nbrs=self.succ.iteritems()
         else:
             nodes_nbrs=((n,self.succ[n]) for n in self.nbunch_iter(nbunch))
-  
-        if weighted:                        
+
+        if weighted:
         # edge weighted graph - degree is sum of edge weights
             for n,nbrs in nodes_nbrs:
                 yield (n, sum((nbrs[nbr].get('weight',1) for nbr in nbrs)))
@@ -945,9 +945,9 @@ class DiGraph(Graph):
         ----------
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
-            through once.    
+            through once.
         weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.  
+           If True return the sum of edge weights adjacent to the node.
 
         Returns
         -------
@@ -984,9 +984,9 @@ class DiGraph(Graph):
         ----------
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
-            through once.    
+            through once.
         weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.  
+           If True return the sum of edge weights adjacent to the node.
 
         Returns
         -------
@@ -1016,7 +1016,7 @@ class DiGraph(Graph):
         """Remove all nodes and edges from the graph.
 
         This also removes the name, and all graph, node, and edge attributes.
-        
+
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -1029,8 +1029,8 @@ class DiGraph(Graph):
 
         """
         self.name=''
-        self.succ.clear() 
-        self.pred.clear() 
+        self.succ.clear()
+        self.pred.clear()
         self.node.clear()
         self.graph.clear()
 
@@ -1046,7 +1046,7 @@ class DiGraph(Graph):
 
     def to_directed(self):
         """Return a directed copy of the graph.
- 
+
         Returns
         -------
         G : DiGraph
@@ -1054,12 +1054,12 @@ class DiGraph(Graph):
 
         Notes
         -----
-        This returns a "deepcopy" of the edge, node, and 
+        This returns a "deepcopy" of the edge, node, and
         graph attributes which attempts to completely copy
         all of the data and references.
 
-        This is in contrast to the similar D=DiGraph(G) which returns a 
-        shallow copy of the data. 
+        This is in contrast to the similar D=DiGraph(G) which returns a
+        shallow copy of the data.
 
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
@@ -1084,11 +1084,11 @@ class DiGraph(Graph):
 
     def to_undirected(self):
         """Return an undirected representation of the digraph.
- 
+
         Returns
         -------
         G : Graph
-            An undirected graph with the same name and nodes and 
+            An undirected graph with the same name and nodes and
             with edge (u,v,data) if either (u,v,data) or (v,u,data)
             is in the digraph.  If both edges exist in digraph and
             their edge data is different, only one edge is created
@@ -1103,12 +1103,12 @@ class DiGraph(Graph):
         in the (arbitrary) order that the edges are encountered.  For
         more customized control of the edge attributes use add_edge().
 
-        This returns a "deepcopy" of the edge, node, and 
+        This returns a "deepcopy" of the edge, node, and
         graph attributes which attempts to completely copy
         all of the data and references.
 
-        This is in contrast to the similar G=DiGraph(D) which returns a 
-        shallow copy of the data. 
+        This is in contrast to the similar G=DiGraph(D) which returns a
+        shallow copy of the data.
 
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
@@ -1117,17 +1117,17 @@ class DiGraph(Graph):
         H=Graph()
         H.name=self.name
         H.add_nodes_from(self)
-        H.add_edges_from( (u,v,deepcopy(d)) 
+        H.add_edges_from( (u,v,deepcopy(d))
                           for u,nbrs in self.adjacency_iter()
                           for v,d in nbrs.iteritems() )
         H.graph=deepcopy(self.graph)
         H.node=deepcopy(self.node)
         return H
-    
+
 
     def reverse(self, copy=True):
         """Return the reverse of the graph.
-        
+
         The reverse is a graph with the same nodes and edges
         but with the directions of the edges reversed.
 
@@ -1155,18 +1155,18 @@ class DiGraph(Graph):
     def subgraph(self, nbunch):
         """Return the subgraph induced on nodes in nbunch.
 
-        The induced subgraph of the graph contains the nodes in nbunch 
-        and the edges between those nodes.  
-        
+        The induced subgraph of the graph contains the nodes in nbunch
+        and the edges between those nodes.
+
         Parameters
         ----------
         nbunch : list, iterable
-            A container of nodes which will be iterated through once.    
+            A container of nodes which will be iterated through once.
 
         Returns
         -------
         G : Graph
-            A subgraph of the graph with the same edge attributes.  
+            A subgraph of the graph with the same edge attributes.
 
         Notes
         -----
@@ -1181,7 +1181,7 @@ class DiGraph(Graph):
         G.subgraph(nbunch).copy()
 
         For an in-place reduction of a graph to a subgraph you can remove nodes:
-        G.remove_nodes_from([ n in G if n not in set(nbunch)])  
+        G.remove_nodes_from([ n in G if n not in set(nbunch)])
 
         Examples
         --------
@@ -1192,7 +1192,7 @@ class DiGraph(Graph):
         [(0, 1), (1, 2)]
         """
         bunch = self.nbunch_iter(nbunch)
-        # create new graph and copy subgraph into it       
+        # create new graph and copy subgraph into it
         H = self.__class__()
         H.name = "Subgraph of (%s)"%(self.name)
         # namespace shortcuts for speed
