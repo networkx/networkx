@@ -1,11 +1,11 @@
 """
 Functional interface to graph methods and assorted utilities.
-    
+
 """
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -65,23 +65,23 @@ def number_of_nodes(G):
 def number_of_edges(G):
     """Return the number of edges in the graph. """
     return G.number_of_edges()
-    
+
 def density(G):
     """Return the density of a graph.
 
     The density for undirected graphs is
-    
+
     .. math::
 
        d = \\frac{2m}{n(n-1)},
-       
-    and for directed graphs is        
+
+    and for directed graphs is
 
     .. math::
 
        d = \\frac{m}{n(n-1)},
 
-    where :math:`n` is the number of nodes and :math:`m` 
+    where :math:`n` is the number of nodes and :math:`m`
     is the number of edges in :math:`G`.
 
     Notes
@@ -104,7 +104,7 @@ def density(G):
 
 def degree_histogram(G):
     """Return a list of the frequency of each degree value.
-    
+
     Parameters
     ----------
     G : Networkx graph
@@ -115,7 +115,7 @@ def degree_histogram(G):
     hist : list
        A list of frequencies of degrees.
        The degree values are the index in the list.
-    
+
     Notes
     -----
     Note: the bins are width one, hence len(list) can be large
@@ -146,12 +146,12 @@ def info(G, n=None):
         if len(G) > 0:
             if G.is_directed():
                 print ("Average in degree:").ljust(width_left), \
-                    round( sum(G.in_degree())/float(len(G)), 4)
+                    round( sum(G.in_degree().values())/float(len(G)), 4)
                 print ("Average out degree:").ljust(width_left), \
-                    round( sum(G.out_degree())/float(len(G)), 4)
+                    round( sum(G.out_degree().values())/float(len(G)), 4)
             else:
                 print ("Average degree:").ljust(width_left), \
-                    round( sum(G.degree())/float(len(G)), 4)
+                    round( sum(G.degree().values())/float(len(G)), 4)
 
     else:
         try:
@@ -169,7 +169,7 @@ def info(G, n=None):
 
 def freeze(G):
     """Modify graph to prevent addition of nodes or edges.
-    
+
     Parameters
     -----------
     G : graph
@@ -194,8 +194,8 @@ def freeze(G):
     --------
     is_frozen
 
-    """        
-    def frozen(*args):    
+    """
+    def frozen(*args):
         raise nx.NetworkXError("Frozen graph can't be modified")
     G.add_node=frozen
     G.add_nodes_from=frozen
@@ -232,9 +232,9 @@ def subgraph(G, nbunch):
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
-    nbunch : list, iterable 
+    nbunch : list, iterable
        A container of nodes that will be iterated through once (thus
        it should be an iterator or be iterable).  Each element of the
        container should be a valid node type: any hashable type except
@@ -255,10 +255,10 @@ def create_empty_copy(G,with_nodes=True):
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
     with_nodes :  bool (default=True)
-       Include nodes. 
+       Include nodes.
 
     Notes
     -----
