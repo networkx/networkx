@@ -132,25 +132,35 @@ def is_directed(G):
     """ Return True if graph is directed."""
     return G.is_directed()
 
-def info(G, n=None):
-    """Print short summary of information for graph G or node n."""
+def info(G, n=None, output_to_file=None):
+    """Print short summary of information for graph G or node n.
+
+    Parameters
+    ----------
+    G : Networkx graph
+       A graph
+    n : node (any hashable)
+       A node from the graph G
+    output_to_file:  filehandle, optional (default= standard output)
+    """
     import textwrap
     width_left = 22
+    fh=output_to_file # abbreviation
 
     if n is None:
-        print ("Name:").ljust(width_left), G.name
+        print >> fh, ("Name:").ljust(width_left), G.name
         type_name = [type(G).__name__]
-        print ("Type:").ljust(width_left), ",".join(type_name)
-        print ("Number of nodes:").ljust(width_left), G.number_of_nodes()
-        print ("Number of edges:").ljust(width_left), G.number_of_edges()
+        print >> fh, ("Type:").ljust(width_left), ",".join(type_name)
+        print >> fh, ("Number of nodes:").ljust(width_left), G.number_of_nodes()
+        print >> fh, ("Number of edges:").ljust(width_left), G.number_of_edges()
         if len(G) > 0:
             if G.is_directed():
-                print ("Average in degree:").ljust(width_left), \
+                print >> fh, ("Average in degree:").ljust(width_left), \
                     round( sum(G.in_degree().values())/float(len(G)), 4)
-                print ("Average out degree:").ljust(width_left), \
+                print >> fh, ("Average out degree:").ljust(width_left), \
                     round( sum(G.out_degree().values())/float(len(G)), 4)
             else:
-                print ("Average degree:").ljust(width_left), \
+                print >> fh, ("Average degree:").ljust(width_left), \
                     round( sum(G.degree().values())/float(len(G)), 4)
 
     else:
@@ -158,14 +168,14 @@ def info(G, n=None):
             list_neighbors = G.neighbors(n)
         except (KeyError, TypeError):
             raise NetworkXError, "node %s not in graph"%(n,)
-        print "\nNode", n, "has the following properties:"
-        print ("Degree:").ljust(width_left), len(list_neighbors)
+        print >> fh, "Node", n, "has the following properties:"
+        print >> fh, ("Degree:").ljust(width_left), len(list_neighbors)
         str_neighbors = str(list_neighbors)
         str_neighbors = str_neighbors[1:len(str_neighbors)-1]
         wrapped_neighbors = textwrap.wrap(str_neighbors, 50)
-        print ("Neighbors:").ljust(width_left), wrapped_neighbors[0]
+        print >> fh, ("Neighbors:").ljust(width_left), wrapped_neighbors[0]
         for i in wrapped_neighbors[1:]:
-            print "".ljust(width_left), i
+            print >> fh, "".ljust(width_left), i
 
 def freeze(G):
     """Modify graph to prevent addition of nodes or edges.
