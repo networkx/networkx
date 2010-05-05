@@ -1290,7 +1290,7 @@ class Graph(object):
         if weighted:
         # edge weighted graph - degree is sum of nbr edge weights
             for n,nbrs in nodes_nbrs:
-                yield (n, sum((nbrs[nbr].get('weight',1) for nbr in nbrs)) +
+                yield (n, sum(data.get('weight',1) for data in nbrs.itervalues()) +
                               (n in nbrs and nbrs[n].get('weight',1)))
         else:
             for n,nbrs in nodes_nbrs:
@@ -1395,9 +1395,9 @@ class Graph(object):
         G=DiGraph()
         G.name=self.name
         G.add_nodes_from(self)
-        G.add_edges_from( ((u,v,deepcopy(data))
+        G.add_edges_from( (u,v,deepcopy(data))
                            for u,nbrs in self.adjacency_iter()
-                           for v,data in nbrs.iteritems()) )
+                           for v,data in nbrs.iteritems() )
         G.graph=deepcopy(self.graph)
         G.node=deepcopy(self.node)
         return G

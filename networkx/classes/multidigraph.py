@@ -477,35 +477,26 @@ class MultiDiGraph(MultiGraph,DiGraph):
         [(0, 1), (1, 2)]
 
         """
-        from itertools import izip
         if nbunch is None:
-            nodes_nbrs=izip(self.succ.iteritems(),self.pred.iteritems())
+            nodes_nbrs=( (n,succs,self.pred[n]) for n,succs in self.succ.iteritems())
         else:
-            nodes_nbrs=izip(
-                ((n,self.succ[n]) for n in self.nbunch_iter(nbunch)),
-                ((n,self.pred[n]) for n in self.nbunch_iter(nbunch)))
+            nodes_nbrs=( (n,self.succ[n],self.pred[n]) for n in self.nbunch_iter(nbunch))
 
         if weighted:
         # edge weighted graph - degree is sum of nbr edge weights
-            for (n,succ),(n2,pred) in nodes_nbrs:
-                deg = sum([d.get('weight',1)
+            for (n,succ,pred) in nodes_nbrs:
+                deg = sum( d.get('weight',1)
                            for data in pred.itervalues()
-                           for d in data.itervalues()])
-                deg += sum([d.get('weight',1)
+                           for d in data.itervalues())
+                deg += sum(d.get('weight',1)
                            for data in succ.itervalues()
-                           for d in data.itervalues()])
-#                if n in succ:
-                    # double counted selfloop so subtract
-#                    deg -= sum([d.get('weight',1)
-#                           for key,d in succ[n].iteritems()])
+                           for d in data.itervalues())
                 yield (n, deg)
         else:
-            for (n,succ),(n2,pred) in nodes_nbrs:
-                indeg = sum([len(data) for data in pred.itervalues()])
-                outdeg = sum([len(data) for data in succ.itervalues()])
+            for (n,succ,pred) in nodes_nbrs:
+                indeg = sum(len(data) for data in pred.itervalues())
+                outdeg = sum(len(data) for data in succ.itervalues())
                 yield (n, indeg + outdeg)
-# double counted selfloop so subtract
-#                      - (n in succ and len(succ[n])))
 
 
     def in_degree_iter(self, nbunch=None, weighted=False):
@@ -554,7 +545,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
                 yield (n, deg)
         else:
             for n,nbrs in nodes_nbrs:
-                yield (n, sum([len(data) for data in nbrs.itervalues()]) )
+                yield (n, sum(len(data) for data in nbrs.itervalues()))
 
 
     def out_degree_iter(self, nbunch=None, weighted=False):
@@ -596,13 +587,13 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         if weighted:
             for n,succ in nodes_nbrs:
-                deg = sum([d.get('weight',1)
+                deg = sum( d.get('weight',1)
                            for data in succ.itervalues()
-                           for d in data.itervalues()])
+                           for d in data.itervalues())
                 yield (n, deg)
         else:
             for n,nbrs in nodes_nbrs:
-                yield (n, sum([len(data) for data in nbrs.itervalues()]) )
+                yield (n, sum(len(data) for data in nbrs.itervalues()) )
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""
@@ -684,10 +675,10 @@ class MultiDiGraph(MultiGraph,DiGraph):
         H=MultiGraph()
         H.name=self.name
         H.add_nodes_from(self)
-        H.add_edges_from( ((u,v,key,deepcopy(data))
+        H.add_edges_from( (u,v,key,deepcopy(data))
                            for u,nbrs in self.adjacency_iter()
                            for v,keydict in nbrs.iteritems()
-                           for key,data in keydict.items()))
+                           for key,data in keydict.items())
         H.graph=deepcopy(self.graph)
         H.node=deepcopy(self.node)
         return H

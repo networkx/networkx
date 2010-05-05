@@ -826,22 +826,19 @@ class DiGraph(Graph):
         [(0, 1), (1, 2)]
 
         """
-        from itertools import izip
         if nbunch is None:
-            nodes_nbrs=izip(self.succ.iteritems(),self.pred.iteritems())
+            nodes_nbrs=( (n,succs,self.pred[n]) for n,succs in self.succ.iteritems())
         else:
-            nodes_nbrs=izip(
-                ((n,self.succ[n]) for n in self.nbunch_iter(nbunch)),
-                ((n,self.pred[n]) for n in self.nbunch_iter(nbunch)))
+            nodes_nbrs=( (n,self.succ[n],self.pred[n]) for n in self.nbunch_iter(nbunch))
 
         if weighted:
         # edge weighted graph - degree is sum of edge weights
-            for (n,succ),(n2,pred) in nodes_nbrs:
+            for (n,succ,pred) in nodes_nbrs:
                yield (n,
-                      sum((succ[nbr].get('weight',1) for nbr in succ))+
-                      sum((pred[nbr].get('weight',1) for nbr in pred)))
+                      sum(data.get('weight',1) for data in succ.itervalues())+
+                      sum(data.get('weight',1) for data in pred.itervalues()))
         else:
-            for (n,succ),(n2,pred) in nodes_nbrs:
+            for (n,succ,pred) in nodes_nbrs:
                 yield (n,len(succ)+len(pred))
 
     def in_degree_iter(self, nbunch=None, weighted=False):
@@ -884,7 +881,7 @@ class DiGraph(Graph):
         if weighted:
         # edge weighted graph - degree is sum of edge weights
             for n,nbrs in nodes_nbrs:
-                yield (n, sum((nbrs[nbr].get('weight',1) for nbr in nbrs)))
+                yield (n, sum(data.get('weight',1) for data in nbrs.itervalues()))
         else:
             for n,nbrs in nodes_nbrs:
                 yield (n,len(nbrs))
@@ -930,7 +927,7 @@ class DiGraph(Graph):
         if weighted:
         # edge weighted graph - degree is sum of edge weights
             for n,nbrs in nodes_nbrs:
-                yield (n, sum((nbrs[nbr].get('weight',1) for nbr in nbrs)))
+                yield (n, sum(data.get('weight',1) for data in nbrs.itervalues()))
         else:
             for n,nbrs in nodes_nbrs:
                 yield (n,len(nbrs))
