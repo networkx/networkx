@@ -49,10 +49,7 @@ def create_hc(G):
     return partition.values()
 
 if __name__ == '__main__':
-    try:
-        G=nx.read_edgelist("hartford_drug.edgelist")
-    except IOError:
-        raise "hartford_drug.edgelist not found"
+    G=nx.read_edgelist("hartford_drug.edgelist")
     
     # Extract largest connected component into graph H
     H=nx.connected_component_subgraphs(G)[0]

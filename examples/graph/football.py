@@ -19,20 +19,20 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 try:
     import pyparsing
-except ImportError:
-    raise "pyparsing not found: install http://pyparsing.wikispaces.com/"
+except ImportError,e:
+    raise ImportError(str(e)+". Check http://pyparsing.wikispaces.com/")
     
 from networkx import *
 
 url="http://www-personal.umich.edu/~mejn/netdata/football.zip"
 
-import urllib                                       
+import urllib
 import StringIO
 import zipfile
 
 sock = urllib.urlopen(url)  # open URL
 s=StringIO.StringIO(sock.read()) # read into StringIO "file"
-sock.close()                                        
+sock.close()
 
 zf = zipfile.ZipFile(s) # zipfile object
 txt=zf.read('football.txt') # read info file

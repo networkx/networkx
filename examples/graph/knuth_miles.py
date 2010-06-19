@@ -35,13 +35,10 @@ def miles_graph():
     """
     # open file miles_dat.txt.gz (or miles_dat.txt)
     try:
-        try:
-            import gzip
-            fh = gzip.open('knuth_miles.txt.gz','r')
-        except:
-            fh=open("knuth_miles.txt","r")
-    except IOError:
-        raise "File knuth_miles.txt not found."
+        import gzip
+        fh = gzip.open('knuth_miles.txt.gz','r')
+    except:
+        fh=open("knuth_miles.txt","r")
 
     G=nx.Graph()
     G.position={}

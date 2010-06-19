@@ -41,13 +41,10 @@ def roget_graph():
     """
     # open file roget_dat.txt.gz (or roget_dat.txt)
     try:
-        try:
-            import gzip
-            fh=gzip.open('roget_dat.txt.gz','r')
-        except:
-            fh=open("roget_dat.txt","r")
-    except IOError:
-        raise "File roget_dat.txt not found."
+        import gzip
+        fh=gzip.open('roget_dat.txt.gz','r')
+    except:
+        fh=open("roget_dat.txt","r")
 
     G=DiGraph()
 

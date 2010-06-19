@@ -60,13 +60,10 @@ def words_graph():
     import sys
     # open file words_dat.txt.gz (or words_dat.txt)
     try:
-        try:
-            import gzip
-            fh=gzip.open('words_dat.txt.gz','r')
-        except:
-            fh=open("words_dat.txt","r")
-    except IOError:
-        raise "File words_dat.txt not found."
+        import gzip
+        fh=gzip.open('words_dat.txt.gz','r')
+    except:
+        fh=open("words_dat.txt","r")
 
     G = Graph(name="words")
     sys.stderr.write("Loading words_dat.txt: ")
