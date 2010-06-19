@@ -22,7 +22,11 @@ Example of creating a block model using the blockmodel function in NX.  Data use
 __author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
                             'Aric Hagberg <hagberg@lanl.gov>'])
 
-from collections import defaultdict
+try:
+    from collections import defaultdict
+except ImportError:
+    raise ImportError("blockmodel.py requires Python 2.5 or greater")
+
 import networkx as nx
 import numpy
 from scipy.cluster import hierarchy
