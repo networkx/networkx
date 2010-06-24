@@ -394,6 +394,8 @@ def newman_watts_strogatz_graph(n, k, p, create_using=None, seed=None):
     """
     if seed is not None:
         random.seed(seed)
+    if k>=n/2: 
+        raise nx.NetworkXError("k>=n/2, choose smaller k or larger n")
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n,create_using)
@@ -460,6 +462,8 @@ def watts_strogatz_graph(n, k, p, create_using=None, seed=None):
        Collective dynamics of small-world networks,
        Nature, 393, pp. 440--442, 1998.
     """
+    if k>=n/2: 
+        raise nx.NetworkXError("k>=n/2, choose smaller k or larger n")
     if create_using is None:
         G = nx.Graph()
     elif create_using.is_directed():
