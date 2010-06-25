@@ -220,8 +220,7 @@ def strongly_connected_component_subgraphs(G):
 
     Notes
     -----
-    The list is ordered from largest connected component to smallest.
-    For undirected graphs only. 
+    The list is ordered from largest strongly connected component to smallest.
     """
     cc=strongly_connected_components(G)
     graph_list=[]
