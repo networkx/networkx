@@ -18,6 +18,7 @@ from operators import *
 from shortest_paths import *
 from link_analysis import *
 from mixing import *
+from flow import *
 
 import centrality
 import traversal
@@ -26,3 +27,4 @@ import shortest_paths
 import link_analysis
 import mixing
 import components
+import flow

@@ -20,6 +20,7 @@ Algorithms
    algorithms.cycles
    algorithms.dag
    algorithms.distance_measures
+   algorithms.flow
    algorithms.isomorphism
    algorithms.link_analysis
    algorithms.matching
