@@ -24,7 +24,7 @@ __all__ = ['dijkstra_path',
 import heapq
 import networkx as nx
 
-def dijkstra_path(G,source,target):
+def dijkstra_path(G,source,target, weight = 'weight'):
     """Returns the shortest path from source to target in a weighted
     graph G.  
 
@@ -38,6 +38,9 @@ def dijkstra_path(G,source,target):
     target : node 
        Ending node
 
+    weight: string, optional       
+       Edge data key corresponding to the edge weight
+       
     Returns
     -------
     path : list
@@ -60,7 +63,7 @@ def dijkstra_path(G,source,target):
     """
 #    (length,path)=bidirectional_dijkstra(G,source,target) # faster, needs test
 #     return path
-    (length,path)=single_source_dijkstra(G,source)
+    (length,path)=single_source_dijkstra(G,source, weight = weight)
     try:
         return path[target]
     except KeyError:
@@ -68,7 +71,7 @@ def dijkstra_path(G,source,target):
               "node %s not reachable from %s"%(source,target)
 
 
-def dijkstra_path_length(G,source,target):
+def dijkstra_path_length(G,source,target, weight = 'weight'):
     """Returns the shortest path length from source to target in a weighted
     graph G.  
 
@@ -82,6 +85,9 @@ def dijkstra_path_length(G,source,target):
 
     target : node label
        ending node for path 
+
+    weight: string, optional       
+       Edge data key corresponding to the edge weight
 
     Returns
     -------
@@ -111,7 +117,7 @@ def dijkstra_path_length(G,source,target):
 
 #    (length,path)=bidirectional_dijkstra(G,source,target) # faster, needs test
 #    return length
-    (length,path)=single_source_dijkstra(G,source)
+    (length,path)=single_source_dijkstra(G,source, weight = weight)
     try:
         return length[target]
     except KeyError:
@@ -120,7 +126,7 @@ def dijkstra_path_length(G,source,target):
 
 
 
-def bidirectional_dijkstra(G, source, target):
+def bidirectional_dijkstra(G, source, target, weight = 'weight'):
     """Dijkstra's algorithm for shortest paths using bidirectional search. 
 
     Parameters
@@ -132,6 +138,9 @@ def bidirectional_dijkstra(G, source, target):
 
     target : node
        Ending node.
+
+    weight: string, optional       
+       Edge data key corresponding to the edge weight
 
     Returns
     -------
@@ -221,9 +230,9 @@ def bidirectional_dijkstra(G, source, target):
             return (finaldist,finalpath)
         for w in neighs[dir](v):
             if(dir==0): #forward
-                vwLength = dists[dir][v] + G[v][w].get('weight',1)
+                vwLength = dists[dir][v] + G[v][w].get(weight,1)
             else: #back, must remember to change v,w->w,v
-                vwLength = dists[dir][v] + G[w][v].get('weight',1)
+                vwLength = dists[dir][v] + G[w][v].get(weight,1)
             
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
@@ -250,7 +259,7 @@ def bidirectional_dijkstra(G, source, target):
 #    return bidirectional_dijkstra(G,source,target)
 
 
-def single_source_dijkstra_path(G,source):
+def single_source_dijkstra_path(G,source, weight = 'weight'):
     """Compute shortest path between source
     and all other reachable nodes for a weighted graph.
 
@@ -260,6 +269,9 @@ def single_source_dijkstra_path(G,source):
 
     source : node
        Starting node for path. 
+
+    weight: string, optional       
+       Edge data key corresponding to the edge weight
 
     Returns
     -------
@@ -282,11 +294,11 @@ def single_source_dijkstra_path(G,source):
     single_source_dijkstra()
 
     """
-    (length,path)=single_source_dijkstra(G,source)
+    (length,path)=single_source_dijkstra(G,source, weight = weight)
     return path
 
 
-def single_source_dijkstra_path_length(G,source):
+def single_source_dijkstra_path_length(G,source, weight = 'weight'):
     """Compute shortest path length between source
     and all other reachable nodes for a weighted graph.
 
@@ -296,6 +308,9 @@ def single_source_dijkstra_path_length(G,source):
 
     source : node label
        Starting node for path
+
+    weight: string, optional       
+       Edge data key corresponding to the edge weight
 
     Returns
     -------
@@ -321,11 +336,11 @@ def single_source_dijkstra_path_length(G,source):
     single_source_dijkstra()
 
     """
-    (length,path)=single_source_dijkstra(G,source)
+    (length,path)=single_source_dijkstra(G,source, weight = weight)
     return length
 
 
-def single_source_dijkstra(G,source,target=None,cutoff=None ):
+def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
     """Compute shortest paths and lengths in a weighted graph G.
 
     Uses Dijkstra's algorithm for shortest paths. 
@@ -347,7 +362,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None ):
     -------
     distance,path : dictionaries
        Returns a tuple of two dictionaries keyed by node.
-       The first dicdtionary stores distance from the source.
+       The first dictionary stores distance from the source.
        The second stores the path from the source to that node.
 
 
@@ -397,14 +412,14 @@ def single_source_dijkstra(G,source,target=None,cutoff=None ):
             edata=[]
             for w,keydata in G[v].items():
                 edata.append((w,
-                             {'weight':min((dd.get('weight',1)
+                             {weight:min((dd.get(weight,1)
                                             for k,dd in keydata.iteritems()))}))
         else:
             edata=G[v].iteritems()
 
 
         for w,edgedata in edata:
-            vw_dist = dist[v] + edgedata.get('weight',1)
+            vw_dist = dist[v] + edgedata.get(weight,1)
             if cutoff is not None:
                 if vw_dist>cutoff: 
                     continue
@@ -418,7 +433,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None ):
                 paths[w] = paths[v]+[w]
     return (dist,paths)
 
-def dijkstra_predecessor_and_distance(G,source):
+def dijkstra_predecessor_and_distance(G,source, weight = 'weight'):
     """Compute shorest path length and predecessors on shortest paths
     in weighted graphs.
 
@@ -428,6 +443,9 @@ def dijkstra_predecessor_and_distance(G,source):
 
     source : node label
        Starting node for path
+
+    weight: string, optional       
+       Edge data key corresponding to the edge weight
 
     Returns
     -------
@@ -457,7 +475,7 @@ def dijkstra_predecessor_and_distance(G,source):
         else:
             edata=G[v].iteritems()
         for w,edgedata in edata:
-            vw_dist = dist[v] + edgedata.get('weight',1)
+            vw_dist = dist[v] + edgedata.get(weight,1)
             if w in dist:
                 if vw_dist < dist[w]:
                     raise ValueError,\
@@ -470,15 +488,15 @@ def dijkstra_predecessor_and_distance(G,source):
                 pred[w].append(v)
     return (pred,dist)
 
-def all_pairs_dijkstra_path_length(G):
+def all_pairs_dijkstra_path_length(G, weight = 'weight'):
     """ Compute shortest path lengths between all nodes in a weighted graph.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+    weight: string, optional       
+       Edge data key corresponding to the edge weight
 
     Returns
     -------
@@ -500,18 +518,18 @@ def all_pairs_dijkstra_path_length(G):
     """
     paths={}
     for n in G:
-        paths[n]=single_source_dijkstra_path_length(G,n)
+        paths[n]=single_source_dijkstra_path_length(G,n, weight = weight)
     return paths        
 
-def all_pairs_dijkstra_path(G):
+def all_pairs_dijkstra_path(G, weight = 'weight'):
     """ Compute shortest paths between all nodes in a weighted graph.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+    weight: string, optional       
+       Edge data key corresponding to the edge weight
 
     Returns
     -------
@@ -532,6 +550,6 @@ def all_pairs_dijkstra_path(G):
     """
     paths={}
     for n in G:
-        paths[n]=single_source_dijkstra_path(G,n)
+        paths[n]=single_source_dijkstra_path(G,n, weight = weight)
     return paths        
 
