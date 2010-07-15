@@ -113,8 +113,9 @@ def ford_fulkerson(G, s, t):
     >>> G.add_edge('d','e', capacity = 2.0)
     >>> G.add_edge('c','y', capacity = 2.0)
     >>> G.add_edge('e','y', capacity = 3.0)
-    >>> maxflow.ford_fulkerson(G, 'x', 'y')
-    (3.0, <networkx.classes.digraph.DiGraph object at 0x1017bc990>)
+    >>> flow,F=maxflow.ford_fulkerson(G, 'x', 'y')
+    >>> flow
+    3.0
     """
     
     auxiliary = _create_auxiliary_digraph(G)
