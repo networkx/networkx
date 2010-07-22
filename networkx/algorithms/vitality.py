@@ -52,6 +52,12 @@ def closeness_vitality(G,v=None,weighted_edges=False):
     nodes : dictionary
        Dictionary with nodes as keys and closeness vitality as the value.
 
+    Examples
+    --------
+    >>> G=nx.cycle_graph(3)
+    >>> nx.closeness_vitality(G)
+    {0: 4.0, 1: 4.0, 2: 4.0}
+
     See Also
     --------
     closeness_centrality()
