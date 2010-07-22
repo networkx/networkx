@@ -19,6 +19,7 @@ from shortest_paths import *
 from link_analysis import *
 from mixing import *
 from flow import *
+from isolates import *
 
 import centrality
 import traversal
