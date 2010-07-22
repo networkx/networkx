@@ -31,6 +31,13 @@ def ego_graph(G,n,radius=1,center=True):
     center : bool, optional
       If False, do not include center node in graph 
 
+    Notes
+    -----
+    For directed graphs D this produces the "out" neighborhood
+    or successors.  If you want the neighborhood of predecessors
+    first reverse the graph with D.reverse().  If you want both
+    first convert the graph to an undirected graph using G=nx.Graph(D).
+
     """
     sp=nx.single_source_shortest_path_length(G,n,cutoff=radius)
     H=G.subgraph(sp.keys())
