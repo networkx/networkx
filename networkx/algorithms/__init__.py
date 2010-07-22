@@ -20,6 +20,7 @@ from link_analysis import *
 from mixing import *
 from flow import *
 from isolates import *
+from euler import *
 
 import centrality
 import traversal
