@@ -10,7 +10,7 @@ Current-flow closeness centrality measures.
 #    BSD license.
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
-__all__ = ['current_flow_closeness_centrality']
+__all__ = ['current_flow_closeness_centrality','information_centrality']
 
 import networkx as nx
 
@@ -111,6 +111,8 @@ def _compute_C(G):
     C[1:,1:]=LRinv
     return C
 
+information_centrality=current_flow_closeness_centrality
+
 # fixture for nose tests
 def setup_module(module):
     from nose import SkipTest
@@ -118,3 +120,4 @@ def setup_module(module):
         import numpy
     except:
         raise SkipTest("NumPy not available")
+
