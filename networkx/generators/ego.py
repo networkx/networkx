@@ -12,7 +12,9 @@ __author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
                             'Aric Hagberg <hagberg@lanl.gov>'])
 __all__ = ['ego_graph']
 
-def ego_graph(G,n,center=True):
+import networkx as nx
+
+def ego_graph(G,n,radius=1,center=True):
     """Returns induced subgraph of neighbors centered at node n. 
     
     Parameters
@@ -23,13 +25,15 @@ def ego_graph(G,n,center=True):
     n : node 
       A single node 
 
+    radius : integer
+      Include all neighbors of distance<=radius from n
+      
     center : bool, optional
       If False, do not include center node in graph 
 
     """
-    nodes=set([n])  # add center node
-    nodes.update(G.neighbors(n)) # extend with neighbors
-    H=G.subgraph(nodes)
+    sp=nx.single_source_shortest_path_length(G,n,cutoff=radius)
+    H=G.subgraph(sp.keys())
     if not center:
         H.remove_node(n)
     return  H
