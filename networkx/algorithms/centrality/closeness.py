@@ -16,7 +16,7 @@ __all__ = ['closeness_centrality']
 
 import networkx as nx
 
-def closeness_centrality(G,v=None,weighted_edges=False):
+def closeness_centrality(G,v=None,weighted_edges=False,normalized=True):
     """Compute closeness centrality for nodes.
 
     Closeness centrality at a node is 1/average distance to all 
@@ -34,6 +34,10 @@ def closeness_centrality(G,v=None,weighted_edges=False):
       Consider the edge weights in determining the shortest paths.
       If False, all edge weights are considered equal.
       
+    normalized : bool, optional
+       If True normalize the values to the size of the connected
+       compoenent containing v.
+
     Returns
     -------
     nodes : dictionary
@@ -51,7 +55,6 @@ def closeness_centrality(G,v=None,weighted_edges=False):
     the node.  If the graph is not completely connected, this
     algorithm computes the closeness centrality for each connected
     part separately.  
-
     """
     if weighted_edges:
         path_length=nx.single_source_dijkstra_path_length
@@ -59,22 +62,24 @@ def closeness_centrality(G,v=None,weighted_edges=False):
         path_length=nx.single_source_shortest_path_length
 
     if v is None:
-        closeness_centrality={}
-        for n in G:
-            sp=path_length(G,n)
-            totsp=sum(sp.values())
-            if totsp > 0.0 and len(G) > 1:
-                # normalize to number of nodes-1 in connected part
-                s=(len(sp)-1.0) / ( len(G) - 1 )
-                closeness_centrality[n]= s / (totsp/(len(sp)-1.0))
-            else:                                                                
-                closeness_centrality[n]=0.0           
-        return closeness_centrality
-    else: # only compute for v
-        sp=path_length(G,v)
+        nodes=G.nodes()
+    else:
+        nodes=[v]
+    closeness_centrality={}
+
+    for n in nodes:
+        sp=path_length(G,n)
         totsp=sum(sp.values())
-        if totsp > 0.0 and len(G) > 1: 
+        if totsp > 0.0 and len(G) > 1:
+            closeness_centrality[n]= (len(sp)-1.0) / totsp
             # normalize to number of nodes-1 in connected part
-            return ( (len(sp)-1.0)/(len(G) - 1) )/ ( totsp / (len(sp) - 1.0) )
-        else:
-            return 0.0
+            if normalized:
+                s=(len(sp)-1.0) / ( len(G) - 1 )
+                closeness_centrality[n] *= s
+        else:                                                                
+            closeness_centrality[n]=0.0           
+    if v is not None:
+        return closeness_centrality[v]
+    else:
+        return closeness_centrality
+
