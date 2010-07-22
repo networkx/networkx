@@ -31,6 +31,7 @@ Algorithms
    algorithms.operators
    algorithms.shortest_paths
    algorithms.traversal
+   algorithms.vitality
 
 
 

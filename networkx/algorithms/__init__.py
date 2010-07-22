@@ -21,6 +21,7 @@ from mixing import *
 from flow import *
 from isolates import *
 from euler import *
+from vitality import *
 
 import centrality
 import traversal
