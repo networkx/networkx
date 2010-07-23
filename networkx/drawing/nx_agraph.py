@@ -34,7 +34,6 @@ __all__ = ['from_agraph', 'to_agraph',
 import os
 import sys
 import tempfile
-import subprocess
 import networkx as nx
 from networkx.utils import _get_fh,is_string_like
 
@@ -429,8 +428,12 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     calls if you experience problems.
     
     """
+    try:
+        import subprocess
+    except ImportError:
+        raise ImportError(
+            """display_pygraphviz requires subprocess module""")
     # This would be more useful as part of PyGraphviz.
-
     if len(path) == 2:
         fd, filename = path
         path = os.fdopen(fd, "w+b")  # grab file-object associated to fd
