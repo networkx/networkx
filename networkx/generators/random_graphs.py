@@ -933,7 +933,7 @@ def random_powerlaw_tree(n, gamma=3, create_using=None, seed=None, tries=100):
     the sequence makes a tree (#edges=#nodes-1).  
 
     """
-    from nx.generators.degree_seq import degree_sequence_tree
+    from networkx.generators.degree_seq import degree_sequence_tree
     try:
         s=random_powerlaw_tree_sequence(n,
                                         gamma=gamma,
