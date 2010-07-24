@@ -4,6 +4,27 @@
 Release Log
 ===========
 
+Networkx-1.2
+------------
+
+Release date:  28 July 2010
+
+See: https://networkx.lanl.gov/trac/timeline
+
+New features
+~~~~~~~~~~~~
+ - :mod:`Ford-Fulkerson max flow and min cut <networkx.algorithms.flow>` 
+ - :mod:`Closness vitality <networkx.algorithms.vitality>` 
+ - :mod:`Eulerian circuits <networkx.algorithms.euler>` 
+ - :mod:`Functions for isolates <networkx.algorithms.isolates>` 
+ - :mod:`Simpler s_max generator <networkx.generators.degree_seq>` 
+ - Compatible with IronPython-2.6
+ - Improved testing functionality: import networkx; networkx.test() tests
+   entire package and skips tests with missing optional packages
+ - All tests work with Python-2.4
+ - and more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.2
+
+
 Networkx-1.1
 ------------
 

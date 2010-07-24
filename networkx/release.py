@@ -63,11 +63,11 @@ def get_svn_revision():
 
 
 name = 'networkx'
-version = '1.2'
+version = '1.2rc1'
 
 # Declare current release as a development release.
 # Change to False before tagging a release; then change back.
-dev = True
+dev = False
 
 revision = None
 if dev:
