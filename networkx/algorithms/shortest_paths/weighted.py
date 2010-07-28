@@ -228,11 +228,22 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
             # if we have scanned v in both directions we are done 
             # we have now discovered the shortest path
             return (finaldist,finalpath)
+
         for w in neighs[dir](v):
             if(dir==0): #forward
-                vwLength = dists[dir][v] + G[v][w].get(weight,1)
+                if G.is_multigraph():
+                    minweight=min((dd.get(weight,1)
+                               for k,dd in G[v][w].iteritems()))
+                else:
+                    minweight=G[v][w].get(weight,1)
+                vwLength = dists[dir][v] + minweight #G[v][w].get(weight,1)
             else: #back, must remember to change v,w->w,v
-                vwLength = dists[dir][v] + G[w][v].get(weight,1)
+                if G.is_multigraph():
+                    minweight=min((dd.get(weight,1)
+                               for k,dd in G[w][v].iteritems()))
+                else:
+                    minweight=G[w][v].get(weight,1)
+                vwLength = dists[dir][v] + minweight #G[w][v].get(weight,1)
             
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
@@ -411,9 +422,9 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
         if G.is_multigraph():
             edata=[]
             for w,keydata in G[v].items():
-                edata.append((w,
-                             {weight:min((dd.get(weight,1)
-                                            for k,dd in keydata.iteritems()))}))
+                minweight=min((dd.get(weight,1)
+                               for k,dd in keydata.iteritems()))
+                edata.append((w,{weight:minweight}))
         else:
             edata=G[v].iteritems()
 

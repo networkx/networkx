@@ -127,6 +127,13 @@ class TestWeightedPath:
         assert_equal(P['v'],['u'])
         assert_equal(D['v'],9)
 
+    def test_bidirectional_dijkstra_multigraph(self):
+        G = nx.MultiGraph() 
+        G.add_edge('a', 'b', weight=10) 
+        G.add_edge('a', 'b', weight=100) 
+        dp= nx.bidirectional_dijkstra(G, 'a', 'b')
+        assert_equal(dp,(10, ['a', 'b']))
+
 
 
 
