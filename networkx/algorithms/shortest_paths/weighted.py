@@ -481,8 +481,11 @@ def dijkstra_predecessor_and_distance(G,source, weight = 'weight'):
         if v in dist: continue # already searched this node.
         dist[v] = d
         if G.is_multigraph():
-            edata=(  (w,min(edgedata.values())) 
-                     for w,edgedata in G[v].iteritems() )
+            edata=[]
+            for w,keydata in G[v].items():
+                minweight=min((dd.get(weight,1)
+                               for k,dd in keydata.iteritems()))
+                edata.append((w,{weight:minweight}))
         else:
             edata=G[v].iteritems()
         for w,edgedata in edata:
