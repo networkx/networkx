@@ -16,10 +16,12 @@ __all__ = ['ford_fulkerson',
 import networkx as nx
 
 def _create_auxiliary_digraph(G):
-    """Initialize an auxiliary digraph for a given graph G.
+    """Initialize an auxiliary digraph and dict of infinite capacity
+    edges for a given graph G.
     Ignore edges with capacity <= 0.
     """
     auxiliary = nx.DiGraph()
+    infcapFlows = {}
 
     if nx.is_directed(G):
         for edge in G.edges(data = True):
@@ -28,6 +30,7 @@ def _create_auxiliary_digraph(G):
                     auxiliary.add_edge(*edge)
             else:
                 auxiliary.add_edge(*edge)
+                infcapFlows[(edge[0], edge[1])] = 0
     else:
         for edge in G.edges(data = True):
             if edge[2].has_key('capacity'):
@@ -37,13 +40,15 @@ def _create_auxiliary_digraph(G):
             else:
                 auxiliary.add_edge(*edge)
                 auxiliary.add_edge(edge[1], edge[0], edge[2])
+                infcapFlows[(edge[0], edge[1])] = 0
+                infcapFlows[(edge[1], edge[0])] = 0
 
-    return auxiliary
+    return auxiliary, infcapFlows
 
 
-def _create_flow_graph(G, H):
+def _create_flow_graph(G, H, infcapFlows):
     """Creates the flow graph on G corresponding to the auxiliary
-    digraph H.
+    digraph H and infinite capacity edges flows infcapFlows.
     """
     if nx.is_directed(G):
         flowGraph = nx.DiGraph(G)
@@ -55,15 +60,17 @@ def _create_flow_graph(G, H):
             try:
                 flowGraph[u][v]['flow'] = abs(G[u][v]['capacity']
                                               - H[u][v]['capacity'])
-            except KeyError:
+            except KeyError: # (u, v) has infinite capacity
                 try:
                     flowGraph[u][v]['flow'] = H[v][u]['capacity']
                 except KeyError:
-                    # If we end up here, it is because of an infinite
-                    # capacity digon in the original graph. A flow
-                    # value could be computed using flow conservation.
-                    # For now, we just set the flow value to None.
-                    flowGraph[u][v]['flow'] = None
+                    # Infinite capacity digon in the original graph.
+                    if nx.is_directed(G):
+                        flowGraph[u][v]['flow'] = max(infcapFlows[(u, v)]
+                                                    - infcapFlows[(v, u)], 0)
+                    else:
+                        flowGraph[u][v]['flow'] = abs(infcapFlows[(u, v)]
+                                                    - infcapFlows[(v, u)])
         else:
             flowGraph[u][v]['flow'] = G[u][v]['capacity']
 
@@ -75,8 +82,7 @@ def ford_fulkerson(G, s, t):
     algorithm.
     
     This algorithm uses Edmond-Karp-Dinitz path selection rule which
-    guarantees a running time of O(nm**2) where n is the number of
-    nodes and m is the number of edges.
+    guarantees a running time of O(|V||E|**2).
 
     Parameters
     ----------
@@ -100,10 +106,16 @@ def ford_fulkerson(G, s, t):
         Graph with V(flowGraph) = V(G) and in which each edge has an
         attribute 'flow' which gives the flow on the edge.
 
+    Raises
+    ------
+    NetworkXError
+        If the graph has a path of infinite capacity, the value of a 
+        feasible flow on the graph is unbounded above and the function
+        raises a NetworkXError.
+
     Examples
     --------
     >>> import networkx as nx
-    >>> import maxflow
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity = 3.0)
     >>> G.add_edge('x','b', capacity = 1.0)
@@ -113,12 +125,12 @@ def ford_fulkerson(G, s, t):
     >>> G.add_edge('d','e', capacity = 2.0)
     >>> G.add_edge('c','y', capacity = 2.0)
     >>> G.add_edge('e','y', capacity = 3.0)
-    >>> flow,F=maxflow.ford_fulkerson(G, 'x', 'y')
+    >>> flow,F=nx.ford_fulkerson(G, 'x', 'y')
     >>> flow
     3.0
     """
     
-    auxiliary = _create_auxiliary_digraph(G)
+    auxiliary, infcapFlows = _create_auxiliary_digraph(G)
     flowValue = 0   # Initial feasible flow.
 
     # As long as there is an (s, t)-path in the auxiliary digraph, find
@@ -141,7 +153,9 @@ def ford_fulkerson(G, s, t):
                             for (u, v, c) in pathEdges
                             if c.has_key('capacity')])
         except ValueError: 
-            return None # path of infinite capacity implies no max flow
+            # path of infinite capacity implies no max flow
+            raise nx.NetworkXError(
+                    "Infinite capacity path, flow unbounded above.")
         
         flowValue += pathCapacity
 
@@ -152,6 +166,8 @@ def ford_fulkerson(G, s, t):
                 auxEdgeAttr['capacity'] -= pathCapacity
                 if auxEdgeAttr['capacity'] == 0:
                     auxiliary.remove_edge(u, v)
+            else:
+                infcapFlows[(u, v)] += pathCapacity
 
             if auxiliary.has_edge(v, u):
                 if auxiliary[v][u].has_key('capacity'):
@@ -159,7 +175,7 @@ def ford_fulkerson(G, s, t):
             else:
                 auxiliary.add_edge(v, u, {'capacity': pathCapacity})
     
-    flowGraph = _create_flow_graph(G, auxiliary)
+    flowGraph = _create_flow_graph(G, auxiliary, infcapFlows)
     return flowValue, flowGraph
 
 
@@ -190,11 +206,16 @@ def min_cut(G, s, t):
     -------
     cutValue : integer, float
         Value of the minimum cut.
-
+    
+    Raises
+    ------
+    NetworkXError
+        If the graph has a path of infinite capacity, all cuts have
+        infinite capacity and the function raises a NetworkXError.
+    
     Examples
     --------
     >>> import networkx as nx
-    >>> import maxflow
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity = 3.0)
     >>> G.add_edge('x','b', capacity = 1.0)
@@ -204,12 +225,13 @@ def min_cut(G, s, t):
     >>> G.add_edge('d','e', capacity = 2.0)
     >>> G.add_edge('c','y', capacity = 2.0)
     >>> G.add_edge('e','y', capacity = 3.0)
-    >>> maxflow.min_cut(G, 'x', 'y')
+    >>> nx.min_cut(G, 'x', 'y')
     3.0
     """
 
     try:
         return ford_fulkerson(G, s, t)[0]
-    except TypeError:
-        return None
+    except nx.NetworkXError:
+        raise nx.NetworkXError(
+                "Infinite capacity path, no minimum cut.")
 

@@ -76,6 +76,25 @@ class TestMaxflow:
 
         compare_flows(G, 'a', 'd', H, 2000.0)
 
+        # An example in which some edges end up with zero flow.
+        G = nx.DiGraph()
+        G.add_edge('s', 'b', capacity = 2)
+        G.add_edge('s', 'c', capacity = 1)
+        G.add_edge('c', 'd', capacity = 1)
+        G.add_edge('d', 'a', capacity = 1)
+        G.add_edge('b', 'a', capacity = 2)
+        G.add_edge('a', 't', capacity = 2)
+
+        H = nx.DiGraph(G)
+        H['s']['b']['flow'] = 2
+        H['s']['c']['flow'] = 0
+        H['c']['d']['flow'] = 0
+        H['d']['a']['flow'] = 0
+        H['b']['a']['flow'] = 2
+        H['a']['t']['flow'] = 2
+
+        compare_flows(G, 's', 't', H, 2)
+
     def test_digraph2(self):
         # A directed graph example from Cormen et al.
         G = nx.DiGraph()
@@ -130,7 +149,7 @@ class TestMaxflow:
         compare_flows(G, 'x', 'y', H, 3.0)
 
     def test_digraph_infcap_edges(self):
-        # Graph with infinite capacity edges
+        # DiGraph with infinite capacity edges
         G = nx.DiGraph()
         G.add_edge('s', 'a')
         G.add_edge('s', 'b', capacity = 30)
@@ -149,6 +168,28 @@ class TestMaxflow:
 
         compare_flows(G, 's', 't', H, 97)
 
+        # DiGraph with infinite capacity digon
+        G = nx.DiGraph()
+        G.add_edge('s', 'a', capacity = 85)
+        G.add_edge('s', 'b', capacity = 30)
+        G.add_edge('a', 'c')
+        G.add_edge('c', 'a')
+        G.add_edge('b', 'c', capacity = 12)
+        G.add_edge('a', 't', capacity = 60)
+        G.add_edge('c', 't', capacity = 37)
+
+        H = nx.DiGraph(G)
+        H['s']['a']['flow'] = 85
+        H['s']['b']['flow'] = 12
+        H['a']['c']['flow'] = 25
+        H['c']['a']['flow'] = 0
+        H['a']['t']['flow'] = 60
+        H['b']['c']['flow'] = 12
+        H['c']['t']['flow'] = 37
+
+        compare_flows(G, 's', 't', H, 97)
+        
+
     def test_digraph_infcap_path(self):
         # Graph with infinite capacity (s, t)-path
         G = nx.DiGraph()
@@ -159,7 +200,8 @@ class TestMaxflow:
         G.add_edge('a', 't', capacity = 60)
         G.add_edge('c', 't')
 
-        assert_equal(nx.ford_fulkerson(G, 's', 't'), None)
+        assert_raises(nx.NetworkXError,
+                      nx.ford_fulkerson, G, 's', 't')
 
     def test_graph_infcap_edges(self):
         # Undirected graph with infinite capacity edges
@@ -172,12 +214,12 @@ class TestMaxflow:
         G.add_edge('c', 't')
 
         H = nx.Graph(G)
-        H['s']['a']['flow'] = None
+        H['s']['a']['flow'] = 85
         H['s']['b']['flow'] = 12
         H['a']['c']['flow'] = 25
         H['a']['t']['flow'] = 60
         H['b']['c']['flow'] = 12
-        H['c']['t']['flow'] = None
+        H['c']['t']['flow'] = 37
 
         compare_flows(G, 's', 't', H, 97)
 
