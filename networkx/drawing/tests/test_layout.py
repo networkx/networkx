@@ -48,8 +48,6 @@ class TestLayout(object):
     def test_adjacency_interface_numpy(self):
         A=nx.to_numpy_matrix(self.Gs)
         pos=nx.drawing.layout._fruchterman_reingold(A)
-        pos=nx.drawing.layout._sparse_fruchterman_reingold(A)
-
         pos=nx.drawing.layout._fruchterman_reingold(A,dim=3)
         assert_equal(pos.shape,(6,3))
 

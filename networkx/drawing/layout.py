@@ -521,3 +521,7 @@ def setup_module(module):
         import numpy
     except:
         raise SkipTest("NumPy not available")
+    try:
+        import scipy
+    except:
+        raise SkipTest("SciPy not available")
