@@ -1,6 +1,6 @@
 """Release data for NetworkX."""
 
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
