@@ -63,7 +63,7 @@ def get_svn_revision():
 
 
 name = 'networkx'
-version = '1.2rc1'
+version = '1.2rc2'
 
 # Declare current release as a development release.
 # Change to False before tagging a release; then change back.
@@ -89,8 +89,8 @@ authors = {'Hagberg' : ('Aric Hagberg','hagberg@lanl.gov'),
            'Schult' : ('Dan Schult','dschult@colgate.edu'),
            'Swart' : ('Pieter Swart','swart@lanl.gov')
            }
-maintainer = "NetworkX Developers",
-maintainer_email = "networkx-discuss@googlegroups.com",
+maintainer = "NetworkX Developers"
+maintainer_email = "networkx-discuss@googlegroups.com"
 url = 'http://networkx.lanl.gov/'
 download_url="http://networkx.lanl.gov/download/networkx"
 platforms = ['Linux','Mac OSX','Windows','Unix']
@@ -106,8 +106,7 @@ classifiers = [
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Scientific/Engineering :: Mathematics',
-        'Topic :: Scientific/Engineering :: Physics',
-        ]
+        'Topic :: Scientific/Engineering :: Physics']
 
 # Get date dynamically
 import time

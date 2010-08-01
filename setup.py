@@ -43,8 +43,7 @@ packages=["networkx",
           "networkx.drawing",
           "networkx.linalg",
           "networkx.readwrite",
-          "networkx.tests",
-          ]
+          "networkx.tests"]
 
 docdirbase  = 'share/doc/networkx-%s' % release.version
 # add basic documentation 
@@ -82,7 +81,7 @@ package_data     = {
     'networkx.generators': ['tests/*.py'],
     'networkx.drawing': ['tests/*.py'],
     'networkx.linalg': ['tests/*.py'],
-    'networkx.readwrite': ['tests/*.py'],
+    'networkx.readwrite': ['tests/*.py']
     }
 
 if __name__ == "__main__":
