@@ -70,6 +70,10 @@ def circular_layout(G, dim=2, scale=1):
     except ImportError:
         raise ImportError, \
           "circular_layout() requires numpy: http://scipy.org/ "
+    if len(G)==0:
+        return {}
+    if len(G)==1:
+        return {G.nodes()[0]:(1,)*dim}
     t=np.arange(0,2.0*np.pi,2.0*np.pi/len(G),dtype=np.float32)
     pos=np.transpose(np.array([np.cos(t),np.sin(t)]))
     pos=_rescale_layout(pos,scale=scale)
@@ -113,6 +117,10 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
     except ImportError:
         raise ImportError, \
           "shell_layout() requires numpy: http://scipy.org/ "
+    if len(G)==0:
+        return {}
+    if len(G)==1:
+        return {G.nodes()[0]:(1,)*dim}
     if nlist==None:
         nlist=[G.nodes()] # draw the whole graph in one shell
 
@@ -195,6 +203,10 @@ def fruchterman_reingold_layout(G,dim=2,
     else:
         pos_arr=None
 
+    if len(G)==0:
+        return {}
+    if len(G)==1:
+        return {G.nodes()[0]:(1,)*dim}
 
     try:
         # Sparse matrix 
