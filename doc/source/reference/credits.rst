@@ -81,5 +81,6 @@ Thanks especially to the following contributors.
  - Willem Ligtenberg contributed the directed scale free graph
    generator.
 
- - Loïc Séguin-C. contributed the Ford-Fulkerson max flow and min cut algorithms
+ - Loïc Séguin-C. contributed the Ford-Fulkerson max flow and min cut 
+   algorithms, and ported all of NetworkX to Python3.
 
