@@ -92,7 +92,8 @@ Requirements
 Python
 ------
 
-To use NetworkX you need Python version 2.4, 2.5, or 2.6
+To use NetworkX you need Python version 2.6 or later.  
+Most of NetworkX works with Python version 3.1.2 or later.
 http://www.python.org/
 
 
