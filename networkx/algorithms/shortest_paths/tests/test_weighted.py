@@ -143,7 +143,59 @@ class TestWeightedPath:
         assert_equal(p,{'a': [], 'b': ['a']})
         assert_equal(d,{'a': 0, 'b': 100})
 
+    def test_bellman_ford(self):
+        # single node graph
+        G = nx.DiGraph()
+        G.add_node(0)
+        assert_equal(nx.bellman_ford(G, 0), ({0: None}, {0: 0}))
 
+        # negative weight cycle
+        G = nx.cycle_graph(5, create_using = nx.DiGraph())
+        G.add_edge(1, 2, weight = -7)
+        assert_raises(nx.NetworkXError, nx.bellman_ford, G, 0)
+        G = nx.cycle_graph(5)
+        G.add_edge(1, 2, weight = -7)
+        assert_raises(nx.NetworkXError, nx.bellman_ford, G, 0)
 
+        # not connected
+        G = nx.complete_graph(6)
+        G.add_edge(10, 11)
+        G.add_edge(10, 12)
+        assert_equal(nx.bellman_ford(G, 0),
+                     ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+                      {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
 
+        # not connected, with a component not containing the source that
+        # contains a negative cost cycle.
+        G = nx.complete_graph(6)
+        G.add_edges_from([('A', 'B', {'load': 3}),
+                          ('B', 'C', {'load': -10}),
+                          ('C', 'A', {'load': 2})])
+        assert_equal(nx.bellman_ford(G, 0, weight = 'load'),
+                     ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+                      {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
+
+        # multigraph
+        P, D = nx.bellman_ford(self.MXG,'s')
+        assert_equal(P['v'], 'u')
+        assert_equal(D['v'], 9)
+        P, D = nx.bellman_ford(self.MXG4, 0)
+        assert_equal(P[2], 1)
+        assert_equal(D[2], 4)
+
+        # other tests
+        (P,D)= nx.bellman_ford(self.XG,'s')
+        assert_equal(P['v'], 'u')
+        assert_equal(D['v'], 9)
+
+        G=nx.path_graph(4)
+        assert_equal(nx.bellman_ford(G,0),
+                     ({0: None, 1: 0, 2: 1, 3: 2}, {0: 0, 1: 1, 2: 2, 3: 3}))
+        G=nx.grid_2d_graph(2,2)
+        pred,dist=nx.bellman_ford(G,(0,0))
+        assert_equal(sorted(pred.items()),
+                     [((0, 0), None), ((0, 1), (0, 0)), 
+                      ((1, 0), (0, 0)), ((1, 1), (0, 1))])
+        assert_equal(sorted(dist.items()),
+                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
 
