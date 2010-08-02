@@ -15,12 +15,12 @@ if os.path.exists('MANIFEST'): os.remove('MANIFEST')
 from distutils.core import setup
 
 if sys.argv[-1] == 'setup.py':
-    print "To install, run 'python setup.py install'"
-    print
+    print("To install, run 'python setup.py install'")
+    print()
 
 if sys.version_info[:2] < (2, 6):
-    print "NetworkX requires Python version 2.6 or later (%d.%d detected)." % \
-          sys.version_info[:2]
+    print("NetworkX requires Python version 2.6 or later (%d.%d detected)." %
+          sys.version_info[:2])
     sys.exit(-1)
 
 # Write the version information.
