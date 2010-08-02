@@ -22,6 +22,7 @@ __all__=['bipartite_configuration_model',
 import random
 import sys
 import networkx 
+from functools import reduce
 
 def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
     """Return a random bipartite graph from two given degree sequences.
@@ -90,7 +91,7 @@ def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
     random.shuffle(astubs)
     random.shuffle(bstubs)
 
-    G.add_edges_from([[astubs[i],bstubs[i]] for i in xrange(suma)])
+    G.add_edges_from([[astubs[i],bstubs[i]] for i in range(suma)])
 
     G.name="bipartite_configuration_model"
     return G
@@ -289,8 +290,8 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
         (degree,u)=astubs.pop() # take of largest degree node in the a set
         if degree==0: break # done, all are zero
         bstubs.sort()
-        small=bstubs[0:degree/2]  # add these low degree targets     
-        large=bstubs[(-degree+degree/2):] # and these high degree targets
+        small=bstubs[0:degree // 2]  # add these low degree targets     
+        large=bstubs[(-degree+degree // 2):] # and these high degree targets
         stubs=[x for z in zip(large,small) for x in z] # combine, sorry
         if len(stubs)<len(small)+len(large): # check for zip truncation
             stubs.append(large.pop())
@@ -409,16 +410,16 @@ def bipartite_random_regular_graph(d, n, create_using=None,seed=None):
         return False  
 
     if not n*d%2==0:
-        print "n*d must be even"
+        print("n*d must be even")
         return False
 
 
     if not n%2==0:
-        print "n must be even"
+        print("n must be even")
         return False
 
     if not n>=2*d:
-        print "n must be >= 2*d"
+        print("n must be >= 2*d")
         return False
 
 
@@ -442,8 +443,8 @@ def bipartite_random_regular_graph(d, n, create_using=None,seed=None):
     vv=[ [v]*d for v in nodes ]   # List of degree-repeated vertex numbers
     stubs=reduce(lambda x,y: x+y ,vv)  # flatten the list of lists to a list
 
-    leftstubs=stubs[:(n*d/2)]
-    rightstubs=stubs[n*d/2:]
+    leftstubs=stubs[:(n*d // 2)]
+    rightstubs=stubs[n*d // 2:]
 
     while leftstubs:
        source=random.choice(leftstubs)

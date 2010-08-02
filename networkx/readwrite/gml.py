@@ -11,7 +11,7 @@ Requires pyparsing: http://pyparsing.wikispaces.com/
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2008-2009 by 
+#    Copyright (C) 2008-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -25,7 +25,7 @@ from networkx.exception import NetworkXException, NetworkXError
 from networkx.utils import _get_fh, is_string_like
 
 	
-def read_gml(path):
+def read_gml(path,encoding='UTF-8'):
     """Read graph in GML format from path.
 
     Parameters
@@ -65,8 +65,10 @@ def read_gml(path):
     >>> H=nx.read_gml('test.gml')
 
     """
-    fh=_get_fh(path,mode='r')        
-    G=parse_gml(fh)
+    fh=_get_fh(path,'rb')
+    lines=(line.decode(encoding) for line in fh)
+    G=parse_gml(lines)
+    fh.close()
     return G
 
 
@@ -113,17 +115,18 @@ def parse_gml(lines):
     try:
         from pyparsing import ParseException
     except ImportError:
-        raise ImportError, \
-          "Import Error: not able to import pyparsing: http://pyparsing.wikispaces.com/"
+        raise ImportError(\
+          """Import Error: not able to import pyparsing: 
+http://pyparsing.wikispaces.com/""")
 
     try:
         data = "".join(lines)
         gml = pyparse_gml()
         tokens =gml.parseString(data)
-    except ParseException, err:
-        print err.line
-        print " "*(err.column-1) + "^"
-        print err
+    except ParseException as err:
+        print((err.line))
+        print((" "*(err.column-1) + "^"))
+        print(err)
         raise
 
     # function to recursively make dicts of key/value pairs
@@ -196,8 +199,9 @@ def pyparse_gml():
              ParseException, restOfLine, White, alphas, alphanums, nums,\
              OneOrMore,quotedString,removeQuotes,dblQuotedString
     except ImportError:
-        raise ImportError, \
-          "Import Error: not able to import pyparsing: http://pyparsing.wikispaces.com/"
+        raise ImportError(\
+            """Import Error: not able to import pyparsing: 
+http://pyparsing.wikispaces.com/""")
 
     if not graph:
         lbrack = Literal("[").suppress()
@@ -290,7 +294,7 @@ def write_gml(G, path):
         node_attr={}
 
     indent=2*' '
-    count=iter(range(G.number_of_nodes()))
+    count=iter(list(range(G.number_of_nodes())))
     node_id={}
     dicttype=type({})
 
@@ -298,7 +302,7 @@ def write_gml(G, path):
     def listify(d,indent,indentlevel):
         result='[ \n'
         dicttype=type({})
-        for k,v in d.iteritems():
+        for k,v in d.items():
             if type(v)==dicttype:
                 v=listify(v,indent,indentlevel+1)
             result += indentlevel*indent+"%s %s\n"%(k,v)
@@ -308,7 +312,7 @@ def write_gml(G, path):
     if G.is_directed():
         fh.write(indent+"directed 1\n")
     # write graph attributes 
-    for k,v in G.graph.items():
+    for k,v in list(G.graph.items()):
         if is_string_like(v):
             v='"'+v+'"'
         elif type(v)==dicttype:
@@ -318,12 +322,12 @@ def write_gml(G, path):
     for n in G:
         fh.write(indent+"node [\n")
         # get id or assign number
-        nid=G.node[n].get('id',count.next())
+        nid=G.node[n].get('id',next(count))
         node_id[n]=nid
         fh.write(2*indent+"id %s\n"%nid)
         fh.write(2*indent+"label \"%s\"\n"%n)
         if n in G:
-          for k,v in G.node[n].items():
+          for k,v in list(G.node[n].items()):
               if is_string_like(v): v='"'+v+'"'
               if type(v)==dicttype: v=listify(v,indent,2)
               if k=='id': continue
@@ -335,7 +339,7 @@ def write_gml(G, path):
         fh.write(indent+"edge [\n")
         fh.write(2*indent+"source %s\n"%node_id[u])
         fh.write(2*indent+"target %s\n"%node_id[v])
-        for k,v in edgedata.items():
+        for k,v in list(edgedata.items()):
             if k=='source': continue
             if k=='target': continue
             if is_string_like(v): v='"'+v+'"'

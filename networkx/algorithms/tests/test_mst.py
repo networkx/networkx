@@ -28,7 +28,7 @@ class TestMST:
                           (1,4,{'weight':7}),
                           (4,2,{'weight':5}),
                           (4,6,{'weight':9})]
-        self.tree_edgelist=sorted(tuple(sorted((u,v,d)))
+        self.tree_edgelist=sorted((sorted((u, v))[0], sorted((u, v))[1], d)
                                   for u,v,d in tree_edgelist)
 
     def test_kruskal_mst(self):

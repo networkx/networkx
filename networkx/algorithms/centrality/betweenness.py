@@ -209,7 +209,7 @@ def _single_source_dijkstra_path_basic(G,s):
         sigma[v] += sigma[pred] # count paths
         S.append(v)
         D[v] = dist
-        for w,edgedata in G[v].iteritems():
+        for w,edgedata in G[v].items():
             vw_dist = dist + edgedata.get('weight',1)
             if w not in D and (w not in seen or vw_dist < seen[w]):
                 seen[w] = vw_dist

@@ -16,9 +16,9 @@ Using
    >>> G=nx.Graph()
    >>> G.add_edge(1,2)
    >>> G.add_node("spam")
-   >>> print G.nodes()
+   >>> print(G.nodes())
    [1, 2, 'spam']
-   >>> print G.edges()
+   >>> print(G.edges())
    [(1, 2)]
 """
 #    Copyright (C) 2004-2010 by 
@@ -31,13 +31,11 @@ Using
 # Add platform dependent shared library path to sys.path
 #
 import sys
-if sys.version_info[:2] < (2, 4):
-    raise ImportError("Python version 2.4 or later is required for NetworkX (%d.%d detected)." %  sys.version_info[:2])
-
-del sys
+if sys.version_info[:2] < (2, 6):
+    raise ImportError("Python version 2.6 or later is required for NetworkX (%d.%d detected)." %  sys.version_info[:2])
 
 # Release data
-import release 
+from networkx import release
 
 if release.revision is None:
     # we probably not running in an svn directory   
@@ -63,23 +61,34 @@ __author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
                 release.authors['Swart'] )
 __license__  = release.license
 
-from exception import  *
+# these packages work with Python >= 2.6 
+from networkx.exception import  *
+import networkx.classes
+from networkx.classes import *
+import networkx.convert
+from networkx.convert import *
+import networkx.generators
+from networkx.generators import *
+from networkx.readwrite import *
+import networkx.readwrite
+#Need to test with SciPy, when available
+import networkx.algorithms
+from networkx.algorithms import *
+import networkx.linalg
+from networkx.linalg import *
+from networkx.tests.test import run as test
+import networkx.utils
 
-from algorithms import *
-from classes import *
-from convert import *
-from drawing import *
-from generators import *
-from linalg import *
-from readwrite import *
+# parts of these packages work with Python >= 2.6 
 
-import utils
-from tests.test import run as test
-import algorithms
-import classes
-import convert
-import drawing
-import generators
-import linalg
-import readwrite
+# These packages need 2.6 <= Python < 3.0
+if sys.version_info[:2] < (3, 0):
+    from drawing import *
+    import drawing
+else:
+    import warnings
+    warnings.warn("""Python version %s detected. 
+Not all functionality enabled""" % sys.version)
+
+del sys
 

@@ -4,11 +4,14 @@ YAML
 ****
 
 Read and write NetworkX graphs in YAML format.
+
+"YAML is a data serialization format designed for human readability 
+and interaction with scripting languages."
 See http://www.yaml.org for documentation.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -17,17 +20,14 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['read_yaml', 'write_yaml']
 
-import cPickle 
-import codecs
-import locale
-import string
-import sys
-import time
 
-from networkx.utils import is_string_like, _get_fh
 import networkx
+from networkx.utils import _get_fh
 
-def write_yaml(G, path, default_flow_style=False, **kwds):
+def write_yaml(G, path, 
+               default_flow_style=False,  
+               encoding='UTF-8',
+               **kwds):
     """Write graph G in YAML text format to path. 
 
     See http://www.yaml.org
@@ -36,10 +36,11 @@ def write_yaml(G, path, default_flow_style=False, **kwds):
     try:
         import yaml
     except ImportError:
-        raise ImportError, \
-          "write_yaml() requires PyYAML: http://pyyaml.org/ "
+        raise ImportError(
+          "write_yaml() requires PyYAML: http://pyyaml.org/ ")
     fh=_get_fh(path,mode='w')        
     yaml.dump(G,fh,default_flow_style=default_flow_style,**kwds)
+    fh.close()
     
 
 def read_yaml(path):
@@ -51,11 +52,13 @@ def read_yaml(path):
     try:
         import yaml
     except ImportError:
-        raise ImportError, \
-          "read_yaml() requires PyYAML: http://pyyaml.org/ "
+        raise ImportError(
+          "read_yaml() requires PyYAML: http://pyyaml.org/ ")
 
     fh=_get_fh(path,mode='r')        
-    return yaml.load(fh)
+    G=yaml.load(fh)
+    fh.close()
+    return G
 
 
 # fixture for nose tests

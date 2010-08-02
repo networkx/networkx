@@ -230,7 +230,7 @@ def make_max_clique_graph(G,create_using=None,name=None):
     This should be the same as make_clique_bipartite followed
     by project_up, but it saves all the intermediate steps.
     """
-    cliq=map(set,find_cliques(G))
+    cliq=list(map(set,find_cliques(G)))
     size=len(cliq)
     if create_using:
         B=create_using

@@ -4,7 +4,7 @@
 
 import os,tempfile
 from nose import SkipTest
-from nose.tools import assert_true
+from nose.tools import assert_true,assert_equal
 
 import networkx as nx
 
@@ -36,8 +36,8 @@ class TestYaml(object):
         nx.write_yaml(G, fname)
         Gin = nx.read_yaml(fname);
 
-        assert_true( sorted(G.nodes())==sorted(Gin.nodes()) )
-        assert_true( sorted(G.edges(data=data))==sorted(Gin.edges(data=data)) )
+        assert_equal(sorted(G.nodes()),sorted(Gin.nodes()))
+        assert_equal(G.edges(data=data),Gin.edges(data=data))
 
         os.close(fd)
         os.unlink(fname)

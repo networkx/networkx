@@ -270,14 +270,14 @@ class GraphMatcher(object):
         if self.G1.order() != self.G2.order(): return False
     
         # Check local properties
-        d1=self.G1.degree().values()
+        d1=list(self.G1.degree().values())
         d1.sort()
-        d2=self.G2.degree().values()
+        d2=list(self.G2.degree().values())
         d2.sort()
         if d1 != d2: return False
 
         try:
-            x = self.isomorphisms_iter().next()
+            x = next(self.isomorphisms_iter())
             return True
         except StopIteration:
             return False
@@ -355,7 +355,7 @@ class GraphMatcher(object):
     def subgraph_is_isomorphic(self):
         """Returns True if a subgraph of G1 is isomorphic to G2."""
         try:
-            x = self.subgraph_isomorphisms_iter().next()
+            x = next(self.subgraph_isomorphisms_iter())
             return True
         except StopIteration:
             return False
@@ -862,7 +862,7 @@ class GMState(object):
         # Now we revert the other two vectors.        
         # Thus, we delete all entries which have this depth level.
         for vector in (self.GM.inout_1, self.GM.inout_2):
-            for node in vector.keys():
+            for node in list(vector.keys()):
                 if vector[node] == self.depth:
                     del vector[node]
    
@@ -967,7 +967,7 @@ class DiGMState(object):
         # Now we revert the other four vectors.        
         # Thus, we delete all entries which have this depth level.
         for vector in (self.GM.in_1, self.GM.in_2, self.GM.out_1, self.GM.out_2):
-            for node in vector.keys():
+            for node in list(vector.keys()):
                 if vector[node] == self.depth:
                     del vector[node]
                    

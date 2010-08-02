@@ -28,11 +28,12 @@ class Benchmark(object):
             else:
                 self['all']=(test_string,'')
 
-    def __setitem__(self,graph_class,(test_str,setup_str)):
+    def __setitem__(self,graph_class,some_strs):
         """
         Set a simple bit of code and setup string for the test.
         Use this for cases where the code differs from one class to another.
         """
+        test_str, setup_str = some_strs
         if graph_class == 'all':
             graph_class = self.class_tests.keys()
         elif not isinstance(graph_class,list):
@@ -48,10 +49,10 @@ class Benchmark(object):
         """Run the benchmark for each class and print results."""
         column_len = max(len(G) for G in self.class_tests)
 
-        print '='*72
+        print('='*72)
         if self.title:
-            print "%s: %s runs, %s reps"% (self.title,self.runs,self.reps)
-        print '='*72
+            print("%s: %s runs, %s reps"% (self.title,self.runs,self.reps))
+        print('='*72)
 
         times=[]
         for GC,timer in self.class_tests.items():
@@ -60,16 +61,16 @@ class Benchmark(object):
                 t=sum(timer.repeat(self.runs,self.reps))/self.runs
 #                print "%s: %s" % (name, timer.repeat(self.runs,self.reps))
                 times.append((t,name))
-            except Exception, e:
-                print "%s: Failed to benchmark (%s)." % (name,e)
+            except Exception as e:
+                print("%s: Failed to benchmark (%s)." % (name,e))
                         
 
         times.sort()                
         tmin=times[0][0]                
         for t,name in times:
-            print "%s: %5.2f %s" % (name, t/tmin*100.,t)            
-        print '-'*72
-        print
+            print("%s: %5.2f %s" % (name, t/tmin*100.,t))
+        print('-'*72)
+        print()
 
 if __name__ == "__main__":
     # set up for all routines:

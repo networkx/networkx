@@ -34,7 +34,7 @@ class TestWikipediaExample(object):
         gm = vf2.GraphMatcher(g1,g2)
         assert_true(gm.is_isomorphic())
 
-        mapping = gm.mapping.items()
+        mapping = list(gm.mapping.items())
         mapping.sort()
         isomap = [('a', 1), ('b', 6), ('c', 3), ('d', 8), 
                   ('g', 2), ('h', 5), ('i', 4), ('j', 7)]
@@ -72,10 +72,10 @@ class TestVF2GraphDB(object):
         nodes = struct.unpack('<H', fh.read(2))[0]
 
         graph = nx.Graph()
-        for from_node in xrange(nodes):
+        for from_node in range(nodes):
             # Get the number of edges.
             edges = struct.unpack('<H', fh.read(2))[0]
-            for edge in xrange(edges):
+            for edge in range(edges):
                 # Get the terminal node.
                 to_node = struct.unpack('<H', fh.read(2))[0]
                 graph.add_edge(from_node, to_node)
@@ -102,13 +102,13 @@ class TestVF2GraphDB(object):
 def test_graph_atlas():
     #Atlas = nx.graph_atlas_g()[0:208] # 208, 6 nodes or less
     Atlas = nx.graph_atlas_g()[0:100]
-    alphabet = range(26)
+    alphabet = list(range(26))
     for graph in Atlas:
         nlist = graph.nodes()
         labels = alphabet[:len(nlist)]
         for s in range(10):
             random.shuffle(labels)
-            d = dict(zip(nlist,labels))
+            d = dict(list(zip(nlist,labels)))
             relabel = nx.relabel_nodes(graph, d)
             gm = vf2.GraphMatcher(graph, relabel)
             assert_true(gm.is_isomorphic())
@@ -123,14 +123,14 @@ def test_multiedge():
              (14, 15), (14, 15), (15, 16), (15, 16), 
              (16, 17), (16, 17), (17, 18), (17, 18), 
              (18, 19), (18, 19), (19, 0), (19, 0)]
-    nodes = range(20)
+    nodes = list(range(20))
 
     for g1 in [nx.MultiGraph(), nx.MultiDiGraph()]:
         g1.add_edges_from(edges)
         for _ in range(10):
             new_nodes = list(nodes)
             random.shuffle(new_nodes)
-            d = dict(zip(nodes, new_nodes))
+            d = dict(list(zip(nodes, new_nodes)))
             g2 = nx.relabel_nodes(g1, d)
             if not g1.is_directed():
                 gm = vf2.GraphMatcher(g1,g2)
@@ -142,14 +142,14 @@ def test_selfloop():
     # Simple test for graphs with selfloops
     edges = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 2), 
              (2, 4), (3, 1), (3, 2), (4, 2), (4, 5), (5, 4)]
-    nodes = range(6)
+    nodes = list(range(6))
 
     for g1 in [nx.Graph(), nx.DiGraph()]:
         g1.add_edges_from(edges)
         for _ in range(100):
             new_nodes = list(nodes)
             random.shuffle(new_nodes)
-            d = dict(zip(nodes, new_nodes))
+            d = dict(list(zip(nodes, new_nodes)))
             g2 = nx.relabel_nodes(g1, d)
             if not g1.is_directed():
                 gm = vf2.GraphMatcher(g1,g2)

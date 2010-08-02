@@ -20,7 +20,7 @@ class TestSubsetBetweennessCentrality:
     def test_P5_directed(self):
         """Betweenness centrality: P5 directed"""
         G=networkx.DiGraph()
-        G.add_path(range(5))
+        G.add_path(list(range(5)))
         b_answer={0:0,1:1,2:1,3:0,4:0,5:0}
         b=betweenness_centrality_subset(G,
                                         sources=[0],
@@ -32,7 +32,7 @@ class TestSubsetBetweennessCentrality:
     def test_P5(self):
         """Betweenness centrality: P5"""
         G=networkx.Graph()
-        G.add_path(range(5))
+        G.add_path(list(range(5)))
         b_answer={0:0,1:0.5,2:0.5,3:0,4:0,5:0}
         b=betweenness_centrality_subset(G,
                                         sources=[0],
@@ -44,7 +44,7 @@ class TestSubsetBetweennessCentrality:
     def test_P5_multiple_target(self):
         """Betweenness centrality: P5 multiple target"""
         G=networkx.Graph()
-        G.add_path(range(5))
+        G.add_path(list(range(5)))
         b_answer={0:0,1:1,2:1,3:0.5,4:0,5:0}
         b=betweenness_centrality_subset(G,
                                         sources=[0],
@@ -140,13 +140,13 @@ class TestEdgeSubsetBetweennessCentrality:
         b_answer[(0,3)]=0.5
         b_answer[(0,1)]=0.5
         for n in sorted(G.edges()):
-            print n,b[n]
+            print(n,b[n])
             assert_almost_equal(b[n],b_answer[n])
 
     def test_P5_directed(self):
         """Edge betweenness centrality: P5 directed"""
         G=networkx.DiGraph()
-        G.add_path(range(5))
+        G.add_path(list(range(5)))
         b_answer=dict.fromkeys(G.edges(),0)
         b_answer[(0,1)]=1
         b_answer[(1,2)]=1
@@ -161,7 +161,7 @@ class TestEdgeSubsetBetweennessCentrality:
     def test_P5(self):
         """Edge betweenness centrality: P5"""
         G=networkx.Graph()
-        G.add_path(range(5))
+        G.add_path(list(range(5)))
         b_answer=dict.fromkeys(G.edges(),0)
         b_answer[(0,1)]=0.5
         b_answer[(1,2)]=0.5
@@ -176,7 +176,7 @@ class TestEdgeSubsetBetweennessCentrality:
     def test_P5_multiple_target(self):
         """Edge betweenness centrality: P5 multiple target"""
         G=networkx.Graph()
-        G.add_path(range(5))
+        G.add_path(list(range(5)))
         b_answer=dict.fromkeys(G.edges(),0)
         b_answer[(0,1)]=1
         b_answer[(1,2)]=1

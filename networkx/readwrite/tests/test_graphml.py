@@ -82,37 +82,39 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 
     def test_parse_graphml(self):
         G=networkx.parse_graphml(self.simple_data)
-        assert_equals(sorted(G.nodes()),\
-            [u'n0', u'n1', u'n10', u'n2', u'n3', u'n4', u'n5', u'n6', u'n7', u'n8', u'n9'])
-        assert_equals( [sorted(e) for e in sorted(G.edges(keys=True))],\
-            [[u'foo', u'n0', u'n2'], [0, u'n1', u'n2'], [0, u'n10', u'n8'], \
-             [0, u'n2', u'n3'], [0, u'n3', u'n4'], [0, u'n3', u'n5'], \
-             [0, u'n4', u'n6'], [0, u'n5', u'n7'], [0, u'n5', u'n6'], \
-             [0, u'n6', u'n8'], [0, u'n10', u'n8'], [0, u'n7', u'n8'], \
-             [0, u'n8', u'n9']] )
+        assert_equals(sorted(G.nodes()),
+            ['n0', 'n1', 'n10', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9'])
+        
+        assert_equals( [set(e) for e in sorted(G.edges(keys=True))],
+            [set(['foo', 'n0', 'n2']), set([0, 'n1', 'n2']),
+             set([0, 'n10', 'n8']), set([0, 'n2', 'n3']),
+             set([0, 'n3', 'n4']), set([0, 'n3', 'n5']),
+             set([0, 'n4', 'n6']), set([0, 'n5', 'n7']), set([0, 'n5', 'n6']),
+             set([0, 'n6', 'n8']), set([0, 'n10', 'n8']), set([0, 'n7', 'n8']),
+             set([0, 'n8', 'n9'])] )
 
         G=networkx.parse_graphml(self.attribute_data.split('\n'))
-        assert_equals(sorted(G.nodes()),[u'n0', u'n1', u'n2', u'n3', u'n4', u'n5'])
+        assert_equals(sorted(G.nodes()),['n0', 'n1', 'n2', 'n3', 'n4', 'n5'])
         assert_equals( sorted(G.edges(keys=True)),\
-                [(u'n0', u'n1', u'e1'), (u'n0', u'n2', u'e0'), (u'n1', u'n3', u'e2'), \
-                 (u'n2', u'n4', u'e4'), (u'n3', u'n2', u'e3'), (u'n3', u'n5', u'e5'), \
-                 (u'n5', u'n3', u'e5'), (u'n5', u'n4', u'e6')] )
+                [('n0', 'n1', 'e1'), ('n0', 'n2', 'e0'), ('n1', 'n3', 'e2'), \
+                 ('n2', 'n4', 'e4'), ('n3', 'n2', 'e3'), ('n3', 'n5', 'e5'), \
+                 ('n5', 'n3', 'e5'), ('n5', 'n4', 'e6')] )
         assert_equals(sorted(G.nodes(data=True)),\
-                [(u'n0', {u'color': u'green', u'id': u'n0'}),\
-                (u'n1', {u'color': u'yellow', u'id': u'n1'}),\
-                (u'n2', {u'color': u'blue', u'id': u'n2'}),\
-                (u'n3', {u'color': u'yellow', u'id': u'n3', u'd3': u'red'}),\
-                (u'n4', {u'color': u'yellow', u'id': u'n4'}),\
-                (u'n5', {u'color': u'turquoise', u'id': u'n5'})] )
+                [('n0', {'color': 'green', 'id': 'n0'}),\
+                ('n1', {'color': 'yellow', 'id': 'n1'}),\
+                ('n2', {'color': 'blue', 'id': 'n2'}),\
+                ('n3', {'color': 'yellow', 'id': 'n3', 'd3': 'red'}),\
+                ('n4', {'color': 'yellow', 'id': 'n4'}),\
+                ('n5', {'color': 'turquoise', 'id': 'n5'})] )
         assert_equals( sorted(G.edges(keys=True,data=True)),\
-           [(u'n0', u'n1', u'e1', {u'source': u'n0', u'id': u'e1', u'weight': 1.0, u'target': u'n1'}),\
-            (u'n0', u'n2', u'e0', {u'source': u'n0', u'id': u'e0', u'weight': 1.0, u'target': u'n2'}),\
-            (u'n1', u'n3', u'e2', {u'source': u'n1', u'id': u'e2', u'weight': 2.0, u'target': u'n3'}),\
-            (u'n2', u'n4', u'e4', {u'source': u'n2', u'id': u'e4', u'target': u'n4'}),\
-            (u'n3', u'n2', u'e3', {u'source': u'n3', u'id': u'e3', u'target': u'n2'}),\
-            (u'n3', u'n5', u'e5', {u'directed': u'false', u'source': u'n3', u'target': u'n5', u'id': u'e5'}),\
-            (u'n5', u'n3', u'e5', {u'directed': u'false', u'source': u'n3', u'target': u'n5', u'id': u'e5'}),\
-            (u'n5', u'n4', u'e6', {u'source': u'n5', u'id': u'e6', u'weight': 1.1, u'target': u'n4'})] )
+           [('n0', 'n1', 'e1', {'source': 'n0', 'id': 'e1', 'weight': 1.0, 'target': 'n1'}),\
+            ('n0', 'n2', 'e0', {'source': 'n0', 'id': 'e0', 'weight': 1.0, 'target': 'n2'}),\
+            ('n1', 'n3', 'e2', {'source': 'n1', 'id': 'e2', 'weight': 2.0, 'target': 'n3'}),\
+            ('n2', 'n4', 'e4', {'source': 'n2', 'id': 'e4', 'target': 'n4'}),\
+            ('n3', 'n2', 'e3', {'source': 'n3', 'id': 'e3', 'target': 'n2'}),\
+            ('n3', 'n5', 'e5', {'directed': 'false', 'source': 'n3', 'target': 'n5', 'id': 'e5'}),\
+            ('n5', 'n3', 'e5', {'directed': 'false', 'source': 'n3', 'target': 'n5', 'id': 'e5'}),\
+            ('n5', 'n4', 'e6', {'source': 'n5', 'id': 'e6', 'weight': 1.1, 'target': 'n4'})] )
 
 
 

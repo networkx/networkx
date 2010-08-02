@@ -8,16 +8,16 @@ Generators for geometric graphs.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+
+from __future__ import print_function
+
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
 
 __all__ = ['random_geometric_graph']
 
 import networkx
 import random,sys
-try:
-    from functools import reduce # for Python2.6
-except:
-    pass # pre 2.6 uses builtin
+from functools import reduce
 
 
 #---------------------------------------------------------------------------
@@ -43,7 +43,7 @@ def random_geometric_graph(n, radius, create_using=None, repel=0.0, verbose=Fals
     positions=[]
     while(len(positions)< n):
         pnew=[]
-        [pnew.append(random.random()) for i in xrange(0,dim)]
+        [pnew.append(random.random()) for i in range(0,dim)]
         reject=False
         # avoid existing nodes
         if repel > 0.0 :
@@ -52,14 +52,14 @@ def random_geometric_graph(n, radius, create_using=None, repel=0.0, verbose=Fals
                 r2=reduce(lambda x, y: x+y, m2, 0.)
                 if r2 < repel**2 :
                     reject=True
-                    print >>sys.stderr,"rejecting", len(positions),pnew
+                    print("rejecting", len(positions),pnew, file = sys.stderr)
                     break
             if(reject):
                 reject=False
                 continue
         if(verbose):
-            print >>sys.stderr,"accepting", len(positions),pnew
-        positions.append(pnew)    
+            print("accepting", len(positions),pnew, file = sys.stderr)
+        positions.append(pnew)
 
     # add positions to nodes        
     G.pos={}

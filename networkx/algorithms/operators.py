@@ -18,7 +18,7 @@ __all__ = ['union', 'cartesian_product',
            'difference', 'symmetric_difference']
 
 import networkx as nx
-from networkx.utils import is_string_like
+from networkx.datatype_utils import is_string_like
                                                                                 
 
 def union(G,H,create_using=None,rename=False,name=None):

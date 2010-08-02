@@ -43,12 +43,14 @@ def astar_path(G, source, target, heuristic=None):
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> print nx.astar_path(G,0,4)
+    >>> print(nx.astar_path(G,0,4))
     [0, 1, 2, 3, 4]
     >>> G=nx.grid_graph(dim=[3,3])  # nodes are two-tuples (x,y)
-    >>> def dist((x1, y1), (x2, y2)):
+    >>> def dist(a, b):
+    ...    (x1, y1) = a
+    ...    (x2, y2) = b
     ...    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
-    >>> print nx.astar_path(G,(0,0),(2,2),dist)
+    >>> print(nx.astar_path(G,(0,0),(2,2),dist))
     [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2)]
 
 
@@ -92,7 +94,7 @@ def astar_path(G, source, target, heuristic=None):
 
         explored[curnode] = parent
 
-        for neighbor, w in G[curnode].iteritems():
+        for neighbor, w in G[curnode].items():
             if neighbor in explored:
                 continue
             ncost = dist + w.get('weight',1)

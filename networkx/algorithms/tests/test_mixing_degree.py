@@ -13,7 +13,7 @@ class TestDegreeMixing(object):
         self.D=networkx.DiGraph() 
         self.D.add_edges_from([(0, 2), (0, 3), (1, 3), (2, 3)])
         self.M=networkx.MultiGraph() 
-        self.M.add_path(range(4))
+        self.M.add_path(list(range(4)))
         self.M.add_edge(0,1)
         self.S=networkx.Graph()
         self.S.add_edges_from([(0,0),(1,1)])
@@ -66,7 +66,7 @@ class TestDegreeMixing(object):
 
     def test_degree_mixing_dict_directed(self):
         d=mixing.degree_mixing_dict(self.D)
-        print d
+        print(d)
         d_result={1:{3:2},
                   2:{1:1,3:1},
                   3:{}
@@ -100,7 +100,7 @@ class TestDegreeMixingMatrix(object):
         self.D=networkx.DiGraph() 
         self.D.add_edges_from([(0, 2), (0, 3), (1, 3), (2, 3)])
         self.M=networkx.MultiGraph() 
-        self.M.add_path(range(4))
+        self.M.add_path(list(range(4)))
         self.M.add_edge(0,1)
         self.S=networkx.Graph()
         self.S.add_edges_from([(0,0),(1,1)])
@@ -185,7 +185,7 @@ class TestDegreeMixingMatrixPearsonr(object):
         self.D=networkx.DiGraph() 
         self.D.add_edges_from([(0, 2), (0, 3), (1, 3), (2, 3)])
         self.M=networkx.MultiGraph() 
-        self.M.add_path(range(4))
+        self.M.add_path(list(range(4)))
         self.M.add_edge(0,1)
         self.S=networkx.Graph()
         self.S.add_edges_from([(0,0),(1,1)])
@@ -209,7 +209,7 @@ class TestNeighborhoodConnectivity(object):
         self.D=networkx.DiGraph() 
         self.D.add_edges_from([(0, 2), (0, 3), (1, 3), (2, 3)])
         self.M=networkx.MultiGraph() 
-        self.M.add_path(range(4))
+        self.M.add_path(list(range(4)))
         self.M.add_edge(0,1)
         self.S=networkx.Graph()
         self.S.add_edges_from([(0,0),(1,1)])

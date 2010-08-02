@@ -13,7 +13,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu
 _all__ = ['kl_connected_subgraph', 'is_kl_connected']
 
 import copy
-from networkx import shortest_path
+import networkx as nx
 
 def kl_connected_subgraph(G,k,l,low_memory=False,same_as_graph=False):
     """ Returns the maximum locally (k,l) connected subgraph of G.
@@ -59,7 +59,7 @@ def kl_connected_subgraph(G,k,l,low_memory=False,same_as_graph=False):
                         G2.remove_edge(prev,w)
                         prev=w
 #                path=shortest_path(G2,u,v,k) # ??? should "Cutoff" be k+1?
-                path=shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
+                path=nx.shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
             # No Other Paths
             if accept==0:
                 H.remove_edge(u,v)
@@ -100,7 +100,7 @@ def is_kl_connected(G,k,l,low_memory=False):
                     G2.remove_edge(prev,w)
                     prev=w
 #            path=shortest_path(G2,u,v,k) # ??? should "Cutoff" be k+1?
-            path=shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
+            path=nx.shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
         # No Other Paths
         if accept==0:
             graphOK=False

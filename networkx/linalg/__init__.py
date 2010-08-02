@@ -1,4 +1,5 @@
-from spectrum import *
-from attrmatrix import *
-import spectrum
-import attrmatrix
+from networkx.linalg.attrmatrix import *
+import networkx.linalg.attrmatrix
+from networkx.linalg.spectrum import *
+import networkx.linalg.spectrum
+

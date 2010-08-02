@@ -91,7 +91,7 @@ def make_small_graph(graph_description, create_using=None):
     if ltype=="adjacencylist":
         adjlist=graph_description[3]
         if len(adjlist) != n:
-            raise NetworkXError,"invalid graph_description"
+            raise NetworkXError("invalid graph_description")
         G.add_edges_from([(u-1,v) for v in nodes for u in adjlist[v]])
     elif ltype=="edgelist":
         edgelist=graph_description[3]
@@ -99,7 +99,7 @@ def make_small_graph(graph_description, create_using=None):
             v1=e[0]-1
             v2=e[1]-1
             if v1<0 or v1>n-1 or v2<0 or v2>n-1:
-                raise NetworkXError,"invalid graph_description"
+                raise NetworkXError("invalid graph_description")
             else:
                 G.add_edge(v1,v2)
     G.name=name

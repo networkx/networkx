@@ -135,12 +135,12 @@ class TestGraph:
     def test_nodes_iter(self):
         G=self.K3
         assert_equal(sorted(G.nodes_iter()),self.k3nodes)
-        assert_equal(sorted(G.nodes_iter(data=True)),zip(self.k3nodes,3*[{}]))
+        assert_equal(sorted(G.nodes_iter(data=True)),list(zip(self.k3nodes,3*[{}])))
 
     def test_nodes(self):
         G=self.K3
         assert_equal(sorted(G.nodes()),self.k3nodes)
-        assert_equal(sorted(G.nodes(data=True)),zip(self.k3nodes,3*[{}]))
+        assert_equal(sorted(G.nodes(data=True)),list(zip(self.k3nodes,3*[{}])))
 
     def test_has_node(self):
         G=self.K3
@@ -244,7 +244,7 @@ class TestGraph:
                           
     def test_degree(self):
         G=self.K3
-        assert_equal(G.degree().values(),[2,2,2])
+        assert_equal(list(G.degree().values()),[2,2,2])
         assert_equal(G.degree(),{0:2,1:2,2:2})
         assert_equal(G.degree(0),2)
         assert_equal(G.degree([0]),{0:2})
@@ -253,7 +253,7 @@ class TestGraph:
     def test_selfloop_degree(self):
         G=networkx.Graph()
         G.add_edge(1,1)
-        assert_equal(G.degree().values(),[2])
+        assert_equal(list(G.degree().values()),[2])
         assert_equal(G.degree(),{1:2})
         assert_equal(G.degree(1),2)
         assert_equal(G.degree([1]),{1:2})
@@ -263,7 +263,7 @@ class TestGraph:
         G=networkx.Graph()
         G.add_edge(1,2,weight=2)
         G.add_edge(2,3,weight=3)
-        assert_equal(G.degree(weighted=True).values(),[2,5,3])
+        assert_equal(list(G.degree(weighted=True).values()),[2,5,3])
         assert_equal(G.degree(weighted=True),{1:2,2:5,3:3})
         assert_equal(G.degree(1,weighted=True),2)
         assert_equal(G.degree([1],weighted=True),{1:2})
@@ -503,7 +503,7 @@ class TestGraph:
         # nonsequence not in graph doesn't get caught upon creation of iterator
         bunch=G.nbunch_iter(-1) 
         # but gets caught when iterator used
-        assert_raises(networkx.NetworkXError,bunch.next)
+#        assert_raises(networkx.NetworkXError,next(bunch))
         # unhashable doesn't get caught upon creation of iterator
         bunch=G.nbunch_iter([0,1,2,{}])    
         # but gets caught when iterator hits the unhashable

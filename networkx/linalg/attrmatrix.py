@@ -241,8 +241,8 @@ def attr_matrix(G, edge_attr=None, node_attr=None, normalized=False,
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "attr_matrix() requires numpy: http://scipy.org/ "
+        raise ImportError(
+          "attr_matrix() requires numpy: http://scipy.org/ ")
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)
@@ -404,8 +404,8 @@ def attr_sparse_matrix(G, edge_attr=None, node_attr=None,
         import numpy as np
         from scipy import sparse
     except ImportError:
-        raise ImportError, \
-          "attr_sparse_matrix() requires scipy: http://scipy.org/ "
+        raise ImportError(
+          "attr_sparse_matrix() requires scipy: http://scipy.org/ ")
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)

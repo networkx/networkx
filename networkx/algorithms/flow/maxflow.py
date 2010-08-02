@@ -3,11 +3,11 @@
 Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """
 
-__author__ = u"""Loïc Séguin-C. <loicseguin@gmail.com>"""
-u"""Copyright (C) 2010 Loïc Séguin-C. <loicseguin@gmail.com>
-All rights reserved.
-BSD license.
-"""
+__author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
+# Copyright (C) 2010 Loïc Séguin-C. <loicseguin@gmail.com>
+# All rights reserved.
+# BSD license.
+
 
 __all__ = ['ford_fulkerson',
            'max_flow',
@@ -25,7 +25,7 @@ def _create_auxiliary_digraph(G):
 
     if nx.is_directed(G):
         for edge in G.edges(data = True):
-            if edge[2].has_key('capacity'):
+            if 'capacity' in edge[2]:
                 if edge[2]['capacity'] > 0:
                     auxiliary.add_edge(*edge)
             else:
@@ -33,7 +33,7 @@ def _create_auxiliary_digraph(G):
                 infcapFlows[(edge[0], edge[1])] = 0
     else:
         for edge in G.edges(data = True):
-            if edge[2].has_key('capacity'):
+            if 'capacity' in edge[2]:
                 if edge[2]['capacity'] > 0:
                     auxiliary.add_edge(*edge)
                     auxiliary.add_edge(edge[1], edge[0], edge[2])
@@ -151,7 +151,7 @@ def ford_fulkerson(G, s, t):
         try:
             pathCapacity = min([c['capacity']
                             for (u, v, c) in pathEdges
-                            if c.has_key('capacity')])
+                            if 'capacity' in c])
         except ValueError: 
             # path of infinite capacity implies no max flow
             raise nx.NetworkXError(
@@ -162,7 +162,7 @@ def ford_fulkerson(G, s, t):
         # Augment the flow along the path.
         for (u, v, c) in pathEdges:
             auxEdgeAttr = auxiliary[u][v]
-            if auxEdgeAttr.has_key('capacity'):
+            if 'capacity' in auxEdgeAttr:
                 auxEdgeAttr['capacity'] -= pathCapacity
                 if auxEdgeAttr['capacity'] == 0:
                     auxiliary.remove_edge(u, v)
@@ -170,7 +170,7 @@ def ford_fulkerson(G, s, t):
                 infcapFlows[(u, v)] += pathCapacity
 
             if auxiliary.has_edge(v, u):
-                if auxiliary[v][u].has_key('capacity'):
+                if 'capacity' in auxiliary[v][u]:
                     auxiliary[v][u]['capacity'] += pathCapacity
             else:
                 auxiliary.add_edge(v, u, {'capacity': pathCapacity})

@@ -20,7 +20,7 @@ def is_threshold_graph(G):
     """
     Returns True if G is a threshold graph.
     """
-    return is_threshold_sequence(G.degree().values())
+    return is_threshold_sequence(list(G.degree().values()))
     
 def is_threshold_sequence(degree_sequence):
     """
@@ -74,7 +74,7 @@ def creation_sequence(degree_sequence,with_labels=False,compact=False):
     Returns None if the sequence is not a threshold sequence
     """
     if with_labels and compact:
-        raise ValueError,"compact sequences cannot be labeled"
+        raise ValueError("compact sequences cannot be labeled")
 
     # make an indexed copy
     if isinstance(degree_sequence,dict):   # labeled degree seqeunce
@@ -122,7 +122,7 @@ def make_compact(creation_sequence):
     elif isinstance(first,int):   # compact creation sequence
         return creation_sequence   
     else:
-        raise TypeError, "Not a valid creation sequence type"
+        raise TypeError("Not a valid creation sequence type")
 
     ccs=[]
     count=1 # count the run lengths of d's or i's.
@@ -150,7 +150,7 @@ def uncompact(creation_sequence):
     elif isinstance(first,int):   # compact creation sequence
         ccscopy=creation_sequence[:]
     else:
-        raise TypeError, "Not a valid creation sequence type"
+        raise TypeError("Not a valid creation sequence type")
     cs = []
     while ccscopy:
         cs.extend(ccscopy.pop(0)*['d'])
@@ -177,7 +177,7 @@ def creation_sequence_to_weights(creation_sequence):
     elif isinstance(first,int):  # compact creation sequence
         wseq = uncompact(creation_sequence)
     else:
-        raise TypeError, "Not a valid creation sequence type"
+        raise TypeError("Not a valid creation sequence type")
     # pass through twice--first backwards
     wseq.reverse()
     w=0
@@ -232,7 +232,7 @@ def weights_to_creation_sequence(weights,threshold=1,with_labels=False,compact=F
     with_labels and compact cannot both be True.
     """
     if with_labels and compact:
-        raise ValueError,"compact sequences cannot be labeled"
+        raise ValueError("compact sequences cannot be labeled")
 
     # make an indexed copy
     if isinstance(weights,dict):   # labeled weights
@@ -288,7 +288,7 @@ def threshold_graph(creation_sequence, create_using=None):
         cs = uncompact(creation_sequence)
         ci = list(enumerate(cs))
     else:
-        print "not a valid creation sequence type"
+        print("not a valid creation sequence type")
         return None
         
     if create_using is None:
@@ -350,7 +350,7 @@ def find_creation_sequence(G):
     while H.order()>0:
         # get new degree sequence on subgraph
         dsdict=H.degree()
-        ds=[ [d,v] for v,d in dsdict.iteritems() ]
+        ds=[ [d,v] for v,d in dsdict.items() ]
         ds.sort()
         # Update threshold graph nodes
         if ds[-1][0]==0: # all are isolated
@@ -400,7 +400,7 @@ def triangle_sequence(creation_sequence):
     cs=creation_sequence
     seq=[]
     dr=cs.count("d")     # number of d's to the right of the current pos
-    dcur=(dr-1)*(dr-2)/2 # number of triangles through a node of clique dr
+    dcur=(dr-1)*(dr-2) // 2 # number of triangles through a node of clique dr
     irun=0               # number of i's in the last run
     drun=0               # number of d's in the last run
     for i,sym in enumerate(cs):
@@ -414,7 +414,7 @@ def triangle_sequence(creation_sequence):
                 dr-=drun            # reduce number of d's to right
                 drun=0              # reset d run counter
             irun+=1
-            tri=dr*(dr-1)/2      # new triangles at this i
+            tri=dr*(dr-1) // 2      # new triangles at this i
         seq.append(tri)
         prevsym=sym
     return seq
@@ -431,7 +431,7 @@ def cluster_sequence(creation_sequence):
         if deg <= 1:    # isolated vertex or single pair gets cc 0
             cseq.append(0)
             continue
-        max_size=(deg*(deg-1))/2
+        max_size=(deg*(deg-1)) // 2
         cseq.append(float(tri)/float(max_size))
     return cseq
 
@@ -478,7 +478,7 @@ def degree_correlation(creation_sequence):
     for i,sym in enumerate(cs):
         if sym=="d": 
             if i!=rdi[0]:
-                print "Logic error in degree_correlation",i,rdi
+                print("Logic error in degree_correlation",i,rdi)
                 raise ValueError
             rdi.pop(0)
         degi=ds[i]
@@ -493,7 +493,7 @@ def degree_correlation(creation_sequence):
     if denom==0:
         if numer==0: 
             return 1
-        raise ValueError,"Zero Denominator but Numerator is %s"%numer
+        raise ValueError("Zero Denominator but Numerator is %s"%numer)
     return numer/float(denom)
 
 
@@ -517,20 +517,20 @@ def shortest_path(creation_sequence,u,v):
     # Turn input sequence into a labeled creation sequence
     first=creation_sequence[0]
     if isinstance(first,str):    # creation sequence
-        cs = [(i,creation_sequence[i]) for i in xrange(len(creation_sequence))]
+        cs = [(i,creation_sequence[i]) for i in range(len(creation_sequence))]
     elif isinstance(first,tuple):   # labeled creation sequence
         cs = creation_sequence[:]
     elif isinstance(first,int):  # compact creation sequence
         ci = uncompact(creation_sequence)
-        cs = [(i,ci[i]) for i in xrange(len(ci))]
+        cs = [(i,ci[i]) for i in range(len(ci))]
     else:
-        raise TypeError, "Not a valid creation sequence type"
+        raise TypeError("Not a valid creation sequence type")
         
     verts=[ s[0] for s in cs ]
     if v not in verts:
-        raise ValueError,"Vertex %s not in graph from creation_sequence"%v
+        raise ValueError("Vertex %s not in graph from creation_sequence"%v)
     if u not in verts:
-        raise ValueError,"Vertex %s not in graph from creation_sequence"%u
+        raise ValueError("Vertex %s not in graph from creation_sequence"%u)
     # Done checking
     if u==v: return [u]
 
@@ -573,7 +573,7 @@ def shortest_path_length(creation_sequence,i):
     elif isinstance(first,int):  # compact creation sequence
         cs = uncompact(creation_sequence)
     else:
-        raise TypeError, "Not a valid creation sequence type"
+        raise TypeError("Not a valid creation sequence type")
     
     # Compute
     N=len(cs)
@@ -773,7 +773,7 @@ def random_threshold_sequence(n,p,seed=None):
         random.seed(seed)
 
     if not (p<=1 and p>=0):
-        raise ValueError,"p must be in [0,1]"
+        raise ValueError("p must be in [0,1]")
 
     cs=['d']  # threshold sequences always start with a d
     for i in range(1,n):
@@ -810,7 +810,7 @@ def right_d_threshold_sequence(n,m):
 
     # too many edges 
     if m > n*(n-1)/2:
-        raise ValueError,"Too many edges for this many nodes."
+        raise ValueError("Too many edges for this many nodes.")
 
     # connected case m >n-1
     ind=n-1
@@ -843,7 +843,7 @@ def left_d_threshold_sequence(n,m):
 
     # too many edges 
     if m > n*(n-1)/2:
-        raise ValueError,"Too many edges for this many nodes."
+        raise ValueError("Too many edges for this many nodes.")
 
     # Connected case when M>N-1
     cs[n-1]='d'

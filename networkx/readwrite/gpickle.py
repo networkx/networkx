@@ -30,15 +30,12 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu
 __all__ = ['read_gpickle', 'write_gpickle']
 
 
-import codecs
-import locale
-import string
-import sys
-import time
-
 from networkx.utils import is_string_like,_get_fh
 
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 def write_gpickle(G, path):
     """

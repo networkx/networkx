@@ -17,7 +17,6 @@ def test_simple():
                nx.MultiDiGraph(weighted=w)
                ]:
 
-        print g1.__class__
         g1.add_weighted_edges_from(edges)
         g2 = g1.subgraph(g1.nodes())
         assert_true( nx.is_isomorphic(g1,g2,True,rtol,atol) )
@@ -25,7 +24,6 @@ def test_simple():
         for mod1, mod2 in [(False, True), (True, False), (True, True)]:
             # mod1 tests a regular edge
             # mod2 tests a selfloop
-            print "Modification:", mod1, mod2
             if g2.is_multigraph():
                 if mod1:
                     data1 = {0:{'weight':10}}

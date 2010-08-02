@@ -165,7 +165,7 @@ def test_union_and_compose():
 
     G=union(G1,G2,create_using=R)
     H=compose(G1,G2)
-    assert_true(sorted(G.edges())==sorted(H.edges()))
+    assert_true(G.edges()==H.edges())
     assert_false(G.has_edge('A',1))
     assert_raises(nx.NetworkXError, nx.union, K3, P3)
     H1=union(H,G1,rename=('H','G1'))
@@ -181,7 +181,7 @@ def test_union_and_compose():
     assert_false(H1.has_edge('NB','NA'))
 
     G=compose(G,G)
-    assert_equal(sorted(G.edges()),sorted(H.edges()))
+    assert_equal(G.edges(),H.edges())
 
     G2=union(G2,G2,rename=('','copy'))
     assert_equal(sorted(G2.nodes()),

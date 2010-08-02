@@ -72,7 +72,7 @@ MultiGraph
 True
 >>> sorted(H.nodes())==sorted(XG.nodes())
 True
->>> sorted(H.edges(data=True))==sorted(XG.edges(data=True))
+>>> H.edges(data=True)==XG.edges(data=True)
 True
 
 MultiDiGraph
@@ -85,7 +85,7 @@ MultiDiGraph
 True
 >>> sorted(H.nodes())==sorted(XDG.nodes())
 True
->>> sorted(H.edges(data=True))==sorted(XDG.edges(data=True))
+>>> H.edges(data=True)==XDG.edges(data=True)
 True
 
 >>> os.close(fd)

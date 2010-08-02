@@ -112,9 +112,9 @@ def faster_could_be_isomorphic(G1,G2):
     if G1.order() != G2.order(): return False
     
     # Check local properties
-    d1=G1.degree().values()
+    d1=list(G1.degree().values())
     d1.sort()
-    d2=G2.degree().values()
+    d2=list(G2.degree().values())
     d2.sort()
 
     if d1 != d2: return False

@@ -102,7 +102,7 @@ def eulerian_circuit(G, source=None):
 
     # set starting node
     if source is None:
-        v = g.nodes_iter().next()
+        v = next(g.nodes_iter())
     else:
         v = source
 

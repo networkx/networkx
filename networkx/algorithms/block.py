@@ -55,7 +55,7 @@ def blockmodel(G,partitions,multigraph=False):
     	"Generalized Blockmodeling",Cambridge University Press, 2004.
     """
     # Create sets of node partitions
-    part=map(set,partitions) 
+    part=list(map(set,partitions)) 
 
     # Check for overlapping node partitions
     u=set()

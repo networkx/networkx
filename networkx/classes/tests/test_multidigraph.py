@@ -123,7 +123,6 @@ class TestMultiDiGraph(TestMultiGraph):
 
     def test_edges(self):
         G=self.K3
-        print self.K3.adj
         assert_equal(sorted(G.edges()),[(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
         assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
         assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
@@ -256,7 +255,7 @@ class TestMultiDiGraph(TestMultiGraph):
 
     def test_degree(self):
         G=self.K3
-        assert_equal(G.degree().values(),[4,4,4])
+        assert_equal(list(G.degree().values()),[4,4,4])
         assert_equal(G.degree(),{0:4,1:4,2:4})
         assert_equal(G.degree(0),4)
         assert_equal(G.degree([0]),{0:4})
@@ -271,7 +270,7 @@ class TestMultiDiGraph(TestMultiGraph):
 
     def test_in_degree(self):
         G=self.K3
-        assert_equal(G.in_degree().values(),[2,2,2])
+        assert_equal(list(G.in_degree().values()),[2,2,2])
         assert_equal(G.in_degree(),{0:2,1:2,2:2})
         assert_equal(G.in_degree(0),2)
         assert_equal(G.in_degree([0]),{0:2})
@@ -285,7 +284,7 @@ class TestMultiDiGraph(TestMultiGraph):
 
     def test_out_degree(self):
         G=self.K3
-        assert_equal(G.out_degree().values(),[2,2,2])
+        assert_equal(list(G.out_degree().values()),[2,2,2])
         assert_equal(G.out_degree(),{0:2,1:2,2:2})
         assert_equal(G.out_degree(0),2)
         assert_equal(G.out_degree([0]),{0:2})

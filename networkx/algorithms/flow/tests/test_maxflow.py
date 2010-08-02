@@ -4,11 +4,11 @@
 Run with nose: nosetests -v test_max_flow.py
 """
 
-__author__ = u"""Loïc Séguin-C. <loicseguin@gmail.com>"""
-u"""Copyright (C) 2010 Loïc Séguin-C. <loicseguin@gmail.com>
-All rights reserved.
-BSD license.
-"""
+__author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
+# Copyright (C) 2010 Loïc Séguin-C. <loicseguin@gmail.com>
+# All rights reserved.
+# BSD license.
+
 
 import networkx as nx
 from nose.tools import *

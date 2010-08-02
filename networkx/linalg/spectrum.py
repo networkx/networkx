@@ -77,8 +77,8 @@ def laplacian(G,nodelist=None):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "laplacian() requires numpy: http://scipy.org/ "
+        raise ImportError(
+          "laplacian() requires numpy: http://scipy.org/ ")
     # this isn't the most efficient way to do this...
     n=G.order()
     I=np.identity(n)
@@ -121,8 +121,8 @@ def normalized_laplacian(G,nodelist=None):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "normalized_laplacian() requires numpy: http://scipy.org/ "
+        raise ImportError(
+          "normalized_laplacian() requires numpy: http://scipy.org/ ")
     A=np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist))
     d=np.sum(A,axis=1)
     I=np.identity(len(d))
@@ -155,8 +155,8 @@ def laplacian_spectrum(G):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "laplacian_spectrum() requires NumPy: http://scipy.org/ "
+        raise ImportError(
+          "laplacian_spectrum() requires NumPy: http://scipy.org/ ")
     return np.linalg.eigvals(laplacian(G))
 
 def adjacency_spectrum(G):
@@ -179,8 +179,8 @@ def adjacency_spectrum(G):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "adjacency_spectrum() requires NumPy: http://scipy.org/ "
+        raise ImportError(
+          "adjacency_spectrum() requires NumPy: http://scipy.org/ ")
     return np.linalg.eigvals(adj_matrix(G))
 
 

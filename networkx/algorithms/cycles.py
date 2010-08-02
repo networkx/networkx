@@ -38,7 +38,7 @@ def cycle_basis(G,root=None):
     >>> G=nx.Graph()
     >>> G.add_cycle([0,1,2,3])
     >>> G.add_cycle([0,3,4,5])
-    >>> print nx.cycle_basis(G,0)
+    >>> print(nx.cycle_basis(G,0))
     [[3, 4, 5, 0], [1, 2, 3, 0]]
 
     Notes

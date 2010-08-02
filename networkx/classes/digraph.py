@@ -73,7 +73,8 @@ class DiGraph(Graph):
 
     >>> G.add_nodes_from([2,3])
     >>> G.add_nodes_from(range(100,110))
-    >>> H=nx.path_graph(10)
+    >>> H=nx.Graph()
+    >>> H.add_path([0,1,2,3,4,5,6,7,8,9])
     >>> G.add_nodes_from(H)
 
     In addition to strings and integers any hashable Python object
@@ -141,11 +142,11 @@ class DiGraph(Graph):
 
     >>> 1 in G     # check if node in graph
     True
-    >>> print [n for n in G if n<3]   # iterate through nodes
+    >>> [n for n in G if n<3]   # iterate through nodes
     [1, 2]
-    >>> print len(G)  # number of nodes in graph
+    >>> len(G)  # number of nodes in graph
     5
-    >>> print G[1] # adjacency dict keyed by neighbor to edge attributes
+    >>> G[1] # adjacency dict keyed by neighbor to edge attributes
     ...            # Note: you should not change this dict manually!
     {2: {'color': 'blue', 'weight': 4}}
 
@@ -153,12 +154,12 @@ class DiGraph(Graph):
     adjacency_iter(), but the edges() method is often more convenient.
 
     >>> for n,nbrsdict in G.adjacency_iter():
-    ...     for nbr,eattr in nbrsdict.iteritems():
+    ...     for nbr,eattr in nbrsdict.items():
     ...        if 'weight' in eattr:
-    ...            print (n,nbr,eattr['weight'])
+    ...            (n,nbr,eattr['weight'])
     (1, 2, 4)
     (2, 3, 8)
-    >>> print [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
+    >>> [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
     [(1, 2, 4), (2, 3, 8)]
 
     **Reporting:**
@@ -212,8 +213,10 @@ class DiGraph(Graph):
         self.adj = {}  # empty adjacency dictionary
         self.pred = {}  # predecessor
         self.succ = self.adj  # successor
-        if data is not None:  # attempt to load graph with data
-            convert.to_networkx_graph(data,create_using=self)
+
+        # attempt to load graph with data
+        if data is not None:
+            convert.from_whatever(data,create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
@@ -304,7 +307,7 @@ class DiGraph(Graph):
         >>> G.add_nodes_from('Hello')
         >>> K3 = nx.Graph([(0,1),(1,2),(2,0)])
         >>> G.add_nodes_from(K3)
-        >>> sorted(G.nodes())
+        >>> sorted(G.nodes(),key=str)
         [0, 1, 2, 'H', 'e', 'l', 'o']
 
         Use keywords to update specific node attributes for every node.
@@ -667,14 +670,14 @@ class DiGraph(Graph):
         neighbors_iter() and successors_iter() are the same.
         """
         try:
-            return self.succ[n].iterkeys()
+            return iter(self.succ[n].keys())
         except KeyError:
             raise NetworkXError("The node %s is not in the digraph."%(n,))
 
     def predecessors_iter(self,n):
         """Return an iterator over predecessor nodes of n."""
         try:
-            return self.pred[n].iterkeys()
+            return iter(self.pred[n].keys())
         except KeyError:
             raise NetworkXError("The node %s is not in the digraph."%(n,))
 
@@ -736,12 +739,12 @@ class DiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs=self.adj.iteritems()
+            nodes_nbrs=iter(self.adj.items())
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
         if data:
             for n,nbrs in nodes_nbrs:
-                for nbr,data in nbrs.iteritems():
+                for nbr,data in nbrs.items():
                     yield (n,nbr,data)
         else:
             for n,nbrs in nodes_nbrs:
@@ -773,12 +776,12 @@ class DiGraph(Graph):
         edges_iter : return an iterator of edges
         """
         if nbunch is None:
-            nodes_nbrs=self.pred.iteritems()
+            nodes_nbrs=iter(self.pred.items())
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
         if data:
             for n,nbrs in nodes_nbrs:
-                for nbr,data in nbrs.iteritems():
+                for nbr,data in nbrs.items():
                     yield (nbr,n,data)
         else:
             for n,nbrs in nodes_nbrs:
@@ -827,19 +830,22 @@ class DiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs=( (n,succs,self.pred[n]) for n,succs in self.succ.iteritems())
+            nodes_nbrs=zip(iter(self.succ.items()),iter(self.pred.items()))
         else:
-            nodes_nbrs=( (n,self.succ[n],self.pred[n]) for n in self.nbunch_iter(nbunch))
+            nodes_nbrs=zip(
+                ((n,self.succ[n]) for n in self.nbunch_iter(nbunch)),
+                ((n,self.pred[n]) for n in self.nbunch_iter(nbunch)))
 
-        if weighted:
+        if weighted:                        
         # edge weighted graph - degree is sum of edge weights
-            for (n,succ,pred) in nodes_nbrs:
-               yield (n,
-                      sum(data.get('weight',1) for data in succ.itervalues())+
-                      sum(data.get('weight',1) for data in pred.itervalues()))
+            for (n,succ),(n2,pred) in nodes_nbrs:
+               yield (n, 
+                      sum((succ[nbr].get('weight',1) for nbr in succ))+
+                      sum((pred[nbr].get('weight',1) for nbr in pred)))
         else:
-            for (n,succ,pred) in nodes_nbrs:
-                yield (n,len(succ)+len(pred))
+            for (n,succ),(n2,pred) in nodes_nbrs:
+                yield (n,len(succ)+len(pred)) 
+
 
     def in_degree_iter(self, nbunch=None, weighted=False):
         """Return an iterator for (node, in-degree).
@@ -874,7 +880,7 @@ class DiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs=self.pred.iteritems()
+            nodes_nbrs=iter(self.pred.items())
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
 
@@ -920,7 +926,7 @@ class DiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs=self.succ.iteritems()
+            nodes_nbrs=iter(self.succ.items())
         else:
             nodes_nbrs=((n,self.succ[n]) for n in self.nbunch_iter(nbunch))
 
@@ -964,11 +970,11 @@ class DiGraph(Graph):
         0
         >>> G.in_degree([0,1])
         {0: 0, 1: 1}
-        >>> G.in_degree([0,1]).values()
+        >>> list(G.in_degree([0,1]).values())
         [0, 1]
         """
         if nbunch in self:      # return a single node
-            return self.in_degree_iter(nbunch,weighted=weighted).next()[1]
+            return next(self.in_degree_iter(nbunch,weighted=weighted))[1]
         else:           # return a dict
             return dict(self.in_degree_iter(nbunch,weighted=weighted))
 
@@ -999,13 +1005,13 @@ class DiGraph(Graph):
         1
         >>> G.out_degree([0,1])
         {0: 1, 1: 1}
-        >>> G.out_degree([0,1]).values()
+        >>> list(G.out_degree([0,1]).values())
         [1, 1]
 
 
         """
         if nbunch in self:      # return a single node
-            return self.out_degree_iter(nbunch,weighted=weighted).next()[1]
+            return next(self.out_degree_iter(nbunch,weighted=weighted))[1]
         else:           # return a dict
             return dict(self.out_degree_iter(nbunch,weighted=weighted))
 
@@ -1116,7 +1122,7 @@ class DiGraph(Graph):
         H.add_nodes_from(self)
         H.add_edges_from( (u,v,deepcopy(d))
                           for u,nbrs in self.adjacency_iter()
-                          for v,d in nbrs.iteritems() )
+                          for v,d in nbrs.items() )
         H.graph=deepcopy(self.graph)
         H.node=deepcopy(self.node)
         return H
@@ -1177,7 +1183,7 @@ class DiGraph(Graph):
         If edge attributes are containers, a deep copy can be obtained using:
         G.subgraph(nbunch).copy()
 
-        For an in-place reduction of a graph to a subgraph you can remove nodes:
+        For an inplace reduction of a graph to a subgraph you can remove nodes:
         G.remove_nodes_from([ n in G if n not in set(nbunch)])
 
         Examples
@@ -1185,7 +1191,7 @@ class DiGraph(Graph):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
-        >>> print H.edges()
+        >>> H.edges()
         [(0, 1), (1, 2)]
         """
         bunch = self.nbunch_iter(nbunch)
@@ -1204,7 +1210,7 @@ class DiGraph(Graph):
         # add edges
         for u in H_succ:
             Hnbrs=H_succ[u]
-            for v,datadict in self_succ[u].iteritems():
+            for v,datadict in self_succ[u].items():
                 if v in H_succ:
                     # add both representations of edge: u-v and v-u
                     Hnbrs[v]=datadict

@@ -149,7 +149,7 @@ Multigraph
 True
 >>> sorted(H.nodes())==sorted(XG.nodes())
 True
->>> sorted(H.edges(data=True))==sorted(XG.edges(data=True))
+>>> H.edges(data=True)==XG.edges(data=True)
 True
 
 MultiiDigraph
@@ -172,10 +172,10 @@ Filehandling/Compression/Uncompression
 -------------------------
 
 >>> (fd,fname)=tempfile.mkstemp()
->>> fh=open(fname,'w')
+>>> fh=open(fname,'wb')
 >>> write_adjlist(G,fh)
 >>> fh.close()
->>> fh=open(fname,'r')
+>>> fh=open(fname,'rb')
 >>> H=read_adjlist(fh)
 >>> sorted(G.nodes())==sorted(H.nodes())
 True

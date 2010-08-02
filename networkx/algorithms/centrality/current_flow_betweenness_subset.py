@@ -85,7 +85,7 @@ http://scipy.org/""")
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     F=_compute_F(G) # Current-flow matrix
     m,n=F.shape # m edges and n nodes
-    mapping=dict(zip(G,xrange(n)))  # map nodes to integers
+    mapping=dict(zip(G,range(n)))  # map nodes to integers
     for (ei,e) in enumerate(G.edges_iter()): 
         u,v=e
         # ei is index of edge
@@ -180,7 +180,7 @@ http://scipy.org/""")
         nb=(n-1.0)*(n-2.0) # normalization factor
     else:
         nb=2.0
-    mapping=dict(zip(G,xrange(n)))  # map nodes to integers
+    mapping=dict(zip(G,range(n)))  # map nodes to integers
     for (ei,e) in enumerate(G.edges_iter()): 
         # ei is index of edge
         Fe=F[ei,:] # ei row of F
@@ -224,7 +224,7 @@ http://scipy.org/""")
     m=G.number_of_edges()
     B=np.zeros((n,m))
     # use G.nodes() and G.edges() ordering of edges for B  
-    mapping=dict(zip(G,xrange(n)))  # map nodes to integers
+    mapping=dict(zip(G,range(n)))  # map nodes to integers
     for (ei,(v,w,d)) in enumerate(G.edges_iter(data=True)): 
         c=d.get('weight',1.0)
         vi=mapping[v]

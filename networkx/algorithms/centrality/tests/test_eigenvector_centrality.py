@@ -72,11 +72,11 @@ class TestEigenvectorCentralityDirected(object):
     def test_eigenvector_centrality_weighted(self):
         G=self.G
         p=networkx.eigenvector_centrality_numpy(G)
-        for (a,b) in zip(p.values(),self.G.evc):
+        for (a,b) in zip(list(p.values()),self.G.evc):
             assert_almost_equal(a,b)
 
     def test_eigenvector_centrality_unweighted(self):
         G=self.H
         p=networkx.eigenvector_centrality_numpy(G)
-        for (a,b) in zip(p.values(),self.G.evc):
+        for (a,b) in zip(list(p.values()),self.G.evc):
             assert_almost_equal(a,b)

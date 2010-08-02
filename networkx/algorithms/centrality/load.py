@@ -171,7 +171,7 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
     #(pred,length)=_fast_predecessor(G,source,cutoff=cutoff) 
     (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True) 
     # order the nodes by path length
-    onodes = [ nn for dd,nn in sorted( (dist,n) for n,dist in length.iteritems() )]
+    onodes = [ nn for dd,nn in sorted( (dist,n) for n,dist in length.items() )]
     # intialize betweenness, doesn't account for any edge weights
     for u,v in G.edges(nodes):
         between[(u,v)]=1.0

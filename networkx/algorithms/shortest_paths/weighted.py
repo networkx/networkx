@@ -49,7 +49,7 @@ def dijkstra_path(G,source,target, weight = 'weight'):
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> print nx.dijkstra_path(G,0,4)
+    >>> print(nx.dijkstra_path(G,0,4))
     [0, 1, 2, 3, 4]
 
     Notes
@@ -67,8 +67,7 @@ def dijkstra_path(G,source,target, weight = 'weight'):
     try:
         return path[target]
     except KeyError:
-        raise nx.NetworkXError, \
-              "node %s not reachable from %s"%(source,target)
+        raise nx.NetworkXError("node %s not reachable from %s"%(source,target))
 
 
 def dijkstra_path_length(G,source,target, weight = 'weight'):
@@ -102,7 +101,7 @@ def dijkstra_path_length(G,source,target, weight = 'weight'):
     Examples
     --------
     >>> G=nx.path_graph(5) # a weighted graph by default
-    >>> print nx.dijkstra_path_length(G,0,4)
+    >>> print(nx.dijkstra_path_length(G,0,4))
     4
     
     Notes
@@ -121,8 +120,7 @@ def dijkstra_path_length(G,source,target, weight = 'weight'):
     try:
         return length[target]
     except KeyError:
-        raise nx.NetworkXError, \
-              "node %s not reachable from %s"%(source,target)
+        raise nx.NetworkXError("node %s not reachable from %s"%(source,target))
 
 
 
@@ -163,9 +161,9 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
     --------
     >>> G=nx.path_graph(5)
     >>> length,path=nx.bidirectional_dijkstra(G,0,4)
-    >>> print length
+    >>> print(length)
     4
-    >>> print path
+    >>> print(path)
     [0, 1, 2, 3, 4]
     
     Notes
@@ -233,22 +231,21 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
             if(dir==0): #forward
                 if G.is_multigraph():
                     minweight=min((dd.get(weight,1)
-                               for k,dd in G[v][w].iteritems()))
+                               for k,dd in G[v][w].items()))
                 else:
                     minweight=G[v][w].get(weight,1)
                 vwLength = dists[dir][v] + minweight #G[v][w].get(weight,1)
             else: #back, must remember to change v,w->w,v
                 if G.is_multigraph():
                     minweight=min((dd.get(weight,1)
-                               for k,dd in G[w][v].iteritems()))
+                               for k,dd in G[w][v].items()))
                 else:
                     minweight=G[w][v].get(weight,1)
                 vwLength = dists[dir][v] + minweight #G[w][v].get(weight,1)
             
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
-                    raise ValueError,\
-                        "Contradictory paths found: negative weights?"
+                    raise ValueError("Contradictory paths found: negative weights?")
             elif w not in seen[dir] or vwLength < seen[dir][w]:
                 # relaxing        
                 seen[dir][w] = vwLength
@@ -334,7 +331,7 @@ def single_source_dijkstra_path_length(G,source, weight = 'weight'):
     >>> length=nx.single_source_dijkstra_path_length(G,0)
     >>> length[4]
     4
-    >>> print length
+    >>> print(length)
     {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
 
     Notes
@@ -381,9 +378,9 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
     --------
     >>> G=nx.path_graph(5)
     >>> length,path=nx.single_source_dijkstra(G,0)
-    >>> print length[4]
+    >>> print(length[4])
     4
-    >>> print length
+    >>> print(length)
     {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
     >>> path[4]
     [0, 1, 2, 3, 4]
@@ -421,12 +418,12 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
         #is about 30% slower than the following
         if G.is_multigraph():
             edata=[]
-            for w,keydata in G[v].items():
+            for w,keydata in list(G[v].items()):
                 minweight=min((dd.get(weight,1)
-                               for k,dd in keydata.iteritems()))
+                               for k,dd in keydata.items()))
                 edata.append((w,{weight:minweight}))
         else:
-            edata=G[v].iteritems()
+            edata=iter(G[v].items())
 
 
         for w,edgedata in edata:
@@ -436,8 +433,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
                     continue
             if w in dist:
                 if vw_dist < dist[w]:
-                    raise ValueError,\
-                          "Contradictory paths found: negative weights?"
+                    raise ValueError("Contradictory paths found: negative weights?")
             elif w not in seen or vw_dist < seen[w]:
                 seen[w] = vw_dist
                 heapq.heappush(fringe,(vw_dist,w))
@@ -484,16 +480,15 @@ def dijkstra_predecessor_and_distance(G,source, weight = 'weight'):
             edata=[]
             for w,keydata in G[v].items():
                 minweight=min((dd.get(weight,1)
-                               for k,dd in keydata.iteritems()))
+                               for k,dd in keydata.items()))
                 edata.append((w,{weight:minweight}))
         else:
-            edata=G[v].iteritems()
+            edata=iter(G[v].items())
         for w,edgedata in edata:
             vw_dist = dist[v] + edgedata.get(weight,1)
             if w in dist:
                 if vw_dist < dist[w]:
-                    raise ValueError,\
-                          "Contradictory paths found: negative weights?"
+                    raise ValueError("Contradictory paths found: negative weights?")
             elif w not in seen or vw_dist < seen[w]:
                 seen[w] = vw_dist
                 push(fringe,(vw_dist,w))
@@ -521,7 +516,7 @@ def all_pairs_dijkstra_path_length(G, weight = 'weight'):
     --------
     >>> G=nx.path_graph(5)
     >>> length=nx.all_pairs_dijkstra_path_length(G)
-    >>> print length[1][4]
+    >>> print(length[1][4])
     3
     >>> length[1]
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
@@ -554,7 +549,7 @@ def all_pairs_dijkstra_path(G, weight = 'weight'):
     --------
     >>> G=nx.path_graph(5)
     >>> path=nx.all_pairs_dijkstra_path(G)
-    >>> print path[0][4]
+    >>> print(path[0][4])
     [0, 1, 2, 3, 4]
 
     See Also

@@ -54,7 +54,7 @@ def shortest_path(G,source=None,target=None,weighted=False):
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> print nx.shortest_path(G,source=0,target=4)
+    >>> print(nx.shortest_path(G,source=0,target=4))
     [0, 1, 2, 3, 4]
     >>> p=nx.shortest_path(G,source=0) # target not specified
     >>> p[4]
@@ -142,7 +142,7 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> print nx.shortest_path_length(G,source=0,target=4)
+    >>> print(nx.shortest_path_length(G,source=0,target=4))
     4
     >>> p=nx.shortest_path_length(G,source=0) # target not specified
     >>> p[4]
@@ -207,7 +207,7 @@ def average_shortest_path_length(G,weighted=False):
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> print nx.average_shortest_path_length(G)
+    >>> print(nx.average_shortest_path_length(G))
     2.0
 
     Notes
@@ -222,7 +222,7 @@ def average_shortest_path_length(G,weighted=False):
         path_length=nx.single_source_shortest_path_length
     avg=0.0
     for n in G:
-        l=path_length(G,n).values()
+        l=list(path_length(G,n).values())
         avg+=float(sum(l))/len(l)
     return avg/(len(G)-1)
         

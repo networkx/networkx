@@ -1,9 +1,5 @@
-from generic import *
-from unweighted import *
-from weighted import *
-from astar import *
+from networkx.algorithms.shortest_paths.generic import *
+from networkx.algorithms.shortest_paths.unweighted import *
+from networkx.algorithms.shortest_paths.weighted import *
+from networkx.algorithms.shortest_paths.astar import *
 
-#import generic
-#import unweighted
-#import weighted
-#import astar

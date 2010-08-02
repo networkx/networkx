@@ -25,6 +25,7 @@ import networkx as nx
 from networkx.exception import NetworkXException, NetworkXError
 import networkx.convert as convert
 from copy import deepcopy
+import sys
 
 
 class Graph(object):
@@ -81,7 +82,8 @@ class Graph(object):
 
     >>> G.add_nodes_from([2,3])
     >>> G.add_nodes_from(range(100,110))
-    >>> H=nx.path_graph(10)
+    >>> H=nx.Graph()
+    >>> H.add_path([0,1,2,3,4,5,6,7,8,9])
     >>> G.add_nodes_from(H)
 
     In addition to strings and integers any hashable Python object
@@ -149,11 +151,11 @@ class Graph(object):
 
     >>> 1 in G     # check if node in graph
     True
-    >>> print [n for n in G if n<3]   # iterate through nodes
+    >>> [n for n in G if n<3]   # iterate through nodes
     [1, 2]
-    >>> print len(G)  # number of nodes in graph
+    >>> len(G)  # number of nodes in graph
     5
-    >>> print G[1] # adjacency dict keyed by neighbor to edge attributes
+    >>> G[1] # adjacency dict keyed by neighbor to edge attributes
     ...            # Note: you should not change this dict manually!
     {2: {'color': 'blue', 'weight': 4}}
 
@@ -161,14 +163,14 @@ class Graph(object):
     adjacency_iter(), but the edges() method is often more convenient.
 
     >>> for n,nbrsdict in G.adjacency_iter():
-    ...     for nbr,eattr in nbrsdict.iteritems():
+    ...     for nbr,eattr in nbrsdict.items():
     ...        if 'weight' in eattr:
-    ...            print (n,nbr,eattr['weight'])
+    ...            (n,nbr,eattr['weight'])
     (1, 2, 4)
     (2, 1, 4)
     (2, 3, 8)
     (3, 2, 8)
-    >>> print [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
+    >>> [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
     [(1, 2, 4), (2, 3, 8)]
 
     **Reporting:**
@@ -217,8 +219,9 @@ class Graph(object):
         self.graph = {}   # dictionary for graph attributes
         self.node = {}    # empty node dict (created before convert)
         self.adj = {}     # empty adjacency dict
-        if data is not None:  # attempt to load graph with data
-            convert.to_networkx_graph(data,create_using=self)
+        # attempt to load graph with data
+        if data is not None:
+            convert.from_whatever(data,create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
         self.name = name
@@ -234,9 +237,9 @@ class Graph(object):
 
         Examples
         --------
-        >>> G = nx.path_graph(4)
-        >>> print G
-        path_graph(4)
+        >>> G = nx.Graph(name='foo')
+        >>> str(G)
+        'foo'
         """
         return self.name
 
@@ -252,11 +255,8 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> for n in G:
-        ...     print n,
-        0 1 2 3
         """
-        return self.adj.iterkeys()
+        return iter(self.adj.keys())
 
     def __contains__(self,n):
         """Return True if n is a node, False otherwise. Use the expression
@@ -266,7 +266,7 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> print 1 in G
+        >>> 1 in G
         True
         """
         try:
@@ -286,7 +286,7 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> print len(G)
+        >>> len(G)
         4
 
         """
@@ -317,7 +317,7 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> print G[0]
+        >>> G[0]
         {1: {}}
         """
         return self.adj[n]
@@ -406,7 +406,7 @@ class Graph(object):
         >>> G.add_nodes_from('Hello')
         >>> K3 = nx.Graph([(0,1),(1,2),(2,0)])
         >>> G.add_nodes_from(K3)
-        >>> sorted(G.nodes())
+        >>> sorted(G.nodes(),key=str)
         [0, 1, 2, 'H', 'e', 'l', 'o']
 
         Use keywords to update specific node attributes for every node.
@@ -480,7 +480,7 @@ class Graph(object):
         """
         adj = self.adj
         try:
-            nbrs = adj[n].keys() # keys handles self-loops (allow mutation later)
+            nbrs = list(adj[n].keys()) # keys handles self-loops (allow mutation later)
             del self.node[n]
         except KeyError: # NetworkXError if n not in self
             raise NetworkXError("The node %s is not in the graph."%(n,))
@@ -519,7 +519,7 @@ class Graph(object):
         for n in nodes:
             try:
                 del self.node[n]
-                for u in adj[n].keys():   # keys() handles self-loops
+                for u in list(adj[n].keys()):   # keys() handles self-loops 
                     del adj[u][n]         #(allows mutation of dict in loop)
                 del adj[n]
             except KeyError:
@@ -548,26 +548,18 @@ class Graph(object):
 
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> for n in G:
-        ...     print n,
-        0 1 2
-
 
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> for n in G.nodes_iter():
-        ...     print n,
-        0 1 2
-        >>> for n,d in G.nodes_iter(data=True):
-        ...     print d,
-        {} {} {}
 
+        >>> [d for n,d in G.nodes_iter(data=True)]
+        [{}, {}, {}]
         """
         if data:
-            return self.node.iteritems()
-        return self.adj.iterkeys()
+            return iter(self.node.items())
+        return iter(self.adj.keys())
 
     def nodes(self, data=False):
         """Return a list of the nodes in the graph.
@@ -588,10 +580,10 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> print G.nodes()
+        >>> G.nodes()
         [0, 1, 2]
         >>> G.add_node(1, time='5pm')
-        >>> print G.nodes(data=True)
+        >>> G.nodes(data=True)
         [(0, {}), (1, {'time': '5pm'}), (2, {})]
         """
         return list(self.nodes_iter(data=data))
@@ -612,9 +604,8 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> print len(G)
+        >>> len(G)
         3
-
         """
         return len(self.adj)
 
@@ -644,7 +635,7 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> print G.has_node(0)
+        >>> G.has_node(0)
         True
 
         It is more readable and simpler to use
@@ -983,7 +974,7 @@ class Graph(object):
 
         """
         try:
-            return self.adj[n].keys()
+            return list(self.adj[n].keys())
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
@@ -994,18 +985,17 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> print [n for n in G.neighbors_iter(0)]
+        >>> [n for n in G.neighbors_iter(0)]
         [1]
 
         Notes
         -----
         It is faster to use the idiom "in G[0]", e.g.
-        >>> for n in G[0]:
-        ...     print n
-        1
+        >>> [n for n in G[0]]
+        [1]
         """
         try:
-            return self.adj[n].iterkeys()
+            return iter(self.adj[n].keys())
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
@@ -1096,12 +1086,12 @@ class Graph(object):
         """
         seen={}     # helper dict to keep track of multiply stored edges
         if nbunch is None:
-            nodes_nbrs = self.adj.iteritems()
+            nodes_nbrs = iter(self.adj.items())
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
         if data:
             for n,nbrs in nodes_nbrs:
-                for nbr,data in nbrs.iteritems():
+                for nbr,data in nbrs.items():
                     if nbr not in seen:
                         yield (n,nbr,data)
                 seen[n]=1
@@ -1186,7 +1176,7 @@ class Graph(object):
         [[1], [0, 2], [1, 3], [2]]
 
         """
-        return map(list,self.adj.itervalues())
+        return list(map(list,iter(self.adj.values())))
 
     def adjacency_iter(self):
         """Return an iterator of (node, adjacency dict) tuples for all nodes.
@@ -1212,7 +1202,7 @@ class Graph(object):
         [(0, {1: {}}), (1, {0: {}, 2: {}}), (2, {1: {}, 3: {}}), (3, {2: {}})]
 
         """
-        return self.adj.iteritems()
+        return iter(self.adj.items())
 
     def degree(self, nbunch=None, weighted=False):
         """Return the degree of a node or nodes.
@@ -1241,12 +1231,12 @@ class Graph(object):
         1
         >>> G.degree([0,1])
         {0: 1, 1: 2}
-        >>> G.degree([0,1]).values()
+        >>> list(G.degree([0,1]).values())
         [1, 2]
 
         """
         if nbunch in self:      # return a single node
-            return self.degree_iter(nbunch,weighted=weighted).next()[1]
+            return next(self.degree_iter(nbunch,weighted=weighted))[1]
         else:           # return a dict
             return dict(self.degree_iter(nbunch,weighted=weighted))
 
@@ -1283,14 +1273,14 @@ class Graph(object):
 
         """
         if nbunch is None:
-            nodes_nbrs = self.adj.iteritems()
+            nodes_nbrs = iter(self.adj.items())
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
-
-        if weighted:
+  
+        if weighted:                        
         # edge weighted graph - degree is sum of nbr edge weights
             for n,nbrs in nodes_nbrs:
-                yield (n, sum(data.get('weight',1) for data in nbrs.itervalues()) +
+                yield (n, sum((nbrs[nbr].get('weight',1) for nbr in nbrs)) +
                               (n in nbrs and nbrs[n].get('weight',1)))
         else:
             for n,nbrs in nodes_nbrs:
@@ -1395,9 +1385,9 @@ class Graph(object):
         G=DiGraph()
         G.name=self.name
         G.add_nodes_from(self)
-        G.add_edges_from( (u,v,deepcopy(data))
-                           for u,nbrs in self.adjacency_iter()
-                           for v,data in nbrs.iteritems() )
+        G.add_edges_from( ((u,v,deepcopy(data)) 
+                           for u,nbrs in self.adjacency_iter() 
+                           for v,data in nbrs.items()) )
         G.graph=deepcopy(self.graph)
         G.node=deepcopy(self.node)
         return G
@@ -1467,7 +1457,7 @@ class Graph(object):
         If edge attributes are containers, a deep copy can be obtained using:
         G.subgraph(nbunch).copy()
 
-        For an in-place reduction of a graph to a subgraph you can remove nodes:
+        For an inplace reduction of a graph to a subgraph you can remove nodes:
         G.remove_nodes_from([ n in G if n not in set(nbunch)])
 
         Examples
@@ -1475,7 +1465,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
-        >>> print H.edges()
+        >>> H.edges()
         [(0, 1), (1, 2)]
         """
         bunch =self.nbunch_iter(nbunch)
@@ -1489,7 +1479,7 @@ class Graph(object):
         for n in bunch:
             Hnbrs={}
             H_adj[n]=Hnbrs
-            for nbr,d in self_adj[n].iteritems():
+            for nbr,d in self_adj[n].items():
                 if nbr in H_adj:
                     # add both representations of edge: n-nbr and nbr-n
                     Hnbrs[nbr]=d
@@ -1524,7 +1514,7 @@ class Graph(object):
         >>> G.nodes_with_selfloops()
         [1]
         """
-        return [ n for n,nbrs in self.adj.iteritems() if n in nbrs ]
+        return [ n for n,nbrs in self.adj.items() if n in nbrs ]
 
     def selfloop_edges(self, data=False):
         """Return a list of selfloop edges.
@@ -1558,10 +1548,10 @@ class Graph(object):
         """
         if data:
             return [ (n,n,nbrs[n])
-                     for n,nbrs in self.adj.iteritems() if n in nbrs ]
+                     for n,nbrs in self.adj.items() if n in nbrs ]
         else:
             return [ (n,n)
-                     for n,nbrs in self.adj.iteritems() if n in nbrs ]
+                     for n,nbrs in self.adj.items() if n in nbrs ]
 
 
     def number_of_selfloops(self):
@@ -1619,10 +1609,13 @@ class Graph(object):
         >>> G.size()
         2
         >>> G.size(weighted=True)
-        6
+        6.0
         """
-
-        return sum(self.degree(weighted=weighted).values())/2
+        s=sum(self.degree(weighted=weighted).values())/2
+        if weighted:
+            return float(s)
+        else:
+            return int(s)
 
     def number_of_edges(self, u=None, v=None):
         """Return the number of edges between two nodes.
@@ -1655,7 +1648,7 @@ class Graph(object):
         >>> G.number_of_edges(*e)
         1
         """
-        if u is None: return self.size()
+        if u is None: return int(self.size())
         if v in self.adj[u]:
             return 1
         else:
@@ -1712,7 +1705,7 @@ class Graph(object):
         >>> G.add_path([10,11,12],weight=7)
 
         """
-        edges=zip(nlist[:-1],nlist[1:])
+        edges=list(zip(nlist[:-1],nlist[1:]))
         self.add_edges_from(edges, **attr)
 
     def add_cycle(self, nlist, **attr):
@@ -1737,7 +1730,7 @@ class Graph(object):
         >>> G.add_cycle([10,11,12],weight=7)
 
         """
-        edges=zip(nlist,nlist[1:]+[nlist[0]])
+        edges=list(zip(nlist,nlist[1:]+[nlist[0]]))
         self.add_edges_from(edges, **attr)
 
 
@@ -1783,26 +1776,27 @@ class Graph(object):
         nbunch is not hashable, a NetworkXError is raised.
         """
         if nbunch is None:   # include all nodes via iterator
-            bunch=self.adj.iterkeys()
+            bunch=iter(self.adj.keys())
         elif nbunch in self: # if nbunch is a single node
-            bunch=[nbunch].__iter__()
+            bunch=iter([nbunch])
         else:                # if nbunch is a sequence of nodes
             def bunch_iter(nlist,adj):
                 try:
                     for n in nlist:
                         if n in adj:
                             yield n
-                except TypeError,e:
+                except TypeError as e:
                     message=e.args[0]
-                    print message
+#                    sys.stdout.write(message)
                     # capture error for non-sequence/iterator nbunch.
                     if 'iter' in message:
-                        raise NetworkXError(
+                        raise NetworkXError(\
                             "nbunch is not a node or a sequence of nodes.")
                     # capture error for unhashable node.
                     elif 'hashable' in message:
-                        raise NetworkXError(
+                        raise NetworkXError(\
                             "Node %s in the sequence nbunch is not a valid node."%n)
-                    else: raise
+                    else: 
+                        raise 
             bunch=bunch_iter(nbunch,self.adj)
         return bunch

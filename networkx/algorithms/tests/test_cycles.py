@@ -25,7 +25,7 @@ class TestCycles:
         # test disconnected graphs
         G.add_cycle(list("ABC")) 
         cy=networkx.cycle_basis(G,9)
-        sort_cy= sorted( sorted(c) for c in cy )
+        sort_cy= sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5],['A','B','C']])
 
 

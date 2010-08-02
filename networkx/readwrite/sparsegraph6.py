@@ -10,7 +10,7 @@ See http://cs.anu.edu.au/~bdm/data/formats.txt
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -27,7 +27,7 @@ from networkx.utils import _get_fh
 def read_graph6_list(path):
     """Read simple undirected graphs in graph6 format from path.
     Returns a list of Graphs, one for each line in file."""
-    fh=_get_fh(path,mode='r')        
+    fh=_get_fh(path,mode='rt')        
     glist=[]
     for line in fh:
         line = line.strip()
@@ -44,7 +44,7 @@ def read_graph6(path):
 def read_sparse6_list(path):
     """Read simple undirected graphs in sparse6 format from path.
     Returns a list of Graphs, one for each line in file."""
-    fh=_get_fh(path,mode='r')        
+    fh=_get_fh(path,mode='rt')        
     glist=[]
     for line in fh:
         line = line.strip()
@@ -66,7 +66,8 @@ def graph6data(str):
     return v
 	
 def graph6n(data):
-    """Read initial one or four-unit value from graph6 sequence.  Return value, rest of seq."""
+    """Read initial one or four-unit value from graph6 sequence.  
+    Return value, rest of seq."""
     if data[0] <= 62:
         return data[0], data[1:]
     return (data[1]<<12) + (data[2]<<6) + data[3], data[4:]
@@ -79,7 +80,8 @@ def parse_graph6(str):
     n, data = graph6n(data)
     nd = (n*(n-1)//2 + 5) // 6
     if len(data) != nd:
-        raise NetworkXError, 'Expected %d bits but got %d in graph6' % (n*(n-1)//2, len(data)*6)
+        raise NetworkXError(\
+            'Expected %d bits but got %d in graph6' % (n*(n-1)//2, len(data)*6))
 
     def bits():
         """Return sequence of individual bits from 6-bit-per-value
@@ -94,13 +96,13 @@ def parse_graph6(str):
         if b: G.add_edge(i,j)
     return G
 
-def parse_sparse6(str):
+def parse_sparse6(string):
     """Read undirected graph in sparse6 format."""
-    if str.startswith('>>sparse6<<'):
-        str = str[10:]
-    if not str.startswith(':'):
-        raise NetworkXError, 'Expected colon in sparse6'
-    n, data = graph6n(graph6data(str[1:]))
+    if string.startswith('>>sparse6<<'):
+        string = str[10:]
+    if not string.startswith(':'):
+        raise NetworkXError('Expected colon in sparse6')
+    n, data = graph6n(graph6data(string[1:]))
     k = 1
     while 1<<k < n:
         k += 1
@@ -113,7 +115,7 @@ def parse_sparse6(str):
     
         while 1:
             if dLen < 1:
-                d = chunks.next()
+                d = next(chunks)
                 dLen = 6
             dLen -= 1
             b = (d>>dLen) & 1 # grab top remaining bit
@@ -121,7 +123,7 @@ def parse_sparse6(str):
             x = d & ((1<<dLen)-1) # partially built up value of x
             xLen = dLen		# how many bits included so far in x
             while xLen < k:	# now grab full chunks until we have enough
-                d = chunks.next()
+                d = next(chunks)
                 dLen = 6
                 x = (x<<6) + d
                 xLen += 6

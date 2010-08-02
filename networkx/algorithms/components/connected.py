@@ -44,15 +44,14 @@ def connected_components(G):
     For undirected graphs only. 
     """
     if G.is_directed():
-        raise nx.NetworkXError,\
-              """Not allowed for directed graph G.
-              Use UG=G.to_undirected() to create an undirected graph."""
+        raise nx.NetworkXError("""Not allowed for directed graph G.
+              Use UG=G.to_undirected() to create an undirected graph.""")
     seen={}
     components=[]
     for v in G:      
         if v not in seen:
             c=nx.single_source_shortest_path_length(G,v)
-            components.append(c.keys())
+            components.append(list(c.keys()))
             seen.update(c)
     components.sort(key=len,reverse=True)            
     return components            
@@ -98,7 +97,7 @@ def is_connected(G):
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> print nx.is_connected(G)
+    >>> print(nx.is_connected(G))
     True
 
     See Also
@@ -119,7 +118,7 @@ Use UG=G.to_undirected() to create an undirected graph.""")
             """Connectivity is undefined for the null graph.""")
 
     return len(nx.single_source_shortest_path_length(G,
-                                              G.nodes_iter().next()))==len(G)
+                                              next(G.nodes_iter())))==len(G)
 
 
 def connected_component_subgraphs(G):
@@ -184,9 +183,8 @@ def node_connected_component(G,n):
     For undirected graphs only. 
     """
     if G.is_directed():
-        raise nx.NetworkXError,\
-              """Not allowed for directed graph G.
-              Use UG=G.to_undirected() to create an undirected graph."""
-    return nx.single_source_shortest_path_length(G,n).keys()
+        raise nx.NetworkXError("""Not allowed for directed graph G.
+              Use UG=G.to_undirected() to create an undirected graph.""")
+    return list(nx.single_source_shortest_path_length(G,n).keys())
 
 

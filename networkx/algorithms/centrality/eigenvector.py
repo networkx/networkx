@@ -87,7 +87,7 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
     # make up to max_iter iterations        
     for i in range(max_iter):
         xlast=x
-        x=dict.fromkeys(xlast.keys(),0)
+        x=dict.fromkeys(list(xlast.keys()),0)
         # do the multiplication y=Ax
         for n in x:
             for nbr in G[n]:

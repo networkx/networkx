@@ -22,7 +22,7 @@ class TestAttractingComponents(object):
 
         ac = nx.attracting_components(self.G2)
         ac = [tuple(sorted(x)) for x in ac]
-        print ac
+        print(ac)
         assert_true(ac == [(1,2)])
 
         ac = nx.attracting_components(self.G3)

@@ -40,7 +40,7 @@ Load
 ----
 >>> b=load_centrality(K5)
 >>> for v in K5:
-...     print "%0.2d %5.3f"%(v,b[v])
+...     print("%0.2d %5.3f"%(v,b[v]))
 00 0.000
 01 0.000
 02 0.000
@@ -49,7 +49,7 @@ Load
 
 >>> b=load_centrality(P3)
 >>> for v in P3:
-...     print "%0.2d %5.3f"%(v,b[v])
+...     print("%0.2d %5.3f"%(v,b[v]))
 00 0.000
 01 1.000
 02 0.000
@@ -57,7 +57,7 @@ Load
 
 >>> b=load_centrality(K)
 >>> for v in K:
-...     print "%0.2d %5.3f"%(v,b[v])
+...     print("%0.2d %5.3f"%(v,b[v]))
 00 0.023
 01 0.023
 02 0.000
@@ -72,7 +72,7 @@ Load
 
 >>> b=load_centrality(F)
 >>> for v in sorted(F):
-...     print "%-13s %5.3f"%(v,b[v])
+...     print("%-13s %5.3f"%(v,b[v]))
 Acciaiuoli    0.000
 Albizzi       0.211
 Barbadori     0.093
@@ -94,7 +94,7 @@ Unnormalized
 
 >>> b=load_centrality(K5,normalized=False)
 >>> for v in K5:
-...     print "%0.2d %5.3f"%(v,b[v])
+...     print("%0.2d %5.3f"%(v,b[v]))
 00 0.000
 01 0.000
 02 0.000
@@ -103,7 +103,7 @@ Unnormalized
 
 >>> b=load_centrality(P3,normalized=False)
 >>> for v in P3:
-...     print "%0.2d %5.3f"%(v,b[v])
+...     print("%0.2d %5.3f"%(v,b[v]))
 00 0.000
 01 2.000
 02 0.000
@@ -111,7 +111,7 @@ Unnormalized
 
 >>> b=load_centrality(K,normalized=False)
 >>> for v in K:
-...     print "%0.2d %5.3f"%(v,b[v])
+...     print("%0.2d %5.3f"%(v,b[v]))
 00 1.667
 01 1.667
 02 0.000
@@ -127,7 +127,7 @@ Unnormalized
 
 >>> b=load_centrality(F,normalized=False)
 >>> for v in sorted(F):
-...     print "%-13s %5.3f"%(v,b[v])
+...     print("%-13s %5.3f"%(v,b[v]))
 Acciaiuoli    0.000
 Albizzi       38.333
 Barbadori     17.000
@@ -172,7 +172,7 @@ in the figure in their paper - personal communication).
 
 >>> b = load_centrality(B,normalized=False)
 >>> for v in B:
-...     print "%0.2d %5.3f"%(v,b[v])
+...     print("%0.2d %5.3f"%(v,b[v]))
 00 1.750
 01 1.750
 02 6.500
@@ -185,7 +185,7 @@ Edge Load
 ---------
 >>> b = edge_load(C4)
 >>> for v in C4.edges():
-...     print "(%0.2d, %0.2d) %5.3f"%(v[0], v[1], b[v])
+...     print("(%0.2d, %0.2d) %5.3f"%(v[0], v[1], b[v]))
 (00, 01) 6.000
 (00, 03) 6.000
 (01, 02) 6.000
@@ -193,14 +193,14 @@ Edge Load
 
 >>> b = edge_load(P4)
 >>> for v in P4.edges():
-...     print "(%0.2d, %0.2d) %5.3f"%(v[0], v[1], b[v])
+...     print("(%0.2d, %0.2d) %5.3f"%(v[0], v[1], b[v]))
 (00, 01) 6.000
 (01, 02) 8.000
 (02, 03) 6.000
 
 >>> b = edge_load(K5)
 >>> for v in K5.edges():
-...     print "(%0.2d, %0.2d) %5.3f"%(v[0], v[1], b[v])
+...     print("(%0.2d, %0.2d) %5.3f"%(v[0], v[1], b[v]))
 (00, 01) 5.000
 (00, 02) 5.000
 (00, 03) 5.000
@@ -214,7 +214,7 @@ Edge Load
 
 >>> b = edge_load(T)
 >>> for v in T.edges():
-...     print "(%0.2d, %0.2d) %5.3f"%(v[0], v[1], b[v])
+...     print("(%0.2d, %0.2d) %5.3f"%(v[0], v[1], b[v]))
 (00, 01) 24.000
 (00, 02) 24.000
 (01, 03) 12.000

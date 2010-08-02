@@ -125,25 +125,25 @@ Check boundaries in the petersen graph
 >>> from random import sample
 >>> P=petersen_graph()
 >>> def cheeger(G,k):
-...    return  min([float(len(node_boundary(G,sample(G.nodes(),k))))/k for n in xrange(100)])
->>> print "%4.2f"%cheeger(P,1)
+...    return  min([float(len(node_boundary(G,sample(G.nodes(),k))))/k for n in range(100)])
+>>> print("%4.2f"%cheeger(P,1))
 3.00
->>> print "%4.2f"%cheeger(P,2)
+>>> print("%4.2f"%cheeger(P,2))
 2.00
->>> print "%4.2f"%cheeger(P,3)
+>>> print("%4.2f"%cheeger(P,3))
 1.67
->>> print "%4.2f"%cheeger(P,4)
+>>> print("%4.2f"%cheeger(P,4))
 1.00
->>> print "%4.2f"%cheeger(P,5)
+>>> print("%4.2f"%cheeger(P,5))
 0.80
->>> print "%4.2f"%cheeger(P,6)
+>>> print("%4.2f"%cheeger(P,6))
 0.50
->>> print "%4.2f"%cheeger(P,7)
+>>> print("%4.2f"%cheeger(P,7))
 0.43
->>> print "%4.2f"%cheeger(P,8)
+>>> print("%4.2f"%cheeger(P,8))
 0.25
->>> print "%4.2f"%cheeger(P,9)
+>>> print("%4.2f"%cheeger(P,9))
 0.11
->>> print "%4.2f"%cheeger(P,10)
+>>> print("%4.2f"%cheeger(P,10))
 0.00
 

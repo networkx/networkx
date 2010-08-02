@@ -23,7 +23,7 @@ Generators - Atlas
 >>> for i in range(GAGsize):
 ...    name=GAG[i].name
 ...    if int(name[1:]) != i: failures.append(i)
->>> print failures
+>>> print(failures)
 []
 
 # check for monotone increasing number of nodes
@@ -33,7 +33,7 @@ Generators - Atlas
 ...    G=GAG[i]
 ...    if len(G)-len(G_previous) > 1: failures.append(i)
 ...    G_previous=G.copy()
->>> print failures
+>>> print(failures)
 []
 
 # check for monotone increasing number of edges
@@ -45,7 +45,7 @@ Generators - Atlas
 ...    if len(G)==len(G_previous): 
 ...       if G.size()-G_previous.size() > 1: failures.append(i)
 ...    G_previous=G.copy()
->>> print failures
+>>> print(failures)
 []
 
 # check for monotone increasing degree sequence
@@ -60,6 +60,6 @@ Generators - Atlas
 ...       G_previous_deg_seq=G_previous.degree().sort() 
 ...       if not G_previous_deg_seq < G_deg_seq: failures.append(i)
 ...       G_previous=G.copy()
->>> print failures
+>>> print(failures)
 []
 

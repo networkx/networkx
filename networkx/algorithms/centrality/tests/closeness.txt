@@ -42,7 +42,7 @@ Closeness Centrality
 
 >>> c=closeness_centrality(K5)
 >>> for v in K5:
-...     print "%0.2d %5.3f"%(v,c[v])
+...     print("%0.2d %5.3f"%(v,c[v]))
 00 1.000
 01 1.000
 02 1.000
@@ -51,7 +51,7 @@ Closeness Centrality
 
 >>> c=closeness_centrality(P3)
 >>> for v in P3:
-...     print "%0.2d %5.3f"%(v,c[v])
+...     print("%0.2d %5.3f"%(v,c[v]))
 00 0.667
 01 1.000
 02 0.667
@@ -59,7 +59,7 @@ Closeness Centrality
 
 >>> c=closeness_centrality(K)
 >>> for v in K:
-...     print "%0.2d %5.3f"%(v,c[v])
+...     print("%0.2d %5.3f"%(v,c[v]))
 00 0.529
 01 0.529
 02 0.500
@@ -74,7 +74,7 @@ Closeness Centrality
 
 >>> c=closeness_centrality(F)
 >>> for v in sorted(F):
-...     print "%-13s %5.3f"%(v,c[v])
+...     print("%-13s %5.3f"%(v,c[v]))
 Acciaiuoli    0.368
 Albizzi       0.483
 Barbadori     0.438
@@ -99,7 +99,7 @@ Weighted Closeness
 >>> XG.add_weighted_edges_from([('s','u',10) ,('s','x',5) ,('u','v',1) ,('u','x',2) ,('v','y',1) ,('x','u',3) ,('x','v',5) ,('x','y',2) ,('y','s',7) ,('y','v',6)])
 >>> c=closeness_centrality(XG,weighted_edges=True)
 >>> for v in XG.nodes():
-...     print "%s %5.3f"%(v,c[v])
+...     print("%s %5.3f"%(v,c[v]))
 y 0.200
 x 0.286
 s 0.138

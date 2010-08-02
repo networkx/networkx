@@ -275,9 +275,8 @@ def is_strongly_connected(G):
     For directed graphs only. 
     """
     if not G.is_directed():
-        raise nx.NetworkXError,\
-              """Not allowed for undirected graph G.
-              See is_connected() for connectivity test."""
+        raise nx.NetworkXError("""Not allowed for undirected graph G.
+              See is_connected() for connectivity test.""")
 
     if len(G)==0:
         raise nx.NetworkXPointlessConcept(

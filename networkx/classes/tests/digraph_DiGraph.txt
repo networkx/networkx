@@ -49,20 +49,19 @@ Name
 ----
 
 >>> G = DiGraph(name="test")
->>> print G    # test of __str__
-test
->>> print G.name
-test
+>>> str(G)    # test of __str__
+'test'
+>>> G.name
+'test'
 >>> H= DiGraph()
->>> print H.name
-<BLANKLINE>
+>>> H.name
+''
 
 >>> G2=DiGraph(data={1:[2],2:[1]}, name="test")
->>> print G2.edges()
+>>> G2.edges()
 [(1, 2), (2, 1)]
->>> print G2.name
-test
-
+>>> G2.name
+'test'
 
 Nodes
 -----
@@ -97,10 +96,12 @@ Test add_node and remove_node acting for various nbunch
 >>> G.has_node('m')
 True
 >>> G.add_node('m')   # no complaints
->>> G.remove_node('j') # NetworkXError
-Traceback (most recent call last):
-...
-NetworkXError: The node j is not in the digraph.
+>>> try:
+...    G.remove_node('j')
+... except NetworkXError as e:
+...    print(str(e))
+The node j is not in the digraph.
+
 >>> G.remove_node('m')
 >>> G.nodes()
 []
@@ -133,7 +134,7 @@ nbunch is an iterator
 
 >>> n_iter=P3.nodes_iter()
 >>> G.add_nodes_from(n_iter)
->>> sorted(G.nodes())
+>>> sorted(G.nodes(),key=str)
 [1, 2, 3, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 >>> n_iter=P3.nodes_iter() # rebuild same iterator
 >>> G.remove_nodes_from(n_iter) # remove nbunch of nodes (nbunch=iterator)
@@ -149,11 +150,11 @@ nbunch is a graph
 
 Edges
 -----
-
->>> G.add_edge('A')
-Traceback (most recent call last):
-...
-TypeError: add_edge() takes at least 3 arguments (2 given)
+>>> try:
+...    G.add_edge('A')
+...    raise Assertionerror("No Exception TypeError on add_edge('A')")
+... except:
+...    pass
 
 >>> G.add_edge('A','B')     # testing add_edge()
 >>> G.add_edge('A','B') # should fail silently
@@ -227,10 +228,11 @@ True
 False
 
 
->>> G.remove_edge('M')       # test remove_edge()
-Traceback (most recent call last):
-...
-TypeError: remove_edge() takes exactly 3 arguments (2 given)
+>>> try:
+...    G.remove_edge('M')
+...    raise Assertionerror("No Exception TypeError on remove_edge('M')")
+... except:
+...    pass
 
 
 >>> G.add_edge('N','M')  
@@ -259,10 +261,11 @@ Test G.edges(nbunch) with various forms of nbunch
 
 node not in nbunch should be quietly ignored
 
->>> sorted(G.edges(6))    # non-iterable non-node
-Traceback (most recent call last):
-...
-NetworkXError: nbunch is not a node or a sequence of nodes.
+>>> try:
+...    sorted(G.edges(6))    # non-iterable non-node
+... except NetworkXError as e:
+...    print(str(e))
+nbunch is not a node or a sequence of nodes.
 
 
 >>> sorted(G.edges('Z'))  # iterable non-node
@@ -360,7 +363,7 @@ degree of single node must return single int
 
 degree of single node in iterable container must return list
 
->>> G.degree(['A']).values()
+>>> list(G.degree(['A']).values())
 [2]
 
 >>> G.degree(['A'])
@@ -536,30 +539,44 @@ sorted(G.in_neighbors('C'))
 []
 >>> sorted(G.successors_iter('D'))  
 []
->>> sorted(G.neighbors('j'))  
-Traceback (most recent call last):
-...
-NetworkXError: The node j is not in the digraph.
->>> sorted(G.predecessors('j'))  
-Traceback (most recent call last):
-...
-NetworkXError: The node j is not in the digraph.
->>> sorted(G.successors('j'))  
-Traceback (most recent call last):
-...
-NetworkXError: The node j is not in the digraph.
->>> sorted(G.neighbors_iter('j'))  
-Traceback (most recent call last):
-...
-NetworkXError: The node j is not in the digraph.
->>> sorted(G.predecessors_iter('j'))  
-Traceback (most recent call last):
-...
-NetworkXError: The node j is not in the digraph.
->>> sorted(G.successors_iter('j'))  
-Traceback (most recent call last):
-...
-NetworkXError: The node j is not in the digraph.
+>>> try:
+...    sorted(G.neighbors('j'))
+... except NetworkXError as e:
+...    print(str(e))
+The node j is not in the digraph.
+
+>>> try:
+...    sorted(G.predecessors('j'))
+... except NetworkXError as e:
+...    print(str(e))
+The node j is not in the digraph.
+
+>>> try:
+...    sorted(G.successors('j'))
+... except NetworkXError as e:
+...    print(str(e))
+The node j is not in the digraph.
+
+>>> try:
+...    sorted(G.neighbors_iter('j'))
+... except NetworkXError as e:
+...    print(str(e))
+The node j is not in the digraph.
+
+
+>>> try:
+...    sorted(G.predecessors_iter('j'))
+... except NetworkXError as e:
+...    print(str(e))
+The node j is not in the digraph.
+
+
+>>> try:
+...    sorted(G.successors_iter('j'))
+... except NetworkXError as e:
+...    print(str(e))
+The node j is not in the digraph.
+
 
 
 Functional interface
@@ -605,10 +622,11 @@ Iterators
 [('A', 2), ('B', 3), ('C', 3), ('D', 2), ('G', 0), ('J', 0), ('K', 0)]
 >>> sorted(G.neighbors_iter('A'))
 ['B', 'C']
->>> sorted(G.neighbors_iter('X'))
-Traceback (most recent call last):
-...
-NetworkXError: The node X is not in the digraph.
+>>> try:
+...    sorted(G.neighbors_iter('X'))
+... except NetworkXError as e:
+...    print(str(e))
+The node X is not in the digraph.
 
 >>> G.clear()
 >>> number_of_nodes(G)
@@ -703,14 +721,19 @@ True
 [1, 2, 3, 4]
 
 Test error handling of tuple as a node
->>> H.remove_node((1,2))
-Traceback (most recent call last):
-...
-NetworkXError: The node (1, 2) is not in the digraph.
+>>> try:
+...    H.remove_node((1,2))
+... except NetworkXError as e:
+...    print(str(e))
+The node (1, 2) is not in the digraph.
 
 >>> H.remove_nodes_from([(1,2)])
 
->>> H.neighbors((1,2))
-Traceback (most recent call last):
-...
-NetworkXError: The node (1, 2) is not in the digraph.
+
+>>> try:
+...    H.neighbors((1,2))
+... except NetworkXError as e:
+...    print(str(e))
+The node (1, 2) is not in the digraph.
+
+

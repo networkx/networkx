@@ -44,7 +44,7 @@ def single_source_shortest_path_length(G,source,cutoff=None):
     >>> length=nx.single_source_shortest_path_length(G,0)
     >>> length[4]
     4
-    >>> print length
+    >>> print(length)
     {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
 
     See Also
@@ -89,7 +89,7 @@ def all_pairs_shortest_path_length(G,cutoff=None):
     --------
     >>> G=nx.path_graph(5)
     >>> length=nx.all_pairs_shortest_path_length(G)
-    >>> print length[1][4]
+    >>> print(length[1][4])
     3
     >>> length[1]
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
@@ -277,7 +277,7 @@ def all_pairs_shortest_path(G,cutoff=None):
     --------
     >>> G=nx.path_graph(5)
     >>> path=nx.all_pairs_shortest_path(G)
-    >>> print path[0][4]
+    >>> print(path[0][4])
     [0, 1, 2, 3, 4]
 
     See Also
@@ -450,7 +450,7 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> print G.nodes()
+    >>> print(G.nodes())
     [0, 1, 2, 3]
     >>> nx.predecessor(G,0)
     {0: [], 1: [0], 2: [1], 3: [2]}

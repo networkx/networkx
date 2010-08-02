@@ -23,15 +23,14 @@ def weakly_connected_components(G):
     """Return weakly connected components of G.
     """
     if not G.is_directed():
-        raise nx.NetworkXError,\
-              """Not allowed for undirected graph G. 
-              Use connected_components() """
+        raise nx.NetworkXError("""Not allowed for undirected graph G. 
+              Use connected_components() """)
     seen={}
     components=[]
     for v in G:
         if v not in seen:
             c=_single_source_shortest_unipath_length(G,v)
-            components.append(c.keys())
+            components.append(list(c.keys()))
             seen.update(c)
     components.sort(key=len,reverse=True)
     return components
@@ -74,9 +73,8 @@ def is_weakly_connected(G):
     For directed graphs only. 
     """
     if not G.is_directed():
-        raise nx.NetworkXError,\
-              """Not allowed for undirected graph G.
-              See is_connected() for connectivity test."""
+        raise nx.NetworkXError("""Not allowed for undirected graph G.
+              See is_connected() for connectivity test.""")
 
     if len(G)==0:
         raise nx.NetworkXPointlessConcept(

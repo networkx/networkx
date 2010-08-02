@@ -127,7 +127,7 @@ def parse_pajek(lines,edge_attr=True):
     directed=True # assume this is a directed network for now
     while lines:
         try:
-            l=lines.next()
+            l=next(lines)
         except: #EOF
             break
         if l.lower().startswith("*network"):
@@ -137,7 +137,7 @@ def parse_pajek(lines,edge_attr=True):
             nodelabels={}
             l,nnodes=l.split()
             for i in range(int(nnodes)):
-                splitline=shlex.split(lines.next())
+                splitline=shlex.split(next(lines))
                 id,label=splitline[0:2]
                 G.add_node(label)
                 nodelabels[id]=label

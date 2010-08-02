@@ -83,8 +83,8 @@ http://scipy.org/""")
         # ei is index of edge
         Fe=F[ei,:] # ei row of F
         # rank of F[ei,v] in row Fe sorted in non-increasing order
-        pos=dict(zip(Fe.argsort()[::-1],xrange(1,n+1)))
-        for i in xrange(n):
+        pos=dict(zip(Fe.argsort()[::-1],range(1,n+1)))
+        for i in range(n):
             betweenness[s]+=(i+1-pos[i])*Fe[i]
             betweenness[t]+=(n-i-pos[i])*Fe[i]
     if normalized:
@@ -144,7 +144,6 @@ def edge_current_flow_betweenness_centrality(G,normalized=True):
     .. [2] A measure of betweenness centrality based on random walks, 
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    from itertools import izip
     try:
         import numpy as np
     except ImportError:
@@ -168,8 +167,8 @@ http://scipy.org/""")
         # ei is index of edge
         Fe=F[ei,:] # ei row of F
         # rank of F[ei,v] in row Fe sorted in non-increasing order
-        pos=dict(zip(Fe.argsort()[::-1],xrange(1,n+1)))
-        for i in xrange(n):
+        pos=dict(zip(Fe.argsort()[::-1],range(1,n+1)))
+        for i in range(n):
             betweenness[e]+=(i+1-pos[i])*Fe[i]
             betweenness[e]+=(n-i-pos[i])*Fe[i]
         betweenness[e]/=nb
@@ -207,7 +206,7 @@ http://scipy.org/""")
     m=G.number_of_edges()
     B=np.zeros((n,m))
     # use G.nodes() and G.edges() ordering of edges for B  
-    mapping=dict(zip(G,xrange(n)))  # map nodes to integers
+    mapping=dict(zip(G,range(n)))  # map nodes to integers
     for (ei,(v,w,d)) in enumerate(G.edges_iter(data=True)): 
         c=d.get('weight',1.0)
         vi=mapping[v]

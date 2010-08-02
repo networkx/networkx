@@ -203,8 +203,8 @@ def directed_configuration_model(in_degree_sequence,
     Examples
     --------
     >>> D=nx.DiGraph([(0,1),(1,2),(2,3)]) # directed path graph
-    >>> din=D.in_degree().values()
-    >>> dout=D.out_degree().values()
+    >>> din=list(D.in_degree().values())
+    >>> dout=list(D.out_degree().values())
     >>> din.append(1) 
     >>> dout[0]=2
     >>> D=nx.directed_configuration_model(din,dout)
@@ -307,7 +307,7 @@ def expected_degree_graph(w, create_using=None, seed=None):
 
     d = sum(w)
     rho = 1.0 / float(d) # Vol(G)
-    for i in xrange(n):
+    for i in range(n):
         if (w[i])**2 > d:
             raise nx.NetworkXError(\
                   "NetworkXError w[i]**2 must be <= sum(w)\
@@ -316,8 +316,8 @@ def expected_degree_graph(w, create_using=None, seed=None):
     if seed is not None:
         random.seed(seed)
 	
-    for u in xrange(n):
-        for v in xrange(u,n):
+    for u in range(n):
+        for v in range(u,n):
             if random.random() < w[u]*w[v]*rho:
                 G.add_edge(u,v)
     return G 
@@ -469,6 +469,9 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
 
     if not seed is None:
         random.seed(seed)
+
+    # In Python 3, zip() returns an iterator. Make this into a list.
+    joint_degree_sequence = list(joint_degree_sequence)
 
     N = len(joint_degree_sequence)
     G = nx.empty_graph(N,create_using)
@@ -656,7 +659,7 @@ def double_edge_swap(G, nswap=1):
     n=0
     swapcount=0
     deg=G.degree()
-    dk=deg.keys() # key labels 
+    dk=list(deg.keys()) # key labels 
     cdf=nx.utils.cumulative_distribution(deg.values())  # cdf of degree
     if len(cdf)<4:
         raise nx.NetworkXError("Graph has less than four nodes.")
@@ -715,7 +718,7 @@ def connected_double_edge_swap(G, nswap=1):
     n=0
     swapcount=0
     deg=G.degree()
-    dk=deg.keys() # Label key for nodes
+    dk=list(deg.keys()) # Label key for nodes
     ideg=G.degree().values()
     cdf=nx.utils.cumulative_distribution(G.degree().values()) 
     if len(cdf)<4:
@@ -856,15 +859,15 @@ def li_smax_graph(degree_seq, create_using=None):
         i = 0
         for di in dseven:
             Gmax.add_node(i)
-            for k in range(di/2):
+            for k in range(di // 2):
                 Gmax.add_edge(i,i)
             i=i+1
         for j in range(0,len(dsodd),2): #do this iteratively to connect
             Gmax.add_node(i)            #node stubs as we go
             Gmax.add_node(i+1)
-            for k in range((dsodd[j]-1)/2):
+            for k in range((dsodd[j]-1) // 2):
                 Gmax.add_edge(i,i)
-            for k in range((dsodd[j+1]-1)/2):
+            for k in range((dsodd[j+1]-1) // 2):
                 Gmax.add_edge(i+1,i+1)
             Gmax.add_edge(i,i+1)
             i=i+2
@@ -989,7 +992,7 @@ def connected_smax_graph(degree_seq, create_using=None):
     # build dictionary of node id and degree, sorted by degree, largest first
     degree_seq.sort() 
     degree_seq.reverse()
-    ddict=dict(zip(xrange(len(degree_seq)),degree_seq))
+    ddict=dict(zip(range(len(degree_seq)),degree_seq))
 
     G=empty_graph(1,create_using) # start with single node
 

@@ -28,11 +28,11 @@ class TestRandomClusteredGraph:
 
 def test_li_smax():
     G = networkx.barabasi_albert_graph(25,1) #Any old graph
-    Gdegseq = G.degree().values() #degree sequence
+    Gdegseq = list(G.degree().values()) #degree sequence
     Gdegseq.sort(reverse=True)
     assert_true(not (sum(Gdegseq)%2)) #Tests the 'unconstrained version'
     Gmax = networkx.li_smax_graph(Gdegseq) 
-    Gmaxdegseq = Gmax.degree().values()
+    Gmaxdegseq = list(Gmax.degree().values())
     Gmaxdegseq.sort(reverse=True)
     assert_equal(G.order(),Gmax.order()) #Sanity Check on the nodes
     assert_equal(Gdegseq,Gmaxdegseq) #make sure both graphs have the same degree sequence

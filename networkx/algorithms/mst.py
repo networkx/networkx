@@ -35,10 +35,10 @@ def minimum_spanning_tree(G):
     >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
     >>> mst=nx.minimum_spanning_tree(G) # a generator of MST edges
     >>> edgelist=list(mst) # make a list of the edges
-    >>> print sorted(edgelist)
+    >>> print(sorted(edgelist))
     [(0, 1, {'weight': 1}), (1, 2, {'weight': 1}), (2, 3, {'weight': 1})]
     >>> T=nx.Graph(edgelist)  # build a graph of the MST.
-    >>> print sorted(T.edges(data=True))
+    >>> print(sorted(T.edges(data=True)))
     [(0, 1, {'weight': 1}), (1, 2, {'weight': 1}), (2, 3, {'weight': 1})]
 
     Notes

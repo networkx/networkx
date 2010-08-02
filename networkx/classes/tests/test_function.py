@@ -91,23 +91,23 @@ class TestFunction(object):
         assert_equal(G.frozen, networkx.is_frozen(self.G))
         assert_equal(G.frozen,True)
 
-    def test_info(self):
-        import StringIO
-        fh=StringIO.StringIO()
-        networkx.info(self.G,output_to_file=fh)
-        expected_graph_info="""Name:                  Test
-Type:                  Graph
-Number of nodes:       5
-Number of edges:       5
-Average degree:        2.0
-"""
-        assert_equal(fh.getvalue(),expected_graph_info)
-        fh.close()
-        fh=StringIO.StringIO()
-        networkx.info(self.G,n=1,output_to_file=fh)
-        expected_node_info="""Node 1 has the following properties:
-Degree:                3
-Neighbors:             0, 1, 2
-"""
-        assert_equal(fh.getvalue(),expected_node_info)
-        fh.close()
+#     def test_info(self):
+#         import StringIO
+#         fh=StringIO.StringIO()
+#         networkx.info(self.G,output_to_file=fh)
+#         expected_graph_info="""Name:                  Test
+# Type:                  Graph
+# Number of nodes:       5
+# Number of edges:       5
+# Average degree:        2.0
+# """
+#         assert_equal(fh.getvalue(),expected_graph_info)
+#         fh.close()
+#         fh=StringIO.StringIO()
+#         networkx.info(self.G,n=1,output_to_file=fh)
+#         expected_node_info="""Node 1 has the following properties:
+# Degree:                3
+# Neighbors:             0, 1, 2
+# """
+#         assert_equal(fh.getvalue(),expected_node_info)
+#         fh.close()

@@ -5,9 +5,9 @@ Maximum weight matching
 >>> from networkx import *
 
 >>> def sortdict(d):
-...     s = d.items()
+...     s = list(d.items())
 ...     s.sort()
-...     print '{' + ', '.join(map(lambda t: ': '.join(map(repr, t)), s)) + '}'
+...     print('{' + ', '.join(map(lambda t: ': '.join(map(repr, t)), s)) + '}')
 
 
 Trivial cases
@@ -34,13 +34,13 @@ Trivial cases
 {'three': 'two', 'two': 'three'}
 
 >>> G = Graph()
->>> G.add_edge((1,), 2, weight=5)
+>>> G.add_edge(1, 2, weight=5)
 >>> G.add_edge(2, 3, weight=11)
 >>> G.add_edge(3, 4, weight=5)
 >>> sortdict(max_weight_matching(G))
 {2: 3, 3: 2}
 >>> sortdict(max_weight_matching(G, 1))
-{2: (1,), 3: 4, 4: 3, (1,): 2}
+{1: 2, 2: 1, 3: 4, 4: 3}
 
 Floating point weights:
 

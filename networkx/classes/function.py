@@ -19,7 +19,7 @@ import networkx as nx
 
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
-           'nodes_iter', 'edges_iter', 'is_directed','info',
+           'nodes_iter', 'edges_iter', 'is_directed',#'info',
            'freeze','is_frozen','subgraph','create_empty_copy']
 
 def nodes(G):
@@ -123,7 +123,7 @@ def degree_histogram(G):
     """
     degseq=G.degree().values()
     dmax=max(degseq)+1
-    freq= [ 0 for d in xrange(dmax) ]
+    freq= [ 0 for d in range(dmax) ]
     for d in degseq:
         freq[d] += 1
     return freq
@@ -132,50 +132,38 @@ def is_directed(G):
     """ Return True if graph is directed."""
     return G.is_directed()
 
-def info(G, n=None, output_to_file=None):
-    """Print short summary of information for graph G or node n.
-
-    Parameters
-    ----------
-    G : Networkx graph
-       A graph
-    n : node (any hashable)
-       A node from the graph G
-    output_to_file:  filehandle, optional (default= standard output)
-    """
-    import textwrap
-    width_left = 22
-    fh=output_to_file # abbreviation
-
-    if n is None:
-        print >> fh, ("Name:").ljust(width_left), G.name
-        type_name = [type(G).__name__]
-        print >> fh, ("Type:").ljust(width_left), ",".join(type_name)
-        print >> fh, ("Number of nodes:").ljust(width_left), G.number_of_nodes()
-        print >> fh, ("Number of edges:").ljust(width_left), G.number_of_edges()
-        if len(G) > 0:
-            if G.is_directed():
-                print >> fh, ("Average in degree:").ljust(width_left), \
-                    round( sum(G.in_degree().values())/float(len(G)), 4)
-                print >> fh, ("Average out degree:").ljust(width_left), \
-                    round( sum(G.out_degree().values())/float(len(G)), 4)
-            else:
-                print >> fh, ("Average degree:").ljust(width_left), \
-                    round( sum(G.degree().values())/float(len(G)), 4)
-
-    else:
-        try:
-            list_neighbors = G.neighbors(n)
-        except (KeyError, TypeError):
-            raise NetworkXError, "node %s not in graph"%(n,)
-        print >> fh, "Node", n, "has the following properties:"
-        print >> fh, ("Degree:").ljust(width_left), len(list_neighbors)
-        str_neighbors = str(list_neighbors)
-        str_neighbors = str_neighbors[1:len(str_neighbors)-1]
-        wrapped_neighbors = textwrap.wrap(str_neighbors, 50)
-        print >> fh, ("Neighbors:").ljust(width_left), wrapped_neighbors[0]
-        for i in wrapped_neighbors[1:]:
-            print >> fh, "".ljust(width_left), i
+# def info(G, n=None):
+#     """Print short summary of information for graph G or node n."""
+#     import textwrap
+#     width_left = 22
+#     if n is None:
+#         print ("Name:").ljust(width_left), G.name
+#         type_name = [type(G).__name__]
+#         print ("Type:").ljust(width_left), ",".join(type_name)
+#         print ("Number of nodes:").ljust(width_left), G.number_of_nodes()
+#         print ("Number of edges:").ljust(width_left), G.number_of_edges()
+#         if len(G) > 0:
+#             if G.is_directed():
+#                 print ("Average in degree:").ljust(width_left), \
+#                     round( sum(G.in_degree())/float(len(G)), 4)
+#                 print ("Average out degree:").ljust(width_left), \
+#                     round( sum(G.out_degree())/float(len(G)), 4)
+#             else:
+#                 print ("Average degree:").ljust(width_left), \
+#                     round( sum(G.degree())/float(len(G)), 4)
+#     else:
+#         try:
+#             list_neighbors = G.neighbors(n)
+#         except (KeyError, TypeError):
+#             raise NetworkXError, "node %s not in graph"%(n,)
+#         print "\nNode", n, "has the following properties:"
+#         print ("Degree:").ljust(width_left), len(list_neighbors)
+#         str_neighbors = str(list_neighbors)
+#         str_neighbors = str_neighbors[1:len(str_neighbors)-1]
+#         wrapped_neighbors = textwrap.wrap(str_neighbors, 50)
+#         print ("Neighbors:").ljust(width_left), wrapped_neighbors[0]
+#         for i in wrapped_neighbors[1:]:
+#             print "".ljust(width_left), i
 
 def freeze(G):
     """Modify graph to prevent addition of nodes or edges.
@@ -187,12 +175,14 @@ def freeze(G):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G=nx.Graph()
+    >>> G.add_path([0,1,2,3])
     >>> G=nx.freeze(G)
-    >>> G.add_edge(4,5)
-    Traceback (most recent call last):
-    ...
-    NetworkXError: Frozen graph can't be modified
+    >>> try:
+    ...    G.add_edge(4,5)
+    ... except nx.NetworkXError as e:
+    ...    print(str(e))
+    Frozen graph can't be modified
 
     Notes
     -----

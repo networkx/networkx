@@ -20,44 +20,7 @@ from networkx.generators.classic import empty_graph, path_graph, complete_graph
 
 # until we require python2.5 fall back to pure Python defaultdict 
 # from http://code.activestate.com/recipes/523034/
-try:
-    from collections import defaultdict
-except:
-    class defaultdict(dict):
-        def __init__(self, default_factory=None, *a, **kw):
-            if (default_factory is not None and
-                not hasattr(default_factory, '__call__')):
-                raise TypeError('first argument must be callable')
-            dict.__init__(self, *a, **kw)
-            self.default_factory = default_factory
-        def __getitem__(self, key):
-            try:
-                return dict.__getitem__(self, key)
-            except KeyError:
-                return self.__missing__(key)
-        def __missing__(self, key):
-            if self.default_factory is None:
-                raise KeyError(key)
-            self[key] = value = self.default_factory()
-            return value
-        def __reduce__(self):
-            if self.default_factory is None:
-                args = tuple()
-            else:
-                args = self.default_factory,
-            return type(self), args, None, None, self.items()
-        def copy(self):
-            return self.__copy__()
-        def __copy__(self):
-            return type(self)(self.default_factory, self)
-        def __deepcopy__(self, memo):
-            import copy
-            return type(self)(self.default_factory,
-                              copy.deepcopy(self.items()))
-        def __repr__(self):
-            return 'defaultdict(%s, %s)' % (self.default_factory,
-                                            dict.__repr__(self))
-
+from collections import defaultdict
 
 __all__ = ['fast_gnp_random_graph',
            'gnp_random_graph',
@@ -181,8 +144,8 @@ def gnp_random_graph(n, p, create_using=None, seed=None):
     if not seed is None:
         random.seed(seed)
 
-    for u in xrange(n):
-        for v in xrange(u+1,n):
+    for u in range(n):
+        for v in range(u+1,n):
             if random.random() < p:
                 G.add_edge(u,v)
     return G
@@ -233,8 +196,8 @@ def directed_gnp_random_graph(n, p, create_using=None, seed=None):
     if not seed is None:
         random.seed(seed)
 
-    for u in xrange(n):
-        for v in xrange(n):
+    for u in range(n):
+        for v in range(n):
             if u==v: continue
             if random.random() < p:
                 G.add_edge(u,v)
@@ -394,7 +357,7 @@ def newman_watts_strogatz_graph(n, k, p, create_using=None, seed=None):
     """
     if seed is not None:
         random.seed(seed)
-    if k>=n/2: 
+    if k>=n // 2: 
         raise nx.NetworkXError("k>=n/2, choose smaller k or larger n")
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
@@ -403,7 +366,7 @@ def newman_watts_strogatz_graph(n, k, p, create_using=None, seed=None):
     nlist = G.nodes()
     fromv = nlist
     # connect the k/2 neighbors
-    for n in range(1, k/2+1):
+    for n in range(1, k // 2+1):
         tov = fromv[n:] + fromv[0:n] # the first n are now last
         for i in range(len(fromv)):
             G.add_edge(fromv[i], tov[i])
@@ -476,15 +439,15 @@ def watts_strogatz_graph(n, k, p, create_using=None, seed=None):
         random.seed(seed)
 
     G.name="watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
-    nodes = range(n) # nodes are labeled 0 to n-1
+    nodes = list(range(n)) # nodes are labeled 0 to n-1
     # connect each node to k/2 neighbors
-    for j in range(1, k/2+1):
+    for j in range(1, k // 2+1):
         targets = nodes[j:] + nodes[0:j] # first j nodes are now last in list
         G.add_edges_from(zip(nodes,targets))
     # rewire edges from each node
     # loop over all nodes in order (label) and neighbors in order (distance)
     # no self loops or multiple edges allowed
-    for j in range(1, k/2+1): # outer loop is neighbors
+    for j in range(1, k // 2+1): # outer loop is neighbors
         targets = nodes[j:] + nodes[0:j] # first j nodes are now last in list
         # inner loop in node order
         for u,v in zip(nodes,targets): 
@@ -614,13 +577,13 @@ def random_regular_graph(d, n, create_using=None, seed=None):
         # Attempt to create an edge set
 
         edges = set()
-        stubs = range(n) * d
+        stubs = list(range(n)) * d
 
         while stubs:
-            potential_edges = defaultdict(itertools.repeat(0).next)
+            potential_edges = defaultdict(lambda: 0)
             random.shuffle(stubs)
             stubiter = iter(stubs)
-            for s1, s2 in itertools.izip(stubiter, stubiter):
+            for s1, s2 in zip(stubiter, stubiter):
                 if s1 > s2:
                     s1, s2 = s2, s1
                 if s1 != s2 and ((s1, s2) not in edges):
@@ -632,8 +595,8 @@ def random_regular_graph(d, n, create_using=None, seed=None):
             if not _suitable(edges, potential_edges):
                 return None # failed to find suitable edge set
 
-            stubs = [node for node, potential in potential_edges.iteritems()
-                     for _ in xrange(potential)]
+            stubs = [node for node, potential in potential_edges.items()
+                     for _ in range(potential)]
         return edges 
 
     # Even though a suitable edge set exists, 
@@ -695,7 +658,7 @@ def barabasi_albert_graph(n, m, create_using=None, seed=None):
     G=empty_graph(m,create_using)  
     G.name="barabasi_albert_graph(%s,%s)"%(n,m)
     # Target nodes for new edges
-    targets=range(m)  
+    targets=list(range(m))
     # List of existing nodes, with nodes repeated once for each adjacent edge 
     repeated_nodes=[]     
     # Start adding the other n-m nodes. The first node is m.
@@ -837,7 +800,7 @@ def random_lobster(n, p1, p2, create_using=None, seed=None):
     L.name="random_lobster(%d,%s,%s)"%(n,p1,p2)
     # build caterpillar: add edges to path graph with probability p1
     current_node=llen-1
-    for n in xrange(llen):
+    for n in range(llen):
         if random.random()<p1: # add fuzzy caterpillar parts
             current_node+=1
             L.add_edge(n,current_node)

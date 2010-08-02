@@ -20,19 +20,21 @@ class TestAStar:
 
     def test_random_graph(self):        
 
-        def dist((x1, y1), (x2, y2)):
+        def dist(a, b):
+            (x1, y1) = a
+            (x2, y2) = b
             return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
         G = nx.Graph()
 
-        points = [(random(), random()) for _ in xrange(100)]
+        points = [(random(), random()) for _ in range(100)]
 
         # Build a path from points[0] to points[-1] to be sure it exists
         for p1, p2 in zip(points[:-1], points[1:]):
             G.add_edge(p1, p2, weight=dist(p1, p2))
 
         # Add other random edges
-        for _ in xrange(100):
+        for _ in range(100):
             p1, p2 = choice(points), choice(points)
             G.add_edge(p1, p2, weight=dist(p1, p2))
 

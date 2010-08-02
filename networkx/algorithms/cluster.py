@@ -35,11 +35,11 @@ def triangles(G,nbunch=None):
     Examples
     --------
     >>> G=nx.complete_graph(5)
-    >>> print nx.triangles(G,0)
+    >>> print(nx.triangles(G,0))
     6
-    >>> print nx.triangles(G)
+    >>> print(nx.triangles(G))
     {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}
-    >>> print nx.triangles(G,(0,1)).values()
+    >>> print(list(nx.triangles(G,(0,1)).values()))
     [6, 6]
 
     Notes
@@ -53,8 +53,8 @@ def triangles(G,nbunch=None):
     if G.is_directed():
         raise NetworkXError("triangles() is not defined for directed graphs.")
     if nbunch in G: 
-        return _triangles_and_degree_iter(G,nbunch).next()[2]/2 # return single value
-    return dict( (v,t/2) for v,d,t in _triangles_and_degree_iter(G,nbunch))
+        return next(_triangles_and_degree_iter(G,nbunch))[2] // 2 # return single value
+    return dict( (v,t // 2) for v,d,t in _triangles_and_degree_iter(G,nbunch))
 
 def _triangles_and_degree_iter(G,nbunch=None):
     """ Return an iterator of (node, degree, triangles).  
@@ -67,7 +67,7 @@ def _triangles_and_degree_iter(G,nbunch=None):
         raise NetworkXError("Not defined for multigraphs.")
 
     if nbunch is None:
-        nodes_nbrs = G.adj.iteritems()
+        nodes_nbrs = iter(G.adj.items())
     else:
         nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nbunch) )
 
@@ -108,7 +108,7 @@ def average_clustering(G):
     Examples
     --------
     >>> G=nx.complete_graph(5)
-    >>> print nx.average_clustering(G)
+    >>> print(nx.average_clustering(G))
     1.0
 
     Notes
@@ -151,9 +151,9 @@ def clustering(G,nbunch=None,weights=False):
     Examples
     --------
     >>> G=nx.complete_graph(5)
-    >>> print nx.clustering(G,0)
+    >>> print(nx.clustering(G,0))
     1.0
-    >>> print nx.clustering(G)
+    >>> print(nx.clustering(G))
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
 
 
@@ -177,8 +177,8 @@ def clustering(G,nbunch=None,weights=False):
                 clusterc[v]=0.0
             else:
                 clusterc[v]=t/float(d*(d-1))
-        scale=1./sum(weights.itervalues())
-        for v,w in weights.iteritems():
+        scale=1./sum(weights.values())
+        for v,w in weights.items():
             weights[v]=w*scale
         return clusterc,weights
 
@@ -190,7 +190,7 @@ def clustering(G,nbunch=None,weights=False):
             clusterc[v]=t/float(d*(d-1))
 
     if nbunch in G: 
-        return clusterc.values()[0] # return single value
+        return list(clusterc.values())[0] # return single value
     return clusterc
 
 def transitivity(G):
@@ -216,7 +216,7 @@ def transitivity(G):
     Examples
     --------
     >>> G=nx.complete_graph(5)
-    >>> print nx.transitivity(G)
+    >>> print(nx.transitivity(G))
     1.0
 
 """

@@ -64,9 +64,8 @@ def current_flow_closeness_centrality(G,normalized=True):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "flow_closeness_centrality() requires NumPy: http://scipy.org/ "
-    from itertools import izip
+        raise ImportError("flow_closeness_centrality() requires NumPy: http://scipy.org/ ")
+    
 
     if G.is_directed():
         raise nx.NetworkXError(\
@@ -77,7 +76,7 @@ def current_flow_closeness_centrality(G,normalized=True):
 
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     n=len(G)
-    mapping=dict(zip(G,range(n)))  # map nodes to integers
+    mapping=dict(zip(G,list(range(n))))  # map nodes to integers
     C=_compute_C(G)
     for v in G:
         vi=mapping[v]
@@ -101,8 +100,7 @@ def _compute_C(G):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "flow_closeness_centrality() requires NumPy: http://scipy.org/ "
+        raise ImportError("flow_closeness_centrality() requires NumPy: http://scipy.org/ ")
     L=nx.laplacian(G) # use ordering of G.nodes()
     # remove first row and column
     LR=L[1:,1:]

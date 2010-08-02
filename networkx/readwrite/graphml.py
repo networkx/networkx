@@ -23,7 +23,7 @@ __all__ = ['write_graphml', 'read_graphml', 'parse_graphml']
 
 import networkx as nx
 from networkx.exception import NetworkXException, NetworkXError
-from networkx.utils import _get_fh, is_string_like
+from networkx.utils import _get_fh, is_string_like, make_str
 
 def write_graphml(G, path, encoding='utf-8'):
     """Write graph G in GraphML format to path.
@@ -37,7 +37,8 @@ def write_graphml(G, path, encoding='utf-8'):
     G : graph
        A networkx graph
     path : file or string
-       File or filename to write.  
+       File or filename to write. If a filename is provided, it must be
+       opened in 'wb' mode.
        Filenames ending in .gz or .bz2 will be compressed.
 
     Examples
@@ -46,10 +47,6 @@ def write_graphml(G, path, encoding='utf-8'):
     >>> nx.write_graphml(G, "test.graphml")
     """
     from xml.dom.minidom import Document
-
-    def make_str(t):
-        if is_string_like(t): return t
-        return str(t)
 
     def new_element(name, parent):
         el = doc.createElement(name)
@@ -67,7 +64,7 @@ def write_graphml(G, path, encoding='utf-8'):
             return "double"
         if type(val) == type(True):
             return "boolean"
-        if type(val) == type(1L):
+        if str(type(val)).split("'")[1] == 'long':
             return "long"
 
 
@@ -79,7 +76,7 @@ def write_graphml(G, path, encoding='utf-8'):
         key.setAttribute("attr.type", type)
         return key
 
-    fh = _get_fh(path, mode='w')
+    fh = _get_fh(path, mode='wb')
 
     doc = Document()
     root = doc.createElement("graphml")
@@ -137,7 +134,7 @@ def write_graphml(G, path, encoding='utf-8'):
     fh.write(doc.toprettyxml(encoding=encoding))
     fh.close()
 
-def read_graphml(path):
+def read_graphml(path, encoding = 'utf-8'):
     """Read graph in GraphML format from path.
 
     Returns a MultiGraph or MultiDiGraph.
@@ -152,8 +149,9 @@ def read_graphml(path):
     Data whose key value doesn't match a key element
     uses key value itself as the attribute name.
     """
-    fh=_get_fh(path,mode='r')
-    G=parse_graphml(fh.readlines())
+    fh=_get_fh(path,mode='rb')
+    lines = (line.decode(encoding) for line in fh)
+    G=parse_graphml(lines)
     return G
 
 def parse_graphml(lines):
@@ -190,14 +188,14 @@ def parse_graphml(lines):
         context_len=len(context)
         if context_len==1:
             if name != 'graphml':
-                raise GraphFormatError, \
-                  'Unrecognized outer tag "%s" in GraphML' % name
+                raise GraphFormatError(
+                  'Unrecognized outer tag "%s" in GraphML' % name)
             storage[-1].update(attrs)
         elif context_len==2:
             if name=='graph':
                 if 'edgedefault' not in attrs:
-                    raise GraphFormatError, \
-                          'Required attribute edgedefault missing in GraphML'
+                    raise GraphFormatError(
+                          'Required attribute edgedefault missing in GraphML')
                 if attrs['edgedefault'] == 'undirected':
                     defaultDirected[0] = False
                 storage[-1].update(attrs)
@@ -209,14 +207,14 @@ def parse_graphml(lines):
         elif context_len==3 and context[1]=='graph':
             if name=='node':
                 if 'id' not in attrs:
-                    raise GraphFormatError, 'Anonymous node in GraphML'
+                    raise GraphFormatError('Anonymous node in GraphML')
                 attrs.update(node_defaults)
                 storage.append(attrs)
             elif name=='edge':
                 if 'source' not in attrs:
-                    raise GraphFormatError, 'Edge without source in GraphML'
+                    raise GraphFormatError('Edge without source in GraphML')
                 if 'target' not in attrs:
-                    raise GraphFormatError, 'Edge without target in GraphML'
+                    raise GraphFormatError('Edge without target in GraphML')
                 attrs.update(edge_defaults)
                 storage.append(attrs)
             elif name=='data':
@@ -312,7 +310,10 @@ def parse_graphml(lines):
             #print context[-1],data
 
     p = xml.parsers.expat.ParserCreate()
-    p.returns_unicode=True
+    try: # Python 2.6+
+        p.returns_unicode=True
+    except AttributeError: # Python 3.x
+        pass
     p.StartElementHandler = start_element
     p.EndElementHandler = end_element
     p.CharacterDataHandler = char_element
@@ -330,7 +331,7 @@ def parse_graphml(lines):
 if __name__ == "__main__":
     fh=open("test2.graphml")
     g=parse_graphml(fh.readlines())
-    print "Nodes: ",g.nodes(data=True)
-    print "Edges: ",g.edges(keys=True,data=True)
-    print "Nodes: ",g.nodes()
-    print "Edges: ",g.edges(keys=True)
+    print("Nodes: ",g.nodes(data=True))
+    print("Edges: ",g.edges(keys=True,data=True))
+    print("Nodes: ",g.nodes())
+    print("Edges: ",g.edges(keys=True))

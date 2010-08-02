@@ -120,7 +120,8 @@ def max_weight_matching(G, maxcardinality=False):
         wt=d.get('weight',1)
         if i != j and wt > maxweight:
             maxweight = wt
-        allinteger = allinteger and (type(wt) in (int, long))
+        allinteger = allinteger and (str(type(wt)).split("'")[1]
+                                     in ('int', 'long'))
 
     # If v is a matched vertex, mate[v] is its partner vertex.
     # If v is a single vertex, v does not occur as a key in mate.
@@ -339,7 +340,7 @@ def max_weight_matching(G, maxcardinality=False):
                     bestedgeto[bj] = k
             # Forget about least-slack edge of the subblossom.
             bestedge[bv] = None
-        b.mybestedges = bestedgeto.values()
+        b.mybestedges = list(bestedgeto.values())
         # Select bestedge[b].
         mybestedge = None
         bestedge[b] = None
@@ -774,7 +775,7 @@ def max_weight_matching(G, maxcardinality=False):
             break
 
         # End of a stage; expand all S-blossoms which have zero dual.
-        for b in blossomdual.keys():
+        for b in list(blossomdual.keys()):
             if b not in blossomdual:
                 continue # already expanded
             if ( blossomparent[b] is None and label.get(b) == 1 and

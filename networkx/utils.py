@@ -32,8 +32,6 @@ def is_singleton(obj):
 
 def is_string_like(obj): # from John Hunter, types-free version
     """Check if obj is string."""
-#    if hasattr(obj, 'shape'): return False # this is a workaround
-                                       # for a bug in numeric<23.1
     try:
         obj + ''
     except (TypeError, ValueError):
@@ -86,13 +84,17 @@ def _get_fh(path, mode='r'):
             import bz2
             fh = bz2.BZ2File(path,mode=mode)
         else:
-            fh = file(path,mode=mode)
+            fh = open(path,mode = mode)           
     elif hasattr(path, 'read'):
         fh = path
     else:
         raise ValueError('path must be a string or file handle')
     return fh
 
+def make_str(t):
+    """Return the string representation of t."""
+    if is_string_like(t): return t
+    return str(t)
 
 ##def iterable(obj):
 ##  """ Return True if obj is iterable with a well-defined len()"""
@@ -115,7 +117,7 @@ def scipy_pareto_sequence(n,exponent=1.0):
     try: 
         import scipy.stats as stats
     except ImportError:
-        print "Import error: not able to import scipy"
+        print("Import error: not able to import scipy")
         return
     random._inst = random.Random()
     stats.seed(random.randint(1,2**30),random.randint(1,2**30))
@@ -130,7 +132,7 @@ def scipy_powerlaw_sequence(n,exponent=2.0):
     try: 
         import scipy.stats as stats
     except ImportError:
-        print "Import error: not able to import scipy"
+        print("Import error: not able to import scipy")
         return
     random._inst = random.Random()
     stats.seed(random.randint(1,2**30),random.randint(1,2**30))
@@ -145,7 +147,7 @@ def scipy_poisson_sequence(n,mu=1.0):
     try: 
         import scipy.stats as stats
     except ImportError:
-        print "Import error: not able to import scipy"
+        print("Import error: not able to import scipy")
         return
     random._inst = random.Random()
     stats.seed(random.randint(1,2**30),random.randint(1,2**30))
@@ -159,7 +161,7 @@ def scipy_uniform_sequence(n):
     try: 
         import scipy.stats as stats
     except ImportError:
-        print "Import error: not able to import scipy"
+        print("Import error: not able to import scipy")
         return
     random._inst = random.Random()
     stats.seed(random.randint(1,2**30),random.randint(1,2**30))
@@ -175,7 +177,7 @@ def scipy_discrete_sequence(n,distribution=False):
     try: 
         import scipy.stats as stats
     except ImportError:
-        print "Import error: not able to import scipy"
+        print("Import error: not able to import scipy")
         return
     import bisect
     if not distribution:
@@ -207,21 +209,21 @@ def pareto_sequence(n,exponent=1.0):
     """
     Return sample sequence of length n from a Pareto distribution.
     """
-    return [random.paretovariate(exponent) for i in xrange(n)]
+    return [random.paretovariate(exponent) for i in range(n)]
 
 
 def powerlaw_sequence(n,exponent=2.0):
     """
     Return sample sequence of length n from a power law distribution.
     """
-    return [random.paretovariate(exponent-1) for i in xrange(n)]
+    return [random.paretovariate(exponent-1) for i in range(n)]
 
 
 def uniform_sequence(n):
     """
     Return sample sequence of length n from a uniform distribution.
     """
-    return [ random.uniform(0,n) for i in xrange(n)]
+    return [ random.uniform(0,n) for i in range(n)]
 
 
 def cumulative_distribution(distribution):
@@ -254,12 +256,12 @@ def discrete_sequence(n, distribution=None, cdistribution=None):
     elif distribution is not None:
         cdf=cumulative_distribution(distribution)
     else:
-        raise InputError, \
-                  "discrete_sequence: distribution or cdistribution missing"
+        raise InputError(
+                "discrete_sequence: distribution or cdistribution missing")
         
 
     # get a uniform random number
-    inputseq=[random.random() for i in xrange(n)]
+    inputseq=[random.random() for i in range(n)]
 
     # choose from CDF
     seq=[bisect.bisect_left(cdf,s)-1 for s in inputseq]

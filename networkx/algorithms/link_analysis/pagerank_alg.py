@@ -267,7 +267,7 @@ def pagerank_scipy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
     M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     S=scipy.array(M.sum(axis=1)).flatten()
-    index=scipy.where(S<>0)[0]
+    index=scipy.where(S != 0)[0]
     for i in index:
         M[i,:]*=1.0/S[i]
     x=scipy.ones((n))/n  # initial guess

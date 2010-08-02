@@ -15,6 +15,7 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 import networkx as nx
 from networkx.classes.graph import Graph
 from networkx import NetworkXException, NetworkXError
+import networkx.convert as convert
 from copy import deepcopy
 
 
@@ -72,7 +73,8 @@ class MultiGraph(Graph):
 
     >>> G.add_nodes_from([2,3])
     >>> G.add_nodes_from(range(100,110))
-    >>> H=nx.path_graph(10)
+    >>> H=nx.Graph()
+    >>> H.add_path([0,1,2,3,4,5,6,7,8,9])
     >>> G.add_nodes_from(H)
 
     In addition to strings and integers any hashable Python object
@@ -145,11 +147,11 @@ class MultiGraph(Graph):
 
     >>> 1 in G     # check if node in graph
     True
-    >>> print [n for n in G if n<3]   # iterate through nodes
+    >>> [n for n in G if n<3]   # iterate through nodes
     [1, 2]
-    >>> print len(G)  # number of nodes in graph
+    >>> len(G)  # number of nodes in graph
     5
-    >>> print G[1] # adjacency dict keyed by neighbor to edge attributes
+    >>> G[1] # adjacency dict keyed by neighbor to edge attributes
     ...            # Note: you should not change this dict manually!
     {2: {0: {'weight': 4}, 1: {'color': 'blue'}}}
 
@@ -157,15 +159,15 @@ class MultiGraph(Graph):
     adjacency_iter(), but the edges() method is often more convenient.
 
     >>> for n,nbrsdict in G.adjacency_iter():
-    ...     for nbr,keydict in nbrsdict.iteritems():
-    ...        for key,eattr in keydict.iteritems():
+    ...     for nbr,keydict in nbrsdict.items():
+    ...        for key,eattr in keydict.items():
     ...            if 'weight' in eattr:
-    ...                print (n,nbr,eattr['weight'])
+    ...                (n,nbr,eattr['weight'])
     (1, 2, 4)
     (2, 1, 4)
     (2, 3, 8)
     (3, 2, 8)
-    >>> print [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
+    >>> [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
     [(1, 2, 4), (2, 3, 8)]
 
     **Reporting:**
@@ -360,7 +362,7 @@ class MultiGraph(Graph):
             Remove an edge between nodes u and v.
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
-            If None remove a single (arbitrary) edge between u and v.
+            If None remove a single (abritrary) edge between u and v.
 
         Raises
         ------
@@ -447,10 +449,10 @@ class MultiGraph(Graph):
         >>> G = nx.MultiGraph()
         >>> G.add_edges_from([(1,2),(1,2),(1,2)])
         >>> G.remove_edges_from([(1,2),(1,2)])
-        >>> print G.edges()
+        >>> G.edges()
         [(1, 2)]
         >>> G.remove_edges_from([(1,2),(1,2)]) # silently ignore extra copy
-        >>> print G.edges() # now empty graph
+        >>> G.edges() # now empty graph
         []
         """
         for e in ebunch:
@@ -613,14 +615,14 @@ class MultiGraph(Graph):
         """
         seen={}     # helper dict to keep track of multiply stored edges
         if nbunch is None:
-            nodes_nbrs = self.adj.iteritems()
+            nodes_nbrs = iter(self.adj.items())
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
         if data:
             for n,nbrs in nodes_nbrs:
-                for nbr,keydict in nbrs.iteritems():
+                for nbr,keydict in nbrs.items():
                     if nbr not in seen:
-                        for key,data in keydict.iteritems():
+                        for key,data in keydict.items():
                             if keys:
                                 yield (n,nbr,key,data)
                             else:
@@ -628,9 +630,9 @@ class MultiGraph(Graph):
                 seen[n]=1
         else:
             for n,nbrs in nodes_nbrs:
-                for nbr,keydict in nbrs.iteritems():
+                for nbr,keydict in nbrs.items():
                     if nbr not in seen:
-                        for key,data in keydict.iteritems():
+                        for key,data in keydict.items():
                             if keys:
                                 yield (n,nbr,key)
                             else:
@@ -727,23 +729,24 @@ class MultiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs = self.adj.iteritems()
+            nodes_nbrs = iter(self.adj.items())
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
 
         if weighted:
         # edge weighted graph - degree is sum of nbr edge weights
             for n,nbrs in nodes_nbrs:
-                deg = sum( d.get('weight',1)
-                           for data in nbrs.itervalues()
-                           for d in data.itervalues())
+                deg = sum([d.get('weight',1)
+                           for data in nbrs.values()
+                           for d in data.values()])
                 if n in nbrs:
-                    deg += sum(d.get('weight',1) for d in nbrs[n].itervalues())
+                    deg += sum([d.get('weight',1) 
+                           for key,d in nbrs[n].items()])
                 yield (n, deg)
 
         else:
             for n,nbrs in nodes_nbrs:
-                deg = sum(len(data) for data in nbrs.itervalues())
+                deg = sum([len(data) for data in nbrs.values()])
                 yield (n, deg+(n in nbrs and len(nbrs[n])))
 
     def is_multigraph(self):
@@ -793,13 +796,13 @@ class MultiGraph(Graph):
         >>> H.edges()
         [(0, 1)]
         """
-        from multidigraph import MultiDiGraph
+        from networkx.classes.multidigraph import MultiDiGraph
         G=MultiDiGraph()
         G.add_nodes_from(self)
         G.add_edges_from( (u,v,key,deepcopy(datadict))
                            for u,nbrs in self.adjacency_iter()
-                           for v,keydict in nbrs.iteritems()
-                           for key,datadict in keydict.iteritems() )
+                           for v,keydict in nbrs.items()
+                           for key,datadict in keydict.items() ) 
         G.graph=deepcopy(self.graph)
         G.node=deepcopy(self.node)
         return G
@@ -843,22 +846,22 @@ class MultiGraph(Graph):
         """
         if data:
             if keys:
-                return [ (n,n,k,d)
-                         for n,nbrs in self.adj.iteritems()
+                return [ (n,n,k,d) 
+                         for n,nbrs in self.adj.items() 
                          if n in nbrs for k,d in nbrs[n].items()]
             else:
-                return [ (n,n,d)
-                         for n,nbrs in self.adj.iteritems()
+                return [ (n,n,d) 
+                         for n,nbrs in self.adj.items() 
                          if n in nbrs for d in nbrs[n].values()]
         else:
             if keys:
                 return [ (n,n,k)
-                     for n,nbrs in self.adj.iteritems()
+                     for n,nbrs in self.adj.items() 
                      if n in nbrs for k in nbrs[n].keys()]
 
             else:
                 return [ (n,n)
-                     for n,nbrs in self.adj.iteritems()
+                     for n,nbrs in self.adj.items() 
                      if n in nbrs for d in nbrs[n].values()]
 
 
@@ -929,7 +932,7 @@ class MultiGraph(Graph):
         If edge attributes are containers, a deep copy can be obtained using:
         G.subgraph(nbunch).copy()
 
-        For an in-place reduction of a graph to a subgraph you can remove nodes:
+        For an inplace reduction of a graph to a subgraph you can remove nodes:
         G.remove_nodes_from([ n in G if n not in set(nbunch)])
 
         Examples
@@ -937,7 +940,7 @@ class MultiGraph(Graph):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
-        >>> print H.edges()
+        >>> H.edges()
         [(0, 1), (1, 2)]
         """
         bunch =self.nbunch_iter(nbunch)
@@ -951,7 +954,7 @@ class MultiGraph(Graph):
         for n in bunch:
             Hnbrs={}
             H_adj[n]=Hnbrs
-            for nbr,edgedict in self_adj[n].iteritems():
+            for nbr,edgedict in self_adj[n].items():
                 if nbr in H_adj:
                     # add both representations of edge: n-nbr and nbr-n
                     # they share the same edgedict

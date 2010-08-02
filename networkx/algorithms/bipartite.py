@@ -38,9 +38,9 @@ def project(B,nodes,create_using=None):
     --------
     >>> B=nx.path_graph(4)
     >>> G=nx.project(B,[1,3]) 
-    >>> print G.nodes()
+    >>> print(G.nodes())
     [1, 3]
-    >>> print G.edges()
+    >>> print(G.edges())
     [(1, 3)]
     
     Notes
@@ -85,7 +85,7 @@ def bipartite_color(G):
     --------
     >>> G=nx.path_graph(4)
     >>> c=nx.bipartite_color(G)
-    >>> print c
+    >>> print(c)
     {0: 1, 1: 0, 2: 1, 3: 0}
 
     """
@@ -116,7 +116,7 @@ def is_bipartite(G):
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> print nx.is_bipartite(G)
+    >>> print(nx.is_bipartite(G))
     True
 
     See Also
@@ -148,10 +148,10 @@ def bipartite_sets(G):
     --------
     >>> G=nx.path_graph(4)
     >>> X,Y=nx.bipartite_sets(G)
-    >>> print X
-    set([0, 2])
-    >>> print Y
-    set([1, 3])
+    >>> list(X)
+    [0, 2]
+    >>> list(Y)
+    [1, 3]
 
     See Also
     --------

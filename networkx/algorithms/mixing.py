@@ -36,7 +36,7 @@ def degree_assortativity(G):
     --------
     >>> G=nx.path_graph(4)
     >>> r=nx.degree_assortativity(G)
-    >>> print "%3.1f"%r
+    >>> print("%3.1f"%r)
     -0.5
 
     See Also
@@ -81,7 +81,9 @@ def degree_pearsonr(G):
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> r=nx.degree_pearsonr(G) # r=-0.5
+    >>> r=nx.degree_pearsonr(G) 
+    >>> r 
+    -0.5
 
     Notes
     -----
@@ -92,14 +94,13 @@ def degree_pearsonr(G):
     .. [1] M. E. J. Newman, Mixing patterns in networks
            Physical Review E, 67 026126, 2003
     """
-    from itertools import izip        
     try:
         import scipy.stats as stats
     except ImportError:
-        raise ImportError, \
-          "Assortativity requires SciPy: http://scipy.org/ "
+        raise ImportError(
+          "Assortativity requires SciPy: http://scipy.org/ ")
     xy=node_degree_xy(G)
-    x,y=izip(*xy)
+    x,y=zip(*xy)
     return stats.pearsonr(x,y)[0]
 
 
@@ -125,9 +126,9 @@ def attribute_mixing_dict(G,attribute,normalized=False):
     >>> G.add_nodes_from([2,3],color='blue')
     >>> G.add_edge(1,3)
     >>> d=nx.attribute_mixing_dict(G,'color')
-    >>> print d['red']['blue']
+    >>> print(d['red']['blue'])
     1
-    >>> print d['blue']['red'] # d symmetric for undirected graphs
+    >>> print(d['blue']['red']) # d symmetric for undirected graphs
     1
 
     Returns
@@ -193,7 +194,7 @@ def attribute_assortativity(G,attribute):
     >>> G.add_nodes_from([0,1],color='red')
     >>> G.add_nodes_from([2,3],color='blue')
     >>> G.add_edges_from([(0,1),(2,3)])
-    >>> print nx.attribute_assortativity(G,'color')
+    >>> print(nx.attribute_assortativity(G,'color'))
     1.0
 
     Notes
@@ -235,7 +236,7 @@ def numeric_assortativity(G,attribute):
     >>> G.add_nodes_from([0,1],size=2)
     >>> G.add_nodes_from([2,3],size=3)
     >>> G.add_edges_from([(0,1),(2,3)])
-    >>> print nx.numeric_assortativity(G,'size')
+    >>> print(nx.numeric_assortativity(G,'size'))
     1.0
 
     Notes
@@ -275,8 +276,8 @@ def attribute_assortativity_coefficient(e):
     try:
         import numpy
     except ImportError:
-        raise ImportError, \
-          "attribute_assortativity requires NumPy: http://scipy.org/ "
+        raise ImportError(
+          "attribute_assortativity requires NumPy: http://scipy.org/ ")
     if e.sum() != 1.0:
         e=e/float(e.sum())
     e=numpy.asmatrix(e)
@@ -406,8 +407,8 @@ def numeric_assortativity_coefficient(e):
     try:
         import numpy
     except ImportError:
-        raise ImportError, \
-          "numeric_assortativity_coefficient requires NumPy: http://scipy.org/ "
+        raise ImportError(
+          "numeric_assortativity_coefficient requires NumPy: http://scipy.org/ ")
     if e.sum() != 1.0:
         e=e/float(e.sum())
     nx,ny=e.shape # nx=ny
@@ -464,8 +465,8 @@ def dict_to_numpy_array(d,mapping=None):
     try:
         import numpy 
     except ImportError:
-        raise ImportError, \
-          "dict_to_numpy_array requires numpy : http://scipy.org/ "
+        raise ImportError(
+          "dict_to_numpy_array requires numpy : http://scipy.org/ ")
     if mapping is None:
         s=set(d.keys())
         for k,v in d.items():
@@ -473,8 +474,8 @@ def dict_to_numpy_array(d,mapping=None):
         mapping=dict(zip(s,range(len(s))))
     n=len(mapping)
     a = numpy.zeros((n, n))
-    for k1, row in d.iteritems():
-        for k2, value in row.iteritems():
+    for k1, row in d.items():
+        for k2, value in row.items():
             i=mapping[k1]
             j=mapping[k2]
             a[i,j] = value 
@@ -492,12 +493,12 @@ def node_attribute_xy(G,attribute):
     for u,nbrsdict in G.adjacency_iter(): 
         uattr=node[u].get(attribute,None)
         if G.is_multigraph():
-            for v,keys in nbrsdict.iteritems():
+            for v,keys in nbrsdict.items():
                 vattr=node[v].get(attribute,None)                
-                for k,d in keys.iteritems():
+                for k,d in keys.items():
                     yield (uattr,vattr)
         else:
-            for v,eattr in nbrsdict.iteritems():
+            for v,eattr in nbrsdict.items():
                 vattr=node[v].get(attribute,None)
                 yield (uattr,vattr)
 
@@ -521,12 +522,12 @@ def node_degree_xy(G):
     for u,nbrsdict in G.adjacency_iter(): 
         degu=out_degree(u)
         if G.is_multigraph():
-            for v,keys in nbrsdict.iteritems():
+            for v,keys in nbrsdict.items():
                 degv=in_degree(v)
-                for k,d in keys.iteritems():
+                for k,d in keys.items():
                     yield degu,degv
         else:
-            for v,eattr in nbrsdict.iteritems():
+            for v,eattr in nbrsdict.items():
                 degv=in_degree(v)
                 yield degu,degv
 

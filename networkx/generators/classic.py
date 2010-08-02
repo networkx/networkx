@@ -43,7 +43,7 @@ __all__ = [ 'balanced_tree',
 #   Some Classic Graphs
 #-------------------------------------------------------------------
 import networkx as nx
-from networkx import utils
+from networkx.datatype_utils import is_list_of_ints, flatten
 
 
 def balanced_tree(r,h,create_using=None):
@@ -92,7 +92,7 @@ def balanced_tree(r,h,create_using=None):
         leavelist=newleavelist[:]
         newleavelist=[]
         for leave in leavelist:
-            for i in xrange(r):
+            for i in range(r):
                 v=v+1
                 G.add_edge(leave,v)
                 newleavelist.append(v)
@@ -152,8 +152,8 @@ def complete_graph(n,create_using=None):
         raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n,create_using)
     G.name="complete_graph(%d)"%n
-    for u in xrange(n):
-        for v in xrange(u+1,n):
+    for u in range(n):
+        for v in range(u+1,n):
             G.add_edge(u,v)
     return G
 
@@ -171,8 +171,8 @@ def complete_bipartite_graph(n1,n2,create_using=None):
         raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n1+n2,create_using)
     G.name="complete_bipartite_graph(%d,%d)"%(n1,n2)
-    for v1 in xrange(n1):
-        for v2 in xrange(n2):
+    for v1 in range(n1):
+        for v2 in range(n2):
             G.add_edge(v1,n1+v2)
     return G
 
@@ -276,7 +276,7 @@ def empty_graph(n=0,create_using=None):
         G=create_using
         G.clear()
 
-    G.add_nodes_from(xrange(n))
+    G.add_nodes_from(range(n))
     G.name="empty_graph(%d)"%n 
     return G
 
@@ -320,7 +320,6 @@ def grid_graph(dim,periodic=False,create_using=None):
     If periodic=True then join grid edges with periodic boundary conditions.
 
     """    
-    from networkx.utils import is_list_of_ints
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
     dlabel="%s"%dim
@@ -350,7 +349,7 @@ def grid_graph(dim,periodic=False,create_using=None):
         G=nx.cartesian_product(Gnew,Gold,create_using=None)
     # graph G is done but has labels of the form (1,(2,(3,1)))
     # so relabel
-    H=nx.relabel_nodes(G, utils.flatten)
+    H=nx.relabel_nodes(G, flatten)
     H.name="grid_graph(%s)"%dlabel
     return H
 
@@ -378,9 +377,9 @@ def ladder_graph(n,create_using=None):
         raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(2*n,create_using)
     G.name="ladder_graph_(%d)"%n 
-    G.add_edges_from([(v,v+1) for v in xrange(n-1)])
-    G.add_edges_from([(v,v+1) for v in xrange(n,2*n-1)])
-    G.add_edges_from([(v,v+n) for v in xrange(n)])
+    G.add_edges_from([(v,v+1) for v in range(n-1)])
+    G.add_edges_from([(v,v+1) for v in range(n,2*n-1)])
+    G.add_edges_from([(v,v+n) for v in range(n)])
     return G
 
 def lollipop_graph(m,n,create_using=None):
@@ -409,9 +408,9 @@ def lollipop_graph(m,n,create_using=None):
     # the ball
     G=complete_graph(m,create_using)
     # the stick
-    G.add_nodes_from([v for v in xrange(m,m+n)])
+    G.add_nodes_from([v for v in range(m,m+n)])
     if n>1:
-        G.add_edges_from([(v,v+1) for v in xrange(m,m+n-1)])
+        G.add_edges_from([(v,v+1) for v in range(m,m+n-1)])
     # connect ball to stick
     if m>0: G.add_edge(m-1,m)
     G.name="lollipop_graph(%d,%d)"%(m,n)
@@ -438,7 +437,7 @@ def path_graph(n,create_using=None):
     """
     G=empty_graph(n,create_using)
     G.name="path_graph(%d)"%n
-    G.add_edges_from([(v,v+1) for v in xrange(n-1)])
+    G.add_edges_from([(v,v+1) for v in range(n-1)])
     return G
 
 def star_graph(n,create_using=None):
@@ -470,7 +469,7 @@ def wheel_graph(n,create_using=None):
     """
     G=star_graph(n-1,create_using)
     G.name="wheel_graph(%d)"%n
-    G.add_edges_from([(v,v+1) for v in xrange(1,n-1)])
+    G.add_edges_from([(v,v+1) for v in range(1,n-1)])
     if n>2:
         G.add_edge(1,n-1)
     return G
