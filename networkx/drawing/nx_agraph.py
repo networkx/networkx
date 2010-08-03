@@ -18,15 +18,15 @@ Pygraphviz: http://networkx.lanl.gov/pygraphviz
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2008 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['from_agraph', 'to_agraph', 
-           'write_dot', 'read_dot', 
+__all__ = ['from_agraph', 'to_agraph',
+           'write_dot', 'read_dot',
            'graphviz_layout',
            'pygraphviz_layout',
            'view_pygraphviz']
@@ -34,6 +34,7 @@ __all__ = ['from_agraph', 'to_agraph',
 import os
 import sys
 import tempfile
+
 import networkx as nx
 from networkx.utils import _get_fh,is_string_like
 
@@ -45,8 +46,8 @@ def from_agraph(A,create_using=None):
     ----------
     A : PyGraphviz AGraph
       A graph created with PyGraphviz
-      
-    create_using : NetworkX graph class instance      
+
+    create_using : NetworkX graph class instance
       The output is created using the given graph class instance
 
     Examples
@@ -70,7 +71,7 @@ def from_agraph(A,create_using=None):
     attribute or the value 1 if no edge weight attribute is found.
 
     """
-    if create_using is None:        
+    if create_using is None:
         if A.is_directed():
             if A.is_strict():
                 create_using=nx.DiGraph()
@@ -82,7 +83,7 @@ def from_agraph(A,create_using=None):
             else:
                 create_using=nx.MultiGraph()
 
-    # assign defaults        
+    # assign defaults
     N=nx.empty_graph(0,create_using)
     N.name=str(A)
     node_attr={}
@@ -103,13 +104,13 @@ def from_agraph(A,create_using=None):
                 N.add_edge(u,v,e.key,**attr)
             else:
                 N.add_edge(u,v,**attr)
-        
-    # add default attributes for graph, nodes, and edges       
+
+    # add default attributes for graph, nodes, and edges
     # hang them on N.graph_attr
     N.graph['graph']=dict(A.graph_attr)
     N.graph['node']=dict(A.node_attr)
     N.graph['edge']=dict(A.edge_attr)
-    return N        
+    return N
 
 def to_agraph(N):
     """Return a pygraphviz graph from a NetworkX graph N.
@@ -118,7 +119,7 @@ def to_agraph(N):
     ----------
     N : NetworkX graph
       A graph created with NetworkX
-      
+
     Examples
     --------
     >>> K5=nx.complete_graph(5)
@@ -137,10 +138,10 @@ def to_agraph(N):
         raise ImportError, \
           "to_agraph() requires pygraphviz: http://nx.lanl.gov/pygraphviz"
     directed=N.is_directed()
-    strict=N.number_of_selfloops()==0 and not N.is_multigraph() 
+    strict=N.number_of_selfloops()==0 and not N.is_multigraph()
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
 
-    # default graph attributes            
+    # default graph attributes
     A.graph_attr.update(N.graph.get('graph',{}))
     A.node_attr.update(N.graph.get('node',{}))
     A.edge_attr.update(N.graph.get('edge',{}))
@@ -171,7 +172,7 @@ def write_dot(G,path):
     G : graph
        A networkx graph
     path : filename
-       Filename or file handle to write.  
+       Filename or file handle to write.
 
     """
     try:
@@ -209,13 +210,13 @@ def graphviz_layout(G,prog='neato',root=None, args=''):
     G : NetworkX graph
       A graph created with NetworkX
     prog : string
-      Name of Graphviz layout program 
+      Name of Graphviz layout program
     root : string, optional
       Root node for twopi layout
     args : string, optional
       Extra arguments to Graphviz layout program
 
-    Returns : dictionary      
+    Returns : dictionary
       Dictionary of x,y, positions keyed by node.
 
     Examples
@@ -223,7 +224,7 @@ def graphviz_layout(G,prog='neato',root=None, args=''):
     >>> G=nx.petersen_graph()
     >>> pos=nx.graphviz_layout(G)
     >>> pos=nx.graphviz_layout(G,prog='dot')
-    
+
     Notes
     -----
     This is a wrapper for pygraphviz_layout.
@@ -239,13 +240,13 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     G : NetworkX graph
       A graph created with NetworkX
     prog : string
-      Name of Graphviz layout program 
+      Name of Graphviz layout program
     root : string, optional
       Root node for twopi layout
     args : string, optional
       Extra arguments to Graphviz layout program
 
-    Returns : dictionary      
+    Returns : dictionary
       Dictionary of x,y, positions keyed by node.
 
     Examples
@@ -253,7 +254,7 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     >>> G=nx.petersen_graph()
     >>> pos=nx.graphviz_layout(G)
     >>> pos=nx.graphviz_layout(G,prog='dot')
-    
+
     """
     try:
         import pygraphviz
@@ -275,7 +276,7 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
             node_pos[n]=(0.0,0.0)
     return node_pos
 
-def view_pygraphviz(G, edgelabel=None, prog='neato', args='', 
+def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
                        suffix='', filename=None):
     """Views the graph G using the specified layout algorithm.
 
@@ -285,7 +286,7 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
         The machine to draw.
     edgelabel : str, callable, None
         If a string, then it specifes the edge attribute to be displayed
-        on the edge labels. If a callable, then it is called for each 
+        on the edge labels. If a callable, then it is called for each
         edge and it should return the string to be displayed on the edges.
         The function signature of `edgelabel` should be edgelabel(data),
         where `data` is the edge attribute dictionary.
@@ -309,10 +310,10 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
 
     Notes
     -----
-    If this function is called in succession too quickly, sometimes the 
+    If this function is called in succession too quickly, sometimes the
     image is not displayed. So you might consider time.sleep(.5) between
     calls if you experience problems.
-    
+
     """
     if not len(G):
         raise nx.NetworkXException("An empty graph cannot be drawn.")
@@ -330,7 +331,7 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
     for attr in attrs:
         if attr not in G.graph:
             G.graph[attr] = {}
-    
+
     # These are the default values.
     edge_attrs = {'fontsize': '10'}
     node_attrs = {'style': 'filled',
@@ -423,10 +424,10 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
 
     Notes
     -----
-    If this function is called in succession too quickly, sometimes the 
+    If this function is called in succession too quickly, sometimes the
     image is not displayed. So you might consider time.sleep(.5) between
     calls if you experience problems.
-    
+
     """
     try:
         import subprocess
@@ -437,20 +438,24 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     if len(path) == 2:
         fd, filename = path
         path = os.fdopen(fd, "w+b")  # grab file-object associated to fd
+        close = True
     else:
         filename = path[0]
         path = filename              # graph.draw() will open the file-object
-
+        close = False
     # If we are using a temporary file, the file-object does not contain the
-    # name of the file. This means that graph.draw() will fail to detect the 
+    # name of the file. This means that graph.draw() will fail to detect the
     # format and will set it to 'dot' by default. Since we have the filename,
     # we explicitly set the format.
     if format is None:
         format = os.path.splitext(filename)[-1].lower()[1:]
-    
+
     # Save to a file and display in the default viewer.
     cmds = {'darwin': 'open', 'linux2': 'xdg-open', 'win32': 'start'}
     graph.draw(path, format, prog, args)
+    if close:
+        # Causes trouble on MacOS if not closed.
+        path.close()
     subprocess.call([cmds[sys.platform], filename])
 
 # fixture for nose tests
