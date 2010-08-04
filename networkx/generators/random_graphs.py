@@ -535,7 +535,7 @@ def random_regular_graph(d, n, create_using=None, seed=None):
        Generating random regular graphs,
        Proceedings of the thirty-fifth ACM symposium on Theory of computing,
        San Diego, CA, USA, pp 213--222, 2003.
-       http://doi.acm.org/10.1145/780542.780576
+       http://portal.acm.org/citation.cfm?id=780542.780576
     """
     if (n * d) % 2 != 0:
         raise nx.NetworkXError("n * d must be even")
