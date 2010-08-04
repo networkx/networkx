@@ -43,7 +43,7 @@ __all__ = [ 'balanced_tree',
 #   Some Classic Graphs
 #-------------------------------------------------------------------
 import networkx as nx
-from networkx.datatype_utils import is_list_of_ints, flatten
+from networkx.utils import is_list_of_ints, flatten
 
 
 def balanced_tree(r,h,create_using=None):
