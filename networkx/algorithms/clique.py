@@ -50,15 +50,35 @@ def find_cliques(G):
     find_cliques_recursive : 
     A recursive version of the same algorithm
 
+    Notes
+    -----
+    Based on the algorithm published by Bron & Kerbosch (1973) [1]_
+    as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
+    and discussed in Cazals and Karande (2008) [3]_.
+
     References
     ----------
-    Based on the algorithm published by Bron & Kerbosch (1973)
-        http://doi.acm.org/10.1145/362342.362367
-    as adapated by Tomita, Tanaka and Takahashi (2006)
-        http://dx.doi.org/10.1016/j.tcs.2006.06.015
-    and discussed in Cazals and Karande (2008)
-        http://dx.doi.org/10.1016/j.tcs.2008.05.010
-     """
+    .. [1] Bron, C. and Kerbosch, J. 1973. 
+       Algorithm 457: finding all cliques of an undirected graph. 
+       Commun. ACM 16, 9 (Sep. 1973), 575-577. 
+       http://portal.acm.org/citation.cfm?doid=362342.362367
+   
+    .. [2] Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi, 
+       The worst-case time complexity for generating all maximal 
+       cliques and computational experiments, 
+       Theoretical Computer Science, Volume 363, Issue 1, 
+       Computing and Combinatorics, 
+       10th Annual International Conference on 
+       Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28-42
+       http://dx.doi.org/10.1016/j.tcs.2006.06.015
+
+    .. [3] F. Cazals, C. Karande, 
+       A note on the problem of reporting maximal cliques, 
+       Theoretical Computer Science,
+       Volume 407, Issues 1-3, 6 November 2008, Pages 564-568, 
+       http://dx.doi.org/10.1016/j.tcs.2008.05.010
+    """
+
     # Cache nbrs and find first pivot (highest degree)
     maxconn=-1
     nnbrs={}
