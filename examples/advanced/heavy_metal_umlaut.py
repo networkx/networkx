@@ -18,18 +18,28 @@ __revision__ = ""
 #    All rights reserved.
 #    BSD license.
 
-import codecs
 import networkx as NX
-import pylab as P
+try:
+    import pylab as P
+except ImportError:
+    pass
 
-
-hd=u'H\u00fcsker D\u00fc'
-mh=u'Mot\u00F6rhead'
-mc=u'M\u00F6tley Cr\u00fce'
-st=u'Sp\u0131n\u0308al Tap'
-q=u'Queensr\u00ffche'
-boc=u'Blue \u00d6yster Cult'
-dt=u'Deatht\u00F6ngue'
+try:
+    hd='H' + unichr(252) + 'sker D' + unichr(252)
+    mh='Mot' + unichr(246) + 'rhead'
+    mc='M' + unichr(246) + 'tley Cr' + unichr(252) + 'e'
+    st='Sp' + unichr(305) + 'n' + unichr(776) + 'al Tap'
+    q='Queensr' + unichr(255) + 'che'
+    boc='Blue ' + unichr(214) +'yster Cult'
+    dt='Deatht' + unichr(246) + 'ngue'
+except NameError:
+    hd='H' + chr(252) + 'sker D' + chr(252)
+    mh='Mot' + chr(246) + 'rhead'
+    mc='M' + chr(246) + 'tley Cr' + chr(252) + 'e'
+    st='Sp' + chr(305) + 'n' + chr(776) + 'al Tap'
+    q='Queensr' + chr(255) + 'che'
+    boc='Blue ' + chr(214) +'yster Cult'
+    dt='Deatht' + chr(246) + 'ngue'
 
 G=NX.Graph()
 G.add_edge(hd,mh)
@@ -42,19 +52,19 @@ G.add_edge(dt,mh)
 G.add_edge(st,mh)
 
 # write in UTF-8 encoding
-fh=codecs.open('edgelist.utf-8','w',encoding='utf-8')
-fh.write('# -*- coding: %s -*-\n'%fh.encoding) # encoding hint for emacs
-NX.write_multiline_adjlist(G,fh,delimiter='\t')
+fh=open('edgelist.utf-8','wb')
+fh.write('# -*- coding: utf-8 -*-\n'.encode('utf-8')) # encoding hint for emacs
+NX.write_multiline_adjlist(G,fh,delimiter='\t', encoding = 'utf-8')
 
 # read and store in UTF-8
-fh=codecs.open('edgelist.utf-8','r',encoding='utf-8')
-H=NX.read_multiline_adjlist(fh,delimiter='\t')
+fh=open('edgelist.utf-8','rb')
+H=NX.read_multiline_adjlist(fh,delimiter='\t', encoding = 'utf-8')
 
 for n in G.nodes():
     if n not in H:
-        print False
+        print(False)
 
-print G.nodes()
+print(G.nodes())
 
 try:
     pos=NX.spring_layout(G)

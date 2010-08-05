@@ -21,7 +21,7 @@ try:
     import numpy.linalg
     eigenvalues=numpy.linalg.eigvals
 except ImportError:
-    raise ImportError,"numpy can not be imported."
+    raise ImportError("numpy can not be imported.")
 
 try:
     from pylab import *
@@ -33,10 +33,10 @@ m=5000 # 5000 edges
 
 G=gnm_random_graph(n,m)
 
-L=generalized_laplacian(G) 
+L=generalized_laplacian(G)
 e=eigenvalues(L)
-print "Largest eigenvalue:",max(e)
-print "Smallest eigenvalue:",min(e)
+print("Largest eigenvalue:", max(e))
+print("Smallest eigenvalue:", min(e))
 # plot with matplotlib if we have it
 # shows "semicircle" distribution of eigenvalues 
 try:
@@ -45,3 +45,4 @@ try:
     show()
 except:
     pass
+

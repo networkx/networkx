@@ -100,7 +100,7 @@ def digitsrep(n,b=10):
     maxpow=int(floor( log(n)/log(b) + mach_eps ))
     pow=maxpow
     while pow>=0:
-        x=int(floor(n/b**pow))
+        x=int(floor(n // b**pow))
         dlist.append(x)
         n=n-x*b**pow
         pow=pow-1
@@ -117,7 +117,7 @@ def powersum(n,p,b=10):
 def attractor153_graph(n,p,multiple=3,b=10):
     """Return digraph of iterations of powersum(n,3,10)."""
     G=DiGraph()
-    for k in xrange(1,n+1):
+    for k in range(1,n+1):
         if k%multiple==0 and k not in G:
             k1=k
             knext=powersum(k1,p,b)
@@ -130,7 +130,7 @@ def attractor153_graph(n,p,multiple=3,b=10):
 def squaring_cycle_graph_old(n,b=10):
     """Return digraph of iterations of powersum(n,2,10)."""
     G=DiGraph()
-    for k in xrange(1,n+1):
+    for k in range(1,n+1):
         k1=k
         G.add_node(k1) # case k1==knext, at least add node
         knext=powersum(k1,2,b)
@@ -158,7 +158,7 @@ def cubing_153_digraph(nmax):
 
 def discrete_dynamics_digraph(nmax,f,itermax=50000):
     G=DiGraph()
-    for k in xrange(1,nmax+1):
+    for k in range(1,nmax+1):
         kold=k
         G.add_node(kold)
         knew=f(kold)
@@ -176,7 +176,7 @@ def discrete_dynamics_digraph(nmax,f,itermax=50000):
 def collatz_problem_digraph(nmax):
     def f(n):
         if n%2==0:
-            return n/2
+            return n // 2
         else:
             return 3*n+1
     return discrete_dynamics_digraph(nmax,f)
@@ -190,10 +190,10 @@ def fixed_points(G):
     
 if __name__ == "__main__":
     nmax=10000
-    print "Building cubing_153_digraph(%d)"% nmax
+    print("Building cubing_153_digraph(%d)"% nmax)
     G=cubing_153_digraph(nmax)
-    print "Resulting digraph has", len(G), "nodes and", \
-          G.size()," edges" 
-    print "Shortest path from 177 to 153 is:"
-    print shortest_path(G,177,153)
-    print "fixed points are", fixed_points(G)
+    print("Resulting digraph has", len(G), "nodes and",
+          G.size()," edges")
+    print("Shortest path from 177 to 153 is:")
+    print(shortest_path(G,177,153))
+    print("fixed points are %s" % fixed_points(G))
