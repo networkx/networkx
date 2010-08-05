@@ -25,12 +25,12 @@ __revision__ = "$Revision: 998 $"
 #    BSD license.
 
 import string
-import networkx as NX
+import networkx as nx
 
 def davis_club_graph(create_using=None, **kwds):
     nwomen=14
     nclubs=18
-    G=NX.generators.empty_graph(nwomen+nclubs,create_using=create_using,**kwds)
+    G=nx.generators.empty_graph(nwomen+nclubs,create_using=create_using,**kwds)
     G.clear()
     G.name="Davis Southern Club Women"
 
@@ -94,26 +94,26 @@ E14"""
     # women names
     w={}
     n=0
-    for name in string.split(women,'\n'):
+    for name in women.split('\n'):
         w[n]=name
         n+=1
 
     # club names        
     c={}
     n=0
-    for name in string.split(clubs,'\n'):
+    for name in clubs.split('\n'):
         c[n]=name
         n+=1
 
     # parse matrix         
     row=0
-    for line in string.split(davisdat,'\n'):
-        thisrow=map(int,string.split(line,' '))
+    for line in davisdat.split('\n'):
+        thisrow=list(map(int,line.split(' ')))
         for col in range(0,len(thisrow)):
             if thisrow[col]==1:
                 G.add_edge(w[row],c[col])
         row+=1
-    return (G,w.values(),c.values())
+    return (G,list(w.values()),list(c.values()))
 
 def project(B,pv,result=False,**kwds):
     """
@@ -128,7 +128,7 @@ def project(B,pv,result=False,**kwds):
     if result:
         G=result
     else:
-        G=NX.Graph(**kwds)
+        G=nx.Graph(**kwds)
     for v in pv:
         G.add_node(v)
         for cv in B.neighbors(v):
@@ -144,13 +144,13 @@ if __name__ == "__main__":
     # project bipartite graph onto club nodes
     C=project(G,clubs)
 
-    print "Degree distributions of projected graphs"
-    print 
-    print "Member #Friends"
+    print("Degree distributions of projected graphs")
+    print('') 
+    print("Member #Friends")
     for v in W:
-        print v,W.degree(v)
+        print('%s %d' % (v,W.degree(v)))
 
-    print 
-    print "Clubs #Members"
+    print('') 
+    print("Clubs #Members")
     for v in C:
-        print v,C.degree(v)
+        print('%s %d' % (v,C.degree(v)))

@@ -22,11 +22,7 @@ Example of creating a block model using the blockmodel function in NX.  Data use
 __author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
                             'Aric Hagberg <hagberg@lanl.gov>'])
 
-try:
-    from collections import defaultdict
-except ImportError:
-    raise ImportError("blockmodel.py requires Python 2.5 or greater")
-
+from collections import defaultdict
 import networkx as nx
 import numpy
 from scipy.cluster import hierarchy
@@ -38,8 +34,8 @@ def create_hc(G):
     """Creates hierarchical cluster of graph G from distance matrix"""
     path_length=nx.all_pairs_shortest_path_length(G)
     distances=numpy.zeros((len(G),len(G)))
-    for u,p in path_length.iteritems():
-        for v,d in p.iteritems():
+    for u,p in path_length.items():
+        for v,d in p.items():
             distances[u][v]=d
     # Create hierarchical cluster
     Y=distance.squareform(distances)
@@ -50,7 +46,7 @@ def create_hc(G):
     partition=defaultdict(list)
     for n,p in zip(range(len(G)),membership):
         partition[p].append(n)
-    return partition.values()
+    return list(partition.values())
 
 if __name__ == '__main__':
     G=nx.read_edgelist("hartford_drug.edgelist")
@@ -74,7 +70,7 @@ if __name__ == '__main__':
     plt.ylim(0,1)
 
     # Draw block model with weighted edges and nodes sized by number of internal nodes
-    node_size=map(lambda x: BM.node[x]['nnodes']*10,BM.nodes())
+    node_size=[BM.node[x]['nnodes']*10 for x in BM.nodes()]
     edge_width=[(2*d['weight']) for (u,v,d) in BM.edges(data=True)]
     # Set positions to mean of positions of internal nodes from original graph
     posBM={}
