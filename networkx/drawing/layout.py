@@ -28,11 +28,10 @@ def random_layout(G,dim=2):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "random_layout() requires numpy: http://scipy.org/ "
+        raise ImportError("random_layout() requires numpy: http://scipy.org/ ")
     n=len(G)
     pos=np.asarray(np.random.random((n,dim)),dtype=np.float32)
-    return dict(zip(G,pos))
+    return dict(list(zip(G,pos)))
 
 
 def circular_layout(G, dim=2, scale=1):
@@ -68,8 +67,7 @@ def circular_layout(G, dim=2, scale=1):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "circular_layout() requires numpy: http://scipy.org/ "
+        raise ImportError("circular_layout() requires numpy: http://scipy.org/ ")
     if len(G)==0:
         return {}
     if len(G)==1:
@@ -77,7 +75,7 @@ def circular_layout(G, dim=2, scale=1):
     t=np.arange(0,2.0*np.pi,2.0*np.pi/len(G),dtype=np.float32)
     pos=np.transpose(np.array([np.cos(t),np.sin(t)]))
     pos=_rescale_layout(pos,scale=scale)
-    return dict(zip(G,pos))
+    return dict(list(zip(G,pos)))
 
 def shell_layout(G,nlist=None,dim=2,scale=1):
     """Position nodes in concentric circles.
@@ -115,8 +113,7 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "shell_layout() requires numpy: http://scipy.org/ "
+        raise ImportError("shell_layout() requires numpy: http://scipy.org/ ")
     if len(G)==0:
         return {}
     if len(G)==1:
@@ -134,7 +131,7 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
     for nodes in nlist:
         t=np.arange(0,2.0*np.pi,2.0*np.pi/len(nodes),dtype=np.float32)
         pos=np.transpose(np.array([radius*np.cos(t),radius*np.sin(t)]))
-        npos.update(dict(zip(nodes,pos)))
+        npos.update(dict(list(zip(nodes,pos))))
         radius+=1.0
 
     # FIXME: rescale        
@@ -189,15 +186,14 @@ def fruchterman_reingold_layout(G,dim=2,
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "fruchterman_reingold_layout() requires numpy: http://scipy.org/ "
+        raise ImportError("fruchterman_reingold_layout() requires numpy: http://scipy.org/ ")
     if fixed is not None:
-        nfixed=dict(zip(G,range(len(G))))
+        nfixed=dict(list(zip(G,list(range(len(G))))))
         fixed=np.asarray([nfixed[v] for v in fixed])
 
     if pos is not None:
         pos_arr=np.asarray(np.random.random((len(G),dim)))
-        for n,i in zip(G,range(len(G))):
+        for n,i in zip(G,list(range(len(G)))):
             if n in pos:
                 pos_arr[i]=np.asarray(pos[n])
     else:
@@ -229,7 +225,7 @@ def fruchterman_reingold_layout(G,dim=2,
                                   weighted=weighted)
     if fixed is None:
         pos=_rescale_layout(pos,scale=scale)
-    return dict(zip(G,pos))
+    return dict(list(zip(G,pos)))
 
 
 
@@ -248,8 +244,7 @@ def _fruchterman_reingold(A,dim=2,
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "_fruchterman_reingold() requires numpy: http://scipy.org/ "
+        raise ImportError("_fruchterman_reingold() requires numpy: http://scipy.org/ ")
 
     try:
         nnodes,_=A.shape
@@ -282,7 +277,7 @@ def _fruchterman_reingold(A,dim=2,
     # could use multilevel methods to speed this up significantly
     for iteration in range(iterations):
         # matrix of difference between points
-        for i in xrange(pos.shape[1]):
+        for i in range(pos.shape[1]):
             delta[:,:,i]= pos[:,i,None]-pos[:,i]
         # distance between points
         distance=np.sqrt((delta**2).sum(axis=-1))
@@ -317,8 +312,7 @@ def _sparse_fruchterman_reingold(A,dim=2,
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "_sparse_fruchterman_reingold() requires numpy: http://scipy.org/ "
+        raise ImportError("_sparse_fruchterman_reingold() requires numpy: http://scipy.org/ ")
     try:
         nnodes,_=A.shape
     except AttributeError:
@@ -328,8 +322,7 @@ def _sparse_fruchterman_reingold(A,dim=2,
     try:
         from scipy.sparse import spdiags,coo_matrix
     except ImportError:
-        raise ImportError, \
-          "_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ "
+        raise ImportError("_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ ")
     
     # make sure we have a LIst of Lists representation
     try:
@@ -426,8 +419,7 @@ def spectral_layout(G,dim=2,weighted=True,scale=1):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "spectral_layout() requires numpy: http://scipy.org/ "
+        raise ImportError("spectral_layout() requires numpy: http://scipy.org/ ")
     if len(G)<=2:
         if len(G)==0:
             pos=np.array([])
@@ -435,7 +427,7 @@ def spectral_layout(G,dim=2,weighted=True,scale=1):
             pos=np.array([[1,1]])
         else:
             pos=np.array([[0,0.5],[1,0.5]])
-        return dict(zip(G,pos))
+        return dict(list(zip(G,pos)))
     try:
         # Sparse matrix 
         if len(G)< 500:  # dense solver is faster for small graphs
@@ -454,7 +446,7 @@ def spectral_layout(G,dim=2,weighted=True,scale=1):
         pos=_spectral(A,dim=dim,weighted=weighted)
 
     pos=_rescale_layout(pos,scale=scale)
-    return dict(zip(G,pos))
+    return dict(list(zip(G,pos)))
 
 
 def _spectral(A,dim=2,weighted=True):
@@ -463,8 +455,7 @@ def _spectral(A,dim=2,weighted=True):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError, \
-          "spectral_layout() requires numpy: http://scipy.org/ "
+        raise ImportError("spectral_layout() requires numpy: http://scipy.org/ ")
     try:
         nnodes,_=A.shape
     except AttributeError:
@@ -492,8 +483,7 @@ def _sparse_spectral(A,dim=2,weighted=True):
         from scipy.sparse import spdiags
         from scipy.sparse.linalg import eigen_symmetric
     except ImportError:
-        raise ImportError, \
-          "_sparse_spectral() scipy numpy: http://scipy.org/ "
+        raise ImportError("_sparse_spectral() scipy numpy: http://scipy.org/ ")
     try:
         nnodes,_=A.shape
     except AttributeError:
@@ -517,11 +507,11 @@ def _rescale_layout(pos,scale=1):
 
     # shift origin to (0,0)
     lim=0 # max coordinate for all axes
-    for i in xrange(pos.shape[1]):
+    for i in range(pos.shape[1]):
         pos[:,i]-=pos[:,i].min()
         lim=max(pos[:,i].max(),lim)
     # rescale to (0,scale) in all directions, preserves aspect
-    for i in xrange(pos.shape[1]):
+    for i in range(pos.shape[1]):
         pos[:,i]*=scale/lim
     return pos
 

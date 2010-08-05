@@ -135,8 +135,7 @@ def to_agraph(N):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError, \
-          "to_agraph() requires pygraphviz: http://nx.lanl.gov/pygraphviz"
+        raise ImportError("to_agraph() requires pygraphviz: http://nx.lanl.gov/pygraphviz")
     directed=N.is_directed()
     strict=N.number_of_selfloops()==0 and not N.is_multigraph()
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
@@ -154,11 +153,11 @@ def to_agraph(N):
 
     if N.is_multigraph():
         for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
-            str_edgedata=dict((k,str(v)) for k,v in edgedata.iteritems())
+            str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
             A.add_edge(u,v,key=str(key),**str_edgedata)
     else:
         for u,v,edgedata in N.edges_iter(data=True):
-            str_edgedata=dict((k,str(v)) for k,v in edgedata.iteritems())
+            str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
             A.add_edge(u,v,**str_edgedata)
 
 
@@ -178,8 +177,7 @@ def write_dot(G,path):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError, \
-          "write_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz"
+        raise ImportError("write_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz")
 
     A=to_agraph(G)
     A.write(path)
@@ -196,8 +194,7 @@ def read_dot(path):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError, \
-          "read_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz"
+        raise ImportError("read_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz")
     A=pygraphviz.AGraph(file=path)
     return from_agraph(A)
 
@@ -259,8 +256,7 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError, \
-          "pygraphviz_layout() requires pygraphviz: http://networkx.lanl.gov/pygraphviz"
+        raise ImportError("pygraphviz_layout() requires pygraphviz: http://networkx.lanl.gov/pygraphviz")
     A=to_agraph(G)
     if root is not None:
         args+="-Groot=%s"%root
@@ -272,7 +268,7 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
             xx,yy=node.attr["pos"].split(',')
             node_pos[n]=(float(xx),float(yy))
         except:
-            print "no position for node",n
+            print("no position for node",n)
             node_pos[n]=(0.0,0.0)
     return node_pos
 
@@ -344,7 +340,7 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
     def update_attrs(which, attrs):
         # Update graph attributes. Return list of those which were added.
         added = []
-        for k,v in attrs.iteritems():
+        for k,v in attrs.items():
             if k not in G.graph[which]:
                 G.graph[which][k] = v
                 added.append(k)

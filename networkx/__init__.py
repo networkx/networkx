@@ -79,16 +79,8 @@ from networkx.linalg import *
 from networkx.tests.test import run as test
 import networkx.utils
 
-# parts of these packages work with Python >= 2.6 
-
-# These packages need 2.6 <= Python < 3.0
-if sys.version_info[:2] < (3, 0):
-    from drawing import *
-    import drawing
-else:
-    import warnings
-    warnings.warn("""Python version %s detected. 
-Not all functionality enabled""" % sys.version)
+import networkx.drawing
+from networkx.drawing import *
 
 del sys
 

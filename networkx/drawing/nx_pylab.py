@@ -116,9 +116,9 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     try:
         import matplotlib.pylab as pylab
     except ImportError:
-        raise ImportError, "Matplotlib required for draw()"
+        raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
-        print "Matplotlib unable to open display"
+        print("Matplotlib unable to open display")
         raise
 
     cf=pylab.gcf()
@@ -261,9 +261,9 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     try:
         import matplotlib.pylab as pylab
     except ImportError:
-        raise ImportError, "Matplotlib required for draw()"
+        raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
-        print "Matplotlib unable to open display"
+        print("Matplotlib unable to open display")
         raise
 
     if pos is None:
@@ -366,9 +366,9 @@ def draw_networkx_nodes(G, pos,
         import matplotlib.pylab as pylab
         import numpy
     except ImportError:
-        raise ImportError, "Matplotlib required for draw()"
+        raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
-        print "Matplotlib unable to open display"
+        print("Matplotlib unable to open display")
         raise
 
 
@@ -383,7 +383,7 @@ def draw_networkx_nodes(G, pos,
 
     try:
         xy=numpy.asarray([pos[v] for v in nodelist])
-    except KeyError,e:
+    except KeyError as e:
         raise nx.NetworkXError('Node %s has no position.'%e)
     except ValueError:
         raise nx.NetworkXError('Bad value in node positions.')
@@ -488,9 +488,9 @@ def draw_networkx_edges(G, pos,
         from matplotlib.collections import LineCollection
         import numpy
     except ImportError:
-        raise ImportError, "Matplotlib required for draw()"
+        raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
-        print "Matplotlib unable to open display"
+        print("Matplotlib unable to open display")
         raise
 
     if ax is None:
@@ -564,7 +564,7 @@ def draw_networkx_edges(G, pos,
         mpl_version=matplotlib.__version__[0:-3]
     elif mpl_version.endswith('pre'):
         mpl_version=matplotlib.__version__[0:-3]
-    if map(int,mpl_version.split('.'))>=[0,87,7]:
+    if list(map(int,mpl_version.split('.')))>=[0,87,7]:
         if edge_colors is None:
             if edge_cmap is not None: assert(isinstance(edge_cmap, Colormap))
             edge_collection.set_array(numpy.asarray(edge_color))
@@ -708,19 +708,19 @@ def draw_networkx_labels(G, pos,
         import matplotlib.pylab as pylab
         import matplotlib.cbook as cb
     except ImportError:
-        raise ImportError, "Matplotlib required for draw()"
+        raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
-        print "Matplotlib unable to open display"
+        print("Matplotlib unable to open display")
         raise
 
     if ax is None:
         ax=pylab.gca()
 
     if labels is None:
-        labels=dict(zip(G.nodes(),G.nodes()))
+        labels=dict(list(zip(G.nodes(),G.nodes())))
 
     text_items={}  # there is no text collection so we'll fake one        
-    for (n,label) in labels.items():
+    for (n,label) in list(labels.items()):
         (x,y)=pos[n]
         if not cb.is_string_like(label):
             label=str(label) # this will cause "1" and 1 to be labeled the same
@@ -812,19 +812,19 @@ def draw_networkx_edge_labels(G, pos,
         import matplotlib.cbook as cb
         import numpy
     except ImportError:
-        raise ImportError, "Matplotlib required for draw()"
+        raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
-        print "Matplotlib unable to open display"
+        print("Matplotlib unable to open display")
         raise
 
     if ax is None:
         ax=pylab.gca()
     if edge_labels is None:
-        labels=dict(zip(G.edges(),[d for u,v,d in G.edges(data=True)]))
+        labels=dict(list(zip(G.edges(),[d for u,v,d in G.edges(data=True)])))
     else:
         labels = edge_labels
     text_items={} 
-    for ((n1,n2),label) in labels.items():
+    for ((n1,n2),label) in list(labels.items()):
         (x1,y1)=pos[n1]
         (x2,y2)=pos[n2]
         (x,y) = ((x1+x2)/2, (y1+y2)/2)

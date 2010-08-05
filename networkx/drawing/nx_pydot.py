@@ -39,8 +39,7 @@ def write_dot(G,path):
     try:
         import pydot
     except ImportError:
-        raise ImportError, \
-          "write_dot() requires pydot http://dkbza.org/pydot.html/"
+        raise ImportError("write_dot() requires pydot http://dkbza.org/pydot.html/")
     fh=_get_fh(path,'w')
     P=to_pydot(G)
     fh.write(P.to_string())
@@ -56,8 +55,7 @@ def read_dot(path):
     try:
         import pydot
     except ImportError:
-        raise ImportError, \
-          "read_dot() requires pydot http://dkbza.org/pydot.html/"
+        raise ImportError("read_dot() requires pydot http://dkbza.org/pydot.html/")
 
     fh=_get_fh(path,'r')
     data=fh.read()        
@@ -152,8 +150,7 @@ def to_pydot(N, strict=True):
     try:
         import pydot
     except ImportError:
-        raise ImportError, \
-          "to_pydot() requires pydot http://dkbza.org/pydot.html/"
+        raise ImportError("to_pydot() requires pydot http://dkbza.org/pydot.html/")
 
     # set Graphviz graph type
     if N.is_directed():
@@ -165,19 +162,19 @@ def to_pydot(N, strict=True):
     P = pydot.Dot(graph_type=graph_type,strict=strict)
 
     for n,nodedata in N.nodes_iter(data=True):
-        str_nodedata=dict((k,str(v)) for k,v in nodedata.iteritems())
+        str_nodedata=dict((k,str(v)) for k,v in nodedata.items())
         p=pydot.Node(str(n),**str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
         for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
-            str_edgedata=dict((k,str(v)) for k,v in edgedata.iteritems())
+            str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
             edge=pydot.Edge(str(u),str(v),key=str(key),**str_edgedata)
             P.add_edge(edge)
         
     else:
         for u,v,edgedata in N.edges_iter(data=True):
-            str_edgedata=dict((k,str(v)) for k,v in edgedata.iteritems())
+            str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
             edge=pydot.Edge(str(u),str(v),**str_edgedata)
             P.add_edge(edge)
 
@@ -198,17 +195,17 @@ def to_pydot(N, strict=True):
 
 
 def pydot_from_networkx(N):
-	"""Create a Pydot graph from a NetworkX graph."""
-        from warnings import warn
-        warn('pydot_from_networkx is replaced by to_pydot', DeprecationWarning)
-        return to_pydot(N)
+    """Create a Pydot graph from a NetworkX graph."""
+    from warnings import warn
+    warn('pydot_from_networkx is replaced by to_pydot', DeprecationWarning)
+    return to_pydot(N)
 
 def networkx_from_pydot(D, create_using=None):
-	"""Create a NetworkX graph from a Pydot graph."""
-        from warnings import warn
-        warn('networkx_from_pydot is replaced by from_pydot', 
-             DeprecationWarning)
-        return from_pydot(D)
+    """Create a NetworkX graph from a Pydot graph."""
+    from warnings import warn
+    warn('networkx_from_pydot is replaced by from_pydot', 
+         DeprecationWarning)
+    return from_pydot(D)
 
 def graphviz_layout(G,prog='neato',root=None, **kwds):
     """Create node positions using Pydot and Graphviz.
@@ -244,8 +241,7 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     try:
         import pydot
     except ImportError:
-        raise ImportError, \
-          "pydot_layout() requires pydot http://dkbza.org/pydot.html/"
+        raise ImportError("pydot_layout() requires pydot http://dkbza.org/pydot.html/")
 
     P=to_pydot(G)
     if root is not None :
@@ -254,12 +250,12 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     D=P.create_dot(prog=prog)
 
     if D=="":  # no data returned
-        print "Graphviz layout with %s failed"%(prog)
-        print
-        print "To debug what happened try:"
-        print "P=pydot_from_networkx(G)"
-        print "P.write_dot(\"file.dot\")"
-        print "And then run %s on file.dot"%(prog)
+        print("Graphviz layout with %s failed"%(prog))
+        print()
+        print("To debug what happened try:")
+        print("P=pydot_from_networkx(G)")
+        print("P.write_dot(\"file.dot\")")
+        print("And then run %s on file.dot"%(prog))
         return
 
     Q=pydot.graph_from_dot_data(D)
