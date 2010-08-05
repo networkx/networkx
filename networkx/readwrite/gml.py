@@ -104,13 +104,6 @@ def parse_gml(lines):
     ----------
     GML specification:
     http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
-
-    Examples
-    --------
-    >>> G=nx.path_graph(4)
-    >>> nx.write_gml(G,'test.gml')
-    >>> fh=open('test.gml')
-    >>> H=nx.read_gml(fh)
     """
     try:
         from pyparsing import ParseException
@@ -251,16 +244,6 @@ def write_gml(G, path):
 
     Notes
     -----
-    The output file will use the default text encoding on your system.
-    It is possible to write files in other encodings by opening
-    the file with the codecs module.  See doc/examples/unicode.py
-    for hints.
-
-    >>> G=nx.path_graph(4)
-    >>> import codecs
-    >>> fh=codecs.open('test.gml','w',encoding='iso8859-1')# use iso8859-1
-    >>> nx.write_gml(G,fh)
-
     GML specifications indicate that the file should only use
     7bit ASCII text encoding.iso8859-1 (latin-1). 
 
@@ -271,11 +254,6 @@ def write_gml(G, path):
     ---------
     >>> G=nx.path_graph(4)
     >>> nx.write_gml(G,"test.gml")
-
-    path can be a filehandle or a string with the name of the file.
-
-    >>> fh=open("test.gml",'w')
-    >>> nx.write_gml(G,fh)
 
     Filenames ending in .gz or .bz2 will be compressed.
 
