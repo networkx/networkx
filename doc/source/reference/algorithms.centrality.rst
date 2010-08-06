@@ -7,7 +7,7 @@ Centrality
 
 Degree
 ------
-.. automodule:: networkx.algorithms.centrality.degree
+.. automodule:: networkx.algorithms.centrality.degree_alg
 .. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
