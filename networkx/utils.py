@@ -96,6 +96,20 @@ def make_str(t):
     if is_string_like(t): return t
     return str(t)
 
+def cumulative_sum(numbers):
+    """Yield cumulative sum of numbers.
+    
+    >>> import networkx.utils as utils
+    >>> list(utils.cumulative_sum([1,2,3,4]))
+    [1, 3, 6, 10]
+    """
+    csum = 0
+    for n in numbers:
+        csum += n
+        yield csum
+        
+
+
 ##def iterable(obj):
 ##  """ Return True if obj is iterable with a well-defined len()"""
 ##    try:
