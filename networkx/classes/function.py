@@ -2,8 +2,6 @@
 Functional interface to graph methods and assorted utilities.
 
 """
-from __future__ import print_function
-
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
@@ -242,59 +240,43 @@ def create_empty_copy(G,with_nodes=True):
     return H
 
 
-def info(G, n=None, file=None):
-    """Print short summary of information for graph G or node n.
+def info(G, n=None):
+    """Print short summary of information for the graph G or 
+    the node n.
 
     Parameters
     ----------
     G : Networkx graph
        A graph
     n : node (any hashable)
-       A node from the graph G
-    file:  filehandle, optional (default=sys.stdout)
-       Write data to opened file
+       A node in the graph G
     """
-    
     import textwrap
-    width_left = 22
-
-    if file is None:
-        import sys
-        f=sys.stdout
-    else:
-        f=file
-
+    info='' # append this all to a string
     if n is None:
-        print(("Name:").ljust(width_left), G.name, file=f)
+        info+="Name: %s\n"%G.name
         type_name = [type(G).__name__]
-        print(("Type:").ljust(width_left), ",".join(type_name), file=f)
-        print(("Number of nodes:").ljust(width_left), 
-              G.number_of_nodes(), file=f)
-        print(("Number of edges:").ljust(width_left), 
-              G.number_of_edges(), file=f)
+        info+="Type: %s\n"%",".join(type_name)
+        info+="Number of nodes: %d\n"%G.number_of_nodes()
+        info+="Number of edges: %d\n"%G.number_of_edges()
+        nnodes=G.number_of_nodes()
         if len(G) > 0:
             if G.is_directed():
-                print(("Average in degree:").ljust(width_left), 
-                      round( sum(G.in_degree().values())/float(len(G)), 4), 
-                      file=f)
-                print(("Average out degree:").ljust(width_left), 
-                      round( sum(G.out_degree().values())/float(len(G)), 4), 
-                      file=f)
+                info+="Average in degree: %8.4f\n"%\
+                    (sum(G.in_degree().values())/nnodes)
+                info+="Average out degree: %8.4f\n"%\
+                    sum(G.out_degree().values())/nnodes
             else:
-                print(("Average degree:").ljust(width_left), 
-                      round( sum(G.degree().values())/float(len(G)), 4), 
-                      file=f)
+                s=sum(G.degree().values())
+                info+="Average degree: %8.4f"%\
+                    (float(s)/float(nnodes))
 
     else:
-        try:
-            list_neighbors = G.neighbors(n)
-        except (KeyError, TypeError):
+        if n not in G:
             raise NetworkXError("node %s not in graph"%(n,))
-        print("Node", n, "has the following properties:", file=f)
-        print(("Degree:").ljust(width_left), len(list_neighbors), file=f)
-        str_neighbors = str(list_neighbors)
-        str_neighbors = str_neighbors[1:len(str_neighbors)-1]
-        wrapped_neighbors = textwrap.wrap(str_neighbors, 50)
-        print(("Neighbors:").ljust(width_left), wrapped_neighbors[0], file=f)
-        for i in wrapped_neighbors[1:]:
-            print("".ljust(width_left), i, file=f)
+        info+="Node % s has the following properties:\n"%n
+        info+="Degree: %d\n"%G.degree(n)
+        info+="Neighbors: "
+        info+=' '.join(str(nbr) for nbr in G.neighbors(n))
+    return info
+

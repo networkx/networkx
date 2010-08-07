@@ -92,22 +92,18 @@ class TestFunction(object):
         assert_equal(G.frozen,True)
 
     def test_info(self):
-        import io
-        fh=io.StringIO()
-        networkx.info(self.G,file=fh)
-        expected_graph_info="""Name:                  Test
-Type:                  Graph
-Number of nodes:       5
-Number of edges:       5
-Average degree:        2.0
-"""
-        assert_equal(fh.getvalue(),expected_graph_info)
-        fh.close()
-        fh=io.StringIO()
-        networkx.info(self.G,n=1,file=fh)
-        expected_node_info="""Node 1 has the following properties:
-Degree:                3
-Neighbors:             0, 1, 2
-"""
-        assert_equal(fh.getvalue(),expected_node_info)
-        fh.close()
+        G=networkx.path_graph(5)
+        info=networkx.info(G)
+        expected_graph_info='\n'.join(['Name: path_graph(5)',
+                                       'Type: Graph',
+                                       'Number of nodes: 5',
+                                       'Number of edges: 4',
+                                       'Average degree:   1.6000'])
+        assert_equal(info,expected_graph_info)
+
+        info=networkx.info(G,n=1)
+        expected_node_info='\n'.join(
+            ['Node 1 has the following properties:',
+             'Degree: 2',
+             'Neighbors: 0 2'])
+        assert_equal(info,expected_node_info)
