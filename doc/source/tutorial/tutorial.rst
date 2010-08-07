@@ -190,9 +190,9 @@ Note that for undirected graphs this actually looks at each edge twice.
 >>> FG=nx.Graph()
 >>> FG.add_weighted_edges_from([(1,2,0.125),(1,3,0.75),(2,4,1.2),(3,4,0.375)])
 >>> for n,nbrs in FG.adjacency_iter():
-...    for nbr,eattr in nbrs.iteritems():
+...    for nbr,eattr in nbrs.items():
 ...        data=eattr['weight']
-...        if data<0.5: print (n,nbr,data)
+...        if data<0.5: print('(%d, %d, %.3f)' % (n,nbr,data))
 (1, 2, 0.125)
 (2, 1, 0.125)
 (3, 4, 0.375)
@@ -208,7 +208,7 @@ Each graph, node, and edge can hold key/value attribute pairs
 in an associated attribute dictionary (the keys must be hashable).
 By default these are empty, but attributes can be added or changed using
 add_edge, add_node or direct manipulation of the attribute 
-dictionaries named G.graph, g.node and G.edge for a graph G.
+dictionaries named G.graph, G.node and G.edge for a graph G.
 
 
 Graph attributes
@@ -219,7 +219,7 @@ Assign graph attributes when creating a new graph
 >>> G.graph
 {'day': 'Friday'}
 
-Or you can modify attriubutes later
+Or you can modify attributes later
 
 >>> G.graph['day']='Monday'
 >>> G.graph
@@ -313,10 +313,10 @@ well defined.
 {1: 1.25, 2: 1.75, 3: 0.5}
 >>> GG=nx.Graph()
 >>> for n,nbrs in MG.adjacency_iter():
-...    for nbr,edict in nbrs.iteritems():
-...        minvalue=min(edict.values())
-...        GG.add_edge(n,nbr,minvalue)
-
+...    for nbr,edict in nbrs.items():
+...        minvalue=min([d['weight'] for d in edict.values()])
+...        GG.add_edge(n,nbr, weight = minvalue)
+...
 >>> nx.shortest_path(GG,1,3)
 [1, 2, 3]
 
@@ -425,6 +425,9 @@ open source Graphviz software package are included.
 These are part of the networkx.drawing package
 and will be imported if possible. 
 See :doc:`/reference/drawing` for details.
+
+Note that the drawing package in NetworkX is not yet compatible with
+Python versions 3.0 and above.
 
 First import Matplotlib's plot interface (pylab works too)
 
