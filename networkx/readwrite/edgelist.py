@@ -307,19 +307,6 @@ def read_edgelist(path,
      a c 3.14159
      d e 42
     """
-    if edgetype is not None: 
-        import warnings
-        warnings.warn('edgetype option is deprecated, use read_weighted_edgelist()', 
-                      DeprecationWarning)
-        return read_edgelist(path,
-                             comments=comments,
-                             delimiter=delimiter,
-                             create_using=create_using,
-                             nodetype=nodetype,
-                             data=(('weight',edgetype),),
-                             encoding = encoding
-                             )
-    
     fh=_get_fh(path, 'rb')
     lines = (line.decode(encoding) for line in fh)
     return parse_edgelist(lines,
