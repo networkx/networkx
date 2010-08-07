@@ -68,8 +68,8 @@ def karate_graph(create_using=None, **kwds):
 
 
     row=0
-    for line in string.split(zacharydat,'\n'):
-        thisrow=map(int,string.split(line,' '))
+    for line in zacharydat.split('\n'):
+        thisrow=list(map(int,line.split(' ')))
         for col in range(0,len(thisrow)):
             if thisrow[col]==1:
                 G.add_edge(row,col) # col goes from 0,33
@@ -79,6 +79,6 @@ def karate_graph(create_using=None, **kwds):
 if __name__ == "__main__":
 
     G=karate_graph()
-    print "Node Degree"
+    print("Node Degree")
     for v in G:
-        print v,G.degree(v)
+        print('%s %s' % (v,G.degree(v)))

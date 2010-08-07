@@ -20,6 +20,7 @@ References.
 
 
 """
+from __future__ import print_function
 __author__ = """Brendt Wohlberg\nAric Hagberg (hagberg@lanl.gov)"""
 __date__ = "$Date: 2005-04-01 07:56:22 -0700 (Fri, 01 Apr 2005) $"
 __credits__ = """"""
@@ -40,15 +41,13 @@ def roget_graph():
     the Stanford Graph Base.
     """
     # open file roget_dat.txt.gz (or roget_dat.txt)
-    try:
-        import gzip
-        fh=gzip.open('roget_dat.txt.gz','r')
-    except:
-        fh=open("roget_dat.txt","r")
+    import gzip
+    fh=gzip.open('roget_dat.txt.gz','r')
 
     G=DiGraph()
 
     for line in fh.readlines():
+        line = line.decode()
         if line.startswith("*"): # skip comments
             continue
         if line.startswith(" "): # this is a continuation line, append
@@ -67,7 +66,7 @@ def roget_graph():
 
         for tail in tails.split():
             if head==tail:
-                print >>sys.stderr,"skipping self loop",head,tail
+                print("skipping self loop",head,tail, file=sys.stderr)
             G.add_edge(head,tail)
 
     return G            
@@ -75,9 +74,9 @@ def roget_graph():
 if __name__ == '__main__':
     from networkx import *
     G=roget_graph()
-    print "Loaded roget_dat.txt containing 1022 categories."
-    print "digraph has %d nodes with %d edges"\
-          %(number_of_nodes(G),number_of_edges(G))
+    print("Loaded roget_dat.txt containing 1022 categories.")
+    print("digraph has %d nodes with %d edges"\
+          %(number_of_nodes(G),number_of_edges(G)))
     UG=G.to_undirected()
-    print number_connected_components(UG),"connected components"
+    print(number_connected_components(UG),"connected components")
 

@@ -58,9 +58,9 @@ if __name__ == '__main__':
 
     G=atlas6()
 
-    print "graph has %d nodes with %d edges"\
-          %(nx.number_of_nodes(G),nx.number_of_edges(G))
-    print nx.number_connected_components(G),"connected components"
+    print("graph has %d nodes with %d edges"\
+          %(nx.number_of_nodes(G),nx.number_of_edges(G)))
+    print(nx.number_connected_components(G),"connected components")
 
 
     try:

@@ -58,49 +58,47 @@ def words_graph():
     """ Return the words example graph from the Stanford GraphBase"""
 
     import sys
-    # open file words_dat.txt.gz (or words_dat.txt)
-    try:
-        import gzip
-        fh=gzip.open('words_dat.txt.gz','r')
-    except:
-        fh=open("words_dat.txt","r")
+    # open file words_dat.txt.gz
+    import gzip
+    fh=gzip.open('words_dat.txt.gz','r')
 
     G = Graph(name="words")
     sys.stderr.write("Loading words_dat.txt: ")
     for line in fh.readlines():
+        line = line.decode()
         if line.startswith("*"):
             continue
         w=line[0:5]
         G.add_node(w)
     nwords=number_of_nodes(G)
     words=G.nodes()
-    for k in xrange(0,nwords):
+    for k in range(0,nwords):
         if (k%100==0): 
             sys.stderr.softspace=0
             sys.stderr.write(".")
-        for l in xrange(k+1,nwords):
+        for l in range(k+1,nwords):
             if _wdist(words[k],words[l]) == 1:
                 G.add_edge(words[k],words[l])
+    print()
     return G
 
 
 if __name__ == '__main__':
     from networkx import *
     G=words_graph()
-    print "Loaded words_dat.txt containing 5757 five-letter English words."
-    print "Two words are connected if they differ in one letter."
-    print "graph has %d nodes with %d edges"\
-          %(number_of_nodes(G),number_of_edges(G))
+    print("Loaded words_dat.txt containing 5757 five-letter English words.")
+    print("Two words are connected if they differ in one letter.")
+    print("graph has %d nodes with %d edges"
+          %(number_of_nodes(G),number_of_edges(G)))
 
     sp=shortest_path(G, 'chaos', 'order')
-    print "shortest path between 'chaos' and 'order' is:\n", sp
+    print("shortest path between 'chaos' and 'order' is:\n%s" % sp)
 
     sp=shortest_path(G, 'nodes', 'graph')
-    print "shortest path between 'nodes' and 'graph' is:\n", sp
+    print("shortest path between 'nodes' and 'graph' is:\n%s" % sp)
 
     sp=shortest_path(G, 'pound', 'marks')
-    print "shortest path between 'pound' and 'marks' is:\n", sp
+    print("shortest path between 'pound' and 'marks' is:\n%s" % sp)
 
-    print number_connected_components(G),"connected components"
+    print("%d connected components" % number_connected_components(G))
 
-    

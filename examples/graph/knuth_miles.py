@@ -34,11 +34,8 @@ def miles_graph():
         from the Stanford GraphBase.
     """
     # open file miles_dat.txt.gz (or miles_dat.txt)
-    try:
-        import gzip
-        fh = gzip.open('knuth_miles.txt.gz','r')
-    except:
-        fh=open("knuth_miles.txt","r")
+    import gzip
+    fh = gzip.open('knuth_miles.txt.gz','r')
 
     G=nx.Graph()
     G.position={}
@@ -46,6 +43,7 @@ def miles_graph():
 
     cities=[]
     for line in fh.readlines():
+        line = line.decode()
         if line.startswith("*"): # skip comments
             continue
 
@@ -76,9 +74,9 @@ if __name__ == '__main__':
 
     G=miles_graph()
 
-    print "Loaded miles_dat.txt containing 128 cities."
-    print "digraph has %d nodes with %d edges"\
-          %(nx.number_of_nodes(G),nx.number_of_edges(G))
+    print("Loaded miles_dat.txt containing 128 cities.")
+    print("digraph has %d nodes with %d edges"\
+          %(nx.number_of_nodes(G),nx.number_of_edges(G)))
 
 
     # make new graph of cites, edge if less then 300 miles between them

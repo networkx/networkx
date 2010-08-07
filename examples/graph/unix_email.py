@@ -24,7 +24,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    BSD license.
 
 import email
-from email.Utils import getaddresses,parseaddr
+from email.utils import getaddresses,parseaddr
 import mailbox
 import sys
 
@@ -48,12 +48,11 @@ if __name__ == '__main__':
         pass
 
     if len(sys.argv)==1:
-        file="unix_email.mbox"
+        filePath = "unix_email.mbox"
     else:
-        file=sys.argv[1]
-    fp=open(file,"r")
+        filePath = sys.argv[1]
 
-    mbox = mailbox.UnixMailbox(fp, msgfactory) # parse unix mailbox
+    mbox = mailbox.mbox(filePath, msgfactory) # parse unix mailbox
 
     G=nx.MultiDiGraph() # create empty graph
 
@@ -73,7 +72,7 @@ if __name__ == '__main__':
 
     # print edges with message subject
     for (u,v,d) in G.edges_iter(data=True):
-        print "From: %s To: %s Subject: %s"%(u,v,d['message']["Subject"])
+        print("From: %s To: %s Subject: %s"%(u,v,d['message']["Subject"]))
     
 
     try: # draw

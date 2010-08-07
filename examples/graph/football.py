@@ -19,29 +19,32 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 try:
     import pyparsing
-except ImportError,e:
+except ImportError as e:
     raise ImportError(str(e)+". Check http://pyparsing.wikispaces.com/")
     
 from networkx import *
 
 url="http://www-personal.umich.edu/~mejn/netdata/football.zip"
 
-import urllib
-import StringIO
+try: # Python 3.x
+    import urllib.request as urllib
+except ImportError: # Python 2.x
+    import urllib
+import io
 import zipfile
 
 sock = urllib.urlopen(url)  # open URL
-s=StringIO.StringIO(sock.read()) # read into StringIO "file"
+s=io.BytesIO(sock.read()) # read into BytesIO "file"
 sock.close()
 
 zf = zipfile.ZipFile(s) # zipfile object
-txt=zf.read('football.txt') # read info file
-gml=zf.read('football.gml') # read gml data
+txt=zf.read('football.txt').decode() # read info file
+gml=zf.read('football.gml').decode() # read gml data
 # throw away bogus first line with # from mejn files
 gml=gml.split('\n')[1:]
 G=parse_gml(gml) # parse gml data
 
-print txt
+print(txt)
 # print degree for each team - number of games
 for n,d in G.degree_iter():
-    print n,d
+    print('%s %d' % (n, d))
