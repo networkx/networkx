@@ -887,7 +887,7 @@ class DiGraph(Graph):
         if weighted:
         # edge weighted graph - degree is sum of edge weights
             for n,nbrs in nodes_nbrs:
-                yield (n, sum(data.get('weight',1) for data in nbrs.itervalues()))
+                yield (n, sum(data.get('weight',1) for data in nbrs.values()))
         else:
             for n,nbrs in nodes_nbrs:
                 yield (n,len(nbrs))
@@ -933,7 +933,7 @@ class DiGraph(Graph):
         if weighted:
         # edge weighted graph - degree is sum of edge weights
             for n,nbrs in nodes_nbrs:
-                yield (n, sum(data.get('weight',1) for data in nbrs.itervalues()))
+                yield (n, sum(data.get('weight',1) for data in nbrs.values()))
         else:
             for n,nbrs in nodes_nbrs:
                 yield (n,len(nbrs))
