@@ -112,9 +112,9 @@ Windows
 OSX
 ~~~
 
-OSX 10.5 ships with Python version 2.5.  If you
-have an older version we encourage you to download
-a newer release. Pre-built Python packages are available from 
+OSX 10.5 ships with Python version 2.5.  You need Python 2.6 or 
+later to use NetworkX.  If you have an older version and need
+to install a newer release pre-built Python packages are available from 
 
  - Official Python site version  http://www.python.org/download/
 
