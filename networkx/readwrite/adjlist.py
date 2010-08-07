@@ -282,7 +282,7 @@ def parse_multiline_adjlist(lines, comments = '#', delimiter = ' ',
                     edgedata=literal_eval(data)
                 except:
                     edgedata={}
-            G.add_edge(u,v,**edgedata)
+            G.add_edge(u,v,attr_dict=edgedata)
 
     return G
 

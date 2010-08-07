@@ -218,7 +218,7 @@ def parse_edgelist(lines, comments = '#', delimiter = ' ',
                     raise TypeError("Failed to convert edge data (%s) to type %s."%
                                     (edge_key, edge_type))
                 edgedata.update({edge_key:edge_value})
-        G.add_edge(u, v, **edgedata)
+        G.add_edge(u, v, attr_dict=edgedata)
     return G
 
 
