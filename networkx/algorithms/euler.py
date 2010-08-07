@@ -26,11 +26,11 @@ def is_eulerian(G):
 
     Examples
     --------
-    >>> is_eulerian(nx.DiGraph({0:[3], 1:[2], 2:[3], 3:[0, 1]}))
+    >>> nx.is_eulerian(nx.DiGraph({0:[3], 1:[2], 2:[3], 3:[0, 1]}))
     True
-    >>> is_eulerian(nx.complete_graph(5))
+    >>> nx.is_eulerian(nx.complete_graph(5))
     True
-    >>> is_eulerian(nx.petersen_graph())
+    >>> nx.is_eulerian(nx.petersen_graph())
     False
 
     Notes
@@ -78,11 +78,11 @@ def eulerian_circuit(G, source=None):
     Examples
     --------
     >>> G=nx.complete_graph(3)
-    >>> list( eulerian_circuit(G) )
+    >>> list(nx.eulerian_circuit(G))
     [(0, 1), (1, 2), (2, 0)]
-    >>> list( eulerian_circuit(G,source=1) ) 
+    >>> list(nx.eulerian_circuit(G,source=1)) 
     [(1, 0), (0, 2), (2, 1)]
-    >>> [u for u,v in eulerian_circuit(G)]  # nodes in circuit
+    >>> [u for u,v in nx.eulerian_circuit(G)]  # nodes in circuit
     [0, 1, 2]
 
     Notes

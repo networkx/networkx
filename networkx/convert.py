@@ -230,13 +230,13 @@ def relabel_nodes(G,mapping):
     >>> G=nx.path_graph(3)  # nodes 0-1-2
     >>> mapping={0:'a',1:'b',2:'c'}
     >>> H=nx.relabel_nodes(G,mapping)
-    >>> print H.nodes()
+    >>> print(H.nodes())
     ['a', 'c', 'b']
 
     >>> G=nx.path_graph(26) # nodes 0..25
     >>> mapping=dict(zip(G.nodes(),"abcdefghijklmnopqrstuvwxyz"))
     >>> H=nx.relabel_nodes(G,mapping) # nodes a..z
-    >>> mapping=dict(zip(G.nodes(),xrange(1,27)))
+    >>> mapping=dict(zip(G.nodes(),range(1,27)))
     >>> G1=nx.relabel_nodes(G,mapping) # nodes 1..26
 
     mapping as function
@@ -245,7 +245,7 @@ def relabel_nodes(G,mapping):
     >>> def mapping(x):
     ...    return x**2
     >>> H=nx.relabel_nodes(G,mapping)
-    >>> print H.nodes()
+    >>> print(H.nodes())
     [0, 1, 4]
 
     See Also
