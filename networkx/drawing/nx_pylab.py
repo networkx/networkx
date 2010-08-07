@@ -398,8 +398,7 @@ def draw_networkx_nodes(G, pos,
                                vmin=vmin,
                                vmax=vmax,
                                alpha=alpha,
-                               linewidths=linewidths,
-                               **kwds)
+                               linewidths=linewidths)
                                
 #    pylab.axes(ax)
     pylab.sci(node_collection)
@@ -543,7 +542,7 @@ def draw_networkx_edges(G, pos,
                                      antialiaseds = (1,),
                                      linestyle    = style,     
                                      transOffset = ax.transData,             
-                                     **kwds)
+                                     )
 
 
     edge_collection.set_zorder(1) # edges go behind nodes            
@@ -621,7 +620,7 @@ def draw_networkx_edges(G, pos,
                                 linewidths   = [4*ww for ww in lw],
                                 antialiaseds = (1,),
                                 transOffset = ax.transData,             
-                                **kwds)
+                                )
         
         arrow_collection.set_zorder(1) # edges go behind nodes            
         ax.add_collection(arrow_collection)
@@ -735,7 +734,7 @@ def draw_networkx_labels(G, pos,
                   verticalalignment='center',
                   transform = ax.transData,
                   clip_on=True,
-                  **kwds)
+                  )
         text_items[n]=t
 
     return text_items
@@ -860,7 +859,7 @@ def draw_networkx_edge_labels(G, pos,
                   bbox = bbox,
                   zorder = 1,
                   clip_on=True,
-                  **kwds)
+                  )
         text_items[(n1,n2)]=t
 
     return text_items
