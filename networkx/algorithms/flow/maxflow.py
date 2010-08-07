@@ -78,11 +78,11 @@ def _create_flow_graph(G, H, infcapFlows):
 
 
 def ford_fulkerson(G, s, t):
-    """Find a maximum single-commodity flow using the Ford-Fulkerson
-    algorithm.
+    """Find a maximum single-commodity flow using the Ford-Fulkerson algorithm.
     
     This algorithm uses Edmond-Karp-Dinitz path selection rule which
-    guarantees a running time of O(|V||E|**2).
+    guarantees a running time of O(nm^2) for n nodes and m edges.
+
 
     Parameters
     ----------
