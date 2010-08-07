@@ -8,12 +8,12 @@ class TestFunction(object):
     def setUp(self):
         self.G=networkx.Graph({0:[1,2,3], 1:[1,2,0], 4:[]}, name='Test')
         self.Gdegree={0:3, 1:2, 2:2, 3:1, 4:0}
-        self.Gnodes=range(5)
+        self.Gnodes=list(range(5))
         self.Gedges=[(0,1),(0,2),(0,3),(1,0),(1,1),(1,2)]
         self.DG=networkx.DiGraph({0:[1,2,3], 1:[1,2,0], 4:[]})
         self.DGin_degree={0:1, 1:2, 2:2, 3:1, 4:0}
         self.DGout_degree={0:3, 1:3, 2:0, 3:0, 4:0}
-        self.DGnodes=range(5)
+        self.DGnodes=list(range(5))
         self.DGedges=[(0,1),(0,2),(0,3),(1,0),(1,1),(1,2)]
 
     def test_nodes(self):
@@ -91,23 +91,23 @@ class TestFunction(object):
         assert_equal(G.frozen, networkx.is_frozen(self.G))
         assert_equal(G.frozen,True)
 
-#     def test_info(self):
-#         import StringIO
-#         fh=StringIO.StringIO()
-#         networkx.info(self.G,output_to_file=fh)
-#         expected_graph_info="""Name:                  Test
-# Type:                  Graph
-# Number of nodes:       5
-# Number of edges:       5
-# Average degree:        2.0
-# """
-#         assert_equal(fh.getvalue(),expected_graph_info)
-#         fh.close()
-#         fh=StringIO.StringIO()
-#         networkx.info(self.G,n=1,output_to_file=fh)
-#         expected_node_info="""Node 1 has the following properties:
-# Degree:                3
-# Neighbors:             0, 1, 2
-# """
-#         assert_equal(fh.getvalue(),expected_node_info)
-#         fh.close()
+    def test_info(self):
+        import io
+        fh=io.StringIO()
+        networkx.info(self.G,file=fh)
+        expected_graph_info="""Name:                  Test
+Type:                  Graph
+Number of nodes:       5
+Number of edges:       5
+Average degree:        2.0
+"""
+        assert_equal(fh.getvalue(),expected_graph_info)
+        fh.close()
+        fh=io.StringIO()
+        networkx.info(self.G,n=1,file=fh)
+        expected_node_info="""Node 1 has the following properties:
+Degree:                3
+Neighbors:             0, 1, 2
+"""
+        assert_equal(fh.getvalue(),expected_node_info)
+        fh.close()
