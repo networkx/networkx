@@ -44,7 +44,7 @@ def create_hc(G):
     membership=list(hierarchy.fcluster(Z,t=1.15)) 
     # Create collection of lists for blockmodel 
     partition=defaultdict(list)
-    for n,p in zip(range(len(G)),membership):
+    for n,p in zip(list(range(len(G))),membership):
         partition[p].append(n)
     return list(partition.values())
 
