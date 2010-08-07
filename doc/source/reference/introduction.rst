@@ -232,7 +232,7 @@ find the shortest weighted path:
 >>> G=nx.Graph()
 >>> e=[('a','b',0.3),('b','c',0.9),('a','c',0.5),('c','d',1.2)]
 >>> G.add_weighted_edges_from(e)
->>> print nx.dijkstra_path(G,'a','d')
+>>> print(nx.dijkstra_path(G,'a','d'))
 ['a', 'c', 'd']
 
 Drawing
@@ -284,7 +284,7 @@ edges ('A','B'), ('B','C')
 >>> G=nx.Graph()
 >>> G.add_edge('A','B')
 >>> G.add_edge('B','C')
->>> print G.adj
+>>> print(G.adj)
 {'A': {'B': {}}, 'C': {'B': {}}, 'B': {'A': {}, 'C': {}}}
 
 The data structure gets morphed slightly for each base graph class.
@@ -301,7 +301,7 @@ dictionary storing "name-value" relationships for that edge.
 
 >>> G=nx.Graph()
 >>> G.add_edge(1,2,color='red',weight=0.84,size=300)
->>> print G[1][2]['size']
+>>> print(G[1][2]['size'])
 300
 
 .. rubric:: Footnotes
