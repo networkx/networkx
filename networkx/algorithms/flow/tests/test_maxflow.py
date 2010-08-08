@@ -13,13 +13,13 @@ __author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
 import networkx as nx
 from nose.tools import *
 
-def compare_flows(G, s, t, H, solnValue):
-    output = nx.ford_fulkerson(G, s, t)
-    flows = [edge[2]['flow']
-            for edge in output[1].edges(data = True)]
-    solnFlows = [H[u][v]['flow'] for (u, v) in output[1].edges()]
-
-    assert_equal((output[0], flows), (solnValue, solnFlows))
+def compare_flows(G, s, t, solnFlows, solnValue):
+    flowValue, flowDict = nx.ford_fulkerson(G, s, t)
+    assert_equal(flowValue, solnValue)
+    assert_equal(flowDict, solnFlows)
+    assert_equal(nx.min_cut(G, s, t), solnValue)
+    assert_equal(nx.max_flow(G, s, t), solnValue)
+    assert_equal(nx.ford_fulkerson_flow(G, s, t), solnFlows)
 
 
 class TestMaxflow:
@@ -28,10 +28,10 @@ class TestMaxflow:
         G = nx.Graph()
         G.add_edge(1,2, capacity = 1.0)
 
-        H = nx.Graph(G)
-        H[1][2]['flow'] = 1.0
+        solnFlows = {1: {2: 1.0},
+                     2: {1: 1.0}}
 
-        compare_flows(G, 1, 2, H, 1.0)
+        compare_flows(G, 1, 2, solnFlows, 1.0)
 
     def test_graph2(self):
         # A more complex undirected graph
@@ -46,15 +46,13 @@ class TestMaxflow:
         G.add_edge('c','y', capacity = 2.0)
         G.add_edge('e','y', capacity = 3.0)
 
-        H = nx.Graph(G)
-        H['x']['a']['flow'] = 3
-        H['x']['b']['flow'] = 1
-        H['a']['c']['flow'] = 3
-        H['b']['c']['flow'] = 1
-        H['b']['d']['flow'] = 2
-        H['c']['y']['flow'] = 2
-        H['d']['e']['flow'] = 2
-        H['e']['y']['flow'] = 2
+        H = {'x': {'a': 3, 'b': 1},
+             'a': {'c': 3, 'x': 3},
+             'b': {'c': 1, 'd': 2, 'x': 1},
+             'c': {'a': 3, 'b': 1, 'y': 2},
+             'd': {'b': 2, 'e': 2},
+             'e': {'d': 2, 'y': 2},
+             'y': {'c': 2, 'e': 2}}
 
         compare_flows(G, 'x', 'y', H, 4.0)
 
@@ -67,12 +65,10 @@ class TestMaxflow:
         G.add_edge('b','d', capacity = 1000.0)
         G.add_edge('c','d', capacity = 1000.0)
 
-        H = nx.DiGraph(G)
-        H['a']['b']['flow'] = 1000.0
-        H['a']['c']['flow'] = 1000.0
-        H['b']['c']['flow'] = 0
-        H['b']['d']['flow'] = 1000.0
-        H['c']['d']['flow'] = 1000.0
+        H = {'a': {'b': 1000.0, 'c': 1000.0},
+             'b': {'c': 0, 'd': 1000.0},
+             'c': {'d': 1000.0},
+             'd': {}}
 
         compare_flows(G, 'a', 'd', H, 2000.0)
 
@@ -85,13 +81,12 @@ class TestMaxflow:
         G.add_edge('b', 'a', capacity = 2)
         G.add_edge('a', 't', capacity = 2)
 
-        H = nx.DiGraph(G)
-        H['s']['b']['flow'] = 2
-        H['s']['c']['flow'] = 0
-        H['c']['d']['flow'] = 0
-        H['d']['a']['flow'] = 0
-        H['b']['a']['flow'] = 2
-        H['a']['t']['flow'] = 2
+        H = {'s': {'b': 2, 'c': 0},
+             'c': {'d': 0},
+             'd': {'a': 0},
+             'b': {'a': 2},
+             'a': {'t': 2},
+             't': {}}
 
         compare_flows(G, 's', 't', H, 2)
 
@@ -109,17 +104,12 @@ class TestMaxflow:
         G.add_edge('v3','t', capacity = 20.0)
         G.add_edge('v4','t', capacity = 4.0)
 
-        H = nx.DiGraph(G)
-        H['s']['v1']['flow'] = 12.0
-        H['s']['v2']['flow'] = 11.0
-        H['v2']['v1']['flow'] = 0
-        H['v1']['v2']['flow'] = 0
-        H['v3']['v2']['flow'] = 0
-        H['v2']['v4']['flow'] = 11.0
-        H['v4']['v3']['flow'] = 7.0
-        H['v1']['v3']['flow'] = 12.0
-        H['v3']['t']['flow'] = 19.0
-        H['v4']['t']['flow'] = 4.0
+        H = {'s': {'v1': 12.0, 'v2': 11.0},
+             'v2': {'v1': 0, 'v4': 11.0},
+             'v1': {'v2': 0, 'v3': 12.0},
+             'v3': {'v2': 0, 't': 19.0},
+             'v4': {'v3': 7.0, 't': 4.0},
+             't': {}}
 
         compare_flows(G, 's', 't', H, 23.0)
 
@@ -136,15 +126,13 @@ class TestMaxflow:
         G.add_edge('c','y', capacity = 2.0)
         G.add_edge('e','y', capacity = 3.0)
 
-        H = nx.DiGraph(G)
-        H['x']['a']['flow'] = 2.0
-        H['a']['c']['flow'] = 2.0
-        H['x']['b']['flow'] = 1.0
-        H['b']['c']['flow'] = 0
-        H['b']['d']['flow'] = 1.0
-        H['c']['y']['flow'] = 2.0
-        H['d']['e']['flow'] = 1.0
-        H['e']['y']['flow'] = 1.0
+        H = {'x': {'a': 2.0, 'b': 1.0},
+             'a': {'c': 2.0},
+             'b': {'c': 0, 'd': 1.0},
+             'c': {'y': 2.0},
+             'd': {'e': 1.0},
+             'e': {'y': 1.0},
+             'y': {}}
 
         compare_flows(G, 'x', 'y', H, 3.0)
 
@@ -158,13 +146,11 @@ class TestMaxflow:
         G.add_edge('a', 't', capacity = 60)
         G.add_edge('c', 't')
 
-        H = nx.DiGraph(G)
-        H['s']['a']['flow'] = 85
-        H['s']['b']['flow'] = 12
-        H['a']['c']['flow'] = 25
-        H['a']['t']['flow'] = 60
-        H['b']['c']['flow'] = 12
-        H['c']['t']['flow'] = 37
+        H = {'s': {'a': 85, 'b': 12},
+             'a': {'c': 25, 't': 60},
+             'b': {'c': 12},
+             'c': {'t': 37},
+             't': {}}
 
         compare_flows(G, 's', 't', H, 97)
 
@@ -178,14 +164,11 @@ class TestMaxflow:
         G.add_edge('a', 't', capacity = 60)
         G.add_edge('c', 't', capacity = 37)
 
-        H = nx.DiGraph(G)
-        H['s']['a']['flow'] = 85
-        H['s']['b']['flow'] = 12
-        H['a']['c']['flow'] = 25
-        H['c']['a']['flow'] = 0
-        H['a']['t']['flow'] = 60
-        H['b']['c']['flow'] = 12
-        H['c']['t']['flow'] = 37
+        H = {'s': {'a': 85, 'b': 12},
+             'a': {'c': 25, 't': 60},
+             'c': {'a': 0, 't': 37},
+             'b': {'c': 12},
+             't': {}}
 
         compare_flows(G, 's', 't', H, 97)
         
@@ -200,8 +183,14 @@ class TestMaxflow:
         G.add_edge('a', 't', capacity = 60)
         G.add_edge('c', 't')
 
-        assert_raises(nx.NetworkXError,
+        assert_raises(nx.NetworkXUnbounded,
                       nx.ford_fulkerson, G, 's', 't')
+        assert_raises(nx.NetworkXUnbounded,
+                      nx.max_flow, G, 's', 't')
+        assert_raises(nx.NetworkXUnbounded,
+                      nx.ford_fulkerson_flow, G, 's', 't')
+        assert_raises(nx.NetworkXUnbounded,
+                      nx.min_cut, G, 's', 't')
 
     def test_graph_infcap_edges(self):
         # Undirected graph with infinite capacity edges
@@ -213,13 +202,11 @@ class TestMaxflow:
         G.add_edge('a', 't', capacity = 60)
         G.add_edge('c', 't')
 
-        H = nx.Graph(G)
-        H['s']['a']['flow'] = 85
-        H['s']['b']['flow'] = 12
-        H['a']['c']['flow'] = 25
-        H['a']['t']['flow'] = 60
-        H['b']['c']['flow'] = 12
-        H['c']['t']['flow'] = 37
+        H = {'s': {'a': 85, 'b': 12},
+             'a': {'c': 25, 's': 85, 't': 60},
+             'b': {'c': 12, 's': 12},
+             'c': {'a': 25, 'b': 12, 't': 37},
+             't': {'a': 60, 'c': 37}}
 
         compare_flows(G, 's', 't', H, 97)
 

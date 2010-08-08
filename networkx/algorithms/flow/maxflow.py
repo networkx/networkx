@@ -10,6 +10,7 @@ __author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
 
 
 __all__ = ['ford_fulkerson',
+           'ford_fulkerson_flow',
            'max_flow',
            'min_cut']
 
@@ -77,6 +78,36 @@ def _create_flow_graph(G, H, infcapFlows):
     return flowGraph
 
 
+def _create_flow_dict(G, H, infcapFlows):
+    """Creates the flow dict of dicts on G corresponding to the
+    auxiliary digraph H and infinite capacity edges flows infcapFlows.
+    """
+    flowDict = {}
+
+    for u in G.nodes_iter():
+        if not u in flowDict:
+            flowDict[u] = {}
+        for v in G.neighbors(u):
+            if H.has_edge(u, v):
+                try:
+                    flowDict[u][v] = abs(G[u][v]['capacity']
+                                         - H[u][v]['capacity'])
+                except KeyError: # (u, v) has infinite capacity
+                    try:
+                        flowDict[u][v] = H[v][u]['capacity']
+                    except KeyError:
+                        # Infinite capacity digon in the original graph.
+                        if nx.is_directed(G):
+                            flowDict[u][v] = max(infcapFlows[(u, v)]
+                                                 - infcapFlows[(v, u)], 0)
+                        else:
+                            flowDict[u][v] = abs(infcapFlows[(u, v)]
+                                                 - infcapFlows[(v, u)])
+            else:
+                flowDict[u][v] = G[u][v]['capacity']
+    return flowDict
+
+
 def ford_fulkerson(G, s, t):
     """Find a maximum single-commodity flow using the Ford-Fulkerson algorithm.
     
@@ -102,9 +133,9 @@ def ford_fulkerson(G, s, t):
     flowValue : integer, float
         Value of the maximum flow, i.e., net outflow from the source.
 
-    flowGraph : NetworkX graph
-        Graph with V(flowGraph) = V(G) and in which each edge has an
-        attribute 'flow' which gives the flow on the edge.
+    flowDict : dictionary
+        Dictionary of dictionaries keyed by nodes such that
+        flowDict[u][v] is the flow edge (u, v).
 
     Raises
     ------
@@ -183,12 +214,122 @@ def ford_fulkerson(G, s, t):
             else:
                 auxiliary.add_edge(v, u, {'capacity': pathCapacity})
     
-    flowGraph = _create_flow_graph(G, auxiliary, infcapFlows)
-    return flowValue, flowGraph
+    flowDict = _create_flow_dict(G, auxiliary, infcapFlows)
+    return flowValue, flowDict
 
 
-# Just an alias for max_flow
-max_flow = ford_fulkerson
+def ford_fulkerson_flow(G, s, t):
+    """Return a maximum flow for a single-commodity flow problem.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Edges of the graph are expected to have an attribute called
+        'capacity'. If this attribute is not present, the edge is
+        considered to have infinite capacity.
+
+    s : node
+        Source node for the flow.
+
+    t : node
+        Sink node for the flow.
+
+    Returns
+    -------
+    flowDict : dictionary
+        Dictionary of dictionaries keyed by nodes such that
+        flowDict[u][v] is the flow edge (u, v).
+
+    Raises
+    ------
+    NetworkXError
+        The algorithm does not support MultiGraph and MultiDiGraph. If
+        the input graph is an instance of one of these two classes, a
+        NetworkXError is raised.
+
+    NetworkXUnbounded
+        If the graph has a path of infinite capacity, the value of a 
+        feasible flow on the graph is unbounded above and the function
+        raises a NetworkXUnbounded.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.DiGraph()
+    >>> G.add_edge('x','a', capacity = 3.0)
+    >>> G.add_edge('x','b', capacity = 1.0)
+    >>> G.add_edge('a','c', capacity = 3.0)
+    >>> G.add_edge('b','c', capacity = 5.0)
+    >>> G.add_edge('b','d', capacity = 4.0)
+    >>> G.add_edge('d','e', capacity = 2.0)
+    >>> G.add_edge('c','y', capacity = 2.0)
+    >>> G.add_edge('e','y', capacity = 3.0)
+    >>> F=nx.ford_fulkerson_flow(G, 'x', 'y')
+    >>> for u, v in G.edges_iter():
+    ...     print('(%s, %s) %.2f' % (u, v, F[u][v]))
+    ... 
+    (a, c) 2.00
+    (c, y) 2.00
+    (b, c) 0.00
+    (b, d) 1.00
+    (e, y) 1.00
+    (d, e) 1.00
+    (x, a) 2.00
+    (x, b) 1.00
+    """
+    return ford_fulkerson(G, s, t)[1]
+
+
+def max_flow(G, s, t):
+    """Find the value of a maximum single-commodity flow.
+    
+    Parameters
+    ----------
+    G : NetworkX graph
+        Edges of the graph are expected to have an attribute called
+        'capacity'. If this attribute is not present, the edge is
+        considered to have infinite capacity.
+
+    s : node
+        Source node for the flow.
+
+    t : node
+        Sink node for the flow.
+
+    Returns
+    -------
+    flowValue : integer, float
+        Value of the maximum flow, i.e., net outflow from the source.
+
+    Raises
+    ------
+    NetworkXError
+        The algorithm does not support MultiGraph and MultiDiGraph. If
+        the input graph is an instance of one of these two classes, a
+        NetworkXError is raised.
+
+    NetworkXUnbounded
+        If the graph has a path of infinite capacity, the value of a 
+        feasible flow on the graph is unbounded above and the function
+        raises a NetworkXUnbounded.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.DiGraph()
+    >>> G.add_edge('x','a', capacity = 3.0)
+    >>> G.add_edge('x','b', capacity = 1.0)
+    >>> G.add_edge('a','c', capacity = 3.0)
+    >>> G.add_edge('b','c', capacity = 5.0)
+    >>> G.add_edge('b','d', capacity = 4.0)
+    >>> G.add_edge('d','e', capacity = 2.0)
+    >>> G.add_edge('c','y', capacity = 2.0)
+    >>> G.add_edge('e','y', capacity = 3.0)
+    >>> flow=nx.max_flow(G, 'x', 'y')
+    >>> flow
+    3.0
+    """
+    return ford_fulkerson(G, s, t)[0]
 
 
 def min_cut(G, s, t):
@@ -217,7 +358,7 @@ def min_cut(G, s, t):
     
     Raises
     ------
-    NetworkXError
+    NetworkXUnbounded
         If the graph has a path of infinite capacity, all cuts have
         infinite capacity and the function raises a NetworkXError.
     
@@ -239,7 +380,7 @@ def min_cut(G, s, t):
 
     try:
         return ford_fulkerson(G, s, t)[0]
-    except nx.NetworkXError:
-        raise nx.NetworkXError(
+    except nx.NetworkXUnbounded:
+        raise nx.NetworkXUnbounded(
                 "Infinite capacity path, no minimum cut.")
 
