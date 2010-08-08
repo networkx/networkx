@@ -18,7 +18,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['read_gml', 'parse_gml', 'write_gml']
+__all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 
 import networkx as nx
 from networkx.exception import NetworkXException, NetworkXError
@@ -228,6 +228,79 @@ http://pyparsing.wikispaces.com/""")
         
     return graph
 
+def generate_gml(G):
+    """Generate a single entry of the graph G in gml format.
+
+    This function is a generator.
+    """
+    # check for attributes or assign empty dict
+    if hasattr(G,'graph_attr'):
+        graph_attr=G.graph_attr
+    else:
+        graph_attr={}
+    if hasattr(G,'node_attr'):
+        node_attr=G.node_attr
+    else:
+        node_attr={}
+
+    indent=2*' '
+    count=iter(list(range(G.number_of_nodes())))
+    node_id={}
+    dicttype=type({})
+
+    # recursively make dicts into gml brackets
+    def listify(d,indent,indentlevel):
+        result='[ \n'
+        dicttype=type({})
+        for k,v in d.items():
+            if type(v)==dicttype:
+                v=listify(v,indent,indentlevel+1)
+            result += indentlevel*indent+"%s %s\n"%(k,v)
+        return result+indentlevel*indent+"]"
+
+    yield "graph [\n"
+    if G.is_directed():
+        yield indent+"directed 1\n"
+    # write graph attributes 
+    for k,v in list(G.graph.items()):
+        if is_string_like(v):
+            v='"'+v+'"'
+        elif type(v)==dicttype:
+            v=listify(v,indent,1)
+        yield indent+"%s %s\n"%(k,v)
+    # write nodes
+    for n in G:
+        multiline = indent+"node [\n"
+        # get id or assign number
+        nid=G.node[n].get('id',next(count))
+        node_id[n]=nid
+        multiline += 2*indent+"id %s\n"%nid
+        multiline += 2*indent+"label \"%s\"\n"%n
+        if n in G:
+          for k,v in list(G.node[n].items()):
+              if is_string_like(v): v='"'+v+'"'
+              if type(v)==dicttype: v=listify(v,indent,2)
+              if k=='id': continue
+              multiline += 2*indent+"%s %s\n"%(k,v)
+        multiline += indent+"]\n"
+        yield multiline
+    # write edges
+    for u,v,edgedata in G.edges_iter(data=True):
+        # try to guess what is on the edge and do something reasonable
+        multiline = indent+"edge [\n"
+        multiline += 2*indent+"source %s\n"%node_id[u]
+        multiline += 2*indent+"target %s\n"%node_id[v]
+        for k,v in list(edgedata.items()):
+            if k=='source': continue
+            if k=='target': continue
+            if is_string_like(v): v='"'+v+'"'
+            if type(v)==dicttype: v=listify(v,indent,2)
+            multiline += 2*indent+"%s %s\n"%(k,v)
+        multiline += indent+"]\n"
+        yield multiline
+    yield "]"
+
+
 def write_gml(G, path):
     """
     Write the graph G in GML format to the file or file handle path.
@@ -259,72 +332,10 @@ def write_gml(G, path):
 
     >>> nx.write_gml(G,"test.gml.gz")
     """
-    fh=_get_fh(path,mode='w')        
+    fh=_get_fh(path,mode='wb')
+    for multiline in generate_gml(G):
+        fh.write(multiline.encode('latin-1'))
 
-    # check for attributes or assign empty dict
-    if hasattr(G,'graph_attr'):
-        graph_attr=G.graph_attr
-    else:
-        graph_attr={}
-    if hasattr(G,'node_attr'):
-        node_attr=G.node_attr
-    else:
-        node_attr={}
-
-    indent=2*' '
-    count=iter(list(range(G.number_of_nodes())))
-    node_id={}
-    dicttype=type({})
-
-    # recursively make dicts into gml brackets
-    def listify(d,indent,indentlevel):
-        result='[ \n'
-        dicttype=type({})
-        for k,v in d.items():
-            if type(v)==dicttype:
-                v=listify(v,indent,indentlevel+1)
-            result += indentlevel*indent+"%s %s\n"%(k,v)
-        return result+indentlevel*indent+"]"
-
-    fh.write("graph [\n")
-    if G.is_directed():
-        fh.write(indent+"directed 1\n")
-    # write graph attributes 
-    for k,v in list(G.graph.items()):
-        if is_string_like(v):
-            v='"'+v+'"'
-        elif type(v)==dicttype:
-            v=listify(v,indent,1)
-        fh.write(indent+"%s %s\n"%(k,v))
-    # write nodes        
-    for n in G:
-        fh.write(indent+"node [\n")
-        # get id or assign number
-        nid=G.node[n].get('id',next(count))
-        node_id[n]=nid
-        fh.write(2*indent+"id %s\n"%nid)
-        fh.write(2*indent+"label \"%s\"\n"%n)
-        if n in G:
-          for k,v in list(G.node[n].items()):
-              if is_string_like(v): v='"'+v+'"'
-              if type(v)==dicttype: v=listify(v,indent,2)
-              if k=='id': continue
-              fh.write(2*indent+"%s %s\n"%(k,v))
-        fh.write(indent+"]\n")
-    # write edges
-    for u,v,edgedata in G.edges_iter(data=True):
-        # try to guess what is on the edge and do something reasonable
-        fh.write(indent+"edge [\n")
-        fh.write(2*indent+"source %s\n"%node_id[u])
-        fh.write(2*indent+"target %s\n"%node_id[v])
-        for k,v in list(edgedata.items()):
-            if k=='source': continue
-            if k=='target': continue
-            if is_string_like(v): v='"'+v+'"'
-            if type(v)==dicttype: v=listify(v,indent,2)
-            fh.write(2*indent+"%s %s\n"%(k,v))
-        fh.write(indent+"]\n")
-    fh.write("]")
 
 # fixture for nose tests
 def setup_module(module):
