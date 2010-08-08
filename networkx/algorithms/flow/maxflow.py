@@ -109,9 +109,14 @@ def ford_fulkerson(G, s, t):
     Raises
     ------
     NetworkXError
+        The algorithm does not support MultiGraph and MultiDiGraph. If
+        the input graph is an instance of one of these two classes, a
+        NetworkXError is raised.
+
+    NetworkXUnbounded
         If the graph has a path of infinite capacity, the value of a 
         feasible flow on the graph is unbounded above and the function
-        raises a NetworkXError.
+        raises a NetworkXUnbounded.
 
     Examples
     --------
@@ -129,7 +134,10 @@ def ford_fulkerson(G, s, t):
     >>> flow
     3.0
     """
-    
+    if G.is_multigraph():
+        raise nx.NetworkXError(
+                'MultiGraph and MultiDiGraph not supported (yet).')
+
     auxiliary, infcapFlows = _create_auxiliary_digraph(G)
     flowValue = 0   # Initial feasible flow.
 
@@ -154,7 +162,7 @@ def ford_fulkerson(G, s, t):
                             if 'capacity' in c])
         except ValueError: 
             # path of infinite capacity implies no max flow
-            raise nx.NetworkXError(
+            raise nx.NetworkXUnbounded(
                     "Infinite capacity path, flow unbounded above.")
         
         flowValue += pathCapacity
