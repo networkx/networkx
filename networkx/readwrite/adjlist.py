@@ -16,6 +16,8 @@ This module provides the following :
 Adjacency list with single line per node:
 Useful for connected or unconnected graphs without edge data.
 
+>>> G=nx.path_graph(4)
+>>> path='test.adjlist'
 >>> write_adjlist(G, path)
 >>> G=read_adjlist(path)
 
@@ -23,7 +25,7 @@ Adjacency list with multiple lines per node:
 Useful for connected or unconnected graphs with or without edge data.
 
 >>> write_multiline_adjlist(G, path)
->>> read_multiline_adjlist(path)
+>>> G=read_multiline_adjlist(path)
 
 """
 __author__ = '\n'.join(['Aric Hagberg <hagberg@lanl.gov>',
