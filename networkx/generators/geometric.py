@@ -25,7 +25,7 @@ from functools import reduce
 #---------------------------------------------------------------------------
         
 def random_geometric_graph(n, radius, create_using=None, repel=0.0, verbose=False, dim=2):
-    """Random geometric graph in the unit cube
+    """Random geometric graph in the unit cube.
 
     Returned Graph has added attribute G.pos which is a 
     dict keyed by node to the position tuple for the node.

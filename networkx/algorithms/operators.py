@@ -112,8 +112,7 @@ Use appropriate rename=('Gprefix','Hprefix') or use disjoint_union(G,H).""")
 
 
 def disjoint_union(G,H):
-    """ Return the disjoint union of graphs G and H, forcing distinct integer
-    node labels.
+    """ Return the disjoint union of graphs G and H, forcing distinct integer node labels.
 
     Parameters
     ----------
@@ -134,8 +133,7 @@ def disjoint_union(G,H):
 
 
 def intersection(G,H,create_using=None ):
-    """Return a new graph that contains only the edges that exist in 
-    both G and H.   
+    """Return a new graph that contains only the edges that exist in both G and H.   
 
     The node sets of H and G must be the same.
 
@@ -193,8 +191,7 @@ def intersection(G,H,create_using=None ):
     return R
 
 def difference(G,H,create_using=None):
-    """Return a new graph that contains the edges that exist in 
-    in G but not in H.  
+    """Return a new graph that contains the edges that exist in G but not in H.  
 
     The node sets of H and G must be the same.
 
@@ -252,8 +249,7 @@ def difference(G,H,create_using=None):
     return R
 
 def symmetric_difference(G,H,create_using=None ):
-    """Return new graph with edges that exist in in either G or H but
-    not both.
+    """Return new graph with edges that exist in either G or H but not both.
 
     The node sets of H and G must be the same.
 

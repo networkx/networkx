@@ -358,7 +358,7 @@ def convert_node_labels_to_integers(G,first_label=0,
 
 
 def to_dict_of_lists(G,nodelist=None):
-    """Return adjacency representation of graph as a dictionary of lists
+    """Return adjacency representation of graph as a dictionary of lists.
 
     Parameters
     ----------
@@ -421,7 +421,7 @@ def from_dict_of_lists(d,create_using=None):
 
 
 def to_dict_of_dicts(G,nodelist=None,edge_data=None):
-    """Return adjacency representation of graph as a dictionary of dictionaries
+    """Return adjacency representation of graph as a dictionary of dictionaries.
 
     Parameters
     ----------

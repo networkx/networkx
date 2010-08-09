@@ -423,8 +423,7 @@ def floyd_warshall(G):
 
 
 def predecessor(G,source,target=None,cutoff=None,return_seen=None):
-    """ Returns dictionary of predecessors for the path from source to all
-    nodes in G.  
+    """ Returns dictionary of predecessors for the path from source to all nodes in G.  
 
 
     Parameters

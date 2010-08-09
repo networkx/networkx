@@ -27,8 +27,7 @@ import heapq
 import networkx as nx
 
 def dijkstra_path(G,source,target, weight = 'weight'):
-    """Returns the shortest path from source to target in a weighted
-    graph G.  
+    """Returns the shortest path from source to target in a weighted graph G.  
 
     Parameters
     ----------
@@ -73,8 +72,7 @@ def dijkstra_path(G,source,target, weight = 'weight'):
 
 
 def dijkstra_path_length(G,source,target, weight = 'weight'):
-    """Returns the shortest path length from source to target in a weighted
-    graph G.  
+    """Returns the shortest path length from source to target in a weighted graph G.  
 
 
     Parameters
@@ -270,8 +268,7 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
 
 
 def single_source_dijkstra_path(G,source, weight = 'weight'):
-    """Compute shortest path between source
-    and all other reachable nodes for a weighted graph.
+    """Compute shortest path between source and all other reachable nodes for a weighted graph.
 
     Parameters
     ----------
@@ -309,8 +306,7 @@ def single_source_dijkstra_path(G,source, weight = 'weight'):
 
 
 def single_source_dijkstra_path_length(G,source, weight = 'weight'):
-    """Compute shortest path length between source
-    and all other reachable nodes for a weighted graph.
+    """Compute shortest path length between source and all other reachable nodes for a weighted graph.
 
     Parameters
     ----------
@@ -443,8 +439,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
     return (dist,paths)
 
 def dijkstra_predecessor_and_distance(G,source, weight = 'weight'):
-    """Compute shorest path length and predecessors on shortest paths
-    in weighted graphs.
+    """Compute shorest path length and predecessors on shortest paths in weighted graphs.
 
     Parameters
     ----------
@@ -565,8 +560,7 @@ def all_pairs_dijkstra_path(G, weight = 'weight'):
     return paths        
 
 def bellman_ford(G, source, weight = 'weight'):
-    """Compute shortest path lengths and predecessors on shortest paths
-    in weighted graphs.
+    """Compute shortest path lengths and predecessors on shortest paths in weighted graphs.
 
     The algorithm has a running time of O(|E||V|).
 

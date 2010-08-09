@@ -427,8 +427,7 @@ def null_graph(create_using=None):
     return G
 
 def path_graph(n,create_using=None):
-    """Return the Path graph P_n of n nodes linearly connected
-    by n-1 edges.
+    """Return the Path graph P_n of n nodes linearly connected by n-1 edges.
 
     Node labels are the integers 0 to n - 1.
     If create_using is a DiGraph then the edges are directed in 
@@ -441,8 +440,7 @@ def path_graph(n,create_using=None):
     return G
 
 def star_graph(n,create_using=None):
-    """ Return the Star graph with n+1 nodes:
-    one center node, connected to n outer nodes.
+    """ Return the Star graph with n+1 nodes: one center node, connected to n outer nodes.
 
    Node labels are the integers 0 to n.
 
@@ -452,8 +450,7 @@ def star_graph(n,create_using=None):
     return G
 
 def trivial_graph(create_using=None):
-    """ Return the Trivial graph with one node (with integer label 0)
-    and no edges.
+    """ Return the Trivial graph with one node (with integer label 0) and no edges.
 
     """
     G=empty_graph(1,create_using)
@@ -461,8 +458,7 @@ def trivial_graph(create_using=None):
     return G
 
 def wheel_graph(n,create_using=None):
-    """ Return the wheel graph: a single hub node connected
-    to each node of the (n-1)-node cycle graph. 
+    """ Return the wheel graph: a single hub node connected to each node of the (n-1)-node cycle graph. 
 
    Node labels are the integers 0 to n - 1.
 

@@ -20,8 +20,7 @@ import networkx as nx
 __all__ = ['astar_path','astar_path_length']
 
 def astar_path(G, source, target, heuristic=None):
-    """Return a list of nodes in a shortest path between source and target
-    using the A* ("A-star") algorithm.
+    """Return a list of nodes in a shortest path between source and target using the A* ("A-star") algorithm.
 
     There may be more than one shortest path.  This returns only one.
     
@@ -114,8 +113,7 @@ def astar_path(G, source, target, heuristic=None):
     raise NetworkXError("Node %s not reachable from %s"%(source,target))
 
 def astar_path_length(G, source, target, heuristic=None):
-    """Return a list of nodes in a shortest path between source and target
-    using the A* ("A-star") algorithm.
+    """Return a list of nodes in a shortest path between source and target using the A* ("A-star") algorithm.
 
     Parameters
     ----------

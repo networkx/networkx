@@ -55,7 +55,7 @@ def write_gpickle(G, path):
 
 def read_gpickle(path):
     """
-    Read graph object in Python pickle format
+    Read graph object in Python pickle format.
 
 
     G=nx.path_graph(4)

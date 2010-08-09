@@ -98,8 +98,7 @@ def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
 
 
 def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Return a bipartite graph from two given degree sequences
-    using a Havel-Hakimi style construction.
+    """Return a bipartite graph from two given degree sequences using a Havel-Hakimi style construction.
 
     Parameters
     ----------
@@ -166,8 +165,7 @@ def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
     return G
 
 def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Return a bipartite graph from two given degree sequences
-    using a Havel-Hakimi style construction.
+    """Return a bipartite graph from two given degree sequences using a Havel-Hakimi style construction.
 
     Parameters
     ----------
@@ -235,8 +233,7 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
 
 
 def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
-    """Return a bipartite graph from two given degree sequences
-    using a alternating Havel-Hakimi style construction.
+    """Return a bipartite graph from two given degree sequences using a alternating Havel-Hakimi style construction.
 
     Parameters
     ----------
@@ -306,8 +303,7 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
     return G
 
 def bipartite_preferential_attachment_graph(aseq,p,create_using=None,seed=None):
-    """Create a bipartite graph with a preferential attachment model
-    from a given single degree sequence.
+    """Create a bipartite graph with a preferential attachment model from a given single degree sequence.
 
     Parameters
     ----------

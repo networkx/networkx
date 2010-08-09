@@ -40,7 +40,7 @@ def is_string_like(obj): # from John Hunter, types-free version
 
  
 def iterable(obj):
-    """ Return True if obj is iterable with a well-defined len()"""
+    """ Return True if obj is iterable with a well-defined len()."""
     if hasattr(obj,"__iter__"): return True
     try:
         len(obj)
@@ -183,7 +183,7 @@ def scipy_uniform_sequence(n):
 
 def scipy_discrete_sequence(n,distribution=False):
     """
-    Return sample sequence of length n from a given discrete distribution
+    Return sample sequence of length n from a given discrete distribution.
 
     distribution=histogram of values, will be normalized
 

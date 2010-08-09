@@ -9,5 +9,14 @@ Exceptions
 
 .. autoclass:: networkx.NetworkXError
 
+.. autoclass:: networkx.NetworkXPointlessConcept
+
+.. autoclass:: networkx.NetworkXAlgorithmError
+
+.. autoclass:: networkx.NetworkXUnfeasible
+
+.. autoclass:: networkx.NetworkXNoPath
+
+.. autoclass:: networkx.NetworkXUnbounded
 
 

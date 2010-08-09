@@ -82,7 +82,7 @@ def number_connected_components(G):
 
 
 def is_connected(G):
-    """Test graph connectivity
+    """Test graph connectivity.
 
     Parameters
     ----------

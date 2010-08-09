@@ -16,14 +16,14 @@ This module provides the following :
 Adjacency list with single line per node:
 Useful for connected or unconnected graphs without edge data.
 
-    write_adjlist(G, path)
-    G=read_adjlist(path)
+>>> write_adjlist(G, path)
+>>> G=read_adjlist(path)
 
 Adjacency list with multiple lines per node:
 Useful for connected or unconnected graphs with or without edge data.
 
-    write_multiline_adjlist(G, path)
-    read_multiline_adjlist(path)
+>>> write_multiline_adjlist(G, path)
+>>> read_multiline_adjlist(path)
 
 """
 __author__ = '\n'.join(['Aric Hagberg <hagberg@lanl.gov>',
@@ -50,8 +50,7 @@ from networkx.utils import is_string_like, make_str, _get_fh
 import networkx as nx
 
 def generate_multiline_adjlist(G, delimiter = ' '):
-    """Generate a single entry of the graph G in multiline adjacency
-    list format.
+    """Generate a single entry of the graph G in multiline adjacency list format.
 
     This function is a generator.
 
@@ -143,8 +142,7 @@ def generate_multiline_adjlist(G, delimiter = ' '):
 def write_multiline_adjlist(G, path, delimiter=' ', comments='#',
                             encoding = 'utf-8'):
     """
-    Write the graph G in multiline adjacency list format to the file
-    or file handle path.
+    Write the graph G in multiline adjacency list format to the file or file handle path.
 
     See read_multiline_adjlist for file format details.
 
@@ -191,8 +189,7 @@ def write_multiline_adjlist(G, path, delimiter=' ', comments='#',
 def parse_multiline_adjlist(lines, comments = '#', delimiter = ' ',
                             create_using = None, nodetype = None,
                             edgetype = None):
-    """Parse lines of a multiline adjacency list representation of a
-    graph.
+    """Parse lines of a multiline adjacency list representation of a graph.
 
     See read_multiline_adjlist for file format details.
 

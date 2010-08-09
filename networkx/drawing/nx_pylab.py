@@ -418,7 +418,7 @@ def draw_networkx_edges(G, pos,
                         ax=None,
                         arrows=True,
                         **kwds):
-    """Draw the edges of the graph G
+    """Draw the edges of the graph G.
 
     This draws only the edges of the graph G.
 
@@ -653,7 +653,7 @@ def draw_networkx_labels(G, pos,
                          alpha=1.0,
                          ax=None,
                          **kwds):
-    """Draw node labels on the graph G
+    """Draw node labels on the graph G.
 
     Parameters
     ----------
@@ -867,7 +867,7 @@ def draw_networkx_edge_labels(G, pos,
 
 
 def draw_circular(G, **kwargs):
-    """Draw the graph G with a circular layout"""
+    """Draw the graph G with a circular layout."""
     draw(G,circular_layout(G),**kwargs)
     
 def draw_random(G, **kwargs):
@@ -879,23 +879,23 @@ def draw_spectral(G, **kwargs):
     draw(G,spectral_layout(G),**kwargs)
 
 def draw_spring(G, **kwargs):
-    """Draw the graph G with a spring layout"""
+    """Draw the graph G with a spring layout."""
     draw(G,spring_layout(G),**kwargs)
 
 def draw_shell(G, **kwargs):
-    """Draw networkx graph with shell layout"""
+    """Draw networkx graph with shell layout."""
     nlist = kwargs.get('nlist', None)
     if nlist != None:        
         del(kwargs['nlist'])
     draw(G,shell_layout(G,nlist=nlist),**kwargs)
 
 def draw_graphviz(G, prog="neato", **kwargs):
-    """Draw networkx graph with graphviz layout"""
+    """Draw networkx graph with graphviz layout."""
     pos=nx.drawing.graphviz_layout(G,prog)
     draw(G,pos,**kwargs)
 
 def draw_nx(G,pos,**kwds):
-    """For backward compatibility; use draw or draw_networkx"""
+    """For backward compatibility; use draw or draw_networkx."""
     draw(G,pos,**kwds)
 
 # fixture for nose tests

@@ -18,8 +18,7 @@ __all__ = ['topological_sort',
 import networkx
 
 def is_directed_acyclic_graph(G):
-    """Return True if the graph G is a directed acyclic graph (DAG)
-    or False if not.
+    """Return True if the graph G is a directed acyclic graph (DAG) or False if not.
     
     Parameters
     ----------

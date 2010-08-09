@@ -72,7 +72,7 @@ def kl_connected_subgraph(G,k,l,low_memory=False,same_as_graph=False):
     return H
 
 def is_kl_connected(G,k,l,low_memory=False):
-    """Returns True if G is kl connected """
+    """Returns True if G is kl connected."""
     graphOK=True
     for edge in G.edges():
         (u,v)=edge

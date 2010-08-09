@@ -324,8 +324,7 @@ def expected_degree_graph(w, create_using=None, seed=None):
 
 
 def havel_hakimi_graph(deg_sequence,create_using=None):
-    """Return a simple graph with given degree sequence, constructed using the
-    Havel-Hakimi algorithm.
+    """Return a simple graph with given degree sequence, constructed using the Havel-Hakimi algorithm.
 
     Parameters
     ----------
@@ -544,8 +543,7 @@ def degree_sequence_tree(deg_sequence,create_using=None):
         
 
 def is_valid_degree_sequence(deg_sequence):
-    """Return True if deg_sequence is a valid sequence of integer degrees
-    equal to the degree sequence of some simple graph.
+    """Return True if deg_sequence is a valid sequence of integer degrees equal to the degree sequence of some simple graph.
        
       - `deg_sequence`: degree sequence, a list of integers with each entry
          corresponding to the degree of a node (need not be sorted).

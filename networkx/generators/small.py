@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Various small and named graphs, together with some compact generators.
 
@@ -183,7 +184,7 @@ def bull_graph(create_using=None):
     return G
 
 def chvatal_graph(create_using=None):
-    """Return the Chvatal graph."""
+    """Return the Chvátal graph."""
     description=[
         "adjacencylist",
         "Chvatal Graph",
