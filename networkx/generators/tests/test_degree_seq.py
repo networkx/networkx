@@ -135,7 +135,6 @@ class TestGeneratorsDegreeSequence():
     def test_construction_smax_graph1(self):
         z=[5,4,3,3,3,2,2,2]
         G=li_smax_graph(z)
-#        assert_true(is_connected(G))
 
         degs = sorted(degree(G).values(),reverse=True)
         assert_equal(degs, z)
@@ -152,7 +151,6 @@ class TestGeneratorsDegreeSequence():
         assert_true(is_valid_degree_sequence(z))
         G=li_smax_graph(z)
 
-#        assert_true(is_connected(G))
         degs = sorted(degree(G).values(),reverse=True)
         assert_equal(degs, z)
 
