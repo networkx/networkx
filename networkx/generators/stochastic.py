@@ -1,6 +1,5 @@
 """
 Stocastic graph.
-
 """
 #    Copyright (C) 2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -12,7 +11,7 @@ __author__ = "Aric Hagberg <hagberg@lanl.gov>"
 
 __all__ = ['stochastic_graph']
 
-import networkx
+import networkx as nx
 
 def stochastic_graph(G,copy=True):
     """Return a right-stochastic representation of G.
@@ -29,14 +28,14 @@ def stochastic_graph(G,copy=True):
       If True make a copy of the graph, otherwise modify original graph
 
     """        
-    if type(G) == networkx.MultiGraph or type(G) == networkx.MultiDiGraph:
+    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception("stochastic_graph not implemented for Multi(Di)Graphs")
 
     if not G.is_directed():
         raise Exception("stochastic_graph not implemented for undirected graphs")
 
     if copy:
-        W=networkx.DiGraph(G)
+        W=nx.DiGraph(G)
     else:
         W=G # reference original graph, no copy
 
