@@ -112,54 +112,52 @@ class TestGeneratorsDegreeSequence():
         seq=create_degree_sequence(10,powerlaw_sequence)
         assert_equal(len(seq), 10)
 
+
+    def test_double_edge_swap(self):
         graph = barabasi_albert_graph(200,1)
 
-        degreeStart = sorted(degree(graph))
-
+        degreeStart = sorted(graph.degree().values())
         swaps = connected_double_edge_swap(graph, 40)
         assert_true(is_connected(graph))
 
-        degseq = sorted(degree(graph))
+        degseq = sorted(graph.degree().values())
         assert_true(degreeStart == degseq)
 
         swaps = double_edge_swap(graph, 40)
-        degseq2 = sorted(degree(graph))
+        degseq2 = sorted(graph.degree().values())
         assert_true(degreeStart == degseq2)
 
-    def test_contruction_smax_graph(self):
+    def test_construction_smax_graph0(self):
         z=["A",3,3,3,3,2,2,2,1,1,1]
         assert_raises(networkx.exception.NetworkXError,
                       li_smax_graph, z)
 
+    def test_construction_smax_graph1(self):
         z=[5,4,3,3,3,2,2,2]
         G=li_smax_graph(z)
-        assert_true(is_connected(G))
+#        assert_true(is_connected(G))
 
-        degs = degree(G).values()
-        degs.sort()
-        degs.reverse()
+        degs = sorted(degree(G).values(),reverse=True)
         assert_equal(degs, z)
 
+    def test_construction_smax_graph2(self):
         z=[6,5,4,4,2,1,1,1]
         assert_false(is_valid_degree_sequence(z))
 
         assert_raises(networkx.exception.NetworkXError,
                       li_smax_graph, z)
 
+    def test_construction_smax_graph3(self):
         z=[10,3,3,3,3,2,2,2,2,2,2]
         assert_true(is_valid_degree_sequence(z))
         G=li_smax_graph(z)
 
-        assert_true(is_connected(G))
-        degs = degree(G).values()
-        degs.sort()
-        degs.reverse()
+#        assert_true(is_connected(G))
+        degs = sorted(degree(G).values(),reverse=True)
         assert_equal(degs, z)
 
         assert_raises(networkx.exception.NetworkXError,
                       li_smax_graph, z, create_using=DiGraph())
-
-
 
 
 

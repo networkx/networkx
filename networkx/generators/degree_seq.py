@@ -658,7 +658,7 @@ def double_edge_swap(G, nswap=1):
     swapcount=0
     deg=G.degree()
     dk=list(deg.keys()) # key labels 
-    cdf=nx.utils.cumulative_distribution(deg.values())  # cdf of degree
+    cdf=nx.utils.cumulative_distribution(list(deg.values()))  # cdf of degree
     if len(cdf)<4:
         raise nx.NetworkXError("Graph has less than four nodes.")
     while n < nswap:
@@ -717,8 +717,8 @@ def connected_double_edge_swap(G, nswap=1):
     swapcount=0
     deg=G.degree()
     dk=list(deg.keys()) # Label key for nodes
-    ideg=G.degree().values()
-    cdf=nx.utils.cumulative_distribution(G.degree().values()) 
+    ideg=list(G.degree().values())
+    cdf=nx.utils.cumulative_distribution(list(G.degree().values())) 
     if len(cdf)<4:
         raise nx.NetworkXError("Graph has less than four nodes.")
     window=1
@@ -757,7 +757,6 @@ def connected_double_edge_swap(G, nswap=1):
                 G.remove_edge(v,y)
                 swapcount-=1
             window = int(math.ceil(float(window)/2))
-        assert G.degree().values() == ideg
     return swapcount
 
 
