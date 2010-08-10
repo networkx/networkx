@@ -2,13 +2,16 @@
 import sys
 from os import path
 
-def run(verbosity=1,doctest=True):
+def run(verbosity=1,doctest=False):
     """Run NetworkX tests.
 
     Parameters
     ----------
     verbosity: integer, optional
       Level of detail in test reports.  Higher numbers provide  more detail.  
+
+    doctest: bool, optional
+      True to run doctests in code modules
     """
     try:
         import nose
