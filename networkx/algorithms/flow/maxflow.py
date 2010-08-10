@@ -16,7 +16,7 @@ __all__ = ['ford_fulkerson',
 
 import networkx as nx
 
-def _create_auxiliary_digraph(G):
+def _create_auxiliary_digraph(G, capacity = 'capacity'):
     """Initialize an auxiliary digraph and dict of infinite capacity
     edges for a given graph G.
     Ignore edges with capacity <= 0.
@@ -26,16 +26,16 @@ def _create_auxiliary_digraph(G):
 
     if nx.is_directed(G):
         for edge in G.edges(data = True):
-            if 'capacity' in edge[2]:
-                if edge[2]['capacity'] > 0:
+            if capacity in edge[2]:
+                if edge[2][capacity] > 0:
                     auxiliary.add_edge(*edge)
             else:
                 auxiliary.add_edge(*edge)
                 infcapFlows[(edge[0], edge[1])] = 0
     else:
         for edge in G.edges(data = True):
-            if 'capacity' in edge[2]:
-                if edge[2]['capacity'] > 0:
+            if capacity in edge[2]:
+                if edge[2][capacity] > 0:
                     auxiliary.add_edge(*edge)
                     auxiliary.add_edge(edge[1], edge[0], edge[2])
             else:
@@ -47,7 +47,7 @@ def _create_auxiliary_digraph(G):
     return auxiliary, infcapFlows
 
 
-def _create_flow_graph(G, H, infcapFlows):
+def _create_flow_graph(G, H, infcapFlows, capacity = 'capacity'):
     """Creates the flow graph on G corresponding to the auxiliary
     digraph H and infinite capacity edges flows infcapFlows.
     """
@@ -59,11 +59,11 @@ def _create_flow_graph(G, H, infcapFlows):
     for (u, v) in flowGraph.edges():
         if H.has_edge(u, v):
             try:
-                flowGraph[u][v]['flow'] = abs(G[u][v]['capacity']
-                                              - H[u][v]['capacity'])
+                flowGraph[u][v]['flow'] = abs(G[u][v][capacity]
+                                              - H[u][v][capacity])
             except KeyError: # (u, v) has infinite capacity
                 try:
-                    flowGraph[u][v]['flow'] = H[v][u]['capacity']
+                    flowGraph[u][v]['flow'] = H[v][u][capacity]
                 except KeyError:
                     # Infinite capacity digon in the original graph.
                     if nx.is_directed(G):
@@ -73,12 +73,12 @@ def _create_flow_graph(G, H, infcapFlows):
                         flowGraph[u][v]['flow'] = abs(infcapFlows[(u, v)]
                                                     - infcapFlows[(v, u)])
         else:
-            flowGraph[u][v]['flow'] = G[u][v]['capacity']
+            flowGraph[u][v]['flow'] = G[u][v][capacity]
 
     return flowGraph
 
 
-def _create_flow_dict(G, H, infcapFlows):
+def _create_flow_dict(G, H, infcapFlows, capacity = 'capacity'):
     """Creates the flow dict of dicts on G corresponding to the
     auxiliary digraph H and infinite capacity edges flows infcapFlows.
     """
@@ -90,11 +90,11 @@ def _create_flow_dict(G, H, infcapFlows):
         for v in G.neighbors(u):
             if H.has_edge(u, v):
                 try:
-                    flowDict[u][v] = abs(G[u][v]['capacity']
-                                         - H[u][v]['capacity'])
+                    flowDict[u][v] = abs(G[u][v][capacity]
+                                         - H[u][v][capacity])
                 except KeyError: # (u, v) has infinite capacity
                     try:
-                        flowDict[u][v] = H[v][u]['capacity']
+                        flowDict[u][v] = H[v][u][capacity]
                     except KeyError:
                         # Infinite capacity digon in the original graph.
                         if nx.is_directed(G):
@@ -104,11 +104,11 @@ def _create_flow_dict(G, H, infcapFlows):
                             flowDict[u][v] = abs(infcapFlows[(u, v)]
                                                  - infcapFlows[(v, u)])
             else:
-                flowDict[u][v] = G[u][v]['capacity']
+                flowDict[u][v] = G[u][v][capacity]
     return flowDict
 
 
-def ford_fulkerson(G, s, t):
+def ford_fulkerson(G, s, t, capacity = 'capacity'):
     """Find a maximum single-commodity flow using the Ford-Fulkerson algorithm.
     
     This algorithm uses Edmonds-Karp-Dinitz path selection rule which
@@ -127,6 +127,12 @@ def ford_fulkerson(G, s, t):
 
     t : node
         Sink node for the flow.
+
+    capacity: string
+        Edges of the graph G are expected to have an attribute capacity
+        that indicates how much flow the edge can support. If this
+        attribute is not present, the edge is considered to have
+        infinite capacity. Default value: 'capacity'.
 
     Returns
     -------
@@ -169,7 +175,7 @@ def ford_fulkerson(G, s, t):
         raise nx.NetworkXError(
                 'MultiGraph and MultiDiGraph not supported (yet).')
 
-    auxiliary, infcapFlows = _create_auxiliary_digraph(G)
+    auxiliary, infcapFlows = _create_auxiliary_digraph(G, capacity = capacity)
     flowValue = 0   # Initial feasible flow.
 
     # As long as there is an (s, t)-path in the auxiliary digraph, find
@@ -188,9 +194,9 @@ def ford_fulkerson(G, s, t):
 
         # Find the minimum capacity of an edge in the path.
         try:
-            pathCapacity = min([c['capacity']
+            pathCapacity = min([c[capacity]
                             for (u, v, c) in pathEdges
-                            if 'capacity' in c])
+                            if capacity in c])
         except ValueError: 
             # path of infinite capacity implies no max flow
             raise nx.NetworkXUnbounded(
@@ -201,24 +207,25 @@ def ford_fulkerson(G, s, t):
         # Augment the flow along the path.
         for (u, v, c) in pathEdges:
             auxEdgeAttr = auxiliary[u][v]
-            if 'capacity' in auxEdgeAttr:
-                auxEdgeAttr['capacity'] -= pathCapacity
-                if auxEdgeAttr['capacity'] == 0:
+            if capacity in auxEdgeAttr:
+                auxEdgeAttr[capacity] -= pathCapacity
+                if auxEdgeAttr[capacity] == 0:
                     auxiliary.remove_edge(u, v)
             else:
                 infcapFlows[(u, v)] += pathCapacity
 
             if auxiliary.has_edge(v, u):
-                if 'capacity' in auxiliary[v][u]:
-                    auxiliary[v][u]['capacity'] += pathCapacity
+                if capacity in auxiliary[v][u]:
+                    auxiliary[v][u][capacity] += pathCapacity
             else:
-                auxiliary.add_edge(v, u, {'capacity': pathCapacity})
+                auxiliary.add_edge(v, u, {capacity: pathCapacity})
     
-    flowDict = _create_flow_dict(G, auxiliary, infcapFlows)
+    flowDict = _create_flow_dict(G, auxiliary, infcapFlows,
+                                 capacity = capacity)
     return flowValue, flowDict
 
 
-def ford_fulkerson_flow(G, s, t):
+def ford_fulkerson_flow(G, s, t, capacity = 'capacity'):
     """Return a maximum flow for a single-commodity flow problem.
 
     Parameters
@@ -233,6 +240,12 @@ def ford_fulkerson_flow(G, s, t):
 
     t : node
         Sink node for the flow.
+
+    capacity: string
+        Edges of the graph G are expected to have an attribute capacity
+        that indicates how much flow the edge can support. If this
+        attribute is not present, the edge is considered to have
+        infinite capacity. Default value: 'capacity'.
 
     Returns
     -------
@@ -277,10 +290,10 @@ def ford_fulkerson_flow(G, s, t):
     (x, a) 2.00
     (x, b) 1.00
     """
-    return ford_fulkerson(G, s, t)[1]
+    return ford_fulkerson(G, s, t, capacity = capacity)[1]
 
 
-def max_flow(G, s, t):
+def max_flow(G, s, t, capacity = 'capacity'):
     """Find the value of a maximum single-commodity flow.
     
     Parameters
@@ -295,6 +308,12 @@ def max_flow(G, s, t):
 
     t : node
         Sink node for the flow.
+
+    capacity: string
+        Edges of the graph G are expected to have an attribute capacity
+        that indicates how much flow the edge can support. If this
+        attribute is not present, the edge is considered to have
+        infinite capacity. Default value: 'capacity'.
 
     Returns
     -------
@@ -329,10 +348,10 @@ def max_flow(G, s, t):
     >>> flow
     3.0
     """
-    return ford_fulkerson(G, s, t)[0]
+    return ford_fulkerson(G, s, t, capacity = capacity)[0]
 
 
-def min_cut(G, s, t):
+def min_cut(G, s, t, capacity = 'capacity'):
     """Compute the value of a minimum (s, t)-cut.
 
     Use the max-flow min-cut theorem, i.e., the capacity of a minimum
@@ -350,6 +369,12 @@ def min_cut(G, s, t):
 
     t : node
         Sink node for the flow.
+
+    capacity: string
+        Edges of the graph G are expected to have an attribute capacity
+        that indicates how much flow the edge can support. If this
+        attribute is not present, the edge is considered to have
+        infinite capacity. Default value: 'capacity'.
 
     Returns
     -------
@@ -379,7 +404,7 @@ def min_cut(G, s, t):
     """
 
     try:
-        return ford_fulkerson(G, s, t)[0]
+        return ford_fulkerson(G, s, t, capacity = capacity)[0]
     except nx.NetworkXUnbounded:
         raise nx.NetworkXUnbounded(
                 "Infinite capacity path, no minimum cut.")
