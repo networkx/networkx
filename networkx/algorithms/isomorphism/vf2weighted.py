@@ -156,6 +156,7 @@ class WeightedMultiGraphMatcher(GraphMatcher):
         super(WeightedMultiGraphMatcher, self).__init__(G1, G2)
 
     def semantic_feasibility(self, G1_node, G2_node):
+        """Returns True if mapping G1_node to G2_node is semantically feasible."""
         G1_adj = self.G1.adj
         G2_adj = self.G2.adj
         core_1 = self.core_1
