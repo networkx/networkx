@@ -2,10 +2,11 @@
     Unit tests for edgelists.
 """
 
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_equal, assert_raises, assert_not_equal
 import networkx as nx
 import io
 import tempfile
+import os
 
 def assert_equal_edges(elist1,elist2):
     if len(elist1[0]) == 2:
@@ -16,6 +17,17 @@ def assert_equal_edges(elist1,elist2):
                             sorted((sorted((u, v)), d) for u, v, d in elist2))
 
 class TestEdgelist:
+
+    def setUp(self):
+        self.G=nx.Graph(name="test")
+        e=[('a','b'),('b','c'),('c','d'),('d','e'),('e','f'),('a','f')]
+        self.G.add_edges_from(e)
+        self.G.add_node('g')
+        self.DG=nx.DiGraph(self.G)
+        self.XG=nx.MultiGraph()
+        self.XG.add_weighted_edges_from([(1,2,5),(1,2,5),(1,2,1),(3,3,42)])
+        self. XDG=nx.MultiDiGraph(self.XG)
+
 
     def test_read_edgelist_1(self):
         s = b"""\
@@ -136,5 +148,81 @@ class TestEdgelist:
         assert_equal(G.adj, H.adj)
 
 
+    def test_edgelist_graph(self):
+        G=self.G
+        (fd,fname)=tempfile.mkstemp()
+        nx.write_edgelist(G,fname);  
+        H=nx.read_edgelist(fname);
+        H2=nx.read_edgelist(fname)
+        assert_not_equal(H,H2) # they should be different graphs
+        G.remove_node('g') # isolated nodes are not written in edgelist
+        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
+        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        os.close(fd)
+        os.unlink(fname)
+
+    def test_edgelist_digraph(self):
+        G=self.DG
+        (fd,fname)=tempfile.mkstemp()
+        nx.write_edgelist(G,fname);  
+        H=nx.read_edgelist(fname,create_using=nx.DiGraph());
+        H2=nx.read_edgelist(fname,create_using=nx.DiGraph())
+        assert_not_equal(H,H2) # they should be different graphs
+        G.remove_node('g') # isolated nodes are not written in edgelist
+        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
+        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        os.close(fd)
+        os.unlink(fname)
+
+
+    def test_edgelist_integers(self):
+        (fd,fname)=tempfile.mkstemp()
+        G=nx.convert_node_labels_to_integers(self.G)
+        nx.write_edgelist(G,fname);  
+        H=nx.read_edgelist(fname,nodetype=int);
+        H2=nx.read_edgelist(fname,nodetype=int);
+        G.remove_node(5) # isolated nodes are not written in edgelist
+        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
+        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        os.close(fd)
+        os.unlink(fname)
+
+
+    def test_edgelist_digraph(self):
+        G=self.DG
+        (fd,fname)=tempfile.mkstemp()
+        nx.write_edgelist(G,fname);  
+        H=nx.read_edgelist(fname,create_using=nx.DiGraph());
+        H2=nx.read_edgelist(fname,create_using=nx.DiGraph())
+        assert_not_equal(H,H2) # they should be different graphs
+        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
+        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        os.close(fd)
+        os.unlink(fname)
+
+
+    def test_edgelist_multigraph(self):
+        G=self.XG
+        (fd,fname)=tempfile.mkstemp()
+        nx.write_edgelist(G,fname);  
+        H=nx.read_edgelist(fname,create_using=nx.MultiGraph());
+        H2=nx.read_edgelist(fname,create_using=nx.MultiGraph())
+        assert_not_equal(H,H2) # they should be different graphs
+        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
+        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        os.close(fd)
+        os.unlink(fname)
+
+    def test_edgelist_multidigraph(self):
+        G=self.XDG
+        (fd,fname)=tempfile.mkstemp()
+        nx.write_edgelist(G,fname);  
+        H=nx.read_edgelist(fname,create_using=nx.MultiDiGraph());
+        H2=nx.read_edgelist(fname,create_using=nx.MultiDiGraph())
+        assert_not_equal(H,H2) # they should be different graphs
+        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
+        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        os.close(fd)
+        os.unlink(fname)
 
 
