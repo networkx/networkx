@@ -22,6 +22,7 @@ from networkx.utils import _get_fh, is_string_like
 	
 def read_leda(path,encoding='UTF-8'):
     """Read graph in GraphML format from path.
+
     Returns an XGraph or XDiGraph."""
     fh=_get_fh(path,mode='rb')        
     lines=(line.decode(encoding) for line in fh)
@@ -32,6 +33,7 @@ def read_leda(path,encoding='UTF-8'):
 
 def parse_leda(lines):
     """Parse LEDA.GRAPH format from string or iterable.
+
     Returns an Graph or DiGraph."""
     if is_string_like(lines): lines=iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines \
