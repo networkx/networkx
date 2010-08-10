@@ -51,6 +51,7 @@ Advanced Interface
    bidirectional_dijkstra
    bidirectional_shortest_path
    dijkstra_predecessor_and_distance
+   bellman_ford
 
 
 
