@@ -14,8 +14,8 @@ class TestDAG:
         assert_equal(nx.topological_sort_recursive(DG),[1, 2, 3])
 
         DG.add_edge(3,2)
-        assert_equal(nx.topological_sort(DG),None)
-        assert_equal(nx.topological_sort_recursive(DG),None)
+        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort, DG)
+        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort_recursive, DG)
         
         DG.remove_edge(2,3)
         assert_equal(nx.topological_sort(DG),[1, 3, 2])
@@ -25,8 +25,8 @@ class TestDAG:
         DG=nx.DiGraph({1:[2],2:[3],3:[4],
                        4:[5],5:[1],11:[12],
                        12:[13],13:[14],14:[15]})
-        assert_equal(nx.topological_sort(DG),None)
-        assert_equal(nx.topological_sort_recursive(DG),None)
+        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort, DG)
+        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort_recursive, DG)
 
         assert_false(nx.is_directed_acyclic_graph(DG))
 
@@ -49,14 +49,12 @@ class TestDAG:
                      [1, 2, 8, 5, 6, 9, 10, 11, 7, 3, 4, 12, 13, 14])
 
         DG.add_edge(14,1)
-        assert_equal(nx.topological_sort(DG), None)
-        assert_equal(nx.topological_sort_recursive(DG), None)
+        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort, DG)
+        assert_raises(nx.NetworkXUnfeasible, nx.topological_sort_recursive, DG)
 
     def test_topological_sort4(self):
         G=nx.Graph()
         G.add_edge(1,2)
-        assert_equal(nx.topological_sort(G), None)
-        assert_equal(nx.topological_sort_recursive(G), None)
-
-
+        assert_raises(nx.NetworkXError, nx.topological_sort, G)
+        assert_raises(nx.NetworkXError, nx.topological_sort_recursive, G)
 
