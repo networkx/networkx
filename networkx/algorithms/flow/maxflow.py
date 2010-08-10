@@ -65,13 +65,15 @@ def _create_flow_graph(G, H, infcapFlows, capacity = 'capacity'):
                 try:
                     flowGraph[u][v]['flow'] = H[v][u][capacity]
                 except KeyError:
-                    # Infinite capacity digon in the original graph.
-                    if nx.is_directed(G):
-                        flowGraph[u][v]['flow'] = max(infcapFlows[(u, v)]
-                                                    - infcapFlows[(v, u)], 0)
-                    else:
-                        flowGraph[u][v]['flow'] = abs(infcapFlows[(u, v)]
-                                                    - infcapFlows[(v, u)])
+                    try: # Infinite capacity digon in the original graph.
+                        if nx.is_directed(G):
+                            flowDict[u][v] = max(infcapFlows[(u, v)]
+                                             - infcapFlows[(v, u)], 0)
+                        else:
+                            flowDict[u][v] = abs(infcapFlows[(u, v)]
+                                             - infcapFlows[(v, u)])
+                    except KeyError: # Zero flow
+                            flowDict[u][v] = 0
         else:
             flowGraph[u][v]['flow'] = G[u][v][capacity]
 
@@ -96,13 +98,15 @@ def _create_flow_dict(G, H, infcapFlows, capacity = 'capacity'):
                     try:
                         flowDict[u][v] = H[v][u][capacity]
                     except KeyError:
-                        # Infinite capacity digon in the original graph.
-                        if nx.is_directed(G):
-                            flowDict[u][v] = max(infcapFlows[(u, v)]
+                        try: # Infinite capacity digon in the original graph.
+                            if nx.is_directed(G):
+                                flowDict[u][v] = max(infcapFlows[(u, v)]
                                                  - infcapFlows[(v, u)], 0)
-                        else:
-                            flowDict[u][v] = abs(infcapFlows[(u, v)]
+                            else:
+                                flowDict[u][v] = abs(infcapFlows[(u, v)]
                                                  - infcapFlows[(v, u)])
+                        except KeyError: # Zero flow
+                            flowDict[u][v] = 0
             else:
                 flowDict[u][v] = G[u][v][capacity]
     return flowDict
