@@ -12,7 +12,10 @@ class TestGraph(object):
         try:
             import pyparsing
         except ImportError:
-            raise SkipTest('gml test: pyparsing not available.')
+            try:
+                import matplotlib.pyparsing as pyparsing
+            except:
+                raise SkipTest('gml test: pyparsing not available.')
 
     def setUp(self):
         self.simple_data="""Creator me

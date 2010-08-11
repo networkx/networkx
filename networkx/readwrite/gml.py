@@ -108,8 +108,11 @@ def parse_gml(lines):
     try:
         from pyparsing import ParseException
     except ImportError:
-        raise ImportError(\
-          """Import Error: not able to import pyparsing: 
+        try:
+            from matplotlib.pyparsing import ParseException
+        except:
+            raise ImportError(\
+            """Import Error: not able to import pyparsing: 
 http://pyparsing.wikispaces.com/""")
 
     try:
@@ -192,8 +195,15 @@ def pyparse_gml():
              ParseException, restOfLine, White, alphas, alphanums, nums,\
              OneOrMore,quotedString,removeQuotes,dblQuotedString
     except ImportError:
-        raise ImportError(\
-            """Import Error: not able to import pyparsing: 
+        try:
+            from matplotlib.pyparsing import \
+             Literal, CaselessLiteral, Word, Forward,\
+             ZeroOrMore, Group, Dict, Optional, Combine,\
+             ParseException, restOfLine, White, alphas, alphanums, nums,\
+             OneOrMore,quotedString,removeQuotes,dblQuotedString
+        except:
+            raise ImportError(\
+                """Import Error: not able to import pyparsing: 
 http://pyparsing.wikispaces.com/""")
 
     if not graph:
@@ -343,4 +353,7 @@ def setup_module(module):
     try:
         import pyparsing
     except:
-        raise SkipTest("pyparsing not available")
+        try:
+            import matplotlib.pyparsing
+        except:
+            raise SkipTest("pyparsing not available")
