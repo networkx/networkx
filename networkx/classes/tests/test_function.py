@@ -107,3 +107,22 @@ class TestFunction(object):
              'Degree: 2',
              'Neighbors: 0 2'])
         assert_equal(info,expected_node_info)
+
+    def test_info_digraph(self):
+        G=networkx.DiGraph(name='path_graph(5)')
+        G.add_path([0,1,2,3,4])
+        info=networkx.info(G)
+        expected_graph_info='\n'.join(['Name: path_graph(5)',
+                                       'Type: DiGraph',
+                                       'Number of nodes: 5',
+                                       'Number of edges: 4',
+                                       'Average in degree:   0.8000',
+                                       'Average out degree:   0.8000'])
+        assert_equal(info,expected_graph_info)
+
+        info=networkx.info(G,n=1)
+        expected_node_info='\n'.join(
+            ['Node 1 has the following properties:',
+             'Degree: 2',
+             'Neighbors: 2'])
+        assert_equal(info,expected_node_info)

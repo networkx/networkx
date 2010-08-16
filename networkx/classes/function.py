@@ -262,9 +262,9 @@ def info(G, n=None):
         if len(G) > 0:
             if G.is_directed():
                 info+="Average in degree: %8.4f\n"%\
-                    (sum(G.in_degree().values())/nnodes)
-                info+="Average out degree: %8.4f\n"%\
-                    sum(G.out_degree().values())/nnodes
+                    (sum(G.in_degree().values())/float(nnodes))
+                info+="Average out degree: %8.4f"%\
+                    (sum(G.out_degree().values())/float(nnodes))
             else:
                 s=sum(G.degree().values())
                 info+="Average degree: %8.4f"%\
