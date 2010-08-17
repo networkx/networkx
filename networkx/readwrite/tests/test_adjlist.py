@@ -48,6 +48,8 @@ class TestAdjlist():
         nx.write_multiline_adjlist(G, fname)
         H = nx.read_multiline_adjlist(fname)
         assert_equal(G.adj, H.adj)
+        os.close(fd)
+        os.unlink(fname)
 
     def test_latin1_error(self):
         G = nx.Graph()
@@ -62,6 +64,8 @@ class TestAdjlist():
         assert_raises(UnicodeEncodeError,
                       nx.write_multiline_adjlist,
                       G, fname, encoding = 'latin-1')
+        os.close(fd)
+        os.unlink(fname)
 
     def test_latin1(self):
         G = nx.Graph()
@@ -77,6 +81,8 @@ class TestAdjlist():
         nx.write_multiline_adjlist(G, fname, encoding = 'latin-1')
         H = nx.read_multiline_adjlist(fname, encoding = 'latin-1')
         assert_equal(G.adj, H.adj)
+        os.close(fd)
+        os.unlink(fname)
 
 
 
