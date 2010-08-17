@@ -2,7 +2,6 @@
 ****
 YAML
 ****
-
 Read and write NetworkX graphs in YAML format.
 
 "YAML is a data serialization format designed for human readability 
@@ -20,40 +19,72 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['read_yaml', 'write_yaml']
 
-
-import networkx
+import networkx as nx
 from networkx.utils import _get_fh
 
-def write_yaml(G, path, 
-               default_flow_style=False,  
-               encoding='UTF-8',
-               **kwds):
-    """Write graph G in YAML text format to path. 
+def write_yaml(G, path, encoding='UTF-8', **kwds):
+    """Write graph G in YAML format to path. 
 
-    See http://www.yaml.org
+    YAML is a data serialization format designed for human readability 
+    and interaction with scripting languages [1]_.
 
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph
+    path : file or string
+       File or filename to write. 
+       Filenames ending in .gz or .bz2 will be compressed.
+    encoding: string, optional
+       Specify which encoding to use when writing file.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> nx.write_yaml(G,'test.yaml')
+
+    References
+    ----------
+    .. [1] http://www.yaml.org
     """
     try:
         import yaml
     except ImportError:
-        raise ImportError(
-          "write_yaml() requires PyYAML: http://pyyaml.org/ ")
+        raise ImportError("write_yaml() requires PyYAML: http://pyyaml.org/")
     fh=_get_fh(path,mode='w')        
-    yaml.dump(G,fh,default_flow_style=default_flow_style,**kwds)
+    yaml.dump(G,fh,**kwds)
     fh.close()
     
 
 def read_yaml(path):
-    """Read graph from YAML format from path.
+    """Read graph in YAML format from path.
 
-    See http://www.yaml.org
+    YAML is a data serialization format designed for human readability 
+    and interaction with scripting languages [1]_.
+
+    Parameters
+    ----------
+    path : file or string
+       File or filename to read.  Filenames ending in .gz or .bz2 
+       will be uncompressed.
+
+    Returns
+    -------
+    G : NetworkX graph
+
+    Examples
+    --------
+    >>> G=nx.read_yaml('test.yaml')
+ 
+    References
+    ----------
+    .. [1] http://www.yaml.org
 
     """
     try:
         import yaml
     except ImportError:
-        raise ImportError(
-          "read_yaml() requires PyYAML: http://pyyaml.org/ ")
+        raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/")
 
     fh=_get_fh(path,mode='r')        
     G=yaml.load(fh)
@@ -67,4 +98,4 @@ def setup_module(module):
     try:
         import yaml
     except:
-        raise SkipTest("yaml not available")
+        raise SkipTest("PyYAML not available")
