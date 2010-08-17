@@ -49,7 +49,6 @@ def write_p2g(G, path):
     This format is meant to be used with directed graphs with
     possible self loops.
     """
-    
     fh=_get_fh(path,mode='w')
 
     fh.write("%s\n"%G.name)
@@ -68,24 +67,28 @@ def write_p2g(G, path):
     fh.close()
 
 def read_p2g(path):
-    """Read graph in p2g format from path. Returns an XDiGraph.
+    """Read graph in p2g format from path. 
+
+    Returns an MultiDiGraph.
 
     If you want a DiGraph (with no self loops allowed and no edge data)
     use D=networkx.DiGraph(read_p2g(path))
-
     """
     fh=_get_fh(path,mode='r')        
     G=parse_p2g(fh)
     return G
 
 def parse_p2g(lines):
-    """Parse p2g format graph from string or iterable. Returns an XDiGraph."""
+    """Parse p2g format graph from string or iterable. 
+
+    Returns an MultiDiGraph.
+    """
     if is_string_like(lines): lines=iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines])
 
     description = lines.next()
     # are multiedges (parallel edges) allowed?
-    G=networkx.XDiGraph(name=description,selfloops=True)
+    G=networkx.MultiDiGraph(name=description,selfloops=True)
     nnodes,nedges=map(int,lines.next().split())
 
     nodelabel={}
