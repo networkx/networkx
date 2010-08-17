@@ -86,7 +86,7 @@ def read_sparse6(path):
     return read_sparse6_list(path)[0]
 
 def read_sparse6_list(path):
-    """Read simple undirected graphs in sparse6 format from path.
+    """Read undirected graphs in sparse6 format from path.
 
     Returns a list of MultiGraphs, one for each line in file."""
     fh=_get_fh(path,mode='rt')        
