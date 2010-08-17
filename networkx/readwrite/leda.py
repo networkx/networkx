@@ -1,5 +1,6 @@
 """
 Read graphs in LEDA format.
+
 See http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
 
 """
@@ -15,15 +16,31 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['read_leda', 'parse_leda']
 
-
-import networkx
+import networkx as nx 
 from networkx.exception import NetworkXError
 from networkx.utils import _get_fh, is_string_like
 	
-def read_leda(path,encoding='UTF-8'):
-    """Read graph in GraphML format from path.
+def read_leda(path, encoding='UTF-8'):
+    """Read graph in LEDA format from path.
 
-    Returns an XGraph or XDiGraph."""
+    Parameters
+    ----------
+    path : file or string
+       File or filename to read.  Filenames ending in .gz or .bz2  will be 
+       uncompressed.
+
+    Returns
+    -------
+    G : NetworkX graph
+
+    Examples
+    --------
+    G=nx.read_leda('file.leda')
+ 
+    References
+    ----------
+    .. [1] http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
+    """
     fh=_get_fh(path,mode='rb')        
     lines=(line.decode(encoding) for line in fh)
     G=parse_leda(lines)
@@ -32,23 +49,39 @@ def read_leda(path,encoding='UTF-8'):
 
 
 def parse_leda(lines):
-    """Parse LEDA.GRAPH format from string or iterable.
+    """Read graph in LEDA format from string or iterable.
 
-    Returns an Graph or DiGraph."""
+    Parameters
+    ----------
+    lines : string or iterable
+       Data in LEDA format.
+
+    Returns
+    -------
+    G : NetworkX graph
+
+    Examples
+    --------
+    G=nx.parse_leda(string)
+ 
+    References
+    ----------
+    .. [1] http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
+    """
     if is_string_like(lines): lines=iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines \
             if not (line.startswith('#') or line.startswith('\n') or line=='')])
     for i in range(3):
         next(lines)
     # Graph
-    du = int(next(lines))	# -1 directed, -2 undirected
+    du = int(next(lines)) # -1=directed, -2=undirected
     if du==-1:
-        G = networkx.DiGraph()
+        G = nx.DiGraph()
     else:
-        G = networkx.Graph()
+        G = nx.Graph()
         
     # Nodes
-    n =int(next(lines))	# number of vertices
+    n =int(next(lines)) # number of nodes
     node={}
     for i in range(1,n+1):  # LEDA counts from 1 to n
         symbol=next(lines).rstrip().strip('|{}|  ')
@@ -58,13 +91,12 @@ def parse_leda(lines):
     G.add_nodes_from([s for i,s in node.items()])
 	
     # Edges
-    m = int(next(lines))	# number of edges
+    m = int(next(lines)) # number of edges
     for i in range(m):
         try:
             s,t,reversal,label=next(lines).split()
         except:
-            raise NetworkXError(\
-                  'Too few fields in LEDA.GRAPH edge %d' % (i+1))
+            raise NetworkXError('Too few fields in LEDA.GRAPH edge %d'%(i+1))
         # BEWARE: no handling of reversal edges
         G.add_edge(node[int(s)],node[int(t)],label=label[2:-2])
     return G
