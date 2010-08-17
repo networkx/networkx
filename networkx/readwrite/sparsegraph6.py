@@ -2,10 +2,14 @@
 **************
 SparseGraph 6
 **************
-
 Read graphs in graph6 and sparse6 format.
-See http://cs.anu.edu.au/~bdm/data/formats.txt
 
+"graph6 and sparse6 are formats for storing undirected graphs in a
+compact manner, using only printable ASCII characters. Files in these
+formats have text type and contain one line per graph."
+http://cs.anu.edu.au/~bdm/data/formats.html
+
+See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
 """
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
@@ -20,60 +24,31 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['read_graph6', 'parse_graph6', 'read_graph6_list',
            'read_sparse6', 'parse_sparse6', 'read_sparse6_list']
 
-import networkx
+import networkx as nx
 from networkx.exception import NetworkXException, NetworkXError
 from networkx.utils import _get_fh
 	
-def read_graph6_list(path):
-    """Read simple undirected graphs in graph6 format from path.
-    Returns a list of Graphs, one for each line in file."""
-    fh=_get_fh(path,mode='rt')        
-    glist=[]
-    for line in fh:
-        line = line.strip()
-        if not len(line): continue
-        glist.append(parse_graph6(line))
-    return glist
+# graph6
 
 def read_graph6(path):
     """Read simple undirected graphs in graph6 format from path.
-    Returns a single Graph."""
+
+    Returns a single Graph.
+    """
     return read_graph6_list(path)[0]
 	
-	
-def read_sparse6_list(path):
-    """Read simple undirected graphs in sparse6 format from path.
-    Returns a list of Graphs, one for each line in file."""
-    fh=_get_fh(path,mode='rt')        
-    glist=[]
-    for line in fh:
-        line = line.strip()
-        if not len(line): continue
-        glist.append(parse_sparse6(line))
-    return glist
-
-def read_sparse6(path):
-    """Read simple undirected graphs in sparse6 format from path.
-    Returns a single Graph."""
-    return read_sparse6_list(path)[0]
-
-
-def graph6data(str):
-    """Convert graph6 character sequence to 6-bit integers."""
-    v = [ord(c)-63 for c in str]
-    if min(v) < 0 or max(v) > 63:
-        return None
-    return v
-	
-def graph6n(data):
-    """Read initial one or four-unit value from graph6 sequence.  
-    Return value, rest of seq."""
-    if data[0] <= 62:
-        return data[0], data[1:]
-    return (data[1]<<12) + (data[2]<<6) + data[3], data[4:]
-
 def parse_graph6(str):
-    """Read undirected graph in graph6 format."""
+    """Read a simple undirected graph in graph6 format from string.
+
+    Returns a single Graph.
+    """
+    def bits():
+        """Return sequence of individual bits from 6-bit-per-value
+        list of data values."""
+        for d in data:
+            for i in [5,4,3,2,1,0]:
+                yield (d>>i)&1
+
     if str.startswith('>>graph6<<'):
         str = str[10:]
     data = graph6data(str)
@@ -83,21 +58,50 @@ def parse_graph6(str):
         raise NetworkXError(\
             'Expected %d bits but got %d in graph6' % (n*(n-1)//2, len(data)*6))
 
-    def bits():
-        """Return sequence of individual bits from 6-bit-per-value
-        list of data values."""
-        for d in data:
-            for i in [5,4,3,2,1,0]:
-                yield (d>>i)&1
-				
-    G=networkx.Graph()
+    G=nx.Graph()
     G.add_nodes_from(range(n))
     for (i,j),b in zip([(i,j) for j in range(1,n) for i in range(j)], bits()):
         if b: G.add_edge(i,j)
     return G
 
+def read_graph6_list(path):
+    """Read simple undirected graphs in graph6 format from path.
+
+    Returns a list of Graphs, one for each line in file.
+    """
+    fh=_get_fh(path,mode='rt')        
+    glist=[]
+    for line in fh:
+        line = line.strip()
+        if not len(line): continue
+        glist.append(parse_graph6(line))
+    return glist
+
+# sparse6
+
+def read_sparse6(path):
+    """Read simple undirected graphs in sparse6 format from path.
+
+    Returns a single MultiGraph."""
+    return read_sparse6_list(path)[0]
+
+def read_sparse6_list(path):
+    """Read simple undirected graphs in sparse6 format from path.
+
+    Returns a list of MultiGraphs, one for each line in file."""
+    fh=_get_fh(path,mode='rt')        
+    glist=[]
+    for line in fh:
+        line = line.strip()
+        if not len(line): continue
+        glist.append(parse_sparse6(line))
+    return glist
+
 def parse_sparse6(string):
-    """Read undirected graph in sparse6 format."""
+    """Read undirected graph in sparse6 format from string.
+
+    Returns a MultiGraph.
+    """
     if string.startswith('>>sparse6<<'):
         string = str[10:]
     if not string.startswith(':'):
@@ -133,7 +137,7 @@ def parse_sparse6(string):
 	
     v = 0
 
-    G=networkx.Graph()
+    G=nx.MultiGraph()
     G.add_nodes_from(range(n))
 
     for b,x in parseData():
@@ -145,3 +149,18 @@ def parse_sparse6(string):
 
     return G
 
+# helper functions
+
+def graph6data(str):
+    """Convert graph6 character sequence to 6-bit integers."""
+    v = [ord(c)-63 for c in str]
+    if min(v) < 0 or max(v) > 63:
+        return None
+    return v
+	
+def graph6n(data):
+    """Read initial one or four-unit value from graph6 sequence.  
+    Return value, rest of seq."""
+    if data[0] <= 62:
+        return data[0], data[1:]
+    return (data[1]<<12) + (data[2]<<6) + data[3], data[4:]
