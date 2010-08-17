@@ -123,7 +123,7 @@ def read_pajek(path,encoding='UTF-8'):
 
     References
     ----------
-    See Http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
+    See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
     for format information.
     """
     fh=_get_fh(path, 'rb')
