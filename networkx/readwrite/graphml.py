@@ -36,7 +36,7 @@ __all__ = ['write_graphml', 'read_graphml',
 
 import networkx as nx
 from networkx.utils import _get_fh
-from xml.etree.ElementTree import Element, ElementTree as ET
+from xml.etree.cElementTree import Element, ElementTree as ET
 import warnings
     
 def write_graphml(G, path, encoding='utf-8'):
