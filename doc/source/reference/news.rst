@@ -4,6 +4,32 @@
 Release Log
 ===========
 
+Networkx-1.3
+------------
+
+Release date:  xx August 2010
+
+See: https://networkx.lanl.gov/trac/timeline
+
+New features
+~~~~~~~~~~~~
+ - Works with Python versions 2.6, 2.7, 3.1, and 3.2 (but not 2.4 and 2.5).
+ - :mod:`Minimum cost flow algorithms <networkx.algorithms.flow>`
+ - :mod:`Bellman-Ford shortest paths <networkx.algorithms.shortest_paths.weighted>`
+ - :mod:`GraphML reader and writer <networkx.readwrite.graphml>` 
+ - :mod:`More exception/error types <networkx.exception>` 
+ - Updated many tests to unittest style.  Run with: "import networkx; networkx.test()" (requires nose testing package)
+ - and more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.3
+
+API Changes
+~~~~~~~~~~~
+ - :mod:`minimum_spanning_tree() now returns a NetworkX Graph (a tree or forest) <networkx.algorithms.mst>` 
+
+Bug fixes
+~~~~~~~~~
+  - see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.3
+
+
 Networkx-1.2
 ------------
 
