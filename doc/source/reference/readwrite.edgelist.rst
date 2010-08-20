@@ -10,3 +10,5 @@ Edge List
    write_edgelist
    read_weighted_edgelist
    write_weighted_edgelist
+   generate_edgelist
+   parse_edgelist

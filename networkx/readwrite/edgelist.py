@@ -2,25 +2,29 @@
 **********
 Edge Lists
 **********
-
 Read and write NetworkX graphs as edge lists.
 
+The multi-line adjacency list format is useful for graphs with nodes
+that can be meaningfully represented as strings.  With the edgelist
+format simple edge data can be stored but node or graph data is not.
+There is no way of representing isolated nodes unless the node has a
+self-loop edge.
+
+Format
+------
 You can read or write three formats of edge lists with these functions.
 
-Node pairs::
+Node pairs with no data::
 
- 1 2 # no data
+ 1 2 
 
-Dictionary as data::
+Python dictionary as data::
 
  1 2 {'weight':7, 'color':'green'} 
 
 Arbitrary data::
 
  1 2 7 green
-
-See the read_edgelist() function for details and examples.
-
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
 #    Copyright (C) 2004-2010 by 
@@ -40,24 +44,45 @@ __all__ = ['generate_edgelist',
 from networkx.utils import is_string_like, _get_fh, make_str
 import networkx as nx
 
-def generate_edgelist(G, delimiter = ' ', data = True):
-    """Generate a single entry of the graph G in edge list format.
+def generate_edgelist(G, delimiter=' ', data=True):
+    """Generate a single line of the graph G in edge list format.
 
-    This function is a generator.
+    Parameters
+    ----------
+    G : NetworkX graph
+    
+    delimiter : string, optional
+       Separator for node labels 
 
-    See read_edgelist for format details.
+    data : bool or list of keys       
+       If False generate no edge data.  If True use a dictionary 
+       representation of edge data.  If a list of keys use a list of data
+       values corresponding to the keys.
+
+    Yields
+    ------
+    lines : string
+        Lines of data in adjlist format.
 
     Examples
     --------
-
     >>> G = nx.lollipop_graph(4, 3)
     >>> G[1][2]['weight'] = 3
     >>> G[3][4]['capacity'] = 12
-    >>> adjlist_str = ''
+    >>> for line in nx.generate_edgelist(G, data=False):
+    ...     print line
+    0 1
+    0 2
+    0 3
+    1 2
+    1 3
+    2 3
+    3 4
+    4 5
+    5 6
+
     >>> for line in nx.generate_edgelist(G):
-    ...     adjlist_str += line
-    ... 
-    >>> print(adjlist_str[:-1])
+    ...     print line
     0 1 {}
     0 2 {}
     0 3 {}
@@ -67,16 +92,34 @@ def generate_edgelist(G, delimiter = ' ', data = True):
     3 4 {'capacity': 12}
     4 5 {}
     5 6 {}
+
+    >>> for line in nx.generate_edgelist(G,data=['weight']):
+    ...     print line
+    0 1
+    0 2
+    0 3
+    1 2 3
+    1 3
+    2 3
+    3 4
+    4 5
+    5 6
+
+    See Also
+    --------
+    write_adjlist, read_adjlist
     """
     if data is True or data is False:
         for e in G.edges(data=data):
-            yield delimiter.join(map(make_str,e))+"\n"
+            yield delimiter.join(map(make_str,e))
     else:
         for u,v,d in G.edges(data=True):
             e=[u,v]
-            e.extend(d[k] for k in data)
-            yield delimiter.join(map(make_str,e))+"\n"
-
+            try:
+                e.extend(d[k] for k in data)
+            except KeyError:
+                pass # missing data for this edge, should warn?
+            yield delimiter.join(map(make_str,e))
 
 def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
                    encoding = 'utf-8'):
@@ -88,8 +131,7 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
        A NetworkX graph
     path : file or string
        File or filename to write. If a file is provided, it must be
-       opened in 'wb' mode.
-       Filenames ending in .gz or .bz2 will be compressed.
+       opened in 'wb' mode. Filenames ending in .gz or .bz2 will be compressed.
     comments : string, optional
        The character used to indicate the start of a comment 
     delimiter : string, optional
@@ -118,13 +160,6 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
     >>> nx.write_edgelist(G,'test.edgelist',data=['color'])
     >>> nx.write_edgelist(G,'test.edgelist',data=['color','weight'])
     
-    Notes
-    -----
-    The file will use the utf-8 encoding by default.
-    It is possible to write files in other encodings by providing the
-    encoding argument to write_edgelist.
-    
-    
     See Also
     --------
     write_edgelist()
@@ -133,33 +168,74 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
     fh=_get_fh(path, 'wb')
 
     for line in generate_edgelist(G, delimiter, data):
+        line+='\n'
         fh.write(line.encode(encoding))
 
-def parse_edgelist(lines, comments = '#', delimiter = ' ',
-                   create_using = None, nodetype = None, data = True):
+def parse_edgelist(lines, comments='#', delimiter=' ',
+                   create_using=None, nodetype=None, data=True):
     """Parse lines of an edge list representation of a graph.
 
-    See read_edgelist for file format details.
 
     Returns
     -------
     G: NetworkX Graph
         The graph corresponding to lines
+    data : bool or list of (label,type) tuples
+       If False generate no edge data or if True use a dictionary 
+       representation of edge data or a list tuples specifying dictionary 
+       key names and types for edge data.
+    create_using: NetworkX graph container, optional
+       Use given NetworkX graph for holding nodes or edges.
+    nodetype : Python type, optional
+       Convert nodes to this type.  
+    comments : string, optional
+       Marker for comment lines
+    delimiter : string, optional
+       Separator for node labels 
+    create_using: NetworkX graph container       
+       Use given NetworkX graph for holding nodes or edges.
 
     Examples
     --------
-    >>> lines = ["1 2 {}",
-    ...          "2 3 {'weight':3, 'name': 'Frodo'}",
-    ...          "3 4 {}",
-    ...          "2 4 {}",
-    ...          "5 2 {'weigth':6, 'name': 'Saruman'}"]
-    >>> G = nx.parse_edgelist(iter(lines), nodetype = int)
+    Edgelist with no data:
+
+    >>> lines = ["1 2",
+    ...          "2 3",
+    ...          "3 4"]
+    >>> G = nx.parse_edgelist(lines, nodetype = int)
     >>> G.nodes()
-    [1, 2, 3, 4, 5]
+    [1, 2, 3, 4]
+    >>> G.edges()
+    [(1, 2), (2, 3), (3, 4)]
+
+    Edgelist with data in Python dictionary representation:
+    
+    >>> lines = ["1 2 {'weight':3}",
+    ...          "2 3 {'weight':27}",
+    ...          "3 4 {'weight':3.0}"]
+    >>> G = nx.parse_edgelist(lines, nodetype = int)
+    >>> G.nodes()
+    [1, 2, 3, 4]
     >>> G.edges(data = True)
-    [(1, 2, {}), (2, 3, {'name': 'Frodo', 'weight': 3}), (2, 4, {}), (2, 5, {'name': 'Saruman', 'weigth': 6}), (3, 4, {})]
-        
+    [(1, 2, {'weight': 3}), (2, 3, {'weight': 27}), (3, 4, {'weight': 3.0})]
+
+    Edgelist with data in a list:
+
+    >>> lines = ["1 2 3",
+    ...          "2 3 27",
+    ...          "3 4 3.0"]
+    >>> G = nx.parse_edgelist(lines, nodetype = int, data=(('weight',float),))
+    >>> G.nodes()
+    [1, 2, 3, 4]
+    >>> G.edges(data = True)
+    [(1, 2, {'weight': 3.0}), (2, 3, {'weight': 27.0}), (3, 4, {'weight': 3.0})]
+
+    See Also
+    --------
+    read_weighted_edgelist
+
     """
+    from ast import literal_eval
     if create_using is None:
         G=nx.Graph()
     else:
@@ -167,7 +243,7 @@ def parse_edgelist(lines, comments = '#', delimiter = ' ',
             G=create_using
             G.clear()
         except:
-            raise TypeError("Input graph is not a NetworkX graph type")
+            raise TypeError("create_using input is not a NetworkX graph type")
 
     for line in lines:
         p=line.find(comments)
@@ -187,50 +263,40 @@ def parse_edgelist(lines, comments = '#', delimiter = ' ',
                 u=nodetype(u)
                 v=nodetype(v)
             except:
-                raise TypeError("Failed to convert nodes %s,%s to type %s."\
-                          %(u,v,nodetype))
+                raise TypeError("Failed to convert nodes %s,%s to type %s."
+                                %(u,v,nodetype))
 
         if len(d)==0 or data is False:
             # no data or data type specified
             edgedata={}
         elif data is True:
-            try:
-                from ast import literal_eval
-            except:
-                literal_eval=eval # use potentially unsafe built-in eval
             # no edge types specified
             try: # try to evaluate as dictionary
                 edgedata=dict(literal_eval(' '.join(d)))
             except:
                 raise TypeError(
-                        "Failed to convert edge data (%s) to dictionary."%(d))
+                    "Failed to convert edge data (%s) to dictionary."%(d))
         else:
             # convert edge data to dictionary with specified keys and type
             if len(d)!=len(data):
                 raise IndexError(
-                        "Edge data %s and data_keys %s are not the same length"%
-                                 (d, data))
+                    "Edge data %s and data_keys %s are not the same length"%
+                    (d, data))
             edgedata={}
             for (edge_key,edge_type),edge_value in zip(data,d):
                 try:
                     edge_value=edge_type(edge_value)
                 except:
-                    raise TypeError("Failed to convert edge data (%s) to type %s."%
-                                    (edge_key, edge_type))
+                    raise TypeError(
+                        "Failed to convert %s data %s to type %s."
+                        %(edge_key, edge_value, edge_type))
                 edgedata.update({edge_key:edge_value})
         G.add_edge(u, v, attr_dict=edgedata)
     return G
 
 
-def read_edgelist(path, 
-                  comments="#", 
-                  delimiter=' ',
-                  create_using=None, 
-                  nodetype=None, 
-                  data=True,
-                  edgetype = None,
-                  encoding = 'utf-8'
-                  ):
+def read_edgelist(path, comments="#", delimiter=' ', create_using=None, 
+                  nodetype=None, data=True, edgetype=None, encoding='utf-8'):
     """Read a graph from a list of edges.
 
     Parameters
@@ -248,7 +314,7 @@ def read_edgelist(path,
        an undirected graph.
     nodetype : int, float, str, Python type, optional
        Convert node data from strings to specified type
-    data : list of (label,type) tuples
+    data : bool or list of (label,type) tuples
        Tuples specifying dictionary key names and types for edge data
     edgetype : int, float, str, Python type, optional OBSOLETE
        Convert edge data from strings to specified type and use as 'weight'
@@ -271,56 +337,26 @@ def read_edgelist(path,
     >>> G=nx.read_edgelist("test.edgelist", nodetype=int)
     >>> G=nx.read_edgelist("test.edgelist",create_using=nx.DiGraph())
 
+    See parse_edgelist() for more examples of formatting.
+
+    See Also
+    --------
+    parse_edgelist
+
     Notes
     -----
     Since nodes must be hashable, the function nodetype must return hashable
     types (e.g. int, float, str, frozenset - or tuples of those, etc.) 
-
-    Example edgelist file formats.
-
-    Without edge data::
-
-     # read with 
-     # >>> G=nx.read_edgelist(fh,data=False)
-     # source target
-     a b
-     a c
-     d e
-
-    With edge data as dictionary:: 
-
-     # read with 
-     # >>> G=nx.read_edgelist(fh,data=True)
-     # source target data  
-     a b {'weight': 1}
-     a c {'weight': 3.14159}
-     d e {'fruit': 'apple'}
-
-    With arbitrary edge data:: 
-
-     # read with 
-     # >>> G=nx.read_edgelist(fh,data=[('weight',float')])
-     # or
-     # >>> G=nx.read_weighted_edgelist(fh)
-     # source target data  
-     a b 1
-     a c 3.14159
-     d e 42
     """
     fh=_get_fh(path, 'rb')
     lines = (line.decode(encoding) for line in fh)
-    return parse_edgelist(lines,
-                          comments = comments,
-                          delimiter = delimiter,
-                          create_using = create_using,
-                          nodetype = nodetype,
-                          data = data)
+    return parse_edgelist(lines,comments=comments, delimiter=delimiter,
+                          create_using=create_using, nodetype=nodetype,
+                          data=data)
 
 
-def write_weighted_edgelist(G, path, 
-                            comments="#", 
-                            delimiter=' ',
-                            encoding = 'utf-8'):
+def write_weighted_edgelist(G, path, comments="#", 
+                            delimiter=' ', encoding='utf-8'):
     """Write graph G as a list of edges with numeric weights.
 
     Parameters
@@ -350,18 +386,14 @@ def write_weighted_edgelist(G, path,
     write_edgelist()
     write_weighted_edgelist()
 
-"""
-    write_edgelist(G,path,
-                   comments=comments,
-                   delimiter=delimiter,
-                   data=('weight',),
-                   encoding = encoding)
+    """
+    write_edgelist(G,path, comments=comments, delimiter=delimiter,
+                   data=('weight',), encoding = encoding)
     
 def read_weighted_edgelist(path, comments="#", delimiter=' ',
-                           create_using=None, nodetype=None,
-                           encoding = 'utf-8') :
+                           create_using=None, nodetype=None, encoding='utf-8'):
 
-    """Read list of edges with numeric weights.
+    """Read a graph as list of edges with numeric weights.
 
     Parameters
     ----------
