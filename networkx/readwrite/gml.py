@@ -1,14 +1,26 @@
 """
 Read graphs in GML format.
+
+"GML, the G>raph Modelling Language, is our proposal for a portable
+file format for graphs. GML's key features are portability, simple
+syntax, extensibility and flexibility. A GML file consists of a
+hierarchical key-value lists. Graphs can be annotated with arbitrary
+data structures. The idea for a common file format was born at the
+GD'95; this proposal is the outcome of many discussions. GML is the
+standard file format in the Graphlet graph editor system. It has been
+overtaken and adapted by several other systems for drawing graphs."
+
+See http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
+
+Requires pyparsing: http://pyparsing.wikispaces.com/
+
+Format
+------
 See http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
 for format specification.
 
 Example graphs in GML format:
 http://www-personal.umich.edu/~mejn/netdata/
-
-Requires pyparsing: http://pyparsing.wikispaces.com/
-
-
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2008-2010 by 
@@ -63,14 +75,12 @@ def read_gml(path,encoding='UTF-8'):
     >>> G=nx.path_graph(4)
     >>> nx.write_gml(G,'test.gml')
     >>> H=nx.read_gml('test.gml')
-
     """
     fh=_get_fh(path,'rb')
     lines=(line.decode(encoding) for line in fh)
     G=parse_gml(lines)
     fh.close()
     return G
-
 
 def parse_gml(lines):
     """Parse GML graph from a string or iterable.
@@ -111,10 +121,8 @@ def parse_gml(lines):
         try:
             from matplotlib.pyparsing import ParseException
         except:
-            raise ImportError(\
-            """Import Error: not able to import pyparsing: 
-http://pyparsing.wikispaces.com/""")
-
+            raise ImportError('Import Error: not able to import pyparsing:', 
+                              'http://pyparsing.wikispaces.com/')
     try:
         data = "".join(lines)
         gml = pyparse_gml()
@@ -135,6 +143,7 @@ http://pyparsing.wikispaces.com/""")
             else:
                 result[k]=v
         return result
+
     # storage areas
     node_labels={}
     graphs=[]
@@ -161,16 +170,23 @@ http://pyparsing.wikispaces.com/""")
             if k=="directed" and v==1:
                 directed=True
     # Now create the Graph
-    if directed:
-        G=nx.MultiDiGraph()
+    if len(edges)==len(set((s,t) for s,t,d in edges)):
+        # no parallel edges, use Graph/DiGraph
+        if directed:
+            G=nx.DiGraph()
+        else:
+            G=nx.Graph()
     else:
-        G=nx.MultiGraph()
+        # parallel edges, multigraph
+        if directed:
+            G=nx.MultiDiGraph()
+        else:
+            G=nx.MultiGraph()
     G.graph.update(graphs)
     G.add_nodes_from(nodes)
     G.add_edges_from( (node_labels[s],node_labels[t],d) for s,t,d in edges)
     return G 
-            
-graph = None
+
 def pyparse_gml():
     """A pyparsing tokenizer for GML graph format.
 
@@ -186,8 +202,6 @@ def pyparse_gml():
     nested attributes for graphs, edges, and nodes. 
 
     """  
-    global graph
-    
     try:
         from pyparsing import \
              Literal, CaselessLiteral, Word, Forward,\
@@ -202,46 +216,51 @@ def pyparse_gml():
              ParseException, restOfLine, White, alphas, alphanums, nums,\
              OneOrMore,quotedString,removeQuotes,dblQuotedString
         except:
-            raise ImportError(\
-                """Import Error: not able to import pyparsing: 
-http://pyparsing.wikispaces.com/""")
+            raise ImportError('pyparsing not found',
+                              'http://pyparsing.wikispaces.com/')
 
-    if not graph:
-        lbrack = Literal("[").suppress()
-        rbrack = Literal("]").suppress()
-        pound = ("#")
-        comment = pound + Optional( restOfLine )
-        white = White(" \t\n")
-        point = Literal(".")
-        e = CaselessLiteral("E")
-        integer = Word(nums).setParseAction(lambda s,l,t:[ int(t[0])])
-        real = Combine( Word("+-"+nums, nums )+ 
-                        Optional(point+Optional(Word(nums)))+
-                        Optional(e+Word("+-"+nums, nums))).setParseAction(
-                                        lambda s,l,t:[ float(t[0]) ])
-        key = Word(alphas,alphanums+'_')
-        value_atom = integer^real^Word(alphanums)^quotedString.setParseAction(removeQuotes)
+    lbrack = Literal("[").suppress()
+    rbrack = Literal("]").suppress()
+    pound = ("#")
+    comment = pound + Optional( restOfLine )
+    white = White(" \t\n")
+    point = Literal(".")
+    e = CaselessLiteral("E")
+    integer = Word(nums).setParseAction(lambda s,l,t:[ int(t[0])])
+    real = Combine( Word("+-"+nums, nums )+ 
+                    Optional(point+Optional(Word(nums)))+
+                    Optional(e+Word("+-"+nums, nums))).setParseAction(
+                                    lambda s,l,t:[ float(t[0]) ])
+    key = Word(alphas,alphanums+'_')
+    value_atom = integer^real^Word(alphanums)^quotedString.setParseAction(removeQuotes)
 
-        value = Forward()   # to be defined later with << operator
-        keyvalue = Group(key+value)
-        value << (value_atom | Group( lbrack + ZeroOrMore(keyvalue) + rbrack ))
-        node = Group(Literal("node") + lbrack + Group(OneOrMore(keyvalue)) + rbrack)
-        edge = Group(Literal("edge") + lbrack + Group(OneOrMore(keyvalue)) + rbrack)
+    value = Forward()   # to be defined later with << operator
+    keyvalue = Group(key+value)
+    value << (value_atom | Group( lbrack + ZeroOrMore(keyvalue) + rbrack ))
+    node = Group(Literal("node") + lbrack + Group(OneOrMore(keyvalue)) + rbrack)
+    edge = Group(Literal("edge") + lbrack + Group(OneOrMore(keyvalue)) + rbrack)
 
-        creator = Group(Literal("Creator")+ Optional( restOfLine ))
-        version = Group(Literal("Version")+ Optional( restOfLine ))
-        graphkey = Literal("graph").suppress()
+    creator = Group(Literal("Creator")+ Optional( restOfLine ))
+    version = Group(Literal("Version")+ Optional( restOfLine ))
+    graphkey = Literal("graph").suppress()
 
-        graph = Optional(creator)+Optional(version)+\
-            graphkey + lbrack + ZeroOrMore( (node|edge|keyvalue) ) + rbrack
-        graph.ignore(comment)
-        
+    graph = Optional(creator)+Optional(version)+\
+        graphkey + lbrack + ZeroOrMore( (node|edge|keyvalue) ) + rbrack
+    graph.ignore(comment)
+    
     return graph
 
 def generate_gml(G):
-    """Generate a single entry of the graph G in gml format.
+    """Generate a single entry of the graph G in GML format.
 
-    This function is a generator.
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Yields
+    ------
+    lines: string
+       Lines in GML format.
     """
     # check for attributes or assign empty dict
     if hasattr(G,'graph_attr'):
@@ -254,7 +273,7 @@ def generate_gml(G):
         node_attr={}
 
     indent=2*' '
-    count=iter(list(range(G.number_of_nodes())))
+    count=iter(range(len(G)))
     node_id={}
     dicttype=type({})
 
@@ -268,46 +287,44 @@ def generate_gml(G):
             result += indentlevel*indent+"%s %s\n"%(k,v)
         return result+indentlevel*indent+"]"
 
-    yield "graph [\n"
+    yield "graph ["
     if G.is_directed():
-        yield indent+"directed 1\n"
+        yield indent+"directed 1"
     # write graph attributes 
     for k,v in list(G.graph.items()):
         if is_string_like(v):
             v='"'+v+'"'
         elif type(v)==dicttype:
             v=listify(v,indent,1)
-        yield indent+"%s %s\n"%(k,v)
+        yield indent+"%s %s"%(k,v)
     # write nodes
     for n in G:
-        multiline = indent+"node [\n"
+        yield indent+"node ["
         # get id or assign number
         nid=G.node[n].get('id',next(count))
         node_id[n]=nid
-        multiline += 2*indent+"id %s\n"%nid
-        multiline += 2*indent+"label \"%s\"\n"%n
+        yield 2*indent+"id %s"%nid
+        yield 2*indent+"label \"%s\""%n
         if n in G:
           for k,v in list(G.node[n].items()):
               if is_string_like(v): v='"'+v+'"'
               if type(v)==dicttype: v=listify(v,indent,2)
               if k=='id': continue
-              multiline += 2*indent+"%s %s\n"%(k,v)
-        multiline += indent+"]\n"
-        yield multiline
+              yield 2*indent+"%s %s\n"%(k,v)
+        yield indent+"]"
     # write edges
     for u,v,edgedata in G.edges_iter(data=True):
         # try to guess what is on the edge and do something reasonable
-        multiline = indent+"edge [\n"
-        multiline += 2*indent+"source %s\n"%node_id[u]
-        multiline += 2*indent+"target %s\n"%node_id[v]
+        yield indent+"edge ["
+        yield 2*indent+"source %s"%node_id[u]
+        yield 2*indent+"target %s"%node_id[v]
         for k,v in list(edgedata.items()):
             if k=='source': continue
             if k=='target': continue
             if is_string_like(v): v='"'+v+'"'
             if type(v)==dicttype: v=listify(v,indent,2)
-            multiline += 2*indent+"%s %s\n"%(k,v)
-        multiline += indent+"]\n"
-        yield multiline
+            yield 2*indent+"%s %s"%(k,v)
+        yield indent+"]"
     yield "]"
 
 
@@ -343,8 +360,9 @@ def write_gml(G, path):
     >>> nx.write_gml(G,"test.gml.gz")
     """
     fh=_get_fh(path,mode='wb')
-    for multiline in generate_gml(G):
-        fh.write(multiline.encode('latin-1'))
+    for line in generate_gml(G):
+        line+='\n'
+        fh.write(line.encode('latin-1'))
 
 
 # fixture for nose tests

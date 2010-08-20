@@ -8,4 +8,5 @@ GML
    read_gml
    write_gml
    parse_gml
+   generate_gml
 
