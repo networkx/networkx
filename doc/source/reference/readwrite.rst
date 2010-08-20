@@ -8,6 +8,7 @@ Reading and writing graphs
    :maxdepth: 2
 
    readwrite.adjlist
+   readwrite.multiline_adjlist
    readwrite.edgelist
    readwrite.gml
    readwrite.gpickle

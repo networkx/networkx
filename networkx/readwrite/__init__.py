@@ -2,8 +2,8 @@
 A package for reading and writing graphs in various formats.
 
 """
-import sys
 from networkx.readwrite.adjlist import *
+from networkx.readwrite.multiline_adjlist import *
 from networkx.readwrite.edgelist import *
 from networkx.readwrite.gpickle import *
 from networkx.readwrite.pajek import *

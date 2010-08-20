@@ -10,5 +10,5 @@ Adjacency List
 
    read_adjlist
    write_adjlist
-   read_multiline_adjlist
-   write_multiline_adjlist
+   parse_adjlist
+   generate_adjlist
