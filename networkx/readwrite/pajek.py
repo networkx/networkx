@@ -42,10 +42,10 @@ def generate_pajek(G):
         name='NetworkX'
     else:
         name=G.name
-    yield '*network %s\n'%name
+    yield '*network %s'%name
 
     # write nodes with attributes
-    yield '*vertices %s\n'%(G.order())
+    yield '*vertices %s'%(G.order())
     nodes = G.nodes()
     # make dictionary mapping nodes to integers
     nodenumber=dict(zip(nodes,range(1,len(nodes)+1))) 
@@ -59,13 +59,13 @@ def generate_pajek(G):
         yield ' '.join(map(make_str,(id,n,x,y,shape)))
         for k,v in na.items():
             yield '%s %s '%(k,v)
-        yield '\n'
+#        yield '\n'
 
     # write edges with attributes         
     if G.is_directed():
-        yield '*arcs\n'
+        yield '*arcs'
     else:
-        yield '*edges\n'
+        yield '*edges'
     for u,v,edgedata in G.edges(data=True):
         d=edgedata.copy()
         value=d.pop('weight',1.0) # use 1 as default edge value
@@ -76,7 +76,7 @@ def generate_pajek(G):
                 if " " in v: 
                     v="\"%s\""%v
             yield '%s %s '%(k,v)
-        yield '\n'
+#        yield '\n'
         
 def write_pajek(G, path, encoding='UTF-8'):
     """Write graph in Pajek format to path.
@@ -101,6 +101,7 @@ def write_pajek(G, path, encoding='UTF-8'):
     """
     fh=_get_fh(path, 'wb')
     for line in generate_pajek(G):
+        line+='\n'
         fh.write(line.encode(encoding))
 
 def read_pajek(path,encoding='UTF-8'):
@@ -118,6 +119,8 @@ def read_pajek(path,encoding='UTF-8'):
 
     Examples
     --------
+    >>> G=nx.path_graph(4)
+    >>> nx.write_pajek(G, "test.net")
     >>> G=nx.read_pajek("test.net")
 
     To create a Graph instead of a MultiGraph use
@@ -151,6 +154,7 @@ def parse_pajek(lines):
 
     """
     import shlex
+    multigraph=False
     if is_string_like(lines): lines=iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines])
     G=nx.MultiDiGraph() # are multiedges allowed in Pajek? assume yes
@@ -183,15 +187,14 @@ def parse_pajek(lines):
                 G.node[label].update(extra_attr)
         if l.lower().startswith("*edges") or l.lower().startswith("*arcs"):
             if l.lower().startswith("*edge"):
-               # switch from digraph to graph
+               # switch from multi digraph to multi graph
                 G=nx.MultiGraph(G)
             for l in lines:
                 splitline=shlex.split(str(l))
                 ui,vi=splitline[0:2]
                 u=nodelabels.get(ui,ui)
                 v=nodelabels.get(vi,vi)
-                # parse the data attached to this edge and
-                # put it in a dictionary 
+                # parse the data attached to this edge and put in a dictionary 
                 edge_data={}
                 try:
                     # there should always be a single value on the edge?
@@ -203,7 +206,14 @@ def parse_pajek(lines):
 #                    edge_data.update({'value':1})
                 extra_attr=zip(splitline[3::2],splitline[4::2])
                 edge_data.update(extra_attr)
+                if G.has_edge(u,v):
+                    multigraph=True
                 G.add_edge(u,v,**edge_data)
 
+    # if not multigraph: # use Graph/DiGraph if no parallel edges
+    #     if G.is_directed():
+    #         G=nx.DiGraph(G)
+    #     else:
+    #         G=nx.Graph(G)
     return G
 
