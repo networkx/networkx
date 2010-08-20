@@ -70,7 +70,7 @@ def generate_edgelist(G, delimiter=' ', data=True):
     >>> G[1][2]['weight'] = 3
     >>> G[3][4]['capacity'] = 12
     >>> for line in nx.generate_edgelist(G, data=False):
-    ...     print line
+    ...     print(line)
     0 1
     0 2
     0 3
@@ -82,7 +82,7 @@ def generate_edgelist(G, delimiter=' ', data=True):
     5 6
 
     >>> for line in nx.generate_edgelist(G):
-    ...     print line
+    ...     print(line)
     0 1 {}
     0 2 {}
     0 3 {}
@@ -94,7 +94,7 @@ def generate_edgelist(G, delimiter=' ', data=True):
     5 6 {}
 
     >>> for line in nx.generate_edgelist(G,data=['weight']):
-    ...     print line
+    ...     print(line)
     0 1
     0 2
     0 3
