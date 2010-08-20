@@ -1,6 +1,10 @@
 """
 Read graphs in LEDA format.
 
+LEDA is a C++ class library for efficient data types and algorithms.
+
+Format
+------
 See http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
 
 """

@@ -4,6 +4,9 @@ SparseGraph 6
 **************
 Read graphs in graph6 and sparse6 format.
 
+Format
+------
+
 "graph6 and sparse6 are formats for storing undirected graphs in a
 compact manner, using only printable ASCII characters. Files in these
 formats have text type and contain one line per graph."

@@ -4,11 +4,14 @@ Pajek
 *****
 Read graphs in Pajek format.
 
-See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
-for format information.
-
 This implementation handles directed and undirected graphs including
 those with self loops and parallel edges.  
+
+Format
+------
+
+See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
+for format information.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2008-2010 by 

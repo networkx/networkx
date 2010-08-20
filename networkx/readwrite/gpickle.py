@@ -16,6 +16,8 @@ node (not just integers and strings).  For arbitrary data types it may
 be difficult to represent the data as text.  In that case using Python
 pickles to store the graph data can be used.
 
+Format
+------
 See http://docs.python.org/library/pickle.html
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""

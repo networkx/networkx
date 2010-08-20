@@ -8,6 +8,10 @@ Read and write NetworkX graphs in YAML format.
 and interaction with scripting languages."
 See http://www.yaml.org for documentation.
 
+Format
+------
+http://pyyaml.org/wiki/PyYAML
+
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2004-2010 by 
