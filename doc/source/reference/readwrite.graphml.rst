@@ -6,6 +6,6 @@ GraphML
    :toctree: generated/
 
    read_graphml
-   parse_graphml
+   write_graphml
 
 
