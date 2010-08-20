@@ -9,3 +9,4 @@ Minimum Spanning Tree
    :toctree: generated/
 
    minimum_spanning_tree
+   minimum_spanning_edges

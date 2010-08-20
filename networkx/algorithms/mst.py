@@ -76,7 +76,7 @@ def minimum_spanning_edges(G):
 
 
 def minimum_spanning_tree(G):
-    """Generate a minimum spanning tree or forest of an undirected 
+    """Return a minimum spanning tree or forest of an undirected 
     weighted graph.
 
     A minimum spanning tree is a subgraph of the graph (a tree) with
