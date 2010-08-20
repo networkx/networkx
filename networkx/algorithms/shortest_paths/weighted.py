@@ -560,9 +560,11 @@ def all_pairs_dijkstra_path(G, weight = 'weight'):
     return paths        
 
 def bellman_ford(G, source, weight = 'weight'):
-    """Compute shortest path lengths and predecessors on shortest paths in weighted graphs.
+    """Compute shortest path lengths and predecessors on shortest paths 
+    in weighted graphs.
 
-    The algorithm has a running time of O(|E||V|).
+    The algorithm has a running time of O(mn) where n is the number of nodes 
+    and n is the number of edges.
 
     Parameters
     ----------
