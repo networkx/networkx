@@ -78,6 +78,8 @@ def read_yaml(path):
 
     Examples
     --------
+    >>> G=nx.path_graph(4)
+    >>> nx.write_yaml(G,'test.yaml')
     >>> G=nx.read_yaml('test.yaml')
  
     References
