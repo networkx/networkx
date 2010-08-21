@@ -222,6 +222,7 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
     Examples
     --------
     A simple example of a min cost flow problem.
+
     >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_node('a', demand = -5)
@@ -242,6 +243,7 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
     node v a demand a 1. Then run the network simplex. The value of a
     min cost flow will be the distance between u and v and edges
     carrying positive flow will indicate the path.
+
     >>> G=nx.DiGraph()
     >>> G.add_weighted_edges_from([('s','u',10), ('s','x',5), 
     ...                            ('u','v',1), ('u','x',2), 
@@ -260,6 +262,7 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
 
     It is possible to change the name of the attributes used for the
     algorithm.
+
     >>> G = nx.DiGraph()
     >>> G.add_node('p', spam = -4)
     >>> G.add_node('q', spam = 2)
@@ -480,6 +483,7 @@ def min_cost_flow_cost(G, demand = 'demand', capacity = 'capacity',
     Examples
     --------
     A simple example of a min cost flow problem.
+
     >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_node('a', demand = -5)
@@ -563,6 +567,7 @@ def min_cost_flow(G, demand = 'demand', capacity = 'capacity',
     Examples
     --------
     A simple example of a min cost flow problem.
+
     >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_node('a', demand = -5)
