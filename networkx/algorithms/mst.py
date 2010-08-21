@@ -100,7 +100,7 @@ def minimum_spanning_tree(G):
     --------
     >>> G=nx.cycle_graph(4)
     >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
-    >>> T=minimum_spanning_tree(G)
+    >>> T=nx.minimum_spanning_tree(G)
     >>> print(sorted(T.edges(data=True)))
     [(0, 1, {'weight': 1}), (1, 2, {'weight': 1}), (2, 3, {'weight': 1})]
 
