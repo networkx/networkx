@@ -3,7 +3,7 @@
 Generators for random graphs.
 
 """
-#    Copyright (C) 2004-2009 by 
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -18,8 +18,6 @@ import math
 import networkx as nx
 from networkx.generators.classic import empty_graph, path_graph, complete_graph
 
-# until we require python2.5 fall back to pure Python defaultdict 
-# from http://code.activestate.com/recipes/523034/
 from collections import defaultdict
 
 __all__ = ['fast_gnp_random_graph',
@@ -488,10 +486,9 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, create_using=None, seed=N
     watts_strogatz_graph()
 
     """
-    from nx.algorithms.traversal.component import is_connected
     G = watts_strogatz_graph(n, k, p, create_using, seed)
     t=1
-    while not is_connected(G):
+    while not nx.is_connected(G):
         G = watts_strogatz_graph(n, k, p, create_using, seed)
         t=t+1
         if t>tries:
