@@ -181,6 +181,7 @@ def write_dot(G,path):
 
     A=to_agraph(G)
     A.write(path)
+    A.clear()
     return
 
 def read_dot(path):
