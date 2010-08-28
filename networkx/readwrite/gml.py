@@ -37,13 +37,20 @@ from networkx.exception import NetworkXException, NetworkXError
 from networkx.utils import _get_fh, is_string_like
 
 	
-def read_gml(path,encoding='UTF-8'):
+def read_gml(path,encoding='UTF-8',labels=True):
     """Read graph in GML format from path.
 
     Parameters
     ----------
     path : filename or filehandle
        The filename or filehandle to read from.
+
+    encoding : string, optional
+       Text encoding. 
+
+    labels : bool, optional       
+       If True use the GML node label attribute for node names otherwise use
+       the node id.
 
     Returns
     -------
@@ -78,17 +85,21 @@ def read_gml(path,encoding='UTF-8'):
     """
     fh=_get_fh(path,'rb')
     lines=(line.decode(encoding) for line in fh)
-    G=parse_gml(lines)
+    G=parse_gml(lines,labels=labels)
     fh.close()
     return G
 
-def parse_gml(lines):
+def parse_gml(lines, labels=True):
     """Parse GML graph from a string or iterable.
 
     Parameters
     ----------
     lines : string or iterable
        Data in GML format.
+
+    labels : bool, optional       
+       If True use the GML node label attribute for node names otherwise use
+       the node id.
 
     Returns
     -------
@@ -144,48 +155,39 @@ def parse_gml(lines):
                 result[k]=v
         return result
 
-    # storage areas
-    node_labels={}
-    graphs=[]
-    nodes=[]
-    edges=[]
-    directed=False
-    # process parsed info
-    tokenlist=tokens.asList()
-    for k,v in tokenlist:
+    # Set flag
+    multigraph=False
+    # but assume multigraphs to start
+    if tokens.directed==1:
+        G=nx.MultiDiGraph()
+    else:
+        G=nx.MultiGraph()
+
+    for k,v in tokens.asList():
         if k=="node":
             vdict=wrap(v)
-            id=vdict['id']
-            label=vdict['label']
-            node_labels[id]=label
-            nodes.append((label,vdict))
+            node=vdict.pop('id')
+            G.add_node(node,attr_dict=vdict)
         elif k=="edge":
             vdict=wrap(v)
-            edges.append((vdict.pop('source'), vdict.pop('target'), vdict))
+            source=vdict.pop('source')
+            target=vdict.pop('target')
+            if G.has_edge(source,target):
+                multigraph=True
+            G.add_edge(source,target,attr_dict=vdict)
+
+    # switch to Graph or DiGraph if no parallel edges were found.
+    if not multigraph: 
+        if G.is_directed():
+            G=nx.DiGraph(G)
         else:
-            if type(v)==type(tokenlist):
-                graphs.append((k,wrap(v)))
-            else:
-                graphs.append((k,v))
-            if k=="directed" and v==1:
-                directed=True
-    # Now create the Graph
-    if len(edges)==len(set((s,t) for s,t,d in edges)):
-        # no parallel edges, use Graph/DiGraph
-        if directed:
-            G=nx.DiGraph()
-        else:
-            G=nx.Graph()
-    else:
-        # parallel edges, multigraph
-        if directed:
-            G=nx.MultiDiGraph()
-        else:
-            G=nx.MultiGraph()
-    G.graph.update(graphs)
-    G.add_nodes_from(nodes)
-    G.add_edges_from( (node_labels[s],node_labels[t],d) for s,t,d in edges)
-    return G 
+            G=nx.Graph(G)
+
+    if labels:
+        mapping=dict((n,d['label']) for n,d in G.node.items())
+        G=nx.relabel_nodes(G,mapping)
+    return G
+
 
 def pyparse_gml():
     """A pyparsing tokenizer for GML graph format.
@@ -207,14 +209,14 @@ def pyparse_gml():
              Literal, CaselessLiteral, Word, Forward,\
              ZeroOrMore, Group, Dict, Optional, Combine,\
              ParseException, restOfLine, White, alphas, alphanums, nums,\
-             OneOrMore,quotedString,removeQuotes,dblQuotedString
+             OneOrMore,quotedString,removeQuotes,dblQuotedString, Regex
     except ImportError:
         try:
             from matplotlib.pyparsing import \
              Literal, CaselessLiteral, Word, Forward,\
              ZeroOrMore, Group, Dict, Optional, Combine,\
              ParseException, restOfLine, White, alphas, alphanums, nums,\
-             OneOrMore,quotedString,removeQuotes,dblQuotedString
+             OneOrMore,quotedString,removeQuotes,dblQuotedString, Regex
         except:
             raise ImportError('pyparsing not found',
                               'http://pyparsing.wikispaces.com/')
@@ -223,17 +225,12 @@ def pyparse_gml():
     rbrack = Literal("]").suppress()
     pound = ("#")
     comment = pound + Optional( restOfLine )
-    white = White(" \t\n")
-    point = Literal(".")
-    e = CaselessLiteral("E")
     integer = Word(nums).setParseAction(lambda s,l,t:[ int(t[0])])
-    real = Combine( Word("+-"+nums, nums )+ 
-                    Optional(point+Optional(Word(nums)))+
-                    Optional(e+Word("+-"+nums, nums))).setParseAction(
-                                    lambda s,l,t:[ float(t[0]) ])
+    real = Regex(r"[+-]?\d+\.\d*([eE][+-]?\d+)?").setParseAction(
+        lambda s,l,t:[ float(t[0]) ])
     key = Word(alphas,alphanums+'_')
-    value_atom = integer^real^Word(alphanums)^quotedString.setParseAction(removeQuotes)
-
+    value_atom = (real | integer | Word(alphanums) |  
+                  quotedString.setParseAction(removeQuotes))
     value = Forward()   # to be defined later with << operator
     keyvalue = Group(key+value)
     value << (value_atom | Group( lbrack + ZeroOrMore(keyvalue) + rbrack ))
@@ -244,8 +241,8 @@ def pyparse_gml():
     version = Group(Literal("Version")+ Optional( restOfLine ))
     graphkey = Literal("graph").suppress()
 
-    graph = Optional(creator)+Optional(version)+\
-        graphkey + lbrack + ZeroOrMore( (node|edge|keyvalue) ) + rbrack
+    graph = Dict (Optional(creator)+Optional(version)+\
+        graphkey + lbrack + ZeroOrMore( (node|edge|keyvalue) ) + rbrack )
     graph.ignore(comment)
     
     return graph
