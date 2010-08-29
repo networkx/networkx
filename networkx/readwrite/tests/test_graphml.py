@@ -1,9 +1,17 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose import SkipTest
 import networkx as nx
 import io
 
 class TestGraph(object):
+    @classmethod
+    def setupClass(cls):
+        try:
+            import xml.etree.cElementTree
+        except ImportError:
+            raise SkipTest('xml.etree.cElementTree not available.')
+
     def setUp(self):
         self.simple_directed_data="""<?xml version="1.0" encoding="UTF-8"?>
 <!-- This file was written by the JAVA GraphML Library.-->
@@ -286,3 +294,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         # test converting multigraph to graph if no parallel edges are found
         pass
     
+try:
+    from xml.etree.cElementTree import Element, ElementTree as ET
+except ImportError:
+    pass

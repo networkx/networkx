@@ -43,8 +43,11 @@ __all__ = ['write_graphml', 'read_graphml',
 
 import networkx as nx
 from networkx.utils import _get_fh
-from xml.etree.cElementTree import Element, ElementTree as ET
 import warnings
+try:
+    from xml.etree.cElementTree import Element, ElementTree as ET
+except ImportError:
+    pass
     
 def write_graphml(G, path, encoding='utf-8'):
     """Write G in GraphML XML format to path
@@ -114,6 +117,10 @@ class GraphML(object):
     
 class GraphMLWriter(GraphML):
     def __init__(self, encoding="utf-8"):
+        try:
+            import xml.elementtree.cElementTree
+        except ImportError:
+             raise ImportError("GraphML writer requires xml.elementtree.ElementTree")
         self.encoding = encoding
         self.xml = Element("graphml",
                            {'xmlns':self.NS_GRAPHML,
@@ -222,6 +229,10 @@ class GraphMLReader(GraphML):
     """Read a GraphML document.  Produces NetworkX graph objects.
     """
     def __init__(self, node_type=str):
+        try:
+            import xml.elementtree.cElementTree
+        except ImportError:
+             raise ImportError("GraphML reader requires xml.elementtree.ElementTree")
         self.node_type=node_type
         self.multigraph=False # assume graph and test for multigraph
         
@@ -342,3 +353,11 @@ class GraphMLReader(GraphML):
             if default is not None:
                 graphml_key_defaults[attr_id]=default.text
         return graphml_keys,graphml_key_defaults
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import xml.etree.cElementTree
+    except:
+        raise SkipTest("xml.etree.cElementTree not available")
