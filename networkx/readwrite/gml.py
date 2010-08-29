@@ -67,9 +67,6 @@ def read_gml(path,encoding='UTF-8',labels=True):
     
     Notes
     -----
-    This doesn't implement the complete GML specification for
-    nested attributes for graphs, edges, and nodes. 
-
     Requires pyparsing: http://pyparsing.wikispaces.com/
 
     References
@@ -116,8 +113,8 @@ def parse_gml(lines, labels=True):
     
     Notes
     -----
-    This stores nested GML attributes as dicts in the 
-    NetworkX Graph attribute structures.
+    This stores nested GML attributes as dictionaries in the 
+    NetworkX graph, node, and edge attribute structures.
 
     Requires pyparsing: http://pyparsing.wikispaces.com/
 
@@ -166,7 +163,7 @@ def parse_gml(lines, labels=True):
     for k,v in tokens.asList():
         if k=="node":
             vdict=wrap(v)
-            node=vdict.pop('id')
+            node=vdict['id']
             G.add_node(node,attr_dict=vdict)
         elif k=="edge":
             vdict=wrap(v)
@@ -197,12 +194,6 @@ def pyparse_gml():
     See Also
     --------
     write_gml, read_gml, parse_gml
-
-    Notes
-    -----
-    This doesn't implement the complete GML specification for
-    nested attributes for graphs, edges, and nodes. 
-
     """  
     try:
         from pyparsing import \
@@ -225,12 +216,11 @@ def pyparse_gml():
     rbrack = Literal("]").suppress()
     pound = ("#")
     comment = pound + Optional( restOfLine )
-    integer = Word(nums).setParseAction(lambda s,l,t:[ int(t[0])])
+    integer = Word(nums+'-').setParseAction(lambda s,l,t:[ int(t[0])])
     real = Regex(r"[+-]?\d+\.\d*([eE][+-]?\d+)?").setParseAction(
         lambda s,l,t:[ float(t[0]) ])
     key = Word(alphas,alphanums+'_')
-    value_atom = (real | integer | Word(alphanums) |  
-                  quotedString.setParseAction(removeQuotes))
+    value_atom = (real | integer | Word(alphanums) | dblQuotedString) 
     value = Forward()   # to be defined later with << operator
     keyvalue = Group(key+value)
     value << (value_atom | Group( lbrack + ZeroOrMore(keyvalue) + rbrack ))
@@ -258,7 +248,34 @@ def generate_gml(G):
     ------
     lines: string
        Lines in GML format.
+
+    Notes
+    -----
+    This implementation does not support all Python data types as GML
+    data.  Nodes, node attributes, edge attributes, and graph
+    attributes must be either dictionaries or single stings or
+    numbers.  If they are not an attempt is made to represent them as
+    strings.  For example, a list as edge data
+    G[1][2]['somedata']=[1,2,3], will be represented in the GML file
+    as::
+
+       edge [
+         source 1
+         target 2
+         somedata "[1, 2, 3]"
+       ]
     """
+    # recursively make dicts into gml brackets
+    dicttype=type({})
+    def listify(d,indent,indentlevel):
+        result='[ \n'
+        dicttype=type({})
+        for k,v in d.items():
+            if type(v)==dicttype:
+                v=listify(v,indent,indentlevel+1)
+            result += indentlevel*indent+"%s %s\n"%(k,v)
+        return result+indentlevel*indent+"]"
+
     # check for attributes or assign empty dict
     if hasattr(G,'graph_attr'):
         graph_attr=G.graph_attr
@@ -272,27 +289,16 @@ def generate_gml(G):
     indent=2*' '
     count=iter(range(len(G)))
     node_id={}
-    dicttype=type({})
-
-    # recursively make dicts into gml brackets
-    def listify(d,indent,indentlevel):
-        result='[ \n'
-        dicttype=type({})
-        for k,v in d.items():
-            if type(v)==dicttype:
-                v=listify(v,indent,indentlevel+1)
-            result += indentlevel*indent+"%s %s\n"%(k,v)
-        return result+indentlevel*indent+"]"
 
     yield "graph ["
     if G.is_directed():
         yield indent+"directed 1"
     # write graph attributes 
     for k,v in list(G.graph.items()):
-        if is_string_like(v):
-            v='"'+v+'"'
-        elif type(v)==dicttype:
-            v=listify(v,indent,1)
+        if type(v)==dicttype: 
+            v=listify(v,indent,2)
+        elif not is_string_like(v):
+            v='"%s"'%v
         yield indent+"%s %s"%(k,v)
     # write nodes
     for n in G:
@@ -301,13 +307,15 @@ def generate_gml(G):
         nid=G.node[n].get('id',next(count))
         node_id[n]=nid
         yield 2*indent+"id %s"%nid
-        yield 2*indent+"label \"%s\""%n
+        yield 2*indent+"label %s"%n
         if n in G:
           for k,v in list(G.node[n].items()):
-              if is_string_like(v): v='"'+v+'"'
-              if type(v)==dicttype: v=listify(v,indent,2)
               if k=='id': continue
-              yield 2*indent+"%s %s\n"%(k,v)
+              if type(v)==dicttype: 
+                  v=listify(v,indent,3)
+              elif not is_string_like(v):
+                  v='"%s"'%v
+              yield 2*indent+"%s %s"%(k,v)
         yield indent+"]"
     # write edges
     for u,v,edgedata in G.edges_iter(data=True):
@@ -318,8 +326,10 @@ def generate_gml(G):
         for k,v in list(edgedata.items()):
             if k=='source': continue
             if k=='target': continue
-            if is_string_like(v): v='"'+v+'"'
-            if type(v)==dicttype: v=listify(v,indent,2)
+            if type(v)==dicttype: 
+                v=listify(v,indent,3)
+            elif not is_string_like(v):
+                v='"%s"'%v
             yield 2*indent+"%s %s"%(k,v)
         yield indent+"]"
     yield "]"
@@ -344,9 +354,21 @@ def write_gml(G, path):
     GML specifications indicate that the file should only use
     7bit ASCII text encoding.iso8859-1 (latin-1). 
 
-    For nested attributes for graphs, nodes, and edges you should
-    use dicts for the value of the attribute.  
+    This implementation does not support all Python data types as GML
+    data.  Nodes, node attributes, edge attributes, and graph
+    attributes must be either dictionaries or single stings or
+    numbers.  If they are not an attempt is made to represent them as
+    strings.  For example, a list as edge data
+    G[1][2]['somedata']=[1,2,3], will be represented in the GML file
+    as::
 
+       edge [
+         source 1
+         target 2
+         somedata "[1, 2, 3]"
+       ]
+
+    
     Examples
     ---------
     >>> G=nx.path_graph(4)
