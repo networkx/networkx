@@ -118,7 +118,7 @@ class GraphML(object):
 class GraphMLWriter(GraphML):
     def __init__(self, encoding="utf-8"):
         try:
-            import xml.elementtree.cElementTree
+            import xml.etree.cElementTree
         except ImportError:
              raise ImportError("GraphML writer requires xml.elementtree.ElementTree")
         self.encoding = encoding
@@ -230,7 +230,7 @@ class GraphMLReader(GraphML):
     """
     def __init__(self, node_type=str):
         try:
-            import xml.elementtree.cElementTree
+            import xml.etree.cElementTree
         except ImportError:
              raise ImportError("GraphML reader requires xml.elementtree.ElementTree")
         self.node_type=node_type
