@@ -73,14 +73,6 @@ See http://docs.python.org/inst/search-path.html for further details.
 Installing pre-built packages
 ======================================
 
-Windows
--------
-Download and run the latest version of the Windows installer (.exe extension).
-
-OSX 10.5
---------
-Download and install the latest mpkg. 
-
 Linux
 -----
 Debian packages are available at http://packages.debian.org/python-networkx

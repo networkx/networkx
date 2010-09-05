@@ -286,7 +286,7 @@ def parse_edgelist(lines, comments='#', delimiter=' ',
             for (edge_key,edge_type),edge_value in zip(data,d):
                 try:
                     edge_value=edge_type(edge_value)
-                except:
+                except TypeError:
                     raise TypeError(
                         "Failed to convert %s data %s to type %s."
                         %(edge_key, edge_value, edge_type))
