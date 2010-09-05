@@ -126,8 +126,9 @@ Python is included in all major Linux distributions
 Optional packages 
 =================
 
-NetworkX will work without the following optional packages
-but they may be added for additional functionality.
+The following are optional packages that NetworkX can use to
+provide additional functions.
+
 
 NumPy
 -----
