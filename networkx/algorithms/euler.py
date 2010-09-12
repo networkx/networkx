@@ -2,18 +2,18 @@
 """
 Eulerian circuits and graphs.
 """
+import networkx as nx
+
 __author__ = """\n""".join(['Nima Mohammadi (nima.irt[AT]gmail.com)',
                             'Aric Hagberg <hagberg@lanl.gov>'])
 #    Copyright (C) 2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
-#    Distributed under the terms of the GNU Lesser General Public License
-#    http://www.gnu.org/copyleft/lesser.html
+#    All rights reserved.
+#    BSD license.
 
 __all__ = ['is_eulerian', 'eulerian_circuit']
-
-import networkx as nx
 
 def is_eulerian(G):
     """Return True if G is an Eulerian graph, False otherwise.
