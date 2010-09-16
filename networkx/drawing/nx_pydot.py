@@ -47,15 +47,27 @@ def write_dot(G,path):
     return
 
 def read_dot(path):
-    """Return a NetworkX Graph or DiGraph from a dot file on path.
+    """Return a NetworkX MultiGraph or MultiDiGraph from a dot file on path.
 
-    Path can be a string or a file handle.
 
+    Parameters
+    ----------
+    path : filename or file handle
+
+    Returns
+    -------
+    G : NetworkX multigraph
+        A MultiGraph or MultiDiGraph.  
+    
+    Notes
+    -----
+    Use G=nx.Graph(nx.read_dot(path)) to return a Graph instead of a MultiGraph.
     """
     try:
         import pydot
     except ImportError:
-        raise ImportError("read_dot() requires pydot http://dkbza.org/pydot.html/")
+        raise ImportError("read_dot() requires pydot",
+                          "http://dkbza.org/pydot.html/")
 
     fh=_get_fh(path,'r')
     data=fh.read()        
@@ -71,11 +83,17 @@ def from_pydot(P):
     P : Pydot graph
       A graph created with Pydot
 
+    Returns
+    -------
+    G : NetworkX multigraph
+        A MultiGraph or MultiDiGraph.  
+    
     Examples
     --------
     >>> K5=nx.complete_graph(5)
     >>> A=nx.to_pydot(K5)
-    >>> G=nx.from_pydot(A)
+    >>> G=nx.from_pydot(A) # return MultiGraph
+    >>> G=nx.Graph(nx.from_pydot(A)) # make a Graph instead of MultiGraph
 
     """
 
