@@ -70,7 +70,7 @@ def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
                     flowCost += vDemand * H[r][v].get(weight, 0)
 
                 else: # existing edge does not have enough capacity
-                    newLabel = labelGenerator.next()
+                    newLabel = next(labelGenerator)
                     H.add_edge(r, newLabel, {weight: hugeWeight, 'flow': vDemand})
                     H.add_edge(newLabel, v, {weight: hugeWeight, 'flow': vDemand})
                     artificialEdges.append((r, newLabel))
@@ -97,7 +97,7 @@ def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
                     T.add_edge(v, r)
                     flowCost += -vDemand * H[v][r].get(weight, 0)
                 else: # existing edge does not have enough capacity
-                    newLabel = labelGenerator.next()
+                    newLabel = next(labelGenerator)
                     H.add_edge(v, newLabel,
                                {weight: hugeWeight, 'flow': -vDemand})
                     H.add_edge(newLabel, r,
@@ -463,7 +463,7 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
             raise nx.NetworkXUnfeasible("No flow satisfying all demands.")
         H.remove_edge(u, v)
 
-    for u in H:
+    for u in H.nodes():
         if not u in G:
             H.remove_node(u)
 
