@@ -17,7 +17,17 @@ __all__ = ['network_simplex',
 
 import networkx as nx
 
-def _initial_tree_solution(G, r, demand = 'demand', weight = 'weight'):
+def _gen_node_label(G):
+    """ Generate a node label that is not already present in the graph G."""
+    newLabel = 's'
+    while True:
+        if not newLabel in G:
+            yield newLabel
+        else:
+            newLabel += 's'
+
+def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
+                           weight = 'weight'):
     """Find a initial tree solution rooted at r.
 
     The initial tree solution is obtained by considering edges (r, v)
@@ -39,27 +49,67 @@ def _initial_tree_solution(G, r, demand = 'demand', weight = 'weight'):
         maxWeight = 0
     hugeWeight = 1 + n * maxWeight
 
+    labelGenerator = _gen_node_label(G)
+
     for v, d in G.nodes(data = True)[1:]:
         vDemand = d.get(demand, 0)
         if vDemand >= 0:
             if not (r, v) in G.edges():
                 H.add_edge(r, v, {weight: hugeWeight, 'flow': vDemand})
                 artificialEdges.append((r, v))
+                y[v] = H[r][v].get(weight, 0)
+                T.add_edge(r, v)
+                flowCost += vDemand * H[r][v].get(weight, 0)
+
             else: # (r, v) in G.edges()
-                H[r][v]['flow'] = vDemand
-            y[v] = H[r][v].get(weight, 0)
-            T.add_edge(r, v)
-            flowCost += vDemand * H[r][v].get(weight, 0)
+                if (not capacity in G[r][v]
+                    or vDemand <= G[r][v][capacity]):
+                    H[r][v]['flow'] = vDemand
+                    y[v] = H[r][v].get(weight, 0)
+                    T.add_edge(r, v)
+                    flowCost += vDemand * H[r][v].get(weight, 0)
+
+                else: # existing edge does not have enough capacity
+                    newLabel = labelGenerator.next()
+                    H.add_edge(r, newLabel, {weight: hugeWeight, 'flow': vDemand})
+                    H.add_edge(newLabel, v, {weight: hugeWeight, 'flow': vDemand})
+                    artificialEdges.append((r, newLabel))
+                    artificialEdges.append((newLabel, v))
+                    y[v] = 2 * hugeWeight
+                    y[newLabel] = hugeWeight
+                    T.add_edge(r, newLabel)
+                    T.add_edge(newLabel, v)
+                    flowCost += 2 * vDemand * hugeWeight
+
         else: # vDemand < 0
             if not (v, r) in G.edges():
                 H.add_edge(v, r, {weight: hugeWeight, 'flow': -vDemand})
                 artificialEdges.append((v, r))
-            else:
-                H[v][r]['flow'] = -vDemand
-            y[v] = -H[v][r].get(weight, 0)
-            T.add_edge(v, r)
-            flowCost += -vDemand * H[v][r].get(weight, 0)
+                y[v] = -H[v][r].get(weight, 0)
+                T.add_edge(v, r)
+                flowCost += -vDemand * H[v][r].get(weight, 0)
 
+            else:
+                if (not capacity in G[v][r]
+                    or -vDemand <= G[v][r][capacity]):
+                    H[v][r]['flow'] = -vDemand
+                    y[v] = -H[v][r].get(weight, 0)
+                    T.add_edge(v, r)
+                    flowCost += -vDemand * H[v][r].get(weight, 0)
+                else: # existing edge does not have enough capacity
+                    newLabel = labelGenerator.next()
+                    H.add_edge(v, newLabel,
+                               {weight: hugeWeight, 'flow': -vDemand})
+                    H.add_edge(newLabel, r,
+                               {weight: hugeWeight, 'flow': -vDemand})
+                    artificialEdges.append((v, newLabel))
+                    artificialEdges.append((newLabel, r))
+                    y[v] = -2 * hugeWeight
+                    y[newLabel] = -hugeWeight
+                    T.add_edge(v, newLabel)
+                    T.add_edge(newLabel, r)
+                    flowCost += 2 * -vDemand * hugeWeight
+            
     return H, T, y, artificialEdges, flowCost
 
 
@@ -303,7 +353,8 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
     # Fix an arbitrarily chosen root node and find an initial tree solution.
     r = G.nodes()[0]
     H, T, y, artificialEdges, flowCost = \
-            _initial_tree_solution(G, r, demand = demand, weight = weight)
+            _initial_tree_solution(G, r, demand = demand, capacity = capacity,
+                                   weight = weight)
 
     # Initialize the reduced costs.
     c = {}
@@ -411,6 +462,10 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
         if H[u][v]['flow'] != 0:
             raise nx.NetworkXUnfeasible("No flow satisfying all demands.")
         H.remove_edge(u, v)
+
+    for u in H:
+        if not u in G:
+            H.remove_node(u)
 
     flowDict = _create_flow_dict(H)
 

@@ -147,3 +147,34 @@ class TestNetworkSimplex:
         assert_equal(nx.min_cost_flow(G), soln)
         assert_equal(nx.cost_of_flow(G, H), 150)
 
+    def test_digraph2(self):
+        # Example from ticket #430 from mfrasca. Original source:
+        # http://www.cs.princeton.edu/courses/archive/spr03/cs226/lectures/mincost.4up.pdf, slide 11.
+        G = nx.DiGraph()
+        G.add_edge('s', 1, capacity=12)
+        G.add_edge('s', 2, capacity=6)
+        G.add_edge('s', 3, capacity=14)
+        G.add_edge(1, 2, capacity=11)
+        G.add_edge(2, 3, capacity=9)
+        G.add_edge(1, 4, capacity=5)
+        G.add_edge(1, 5, capacity=2)
+        G.add_edge(2, 5, capacity=4)
+        G.add_edge(2, 6, capacity=2)
+        G.add_edge(3, 6, capacity=31)
+        G.add_edge(4, 5, capacity=18)
+        G.add_edge(5, 5, capacity=9)
+        G.add_edge(4, 't', capacity=3)
+        G.add_edge(5, 't', capacity=7)
+        G.add_edge(6, 't', capacity=22)
+        flow = nx.max_flow_min_cost(G, 's', 't')
+        soln = {1: {2: 5, 4: 5, 5: 2},
+                2: {3: 6, 5: 3, 6: 2},
+                3: {6: 20},
+                4: {5: 2, 't': 3},
+                5: {5: 0, 't': 7},
+                6: {'t': 22},
+                's': {1: 12, 2: 6, 3: 14},
+                't': {}}
+        assert_equal(flow, soln)
+
+
