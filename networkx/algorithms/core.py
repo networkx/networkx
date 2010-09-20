@@ -107,8 +107,9 @@ def k_core(G,k=None):
        A graph or directed graph
 
     k : int, optional
-       The order of the core.  If not specified return the main core.
-  
+       The order of the core.  If not specified return the main core (the core 
+       with the largest degree).
+       
     Returns
     -------
     G : NetworkX graph
