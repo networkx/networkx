@@ -394,3 +394,9 @@ def setup_module(module):
             import matplotlib.pyparsing
         except:
             raise SkipTest("pyparsing not available")
+
+# fixture for nose tests
+def teardown_module(module):
+    import os
+    os.unlink('test.gml')
+    os.unlink('test.gml.gz')

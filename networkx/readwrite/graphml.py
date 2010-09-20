@@ -361,3 +361,8 @@ def setup_module(module):
         import xml.etree.cElementTree
     except:
         raise SkipTest("xml.etree.cElementTree not available")
+
+# fixture for nose tests
+def teardown_module(module):
+    import os
+    os.unlink('test.graphml')
