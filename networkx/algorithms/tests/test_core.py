@@ -34,8 +34,8 @@ class TestCore:
         G = nx.Graph()
         assert_equal(nx.find_cores(G),{})
 
-    def find_cores(self):
-        cores=find_cores(self.G)
+    def test_find_cores(self):
+        cores=nx.find_cores(self.G)
         nodes_by_core=[]
         for val in [0,1,2,3]:
             nodes_by_core.append( sorted([k for k in cores if cores[k]==val]))
@@ -44,11 +44,30 @@ class TestCore:
         assert_equal(nodes_by_core[2],[9, 10, 11, 12, 13, 14, 15, 16])
         assert_equal(nodes_by_core[3], [1, 2, 3, 4, 5, 6, 7, 8])
 
-    def find_cores2(self):
-        cores=find_cores(self.H)
+    def test_core_number(self):
+        # smoke test real name
+        cores=nx.core_number(self.G)
+
+    def test_find_cores2(self):
+        cores=nx.find_cores(self.H)
         nodes_by_core=[]
         for val in [0,1,2]:
             nodes_by_core.append( sorted([k for k in cores if cores[k]==val]))
         assert_equal(nodes_by_core[0],[0])
         assert_equal(nodes_by_core[1],[1, 3])
         assert_equal(nodes_by_core[2],[2, 4, 5, 6])
+
+    def test_main_core(self):
+        main_core_subgraph=nx.k_core(self.H)
+        assert_equal(sorted(main_core_subgraph.nodes()),[2,4,5,6])
+
+    def test_k_core(self):
+        # k=0
+        k_core_subgraph=nx.k_core(self.H,k=0)
+        assert_equal(sorted(k_core_subgraph.nodes()),sorted(self.H.nodes()))
+        # k=1
+        k_core_subgraph=nx.k_core(self.H,k=1)
+        assert_equal(sorted(k_core_subgraph.nodes()),[1,2,3,4,5,6])
+        # k=2
+        k_core_subgraph=nx.k_core(self.H,k=2)
+        assert_equal(sorted(k_core_subgraph.nodes()),[2,4,5,6])
