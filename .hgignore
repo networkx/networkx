@@ -1,3 +1,5 @@
 syntax: glob
 *.pyc
 *~
+build/*
+networkx/version.py

@@ -105,3 +105,8 @@ def setup_module(module):
         import yaml
     except:
         raise SkipTest("PyYAML not available")
+
+# fixture for nose tests
+def teardown_module(module):
+    import os
+    os.unlink('test.yaml')

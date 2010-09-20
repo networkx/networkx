@@ -217,3 +217,8 @@ def parse_pajek(lines):
     #         G=nx.Graph(G)
     return G
 
+
+# fixture for nose tests
+def teardown_module(module):
+    import os
+    os.unlink('test.net')

@@ -308,3 +308,8 @@ def read_adjlist(path, comments="#", delimiter=' ', create_using=None,
                          create_using = create_using,
                          nodetype = nodetype)
 
+# fixture for nose tests
+def teardown_module(module):
+    import os
+    os.unlink('test.adjlist')
+    os.unlink('test.adjlist.gz')

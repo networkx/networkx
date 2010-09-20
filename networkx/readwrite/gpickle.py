@@ -94,3 +94,8 @@ def read_gpickle(path):
     """
     fh=_get_fh(path,'rb')
     return pickle.load(fh)
+
+# fixture for nose tests
+def teardown_module(module):
+    import os
+    os.unlink('test.gpickle')

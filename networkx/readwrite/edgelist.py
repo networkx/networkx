@@ -378,7 +378,7 @@ def write_weighted_edgelist(G, path, comments="#",
     --------
     >>> G=nx.Graph()
     >>> G.add_edge(1,2,weight=7)
-    >>> nx.write_weighted_edgelist(G, 'weighted.edgelist')
+    >>> nx.write_weighted_edgelist(G, 'test.weighted.edgelist')
 
     See Also
     --------
@@ -442,3 +442,11 @@ def read_weighted_edgelist(path, comments="#", delimiter=' ',
                          data=(('weight',float),),
                          encoding = encoding
                          )
+
+
+# fixture for nose tests
+def teardown_module(module):
+    import os
+    os.unlink('test.edgelist')
+    os.unlink('test.edgelist.gz')
+    os.unlink('test.weighted.edgelist')
