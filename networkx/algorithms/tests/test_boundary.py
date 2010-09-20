@@ -102,8 +102,3 @@ class TestBoundary:
         assert_almost_equals(cheeger(P,3),1.67,places=2)
         assert_almost_equals(cheeger(P,4),1.00,places=2)
         assert_almost_equals(cheeger(P,5),0.80,places=2)
-        assert_almost_equals(cheeger(P,6),0.50,places=2)
-        assert_almost_equals(cheeger(P,7),0.43,places=2)
-        assert_almost_equals(cheeger(P,8),0.25,places=2)
-        assert_almost_equals(cheeger(P,9),0.11,places=2)
-        assert_almost_equals(cheeger(P,10),0.00,places=2)
