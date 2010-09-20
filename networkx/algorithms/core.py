@@ -19,10 +19,10 @@ import networkx as nx
 def core_number(G):
     """Return the core number for each vertex.
     
-    The core number of a node is the largest value k of a k-core that 
-    contains the node.
-
     A k-core is a maximal subgraph that contains nodes of degree k or more.
+
+    The core number of a node is the largest value k of a k-core containing 
+    that node.
 
     Parameters
     ----------
