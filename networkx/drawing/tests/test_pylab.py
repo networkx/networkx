@@ -16,7 +16,11 @@ class TestPylab(object):
         global pylab
         try:
             import pylab
+            import matplotlib.pyplot as plt
+            plt.switch_backend('PS')
         except ImportError:
+            raise SkipTest('matplotlib not available.')
+        except RuntimeError:
             raise SkipTest('matplotlib not available.')
 
     def setUp(self):
@@ -27,12 +31,11 @@ class TestPylab(object):
 #         hold(False)
         N=self.G
         nx.draw_spring(N)
-        pylab.savefig("test.png")
+        pylab.savefig("test.ps")
         nx.draw_random(N)
         pylab.savefig("test.ps")
         nx.draw_circular(N)
-        pylab.savefig("test.png")
+        pylab.savefig("test.ps")
         nx.draw_spectral(N)
-        pylab.savefig("test.png")
-        os.unlink('test.png')
+        pylab.savefig("test.ps")
         os.unlink('test.ps')

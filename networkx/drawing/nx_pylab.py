@@ -903,5 +903,7 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import pylab
+        import matplotlib.pyplot as plt
+        plt.switch_backend('PS')
     except:
         raise SkipTest("matplotlib not available")
