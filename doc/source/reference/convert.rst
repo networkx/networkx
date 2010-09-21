@@ -45,6 +45,7 @@ Numpy
    :toctree: generated/
 
    to_numpy_matrix
+   to_numpy_recarray
    from_numpy_matrix
 
 Scipy

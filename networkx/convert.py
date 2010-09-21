@@ -48,6 +48,7 @@ __all__ = ['to_networkx_graph','from_whatever',
            'from_dict_of_lists', 'to_dict_of_lists',
            'from_edgelist', 'to_edgelist',
            'from_numpy_matrix', 'to_numpy_matrix',
+           'to_numpy_recarray',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix']
 
 import warnings
@@ -591,9 +592,11 @@ def to_numpy_matrix(G,nodelist=None,dtype=None,order=None):
        The rows and columns are ordered according to the nodes in `nodelist`.
        If `nodelist` is None, then the ordering is produced by G.nodes().
 
-    dtype : NumPy data-type, optional
-        A valid NumPy dtype used to initialize the array. If None, then the
-        NumPy default is used.
+    dtype : NumPy data type, optional
+        A valid single NumPy data type used to initialize the array. 
+        This must be a simple type such as int or numpy.float64 and
+        not a compound data type (see to_numpy_recarray)
+        If None, then the NumPy default is used.
 
     order : {'C', 'F'}, optional
         Whether to store multidimensional data in C- or Fortran-contiguous
@@ -605,9 +608,13 @@ def to_numpy_matrix(G,nodelist=None,dtype=None,order=None):
     M : NumPy matrix
        Graph adjacency matrix.
 
+    See Also
+    --------
+    to_numpy_recarray, from_numpy_matrix
+
     Notes
     -----
-    The matrix entries are populated using the 'weight' edge attribute. When
+    The matrix entries are assigned with 'weight' edge attribute. When
     an edge does not have the 'weight' attribute, the value of the entry is 1.
     For multiple edges, the values of the entries are the sums of the edge
     attributes for each edge.
@@ -657,8 +664,12 @@ def to_numpy_matrix(G,nodelist=None,dtype=None,order=None):
     M = np.asmatrix(M)
     return M
 
+
+
 def from_numpy_matrix(A,create_using=None):
-    """Return a graph from numpy matrix adjacency list. 
+    """Return a graph from numpy matrix.
+
+    The numpy matrix is interpreted as an adjacency matrix for the graph.
 
     Parameters
     ----------
@@ -668,13 +679,43 @@ def from_numpy_matrix(A,create_using=None):
     create_using : NetworkX graph
        Use specified graph for result.  The default is Graph()
 
+    Notes
+    -----
+    If the numpy matrix has a single data type for each matrix entry it 
+    will be converted to an appropriate Python data type.  
+
+    If the numpy matrix has a user-specified compound data type the names
+    of the data fields will be used as attribute keys in the resulting 
+    NetworkX graph.
+
+    See Also
+    --------
+    to_numpy_matrix, to_numpy_recarray
+
     Examples
     --------
+    Simple integer weights on edges:
+
     >>> import numpy
     >>> A=numpy.matrix([[1,1],[2,1]])
     >>> G=nx.from_numpy_matrix(A)
 
+    User defined compound data type on edges:
+
+    >>> import numpy
+    >>> dt=[('weight',float),('cost',int)]
+    >>> A=numpy.matrix([[(1.0,2)]],dtype=dt)                      
+    >>> G=nx.from_numpy_matrix(A)
+    >>> G.edges(data=True)
+    [(0, 0, {'cost': 1, 'weight': 2.0})]
     """
+    kind_to_python_type={'f':float,
+                         'i':int,
+                         'u':int,
+                         'b':bool,
+                         'c':complex,
+                         'S':str,
+                         'V':'void'}
     # This should never fail if you have created a numpy matrix with numpy...  
     try:
         import numpy as np
@@ -682,21 +723,115 @@ def from_numpy_matrix(A,create_using=None):
         raise ImportError(\
           "from_numpy_matrix() requires numpy: http://scipy.org/ ")
 
-
     G=_prep_create_using(create_using)
-
     n,m=A.shape
-
     if n!=m:
-        raise nx.NetworkXError(\
-              "Adjacency matrix is not square. nx,ny=%s"%(A.shape,))
+        raise nx.NetworkXError("Adjacency matrix is not square.",
+                               "nx,ny=%s"%(A.shape,))
+    dt=A.dtype
+    try:
+        python_type=kind_to_python_type[dt.kind]
+    except:
+        raise TypeError("Unknown numpy data type: %s"%dt)
 
-    G.add_nodes_from(range(n)) # make sure we get isolated nodes
-
+    # make sure we get isolated nodes
+    G.add_nodes_from(range(n)) 
     # get a list of edges
     x,y=np.asarray(A).nonzero()         
-    G.add_edges_from( ((u,v,{'weight':A[u,v]}) for (u,v) in zip(x,y)) )
+
+    # handle numpy constructed data type
+    if python_type is 'void':
+        fields=sorted([(offset,dtype,name) for name,(dtype,offset) in
+                       A.dtype.fields.items()])
+        for (u,v) in zip(x,y):         
+            attr={}
+            for (offset,dtype,name),val in zip(fields,A[u,v]):
+                attr[name]=kind_to_python_type[dtype.kind](val)
+            G.add_edge(u,v,attr)
+    else: # basic data type
+        G.add_edges_from( ((u,v,{'weight':python_type(A[u,v])}) 
+                           for (u,v) in zip(x,y)) )
     return G
+
+
+def to_numpy_recarray(G,nodelist=None,
+                      dtype=[('weight',float)],
+                      order=None):
+    """Return the graph adjacency matrix as a NumPy recarray.
+
+    Parameters
+    ----------
+    G : graph
+        The NetworkX graph used to construct the NumPy matrix.
+
+    nodelist : list, optional       
+       The rows and columns are ordered according to the nodes in `nodelist`.
+       If `nodelist` is None, then the ordering is produced by G.nodes().
+
+    dtype : NumPy data-type, optional
+        A valid NumPy named dtype used to initialize the NumPy recarray. 
+        The data type names are assumed to be keys in the graph edge attribute 
+        dictionary.
+
+    order : {'C', 'F'}, optional
+        Whether to store multidimensional data in C- or Fortran-contiguous
+        (row- or column-wise) order in memory. If None, then the NumPy default 
+        is used.
+
+    Returns
+    -------
+    M : NumPy recarray
+       The graph with specified edge data as a Numpy recarray 
+
+    Notes
+    -----
+    When `nodelist` does not contain every node in `G`, the matrix is built 
+    from the subgraph of `G` that is induced by the nodes in `nodelist`.
+    
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edge(1,2,weight=7.0,cost=5)
+    >>> A=nx.to_numpy_recarray(G,dtype=[('weight',float),('cost',int)])
+    >>> A.weight
+    [[ 0.  7.]
+    [ 7.  0.]]
+    >>> A.cost
+    [[0 5]
+    [5 0]]
+    """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(\
+          "to_numpy_matrix() requires numpy: http://scipy.org/ ")
+
+    if G.is_multigraph():
+        raise NetworkXError("Not implemented for multigraphs.")
+
+    if nodelist is None:
+        nodelist = G.nodes()
+
+    nodeset = set(nodelist)
+    if len(nodelist) != len(nodeset):
+        msg = "Ambiguous ordering: `nodelist` contained duplicates."
+        raise nx.NetworkXError(msg)
+
+    nlen=len(nodelist)
+    undirected = not G.is_directed()
+    index=dict(zip(nodelist,range(nlen)))
+    M = np.zeros((nlen,nlen), dtype=dtype, order=order)
+
+    names=M.dtype.names
+    for u,v,attrs in G.edges_iter(data=True):
+        if (u in nodeset) and (v in nodeset):
+            i,j = index[u],index[v]
+            values=tuple([attrs[n] for n in names])
+            M[i,j] = values
+            if undirected:
+                M[j,i] = M[i,j]
+
+    return M.view(np.recarray)
 
 
 def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):

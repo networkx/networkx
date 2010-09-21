@@ -1,7 +1,7 @@
 
 import os, tempfile
 from nose import SkipTest
-from nose.tools import assert_raises, assert_true, assert_false
+from nose.tools import assert_raises, assert_true, assert_false, assert_equal
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph,cycle_graph,path_graph
@@ -106,3 +106,50 @@ class TestConvertNumpy(object):
         nodelist += [nodelist[0]]
         assert_raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=nodelist)
 
+    def test_from_numpy_matrix_type(self):
+        A=np.matrix([[1]])
+        G=nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']),int)
+
+        A=np.matrix([[1]]).astype(np.float)
+        G=nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']),float)
+
+        A=np.matrix([[1]]).astype(np.str)
+        G=nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']),str)
+
+        A=np.matrix([[1]]).astype(np.bool)
+        G=nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']),bool)
+
+        A=np.matrix([[1]]).astype(np.complex)
+        G=nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']),complex)
+
+        A=np.matrix([[1]]).astype(np.object)
+        assert_raises(TypeError,nx.from_numpy_matrix,A)
+
+    def test_from_numpy_matrix_dtype(self):
+        dt=[('weight',float),('cost',int)]
+        A=np.matrix([[(1.0,2)]],dtype=dt)
+        print A
+        G=nx.from_numpy_matrix(A)
+        assert_equal(type(G[0][0]['weight']),float)
+        assert_equal(type(G[0][0]['cost']),int)
+        print G.edges(data=True)
+        assert_equal(G[0][0]['cost'],2)
+        assert_equal(G[0][0]['weight'],1.0)
+
+    def test_to_numpy_recarray(self):
+        G=nx.Graph()
+        G.add_edge(1,2,weight=7.0,cost=5)
+        A=nx.to_numpy_recarray(G,dtype=[('weight',float),('cost',int)])
+        assert_equal(sorted(A.dtype.names),['cost','weight'])
+        assert_equal(A.weight[0,1],7.0)
+        assert_equal(A.weight[0,0],0.0)
+        assert_equal(A.cost[0,1],5)
+        assert_equal(A.cost[0,0],0)
+
+
+                         
