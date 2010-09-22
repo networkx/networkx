@@ -65,8 +65,8 @@ def core_number(G):
 
     if G.number_of_selfloops()>0:
         raise nx.NetworkXError(
-                'Input graph has self loops; the core number is not defined',
-                'Consider using G.remove_edges_from(G.selfloop_edges())')
+                'Input graph has self loops; the core number is not defined.',
+                'Consider using G.remove_edges_from(G.selfloop_edges()).')
 
     if G.is_directed():
         import itertools
