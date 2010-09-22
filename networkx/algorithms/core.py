@@ -2,6 +2,13 @@
 Find the k-cores of a graph.
 
 The k-core is found by recursively pruning nodes with degrees less than k. 
+
+See the following reference for details:
+
+An O(m) Algorithm for Cores Decomposition of Networks
+Vladimir Batagelj and Matjaz Zaversnik, 2003
+http://arxiv.org/abs/cs.DS/0310049 
+
 """
 __author__ = "\n".join(['Dan Schult (dschult@colgate.edu)',
                         'Jason Grout (jason-sage@creativetrax.com)',
