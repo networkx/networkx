@@ -6,7 +6,7 @@ The k-core is found by recursively pruning nodes with degrees less than k.
 See the following reference for details:
 
 An O(m) Algorithm for Cores Decomposition of Networks
-Vladimir Batagelj and Matjaz Zaversnik, 2003
+Vladimir Batagelj and Matjaz Zaversnik, 2003.
 http://arxiv.org/abs/cs.DS/0310049 
 
 """
@@ -56,7 +56,7 @@ def core_number(G):
     References
     ----------
     .. [1] An O(m) Algorithm for Cores Decomposition of Networks
-       Vladimir Batagelj and Matjaz Zaversnik, 2003
+       Vladimir Batagelj and Matjaz Zaversnik, 2003.
        http://arxiv.org/abs/cs.DS/0310049 
     """
     if G.is_multigraph():
@@ -137,7 +137,7 @@ def k_core(G,k=None):
     References
     ----------
     .. [1] An O(m) Algorithm for Cores Decomposition of Networks
-       Vladimir Batagelj and Matjaz Zaversnik,  2003
+       Vladimir Batagelj and Matjaz Zaversnik,  2003.
        http://arxiv.org/abs/cs.DS/0310049 
     """
     core_number=nx.core_number(G)
