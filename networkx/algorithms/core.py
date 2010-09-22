@@ -43,8 +43,8 @@ def core_number(G):
     -----
     Not implemented for graphs with parallel edges or self loops.
 
-    For directed graphs the degree is defined to be the in-degree + out-degree 
-    of a node.
+    For directed graphs the node degree is defined to be the 
+    in-degree + out-degree. 
 
     References
     ----------
@@ -124,8 +124,8 @@ def k_core(G,k=None):
     -----
     Not implemented for graphs with parallel edges or self loops.
 
-    For directed graphs the degree is defined to be the in-degree + out-degree 
-    of a node.
+    For directed graphs the node degree is defined to be the 
+    in-degree + out-degree. 
 
     References
     ----------
