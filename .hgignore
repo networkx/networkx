@@ -3,3 +3,8 @@ syntax: glob
 *~
 build/*
 networkx/version.py
+examples/*/*.png
+doc/source/networkx-documentation.zip
+doc/source/networkx_reference.pdf
+doc/source/networkx_tutorial.pdf
+doc/source/templates/gallery.html
