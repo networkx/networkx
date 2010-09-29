@@ -650,8 +650,14 @@ class MultiDiGraph(MultiGraph,DiGraph):
         """
         return deepcopy(self)
 
-    def to_undirected(self):
+    def to_undirected(self, reciprocal=False):
         """Return an undirected representation of the digraph.
+
+        Parameters
+        ----------
+        reciprocal : bool (optional)
+          If True only keep edges that appear in both directions 
+          in the original digraph. 
 
         Returns
         -------
@@ -678,10 +684,17 @@ class MultiDiGraph(MultiGraph,DiGraph):
         H=MultiGraph()
         H.name=self.name
         H.add_nodes_from(self)
-        H.add_edges_from( (u,v,key,deepcopy(data))
-                           for u,nbrs in self.adjacency_iter()
-                           for v,keydict in nbrs.items()
-                           for key,data in list(keydict.items()))
+        if reciprocal is True:
+            H.add_edges_from( (u,v,key,deepcopy(data))
+                              for u,nbrs in self.adjacency_iter()
+                              for v,keydict in nbrs.items()
+                              for key,data in list(keydict.items())
+                              if self.has_edge(v,u,key))
+        else:
+            H.add_edges_from( (u,v,key,deepcopy(data))
+                              for u,nbrs in self.adjacency_iter()
+                              for v,keydict in nbrs.items()
+                              for key,data in list(keydict.items()))
         H.graph=deepcopy(self.graph)
         H.node=deepcopy(self.node)
         return H

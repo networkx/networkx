@@ -1085,8 +1085,14 @@ class DiGraph(Graph):
         """
         return deepcopy(self)
 
-    def to_undirected(self):
+    def to_undirected(self, reciprocal=False):
         """Return an undirected representation of the digraph.
+
+        Parameters
+        ----------
+        reciprocal : bool (optional)
+          If True only keep edges that appear in both directions 
+          in the original digraph. 
 
         Returns
         -------
@@ -1115,14 +1121,19 @@ class DiGraph(Graph):
 
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
-
         """
         H=Graph()
         H.name=self.name
         H.add_nodes_from(self)
-        H.add_edges_from( (u,v,deepcopy(d))
-                          for u,nbrs in self.adjacency_iter()
-                          for v,d in nbrs.items() )
+        if reciprocal is True:
+            H.add_edges_from( (u,v,deepcopy(d))
+                              for u,nbrs in self.adjacency_iter()
+                              for v,d in nbrs.items() 
+                              if v in self.pred[u])
+        else:
+            H.add_edges_from( (u,v,deepcopy(d))
+                              for u,nbrs in self.adjacency_iter()
+                              for v,d in nbrs.items() )
         H.graph=deepcopy(self.graph)
         H.node=deepcopy(self.node)
         return H

@@ -220,10 +220,15 @@ class TestDiGraph(TestGraph):
         assert_equal(dict(G.out_degree_iter()),{0:2,1:2,2:2})
         assert_equal(list(G.out_degree_iter(0)),[(0,2)])
 
-
     def test_size(self):
         G=self.K3
         assert_equal(G.size(),6)
         assert_equal(G.number_of_edges(),6)
 
-
+    def test_to_undirected_reciprocal(self):
+        G=self.Graph()
+        G.add_edge(1,2)
+        assert_true(G.to_undirected().has_edge(1,2))
+        assert_false(G.to_undirected(reciprocal=True).has_edge(1,2))
+        G.add_edge(2,1)
+        assert_true(G.to_undirected(reciprocal=True).has_edge(1,2))

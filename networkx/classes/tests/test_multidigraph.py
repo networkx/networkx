@@ -302,3 +302,10 @@ class TestMultiDiGraph(TestMultiGraph):
         assert_equal(G.size(),6)
         assert_equal(G.number_of_edges(),6)
 
+    def test_to_undirected_reciprocal(self):
+        G=self.Graph()
+        G.add_edge(1,2)
+        assert_true(G.to_undirected().has_edge(1,2))
+        assert_false(G.to_undirected(reciprocal=True).has_edge(1,2))
+        G.add_edge(2,1)
+        assert_true(G.to_undirected(reciprocal=True).has_edge(1,2))
