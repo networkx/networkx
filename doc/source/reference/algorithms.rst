@@ -30,6 +30,7 @@ Algorithms
    algorithms.mixing
    algorithms.mst
    algorithms.operators
+   algorithms.rich_club
    algorithms.shortest_paths
    algorithms.traversal
    algorithms.vitality
