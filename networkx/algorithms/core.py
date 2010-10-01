@@ -19,7 +19,7 @@ __author__ = "\n".join(['Dan Schult (dschult@colgate.edu)',
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__all__ = ['core_number','k_core','find_cores']
+__all__ = ['core_number','k_core','k_shell','k_crust','find_cores']
 
 import networkx as nx
 
@@ -104,7 +104,7 @@ def core_number(G):
 find_cores=core_number
 
 def k_core(G,k=None):
-    """Return k-core of G.
+    """Return the k-core of G.
 
     A k-core is a maximal subgraph that contains nodes of degree k or more.
 
@@ -134,6 +134,10 @@ def k_core(G,k=None):
     For directed graphs the node degree is defined to be the 
     in-degree + out-degree. 
 
+    See Also
+    --------
+    core_number
+
     References
     ----------
     .. [1] An O(m) Algorithm for Cores Decomposition of Networks
@@ -142,6 +146,106 @@ def k_core(G,k=None):
     """
     core_number=nx.core_number(G)
     if k is None:
-        k=max(core_number.values()) # main core
+        k=max(core_number.values()) # max core 
     nodes=(n for n in core_number if core_number[n]>=k)
+    return G.subgraph(nodes)
+
+def k_shell(G,k=None):
+    """Return the k-shell of G.
+
+    The k-shell is the subgraph of nodes in the k-core containing 
+    nodes of exactly degree k.
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+       A graph or directed graph
+
+    k : int, optional
+       The order of the shell.  If not specified return the main shell 
+       (the shell with the largest degree, also known as the main core).
+       
+    Returns
+    -------
+    G : NetworkX graph
+       The k-shell subgraph
+
+    Raises
+    ------
+    NetworkXError
+        The k-shell is not defined for graphs with self loops or parallel edges.
+
+    Notes
+    -----
+    Not implemented for graphs with parallel edges or self loops.
+
+    For directed graphs the node degree is defined to be the 
+    in-degree + out-degree. 
+
+    See Also
+    --------
+    core_number
+
+    References
+    ----------
+    .. [1] A model of Internet topology using k-shell decomposition 
+       Shai Carmi, Shlomo Havlin, Scott Kirkpatrick, Yuval Shavitt, 
+       and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154 
+       http://www.pnas.org/content/104/27/11150.full
+    """
+    core_number=nx.core_number(G)
+    if k is None:
+        k=max(core_number.values()) # max core
+    nodes=(n for n in core_number if core_number[n]==k)
+    return G.subgraph(nodes)
+
+def k_crust(G,k=None):
+    """Return the k-crust of G.
+
+    The k-crust is the graph G with the k-core removed.
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+       A graph or directed graph
+
+    k : int, optional
+       The order of the shell.  If not specified return the main crust 
+       which is the graph G with the k-core removed.
+
+    Returns
+    -------
+    G : NetworkX graph
+       The k-crust subgraph
+
+    Raises
+    ------
+    NetworkXError
+        The k-crust is not defined for graphs with self loops or parallel edges.
+
+    Notes
+    -----
+    This definition of k-crust is different than the definition in [1]_.
+    The k-crust in [1]_ is equivalent to the k+1 crust of this algorithm.
+    
+    Not implemented for graphs with parallel edges or self loops.
+
+    For directed graphs the node degree is defined to be the 
+    in-degree + out-degree. 
+
+    See Also
+    --------
+    core_number
+
+    References
+    ----------
+    .. [1] A model of Internet topology using k-shell decomposition 
+       Shai Carmi, Shlomo Havlin, Scott Kirkpatrick, Yuval Shavitt, 
+       and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154 
+       http://www.pnas.org/content/104/27/11150.full
+    """
+    core_number=nx.core_number(G)
+    if k is None:
+        k=max(core_number.values())-1
+    nodes=(n for n in core_number if core_number[n]<=k)
     return G.subgraph(nodes)
