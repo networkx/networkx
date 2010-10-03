@@ -274,14 +274,14 @@ def relabel_nodes(G,mapping):
     #    v=map_func(n2)
     #    H.add_edge(u,v,d)
     if G.is_multigraph():
-        H.add_edges_from( (map_func(n1),map_func(n2),k,d) 
+        H.add_edges_from( (map_func(n1),map_func(n2),k,d.copy()) 
                           for (n1,n2,k,d) in G.edges_iter(keys=True,data=True)) 
     else:
-        H.add_edges_from( (map_func(n1),map_func(n2),d) 
+        H.add_edges_from( (map_func(n1),map_func(n2),d.copy()) 
                           for (n1,n2,d) in G.edges_iter(data=True)) 
 
-    H.node.update(dict((map_func(n),d) for n,d in G.node.items()))
-    H.graph.update(G.graph)
+    H.node.update(dict((map_func(n),d.copy()) for n,d in G.node.items()))
+    H.graph.update(G.graph.copy())
 
     return H        
     
