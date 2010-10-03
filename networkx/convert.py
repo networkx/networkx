@@ -707,7 +707,7 @@ def from_numpy_matrix(A,create_using=None):
     >>> A=numpy.matrix([[(1.0,2)]],dtype=dt)                      
     >>> G=nx.from_numpy_matrix(A)
     >>> G.edges(data=True)
-    [(0, 0, {'cost': 1, 'weight': 2.0})]
+    [(0, 0, {'cost': 2, 'weight': 1.0})]
     """
     kind_to_python_type={'f':float,
                          'i':int,
