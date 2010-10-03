@@ -793,12 +793,12 @@ def to_numpy_recarray(G,nodelist=None,
     >>> G = nx.Graph()
     >>> G.add_edge(1,2,weight=7.0,cost=5)
     >>> A=nx.to_numpy_recarray(G,dtype=[('weight',float),('cost',int)])
-    >>> A.weight
+    >>> print(A.weight)
     [[ 0.  7.]
-    [ 7.  0.]]
-    >>> A.cost
+     [ 7.  0.]]
+    >>> print(A.cost)
     [[0 5]
-    [5 0]]
+     [5 0]]
     """
     try:
         import numpy as np
