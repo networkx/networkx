@@ -41,10 +41,10 @@ if dynamic:
     version_info = release.version_info
 else:
     # using statically stored release data (from installation/build time).
-    date = networkx.version.__date__
+    date = networkx.version.date
     date_info = networkx.version.date_info
     dev = networkx.version.dev
     vcs_info = networkx.version.vcs_info
-    version = networkx.version.__version__
+    version = networkx.version.version
     version_info = networkx.version.version_info    
 

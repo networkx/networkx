@@ -34,8 +34,8 @@ Do not add this file to the repository.
 
 import datetime
 
-__version__ = %(version)r
-__date__ = %(date)r
+version = %(version)r
+date = %(date)r
 
 # Was NetworkX built from a development version? If so, remember the the major
 # and minor versions reference the "target" (rather than "current") release.
