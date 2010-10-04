@@ -31,7 +31,7 @@ from setuptools import setup
 if __name__ == "__main__":
 
     setup(
-        name             = release.name,
+        name             = release.name.lower(),
         version          = release.version,
         maintainer       = release.maintainer,
         maintainer_email = release.maintainer_email,
