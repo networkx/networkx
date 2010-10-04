@@ -89,7 +89,7 @@ def get_mercurial_revision():
     stdout, stderr = p.communicate()
     if not p.returncode:
         hg = {}
-        hg['hash'], hg['tag'] = stdout.strip().split(' ')
+        hg['hash'], hg['tag'] = stdout.decode().strip().split(' ')
     else:
         hg = None
     os.chdir(curdir)

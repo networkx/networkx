@@ -23,7 +23,6 @@ if release.revision is None:
     try:
         import networkx.version
     except ImportError:
-        print "import error"
         dynamic = True
     else:
         dynamic = False
