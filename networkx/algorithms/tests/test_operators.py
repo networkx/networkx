@@ -130,8 +130,8 @@ def test_difference_multigraph_attributes():
     gh = nx.difference(g, h)
     assert_equal( set(gh.nodes()) , set(g.nodes()) )
     assert_equal( set(gh.nodes()) , set(h.nodes()) )
-    assert_equal( sorted(gh.edges()) , [(0,1)] )
-    assert_equal( sorted(gh.edges(keys=True)) , [(0,1,3)] )
+    assert_equal( sorted(gh.edges()) , [(0,1),(0,1)] )
+    assert_equal( sorted(gh.edges(keys=True)) , [(0,1,1),(0,1,2)] )
 
 
 def test_symmetric_difference_multigraph():

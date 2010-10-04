@@ -191,7 +191,8 @@ def intersection(G,H,create_using=None ):
     return R
 
 def difference(G,H,create_using=None):
-    """Return a new graph that contains the edges that exist in G but not in H.  
+    """Return a new graph that contains the edges that exist in G 
+    but not in H.  
 
     The node sets of H and G must be the same.
 
@@ -229,23 +230,13 @@ def difference(G,H,create_using=None):
     if set(G)!=set(H):
         raise nx.NetworkXError("Node sets of graphs not equal")        
     
-    if G.number_of_edges()<=H.number_of_edges():
-        if G.is_multigraph():
-            edges=G.edges_iter(keys=True)
-        else:
-            edges=G.edges_iter()
-        for e in edges:
-            if not H.has_edge(*e):
-                R.add_edge(*e)
+    if G.is_multigraph():
+        edges=G.edges_iter(keys=True)
     else:
-        if H.is_multigraph():
-            edges=H.edges_iter(keys=True)
-        else:
-            edges=H.edges_iter()
-        for e in edges:
-            if not G.has_edge(*e):
-                R.add_edge(*e)
-
+        edges=G.edges_iter()
+    for e in edges:
+        if not H.has_edge(*e):
+            R.add_edge(*e)
     return R
 
 def symmetric_difference(G,H,create_using=None ):
