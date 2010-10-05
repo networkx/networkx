@@ -133,11 +133,9 @@ class TestConvertNumpy(object):
     def test_from_numpy_matrix_dtype(self):
         dt=[('weight',float),('cost',int)]
         A=np.matrix([[(1.0,2)]],dtype=dt)
-        print A
         G=nx.from_numpy_matrix(A)
         assert_equal(type(G[0][0]['weight']),float)
         assert_equal(type(G[0][0]['cost']),int)
-        print G.edges(data=True)
         assert_equal(G[0][0]['cost'],2)
         assert_equal(G[0][0]['weight'],1.0)
 
