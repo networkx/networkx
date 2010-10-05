@@ -36,17 +36,21 @@ tar.gz file. This is why write_versionfile() includes an early escape.
 #    All rights reserved.
 #    BSD license.
 
+# Necessary or 'import sys' grabs the wrong module
+from __future__ import absolute_import
 
 import os
+import sys
 import re
 import time
 import datetime
 import subprocess
 
+basedir = os.path.abspath(os.path.split(__file__)[0])
+
 def write_versionfile():
     """Creates a static file containing version information."""
-    base = os.path.abspath(os.path.split(__file__)[0])
-    versionfile = os.path.join(base, 'version.py')
+    versionfile = os.path.join(basedir, 'version.py')
     
     text = '''"""
 Version information for NetworkX, created during installation.
@@ -100,14 +104,16 @@ vcs_info = %(vcs_info)r
         else:
             # This is *good*, and the most likely place users will be when
             # running setup.py. We do not want to update version.py.
-            pass
+            # Grab the version so that setup can use it.
+            sys.path.insert(0, basedir)
+            from version import version
+            del sys.path[0]
             
     return version
 
 def get_revision():
     """Returns revision and vcs information, dynamically obtained."""
     vcs, revision, tag = None, None, None
-    basedir = os.path.abspath(os.path.split(__file__)[0])
     
     hgdir = os.path.join(basedir, '..', '.hg')
     gitdir = os.path.join(basedir, '..', '.git')
@@ -152,12 +158,14 @@ def get_info(dynamic=None):
         # This is where most final releases of NetworkX will be.
         # All info should come from version.py. If it does not exist, then
         # no vcs information will be provided.
+        sys.path.insert(0, basedir)
         try:
             # We use a relative import since setup.py calls this function
             # and NetworkX might not be installed yet.
-            from .version import date, date_info, version, version_info, vcs_info
+            from version import date, date_info, version, version_info, vcs_info
         except ImportError:
             pass
+        del sys.path[0]
 
     if version is None:
         # We are here if we failed to obtain static version info.
