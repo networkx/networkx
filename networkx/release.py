@@ -160,8 +160,6 @@ def get_info(dynamic=None):
         # no vcs information will be provided.
         sys.path.insert(0, basedir)
         try:
-            # We use a relative import since setup.py calls this function
-            # and NetworkX might not be installed yet.
             from version import date, date_info, version, version_info, vcs_info
         except ImportError:
             pass
