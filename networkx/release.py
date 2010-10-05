@@ -169,10 +169,7 @@ def get_info(dynamic=None):
         # We are here if we failed to obtain static version info.
         version = ''.join([str(major), '.', str(minor)])
         if dev:
-            version += '.dev'
-            # revision info is in `version` only if this is a 'dev' revision
-            if revision is not None:
-                version += "_%s" % revision
+            version += '.dev_' + date_info.strftime("%Y%m%d%H%M%S")
         version_info = (name, major, minor, revision)
 
     if vcs_info is None:
