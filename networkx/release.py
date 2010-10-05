@@ -120,7 +120,7 @@ def get_revision():
     
     if os.path.isdir(hgdir):
         vcs = 'mercurial'
-        p = subprocess.Popen(['hg', 'id'], stdout=subprocess.PIPE)
+        p = subprocess.Popen(['hg', 'id'], cwd=basedir, stdout=subprocess.PIPE)
         stdout = p.communicate()[0]
         revision, tag = stdout.decode().strip().split()
     elif os.path.isdir(gitdir):
