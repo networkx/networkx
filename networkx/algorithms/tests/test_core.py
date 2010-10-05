@@ -101,3 +101,14 @@ class TestCore:
         # k=2
         k_shell_subgraph=nx.k_shell(self.H,k=0)
         assert_equal(sorted(k_shell_subgraph.nodes()),[0])
+
+    def test_k_corona(self):
+        # k=0
+        k_corona_subgraph=nx.k_corona(self.H,k=2)
+        assert_equal(sorted(k_corona_subgraph.nodes()),[2,4,5,6])
+        # k=1
+        k_corona_subgraph=nx.k_corona(self.H,k=1)
+        assert_equal(sorted(k_corona_subgraph.nodes()),[1])
+        # k=2
+        k_corona_subgraph=nx.k_corona(self.H,k=0)
+        assert_equal(sorted(k_corona_subgraph.nodes()),[0])
