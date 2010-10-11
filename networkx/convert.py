@@ -716,6 +716,13 @@ def from_numpy_matrix(A,create_using=None):
                          'c':complex,
                          'S':str,
                          'V':'void'}
+
+    try: # Python 3.x
+        blurb = chr(1245) # just to trigger the exception
+        kind_to_python_type['U']=str
+    except ValueError: # Python 2.6+
+        kind_to_python_type['U']=unicode
+
     # This should never fail if you have created a numpy matrix with numpy...  
     try:
         import numpy as np
