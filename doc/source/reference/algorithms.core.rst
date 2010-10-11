@@ -7,4 +7,7 @@ Cores
 .. autosummary::
    :toctree: generated/
 
-   find_cores
+   core_number
+   k_core
+   k_shell
+   k_crust
