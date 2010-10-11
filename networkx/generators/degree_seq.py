@@ -633,53 +633,79 @@ def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
     raise nx.NetworkXError(\
           "Exceeded max (%d) attempts at a valid sequence."%max_tries)
 
-def double_edge_swap(G, nswap=1):
-    """Attempt nswap double-edge swaps on the graph G.
+def double_edge_swap(G, nswap=1, max_tries=100):
+    """Swap two edges in the graph while keeping the node degrees fixed.
 
-    Return count of successful swaps.
-    The graph G is modified in place.
-    A double-edge swap removes two randomly choseen edges u-v and x-y
+    A double-edge swap removes two randomly chosen edges u-v and x-y
     and creates the new edges u-x and v-y::
 
      u--v            u  v
             becomes  |  |
      x--y            x  y
 
-
-    If either the edge u-x or v-y already exist no swap is performed so
-    the actual count of swapped edges is always <= nswap
+    If either the edge u-x or v-y already exist no swap is performed 
+    and another attempt is made to find a suitable edge pair.
     
+    Parameters
+    ----------
+    G : graph
+       A NetworkX (undirected) Graph.
+
+    nswap : integer (optional)
+       Number of double-edge swaps to perform 
+
+    max_tries : integer (optional)
+       Maximum number of attempts to swap nswap edges.
+
+    Returns
+    -------
+    G : graph
+       The graph after nswap double edge swaps.
+
+    Notes
+    -----
     Does not enforce any connectivity constraints.
+
+    The graph G is modified in place.
     """
-    # this algorithm and connected_double_edge_swap avoid choosing
-    # uniformly at random from a generated edge list by instead
-    # choosing nonuniformly from the set nodes (probability weighted by degree)
+    if G.is_directed():
+        raise nx.NetworkXError(\
+            "double_edge_swap() not defined for directed graphs.")
+    # Instead of choosing uniformly at random from a generated edge list, 
+    # this algorithm chooses nonuniformly from the set of nodes with
+    # probability weighted by degree.
     n=0
     swapcount=0
-    deg=G.degree()
-    dk=list(deg.keys()) # key labels 
-    cdf=nx.utils.cumulative_distribution(list(deg.values()))  # cdf of degree
+    keys,degrees=zip(*G.degree().items()) # keys, degree
+    cdf=nx.utils.cumulative_distribution(degrees)  # cdf of degree
     if len(cdf)<4:
         raise nx.NetworkXError("Graph has less than four nodes.")
-    while n < nswap:
+    while swapcount < nswap:
 #        if random.random() < 0.5: continue # trick to avoid periodicities?
         # pick two randon edges without creating edge list
         # choose source node indices from discrete distribution
         (ui,xi)=nx.utils.discrete_sequence(2,cdistribution=cdf) 
-        if ui==xi: continue # same source, skip
-        u=dk[ui] # convert index to label
-        x=dk[xi] 
-        v=random.choice(G.neighbors(u)) # choose target uniformly from nbrs
-        y=random.choice(G.neighbors(x)) # Note: dan't use G[u] because choice can't use dict 
-        if v==y: continue # same target, skip
-        if (x not in G[u]) and (y not in G[v]):
+        if ui==xi: 
+            continue # same source, skip
+        u=keys[ui] # convert index to label
+        x=keys[xi] 
+        # choose target uniformly from neighbors
+        v=random.choice(list(G[u]))
+        y=random.choice(list(G[x]))
+        if v==y: 
+            continue # same target, skip
+        if (x not in G[u]) and (y not in G[v]): # don't create parallel edges
             G.add_edge(u,x)
             G.add_edge(v,y)
             G.remove_edge(u,v)
             G.remove_edge(x,y)
             swapcount+=1
+        if n > max_tries:
+            e=('Maximum number of swap attempts (%s) exceeded '%n +
+            'before desired swaps achieved (%s).'%nswap)
+            raise nx.NetworkXAlgorithmError(e)
         n+=1
-    return swapcount
+    return G
 
 def connected_double_edge_swap(G, nswap=1):
     """Attempt nswap double-edge swaps on the graph G.
