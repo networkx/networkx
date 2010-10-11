@@ -26,7 +26,7 @@ if sys.version_info[:2] < (2, 6):
 # Write the version information.
 sys.path.insert(0, 'networkx')
 import release
-release.write_versionfile()
+version = release.write_versionfile()
 sys.path.pop(0)
 
 packages=["networkx",
@@ -45,7 +45,7 @@ packages=["networkx",
           "networkx.readwrite",
           "networkx.tests"]
 
-docdirbase  = 'share/doc/networkx-%s' % release.version
+docdirbase  = 'share/doc/networkx-%s' % version
 # add basic documentation 
 data = [(docdirbase, glob("*.txt"))]
 # add examples
@@ -87,8 +87,8 @@ package_data     = {
 if __name__ == "__main__":
 
     setup(
-        name             = release.name,
-        version          = release.version,
+        name             = release.name.lower(),
+        version          = version,
         maintainer       = release.maintainer,
         maintainer_email = release.maintainer_email,
         author           = release.authors['Hagberg'][0],

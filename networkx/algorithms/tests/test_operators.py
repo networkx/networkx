@@ -98,6 +98,25 @@ def test_difference():
     assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
     assert_equal( sorted(D.edges()) , [(1,2),(3,4)] )    
 
+def test_difference2():
+    G=nx.Graph()
+    H=nx.Graph()
+    G.add_nodes_from([1,2,3,4])
+    H.add_nodes_from([1,2,3,4])
+    G.add_edge(1,2)
+    H.add_edge(1,2)
+    G.add_edge(2,3)
+    D=nx.difference(G,H)
+    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
+    assert_equal( sorted(D.edges()) , [(2,3)] )    
+    D=nx.difference(H,G)
+    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
+    assert_equal( sorted(D.edges()) , [] )    
+    H.add_edge(3,4)
+    D=nx.difference(H,G)
+    assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
+    assert_equal( sorted(D.edges()) , [(3,4)] )    
+
 
 def test_difference_attributes():
     g = nx.Graph()
@@ -130,8 +149,8 @@ def test_difference_multigraph_attributes():
     gh = nx.difference(g, h)
     assert_equal( set(gh.nodes()) , set(g.nodes()) )
     assert_equal( set(gh.nodes()) , set(h.nodes()) )
-    assert_equal( sorted(gh.edges()) , [(0,1)] )
-    assert_equal( sorted(gh.edges(keys=True)) , [(0,1,3)] )
+    assert_equal( sorted(gh.edges()) , [(0,1),(0,1)] )
+    assert_equal( sorted(gh.edges(keys=True)) , [(0,1,1),(0,1,2)] )
 
 
 def test_symmetric_difference_multigraph():

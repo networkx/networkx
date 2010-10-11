@@ -29,7 +29,7 @@ def betweenness_centrality(G,normalized=True,
     Parameters
     ----------
     G : graph
-      A networkx graph 
+      A NetworkX graph 
 
     normalized : bool, optional
       If True the betweenness values are normalized by
@@ -40,7 +40,8 @@ def betweenness_centrality(G,normalized=True,
       The edge weights must be greater than zero.
       If False, all edge weights are considered equal.
 
-
+    endpoints : bool, optional
+      If True include the endpoints in the shortest path counts.
 
     Returns
     -------
@@ -55,6 +56,7 @@ def betweenness_centrality(G,normalized=True,
     Notes
     -----
     The algorithm is from Ulrik Brandes [1]_.
+    See [2]_ for details on algorithms for variations and related metrics.
 
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length 
@@ -66,6 +68,10 @@ def betweenness_centrality(G,normalized=True,
        Ulrik Brandes, 
        Journal of Mathematical Sociology 25(2):163-177, 2001.
        http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness 
+       Centrality and their Generic Computation. 
+       Social Networks 30(2):136-145, 2008.
+       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
     """
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     for s in G:
@@ -96,7 +102,7 @@ def edge_betweenness_centrality(G,normalized=True,
     Parameters
     ----------
     G : graph
-      A networkx graph 
+      A NetworkX graph 
 
     normalized : bool, optional
       If True the betweenness values are normalized by 
@@ -106,7 +112,6 @@ def edge_betweenness_centrality(G,normalized=True,
       Consider the edge weights in determining the shortest paths.
       The edge weights must be greater than zero.
       If False, all edge weights are considered equal.
-
 
     Returns
     -------
@@ -126,11 +131,9 @@ def edge_betweenness_centrality(G,normalized=True,
     Zero edge weights can produce an infinite number of equal length 
     paths between pairs of nodes.
 
-
     References
     ----------
-    .. [1]  A Faster Algorithm for Betweenness Centrality.
-       Ulrik Brandes, 
+    .. [1]  A Faster Algorithm for Betweenness Centrality. Ulrik Brandes, 
        Journal of Mathematical Sociology 25(2):163-177, 2001.
        http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
     """

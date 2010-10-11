@@ -274,14 +274,14 @@ def relabel_nodes(G,mapping):
     #    v=map_func(n2)
     #    H.add_edge(u,v,d)
     if G.is_multigraph():
-        H.add_edges_from( (map_func(n1),map_func(n2),k,d) 
+        H.add_edges_from( (map_func(n1),map_func(n2),k,d.copy()) 
                           for (n1,n2,k,d) in G.edges_iter(keys=True,data=True)) 
     else:
-        H.add_edges_from( (map_func(n1),map_func(n2),d) 
+        H.add_edges_from( (map_func(n1),map_func(n2),d.copy()) 
                           for (n1,n2,d) in G.edges_iter(data=True)) 
 
-    H.node.update(dict((map_func(n),d) for n,d in G.node.items()))
-    H.graph.update(G.graph)
+    H.node.update(dict((map_func(n),d.copy()) for n,d in G.node.items()))
+    H.graph.update(G.graph.copy())
 
     return H        
     
@@ -707,7 +707,7 @@ def from_numpy_matrix(A,create_using=None):
     >>> A=numpy.matrix([[(1.0,2)]],dtype=dt)                      
     >>> G=nx.from_numpy_matrix(A)
     >>> G.edges(data=True)
-    [(0, 0, {'cost': 1, 'weight': 2.0})]
+    [(0, 0, {'cost': 2, 'weight': 1.0})]
     """
     kind_to_python_type={'f':float,
                          'i':int,
@@ -793,12 +793,12 @@ def to_numpy_recarray(G,nodelist=None,
     >>> G = nx.Graph()
     >>> G.add_edge(1,2,weight=7.0,cost=5)
     >>> A=nx.to_numpy_recarray(G,dtype=[('weight',float),('cost',int)])
-    >>> A.weight
+    >>> print(A.weight)
     [[ 0.  7.]
-    [ 7.  0.]]
-    >>> A.cost
+     [ 7.  0.]]
+    >>> print(A.cost)
     [[0 5]
-    [5 0]]
+     [5 0]]
     """
     try:
         import numpy as np
