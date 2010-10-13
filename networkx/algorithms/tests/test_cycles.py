@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx
+import networkx as nx
 
 class TestCycles:
     def setUp(self):
@@ -29,4 +30,62 @@ class TestCycles:
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5],['A','B','C']])
 
 
+    def test_simple_cycles(self):
+        G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
+        c=sorted(nx.simple_cycles(G))
+        assert_equal(c,[[0, 0], [0, 1, 2, 0], [0, 2, 0], [1, 2, 1], [2, 2]])
 
+    def test_simple_cycles_graph(self):
+        G = nx.Graph()
+        assert_raises(nx.NetworkXError,nx.simple_cycles,G)
+
+    def test_unsortable(self):
+        G=nx.DiGraph()
+        G.add_cycle(['a',1])
+        c=nx.simple_cycles(G)
+
+    def test_simple_cycles_small(self):
+        G = nx.DiGraph()
+        G.add_path([1,2,3,1])
+        c=sorted(nx.simple_cycles(G))
+        assert_equal(c,[[1,2,3,1]])
+        G.add_path([10,20,30,10])
+        c=sorted(nx.simple_cycles(G))
+        assert_equal(c,[[1,2,3,1],[10,20,30,10]])
+
+    def test_simple_cycles_empty(self):
+        G = nx.DiGraph()
+        assert_equal(list(nx.simple_cycles(G)),[])
+        
+    def test_complete_directed_graph(self):
+        # see table 2 in Johnson's paper
+        ncircuits=[1,5,20,84,409,2365,16064]
+        for n,c in zip(range(2,9),ncircuits):
+            G=nx.DiGraph(nx.complete_graph(n))
+            assert_equal(len(nx.simple_cycles(G)),c)
+        
+    def worst_case_graph(self,k):
+        # see figure 1 in Johnson's paper
+        # this graph has excactly 3k simple cycles
+        G=nx.DiGraph()
+        for n in range(2,k+2):
+            G.add_edge(1,n)
+            G.add_edge(n,k+2)
+        G.add_edge(2*k+1,1)
+        for n in range(k+2,2*k+2):
+            G.add_edge(n,2*k+2)
+            G.add_edge(n,n+1)
+        G.add_edge(2*k+3,k+2)
+        for n in range(2*k+3,3*k+3):
+            G.add_edge(2*k+2,n)
+            G.add_edge(n,3*k+3)
+        G.add_edge(3*k+3,2*k+2)
+        return G
+
+    def test_worst_case_graph(self):
+        # see figure 1 in Johnson's paper
+        for k in range(3,10):
+            G=self.worst_case_graph(k)
+            l=len(nx.simple_cycles(G))
+            assert_equal(l,3*k)
+        

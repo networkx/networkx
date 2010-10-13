@@ -8,3 +8,4 @@ Cycles
    :toctree: generated/
 
    cycle_basis
+   simple_cycles
