@@ -1,4 +1,33 @@
-"""Release data for NetworkX."""
+"""Release data for NetworkX.
+
+When NetworkX is imported a number of steps are followed to determine
+the version information.
+
+   1) If the release is not a development release (dev=False), then version
+      information is read from version.py, a file containing statically
+      defined version information.  This file should exist on every 
+      downloadable release of NetworkX since setup.py creates it during
+      packaging/installation.  However, version.py might not exist if one
+      is running NetworkX from the mercurial repository.  In the event that
+      version.py does not exist, then no vcs information will be available.
+
+   2) If the release is a development release, then version information
+      is read dynamically, when possible.  If no dynamic information can be
+      read, then an attempt is made to read the information from version.py.
+      If version.py does not exist, then no vcs information will be available.
+      
+Clarification: 
+      version.py is created only by setup.py
+
+When setup.py creates version.py, it does so before packaging/installation.
+So the created file is included in the source distribution.  When a user
+downloads a tar.gz file and extracts the files, the files will not be in a 
+live version control repository.  So when the user runs setup.py to install
+NetworkX, we must make sure write_versionfile() does not overwrite the 
+revision information contained in the version.py that was included in the
+tar.gz file. This is why write_versionfile() includes an early escape. 
+
+"""
 
 #    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -7,24 +36,22 @@
 #    All rights reserved.
 #    BSD license.
 
+# Necessary or 'import sys' grabs the wrong module
+from __future__ import absolute_import
 
 import os
+import sys
 import re
 import time
 import datetime
 import subprocess
 
+basedir = os.path.abspath(os.path.split(__file__)[0])
 
 def write_versionfile():
     """Creates a static file containing version information."""
-    base = os.path.split(__file__)[0]
-    versionfile = os.path.join(base, 'version.py')
-    if revision is None and os.path.isfile(versionfile):
-        # Unable to get revision info, so probably not in an vcs directory
-        # If a version.py already exists, let's not overwrite it.
-        # Useful mostly for nightly tarballs, but also for installed builds.
-        return
-    fh = open(versionfile, 'w')
+    versionfile = os.path.join(basedir, 'version.py')
+    
     text = '''"""
 Version information for NetworkX, created during installation.
 
@@ -41,7 +68,7 @@ date = %(date)r
 # and minor versions reference the "target" (rather than "current") release.
 dev = %(dev)r
 
-# Format: (name, major, min, mercurial revision)
+# Format: (name, major, min, revision)
 version_info = %(version_info)r
 
 # Format: a 'datetime.datetime' instance
@@ -51,121 +78,104 @@ date_info = %(date_info)r
 vcs_info = %(vcs_info)r
 
 '''
-    subs = {
-        'dev' : dev,
-        'version': version,
-        'version_info': version_info,
-        'date': date,
-        'date_info': date_info,
-        'vcs_info': vcs_info
-    }
+
+    # Try to update all information
+    date, date_info, version, version_info, vcs_info = get_info(dynamic=True)
     
-    fh.write(text % subs)
-    fh.close()
+    if vcs_info[0] == 'mercurial':
+        # Then, we want to update version.py.
+        fh = open(versionfile, 'w')
+        subs = {
+            'dev' : dev,
+            'version': version,
+            'version_info': version_info,
+            'date': date,
+            'date_info': date_info,
+            'vcs_info': vcs_info
+        }    
+        fh.write(text % subs)
+        fh.close()
+    else:
+        if not os.path.isfile(versionfile):
+            # This is *bad*.  It means the user might have a tarball that
+            # does not include version.py.  Let this error raise so we can
+            # fix the tarball.
+            raise Exception('version.py not found!')
+        else:
+            # This is *good*, and the most likely place users will be when
+            # running setup.py. We do not want to update version.py.
+            # Grab the version so that setup can use it.
+            sys.path.insert(0, basedir)
+            from version import version
+            del sys.path[0]
+            
+    return version
 
 def get_revision():
-    # currently supported: mercurial, git
-    funcs = {'mercurial': get_mercurial_revision, 'git': get_git_revision}
-    vcs_dict = {'mercurial': None, 'git': None}
-    for vcs in vcs_dict:
-        vcs_dict[vcs] = funcs[vcs]()
+    """Returns revision and vcs information, dynamically obtained."""
+    vcs, revision, tag = None, None, None
+    
+    hgdir = os.path.join(basedir, '..', '.hg')
+    gitdir = os.path.join(basedir, '..', '.git')
+    
+    if os.path.isdir(hgdir):
+        vcs = 'mercurial'
+        p = subprocess.Popen(['hg', 'id'], cwd=basedir, stdout=subprocess.PIPE)
+        stdout = p.communicate()[0]
+        revision, tag = stdout.decode().strip().split()
+    elif os.path.isdir(gitdir):
+        vcs = 'git'
+        # For now, we are not bothering with revision and tag.
 
-    # only mercurial revision is used
-    if vcs_dict['mercurial'] is not None:
-        rev = vcs_dict['mercurial']['hash']
-    else:
-        rev = None
+    vcs_info = (vcs, (revision, tag))
 
-    return rev, vcs_dict
+    return revision, vcs_info
+    
+def get_info(dynamic=None):
+
+    ## Date information
+    date_info = datetime.datetime.now()
+    date = time.asctime(date_info.timetuple())
+
+    revision, version, version_info, vcs_info = None, None, None, None
+    
+    if dev or (not dev and dynamic):
+        # grab dynamic info
+        revision, vcs_info = get_revision()
         
-def get_mercurial_revision():
-    from subprocess import PIPE
-    
-    basedir = os.path.split(__file__)[0]
-    curdir = os.path.abspath(os.path.curdir)
-    if basedir:
-        os.chdir(basedir)
-    p = subprocess.Popen(['hg', 'id'], stdout=PIPE, stderr=PIPE)
-    stdout, stderr = p.communicate()
-    if not p.returncode:
-        hg = {}
-        hg['hash'], hg['tag'] = stdout.decode().strip().split(' ')
+        if revision is None:
+            # failed in obtaining dynamic info
+            try_static = True
+        else:
+            # succeeded in obtaining dynamic info
+            try_static = False
     else:
-        hg = None
-    os.chdir(curdir)
-    return hg
-    
-def get_git_revision():
-    from subprocess import PIPE
-    
-    basedir = os.path.split(__file__)[0]
-    curdir = os.path.abspath(os.path.curdir)
-    if basedir:
-        os.chdir(basedir)
-    
-    # Determine hash value
-    cmd = ['git', 'rev-parse', 'HEAD']
-    p = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
-    stdout, stderr = p.communicate()
-    if not p.returncode:
-        git = {}
-        git['hash'] = stdout.strip()
+        # case: not dev AND not dynamic
+        # We *only* want to check the static info.
+        try_static = True
         
-        # Determine if there are local modifications
-        local = False
-        cmd = ['git', 'diff']
-        p = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = p.communicate()
-        if stdout:
-            local = True
-        cmd = ['git', 'diff', '--staged']
-        p = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = p.communicate()
-        if stdout:
-            local = True
-        if local:
-            git['hash'] += '+'
-            
-        # Determine the branch name
-        cmd = ['git', 'branch']
-        p = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = p.communicate()
-        for line in stdout:
-            if line.startswith("*"):
-                branch = line.split()[1]
-                break
-        git['branch'] = branch
-    else:
-        git = None
-    os.chdir(curdir)
-    return git
-    
-def get_dynamic_info():
-    version = ''.join([str(major), '.', str(minor)])
-    revision, vcs_dict = get_revision()
-    if dev:
-        version += '.dev'
-        # revision info is in `version` only if this is a 'dev' revision
-        if revision is not None:
-            version += "_%s" % revision
-    # mercurial revision info is always in `version_info`.
-    version_info = (name, major, minor, revision)
+    if try_static:
+        # This is where most final releases of NetworkX will be.
+        # All info should come from version.py. If it does not exist, then
+        # no vcs information will be provided.
+        sys.path.insert(0, basedir)
+        try:
+            from version import date, date_info, version, version_info, vcs_info
+        except ImportError:
+            pass
+        del sys.path[0]
 
-    # vcs_info
-    mercurial = vcs_dict['mercurial']
-    git = vcs_dict['git']
-    if mercurial is not None:
-        vcs_info = ('mercurial', (mercurial['hash'], mercurial['tag']))
-    elif git is not None:
-        vcs_info = ('git', (git['hash'], git['branch']))
-    else:
-        vcs_info = (None,  ())
+    if version is None:
+        # We are here if we failed to obtain static version info.
+        version = ''.join([str(major), '.', str(minor)])
+        if dev:
+            version += '.dev_' + date_info.strftime("%Y%m%d%H%M%S")
+        version_info = (name, major, minor, revision)
 
-    return revision, version, version_info, vcs_info
-
-## Date information
-date_info = datetime.datetime.now()
-date = time.asctime(date_info.timetuple())
+    if vcs_info is None:
+        vcs_info = (None, (None, None))
+        
+    return date, date_info, version, version_info, vcs_info
 
 ## Version information
 name = 'networkx'
@@ -175,9 +185,6 @@ minor = 4
 ## Declare current release as a development release.
 ## Change to False before tagging a release; then change back.
 dev = True
-
-## Populate other dynamic values
-revision, version, version_info, vcs_info = get_dynamic_info()
 
 description = "Python package for creating and manipulating graphs and networks"
 

@@ -9,4 +9,5 @@ Cores
 
    core_number
    k_core
-
+   k_shell
+   k_crust
