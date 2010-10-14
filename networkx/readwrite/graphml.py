@@ -111,8 +111,9 @@ class GraphML(object):
         ' '.join(['http://graphml.graphdrawing.org/xmlns',
                   'http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd'])
     
-    xml_type = {str:"string", int:"int", float:"float", float:"double"}
-    python_type = dict(reversed(a) for a in list(xml_type.items()))
+    types=((str,"string"), (int,"int"), (float,"float"), (float,"double"))
+    xml_type = dict(types)
+    python_type = dict(reversed(a) for a in types)
 
     
 class GraphMLWriter(GraphML):
