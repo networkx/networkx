@@ -15,7 +15,7 @@ __all__ = ['mst', 'kruskal_mst',
 
 import networkx as nx
 
-def minimum_spanning_edges(G):
+def minimum_spanning_edges(G,weight='weight',data=True):
     """Generate edges in a minimum spanning forest of an undirected 
     weighted graph.
 
@@ -27,6 +27,12 @@ def minimum_spanning_edges(G):
     ----------
     G : NetworkX Graph
     
+    weight : string
+       Edge data key to use for weight (default 'weight').
+
+    data : bool, optional
+       If True yield the edge data along with the edge.
+       
     Returns
     -------
     edges : iterator
@@ -62,20 +68,22 @@ def minimum_spanning_edges(G):
     # implement once UnionFind exists, and second, because the only slow
     # part (the sort) is sped up by being built in to Python.
     from networkx.utils import UnionFind
-
     if G.is_directed():
         raise NetworkXError(\
             "Mimimum spanning tree not defined for directed graphs.")
 
     subtrees = UnionFind()
-    edges = sorted((G[u][v].get('weight',1),u,v) for u in G for v in G[u])
-    for W,u,v in edges:
+    edges = sorted(G.edges(data=True),key=lambda t: t[2].get(weight,1))
+    for u,v,d in edges:
         if subtrees[u] != subtrees[v]:
-            yield (u,v,{'weight':W})
+            if data:
+                yield (u,v,d)
+            else:
+                yield (u,v)
             subtrees.union(u,v)
 
 
-def minimum_spanning_tree(G):
+def minimum_spanning_tree(G,weight='weight'):
     """Return a minimum spanning tree or forest of an undirected 
     weighted graph.
 
@@ -86,11 +94,13 @@ def minimum_spanning_tree(G):
     spanning forest is a union of the spanning trees for each
     connected component of the graph.
 
-
     Parameters
     ----------
     G : NetworkX Graph
     
+    weight : string
+       Edge data key to use for weight (default 'weight').
+
     Returns
     -------
     G : NetworkX Graph
@@ -111,10 +121,14 @@ def minimum_spanning_tree(G):
     If the graph edges do not have a weight attribute a default weight of 1
     will be assigned.
     """
-    T=nx.Graph(nx.minimum_spanning_edges(G))
+    T=nx.Graph(nx.minimum_spanning_edges(G,weight=weight,data=True))
     # Add isolated nodes
     if len(T)!=len(G):
         T.add_nodes_from([n for n,d in G.degree().items() if d==0])
+    # Add node and graph attributes as shallow copy
+    for n in T:
+        T.node[n]=G.node[n].copy()
+    T.graph=G.graph.copy()
     return T
 
 kruskal_mst=minimum_spanning_tree

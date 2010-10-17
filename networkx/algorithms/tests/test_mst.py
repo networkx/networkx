@@ -54,4 +54,28 @@ class TestMST:
         assert_equal(sorted(T.nodes()),[1, 2])
         assert_equal(sorted(T.edges()),[])
 
-        
+    def test_mst_attributes(self):
+        G=nx.Graph()
+        G.add_edge(1,2,weight=1,color='red',distance=7)
+        G.add_edge(2,3,weight=1,color='green',distance=2)
+        G.add_edge(1,3,weight=10,color='blue',distance=1)
+        G.add_node(13,color='purple')
+        G.graph['foo']='bar'
+        T=nx.minimum_spanning_tree(G)
+        assert_equal(T.graph,G.graph)
+        assert_equal(T.node[13],G.node[13])
+        assert_equal(T.edge[1][2],G.edge[1][2])
+
+    def test_mst_edges_specify_weight(self):
+        G=nx.Graph()
+        G.add_edge(1,2,weight=1,color='red',distance=7)
+        G.add_edge(1,3,weight=30,color='blue',distance=1)
+        G.add_edge(2,3,weight=1,color='green',distance=1)
+        G.add_node(13,color='purple')
+        G.graph['foo']='bar'
+        T=nx.minimum_spanning_tree(G)
+        assert_equal(sorted(T.nodes()),[1,2,3,13])
+        assert_equal(sorted(T.edges()),[(1,2),(2,3)])
+        T=nx.minimum_spanning_tree(G,weight='distance')
+        assert_equal(sorted(T.edges()),[(1,3),(2,3)])
+        assert_equal(sorted(T.nodes()),[1,2,3,13])
