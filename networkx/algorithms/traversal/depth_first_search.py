@@ -1,184 +1,96 @@
 """
-Search algorithms.
+==================
+Depth-first search 
+==================
+
+Basic algorithms for depth-first searching.
+
+Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
+by D. Eppstein, July 2004.
 """
-__authors__ = """Eben Kenah\nAric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2008 by 
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+__author__ = """\n""".join(['Aric Hagberg <hagberg@lanl.gov>'])
 
+__all__ = ['dfs_edges', 'dfs_tree',
+           'dfs_predecessors', 'dfs_successors',
+           'dfs_preorder_nodes','dfs_postorder_nodes',
+           'dfs_labeled_edges']
 
-__all__ = ['dfs_preorder', 'dfs_postorder',
-           'dfs_predecessor', 'dfs_successor', 'dfs_tree']
+import networkx as nx
+from collections import defaultdict
+from itertools import chain
 
-import networkx
-
-def dfs_preorder(G,source=None,reverse_graph=False):
-    """Return list of nodes connected to source in depth-first-search preorder.
-
-    Traverse the graph G with depth-first-search from source.
-    Non-recursive algorithm.
-    """
-    if source is None:
-        nlist=G.nodes() # process entire graph
-    else:
-        nlist=[source]  # only process component with source
-
-    if reverse_graph:
+def dfs_edges(G,source):
+    """Produce edges in a depth-first-search starting at source."""
+    # Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
+    # by D. Eppstein, July 2004.
+    visited=set([source])
+    stack = [(source,iter(G[source]))]
+    while stack:
+        parent,children = stack[-1]
         try:
-            neighbors=G.predecessors_iter
-        except:
-            neighbors=G.neighbors_iter
-    else:
-        neighbors=G.neighbors_iter
-
-    seen={} # nodes seen      
-    pre=[]  # list of nodes in a DFS preorder
-    for source in nlist:
-        if source in seen: continue
-        queue=[source]     # use as LIFO queue
-        while queue:
-            v=queue[-1]
-            if v not in seen:
-                pre.append(v)
-                seen[v]=True
-            done=1
-            for w in neighbors(v):
-                if w not in seen:
-                    queue.append(w)
-                    done=0
-                    break
-            if done==1:
-                queue.pop()
-    return pre
+            child = children.next()
+            if child not in visited:
+                yield parent,child
+                visited.add(child)
+                stack.append((child,iter(G[child])))
+        except StopIteration:
+            stack.pop()
 
 
-def dfs_postorder(G,source=None,reverse_graph=False):
-    """ 
-    Return list of nodes connected to source in depth-first-search postorder.
+def dfs_tree(G, source):
+    """Return directed tree of depth-first-search from source."""
+    return nx.DiGraph(dfs_edges(G,source))
 
-    Traverse the graph G with depth-first-search from source.
-    Non-recursive algorithm.
+
+def dfs_predecessors(G, source):
+    """Return dictionary of predecessors in depth-first-search from source."""
+    return dict((t,s) for s,t in dfs_edges(G,source))
+
+
+def dfs_successors(G, source):
+    """Return dictionary of successors in depth-first-search from source."""
+    d=defaultdict(list)
+    for k, v in dfs_edges(G,source):
+        d[k].append(v)
+    return dict(d)
+
+
+def dfs_postorder_nodes(G,source):
+    """Produce nodes in a depth-first-search post-ordering starting 
+    from source.
     """
-    if source is None:
-        nlist=G.nodes() # process entire graph
-    else:
-        nlist=[source]  # only process component with source
-    
-    if reverse_graph==True:
+    post=(v for u,v,d in nx.dfs_labeled_edges(G,source) if d['dir']=='forward')
+    # chain source to end of pre-ordering
+    return chain(post,[source])
+
+
+def dfs_preorder_nodes(G,source):
+    """Produce nodes in a depth-first-search pre-ordering starting at source."""
+    pre=(v for u,v,d in nx.dfs_labeled_edges(G,source) if d['dir']=='forward')
+    # chain source to beginning of pre-ordering
+    return chain([source],pre)
+
+
+def dfs_labeled_edges(G,source):
+    """Produce edges in a depth-first-search starting at source and
+    labeled by direction type (forward, reverse, nontree).
+    """
+    # Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
+    # by D. Eppstein, July 2004.
+    visited=set([source])
+    stack = [(source,iter(G[source]))]
+    while stack:
+        parent,children = stack[-1]
         try:
-            neighbors=G.predecessors_iter
-        except:
-            neighbors=G.neighbors_iter
-    else:
-        neighbors=G.neighbors_iter
-    
-    seen={} # nodes seen      
-    post=[] # list of nodes in a DFS postorder
-    for source in nlist:
-        if source in seen: continue
-        queue=[source]     # use as LIFO queue
-        while queue:
-            v=queue[-1]
-            if v not in seen:
-                seen[v]=True
-            done=1
-            for w in neighbors(v):
-                if w not in seen:
-                    queue.append(w)
-                    done=0
-                    break
-            if done==1:
-                post.append(v)
-                queue.pop()
-    return post
-
-
-def dfs_tree(G,source=None,reverse_graph=False):
-    """Return directed graph (tree) of depth-first-search with root at source.
-
-    If the graph is disconnected, return a disconnected graph (forest).
-    """
-    succ=dfs_successor(G,source=source,reverse_graph=reverse_graph)
-    return networkx.DiGraph(succ)
-
-def dfs_predecessor(G,source=None,reverse_graph=False):
-    """
-    Return predecessors of depth-first-search with root at source.
-    """
-    if source is None:
-        nlist=G.nodes() # process entire graph
-    else:
-        nlist=[source]  # only process component with source
-
-    if reverse_graph==True:
-        try:
-            neighbors=G.predecessors_iter
-        except:
-            neighbors=G.neighbors_iter
-    else:
-        neighbors=G.neighbors_iter
-
-    seen={}   # nodes seen      
-    pred={}
-    for source in nlist:
-        if source in seen: continue
-        queue=[source]     # use as LIFO queue
-        pred[source]=[]
-        while queue:
-            v=queue[-1]
-            if v not in seen:
-                seen[v]=True
-            done=1
-            for w in neighbors(v):
-                if w not in seen:
-                    queue.append(w)
-                    pred[w]=[v]     # Each node has at most one predecessor
-                    done=0
-                    break
-            if done==1:
-                queue.pop()
-    return pred
-
-
-def dfs_successor(G,source=None,reverse_graph=False):
-    """
-    Return succesors of depth-first-search with root at source.
-    """
-
-    if source is None:
-        nlist=G.nodes() # process entire graph
-    else:
-        nlist=[source]  # only process component with source
-
-    if reverse_graph==True:
-        try:
-            neighbors=G.predecessors_iter
-        except:
-            neighbors=G.neighbors_iter
-    else:
-        neighbors=G.neighbors_iter
-
-    seen={}   # nodes seen      
-    succ={}
-    for source in nlist:
-        if source in seen: continue
-        queue=[source]     # use as LIFO queue
-        while queue:
-            v=queue[-1]
-            if v not in seen:
-                seen[v]=True
-                succ[v]=[]
-            done=1
-            for w in neighbors(v):
-                if w not in seen:
-                    queue.append(w)
-                    succ[v].append(w)
-                    done=0
-                    break
-            if done==1:
-                queue.pop()
-    return succ
+            child = children.next()
+            if child in visited:
+                yield parent,child,{'dir':'nontree'}
+            else:
+                yield parent,child,{'dir':'forward'}
+                visited.add(child)
+                stack.append((child,iter(G[child])))
+        except StopIteration:
+            stack.pop()
+            if stack:
+                yield stack[-1][0],parent,{'dir':'reverse'}
 
