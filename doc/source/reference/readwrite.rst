@@ -10,6 +10,7 @@ Reading and writing graphs
    readwrite.adjlist
    readwrite.multiline_adjlist
    readwrite.edgelist
+   readwrite.gexf
    readwrite.gml
    readwrite.gpickle
    readwrite.graphml
