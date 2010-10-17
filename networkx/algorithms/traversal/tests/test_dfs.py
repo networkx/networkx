@@ -11,19 +11,21 @@ class TestDFS:
         self.G=G
 
 
-    def test_preorder(self):
-        assert_equal(nx.dfs_preorder(self.G,source=0),[0, 1, 2, 4, 3])
+    def test_preorder_nodes(self):
+        assert_equal(list(nx.dfs_preorder_nodes(self.G,source=0)),
+                     [0, 1, 2, 4, 3])
 
-    def test_postorder(self):
-        assert_equal(nx.dfs_postorder(self.G,source=0),[3, 4, 2, 1, 0])
+    def test_postorder_nodes(self):
+        assert_equal(list(nx.dfs_postorder_nodes(self.G,source=0)),
+                     [3, 4, 2, 1, 0])
 
     def test_successor(self):
-        assert_equal(nx.dfs_successor(self.G,source=0),
-                     {0: [1], 1: [2], 2: [4], 3: [], 4: [3]})
+        assert_equal(nx.dfs_successors(self.G,source=0),
+                     {0: [1], 1: [2], 2: [4], 4: [3]})
 
     def test_predecessor(self):
-        assert_equal(nx.dfs_predecessor(self.G,source=0),
-                     {0: [], 1: [0], 2: [1], 3: [4], 4: [2]})
+        assert_equal(nx.dfs_predecessors(self.G,source=0),
+                     {1: 0, 2: 1, 3: 4, 4: 2})
 
     def test_dfs_tree(self):
         T=nx.dfs_tree(self.G,source=0)

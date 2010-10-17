@@ -50,8 +50,8 @@ def dfs_predecessors(G, source):
 def dfs_successors(G, source):
     """Return dictionary of successors in depth-first-search from source."""
     d=defaultdict(list)
-    for k, v in dfs_edges(G,source):
-        d[k].append(v)
+    for s,t in dfs_edges(G,source):
+        d[s].append(t)
     return dict(d)
 
 
@@ -59,7 +59,7 @@ def dfs_postorder_nodes(G,source):
     """Produce nodes in a depth-first-search post-ordering starting 
     from source.
     """
-    post=(v for u,v,d in nx.dfs_labeled_edges(G,source) if d['dir']=='forward')
+    post=(v for u,v,d in nx.dfs_labeled_edges(G,source) if d['dir']=='reverse')
     # chain source to end of pre-ordering
     return chain(post,[source])
 
