@@ -37,7 +37,7 @@ from networkx.exception import NetworkXException, NetworkXError
 from networkx.utils import _get_fh, is_string_like
 
 	
-def read_gml(path,encoding='UTF-8',labels=True):
+def read_gml(path,encoding='UTF-8',relabel=False):
     """Read graph in GML format from path.
 
     Parameters
@@ -48,9 +48,9 @@ def read_gml(path,encoding='UTF-8',labels=True):
     encoding : string, optional
        Text encoding. 
 
-    labels : bool, optional       
+    relabel : bool, optional       
        If True use the GML node label attribute for node names otherwise use
-       the node id.
+       the node id.  
 
     Returns
     -------
@@ -82,11 +82,11 @@ def read_gml(path,encoding='UTF-8',labels=True):
     """
     fh=_get_fh(path,'rb')
     lines=(line.decode(encoding) for line in fh)
-    G=parse_gml(lines,labels=labels)
+    G=parse_gml(lines,relabel=relabel)
     fh.close()
     return G
 
-def parse_gml(lines, labels=True):
+def parse_gml(lines, relabel=True):
     """Parse GML graph from a string or iterable.
 
     Parameters
@@ -94,7 +94,7 @@ def parse_gml(lines, labels=True):
     lines : string or iterable
        Data in GML format.
 
-    labels : bool, optional       
+    relabel : bool, optional       
        If True use the GML node label attribute for node names otherwise use
        the node id.
 
@@ -180,9 +180,15 @@ def parse_gml(lines, labels=True):
         else:
             G=nx.Graph(G)
 
-    if labels:
-        mapping=dict((n,d['label']) for n,d in G.node.items())
-        G=nx.relabel_nodes(G,mapping)
+    if relabel:
+        # relabel, but check for duplicate labels first
+        mapping=[(n,d['label']) for n,d in G.node.items()]
+        x,y=zip(*mapping)
+        if len(set(y))!=len(G):
+            raise NetworkXError('Failed to relabel nodes: '
+                                'duplicate node labels found. '
+                                'Use relabel=False.')
+        G=nx.relabel_nodes(G,dict(mapping))
     return G
 
 
