@@ -1,7 +1,7 @@
 """
-==================
+====================
 Breadth-first search 
-==================
+====================
 
 Basic algorithms for breadth-first searching.
 """
