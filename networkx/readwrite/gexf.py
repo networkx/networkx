@@ -713,7 +713,19 @@ def relabel_gexf_graph(G):
     "label" attribute.  It also handles relabeling the specific GEXF
     node attributes "parents", and "pid".
     """
-    mapping=dict((u,G.node[u].get('label')) for u in G)
+    # build mapping of node labels, do some error checking
+    try:
+        mapping=[(u,G.node[u]['label']) for u in G]
+    except KeyError:
+        raise nx.NetworkXError('Failed to relabel nodes: '
+                               'missing node labels found. '
+                               'Use relabel=False.')
+    x,y=zip(*mapping)
+    if len(set(y))!=len(G):
+        raise nx.NetworkXError('Failed to relabel nodes: '
+                               'duplicate node labels found. '
+                               'Use relabel=False.')
+    mapping=dict(mapping)
     H=nx.relabel_nodes(G,mapping)
     # relabel attributes
     for n in G:
