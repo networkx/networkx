@@ -44,8 +44,8 @@ def bfs_predecessors(G, source):
 def bfs_successors(G, source):
     """Return dictionary of successors in breadth-first-search from source."""
     d=defaultdict(list)
-    for k, v in bfs_edges(G,source):
-        d[k].append(v)
+    for s,t in bfs_edges(G,source):
+        d[s].append(t)
     return dict(d)
 
 
