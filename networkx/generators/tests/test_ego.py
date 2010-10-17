@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-
-"""ego graph
+"""
+ego graph
 ---------
 """
 
@@ -20,4 +20,15 @@ class TestGeneratorEgo():
         G=nx.path_graph(3)
         H=nx.ego_graph(G,0)
         assert_equal(H.edges(), [(0, 1)])
+
+    def test_ego_distance(self):
+        G=nx.Graph()                                                            
+        G.add_edge(0,1,weight=2,distance=1)
+        G.add_edge(1,2,weight=2,distance=2)
+        G.add_edge(2,3,weight=2,distance=1) 
+        assert_equal(sorted(nx.ego_graph(G,0,radius=3).nodes()),[0,1,2,3])
+        eg=nx.ego_graph(G,0,radius=3,distance='weight')
+        assert_equal(sorted(eg.nodes()),[0,1])
+        eg=nx.ego_graph(G,0,radius=3,distance='distance')
+        assert_equal(sorted(eg.nodes()),[0,1,2])
 
