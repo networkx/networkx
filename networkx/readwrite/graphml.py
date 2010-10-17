@@ -95,6 +95,11 @@ def read_graphml(path,node_type=str):
     This implementation does not support mixed graphs (directed and unidirected 
     edges together), hypergraphs, nested graphs, or ports. 
     
+    Files with the yEd "yfiles" extension will can be read but the graphics
+    information is discarded.
+
+    yEd compressed files ("file.graphmlz" extension) can be read by renaming
+    the file to "file.graphml.gz".
 
     """
     fh=_get_fh(path,mode='rb')
@@ -107,11 +112,14 @@ def read_graphml(path,node_type=str):
 class GraphML(object):
     NS_GRAPHML = "http://graphml.graphdrawing.org/xmlns"
     NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
+    #xmlns:y="http://www.yworks.com/xml/graphml"
+    NS_Y = "http://www.yworks.com/xml/graphml"
     SCHEMALOCATION = \
         ' '.join(['http://graphml.graphdrawing.org/xmlns',
                   'http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd'])
     
-    types=((str,"string"), (int,"int"), (float,"float"), (float,"double"))
+    types=((str,"yfiles"),(str,"string"), (int,"int"), 
+           (float,"float"), (float,"double"))
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
 
@@ -335,7 +343,10 @@ class GraphMLReader(GraphML):
                 data_type=graphml_keys[key]['type']
             except KeyError:
                 raise nx.NetworkXError("Bad GraphML data: no key %s"%key)
-            data[data_name] = data_type(data_element.text)
+            text=data_element.text
+            # assume anything with subelements is a yfiles extension
+            if text is not None and len(list(data_element))==0:
+                data[data_name] = data_type(text)
         return data
             
     def find_graphml_keys(self, graph_element):
@@ -345,9 +356,16 @@ class GraphMLReader(GraphML):
         graphml_key_defaults = {}
         for k in graph_element.findall("{%s}key" % self.NS_GRAPHML):
             attr_id = k.get("id")
+            attr_type=k.get('attr.type')
+            attr_name=k.get("attr.name")
+            if attr_type is None:
+                attr_name=k.get('yfiles.type')
+                attr_type='yfiles'
+            if attr_name is None:
+                raise nx.NetworkXError("Unknown key type in file.")
             graphml_keys[attr_id] = {
-                "name":k.get("attr.name"),
-                "type":self.python_type[k.get("attr.type")],
+                "name":attr_name,
+                "type":self.python_type[attr_type],
                 "for":k.get("for")}
             # check for "default" subelement of key element
             default=k.find("{%s}default" % self.NS_GRAPHML)
