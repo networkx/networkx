@@ -13,7 +13,7 @@ __author__ = """\n""".join(['Aric Hagberg <hagberg@lanl.gov>'])
 __all__ = ['dfs_edges', 'dfs_tree',
            'dfs_predecessors', 'dfs_successors',
            'dfs_preorder_nodes','dfs_postorder_nodes',
-           'dfs_labeled_edges']
+           'dfs_labeled_edges','dfs_forest']
 
 import networkx as nx
 from collections import defaultdict
@@ -94,3 +94,13 @@ def dfs_labeled_edges(G,source):
             if stack:
                 yield stack[-1][0],parent,{'dir':'reverse'}
 
+def dfs_forest(G):
+    """Return directed forest of a depth-first-search for entire graph.
+    
+    Includes all disconnected components of G.
+    """
+    F=nx.DiGraph()
+    for n in G:
+        if n not in F:
+            F.add_edges_from(dfs_edges(G,n))
+    return F
