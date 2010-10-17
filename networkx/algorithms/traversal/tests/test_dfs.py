@@ -36,3 +36,8 @@ class TestDFS:
         edges=nx.dfs_edges(self.G,source=0)
         assert_equal(list(edges),[(0, 1), (1, 2), (2, 4), (4, 3)])
 
+    def test_dfs_labeled_edges(self):
+        edges=list(nx.dfs_labeled_edges(self.G,source=0))
+        forward=[(u,v) for (u,v,d) in edges if d['dir']=='forward']
+        assert_equal(forward,[(0, 1), (1, 2), (2, 4), (4, 3)])
+
