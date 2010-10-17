@@ -32,3 +32,7 @@ class TestDFS:
         assert_equal(sorted(T.nodes()),sorted(self.G.nodes()))
         assert_equal(sorted(T.edges()),[(0, 1), (1, 2), (2, 4), (4, 3)])
 
+    def test_dfs_edges(self):
+        edges=nx.dfs_edges(self.G,source=0)
+        assert_equal(list(edges),[(0, 1), (1, 2), (2, 4), (4, 3)])
+
