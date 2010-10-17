@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import copy
-import unittest
+import io
 from nose.tools import *
 from nose import SkipTest
 import networkx
@@ -59,7 +58,7 @@ graph [
 ]
 """
     def test_parse_gml(self):
-        G=networkx.parse_gml(self.simple_data)
+        G=networkx.parse_gml(self.simple_data,relabel=True)
         assert_equals(sorted(G.nodes()),\
                           ['"Node 1"', '"Node 2"', '"Node 3"'])
         assert_equals( [e for e in sorted(G.edges())],\
@@ -83,10 +82,31 @@ graph [
         fh=open(fname,'w')
         fh.write(self.simple_data)
         fh.close()
-        Gin=networkx.read_gml(fname)
-        G=networkx.parse_gml(self.simple_data)
+        Gin=networkx.read_gml(fname,relabel=True)
+        G=networkx.parse_gml(self.simple_data,relabel=True)
         assert_equals( sorted(G.nodes(data=True)), sorted(Gin.nodes(data=True)))
         assert_equals( sorted(G.edges(data=True)), sorted(Gin.edges(data=True)))
         os.close(fd)
         os.unlink(fname)
 
+    def test_relabel_dupliate(self):
+        data="""
+graph
+[
+	label	""
+	directed	1
+	node
+	[
+		id	0
+		label	"same"
+	]
+	node
+	[
+		id	1
+		label	"same"
+	]
+]
+"""
+        fh = io.BytesIO(data.encode('UTF-8'))
+        fh.seek(0)
+        assert_raises(networkx.NetworkXError,networkx.read_gml,fh,relabel=True)
