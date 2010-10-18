@@ -22,7 +22,7 @@ def bfs_edges(G,source):
     while stack:
         parent,children = stack[0]
         try:
-            child = children.next()
+            child = next(children)
             if child not in visited:
                 yield parent,child
                 visited.add(child)
