@@ -122,13 +122,15 @@ def kosaraju_strongly_connected_components(G,source=None):
     Uses Kosaraju's algorithm.
     """
     components=[]
-    post=nx.dfs_postorder(G,source=source,reverse_graph=True)
+    G=G.reverse(copy=False)
+    post=list(nx.dfs_postorder_nodes(G,source=source))
+    G=G.reverse(copy=False)
     seen={}
     while post:
         r=post.pop()
         if r in seen:
             continue
-        c=nx.dfs_preorder(G,r)
+        c=nx.dfs_preorder_nodes(G,r)
         new=[v for v in c if v not in seen]
         seen.update([(u,True) for u in new])
         components.append(new)
