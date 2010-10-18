@@ -43,20 +43,17 @@ def minimum_spanning_edges(G,weight='weight',data=True):
     --------
     >>> G=nx.cycle_graph(4)
     >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
-    >>> mst=nx.minimum_spanning_edges(G) # a generator of MST edges
+    >>> mst=nx.minimum_spanning_edges(G,data=False) # a generator of MST edges
     >>> edgelist=list(mst) # make a list of the edges
     >>> print(sorted(edgelist))
-    [(0, 1, {'weight': 1}), (1, 2, {'weight': 1}), (2, 3, {'weight': 1})]
-    >>> T=nx.Graph(edgelist)  # build a graph of the MST.
-    >>> print(sorted(T.edges(data=True)))
-    [(0, 1, {'weight': 1}), (1, 2, {'weight': 1}), (2, 3, {'weight': 1})]
+    [(0, 1), (1, 2), (2, 3)]
 
     Notes
     -----
     Uses Kruskal's algorithm.
 
     If the graph edges do not have a weight attribute a default weight of 1
-    will be assigned.
+    will be used.
 
     Modified code from David Eppstein, April 2006
     http://www.ics.uci.edu/~eppstein/PADS/
@@ -112,14 +109,14 @@ def minimum_spanning_tree(G,weight='weight'):
     >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
     >>> T=nx.minimum_spanning_tree(G)
     >>> print(sorted(T.edges(data=True)))
-    [(0, 1, {'weight': 1}), (1, 2, {'weight': 1}), (2, 3, {'weight': 1})]
+    [(0, 1, {}), (1, 2, {}), (2, 3, {})]
 
     Notes
     -----
     Uses Kruskal's algorithm.
 
     If the graph edges do not have a weight attribute a default weight of 1
-    will be assigned.
+    will be used.
     """
     T=nx.Graph(nx.minimum_spanning_edges(G,weight=weight,data=True))
     # Add isolated nodes
