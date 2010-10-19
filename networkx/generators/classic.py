@@ -10,7 +10,7 @@ as a simple graph. Except for empty_graph, all the generators
 in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -27,6 +27,7 @@ __all__ = [ 'balanced_tree',
             'cycle_graph',
             'dorogovtsev_goltsev_mendes_graph',
             'empty_graph',
+            'full_rary_tree',
             'grid_graph',
             'grid_2d_graph',
             'hypercube_graph',
@@ -45,59 +46,90 @@ __all__ = [ 'balanced_tree',
 import networkx as nx
 from networkx.utils import is_list_of_ints, flatten
 
+def _tree_edges(n,r):
+    # helper function for trees
+    # yields edges in rooted tree at 0 with n nodes and branching ratio r
+    nodes=iter(range(n))
+    parents=[next(nodes)] # stack of max length r
+    while parents:
+        source=parents.pop(0)
+        for i in range(r):
+            try:
+                target=next(nodes)
+                parents.append(target)
+                yield source,target
+            except StopIteration:
+                break
 
-def balanced_tree(r,h,create_using=None):
+def full_rary_tree(r, n, create_using=None):
+    """Creates a full r-ary tree of n vertices. 
+
+    Sometimes called a k-ary, n-ary, or m-ary tree.  "... all non-leaf
+    vertices have exactly r children and all levels are full except
+    for some rightmost position of the bottom level (if a leaf at the
+    bottom level is missing, then so are all of the leaves to its
+    right." [1]_
+
+    Parameters
+    ----------
+    r : int
+        branching factor of the tree
+    n : int
+        Number of nodes in the tree
+    create_using : NetworkX graph type, optional
+        Use specified type to construct graph (default = networkx.Graph)    
+
+    Returns
+    -------
+    G : networkx Graph
+        An r-ary tree with n nodes
+
+    References
+    ----------
+    .. [1] An introduction to data structures and algorithms,
+           James Andrew Storer,  Birkhauser Boston 2001, (page 225).
+    """
+    G=nx.empty_graph(n,create_using)
+    G.add_edges_from(_tree_edges(n,r))
+    return G
+
+def balanced_tree(r, h, create_using=None):
     """Return the perfectly balanced r-tree of height h.
 
-    For r>=2, h>=1, this is the rooted tree where all leaves
-    are at distance h from the root.
-    The root has degree r and all other internal nodes have degree r+1.
+    Parameters
+    ----------
+    r : int
+        Branching factor of the tree
+    h : int
+        Height of the tree
+    create_using : NetworkX graph type, optional
+        Use specified type to construct graph (default = networkx.Graph)    
 
-    number_of_nodes = 1+r+r**2+...+r**h = (r**(h+1)-1)/(r-1), 
-    number_of_edges = number_of_nodes - 1.
+    Returns
+    -------
+    G : networkx Graph
+        A tree with n nodes
 
-    Node labels are the integers 0 (the root) up to 
-    number_of_nodes - 1.
-    
+    Notes
+    -----
+    This is the rooted tree where all leaves are at distance h from
+    the root. The root has degree r and all other internal nodes have
+    degree r+1.
+
+    Node labels are the integers 0 (the root) up to  number_of_nodes - 1.
+
+    Also refered to as a complete r-ary tree.
     """
-    if r<2:
-        raise nx.NetworkXError(\
-              "Invalid graph description, r should be >=2")
-    if h<1:
-        raise nx.NetworkXError(\
-              "Invalid graph description, h should be >=1")
-    
-    if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-    G=empty_graph(0,create_using)
-    G.name="balanced_tree(%d,%d)"%(r,h)
-
-    # Grow tree of increasing height by repeatedly adding a layer
-    # of new leaves to current leaves.
-    
-    # First create root of degree r
-    root=0
-    v=root
-    G.add_node(v)
-    newleavelist=[]
-    i=0
-    while i < r:
-        v=v+1
-        G.add_edge(root,v)
-        newleavelist.append(v)
-        i=i+1
-    # All other  internal nodes have degree r+1
-    height=1
-    while height<h:
-        leavelist=newleavelist[:]
-        newleavelist=[]
-        for leave in leavelist:
-            for i in range(r):
-                v=v+1
-                G.add_edge(leave,v)
-                newleavelist.append(v)
-        height=height+1
+    # number of nodes is n=1+r+..+r^h
+    if r==1:
+        n=2
+    else:
+        n = int((1-r**(h+1))/(1-r)) # sum of geometric series r!=1
+    G=nx.empty_graph(n,create_using)
+    G.add_edges_from(_tree_edges(n,r))
     return G
+
+    return nx.full_rary_tree(r,n,create_using)
 
 def barbell_graph(m1,m2,create_using=None):
     """Return the Barbell Graph: two complete graphs connected by a path.

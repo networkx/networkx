@@ -1,74 +1,72 @@
 #!/usr/bin/env python
+"""
+====================
+Generators - Classic
+====================
 
+Unit tests for various classic graph generators in generators/classic.py
+"""
 from nose.tools import *
 from networkx import *
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 is_isomorphic=graph_could_be_isomorphic
 
-"""Generators - Classic
-====================
-
-Unit tests for various classic graph generators in generators/classic.py
-"""
-
-
 class TestGeneratorClassic():
     def test_balanced_tree(self):
         # balanced_tree(r,h) is a tree with (r**(h+1)-1)/(r-1) edges
-        r=2; h=2
-        t=balanced_tree(r,h)
-        order=t.order()
-        assert_true(order==(r**(h+1)-1)/(r-1))
-        assert_true(is_connected(t))
-        assert_true(t.size()==order-1)
-        
-        r=3; h=3
-        t=balanced_tree(r,h)
-        order=t.order()
-        assert_true(order==(r**(h+1)-1)/(r-1))
-        assert_true(is_connected(t))
-        assert_true(t.size()==order-1)
+        for r,h in [(2,2),(3,3),(6,2)]:
+            t=balanced_tree(r,h)
+            order=t.order()
+            assert_true(order==(r**(h+1)-1)/(r-1))
+            assert_true(is_connected(t)) 
+            assert_true(t.size()==order-1)
+            dh = degree_histogram(t)
+            assert_equal(dh[0],0) # no nodes of 0 
+            assert_equal(dh[1],r**h) # nodes of degree 1 are leaves
+            assert_equal(dh[r],1)  # root is degree r
+            assert_equal(dh[r+1],order-r**h-1)# everyone else is degree r+1
+            assert_equal(len(dh),r+2)
 
-        r=6; h=2
-        t=balanced_tree(r,h)
-        order=t.order()
-        assert_true(order==(r**(h+1)-1)/(r-1))
-        assert_true(is_connected(t))
-        assert_true(t.size()==order-1)
-
+    def test_balanced_tree_star(self):
         # balanced_tree(r,1) is the r-star
-        r=2; h=1
-        t=balanced_tree(r,h)
-        assert_true(is_isomorphic(t,star_graph(r)))
+        t=balanced_tree(r=2,h=1)
+        assert_true(is_isomorphic(t,star_graph(2)))
+        t=balanced_tree(r=5,h=1)
+        assert_true(is_isomorphic(t,star_graph(5)))
+        t=balanced_tree(r=10,h=1)
+        assert_true(is_isomorphic(t,star_graph(10)))
 
-        r=5; h=1
-        t=balanced_tree(r,h)
-        assert_true(is_isomorphic(t,star_graph(r)))
+    def test_full_rary_tree(self):
+        r=2
+        n=9
+        t=full_rary_tree(r,n)
+        assert_equal(t.order(),n)
+        assert_true(is_connected(t))
+        dh = degree_histogram(t)
+        assert_equal(dh[0],0) # no nodes of 0 
+        assert_equal(dh[1],5) # nodes of degree 1 are leaves
+        assert_equal(dh[r],1)  # root is degree r
+        assert_equal(dh[r+1],9-5-1) # everyone else is degree r+1
+        assert_equal(len(dh),r+2)
 
-        r=10; h=1
-        t=balanced_tree(r,h)
-        assert_true(is_isomorphic(t,star_graph(r)))
+    def test_full_rary_tree_balanced(self):
+        t=full_rary_tree(2,15)
+        th=balanced_tree(2,3)
+        assert_true(is_isomorphic(t,th))
 
-        # Raise NetworkXError if r<2
-        r=1; h=10
-        assert_raises(networkx.exception.NetworkXError, balanced_tree, r, h)
-        
-        r=0; h=10
-        assert_raises(networkx.exception.NetworkXError, balanced_tree, r, h)
+    def test_full_rary_tree_path(self):
+        t=full_rary_tree(1,10)
+        assert_true(is_isomorphic(t,path_graph(10)))
 
-        # Raise NetworkXError if h<1
-        r=10; h=0
-        assert_raises(networkx.exception.NetworkXError, balanced_tree, r, h)
-        
-        # Raise NetworkXError if h<1
-        r=4; h=0
-        assert_raises(networkx.exception.NetworkXError, balanced_tree, r, h)
+    def test_full_rary_tree_empty(self):
+        t=full_rary_tree(0,10)
+        assert_true(is_isomorphic(t,empty_graph(10)))
+        t=full_rary_tree(3,0)
+        assert_true(is_isomorphic(t,empty_graph(0)))
 
-        assert_raises(networkx.exception.NetworkXError, balanced_tree, 10, 1,
-                      create_using=DiGraph())
-        
-        mt=balanced_tree(10, 1, create_using=MultiGraph())
-        assert_true(mt.edges()==t.edges())
+    def test_full_rary_tree_3_20(self):
+        t=full_rary_tree(3,20)
+        assert_equal(t.order(),20)
 
     def test_barbell_graph(self):
         # number of nodes = 2*m1 + m2 (2 m1-complete graphs + m2-path + 2 edges)
