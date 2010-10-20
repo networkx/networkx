@@ -16,8 +16,8 @@ in this module return a Graph class (i.e. a simple, undirected graph).
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import itertools
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
-
 
 __all__ = [ 'balanced_tree',
             'barbell_graph',
@@ -151,6 +151,8 @@ def barbell_graph(m1,m2,create_using=None):
     and Jim Fill's etext on Random Walks on Graphs.
 
     """
+    if create_using is not None and create_using.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
     if m1<2:
         raise nx.NetworkXError(\
               "Invalid graph description, m1 should be >=2")
@@ -175,19 +177,18 @@ def barbell_graph(m1,m2,create_using=None):
     return G
 
 def complete_graph(n,create_using=None):
-    """ Return the Complete graph K_n with n nodes. 
+    """ Return the complete graph K_n with n nodes. 
     
     Node labels are the integers 0 to n-1.
-
     """
-    if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n,create_using)
-    G.name="complete_graph(%d)"%n
-    for u in range(n):
-        for v in range(u+1,n):
-            G.add_edge(u,v)
+    if G.is_directed():
+        edges=itertools.permutations(range(n),2)
+    else:
+        edges=itertools.combinations(range(n),2)
+    G.add_edges_from(edges)
     return G
+
 
 def complete_bipartite_graph(n1,n2,create_using=None):
     """Return the complete bipartite graph K_{n1_n2}.
@@ -431,6 +432,8 @@ def lollipop_graph(m,n,create_using=None):
     Fill's etext on Random Walks on Graphs.)
     
     """
+    if create_using is not None and create_using.is_directed():
+        raise nx.NetworkXError("Directed Graph not supported")
     if m<2:
         raise nx.NetworkXError(\
               "Invalid graph description, m should be >=2")

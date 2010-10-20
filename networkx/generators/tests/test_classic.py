@@ -124,11 +124,17 @@ class TestGeneratorClassic():
             assert_true(number_of_nodes(g) == m)
             assert_true(number_of_edges(g) == m * (m - 1) // 2)
 
-        assert_raises(networkx.exception.NetworkXError, complete_graph,
-                m, create_using=DiGraph())
         
         mg=complete_graph(m, create_using=MultiGraph())
         assert_true(mg.edges()==g.edges())
+
+    def test_complete_digraph(self):
+        # complete_graph(m) is a connected graph with 
+        # m nodes and  m*(m+1)/2 edges
+        for m in [0, 1, 3, 5]:
+            g = complete_graph(m,create_using=nx.DiGraph())
+            assert_true(number_of_nodes(g) == m)
+            assert_true(number_of_edges(g) == m * (m - 1))
 
     def test_complete_bipartite_graph(self):
         G=complete_bipartite_graph(0,0)
