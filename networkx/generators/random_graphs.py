@@ -103,10 +103,9 @@ def fast_gnp_random_graph(n, p, create_using=None, seed=None):
 def gnp_random_graph(n, p, create_using=None, seed=None):
     """Return a random graph G_{n,p}.
 
-    Choses each of the possible [n(n-1)]/2 edges with probability p.
+    Choses each of the possible edges with probability p.
     This is the same as binomial_graph and erdos_renyi_graph. 
 
-    Sometimes called Erdős-Rényi graph, or binomial graph.
 
     Parameters
     ----------
@@ -128,6 +127,8 @@ def gnp_random_graph(n, p, create_using=None, seed=None):
     This is an O(n^2) algorithm.  For sparse graphs (small p) see
     fast_gnp_random_graph. 
 
+    Sometimes called Erdős-Rényi graph, or binomial graph.
+
     References
     ----------
     .. [1] P. Erdős and A. Rényi, On Random Graphs, Publ. Math. 6, 290 (1959).
@@ -142,64 +143,22 @@ def gnp_random_graph(n, p, create_using=None, seed=None):
     if not seed is None:
         random.seed(seed)
 
-    for u in range(n):
-        for v in range(u+1,n):
-            if random.random() < p:
-                G.add_edge(u,v)
+    if G.is_directed():
+        edges=itertools.permutations(range(n),2)
+    else:
+        edges=itertools.combinations(range(n),2)
+
+    for e in edges:
+        if random.random() < p:        
+            G.add_edge(*e)
     return G
 
 
 # add some aliases to common names
 binomial_graph=gnp_random_graph
 erdos_renyi_graph=gnp_random_graph
+directed_gnp_random_graph=gnp_random_graph
 
-def directed_gnp_random_graph(n, p, create_using=None, seed=None):
-    """Return a directed random graph.
-
-    Chooses each of the possible n(n-1) edges with probability p.
-
-    This is a directed version of G_np.
-
-    Parameters
-    ----------
-    n : int
-        The number of nodes.
-    p : float
-        Probability for edge creation.
-    create_using :  graph, optional (default DiGraph)
-        Use specified graph as a container.
-    seed : int, optional
-        Seed for random number generator (default=None). 
-      
-    See Also
-    --------
-    gnp_random_graph()
-    fast_gnp_random_graph()
-
-    Notes
-    -----
-    This is an O(n^2) algorithm.  
-
-    References
-    ----------
-    .. [1] P. Erdős and A. Rényi, On Random Graphs, Publ. Math. 6, 290 (1959).
-    .. [2] E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
-
-    """
-    if create_using is None:
-        create_using=nx.DiGraph()
-    G=empty_graph(n,create_using)
-    G.name="directed gnp_random_graph(%s,%s)"%(n,p)
-
-    if not seed is None:
-        random.seed(seed)
-
-    for u in range(n):
-        for v in range(n):
-            if u==v: continue
-            if random.random() < p:
-                G.add_edge(u,v)
-    return G
 
 def dense_gnm_random_graph(n, m, create_using=None, seed=None):
     """Return the random graph G_{n,m}.
