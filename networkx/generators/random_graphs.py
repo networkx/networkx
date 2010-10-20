@@ -47,11 +47,6 @@ __all__ = ['fast_gnp_random_graph',
 def fast_gnp_random_graph(n, p, create_using=None, seed=None):
     """Return a random graph G_{n,p}.
 
-    The G_{n,p} graph choses each of the possible [n(n-1)]/2 edges
-    with probability p.
-
-    Sometimes called Erdős-Rényi graph, or binomial graph.
-
     Parameters
     ----------
     n : int
@@ -65,11 +60,16 @@ def fast_gnp_random_graph(n, p, create_using=None, seed=None):
       
     Notes
     -----
+    The G_{n,p} graph algorithm chooses each of the [n(n-1)]/2
+    (undirected) or n(n-1) (directed) possible edges with probability p.
+
+    Sometimes called Erdős-Rényi graph, or binomial graph.
+
     This algorithm is O(n+m) where m is the expected number of
     edges m=p*n*(n-1)/2.
     
-    It should be faster than gnp_random_graph when p is small, and
-    the expected number of edges is small, (sparse graph).
+    It should be faster than gnp_random_graph when p is small and
+    the expected number of edges is small (sparse graph).
 
     References
     ----------
@@ -84,6 +84,9 @@ def fast_gnp_random_graph(n, p, create_using=None, seed=None):
 
     if not seed is None:
         random.seed(seed)
+
+    if p<=0 or p>=1:
+        return nx.gnp_random_graph(n,p,create_using=create_using)
 
     v=1  # Nodes in graph are from 0,n-1 (this is the second node index).
     w=-1
@@ -139,6 +142,10 @@ def gnp_random_graph(n, p, create_using=None, seed=None):
         raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(n,create_using)
     G.name="gnp_random_graph(%s,%s)"%(n,p)
+    if p<=0:
+        return G
+    if p>=1:
+        return complete_graph(n,create_using)
 
     if not seed is None:
         random.seed(seed)
