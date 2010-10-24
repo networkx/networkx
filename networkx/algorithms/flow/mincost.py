@@ -189,11 +189,9 @@ def _find_leaving_edge(H, T, cycle, newEdge, capacity = 'capacity'):
 
 def _create_flow_dict(G):
     """Creates the flow dict of dicts of graph G."""
-    flowDict = {}
+    flowDict = dict([(u, {}) for u in G])
 
     for u in G.nodes_iter():
-        if not u in flowDict:
-            flowDict[u] = {}
         for v in G.neighbors(u):
             flowDict[u][v] = G[u][v].get('flow', 0)
     return flowDict
