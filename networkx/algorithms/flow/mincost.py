@@ -49,7 +49,7 @@ def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
         maxWeight = 0
     hugeWeight = 1 + n * maxWeight
 
-    labelGenerator = _gen_node_label(G)
+    labelGenerator = _gen_node_label(H)
 
     for v, d in G.nodes(data = True)[1:]:
         vDemand = d.get(demand, 0)

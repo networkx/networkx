@@ -177,4 +177,28 @@ class TestNetworkSimplex:
                 't': {}}
         assert_equal(flow, soln)
 
+    def test_digraph3(self):
+        """Combinatorial Optimization: Algorithms and Complexity,
+        Papadimitriou Steiglitz at page 140 has an example, 7.1, but that
+        admits multiple solutions, so I alter it a bit. From ticket #430
+        by mfrasca."""
+
+        G = G = nx.DiGraph()
+        G.add_edge('s', 'a', {0: 2, 1: 4})
+        G.add_edge('s', 'b', {0: 2, 1: 1})
+        G.add_edge('a', 'b', {0: 5, 1: 2})
+        G.add_edge('a', 't', {0: 1, 1: 5})
+        G.add_edge('b', 'a', {0: 1, 1: 3})
+        G.add_edge('b', 't', {0: 3, 1: 2})
+
+        "PS.ex.7.1: testing main function"
+        sol = nx.max_flow_min_cost(G, 's', 't', capacity=0, weight=1)
+        flow = sum(v for v in sol['s'].values())
+        assert_equal(4, flow)
+        assert_equal(23, nx.cost_of_flow(G, sol, weight=1))
+        assert_equal(sol['s'], {'a': 2, 'b': 2})
+        assert_equal(sol['a'], {'b': 1, 't': 1})
+        assert_equal(sol['b'], {'a': 0, 't': 3})
+        assert_equal(sol['t'], {})
+
 
