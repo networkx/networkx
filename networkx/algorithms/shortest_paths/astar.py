@@ -39,6 +39,11 @@ def astar_path(G, source, target, heuristic=None):
        from the a node to the target.  The function takes
        two nodes arguments and must return a number.
 
+    Raises
+    ------
+    NetworkXNoPath
+        If no path exists between source and target.
+
     Examples
     --------
     >>> G=nx.path_graph(5)
@@ -110,7 +115,7 @@ def astar_path(G, source, target, heuristic=None):
             enqueued[neighbor] = ncost, h
             heappush(queue, (ncost + h, neighbor, ncost, curnode))
 
-    raise NetworkXError("Node %s not reachable from %s"%(source,target))
+    raise nx.NetworkXNoPath("Node %s not reachable from %s"%(source,target))
 
 def astar_path_length(G, source, target, heuristic=None):
     """Return a list of nodes in a shortest path between source and target using the A* ("A-star") algorithm.
@@ -129,6 +134,11 @@ def astar_path_length(G, source, target, heuristic=None):
        A function to evaluate the estimate of the distance
        from the a node to the target.  The function takes
        two nodes arguments and must return a number.
+
+    Raises
+    ------
+    NetworkXNoPath
+        If no path exists between source and target.
 
     See Also
     --------

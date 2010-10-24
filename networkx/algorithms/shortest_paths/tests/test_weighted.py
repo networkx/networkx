@@ -80,8 +80,8 @@ class TestWeightedPath:
         assert_equal(nx.dijkstra_path_length(self.G,'s','v'), 2)
 
         # NetworkXError: node s not reachable from moon
-        assert_raises(nx.NetworkXError,nx.dijkstra_path,self.G,'s','moon')
-        assert_raises(nx.NetworkXError,nx.dijkstra_path_length,self.G,'s','moon')
+        assert_raises(nx.NetworkXNoPath,nx.dijkstra_path,self.G,'s','moon')
+        assert_raises(nx.NetworkXNoPath,nx.dijkstra_path_length,self.G,'s','moon')
 
         assert_equal(nx.dijkstra_path(self.cycle,0,3),[0, 1, 2, 3])
         assert_equal(nx.dijkstra_path(self.cycle,0,4), [0, 6, 5, 4])
@@ -152,10 +152,10 @@ class TestWeightedPath:
         # negative weight cycle
         G = nx.cycle_graph(5, create_using = nx.DiGraph())
         G.add_edge(1, 2, weight = -7)
-        assert_raises(nx.NetworkXError, nx.bellman_ford, G, 0)
+        assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, 0)
         G = nx.cycle_graph(5)
         G.add_edge(1, 2, weight = -7)
-        assert_raises(nx.NetworkXError, nx.bellman_ford, G, 0)
+        assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, 0)
 
         # not connected
         G = nx.complete_graph(6)

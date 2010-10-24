@@ -121,6 +121,11 @@ def bidirectional_shortest_path(G,source,target):
     path: list
        List of nodes in a path from source to target.
 
+    Raises
+    ------
+    NetworkXNoPath
+       If no path exists between source and target.
+
     See Also
     --------
     shortest_path
@@ -131,8 +136,6 @@ def bidirectional_shortest_path(G,source,target):
     """
     # call helper to do the real work
     results=_bidirectional_pred_succ(G,source,target)
-    if results is False:
-        return False  # no path from source to target
     pred,succ,w=results
 
     # build path from pred+w+succ
@@ -199,9 +202,7 @@ def _bidirectional_pred_succ(G, source, target):
                         reverse_fringe.append(w)
                     if w in pred:  return pred,succ,w # found path
 
-
-
-    return False  # no path found
+    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
 
 
 def single_source_shortest_path(G,source,cutoff=None):

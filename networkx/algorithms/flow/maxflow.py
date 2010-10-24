@@ -156,8 +156,9 @@ def ford_fulkerson(G, s, t, capacity = 'capacity'):
     # the shortest (with respect to the number of arcs) such path and
     # augment the flow on this path.
     while True:
-        pathNodes = nx.bidirectional_shortest_path(auxiliary, s, t)
-        if not pathNodes:
+        try:
+            pathNodes = nx.bidirectional_shortest_path(auxiliary, s, t)
+        except nx.NetworkXNoPath:
             break
 
         # Get the list of edges in the shortest path.
