@@ -183,9 +183,7 @@ def prim_mst_edges(G, weight = 'weight', data = True):
 
     nodes = G.nodes()
 
-    while True:
-        if len(nodes) == 0:
-            break
+    while len(nodes) > 0:
         u = nodes.pop(0)
         frontier = []
         visited = [u]
