@@ -47,6 +47,11 @@ def dijkstra_path(G,source,target, weight = 'weight'):
     path : list
        List of nodes in a shortest path.
 
+    Raises
+    ------
+    NetworkXNoPath
+       If no path exists between source and target.
+
     Examples
     --------
     >>> G=nx.path_graph(5)
@@ -68,7 +73,7 @@ def dijkstra_path(G,source,target, weight = 'weight'):
     try:
         return path[target]
     except KeyError:
-        raise nx.NetworkXError("node %s not reachable from %s"%(source,target))
+        raise nx.NetworkXNoPath("node %s not reachable from %s"%(source,target))
 
 
 def dijkstra_path_length(G,source,target, weight = 'weight'):
@@ -95,7 +100,7 @@ def dijkstra_path_length(G,source,target, weight = 'weight'):
        
     Raises
     ------
-    NetworkXError
+    NetworkXNoPath
         If no path exists between source and target.
 
     Examples
@@ -120,7 +125,7 @@ def dijkstra_path_length(G,source,target, weight = 'weight'):
     try:
         return length[target]
     except KeyError:
-        raise nx.NetworkXError("node %s not reachable from %s"%(source,target))
+        raise nx.NetworkXNoPath("node %s not reachable from %s"%(source,target))
 
 
 
@@ -149,12 +154,9 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
     The first dicdtionary stores distance from the source.
     The second stores the path from the source to that node.
 
-    Raise an exception if no path exists.
-
-
     Raises
     ------
-    NetworkXError
+    NetworkXNoPath
         If no path exists between source and target.
 
     Examples
@@ -260,7 +262,7 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
                         revpath = paths[1][w][:]
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
-    return False
+    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
 
 
 #def dijkstra(G,source,target):
@@ -587,7 +589,7 @@ def bellman_ford(G, source, weight = 'weight'):
 
     Raises
     ------
-    NetworkXError
+    NetworkXUnbounded
        If the (di)graph contains a negative cost (di)cycle, the
        algorithm raises an exception to indicate the presence of the
        negative cost (di)cycle.
@@ -605,7 +607,7 @@ def bellman_ford(G, source, weight = 'weight'):
     >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5)
     >>> G[1][2]['weight'] = -7
-    >>> assert_raises(nx.NetworkXError, nx.bellman_ford, G, 0)
+    >>> assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, 0)
    
     Notes
     -----
@@ -656,6 +658,6 @@ def bellman_ford(G, source, weight = 'weight'):
             break
 
     if i + 1 == G.number_of_nodes():
-        raise nx.NetworkXError("Negative cost cycle detected.")
+        raise nx.NetworkXUnbounded("Negative cost cycle detected.")
     return pred, dist
 

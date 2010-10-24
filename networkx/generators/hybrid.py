@@ -59,7 +59,10 @@ def kl_connected_subgraph(G,k,l,low_memory=False,same_as_graph=False):
                         G2.remove_edge(prev,w)
                         prev=w
 #                path=shortest_path(G2,u,v,k) # ??? should "Cutoff" be k+1?
-                path=nx.shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
+                try:
+                    path=nx.shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
+                except nx.NetworkXNoPath:
+                    path = False
             # No Other Paths
             if accept==0:
                 H.remove_edge(u,v)
@@ -100,7 +103,10 @@ def is_kl_connected(G,k,l,low_memory=False):
                     G2.remove_edge(prev,w)
                     prev=w
 #            path=shortest_path(G2,u,v,k) # ??? should "Cutoff" be k+1?
-            path=nx.shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
+            try:
+                path=nx.shortest_path(G2,u,v) # ??? should "Cutoff" be k+1?
+            except nx.NetworkXNoPath:
+                path = False
         # No Other Paths
         if accept==0:
             graphOK=False

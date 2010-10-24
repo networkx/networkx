@@ -136,7 +136,7 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
 
     Raises
     ------
-    NetworkXError
+    NetworkXNoPath
         If no path exists between source and target.
 
     Examples
@@ -181,9 +181,6 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
                 paths=nx.dijkstra_path_length(G,source,target)
             else:
                 p=nx.bidirectional_shortest_path(G,source,target)
-                if p is False:
-                    raise nx.NetworkXError(\
-                        "No path from %s to %s."%(source,target))
                 paths=len(p)-1
     return paths
 
