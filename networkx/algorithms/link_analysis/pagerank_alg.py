@@ -1,7 +1,6 @@
 """
 PageRank analysis of graph structure.
 """
-#!/usr/bin/env python
 #    Copyright (C) 2004-2010 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -9,13 +8,13 @@ PageRank analysis of graph structure.
 #    All rights reserved.
 #    BSD license.
 #    NetworkX:http://networkx.lanl.gov/. 
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-
 import networkx as nx
 from networkx.exception import NetworkXError
+__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['pagerank','pagerank_numpy','pagerank_scipy','google_matrix']
 
-def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
+def pagerank(G,alpha=0.85,personalization=None,
+             max_iter=100,tol=1.0e-8,nstart=None):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -30,6 +29,10 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
     alpha : float, optional
       Damping parameter for PageRank, default=0.85
        
+    personalization: dict, optional      
+       The "personalization vector" consisting of a dictionary with a
+       key for every graph node and nonzero personalization value for each node.
+
     max_iter : integer, optional
       Maximum number of iterations in power method eigenvalue solver.
 
@@ -41,9 +44,8 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
 
     Returns
     -------
-    nodes : dictionary
-       Dictionary of nodes with value as PageRank 
-
+    pagerank : dictionary
+       Dictionary of nodes with PageRank as value
 
     Examples
     --------
@@ -62,6 +64,10 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
     execute on undirected graphs by converting each oriented edge in the
     directed graph to two edges.
     
+    See Also
+    --------
+    pagerank_numpy, pagerank_scipy, google_matrix
+
     References
     ----------
     .. [1] A. Langville and C. Meyer, 
@@ -91,6 +97,20 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
         s=1.0/sum(x.values())
         for k in x: x[k]*=s
 
+    # assign uniform personalization/teleportation vector if not given
+    if personalization is None:
+        p=dict.fromkeys(W,1.0/W.number_of_nodes())
+    else:
+        p=personalization
+        # normalize starting vector to 1                
+        s=1.0/sum(p.values())
+        for k in p: 
+            p[k]*=s
+        if set(p)!=set(G):
+            raise NetworkXError('Personalization vector ' 
+                                'must have a value for every node')
+
+
     nnodes=W.number_of_nodes()
     # "dangling" nodes, no links out from them
     out_degree=W.out_degree()
@@ -100,28 +120,28 @@ def pagerank(G,alpha=0.85,max_iter=100,tol=1.0e-8,nstart=None):
         xlast=x
         x=dict.fromkeys(xlast.keys(),0)
         danglesum=alpha/nnodes*sum(xlast[n] for n in dangle)
-        teleportsum=(1.0-alpha)/nnodes*sum(xlast.values())
         for n in x:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
             for nbr in W[n]:
                 x[nbr]+=alpha*xlast[n]*W[n][nbr]['weight']
-            x[n]+=danglesum+teleportsum
-        # normalize vector to 1                
+            x[n]+=danglesum+(1.0-alpha)*p[n]
+        # normalize vector 
         s=1.0/sum(x.values())
-        for n in x: x[n]*=s
+        for n in x: 
+            x[n]*=s
         # check convergence, l1 norm            
         err=sum([abs(x[n]-xlast[n]) for n in x])
         if err < tol:
             break
         if i>max_iter:
-            raise NetworkXError(\
-        "pagerank: power iteration failed to converge in %d iterations."%(i+1))
+            raise NetworkXError('pagerank: power iteration failed to converge'
+                                'in %d iterations.'%(i+1))
         i+=1
     return x
 
 
-def google_matrix(G,alpha=0.85,nodelist=None):
+def google_matrix(G,alpha=0.85,personalization=None,nodelist=None):
     """Return the Google matrix of the graph.
 
     Parameters
@@ -132,6 +152,10 @@ def google_matrix(G,alpha=0.85,nodelist=None):
     alpha : float
       The damping factor
 
+    personalization: dict, optional      
+       The "personalization vector" consisting of a dictionary with a
+       key for every graph node and nonzero personalization value for each node.
+
     nodelist : list, optional       
       The rows and columns are ordered according to the nodes in nodelist.
       If nodelist is None, then the ordering is produced by G.nodes().
@@ -140,12 +164,24 @@ def google_matrix(G,alpha=0.85,nodelist=None):
     -------
     A : NumPy matrix
        Google matrix of the graph
+
+    See Also
+    --------
+    pagerank, pagerank_numpy, pagerank_scipy
     """
     try:
         import numpy as np
     except ImportError:
         raise ImportError(\
             "google_matrix() requires NumPy: http://scipy.org/")
+    # choose ordering in matrix
+    if personalization is None: # use G.nodes() ordering
+        nodelist=G.nodes()
+    else:  # use personalization "vector" ordering
+        nodelist=personalization.keys()
+        if set(nodelist)!=set(G):
+            raise NetworkXError('Personalization vector dictionary'
+                                'must have a value for every node')
     M=nx.to_numpy_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     # add constant to dangling nodes' row
@@ -154,13 +190,18 @@ def google_matrix(G,alpha=0.85,nodelist=None):
         M[d]=1.0/n
     # normalize        
     M=M/M.sum(axis=1)
-    # add "teleportation"
-    P=alpha*M+(1-alpha)*np.ones((n,n))/n
+    # add "teleportation"/personalization
+    e=np.ones((n))
+    if personalization is not None:
+        v=np.array(personalization.values()).astype(np.float)
+    else:
+        v=e
+    v=v/v.sum()
+    P=alpha*M+(1-alpha)*np.outer(e,v)
     return P
-    
 
 
-def pagerank_numpy(G,alpha=0.85):
+def pagerank_numpy(G,alpha=0.85,personalization=None):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -175,10 +216,14 @@ def pagerank_numpy(G,alpha=0.85):
     alpha : float, optional
       Damping parameter for PageRank, default=0.85
        
+    personalization: dict, optional      
+       The "personalization vector" consisting of a dictionary with a
+       key for every graph node and nonzero personalization value for each node.
+
     Returns
     -------
-    nodes : dictionary
-       Dictionary of nodes with value as PageRank 
+    pagerank : dictionary
+       Dictionary of nodes with PageRank as value
 
     Examples
     --------
@@ -188,10 +233,15 @@ def pagerank_numpy(G,alpha=0.85):
     Notes
     -----
     The eigenvector calculation uses NumPy's interface to the LAPACK
-    eigenvalue solvers.  
+    eigenvalue solvers.  This will be the fastest and most accurate
+    for small graphs.
 
     This implementation works with Multi(Di)Graphs.
     
+    See Also
+    --------
+    pagerank, pagerank_scipy, google_matrix
+
     References
     ----------
     .. [1] A. Langville and C. Meyer, 
@@ -204,21 +254,26 @@ def pagerank_numpy(G,alpha=0.85):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(\
-            "pagerank_numpy() requires NumPy: http://scipy.org/")
+        raise ImportError("pagerank_numpy() requires NumPy: http://scipy.org/")
 
-    M=google_matrix(G,alpha,nodelist=G.nodes())
+    # choose ordering in matrix
+    if personalization is None: # use G.nodes() ordering
+        nodelist=G.nodes()
+    else:  # use personalization "vector" ordering
+        nodelist=personalization.keys()
+    M=google_matrix(G,alpha,personalization=personalization,nodelist=nodelist)
     # use numpy LAPACK solver
     eigenvalues,eigenvectors=np.linalg.eig(M.T)
     ind=eigenvalues.argsort()[::-1]
     # eigenvector of largest eigenvalue at ind[0], normalized
-    largest=np.array(eigenvectors[:,ind[0]]).flatten()
+    largest=np.array(eigenvectors[:,ind[0]]).flatten().astype(np.float)
     norm=largest.sum()
     centrality=dict(zip(G.nodes(),largest/norm))
     return centrality
 
 
-def pagerank_scipy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
+def pagerank_scipy(G,alpha=0.85,personalization=None,
+                   max_iter=100,tol=1.0e-6):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -233,21 +288,35 @@ def pagerank_scipy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
     alpha : float, optional
       Damping parameter for PageRank, default=0.85
        
+    personalization: dict, optional      
+       The "personalization vector" consisting of a dictionary with a
+       key for every graph node and nonzero personalization value for each node.
+
+    max_iter : integer, optional
+      Maximum number of iterations in power method eigenvalue solver.
+
+    tol : float, optional
+      Error tolerance used to check convergence in power method solver.
+
     Returns
     -------
-    nodes : dictionary
-       Dictionary of nodes with value as PageRank 
+    pagerank : dictionary
+       Dictionary of nodes with PageRank as value
 
     Examples
     --------
     >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> pr=nx.pagerank_numpy(G,alpha=0.9)
+    >>> pr=nx.pagerank_scipy(G,alpha=0.9)
 
     Notes
     -----
     The eigenvector calculation uses power iteration with a SciPy
     sparse matrix representation.
     
+    See Also
+    --------
+    pagerank, pagerank_numpy, google_matrix
+
     References
     ----------
     .. [1] A. Langville and C. Meyer, 
@@ -260,10 +329,12 @@ def pagerank_scipy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
     try:
         import scipy.sparse
     except ImportError:
-        raise ImportError(\
-            "pagerank_scipy() requires SciPy: http://scipy.org/")
-    if nodelist is None:
+        raise ImportError("pagerank_scipy() requires SciPy: http://scipy.org/")
+    # choose ordering in matrix
+    if personalization is None: # use G.nodes() ordering
         nodelist=G.nodes()
+    else:  # use personalization "vector" ordering
+        nodelist=personalization.keys()
     M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     S=scipy.array(M.sum(axis=1)).flatten()
@@ -272,20 +343,26 @@ def pagerank_scipy(G,alpha=0.85,max_iter=100,tol=1.0e-6,nodelist=None):
         M[i,:]*=1.0/S[i]
     x=scipy.ones((n))/n  # initial guess
     dangle=scipy.array(scipy.where(M.sum(axis=1)==0,1.0/n,0)).flatten()
+    # add "teleportation"/personalization
+    e=scipy.ones((n))
+    if personalization is not None:
+        v=scipy.array(personalization.values()).astype(scipy.float_)
+    else:
+        v=e
+    v=v/v.sum()
     i=0
-    while True: # power iteration: make up to max_iter iterations
+    while i <= max_iter:
+        # power iteration: make up to max_iter iterations
         xlast=x
-        x=alpha*(x*M+scipy.dot(dangle,xlast))+(1-alpha)*xlast.sum()/n
+        x=alpha*(x*M+scipy.dot(dangle,xlast))+(1-alpha)*v
+        x=x/x.sum()
         # check convergence, l1 norm            
         err=scipy.absolute(x-xlast).sum()
         if err < n*tol:
-            break
-        if i>max_iter:
-            raise NetworkXError(\
-        "pagerank: power iteration failed to converge in %d iterations."%(i+1))
+            return dict(zip(G.nodes(),x))
         i+=1
-    centrality=dict(zip(G.nodes(),x))
-    return centrality
+    raise NetworkXError('pagerank_scipy: power iteration failed to converge'
+                        'in %d iterations.'%(i+1))
 
 
 # fixture for nose tests

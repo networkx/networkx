@@ -11,7 +11,6 @@ import networkx
 class TestPageRank:
 
     def setUp(self):
-        
         G=networkx.DiGraph()
         edges=[(1,2),(1,3),\
            (3,1),(3,2),(3,5),\
@@ -65,7 +64,13 @@ class TestPageRank:
         for n in G:
             assert_almost_equal(p[n],G.pagerank[n],places=4)    
 
-
+    def test_personalization(self):
+        G=networkx.complete_graph(4)
+        personalize={0:1,1:1,2:4,3:4}
+        answer={0:0.1,1:0.1,2:0.4,3:0.4}
+        p=networkx.pagerank(G,alpha=0.0,personalization=personalize)
+        for n in G:
+            assert_almost_equal(p[n],answer[n],places=4)    
 
 
 
