@@ -233,9 +233,10 @@ def single_source_shortest_path(G,source,cutoff=None):
 
     Notes
     -----
-    There may be more than one shortest path between the
-    source and target nodes. This function returns only one
-    of them.
+    The shortest path is not necessarily unique. So there can be multiple 
+    paths between the source and each target node, all of which have the 
+    same 'shortest' length. For each target node, this function returns 
+    only one of those paths.
 
     See Also
     --------
