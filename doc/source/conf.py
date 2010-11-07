@@ -24,7 +24,7 @@ sys.path.append(os.path.abspath('../sphinxext'))
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath', 'numpydoc',
               'sphinx.ext.coverage',
               'sphinx.ext.autosummary','sphinx.ext.todo','sphinx.ext.doctest',
-              'sphinx.ext.intersphinx']
+              'sphinx.ext.intersphinx', 'customroles']
 
 # generate autosummary pages
 autosummary_generate=True
@@ -156,4 +156,6 @@ latex_documents = [('tutorial/index', 'networkx_tutorial.tex',
 intersphinx_mapping = {'http://docs.python.org/': None,
                        'http://docs.scipy.org/doc/numpy/': None,
                       }
-
+                      
+# For trac custom roles
+trac_url = 'https://networkx.lanl.gov/trac/'

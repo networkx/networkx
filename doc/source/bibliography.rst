@@ -4,9 +4,8 @@ Bibliography
 ============
 
 .. [BA02] R. Albert and A.-L. Barabási, "Statistical mechanics of complex
-   networks", Reviews of Modern Physics, 74, pp. 47-97, 2002.
-   (Preprint available online at http://citeseer.ist.psu.edu/442178.html
-   or http://arxiv.org/abs/cond-mat/0106096)
+   networks", Reviews of Modern Physics, 74, pp. 47-97, 2002. 
+   :arxiv:`cond-mat/0106096`
 
 .. [Bollobas01] B. Bollobás, "Random Graphs", Second Edition,
    Cambridge University Press, 2001.
@@ -15,24 +14,27 @@ Bibliography
    Methodological Foundations", Lecture Notes in Computer Science, 
    Volume 3418, Springer-Verlag, 2005.
 
-.. [Diestel97] R. Diestel, "Graph Theory", Springer-Verlag, 1997.
-   (A free electronic version is available at
-   http://diestel-graph-theory.com/GrTh.html)
+.. [Diestel97] R. Diestel, "Graph Theory", Springer-Verlag, 1997. 
+   :url:`http://diestel-graph-theory.com/index.html`
 
 .. [DM03] S.N. Dorogovtsev and J.F.F. Mendes, "Evolution of Networks",
    Oxford University Press, 2003.
 
+.. [EppsteinPads] David Eppstein.
+   PADS, A library of Python Algorithms and Data Structures.
+   :url:`http://www.ics.uci.edu/~eppstein/PADS`
+   
 .. [Langtangen04] H.P. Langtangen, "Python Scripting for Computational
     Science.", Springer Verlag Series in Computational Science and
     Engineering, 2004. 
 
 .. [Martelli03]  A. Martelli, "Python in a Nutshell", O'Reilly Media
-   Inc, 2003. (A useful guide to the language is available at 
-   http://www.oreilly.com/catalog/pythonian/chapter/ch04.pdf)
+   Inc, 2003. (A useful guide to the language:
+   :pdf:`http://www.oreilly.com/catalog/pythonian/chapter/ch04.pdf`)
 
 .. [Newman03] M.E.J. Newman, "The Structure and Function of Complex
-   Networks", SIAM Review, 45, pp. 167-256, 2003. (Available online at 
-   http://epubs.siam.org/sam-bin/dbq/article/42480 ) 
+   Networks", SIAM Review, 45, pp. 167-256, 2003. 
+   :url:`http://epubs.siam.org/sam-bin/dbq/article/42480`
 
 .. [Sedgewick02] R. Sedgewick, "Algorithms in C: Parts 1-4: 
    Fundamentals, Data Structure, Sorting, Searching", Addison Wesley
@@ -45,8 +47,5 @@ Bibliography
     2nd ed., 2001.
 
 .. [vanRossum98] Guido van Rossum. Python Patterns - Implementing Graphs, 1998.
-   http://www.python.org/doc/essays/graphs/
+   :url:`http://www.python.org/doc/essays/graphs`
 
-.. [EppsteinPads] David Eppstein.
-   PADS, A library of Python Algorithms and Data Structures, 
-   http://www.ics.uci.edu/~eppstein/PADS/

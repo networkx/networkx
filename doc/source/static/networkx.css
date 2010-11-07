@@ -35,3 +35,9 @@ div.sphinxsidebar {
 dt:target, .highlight {
     background-color: #E3EFF1;
 }
+
+table.citation td.label {
+  font-size: small;
+  width: 120px;  /** will need to adjust based on largest label. **/
+}
+
