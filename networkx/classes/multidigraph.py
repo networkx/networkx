@@ -487,7 +487,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
                 ((n,self.pred[n]) for n in self.nbunch_iter(nbunch)))
         if weighted:
         # edge weighted graph - degree is sum of nbr edge weights
-            for (n,succ,pred) in nodes_nbrs:
+            for (n,succ),(n2,pred) in nodes_nbrs:
                 deg = sum([d.get('weight',1)
                            for data in pred.values()
                            for d in data.values()])
