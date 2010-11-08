@@ -16,8 +16,24 @@ Depth First Search
 .. autosummary::
    :toctree: generated/
 
-   dfs_preorder
-   dfs_postorder
-   dfs_predecessor
-   dfs_successor
+   dfs_edges
    dfs_tree
+   dfs_predecessors
+   dfs_successors
+   dfs_preorder_nodes
+   dfs_postorder_nodes
+   dfs_labeled_edges
+
+Breadth First Search
+--------------------
+.. automodule:: networkx.algorithms.traversal.breadth_first_search
+.. currentmodule:: networkx
+
+.. autosummary::
+   :toctree: generated/
+
+   bfs_edges
+   bfs_tree
+   bfs_predecessors
+   bfs_successors
+
