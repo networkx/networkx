@@ -51,8 +51,8 @@ copyright = '2010, NetworkX Developers'
 # The short X.Y version.
 import networkx
 version = networkx.__version__
-# The full version, including alpha/beta/rc tags.
-release = '.'.join(map(str,networkx.sys.version_info))
+# The full version, including dev info
+release = networkx.__version__.replace('_','')
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
