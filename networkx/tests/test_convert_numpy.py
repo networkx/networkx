@@ -149,5 +149,14 @@ class TestConvertNumpy(object):
         assert_equal(A.cost[0,1],5)
         assert_equal(A.cost[0,0],0)
 
-
+    def test_numpy_multigraph(self):
+        G=nx.MultiGraph()
+        G.add_edge(1,2,weight=7)
+        G.add_edge(1,2,weight=70)
+        A=nx.to_numpy_matrix(G)
+        assert_equal(A[1,0],77)
+        A=nx.to_numpy_matrix(G,multigraph_weight=min)
+        assert_equal(A[1,0],7)
+        A=nx.to_numpy_matrix(G,multigraph_weight=max)
+        assert_equal(A[1,0],70)
                          
