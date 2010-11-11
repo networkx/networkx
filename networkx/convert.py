@@ -580,7 +580,7 @@ def from_edgelist(edgelist,create_using=None):
     G.add_edges_from(edgelist)
     return G                         
 
-def to_numpy_matrix(G,nodelist=None,dtype=None,order=None):
+def to_numpy_matrix(G,nodelist=None,dtype=None,order=None,multigraph_weight=sum):
     """Return the graph adjacency matrix as a NumPy matrix.
 
     Parameters
@@ -602,6 +602,10 @@ def to_numpy_matrix(G,nodelist=None,dtype=None,order=None):
         Whether to store multidimensional data in C- or Fortran-contiguous
         (row- or column-wise) order in memory. If None, then the NumPy default 
         is used.
+
+    multigraph_weight : {sum, min, max}, optional        
+        An operator that determines how weights in multigraphs are handled.
+        The default is to sum the weights of the multiple edges.
 
     Returns
     -------
@@ -652,16 +656,26 @@ def to_numpy_matrix(G,nodelist=None,dtype=None,order=None):
     nlen=len(nodelist)
     undirected = not G.is_directed()
     index=dict(zip(nodelist,range(nlen)))
-    M = np.zeros((nlen,nlen), dtype=dtype, order=order)
+    # array of nan' to start with, any leftover nans will be converted to 0
+    # nans are used so we can use sum, min, max for multigraphs
+    M = np.zeros((nlen,nlen), dtype=dtype, order=order)+np.nan
+    # use numpy nan-aware operations
+    operator={sum:np.nansum, min:np.nanmin, max:np.nanmax}
+    try:
+        op=operator[multigraph_weight]
+    except:
+        raise ValueError('multigraph_weight must be sum, min, or max')
 
     for u,v,attrs in G.edges_iter(data=True):
         if (u in nodeset) and (v in nodeset):
             i,j = index[u],index[v]
-            M[i,j] += attrs.get('weight', 1)
+            weight = attrs.get('weight', 1)
+            M[i,j] = op([weight,M[i,j]]) 
             if undirected:
                 M[j,i] = M[i,j]
 
-    M = np.asmatrix(M)
+    # convert any nans to zeros
+    M = np.asmatrix(np.nan_to_num(M))
     return M
 
 
@@ -866,8 +880,8 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):
     -----
     The matrix entries are populated using the 'weight' edge attribute. When
     an edge does not have the 'weight' attribute, the value of the entry is 1.
-    For multiple edges, the values of the entries are the sums of the edge
-    attributes for each edge.
+
+    For multiple edges the matrix values are the sums of the edge weights.
 
     When `nodelist` does not contain every node in `G`, the matrix is built 
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
