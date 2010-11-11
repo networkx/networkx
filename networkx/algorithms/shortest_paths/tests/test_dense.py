@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose import SkipTest
 import networkx as nx
 
 class TestFloyd:
@@ -65,12 +66,25 @@ class TestFloyd:
         assert_equal(path[0][2],1)
 
     def test_cycle_numpy(self):
+        try:
+            import numpy
+        except ImportError:
+            raise SkipTest('numpy not available.')
         dist = nx.floyd_warshall_numpy(nx.cycle_graph(7))
-        print dist
         assert_equal(dist[0,3],3)
         assert_equal(dist[0,4],3)
 
     def test_weighted_numpy(self):
+        try:
+            import numpy
+        except ImportError:
+            raise SkipTest('numpy not available.')
+
+        try:
+            import numpy
+        except ImportError:
+            raise SkipTest('numpy not available.')
+
         XG3=nx.Graph()
         XG3.add_weighted_edges_from([ [0,1,2],[1,2,12],[2,3,1],
                                       [3,4,5],[4,5,1],[5,0,10] ])
@@ -78,6 +92,11 @@ class TestFloyd:
         assert_equal(dist[0,3],15)
 
     def test_weighted_numpy(self):
+        try:
+            import numpy
+        except ImportError:
+            raise SkipTest('numpy not available.')
+
         XG4=nx.Graph()
         XG4.add_weighted_edges_from([ [0,1,2],[1,2,2],[2,3,1],
                                       [3,4,1],[4,5,1],[5,6,1],
