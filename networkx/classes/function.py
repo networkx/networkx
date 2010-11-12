@@ -20,7 +20,9 @@ import networkx as nx
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
            'nodes_iter', 'edges_iter', 'is_directed','info',
-           'freeze','is_frozen','subgraph','create_empty_copy']
+           'freeze','is_frozen','subgraph','create_empty_copy',
+           'set_node_attributes','get_node_attributes',
+           'set_edge_attributes','get_edge_attributes']
 
 def nodes(G):
     """Return a copy of the graph nodes in a list."""
@@ -279,3 +281,99 @@ def info(G, n=None):
         info+=' '.join(str(nbr) for nbr in G.neighbors(n))
     return info
 
+def set_node_attributes(G,name,attributes):
+    """Set node attributes from dictionary of nodes and values
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+    
+    name : string
+       Attribute name
+
+    attributes: dict
+       Dictionary of attributes keyed by node.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(3)
+    >>> bb=nx.betweenness_centrality(G)
+    >>> nx.set_node_attributes(G,'betweenness',bb)
+    >>> print G.node[1]['betweenness']
+    1.0
+    """
+    for node,value in attributes.iteritems():
+        G.node[node][name]=value
+
+def get_node_attributes(G,name):
+    """Get node attributes from graph
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+    
+    name : string
+       Attribute name
+
+    Returns
+    -------
+    Dictionary of attributes keyed by node.
+
+    Examples
+    --------
+    >>> G=nx.Graph()
+    >>> G.add_nodes_from([1,2,3],color='red')
+    >>> color=nx.get_node_attributes(G,'color')
+    >>> color[1]
+    'red'
+    """
+    return dict( (n,d[name]) for n,d in G.node.iteritems() if name in d)
+
+
+def set_edge_attributes(G,name,attributes):
+    """Set edge attributes from dictionary of edge tuples and values
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+    
+    name : string
+       Attribute name
+
+    attributes: dict
+       Dictionary of attributes keyed by edge (tuple).
+
+    Examples
+    --------
+    >>> G=nx.path_graph(3)
+    >>> bb=nx.edge_betweenness_centrality(G)
+    >>> nx.set_edge_attributes(G,'betweenness',bb)
+    >>> print G[1][2]['betweenness']
+    4.0
+    """
+    for (u,v),value in attributes.iteritems():
+        G[u][v][name]=value
+
+def get_edge_attributes(G,name):
+    """Get edge attributes from graph
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+    
+    name : string
+       Attribute name
+
+    Returns
+    -------
+    Dictionary of attributes keyed by node.
+
+    Examples
+    --------
+    >>> G=nx.Graph()
+    >>> G.add_path([1,2,3],color='red')
+    >>> color=nx.get_edge_attributes(G,'color')
+    >>> color[(1,2)]
+    'red'
+    """
+    return dict( ((u,v),d[name]) for u,v,d in G.edges(data=True) if name in d)

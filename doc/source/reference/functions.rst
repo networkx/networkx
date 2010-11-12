@@ -5,16 +5,59 @@ Functions
 .. automodule:: networkx.classes.function
 .. currentmodule:: networkx
 
-Graph functions
----------------
+Graph
+-----
 .. autosummary::
    :toctree: generated/
 
+   degree
+   degree_histogram
    density
    info
-   degree_histogram
+   create_empty_copy
+   is_directed
+
+
+Nodes
+-----
+.. autosummary::
+   :toctree: generated/
+
+   nodes
+   number_of_nodes
+   nodes_iter
+
+Edges
+-----
+.. autosummary::
+   :toctree: generated/
+
+
+   edges
+   number_of_edges
+   edges_iter
+
+
+Attributes
+----------
+.. autosummary::
+   :toctree: generated/
+
+   set_node_attributes
+   get_node_attributes
+   set_edge_attributes
+   get_edge_attributes
+
+
+Freezing graph structure
+------------------------
+.. autosummary::
+   :toctree: generated/
+
    freeze
    is_frozen
-   create_empty_copy
+
+
+
 
 
