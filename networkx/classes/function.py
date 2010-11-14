@@ -299,10 +299,10 @@ def set_node_attributes(G,name,attributes):
     >>> G=nx.path_graph(3)
     >>> bb=nx.betweenness_centrality(G)
     >>> nx.set_node_attributes(G,'betweenness',bb)
-    >>> print G.node[1]['betweenness']
+    >>> G.node[1]['betweenness']
     1.0
     """
-    for node,value in attributes.iteritems():
+    for node,value in attributes.items():
         G.node[node][name]=value
 
 def get_node_attributes(G,name):
@@ -327,7 +327,7 @@ def get_node_attributes(G,name):
     >>> color[1]
     'red'
     """
-    return dict( (n,d[name]) for n,d in G.node.iteritems() if name in d)
+    return dict( (n,d[name]) for n,d in G.node.items() if name in d)
 
 
 def set_edge_attributes(G,name,attributes):
@@ -348,10 +348,10 @@ def set_edge_attributes(G,name,attributes):
     >>> G=nx.path_graph(3)
     >>> bb=nx.edge_betweenness_centrality(G)
     >>> nx.set_edge_attributes(G,'betweenness',bb)
-    >>> print G[1][2]['betweenness']
+    >>> G[1][2]['betweenness']
     4.0
     """
-    for (u,v),value in attributes.iteritems():
+    for (u,v),value in attributes.items():
         G[u][v][name]=value
 
 def get_edge_attributes(G,name):
