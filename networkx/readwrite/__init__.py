@@ -13,4 +13,4 @@ from networkx.readwrite.nx_yaml import *
 from networkx.readwrite.gml import *
 from networkx.readwrite.graphml import *
 from networkx.readwrite.gexf import *
-
+from networkx.readwrite.nx_shp import *
