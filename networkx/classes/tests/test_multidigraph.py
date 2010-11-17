@@ -152,6 +152,7 @@ class TestMultiDiGraph(TestMultiGraph):
                      [(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
         assert_equal(sorted(G.out_edges(0)),[(0,1),(0,2)])
         assert_raises((KeyError,networkx.NetworkXError), G.out_edges,-1)
+        assert_equal(sorted(G.out_edges(0,keys=True)),[(0,1,0),(0,2,0)])
 
 
     def test_out_edges_iter(self):
@@ -172,8 +173,7 @@ class TestMultiDiGraph(TestMultiGraph):
         G.add_edge(0,1,2)
         assert_equal(sorted(G.in_edges()),
                      [(0,1),(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
-
-
+        assert_equal(sorted(G.in_edges(0,keys=True)),[(1,0,0),(2,0,0)])
 
     def test_in_edges_iter(self):
         G=self.K3

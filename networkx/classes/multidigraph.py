@@ -364,6 +364,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Notes
         -----
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
+        For directed graphs edges() is the same as out_edges().
 
         Examples
         --------
@@ -402,6 +403,39 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
     # alias out_edges to edges
     out_edges_iter=edges_iter
+
+    def out_edges(self, nbunch=None, keys=False, data=False):
+        """Return a list of the outgoing edges.
+
+        Edges are returned as tuples with optional data and keys
+        in the order (node, neighbor, key, data).
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default= all nodes)
+            A container of nodes.  The container will be iterated
+            through once.
+        data : bool, optional (default=False)
+            If True, return edge attribute dict with each edge.
+        keys : bool, optional (default=False)
+            If True, return edge keys with each edge.
+
+        Returns
+        -------
+        out_edges : list
+            An listr of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+
+        Notes
+        -----
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
+        For directed graphs edges() is the same as out_edges().
+
+        See Also
+        --------
+        in_edges: return a list of incoming edges
+        """
+        return list(self.out_edges_iter(nbunch, keys=keys, data=data))
+
 
     def in_edges_iter(self, nbunch=None, data=False, keys=False):
         """Return an iterator over the incoming edges.
@@ -445,6 +479,30 @@ class MultiDiGraph(MultiGraph,DiGraph):
                             yield (nbr,n,key)
                         else:
                             yield (nbr,n)
+
+    def in_edges(self, nbunch=None, keys=False, data=False):
+        """Return a list of the incoming edges.
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default= all nodes)
+            A container of nodes.  The container will be iterated
+            through once.
+        data : bool, optional (default=False)
+            If True, return edge attribute dict with each edge.
+        keys : bool, optional (default=False)
+            If True, return edge keys with each edge.
+
+        Returns
+        -------
+        in_edges : list
+            A list  of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+
+        See Also
+        --------
+        out_edges: return a list of outgoing edges
+        """
+        return list(self.in_edges_iter(nbunch, keys=keys, data=data))
 
 
     def degree_iter(self, nbunch=None, weighted=False):
