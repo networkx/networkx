@@ -25,10 +25,20 @@ from networkx.algorithms.centrality.betweenness import\
 def betweenness_centrality_subset(G,sources,targets,
                                   normalized=False,
                                   weighted_edges=False):
-    """Compute betweenness centrality for nodes.
+    """Compute betweenness centrality for a subset of nodes.
 
-    Betweenness centrality of a node is the fraction of all shortest 
-    paths that pass through that node.
+    .. math::
+
+       c_B(v) =\\sum_{s\\in S, t \\in T} \\frac{\\sigma(s, t|v)}{\\sigma(s, t)}
+
+    where :math:`S` is the set of sources, 
+    :math:`T` is the set of targets,
+    :math:`\\sigma(s, t)` is the number of shortest :math:`(s, t)`-paths, 
+    and :math:`\\sigma(s, t|v)` is the number of those paths
+    passing through some  node :math:`v` other than :math:`s, t`. 
+    If :math:`s = t`, :math:`\\sigma(s, t) = 1`,
+    and if :math:`v \\in {s, t}`,  :math:`\\sigma(s, t|v) = 0` [2]_.
+
 
     Parameters
     ----------
@@ -43,7 +53,7 @@ def betweenness_centrality_subset(G,sources,targets,
 
     normalized : bool, optional
       If True the betweenness values are normalized by
-      b=b/(n-1)(n-2) where n is the number of nodes in G.
+      :math:`1/(n-1)(n-2)` where :math:`n` is the number of nodes in G.
        
     weighted_edges : bool, optional
       Consider the edge weights in determining the shortest paths.
@@ -80,6 +90,10 @@ def betweenness_centrality_subset(G,sources,targets,
        Ulrik Brandes, 
        Journal of Mathematical Sociology 25(2):163-177, 2001.
        http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness 
+       Centrality and their Generic Computation. 
+       Social Networks 30(2):136-145, 2008.
+       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
     """
     b=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     for s in sources:
@@ -96,10 +110,18 @@ def betweenness_centrality_subset(G,sources,targets,
 def edge_betweenness_centrality_subset(G,sources,targets,
                                        normalized=False,
                                        weighted_edges=False):
-    """Compute betweenness centrality for edges.
+    """Compute betweenness centrality for edges for a subset of nodes.
 
-    Betweenness centrality of an edge is the fraction of all shortest 
-    paths that pass through that edge.
+    .. math::
+
+       c_B(v) =\\sum_{s\\in S,t \\in T} \\frac{\\sigma(s, t|e)}{\\sigma(s, t)}
+
+    where :math:`S` is the set of sources,
+    :math:`T` is the set of targets,
+    :math:`\\sigma(s, t)` is the number of shortest :math:`(s, t)`-paths, 
+    and :math:`\\sigma(s, t|e)` is the number of those paths
+    passing through edge :math:`e` [2]_..
+
 
     Parameters
     ----------
@@ -150,6 +172,11 @@ def edge_betweenness_centrality_subset(G,sources,targets,
        Ulrik Brandes, 
        Journal of Mathematical Sociology 25(2):163-177, 2001.
        http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+    .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness 
+       Centrality and their Generic Computation. 
+       Social Networks 30(2):136-145, 2008.
+       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
+
     """
 
     b=dict.fromkeys(G,0.0) # b[v]=0 for v in G
