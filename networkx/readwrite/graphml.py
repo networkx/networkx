@@ -118,8 +118,14 @@ class GraphML(object):
         ' '.join(['http://graphml.graphdrawing.org/xmlns',
                   'http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd'])
     
-    types=((str,"yfiles"),(str,"string"), (int,"int"), 
-           (float,"float"), (float,"double"))
+    try:
+        chr(12345)     # Fails on Py!=3.
+        unicode = str  # Py3k's str is our unicode type
+    except ValueError:
+        pass
+
+    types=((str,"yfiles"),(str,"string"), (unicode,"string"),
+           (int,"int"), (float,"float"), (float,"double"))
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
 
