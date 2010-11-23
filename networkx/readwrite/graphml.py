@@ -42,7 +42,7 @@ __all__ = ['write_graphml', 'read_graphml',
            'GraphMLWriter', 'GraphMLReader']
 
 import networkx as nx
-from networkx.utils import _get_fh
+from networkx.utils import _get_fh, make_str
 import warnings
 try:
     from xml.etree.cElementTree import Element, ElementTree as ET
@@ -159,7 +159,7 @@ class GraphMLWriter(GraphML):
             # add subelement for data default value if present
             if default is not None:
                 default_element=Element("default")
-                default_element.text=str(default)
+                default_element.text=make_str(default)
                 key_element.append(default_element)
             self.xml.insert(0,key_element)
         return new_id
@@ -174,7 +174,7 @@ class GraphMLWriter(GraphML):
         key_id = self.get_key(name,self.xml_type[element_type],
                               edge_or_node, default)
         data_element = Element("data", key=key_id)
-        data_element.text = str(value)
+        data_element.text = make_str(value)
         return data_element
     
     def add_attributes(self, node_or_edge, xml_obj, data, default):
@@ -182,14 +182,14 @@ class GraphMLWriter(GraphML):
         """
         for k,v in list(data.items()):
             default_value=default.get(k)
-            obj=self.add_data(str(k),type(v),str(v), 
+            obj=self.add_data(make_str(k),type(v),make_str(v), 
                               edge_or_node=node_or_edge,
                               default=default_value)
             xml_obj.append(obj)
             
     def add_nodes(self, G, graph_element):
         for node,data in G.nodes_iter(data=True):
-            node_element = Element("node", id = str(node))
+            node_element = Element("node", id = make_str(node))
             default=G.graph.get('node_default',{})
             self.add_attributes("node", node_element, data, default)
             graph_element.append(node_element)
@@ -197,14 +197,16 @@ class GraphMLWriter(GraphML):
     def add_edges(self, G, graph_element):        
         if G.is_multigraph():
             for u,v,key,data in G.edges_iter(data=True,keys=True):            
-                edge_element = Element("edge",source=str(u),target=str(v), 
-                                       id=str(key))
+                edge_element = Element("edge",source=make_str(u),
+                                       target=make_str(v), 
+                                       id=make_str(key))
                 default=G.graph.get('edge_default',{})
                 self.add_attributes("edge", edge_element, data, default)
                 graph_element.append(edge_element)                
         else:
             for u,v,data in G.edges_iter(data=True):
-                edge_element = Element("edge",source=str(u),target=str(v))
+                edge_element = Element("edge",source=make_str(u),
+                                       target=make_str(v))
                 default=G.graph.get('edge_default',{})
                 self.add_attributes("edge", edge_element, data, default)
                 graph_element.append(edge_element)                

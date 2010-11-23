@@ -3,6 +3,8 @@ from nose.tools import *
 from nose import SkipTest
 import networkx as nx
 import io
+import tempfile
+import os
 
 class TestGraph(object):
     @classmethod
@@ -351,7 +353,27 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         G=nx.read_graphml(fh)
         assert_equal(G.edges(),[('n0','n1')])
 
+    def test_unicode(self):
+        G = nx.Graph()
+        try: # Python 3.x
+            name1 = chr(2344) + chr(123) + chr(6543)
+            name2 = chr(5543) + chr(1543) + chr(324)
+            node_type=str
+        except ValueError: # Python 2.6+
+            name1 = unichr(2344) + unichr(123) + unichr(6543)
+            name2 = unichr(5543) + unichr(1543) + unichr(324)
+            node_type=unicode
+        G.add_edge(name1, 'Radiohead', attr_dict={'foo': name2})
+        fd, fname = tempfile.mkstemp()
+        nx.write_graphml(G, fname)
+        H = nx.read_graphml(fname,node_type=node_type)
+        assert_equal(G.adj, H.adj)
+        os.close(fd)
+        os.unlink(fname)
+
+
 try:
     from xml.etree.cElementTree import Element, ElementTree as ET
 except ImportError:
     pass
+
