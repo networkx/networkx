@@ -147,9 +147,9 @@ def parse_gml(lines, relabel=True):
         result={}
         for k,v in tok:
             if type(v)==listtype:
-                result[k]=wrap(v)
+                result[str(k)]=wrap(v)
             else:
-                result[k]=v
+                result[str(k)]=v
         return result
 
     # Set flag
