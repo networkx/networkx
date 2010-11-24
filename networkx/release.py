@@ -82,8 +82,7 @@ vcs_info = %(vcs_info)r
     # Try to update all information
     date, date_info, version, version_info, vcs_info = get_info(dynamic=True)
     
-    if vcs_info[0] == 'mercurial':
-        # Then, we want to update version.py.
+    def writefile():
         fh = open(versionfile, 'w')
         subs = {
             'dev' : dev,
@@ -95,6 +94,10 @@ vcs_info = %(vcs_info)r
         }    
         fh.write(text % subs)
         fh.close()
+    
+    if vcs_info[0] == 'mercurial':
+        # Then, we want to update version.py.
+        writefile()
     else:
         if os.path.isfile(versionfile):
             # This is *good*, and the most likely place users will be when
@@ -110,8 +113,9 @@ vcs_info = %(vcs_info)r
             ##raise Exception('version.py not found!')
             
             # We no longer require that prepared tarballs include a version.py
-            # So we use the possibly trunction value from get_info()
-            pass
+            # So we use the possibly trunctated value from get_info()
+            # Then we write a new file.
+            writefile()
             
     return version
 
@@ -170,14 +174,7 @@ def get_info(dynamic=True):
         #   we successfully obtained dynamic revision info
         version = ''.join([str(major), '.', str(minor)])
         if dev:
-            version += '.dev'
-            if (dynamic and not dynamic_failed):
-                # since we have dynamic info, add a dynamic date
-                version += '_' + date_info.strftime("%Y%m%d%H%M%S")
-            else:
-                # blank the dates
-                date = ''
-                date_info = None
+            version += '.dev_' + date_info.strftime("%Y%m%d%H%M%S")
         version_info = (name, major, minor, revision)        
             
     return date, date_info, version, version_info, vcs_info            
