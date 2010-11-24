@@ -84,6 +84,9 @@ def read_graphml(path,node_type=str):
        File or filename to write.  
        Filenames ending in .gz or .bz2 will be compressed.
 
+    node_type: Python type (default: str)
+       Convert node ids to this type 
+
     Returns
     -------
     graph: NetworkX graph
@@ -95,6 +98,11 @@ def read_graphml(path,node_type=str):
     This implementation does not support mixed graphs (directed and unidirected 
     edges together), hypergraphs, nested graphs, or ports. 
     
+    For multigraphs the GraphML edge "id" will be used as the edge
+    key.  If not specified then they "key" attribute will be used.  If
+    there is no "key" attribute a default NetworkX multigraph edge key
+    will be provided.
+
     Files with the yEd "yfiles" extension will can be read but the graphics
     information is discarded.
 
@@ -198,10 +206,11 @@ class GraphMLWriter(GraphML):
         if G.is_multigraph():
             for u,v,key,data in G.edges_iter(data=True,keys=True):            
                 edge_element = Element("edge",source=make_str(u),
-                                       target=make_str(v), 
-                                       id=make_str(key))
+                                       target=make_str(v)) 
                 default=G.graph.get('edge_default',{})
                 self.add_attributes("edge", edge_element, data, default)
+                self.add_attributes("edge", edge_element, 
+                                    {'key':key}, default)
                 graph_element.append(edge_element)                
         else:
             for u,v,data in G.edges_iter(data=True):
@@ -251,7 +260,7 @@ class GraphMLReader(GraphML):
         except ImportError:
              raise ImportError("GraphML reader requires xml.elementtree.ElementTree")
         self.node_type=node_type
-        self.multigraph=False # assume graph and test for multigraph
+        self.multigraph=False # assume multigraph and test for parallel edges
         
     def __call__(self, stream):
         self.xml = ET(file=stream)
@@ -329,16 +338,18 @@ class GraphMLReader(GraphML):
         target = self.node_type(edge_element.get("target"))
         data = self.decode_data_elements(graphml_keys, edge_element)
         # GraphML stores edge ids as an attribute
-        # NetworkX uses them as keys in multigraphs too
+        # NetworkX uses them as keys in multigraphs too if no key
+        # attribute is specified
         edge_id = edge_element.get("id")
         if edge_id:
             data["id"] = edge_id
         if G.has_edge(source,target):
+            # mark this as a multigraph
             self.multigraph=True
-        if G.is_multigraph():
-            G.add_edge(source, target, key=edge_id, **data)
-        else:
-            G.add_edge(source, target, **data)
+        if edge_id is None:
+            # no id specified, try using 'key' attribute as id
+            edge_id=data.pop('key',None)
+        G.add_edge(source, target, key=edge_id, **data)
             
     def decode_data_elements(self, graphml_keys, obj_xml):
         """Use the key information to decode the data XML if present.
