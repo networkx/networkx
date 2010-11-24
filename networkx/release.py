@@ -64,7 +64,7 @@ import datetime
 version = %(version)r
 date = %(date)r
 
-# Was NetworkX built from a development version? If so, remember the the major
+# Was NetworkX built from a development version? If so, remember that the major
 # and minor versions reference the "target" (rather than "current") release.
 dev = %(dev)r
 
@@ -96,18 +96,22 @@ vcs_info = %(vcs_info)r
         fh.write(text % subs)
         fh.close()
     else:
-        if not os.path.isfile(versionfile):
-            # This is *bad*.  It means the user might have a tarball that
-            # does not include version.py.  Let this error raise so we can
-            # fix the tarball.
-            raise Exception('version.py not found!')
-        else:
+        if os.path.isfile(versionfile):
             # This is *good*, and the most likely place users will be when
-            # running setup.py. We do not want to update version.py.
+            # running setup.py. We do not want to overwrite version.py.
             # Grab the version so that setup can use it.
             sys.path.insert(0, basedir)
             from version import version
             del sys.path[0]
+        else:
+            # This is *bad*.  It means the user might have a tarball that
+            # does not include version.py.  Let this error raise so we can
+            # fix the tarball.
+            ##raise Exception('version.py not found!')
+            
+            # We no longer require that prepared tarballs include a version.py
+            # So we use the possibly trunction value from get_info()
+            pass
             
     return version
 
@@ -131,30 +135,22 @@ def get_revision():
 
     return revision, vcs_info
     
-def get_info(dynamic=None):
-
+def get_info(dynamic=True):
     ## Date information
     date_info = datetime.datetime.now()
     date = time.asctime(date_info.timetuple())
 
     revision, version, version_info, vcs_info = None, None, None, None
-    
-    if dev or (not dev and dynamic):
-        # grab dynamic info
+
+    import_failed = False
+    dynamic_failed = False
+
+    if dynamic:
         revision, vcs_info = get_revision()
-        
         if revision is None:
-            # failed in obtaining dynamic info
-            try_static = True
-        else:
-            # succeeded in obtaining dynamic info
-            try_static = False
-    else:
-        # case: not dev AND not dynamic
-        # We *only* want to check the static info.
-        try_static = True
-        
-    if try_static:
+            dynamic_failed = True
+
+    if dynamic_failed or not dynamic:
         # This is where most final releases of NetworkX will be.
         # All info should come from version.py. If it does not exist, then
         # no vcs information will be provided.
@@ -162,20 +158,29 @@ def get_info(dynamic=None):
         try:
             from version import date, date_info, version, version_info, vcs_info
         except ImportError:
-            pass
+            import_failed = True
+            vcs_info = (None, (None, None))
+        else:
+            revision = vcs_info[1][0]
         del sys.path[0]
-
-    if version is None:
-        # We are here if we failed to obtain static version info.
+                
+    if import_failed or (dynamic and not dynamic_failed):
+        # We are here if:
+        #   we failed to determine static versioning info, or
+        #   we successfully obtained dynamic revision info
         version = ''.join([str(major), '.', str(minor)])
         if dev:
-            version += '.dev_' + date_info.strftime("%Y%m%d%H%M%S")
-        version_info = (name, major, minor, revision)
-
-    if vcs_info is None:
-        vcs_info = (None, (None, None))
-        
-    return date, date_info, version, version_info, vcs_info
+            version += '.dev'
+            if (dynamic and not dynamic_failed):
+                # since we have dynamic info, add a dynamic date
+                version += '_' + date_info.strftime("%Y%m%d%H%M%S")
+            else:
+                # blank the dates
+                date = ''
+                date_info = None
+        version_info = (name, major, minor, revision)        
+            
+    return date, date_info, version, version_info, vcs_info            
 
 ## Version information
 name = 'networkx'

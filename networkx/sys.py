@@ -12,6 +12,9 @@ import networkx.release as release
 __all__ = ['date', 'date_info', 'dev', 'vcs_info', 'version', 'version_info']
 
 # Note, these could all be kept/accessible in/from release.py
+# So this module really just exists to consolidate information we want to 
+# present to the user as an 'offical' sys module.
+
 dev = release.dev
 date, date_info, version, version_info, vcs_info = release.get_info()
 
