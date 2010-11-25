@@ -131,6 +131,8 @@ def get_revision():
         p = subprocess.Popen(['hg', 'id'], cwd=basedir, stdout=subprocess.PIPE)
         stdout = p.communicate()[0]
         revision, tag = stdout.decode().strip().split()
+        revision=str(revision) # force strings instead of unicode
+        tag=str(tag) # force strings instead of unicode
     elif os.path.isdir(gitdir):
         vcs = 'git'
         # For now, we are not bothering with revision and tag.
