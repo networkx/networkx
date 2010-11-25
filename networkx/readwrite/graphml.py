@@ -49,7 +49,7 @@ try:
 except ImportError:
     pass
     
-def write_graphml(G, path, encoding='utf-8'):
+def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     """Write G in GraphML XML format to path
 
     Parameters
@@ -59,6 +59,10 @@ def write_graphml(G, path, encoding='utf-8'):
     path : file or string
        File or filename to write.  
        Filenames ending in .gz or .bz2 will be compressed.
+    encoding : string (optional)
+       Encoding for text data.
+    prettyprint : bool (optional)
+       If True use line breaks and indenting in output XML.
 
     Examples
     --------
@@ -71,7 +75,7 @@ def write_graphml(G, path, encoding='utf-8'):
     edges together) hyperedges, nested graphs, or ports. 
     """
     fh = _get_fh(path, mode='wb')
-    writer = GraphMLWriter(encoding=encoding)
+    writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint)
     writer.add_graph_element(G)
     writer.dump(fh)
 
@@ -139,11 +143,12 @@ class GraphML(object):
 
     
 class GraphMLWriter(GraphML):
-    def __init__(self, encoding="utf-8"):
+    def __init__(self, encoding="utf-8",prettyprint=True):
         try:
             import xml.etree.cElementTree
         except ImportError:
              raise ImportError("GraphML writer requires xml.elementtree.ElementTree")
+        self.prettyprint=prettyprint
         self.encoding = encoding
         self.xml = Element("graphml",
                            {'xmlns':self.NS_GRAPHML,
@@ -245,10 +250,28 @@ class GraphMLWriter(GraphML):
             self.add_graph_element(G)
 
     def dump(self, stream):
+        if self.prettyprint:
+            self.indent(self.xml)
         document = ET(self.xml)
         header='<?xml version="1.0" encoding="%s"?>'%self.encoding
         stream.write(header.encode(self.encoding))
         document.write(stream, encoding=self.encoding)
+
+    def indent(self, elem, level=0):
+        # in-place prettyprint formatter
+        i = "\n" + level*"  "
+        if len(elem):
+            if not elem.text or not elem.text.strip():
+                elem.text = i + "  "
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+            for elem in elem:
+                self.indent(elem, level+1)
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+        else:
+            if level and (not elem.tail or not elem.tail.strip()):
+                elem.tail = i
 
 
 class GraphMLReader(GraphML):
