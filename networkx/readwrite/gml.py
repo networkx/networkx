@@ -313,7 +313,8 @@ def generate_gml(G):
         nid=G.node[n].get('id',next(count))
         node_id[n]=nid
         yield 2*indent+"id %s"%nid
-        yield 2*indent+"label %s"%n
+        label=G.node[n].pop('label',n)
+        yield 2*indent+"label %s"%label
         if n in G:
           for k,v in list(G.node[n].items()):
               if k=='id': continue
