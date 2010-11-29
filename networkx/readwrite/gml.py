@@ -303,7 +303,7 @@ def generate_gml(G):
     for k,v in list(G.graph.items()):
         if type(v)==dicttype: 
             v=listify(v,indent,2)
-        elif not is_string_like(v):
+        elif is_string_like(v):
             v='"%s"'%v
         yield indent+"%s %s"%(k,v)
     # write nodes
@@ -320,7 +320,7 @@ def generate_gml(G):
               if k=='id': continue
               if type(v)==dicttype: 
                   v=listify(v,indent,3)
-              elif not is_string_like(v):
+              elif is_string_like(v):
                   v='"%s"'%v
               yield 2*indent+"%s %s"%(k,v)
         yield indent+"]"
@@ -335,7 +335,7 @@ def generate_gml(G):
             if k=='target': continue
             if type(v)==dicttype: 
                 v=listify(v,indent,3)
-            elif not is_string_like(v):
+            elif is_string_like(v):
                 v='"%s"'%v
             yield 2*indent+"%s %s"%(k,v)
         yield indent+"]"
