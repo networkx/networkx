@@ -60,20 +60,20 @@ graph [
     def test_parse_gml(self):
         G=networkx.parse_gml(self.simple_data,relabel=True)
         assert_equals(sorted(G.nodes()),\
-                          ['"Node 1"', '"Node 2"', '"Node 3"'])
+                          ['Node 1', 'Node 2', 'Node 3'])
         assert_equals( [e for e in sorted(G.edges())],\
-                           [('"Node 1"', '"Node 2"'), 
-                            ('"Node 2"', '"Node 3"'), 
-                            ('"Node 3"', '"Node 1"')])
+                           [('Node 1', 'Node 2'), 
+                            ('Node 2', 'Node 3'), 
+                            ('Node 3', 'Node 1')])
 
         assert_equals( [e for e in sorted(G.edges(data=True))],\
-                           [('"Node 1"', '"Node 2"', 
-                             {'color': {'line': '"blue"', 'thickness': 3},
-                              'label': '"Edge from node 1 to node 2"'}), 
-                            ('"Node 2"', '"Node 3"', 
-                             {'label': '"Edge from node 2 to node 3"'}), 
-                            ('"Node 3"', '"Node 1"', 
-                             {'label': '"Edge from node 3 to node 1"'})])
+                           [('Node 1', 'Node 2', 
+                             {'color': {'line': 'blue', 'thickness': 3},
+                              'label': 'Edge from node 1 to node 2'}), 
+                            ('Node 2', 'Node 3', 
+                             {'label': 'Edge from node 2 to node 3'}), 
+                            ('Node 3', 'Node 1', 
+                             {'label': 'Edge from node 3 to node 1'})])
 
 
     def test_read_gml(self):
