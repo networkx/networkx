@@ -172,6 +172,8 @@ def parse_gml(lines, relabel=True):
             if G.has_edge(source,target):
                 multigraph=True
             G.add_edge(source,target,attr_dict=vdict)
+        else:
+            G.graph[k]=v
 
     # switch to Graph or DiGraph if no parallel edges were found.
     if not multigraph: 
