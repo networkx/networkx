@@ -253,7 +253,7 @@ class MultiGraph(Graph):
             if key is None:
                 # find a unique integer key
                 # other methods might be better here?
-                key=0
+                key=len(keydict)
                 while key in keydict:
                     key+=1
             datadict=keydict.get(key,{})
@@ -344,7 +344,7 @@ class MultiGraph(Graph):
             if key is None:
                 # find a unique integer key
                 # other methods might be better here?
-                key=0
+                key=len(keydict)
                 while key in keydict:
                     key+=1
             datadict=keydict.get(key,{})
