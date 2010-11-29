@@ -182,11 +182,12 @@ def complete_graph(n,create_using=None):
     Node labels are the integers 0 to n-1.
     """
     G=empty_graph(n,create_using)
-    if G.is_directed():
-        edges=itertools.permutations(range(n),2)
-    else:
-        edges=itertools.combinations(range(n),2)
-    G.add_edges_from(edges)
+    if n>1:
+        if G.is_directed():
+            edges=itertools.permutations(range(n),2)
+        else:
+            edges=itertools.combinations(range(n),2)
+        G.add_edges_from(edges)
     return G
 
 
