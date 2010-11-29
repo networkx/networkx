@@ -157,15 +157,15 @@ class GraphMLWriter(GraphML):
                            )
         self.keys={}
     
-    def get_key(self, name, attr_type, edge_or_node,default):
-        keys_key = (name, attr_type, edge_or_node)
+    def get_key(self, name, attr_type, scope, default):
+        keys_key = (name, attr_type, scope)
         try:
             return self.keys[keys_key]
         except KeyError:
             new_id = "d%i" % len(list(self.keys))
             self.keys[keys_key] = new_id
             key_kwargs = {"id":new_id,
-                          "for":edge_or_node,
+                          "for":scope,
                           "attr.name":name, 
                           "attr.type":attr_type}
             key_element=Element("key",**key_kwargs)
@@ -178,26 +178,27 @@ class GraphMLWriter(GraphML):
         return new_id
     
     def add_data(self, name, element_type, value, 
-                 edge_or_node="edge",
+                 scope="all",
                  default=None):
         """
         Make a data element for an edge or a node. Keep a log of the
         type in the keys table.
         """
-        key_id = self.get_key(name,self.xml_type[element_type],
-                              edge_or_node, default)
+        if element_type not in self.xml_type:
+            raise nx.NetworkXError('GraphML writer does not support '
+                                   'dict types as data values.')
+        key_id = self.get_key(name, self.xml_type[element_type], scope, default)
         data_element = Element("data", key=key_id)
         data_element.text = make_str(value)
         return data_element
     
-    def add_attributes(self, node_or_edge, xml_obj, data, default):
+    def add_attributes(self, scope, xml_obj, data, default):
         """Appends attributes to edges or nodes.
         """
         for k,v in list(data.items()):
             default_value=default.get(k)
-            obj=self.add_data(make_str(k),type(v),make_str(v), 
-                              edge_or_node=node_or_edge,
-                              default=default_value)
+            obj=self.add_data(make_str(k), type(v), make_str(v), 
+                              scope=scope, default=default_value)
             xml_obj.append(obj)
             
     def add_nodes(self, G, graph_element):
@@ -237,7 +238,10 @@ class GraphMLWriter(GraphML):
         graph_element = Element("graph",
                                 edgedefault = default_edge_type, 
                                 id=G.name)
-        
+        default={}
+        data=dict((k,v) for (k,v) in  G.graph.items() 
+                  if k not in ['node_default','edge_default'])
+        self.add_attributes("graph", graph_element, data, default)
         self.add_nodes(G,graph_element)
         self.add_edges(G,graph_element)
         self.xml.append(graph_element)
@@ -318,6 +322,10 @@ class GraphMLReader(GraphML):
         # add edges
         for edge_xml in graph_xml.findall("{%s}edge" % self.NS_GRAPHML):        
             self.add_edge(G, edge_xml, graphml_keys)                            
+        # add graph data            
+        data = self.decode_data_elements(graphml_keys, graph_xml)
+        G.graph.update(data)
+
         # switch to Graph or DiGraph if no parallel edges were found.
         if not self.multigraph: 
             if G.is_directed():
