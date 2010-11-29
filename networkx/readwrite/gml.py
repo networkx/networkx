@@ -227,6 +227,7 @@ def pyparse_gml():
     integer = Word(nums+'-').setParseAction(lambda s,l,t:[ int(t[0])])
     real = Regex(r"[+-]?\d+\.\d*([eE][+-]?\d+)?").setParseAction(
         lambda s,l,t:[ float(t[0]) ])
+    dblQuotedString.setParseAction( removeQuotes )
     key = Word(alphas,alphanums+'_')
     value_atom = (real | integer | Word(alphanums) | dblQuotedString) 
     value = Forward()   # to be defined later with << operator
