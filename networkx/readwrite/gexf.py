@@ -22,10 +22,9 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)'])
 
 __all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph']
 
-
+import itertools
 import networkx as nx
 from networkx.utils import _get_fh, make_str
-
 import xml.etree.ElementTree as ET
 from xml.etree.cElementTree import ElementTree, Element
 
@@ -176,8 +175,8 @@ class GEXFWriter(GEXF):
                             'version':self.VERSION}
                            )
         # counters for edge and attribute identifiers
-        self.edge_id=0
-        self.attr_id=0
+        self.edge_id=itertools.count()
+        self.attr_id=itertools.count()
         # default attributes are stored in dictionaries
         self.attr={}
         self.attr['node']={}
@@ -235,14 +234,17 @@ class GEXFWriter(GEXF):
             if G.is_multigraph():
                 for u,v,key,data in G.edges_iter(data=True,keys=True):
                     edge_data=data.copy()
-                    yield u,v,key,edge_data
+                    edge_data.update(key=key)
+                    edge_id=edge_data.pop('id',None)
+                    if edge_id is None:
+                        edge_id=next(self.edge_id)
+                    yield u,v,edge_id,edge_data
             else:
                 for u,v,data in G.edges_iter(data=True):
                     edge_data=data.copy()
                     edge_id=edge_data.pop('id',None)
                     if edge_id is None:
-                        edge_id=self.edge_id
-                        self.edge_id+=1
+                        edge_id=next(self.edge_id)
                     yield u,v,edge_id,edge_data
 
         edges_element = Element('edges')
@@ -301,9 +303,8 @@ class GEXFWriter(GEXF):
             return self.attr[edge_or_node][mode][title]
         except KeyError:
             # generate new id
-            new_id=str(self.attr_id)
+            new_id=str(next(self.attr_id))
             self.attr[edge_or_node][mode][title] = new_id
-            self.attr_id+=1
             attr_kwargs = {"id":new_id, "title":title, "type":attr_type}
             attribute=Element("attribute",**attr_kwargs)
             # add subelement for data default value if present
