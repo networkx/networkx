@@ -15,9 +15,9 @@ class TestPylab(object):
     def setupClass(cls):
         global pylab
         try:
+            import matplotlib as mpl
+            mpl.use('PS')
             import pylab
-            import matplotlib.pyplot as plt
-            plt.switch_backend('PS')
         except ImportError:
             raise SkipTest('matplotlib not available.')
         except RuntimeError:

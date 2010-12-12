@@ -902,8 +902,8 @@ def draw_nx(G,pos,**kwds):
 def setup_module(module):
     from nose import SkipTest
     try:
+        import matplotlib as mpl
+        mpl.use('PS')
         import pylab
-        import matplotlib.pyplot as plt
-        plt.switch_backend('PS')
     except:
         raise SkipTest("matplotlib not available")
