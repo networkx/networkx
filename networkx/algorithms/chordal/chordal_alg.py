@@ -80,7 +80,7 @@ def is_chordal(G):
     else:
         return False
 
-def find_induced_nodes(G,s,t,treewidth_bound=sys.maxsize):
+def find_induced_nodes(G,s,t,treewidth_bound=sys.maxint):
     """Returns the set of induced nodes in the path from s to t. 
 
     Parameters
@@ -267,7 +267,7 @@ def _find_missing_edge(G):
 
 
 def _max_cardinality_node(G,choices,wanna_connect):
-    """Returns a set of node in choices that has more connections in G 
+    """Returns a the node in choices that has more connections in G 
     to nodes in wanna_connect.
     """
 #    max_number = None 
@@ -280,7 +280,7 @@ def _max_cardinality_node(G,choices,wanna_connect):
     return max_cardinality_node
 
 
-def _find_chordality_breaker(G,s=None,treewidth_bound=sys.maxsize):
+def _find_chordality_breaker(G,s=None,treewidth_bound=sys.maxint):
     """ Given a graph G, starts a max cardinality search 
     (starting from s if s is given and from a random node otherwise)
     trying to find a non-chordal cycle. 
