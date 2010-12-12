@@ -13,6 +13,7 @@ Algorithms
    algorithms.block
    algorithms.boundary
    algorithms.centrality
+   algorithms.chordal
    algorithms.clique
    algorithms.clustering
    algorithms.component

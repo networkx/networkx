@@ -2,7 +2,6 @@
 from nose.tools import *
 import networkx as nx
 import random
-#import networkx.algorithms.chordal.approximation
 
 class TestMCS:
 
@@ -33,10 +32,11 @@ class TestMCS:
     
     def test_induced_nodes(self):
         G = nx.generators.classic.path_graph(10)
-        (I,h) = nx.induced_nodes(G,1,9,2)
+        (I,h) = nx.find_induced_nodes(G,1,9,2)
         assert_equal(I,set([1,2,3,4,5,6,7,8,9]))
-        assert_raises(nx.NetworkXTreewidthBoundExceeded,nx.induced_nodes,G,1,9,1)
-        (I,h) = nx.induced_nodes(self.chordal_G,1,6)
+        assert_raises(nx.NetworkXTreewidthBoundExceeded,
+                      nx.find_induced_nodes,G,1,9,1)
+        (I,h) = nx.find_induced_nodes(self.chordal_G,1,6)
         assert_equal(I,set([1,2,4,6]))
         
     def test_chordal_find_cliques(self):
