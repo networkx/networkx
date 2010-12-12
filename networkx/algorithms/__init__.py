@@ -22,6 +22,7 @@ from networkx.algorithms.traversal import *
 from networkx.algorithms.isolates import *
 from networkx.algorithms.euler import *
 from networkx.algorithms.vitality import *
+from networkx.algorithms.chordal import *
 
 import networkx.algorithms.centrality
 import networkx.algorithms.cluster
@@ -33,4 +34,4 @@ import networkx.algorithms.link_analysis
 import networkx.algorithms.mixing
 import networkx.algorithms.shortest_paths
 import networkx.algorithms.traversal
-
+import networkx.algorithms.chordal

@@ -32,6 +32,7 @@ sys.path.pop(0)
 packages=["networkx",
           "networkx.algorithms",
           "networkx.algorithms.centrality",
+          "networkx.algorithms.chordal",
           "networkx.algorithms.components",
           "networkx.algorithms.flow",
           "networkx.algorithms.traversal",
