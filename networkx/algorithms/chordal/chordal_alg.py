@@ -138,7 +138,7 @@ def find_induced_nodes(G,s,t,treewidth_bound=sys.maxint):
        http://jmlr.csail.mit.edu/papers/volume9/elidan08a/elidan08a.pdf
     """
     if not is_chordal(G):
-        raise NetworkXError("Input graph is not chordal.")
+        raise nx.NetworkXError("Input graph is not chordal.")
  
     H = nx.Graph(G)
     H.add_edge(s,t)
@@ -159,7 +159,6 @@ def find_induced_nodes(G,s,t,treewidth_bound=sys.maxint):
                 I.add(u)
                 break
     return I
-
 
 def chordal_graph_cliques(G):
     """Returns the set of maximal cliques of a chordal graph.
@@ -193,7 +192,7 @@ def chordal_graph_cliques(G):
     >>> setlist = nx.chordal_graph_cliques(G)
     """
     if not is_chordal(G):
-        raise NetworkXError("Input graph is not chordal.")
+        raise nx.NetworkXError("Input graph is not chordal.")
     
     cliques = set()
     for C in nx.connected.connected_component_subgraphs(G):
@@ -238,7 +237,7 @@ def chordal_graph_treewidth(G):
     .. [1] http://en.wikipedia.org/wiki/Tree_decomposition#Treewidth
     """
     if not is_chordal(G):
-        raise NetworkXError("Input graph is not chordal.")
+        raise nx.NetworkXError("Input graph is not chordal.")
     
     max_clique = -1
     for clique in nx.chordal_graph_cliques(G):
@@ -341,7 +340,7 @@ def _connected_chordal_graph_cliques(G):
                     cliques.add(frozenset(clique_wanna_be))
                 clique_wanna_be = new_clique_wanna_be
             else:
-                raise NetworkXError("Input graph is not chordal.")
+                raise nx.NetworkXError("Input graph is not chordal.")
         cliques.add(frozenset(clique_wanna_be))
         return cliques
 

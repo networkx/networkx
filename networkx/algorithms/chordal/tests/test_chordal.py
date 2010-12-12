@@ -38,6 +38,8 @@ class TestMCS:
                       nx.find_induced_nodes,G,1,9,1)
         I = nx.find_induced_nodes(self.chordal_G,1,6)
         assert_equal(I,set([1,2,4,6]))
+        assert_raises(nx.NetworkXError,
+		      nx.find_induced_nodes,self.non_chordal_G,1,5)
         
     def test_chordal_find_cliques(self):
         cliques = set([frozenset([9]),frozenset([7,8]),frozenset([1,2,3]),
