@@ -81,9 +81,7 @@ def is_chordal(G):
         return False
 
 def find_induced_nodes(G,s,t,treewidth_bound=sys.maxsize):
-    """Returns a pair (I,H) where I is the set of induced nodes in the
-    path from s to t, and H is the graph G plus (s,t) and an edge from
-    s to every induced node in I. 
+    """Returns the set of induced nodes in the path from s to t. 
 
     Parameters
     ----------
@@ -105,10 +103,6 @@ def find_induced_nodes(G,s,t,treewidth_bound=sys.maxsize):
     I : Set of nodes
 	The set of induced nodes in the path from s to t in G
     
-    H : NetworkX graph
-	A graph with every edge in G plus edge (s,t) and an edge from s to 
-	each induced node in I 
-    
     Raises
     ------
     NetworkXError
@@ -123,7 +117,7 @@ def find_induced_nodes(G,s,t,treewidth_bound=sys.maxsize):
     >>> import networkx as nx
     >>> G=nx.Graph()  
     >>> G = nx.generators.classic.path_graph(10)
-    >>> (I,h) = nx.find_induced_nodes(G,1,9,2)
+    >>> I = nx.find_induced_nodes(G,1,9,2)
     >>> list(I)
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -164,7 +158,7 @@ def find_induced_nodes(G,s,t,treewidth_bound=sys.maxsize):
             if len(I & set(G[u]))==2:
                 I.add(u)
                 break
-    return I,H
+    return I
 
 
 def chordal_graph_cliques(G):
