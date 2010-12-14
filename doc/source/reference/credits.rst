@@ -53,7 +53,7 @@ Thanks especially to the following contributors.
    and helped test the pygraphviz interface
 
  - Christopher Ellison implemented the VF2 isomorphism algorithm
-   and contributed the code for matching all the graph types.
+   and is a core developer.
 
  - Eben Kenah contributed the strongly connected components and
    DFS functions.
@@ -91,3 +91,4 @@ Thanks especially to the following contributors.
  - Ben Edwards contributed tree generating functions.
 
  - Jon Olav Vik contributed cycle finding algorithms.
+
