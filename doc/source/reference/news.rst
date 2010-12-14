@@ -7,7 +7,7 @@ Release Log
 Networkx-1.3
 ------------
 
-Release date:  xx August 2010
+Release date:  28 August 2010
 
 See: https://networkx.lanl.gov/trac/timeline
 
