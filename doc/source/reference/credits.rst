@@ -93,3 +93,4 @@ Thanks especially to the following contributors:
 
  - Jon Olav Vik contributed cycle finding algorithms.
 
+ - Hugh Brown improved the words.py example from the n^2 algorithm.
