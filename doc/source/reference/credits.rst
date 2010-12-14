@@ -89,3 +89,5 @@ Thanks especially to the following contributors.
  - Jesus Cerquides contributed the chordal graph algorithms
 
  - Ben Edwards contributed tree generating functions.
+
+ - Jon Olav Vik contributed cycle finding algorithms.
