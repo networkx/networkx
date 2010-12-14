@@ -12,7 +12,7 @@ Thanks to David Eppstein for the idea of representing a graph G
 so that "for n in G" loops over the nodes in G and G[n] are node n's 
 neighbors.      
 
-Thanks to all those who have improved NetworkX by contributing code,
+Thanks to everyone who has improved NetworkX by contributing code,
 bug reports (and fixes), documentation, and input on design, featues,
 and the future of NetworkX.
 
