@@ -4,6 +4,12 @@
 Release Log
 ===========
 
+Networkx-1.4
+------------
+
+Release date:  xx December 2010
+
+
 Networkx-1.3
 ------------
 
