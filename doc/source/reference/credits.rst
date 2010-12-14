@@ -18,39 +18,39 @@ and the future of NetworkX.
 
 Thanks especially to the following contributors:
 
- - Katy Bold contributed the Karate Club graph 
+ - Katy Bold contributed the Karate Club graph.
 
  - Hernan Rozenfeld added dorogovtsev_goltsev_mendes_graph and did 
-   stress testing
+   stress testing.
 
- - Brendt Wohlberg added examples from the Stanford GraphBase
+ - Brendt Wohlberg added examples from the Stanford GraphBase.
 
- - Jim Bagrow reported bugs in the search methods 
+ - Jim Bagrow reported bugs in the search methods. 
 
- - Holly Johnsen helped fix the path based centrality measures 
+ - Holly Johnsen helped fix the path based centrality measures. 
 
- - Arnar Flatberg fixed the graph laplacian routines
+ - Arnar Flatberg fixed the graph laplacian routines.
 
  - Chris Myers suggested using None as a default datatype, suggested
    improvements for the IO routines, added grid generator index tuple
-   labeling and associated routines, and reported bugs
+   labeling and associated routines, and reported bugs.
 
  - Joel Miller tested and improved the connected components methods
    fixed bugs and typos in the graph generators, and contributed
    the random clustered graph generator.
 
  - Keith Briggs sorted out naming issues for random graphs and
-   wrote dense_gnm_random_graph
+   wrote dense_gnm_random_graph.
 
- - Ignacio Rozada provided the Krapivsky-Redner graph generator
+ - Ignacio Rozada provided the Krapivsky-Redner graph generator.
 
- - Phillipp Pagel helped fix eccentricity etc. for disconnected graphs 
+ - Phillipp Pagel helped fix eccentricity etc. for disconnected graphs. 
 
  - Sverre Sundsdal contributed bidirectional shortest path and
    Dijkstra routines, s-metric computation and graph generation  
 
  - Ross M. Richardson contributed the expected degree graph generator
-   and helped test the pygraphviz interface
+   and helped test the pygraphviz interface.
 
  - Christopher Ellison implemented the VF2 isomorphism algorithm
    and is a core developer.
