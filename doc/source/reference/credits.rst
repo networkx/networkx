@@ -5,18 +5,18 @@ NetworkX was originally written by Aric Hagberg, Dan Schult, and Pieter Swart
 with the help of many others.   
 
 Thanks to Guido van Rossum for the idea of using Python for
-implementing a graph data structure  
+implementing a graph data structure
 http://www.python.org/doc/essays/graphs.html
 
-Thanks to David Eppstein for the idea of representing a graph G
-so that "for n in G" loops over the nodes in G and G[n] are node n's 
-neighbors.      
+Thanks to David Eppstein for the idea of representing a graph G so
+that "for n in G" loops over the nodes in G and G[n] are node n's
+neighbors.
 
 Thanks to everyone who has improved NetworkX by contributing code,
 bug reports (and fixes), documentation, and input on design, featues,
 and the future of NetworkX.
 
-Thanks especially to the following contributors.
+Thanks especially to the following contributors:
 
  - Katy Bold contributed the Karate Club graph 
 
