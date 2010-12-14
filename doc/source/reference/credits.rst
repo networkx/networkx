@@ -82,7 +82,8 @@ Thanks especially to the following contributors:
    generator.
 
  - Loïc Séguin-C. contributed the Ford-Fulkerson max flow and min cut 
-   algorithms, and ported all of NetworkX to Python3.
+   algorithms, and ported all of NetworkX to Python3.  He is a 
+   NetworkX core developer.
 
  - Paul McGuire improved the performance of the GML data parser
 
