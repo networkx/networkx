@@ -93,9 +93,22 @@ class TestGenericPath:
     def test_average_shortest_path(self):
         l=nx.average_shortest_path_length(self.cycle)
         assert_almost_equal(l,2)
-        l=nx.average_shortest_path_length(self.cycle,weighted=True)
-        assert_almost_equal(l,2)
         l=nx.average_shortest_path_length(nx.path_graph(5))
         assert_almost_equal(l,2)
-        l=nx.average_shortest_path_length(nx.path_graph(5),weighted=True)
-        assert_almost_equal(l,2)
+
+    def test_weighted_average_shortest_path(self):
+        G=nx.Graph()
+        G.add_cycle(range(7),weight=2)
+        l=nx.average_shortest_path_length(G,weighted=True)
+        assert_almost_equal(l,4)
+        G=nx.Graph()
+        G.add_path(range(5),weight=2)
+        l=nx.average_shortest_path_length(G,weighted=True)
+        assert_almost_equal(l,4)
+
+
+    def test_average_shortest_disconnected(self):
+        g = nx.Graph()
+        g.add_nodes_from(range(3))
+        g.add_edge(0, 1) 
+        assert_raises(nx.NetworkXError,nx.average_shortest_path_length,g)

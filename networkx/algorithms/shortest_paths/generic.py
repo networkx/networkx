@@ -189,10 +189,15 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
 def average_shortest_path_length(G,weighted=False):
     """ Return the average shortest path length.
 
-    The average shortest path length is the sum of path lengths d(u,v)
-    between all pairs of nodes (assuming the length is zero if v is
-    not reachable from v) normalized by n*(n-1) where n is the number
-    of nodes in G.
+    The average shortest path length is
+
+    .. math::
+
+       a =\\sum_{s,t \\in V} \\frac{d(s, t)}{n(n-1)}
+
+    where :math:`V` is the set of nodes in :math:`G`,
+    :math:`d(s, t)` is the shortest path from :math:`s` to :math:`t`,
+    and :math:`n` is the number of nodes in :math:`G`.
 
     Parameters
     ----------
@@ -201,11 +206,24 @@ def average_shortest_path_length(G,weighted=False):
     weighted : bool, optional, default=False 
        If True use edge weights on path. 
 
+    Raises
+    ------
+    NetworkXError:
+       if the graph is not connected.
+
     Examples
     --------
     >>> G=nx.path_graph(5)
     >>> print(nx.average_shortest_path_length(G))
     2.0
+
+    For disconnected graphs you can compute the average shortest path
+    length for each component:
+    >>> G=nx.Graph([(1,2),(3,4)])
+    >>> for g in nx.connected_component_subgraphs(G): 
+    ...     print(nx.average_shortest_path_length(g))
+    1.0
+    1.0
 
     Notes
     -----
@@ -217,10 +235,17 @@ def average_shortest_path_length(G,weighted=False):
         path_length=nx.single_source_dijkstra_path_length
     else:
         path_length=nx.single_source_shortest_path_length
+    if G.is_directed():
+        if not nx.is_weakly_connected(G):
+            raise nx.NetworkXError("Graph is not connected.")
+    else:
+        if not nx.is_connected(G):
+            raise nx.NetworkXError("Graph is not connected.")
     avg=0.0
-    for n in G:
-        l=list(path_length(G,n).values())
-        avg+=float(sum(l))/len(l)
-    return avg/(len(G)-1)
+    n=len(G)
+    for node in G:
+        l=list(path_length(G,node).values())
+        avg+=sum(l)
+    return avg/(n*(n-1))
         
 
