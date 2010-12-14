@@ -87,3 +87,5 @@ Thanks especially to the following contributors.
  - Paul McGuire improved the performance of the GML data parser
 
  - Jesus Cerquides contributed the chordal graph algorithms
+
+ - Ben Edwards contributed tree generating functions.
