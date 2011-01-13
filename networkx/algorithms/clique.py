@@ -417,7 +417,19 @@ def node_clique_number(G,nodes=None,cliques=None):
         Optional list of cliques can be input if already computed.
 
     """
-    if cliques is None:
+    if cliques is None: 
+        if nodes is not None:
+            # Use ego_graph to decrease size of graph
+            if isinstance(nodes,list):
+                d={}
+                for n in nodes:
+                    H=networkx.ego_graph(G,n)
+                    d[n]=max( (len(c) for c in find_cliques(H)) )
+            else:
+                H=networkx.ego_graph(G,nodes)
+                d=max( (len(c) for c in find_cliques(H)) )
+            return d
+        # nodes is None--find all cliques
         cliques=list(find_cliques(G))
 
     if nodes is None:
