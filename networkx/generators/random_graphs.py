@@ -574,7 +574,18 @@ def random_regular_graph(d, n, create_using=None, seed=None):
 
     return G
 
+def _random_subset(seq,m):
+    """ Return m unique elements from seq.
 
+    This differs from random.sample which can return repeated
+    elements if seq holds repeated elements.
+    """
+    targets=set()
+    while len(targets)<m:
+        x=random.choice(seq)
+        targets.add(x)
+    return targets
+    
 def barabasi_albert_graph(n, m, create_using=None, seed=None):
     """Return random graph using Barabási-Albert preferential attachment model.
         
@@ -635,10 +646,7 @@ def barabasi_albert_graph(n, m, create_using=None, seed=None):
         repeated_nodes.extend([source]*m) 
         # Now choose m unique nodes from the existing nodes 
         # Pick uniformly from repeated_nodes (preferential attachement) 
-        targets=set()
-        while len(targets)<m:
-            x=random.choice(repeated_nodes)
-            targets.add(x)
+        targets = _random_subset(repeated_nodes,m)
         source += 1
     return G
 
@@ -704,7 +712,7 @@ def powerlaw_cluster_graph(n, m, p, create_using=None, seed=None):
                            # with nodes repeated once for each adjacent edge 
     source=m               # next node is m
     while source<n:        # Now add the other n-1 nodes
-        possible_targets=random.sample(repeated_nodes,m)
+        possible_targets = _random_subset(repeated_nodes,m)
         # do one preferential attachment for new node
         target=possible_targets.pop()
         G.add_edge(source,target)  

@@ -35,8 +35,13 @@ class TestGeneratorsRandom():
         assert_true(G.number_of_edges() >= 20)
 
         G=barabasi_albert_graph(100,1)
+        G=barabasi_albert_graph(100,3)
+        assert_equal(G.number_of_edges(),(97*3))
+        
         G=powerlaw_cluster_graph(100,1,1.0)
-
+        G=powerlaw_cluster_graph(100,3,0.0)
+        assert_equal(G.number_of_edges(),(97*3))
+        
         G=random_regular_graph(10,20)
         
         assert_raises(networkx.exception.NetworkXError,
