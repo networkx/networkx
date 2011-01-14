@@ -79,9 +79,6 @@ def generate_gexf(G, encoding='utf-8',prettyprint=True):
     ----------
     G : graph
        A NetworkX graph
-    path : file or string
-       File or filename to write.  
-       Filenames ending in .gz or .bz2 will be compressed.
     encoding : string (optional)
        Encoding for text data.
     prettyprint : bool (optional)
