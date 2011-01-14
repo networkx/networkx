@@ -38,14 +38,15 @@ __author__ = """\n""".join(['Salim Fadhley',
                             'Aric Hagberg (hagberg@lanl.gov)'
                             ])
 
-__all__ = ['write_graphml', 'read_graphml', 
+__all__ = ['write_graphml', 'read_graphml', 'generate_graphml',
            'GraphMLWriter', 'GraphMLReader']
 
 import networkx as nx
 from networkx.utils import _get_fh, make_str
 import warnings
 try:
-    from xml.etree.cElementTree import Element, ElementTree as ET
+    from xml.etree.cElementTree import Element, ElementTree as ET, tostring
+
 except ImportError:
     pass
     
@@ -78,6 +79,36 @@ def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint)
     writer.add_graph_element(G)
     writer.dump(fh)
+
+def generate_graphml(G, encoding='utf-8',prettyprint=True):
+    """Generate GraphML lines for G
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+    encoding : string (optional)
+       Encoding for text data.
+    prettyprint : bool (optional)
+       If True use line breaks and indenting in output XML.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> linefeed=chr(10) # linefeed=\n
+    >>> s=linefeed.join(nx.generate_graphml(G))  # a string
+    >>> for line in nx.generate_graphml(G):  # doctest: +SKIP
+    ...    print line                   
+
+    Notes
+    -----
+    This implementation does not support mixed graphs (directed and unidirected 
+    edges together) hyperedges, nested graphs, or ports. 
+    """
+    writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint)
+    writer.add_graph_element(G)
+    for line in str(writer).splitlines():
+        yield line
 
 def read_graphml(path,node_type=str):
     """Read graph in GraphML format from path.
@@ -143,7 +174,7 @@ class GraphML(object):
 
     
 class GraphMLWriter(GraphML):
-    def __init__(self, encoding="utf-8",prettyprint=True):
+    def __init__(self, graph=None, encoding="utf-8",prettyprint=True):
         try:
             import xml.etree.cElementTree
         except ImportError:
@@ -156,7 +187,16 @@ class GraphMLWriter(GraphML):
                             'xsi:schemaLocation':self.SCHEMALOCATION}
                            )
         self.keys={}
+
+        if graph is not None:
+            self.add_graph_element(graph)
+
     
+    def __str__(self):
+        if self.prettyprint:
+            self.indent(self.xml)
+        return tostring(self.xml)
+
     def get_key(self, name, attr_type, scope, default):
         keys_key = (name, attr_type, scope)
         try:
@@ -177,6 +217,7 @@ class GraphMLWriter(GraphML):
             self.xml.insert(0,key_element)
         return new_id
     
+
     def add_data(self, name, element_type, value, 
                  scope="all",
                  default=None):
