@@ -20,13 +20,13 @@ specification and http://gexf.net/format/basic.html for examples.
 # Based on GraphML NetworkX GraphML reader
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)'])
 
-__all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph']
+__all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
 
 import itertools
 import networkx as nx
 from networkx.utils import _get_fh, make_str
 import xml.etree.ElementTree as ET
-from xml.etree.cElementTree import ElementTree, Element
+from xml.etree.cElementTree import ElementTree, Element, tostring
 
 def write_gexf(G, path, encoding='utf-8',prettyprint=True):
     """Write G in GEXF format to path.
@@ -68,6 +68,51 @@ def write_gexf(G, path, encoding='utf-8',prettyprint=True):
     writer = GEXFWriter(encoding=encoding,prettyprint=prettyprint)
     writer.add_graph(G)
     writer.write(fh)
+
+def generate_gexf(G, encoding='utf-8',prettyprint=True):
+    """Generate lines of GEXF format representation of G"
+
+    "GEXF (Graph Exchange XML Format) is a language for describing
+    complex networks structures, their associated data and dynamics" [1]_.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph
+    path : file or string
+       File or filename to write.  
+       Filenames ending in .gz or .bz2 will be compressed.
+    encoding : string (optional)
+       Encoding for text data.
+    prettyprint : bool (optional)
+       If True use line breaks and indenting in output XML.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> linefeed=chr(10) # linefeed=\n
+    >>> s=linefeed.join(nx.generate_gexf(G))  # a string
+    >>> for line in nx.generate_gexf(G):  # doctest: +SKIP
+    ...    print line                   
+
+    Notes
+    -----
+    This implementation does not support mixed graphs (directed and unidirected 
+    edges together).
+    
+    The node id attribute is set to be the string of the node label.  
+    If you want to specify an id use set it as node data, e.g.
+    node['a']['id']=1 to set the id of node 'a' to 1.
+
+    References
+    ----------
+    .. [1] GEXF graph format, http://gexf.net/format/
+    """
+    writer = GEXFWriter(encoding=encoding,prettyprint=prettyprint)
+    writer.add_graph(G)
+    for line in str(writer).splitlines():
+        yield line
+
 
 def read_gexf(path,node_type=str,relabel=False):
     """Read graph in GEXF format from path.
@@ -158,7 +203,7 @@ class GEXF(object):
 class GEXFWriter(GEXF):
     # class for writing GEXF format files
     # use write_gexf() function 
-    def __init__(self, encoding="utf-8",mode='static',prettyprint=True):
+    def __init__(self, graph=None, encoding="utf-8",mode='static',prettyprint=True):
         try:
             import xml.etree.cElementTree
         except ImportError:
@@ -186,6 +231,13 @@ class GEXFWriter(GEXF):
         self.attr['edge']['dynamic']={}
         self.attr['edge']['static']={}
     
+        if graph is not None:
+            self.add_graph(graph)
+
+    def __str__(self):
+        if self.prettyprint:
+            self.indent(self.xml)
+        return tostring(self.xml)
 
     def add_graph(self, G):
         # Add a graph element to the XML
