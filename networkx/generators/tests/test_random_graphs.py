@@ -56,3 +56,67 @@ class TestGeneratorsRandom():
         s=random_powerlaw_tree(10,gamma=3,tries=1000)
         """
 
+    def test_gnp(self):
+        G=gnp_random_graph(10,0.1)
+        assert_equal(len(G),10)
+
+        G=gnp_random_graph(10,0.1,seed=42)
+        assert_equal(len(G),10)
+
+        G=gnp_random_graph(10,1.1)
+        assert_equal(len(G),10)
+        assert_equal(len(G.edges()),45)
+
+        G=gnp_random_graph(10,1.1,directed=True)
+        assert_equal(len(G),10)
+        assert_equal(len(G.edges()),90)
+
+        G=gnp_random_graph(10,-1.1)
+        assert_equal(len(G),10)
+        assert_equal(len(G.edges()),0)
+
+        G=binomial_graph(10,0.1)
+        assert_equal(len(G),10)
+
+        G=erdos_renyi_graph(10,0.1)
+        assert_equal(len(G),10)
+
+
+    def test_fast_gnp(self):
+        G=fast_gnp_random_graph(10,0.1)
+        assert_equal(len(G),10)
+
+        G=fast_gnp_random_graph(10,0.1,seed=42)
+        assert_equal(len(G),10)
+
+        G=fast_gnp_random_graph(10,1.1)
+        assert_equal(len(G),10)
+        assert_equal(len(G.edges()),45)
+
+        G=fast_gnp_random_graph(10,-1.1)
+        assert_equal(len(G),10)
+        assert_equal(len(G.edges()),0)
+
+    def test_gnm(self):
+        G=gnm_random_graph(10,3)
+        assert_equal(len(G),10)
+        assert_equal(len(G.edges()),3)
+
+        G=gnm_random_graph(10,3,seed=42)
+        assert_equal(len(G),10)
+        assert_equal(len(G.edges()),3)
+
+        G=gnm_random_graph(10,100)
+        assert_equal(len(G),10)
+        assert_equal(len(G.edges()),45)
+
+        G=gnm_random_graph(10,100,directed=True)
+        assert_equal(len(G),10)
+        assert_equal(len(G.edges()),90)
+
+        G=gnm_random_graph(10,-1.1)
+        assert_equal(len(G),10)
+        assert_equal(len(G.edges()),0)
+
+
+

@@ -3,7 +3,7 @@
 Generators for random graphs.
 
 """
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -22,7 +22,6 @@ from collections import defaultdict
 
 __all__ = ['fast_gnp_random_graph',
            'gnp_random_graph',
-           'directed_gnp_random_graph',
            'dense_gnm_random_graph',
            'gnm_random_graph',
            'erdos_renyi_graph',
@@ -44,8 +43,8 @@ __all__ = ['fast_gnp_random_graph',
 #-------------------------------------------------------------------------
 
 
-def fast_gnp_random_graph(n, p, create_using=None, seed=None):
-    """Return a random graph G_{n,p}.
+def fast_gnp_random_graph(n, p, seed=None):
+    """Return a random graph G_{n,p} (Erdős-Rényi graph, binomial graph).
 
     Parameters
     ----------
@@ -53,8 +52,6 @@ def fast_gnp_random_graph(n, p, create_using=None, seed=None):
         The number of nodes.
     p : float
         Probability for edge creation.
-    create_using :  graph, optional (default Graph)
-        Use specified graph as a container.
     seed : int, optional
         Seed for random number generator (default=None). 
       
@@ -63,30 +60,29 @@ def fast_gnp_random_graph(n, p, create_using=None, seed=None):
     The G_{n,p} graph algorithm chooses each of the [n(n-1)]/2
     (undirected) or n(n-1) (directed) possible edges with probability p.
 
-    Sometimes called Erdős-Rényi graph, or binomial graph.
-
     This algorithm is O(n+m) where m is the expected number of
     edges m=p*n*(n-1)/2.
     
     It should be faster than gnp_random_graph when p is small and
     the expected number of edges is small (sparse graph).
 
+    See Also
+    --------
+    gnp_random_graph
+
     References
     ----------
-    .. [1] Batagelj and Brandes,
-       "Efficient generation of large random networks",
+    .. [1] Batagelj and Brandes, "Efficient generation of large random networks",
        Phys. Rev. E, 71, 036113, 2005.
     """
-    if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-    G=empty_graph(n,create_using)
+    G=empty_graph(n)
     G.name="fast_gnp_random_graph(%s,%s)"%(n,p)
 
     if not seed is None:
         random.seed(seed)
 
     if p<=0 or p>=1:
-        return nx.gnp_random_graph(n,p,create_using=create_using)
+        return nx.gnp_random_graph(n,p)
 
     v=1  # Nodes in graph are from 0,n-1 (this is the second node index).
     w=-1
@@ -103,12 +99,12 @@ def fast_gnp_random_graph(n, p, create_using=None, seed=None):
     return G
 
 
-def gnp_random_graph(n, p, create_using=None, seed=None):
-    """Return a random graph G_{n,p}.
+def gnp_random_graph(n, p, seed=None, directed=False):
+    """Return a random graph G_{n,p} (Erdős-Rényi graph, binomial graph).
 
-    Choses each of the possible edges with probability p.
-    This is the same as binomial_graph and erdos_renyi_graph. 
+    Chooses each of the possible edges with probability p.
 
+    This is also called binomial_graph and erdos_renyi_graph. 
 
     Parameters
     ----------
@@ -116,36 +112,35 @@ def gnp_random_graph(n, p, create_using=None, seed=None):
         The number of nodes.
     p : float
         Probability for edge creation.
-    create_using :  graph, optional (default Graph)
-        Use specified graph as a container.
     seed : int, optional
         Seed for random number generator (default=None). 
-      
-    See Also
+    directed : bool, optional (default=False)
+        If True return a directed graph 
+    
+    See Also  
     --------
-    fast_gnp_random_graph()
+    fast_gnp_random_graph
 
     Notes
     -----
     This is an O(n^2) algorithm.  For sparse graphs (small p) see
-    fast_gnp_random_graph. 
-
-    Sometimes called Erdős-Rényi graph, or binomial graph.
+    fast_gnp_random_graph for a faster algorithm.
 
     References
     ----------
     .. [1] P. Erdős and A. Rényi, On Random Graphs, Publ. Math. 6, 290 (1959).
     .. [2] E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
-
     """
-    if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-    G=empty_graph(n,create_using)
+    if directed:
+        G=nx.DiGraph()
+    else:
+        G=nx.Graph()
+    G.add_nodes_from(range(n))
     G.name="gnp_random_graph(%s,%s)"%(n,p)
     if p<=0:
         return G
     if p>=1:
-        return complete_graph(n,create_using)
+        return complete_graph(n,create_using=G)
 
     if not seed is None:
         random.seed(seed)
@@ -164,10 +159,8 @@ def gnp_random_graph(n, p, create_using=None, seed=None):
 # add some aliases to common names
 binomial_graph=gnp_random_graph
 erdos_renyi_graph=gnp_random_graph
-directed_gnp_random_graph=gnp_random_graph
 
-
-def dense_gnm_random_graph(n, m, create_using=None, seed=None):
+def dense_gnm_random_graph(n, m, seed=None):
     """Return the random graph G_{n,m}.
 
     Gives a graph picked randomly out of the set of all graphs
@@ -180,8 +173,6 @@ def dense_gnm_random_graph(n, m, create_using=None, seed=None):
         The number of nodes.
     m : int
         The number of edges.
-    create_using :  graph, optional (default Graph)
-        Use specified graph as a container.
     seed : int, optional
         Seed for random number generator (default=None). 
       
@@ -193,25 +184,19 @@ def dense_gnm_random_graph(n, m, create_using=None, seed=None):
     -----
     Algorithm by Keith M. Briggs Mar 31, 2006.
     Inspired by Knuth's Algorithm S (Selection sampling technique),
-    in section 3.4.2 of
+    in section 3.4.2 of [1]_.
 
     References
     ----------
-    .. [1] Donald E. Knuth,
-        The Art of Computer Programming,
-        Volume 2 / Seminumerical algorithms
-        Third Edition, Addison-Wesley, 1997.
- 
+    .. [1] Donald E. Knuth, The Art of Computer Programming,
+        Volume 2/Seminumerical algorithms, Third Edition, Addison-Wesley, 1997.
     """
     mmax=n*(n-1)/2
     if m>=mmax:
-        G=complete_graph(n,create_using)
+        G=complete_graph(n)
     else:
-        if create_using is not None and create_using.is_directed():
-            raise nx.NetworkXError("Directed Graph not supported")
-        G=empty_graph(n,create_using)
-
-        G.name="dense_gnm_random_graph(%s,%s)"%(n,m)
+        G=empty_graph(n)
+    G.name="dense_gnm_random_graph(%s,%s)"%(n,m)
   
     if n==1 or m>=mmax:
         return G
@@ -234,10 +219,10 @@ def dense_gnm_random_graph(n, m, create_using=None, seed=None):
             u+=1
             v=u+1
 
-def gnm_random_graph(n, m, create_using=None, seed=None):
+def gnm_random_graph(n, m, seed=None, directed=False):
     """Return the random graph G_{n,m}.
 
-    Gives a graph picked randomly out of the set of all graphs
+    Produces a graph picked randomly out of the set of all graphs
     with n nodes and m edges.
 
     Parameters
@@ -246,15 +231,16 @@ def gnm_random_graph(n, m, create_using=None, seed=None):
         The number of nodes.
     m : int
         The number of edges.
-    create_using :  graph, optional (default Graph)
-        Use specified graph as a container.
     seed : int, optional
         Seed for random number generator (default=None). 
-      
+    directed : bool, optional (default=False)
+        If True return a directed graph 
     """
-    if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-    G=empty_graph(n,create_using)
+    if directed:
+        G=nx.DiGraph()
+    else:
+        G=nx.Graph()
+    G.add_nodes_from(range(n))
     G.name="gnm_random_graph(%s,%s)"%(n,m)
 
     if seed is not None:
@@ -262,9 +248,11 @@ def gnm_random_graph(n, m, create_using=None, seed=None):
 
     if n==1:
         return G
-
-    if m>=n*(n-1)/2:
-        return complete_graph(n,create_using)
+    max_edges=n*(n-1)
+    if not directed:
+        max_edges/=2.0
+    if m>=max_edges:
+        return complete_graph(n,create_using=G)
 
     nlist=G.nodes()
     edge_count=0
@@ -274,14 +262,11 @@ def gnm_random_graph(n, m, create_using=None, seed=None):
         v = random.choice(nlist)
         if u==v or G.has_edge(u,v):
             continue
-        # is this faster?
-        # (u,v)=random.sample(nlist,2)
-        #  if G.has_edge(u,v):
-        #      continue
         else:
             G.add_edge(u,v)
             edge_count=edge_count+1
     return G
+
 
 def newman_watts_strogatz_graph(n, k, p, create_using=None, seed=None):
     """Return a Newman-Watts-Strogatz small world graph.

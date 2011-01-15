@@ -326,6 +326,9 @@ class GEXFWriter(GEXF):
         else:
             mode='static'
         for k,v in list(data.items()):
+            # rename generic multigraph key to avoid any name conflict
+            if k == 'key':
+                k='networkx_key' 
             attr_id = self.get_attr_id(make_str(k), self.xml_type[type(v)],
                                        node_or_edge, default, mode)
             if type(v)==list:
@@ -670,10 +673,16 @@ class GEXFReader(GEXF):
         data = self.add_start_end(data,edge_element)
 
         # GEXF stores edge ids as an attribute
-        # NetworkX uses them as keys in multigraphs too
+        # NetworkX uses them as keys in multigraphs
+        # if networkx_key is not specified as an attribute
         edge_id = edge_element.get("id")
         if edge_id is not None:
             data["id"] = edge_id
+        
+        # check if there is a 'multigraph_key' and use that as edge_id
+        multigraph_key = data.pop('networkx_key',None)
+        if multigraph_key is not None:
+            edge_id=multigraph_key
 
         weight = edge_element.get('weight')
         if weight is not None:
@@ -682,6 +691,8 @@ class GEXFReader(GEXF):
         edge_label = edge_element.get("label")
         if edge_label is not None:
             data['label']=edge_label
+
+   
 
         if G.has_edge(source,target): 
             # seen this edge before - this is a multigraph
