@@ -140,7 +140,7 @@ def gnp_random_graph(n, p, seed=None, directed=False):
     if p<=0:
         return G
     if p>=1:
-        return complete_graph(n,create_using)
+        return complete_graph(n,create_using=G)
 
     if not seed is None:
         random.seed(seed)
@@ -189,7 +189,7 @@ def dense_gnm_random_graph(n, m, seed=None):
     References
     ----------
     .. [1] Donald E. Knuth, The Art of Computer Programming,
-        Volume 2 / Seminumerical algorithms, Third Edition, Addison-Wesley, 1997.
+        Volume 2/Seminumerical algorithms, Third Edition, Addison-Wesley, 1997.
     """
     mmax=n*(n-1)/2
     if m>=mmax:
@@ -248,7 +248,10 @@ def gnm_random_graph(n, m, seed=None, directed=False):
 
     if n==1:
         return G
-    if m>=n*(n-1)/2:
+    max_edges=n*(n-1)
+    if not directed:
+        max_edges/=2.0
+    if m>=max_edges:
         return complete_graph(n,create_using=G)
 
     nlist=G.nodes()
