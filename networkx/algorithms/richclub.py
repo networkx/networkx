@@ -69,15 +69,10 @@ def rich_club_coefficient(G, normalized=True, Q=100):
 
 def _compute_rc(G):
     # compute rich club coefficient for all k degrees in G
-    def cumulative_sum(numbers):
-        csum = 0
-        for n in numbers:
-            csum += n
-            yield csum
     deghist = nx.degree_histogram(G)
     total = sum(deghist)
     # number of nodes with degree > k (omit last entry which is zero)
-    nks = [total-cs for cs in cumulative_sum(deghist) if total-cs > 1]
+    nks = [total-cs for cs in nx.utils.cumulative_sum(deghist) if total-cs > 1]
     deg=G.degree()
     edge_degrees=sorted(sorted((deg[u],deg[v])) 
                         for u,v in G.edges_iter() if u!=v)
