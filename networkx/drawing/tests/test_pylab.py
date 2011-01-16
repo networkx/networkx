@@ -16,7 +16,7 @@ class TestPylab(object):
         global pylab
         try:
             import matplotlib as mpl
-            mpl.use('PS')
+            mpl.use('PS',warn=False)
             import pylab
         except ImportError:
             raise SkipTest('matplotlib not available.')
