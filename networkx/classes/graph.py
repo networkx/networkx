@@ -1655,15 +1655,15 @@ class Graph(object):
             return 0
 
 
-    def add_star(self, nlist, **attr):
+    def add_star(self, nodes, **attr):
         """Add a star.
 
-        The first node in nlist is the middle of the star.  It is connected
-        to all other nodes in nlist.
+        The first node in nodes is the middle of the star.  It is connected
+        to all other nodes.
 
         Parameters
         ----------
-        nlist : iterable container
+        nodes : iterable container
             A container of nodes.
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to every edge in star.
@@ -1679,17 +1679,17 @@ class Graph(object):
         >>> G.add_star([10,11,12],weight=2)
 
         """
-        nlist = list(nlist)
+        nlist = list(nodes)
         v=nlist[0]
         edges=((v,n) for n in nlist[1:])
         self.add_edges_from(edges, **attr)
 
-    def add_path(self, nlist, **attr):
+    def add_path(self, nodes, **attr):
         """Add a path.
 
         Parameters
         ----------
-        nlist : iterable container
+        nodes : iterable container
             A container of nodes.  A path will be constructed from
             the nodes (in order) and added to the graph.
         attr : keyword arguments, optional (default= no attributes)
@@ -1706,16 +1706,16 @@ class Graph(object):
         >>> G.add_path([10,11,12],weight=7)
 
         """
-        nlist = list(nlist)
+        nlist = list(nodes)
         edges=list(zip(nlist[:-1],nlist[1:]))
         self.add_edges_from(edges, **attr)
 
-    def add_cycle(self, nlist, **attr):
+    def add_cycle(self, nodes, **attr):
         """Add a cycle.
 
         Parameters
         ----------
-        nlist : iterable container
+        nodes: iterable container
             A container of nodes.  A cycle will be constructed from
             the nodes (in order) and added to the graph.
         attr : keyword arguments, optional (default= no attributes)
@@ -1732,7 +1732,7 @@ class Graph(object):
         >>> G.add_cycle([10,11,12],weight=7)
 
         """
-        nlist = list(nlist)
+        nlist = list(nodes)
         edges=list(zip(nlist,nlist[1:]+[nlist[0]]))
         self.add_edges_from(edges, **attr)
 
