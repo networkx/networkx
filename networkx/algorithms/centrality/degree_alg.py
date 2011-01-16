@@ -71,6 +71,7 @@ def in_degree_centrality(G):
     See Also
     --------
     degree_centrality, out_degree_centrality
+
     Notes
     -----
     The degree centrality values are normalized by dividing by the maximum 

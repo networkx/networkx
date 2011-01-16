@@ -10,3 +10,4 @@ Cores
    k_core
    k_shell
    k_crust
+   k_corona

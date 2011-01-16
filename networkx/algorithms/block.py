@@ -31,9 +31,9 @@ def blockmodel(G,partitions,multigraph=False):
     ----------
     G : graph
         A networkx Graph or DiGraph
-    partitions : list of lists or list of sets
+    partitions : list of lists, or list of sets 
         The partition of the nodes.  Must be non-overlapping.
-    multigraph: bool (optional)
+    multigraph : bool, optional
         If True return a MultiGraph with the edge data of the original
         graph applied to each corresponding edge in the new graph.
         If False return a Graph with the sum of the edge weights, or a

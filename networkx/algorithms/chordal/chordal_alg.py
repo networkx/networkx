@@ -5,7 +5,6 @@ Algorithms for chordal graphs.
 A graph is chordal if every cycle of length at least 4 has a chord
 (an edge joining two nodes not adjacent in the cycle).
 http://en.wikipedia.org/wiki/Chordal_graph
-
 """
 import networkx as nx
 import random
@@ -30,18 +29,19 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
 
 def is_chordal(G):
     """Checks whether G is a chordal graph.
-    
+
     A graph is chordal if every cycle of length at least 4 has a chord
     (an edge joining two nodes not adjacent in the cycle).
 
     Parameters
     ----------
-    G : NetworkX graph
-    
+    G : graph  
+      A NetworkX graph.  
+
     Returns
     -------
-    chordal : boolean. 
-	True if G is a chordal graph and False otherwise
+    chordal : bool
+      True if G is a chordal graph and False otherwise.
     
     Raises
     ------
@@ -61,7 +61,7 @@ def is_chordal(G):
     Notes
     -----
     The routine tries to go through every node following maximum cardinality 
-    search. It returns False when it founds that the separator for any node 
+    search. It returns False when it finds that the separator for any node 
     is not a clique.  Based on the algorithms in [1]_.
 
     References
@@ -85,15 +85,12 @@ def find_induced_nodes(G,s,t,treewidth_bound=sys.maxsize):
 
     Parameters
     ----------
-    G : NetworkX graph
-	Chordal graph.
-	
+    G : graph
+      A chordal NetworkX graph 
     s : node
 	Source node to look for induced nodes
-	
     t : node
 	Destination node to look for induced nodes
-	
     treewith_bound: float
         Maximum treewidth acceptable for the graph H. The search 
         for induced nodes will end as soon as the treewidth_bound is exceeded.
@@ -168,11 +165,12 @@ def chordal_graph_cliques(G):
     
     Parameters
     ----------
-    G: NetworkX graph
+    G : graph
+      A NetworkX graph 
     
     Returns
     -------
-    cliques: A set containing the maximal cliques in G.
+    cliques : A set containing the maximal cliques in G.
     
     Raises
     ------
@@ -206,8 +204,8 @@ def chordal_graph_treewidth(G):
  
     Parameters
     ----------
-    G : NetworkX graph
-	The chordal graph which we want to measure its treewidth.
+    G : graph
+      A NetworkX graph 
     
     Returns
     -------

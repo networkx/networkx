@@ -111,28 +111,27 @@ def k_core(G,k=None,core_number=None):
 
     Parameters
     ----------
-    G : NetworkX graph 
-       A graph or directed graph
-
+    G : NetworkX graph
+      A graph or directed graph
     k : int, optional
-       The order of the core.  If not specified return the main core (the core 
-       with the largest degree).
-       
-    core_number: dictionary (optional)
-       Precomputed core numbers for the graph G.  
+      The order of the core.  If not specified return the main core.
+    core_number : dictionary, optional
+      Precomputed core numbers for the graph G.
 
     Returns
     -------
     G : NetworkX graph
-       The k-core subgraph
+      The k-core subgraph
 
     Raises
     ------
     NetworkXError
-        The k-core is not defined for graphs with self loops or parallel edges.
+      The k-core is not defined for graphs with self loops or parallel edges.
 
     Notes
     -----
+    The main core is the core with the largest degree.
+
     Not implemented for graphs with parallel edges or self loops.
 
     For directed graphs the node degree is defined to be the 
@@ -163,15 +162,13 @@ def k_shell(G,k=None,core_number=None):
 
     Parameters
     ----------
-    G : NetworkX graph 
-       A graph or directed graph
+    G : NetworkX graph
+      A graph or directed graph.
+    k : int, optional      
+      The order of the shell.  If not specified return the main shell.
+    core_number : dictionary, optional
+      Precomputed core numbers for the graph G.
 
-    k : int, optional
-       The order of the shell.  If not specified return the main shell 
-       (the shell with the largest degree, also known as the main core).
-       
-    core_number: dictionary (optional)
-       Precomputed core numbers for the graph G.  
 
     Returns
     -------
@@ -215,15 +212,12 @@ def k_crust(G,k=None,core_number=None):
 
     Parameters
     ----------
-    G : NetworkX graph 
-       A graph or directed graph
-
-    k : int, optional
-       The order of the shell.  If not specified return the main crust 
-       which is the graph G with the k-core removed.
-
-    core_number: dictionary (optional)
-       Precomputed core numbers for the graph G.  
+    G : NetworkX graph
+       A graph or directed graph.
+    k : int, optional      
+      The order of the shell.  If not specified return the main crust.
+    core_number : dictionary, optional
+      Precomputed core numbers for the graph G.
 
     Returns
     -------
@@ -274,12 +268,10 @@ def k_corona(G, k, core_number=None):
     ----------
     G : NetworkX graph 
        A graph or directed graph
-
     k : int
        The order of the corona.
-
-    core_number: dictionary (optional)
-       Precomputed core numbers for the graph G.  
+    core_number : dictionary, optional
+       Precomputed core numbers for the graph G.
 
     Returns
     -------
@@ -306,10 +298,10 @@ def k_corona(G, k, core_number=None):
     References
     ----------
     .. [1]  k -core (bootstrap) percolation on complex networks: 
-    Critical phenomena and nonlocal effects, 
-    A. V. Goltsev, S. N. Dorogovtsev, and J. F. F. Mendes,
-    Phys. Rev. E 73, 056101 (2006) 
-    http://link.aps.org/doi/10.1103/PhysRevE.73.056101
+       Critical phenomena and nonlocal effects, 
+       A. V. Goltsev, S. N. Dorogovtsev, and J. F. F. Mendes,
+       Phys. Rev. E 73, 056101 (2006) 
+       http://link.aps.org/doi/10.1103/PhysRevE.73.056101
     """
 
     if core_number is None:

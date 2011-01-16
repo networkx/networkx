@@ -41,17 +41,14 @@ def betweenness_centrality(G,normalized=True,
     ----------
     G : graph
       A NetworkX graph 
-
-    normalized : bool, optional
+    normalized : bool, optional  
       If True the betweenness values are normalized by
       :math:`1/(n-1)(n-2)` where :math:`n` is the number of nodes in G.
-       
-    weighted_edges : bool, optional
+    weighted_edges : bool, optional  
       Consider the edge weights in determining the shortest paths.
       The edge weights must be greater than zero.
       If False, all edge weights are considered equal.
-
-    endpoints : bool, optional
+    endpoints : bool, optional  
       If True include the endpoints in the shortest path counts.
 
     Returns
