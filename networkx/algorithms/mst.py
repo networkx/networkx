@@ -11,7 +11,7 @@ Computes minimum spanning tree of a weighted graph.
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['mst', 'kruskal_mst',
+__all__ = ['kruskal_mst',
            'minimum_spanning_edges',
            'minimum_spanning_tree',
            'prim_mst_edges', 'prim_mst']
@@ -133,8 +133,6 @@ def minimum_spanning_tree(G,weight='weight'):
     return T
 
 kruskal_mst=minimum_spanning_tree
-mst=minimum_spanning_tree
-
 
 def prim_mst_edges(G, weight = 'weight', data = True):
     """Generate edges in a minimum spanning forest of an undirected 
