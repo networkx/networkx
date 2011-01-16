@@ -19,7 +19,7 @@ from networkx.algorithms.operators import *
 from networkx.algorithms.shortest_paths import *
 from networkx.algorithms.smetric import *
 from networkx.algorithms.traversal import *
-from networkx.algorithms.isolates import *
+from networkx.algorithms.isolate import *
 from networkx.algorithms.euler import *
 from networkx.algorithms.vitality import *
 from networkx.algorithms.chordal import *
