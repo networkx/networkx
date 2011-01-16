@@ -98,11 +98,11 @@ class TestGenericPath:
 
     def test_weighted_average_shortest_path(self):
         G=nx.Graph()
-        G.add_cycle(list(range(7)),weight=2)
+        G.add_cycle(range(7),weight=2)
         l=nx.average_shortest_path_length(G,weighted=True)
         assert_almost_equal(l,4)
         G=nx.Graph()
-        G.add_path(list(range(5)),weight=2)
+        G.add_path(range(5),weight=2)
         l=nx.average_shortest_path_length(G,weighted=True)
         assert_almost_equal(l,4)
 

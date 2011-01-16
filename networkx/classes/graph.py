@@ -1663,8 +1663,8 @@ class Graph(object):
 
         Parameters
         ----------
-        nlist : list
-            A list of nodes.
+        nlist : iterable container
+            A container of nodes.
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to every edge in star.
 
@@ -1679,6 +1679,7 @@ class Graph(object):
         >>> G.add_star([10,11,12],weight=2)
 
         """
+        nlist = list(nlist)
         v=nlist[0]
         edges=((v,n) for n in nlist[1:])
         self.add_edges_from(edges, **attr)
@@ -1688,8 +1689,8 @@ class Graph(object):
 
         Parameters
         ----------
-        nlist : list
-            A list of nodes.  A path will be constructed from
+        nlist : iterable container
+            A container of nodes.  A path will be constructed from
             the nodes (in order) and added to the graph.
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to every edge in path.
@@ -1705,6 +1706,7 @@ class Graph(object):
         >>> G.add_path([10,11,12],weight=7)
 
         """
+        nlist = list(nlist)
         edges=list(zip(nlist[:-1],nlist[1:]))
         self.add_edges_from(edges, **attr)
 
@@ -1713,8 +1715,8 @@ class Graph(object):
 
         Parameters
         ----------
-        nlist : list
-            A list of nodes.  A cycle will be constructed from
+        nlist : iterable container
+            A container of nodes.  A cycle will be constructed from
             the nodes (in order) and added to the graph.
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to every edge in cycle.
@@ -1730,6 +1732,7 @@ class Graph(object):
         >>> G.add_cycle([10,11,12],weight=7)
 
         """
+        nlist = list(nlist)
         edges=list(zip(nlist,nlist[1:]+[nlist[0]]))
         self.add_edges_from(edges, **attr)
 
