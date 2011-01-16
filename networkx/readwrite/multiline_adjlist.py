@@ -53,8 +53,8 @@ def generate_multiline_adjlist(G, delimiter = ' '):
     delimiter : string, optional
        Separator for node labels 
 
-    Yields
-    ------
+    Returns
+    -------
     lines : string
         Lines of data in multiline adjlist format.
 

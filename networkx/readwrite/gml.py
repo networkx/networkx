@@ -253,8 +253,8 @@ def generate_gml(G):
     ----------
     G : NetworkX graph
 
-    Yields
-    ------
+    Returns
+    -------
     lines: string
        Lines in GML format.
 
