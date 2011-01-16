@@ -1,14 +1,6 @@
-.. _shortest_paths:
-
 Shortest Paths
 ==============
-
-.. toctree::
-   :maxdepth: 2
-
 .. automodule:: networkx.algorithms.shortest_paths.generic
-.. currentmodule:: networkx
-
 .. autosummary::
    :toctree: generated/
 
@@ -22,8 +14,6 @@ Advanced Interface
 ------------------
 
 .. automodule:: networkx.algorithms.shortest_paths.unweighted
-.. currentmodule:: networkx
-
 .. autosummary::
    :toctree: generated/
 
@@ -36,8 +26,6 @@ Advanced Interface
 
 
 .. automodule:: networkx.algorithms.shortest_paths.weighted
-.. currentmodule:: networkx
-
 .. autosummary::
    :toctree: generated/
 
@@ -49,7 +37,6 @@ Advanced Interface
    all_pairs_dijkstra_path_length
    single_source_dijkstra
    bidirectional_dijkstra
-   bidirectional_shortest_path
    dijkstra_predecessor_and_distance
    bellman_ford
 
@@ -59,8 +46,6 @@ A* Algorithm
 ------------
 
 .. automodule:: networkx.algorithms.shortest_paths.astar
-.. currentmodule:: networkx
-
 .. autosummary::
    :toctree: generated/
 

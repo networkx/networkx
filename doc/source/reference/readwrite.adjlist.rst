@@ -3,8 +3,6 @@ Adjacency List
 ==============
 
 .. automodule:: networkx.readwrite.adjlist
-
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

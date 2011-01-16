@@ -13,6 +13,11 @@
 
 import sys, os, re
 
+# Check Sphinx version
+import sphinx
+if sphinx.__version__ < "1.0.1":
+    raise RuntimeError("Sphinx 1.0.1 or newer required")
+
 # If your extensions are in another directory, add it here.
 sys.path.append(os.path.abspath('../sphinxext'))
 
@@ -69,7 +74,7 @@ release = networkx.__version__.replace('_','')
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
 
-add_module_names = False
+#add_module_names = False
 
 # show_authors = True
 

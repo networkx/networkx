@@ -3,7 +3,9 @@ import sphinx
 from docscrape import NumpyDocString, FunctionDoc, ClassDoc
 
 class SphinxDocString(NumpyDocString):
-    use_plots = False
+    def __init__(self, docstring, config={}):
+        self.use_plots = config.get('use_plots', False)
+        NumpyDocString.__init__(self, docstring, config=config)
 
     # string conversion routines
     def _str_header(self, name, symbol='`'):
@@ -176,7 +178,8 @@ class SphinxDocString(NumpyDocString):
         out += self._str_index() + ['']
         out += self._str_summary()
         out += self._str_extended_summary()
-        for param_list in ('Parameters', 'Returns', 'Raises'):
+        for param_list in ('Parameters', 'Returns', 'Other Parameters',
+                           'Raises', 'Warns'):
             out += self._str_param_list(param_list)
         out += self._str_warnings()
         out += self._str_see_also(func_role)
@@ -189,17 +192,21 @@ class SphinxDocString(NumpyDocString):
         return '\n'.join(out)
 
 class SphinxFunctionDoc(SphinxDocString, FunctionDoc):
-    pass
+    def __init__(self, obj, doc=None, config={}):
+        self.use_plots = config.get('use_plots', False)
+        FunctionDoc.__init__(self, obj, doc=doc, config=config)
 
 class SphinxClassDoc(SphinxDocString, ClassDoc):
-    pass
+    def __init__(self, obj, doc=None, func_doc=None, config={}):
+        self.use_plots = config.get('use_plots', False)
+        ClassDoc.__init__(self, obj, doc=doc, func_doc=None, config=config)
 
 class SphinxObjDoc(SphinxDocString):
-    def __init__(self, obj, doc):
+    def __init__(self, obj, doc=None, config={}):
         self._f = obj
-        SphinxDocString.__init__(self, doc)
+        SphinxDocString.__init__(self, doc, config=config)
 
-def get_doc_object(obj, what=None, doc=None):
+def get_doc_object(obj, what=None, doc=None, config={}):
     if what is None:
         if inspect.isclass(obj):
             what = 'class'
@@ -210,10 +217,11 @@ def get_doc_object(obj, what=None, doc=None):
         else:
             what = 'object'
     if what == 'class':
-        return SphinxClassDoc(obj, '', func_doc=SphinxFunctionDoc, doc=doc)
+        return SphinxClassDoc(obj, func_doc=SphinxFunctionDoc, doc=doc,
+                              config=config)
     elif what in ('function', 'method'):
-        return SphinxFunctionDoc(obj, '', doc=doc)
+        return SphinxFunctionDoc(obj, doc=doc, config=config)
     else:
         if doc is None:
             doc = pydoc.getdoc(obj)
-        return SphinxObjDoc(obj, doc)
+        return SphinxObjDoc(obj, doc, config=config)

@@ -3,7 +3,6 @@ Mixing Patterns
 ***************
 
 .. automodule:: networkx.algorithms.mixing
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

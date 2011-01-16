@@ -2,9 +2,7 @@
 Isolates
 ********
 
-.. automodule:: networkx.algorithms.isolates
-
-.. currentmodule:: networkx
+.. automodule:: networkx.algorithms.isolate
 .. autosummary::
    :toctree: generated/
 

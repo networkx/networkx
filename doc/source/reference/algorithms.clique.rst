@@ -3,8 +3,6 @@ Clique
 ******
 
 .. automodule:: networkx.algorithms.clique
-
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

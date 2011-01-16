@@ -7,8 +7,6 @@ Chordal
    :maxdepth: 2
 
 .. automodule:: networkx.algorithms.chordal.chordal_alg
-.. currentmodule:: networkx
-
 .. autosummary::
    :toctree: generated/
 

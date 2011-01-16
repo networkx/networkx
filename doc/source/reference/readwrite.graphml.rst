@@ -1,7 +1,6 @@
 GraphML
 =======
 .. automodule:: networkx.readwrite.graphml
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

@@ -2,7 +2,6 @@
 Edge List
 =========
 .. automodule:: networkx.readwrite.edgelist
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

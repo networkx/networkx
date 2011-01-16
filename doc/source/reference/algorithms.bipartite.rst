@@ -3,8 +3,6 @@ Bipartite
 *********
 
 .. automodule:: networkx.algorithms.bipartite
-
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

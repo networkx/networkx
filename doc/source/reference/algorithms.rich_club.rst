@@ -3,7 +3,6 @@ Rich Club
 *********
 
 .. automodule:: networkx.algorithms.richclub
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

@@ -3,7 +3,6 @@ Flows
 *****
 
 .. automodule:: networkx.algorithms.flow
-.. currentmodule:: networkx
 
 Ford-Fulkerson
 --------------

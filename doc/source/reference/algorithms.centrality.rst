@@ -1,14 +1,10 @@
 **********
 Centrality
 **********
-
 .. automodule:: networkx.algorithms.centrality
-.. currentmodule:: networkx
 
 Degree
 ------
-.. automodule:: networkx.algorithms.centrality.degree_alg
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 
@@ -18,8 +14,6 @@ Degree
 
 Closeness
 ---------
-.. automodule:: networkx.algorithms.centrality.closeness
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 
@@ -27,7 +21,6 @@ Closeness
 
 Betweenness
 -----------
-.. automodule:: networkx.algorithms.centrality.betweenness
 .. autosummary::
    :toctree: generated/
 
@@ -36,8 +29,6 @@ Betweenness
 
 Current Flow Closeness
 ----------------------
-.. automodule:: networkx.algorithms.centrality.current_flow_closeness
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 
@@ -46,7 +37,6 @@ Current Flow Closeness
 
 Current-Flow Betweenness
 ------------------------
-.. automodule:: networkx.algorithms.centrality.current_flow_betweenness
 .. autosummary::
    :toctree: generated/
 
@@ -56,8 +46,6 @@ Current-Flow Betweenness
 
 Eigenvector
 -----------
-.. automodule:: networkx.algorithms.centrality.eigenvector
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 
@@ -67,7 +55,6 @@ Eigenvector
 
 Load
 ----
-.. automodule:: networkx.algorithms.centrality.load
 .. autosummary::
    :toctree: generated/
 

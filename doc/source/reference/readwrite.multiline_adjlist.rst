@@ -3,8 +3,6 @@ Multiline Adjacency List
 ========================
 
 .. automodule:: networkx.readwrite.multiline_adjlist
-
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

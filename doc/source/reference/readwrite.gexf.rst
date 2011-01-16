@@ -1,7 +1,6 @@
 GEXF
 ====
 .. automodule:: networkx.readwrite.gexf
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

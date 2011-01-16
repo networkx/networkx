@@ -1,7 +1,6 @@
 LEDA
 ====
 .. automodule:: networkx.readwrite.leda
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

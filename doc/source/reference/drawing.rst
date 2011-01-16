@@ -7,8 +7,6 @@ Drawing
 Matplotlib
 ==========
 .. automodule:: networkx.drawing.nx_pylab
-
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 
@@ -30,8 +28,6 @@ Matplotlib
 Graphviz AGraph (dot)
 =====================
 .. automodule:: networkx.drawing.nx_agraph
-
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 
@@ -46,8 +42,6 @@ Graphviz AGraph (dot)
 Graphviz with pydot
 ===================
 .. automodule:: networkx.drawing.nx_pydot
-
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 
@@ -62,8 +56,6 @@ Graphviz with pydot
 Graph Layout
 ============
 .. automodule:: networkx.drawing.layout
-
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

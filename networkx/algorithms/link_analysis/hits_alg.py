@@ -24,7 +24,7 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
     Hubs estimates the node value based on outgoing links.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph 
        

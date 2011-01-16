@@ -78,7 +78,6 @@ Random Graphs
 
    fast_gnp_random_graph
    gnp_random_graph
-   directed_gnp_random_graph
    dense_gnm_random_graph
    gnm_random_graph
    erdos_renyi_graph

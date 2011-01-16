@@ -3,8 +3,6 @@ Eulerian
 ********
 
 .. automodule:: networkx.algorithms.euler
-
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

@@ -11,8 +11,6 @@ Traversal
 Depth First Search
 ------------------
 .. automodule:: networkx.algorithms.traversal.depth_first_search
-.. currentmodule:: networkx
-
 .. autosummary::
    :toctree: generated/
 
@@ -27,8 +25,6 @@ Depth First Search
 Breadth First Search
 --------------------
 .. automodule:: networkx.algorithms.traversal.breadth_first_search
-.. currentmodule:: networkx
-
 .. autosummary::
    :toctree: generated/
 

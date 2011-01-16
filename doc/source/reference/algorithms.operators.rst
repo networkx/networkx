@@ -4,7 +4,6 @@ Operators
 *********
 
 .. automodule:: networkx.algorithms.operators
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

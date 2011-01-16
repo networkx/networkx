@@ -1,7 +1,6 @@
 Pickle
 ======
 .. automodule:: networkx.readwrite.gpickle
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

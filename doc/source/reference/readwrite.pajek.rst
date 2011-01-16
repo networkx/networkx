@@ -1,7 +1,6 @@
 Pajek
 =====
 .. automodule:: networkx.readwrite.pajek
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

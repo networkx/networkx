@@ -3,7 +3,6 @@ Matching
 ********
 
 .. automodule:: networkx.algorithms.matching
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

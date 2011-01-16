@@ -7,8 +7,7 @@ Isomorphism
 .. toctree::
    :maxdepth: 2
 
-.. currentmodule:: networkx
-
+.. automodule:: networkx.algorithms.isomorphism
 .. autosummary::
    :toctree: generated/
 

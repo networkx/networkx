@@ -3,7 +3,6 @@ Directed Acyclic Graphs
 ***********************
 
 .. automodule:: networkx.algorithms.dag
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

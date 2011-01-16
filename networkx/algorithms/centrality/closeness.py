@@ -19,42 +19,36 @@ import networkx as nx
 def closeness_centrality(G,v=None,weighted_edges=False,normalized=True):
     """Compute closeness centrality for nodes.
 
-    Closeness centrality at a node is 1/average distance to all 
-    other nodes.
+    Closeness centrality at a node is 1/average distance to all other nodes.
 
     Parameters
     ----------
     G : graph
       A networkx graph 
-
     v : node, optional
-      Return only the value for node v.
-
+      Return only the value for node v
     weighted_edges : bool, optional
-      Consider the edge weights in determining the shortest paths.
-      If False, all edge weights are considered equal.
-      
-    normalized : bool, optional
-       If True normalize the values to the size of the connected
-       compoenent containing v.
+      If True use edge weights in computing degree and size.
+    normalized : bool, optional      
+      If True (default) normalize by the graph size.
 
     Returns
     -------
     nodes : dictionary
-       Dictionary of nodes with closeness centrality as the value.
+      Dictionary of nodes with closeness centrality as the value.
 
     See Also
     --------
-    betweenness_centrality(), load_centrality(), eigenvector_centrality(),
-    degree_centrality()
+    betweenness_centrality, load_centrality, eigenvector_centrality,
+    degree_centrality
 
     Notes
     -----
-    The closeness centrality is normalized to to n-1 / size(G)-1 where 
+    The closeness centrality is normalized to to n-1 / size(G)-1 where
     n is the number of nodes in the connected part of graph containing
     the node.  If the graph is not completely connected, this
     algorithm computes the closeness centrality for each connected
-    part separately.  
+    part separately.
     """
     if weighted_edges:
         path_length=nx.single_source_dijkstra_path_length

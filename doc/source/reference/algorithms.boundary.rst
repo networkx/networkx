@@ -3,7 +3,6 @@ Boundary
 ********
 
 .. automodule:: networkx.algorithms.boundary
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 

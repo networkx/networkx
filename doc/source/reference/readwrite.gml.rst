@@ -1,7 +1,6 @@
 GML
 ===
 .. automodule:: networkx.readwrite.gml
-.. currentmodule:: networkx
 .. autosummary::
    :toctree: generated/
 
