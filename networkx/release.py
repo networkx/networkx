@@ -191,6 +191,7 @@ minor = '4rc1'
 ## Change to False before tagging a release; then change back.
 dev = False
 
+
 description = "Python package for creating and manipulating graphs and networks"
 
 long_description = \
