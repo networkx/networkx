@@ -28,9 +28,9 @@ New features
 API Changes
 ~~~~~~~~~~~
  - :mod:`gnp_random_graph() <networkx.generators.random_graphs>` now takes a 
-   directed=True|False keyword instead of create_using` 
+   directed=True|False keyword instead of create_using 
  - :mod:`gnm_random_graph() <networkx.generators.random_graphs>` now takes a 
-   directed=True|False keyword instead of create_using` 
+   directed=True|False keyword instead of create_using 
 
 Bug fixes
 ~~~~~~~~~

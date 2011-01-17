@@ -22,8 +22,6 @@ Advanced Interface
    all_pairs_shortest_path
    all_pairs_shortest_path_length
    predecessor
-   floyd_warshall
-
 
 .. automodule:: networkx.algorithms.shortest_paths.weighted
 .. autosummary::
@@ -40,6 +38,17 @@ Advanced Interface
    dijkstra_predecessor_and_distance
    bellman_ford
 
+
+Dense Graphs
+------------
+
+.. automodule:: networkx.algorithms.shortest_paths.dense
+.. autosummary::
+   :toctree: generated/
+
+   floyd_warshall
+   floyd_warshall_predecessor_and_distance
+   floyd_warshall_numpy
 
 
 A* Algorithm

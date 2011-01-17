@@ -15,8 +15,8 @@ __all__ = ['bidirectional_shortest_path',
            'single_source_shortest_path_length',
            'all_pairs_shortest_path', 
            'all_pairs_shortest_path_length',
-           'predecessor', 
-           'floyd_warshall']
+           'predecessor'] 
+
 
 import networkx as nx
 
@@ -293,135 +293,6 @@ def all_pairs_shortest_path(G,cutoff=None):
     return paths        
 
 
-def floyd_warshall_array(G):
-    """The Floyd-Warshall algorithm for all pairs shortest paths.
- 
-
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    Returns
-    -------
-    distance,pred : dictionaries
-       A dictionary, keyed by source and target, of shortest path
-       distance and predecessors in the shortest path.
-
-    Notes
-    ------
-    This differs from floyd_warshall only in the types of the return
-    values.  Thus, path[i,j] gives the predecessor at j on a path from
-    i to j.  A value of None indicates that no path exists.  A
-    predecessor of i indicates the beginning of the path.  The
-    advantage of this implementation is that, while running time is
-    O(n^3), running space is O(n^2).
-
-    This algorithm handles negative weights.
-    """
-
-    # A weight that's more than any path weight
-    HUGE_VAL = 1
-    for u,v,d in G.edges(data=True):
-        HUGE_VAL += abs(d)
-
-    dist = {}
-    dist_prev = {}
-    pred = {}
-    pred_prev = {}
-    for i in G:
-        dist[i] = {}
-        dist_prev[i] = {}
-        pred[i] = {}
-        pred_prev[i] = {}
-        inbrs=G[i]
-        for j in G:
-            dist[i][j] = 0              # arbitrary, just create slot
-            pred[i][j] = 0              # arbitrary, just create slot
-            if i == j:
-                dist_prev[i][j] = 0
-                pred_prev[i][j] = -1
-            elif j in inbrs:
-                val = inbrs[j]
-                dist_prev[i][j] = val
-                pred_prev[i][j] = i
-            else:
-                # no edge, distinct vertices
-                dist_prev[i][j] = HUGE_VAL
-                pred_prev[i][j] = -1    # None, but has to be numerically comparable
-    for k in G:
-        for i in G:
-            for j in G:
-                dist[i][j] = min(dist_prev[i][j], dist_prev[i][k] + dist_prev[k][j])
-                if dist_prev[i][j] <= dist_prev[i][k] + dist[k][j]:
-                    pred[i][j] = pred_prev[i][j]
-                else:
-                    pred[i][j] = pred_prev[k][j]
-        tmp = dist_prev
-        dist_prev = dist
-        dist = tmp
-
-        tmp = pred_prev
-        pred_prev = pred
-        pred = tmp
-    # The last time through the loop, we exchanged for nothing, so
-    # return the prev versions, since they're really the current
-    # versions.
-    return dist_prev, pred_prev
-######################################################################
-
-def floyd_warshall(G):
-    """The Floyd-Warshall algorithm for all pairs shortest paths.
-    
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    Returns
-    -------
-    distance,pred : dictionaries
-       A dictionary, keyed by source and target, of shortest path
-       distance and predecessors in the shortest path.
-
-    Notes
-    -----
-    This algorithm is most appropriate for dense graphs.
-    The running time is O(n^3), and running space is O(n^2)
-    where n is the number of nodes in G.  
-
-    See Also
-    --------
-    all_pairs_shortest_path()
-    all_pairs_shortest_path_length()
-
-    """
-    huge=1e30000 # sentinal value
-    # dictionary-of-dictionaries representation for dist and pred
-    dist={} 
-    # initialize path distance dictionary to be the adjacency matrix
-    # but with sentinal value "huge" where there is no edge
-    # also set the distance to self to 0 (zero diagonal)
-    pred={}
-    # initialize predecessor dictionary 
-    for u in G:
-        dist[u]={}
-        pred[u]={}
-        unbrs=G[u]
-        for v in G:
-            if v in unbrs:
-                dist[u][v]=unbrs[v].get('weight',1)
-                pred[u][v]=u
-            else:
-                dist[u][v]=huge
-                pred[u][v]=None 
-        dist[u][u]=0  # set 0 distance to self
-
-    for w in G.nodes():
-        for u in G.nodes():
-            for v in G.nodes():
-                if dist[u][v] > dist[u][w] + dist[w][v]:
-                    dist[u][v] = dist[u][w] + dist[w][v]
-                    pred[u][v] = pred[w][v]
-    return dist,pred
 
 
 def predecessor(G,source,target=None,cutoff=None,return_seen=None):
