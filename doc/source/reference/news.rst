@@ -7,7 +7,35 @@ Release Log
 Networkx-1.4
 ------------
 
-Release date:  xx December 2010
+Release date:  21 January 2011
+
+New features
+~~~~~~~~~~~~
+ - :mod:`k-shell,k-crust,k-coronoa <networkx.algorithms.core>`
+ - :mod:`read GraphML files from yEd <networkx.readwrite.graphml>`
+ - :mod:`read/write GEXF format files <networkx.readwrite.gexf>`
+ - :mod:`find cycles in a directed graph <networkx.algorithms.cycles>`
+ - :mod:`DFS <networkx.algorithms.traversal.depth_first_search>` and :mod:`BFS <networkx.algorithms.traversal.breadth_first_search>` algorithms
+ - :mod:`chordal graph functions <networkx.algorithms.chordal.chordal_alg>`
+ - :mod:`Prim's algorithm for minimum spanning tree <networkx.algorithms.mst>`
+ - :mod:`r-ary tree generator <networkx.generators.classic>`
+ - :mod:`rich club coefficient <networkx.algorithms.richclub>`
+ - NumPy matrix version of :mod:`Floyd's algorithm for all-pairs shortest path  <networkx.algorithms.shortest_paths.dense>`
+ - :mod:`read GIS shapefiles <networkx.readwrite.nx_shp>`
+ - :mod:`functions to get and set node and edge attributes <networkx.classes.function>`
+ - and more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.4
+
+API Changes
+~~~~~~~~~~~
+ - :mod:`gnp_random_graph() <networkx.generators.random_graphs>` now takes a 
+   directed=True|False keyword instead of create_using` 
+ - :mod:`gnm_random_graph() <networkx.generators.random_graphs>` now takes a 
+   directed=True|False keyword instead of create_using` 
+
+Bug fixes
+~~~~~~~~~
+  - see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.4
+
 
 
 Networkx-1.3
