@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     setup(
         name             = release.name.lower(),
-        version          = release.version,
+        version          = version,
         maintainer       = release.maintainer,
         maintainer_email = release.maintainer_email,
         author           = release.authors['Hagberg'][0],
