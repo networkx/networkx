@@ -18,3 +18,4 @@ Reading and writing graphs
    readwrite.yaml
    readwrite.sparsegraph6
    readwrite.pajek
+   readwrite.nx_shp
