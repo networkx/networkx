@@ -27,7 +27,7 @@ Arbitrary data::
  1 2 7 green
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -336,6 +336,16 @@ def read_edgelist(path, comments="#", delimiter=' ', create_using=None,
 
     >>> G=nx.read_edgelist("test.edgelist", nodetype=int)
     >>> G=nx.read_edgelist("test.edgelist",create_using=nx.DiGraph())
+
+    Edgelist with data in a list:
+
+    >>> textline = '1 2 3'
+    >>> open('test.edgelist','w').write(textline)
+    >>> G = nx.read_edgelist('test.edgelist', nodetype=int, data=(('weight',float),))
+    >>> G.nodes()
+    [1, 2]
+    >>> G.edges(data = True)
+    [(1, 2, {'weight': 3.0})]
 
     See parse_edgelist() for more examples of formatting.
 
