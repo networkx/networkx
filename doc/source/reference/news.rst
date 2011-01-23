@@ -7,7 +7,7 @@ Release Log
 Networkx-1.4
 ------------
 
-Release date:  21 January 2011
+Release date:  23 January 2011
 
 New features
 ~~~~~~~~~~~~
