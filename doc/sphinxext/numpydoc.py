@@ -101,7 +101,7 @@ def setup(app, get_doc_object_=get_doc_object):
     app.add_config_value('numpydoc_show_class_members', True, True)
 
     # Extra mangling domains
-    app.add_domain(NumpyPythonDomain)
+    #app.add_domain(NumpyPythonDomain)
     app.add_domain(NumpyCDomain)
 
 #------------------------------------------------------------------------------
