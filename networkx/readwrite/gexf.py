@@ -538,6 +538,14 @@ class GEXFReader(GEXF):
             else:
                 raise # unknown attribute class
 
+        # Hack to handle Gephi0.7beta bug
+        # add weight attribute 
+        ea={'weight':{'type': 'double', 'mode': 'static', 'title': 'weight'}}
+        ed={}
+        edge_attr.update(ea)
+        edge_default.update(ed)
+        G.graph['edge_default']=edge_default
+
         # add nodes
         nodes_element=graph_xml.find("{%s}nodes" % self.NS_GEXF)        
         if nodes_element is not None:
