@@ -25,8 +25,12 @@ __all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
 import itertools
 import networkx as nx
 from networkx.utils import _get_fh, make_str
-import xml.etree.ElementTree as ET
-from xml.etree.cElementTree import ElementTree, Element, tostring
+try:
+    from xml.etree.cElementTree import ElementTree, Element, tostring
+    import xml.etree.ElementTree as ET
+except ImportError:
+    pass
+
 
 def write_gexf(G, path, encoding='utf-8',prettyprint=True):
     """Write G in GEXF format to path.

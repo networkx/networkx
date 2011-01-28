@@ -46,7 +46,6 @@ from networkx.utils import _get_fh, make_str
 import warnings
 try:
     from xml.etree.cElementTree import Element, ElementTree as ET, tostring
-
 except ImportError:
     pass
     
