@@ -3,11 +3,11 @@ NetworkX
 ========
 
     NetworkX (NX) is a Python package for the creation, manipulation, and
-    study of the structure, dynamics, and functions of complex networks.  
+    study of the structure, dynamics, and functions of complex networks.
 
     https://networkx.lanl.gov/
 
-Using 
+Using
 -----
 
     Just write in Python
@@ -21,7 +21,7 @@ Using
     >>> print(G.edges())
     [(1, 2)]
 """
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -47,8 +47,10 @@ __author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
                 release.authors['Swart'] )
 __license__  = release.license
 
+__date__ = release.date
+__version__ = release.version
 
-# these packages work with Python >= 2.6 
+# these packages work with Python >= 2.6
 from networkx.exception import  *
 import networkx.classes
 from networkx.classes import *
@@ -68,9 +70,4 @@ import networkx.utils
 
 import networkx.drawing
 from networkx.drawing import *
-
-# Do this last in case some of the "*" imports overwrite sys
-import networkx.sys
-__version__ = networkx.sys.version
-__date__ = networkx.sys.date
 
