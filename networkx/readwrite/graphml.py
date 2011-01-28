@@ -167,7 +167,7 @@ class GraphML(object):
         pass
 
     types=((str,"yfiles"),(str,"string"), (unicode,"string"),
-           (int,"int"), (float,"float"), (float,"double"))
+           (int,"int"), (int,"integer"), (float,"float"), (float,"double"))
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
 
