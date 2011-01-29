@@ -340,7 +340,7 @@ def read_edgelist(path, comments="#", delimiter=' ', create_using=None,
     Edgelist with data in a list:
 
     >>> textline = '1 2 3'
-    >>> open('test.edgelist','w').write(textline)
+    >>> n=open('test.edgelist','w').write(textline)
     >>> G = nx.read_edgelist('test.edgelist', nodetype=int, data=(('weight',float),))
     >>> G.nodes()
     [1, 2]
