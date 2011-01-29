@@ -103,7 +103,7 @@ vcs_info = %(vcs_info)r
             # running setup.py. We do not want to overwrite version.py.
             # Grab the version so that setup can use it.
             sys.path.insert(0, basedir)
-            from .version import version
+            from version import version
             del sys.path[0]
         else:
             # This is *bad*.  It means the user might have a tarball that
@@ -161,7 +161,7 @@ def get_info(dynamic=True):
         # no vcs information will be provided.
         sys.path.insert(0, basedir)
         try:
-            from .version import date, date_info, version, version_info, vcs_info
+            from version import date, date_info, version, version_info, vcs_info
         except ImportError:
             import_failed = True
             vcs_info = (None, (None, None))
