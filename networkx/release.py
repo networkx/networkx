@@ -128,16 +128,16 @@ def get_revision():
     if os.path.isdir(hgdir):
         vcs = 'mercurial'
         try:
-            import mercurial
             p = subprocess.Popen(['hg', 'id'], 
                                  cwd=basedir,
                                  stdout=subprocess.PIPE)
+        except OSError:
+            pass
+        else:
             stdout = p.communicate()[0]
             revision, tag = stdout.decode().strip().split()
             revision=str(revision) # force strings instead of unicode
             tag=str(tag) # force strings instead of unicode
-        except ImportError:
-            pass
     elif os.path.isdir(gitdir):
         vcs = 'git'
         # For now, we are not bothering with revision and tag.
