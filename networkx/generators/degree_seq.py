@@ -573,7 +573,7 @@ def is_valid_degree_sequence(deg_sequence):
         
     s=deg_sequence[:]  # copy to s
     while s:      
-        s.sort()    # sort in non-increasing order
+        s.sort()    # sort in increasing order
         if s[0]<0: 
             return False  # check if removed too many from some node
 
@@ -584,8 +584,8 @@ def is_valid_degree_sequence(deg_sequence):
         if d>len(s):   return False
 
         # remove edges to nodes of next higher degrees
-        s.reverse()  # to make it easy to get at higher degree nodes.
-        for i in range(d):
+        #s.reverse()  # to make it easy to get at higher degree nodes.
+        for i in range(len(s)-1,len(s)-(d+1),-1):
             s[i]-=1
 
     # should never get here b/c either d==0, d>len(s) or d<0 before s=[]
