@@ -56,6 +56,9 @@ def find_cliques(G):
     as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
     and discussed in Cazals and Karande (2008) [3]_.
 
+    There are often many cliques in graphs.  This algorithm can
+    run out of memory for large graphs.
+
     References
     ----------
     .. [1] Bron, C. and Kerbosch, J. 1973. 
