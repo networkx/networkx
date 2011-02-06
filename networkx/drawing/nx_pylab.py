@@ -748,6 +748,7 @@ def draw_networkx_edge_labels(G, pos,
                               alpha=1.0,
                               bbox=None,
                               ax=None,
+                              rotate=True,
                               **kwds):
     """Draw edge labels.
 
@@ -828,16 +829,19 @@ def draw_networkx_edge_labels(G, pos,
         (x1,y1)=pos[n1]
         (x2,y2)=pos[n2]
         (x,y) = ((x1+x2)/2, (y1+y2)/2)
-        angle=numpy.arctan2(y2-y1,x2-x1)/(2.0*numpy.pi)*360 # degrees
-        # make label orientation "right-side-up"
-        if angle > 90: 
-            angle-=180
-        if angle < - 90: 
-            angle+=180
-        # transform data coordinate angle to screen coordinate angle
-        xy=numpy.array((x,y))
-        trans_angle=ax.transData.transform_angles(numpy.array((angle,)),
-                                                  xy.reshape((1,2)))[0]
+        if rotate: 
+            angle=numpy.arctan2(y2-y1,x2-x1)/(2.0*numpy.pi)*360 # degrees
+            # make label orientation "right-side-up"
+            if angle > 90: 
+                angle-=180
+            if angle < - 90: 
+                angle+=180
+            # transform data coordinate angle to screen coordinate angle
+            xy=numpy.array((x,y))
+            trans_angle=ax.transData.transform_angles(numpy.array((angle,)),
+                                                      xy.reshape((1,2)))[0]
+        else:
+            trans_angle=0.0
         # use default box of white with white border
         if bbox is None:
             bbox = dict(boxstyle='round',
