@@ -10,3 +10,4 @@ Bipartite
    bipartite_sets
    bipartite_color
    project
+   spectral_bipartivity

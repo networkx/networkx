@@ -1,17 +1,19 @@
+# -*- coding: utf-8 -*-
 """
 ==========================
 Bipartite Graph Algorithms
 ==========================
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2008 by 
+#    Copyright (C) 2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
-__all__=['project','is_bipartite','bipartite_color','bipartite_sets']
+__all__=['project','is_bipartite','bipartite_color','bipartite_sets',
+         'spectral_bipartivity']
 
 import networkx as nx
 
@@ -163,3 +165,73 @@ def bipartite_sets(G):
     Y=set(n for n in color if color[n]==0)
     return (X,Y)
 
+def spectral_bipartivity(G,nodes=None):
+    """Returns the spectral bipartivity..
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+
+    nodes : list or container (optional)
+      Nodes to return value of spectral bipartivity contribution.
+
+    Returns
+    -------
+    sb : spectral bipartivity
+       A single number if the keyword nodes is not specified, or
+       a dictionary keyed by node with the spectral bipartivity contribution
+       of that node as the value.
+       
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> nx.spectral_bipartivity(G)
+    1.0
+
+    Notes
+    -----
+    This implementation uses Numpy (dense) matrices which are not efficient
+    for storing large sparse graphs.  
+
+    See Also
+    --------
+    bipartite_color()
+
+    References
+    ----------
+    .. [1] E. Estrada and J. A. Rodríguez-Velázquez, "Spectral measures of
+       bipartivity in complex networks", PhysRev E 72, 046105 (2005)
+    """
+    try:
+        import scipy.linalg
+    except ImportError:
+        raise ImportError('spectral_bipartivity() requires SciPy: ',
+                          'http://scipy.org/')
+    nodelist=G.nodes() # ordering of nodes in matrix
+    A=nx.to_numpy_matrix(G,nodelist)
+    expA=scipy.linalg.expm(A)
+    expmA=scipy.linalg.expm(-A)
+    coshA=0.5*(expA+expmA)
+    if nodes is None:
+        # return single number for entire graph
+        return coshA.diagonal().sum()/expA.diagonal().sum()
+    else:
+        # contribution for individual nodes
+        index=dict(zip(nodelist,range(len(nodelist))))
+        sb={}
+        for n in nodes:
+            i=index[n]
+            sb[n]=coshA[i,i]/expA[i,i]
+        return sb
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
+    try:
+        import scipy
+    except:
+        raise SkipTest("SciPy not available")
