@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 """
 Algorithms to characterize the number of triangles in a graph.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -15,7 +16,7 @@ __all__= ['triangles', 'average_clustering', 'clustering', 'transitivity']
 import networkx as nx
 from networkx import NetworkXError
 
-def triangles(G,nbunch=None):
+def triangles(G,nodes=None):
     """Compute the number of triangles.
 
     Finds the number of triangles that include a node as one of the vertices.
@@ -24,8 +25,8 @@ def triangles(G,nbunch=None):
     ----------
     G : graph
        A networkx graph
-    nbunch : container of nodes, optional
-       Compute triangles for nodes in nbunch. The default is all nodes in G.
+    nodes : container of nodes, optional
+       Compute triangles for nodes. The default is all nodes in G.
 
     Returns
     -------
@@ -44,19 +45,18 @@ def triangles(G,nbunch=None):
 
     Notes
     -----
-    When computing triangles for the entire graph 
-    each triangle is counted three times, once at each node.
-
-    Self loops are ignored.
+    When computing triangles for the entire graph each triangle is counted 
+    three times, once at each node.  Self loops are ignored.
 
     """
     if G.is_directed():
         raise NetworkXError("triangles() is not defined for directed graphs.")
-    if nbunch in G: 
-        return next(_triangles_and_degree_iter(G,nbunch))[2] // 2 # return single value
-    return dict( (v,t // 2) for v,d,t in _triangles_and_degree_iter(G,nbunch))
+    if nodes in G: 
+        # return single value
+        return next(_triangles_and_degree_iter(G,nodes))[2] // 2
+    return dict( (v,t // 2) for v,d,t in _triangles_and_degree_iter(G,nodes))
 
-def _triangles_and_degree_iter(G,nbunch=None):
+def _triangles_and_degree_iter(G,nodes=None):
     """ Return an iterator of (node, degree, triangles).  
 
     This double counts triangles so you may want to divide by 2.
@@ -66,25 +66,55 @@ def _triangles_and_degree_iter(G,nbunch=None):
     if G.is_multigraph():
         raise NetworkXError("Not defined for multigraphs.")
 
-    if nbunch is None:
+    if nodes is None:
         nodes_nbrs = iter(G.adj.items())
     else:
-        nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nbunch) )
+        nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nodes) )
 
     for v,v_nbrs in nodes_nbrs:
-        vs=set(v_nbrs)
-        if v in vs:
-            vs.remove(v)
+        vs=set(v_nbrs)-set([v])
         ntriangles=0
         for w in vs:
-            ws=set(G[w])
-            if w in ws:
-                ws.remove(w)
+            ws=set(G[w])-set([w])
             ntriangles+=len(vs.intersection(ws))
         yield (v,len(vs),ntriangles)
 
 
-def average_clustering(G):
+def _weighted_triangles_and_degree_iter(G,nodes=None):
+    """ Return an iterator of (node, degree, weighted_triangles).  
+    
+    Used for weighted clustering.
+
+    """
+    if G.is_multigraph():
+        raise NetworkXError("Not defined for multigraphs.")
+
+    if G.edges()==[]:
+        max_weight=1.0
+    else:
+        max_weight=float(max(d.get('weight',1.0) 
+                             for u,v,d in G.edges(data=True)))
+    if nodes is None:
+        nodes_nbrs = iter(G.adj.items())
+    else:
+        nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nodes) )
+
+    for i,nbrs in nodes_nbrs:
+        inbrs=set(nbrs)-set([i])
+        weighted_triangles=0.0
+        seen=set()
+        for j in inbrs:
+            wij=G[i][j].get('weight',1.0)/max_weight
+            seen.add(j)
+            jnbrs=set(G[j])-seen # this keeps from double counting
+            for k in inbrs&jnbrs:
+                wjk=G[j][k].get('weight',1.0)/max_weight
+                wki=G[i][k].get('weight',1.0)/max_weight
+                weighted_triangles+=(wij*wjk*wki)**(1.0/3.0)
+        yield (i,len(inbrs),weighted_triangles*2)
+
+
+def average_clustering(G,weighted=False):
     """Compute average clustering coefficient.
 
     A clustering coefficient for the whole graph is the average, 
@@ -99,6 +129,8 @@ def average_clustering(G):
     ----------
     G : graph
        A networkx graph
+    weighted : bool, optional
+       If True use weights on edges in computing clustering coefficients.
 
     Returns
     -------
@@ -118,12 +150,18 @@ def average_clustering(G):
 
     Self loops are ignored.
 
+    References
+    ----------
+    .. [1] Generalizations of the clustering coefficient to weighted 
+       complex networks by J. Saramäki, M. Kivelä, J.-P. Onnela, 
+       K. Kaski, and J. Kertész, Physical Review E, 75 027105 (2007).  
+       http://jponnela.com/web_documents/a9.pdf
     """
     order=G.order()
-    s=sum(clustering(G).values())
+    s=sum(clustering(G,weighted=weighted).values())
     return s/float(order)
 
-def clustering(G,nbunch=None,weights=False):
+def clustering(G,nodes=None,weighted=False):
     """ Compute the clustering coefficient for nodes.
 
     For each node find the fraction of possible triangles that exist,
@@ -138,10 +176,10 @@ def clustering(G,nbunch=None,weights=False):
     ----------
     G : graph
        A networkx graph
-    nbunch : container of nodes, optional
+    nodes : container of nodes, optional
        Limit to specified nodes. Default is entire graph.
-    weights : bool, optional
-        If True return fraction of connected triples as dictionary
+    weighted : bool, optional
+       If True use weights on edges in computing clustering coefficients.
         
     Returns
     -------
@@ -159,37 +197,32 @@ def clustering(G,nbunch=None,weights=False):
 
     Notes
     -----
-    The weights are the fraction of connected triples in the graph
-    which include the keyed node.  Ths is useful for computing
-    transitivity.
-
     Self loops are ignored.
 
+    References
+    ----------
+    .. [1] Generalizations of the clustering coefficient to weighted 
+       complex networks by J. Saramäki, M. Kivelä, J.-P. Onnela, 
+       K. Kaski, and J. Kertész, Physical Review E, 75 027105 (2007).  
+       http://jponnela.com/web_documents/a9.pdf
     """
     if G.is_directed():
-        raise NetworkXError("Clustering algorithms are not defined for directed graphs.")
-    if weights:
-        clusterc={}
-        weights={}
-        for v,d,t in _triangles_and_degree_iter(G,nbunch):
-            weights[v]=float(d*(d-1))
-            if t==0:
-                clusterc[v]=0.0
-            else:
-                clusterc[v]=t/float(d*(d-1))
-        scale=1./sum(weights.values())
-        for v,w in weights.items():
-            weights[v]=w*scale
-        return clusterc,weights
+        raise NetworkXError('Clustering algorithms are not defined',
+                            'for directed graphs.')
+    if weighted:
+        td_iter=_weighted_triangles_and_degree_iter
+    else:
+        td_iter=_triangles_and_degree_iter
 
     clusterc={}
-    for v,d,t in _triangles_and_degree_iter(G,nbunch):
+
+    for v,d,t in td_iter(G,nodes):
         if t==0:
             clusterc[v]=0.0
         else:
             clusterc[v]=t/float(d*(d-1))
 
-    if nbunch in G: 
+    if nodes in G: 
         return list(clusterc.values())[0] # return single value
     return clusterc
 
