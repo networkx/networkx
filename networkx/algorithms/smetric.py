@@ -1,14 +1,20 @@
+import networkx as nx
+from networkx.generators.degree_seq import li_smax_graph
 
-def s_metric(G):
+def s_metric(G, normalized=True):
     """Return the s-metric of graph.
 
     The s-metric is defined as the sum of the products deg(u)*deg(v)
-    for every edge (u,v) in G.
+    for every edge (u,v) in G. If norm is provided construct the
+    s-max graph and compute it's s_metric, and return the normalized
+    s value
 
     Parameters
     ----------
-    G : graph
-        The graph used to compute the s-metric.
+    G    : graph
+           The graph used to compute the s-metric.
+    normalized : bool (optional)
+           Normalize the value.
 
     Returns
     -------       
@@ -22,5 +28,9 @@ def s_metric(G):
            Definition, Properties, and  Implications (Extended Version), 2005.
            http://arxiv.org/abs/cond-mat/0501169
     """
-    return sum([G.degree(u)*G.degree(v) for (u,v) in G.edges_iter()])
+    if normalized:
+        Gmax = li_smax_graph(list(G.degree().values()))
+        return s_metric(G,normalized=False)/s_metric(Gmax,normalized=False)
+    else:    
+        return float(sum([G.degree(u)*G.degree(v) for (u,v) in G.edges_iter()]))
 
