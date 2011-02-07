@@ -35,7 +35,8 @@ class TestGeneratorsDegreeSequence():
         assert_true(is_isomorphic(G1,G2))
 
         z=[5,3,3,3,3,2,2,2,1,1,1]
-        assert_true(is_valid_degree_sequence(z))
+        assert_true(is_valid_degree_sequence(z, method='hh'))
+        assert_true(is_valid_degree_sequence(z, method='eg'))       
 
         assert_raises(networkx.exception.NetworkXError,
                       configuration_model, z, create_using=DiGraph())
@@ -43,7 +44,8 @@ class TestGeneratorsDegreeSequence():
         G=havel_hakimi_graph(z)
         G=configuration_model(z)
         z=[1000,3,3,3,3,2,2,2,1,1,1]
-        assert_false(is_valid_degree_sequence(z))
+        assert_false(is_valid_degree_sequence(z, method='hh'))
+        assert_false(is_valid_degree_sequence(z, method='eg'))
 
     def test_expected_degree_graph(self):
         # empty graph has empty degree sequence
@@ -77,12 +79,14 @@ class TestGeneratorsDegreeSequence():
         G=havel_hakimi_graph(z)
         G=configuration_model(z)
         z=[6,5,4,4,2,1,1,1]
-        assert_false(is_valid_degree_sequence(z))
+        assert_false(is_valid_degree_sequence(z, method='hh'))
+        assert_false(is_valid_degree_sequence(z, method='eg'))
         assert_raises(networkx.exception.NetworkXError,
                       havel_hakimi_graph, z)
 
         z=[10,3,3,3,3,2,2,2,2,2,2]
-        assert_true(is_valid_degree_sequence(z))
+        assert_true(is_valid_degree_sequence(z, method='hh'))
+        assert_true(is_valid_degree_sequence(z, method='eg'))        
         G=havel_hakimi_graph(z)
 
         assert_raises(networkx.exception.NetworkXError,
@@ -93,7 +97,8 @@ class TestGeneratorsDegreeSequence():
 
     def test_degree_sequence_tree(self):
         z=[1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-        assert_true(is_valid_degree_sequence(z))
+        assert_true(is_valid_degree_sequence(z, method='hh'))
+        assert_true(is_valid_degree_sequence(z, method='eg'))        
         G=degree_sequence_tree(z)
         assert_true(len(G.nodes())==len(z))
         assert_true(len(G.edges())==sum(z)/2)
@@ -102,7 +107,8 @@ class TestGeneratorsDegreeSequence():
                       degree_sequence_tree, z, create_using=DiGraph())
 
         z=[1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-        assert_false(is_valid_degree_sequence(z))
+        assert_false(is_valid_degree_sequence(z, method='hh'))
+        assert_false(is_valid_degree_sequence(z, method='eg'))        
         assert_raises(networkx.exception.NetworkXError,
                       degree_sequence_tree, z)
 
@@ -148,14 +154,16 @@ class TestGeneratorsDegreeSequence():
 
     def test_construction_smax_graph2(self):
         z=[6,5,4,4,2,1,1,1]
-        assert_false(is_valid_degree_sequence(z))
+        assert_false(is_valid_degree_sequence(z, method='hh'))
+        assert_false(is_valid_degree_sequence(z, method='eg'))        
 
         assert_raises(networkx.exception.NetworkXError,
                       li_smax_graph, z)
 
     def test_construction_smax_graph3(self):
         z=[10,3,3,3,3,2,2,2,2,2,2]
-        assert_true(is_valid_degree_sequence(z))
+        assert_true(is_valid_degree_sequence(z, method='hh'))
+        assert_true(is_valid_degree_sequence(z, method='eg'))        
         G=li_smax_graph(z)
 
         degs = sorted(degree(G).values(),reverse=True)
