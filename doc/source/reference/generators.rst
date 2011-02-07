@@ -106,7 +106,8 @@ Degree Sequence
    expected_degree_graph
    havel_hakimi_graph
    degree_sequence_tree
-   is_valid_degree_sequence
+   is_valid_degree_sequence_havel_hakimi
+   is_valid_degree_sequence_erdos_gallai
    create_degree_sequence
    double_edge_swap
    connected_double_edge_swap

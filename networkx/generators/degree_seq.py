@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 """
 Generate graphs with a given degree sequence or expected degree sequence.
 
 """
-#    Copyright (C) 2004-2009 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -22,6 +23,8 @@ __all__ = ['configuration_model',
            'degree_sequence_tree',
            'random_clustered_graph',
            'is_valid_degree_sequence',
+           'is_valid_degree_sequence_erdos_gallai',
+           'is_valid_degree_sequence_havel_hakimi',
            'create_degree_sequence',
            'double_edge_swap',
            'connected_double_edge_swap',
@@ -554,7 +557,7 @@ def is_valid_degree_sequence(deg_sequence, method='eg'):
         in a graph.
     method : 'eg' | 'hh'
         The method used to validate the degree sequence.  'eg' corresponds to
-        the Erdos-Gallai algorithm and 'hh' to the Havel-Hakimi algorithm.
+        the Erdős-Gallai algorithm and 'hh' to the Havel-Hakimi algorithm.
 
     Returns
     -------
@@ -563,7 +566,7 @@ def is_valid_degree_sequence(deg_sequence, method='eg'):
     
     References
     ----------
-    Erdos-Gallai
+    Erdős-Gallai
         [EG1960]_, [choudum1986]_
     
     Havel-Hakimi
@@ -571,9 +574,9 @@ def is_valid_degree_sequence(deg_sequence, method='eg'):
     
     """
     if method == 'eg':
-        valid = is_valid_degree_sequence__erdos_gallai(deg_sequence)
+        valid = is_valid_degree_sequence_erdos_gallai(deg_sequence)
     elif method == 'hh':
-        valid = is_valid_degree_sequence__havel_hakimi(deg_sequence)
+        valid = is_valid_degree_sequence_havel_hakimi(deg_sequence)
     else:
         msg = "`method` must be 'eg' or 'hh'"
         raise nx.NetworkXException(msg)
@@ -581,7 +584,7 @@ def is_valid_degree_sequence(deg_sequence, method='eg'):
     return valid
 
 
-def is_valid_degree_sequence__havel_hakimi(deg_sequence):
+def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     """Returns `True` if `deg_sequence` is a valid degree sequence.
     
     A degree sequence is valid if some graph can realize it. 
@@ -639,11 +642,11 @@ def is_valid_degree_sequence__havel_hakimi(deg_sequence):
     return False
 
 
-def is_valid_degree_sequence__erdos_gallai(deg_sequence):
+def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     """Returns `True` if `deg_sequence` is a valid degree sequence.
     
     A degree sequence is valid if some graph can realize it. 
-    Validation proceeds via the Erdos-Gallai algorithm.
+    Validation proceeds via the Erdős-Gallai algorithm.
     
     Worst-case run time is: O( n**2 )
     
@@ -666,8 +669,8 @@ def is_valid_degree_sequence__erdos_gallai(deg_sequence):
     # some simple tests 
     if deg_sequence==[]:
         return True # empty sequence = empty graph 
-    #if not nx.utils.is_list_of_ints(deg_sequence):
-    #    return False   # list of ints
+    if not nx.utils.is_list_of_ints(deg_sequence):
+        return False   # list of ints
     if min(deg_sequence)<0:
         return False      # each int not negative
     if sum(deg_sequence)%2:
