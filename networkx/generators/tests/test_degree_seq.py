@@ -204,5 +204,26 @@ def test_li_smax():
     assert_equal(Gdegseq,Gmaxdegseq) 
     # make sure the smax graph is actually bigger
     assert_true(networkx.s_metric(G) <= networkx.s_metric(Gmax)) 
+    
+def test_valid_degree_sequence1():
+    # Erdos-Renyi Graph
+    from networkx.generators import degree_seq as ds
+    n = 100
+    p = .3
+    for i in range(10):
+        G = nx.erdos_renyi_graph(n,p)
+        deg = G.degree().values()
+        assert_true( ds.is_valid_degree_sequence(deg, method='eg') )
+        assert_true( ds.is_valid_degree_sequence(deg, method='hh') )        
 
+def test_valid_degree_sequence2():
+    # Barabasi-Albert Graph
+    from networkx.generators import degree_seq as ds
+    n = 100
+    p = .3
+    for i in range(10):
+        G = nx.barabasi_albert_graph(n,1)
+        deg = G.degree().values()
+        assert_true( ds.is_valid_degree_sequence(deg, method='eg') )
+        assert_true( ds.is_valid_degree_sequence(deg, method='hh') )        
 

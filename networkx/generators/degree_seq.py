@@ -545,7 +545,7 @@ def degree_sequence_tree(deg_sequence,create_using=None):
     return G
         
 
-def is_valid_degree_sequence(deg_sequence, method='eg'):
+def is_valid_degree_sequence(deg_sequence, method='hh'):
     """Returns `True` if `deg_sequence` is a valid degree sequence.
     
     A degree sequence is valid if some graph can realize it.
