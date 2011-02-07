@@ -32,7 +32,7 @@ except ImportError:
     pass
 
 
-def write_gexf(G, path, encoding='utf-8',prettyprint=True):
+def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
     """Write G in GEXF format to path.
 
     "GEXF (Graph Exchange XML Format) is a language for describing
@@ -69,11 +69,12 @@ def write_gexf(G, path, encoding='utf-8',prettyprint=True):
     .. [1] GEXF graph format, http://gexf.net/format/
     """
     fh = _get_fh(path, mode='wb')
-    writer = GEXFWriter(encoding=encoding,prettyprint=prettyprint)
+    writer = GEXFWriter(encoding=encoding,prettyprint=prettyprint,
+                        version=version)
     writer.add_graph(G)
     writer.write(fh)
 
-def generate_gexf(G, encoding='utf-8',prettyprint=True):
+def generate_gexf(G, encoding='utf-8',prettyprint=True,version='1.1draft'):
     """Generate lines of GEXF format representation of G"
 
     "GEXF (Graph Exchange XML Format) is a language for describing
@@ -109,13 +110,14 @@ def generate_gexf(G, encoding='utf-8',prettyprint=True):
     ----------
     .. [1] GEXF graph format, http://gexf.net/format/
     """
-    writer = GEXFWriter(encoding=encoding,prettyprint=prettyprint)
+    writer = GEXFWriter(encoding=encoding,prettyprint=prettyprint,
+                        version=version)
     writer.add_graph(G)
     for line in str(writer).splitlines():
         yield line
 
 
-def read_gexf(path,node_type=str,relabel=False):
+def read_gexf(path,node_type=str,relabel=False,version='1.1draft'):
     """Read graph in GEXF format from path.
 
     "GEXF (Graph Exchange XML Format) is a language for describing
@@ -150,7 +152,7 @@ def read_gexf(path,node_type=str,relabel=False):
     .. [1] GEXF graph format, http://gexf.net/format/
     """
     fh=_get_fh(path,mode='rb')
-    reader = GEXFReader(node_type=node_type)
+    reader = GEXFReader(node_type=node_type,version=version)
     if relabel:
         G=relabel_gexf_graph(reader(fh))
     else:
@@ -158,21 +160,28 @@ def read_gexf(path,node_type=str,relabel=False):
     return G
 
 class GEXF(object):
-    NS_GEXF = "http://www.gexf.net/1.1draft"
-    NS_VIZ = "http://www.gexf.net/1.1draft/viz"
-    NS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
-    SCHEMALOCATION = \
-        ' '.join(['http://www.gexf.net/1.1draft',
-                  'http://www.gexf.net/1.1draft/gexf.xsd'
-                  ])
-    VERSION='1.1'
+#    global register_namespace
 
-    try:
-        register_namespace = ET.register_namespace
-    except AttributeError:
-        def register_namespace(prefix, uri):
-            ET._namespace_map[uri] = prefix
-    register_namespace('viz', NS_VIZ)
+    versions={}
+    d={'NS_GEXF':"http://www.gexf.net/1.1draft",
+       'NS_VIZ':"http://www.gexf.net/1.1draft/viz",
+       'NS_XSI':"http://www.w3.org/2001/XMLSchema-instance",
+       'SCHEMALOCATION':' '.join(['http://www.gexf.net/1.1draft',
+                                'http://www.gexf.net/1.1draft/gexf.xsd'
+                                ]),
+       'VERSION':'1.1'
+       }
+    versions['1.1draft']=d
+    d={'NS_GEXF':"http://www.gexf.net/1.2draft",
+       'NS_VIZ':"http://www.gexf.net/1.2draft/viz",
+       'NS_XSI':"http://www.w3.org/2001/XMLSchema-instance",
+       'SCHEMALOCATION':' '.join(['http://www.gexf.net/1.2draft',
+                                'http://www.gexf.net/1.2draft/gexf.xsd'
+                                ]),
+       'VERSION':'1.2'
+       }
+    versions['1.2draft']=d
+
 
     types=[(int,"integer"), 
            (float,"float"), 
@@ -201,10 +210,33 @@ class GEXF(object):
     python_type = dict(reversed(a) for a in types)
     convert_bool={'true':True,'false':False}
 
+#    try:
+#        register_namespace = ET.register_namespace
+#    except AttributeError:
+#        def register_namespace(prefix, uri):
+#            ET._namespace_map[uri] = prefix
+
+
+    def set_version(self,version):
+        d=self.versions.get(version)
+        if d is None:
+            raise nx.NetworkXError('Unknown GEXF version %s'%version)
+        self.NS_GEXF = d['NS_GEXF']
+        self.NS_VIZ = d['NS_VIZ']
+        self.NS_XSI = d['NS_XSI']
+        self.SCHEMALOCATION = d['NS_XSI']
+        self.VERSION=d['VERSION']
+        self.version=version
+        
+#        register_namespace('viz', d['NS_VIZ'])
+
+
 class GEXFWriter(GEXF):
     # class for writing GEXF format files
     # use write_gexf() function 
-    def __init__(self, graph=None, encoding="utf-8",mode='static',prettyprint=True):
+    def __init__(self, graph=None, encoding="utf-8",
+                 mode='static',prettyprint=True,
+                 version='1.1draft'):
         try:
             import xml.etree.cElementTree
         except ImportError:
@@ -213,13 +245,14 @@ class GEXFWriter(GEXF):
         self.prettyprint=prettyprint
         self.mode=mode
         self.encoding = encoding
+        self.set_version(version)
         self.xml = Element("gexf",
                            {'xmlns':self.NS_GEXF,
                             'xmlns:xsi':self.NS_XSI,
                             'xmlns:viz':self.NS_VIZ,
                             'xsi:schemaLocation':self.SCHEMALOCATION,
-                            'version':self.VERSION}
-                           )
+                            'version':self.VERSION})
+
         # counters for edge and attribute identifiers
         self.edge_id=itertools.count()
         self.attr_id=itertools.count()
@@ -273,7 +306,10 @@ class GEXFWriter(GEXF):
             # add node element and attr subelements
             default=G.graph.get('node_default',{})
             node_data=self.add_parents(node_element, node_data)
-            node_data=self.add_slices(node_element, node_data)
+            if self.version=='1.1':
+                node_data=self.add_slices(node_element, node_data)
+            else:
+                node_data=self.add_spells(node_element, node_data)
             node_data=self.add_viz(node_element,node_data)
             node_data=self.add_attributes("node", node_element, 
                                           node_data, default)
@@ -391,11 +427,19 @@ class GEXFWriter(GEXF):
         if viz:
             color=viz.get('color')
             if color is not None:
-                e=Element("{%s}color"%self.NS_VIZ,
-                          r=str(color.get('r')),
-                          g=str(color.get('g')),
-                          b=str(color.get('b')),
-                          )
+                if self.VERSION=='1.1':
+                    e=Element("{%s}color"%self.NS_VIZ,
+                              r=str(color.get('r')),
+                              g=str(color.get('g')),
+                              b=str(color.get('b')),
+                              )
+                else:
+                    e=Element("{%s}color"%self.NS_VIZ,
+                              r=str(color.get('r')),
+                              g=str(color.get('g')),
+                              b=str(color.get('b')),
+                              a=str(color.get('a')),
+                              )
                 element.append(e)
 
             size=viz.get('size')
@@ -449,6 +493,17 @@ class GEXFWriter(GEXF):
         return node_data
 
 
+    def add_spells(self,node_element,node_data):
+        spells=node_data.pop('spells',False)
+        if spells:
+            spells_element=Element('spells')
+            for start,end in spells:
+                e=Element('spell',start=str(start),end=str(end))
+                spells_element.append(e)
+            node_element.append(spells_element)
+        return node_data
+
+
     def write(self, fh):
         # Serialize graph G in GEXF to the open fh
         if self.prettyprint:
@@ -479,7 +534,7 @@ class GEXFWriter(GEXF):
 class GEXFReader(GEXF):
     # Class to read GEXF format files
     # use read_gexf() function
-    def __init__(self, node_type=None):
+    def __init__(self, node_type=None,version='1.1draft'):
         try:
             import xml.etree.cElementTree
         except ImportError:
@@ -488,13 +543,21 @@ class GEXFReader(GEXF):
         self.node_type=node_type
         # assume simple graph and test for multigraph on read
         self.simple_graph=True
-        
+        self.set_version(version)
+
     def __call__(self, stream):
         self.xml = ElementTree(file=stream)
         g=self.xml.find("{%s}graph" % self.NS_GEXF)
-        if g is None:
-            raise nx.NetworkXError("No <graph> element in GEXF file")
-        return self.make_graph(g)
+        if g is not None:
+            return self.make_graph(g)
+        # try all the versions
+        for version in self.versions:
+            self.set_version(version)
+            g=self.xml.find("{%s}graph" % self.NS_GEXF)
+            if g is not None:
+                return self.make_graph(g)
+        raise nx.NetworkXError("No <graph> element in GEXF file")
+ 
 
     def make_graph(self, graph_xml):
         # mode is "static" or "dynamic"
@@ -572,7 +635,10 @@ class GEXFReader(GEXF):
         # get attributes and subattributues for node
         data = self.decode_attr_elements(node_attr, node_xml)
         data = self.add_parents(data, node_xml) # add any parents
-        data = self.add_slices(data, node_xml)  # add slices 
+        if self.version=='1.1':
+            data = self.add_slices(data, node_xml)  # add slices 
+        else:
+            data = self.add_spells(data, node_xml)  # add spells
         data = self.add_viz(data, node_xml) # add viz
         data = self.add_start_end(data, node_xml) # add start/end
 
@@ -614,9 +680,16 @@ class GEXFReader(GEXF):
         viz={}
         color=node_xml.find("{%s}color"%self.NS_VIZ)
         if color is not None:
-            viz['color']={'r':int(color.get('r')),
-                          'g':int(color.get('g')),
-                          'b':int(color.get('b'))}
+            if self.VERSION=='1.1':
+                viz['color']={'r':int(color.get('r')),
+                              'g':int(color.get('g')),
+                              'b':int(color.get('b'))}
+            else:
+                viz['color']={'r':int(color.get('r')),
+                              'g':int(color.get('g')),
+                              'b':int(color.get('b')),
+                              'a':float(color.get('a')),
+                              }
 
         size=node_xml.find("{%s}size"%self.NS_VIZ)
         if size is not None:
@@ -659,6 +732,16 @@ class GEXFReader(GEXF):
                 start=s.get('start')
                 end=s.get('end')
                 data['slices'].append((start,end))
+        return data
+
+    def add_spells(self, data,  node_xml):
+        spells_element=node_xml.find("{%s}spells"%self.NS_GEXF) 
+        if spells_element is not None:
+            data['spells']=[]
+            for s in spells_element.findall("{%s}spell"%self.NS_GEXF): 
+                start=s.get('start')
+                end=s.get('end')
+                data['spells'].append((start,end))
         return data
 
 

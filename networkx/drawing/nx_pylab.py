@@ -719,6 +719,10 @@ def draw_networkx_labels(G, pos,
     if labels is None:
         labels=dict(list(zip(G.nodes(),G.nodes())))
 
+    # set optional alignment
+    horizontalalignment=kwds.get('horizontalalignment','center')
+    verticalalignment=kwds.get('verticalalignment','center')
+
     text_items={}  # there is no text collection so we'll fake one        
     for (n,label) in list(labels.items()):
         (x,y)=pos[n]
@@ -730,8 +734,8 @@ def draw_networkx_labels(G, pos,
                   color=font_color,
                   family=font_family,
                   weight=font_weight,
-                  horizontalalignment='center',
-                  verticalalignment='center',
+                  horizontalalignment=horizontalalignment,
+                  verticalalignment=verticalalignment,
                   transform = ax.transData,
                   clip_on=True,
                   )
@@ -850,14 +854,19 @@ def draw_networkx_edge_labels(G, pos,
                         )
         if not cb.is_string_like(label):
             label=str(label) # this will cause "1" and 1 to be labeled the same
+
+        # set optional alignment
+        horizontalalignment=kwds.get('horizontalalignment','center')
+        verticalalignment=kwds.get('verticalalignment','center')
+
         t=ax.text(x, y,
                   label,
                   size=font_size,
                   color=font_color,
                   family=font_family,
                   weight=font_weight,
-                  horizontalalignment='center',
-                  verticalalignment='center',
+                  horizontalalignment=horizontalalignment,
+                  verticalalignment=verticalalignment,
                   rotation=trans_angle,
                   transform = ax.transData,
                   bbox = bbox,
