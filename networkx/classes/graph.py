@@ -991,6 +991,7 @@ class Graph(object):
         Notes
         -----
         It is faster to use the idiom "in G[0]", e.g.
+
         >>> [n for n in G[0]]
         [1]
         """
