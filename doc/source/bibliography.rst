@@ -14,6 +14,13 @@ Bibliography
    Methodological Foundations", Lecture Notes in Computer Science, 
    Volume 3418, Springer-Verlag, 2005.
 
+.. [CL1996] G. Chartrand and L. Lesniak, "Graphs and Digraphs", 
+   Chapman and Hall/CRC, 1996.
+
+.. [choudum1986] S.A. Choudum. "A simple proof of the Erdos-Gallai theorem on 
+   graph sequences." Bulletin of the Australian Mathematical Society, 33, 
+   pp 67-70, 1986. :doi:`10.1017/S0004972700002872`
+
 .. [Diestel97] R. Diestel, "Graph Theory", Springer-Verlag, 1997. 
    :url:`http://diestel-graph-theory.com/index.html`
 
@@ -23,6 +30,14 @@ Bibliography
 .. [EppsteinPads] David Eppstein.
    PADS, A library of Python Algorithms and Data Structures.
    :url:`http://www.ics.uci.edu/~eppstein/PADS`
+   
+.. [EG1960] Erdos and Gallai, Mat. Lapok 11 264, 1960.
+
+.. [hakimi1962] Hakimi, S. "On the Realizability of a Set of Integers as 
+   Degrees of the Vertices of a Graph." SIAM J. Appl. Math. 10, 496-506, 1962.
+
+.. [havel1955] Havel, V. "A Remark on the Existence of Finite Graphs" 
+   Casopis Pest. Mat. 80, 477-480, 1955.
    
 .. [Langtangen04] H.P. Langtangen, "Python Scripting for Computational
     Science.", Springer Verlag Series in Computational Science and
