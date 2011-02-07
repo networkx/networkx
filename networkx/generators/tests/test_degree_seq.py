@@ -212,7 +212,7 @@ def test_valid_degree_sequence1():
     p = .3
     for i in range(10):
         G = nx.erdos_renyi_graph(n,p)
-        deg = G.degree().values()
+        deg = list(G.degree().values())
         assert_true( ds.is_valid_degree_sequence(deg, method='eg') )
         assert_true( ds.is_valid_degree_sequence(deg, method='hh') )        
 
@@ -223,7 +223,7 @@ def test_valid_degree_sequence2():
     p = .3
     for i in range(10):
         G = nx.barabasi_albert_graph(n,1)
-        deg = G.degree().values()
+        deg = list(G.degree().values())
         assert_true( ds.is_valid_degree_sequence(deg, method='eg') )
         assert_true( ds.is_valid_degree_sequence(deg, method='hh') )        
 
