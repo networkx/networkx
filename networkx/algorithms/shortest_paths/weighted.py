@@ -568,8 +568,7 @@ def bellman_ford(G, source, weight = 'weight'):
                         feasible = False
         if feasible:
             break
-
-    if i + 1 == G.number_of_nodes():
+    else:
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
     return pred, dist
 

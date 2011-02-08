@@ -152,10 +152,12 @@ class TestWeightedPath:
         # negative weight cycle
         G = nx.cycle_graph(5, create_using = nx.DiGraph())
         G.add_edge(1, 2, weight = -7)
-        assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, 0)
+        for i in range(5):
+            assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, i)
         G = nx.cycle_graph(5)
         G.add_edge(1, 2, weight = -7)
-        assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, 0)
+        for i in range(5):
+            assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, i)
 
         # not connected
         G = nx.complete_graph(6)
@@ -191,6 +193,9 @@ class TestWeightedPath:
         G=nx.path_graph(4)
         assert_equal(nx.bellman_ford(G,0),
                      ({0: None, 1: 0, 2: 1, 3: 2}, {0: 0, 1: 1, 2: 2, 3: 3}))
+        assert_equal(nx.bellman_ford(G, 3),
+                    ({0: 1, 1: 2, 2: 3, 3: None}, {0: 3, 1: 2, 2: 1, 3: 0}))
+
         G=nx.grid_2d_graph(2,2)
         pred,dist=nx.bellman_ford(G,(0,0))
         assert_equal(sorted(pred.items()),
