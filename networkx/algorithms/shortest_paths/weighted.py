@@ -337,7 +337,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
 
 
 def dijkstra_predecessor_and_distance(G,source, cutoff=None, weight='weight'):
-    """Compute shorest path length and predecessors on shortest paths 
+    """Compute shortest path length and predecessors on shortest paths 
     in weighted graphs.
 
     Parameters
@@ -585,10 +585,10 @@ def negative_edge_cycle(G, weight = 'weight'):
     --------
     >>> import networkx as nx
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
-    >>> print nx.negative_edge_cycle(G)
+    >>> print(nx.negative_edge_cycle(G))
     False
     >>> G[1][2]['weight'] = -7
-    >>> print nx.negative_edge_cycle(G)
+    >>> print(nx.negative_edge_cycle(G))
     True
 
     Notes:
@@ -634,7 +634,7 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
         Shortest path length.
 
     Returns a tuple of two dictionaries keyed by node.
-    The first dicdtionary stores distance from the source.
+    The first dictionary stores distance from the source.
     The second stores the path from the source to that node.
 
     Raises
