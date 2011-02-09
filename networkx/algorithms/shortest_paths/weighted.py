@@ -676,7 +676,7 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
     shortest_path_length
     """
     if source is None or target is None:
-        raise NetworkXException(
+        raise nx.NetworkXException(
             "Bidirectional Dijkstra called with no source or target")
     if source == target: return (0, [source])
     #Init:   Forward             Backward
