@@ -21,7 +21,7 @@ __all__ = ['dijkstra_path',
            'all_pairs_dijkstra_path', 
            'all_pairs_dijkstra_path_length',
            'dijkstra_predecessor_and_distance',
-           'bellman_ford']
+           'bellman_ford','negative_edge_cycle']
 
 import heapq
 import networkx as nx
@@ -478,8 +478,9 @@ def bellman_ford(G, source, weight = 'weight'):
     """Compute shortest path lengths and predecessors on shortest paths 
     in weighted graphs.
 
-    The algorithm has a running time of O(mn) where n is the number of nodes 
-    and n is the number of edges.
+    The algorithm has a running time of O(mn) where n is the number of 
+    nodes and m is the number of edges.  It is slower than Dijkstra but
+    can handle negative edge weights.
 
     Parameters
     ----------
@@ -495,17 +496,17 @@ def bellman_ford(G, source, weight = 'weight'):
 
     Returns
     -------
-    pred,dist : dictionaries
-       Returns two dictionaries representing a list of predecessors 
-       of a node and the distance from the source to each node. The
-       dictionaries are keyed by target node label.
+    pred, dist : dictionaries
+       Returns two dictionaries keyed by node to predecessor in the 
+       path and to the distance from the source respectively.
 
     Raises
     ------
     NetworkXUnbounded
        If the (di)graph contains a negative cost (di)cycle, the
        algorithm raises an exception to indicate the presence of the
-       negative cost (di)cycle.
+       negative cost (di)cycle.  Note: any negative weight edge in an
+       undirected graph is a negative cost cycle.
 
     Examples
     --------
@@ -518,7 +519,7 @@ def bellman_ford(G, source, weight = 'weight'):
     {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
 
     >>> from nose.tools import assert_raises
-    >>> G = nx.cycle_graph(5)
+    >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
     >>> assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, 0)
    
@@ -564,6 +565,51 @@ def bellman_ford(G, source, weight = 'weight'):
     else:
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
     return pred, dist
+
+def negative_edge_cycle(G, weight = 'weight'):
+    """Return True if there exists a negative edge cycle anywhere in G.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weight: string, optional       
+       Edge data key corresponding to the edge weight
+
+    Returns
+    -------
+    negative_cycle : bool 
+        True if a negative edge cycle exists, otherwise False.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
+    >>> print nx.negative_edge_cycle(G)
+    False
+    >>> G[1][2]['weight'] = -7
+    >>> print nx.negative_edge_cycle(G)
+    True
+
+    Notes:
+    ------
+    This algorithm uses bellman_ford() but finds negative cycles
+    on any component by first adding a new node connected to
+    every node, and starting bellman_ford on that node.  It then
+    removes that extra node.
+    """
+    newnode = "__new_source__"
+    while newnode in G:
+        newnode+="_"
+    G.add_edges_from([ (newnode,n) for n in G])
+
+    try:
+        bellman_ford(G, newnode, weight)
+    except nx.NetworkXUnbounded:
+        G.remove_node(newnode)
+        return True
+    G.remove_node(newnode)
+    return False
 
 
 def bidirectional_dijkstra(G, source, target, weight = 'weight'):

@@ -143,21 +143,35 @@ class TestWeightedPath:
         assert_equal(p,{'a': [], 'b': ['a']})
         assert_equal(d,{'a': 0, 'b': 100})
 
+    def test_negative_edge_cycle(self):
+        G = nx.cycle_graph(5, create_using = nx.DiGraph())
+        assert_equal(nx.negative_edge_cycle(G), False)
+        G.add_edge(8, 9, weight = -7)
+        G.add_edge(9, 8, weight = 3)
+        assert_equal(nx.negative_edge_cycle(G), True)
+
     def test_bellman_ford(self):
         # single node graph
         G = nx.DiGraph()
         G.add_node(0)
         assert_equal(nx.bellman_ford(G, 0), ({0: None}, {0: 0}))
+        assert_raises(KeyError, nx.bellman_ford, G, 1)
 
         # negative weight cycle
         G = nx.cycle_graph(5, create_using = nx.DiGraph())
         G.add_edge(1, 2, weight = -7)
         for i in range(5):
             assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, i)
-        G = nx.cycle_graph(5)
-        G.add_edge(1, 2, weight = -7)
+        G = nx.cycle_graph(5)  # undirected Graph
+        G.add_edge(1, 2, weight = -3)
         for i in range(5):
             assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, i)
+        # no negative cycle but negative weight
+        G = nx.cycle_graph(5, create_using = nx.DiGraph())
+        G.add_edge(1, 2, weight = -3) 
+        assert_equal(nx.bellman_ford(G, 0),
+                     ({0: None, 1: 0, 2: 1, 3: 2, 4: 3},
+                      {0: 0, 1: 1, 2: -2, 3: -1, 4: 0}))
 
         # not connected
         G = nx.complete_graph(6)
