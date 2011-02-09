@@ -3,7 +3,8 @@
 Shortest path algorithms for weighed graphs.
 """
 __author__ = """\n""".join(['Aric Hagberg <hagberg@lanl.gov>',
-                            'Loïc Séguin-C. <loicseguin@gmail.com>'])
+                            'Loïc Séguin-C. <loicseguin@gmail.com>',
+                            'Dan Schult <dschult@colgate.edu>'])
 #    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -531,42 +532,34 @@ def bellman_ford(G, source, weight = 'weight'):
     will not be detected.
 
     """
-
-    if not G.is_directed():
-        directed = False
-    else:
-        directed = True
+    if source not in G:
+        raise KeyError("Node %s is not found in the graph"%source)
+    numb_nodes = len(G)
 
     dist = {source: 0}
     pred = {source: None}
 
-    if G.number_of_nodes() == 1:
+    if numb_nodes == 1:
        return pred, dist
     
-    def process_edge(u, v, weight):
-        # Just a helper function for the main algorithm below.
-        if dist.get(u) is not None:
-            if dist.get(v) is None or dist[v] > dist[u] + weight:
-                dist[v] = dist[u] + weight
-                pred[v] = u
-                return False
-        return True
+    if G.is_multigraph():
+        def get_weight(edge_dict):
+            return min([eattr.get(weight,1) for eattr in edge_dict.values()])
+    else:
+        def get_weight(edge_dict):
+            return edge_dict.get(weight,1)
 
-    for i in range(G.number_of_nodes()):
-        feasible = True
-        for u, v in G.edges():
-            if G.is_multigraph():
-                edata = min([eattr.get(weight, 1)
-                             for eattr in G[u][v].values()])
-            else:
-                edata = G[u][v].get(weight, 1)
-            if not process_edge(u, v, edata):
-                feasible = False
-            if not directed:
-                if not (v, u) in G.edges():
-                    if not process_edge(v, u, edata):
-                        feasible = False
-        if feasible:
+    for i in range(numb_nodes):
+        no_changes=True
+        # Only need edges from nodes in dist b/c all others have dist==inf
+        for u, dist_u in list(dist.items()): # get all edges from nodes in dist
+            for v, edict in G[u].items():  # double loop handles undirected too
+                dist_v = dist_u + get_weight(edict)
+                if v not in dist or dist[v] > dist_v:
+                    dist[v] = dist_v
+                    pred[v] = u
+                    no_changes = False
+        if no_changes:
             break
     else:
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
