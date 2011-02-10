@@ -41,7 +41,7 @@ __all__ = ['generate_edgelist',
            'read_weighted_edgelist',
            'write_weighted_edgelist']
 
-from networkx.utils import is_string_like, _get_fh, make_str
+from networkx.utils import _get_fh, make_str
 import networkx as nx
 
 def generate_edgelist(G, delimiter=' ', data=True):

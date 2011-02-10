@@ -37,7 +37,7 @@ __all__ = ['generate_adjlist',
            'parse_adjlist',
            'read_adjlist']
 
-from networkx.utils import is_string_like, make_str, _get_fh
+from networkx.utils import make_str, _get_fh
 import networkx as nx
 
 

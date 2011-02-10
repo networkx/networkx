@@ -40,7 +40,7 @@ __all__ = ['generate_multiline_adjlist',
            'parse_multiline_adjlist',
            'read_multiline_adjlist']
 
-from networkx.utils import is_string_like, make_str, _get_fh
+from networkx.utils import make_str, _get_fh
 import networkx as nx
 
 def generate_multiline_adjlist(G, delimiter = ' '):

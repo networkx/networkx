@@ -31,7 +31,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu
 __all__ = ['read_gpickle', 'write_gpickle']
 
 import networkx as nx
-from networkx.utils import is_string_like,_get_fh
+from networkx.utils import _get_fh
 
 try:
     import cPickle as pickle

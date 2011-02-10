@@ -28,7 +28,7 @@ __all__ = ['read_graph6', 'parse_graph6', 'read_graph6_list',
            'read_sparse6', 'parse_sparse6', 'read_sparse6_list']
 
 import networkx as nx
-from networkx.exception import NetworkXException, NetworkXError
+from networkx.exception import NetworkXError
 from networkx.utils import _get_fh
 	
 # graph6

@@ -33,7 +33,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 
 import networkx as nx
-from networkx.exception import NetworkXException, NetworkXError
+from networkx.exception import NetworkXError
 from networkx.utils import _get_fh, is_string_like
 
 	
