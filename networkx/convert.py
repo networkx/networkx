@@ -828,7 +828,7 @@ def to_numpy_recarray(G,nodelist=None,
           "to_numpy_matrix() requires numpy: http://scipy.org/ ")
 
     if G.is_multigraph():
-        raise NetworkXError("Not implemented for multigraphs.")
+        raise nx.NetworkXError("Not implemented for multigraphs.")
 
     if nodelist is None:
         nodelist = G.nodes()
