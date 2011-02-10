@@ -7,7 +7,6 @@ from nose.tools import assert_equal, assert_raises, assert_not_equal
 import os
 import tempfile
 import networkx as nx
-import sys
 
 class TestAdjlist():
     

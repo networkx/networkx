@@ -3,7 +3,6 @@ from nose.tools import *
 import networkx
 from networkx import *
 from networkx.generators.degree_seq import *
-from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 from networkx.utils import uniform_sequence,powerlaw_sequence
 
 """Generators - Degree Sequence

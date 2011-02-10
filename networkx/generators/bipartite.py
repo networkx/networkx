@@ -20,7 +20,6 @@ __all__=['bipartite_configuration_model',
          ]
 
 import random
-import sys
 import networkx 
 from functools import reduce
 

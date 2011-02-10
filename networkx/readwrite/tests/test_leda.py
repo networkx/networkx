@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import copy
 from nose.tools import *
 import networkx as nx
 import os,tempfile

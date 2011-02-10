@@ -2,7 +2,7 @@
 Unit tests for shp.
 """
  
-import os,tempfile,shutil
+import os,tempfile
 from nose import SkipTest
 from nose.tools import assert_equal
 

@@ -4,7 +4,7 @@
 
 import os,tempfile
 from nose import SkipTest
-from nose.tools import assert_true,assert_equal
+from nose.tools import assert_equal
 
 import networkx as nx
 

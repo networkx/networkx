@@ -3,7 +3,7 @@
 Pajek tests
 """
 
-from nose.tools import assert_equal, assert_almost_equal
+from nose.tools import assert_equal
 from networkx import *
 import os,tempfile
 from io import open

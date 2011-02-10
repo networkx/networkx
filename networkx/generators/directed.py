@@ -17,12 +17,10 @@ __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nWillem Ligtenberg (W.P.A.Ligtenb
 
 __all__ = ['gn_graph', 'gnc_graph', 'gnr_graph','scale_free_graph']
 
-import math
 import random
 
 import networkx as nx
-from networkx.generators.classic import empty_graph, cycle_graph
-from networkx import MultiDiGraph
+from networkx.generators.classic import empty_graph
 from networkx.utils import discrete_sequence
 
 

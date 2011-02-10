@@ -9,7 +9,6 @@ from nose import SkipTest
 import networkx as nx
 import networkx.generators.threshold as nxt
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
-import string
 
 cnlti = nx.convert_node_labels_to_integers
 
