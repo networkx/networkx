@@ -21,6 +21,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)
 #    All rights reserved.
 #    BSD license.
 import random
+import networkx
 
 ### some cookbook stuff
 
@@ -270,7 +271,7 @@ def discrete_sequence(n, distribution=None, cdistribution=None):
     elif distribution is not None:
         cdf=cumulative_distribution(distribution)
     else:
-        raise InputError(
+        raise networkx.NetworkXError(
                 "discrete_sequence: distribution or cdistribution missing")
         
 
