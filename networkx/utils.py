@@ -21,6 +21,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)
 #    All rights reserved.
 #    BSD license.
 import random
+import uuid
 
 ### some cookbook stuff
 
@@ -342,3 +343,8 @@ class UnionFind:
             if r != heaviest:
                 self.weights[heaviest] += self.weights[r]
                 self.parents[r] = heaviest
+
+def generate_unique_node():
+    """ Generate a unique node label."""
+    return str(uuid.uuid1())
+

@@ -16,15 +16,7 @@ __all__ = ['network_simplex',
            'max_flow_min_cost']
 
 import networkx as nx
-
-def _gen_node_label(G):
-    """ Generate a node label that is not already present in the graph G."""
-    newLabel = 's'
-    while True:
-        if not newLabel in G:
-            yield newLabel
-        else:
-            newLabel += 's'
+from networkx.utils import generate_unique_node
 
 def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
                            weight = 'weight'):
@@ -49,8 +41,6 @@ def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
         maxWeight = 0
     hugeWeight = 1 + n * maxWeight
 
-    labelGenerator = _gen_node_label(H)
-
     for v, d in G.nodes(data = True)[1:]:
         vDemand = d.get(demand, 0)
         if vDemand >= 0:
@@ -70,7 +60,7 @@ def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
                     flowCost += vDemand * H[r][v].get(weight, 0)
 
                 else: # existing edge does not have enough capacity
-                    newLabel = next(labelGenerator)
+                    newLabel = generate_unique_node()
                     H.add_edge(r, newLabel, {weight: hugeWeight, 'flow': vDemand})
                     H.add_edge(newLabel, v, {weight: hugeWeight, 'flow': vDemand})
                     artificialEdges.append((r, newLabel))
@@ -97,7 +87,7 @@ def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
                     T.add_edge(v, r)
                     flowCost += -vDemand * H[v][r].get(weight, 0)
                 else: # existing edge does not have enough capacity
-                    newLabel = next(labelGenerator)
+                    newLabel = generate_unique_node()
                     H.add_edge(v, newLabel,
                                {weight: hugeWeight, 'flow': -vDemand})
                     H.add_edge(newLabel, r,
