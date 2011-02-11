@@ -19,7 +19,6 @@ __all__ = ['number_connected_components',
            'node_connected_component',
            ]
 
-from collections import defaultdict
 import networkx as nx
 
 def connected_components(G):

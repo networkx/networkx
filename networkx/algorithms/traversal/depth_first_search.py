@@ -17,7 +17,6 @@ __all__ = ['dfs_edges', 'dfs_tree',
 
 import networkx as nx
 from collections import defaultdict
-from itertools import chain
 
 def dfs_edges(G,source=None):
     """Produce edges in a depth-first-search starting at source."""

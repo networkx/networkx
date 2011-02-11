@@ -70,7 +70,7 @@ def minimum_spanning_edges(G,weight='weight',data=True):
     # part (the sort) is sped up by being built in to Python.
     from networkx.utils import UnionFind
     if G.is_directed():
-        raise NetworkXError(\
+        raise nx.NetworkXError(
             "Mimimum spanning tree not defined for directed graphs.")
 
     subtrees = UnionFind()
@@ -176,7 +176,7 @@ def prim_mst_edges(G, weight = 'weight', data = True):
     """
 
     if G.is_directed():
-        raise NetworkXError(
+        raise nx.NetworkXError(
             "Mimimum spanning tree not defined for directed graphs.")
 
     nodes = G.nodes()

@@ -12,7 +12,7 @@ __author__ = """Pieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"
 #    BSD license.
 
 import networkx as nx
-from networkx.exception import NetworkXException, NetworkXError
+from networkx.exception import NetworkXError
 
 __all__ = ['could_be_isomorphic',
            'fast_could_be_isomorphic',

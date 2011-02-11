@@ -1,6 +1,3 @@
-
-import os, tempfile
-from nose import SkipTest
 from nose.tools import assert_raises, assert_true, assert_false, assert_equal
 
 import networkx as nx

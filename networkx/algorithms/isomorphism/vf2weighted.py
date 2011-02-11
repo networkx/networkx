@@ -2,8 +2,6 @@
     VF2 implementations for weighted graphs.
 """
 
-from copy import copy
-
 import networkx as nx
 from networkx.algorithms.isomorphism.isomorphvf2 \
     import GraphMatcher,DiGraphMatcher,GMState,DiGMState

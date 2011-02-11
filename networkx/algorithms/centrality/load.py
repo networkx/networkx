@@ -15,7 +15,6 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
 __all__ = ['load_centrality',
            'edge_load']
 
-import heapq
 import networkx as nx
 
 def newman_betweenness_centrality(G,v=None,cutoff=None,
