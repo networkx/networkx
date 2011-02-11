@@ -80,7 +80,6 @@ def current_flow_closeness_centrality(G,normalized=True):
     C=_compute_C(G)
     for v in G:
         vi=mapping[v]
-        Cv=C[:,vi]
         for w in G:
             wi=mapping[w]
             betweenness[v]+=C[vi,vi]-2*C[wi,vi]

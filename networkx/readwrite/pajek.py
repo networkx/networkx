@@ -154,11 +154,10 @@ def parse_pajek(lines):
 
     """
     import shlex
-    multigraph=False
+    # multigraph=False
     if is_string_like(lines): lines=iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines])
     G=nx.MultiDiGraph() # are multiedges allowed in Pajek? assume yes
-    directed=True # assume this is a directed network for now
     while lines:
         try:
             l=next(lines)
@@ -206,8 +205,8 @@ def parse_pajek(lines):
 #                    edge_data.update({'value':1})
                 extra_attr=zip(splitline[3::2],splitline[4::2])
                 edge_data.update(extra_attr)
-                if G.has_edge(u,v):
-                    multigraph=True
+                # if G.has_edge(u,v):
+                #     multigraph=True
                 G.add_edge(u,v,**edge_data)
 
     # if not multigraph: # use Graph/DiGraph if no parallel edges

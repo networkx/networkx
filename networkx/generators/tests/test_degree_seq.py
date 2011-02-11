@@ -227,7 +227,6 @@ def test_valid_degree_sequence2():
     # Barabasi-Albert Graph
     from networkx.generators import degree_seq as ds
     n = 100
-    p = .3
     for i in range(10):
         G = nx.barabasi_albert_graph(n,1)
         deg = list(G.degree().values())

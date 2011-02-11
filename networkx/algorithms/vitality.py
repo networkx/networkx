@@ -65,11 +65,6 @@ def closeness_vitality(G,v=None,weighted_edges=False):
     Notes
     -----
     """
-    if v is None:
-        nodes=G.nodes()
-    else:
-        nodes=[v]
-
     wig=weiner_index(G,weighted_edges=weighted_edges)
     closeness_vitality={}
     for n in G:
