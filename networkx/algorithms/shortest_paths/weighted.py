@@ -25,6 +25,7 @@ __all__ = ['dijkstra_path',
 
 import heapq
 import networkx as nx
+from networkx.utils import generate_unique_node
 
 def dijkstra_path(G, source, target, weight='weight'):
     """Returns the shortest path from source to target in a weighted graph G.  
@@ -598,9 +599,7 @@ def negative_edge_cycle(G, weight = 'weight'):
     every node, and starting bellman_ford on that node.  It then
     removes that extra node.
     """
-    newnode = "__new_source__"
-    while newnode in G:
-        newnode+="_"
+    newnode = generate_unique_node()
     G.add_edges_from([ (newnode,n) for n in G])
 
     try:
