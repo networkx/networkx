@@ -85,7 +85,6 @@ def from_agraph(A,create_using=None):
     # assign defaults
     N=nx.empty_graph(0,create_using)
     N.name=str(A)
-    node_attr={}
     # add nodes, attributes to N.node_attr
     for n in A.nodes():
         N.add_node(str(n),**dict(n.attr))
