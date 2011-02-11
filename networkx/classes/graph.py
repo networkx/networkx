@@ -22,10 +22,9 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 __docformat__ = "restructuredtext en"
 
 import networkx as nx
-from networkx.exception import NetworkXException, NetworkXError
+from networkx.exception import NetworkXError
 import networkx.convert as convert
 from copy import deepcopy
-import sys
 
 
 class Graph(object):

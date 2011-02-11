@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import copy
-import unittest
 from nose.tools import *
 import networkx
 from test_graph import TestGraph

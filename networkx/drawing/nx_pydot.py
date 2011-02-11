@@ -26,7 +26,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
 
-import sys
 from networkx.utils import _get_fh
 import networkx as nx
 

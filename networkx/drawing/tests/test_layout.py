@@ -2,8 +2,7 @@
     Unit tests for layout functions.
 """
 
-import os, sys
-import tempfile
+import sys
 
 from nose import SkipTest
 from nose.tools import assert_equal

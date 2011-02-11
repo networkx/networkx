@@ -2,11 +2,9 @@
     Unit tests for matplotlib drawing functions.
 """
 
-import os, sys
-import tempfile
+import os
 
 from nose import SkipTest
-from nose.tools import assert_true
 
 import networkx as nx
 

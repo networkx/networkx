@@ -18,8 +18,7 @@ import networkx as nx
 from networkx.classes.graph import Graph  # for doctests
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
-from networkx.exception import NetworkXException, NetworkXError
-import networkx.convert as convert
+from networkx.exception import NetworkXError
 from copy import deepcopy
 
 

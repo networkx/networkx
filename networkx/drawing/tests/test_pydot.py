@@ -2,7 +2,7 @@
     Unit tests for pydot drawing functions.
 """
 
-import os, sys
+import os
 import tempfile
 
 from nose import SkipTest

@@ -252,7 +252,6 @@ def info(G, n=None):
     n : node (any hashable)
        A node in the graph G
     """
-    import textwrap
     info='' # append this all to a string
     if n is None:
         info+="Name: %s\n"%G.name
@@ -274,7 +273,7 @@ def info(G, n=None):
 
     else:
         if n not in G:
-            raise NetworkXError("node %s not in graph"%(n,))
+            raise nx.NetworkXError("node %s not in graph"%(n,))
         info+="Node % s has the following properties:\n"%n
         info+="Degree: %d\n"%G.degree(n)
         info+="Neighbors: "

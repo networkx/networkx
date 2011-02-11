@@ -36,7 +36,6 @@ import sys
 import tempfile
 
 import networkx as nx
-from networkx.utils import _get_fh,is_string_like
 
 
 def from_agraph(A,create_using=None):
