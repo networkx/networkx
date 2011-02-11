@@ -36,6 +36,11 @@ class TestHITS:
         for n in G:
             assert_almost_equal(a[n],G.a[n],places=4)
 
+    def test_hits_nstart(self):
+        G = self.G
+        nstart = dict([(i, 1./2) for i in G])
+        h, a = networkx.hits(G, nstart = nstart)
+
     def test_hits_numpy(self):
         try:
             import numpy as np
