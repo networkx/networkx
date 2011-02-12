@@ -15,7 +15,7 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 
 import networkx as nx
 from networkx.classes.graph import Graph
-from networkx.exception import NetworkXException, NetworkXError
+from networkx.exception import NetworkXError
 import networkx.convert as convert
 from copy import deepcopy
 
@@ -1213,7 +1213,6 @@ class DiGraph(Graph):
         H_succ=H.succ
         H_pred=H.pred
         self_succ=self.succ
-        self_pred=self.pred
         # add nodes
         for n in bunch:
             H_succ[n]={}

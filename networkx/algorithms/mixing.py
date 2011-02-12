@@ -284,7 +284,6 @@ def attribute_assortativity_coefficient(e):
     s=(e*e).sum()
     t=e.trace()
     r=(t-s)/(1-s)
-    rmin=-s/(1-s)
     return float(r)
 
 

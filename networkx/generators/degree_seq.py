@@ -838,7 +838,6 @@ def connected_double_edge_swap(G, nswap=1):
     swapcount=0
     deg=G.degree()
     dk=list(deg.keys()) # Label key for nodes
-    ideg=list(G.degree().values())
     cdf=nx.utils.cumulative_distribution(list(G.degree().values())) 
     if len(cdf)<4:
         raise nx.NetworkXError("Graph has less than four nodes.")

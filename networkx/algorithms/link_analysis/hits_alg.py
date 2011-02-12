@@ -80,8 +80,8 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
         h=nstart
         # normalize starting vector 
         s=1.0/sum(h.values())
-        for k in x: h[k]*=s
-    nnodes=G.number_of_nodes()
+        for k in h:
+            h[k]*=s
     i=0
     while True: # power iteration: make up to max_iter iterations
         hlast=h

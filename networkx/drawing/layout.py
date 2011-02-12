@@ -147,7 +147,6 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
     if nlist==None:
         nlist=[G.nodes()] # draw the whole graph in one shell
 
-    nshells=len(nlist)
     if len(nlist[0])==1:
         radius=0.0 # single node at center
     else:
