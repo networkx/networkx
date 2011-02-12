@@ -88,21 +88,20 @@ def from_agraph(A,create_using=None):
     node_attr={}
     # add nodes, attributes to N.node_attr
     for n in A.nodes():
-        N.add_node(str(n),**dict(n.attr))
+        str_attr=dict((str(k),v) for k,v in n.attr.items())
+        N.add_node(str(n),**str_attr)
 
     # add edges, assign edge data as dictionary of attributes
     for e in A.edges():
         u,v=str(e[0]),str(e[1])
         attr=dict(e.attr)
-        if N.is_multigraph():
-            if e.key is not None:
-                attr[key]=e.key
-            N.add_edge(u,v,**attr)
+        str_attr=dict((str(k),v) for k,v in attr.items())
+        if not N.is_multigraph():
+            if e.name is not None:
+                str_attr['key']=e.name
+            N.add_edge(u,v,**str_attr)
         else:
-            if e.key is not None:
-                N.add_edge(u,v,e.key,**attr)
-            else:
-                N.add_edge(u,v,**attr)
+            N.add_edge(u,v,key=e.name,**str_attr)
 
     # add default attributes for graph, nodes, and edges
     # hang them on N.graph_attr
