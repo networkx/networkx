@@ -351,9 +351,9 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
             del G.graph[which]
 
     # Update all default values
-    added_edge = update_attrs('edge', edge_attrs)
-    added_node = update_attrs('node', node_attrs)
-    added_graph = update_attrs('graph', graph_attrs)
+    update_attrs('edge', edge_attrs)
+    update_attrs('node', node_attrs)
+    update_attrs('graph', graph_attrs)
 
     # Convert to agraph, so we inherit default values
     A = to_agraph(G)
