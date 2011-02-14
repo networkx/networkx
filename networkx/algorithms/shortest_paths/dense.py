@@ -26,7 +26,7 @@ def floyd_warshall_numpy(G,nodelist=None):
     
     nodelist : list, optional       
        The rows and columns are ordered by the nodes in nodelist.
-       If`nodelist is None then the ordering is produced by G.nodes().
+       If nodelist is None then the ordering is produced by G.nodes().
 
     Returns
     -------
