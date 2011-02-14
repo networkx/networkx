@@ -8,21 +8,21 @@ __author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
 # All rights reserved.
 # BSD license.
 
+import networkx as nx
 
 __all__ = ['ford_fulkerson',
            'ford_fulkerson_flow',
            'max_flow',
            'min_cut']
 
-import networkx as nx
 
-def _create_auxiliary_digraph(G, capacity = 'capacity'):
+def _create_auxiliary_digraph(G, capacity='capacity'):
     """Initialize an auxiliary digraph and dict of infinite capacity
     edges for a given graph G.
     Ignore edges with capacity <= 0.
     """
     auxiliary = nx.DiGraph()
-    infcapFlows = {}
+    inf_capacity_flows = {}
 
     if nx.is_directed(G):
         for edge in G.edges(data = True):
@@ -31,7 +31,7 @@ def _create_auxiliary_digraph(G, capacity = 'capacity'):
                     auxiliary.add_edge(*edge)
             else:
                 auxiliary.add_edge(*edge)
-                infcapFlows[(edge[0], edge[1])] = 0
+                inf_capacity_flows[(edge[0], edge[1])] = 0
     else:
         for edge in G.edges(data = True):
             if capacity in edge[2]:
@@ -41,15 +41,16 @@ def _create_auxiliary_digraph(G, capacity = 'capacity'):
             else:
                 auxiliary.add_edge(*edge)
                 auxiliary.add_edge(edge[1], edge[0], edge[2])
-                infcapFlows[(edge[0], edge[1])] = 0
-                infcapFlows[(edge[1], edge[0])] = 0
+                inf_capacity_flows[(edge[0], edge[1])] = 0
+                inf_capacity_flows[(edge[1], edge[0])] = 0
 
-    return auxiliary, infcapFlows
+    return auxiliary, inf_capacity_flows
 
 
-def _create_flow_dict(G, H, infcapFlows, capacity = 'capacity'):
+def _create_flow_dict(G, H, inf_capacity_flows, capacity='capacity'):
     """Creates the flow dict of dicts on G corresponding to the
-    auxiliary digraph H and infinite capacity edges flows infcapFlows.
+    auxiliary digraph H and infinite capacity edges flows
+    inf_capacity_flows.
     """
     flow = dict([(u, {}) for u in G])
 
@@ -59,11 +60,11 @@ def _create_flow_dict(G, H, infcapFlows, capacity = 'capacity'):
                 if capacity in G[u][v]:
                     flow[u][v] = max(0, G[u][v][capacity] - H[u][v][capacity])
                 elif G.has_edge(v, u) and not capacity in G[v][u]:
-                    flow[u][v] = max(0, infcapFlows[(u, v)]
-                                     - infcapFlows[(v, u)])
+                    flow[u][v] = max(0, inf_capacity_flows[(u, v)] -
+                                     inf_capacity_flows[(v, u)])
                 else:
-                    flow[u][v] = max(0, H[v].get(u, {}).get(capacity, 0)
-                                        - G[v].get(u, {}).get(capacity, 0))
+                    flow[u][v] = max(0, H[v].get(u, {}).get(capacity, 0) -
+                                     G[v].get(u, {}).get(capacity, 0))
             else:
                 flow[u][v] = G[u][v][capacity]
 
@@ -73,8 +74,8 @@ def _create_flow_dict(G, H, infcapFlows, capacity = 'capacity'):
                 if capacity in G[u][v]:
                     flow[u][v] = abs(G[u][v][capacity] - H[u][v][capacity])
                 else:
-                    flow[u][v] = abs(infcapFlows[(u, v)]
-                                     - infcapFlows[(v, u)])
+                    flow[u][v] = abs(inf_capacity_flows[(u, v)] -
+                                     inf_capacity_flows[(v, u)])
             else:
                 flow[u][v] = abs(G[u][v][capacity] - H[v][u][capacity])
             flow[v][u] = flow[u][v]
@@ -82,8 +83,9 @@ def _create_flow_dict(G, H, infcapFlows, capacity = 'capacity'):
     return flow
 
 
-def ford_fulkerson(G, s, t, capacity = 'capacity'):
-    """Find a maximum single-commodity flow using the Ford-Fulkerson algorithm.
+def ford_fulkerson(G, s, t, capacity='capacity'):
+    """Find a maximum single-commodity flow using the Ford-Fulkerson
+    algorithm.
     
     This algorithm uses Edmonds-Karp-Dinitz path selection rule which
     guarantees a running time of O(nm^2) for n nodes and m edges.
@@ -110,12 +112,12 @@ def ford_fulkerson(G, s, t, capacity = 'capacity'):
 
     Returns
     -------
-    flowValue : integer, float
+    flow_value : integer, float
         Value of the maximum flow, i.e., net outflow from the source.
 
-    flowDict : dictionary
+    flow_dict : dictionary
         Dictionary of dictionaries keyed by nodes such that
-        flowDict[u][v] is the flow edge (u, v).
+        flow_dict[u][v] is the flow edge (u, v).
 
     Raises
     ------
@@ -133,15 +135,15 @@ def ford_fulkerson(G, s, t, capacity = 'capacity'):
     --------
     >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity = 3.0)
-    >>> G.add_edge('x','b', capacity = 1.0)
-    >>> G.add_edge('a','c', capacity = 3.0)
-    >>> G.add_edge('b','c', capacity = 5.0)
-    >>> G.add_edge('b','d', capacity = 4.0)
-    >>> G.add_edge('d','e', capacity = 2.0)
-    >>> G.add_edge('c','y', capacity = 2.0)
-    >>> G.add_edge('e','y', capacity = 3.0)
-    >>> flow,F=nx.ford_fulkerson(G, 'x', 'y')
+    >>> G.add_edge('x','a', capacity=3.0)
+    >>> G.add_edge('x','b', capacity=1.0)
+    >>> G.add_edge('a','c', capacity=3.0)
+    >>> G.add_edge('b','c', capacity=5.0)
+    >>> G.add_edge('b','d', capacity=4.0)
+    >>> G.add_edge('d','e', capacity=2.0)
+    >>> G.add_edge('c','y', capacity=2.0)
+    >>> G.add_edge('e','y', capacity=3.0)
+    >>> flow, F = nx.ford_fulkerson(G, 'x', 'y')
     >>> flow
     3.0
     """
@@ -149,55 +151,56 @@ def ford_fulkerson(G, s, t, capacity = 'capacity'):
         raise nx.NetworkXError(
                 'MultiGraph and MultiDiGraph not supported (yet).')
 
-    auxiliary, infcapFlows = _create_auxiliary_digraph(G, capacity = capacity)
-    flowValue = 0   # Initial feasible flow.
+    auxiliary, inf_capacity_flows = _create_auxiliary_digraph(G,
+                                                        capacity=capacity)
+    flow_value = 0   # Initial feasible flow.
 
     # As long as there is an (s, t)-path in the auxiliary digraph, find
     # the shortest (with respect to the number of arcs) such path and
     # augment the flow on this path.
     while True:
         try:
-            pathNodes = nx.bidirectional_shortest_path(auxiliary, s, t)
+            path_nodes = nx.bidirectional_shortest_path(auxiliary, s, t)
         except nx.NetworkXNoPath:
             break
 
         # Get the list of edges in the shortest path.
-        pathEdges = list(zip(pathNodes[:-1], pathNodes[1:]))
+        path_edges = list(zip(path_nodes[:-1], path_nodes[1:]))
 
         # Find the minimum capacity of an edge in the path.
         try:
-            pathCapacity = min([auxiliary[u][v][capacity]
-                            for u, v in pathEdges
-                            if capacity in auxiliary[u][v]])
+            path_capacity = min([auxiliary[u][v][capacity]
+                                for u, v in path_edges
+                                if capacity in auxiliary[u][v]])
         except ValueError: 
             # path of infinite capacity implies no max flow
             raise nx.NetworkXUnbounded(
                     "Infinite capacity path, flow unbounded above.")
         
-        flowValue += pathCapacity
+        flow_value += path_capacity
 
         # Augment the flow along the path.
-        for u, v in pathEdges:
-            auxEdgeAttr = auxiliary[u][v]
-            if capacity in auxEdgeAttr:
-                auxEdgeAttr[capacity] -= pathCapacity
-                if auxEdgeAttr[capacity] == 0:
+        for u, v in path_edges:
+            edge_attr = auxiliary[u][v]
+            if capacity in edge_attr:
+                edge_attr[capacity] -= path_capacity
+                if edge_attr[capacity] == 0:
                     auxiliary.remove_edge(u, v)
             else:
-                infcapFlows[(u, v)] += pathCapacity
+                inf_capacity_flows[(u, v)] += path_capacity
 
             if auxiliary.has_edge(v, u):
                 if capacity in auxiliary[v][u]:
-                    auxiliary[v][u][capacity] += pathCapacity
+                    auxiliary[v][u][capacity] += path_capacity
             else:
-                auxiliary.add_edge(v, u, {capacity: pathCapacity})
+                auxiliary.add_edge(v, u, {capacity: path_capacity})
     
-    flowDict = _create_flow_dict(G, auxiliary, infcapFlows,
-                                 capacity = capacity)
-    return flowValue, flowDict
+    flow_dict = _create_flow_dict(G, auxiliary, inf_capacity_flows,
+                                  capacity=capacity)
+    return flow_value, flow_dict
 
 
-def ford_fulkerson_flow(G, s, t, capacity = 'capacity'):
+def ford_fulkerson_flow(G, s, t, capacity='capacity'):
     """Return a maximum flow for a single-commodity flow problem.
 
     Parameters
@@ -221,9 +224,9 @@ def ford_fulkerson_flow(G, s, t, capacity = 'capacity'):
 
     Returns
     -------
-    flowDict : dictionary
+    flow_dict : dictionary
         Dictionary of dictionaries keyed by nodes such that
-        flowDict[u][v] is the flow edge (u, v).
+        flow_dict[u][v] is the flow edge (u, v).
 
     Raises
     ------
@@ -241,15 +244,15 @@ def ford_fulkerson_flow(G, s, t, capacity = 'capacity'):
     --------
     >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity = 3.0)
-    >>> G.add_edge('x','b', capacity = 1.0)
-    >>> G.add_edge('a','c', capacity = 3.0)
-    >>> G.add_edge('b','c', capacity = 5.0)
-    >>> G.add_edge('b','d', capacity = 4.0)
-    >>> G.add_edge('d','e', capacity = 2.0)
-    >>> G.add_edge('c','y', capacity = 2.0)
-    >>> G.add_edge('e','y', capacity = 3.0)
-    >>> F=nx.ford_fulkerson_flow(G, 'x', 'y')
+    >>> G.add_edge('x','a', capacity=3.0)
+    >>> G.add_edge('x','b', capacity=1.0)
+    >>> G.add_edge('a','c', capacity=3.0)
+    >>> G.add_edge('b','c', capacity=5.0)
+    >>> G.add_edge('b','d', capacity=4.0)
+    >>> G.add_edge('d','e', capacity=2.0)
+    >>> G.add_edge('c','y', capacity=2.0)
+    >>> G.add_edge('e','y', capacity=3.0)
+    >>> F = nx.ford_fulkerson_flow(G, 'x', 'y')
     >>> for u, v in G.edges_iter():
     ...     print('(%s, %s) %.2f' % (u, v, F[u][v]))
     ... 
@@ -262,10 +265,10 @@ def ford_fulkerson_flow(G, s, t, capacity = 'capacity'):
     (x, a) 2.00
     (x, b) 1.00
     """
-    return ford_fulkerson(G, s, t, capacity = capacity)[1]
+    return ford_fulkerson(G, s, t, capacity=capacity)[1]
 
 
-def max_flow(G, s, t, capacity = 'capacity'):
+def max_flow(G, s, t, capacity='capacity'):
     """Find the value of a maximum single-commodity flow.
     
     Parameters
@@ -289,7 +292,7 @@ def max_flow(G, s, t, capacity = 'capacity'):
 
     Returns
     -------
-    flowValue : integer, float
+    flow_value : integer, float
         Value of the maximum flow, i.e., net outflow from the source.
 
     Raises
@@ -308,22 +311,22 @@ def max_flow(G, s, t, capacity = 'capacity'):
     --------
     >>> import networkx as nx
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity = 3.0)
-    >>> G.add_edge('x','b', capacity = 1.0)
-    >>> G.add_edge('a','c', capacity = 3.0)
-    >>> G.add_edge('b','c', capacity = 5.0)
-    >>> G.add_edge('b','d', capacity = 4.0)
-    >>> G.add_edge('d','e', capacity = 2.0)
-    >>> G.add_edge('c','y', capacity = 2.0)
-    >>> G.add_edge('e','y', capacity = 3.0)
-    >>> flow=nx.max_flow(G, 'x', 'y')
+    >>> G.add_edge('x','a', capacity=3.0)
+    >>> G.add_edge('x','b', capacity=1.0)
+    >>> G.add_edge('a','c', capacity=3.0)
+    >>> G.add_edge('b','c', capacity=5.0)
+    >>> G.add_edge('b','d', capacity=4.0)
+    >>> G.add_edge('d','e', capacity=2.0)
+    >>> G.add_edge('c','y', capacity=2.0)
+    >>> G.add_edge('e','y', capacity=3.0)
+    >>> flow = nx.max_flow(G, 'x', 'y')
     >>> flow
     3.0
     """
-    return ford_fulkerson(G, s, t, capacity = capacity)[0]
+    return ford_fulkerson(G, s, t, capacity=capacity)[0]
 
 
-def min_cut(G, s, t, capacity = 'capacity'):
+def min_cut(G, s, t, capacity='capacity'):
     """Compute the value of a minimum (s, t)-cut.
 
     Use the max-flow min-cut theorem, i.e., the capacity of a minimum
@@ -376,7 +379,7 @@ def min_cut(G, s, t, capacity = 'capacity'):
     """
 
     try:
-        return ford_fulkerson(G, s, t, capacity = capacity)[0]
+        return ford_fulkerson(G, s, t, capacity=capacity)[0]
     except nx.NetworkXUnbounded:
         raise nx.NetworkXUnbounded(
                 "Infinite capacity path, no minimum cut.")
