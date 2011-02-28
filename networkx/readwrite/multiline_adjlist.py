@@ -185,7 +185,7 @@ def write_multiline_adjlist(G, path, delimiter=' ',
         multiline+='\n'
         fh.write(multiline.encode(encoding))
 
-def parse_multiline_adjlist(lines, comments = '#', delimiter = ' ',
+def parse_multiline_adjlist(lines, comments = '#', delimiter = None,
                             create_using = None, nodetype = None,
                             edgetype = None):
     """Parse lines of a multiline adjacency list representation of a graph.
@@ -205,7 +205,7 @@ def parse_multiline_adjlist(lines, comments = '#', delimiter = ' ',
        Marker for comment lines
 
     delimiter : string, optional
-       Separator for node labels 
+       Separator for node labels.  The default is whitespace. 
 
     create_using: NetworkX graph container       
        Use given NetworkX graph for holding nodes or edges.
@@ -298,7 +298,7 @@ def parse_multiline_adjlist(lines, comments = '#', delimiter = ' ',
     return G
 
 
-def read_multiline_adjlist(path, comments="#", delimiter=' ',
+def read_multiline_adjlist(path, comments="#", delimiter=None,
                            create_using=None,
                            nodetype=None, edgetype=None,
                            encoding = 'utf-8'):
@@ -323,7 +323,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=' ',
        Marker for comment lines
 
     delimiter : string, optional
-       Separator for node labels 
+       Separator for node labels.  The default is whitespace. 
 
     create_using: NetworkX graph container       
        Use given NetworkX graph for holding nodes or edges.

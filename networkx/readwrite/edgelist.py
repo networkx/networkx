@@ -171,7 +171,7 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
         line+='\n'
         fh.write(line.encode(encoding))
 
-def parse_edgelist(lines, comments='#', delimiter=' ',
+def parse_edgelist(lines, comments='#', delimiter=None,
                    create_using=None, nodetype=None, data=True):
     """Parse lines of an edge list representation of a graph.
 
@@ -295,7 +295,7 @@ def parse_edgelist(lines, comments='#', delimiter=' ',
     return G
 
 
-def read_edgelist(path, comments="#", delimiter=' ', create_using=None, 
+def read_edgelist(path, comments="#", delimiter=None, create_using=None, 
                   nodetype=None, data=True, edgetype=None, encoding='utf-8'):
     """Read a graph from a list of edges.
 
@@ -400,7 +400,7 @@ def write_weighted_edgelist(G, path, comments="#",
     write_edgelist(G,path, comments=comments, delimiter=delimiter,
                    data=('weight',), encoding = encoding)
     
-def read_weighted_edgelist(path, comments="#", delimiter=' ',
+def read_weighted_edgelist(path, comments="#", delimiter=None,
                            create_using=None, nodetype=None, encoding='utf-8'):
 
     """Read a graph as list of edges with numeric weights.
