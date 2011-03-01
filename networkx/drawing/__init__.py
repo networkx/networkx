@@ -1,11 +1,11 @@
 # graph drawing and interface to graphviz
 import sys
+from networkx.drawing.layout import *
+
 # These packages need 2.6 <= Python < 3.0
 if sys.version_info[:2] < (3, 0):
     from nx_pylab import *
     import nx_pylab
-    from layout import *
-    import layout
 
     # graphviz interface
     # prefer pygraphviz/agraph (it's faster)
