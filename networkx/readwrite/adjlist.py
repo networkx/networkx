@@ -145,7 +145,7 @@ def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
         fh.write(line.encode(encoding))
 
 
-def parse_adjlist(lines, comments = '#', delimiter = ' ',
+def parse_adjlist(lines, comments = '#', delimiter = None,
                   create_using = None, nodetype = None):
     """Parse lines of a graph adjacency list representation.
 
@@ -164,7 +164,7 @@ def parse_adjlist(lines, comments = '#', delimiter = ' ',
        Marker for comment lines
 
     delimiter : string, optional
-       Separator for node labels 
+       Separator for node labels.  The default is whitespace. 
 
     create_using: NetworkX graph container       
        Use given NetworkX graph for holding nodes or edges.
@@ -227,7 +227,7 @@ def parse_adjlist(lines, comments = '#', delimiter = ' ',
         G.add_edges_from([(u, v) for v in vlist])
     return G
 
-def read_adjlist(path, comments="#", delimiter=' ', create_using=None, 
+def read_adjlist(path, comments="#", delimiter=None, create_using=None, 
                  nodetype=None, encoding = 'utf-8'):
     """Read graph in adjacency list format from path.
 
@@ -247,7 +247,7 @@ def read_adjlist(path, comments="#", delimiter=' ', create_using=None,
        Marker for comment lines
 
     delimiter : string, optional
-       Separator for node labels 
+       Separator for node labels.  The default is whitespace. 
 
     create_using: NetworkX graph container       
        Use given NetworkX graph for holding nodes or edges.
