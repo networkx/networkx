@@ -97,7 +97,7 @@ def generate_graphml(G, encoding='utf-8',prettyprint=True):
     >>> linefeed=chr(10) # linefeed=\n
     >>> s=linefeed.join(nx.generate_graphml(G))  # a string
     >>> for line in nx.generate_graphml(G):  # doctest: +SKIP
-    ...    print line                   
+    ...    print(line)
 
     Notes
     -----
@@ -194,7 +194,8 @@ class GraphMLWriter(GraphML):
     def __str__(self):
         if self.prettyprint:
             self.indent(self.xml)
-        return tostring(self.xml)
+        s=tostring(self.xml).decode(self.encoding)
+        return s
 
     def get_key(self, name, attr_type, scope, default):
         keys_key = (name, attr_type, scope)
@@ -474,4 +475,7 @@ def setup_module(module):
 # fixture for nose tests
 def teardown_module(module):
     import os
-    os.unlink('test.graphml')
+    try:
+        os.unlink('test.graphml')
+    except:
+        pass

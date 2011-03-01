@@ -271,7 +271,8 @@ class GEXFWriter(GEXF):
     def __str__(self):
         if self.prettyprint:
             self.indent(self.xml)
-        return tostring(self.xml)
+        s=tostring(self.xml).decode(self.encoding)
+        return s
 
     def add_graph(self, G):
         # Add a graph element to the XML
@@ -904,4 +905,7 @@ def setup_module(module):
 # fixture for nose tests
 def teardown_module(module):
     import os
-    os.unlink('test.gexf')
+    try:
+        os.unlink('test.gexf')
+    except:
+        pass
