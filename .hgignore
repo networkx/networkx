@@ -1,6 +1,7 @@
 syntax: glob
 *.pyc
 *~
+.DS_Store
 build/*
 networkx/version.py
 examples/*/*.png
