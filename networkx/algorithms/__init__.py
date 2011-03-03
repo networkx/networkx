@@ -12,6 +12,7 @@ from networkx.algorithms.distance_measures import *
 from networkx.algorithms.flow import *
 from networkx.algorithms.isomorphism import *
 from networkx.algorithms.matching import *
+from networkx.algorithms.mis import *
 from networkx.algorithms.mixing import *
 from networkx.algorithms.mst import *
 from networkx.algorithms.link_analysis import *
