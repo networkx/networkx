@@ -2,6 +2,11 @@
 Bipartite
 *********
 
+.. automodule:: networkx.algorithms.bipartite
+
+
+Basic functions
+---------------
 .. automodule:: networkx.algorithms.bipartite.basic
 .. autosummary::
    :toctree: generated/
@@ -11,7 +16,7 @@ Bipartite
    bipartite_sets
    bipartite_color
    bipartite_density
-   bipartite_degree
+   bipartite_degrees
 
 Projections
 -----------
@@ -19,7 +24,8 @@ Projections
 .. autosummary::
    :toctree: generated/
 
-   projection_graph
+   projected_graph
+   weighted_projected_graph
    project
 
 
