@@ -85,7 +85,7 @@ def projected_graph(B, nodes, multigraph=False):
                     nparallel=len(set(B[u]) & set(B.pred[n]))
                 else:
                     nparallel=len(set(B[u]) & set(B[n]))/2
-                G.add_edges_from([(u,n)]*nparallel)
+                G.add_edges_from([(u,n)]*int(nparallel))
         else:
             G.add_edges_from((u,n) for n in nbrs2)
     return G

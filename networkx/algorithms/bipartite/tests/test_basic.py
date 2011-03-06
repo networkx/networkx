@@ -33,7 +33,6 @@ class TestBipartiteBasic:
         G=nx.path_graph(5)
         X,Y=nx.bipartite_sets(G)
         density=float(len(G.edges()))/(len(X)*len(Y))
-        print density
         assert_equal(nx.bipartite_density(G,X),density)
 
     def test_bipartite_degrees(self):
