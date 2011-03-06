@@ -19,83 +19,52 @@ and the future of NetworkX.
 Thanks especially to the following contributors:
 
  - Katy Bold contributed the Karate Club graph.
-
  - Hernan Rozenfeld added dorogovtsev_goltsev_mendes_graph and did 
    stress testing.
-
  - Brendt Wohlberg added examples from the Stanford GraphBase.
-
  - Jim Bagrow reported bugs in the search methods. 
-
  - Holly Johnsen helped fix the path based centrality measures. 
-
  - Arnar Flatberg fixed the graph laplacian routines.
-
  - Chris Myers suggested using None as a default datatype, suggested
    improvements for the IO routines, added grid generator index tuple
    labeling and associated routines, and reported bugs.
-
  - Joel Miller tested and improved the connected components methods
    fixed bugs and typos in the graph generators, and contributed
    the random clustered graph generator.
-
  - Keith Briggs sorted out naming issues for random graphs and
    wrote dense_gnm_random_graph.
-
  - Ignacio Rozada provided the Krapivsky-Redner graph generator.
-
  - Phillipp Pagel helped fix eccentricity etc. for disconnected graphs. 
-
  - Sverre Sundsdal contributed bidirectional shortest path and
    Dijkstra routines, s-metric computation and graph generation  
-
  - Ross M. Richardson contributed the expected degree graph generator
    and helped test the pygraphviz interface.
-
  - Christopher Ellison implemented the VF2 isomorphism algorithm
    and is a core developer.
-
  - Eben Kenah contributed the strongly connected components and
    DFS functions.
-
  - Sasha Gutfriend contributed edge betweenness algorithms.
-
  - Udi Weinsberg helped develop intersection and difference operators.
- 
  - Matteo Dell'Amico wrote the random regular graph generator.
-
  - Andrew Conway contributed ego_graph, eigenvector centrality,
    line graph and much more.
-
  - Raf Guns wrote the GraphML writer.
-
  - Salim Fadhley and Matteo Dell'Amico contributed the A* algorithm.
-
  - Fabrice Desclaux contributed the Matplotlib edge labeling code.
-
  - Arpad Horvath fixed the barabasi_albert_graph() generator.
-
  - Minh Van Nguyen contributed the connected_watts_strogatz_graph()
    and documentation for the Graph and MultiGraph classes.
-
  - Willem Ligtenberg contributed the directed scale free graph
    generator.
-
  - Loïc Séguin-C. contributed the Ford-Fulkerson max flow and min cut 
    algorithms, and ported all of NetworkX to Python3.  He is a 
    NetworkX core developer.
-
  - Paul McGuire improved the performance of the GML data parser.
-
  - Jesus Cerquides contributed the chordal graph algorithms.
-
  - Ben Edwards contributed tree generating functions and the rich club 
    coefficient algorithm.
-
  - Jon Olav Vik contributed cycle finding algorithms.
-
  - Hugh Brown improved the words.py example from the n^2 algorithm.
-
  - Ben Reilly contributed the shapefile reader.
-
  - Leo Lopes contributed the maximal independent set algorithm.
+ - Jordi Torrents contributed the bipartite clustering algorithm.
