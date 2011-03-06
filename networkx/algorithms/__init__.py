@@ -26,6 +26,7 @@ from networkx.algorithms.vitality import *
 from networkx.algorithms.chordal import *
 from networkx.algorithms.richclub import *
 
+import networkx.algorithms.bipartite
 import networkx.algorithms.centrality
 import networkx.algorithms.cluster
 import networkx.algorithms.clique

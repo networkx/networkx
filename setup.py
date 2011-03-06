@@ -31,6 +31,7 @@ sys.path.pop(0)
 
 packages=["networkx",
           "networkx.algorithms",
+          "networkx.algorithms.bipartite",
           "networkx.algorithms.centrality",
           "networkx.algorithms.chordal",
           "networkx.algorithms.components",
@@ -70,6 +71,7 @@ for d in ['advanced',
 package_data     = {
     'networkx': ['tests/*.py'],
     'networkx.algorithms': ['tests/*.py'],
+    'networkx.algorithms.bipartite': ['tests/*.py'],
     'networkx.algorithms.centrality': ['tests/*.py'],
     'networkx.algorithms.components': ['tests/*.py'],
     'networkx.algorithms.flow': ['tests/*.py'],

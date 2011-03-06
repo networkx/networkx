@@ -1,0 +1,219 @@
+# -*- coding: utf-8 -*-
+"""
+==========================
+Bipartite Graph Algorithms
+==========================
+"""
+import networkx as nx
+__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+#    Copyright (C) 2011 by 
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+__all__ = ['is_bipartite', 'is_bipartite_node_set',
+           'bipartite_color', 'bipartite_sets',
+           'bipartite_density', 'bipartite_degrees']
+
+def bipartite_color(G):
+    """Returns a two-coloring of the graph.
+
+    Raises an exception if the graph is not bipartite.
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+
+    Returns
+    -------
+    color : dictionary
+       A dictionary keyed by node with a 1 or 0 as data for each node color.
+
+    Raises
+    ------
+    NetworkXError if the graph is not two-colorable.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> c = nx.bipartite_color(G)
+    >>> print(c)
+    {0: 1, 1: 0, 2: 1, 3: 0}
+    """
+    color = {}
+    for n in G: # handle disconnected graphs
+        if n in color:
+            continue
+        queue = [n]  
+        color[n] = 1 # nodes seen with color (1 or 0)
+        while queue:
+            v = queue.pop()
+            c = 1 - color[v] # opposite color of node v
+            for w in G[v]: 
+                if w in color: 
+                    if color[w] == color[v]:
+                        raise nx.NetworkXError("Graph is not bipartite.")
+                else:
+                    color[w] = c
+                    queue.append(w)
+    return color
+
+def is_bipartite(G):
+    """ Returns True if graph G is bipartite, False if not.
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> print(nx.is_bipartite(G))
+    True
+
+    See Also
+    --------
+    bipartite_color, is_bipartite_node_set
+    """
+    try:
+        bipartite_color(G)
+        return True
+    except nx.NetworkXError:
+        return False
+    
+def is_bipartite_node_set(G,nodes):
+    """Returns True if nodes and G/nodes are a bipartition of G.
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+
+    nodes: list or container
+      Check if nodes are a one of a bipartite set.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> X = set([1,3])
+    >>> nx.is_bipartite_node_set(G,X)
+    True
+
+    Notes
+    -----
+    For connected graphs the bipartite sets are unique.  This function handles
+    disconnected graphs.
+    """
+    S=set(nodes)
+    for CC in nx.connected_component_subgraphs(G):
+        X,Y=bipartite_sets(CC)
+        if not ( (X.issubset(S) and Y.isdisjoint(S)) or 
+                 (Y.issubset(S) and X.isdisjoint(S)) ):
+            return False
+    return True
+    
+
+def bipartite_sets(G):
+    """Returns bipartite node sets of graph G.
+
+    Raises an exception if the graph is not bipartite.
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+
+    Returns
+    -------
+    (X,Y) : two-tuple of sets
+       One set of nodes for each part of the bipartite graph.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> X, Y = nx.bipartite_sets(G)
+    >>> list(X)
+    [0, 2]
+    >>> list(Y)
+    [1, 3]
+
+    See Also
+    --------
+    bipartite_color
+    """
+    color = bipartite_color(G)
+    X = set(n for n in color if color[n]) # color[n] == 1
+    Y = set(n for n in color if not color[n]) # color[n] == 0
+    return (X, Y)
+
+def bipartite_density(B, nodes):
+    """Return density of bipartite graph B.
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+
+    nodes: list or container
+      Nodes in one set of the bipartite graph.
+
+    Returns
+    -------
+    d : float
+       The bipartite density
+
+    Examples
+    --------
+    >>> G = nx.complete_bipartite_graph(3,2)
+    >>> X=set([0,1,2])
+    >>> nx.bipartite_density(G,X)
+    1.0
+    >>> Y=set([3,4])
+    >>> nx.bipartite_density(G,Y)
+    1.0
+
+    See Also
+    --------
+    bipartite_color
+    """
+    n=len(B)
+    m=nx.number_of_edges(B)
+    nb=len(nodes)
+    nt=n-nb
+    if m==0: # includes cases n==0 and n==1
+        d=0.0
+    else:
+        if B.is_directed():
+            d=m/(2.0*float(nb*nt))
+        else:
+            d= m/float(nb*nt)
+    return d
+
+def bipartite_degrees(B, nodes, weighted=False):
+    """Return the degrees of the two node sets in the bipartite graph B.
+
+    Parameters
+    ----------
+    G : NetworkX graph 
+
+    nodes: list or container
+      Nodes in one set of the bipartite graph.
+
+    Returns
+    -------
+    (degX,degY) : tuple of dictionaries
+       The degrees of the two bipartite sets as dictionaries keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.complete_bipartite_graph(3,2)
+    >>> Y=set([3,4])
+    >>> degX,degY=nx.bipartite_degrees(G,Y)
+    >>> degX
+    {0: 2, 1: 2, 2: 2}
+
+    See Also
+    --------
+    bipartite_color, bipartite_density
+    """
+    bottom=set(nodes)
+    top=set(B)-bottom
+    return (B.degree(top,weighted),B.degree(bottom,weighted))
