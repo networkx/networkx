@@ -134,7 +134,7 @@ def weighted_projected_graph(B, nodes, collaboration=False):
 
     References
     ----------
-    ..[1] Scientific collaboration networks: II. 
+    .. [1] Scientific collaboration networks: II. 
        Shortest paths, weighted networks, and centrality, 
        M. E. J. Newman, Phys. Rev. E 64, 016132 (2001). 
     """
