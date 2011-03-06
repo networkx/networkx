@@ -184,7 +184,7 @@ def average_bipartite_clustering(G, nodes=None, mode='dot'):
 
     References
     ----------
-    ..[1] Latapy, Matthieu, Clémence Magnien, and Nathalie Del Vecchio (2008).
+    .. [1] Latapy, Matthieu, Clémence Magnien, and Nathalie Del Vecchio (2008).
         Basic notions for the analysis of large two-mode networks. 
         Social Networks 30(1), 31--48.
     """
