@@ -38,4 +38,13 @@ Spectral
    spectral_bipartivity
 
 
+Clustering
+----------
+.. automodule:: networkx.algorithms.bipartite.clustering
+.. autosummary::
+   :toctree: generated/
+
+   bipartite_clustering
+   average_bipartite_clustering
+
 
