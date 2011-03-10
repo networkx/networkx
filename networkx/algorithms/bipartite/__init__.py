@@ -36,6 +36,7 @@ You can find the bipartite node sets using
 from networkx.algorithms.bipartite.basic import *
 from networkx.algorithms.bipartite.clustering import *
 from networkx.algorithms.bipartite.projection import *
+from networkx.algorithms.bipartite.redundancy import *
 from networkx.algorithms.bipartite.spectral import *
 
 

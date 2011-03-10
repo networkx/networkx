@@ -48,3 +48,13 @@ Clustering
    average_bipartite_clustering
 
 
+Redundancy
+----------
+.. automodule:: networkx.algorithms.bipartite.redundancy
+.. autosummary::
+   :toctree: generated/
+
+   bipartite_node_redundancy
+
+
+
