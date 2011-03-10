@@ -76,7 +76,7 @@ def projected_graph(B, nodes, multigraph=False):
             G=nx.MultiGraph()
         else:
             G=nx.Graph()
-    G.add_nodes_from(nodes)
+    G.add_nodes_from((n,B.node[n]) for n in nodes)
     for u in nodes:
         nbrs2=set((v for nbr in B[u] for v in B[nbr])) -set([u])
         if multigraph:
@@ -146,7 +146,7 @@ def weighted_projected_graph(B, nodes, collaboration=False):
     else:
         pred=B.adj
         G=nx.Graph()
-    G.add_nodes_from(nodes)
+    G.add_nodes_from((n,B.node[n]) for n in nodes)
     for u in nodes:
         nbrs2=set((v for nbr in B[u] for v in B[nbr])) -set([u])
         for n in nbrs2:

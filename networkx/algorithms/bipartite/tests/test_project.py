@@ -22,6 +22,20 @@ class TestBipartiteProject:
         assert_equal(sorted(P.nodes()),[0,2])
         assert_equal(sorted(P.edges()),[(0,2)])
 
+    def test_path_projected_properties_graph(self):
+        G=nx.path_graph(4)
+        G.add_node(1,name='one')
+        G.add_node(2,name='two')
+        P=nx.projected_graph(G,[1,3]) 
+        assert_equal(sorted(P.nodes()),[1,3])
+        assert_equal(sorted(P.edges()),[(1,3)])
+        assert_equal(P.node[1]['name'],G.node[1]['name'])
+        P=nx.projected_graph(G,[0,2]) 
+        assert_equal(sorted(P.nodes()),[0,2])
+        assert_equal(sorted(P.edges()),[(0,2)])
+        assert_equal(P.node[2]['name'],G.node[2]['name'])
+
+
     def test_path_weighted_projected_graph(self):
         G=nx.path_graph(4)
         P=nx.weighted_projected_graph(G,[1,3]) 
@@ -112,9 +126,6 @@ class TestBipartiteProject:
         P=nx.projected_graph(G,'AB',multigraph=True)
         assert_equal(sorted(P.edges()),[('A','B'),('A','B')])
 
-
-
-
     def test_project_weighted(self):
         # Tore Opsahl's example
         # http://toreopsahl.com/2009/05/01/projecting-two-mode-networks-onto-weighted-one-mode-networks/
@@ -168,4 +179,4 @@ class TestBipartiteProject:
         for u,v in P.edges():
             assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
 
-
+            

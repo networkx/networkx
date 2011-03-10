@@ -28,7 +28,7 @@ You can find the bipartite node sets using
 
 >>> X,Y=nx.bipartite_sets(B)
 >>> print(list(X))
-['a','c','b']
+['a', 'c', 'b']
 >>> print(list(Y))
 [1, 2, 3]
 
