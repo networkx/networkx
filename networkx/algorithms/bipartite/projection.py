@@ -30,7 +30,8 @@ def projected_graph(B, nodes, multigraph=False):
 
     multigraph: bool (default=False)
        If True return a multigraph where the multiple edges represent multiple
-       shared neighbors.
+       shared neighbors.  They edge key in the multigraph is assigned to the
+       label of the neighbor.
 
     Returns
     -------
@@ -46,6 +47,16 @@ def projected_graph(B, nodes, multigraph=False):
     >>> print(G.edges())
     [(1, 3)]
     
+    If nodes 'a', and 'b' are connected through both nodes 1 and 2 then
+    building a multigraph results in two edges in the projection onto
+    ['a','b']:
+
+    >>> B = nx.Graph()
+    >>> B.add_edges_from([('a', 1), ('b', 1), ('a', 2), ('b', 2)])
+    >>> G = nx.projected_graph(B, ['a', 'b'], multigraph=True)
+    >>> print(G.edges(keys=True))
+    [('a', 'b', 1), ('a', 'b', 2)]
+
     Notes
     ------
     No attempt is made to verify that the input graph B is bipartite.
@@ -85,10 +96,12 @@ def projected_graph(B, nodes, multigraph=False):
         if multigraph:
             for n in nbrs2:
                 if directed:
-                    nparallel=len(set(B[u]) & set(B.pred[n]))
+                    links=set(B[u]) & set(B.pred[n])
                 else:
-                    nparallel=len(set(B[u]) & set(B[n]))/2
-                G.add_edges_from([(u,n)]*int(nparallel))
+                    links=set(B[u]) & set(B[n])
+                for l in links:
+                    if not G.has_edge(u,n,l):
+                        G.add_edge(u,n,key=l)
         else:
             G.add_edges_from((u,n) for n in nbrs2)
     return G
