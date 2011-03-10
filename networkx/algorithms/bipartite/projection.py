@@ -57,6 +57,8 @@ def projected_graph(B, nodes, multigraph=False):
     be a directed graph with edges if there is a directed path between
     the nodes.
 
+    The graph and node properties are (shallow) copied to the projected graph.
+
     See Also
     --------
     is_bipartite, is_bipartite_node_set, bipartite_sets, 
@@ -76,6 +78,7 @@ def projected_graph(B, nodes, multigraph=False):
             G=nx.MultiGraph()
         else:
             G=nx.Graph()
+    G.graph.update(B.graph)
     G.add_nodes_from((n,B.node[n]) for n in nodes)
     for u in nodes:
         nbrs2=set((v for nbr in B[u] for v in B[nbr])) -set([u])
@@ -128,6 +131,8 @@ def weighted_projected_graph(B, nodes, collaboration=False):
     ------
     No attempt is made to verify that the input graph B is bipartite.
 
+    The graph and node properties are (shallow) copied to the projected graph.
+
     See Also
     --------
     is_bipartite, is_bipartite_node_set, bipartite_sets, projected_graph 
@@ -146,6 +151,7 @@ def weighted_projected_graph(B, nodes, collaboration=False):
     else:
         pred=B.adj
         G=nx.Graph()
+    G.graph.update(B.graph)
     G.add_nodes_from((n,B.node[n]) for n in nodes)
     for u in nodes:
         nbrs2=set((v for nbr in B[u] for v in B[nbr])) -set([u])
