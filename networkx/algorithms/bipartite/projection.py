@@ -217,6 +217,9 @@ def project(B, nodes, create_using=None):
     --------
     is_bipartite, is_bipartite_node_set, bipartite_sets, 
     """
+    import warnings
+    warnings.warn('project() function is deprecated in networkx-1.5 '
+                  'use projected_graph()') 
     if create_using is None:
         create_using = nx.Graph()
 
