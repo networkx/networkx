@@ -10,3 +10,4 @@ Clustering
    transitivity
    clustering
    average_clustering   
+   square_clustering
