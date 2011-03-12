@@ -504,8 +504,8 @@ def bipartite_random_graph(n, m, p, seed=None, directed=False):
     if p <= 0:
         return G
     if p >= 1:
-        nx.complete_bipartite_graph(n,m)
-
+        return nx.complete_bipartite_graph(n,m)
+        
     lp = math.log(1.0 - p)  
 
     v = 0 
