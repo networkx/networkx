@@ -156,6 +156,7 @@ Bipartite
    bipartite_alternating_havel_hakimi_graph
    bipartite_preferential_attachment_graph
    bipartite_random_regular_graph
+   bipartite_random_graph
 
 
 Line Graph

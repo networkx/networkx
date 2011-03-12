@@ -17,11 +17,14 @@ __all__=['bipartite_configuration_model',
          'bipartite_alternating_havel_hakimi_graph',
          'bipartite_preferential_attachment_graph',
          'bipartite_random_regular_graph',
+         'bipartite_random_graph',
          ]
 
+import math
 import random
 import networkx 
 from functools import reduce
+import networkx as nx
 
 def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
     """Return a random bipartite graph from two given degree sequences.
@@ -455,4 +458,83 @@ def bipartite_random_regular_graph(d, n, create_using=None,seed=None):
            if suitable(leftstubs,rightstubs)==False: 
                return False
     return G
+
+
+def bipartite_random_graph(n, m, p, seed=None, directed=False):
+    """Return a bipartite random graph.
+
+    This is a bipartite analog of the Gnp (Erdős-Rényi) graph.
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes in the first bipartite set.
+    m : int
+        The number of nodes in the second bipartite set.
+    p : float
+        Probability for edge creation.
+    seed : int, optional
+        Seed for random number generator (default=None). 
+    directed : bool, optional (default=False)
+        If True return a directed graph 
+      
+    Notes
+    -----
+    The bipartite random graph algorithm chooses each of the n*m (undirected) 
+    or 2*nm (directed) possible edges with probability p.
+
+    This algorithm is O(n+m) where m is the expected number of edges.
+    
+    See Also
+    --------
+    gnp_random_graph, bipartite_configuration_model
+
+    References
+    ----------
+    .. [1] Vladimir Batagelj and Ulrik Brandes, 
+       "Efficient generation of large random networks",
+       Phys. Rev. E, 71, 036113, 2005.
+    """
+    G = nx.empty_graph(n+m)
+    if directed:
+        G=nx.DiGraph(G)
+    G.name="fast_gnp_random_graph(%s,%s,%s)"%(n,m,p)
+
+    if not seed is None:
+        random.seed(seed)
+
+    if p <= 0 or p >= 1:
+        return G
+    if p >= 1:
+        nx.complete_bipartite_graph(n,m)
+
+    lp = math.log(1.0 - p)  
+
+    v = 0 
+    w = -1
+    while v < n:
+        lr = math.log(1.0 - random.random())
+        w = w + 1 + int(lr/lp)
+        while w >= m and v < n:
+            w = w - m
+            v = v + 1
+        if v < n:
+            G.add_edge(v, n+w)
+
+    if directed:
+        # use the same algorithm to 
+        # add edges from the "m" to "n" set
+        v = 0 
+        w = -1
+        while v < n:
+            lr = math.log(1.0 - random.random())
+            w = w + 1 + int(lr/lp)
+            while  w>= m and v < n:
+                w = w - m
+                v = v + 1
+            if v < n:
+                G.add_edge(n+w, v)
+
+    return G
+
 
