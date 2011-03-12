@@ -198,15 +198,6 @@ def project(B, nodes, create_using=None):
     Graph : NetworkX graph 
        A graph that is the projection onto the given nodes.
 
-    Examples
-    --------
-    >>> B = nx.path_graph(4)
-    >>> G = nx.project(B, [1,3]) 
-    >>> print(G.nodes())
-    [1, 3]
-    >>> print(G.edges())
-    [(1, 3)]
-    
     Notes
     ------
     Returns a graph that is the projection of the bipartite graph B

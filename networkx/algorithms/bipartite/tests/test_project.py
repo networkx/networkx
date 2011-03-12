@@ -4,14 +4,6 @@ import networkx as nx
 
 class TestBipartiteProject:
 
-    def test_path_project(self):
-        G=nx.path_graph(4)
-        P=nx.project(G,[1,3]) 
-        assert_equal(sorted(P.nodes()),[1,3])
-        assert_equal(sorted(P.edges()),[(1,3)])
-        P=nx.project(G,[0,2]) 
-        assert_equal(sorted(P.nodes()),[0,2])
-        assert_equal(sorted(P.edges()),[(0,2)])
 
     def test_path_projected_graph(self):
         G=nx.path_graph(4)
