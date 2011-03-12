@@ -3,14 +3,20 @@
 Generators and functions for bipartite graphs.
 
 """
-#    Copyright (C) 2006-2008 by 
+#    Copyright (C) 2006-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
- 
+import math
+import random
+import networkx 
+from functools import reduce
+import networkx as nx
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Dan Schult(dschult@colgate.edu)'])
 __all__=['bipartite_configuration_model',
          'bipartite_havel_hakimi_graph',
          'bipartite_reverse_havel_hakimi_graph',
@@ -20,11 +26,6 @@ __all__=['bipartite_configuration_model',
          'bipartite_random_graph',
          ]
 
-import math
-import random
-import networkx 
-from functools import reduce
-import networkx as nx
 
 def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
     """Return a random bipartite graph from two given degree sequences.
@@ -100,7 +101,12 @@ def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
 
 
 def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Return a bipartite graph from two given degree sequences using a Havel-Hakimi style construction.
+    """Return a bipartite graph from two given degree sequences using a 
+    Havel-Hakimi style construction.
+
+    Nodes from the set A are connected to nodes in the set B by
+    connecting the highest degree nodes in set A to the highest degree
+    nodes in set B until all stubs are connected.
 
     Parameters
     ----------
@@ -110,10 +116,6 @@ def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
        Degree sequence for node set B.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
-
-    Nodes from the set A are connected to nodes in the set B by
-    connecting the highest degree nodes in set A to
-    the highest degree nodes in set B until all stubs are connected.
 
     Notes
     -----
@@ -167,7 +169,12 @@ def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
     return G
 
 def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
-    """Return a bipartite graph from two given degree sequences using a Havel-Hakimi style construction.
+    """Return a bipartite graph from two given degree sequences using a
+    Havel-Hakimi style construction.
+
+    Nodes from set A are connected to nodes in the set B by connecting
+    the highest degree nodes in set A to the lowest degree nodes in
+    set B until all stubs are connected.
 
     Parameters
     ----------
@@ -178,9 +185,6 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     create_using : NetworkX graph instance, optional
        Return graph of this type.
 
-    Nodes from the set A are connected to nodes in the set B by
-    connecting the highest degree nodes in set A to
-    the lowest degree nodes in set B until all stubs are connected.
 
     Notes
     -----
@@ -235,7 +239,13 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
 
 
 def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
-    """Return a bipartite graph from two given degree sequences using a alternating Havel-Hakimi style construction.
+    """Return a bipartite graph from two given degree sequences using 
+    an alternating Havel-Hakimi style construction.
+
+    Nodes from the set A are connected to nodes in the set B by
+    connecting the highest degree nodes in set A to alternatively the
+    highest and the lowest degree nodes in set B until all stubs are
+    connected.
 
     Parameters
     ----------
@@ -246,10 +256,6 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
     create_using : NetworkX graph instance, optional
        Return graph of this type.
 
-    Nodes from the set A are connected to nodes in the set B by
-    connecting the highest degree nodes in set A to
-    alternatively the highest and the lowest degree nodes in set
-    B until all stubs are connected.
 
     Notes
     -----
@@ -305,7 +311,8 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
     return G
 
 def bipartite_preferential_attachment_graph(aseq,p,create_using=None,seed=None):
-    """Create a bipartite graph with a preferential attachment model from a given single degree sequence.
+    """Create a bipartite graph with a preferential attachment model from 
+    a given single degree sequence.
 
     Parameters
     ----------
@@ -318,23 +325,12 @@ def bipartite_preferential_attachment_graph(aseq,p,create_using=None,seed=None):
     seed : integer, optional
        Seed for random number generator. 
 
-    Notes
-    -----
-
-     @article{guillaume-2004-bipartite,
-       author = {Jean-Loup Guillaume and Matthieu Latapy},
-       title = {Bipartite structure of all complex networks},
-       journal = {Inf. Process. Lett.},
-       volume = {90},
-       number = {5},
-       year = {2004},
-       issn = {0020-0190},
-       pages = {215--221},
-       doi = {http://dx.doi.org/10.1016/j.ipl.2004.03.007},
-       publisher = {Elsevier North-Holland, Inc.},
-       address = {Amsterdam, The Netherlands, The Netherlands},
-       }
-
+    References
+    ----------
+    .. [1] Jean-Loup Guillaume and Matthieu Latapy,
+       Bipartite structure of all complex networks,
+       Inf. Process. Lett. 90, 2004, pg. 215-221
+       http://dx.doi.org/10.1016/j.ipl.2004.03.007
     """
     if create_using is None:
         create_using=networkx.MultiGraph()
@@ -373,7 +369,7 @@ def bipartite_preferential_attachment_graph(aseq,p,create_using=None,seed=None):
 
 
 def bipartite_random_regular_graph(d, n, create_using=None,seed=None):
-    """UNTESTED: Generate a random bipartite graph.
+    """Experimental: Generate a random regular bipartite graph.
 
     Parameters
     ----------
@@ -388,6 +384,8 @@ def bipartite_random_regular_graph(d, n, create_using=None,seed=None):
 
     Notes
     ------
+    This is an untested, unproved algorithm.
+
     Nodes are numbered 0...n-1. 
 
     Restrictions on n and d:
@@ -463,7 +461,7 @@ def bipartite_random_regular_graph(d, n, create_using=None,seed=None):
 def bipartite_random_graph(n, m, p, seed=None, directed=False):
     """Return a bipartite random graph.
 
-    This is a bipartite analog of the Gnp (Erdős-Rényi) graph.
+    This is a bipartite version of the binomial (Erdős-Rényi) graph.
 
     Parameters
     ----------

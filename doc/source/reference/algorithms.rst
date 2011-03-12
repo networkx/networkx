@@ -28,6 +28,7 @@ Algorithms
    algorithms.link_analysis
    algorithms.matching
    algorithms.mixing
+   algorithms.mis
    algorithms.mst
    algorithms.operators
    algorithms.rich_club
