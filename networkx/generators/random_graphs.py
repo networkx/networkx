@@ -92,6 +92,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
     lp = math.log(1.0 - p)  
 
     if directed:
+        G=nx.DiGraph(G)
         while v < n:
             lr = math.log(1.0 - random.random())
             w = w + 1 + int(lr/lp)

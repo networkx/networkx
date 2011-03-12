@@ -97,6 +97,11 @@ class TestGeneratorsRandom():
         assert_equal(len(G),10)
         assert_equal(len(G.edges()),0)
 
+        G=fast_gnp_random_graph(10,0.1,directed=True)
+        assert_true(G.is_directed())
+        assert_equal(len(G),10)
+
+
     def test_gnm(self):
         G=gnm_random_graph(10,3)
         assert_equal(len(G),10)
