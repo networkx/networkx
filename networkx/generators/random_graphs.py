@@ -43,7 +43,7 @@ __all__ = ['fast_gnp_random_graph',
 #-------------------------------------------------------------------------
 
 
-def fast_gnp_random_graph(n, p, seed=None):
+def fast_gnp_random_graph(n, p, seed=None, directed=False):
     """Return a random graph G_{n,p} (Erdős-Rényi graph, binomial graph).
 
     Parameters
@@ -54,6 +54,8 @@ def fast_gnp_random_graph(n, p, seed=None):
         Probability for edge creation.
     seed : int, optional
         Seed for random number generator (default=None). 
+    directed : bool, optional (default=False)
+        If True return a directed graph 
       
     Notes
     -----
@@ -72,7 +74,8 @@ def fast_gnp_random_graph(n, p, seed=None):
 
     References
     ----------
-    .. [1] Batagelj and Brandes, "Efficient generation of large random networks",
+    .. [1] Vladimir Batagelj and Ulrik Brandes, 
+       "Efficient generation of large random networks",
        Phys. Rev. E, 71, 036113, 2005.
     """
     G=empty_graph(n)
@@ -88,15 +91,26 @@ def fast_gnp_random_graph(n, p, seed=None):
     w=-1
     lp=math.log(1.0-p)  
 
-    while v<n:
-        lr=math.log(1.0-random.random())
-        w=w+1+int(lr/lp)
-        while w>=v and v<n:
-            w=w-v
-            v=v+1
-        if v<n:
-            G.add_edge(v,w)
-    return G
+    if directed:
+        while v<n:
+            lr=math.log(1.0-random.random())
+            w=w+1+int(lr/lp)
+            while w>=n and v<n:
+                w=w-n
+                v=v+1
+            if v<n:
+                G.add_edge(v,w)
+        return G
+    else:
+        while v<n:
+            lr=math.log(1.0-random.random())
+            w=w+1+int(lr/lp)
+            while w>=v and v<n:
+                w=w-v
+                v=v+1
+            if v<n:
+                G.add_edge(v,w)
+        return G
 
 
 def gnp_random_graph(n, p, seed=None, directed=False):
