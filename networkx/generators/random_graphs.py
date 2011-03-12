@@ -101,7 +101,6 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
                 v = v + 1
             if v < n:
                 G.add_edge(v, w)
-        return G
     else:
         while v < n:
             lr = math.log(1.0 - random.random())
@@ -111,7 +110,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
                 v = v + 1
             if v < n:
                 G.add_edge(v, w)
-        return G
+    return G
 
 
 def gnp_random_graph(n, p, seed=None, directed=False):
