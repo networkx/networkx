@@ -501,7 +501,7 @@ def bipartite_random_graph(n, m, p, seed=None, directed=False):
     if not seed is None:
         random.seed(seed)
 
-    if p <= 0 or p >= 1:
+    if p <= 0:
         return G
     if p >= 1:
         nx.complete_bipartite_graph(n,m)
