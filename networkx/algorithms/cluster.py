@@ -315,9 +315,11 @@ def square_clustering(G, nodes=None):
         Physical Review E (72) 056127.
     """
     if nodes is None:
-        nodes = G
+        node_iter = G
+    else:
+        node_iter =  G.nbunch_iter(nodes) 
     clustering = {}
-    for v in nodes:
+    for v in node_iter:
         clustering[v] = 0.0
         potential=0
         for u,w in combinations(G[v], 2):
@@ -329,4 +331,6 @@ def square_clustering(G, nodes=None):
             potential += (len(G[u]) - degm) * (len(G[w]) - degm) + squares
         if potential > 0:
             clustering[v] /= potential
+    if nodes in G: 
+        return list(clustering.values())[0] # return single value
     return clustering
