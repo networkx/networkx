@@ -40,6 +40,14 @@ def bipartite_color(G):
     >>> c = nx.bipartite_color(G)
     >>> print(c)
     {0: 1, 1: 0, 2: 1, 3: 0}
+
+    You can use this to set a node attribute indicating the biparite set:
+    
+    >>> nx.set_node_attributes(G, 'bipartite', c)
+    >>> print(G.node[0]['bipartite'])
+    1
+    >>> print(G.node[1]['bipartite'])
+    0
     """
     color = {}
     for n in G: # handle disconnected graphs
