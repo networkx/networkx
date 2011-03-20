@@ -53,7 +53,7 @@ class WeightedGraphMatcher(GraphMatcher):
         """
         self.rtol = rtol
         self.atol = atol
-        super(WeightedGraphMatcher, self).__init__(G1, G2)
+        GraphMatcher.__init__(self, G1, G2)
 
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if mapping G1_node to G2_node is semantically feasible."""
@@ -94,7 +94,7 @@ class WeightedDiGraphMatcher(DiGraphMatcher):
         """
         self.rtol = rtol
         self.atol = atol
-        super(WeightedDiGraphMatcher, self).__init__(G1, G2)
+        DiGraphMatcher.__init__(self, G1, G2)
 
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if mapping G1_node to G2_node is semantically feasible."""
@@ -151,7 +151,7 @@ class WeightedMultiGraphMatcher(GraphMatcher):
         """
         self.rtol = rtol
         self.atol = atol
-        super(WeightedMultiGraphMatcher, self).__init__(G1, G2)
+        GraphMatcher.__init__(self, G1, G2)
 
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if mapping G1_node to G2_node is semantically feasible."""
@@ -200,7 +200,7 @@ class WeightedMultiDiGraphMatcher(DiGraphMatcher):
         """
         self.rtol = rtol
         self.atol = atol
-        super(WeightedMultiDiGraphMatcher, self).__init__(G1, G2)
+        DiGraphMatcher.__init__(self, G1, G2)
 
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if mapping G1_node to G2_node is semantically feasible."""
