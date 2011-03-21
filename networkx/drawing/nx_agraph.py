@@ -132,7 +132,7 @@ def to_agraph(N):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError("to_agraph() requires pygraphviz: http://nx.lanl.gov/pygraphviz")
+        raise ImportError("to_agraph() requires pygraphviz: http://nx.lanl.gov/pygraphviz (not available for Python3")
     directed=N.is_directed()
     strict=N.number_of_selfloops()==0 and not N.is_multigraph()
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
@@ -174,7 +174,7 @@ def write_dot(G,path):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError("write_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz")
+        raise ImportError("write_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz (not available for Python3")
 
     A=to_agraph(G)
     A.write(path)
@@ -192,7 +192,7 @@ def read_dot(path):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError("read_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz")
+        raise ImportError("read_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz (not available for Python3)")
     A=pygraphviz.AGraph(file=path)
     return from_agraph(A)
 
@@ -254,7 +254,7 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError("pygraphviz_layout() requires pygraphviz: http://networkx.lanl.gov/pygraphviz")
+        raise ImportError("pygraphviz_layout() requires pygraphviz: http://networkx.lanl.gov/pygraphviz (not available for Python3")
     A=to_agraph(G)
     if root is not None:
         args+="-Groot=%s"%root
