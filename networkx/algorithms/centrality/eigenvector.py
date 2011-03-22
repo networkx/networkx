@@ -1,21 +1,18 @@
 """
 Eigenvector centrality.
-
 """
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import networkx as nx
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Sasha Gutfraind (ag362@cornell.edu)'])
-
 __all__ = ['eigenvector_centrality',
            'eigenvector_centrality_numpy']
-
-import networkx as nx
 
 def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
     """Compute the eigenvector centrality for the graph G.
@@ -170,6 +167,6 @@ def eigenvector_centrality_numpy(G):
 def setup_module(module):
     from nose import SkipTest
     try:
-        import pyparsing
+        import numpy
     except:
-        raise SkipTest("pyparsing not available")
+        raise SkipTest("numpy not available")
