@@ -25,6 +25,7 @@ from networkx.algorithms.euler import *
 from networkx.algorithms.vitality import *
 from networkx.algorithms.chordal import *
 from networkx.algorithms.richclub import *
+from networkx.algorithms.neighbor_degree import *
 
 import networkx.algorithms.bipartite
 import networkx.algorithms.centrality

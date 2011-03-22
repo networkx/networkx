@@ -14,7 +14,6 @@ Assortativity
    degree_assortativity
    attribute_assortativity
    numeric_assortativity
-   neighbor_connectivity
    degree_pearsonr
 
 Mixing

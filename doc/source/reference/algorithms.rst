@@ -31,6 +31,7 @@ Algorithms
    algorithms.mis
    algorithms.mst
    algorithms.operators
+   algorithms.neighbor_degree
    algorithms.rich_club
    algorithms.shortest_paths
    algorithms.traversal

@@ -202,19 +202,3 @@ class TestDegreeMixingMatrixPearsonr(object):
         npt.assert_almost_equal(r,-1.0/7.0,decimal=4)
 
 
-class TestNeighborhoodConnectivity(object):
-    def setUp(self):
-        self.P4=networkx.path_graph(4)
-        self.D=networkx.DiGraph() 
-        self.D.add_edges_from([(0, 2), (0, 3), (1, 3), (2, 3)])
-        self.M=networkx.MultiGraph() 
-        self.M.add_path(list(range(4)))
-        self.M.add_edge(0,1)
-        self.S=networkx.Graph()
-        self.S.add_edges_from([(0,0),(1,1)])
-
-    def test_neighbor_connectivity(self):
-        d=networkx.neighbor_connectivity(self.P4)
-        assert_equal(d,{1:2.0/3,2:1.0})
-        d=networkx.neighbor_connectivity(networkx.complete_graph(4))
-        assert_equal(d,{3:3.0})
