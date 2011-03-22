@@ -592,8 +592,8 @@ def negative_edge_cycle(G, weight = 'weight'):
     >>> print(nx.negative_edge_cycle(G))
     True
 
-    Notes:
-    ------
+    Notes
+    -----
     This algorithm uses bellman_ford() but finds negative cycles
     on any component by first adding a new node connected to
     every node, and starting bellman_ford on that node.  It then
