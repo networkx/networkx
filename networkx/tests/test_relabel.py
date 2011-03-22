@@ -1,0 +1,142 @@
+#!/usr/bin/env python
+
+from nose.tools import *
+from networkx import *
+from networkx.convert import *
+from networkx.algorithms.operators import *
+from networkx.generators.classic import barbell_graph,cycle_graph
+
+class TestRelabel():
+    def test_convert_node_labels_to_integers(self):
+        # test that empty graph converts fine for all options
+        G=empty_graph()
+        H=convert_node_labels_to_integers(G,100)
+        assert_equal(H.name, '(empty_graph(0))_with_int_labels')
+        assert_equal(H.nodes(), [])
+        assert_equal(H.edges(), [])
+
+        for opt in ["default", "sorted", "increasing degree",
+                    "decreasing degree"]:
+            G=empty_graph()
+            H=convert_node_labels_to_integers(G,100, ordering=opt)
+            assert_equal(H.name, '(empty_graph(0))_with_int_labels')
+            assert_equal(H.nodes(), [])
+            assert_equal(H.edges(), [])
+
+        G=empty_graph()
+        G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
+        G.name="paw"
+        H=convert_node_labels_to_integers(G)
+        degH=H.degree().values()
+        degG=G.degree().values()
+        assert_equal(sorted(degH), sorted(degG))
+
+        H=convert_node_labels_to_integers(G,1000)
+        degH=H.degree().values()
+        degG=G.degree().values()
+        assert_equal(sorted(degH), sorted(degG))
+        assert_equal(H.nodes(), [1000, 1001, 1002, 1003])
+
+        H=convert_node_labels_to_integers(G,ordering="increasing degree")
+        degH=H.degree().values()
+        degG=G.degree().values()
+        assert_equal(sorted(degH), sorted(degG))
+        assert_equal(degree(H,0), 1)
+        assert_equal(degree(H,1), 2)
+        assert_equal(degree(H,2), 2)
+        assert_equal(degree(H,3), 3)
+
+        H=convert_node_labels_to_integers(G,ordering="decreasing degree")
+        degH=H.degree().values()
+        degG=G.degree().values()
+        assert_equal(sorted(degH), sorted(degG))
+        assert_equal(degree(H,0), 3)
+        assert_equal(degree(H,1), 2)
+        assert_equal(degree(H,2), 2)
+        assert_equal(degree(H,3), 1)
+
+        H=convert_node_labels_to_integers(G,ordering="increasing degree",
+                                          discard_old_labels=False)
+        degH=H.degree().values()
+        degG=G.degree().values()
+        assert_equal(sorted(degH), sorted(degG))
+        assert_equal(degree(H,0), 1)
+        assert_equal(degree(H,1), 2)
+        assert_equal(degree(H,2), 2)
+        assert_equal(degree(H,3), 3)
+        mapping=H.node_labels
+        assert_equal(mapping['C'], 3)
+        assert_equal(mapping['D'], 0)
+        assert_true(mapping['A']==1 or mapping['A']==2)
+        assert_true(mapping['B']==1 or mapping['B']==2)
+
+        G=empty_graph()
+        G.add_edges_from([('C','D'),('A','B'),('A','C'),('B','C')])
+        G.name="paw"
+        H=convert_node_labels_to_integers(G,ordering="sorted")
+        degH=H.degree().values()
+        degG=G.degree().values()
+        assert_equal(sorted(degH), sorted(degG))
+
+        H=convert_node_labels_to_integers(G,ordering="sorted",
+                                          discard_old_labels=False)
+        mapping=H.node_labels
+        assert_equal(mapping['A'], 0)
+        assert_equal(mapping['B'], 1)
+        assert_equal(mapping['C'], 2)
+        assert_equal(mapping['D'], 3)
+
+        assert_raises(networkx.exception.NetworkXError,
+                      convert_node_labels_to_integers, G, 
+                      ordering="increasing age")
+
+    def test_relabel_nodes_copy(self):
+        G=empty_graph()
+        G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
+        mapping={'A':'aardvark','B':'bear','C':'cat','D':'dog'}
+        H=relabel_nodes(G,mapping)
+        assert_equal(sorted(H.nodes()), ['aardvark', 'bear', 'cat', 'dog'])
+        
+    def test_relabel_nodes_function(self):
+        G=empty_graph()
+        G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
+        # function mapping no longer encouraged but works
+        def mapping(n):
+            return ord(n)
+        H=relabel_nodes(G,mapping)
+        assert_equal(sorted(H.nodes()), [65, 66, 67, 68])
+
+    def test_relabel_nodes_graph(self):
+        G=Graph([('A','B'),('A','C'),('B','C'),('C','D')])
+        mapping={'A':'aardvark','B':'bear','C':'cat','D':'dog'}
+        H=relabel_nodes(G,mapping)
+        assert_equal(sorted(H.nodes()), ['aardvark', 'bear', 'cat', 'dog'])
+
+    def test_relabel_nodes_digraph(self):
+        G=DiGraph([('A','B'),('A','C'),('B','C'),('C','D')])
+        mapping={'A':'aardvark','B':'bear','C':'cat','D':'dog'}
+        H=relabel_nodes(G,mapping,copy=False)
+        assert_equal(sorted(H.nodes()), ['aardvark', 'bear', 'cat', 'dog'])
+
+    def test_relabel_nodes_multigraph(self):
+        G=MultiGraph([('a','b'),('a','b')])
+        mapping={'a':'aardvark','b':'bear'}
+        G=relabel_nodes(G,mapping,copy=False)
+        assert_equal(sorted(G.nodes()), ['aardvark', 'bear'])
+        assert_equal(sorted(G.edges()), 
+                     [('aardvark', 'bear'), ('aardvark', 'bear')])
+
+    def test_relabel_nodes_multidigraph(self):
+        G=MultiDiGraph([('a','b'),('a','b')])
+        mapping={'a':'aardvark','b':'bear'}
+        G=relabel_nodes(G,mapping,copy=False)
+        assert_equal(sorted(G.nodes()), ['aardvark', 'bear'])
+        assert_equal(sorted(G.edges()), 
+                     [('aardvark', 'bear'), ('aardvark', 'bear')])
+
+    @raises(KeyError)
+    def test_relabel_nodes_missing(self):
+        G=Graph([('A','B'),('A','C'),('B','C'),('C','D')])        
+        mapping={0:'aardvark'}
+        G=relabel_nodes(G,mapping,copy=False)
+        

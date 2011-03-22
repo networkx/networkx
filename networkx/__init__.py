@@ -56,6 +56,8 @@ import networkx.classes
 from networkx.classes import *
 import networkx.convert
 from networkx.convert import *
+import networkx.relabel
+from networkx.relabel import *
 import networkx.generators
 from networkx.generators import *
 from networkx.readwrite import *
