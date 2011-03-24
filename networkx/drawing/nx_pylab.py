@@ -832,7 +832,7 @@ def draw_networkx_edge_labels(G, pos,
     for ((n1,n2),label) in list(labels.items()):
         (x1,y1)=pos[n1]
         (x2,y2)=pos[n2]
-        (x,y) = ((x1+x2)/2, (y1+y2)/2)
+        (x,y) = (float(x1+x2)/2.0, float(y1+y2)/2.0)
         if rotate: 
             angle=numpy.arctan2(y2-y1,x2-x1)/(2.0*numpy.pi)*360 # degrees
             # make label orientation "right-side-up"
