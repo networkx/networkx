@@ -8,9 +8,7 @@ import networkx as nx
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
-
 __all__ = ['convert_node_labels_to_integers', 'relabel_nodes'] 
-
 
 def relabel_nodes(G, mapping, copy=True):
     """Relabel the nodes of the graph G.
@@ -41,7 +39,7 @@ def relabel_nodes(G, mapping, copy=True):
     >>> mapping=dict(zip(G.nodes(),range(1,27)))
     >>> G1=nx.relabel_nodes(G,mapping) # nodes 1..26
 
-    partial inplace mapping
+    Partial in-place mapping:
 
     >>> G=nx.path_graph(3)  # nodes 0-1-2
     >>> mapping={0:'a',1:'b'} # 0->'a' and 1->'b'
@@ -49,7 +47,7 @@ def relabel_nodes(G, mapping, copy=True):
     >>> print(G.nodes())
     [2, 'b', 'a']
 
-    mapping as function
+    Mapping as function:
 
     >>> G=nx.path_graph(3)
     >>> def mapping(x):
@@ -96,9 +94,9 @@ def _relabel_inplace(G, mapping):
             raise nx.NetworkXUnfeasible('The node label sets are overlapping '
                                         'and no ordering can resolve the '
                                         'mapping. Use copy=True.')
-        # reverse topological order
-        nodes.reverse()
+        nodes.reverse()  # reverse topological order
     else:
+        # non-overlapping label sets
         nodes=old_labels
         
     multigraph = G.is_multigraph()
@@ -148,7 +146,7 @@ def _relabel_copy(G, mapping):
 
 def convert_node_labels_to_integers(G, first_label=0, ordering="default",
                                     discard_old_labels=True):
-    """ Return a copy of G node labels replaced with integers.
+    """Return a copy of G node labels replaced with integers.
 
     Parameters
     ----------
@@ -166,9 +164,8 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
         "decreasing degree" : nodes are sorted by decreasing degree
 
     discard_old_labels : bool, optional (default=True)
-       if True (default) discard old labels
-       if False, create a dict self.node_labels that maps new
-       labels to old labels
+       If True discard old labels. If False, create a node attribute 
+       'old_label' to hold the old labels.
     """
 #    This function strips information attached to the nodes and/or
 #    edges of a graph, and returns a graph with appropriate integer
@@ -205,11 +202,8 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
         dv_pairs.reverse()
         mapping=dict(zip([n for d,n in dv_pairs],range(first_label,N)))
     else:
-        raise nx.NetworkXError(\
-            "unknown value of node ordering variable: ordering")
-
+        raise nx.NetworkXError('Unknown node ordering: %s'%ordering)
     H=relabel_nodes(G,mapping)
-
     H.name="("+G.name+")_with_int_labels"
     if not discard_old_labels:
         H.node_labels=mapping
