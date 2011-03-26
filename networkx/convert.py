@@ -432,7 +432,8 @@ def from_edgelist(edgelist,create_using=None):
     G.add_edges_from(edgelist)
     return G                         
 
-def to_numpy_matrix(G,nodelist=None,dtype=None,order=None,multigraph_weight=sum):
+def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
+                    multigraph_weight=sum):
     """Return the graph adjacency matrix as a NumPy matrix.
 
     Parameters
@@ -508,28 +509,39 @@ def to_numpy_matrix(G,nodelist=None,dtype=None,order=None,multigraph_weight=sum)
     nlen=len(nodelist)
     undirected = not G.is_directed()
     index=dict(zip(nodelist,range(nlen)))
-    # array of nan' to start with, any leftover nans will be converted to 0
-    # nans are used so we can use sum, min, max for multigraphs
-    M = np.zeros((nlen,nlen), dtype=dtype, order=order)+np.nan
-    # use numpy nan-aware operations
-    operator={sum:np.nansum, min:np.nanmin, max:np.nanmax}
-    try:
-        op=operator[multigraph_weight]
-    except:
-        raise ValueError('multigraph_weight must be sum, min, or max')
 
-    for u,v,attrs in G.edges_iter(data=True):
-        if (u in nodeset) and (v in nodeset):
-            i,j = index[u],index[v]
-            weight = attrs.get('weight', 1)
-            M[i,j] = op([weight,M[i,j]]) 
-            if undirected:
-                M[j,i] = M[i,j]
+    if G.is_multigraph():
+        # Handle MultiGraphs and MultiDiGraphs
+        # array of nan' to start with, any leftover nans will be converted to 0
+        # nans are used so we can use sum, min, max for multigraphs
+        M = np.zeros((nlen,nlen), dtype=dtype, order=order)+np.nan
+        # use numpy nan-aware operations
+        operator={sum:np.nansum, min:np.nanmin, max:np.nanmax}
+        try:
+            op=operator[multigraph_weight]
+        except:
+            raise ValueError('multigraph_weight must be sum, min, or max')
 
-    # convert any nans to zeros
-    M = np.asmatrix(np.nan_to_num(M))
+        for u,v,attrs in G.edges_iter(data=True):
+            if (u in nodeset) and (v in nodeset):
+                i,j = index[u],index[v]
+                weight = attrs.get('weight', 1)
+                M[i,j] = op([weight,M[i,j]]) 
+                if undirected:
+                    M[j,i] = M[i,j]
+        # convert any nans to zeros
+        M = np.asmatrix(np.nan_to_num(M))
+    else:
+        # Graph or DiGraph, this is much faster than above 
+        M = np.zeros((nlen,nlen), dtype=dtype, order=order)
+        for u,nbrdict in G.adjacency_iter():
+            for v,d in nbrdict.items():
+                try:
+                    M[index[u],index[v]]=d.get('weight',1)
+                except KeyError:
+                    pass
+        M = np.asmatrix(M)
     return M
-
 
 
 def from_numpy_matrix(A,create_using=None):
