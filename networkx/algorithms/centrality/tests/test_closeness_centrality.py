@@ -19,27 +19,7 @@ class TestClosenessCentrality:
                                 (2,4), (4,5), (3,5)])
 
 
-        F = nx.Graph() # Florentine families
-        F.add_edge('Acciaiuoli','Medici')
-        F.add_edge('Castellani','Peruzzi')
-        F.add_edge('Castellani','Strozzi')
-        F.add_edge('Castellani','Barbadori')
-        F.add_edge('Medici','Barbadori')
-        F.add_edge('Medici','Ridolfi')
-        F.add_edge('Medici','Tornabuoni')
-        F.add_edge('Medici','Albizzi')
-        F.add_edge('Medici','Salviati')
-        F.add_edge('Salviati','Pazzi')
-        F.add_edge('Peruzzi','Strozzi')
-        F.add_edge('Peruzzi','Bischeri')
-        F.add_edge('Strozzi','Ridolfi')
-        F.add_edge('Strozzi','Bischeri')
-        F.add_edge('Ridolfi','Tornabuoni')
-        F.add_edge('Tornabuoni','Guadagni')
-        F.add_edge('Albizzi','Ginori')
-        F.add_edge('Albizzi','Guadagni')
-        F.add_edge('Bischeri','Guadagni')
-        F.add_edge('Guadagni','Lamberteschi')    
+        F = nx.florentine_families_graph()
         self.F = F
 
 
