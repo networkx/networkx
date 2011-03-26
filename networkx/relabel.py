@@ -86,7 +86,8 @@ def _relabel_inplace(G, mapping):
     if len(old_labels & new_labels) > 0:
         # labels sets overlap 
         # can we topological sort and still do the relabeling?
-        D=nx.DiGraph(mapping.items())
+        D=nx.DiGraph(list(mapping.items()))
+
         D.remove_edges_from(D.selfloop_edges())
         try:
             nodes=nx.topological_sort(D)
