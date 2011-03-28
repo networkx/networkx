@@ -4,7 +4,6 @@ import networkx as nx
 class TestBipartiteCentrality(object):
 
     def setUp(self):
-        self.P5 = nx.path_graph(5)
         self.P4 = nx.path_graph(4)
         self.K3 = nx.complete_bipartite_graph(3,3)
         self.C4 = nx.cycle_graph(4)
