@@ -17,6 +17,7 @@ Reference
    generators
    linalg
    convert
+   relabel
    readwrite
    drawing
    exceptions

@@ -12,14 +12,6 @@ To NetworkX Graph
 
    to_networkx_graph
 
-Relabeling
-----------
-.. autosummary::
-   :toctree: generated/
-
-   convert_node_labels_to_integers
-   relabel_nodes
-
 
 Dictionaries
 ------------
