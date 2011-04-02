@@ -17,7 +17,7 @@ __all__ = ['floyd_warshall',
 import networkx as nx
 
 
-def floyd_warshall_numpy(G,nodelist=None):
+def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
     Parameters
@@ -27,6 +27,9 @@ def floyd_warshall_numpy(G,nodelist=None):
     nodelist : list, optional       
        The rows and columns are ordered by the nodes in nodelist.
        If nodelist is None then the ordering is produced by G.nodes().
+
+    weight: string, optional       
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -47,7 +50,8 @@ def floyd_warshall_numpy(G,nodelist=None):
     except ImportError:
         raise ImportError(\
           "to_numpy_matrix() requires numpy: http://scipy.org/ ")
-    A=nx.to_numpy_matrix(G,nodelist=nodelist,multigraph_weight=min)
+    A=nx.to_numpy_matrix(G, nodelist=nodelist, multigraph_weight=min,
+                         weight=weight)
     n,m = A.shape
     I=np.identity(n)
     A[A==0]=np.inf # set zero entries to inf
@@ -57,12 +61,15 @@ def floyd_warshall_numpy(G,nodelist=None):
         A = np.minimum(A, r + r.T)
     return A
 
-def floyd_warshall_predecessor_and_distance(G):
+def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
     
     Parameters
     ----------
     G : NetworkX graph
+
+    weight: string, optional       
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -94,12 +101,12 @@ def floyd_warshall_predecessor_and_distance(G):
     # also set the distance to self to 0 (zero diagonal)
     undirected= not G.is_directed()
     for u,v,d in G.edges(data=True):
-        weight = d.get('weight',1.0)
-        dist[u][v] = min(weight,dist[u][v])
+        e_weight = d.get(weight, 1.0)
+        dist[u][v] = min(e_weight, dist[u][v])
         pred[u][v] = u
         dist[u][u] = 0
         if undirected:
-            dist[v][u] = min(weight,dist[v][u])
+            dist[v][u] = min(e_weight, dist[v][u])
             pred[v][u] = v
     for w in G:
         for u in G:
@@ -110,12 +117,16 @@ def floyd_warshall_predecessor_and_distance(G):
     return dict(pred),dict(dist)
 
 
-def floyd_warshall(G):
+def floyd_warshall(G, weight='weight'):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
     
     Parameters
     ----------
     G : NetworkX graph
+
+    weight: string, optional       
+       Edge data key corresponding to the edge weight.
+
 
     Returns
     -------
@@ -138,7 +149,7 @@ def floyd_warshall(G):
     all_pairs_shortest_path_length
     """
     # could make this it's own function to reduce memory costs
-    return floyd_warshall_predecessor_and_distance(G)[1]
+    return floyd_warshall_predecessor_and_distance(G, weight=weight)[1]
 
 # fixture for nose tests
 def setup_module(module):

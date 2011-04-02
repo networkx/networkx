@@ -433,7 +433,7 @@ def from_edgelist(edgelist,create_using=None):
     return G                         
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
-                    multigraph_weight=sum):
+                    multigraph_weight=sum, weight='weight'):
     """Return the graph adjacency matrix as a NumPy matrix.
 
     Parameters
@@ -460,6 +460,9 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         An operator that determines how weights in multigraphs are handled.
         The default is to sum the weights of the multiple edges.
 
+    weight: string, optional       
+       Edge data key corresponding to the edge weight.
+
     Returns
     -------
     M : NumPy matrix
@@ -471,8 +474,8 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
 
     Notes
     -----
-    The matrix entries are assigned with 'weight' edge attribute. When
-    an edge does not have the 'weight' attribute, the value of the entry is 1.
+    The matrix entries are assigned with weight edge attribute. When
+    an edge does not have the weight attribute, the value of the entry is 1.
     For multiple edges, the values of the entries are the sums of the edge
     attributes for each edge.
 
@@ -525,8 +528,8 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         for u,v,attrs in G.edges_iter(data=True):
             if (u in nodeset) and (v in nodeset):
                 i,j = index[u],index[v]
-                weight = attrs.get('weight', 1)
-                M[i,j] = op([weight,M[i,j]]) 
+                e_weight = attrs.get(weight, 1)
+                M[i,j] = op([e_weight,M[i,j]]) 
                 if undirected:
                     M[j,i] = M[i,j]
         # convert any nans to zeros
@@ -537,7 +540,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         for u,nbrdict in G.adjacency_iter():
             for v,d in nbrdict.items():
                 try:
-                    M[index[u],index[v]]=d.get('weight',1)
+                    M[index[u],index[v]]=d.get(weight,1)
                 except KeyError:
                     pass
         M = np.asmatrix(M)
