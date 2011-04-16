@@ -171,7 +171,7 @@ class DiGraph(Graph):
 
     For details on these and other miscellaneous methods, see below.
     """
-    def __init__(self, data=None, name='', **attr):
+    def __init__(self, data=None, **attr):
         """Initialize a graph with edges, name, graph attributes.
 
         Parameters
@@ -219,8 +219,7 @@ class DiGraph(Graph):
             convert.from_whatever(data,create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
-
-        self.name=name
+        self.name = self.graph.get('name','')
         self.edge=self.adj
 
 
