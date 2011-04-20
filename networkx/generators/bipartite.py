@@ -430,7 +430,7 @@ def bipartite_random_regular_graph(d, n, create_using=None,seed=None):
 
 
     if create_using is None:
-        create_using=networkx.MultiGraph()
+        create_using=networkx.Graph()
     elif create_using.is_directed():
         raise networkx.NetworkXError(\
                 "Directed Graph not supported")
