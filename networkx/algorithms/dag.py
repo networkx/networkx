@@ -2,23 +2,22 @@
 """
 Algorithms for directed acyclic graphs (DAGs).
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-___revision__ = ""
-#    Copyright (C) 2006-2009 by 
+#    Copyright (C) 2006-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+import networkx as nx
+__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
+                            'Dan Schult (dschult@colgate.edu)'])
 __all__ = ['topological_sort', 
            'topological_sort_recursive',
            'is_directed_acyclic_graph']
 
-import networkx as nx
-
 def is_directed_acyclic_graph(G):
-    """Return True if the graph G is a directed acyclic graph (DAG) or False if not.
+    """Return True if the graph G is a directed acyclic graph (DAG) or 
+    False if not.
     
     Parameters
     ----------
@@ -155,12 +154,12 @@ def topological_sort_recursive(G,nbunch=None):
         for w in G[v]:
             if w not in seen: 
                 if not _dfs(G,seen,explored,w):
-                    return
+                    return False
             elif w in seen and w not in explored:
                 # cycle Found--- no topological sort
                 raise nx.NetworkXUnfeasible("Graph contains a cycle.")
         explored.insert(0,v) # inverse order of when explored 
-        return v
+        return True
 
     seen=set()
     explored=[]
