@@ -7,6 +7,9 @@ class TestBipartiteBasic:
     def test_is_bipartite(self):
         G=nx.path_graph(4)
         assert_true(nx.is_bipartite(G))
+        G=nx.DiGraph([(1,0)])
+        assert_true(nx.is_bipartite(G))
+
 
     def test_bipartite_color(self):
         G=nx.path_graph(4)

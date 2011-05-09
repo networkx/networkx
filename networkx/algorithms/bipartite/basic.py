@@ -51,7 +51,7 @@ def bipartite_color(G):
     """
     color = {}
     for n in G: # handle disconnected graphs
-        if n in color:
+        if n in color or len(G[n])==0: # skip isolates
             continue
         queue = [n]  
         color[n] = 1 # nodes seen with color (1 or 0)
@@ -65,6 +65,8 @@ def bipartite_color(G):
                 else:
                     color[w] = c
                     queue.append(w)
+    # color isolates with 0
+    color.update(dict.fromkeys(nx.isolates(G),0))
     return color
 
 def is_bipartite(G):
