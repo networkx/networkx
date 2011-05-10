@@ -26,10 +26,12 @@ import itertools
 import networkx as nx
 from networkx.utils import _get_fh, make_str
 try:
-    from xml.etree.cElementTree import ElementTree, Element, tostring
-    import xml.etree.ElementTree as ET
+    from xml.etree.cElementTree import Element, ElementTree, tostring
 except ImportError:
-    pass
+    try:
+        from xml.etree.ElementTree import Element, ElementTree, tostring
+    except ImportError:
+        pass
 
 
 def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
@@ -238,9 +240,9 @@ class GEXFWriter(GEXF):
                  mode='static',prettyprint=True,
                  version='1.1draft'):
         try:
-            import xml.etree.cElementTree
+            import xml.etree.ElementTree
         except ImportError:
-             raise ImportError('GEXF writer requires',
+             raise ImportError('GEXF writer requires '
                                'xml.elementtree.ElementTree')
         self.prettyprint=prettyprint
         self.mode=mode
@@ -537,9 +539,9 @@ class GEXFReader(GEXF):
     # use read_gexf() function
     def __init__(self, node_type=None,version='1.1draft'):
         try:
-            import xml.etree.cElementTree
+            import xml.etree.ElementTree
         except ImportError:
-             raise ImportError('GEXF reader requires',
+             raise ImportError('GEXF reader requires '
                                'xml.elementtree.ElementTree')
         self.node_type=node_type
         # assume simple graph and test for multigraph on read

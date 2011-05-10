@@ -8,9 +8,9 @@ class TestGEXF(object):
     @classmethod
     def setupClass(cls):
         try:
-            import xml.etree.cElementTree
+            import xml.etree.ElementTree
         except ImportError:
-            raise SkipTest('xml.etree.cElementTree not available.')
+            raise SkipTest('xml.etree.ElementTree not available.')
 
     def setUp(self):
         self.simple_directed_data="""<?xml version="1.0" encoding="UTF-8"?>
@@ -267,7 +267,3 @@ class TestGEXF(object):
             sorted(sorted(e) for e in H.edges()))
         assert_equal(G.graph,H.graph)
     
-try:
-    from xml.etree.cElementTree import Element, ElementTree as ET
-except ImportError:
-    pass

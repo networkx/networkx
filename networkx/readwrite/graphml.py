@@ -45,9 +45,12 @@ import networkx as nx
 from networkx.utils import _get_fh, make_str
 import warnings
 try:
-    from xml.etree.cElementTree import Element, ElementTree as ET, tostring
+    from xml.etree.cElementTree import Element, ElementTree, tostring
 except ImportError:
-    pass
+    try:
+        from xml.etree.ElementTree import Element, ElementTree, tostring
+    except ImportError:
+        pass
     
 def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     """Write G in GraphML XML format to path
@@ -176,9 +179,10 @@ class GraphML(object):
 class GraphMLWriter(GraphML):
     def __init__(self, graph=None, encoding="utf-8",prettyprint=True):
         try:
-            import xml.etree.cElementTree
+            import xml.etree.ElementTree
         except ImportError:
-             raise ImportError("GraphML writer requires xml.elementtree.ElementTree")
+             raise ImportError('GraphML writer requires '
+                               'xml.elementtree.ElementTree')
         self.prettyprint=prettyprint
         self.encoding = encoding
         self.xml = Element("graphml",
@@ -298,7 +302,7 @@ class GraphMLWriter(GraphML):
     def dump(self, stream):
         if self.prettyprint:
             self.indent(self.xml)
-        document = ET(self.xml)
+        document = ElementTree(self.xml)
         header='<?xml version="1.0" encoding="%s"?>'%self.encoding
         stream.write(header.encode(self.encoding))
         document.write(stream, encoding=self.encoding)
@@ -325,14 +329,15 @@ class GraphMLReader(GraphML):
     """
     def __init__(self, node_type=str):
         try:
-            import xml.etree.cElementTree
+            import xml.etree.ElementTree
         except ImportError:
-             raise ImportError("GraphML reader requires xml.elementtree.ElementTree")
+             raise ImportError('GraphML reader requires '
+                               'xml.elementtree.ElementTree')
         self.node_type=node_type
         self.multigraph=False # assume multigraph and test for parallel edges
         
     def __call__(self, stream):
-        self.xml = ET(file=stream)
+        self.xml = ElementTree(file=stream)
         (keys,defaults) = self.find_graphml_keys(self.xml)
         for g in self.xml.findall("{%s}graph" % self.NS_GRAPHML):
             yield self.make_graph(g, keys, defaults)
@@ -469,9 +474,9 @@ class GraphMLReader(GraphML):
 def setup_module(module):
     from nose import SkipTest
     try:
-        import xml.etree.cElementTree
+        import xml.etree.ElementTree
     except:
-        raise SkipTest("xml.etree.cElementTree not available")
+        raise SkipTest("xml.etree.ElementTree not available")
 
 # fixture for nose tests
 def teardown_module(module):
