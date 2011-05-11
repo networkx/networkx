@@ -342,9 +342,11 @@ class GEXFWriter(GEXF):
         edges_element = Element('edges')
         for u,v,key,edge_data in edge_key_data(G):
             kw={'id':make_str(key)}
-            edge_weight=edge_data.pop('weight',False)                
-            if edge_weight:
+            try:
+                edge_weight=edge_data.pop('weight')
                 kw['weight']=make_str(edge_weight)
+            except KeyError:
+                pass
             edge_type=edge_data.pop('type',False)                
             if edge_type:
                 kw['type']=make_str(edge_type)
