@@ -299,9 +299,11 @@ class GEXFWriter(GEXF):
             label=node_data.pop('label',make_str(node))
             kw['label']=label
 
-            pid=node_data.pop('pid',False)
-            if pid:
+            try:
+                pid=node_data.pop('pid')
                 kw['pid']=pid
+            except KeyError:
+                pass
                 
             # add node element with attributes                
             node_element = Element("node", **kw)
@@ -347,9 +349,11 @@ class GEXFWriter(GEXF):
                 kw['weight']=make_str(edge_weight)
             except KeyError:
                 pass
-            edge_type=edge_data.pop('type',False)                
-            if edge_type:
+            try:
+                edge_type=edge_data.pop('type')
                 kw['type']=make_str(edge_type)
+            except KeyError:
+                pass
             edge_element = Element("edge",
                                    source=make_str(u),target=make_str(v), 
                                    **kw)
