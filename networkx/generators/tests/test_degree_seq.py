@@ -62,10 +62,6 @@ class TestGeneratorsDegreeSequence():
         G2=expected_degree_graph(deg_seq,seed=10)
         assert_true(is_isomorphic(G1,G2))
 
-        assert_raises(networkx.exception.NetworkXError,
-                      expected_degree_graph, deg_seq, 
-                      create_using=DiGraph())
-
     def test_havel_hakimi_construction(self):
         z=[1000,3,3,3,3,2,2,2,1,1,1]
         assert_raises(networkx.exception.NetworkXError,

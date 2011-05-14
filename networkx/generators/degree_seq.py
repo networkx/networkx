@@ -30,12 +30,13 @@ __all__ = ['configuration_model',
            'connected_double_edge_swap',
            'li_smax_graph']
 
-
+import heapq
+import math
 import random
 import networkx as nx
 import networkx.utils
 from networkx.generators.classic import empty_graph
-import heapq
+
 #---------------------------------------------------------------------------
 #  Generating Graphs with a given degree sequence
 #---------------------------------------------------------------------------
@@ -274,16 +275,13 @@ def directed_configuration_model(in_degree_sequence,
     return G
 
 
-
-def expected_degree_graph(w, create_using=None, seed=None):
-    """Return a random graph G(w) with expected degrees given by w.
+def expected_degree_graph(w, seed=None):
+    """Return a random graph with given expected degrees.
 
     Parameters
     ----------
     w : list 
         The list of expected degrees.
-    create_using : graph, optional (default Graph)
-        Return graph of this type. The instance will be cleared.
     seed : hashable object, optional
         The seed for the random number generator.
 
@@ -294,37 +292,39 @@ def expected_degree_graph(w, create_using=None, seed=None):
 
     References
     ----------
-    .. [1] Fan Chung and L. Lu,
-        Connected components in random graphs with given expected
-        degree sequences, Ann. Combinatorics, 6, pp. 125-145, 2002.
-	"""
+    .. [1] Fan Chung and L. Lu, Connected components in random graphs with 
+       given expected degree sequences, Ann. Combinatorics, 6, pp. 125-145, 2002.
+    .. [2] Joel Miller and Aric Hagberg, 
+       Efficient generation of networks with given expected degrees
+       To appear in Proceedings of WAW 2011, LNCS, 2011.
+    """
     n = len(w)
-    # allow self loops
-    if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-    G=nx.empty_graph(n,create_using)
-    G.name="random_expected_degree_graph"
-
+    G=nx.empty_graph(n)
     if n==0 or max(w)==0: # done if no edges
         return G 
-
-    d = sum(w)
-    rho = 1.0 / float(d) # Vol(G)
-    for i in range(n):
-        if (w[i])**2 > d:
-            raise nx.NetworkXError(\
-                  "NetworkXError w[i]**2 must be <= sum(w)\
-                  for all i, w[%d] = %f, sum(w) = %f" % (i,w[i],d))
-
     if seed is not None:
         random.seed(seed)
-	
-    for u in range(n):
-        for v in range(u,n):
-            if random.random() < w[u]*w[v]*rho:
-                G.add_edge(u,v)
-    return G 
-
+    rho = 1/float(sum(w))
+    seq = sorted(w, reverse=True)
+    for u in range(n-1):
+        v = u + 1 
+        factor = seq[u] * rho
+        p = seq[v]*factor  
+        if p>1:
+            p = 1
+        while v<n and p>0:
+            if p != 1:
+                r = random.random()
+                v += int(math.floor(math.log(r)/math.log(1-p)))
+            if v < n:
+                q = seq[v]*factor
+                if q>1:
+                    q = 1
+                if random.random() < q/p: 
+                    G.add_edge(u,v)
+                v += 1
+                p = q 
+    return G
 
 def havel_hakimi_graph(deg_sequence,create_using=None):
     """Return a simple graph with given degree sequence, constructed using the Havel-Hakimi algorithm.
