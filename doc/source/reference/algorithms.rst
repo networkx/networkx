@@ -21,6 +21,7 @@ Algorithms
    algorithms.cycles
    algorithms.dag
    algorithms.distance_measures
+   algorithms.distance_regular
    algorithms.euler
    algorithms.flow
    algorithms.isolates
