@@ -231,12 +231,6 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     font_family: string
        Font family (default='sans-serif')
 
-    Notes
-    -----
-    Any keywords not listed above are passed through to draw_networkx_nodes(),
-    draw_networkx_edges(), and draw_networkx_labels().  For finer control
-    of drawing you can call those functions directly.
-
     Examples
     --------
     >>> G=nx.dodecahedral_graph()
@@ -337,11 +331,6 @@ def draw_networkx_nodes(G, pos,
     width`: float
        Line width of edges (default =1.0)
 
-
-    Notes
-    -----
-    Any keywords not listed above are passed through to Matplotlib's
-    scatter function.
 
     Examples
     --------
