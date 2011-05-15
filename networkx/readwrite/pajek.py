@@ -186,10 +186,15 @@ def parse_pajek(lines):
                 G.node[label].update(extra_attr)
         if l.lower().startswith("*edges") or l.lower().startswith("*arcs"):
             if l.lower().startswith("*edge"):
-               # switch from multi digraph to multi graph
+               # switch from multidigraph to multigraph
                 G=nx.MultiGraph(G)
+            if l.lower().startswith("*arcs"):
+               # switch to directed with multiple arcs for each existing edge
+                G=G.to_directed()
             for l in lines:
                 splitline=shlex.split(str(l))
+                if len(splitline)<2:
+                    continue
                 ui,vi=splitline[0:2]
                 u=nodelabels.get(ui,ui)
                 v=nodelabels.get(vi,vi)
@@ -208,12 +213,6 @@ def parse_pajek(lines):
                 # if G.has_edge(u,v):
                 #     multigraph=True
                 G.add_edge(u,v,**edge_data)
-
-    # if not multigraph: # use Graph/DiGraph if no parallel edges
-    #     if G.is_directed():
-    #         G=nx.DiGraph(G)
-    #     else:
-    #         G=nx.Graph(G)
     return G
 
 
