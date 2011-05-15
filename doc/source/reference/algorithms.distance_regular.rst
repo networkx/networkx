@@ -6,7 +6,7 @@ Distance-Regular Graphs
 .. autosummary::
    :toctree: generated/
 
-   is_distance_regular_graph
+   is_distance_regular
    intersection_array
    global_parameters
    
