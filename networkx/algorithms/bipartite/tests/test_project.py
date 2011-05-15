@@ -4,7 +4,6 @@ import networkx as nx
 
 class TestBipartiteProject:
 
-
     def test_path_projected_graph(self):
         G=nx.path_graph(4)
         P=nx.projected_graph(G,[1,3]) 
@@ -27,6 +26,16 @@ class TestBipartiteProject:
         assert_equal(sorted(P.edges()),[(0,2)])
         assert_equal(P.node[2]['name'],G.node[2]['name'])
 
+    def test_path_collaboration_projected_graph(self):
+        G=nx.path_graph(4)
+        P=nx.collaboration_weighted_projected_graph(G,[1,3]) 
+        assert_equal(sorted(P.nodes()),[1,3])
+        assert_equal(sorted(P.edges()),[(1,3)])
+        P[1][3]['weight']=1
+        P=nx.collaboration_weighted_projected_graph(G,[0,2]) 
+        assert_equal(sorted(P.nodes()),[0,2])
+        assert_equal(sorted(P.edges()),[(0,2)])
+        P[0][2]['weight']=1
 
     def test_path_weighted_projected_graph(self):
         G=nx.path_graph(4)
@@ -35,17 +44,6 @@ class TestBipartiteProject:
         assert_equal(sorted(P.edges()),[(1,3)])
         P[1][3]['weight']=1
         P=nx.weighted_projected_graph(G,[0,2]) 
-        assert_equal(sorted(P.nodes()),[0,2])
-        assert_equal(sorted(P.edges()),[(0,2)])
-        P[0][2]['weight']=1
-
-    def test_path_collaboration_projected_graph(self):
-        G=nx.path_graph(4)
-        P=nx.weighted_projected_graph(G,[1,3],collaboration=True) 
-        assert_equal(sorted(P.nodes()),[1,3])
-        assert_equal(sorted(P.edges()),[(1,3)])
-        P[1][3]['weight']=1
-        P=nx.weighted_projected_graph(G,[0,2],collaboration=True) 
         assert_equal(sorted(P.nodes()),[0,2])
         assert_equal(sorted(P.edges()),[(0,2)])
         P[0][2]['weight']=1
@@ -85,7 +83,7 @@ class TestBipartiteProject:
         G.add_edge('c',3)
         G.add_edge('c',4)
         G.add_edge('b',4)
-        P=nx.weighted_projected_graph(G,'abc',collaboration=True)
+        P=nx.collaboration_weighted_projected_graph(G,'abc')
         assert_equal(P['a']['b']['weight'],1)
         assert_equal(P['b']['c']['weight'],2)
 
@@ -118,24 +116,39 @@ class TestBipartiteProject:
         P=nx.projected_graph(G,'AB',multigraph=True)
         assert_equal(sorted(P.edges()),[('A','B'),('A','B')])
 
-    def test_project_weighted(self):
+         
+class TestBipartiteWeightedProjection:
+
+    def setUp(self):
         # Tore Opsahl's example
         # http://toreopsahl.com/2009/05/01/projecting-two-mode-networks-onto-weighted-one-mode-networks/
-        G=nx.Graph()
-        G.add_edge('A',1)
-        G.add_edge('A',2)
-        G.add_edge('B',1)
-        G.add_edge('B',2)
-        G.add_edge('B',3)
-        G.add_edge('B',4)
-        G.add_edge('B',5)
-        G.add_edge('C',1)
-        G.add_edge('D',3)
-        G.add_edge('E',4)
-        G.add_edge('E',5)
-        G.add_edge('E',6)
-        G.add_edge('F',6)
-
+        self.G=nx.Graph()
+        self.G.add_edge('A',1)
+        self.G.add_edge('A',2)
+        self.G.add_edge('B',1)
+        self.G.add_edge('B',2)
+        self.G.add_edge('B',3)
+        self.G.add_edge('B',4)
+        self.G.add_edge('B',5)
+        self.G.add_edge('C',1)
+        self.G.add_edge('D',3)
+        self.G.add_edge('E',4)
+        self.G.add_edge('E',5)
+        self.G.add_edge('E',6)
+        self.G.add_edge('F',6)
+        # Graph based on figure 6 from Newman (2001)
+        self.N=nx.Graph()
+        self.N.add_edge('A',1)
+        self.N.add_edge('A',2)
+        self.N.add_edge('A',3)
+        self.N.add_edge('B',1)
+        self.N.add_edge('B',2)
+        self.N.add_edge('B',3)
+        self.N.add_edge('C',1)
+        self.N.add_edge('D',1)
+        self.N.add_edge('E',3)
+        
+    def test_project_weighted_shared(self):
         edges=[('A','B',2),
                ('A','C',1),
                ('B','C',1),
@@ -144,18 +157,27 @@ class TestBipartiteProject:
                ('E','F',1)]
         Panswer=nx.Graph()
         Panswer.add_weighted_edges_from(edges)
-
-        # binary projected
-        P=nx.projected_graph(G,'ABCDEF')
-        assert_equal(P.edges(),Panswer.edges())
-
-        # weighted projected
-        P=nx.weighted_projected_graph(G,'ABCDEF')
+        P=nx.weighted_projected_graph(self.G,'ABCDEF')
         assert_equal(P.edges(),Panswer.edges())
         for u,v in P.edges():
             assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
-        
 
+        edges=[('A','B',3),
+               ('A','E',1),
+               ('A','C',1),
+               ('A','D',1),
+               ('B','E',1),
+               ('B','C',1),
+               ('B','D',1),
+               ('C','D',1)]
+        Panswer=nx.Graph()
+        Panswer.add_weighted_edges_from(edges)
+        P=nx.weighted_projected_graph(self.N,'ABCDE')
+        assert_equal(P.edges(),Panswer.edges())
+        for u,v in P.edges():
+            assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
+
+    def test_project_weighted_newman(self):
         edges=[('A','B',1.5),
                ('A','C',0.5),
                ('B','C',0.5),
@@ -164,11 +186,111 @@ class TestBipartiteProject:
                ('E','F',1)]
         Panswer=nx.Graph()
         Panswer.add_weighted_edges_from(edges)
-
-        # collaboration projected
-        P=nx.weighted_projected_graph(G,'ABCDEF',collaboration=True)
+        P=nx.collaboration_weighted_projected_graph(self.G,'ABCDEF')
         assert_equal(P.edges(),Panswer.edges())
         for u,v in P.edges():
             assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
 
-            
+        edges=[('A','B',11/6.0),
+               ('A','E',1/2.0),
+               ('A','C',1/3.0),
+               ('A','D',1/3.0),
+               ('B','E',1/2.0),
+               ('B','C',1/3.0),
+               ('B','D',1/3.0),
+               ('C','D',1/3.0)]
+        Panswer=nx.Graph()
+        Panswer.add_weighted_edges_from(edges)
+        P=nx.collaboration_weighted_projected_graph(self.N,'ABCDE')
+        assert_equal(P.edges(),Panswer.edges())
+        for u,v in P.edges():
+            assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
+
+    def test_project_weighted_ratio(self):
+        edges=[('A','B',2/6.0),
+               ('A','C',1/6.0),
+               ('B','C',1/6.0),
+               ('B','D',1/6.0),
+               ('B','E',2/6.0),
+               ('E','F',1/6.0)]
+        Panswer=nx.Graph()
+        Panswer.add_weighted_edges_from(edges)
+        P=nx.weighted_projected_graph(self.G, 'ABCDEF', ratio=True)
+        assert_equal(P.edges(),Panswer.edges())
+        for u,v in P.edges():
+            assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
+
+        edges=[('A','B',3/3.0),
+               ('A','E',1/3.0),
+               ('A','C',1/3.0),
+               ('A','D',1/3.0),
+               ('B','E',1/3.0),
+               ('B','C',1/3.0),
+               ('B','D',1/3.0),
+               ('C','D',1/3.0)]
+        Panswer=nx.Graph()
+        Panswer.add_weighted_edges_from(edges)
+        P=nx.weighted_projected_graph(self.N, 'ABCDE', ratio=True)
+        assert_equal(P.edges(),Panswer.edges())
+        for u,v in P.edges():
+            assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
+
+    def test_project_weighted_overlap(self):
+        edges=[('A','B',2/2.0),
+               ('A','C',1/1.0),
+               ('B','C',1/1.0),
+               ('B','D',1/1.0),
+               ('B','E',2/3.0),
+               ('E','F',1/1.0)]
+        Panswer=nx.Graph()
+        Panswer.add_weighted_edges_from(edges)
+        P=nx.overlap_weighted_projected_graph(self.G,'ABCDEF', jaccard=False)
+        assert_equal(P.edges(),Panswer.edges())
+        for u,v in P.edges():
+            assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
+
+        edges=[('A','B',3/3.0),
+               ('A','E',1/1.0),
+               ('A','C',1/1.0),
+               ('A','D',1/1.0),
+               ('B','E',1/1.0),
+               ('B','C',1/1.0),
+               ('B','D',1/1.0),
+               ('C','D',1/1.0)]
+        Panswer=nx.Graph()
+        Panswer.add_weighted_edges_from(edges)
+        P=nx.overlap_weighted_projected_graph(self.N,'ABCDE', jaccard=False)
+        assert_equal(P.edges(),Panswer.edges())
+        for u,v in P.edges():
+            assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
+
+
+    def test_project_weighted_jaccard(self):
+        edges=[('A','B',2/5.0),
+               ('A','C',1/2.0),
+               ('B','C',1/5.0),
+               ('B','D',1/5.0),
+               ('B','E',2/6.0),
+               ('E','F',1/3.0)]
+        Panswer=nx.Graph()
+        Panswer.add_weighted_edges_from(edges)
+        P=nx.overlap_weighted_projected_graph(self.G,'ABCDEF')
+        assert_equal(P.edges(),Panswer.edges())
+        for u,v in P.edges():
+            assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
+
+        edges=[('A','B',3/3.0),
+               ('A','E',1/3.0),
+               ('A','C',1/3.0),
+               ('A','D',1/3.0),
+               ('B','E',1/3.0),
+               ('B','C',1/3.0),
+               ('B','D',1/3.0),
+               ('C','D',1/1.0)]
+        Panswer=nx.Graph()
+        Panswer.add_weighted_edges_from(edges)
+        P=nx.overlap_weighted_projected_graph(self.N,'ABCDE')
+        assert_equal(P.edges(),Panswer.edges())
+        for u,v in P.edges():
+            assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
+

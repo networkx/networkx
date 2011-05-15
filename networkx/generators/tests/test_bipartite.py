@@ -33,10 +33,10 @@ class TestGeneratorsBipartite():
         assert_equal(sorted(G.degree().values()),
                      [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
-        GU=project(G,range(len(aseq)))
+        GU=project(Graph(G),range(len(aseq)))
         assert_equal(GU.number_of_nodes(), 6)
 
-        GD=project(G,range(len(aseq),len(aseq)+len(bseq)))
+        GD=project(Graph(G),range(len(aseq),len(aseq)+len(bseq)))
         assert_equal(GD.number_of_nodes(), 3)
 
         assert_raises(networkx.exception.NetworkXError,
@@ -60,10 +60,10 @@ class TestGeneratorsBipartite():
         assert_equal(sorted(G.degree().values()),
                      [2, 2, 2, 2, 2, 2, 3, 3, 3, 3])
 
-        GU=project(G,range(len(aseq)))
+        GU=project(Graph(G),range(len(aseq)))
         assert_equal(GU.number_of_nodes(), 6)
 
-        GD=project(G,range(len(aseq),len(aseq)+len(bseq)))
+        GD=project(Graph(G),range(len(aseq),len(aseq)+len(bseq)))
         assert_equal(GD.number_of_nodes(), 4)
         assert_raises(networkx.exception.NetworkXError,
                       bipartite_havel_hakimi_graph, aseq, bseq,
@@ -92,10 +92,10 @@ class TestGeneratorsBipartite():
         assert_equal(sorted(G.degree().values()),
                      [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
-        GU=project(G,range(len(aseq)))
+        GU=project(Graph(G),range(len(aseq)))
         assert_equal(GU.number_of_nodes(), 6)
 
-        GD=project(G,range(len(aseq),len(aseq)+len(bseq)))
+        GD=project(Graph(G),range(len(aseq),len(aseq)+len(bseq)))
         assert_equal(GD.number_of_nodes(), 3)
         assert_raises(networkx.exception.NetworkXError,
                       bipartite_reverse_havel_hakimi_graph, aseq, bseq,
@@ -124,10 +124,10 @@ class TestGeneratorsBipartite():
         assert_equal(sorted(G.degree().values()),
                      [1, 1, 1, 2, 2, 2, 3, 3, 3])
 
-        GU=project(G,range(len(aseq)))
+        GU=project(Graph(G),range(len(aseq)))
         assert_equal(GU.number_of_nodes(), 6)
 
-        GD=project(G,range(len(aseq),len(aseq)+len(bseq)))
+        GD=project(Graph(G),range(len(aseq),len(aseq)+len(bseq)))
         assert_equal(GD.number_of_nodes(), 3)
 
         assert_raises(networkx.exception.NetworkXError,
