@@ -119,7 +119,7 @@ def waxman_graph(n, alpha=0.4, beta=0.1):
 
     # find maximum distance L between two nodes
     L = 0
-    pos = nx.get_node_attributes(G,'pos').values()
+    pos = list(nx.get_node_attributes(G,'pos').values())
     while pos:
         x1,y1 = pos.pop()
         for x2,y2 in pos:
