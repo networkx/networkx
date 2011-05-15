@@ -85,7 +85,7 @@ def global_parameters(b,c):
     --------
     >>> G=nx.dodecahedral_graph()
     >>> b,c=nx.intersection_array(G)
-    >>> nx.global_parameters(b,c)
+    >>> list(nx.global_parameters(b,c))
     [(0, 0, 3), (1, 0, 2), (1, 1, 1), (1, 1, 1), (2, 0, 1), (3, 0, 0)]
 
     References
@@ -159,7 +159,7 @@ def intersection_array(G):
     bint = {} # 'b' intersection array
     cint = {} # 'c' intersection array
     for u in G:
-	for v in G:
+        for v in G:
             try:
                 i = path_length[u][v]
             except KeyError:  # graph must be connected
