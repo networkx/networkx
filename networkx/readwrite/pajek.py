@@ -56,10 +56,10 @@ def generate_pajek(G):
         id=int(na.get('id',nodenumber[n]))
         nodenumber[n]=id
         shape=na.get('shape','ellipse')
-        yield ' '.join(map(make_str,(id,n,x,y,shape)))
+        s=' '.join(map(make_str,(id,n,x,y,shape)))
         for k,v in na.items():
-            yield '%s %s '%(k,v)
-#        yield '\n'
+            s+=' %s %s'%(k,v)
+        yield s
 
     # write edges with attributes         
     if G.is_directed():
@@ -69,14 +69,14 @@ def generate_pajek(G):
     for u,v,edgedata in G.edges(data=True):
         d=edgedata.copy()
         value=d.pop('weight',1.0) # use 1 as default edge value
-        yield ' '.join(map(make_str,(nodenumber[u],nodenumber[v],value)))
+        s=' '.join(map(make_str,(nodenumber[u],nodenumber[v],value)))
         for k,v in d.items():
             if is_string_like(v):
                 # add quotes to any values with a blank space
                 if " " in v: 
                     v="\"%s\""%v
-            yield '%s %s '%(k,v)
-#        yield '\n'
+            s+=' %s %s'%(k,v)
+        yield s
         
 def write_pajek(G, path, encoding='UTF-8'):
     """Write graph in Pajek format to path.
