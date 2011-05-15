@@ -29,12 +29,30 @@ def is_distance_regular(G):
 
     Returns
     -------
-    b,c: tuple of lists 
+    bool
+      True if the graph is Distance Regular, False otherwise
 
     Examples
     --------
-    >>> nx.intersection_array(nx.hypercube_graph(6))
-    ([6, 5, 4, 3, 2, 1], [1, 2, 3, 4, 5, 6])
+    >>> G=nx.hypercube_graph(6)
+    >>> nx.is_distance_regular(G)
+    True
+    
+    See Also
+    --------
+    intersection_array, global_parameters
+
+    Notes
+    -----
+    For undirected and simple graphs only
+
+    References
+    ----------
+    .. [1] Brouwer, A. E.; Cohen, A. M.; and Neumaier, A. 
+        Distance-Regular Graphs. New York: Springer-Verlag, 1989.
+    .. [2] Weisstein, Eric W. "Distance-Regular Graph." 
+        http://mathworld.wolfram.com/Distance-RegularGraph.html
+
     """
     try:
         a=intersection_array(G)
@@ -42,8 +60,18 @@ def is_distance_regular(G):
     except nx.NetworkXError:
         return False
 
-def global_parameters(ba,ca):
+def global_parameters(b,c):
     """Return global parameters for a given intersection array.
+
+    Given a distance-regular graph G with integers b_i, c_i,i = 0,....,d
+    such that for any 2 vertices x,y in G at a distance i=d(x,y), there
+    are exactly c_i neighbors of y at a distance of i-1 from x and b_i
+    neighbors of y at a distance of i+1 from x.
+    
+    Thus, a distance regular graph has the global parameters,
+    [[c_0,a_0,b_0],[c_1,a_1,b_1],......,[c_d,a_d,b_d]] for the
+    intersection array  [b_0,b_1,.....b_{d-1};c_1,c_2,.....c_d]
+    where a_i+b_i+c_i=k , k= degree of every vertex.
 
     Parameters
     ----------
@@ -55,6 +83,10 @@ def global_parameters(ba,ca):
 
     Examples
     --------
+    >>> G=nx.dodecahedral_graph()
+    >>> b,c=nx.intersection_array(G)
+    >>> nx.global_parameters(b,c)
+    [(0, 0, 3), (1, 0, 2), (1, 1, 1), (1, 1, 1), (2, 0, 1), (3, 0, 0)]
 
     References
     ----------
@@ -66,7 +98,9 @@ def global_parameters(ba,ca):
     --------
     intersection_array 
     """
-    d=len(ba)
+    d=len(b)
+    ba=b[:]
+    ca=c[:]
     ba.append(0)
     ca.insert(0,0)
     k = ba[0]
@@ -76,6 +110,14 @@ def global_parameters(ba,ca):
 
 def intersection_array(G):
     """Returns the intersection array of a distance-regular graph.
+
+    Given a distance-regular graph G with integers b_i, c_i,i = 0,....,d
+    such that for any 2 vertices x,y in G at a distance i=d(x,y), there
+    are exactly c_i neighbors of y at a distance of i-1 from x and b_i
+    neighbors of y at a distance of i+1 from x.
+
+    A distance regular graph'sintersection array is given by, 
+    [b_0,b_1,.....b_{d-1};c_1,c_2,.....c_d]
 
     Parameters
     ----------
@@ -87,19 +129,20 @@ def intersection_array(G):
 
     Examples
     --------
-    >>> nx.is_distance_regular(nx.hypercube_graph(6))
-    True
+    >>> G=nx.icosahedral_graph()
+    >>> nx.intersection_array(G)
+    ([5, 2, 1], [1, 2, 5])
 
     References
     ----------
-    .. [1] Brouwer, A. E.; Cohen, A. M.; and Neumaier, A. 
-        Distance-Regular Graphs. New York: Springer-Verlag, 1989.
-    .. [2] Weisstein, Eric W. "Distance-Regular Graph." 
-        http://mathworld.wolfram.com/Distance-RegularGraph.html
+    .. [1] Weisstein, Eric W. "Intersection Array." 
+       From MathWorld--A Wolfram Web Resource. 
+       http://mathworld.wolfram.com/IntersectionArray.html
+    
 
     See Also
     --------
-    intersection_array, global_parameters
+    global_parameters
     """
     if G.is_multigraph() or G.is_directed():
         raise nx.NetworkxException('Not implemented for directed ',
@@ -134,5 +177,3 @@ def intersection_array(G):
             [cint.get(i+1,0) for i in range(diameter)])
 
 
-    
-    
