@@ -273,22 +273,22 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 
     # remove test until we get the "name" issue sorted
     # https://networkx.lanl.gov/trac/ticket/544        
-    # def test_default_attribute(self):
-    #     G=nx.Graph()
-    #     G.add_node(1,label=1,color='green')
-    #     G.add_path([0,1,2,3])
-    #     G.add_edge(1,2,weight=3)
-    #     G.graph['node_default']={'color':'yellow'}
-    #     G.graph['edge_default']={'weight':7}
-    #     fh = io.BytesIO()
-    #     nx.write_graphml(G,fh)
-    #     fh.seek(0)
-    #     H=nx.read_graphml(fh,node_type=int)
-    #     assert_equal(sorted(G.nodes()),sorted(H.nodes()))
-    #     assert_equal(
-    #         sorted(sorted(e) for e in G.edges()),
-    #         sorted(sorted(e) for e in H.edges()))
-    #     assert_equal(G.graph,H.graph)
+    def test_default_attribute(self):
+        G=nx.Graph()
+        G.add_node(1,label=1,color='green')
+        G.add_path([0,1,2,3])
+        G.add_edge(1,2,weight=3)
+        G.graph['node_default']={'color':'yellow'}
+        G.graph['edge_default']={'weight':7}
+        fh = io.BytesIO()
+        nx.write_graphml(G,fh)
+        fh.seek(0)
+        H=nx.read_graphml(fh,node_type=int)
+        assert_equal(sorted(G.nodes()),sorted(H.nodes()))
+        assert_equal(
+            sorted(sorted(e) for e in G.edges()),
+            sorted(sorted(e) for e in H.edges()))
+        assert_equal(G.graph,H.graph)
 
     def test_multigraph_keys(self):
         # test that multigraphs use edge id attributes as key

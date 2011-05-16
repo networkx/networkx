@@ -281,9 +281,15 @@ class GraphMLWriter(GraphML):
         else:
             default_edge_type='undirected'
         
-        graph_element = Element("graph",
+        graphid=G.graph.pop('id',None)
+        if graphid is None:
+            graph_element = Element("graph",
+                                edgedefault = default_edge_type)
+        else:
+            graph_element = Element("graph",
                                 edgedefault = default_edge_type, 
-                                id=G.name)
+                                id=graphid)
+
         default={}
         data=dict((k,v) for (k,v) in  G.graph.items() 
                   if k not in ['node_default','edge_default'])
@@ -343,13 +349,12 @@ class GraphMLReader(GraphML):
             yield self.make_graph(g, keys, defaults)
             
     def make_graph(self, graph_xml, graphml_keys, defaults):
-        # set default graph type and name
-        graph_id = graph_xml.get("id", "")
+        # set default graph type
         edgedefault = graph_xml.get("edgedefault", None)
         if edgedefault=='directed':
-            G=nx.MultiDiGraph(name=graph_id)
+            G=nx.MultiDiGraph()
         else:
-            G=nx.MultiGraph(name=graph_id)
+            G=nx.MultiGraph()
         # set defaults for graph attributes
         for key_id,value in defaults.items():
             key_for=graphml_keys[key_id]['for']

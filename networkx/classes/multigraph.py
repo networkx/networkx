@@ -41,8 +41,6 @@ class MultiGraph(Graph):
         NetworkX graph object.  If the corresponding optional Python
         packages are installed the data can also be a NumPy matrix
         or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
-    name : string, optional (default='')
-        An optional name for the graph.
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
 
@@ -945,7 +943,6 @@ class MultiGraph(Graph):
         bunch =self.nbunch_iter(nbunch)
         # create new graph and copy subgraph into it
         H = self.__class__()
-        H.name = "Subgraph of (%s)"%(self.name)
         # namespace shortcuts for speed
         H_adj=H.adj
         self_adj=self.adj

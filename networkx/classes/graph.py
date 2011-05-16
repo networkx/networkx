@@ -12,7 +12,7 @@ For directed graphs see DiGraph and MultiDiGraph.
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
                             'Dan Schult(dschult@colgate.edu)'])
-#    Copyright (C) 2004-2009 by
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -50,8 +50,6 @@ class Graph(object):
         NetworkX graph object.  If the corresponding optional Python
         packages are installed the data can also be a NumPy matrix
         or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
-    name : string, optional (default='')
-        An optional name for the graph.
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
 
@@ -223,8 +221,14 @@ class Graph(object):
             convert.from_whatever(data,create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
-        self.name = self.graph.get('name','')
         self.edge = self.adj
+
+    @property
+    def name(self):
+        return self.graph.get('name','')
+    @name.setter
+    def name(self, s):
+        self.graph['name']=s
 
     def __str__(self):
         """Return the graph name.
@@ -1471,7 +1475,6 @@ class Graph(object):
         bunch =self.nbunch_iter(nbunch)
         # create new graph and copy subgraph into it
         H = self.__class__()
-        H.name = "Subgraph of (%s)"%(self.name)
         # namespace shortcuts for speed
         H_adj=H.adj
         self_adj=self.adj

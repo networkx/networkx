@@ -17,6 +17,7 @@ class TestPajek(object):
                                ('Bb', 'A1'),('C', 'C'), ('C', 'D2'), 
                                ('D2', 'Bb')])
 
+        self.G.graph['name']='Tralala'
         (self.fd,self.fname)=tempfile.mkstemp()
         fh=open(self.fname,'wb')
         fh.write(self.data.encode('UTF-8'))

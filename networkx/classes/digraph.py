@@ -42,8 +42,6 @@ class DiGraph(Graph):
         NetworkX graph object.  If the corresponding optional Python
         packages are installed the data can also be a NumPy matrix
         or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
-    name : string, optional (default='')
-        An optional name for the graph.
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
 
@@ -219,7 +217,6 @@ class DiGraph(Graph):
             convert.from_whatever(data,create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
-        self.name = self.graph.get('name','')
         self.edge=self.adj
 
 
@@ -280,6 +277,7 @@ class DiGraph(Graph):
             self.node[n] = attr_dict
         else: # update attr even if node already exists
             self.node[n].update(attr_dict)
+
 
     def add_nodes_from(self, nodes, **attr):
         """Add multiple nodes.
@@ -1030,7 +1028,6 @@ class DiGraph(Graph):
         []
 
         """
-        self.name=''
         self.succ.clear()
         self.pred.clear()
         self.node.clear()
@@ -1207,7 +1204,6 @@ class DiGraph(Graph):
         bunch = self.nbunch_iter(nbunch)
         # create new graph and copy subgraph into it
         H = self.__class__()
-        H.name = "Subgraph of (%s)"%(self.name)
         # namespace shortcuts for speed
         H_succ=H.succ
         H_pred=H.pred

@@ -235,8 +235,6 @@ def create_empty_copy(G,with_nodes=True):
     Graph, node, and edge data is not propagated to the new graph.
     """
     H=G.__class__()
-
-    H.name='empty '+G.name
     if with_nodes:
         H.add_nodes_from(G)
     return H

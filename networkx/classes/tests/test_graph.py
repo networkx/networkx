@@ -411,7 +411,7 @@ class TestGraph:
         G=self.K3
         self.add_attributes(G)
         H=G.subgraph([0,1,2,5])
-        assert_equal(H.name, 'Subgraph of ('+G.name+')')
+#        assert_equal(H.name, 'Subgraph of ('+G.name+')')
         H.name=G.name
         self.graphs_equal(H,G)
         self.same_attrdict(H,G)
