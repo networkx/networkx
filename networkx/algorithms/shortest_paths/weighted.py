@@ -62,6 +62,7 @@ def dijkstra_path(G, source, target, weight='weight'):
     Notes
     ------
     Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
 
     See Also
     --------
@@ -111,6 +112,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     Notes
     -----
     Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
 
     See Also
     --------
@@ -155,6 +157,7 @@ def single_source_dijkstra_path(G,source, cutoff=None, weight='weight'):
     Notes
     -----
     Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
 
     See Also
     --------
@@ -200,7 +203,8 @@ def single_source_dijkstra_path_length(G, source, cutoff= None,
 
     Notes
     -----
-    Edge data must be numerical.
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
 
     See Also
     --------
@@ -281,8 +285,8 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
 
     Notes
     ---------
+    Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
-    Edges must hold numerical values for Graph and DiGraphs.
 
     Based on the Python cookbook recipe (119466) at 
     http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/119466
@@ -362,6 +366,9 @@ def dijkstra_predecessor_and_distance(G,source, cutoff=None, weight='weight'):
 
     Notes
     -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
     The list of predecessors contains more than one element only when
     there are more than one shortest paths to the key node.
     """
@@ -431,6 +438,9 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
 
     Notes
     -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
     The dictionary returned only has keys for reachable node pairs.
     """
     paths={}
@@ -463,6 +473,11 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     >>> path=nx.all_pairs_dijkstra_path(G)
     >>> print(path[0][4])
     [0, 1, 2, 3, 4]
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
 
     See Also
     --------
@@ -526,6 +541,9 @@ def bellman_ford(G, source, weight = 'weight'):
    
     Notes
     -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
     The dictionaries returned only have keys for nodes reachable from
     the source.
 
@@ -594,6 +612,9 @@ def negative_edge_cycle(G, weight = 'weight'):
 
     Notes
     -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
     This algorithm uses bellman_ford() but finds negative cycles
     on any component by first adding a new node connected to
     every node, and starting bellman_ford on that node.  It then
