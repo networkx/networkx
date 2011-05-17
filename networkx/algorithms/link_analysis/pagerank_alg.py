@@ -339,8 +339,9 @@ def pagerank_scipy(G,alpha=0.85,personalization=None,
     (n,m)=M.shape # should be square
     S=scipy.array(M.sum(axis=1)).flatten()
     index=scipy.where(S != 0)[0]
-    for i in index:
-        M[i,:]*=1.0/S[i]
+    I, J, V = scipy.sparse.find( M )
+    for index, i in enumerate( I ) :
+        M[i,J[index]] = V[index] / S[i]
     x=scipy.ones((n))/n  # initial guess
     dangle=scipy.array(scipy.where(M.sum(axis=1)==0,1.0/n,0)).flatten()
     # add "teleportation"/personalization
