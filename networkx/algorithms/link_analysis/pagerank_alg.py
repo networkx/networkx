@@ -87,10 +87,11 @@ def pagerank(G,alpha=0.85,personalization=None,
 
     # create a copy in (right) stochastic form        
     W=nx.stochastic_graph(D)
+    scale=1.0/W.number_of_nodes()
 
     # choose fixed starting vector if not given
     if nstart is None:
-        x=dict.fromkeys(W,1.0/W.number_of_nodes())
+        x=dict.fromkeys(W,scale)
     else:
         x=nstart
         # normalize starting vector to 1                
@@ -99,7 +100,7 @@ def pagerank(G,alpha=0.85,personalization=None,
 
     # assign uniform personalization/teleportation vector if not given
     if personalization is None:
-        p=dict.fromkeys(W,1.0/W.number_of_nodes())
+        p=dict.fromkeys(W,scale)
     else:
         p=personalization
         # normalize starting vector to 1                
@@ -111,7 +112,6 @@ def pagerank(G,alpha=0.85,personalization=None,
                                 'must have a value for every node')
 
 
-    nnodes=W.number_of_nodes()
     # "dangling" nodes, no links out from them
     out_degree=W.out_degree()
     dangle=[n for n in W if out_degree[n]==0.0]  
@@ -119,7 +119,7 @@ def pagerank(G,alpha=0.85,personalization=None,
     while True: # power iteration: make up to max_iter iterations
         xlast=x
         x=dict.fromkeys(xlast.keys(),0)
-        danglesum=alpha/nnodes*sum(xlast[n] for n in dangle)
+        danglesum=alpha*scale*sum(xlast[n] for n in dangle)
         for n in x:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
@@ -264,11 +264,11 @@ def pagerank_numpy(G,alpha=0.85,personalization=None):
     M=google_matrix(G,alpha,personalization=personalization,nodelist=nodelist)
     # use numpy LAPACK solver
     eigenvalues,eigenvectors=np.linalg.eig(M.T)
-    ind=eigenvalues.argsort()[::-1]
-    # eigenvector of largest eigenvalue at ind[0], normalized
-    largest=np.array(eigenvectors[:,ind[0]]).flatten().astype(np.float)
+    ind=eigenvalues.argsort()
+    # eigenvector of largest eigenvalue at ind[-1], normalized
+    largest=np.array(eigenvectors[:,ind[-1]]).flatten().astype(np.float)
     norm=largest.sum()
-    centrality=dict(zip(G.nodes(),largest/norm))
+    centrality=dict(zip(nodelist,largest/norm))
     return centrality
 
 
@@ -338,19 +338,16 @@ def pagerank_scipy(G,alpha=0.85,personalization=None,
     M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist)
     (n,m)=M.shape # should be square
     S=scipy.array(M.sum(axis=1)).flatten()
-    index=scipy.where(S != 0)[0]
-    I, J, V = scipy.sparse.find( M )
-    for index, i in enumerate( I ) :
-        M[i,J[index]] = V[index] / S[i]
+    for i, j, v in zip( *scipy.sparse.find(M) ):
+        M[i,j] = v / S[i]
     x=scipy.ones((n))/n  # initial guess
     dangle=scipy.array(scipy.where(M.sum(axis=1)==0,1.0/n,0)).flatten()
     # add "teleportation"/personalization
-    e=scipy.ones((n))
     if personalization is not None:
         v=scipy.array(personalization.values()).astype(scipy.float_)
+        v=v/v.sum()
     else:
-        v=e
-    v=v/v.sum()
+        v=x
     i=0
     while i <= max_iter:
         # power iteration: make up to max_iter iterations
@@ -360,7 +357,7 @@ def pagerank_scipy(G,alpha=0.85,personalization=None,
         # check convergence, l1 norm            
         err=scipy.absolute(x-xlast).sum()
         if err < n*tol:
-            return dict(zip(G.nodes(),x))
+            return dict(zip(nodelist,x))
         i+=1
     raise NetworkXError('pagerank_scipy: power iteration failed to converge'
                         'in %d iterations.'%(i+1))
