@@ -10,9 +10,9 @@ import networkx as nx
 
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg (hagberg@lanl.gov)'])
-__all__ = ['bipartite_node_redundancy']
+__all__ = ['node_redundancy']
 
-def bipartite_node_redundancy(G, nodes=None):
+def node_redundancy(G, nodes=None):
     """Compute bipartite node redundancy coefficient.
 
     The redundancy coefficient of a node :math:`v` is the fraction of pairs of 
@@ -44,8 +44,9 @@ def bipartite_node_redundancy(G, nodes=None):
 
     Examples
     --------
+    >>> from networkx.algorithms import bipartite
     >>> G = nx.cycle_graph(4)
-    >>> rc = nx.bipartite_node_redundancy(G)
+    >>> rc = bipartite.node_redundancy(G)
     >>> rc[0]
     1.0
 

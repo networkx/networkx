@@ -1,4 +1,3 @@
-from networkx.algorithms.bipartite import *
 from networkx.algorithms.block import *
 from networkx.algorithms.boundary import *
 from networkx.algorithms.centrality import *
@@ -41,3 +40,4 @@ import networkx.algorithms.shortest_paths
 import networkx.algorithms.traversal
 import networkx.algorithms.chordal
 
+from networkx.algorithms.bipartite import projected_graph,project,is_bipartite

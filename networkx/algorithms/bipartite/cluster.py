@@ -7,7 +7,7 @@
 import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg (hagberg@lanl.gov)'])
-__all__ = ['bipartite_clustering','average_bipartite_clustering']
+__all__ = ['clustering','average_clustering']
 
 # functions for computing clustering of pairs
 def cc_dot(nu,nv):
@@ -23,7 +23,7 @@ modes={'dot':cc_dot,
        'min':cc_min,
        'max':cc_max}
 
-def bipartite_clustering(G, nodes=None, mode='dot'):
+def clustering(G, nodes=None, mode='dot'):
     """Compute a bipartite clustering coefficient for nodes.
 
     The bipartie clustering coefficient is a measure of local density
@@ -81,18 +81,19 @@ def bipartite_clustering(G, nodes=None, mode='dot'):
 
     Examples
     --------
+    >>> from networkx.algorithms import bipartite
     >>> G=nx.path_graph(4) # path is bipartite
-    >>> c=nx.bipartite_clustering(G) 
+    >>> c=bipartite.clustering(G) 
     >>> c[0]
     0.5
-    >>> c=nx.bipartite_clustering(G,mode='min') 
+    >>> c=bipartite.clustering(G,mode='min') 
     >>> c[0]
     1.0
 
     See Also
     --------
     clustering
-    average_bipartite_clustering
+    bipartite.average_clustering
     
     References
     ----------
@@ -100,7 +101,7 @@ def bipartite_clustering(G, nodes=None, mode='dot'):
        Basic notions for the analysis of large two-mode networks. 
        Social Networks 30(1), 31--48.
     """
-    if not nx.is_bipartite(G):
+    if not nx.algorithms.bipartite.is_bipartite(G):
         raise nx.NetworkXError("Graph is not bipartite")
     
     try:
@@ -122,7 +123,7 @@ def bipartite_clustering(G, nodes=None, mode='dot'):
         ccs[v] = cc
     return ccs
 
-def average_bipartite_clustering(G, nodes=None, mode='dot'):
+def average_clustering(G, nodes=None, mode='dot'):
     """Compute the average bipartite clustering coefficient.
 
     A clustering coefficient for the whole graph is the average, 
@@ -163,18 +164,19 @@ def average_bipartite_clustering(G, nodes=None, mode='dot'):
 
     Examples
     --------
+    >>> from networkx.algorithms import bipartite
     >>> G=nx.star_graph(3) # path is bipartite
-    >>> nx.average_bipartite_clustering(G) 
+    >>> bipartite.average_clustering(G) 
     0.75
-    >>> X,Y=nx.bipartite_sets(G)
-    >>> nx.average_bipartite_clustering(G,X) 
+    >>> X,Y=bipartite.sets(G)
+    >>> bipartite.average_clustering(G,X) 
     0.0
-    >>> nx.average_bipartite_clustering(G,Y) 
+    >>> bipartite.average_clustering(G,Y) 
     1.0
 
     See Also
     --------
-    bipartite_clustering, average_clustering
+    bipartite.clustering, average_clustering
    
     Notes    
     -----
@@ -190,5 +192,5 @@ def average_bipartite_clustering(G, nodes=None, mode='dot'):
     """
     if nodes is None:
         nodes=G
-    ccs=bipartite_clustering(G, nodes=nodes, mode=mode)
+    ccs=clustering(G, nodes=nodes, mode=mode)
     return float(sum(ccs[v] for v in nodes))/len(nodes)

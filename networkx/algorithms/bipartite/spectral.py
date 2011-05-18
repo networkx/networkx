@@ -24,15 +24,16 @@ def spectral_bipartivity(G, nodes=None):
 
     Returns
     -------
-    sb : spectral bipartivity
+    sb : float or dict
        A single number if the keyword nodes is not specified, or
        a dictionary keyed by node with the spectral bipartivity contribution
        of that node as the value.
        
     Examples
     --------
+    >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> nx.spectral_bipartivity(G)
+    >>> bipartite.spectral_bipartivity(G)
     1.0
 
     Notes
@@ -42,7 +43,7 @@ def spectral_bipartivity(G, nodes=None):
 
     See Also
     --------
-    bipartite_color()
+    bipartite.color
 
     References
     ----------

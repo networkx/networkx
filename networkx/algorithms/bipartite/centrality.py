@@ -7,11 +7,11 @@
 import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg (hagberg@lanl.gov)'])
-__all__=['bipartite_degree_centrality',
-         'bipartite_betweenness_centrality',
-         'bipartite_closeness_centrality']
+__all__=['degree_centrality',
+         'betweenness_centrality',
+         'closeness_centrality']
 
-def bipartite_degree_centrality(G, nodes):
+def degree_centrality(G, nodes):
     """Compute the degree centrality for nodes in a bipartite network.
 
     The degree centrality for a node :math:`v` is the fraction of nodes 
@@ -32,8 +32,8 @@ def bipartite_degree_centrality(G, nodes):
 
     See Also
     --------
-    bipartite_betweenness_centrality,
-    bipartite_closeness_centrality,
+    bipartite.betweenness_centrality,
+    bipartite.closeness_centrality,
     bipartite_sets,
     is_bipartite
 
@@ -77,7 +77,7 @@ def bipartite_degree_centrality(G, nodes):
     return centrality
 
 
-def bipartite_betweenness_centrality(G, nodes):
+def betweenness_centrality(G, nodes):
     """Compute betweenness centrality for nodes in a bipartite network.
 
     Betweenness centrality of a node :math:`v` is the sum of the
@@ -134,9 +134,9 @@ def bipartite_betweenness_centrality(G, nodes):
     See Also
     --------
     betweenness_centrality,
-    bipartite_degree_centrality,
-    bipartite_closeness_centrality,
-    bipartite_sets,
+    bipartite.degree_centrality,
+    bipartite.closeness_centrality,
+    bipartite.sets,
     is_bipartite
 
     Notes
@@ -173,7 +173,7 @@ def bipartite_betweenness_centrality(G, nodes):
         betweenness[node]/=bet_max_bot
     return betweenness
 
-def bipartite_closeness_centrality(G, nodes, normalized=True):
+def closeness_centrality(G, nodes, normalized=True):
     """Compute the closeness centrality for nodes in a bipartite network.
 
     The closeness of a node is the distance to all other nodes in the 
@@ -200,9 +200,9 @@ def bipartite_closeness_centrality(G, nodes, normalized=True):
     See Also
     --------
     closeness_centrality,
-    bipartite_betweenness_centrality,
-    bipartite_degree_centrality
-    bipartite_sets,
+    bipartite.betweenness_centrality,
+    bipartite.degree_centrality
+    bipartite.sets,
     is_bipartite
 
     Notes

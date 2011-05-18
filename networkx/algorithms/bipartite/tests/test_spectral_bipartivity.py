@@ -2,7 +2,7 @@
 from nose import SkipTest
 from nose.tools import *
 import networkx as nx
-from networkx import spectral_bipartivity as sb
+from networkx.algorithms.bipartite import spectral_bipartivity as sb
 
 # Examples from Figure 1
 # E. Estrada and J. A. Rodríguez-Velázquez, "Spectral measures of

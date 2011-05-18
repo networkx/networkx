@@ -7,7 +7,6 @@ from networkx.algorithms.centrality.current_flow_betweenness_subset import *
 from networkx.algorithms.centrality.degree_alg import *
 from networkx.algorithms.centrality.eigenvector import *
 from networkx.algorithms.centrality.load import *
-from networkx.algorithms.centrality.bipartite_centrality import *
 import networkx.algorithms.centrality.betweenness
 import networkx.algorithms.centrality.closeness
 import networkx.algorithms.centrality.current_flow_betweenness

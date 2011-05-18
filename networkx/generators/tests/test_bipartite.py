@@ -155,7 +155,7 @@ class TestGeneratorsBipartite():
         G=bipartite_random_graph(n,m,0.9)
         assert_equal(len(G),30)
         assert_true(is_bipartite(G))
-        X,Y=bipartite_sets(G)
+        X,Y=nx.algorithms.bipartite.sets(G)
         assert_equal(set(range(n)),X)
         assert_equal(set(range(n,n+m)),Y)
 
@@ -165,6 +165,6 @@ class TestGeneratorsBipartite():
         G=bipartite_random_graph(n,m,0.9,directed=True)
         assert_equal(len(G),30)
         assert_true(is_bipartite(G))
-        X,Y=bipartite_sets(G)
+        X,Y=nx.algorithms.bipartite.sets(G)
         assert_equal(set(range(n)),X)
         assert_equal(set(range(n,n+m)),Y)

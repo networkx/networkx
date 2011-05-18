@@ -13,10 +13,10 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    All rights reserved.
 #    BSD license.
 __all__ = ['is_bipartite', 'is_bipartite_node_set',
-           'bipartite_color', 'bipartite_sets',
-           'bipartite_density', 'bipartite_degrees']
+           'color', 'sets',
+           'density', 'degrees']
 
-def bipartite_color(G):
+def color(G):
     """Returns a two-coloring of the graph.
 
     Raises an exception if the graph is not bipartite.
@@ -36,8 +36,9 @@ def bipartite_color(G):
 
     Examples
     --------
+    >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> c = nx.bipartite_color(G)
+    >>> c = bipartite.color(G)
     >>> print(c)
     {0: 1, 1: 0, 2: 1, 3: 0}
 
@@ -78,16 +79,17 @@ def is_bipartite(G):
 
     Examples
     --------
+    >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> print(nx.is_bipartite(G))
+    >>> print(bipartite.is_bipartite(G))
     True
 
     See Also
     --------
-    bipartite_color, is_bipartite_node_set
+    bipartite.color, bipartite.is_bipartite_node_set
     """
     try:
-        bipartite_color(G)
+        color(G)
         return True
     except nx.NetworkXError:
         return False
@@ -104,9 +106,10 @@ def is_bipartite_node_set(G,nodes):
 
     Examples
     --------
+    >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
     >>> X = set([1,3])
-    >>> nx.is_bipartite_node_set(G,X)
+    >>> bipartite.is_bipartite_node_set(G,X)
     True
 
     Notes
@@ -116,14 +119,14 @@ def is_bipartite_node_set(G,nodes):
     """
     S=set(nodes)
     for CC in nx.connected_component_subgraphs(G):
-        X,Y=bipartite_sets(CC)
+        X,Y=sets(CC)
         if not ( (X.issubset(S) and Y.isdisjoint(S)) or 
                  (Y.issubset(S) and X.isdisjoint(S)) ):
             return False
     return True
     
 
-def bipartite_sets(G):
+def sets(G):
     """Returns bipartite node sets of graph G.
 
     Raises an exception if the graph is not bipartite.
@@ -139,8 +142,9 @@ def bipartite_sets(G):
 
     Examples
     --------
+    >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> X, Y = nx.bipartite_sets(G)
+    >>> X, Y = bipartite.sets(G)
     >>> list(X)
     [0, 2]
     >>> list(Y)
@@ -148,14 +152,14 @@ def bipartite_sets(G):
 
     See Also
     --------
-    bipartite_color
+    bipartite.color
     """
-    color = bipartite_color(G)
-    X = set(n for n in color if color[n]) # color[n] == 1
-    Y = set(n for n in color if not color[n]) # color[n] == 0
+    c = color(G)
+    X = set(n for n in c if c[n]) # c[n] == 1
+    Y = set(n for n in c if not c[n]) # c[n] == 0
     return (X, Y)
 
-def bipartite_density(B, nodes):
+def density(B, nodes):
     """Return density of bipartite graph B.
 
     Parameters
@@ -172,17 +176,18 @@ def bipartite_density(B, nodes):
 
     Examples
     --------
+    >>> from networkx.algorithms import bipartite
     >>> G = nx.complete_bipartite_graph(3,2)
     >>> X=set([0,1,2])
-    >>> nx.bipartite_density(G,X)
+    >>> bipartite.density(G,X)
     1.0
     >>> Y=set([3,4])
-    >>> nx.bipartite_density(G,Y)
+    >>> bipartite.density(G,Y)
     1.0
 
     See Also
     --------
-    bipartite_color
+    bipartite.color
     """
     n=len(B)
     m=nx.number_of_edges(B)
@@ -197,7 +202,7 @@ def bipartite_density(B, nodes):
             d= m/float(nb*nt)
     return d
 
-def bipartite_degrees(B, nodes, weighted=False):
+def degrees(B, nodes, weighted=False):
     """Return the degrees of the two node sets in the bipartite graph B.
 
     Parameters
@@ -214,15 +219,16 @@ def bipartite_degrees(B, nodes, weighted=False):
 
     Examples
     --------
+    >>> from networkx.algorithms import bipartite
     >>> G = nx.complete_bipartite_graph(3,2)
     >>> Y=set([3,4])
-    >>> degX,degY=nx.bipartite_degrees(G,Y)
+    >>> degX,degY=bipartite.degrees(G,Y)
     >>> degX
     {0: 2, 1: 2, 2: 2}
 
     See Also
     --------
-    bipartite_color, bipartite_density
+    bipartite.color, bipartite.density
     """
     bottom=set(nodes)
     top=set(B)-bottom
