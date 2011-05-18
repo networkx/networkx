@@ -166,7 +166,7 @@ def betweenness_centrality(G, nodes):
                    (n*(p+1)*(2*r-p-1))-
                    (r*((2*p)-r+3)))/2.0
     betweenness = nx.betweenness_centrality(G, normalized=False, 
-                                            weighted_edges=False)
+                                            weight=None)
     for node in top:
         betweenness[node]/=bet_max_top
     for node in bottom:

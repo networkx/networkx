@@ -12,7 +12,7 @@ class TestSubsetBetweennessCentrality:
         b=betweenness_centrality_subset(G,
                                         sources=[0],
                                         targets=[1,3],
-                                        weighted_edges=False)
+                                        weight=None)
         b_answer={0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
@@ -25,7 +25,7 @@ class TestSubsetBetweennessCentrality:
         b=betweenness_centrality_subset(G,
                                         sources=[0],
                                         targets=[3],
-                                        weighted_edges=False)
+                                        weight=None)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
 
@@ -37,7 +37,7 @@ class TestSubsetBetweennessCentrality:
         b=betweenness_centrality_subset(G,
                                         sources=[0],
                                         targets=[3],
-                                        weighted_edges=False)
+                                        weight=None)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
 
@@ -49,7 +49,7 @@ class TestSubsetBetweennessCentrality:
         b=betweenness_centrality_subset(G,
                                         sources=[0],
                                         targets=[3,4],
-                                        weighted_edges=False)
+                                        weight=None)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
 
@@ -64,7 +64,7 @@ class TestSubsetBetweennessCentrality:
         b=betweenness_centrality_subset(G,
                                         sources=[0],
                                         targets=[3],
-                                        weighted_edges=False)
+                                        weight=None)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
 
@@ -81,7 +81,7 @@ class TestSubsetBetweennessCentrality:
         b=betweenness_centrality_subset(G,
                                         sources=[0],
                                         targets=[3,4],
-                                        weighted_edges=False)
+                                        weight=None)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
 
@@ -108,7 +108,7 @@ class TestBetweennessCentralitySources:
         """Betweenness centrality: K5"""
         G=networkx.complete_graph(5)
         b=networkx.betweenness_centrality_source(G,
-                                                 weighted_edges=False,
+                                                 weight=None,
                                                  normalized=False)
         b_answer={0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
         for n in sorted(G):
@@ -119,7 +119,7 @@ class TestBetweennessCentralitySources:
         G=networkx.path_graph(3)
         b_answer={0: 0.0, 1: 1.0, 2: 0.0}
         b=networkx.betweenness_centrality_source(G,
-                                                 weighted_edges=False,
+                                                 weight=None,
                                                  normalized=True)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
@@ -135,7 +135,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b=edge_betweenness_centrality_subset(G,
                                              sources=[0],
                                              targets=[1,3],
-                                             weighted_edges=False)
+                                             weight=None)
         b_answer=dict.fromkeys(G.edges(),0)
         b_answer[(0,3)]=0.5
         b_answer[(0,1)]=0.5
@@ -154,7 +154,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b=edge_betweenness_centrality_subset(G,
                                              sources=[0],
                                              targets=[3],
-                                             weighted_edges=False)
+                                             weight=None)
         for n in sorted(G.edges()):
             assert_almost_equal(b[n],b_answer[n])
 
@@ -169,7 +169,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b=edge_betweenness_centrality_subset(G,
                                              sources=[0],
                                              targets=[3],
-                                             weighted_edges=False)
+                                             weight=None)
         for n in sorted(G.edges()):
             assert_almost_equal(b[n],b_answer[n])
 
@@ -185,7 +185,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b=edge_betweenness_centrality_subset(G,
                                              sources=[0],
                                              targets=[3,4],
-                                             weighted_edges=False)
+                                             weight=None)
         for n in sorted(G.edges()):
             assert_almost_equal(b[n],b_answer[n])
 
@@ -205,7 +205,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b=edge_betweenness_centrality_subset(G,
                                              sources=[0],
                                              targets=[3],
-                                             weighted_edges=False)
+                                             weight=None)
         for n in sorted(G.edges()):
             assert_almost_equal(b[n],b_answer[n])
 
@@ -227,7 +227,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b=edge_betweenness_centrality_subset(G,
                                              sources=[0],
                                              targets=[3,4],
-                                             weighted_edges=False)
+                                             weight=None)
         for n in sorted(G.edges()):
             assert_almost_equal(b[n],b_answer[n])
 
@@ -251,7 +251,7 @@ class TestEdgeSubsetBetweennessCentrality:
         b=edge_betweenness_centrality_subset(G,
                                              sources=[0],
                                              targets=[3,4],
-                                             weighted_edges=False)
+                                             weight=None)
         for n in sorted(G.edges()):
             assert_almost_equal(b[n],b_answer[n])
 

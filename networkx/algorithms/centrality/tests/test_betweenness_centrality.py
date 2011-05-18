@@ -24,7 +24,7 @@ class TestBetweennessCentrality(object):
         """Betweenness centrality: K5"""
         G=nx.complete_graph(5)
         b=nx.betweenness_centrality(G,
-                                             weighted_edges=False,
+                                             weight=None,
                                              normalized=False)
         b_answer={0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
         for n in sorted(G):
@@ -34,7 +34,7 @@ class TestBetweennessCentrality(object):
         """Betweenness centrality: K5 endpoints"""
         G=nx.complete_graph(5)
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=False,
                                           endpoints=True)
         b_answer={0: 4.0, 1: 4.0, 2: 4.0, 3: 4.0, 4: 4.0}
@@ -46,7 +46,7 @@ class TestBetweennessCentrality(object):
         """Betweenness centrality: P3 normalized"""
         G=nx.path_graph(3)
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=True)
         b_answer={0: 0.0, 1: 1.0, 2: 0.0}
         for n in sorted(G):
@@ -58,7 +58,7 @@ class TestBetweennessCentrality(object):
         G=nx.path_graph(3)
         b_answer={0: 0.0, 1: 1.0, 2: 0.0}
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=False)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
@@ -68,7 +68,7 @@ class TestBetweennessCentrality(object):
         G=nx.path_graph(3)
         b_answer={0: 2.0, 1: 3.0, 2: 2.0}
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=False,
                                           endpoints=True)
         for n in sorted(G):
@@ -83,7 +83,7 @@ class TestBetweennessCentrality(object):
         for b in b_answer:
             b_answer[b]/=2.0
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=False)
 
         for n in sorted(G):
@@ -96,7 +96,7 @@ class TestBetweennessCentrality(object):
         b_answer={0:0.023,1:0.023,2:0.000,3:0.102,4:0.000,
                   5:0.231,6:0.231,7:0.389,8:0.222,9:0.000}
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=True)
 
         for n in sorted(G):
@@ -124,7 +124,7 @@ class TestBetweennessCentrality(object):
               'Tornabuoni':    0.092}
 
         b=nx.betweenness_centrality(G,
-                                             weighted_edges=False,
+                                             weight=None,
                                              normalized=True)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n],places=3)
@@ -140,7 +140,7 @@ class TestBetweennessCentrality(object):
         for b in b_answer:
             b_answer[b]/=2.0
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=False)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n],places=3)
@@ -152,7 +152,7 @@ class TestBetweennessCentrality(object):
         G.add_path([3,4,5,6])
         b_answer={0:0,1:1,2:0,3:0,4:2,5:2,6:0}
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=False)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
@@ -164,7 +164,7 @@ class TestBetweennessCentrality(object):
         G.add_path([3,4,5,6])
         b_answer={0:2,1:3,2:2,3:3,4:5,5:5,6:3}
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=False,
                                           endpoints=True)
         for n in sorted(G):
@@ -176,7 +176,7 @@ class TestBetweennessCentrality(object):
         G=nx.DiGraph()
         G.add_path([0,1,2])
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=False)
         b_answer={0: 0.0, 1: 1.0, 2: 0.0}
         for n in sorted(G):
@@ -187,7 +187,7 @@ class TestBetweennessCentrality(object):
         G=nx.DiGraph()
         G.add_path([0,1,2])
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=False,
+                                          weight=None,
                                           normalized=True)
         b_answer={0: 0.0, 1: 0.5, 2: 0.0}
         for n in sorted(G):
@@ -201,7 +201,7 @@ class TestWeightedBetweennessCentrality(object):
         """Weighted betweenness centrality: K5"""
         G=nx.complete_graph(5)
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=True,
+                                          weight=True,
                                           normalized=False)
         b_answer={0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
         for n in sorted(G):
@@ -211,7 +211,7 @@ class TestWeightedBetweennessCentrality(object):
         """Weighted betweenness centrality: P3 normalized"""
         G=nx.path_graph(3)
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=True,
+                                          weight=True,
                                           normalized=True)
         b_answer={0: 0.0, 1: 1.0, 2: 0.0}
         for n in sorted(G):
@@ -223,7 +223,7 @@ class TestWeightedBetweennessCentrality(object):
         G=nx.path_graph(3)
         b_answer={0: 0.0, 1: 1.0, 2: 0.0}
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=True,
+                                          weight=True,
                                           normalized=False)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
@@ -237,7 +237,7 @@ class TestWeightedBetweennessCentrality(object):
             b_answer[b]/=2.0
 
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=True,
+                                          weight=True,
                                           normalized=False)
 
         for n in sorted(G):
@@ -252,7 +252,7 @@ class TestWeightedBetweennessCentrality(object):
         b_answer={0:0.023,1:0.023,2:0.000,3:0.102,4:0.000,
                   5:0.231,6:0.231,7:0.389,8:0.222,9:0.000}
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=True,
+                                          weight=True,
                                           normalized=True)
 
         for n in sorted(G):
@@ -281,7 +281,7 @@ class TestWeightedBetweennessCentrality(object):
               'Tornabuoni':    0.092}
 
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=True,
+                                          weight=True,
                                           normalized=True)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n],places=3)
@@ -297,7 +297,7 @@ class TestWeightedBetweennessCentrality(object):
         for b in b_answer:
             b_answer[b]/=2.0
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=True,
+                                          weight=True,
                                           normalized=False)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n],places=3)
@@ -307,7 +307,7 @@ class TestWeightedBetweennessCentrality(object):
         G = weighted_G()               
         b_answer={0: 2.0, 1: 0.0, 2: 4.0, 3: 3.0, 4: 4.0, 5: 0.0}
         b=nx.betweenness_centrality(G,
-                                          weighted_edges=True,
+                                          weight=True,
                                           normalized=False)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
@@ -324,7 +324,7 @@ class TestWeightedBetweennessCentrality(object):
         b_answer={'y':5.0,'x':5.0,'s':4.0,'u':2.0,'v':2.0}
 
         b=nx.betweenness_centrality(G,
-                                             weighted_edges=True,
+                                             weight=True,
                                              normalized=False)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
@@ -336,7 +336,7 @@ class TestEdgeBetweennessCentrality(object):
         """Edge betweenness centrality: K5"""
         G=nx.complete_graph(5)
         b=nx.edge_betweenness_centrality(G,
-                                               weighted_edges=False,
+                                               weight=None,
                                                normalized=False)
         b_answer=dict.fromkeys(G.edges(),1)
         for n in sorted(G.edges()):
@@ -346,7 +346,7 @@ class TestEdgeBetweennessCentrality(object):
         """Edge betweenness centrality: C4"""
         G=nx.cycle_graph(4)
         b=nx.edge_betweenness_centrality(G,
-                                               weighted_edges=False,
+                                               weight=None,
                                                normalized=False)
         b_answer={(0, 1):2,(0, 3):2, (1, 2):2, (2, 3): 2}
         for n in sorted(G.edges()):
@@ -356,7 +356,7 @@ class TestEdgeBetweennessCentrality(object):
         """Edge betweenness centrality: P4"""
         G=nx.path_graph(4)
         b=nx.edge_betweenness_centrality(G,
-                                               weighted_edges=False,
+                                               weight=None,
                                                normalized=False)
         b_answer={(0, 1):3,(1, 2):4, (2, 3):3}
         for n in sorted(G.edges()):
@@ -366,7 +366,7 @@ class TestEdgeBetweennessCentrality(object):
         """Edge betweenness centrality: balanced tree"""
         G=nx.balanced_tree(r=2,h=2)
         b=nx.edge_betweenness_centrality(G,
-                                               weighted_edges=False,
+                                               weight=None,
                                                normalized=False)
         b_answer={(0, 1):12,(0, 2):12,
                   (1, 3):6,(1, 4):6,(2, 5):6,(2,6):6}
@@ -379,7 +379,7 @@ class TestWeightedEdgeBetweennessCentrality(object):
         """Edge betweenness centrality: K5"""
         G=nx.complete_graph(5)
         b=nx.edge_betweenness_centrality(G,
-                                               weighted_edges=True,
+                                               weight=True,
                                                normalized=False)
         b_answer=dict.fromkeys(G.edges(),1)
         for n in sorted(G.edges()):
@@ -389,7 +389,7 @@ class TestWeightedEdgeBetweennessCentrality(object):
         """Edge betweenness centrality: C4"""
         G=nx.cycle_graph(4)
         b=nx.edge_betweenness_centrality(G,
-                                               weighted_edges=True,
+                                               weight=True,
                                                normalized=False)
         b_answer={(0, 1):2,(0, 3):2, (1, 2):2, (2, 3): 2}
         for n in sorted(G.edges()):
@@ -399,7 +399,7 @@ class TestWeightedEdgeBetweennessCentrality(object):
         """Edge betweenness centrality: P4"""
         G=nx.path_graph(4)
         b=nx.edge_betweenness_centrality(G,
-                                               weighted_edges=True,
+                                               weight=True,
                                                normalized=False)
         b_answer={(0, 1):3,(1, 2):4, (2, 3):3}
         for n in sorted(G.edges()):
@@ -410,7 +410,7 @@ class TestWeightedEdgeBetweennessCentrality(object):
         """Edge betweenness centrality: balanced tree"""
         G=nx.balanced_tree(r=2,h=2)
         b=nx.edge_betweenness_centrality(G,
-                                               weighted_edges=True,
+                                               weight=True,
                                                normalized=False)
         b_answer={(0, 1):12,(0, 2):12,
                   (1, 3):6,(1, 4):6,(2, 5):6,(2,6):6}
@@ -424,8 +424,8 @@ class TestWeightedEdgeBetweennessCentrality(object):
         G = nx.Graph()
         G.add_weighted_edges_from(eList)
         b = nx.edge_betweenness_centrality(G, 
-                                                 normalized=False, 
-                                                 weighted_edges=True)
+                                               weight=True,
+                                               normalized=False)
         b_answer={(0, 1):0.0,
                   (0, 2):1.0,
                   (0, 3):2.0,

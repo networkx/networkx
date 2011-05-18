@@ -82,7 +82,7 @@ class TestClosenessCentrality:
                                     ('u','x',2), ('v','y',1), ('x','u',3),
                                     ('x','v',5), ('x','y',2), ('y','s',7),
                                     ('y','v',6)])
-        c=nx.closeness_centrality(XG,weighted_edges=True)
+        c=nx.closeness_centrality(XG,distance=True)
         d={'y': 0.200,
            'x': 0.286,
            's': 0.138,

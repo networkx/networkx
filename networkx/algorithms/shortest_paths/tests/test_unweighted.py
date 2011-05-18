@@ -26,9 +26,9 @@ class TestUnweightedPath:
         assert_equal(nx.shortest_path_length(self.grid,1,12),5)
         assert_equal(nx.shortest_path_length(self.directed_cycle,0,4),4)
         # now with weights
-        assert_equal(nx.shortest_path_length(self.cycle,0,3,weighted=True),3)
-        assert_equal(nx.shortest_path_length(self.grid,1,12,weighted=True),5)
-        assert_equal(nx.shortest_path_length(self.directed_cycle,0,4,weighted=True),4)
+        assert_equal(nx.shortest_path_length(self.cycle,0,3,weight=True),3)
+        assert_equal(nx.shortest_path_length(self.grid,1,12,weight=True),5)
+        assert_equal(nx.shortest_path_length(self.directed_cycle,0,4,weight=True),4)
 
 
     def test_single_source_shortest_path(self):

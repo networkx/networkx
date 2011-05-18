@@ -40,7 +40,7 @@ def dijkstra_path(G, source, target, weight='weight'):
     target : node 
        Ending node
 
-    weight: string, optional       
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
        
     Returns
@@ -82,7 +82,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
 
     Parameters
     ----------
-    G : NetworkX graph, weighted
+    G : NetworkX graph
 
     source : node label
        starting node for path
@@ -90,7 +90,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     target : node label
        ending node for path 
 
-    weight: string, optional       
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
 
     Returns
@@ -105,7 +105,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
 
     Examples
     --------
-    >>> G=nx.path_graph(5) # a weighted graph by default
+    >>> G=nx.path_graph(5) 
     >>> print(nx.dijkstra_path_length(G,0,4))
     4
     
@@ -136,7 +136,7 @@ def single_source_dijkstra_path(G,source, cutoff=None, weight='weight'):
     source : node
        Starting node for path. 
 
-    weight: string, optional       
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
 
     cutoff : integer or float, optional
@@ -180,9 +180,8 @@ def single_source_dijkstra_path_length(G, source, cutoff= None,
     source : node label
        Starting node for path
 
-    weight: string, optional       
-       Edge data key corresponding to the edge weight.  The default
-       is the 'weight' edge attribute.
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight.
 
     cutoff : integer or float, optional
        Depth to stop the search. Only paths of length <= cutoff are returned.
@@ -352,7 +351,7 @@ def dijkstra_predecessor_and_distance(G,source, cutoff=None, weight='weight'):
     source : node label
        Starting node for path
 
-    weight: string, optional       
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
 
     cutoff : integer or float, optional
@@ -416,7 +415,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     ----------
     G : NetworkX graph
 
-    weight: string, optional       
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
 
     cutoff : integer or float, optional
@@ -456,7 +455,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     ----------
     G : NetworkX graph
 
-    weight: string, optional       
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
 
     cutoff : integer or float, optional
@@ -507,7 +506,7 @@ def bellman_ford(G, source, weight = 'weight'):
     source: node label
        Starting node for path
 
-    weight: string, optional       
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
 
     Returns
@@ -592,7 +591,7 @@ def negative_edge_cycle(G, weight = 'weight'):
     ----------
     G : NetworkX graph
 
-    weight: string, optional       
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
 
     Returns
@@ -645,7 +644,7 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
     target : node
        Ending node.
 
-    weight: string, optional       
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
 
     Returns

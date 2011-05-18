@@ -15,21 +15,24 @@ __all__ = ['closeness_vitality']
 
 import networkx as nx
 
-def weiner_index(G,weighted_edges=True):
+def weiner_index(G,weight=None):
     # compute sum of distances between all node pairs
     # (with optional weights) 
-    if weighted_edges:
-        path_length=nx.single_source_dijkstra_path_length
-    else:
-        path_length=nx.single_source_shortest_path_length
     weiner=0.0
-    for n in G:
-        l=path_length(G,n).values()
-        weiner+=sum(l)
+    if weight is None:
+        for n in G:
+            path_length=nx.single_source_shortest_path_length(G,n)
+            weiner+=sum(path_length.values())
+    else:
+        if weight is True: weight='weight'
+        for n in G:
+            path_length=nx.single_source_dijkstra_path_length(G,
+                    n,weight=weight)
+            weiner+=sum(path_length.values())
     return weiner
 
 
-def closeness_vitality(G,v=None,weighted_edges=False):
+def closeness_vitality(G,v=None,weight=None):
     """Compute closeness vitality for nodes.
 
     Closeness vitality at a node is the change in the sum of distances 
@@ -43,9 +46,10 @@ def closeness_vitality(G,v=None,weighted_edges=False):
     v : node, optional
       Return only the value for node v.
 
-    weighted_edges : bool, optional
-      Consider the edge weights in determining the shortest paths.
-      If False, all edge weights are considered equal.
+    weight : None, True or string, optional  
+      If None, edge weights are ignored.
+      If True, edge attribute 'weight' is used as weight of each edge.
+      Otherwise holds the name of the edge attribute used as weight.
       
     Returns
     -------
@@ -65,7 +69,7 @@ def closeness_vitality(G,v=None,weighted_edges=False):
     Notes
     -----
     """
-    wig=weiner_index(G,weighted_edges=weighted_edges)
+    wig=weiner_index(G,weight)
     closeness_vitality={}
     for n in G:
         # remove edges connected to node n and keep list of edges with data
@@ -74,7 +78,7 @@ def closeness_vitality(G,v=None,weighted_edges=False):
         if G.is_directed():
             edges+=G.in_edges(n,data=True)
         G.remove_edges_from(edges) 
-        closeness_vitality[n]=wig-weiner_index(G,weighted_edges=weighted_edges)
+        closeness_vitality[n]=wig-weiner_index(G,weight)
         # add edges and data back to graph
         G.add_edges_from(edges)
     if v is not None:

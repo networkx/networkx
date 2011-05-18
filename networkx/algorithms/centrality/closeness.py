@@ -8,15 +8,15 @@ Closeness centrality measures.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import functools
+import networkx as nx
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Sasha Gutfraind (ag362@cornell.edu)'])
-
 __all__ = ['closeness_centrality']
 
-import networkx as nx
 
-def closeness_centrality(G,v=None,weighted_edges=False,normalized=True):
+def closeness_centrality(G, v=None, distance=None, normalized=True):
     """Compute closeness centrality for nodes.
 
     Closeness centrality at a node is 1/average distance to all other nodes.
@@ -27,8 +27,9 @@ def closeness_centrality(G,v=None,weighted_edges=False,normalized=True):
       A networkx graph 
     v : node, optional
       Return only the value for node v
-    weighted_edges : bool, optional
-      If True use edge weights in computing degree and size.
+    distance : string key, optional (default=None)
+      Use specified edge key as edge distance. 
+      If True, use 'weight' as the edge key.
     normalized : bool, optional      
       If True (default) normalize by the graph size.
 
@@ -50,8 +51,10 @@ def closeness_centrality(G,v=None,weighted_edges=False,normalized=True):
     algorithm computes the closeness centrality for each connected
     part separately.
     """
-    if weighted_edges:
-        path_length=nx.single_source_dijkstra_path_length
+    if distance is not None:
+        if distance is True: distance='weight'
+        path_length=functools.partial(nx.single_source_dijkstra_path_length,
+                                      weight=distance)
     else:
         path_length=nx.single_source_shortest_path_length
 

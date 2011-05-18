@@ -19,7 +19,7 @@ import networkx as nx
 
 __all__ = ['astar_path','astar_path_length']
 
-def astar_path(G, source, target, heuristic=None):
+def astar_path(G, source, target, heuristic=None, weight='weight'):
     """Return a list of nodes in a shortest path between source and target using the A* ("A-star") algorithm.
 
     There may be more than one shortest path.  This returns only one.
@@ -38,6 +38,9 @@ def astar_path(G, source, target, heuristic=None):
        A function to evaluate the estimate of the distance
        from the a node to the target.  The function takes
        two nodes arguments and must return a number.
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight.
 
     Raises
     ------
@@ -101,7 +104,7 @@ def astar_path(G, source, target, heuristic=None):
         for neighbor, w in G[curnode].items():
             if neighbor in explored:
                 continue
-            ncost = dist + w.get('weight',1)
+            ncost = dist + w.get(weight,1)
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
                 # if qcost < ncost, a longer path to neighbor remains
@@ -117,7 +120,7 @@ def astar_path(G, source, target, heuristic=None):
 
     raise nx.NetworkXNoPath("Node %s not reachable from %s"%(source,target))
 
-def astar_path_length(G, source, target, heuristic=None):
+def astar_path_length(G, source, target, heuristic=None, weight='weight'):
     """Return a list of nodes in a shortest path between source and target using the A* ("A-star") algorithm.
 
     Parameters
@@ -145,7 +148,6 @@ def astar_path_length(G, source, target, heuristic=None):
     astar_path()
 
 """
-    # FIXME: warn if G.weighted==False
     path=astar_path(G,source,target,heuristic)
-    return sum(G[u][v].get('weight',1) for u,v in zip(path[:-1],path[1:]))
+    return sum(G[u][v].get(weight,1) for u,v in zip(path[:-1],path[1:]))
     

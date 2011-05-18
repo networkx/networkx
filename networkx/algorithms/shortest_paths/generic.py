@@ -22,7 +22,7 @@ __all__ = ['shortest_path',
 
 import networkx as nx
 
-def shortest_path(G,source=None,target=None,weighted=False):
+def shortest_path(G, source=None, target=None, weight=None):
     """Compute shortest paths in the graph.
 
     Parameters
@@ -38,8 +38,11 @@ def shortest_path(G,source=None,target=None,weighted=False):
        If not specified compute shortest paths for every node reachable 
        from the source.
 
-    weighted : bool, optional
-       If True consider weighted edges when finding shortest path.
+    weight : None, True or string, optional (default = None)
+       If None, every edge has weight/distance/cost 1.
+       If True, use the 'weight' edge attribute as the edge weight.
+       If a string, use this edge attribute as the edge weight.
+       Any edge attribute not present defaults to 1.
 
     Returns
     -------
@@ -68,39 +71,47 @@ def shortest_path(G,source=None,target=None,weighted=False):
     There may be more than one shortest path between a source and target.
     This returns only one of them.
 
-    If weighted=True and the graph has no 'weight' edge attribute
-    the value 1 will be used.
-
     For digraphs this returns a shortest directed path.  
     To find paths in the reverse direction use G.reverse(copy=False)
     first to flip the edge orientation.
+
+    See Also
+    --------
+    all_pairs_shortest_path()
+    all_pairs_dijkstra_path()
+    single_source_shortest_path()
+    single_source_dijkstra_path()
+
     """
     if source is None:
         if target is None:
-            if weighted:
-                paths=nx.all_pairs_dijkstra_path(G)
-            else:
+            if weight is None:
                 paths=nx.all_pairs_shortest_path(G)
+            else:
+                if weight is True: weight='weight'
+                paths=nx.all_pairs_dijkstra_path(G,weight=weight)
         else:
             raise nx.NetworkXError(\
                 "Target given but no source specified.")
     else: # source specified
         if target is None:
-            if weighted:
-                paths=nx.single_source_dijkstra_path(G,source)
-            else:
+            if weight is None:
                 paths=nx.single_source_shortest_path(G,source)
+            else:
+                if weight is True: weight='weight'
+                paths=nx.single_source_dijkstra_path(G,source,weight=weight)
         else:
             # shortest source-target path
-            if weighted:
-                paths=nx.dijkstra_path(G,source,target)
-            else:
+            if weight is None:
                 paths=nx.bidirectional_shortest_path(G,source,target)
+            else:
+                if weight is True: weight='weight'
+                paths=nx.dijkstra_path(G,source,target,weight)
 
     return paths
 
 
-def shortest_path_length(G,source=None,target=None,weighted=False):
+def shortest_path_length(G, source=None, target=None, weight=None):
     """Compute shortest path lengths in the graph.
     
     This function can compute the single source shortest path
@@ -113,16 +124,19 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
 
     source : node, optional
        Starting node for path.  
-       If not specified compute shortest pats lenghts for all 
+       If not specified compute shortest path lengths for all 
        connected node pairs.
 
     target : node, optional 
        Ending node for path.  
-       If not specified compute shortest path lenghts for every 
+       If not specified compute shortest path lengths for every 
        node reachable from the source.
 
-    weighted : bool, optional
-       If True consider weighted edges when finding shortest path length.
+    weight : None, True or string, optional (default = None)
+       If None, every edge has weight/distance/cost 1.
+       If True, use the 'weight' edge attribute as the edge weight.
+       If a string, use this edge attribute as the edge weight.
+       Any edge attribute not present defaults to 1.
 
     Returns
     -------
@@ -153,40 +167,48 @@ def shortest_path_length(G,source=None,target=None,weighted=False):
 
     Notes
     -----
-    If weighted=True and the graph has no 'weight' edge attribute
-    the value 1 will be used.
-
     For digraphs this returns the shortest directed path.
     To find path lengths in the reverse direction use G.reverse(copy=False)
     first to flip the edge orientation.
+
+    See Also
+    --------
+    all_pairs_shortest_path_length()
+    all_pairs_dijkstra_path_length()
+    single_source_shortest_path_length()
+    single_source_dijkstra_path_length()
+
     """
     if source is None:
         if target is None:
-            if weighted:
-                paths=nx.all_pairs_dijkstra_path_length(G)
-            else:
+            if weight is None:
                 paths=nx.all_pairs_shortest_path_length(G)
+            else:
+                if weight is True: weight='weight'
+                paths=nx.all_pairs_dijkstra_path_length(G, weight=weight)
         else:
             raise nx.NetworkXError(\
                 "Target given but no source specified.")
     else: # source specified
         if target is None:
-            if weighted:
-                paths=nx.single_source_dijkstra_path_length(G,source)
-            else:
+            if weight is None:
                 paths=nx.single_source_shortest_path_length(G,source)
+            else:
+                if weight is True: weight='weight'
+                paths=nx.single_source_dijkstra_path_length(G,source,weight=weight)
         else:
             # shortest source-target path
-            if weighted:
-                paths=nx.dijkstra_path_length(G,source,target)
-            else:
+            if weight is None:
                 p=nx.bidirectional_shortest_path(G,source,target)
                 paths=len(p)-1
+            else:
+                if weight is True: weight='weight'
+                paths=nx.dijkstra_path_length(G,source,target,weight)
     return paths
 
         
 
-def average_shortest_path_length(G,weighted=False):
+def average_shortest_path_length(G, weight=None):
     """ Return the average shortest path length.
 
     The average shortest path length is
@@ -203,8 +225,11 @@ def average_shortest_path_length(G,weighted=False):
     ----------
     G : NetworkX graph
 
-    weighted : bool, optional, default=False 
-       If True use edge weights on path. 
+    weight : None, True or string, optional (default = None)
+       If None, every edge has weight/distance/cost 1.
+       If True, use the 'weight' edge attribute as the edge weight.
+       If a string, use this edge attribute as the edge weight.
+       Any edge attribute not present defaults to 1.
 
     Raises
     ------
@@ -225,16 +250,7 @@ def average_shortest_path_length(G,weighted=False):
     1.0
     1.0
 
-    Notes
-    -----
-    If weighted=True and the graph has no 'weight' edge attribute
-    the value 1 will be used.
-
     """
-    if weighted:
-        path_length=nx.single_source_dijkstra_path_length
-    else:
-        path_length=nx.single_source_shortest_path_length
     if G.is_directed():
         if not nx.is_weakly_connected(G):
             raise nx.NetworkXError("Graph is not connected.")
@@ -242,10 +258,16 @@ def average_shortest_path_length(G,weighted=False):
         if not nx.is_connected(G):
             raise nx.NetworkXError("Graph is not connected.")
     avg=0.0
+    if weight is None:
+        for node in G:
+            path_length=nx.single_source_shortest_path_length(G, node)
+            avg += sum(path_length.values())
+    else:
+        if weight is True: weight='weight'
+        for node in G:
+            path_length=nx.single_source_dijkstra_path_length(G, node, weight=weight)
+            avg += sum(path_length.values())
     n=len(G)
-    for node in G:
-        l=list(path_length(G,node).values())
-        avg+=sum(l)
     return avg/(n*(n-1))
         
 

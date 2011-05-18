@@ -39,8 +39,7 @@ class TestLoadCentrality:
 
 
     def test_weighted_load(self):
-        b=nx.load_centrality(self.G,weighted_edges=True,
-                                   normalized=False)
+        b=nx.load_centrality(self.G,weight=True,normalized=False)
         for n in sorted(self.G):
             assert_equal(b[n],self.exact_weighted[n])
 

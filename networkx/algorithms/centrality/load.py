@@ -19,7 +19,7 @@ import networkx as nx
 
 def newman_betweenness_centrality(G,v=None,cutoff=None,
                            normalized=True,
-                           weighted_edges=False):
+                           weight=None):
     """Compute load centrality for nodes.
 
     The load centrality of a node is the fraction of all shortest 
@@ -34,9 +34,10 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
       If True the betweenness values are normalized by b=b/(n-1)(n-2) where
       n is the number of nodes in G.
        
-    weighted_edges : bool, optional
-      Consider the edge weights in determining the shortest paths.
-      If False, all edge weights are considered equal.
+    weight : None, True or string, optional  
+      If None, edge weights are ignored.
+      If True, edge attribute 'weight' is used as weight of each edge.
+      Otherwise holds the name of the edge attribute used as weight.
 
     cutoff : bool, optional
       If specified, only consider paths of length <= cutoff.
@@ -63,19 +64,13 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
     if v is not None:   # only one node
         betweenness=0.0
         for source in G: 
-            ubetween=_node_betweenness(G,source,
-                                       cutoff=cutoff,
-                                       normalized=normalized,
-                                       weighted_edges=weighted_edges)
+            ubetween=_node_betweenness(G,source,cutoff,normalized,weight)
             betweenness+=ubetween[v]
         return betweenness
     else:
         betweenness={}.fromkeys(G,0.0) 
         for source in betweenness: 
-            ubetween=_node_betweenness(G,source,
-                                       cutoff=cutoff,
-                                       normalized=False,
-                                       weighted_edges=weighted_edges)
+            ubetween=_node_betweenness(G,source,cutoff,False,weight)
             for vk in ubetween:
                 betweenness[vk]+=ubetween[vk]
         if normalized:
@@ -87,7 +82,7 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
                 betweenness[v] *= scale
         return betweenness  # all nodes
 
-def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=False):
+def _node_betweenness(G,source,cutoff=False,normalized=True,weight=None):
     """Node betweenness helper:
     see betweenness_centrality for what you probably want.
 
@@ -100,16 +95,17 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weighted_edges=False
 
     To get the load for a node you need to do all-pairs shortest paths.
 
-    If weighted_edges is True then use Dijkstra for finding shortest paths.
+    If weight is not None then use Dijkstra for finding shortest paths.
     In this case a cutoff is not implemented and so is ignored.
 
     """
 
     # get the predecessor and path length data
-    if weighted_edges:
-        (pred,length)=nx.dijkstra_predecessor_and_distance(G,source) 
+    if weight is None:
+        (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True)
     else:
-        (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True) 
+        if weight is True: weight='weight'
+        (pred,length)=nx.dijkstra_predecessor_and_distance(G,source,weight=weight)
 
     # order the nodes by path length
     onodes = [ (l,vert) for (vert,l) in length.items() ]

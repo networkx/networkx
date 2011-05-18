@@ -28,7 +28,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
        The rows and columns are ordered by the nodes in nodelist.
        If nodelist is None then the ordering is produced by G.nodes().
 
-    weight: string, optional       
+    weight: string, optional (default= 'weight')
        Edge data key corresponding to the edge weight.
 
     Returns
@@ -68,7 +68,7 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     ----------
     G : NetworkX graph
 
-    weight: string, optional       
+    weight: string, optional (default= 'weight')
        Edge data key corresponding to the edge weight.
 
     Returns
@@ -124,7 +124,7 @@ def floyd_warshall(G, weight='weight'):
     ----------
     G : NetworkX graph
 
-    weight: string, optional       
+    weight: string, optional (default= 'weight')
        Edge data key corresponding to the edge weight.
 
 
