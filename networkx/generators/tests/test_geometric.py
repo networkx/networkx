@@ -11,3 +11,5 @@ class TestGeneratorsGeometric():
     def test_waxman_graph(self):
         G=nx.waxman_graph(50,0.5,0.1)
         assert_equal(len(G),50)
+        G=nx.waxman_graph(50,0.5,0.1,L=1)
+        assert_equal(len(G),50)
