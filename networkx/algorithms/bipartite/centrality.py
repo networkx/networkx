@@ -32,10 +32,10 @@ def degree_centrality(G, nodes):
 
     See Also
     --------
-    bipartite.betweenness_centrality,
-    bipartite.closeness_centrality,
-    bipartite_sets,
-    is_bipartite
+    betweenness_centrality,
+    closeness_centrality,
+    networkx.algorithms.bipartite.basic.sets,
+    networkx.algorithms.bipartite.basic.is_bipartite
 
     Notes
     -----
@@ -133,11 +133,10 @@ def betweenness_centrality(G, nodes):
 
     See Also
     --------
-    betweenness_centrality,
-    bipartite.degree_centrality,
-    bipartite.closeness_centrality,
-    bipartite.sets,
-    is_bipartite
+    degree_centrality,
+    closeness_centrality,
+    networkx.algorithms.bipartite.basic.sets,
+    networkx.algorithms.bipartite.basic.is_bipartite
 
     Notes
     -----
@@ -199,11 +198,10 @@ def closeness_centrality(G, nodes, normalized=True):
 
     See Also
     --------
-    closeness_centrality,
-    bipartite.betweenness_centrality,
-    bipartite.degree_centrality
-    bipartite.sets,
-    is_bipartite
+    betweenness_centrality,
+    degree_centrality
+    networkx.algorithms.bipartite.basic.sets,
+    networkx.algorithms.bipartite.basic.is_bipartite
 
     Notes
     -----

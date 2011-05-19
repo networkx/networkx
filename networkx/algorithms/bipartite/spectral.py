@@ -43,7 +43,7 @@ def spectral_bipartivity(G, nodes=None):
 
     See Also
     --------
-    bipartite.color
+    networkx.algorithms.bipartite.basic.color
 
     References
     ----------

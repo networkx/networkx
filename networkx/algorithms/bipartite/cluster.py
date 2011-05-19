@@ -92,8 +92,7 @@ def clustering(G, nodes=None, mode='dot'):
 
     See Also
     --------
-    clustering
-    bipartite.average_clustering
+    networkx.algorithms.bipartite.cluster.average_clustering
     
     References
     ----------
@@ -176,7 +175,7 @@ def average_clustering(G, nodes=None, mode='dot'):
 
     See Also
     --------
-    bipartite.clustering, average_clustering
+    networkx.algorithms.bipartite.cluster.clustering
    
     Notes    
     -----

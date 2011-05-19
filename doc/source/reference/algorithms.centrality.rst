@@ -62,14 +62,5 @@ Load
    edge_load
 
 
-Bipartite
----------
-.. autosummary::
-   :toctree: generated/
-
-   bipartite_betweenness_centrality
-   bipartite_closeness_centrality
-   bipartite_degree_centrality
-
 
 

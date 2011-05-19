@@ -77,9 +77,9 @@ def projected_graph(B, nodes, multigraph=False):
 
     See Also
     --------
-    is_bipartite, 
-    is_bipartite_node_set, 
-    bipartite_sets, 
+    networkx.algorithms.bipartite.basic.is_bipartite, 
+    networkx.algorithms.bipartite.basic.is_bipartite_node_set, 
+    networkx.algorithms.bipartite.basic.sets, 
     weighted_projected_graph,
     collaboration_weighted_projected_graph,
     overlap_weighted_projected_graph,
@@ -165,9 +165,9 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
     See Also
     --------
-    is_bipartite, 
-    is_bipartite_node_set, 
-    bipartite_sets, 
+    networkx.algorithms.bipartite.basic.is_bipartite, 
+    networkx.algorithms.bipartite.basic.is_bipartite_node_set, 
+    networkx.algorithms.bipartite.basic.sets, 
     collaboration_weighted_projected_graph,
     overlap_weighted_projected_graph,
     generic_weighted_projected_graph
@@ -261,9 +261,9 @@ def collaboration_weighted_projected_graph(B, nodes):
 
     See Also
     --------
-    is_bipartite, 
-    is_bipartite_node_set, 
-    bipartite_sets, 
+    networkx.algorithms.bipartite.basic.is_bipartite, 
+    networkx.algorithms.bipartite.basic.is_bipartite_node_set, 
+    networkx.algorithms.bipartite.basic.sets, 
     weighted_projected_graph,
     overlap_weighted_projected_graph,
     generic_weighted_projected_graph,
@@ -354,9 +354,9 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
 
     See Also
     --------
-    is_bipartite, 
-    is_bipartite_node_set, 
-    bipartite_sets, 
+    networkx.algorithms.bipartite.basic.is_bipartite, 
+    networkx.algorithms.bipartite.basic.is_bipartite_node_set, 
+    networkx.algorithms.bipartite.basic.sets, 
     weighted_projected_graph,
     collaboration_weighted_projected_graph,
     generic_weighted_projected_graph,
@@ -449,9 +449,9 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
 
     See Also
     --------
-    is_bipartite, 
-    is_bipartite_node_set, 
-    bipartite_sets, 
+    networkx.algorithms.bipartite.basic.is_bipartite, 
+    networkx.algorithms.bipartite.basic.is_bipartite_node_set, 
+    networkx.algorithms.bipartite.basic.sets, 
     weighted_projected_graph,
     collaboration_weighted_projected_graph,
     overlap_weighted_projected_graph,

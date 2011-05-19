@@ -86,7 +86,7 @@ def is_bipartite(G):
 
     See Also
     --------
-    bipartite.color, bipartite.is_bipartite_node_set
+    color, is_bipartite_node_set
     """
     try:
         color(G)
@@ -152,7 +152,7 @@ def sets(G):
 
     See Also
     --------
-    bipartite.color
+    color
     """
     c = color(G)
     X = set(n for n in c if c[n]) # c[n] == 1
@@ -187,7 +187,7 @@ def density(B, nodes):
 
     See Also
     --------
-    bipartite.color
+    color
     """
     n=len(B)
     m=nx.number_of_edges(B)
@@ -228,7 +228,7 @@ def degrees(B, nodes, weighted=False):
 
     See Also
     --------
-    bipartite.color, bipartite.density
+    color, density
     """
     bottom=set(nodes)
     top=set(B)-bottom

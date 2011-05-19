@@ -13,10 +13,10 @@ Basic functions
 
    is_bipartite
    is_bipartite_node_set
-   bipartite_sets
-   bipartite_color
-   bipartite_density
-   bipartite_degrees
+   sets
+   color
+   density
+   degrees
 
 Projections
 -----------
@@ -40,12 +40,12 @@ Spectral
 
 Clustering
 ----------
-.. automodule:: networkx.algorithms.bipartite.clustering
+.. automodule:: networkx.algorithms.bipartite.cluster
 .. autosummary::
    :toctree: generated/
 
-   bipartite_clustering
-   average_bipartite_clustering
+   clustering
+   average_clustering
 
 
 Redundancy
@@ -54,7 +54,18 @@ Redundancy
 .. autosummary::
    :toctree: generated/
 
-   bipartite_node_redundancy
+   node_redundancy
+
+
+Centrality
+----------
+.. automodule:: networkx.algorithms.bipartite.centrality
+.. autosummary::
+   :toctree: generated/
+
+   closeness_centrality
+   degree_centrality
+   betweenness_centrality
 
 
 
