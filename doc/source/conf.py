@@ -26,7 +26,10 @@ sys.path.append(os.path.abspath('../sphinxext'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.addons.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath', 'numpydoc',
+extensions = ['sphinx.ext.autodoc', 
+              'sphinx.ext.pngmath',
+#              'sphinx.ext.mathjax',
+              'numpydoc',
               'sphinx.ext.coverage',
               'sphinx.ext.autosummary','sphinx.ext.todo','sphinx.ext.doctest',
               'sphinx.ext.intersphinx', 'customroles']
@@ -166,3 +169,6 @@ intersphinx_mapping = {'http://docs.python.org/': None,
 trac_url = 'https://networkx.lanl.gov/trac/'
 
 default_role = 'math' 
+
+#mathjax_path = 'http://mathjax.connectmv.com/MathJax.js'
+

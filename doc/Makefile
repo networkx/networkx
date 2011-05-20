@@ -11,13 +11,14 @@ PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d build/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 
-.PHONY: help clean html dirhtml pickle json htmlhelp qthelp latex changes linkcheck doctest
+.PHONY: help clean html dirhtml pickle json htmlhelp qthelp latex changes linkcheck doctest epub
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html      to make standalone HTML files"
 	@echo "  dirhtml   to make HTML files named index.html in directories"
 	@echo "  pickle    to make pickle files"
+	@echo "  epub       to make an epub"
 	@echo "  json      to make JSON files"
 	@echo "  htmlhelp  to make HTML files and a HTML help project"
 	@echo "  qthelp    to make HTML files and a qthelp project"
@@ -88,6 +89,12 @@ qthelp: generate
 	@echo "# qcollectiongenerator build/qthelp/test.qhcp"
 	@echo "To view the help file:"
 	@echo "# assistant -collectionFile build/qthelp/test.qhc"
+
+epub:
+	$(SPHINXBUILD) -b epub $(ALLSPHINXOPTS) build/epub
+	@echo
+	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
+
 
 latex: generate
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) build/latex
