@@ -332,7 +332,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     if not seed is None:
         random.seed(seed)
     G = nx.DiGraph()
-    nodes = list(product(xrange(n),repeat=dim))
+    nodes = list(product(range(n),repeat=dim))
     for p1 in nodes:
         probs = []
         for p2 in nodes:
