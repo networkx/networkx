@@ -132,6 +132,7 @@ Geometric
    :toctree: generated/
 
    random_geometric_graph
+   geographical_threshold_graph
    waxman_graph
 
 
