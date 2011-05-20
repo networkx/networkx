@@ -180,23 +180,23 @@ def geographical_threshold_edges(G, theta, alpha=2):
                 yield(u,v)
 
 def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
-    """Return a Waxman random graph.
+    r"""Return a Waxman random graph.
 
     The Waxman random graph model places n nodes uniformly at random
     in a rectangular domain. Two nodes u,v are connected with an edge
     with probability
 
     .. math::
-            p = alpha*exp(d/(beta*L)).
+            p = \alpha*exp(d/(\beta*L)).
 
     This function implements both Waxman models.            
 
-    Waxman-1:  L not specified
-       The distance d is the Euclidean distance between the nodes u and v.
-       L is the maximum distance between all nodes in the graph.
+    Waxman-1:  `L` not specified
+       The distance `d` is the Euclidean distance between the nodes u and v.
+       `L` is the maximum distance between all nodes in the graph.
 
-    Waxman-2: L specified
-       The distance d is chosen randomly in [0,L].
+    Waxman-2: `L` specified
+       The distance `d` is chosen randomly in `[0,L]`.
 
     Parameters
     ----------
