@@ -16,11 +16,14 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Ben Edwards (BJEdwards@gmail.com)'])
 
 __all__ = ['random_geometric_graph',
+           'waxman_graph',
            'geographical_threshold_graph',
-           'waxman_graph']
+           'navigable_small_world_graph']
 
-import math, random, sys
+from bisect import bisect_left
 from functools import reduce
+from itertools import product
+import math, random, sys
 import networkx as nx
 
 #---------------------------------------------------------------------------
@@ -265,3 +268,70 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
                 if random.random() < alpha*math.exp(-r/(beta*l)):
                     G.add_edge(u,v)
     return G
+
+
+def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
+    """Return a navigable small-world graph.
+
+    A navigable small-world graph is a directed grid with additional
+    long-range connections that are chosen randomly.  From [1]_:
+
+    Begin with a set of nodes that are identified with the set of lattice
+    points in an `n x n` square, `{(i,j): i\in {1,2,\ldots,n}, j\in {1,2,\ldots,n}}`
+    and define the lattice distance between two nodes `(i,j)` and `(k,l)` 
+    to be the number of "lattice steps" separating them: `d((i,j),(k,l)) = |k-i|+|l-j|`.  
+
+    For a universal constant `p`, the node `u` has a directed edge to every other 
+    node within lattice distance `p` (local contacts) .
+
+    For universal constants `q\ge 0` and `r\ge 0` construct directed edges from `u` to `q`
+    other nodes (long-range contacts) using independent random trials;  the i'th 
+    directed edge from `u` has endpoint `v` with probability proportional to `d(u,v)]^{-r}`.
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes.
+    p : int
+        The diameter of short range connections. Each node is connected
+        to every other node within lattice distance p.
+    q : int
+        The number of long-range connections for each node.
+    r : float
+        Exponent for decaying probability of connections.  The probability of 
+        connecting to a node at lattice distance d is 1/d^r.
+    dim : int
+        Dimension of grid
+    seed : int, optional
+        Seed for random number generator (default=None). 
+      
+    References
+    ----------
+    .. [1] J. Kleinberg. The small-world phenomenon: An algorithmic 
+       perspective. Proc. 32nd ACM Symposium on Theory of Computing, 2000. 
+    """
+    if (p < 1):
+        raise nx.NetworkXException("p must be >= 1")
+    if (q < 0):
+        raise nx.NetworkXException("q must be >= 0")
+    if (r < 0):
+        raise nx.NetworkXException("r must be >= 1")
+    if not seed is None:
+        random.seed(seed)
+    G = nx.DiGraph()
+    nodes = list(product(xrange(n),repeat=dim))
+    for p1 in nodes:
+        probs = []
+        for p2 in nodes:
+            if p1==p2:
+                continue
+            d = sum((abs(b-a) for a,b in zip(p1,p2)))
+            if d <= p:
+                G.add_edge(p1,p2)
+            probs.append(d**-r)
+        cdf = list(nx.utils.cumulative_sum(probs))
+        for _ in range(q):
+            target = nodes[bisect_left(cdf,random.uniform(0, cdf[-1]))]
+            G.add_edge(p1,target)
+    return G
+  
