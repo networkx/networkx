@@ -164,3 +164,5 @@ intersphinx_mapping = {'http://docs.python.org/': None,
                       
 # For trac custom roles
 trac_url = 'https://networkx.lanl.gov/trac/'
+
+default_role = 'math' 
