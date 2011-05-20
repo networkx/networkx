@@ -43,9 +43,6 @@ def current_flow_closeness_centrality(G,normalized=True):
     -----
     The algorithm is from Brandes [1]_.
 
-    If the edges have a 'weight' attribute they will be used as 
-    weights in this algorithm.  Unspecified weights are set to 1.
-
     See also [2]_ for the original definition of information centrality.
 
     References

@@ -12,15 +12,18 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    BSD license.
 __all__ = ['spectral_bipartivity']
 
-def spectral_bipartivity(G, nodes=None):
+def spectral_bipartivity(G, nodes=None, weight='weight'):
     """Returns the spectral bipartivity.
 
     Parameters
     ----------
     G : NetworkX graph 
 
-    nodes : list or container (optional)
+    nodes : list or container  optional(default is all nodes)
       Nodes to return value of spectral bipartivity contribution.
+
+    weight : string or None  optional (default = 'weight')
+      Edge data key to use for edge weights. If None, weights set to 1.
 
     Returns
     -------
@@ -56,7 +59,7 @@ def spectral_bipartivity(G, nodes=None):
         raise ImportError('spectral_bipartivity() requires SciPy: ',
                           'http://scipy.org/')
     nodelist = G.nodes() # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_matrix(G, nodelist, weight=weight)
     expA = scipy.linalg.expm(A)
     expmA = scipy.linalg.expm(-A)
     coshA = 0.5 * (expA + expmA)

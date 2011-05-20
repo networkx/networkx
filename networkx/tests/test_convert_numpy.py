@@ -8,8 +8,10 @@ class TestConvertNumpy(object):
     @classmethod
     def setupClass(cls):
         global np
+        global np_assert_equal
         try:
             import numpy as np
+            np_assert_equal=np.testing.assert_equal
         except ImportError:
             raise SkipTest('NumPy not available.')
 
@@ -103,6 +105,15 @@ class TestConvertNumpy(object):
         # Make nodelist ambiguous by containing duplicates.
         nodelist += [nodelist[0]]
         assert_raises(nx.NetworkXError, nx.to_numpy_matrix, P3, nodelist=nodelist)
+
+    def test_weight_keyword(self):
+        WP4 = nx.Graph()
+        WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3)) for n in range(3) )
+        P4 = path_graph(4)
+        A = nx.to_numpy_matrix(P4)
+        np_assert_equal(A, nx.to_numpy_matrix(WP4,weight=None))
+        np_assert_equal(0.5*A, nx.to_numpy_matrix(WP4))
+        np_assert_equal(0.3*A, nx.to_numpy_matrix(WP4,weight='other'))
 
     def test_from_numpy_matrix_type(self):
         A=np.matrix([[1]])

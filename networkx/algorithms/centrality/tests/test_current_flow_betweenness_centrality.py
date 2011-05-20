@@ -22,7 +22,18 @@ class TestFlowBetweennessCentrality(object):
         b_answer={0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25}
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
-
+        G.add_edge(0,1,{'weight':0.5,'other':0.3})
+        b=networkx.current_flow_betweenness_centrality(G,normalized=True,weight=None)
+        for n in sorted(G):
+            assert_almost_equal(b[n],b_answer[n])
+        wb_answer={0: 0.2222222, 1: 0.2222222, 2: 0.30555555, 3: 0.30555555}
+        b=networkx.current_flow_betweenness_centrality(G,normalized=True)
+        for n in sorted(G):
+            assert_almost_equal(b[n],wb_answer[n])
+        wb_answer={0: 0.2051282, 1: 0.2051282, 2: 0.33974358, 3: 0.33974358}
+        b=networkx.current_flow_betweenness_centrality(G,normalized=True,weight='other')
+        for n in sorted(G):
+            assert_almost_equal(b[n],wb_answer[n])
 
     def test_K4(self):
         """Betweenness centrality: K4"""

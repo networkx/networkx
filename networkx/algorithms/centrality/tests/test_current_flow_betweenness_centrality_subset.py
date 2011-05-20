@@ -41,6 +41,30 @@ class TestFlowBetweennessCentrality(object):
         b_answer=networkx.current_flow_betweenness_centrality(G,normalized=True)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
+        # test weighted network
+        G.add_edge(0,1,{'weight':0.5,'other':0.3})
+        b=networkx.current_flow_betweenness_centrality_subset(G,
+                                                              G.nodes(),
+                                                              G.nodes(),
+                                                              normalized=True,
+                                                              weight=None)
+        for n in sorted(G):
+            assert_almost_equal(b[n],b_answer[n])
+        b=networkx.current_flow_betweenness_centrality_subset(G,
+                                                              G.nodes(),
+                                                              G.nodes(),
+                                                              normalized=True)
+        b_answer=networkx.current_flow_betweenness_centrality(G,normalized=True)
+        for n in sorted(G):
+            assert_almost_equal(b[n],b_answer[n])
+        b=networkx.current_flow_betweenness_centrality_subset(G,
+                                                              G.nodes(),
+                                                              G.nodes(),
+                                                              normalized=True,
+                                                              weight='other')
+        b_answer=networkx.current_flow_betweenness_centrality(G,normalized=True,weight='other')
+        for n in sorted(G):
+            assert_almost_equal(b[n],b_answer[n])
 
 
     def test_P4_normalized(self):
@@ -101,11 +125,25 @@ class TestEdgeFlowBetweennessCentrality(object):
         for n in sorted(G.edges()):
             assert_almost_equal(b[n],b_answer[n])
 
-    def test_K4_normalized(self):
+    def test_K4(self):
         """Betweenness centrality: K4"""
         G=networkx.complete_graph(4)
-        b=edge_current_flow_subset(G,G.nodes(),G.nodes(),normalized=True)
-        b_answer=edge_current_flow(G,normalized=True)
+        b=edge_current_flow_subset(G,G.nodes(),G.nodes(),normalized=False)
+        b_answer=edge_current_flow(G,normalized=False)
+        for n in sorted(G.edges()):
+            assert_almost_equal(b[n],b_answer[n])
+        # test weighted network
+        G.add_edge(0,1,{'weight':0.5,'other':0.3})
+        b=edge_current_flow_subset(G,G.nodes(),G.nodes(),normalized=False,weight=None)
+        # weight is None => same as unweighted network
+        for n in sorted(G.edges()):
+            assert_almost_equal(b[n],b_answer[n])
+        b=edge_current_flow_subset(G,G.nodes(),G.nodes(),normalized=False)
+        b_answer=edge_current_flow(G,normalized=False)
+        for n in sorted(G.edges()):
+            assert_almost_equal(b[n],b_answer[n])
+        b=edge_current_flow_subset(G,G.nodes(),G.nodes(),normalized=False,weight='other')
+        b_answer=edge_current_flow(G,normalized=False,weight='other')
         for n in sorted(G.edges()):
             assert_almost_equal(b[n],b_answer[n])
 

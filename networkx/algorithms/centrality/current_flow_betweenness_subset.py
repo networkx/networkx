@@ -16,7 +16,8 @@ __all__ = ['current_flow_betweenness_centrality_subset',
 import networkx as nx
 
 def current_flow_betweenness_centrality_subset(G,sources,targets,
-                                               normalized=True):
+                                               normalized=True,
+                                               weight='weight'):
     """Compute current-flow betweenness centrality for subsets nodes.
 
     Current-flow betweenness centrality uses an electrical current
@@ -40,6 +41,10 @@ def current_flow_betweenness_centrality_subset(G,sources,targets,
     normalized : bool, optional
       If True the betweenness values are normalized by b=b/(n-1)(n-2) where
       n is the number of nodes in G.
+
+    weight : string or None, optional (default='weight')
+      Key for edge data used as the edge weight.
+      If None, then use 1 as each edge weight.
 
     Returns
     -------
@@ -83,7 +88,7 @@ http://scipy.org/""")
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
-    F=_compute_F(G) # Current-flow matrix
+    F=_compute_F(G,weight) # Current-flow matrix
     m,n=F.shape # m edges and n nodes
     mapping=dict(zip(G,range(n)))  # map nodes to integers
     for (ei,e) in enumerate(G.edges_iter()): 
@@ -102,11 +107,12 @@ http://scipy.org/""")
         nb=2.0
     for v in G:
         betweenness[v]=betweenness[v]/nb+1.0/(2-n)
-    return betweenness            
+    return betweenness
 
 
 def edge_current_flow_betweenness_centrality_subset(G,sources,targets,
-                                                    normalized=True):
+                                               normalized=True,
+                                               weight='weight'):
     """Compute edge current-flow betweenness centrality for subsets
     of nodes.
 
@@ -131,6 +137,10 @@ def edge_current_flow_betweenness_centrality_subset(G,sources,targets,
     normalized : bool, optional
       If True the betweenness values are normalized by b=b/(n-1)(n-2) where
       n is the number of nodes in G.
+
+    weight : string or None, optional (default='weight')
+      Key for edge data used as the edge weight.
+      If None, then use 1 as each edge weight.
 
     Returns
     -------
@@ -174,7 +184,7 @@ http://scipy.org/""")
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     betweenness=(dict.fromkeys(G.edges(),0.0)) 
-    F=_compute_F(G) # Current-flow matrix
+    F=_compute_F(G,weight) # Current-flow matrix
     m,n=F.shape # m edges and n nodes
     if normalized:
         nb=(n-1.0)*(n-2.0) # normalization factor
@@ -190,11 +200,11 @@ http://scipy.org/""")
                 j=mapping[t]
                 betweenness[e]+=0.5*np.abs(Fe[i]-Fe[j])
         betweenness[e]/=nb
-    return betweenness            
+    return betweenness
 
 
 
-def _compute_C(G):
+def _compute_C(G,weight='weight'):
     """Inverse of Laplacian."""
     try:
         import numpy as np
@@ -203,7 +213,7 @@ def _compute_C(G):
             """current_flow_betweenness_centrality_subset() requires NumPy 
 http://scipy.org/""")
 
-    L=nx.laplacian(G) # use ordering of G.nodes() 
+    L=nx.laplacian(G,weight=weight) # use ordering of G.nodes() 
     # remove first row and column
     LR=L[1:,1:]
     LRinv=np.linalg.inv(LR)
@@ -211,7 +221,7 @@ http://scipy.org/""")
     C[1:,1:]=LRinv
     return C
 
-def _compute_F(G):
+def _compute_F(G,weight='weight'):
     """Current flow matrix."""
     try:
         import numpy as np
@@ -219,14 +229,14 @@ def _compute_F(G):
         raise ImportError(
             """current_flow_betweenness_centrality_subset() requires NumPy 
 http://scipy.org/""")
-    C=np.asmatrix(_compute_C(G))
+    C=np.asmatrix(_compute_C(G,weight))
     n=G.number_of_nodes()
     m=G.number_of_edges()
     B=np.zeros((n,m))
     # use G.nodes() and G.edges() ordering of edges for B  
     mapping=dict(zip(G,range(n)))  # map nodes to integers
     for (ei,(v,w,d)) in enumerate(G.edges_iter(data=True)): 
-        c=d.get('weight',1.0)
+        c=d.get(weight,1.0)
         vi=mapping[v]
         wi=mapping[w]
         B[vi,ei]=c
