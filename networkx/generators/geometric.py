@@ -30,59 +30,72 @@ import networkx as nx
 #  Random Geometric Graphs
 #---------------------------------------------------------------------------
         
-def random_geometric_graph(n, radius, create_using=None, repel=0.0, verbose=False, dim=2):
-    """Random geometric graph in the unit cube.
+def random_geometric_graph(n, radius, dim=2, pos=None):
+    r"""Return the random geometric graph in the unit cube.
 
-    Returned Graph has added attribute G.pos which is a 
-    dict keyed by node to the position tuple for the node.
+    The random geometric graph model places n nodes uniformly at random 
+    in the unit cube  Two nodes `u,v` are connected with an edge if
+    'd(u,v)<=r` where `d` is the Euclidean distance and `r` is a radius 
+    threshold.
+
+    Parameters
+    ----------
+    n : int
+        Number of nodes
+    radius: float
+        Distance threshold value  
+    dim : int, optional
+        Dimension of graph
+    pos : dict, optional
+        A dictionary keyed by node with node positions as values.
+
+    Returns
+    -------
+    Graph
+      
+    Examples
+    --------
+    >>> G = nx.random_geometric_graph(20,0.1)
+
+    Notes
+    -----
+    This uses an `n^2` algorithm to build the graph.  A faster algorithm
+    is possible using k-d trees.
+
+    The pos keyword can be used to specify node positions so you can create
+    an arbitrary distribution and domain for positions.  If you need a distance
+    function other than Euclidean you'll have to hack the algorithm.
+
+    E.g to use a 2d Gaussian distribution of node positions with mean (0,0)
+    and std 2
+    >>> n=20
+    >>> p=dict((i,(random.gauss(0,2),random.gauss(0,2))) for i in range(n))
+    >>> G = nx.random_geometric_graph(n,0.2,pos=p)
+
+    References
+    ----------
+    .. [1] Penrose, Mathew, Random Geometric Graphs, 
+       Oxford Studies in Probability, 5, 2003.
     """
-    if create_using is None:    
-        G=nx.Graph()
-    else:
-        G=create_using
-        G.clear()
+    G=nx.Graph()
     G.name="Random Geometric Graph"
-    G.add_nodes_from([v for v in range(n)])  # add n nodes
-    # position them randomly in the unit cube in n dimensions
-    # but not any two within "repel" distance of each other
-    # pick n random positions
-    positions=[]
-    while(len(positions)< n):
-        pnew=[]
-        [pnew.append(random.random()) for i in range(0,dim)]
-        reject=False
-        # avoid existing nodes
-        if repel > 0.0 :
-            for pold in positions:
-                m2=map(lambda x,y: (x-y)**2, pold,pnew)
-                r2=reduce(lambda x, y: x+y, m2, 0.)
-                if r2 < repel**2 :
-                    reject=True
-                    print("rejecting", len(positions),pnew, file = sys.stderr)
-                    break
-            if(reject):
-                reject=False
-                continue
-        if(verbose):
-            print("accepting", len(positions),pnew, file = sys.stderr)
-        positions.append(pnew)
-
-    # add positions to nodes        
-    G.pos={}
-    for v in G.nodes():
-        G.pos[v]=positions.pop()
-
+    G.add_nodes_from(range(n)) 
+    if pos is None:
+        # random positions 
+        for n in G:
+            G.node[n]['pos']=[random.random() for i in range(0,dim)]
+    else:
+        nx.set_node_attributes(G,'pos',pos)
     # connect nodes within "radius" of each other
-    # n^2 algorithm, oh well, should work in n dimensions anyway...
-    for u in G.nodes():
-        p1=G.pos[u]
-        for v in G.nodes():
-            if u==v:  # no self loops
-                continue
-            p2=G.pos[v]
-            m2=map(lambda x,y: (x-y)**2, p1,p2)
-            r2=reduce(lambda x, y: x+y, m2, 0.)
-            if r2 < radius**2 :
+    # n^2 algorithm, could use a k-d tree implementation
+    nodes = G.nodes(data=True)
+    while nodes:
+        u,du = nodes.pop()
+        pu = du['pos']
+        for v,dv in nodes:
+            pv = dv['pos']
+            d = sum(((a-b)**2 for a,b in zip(pu,pv)))
+            if d <= radius**2:
                 G.add_edge(u,v)
     return G
 
