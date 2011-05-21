@@ -78,7 +78,7 @@ def laplacian(G,nodelist=None,weight='weight'):
 
     Returns
     -------
-    L : NumPy matrix
+    L : NumPy array
       Laplacian of G.
 
     Notes
@@ -144,7 +144,7 @@ def normalized_laplacian(G,nodelist=None,weight='weight'):
 
     Returns
     -------
-    L : NumPy matrix
+    L : NumPy array
       Normalized Laplacian of G.
 
     Notes
