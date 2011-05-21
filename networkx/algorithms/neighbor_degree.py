@@ -73,16 +73,16 @@ def average_neighbor_degree(G, nodes=None, weighted=False):
     >>> G=nx.path_graph(4)
     >>> G.edge[0][1]['weight'] = 5
     >>> G.edge[2][3]['weight'] = 3
-    >>> average_neighbor_degree(G)
+    >>> nx.average_neighbor_degree(G)
     {0: 2.0, 1: 1.5, 2: 1.5, 3: 2.0}
-    >>> average_neighbor_degree(G, weighted=True)
+    >>> nx.average_neighbor_degree(G, weighted=True)
     {0: 2.0, 1: 1.1666666666666667, 2: 1.25, 3: 2.0}
 
     >>> G=nx.DiGraph()
     >>> G.add_path([0,1,2,3])
-    >>> average_neighbor_in_degree(G)
+    >>> nx.average_neighbor_in_degree(G)
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0}
-    >>> average_neighbor_out_degree(G)
+    >>> nx.average_neighbor_out_degree(G)
     {0: 1.0, 1: 1.0, 2: 0.0, 3: 0.0}
  
     Notes
@@ -178,9 +178,9 @@ def average_degree_connectivity(G, nodes=None, weighted=False):
     --------
     >>> G=nx.path_graph(4)
     >>> G.edge[1][2]['weight'] = 3
-    >>> k_nearest_neighbors(G)
+    >>> nx.k_nearest_neighbors(G)
     {1: 2.0, 2: 1.5}
-    >>> k_nearest_neighbors(G, weighted=True)
+    >>> nx.k_nearest_neighbors(G, weighted=True)
     {1: 2.0, 2: 1.75}
 
     See also

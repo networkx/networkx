@@ -995,6 +995,7 @@ class Graph(object):
         -----
         It is faster to use the idiom "in G[0]", e.g.
 
+        >>> G = nx.path_graph(4)
         >>> [n for n in G[0]]
         [1]
         """
