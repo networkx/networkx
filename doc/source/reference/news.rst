@@ -4,6 +4,65 @@
 Release Log
 ===========
 
+Networkx-1.5
+------------
+
+Release date:  xx May 2011
+
+For full details of the tickets closed for this release see:
+https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.5
+
+Highlights
+~~~~~~~~~~
+
+New features
+~~~~~~~~~~~~
+ - Algorithms for :mod:`generating <networkx.generators.bipartite>` 
+   and :mod:`analyzing <networkx.algorithms.bipartite>` bipartite graphs
+ - :mod:`Maximal independent set <networkx.algorithms.mis>` algorithm
+ - :mod:`Erdős-Gallai graphical degree sequence test <networkx.generators.degree_seq>`
+ - :mod:`Negative edge cycle test <networkx.algorithms.shortest_paths.weighted>`
+ - More memory effienct :mod:`Dijkstra path length <networkx.algorithms.shortest_paths.weighted>` with cutoff parameter
+ - :mod:`Weighted clustering coefficient <networkx.algorithms.cluster>`
+ - Read and write version 1.2 of :mod:`GEXF reader <networkx.readwrite.gexf>` format
+ - :mod:`Neighbor degree correlation <networkx.algorithms.neighbor_degree>` 
+   that handle subsets of nodes
+ - :mod:`In-place node relabeling <networkx.relabel>` 
+ - Many 'weighted' graph algorithms now take optional parameter to use 
+   specified edge attribute (default='weight') (:ticket:`509`)
+
+ - Test for :mod:`distance regular <networkx.algorithms.distance_regular>` graphs
+ - Fast :mod:`directed Erdős-Renyi graph  <networkx.generators.random_graphs>` generator
+ - Fast :mod:`expected degree graph  <networkx.generators.degree_seq>` generator
+ - :mod:`Navigable small world  <networkx.generators.geometric>` generator
+ - :mod:`Waxman model <networkx.generators.geometric>` generator
+ - :mod:`Geographical threshold graph <networkx.generators.geometric>` generator
+ - :mod:`Karate Club, Florentine Famlies, and Davis' Women's Club <networkx.generators.social>` graphs
+
+
+API Changes
+~~~~~~~~~~~
+See :doc:`api_1.5`
+
+
+Bug fixes
+~~~~~~~~~
+ - Fix edge handling for multigraphs in networkx/graphviz interface 
+   (:ticket:`507`)
+ - Update networkx/pydot interface for new versions of pydot 
+   (:ticket:`506`), (:ticket:`535`)
+ - Fix negative cycle handling in Bellman-Ford (:ticket:`502`)
+ - Write more attributes with GraphML and GML formats (:ticket:`480`)
+ - Handle whitespace better in read_edgelist (:ticket:`513`)
+ - Better parsing of Pajek format files (:ticket:`524`) (:ticket:`542`)
+ - Isolates functions work with directed graphs (:ticket:`526`)
+ - Faster conversion to numpy matrices (:ticket:`529`)
+ - Add graph['name'] and use properties to access Graph.name (:ticket:`544`)
+ - Topological sort confused None and 0 (:ticket:`546`)
+ - GEXF writer mishandled weight=0 (:ticket:`550`)
+ - Speedup in SciPy version of PageRank (:ticket:`554`)
+ - Numpy PageRank node order incorrect + speedups (:ticket:`555`)
+
 Networkx-1.4
 ------------
 

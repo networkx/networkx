@@ -68,4 +68,5 @@ Thanks especially to the following contributors:
  - Ben Reilly contributed the shapefile reader.
  - Leo Lopes contributed the maximal independent set algorithm.
  - Jordi Torrents contributed the bipartite clustering, bipartite
-   node redundancy, and square clustering algorithms.
+   node redundancy, square clustering, and other bipartite algorithms.
+ - Dheeraj M R contributed the distance-regular testing algorithm

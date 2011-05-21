@@ -196,3 +196,14 @@ Intersection
    uniform_random_intersection_graph
    k_random_intersection_graph
    general_random_intersection_graph
+
+Social Networks
+---------------
+.. automodule:: networkx.generators.social
+.. autosummary::
+   :toctree: generated/
+
+   karate_club_graph
+   davis_southern_women_graph
+   florentine_families_graph
+
