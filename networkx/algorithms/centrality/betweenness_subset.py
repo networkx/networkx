@@ -1,8 +1,7 @@
 """
 Betweenness centrality measures for subsets of nodes.
-
 """
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -29,15 +28,14 @@ def betweenness_centrality_subset(G,sources,targets,
 
     .. math::
 
-       c_B(v) =\\sum_{s\\in S, t \\in T} \\frac{\\sigma(s, t|v)}{\\sigma(s, t)}
+       c_B(v) =\sum_{s\in S, t \in T} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
-    where :math:`S` is the set of sources, 
-    :math:`T` is the set of targets,
-    :math:`\\sigma(s, t)` is the number of shortest :math:`(s, t)`-paths, 
-    and :math:`\\sigma(s, t|v)` is the number of those paths
-    passing through some  node :math:`v` other than :math:`s, t`. 
-    If :math:`s = t`, :math:`\\sigma(s, t) = 1`,
-    and if :math:`v \\in {s, t}`,  :math:`\\sigma(s, t|v) = 0` [2]_.
+    where `S` is the set of sources, `T` is the set of targets,
+    `\sigma(s, t)` is the number of shortest `(s, t)`-paths, 
+    and `\sigma(s, t|v)` is the number of those paths
+    passing through some  node `v` other than `s, t`. 
+    If `s = t`, `\sigma(s, t) = 1`,
+    and if `v \in {s, t}`,  `\sigma(s, t|v) = 0` [2]_.
 
 
     Parameters
@@ -53,7 +51,7 @@ def betweenness_centrality_subset(G,sources,targets,
 
     normalized : bool, optional
       If True the betweenness values are normalized by
-      :math:`1/(n-1)(n-2)` where :math:`n` is the number of nodes in G.
+      `1/(n-1)(n-2)` where `n` is the number of nodes in G.
        
     weight : None, True or string, optional  
       If None, all edge weights are considered equal.
@@ -72,7 +70,7 @@ def betweenness_centrality_subset(G,sources,targets,
 
     Notes
     -----
-    The basic algorithm is from Ulrik Brandes [1]_.
+    The basic algorithm is from [1]_.
 
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length 
@@ -86,8 +84,7 @@ def betweenness_centrality_subset(G,sources,targets,
     
     References
     ----------
-    .. [1]  A Faster Algorithm for Betweenness Centrality.
-       Ulrik Brandes, 
+    .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
        http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness 
@@ -115,14 +112,12 @@ def edge_betweenness_centrality_subset(G,sources,targets,
 
     .. math::
 
-       c_B(v) =\\sum_{s\\in S,t \\in T} \\frac{\\sigma(s, t|e)}{\\sigma(s, t)}
+       c_B(v) =\sum_{s\in S,t \in T} \frac{\sigma(s, t|e)}{\sigma(s, t)}
 
-    where :math:`S` is the set of sources,
-    :math:`T` is the set of targets,
-    :math:`\\sigma(s, t)` is the number of shortest :math:`(s, t)`-paths, 
-    and :math:`\\sigma(s, t|e)` is the number of those paths
-    passing through edge :math:`e` [2]_..
-
+    where `S` is the set of sources, `T` is the set of targets,
+    `\sigma(s, t)` is the number of shortest `(s, t)`-paths, 
+    and `\sigma(s, t|e)` is the number of those paths
+    passing through edge `e` [2]_.
 
     Parameters
     ----------
@@ -137,7 +132,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
 
     normalized : bool, optional
       If True the betweenness values are normalized by 
-      b=b/(n-1)(n-2) where n is the number of nodes in G.
+      `b=b/(n-1)(n-2)` where n is the number of nodes in G.
        
     weight : None, True or string, optional  
       If None, all edge weights are considered equal.
@@ -156,7 +151,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
 
     Notes
     -----
-    The basic algorithm is from Ulrik Brandes [1]_.
+    The basic algorithm is from [1]_.
 
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length 
@@ -169,8 +164,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
 
     References
     ----------
-    .. [1]  A Faster Algorithm for Betweenness Centrality.
-       Ulrik Brandes, 
+    .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
        http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness 

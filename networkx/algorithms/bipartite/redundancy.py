@@ -1,5 +1,5 @@
-"""Node redundancy for bipartite graphs."""
 #-*- coding: utf-8 -*-
+"""Node redundancy for bipartite graphs."""
 #    Copyright (C) 2011 by 
 #    Jordi Torrents <jtorrents@milnou.net>
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -13,21 +13,20 @@ __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
 __all__ = ['node_redundancy']
 
 def node_redundancy(G, nodes=None):
-    """Compute bipartite node redundancy coefficient.
+    r"""Compute bipartite node redundancy coefficient.
 
-    The redundancy coefficient of a node :math:`v` is the fraction of pairs of 
-    neighbors of :math:`v` that are both linked to other nodes. In a one-mode
-    projection these nodes would be linked together even if :math:`v`  were 
+    The redundancy coefficient of a node `v` is the fraction of pairs of 
+    neighbors of `v` that are both linked to other nodes. In a one-mode
+    projection these nodes would be linked together even if `v`  were 
     not there.
     
     .. math::
 
-        rc(v) = \\frac{|\{\{u,w\} \subseteq N(v),
-        \: \exists v' \\neq  v,\: (v',u) \in E\: 
-        \mathrm{and}\: (v',w) \in E\}|}{ \\frac{|N(v)|(|N(v)|-1)}{2}}
+        rc(v) = \frac{|\{\{u,w\} \subseteq N(v),
+        \: \exists v' \neq  v,\: (v',u) \in E\: 
+        \mathrm{and}\: (v',w) \in E\}|}{ \frac{|N(v)|(|N(v)|-1)}{2}}
 
-    where  
-    :math:`N(v)` are the neighbors of :math:`v` in :math:`G`.
+    where `N(v)` are the neighbors of `v` in `G`.
 
     Parameters
     ----------

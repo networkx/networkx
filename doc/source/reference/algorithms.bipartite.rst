@@ -26,7 +26,9 @@ Projections
 
    projected_graph
    weighted_projected_graph
-   project
+   collaboration_weighted_projected_graph
+   overlap_weighted_projected_graph
+   generic_weighted_projected_graph
 
 
 Spectral

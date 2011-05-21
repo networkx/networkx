@@ -35,7 +35,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
 
     The random geometric graph model places n nodes uniformly at random 
     in the unit cube  Two nodes `u,v` are connected with an edge if
-    'd(u,v)<=r` where `d` is the Euclidean distance and `r` is a radius 
+    `d(u,v)<=r` where `d` is the Euclidean distance and `r` is a radius 
     threshold.
 
     Parameters
@@ -67,7 +67,9 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
     function other than Euclidean you'll have to hack the algorithm.
 
     E.g to use a 2d Gaussian distribution of node positions with mean (0,0)
-    and std 2
+    and std. dev. 2
+
+    >>> import random
     >>> n=20
     >>> p=dict((i,(random.gauss(0,2),random.gauss(0,2))) for i in range(n))
     >>> G = nx.random_geometric_graph(n,0.2,pos=p)
@@ -105,7 +107,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2,
 
     The geographical threshold graph model places n nodes uniformly at random
     in a rectangular domain.  Each node `u` is assigned a weight `w_u`. 
-    Two nodes u,v are connected with an edge if
+    Two nodes `u,v` are connected with an edge if
 
     .. math::
 
@@ -198,7 +200,7 @@ def geographical_threshold_edges(G, theta, alpha=2):
 def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
     r"""Return a Waxman random graph.
 
-    The Waxman random graph model places n nodes uniformly at random
+    The Waxman random graph models place n nodes uniformly at random
     in a rectangular domain. Two nodes u,v are connected with an edge
     with probability
 
@@ -284,13 +286,13 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
 
 
 def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
-    """Return a navigable small-world graph.
+    r"""Return a navigable small-world graph.
 
     A navigable small-world graph is a directed grid with additional
     long-range connections that are chosen randomly.  From [1]_:
 
     Begin with a set of nodes that are identified with the set of lattice
-    points in an `n x n` square, `{(i,j): i\in {1,2,\ldots,n}, j\in {1,2,\ldots,n}}`
+    points in an `n \times n` square, `{(i,j): i\in {1,2,\ldots,n}, j\in {1,2,\ldots,n}}`
     and define the lattice distance between two nodes `(i,j)` and `(k,l)` 
     to be the number of "lattice steps" separating them: `d((i,j),(k,l)) = |k-i|+|l-j|`.  
 
@@ -299,7 +301,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 
     For universal constants `q\ge 0` and `r\ge 0` construct directed edges from `u` to `q`
     other nodes (long-range contacts) using independent random trials;  the i'th 
-    directed edge from `u` has endpoint `v` with probability proportional to `d(u,v)]^{-r}`.
+    directed edge from `u` has endpoint `v` with probability proportional to `d(u,v)^{-r}`.
 
     Parameters
     ----------

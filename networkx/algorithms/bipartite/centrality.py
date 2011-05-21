@@ -12,9 +12,9 @@ __all__=['degree_centrality',
          'closeness_centrality']
 
 def degree_centrality(G, nodes):
-    """Compute the degree centrality for nodes in a bipartite network.
+    r"""Compute the degree centrality for nodes in a bipartite network.
 
-    The degree centrality for a node :math:`v` is the fraction of nodes 
+    The degree centrality for a node `v` is the fraction of nodes 
     connected to it.
 
     Parameters
@@ -45,21 +45,21 @@ def degree_centrality(G, nodes):
 
     For unipartite networks, the degree centrality values are 
     normalized by dividing by the maximum possible degree (which is 
-    :math:`n-1` where :math:`n` is the number of nodes in G). 
+    `n-1` where `n` is the number of nodes in G). 
+
     In the bipartite case, the maximum possible degree of a node in a
     bipartite node set is the number of nodes in the opposite node set
-    [1]_.  The degree centrality for a node :math:`v` in the bipartite
-    sets :math:`U` with :math:`n` nodes and :math:`V` with :math:`m`
-    nodes is
+    [1]_.  The degree centrality for a node `v` in the bipartite
+    sets `U` with `n` nodes and `V` with `m` nodes is
 
     .. math::
 
-        d_{v} = \\frac{deg(v)}{m}, \mbox{for} v \in U ,
+        d_{v} = \frac{deg(v)}{m}, \mbox{for} v \in U ,
 
-        d_{v} = \\frac{deg(v)}{n}, \mbox{for} v \in V ,
+        d_{v} = \frac{deg(v)}{n}, \mbox{for} v \in V ,
 
 
-    where :math:`deg(v)` is the degree of node :math:`v`.        
+    where `deg(v)` is the degree of node `v`.        
 
     References
     ----------
@@ -78,24 +78,22 @@ def degree_centrality(G, nodes):
 
 
 def betweenness_centrality(G, nodes):
-    """Compute betweenness centrality for nodes in a bipartite network.
+    r"""Compute betweenness centrality for nodes in a bipartite network.
 
-    Betweenness centrality of a node :math:`v` is the sum of the
-    fraction of all-pairs shortest paths that pass through :math:`v`. 
+    Betweenness centrality of a node `v` is the sum of the
+    fraction of all-pairs shortest paths that pass through `v`. 
 
     Values of betweenness are normalized by the maximum possible
     value which for bipartite graphs is limited by the relative size 
     of the two node sets [1]_.
 
-    Let :math:`n` be the number of nodes in the node set :math:`U` and
-    :math:`m` be the number of nodes in the node set :math:`V`, then
-    nodes in :math:`U` are normalized by dividing by 
+    Let `n` be the number of nodes in the node set `U` and
+    `m` be the number of nodes in the node set `V`, then
+    nodes in `U` are normalized by dividing by 
 
     .. math::
 
-        \\frac{1}{2} [m^2 (s + 1)^2 + 
-                      m (s + 1)(2t - s - 1) - 
-                      t (2s - t + 3)] ,
+       \frac{1}{2} [m^2 (s + 1)^2 + m (s + 1)(2t - s - 1) - t (2s - t + 3)] ,
 
     where
     
@@ -103,13 +101,11 @@ def betweenness_centrality(G, nodes):
         
         s = (n - 1) \div m , t = (n - 1) \mod m ,
     
-    and nodes in :math:`V` are normalized by dividing by
+    and nodes in `V` are normalized by dividing by
 
     .. math::    
 
-        \\frac{1}{2} [n^2 (p + 1)^2 + 
-                      n (p + 1)(2r - p - 1) - 
-                      r (2p - r + 3)] ,
+        \frac{1}{2} [n^2 (p + 1)^2 + n (p + 1)(2r - p - 1) - r (2p - r + 3)] ,
 
     where,
     
@@ -173,7 +169,7 @@ def betweenness_centrality(G, nodes):
     return betweenness
 
 def closeness_centrality(G, nodes, normalized=True):
-    """Compute the closeness centrality for nodes in a bipartite network.
+    r"""Compute the closeness centrality for nodes in a bipartite network.
 
     The closeness of a node is the distance to all other nodes in the 
     graph or in the case that the graph is not connected to all other nodes
@@ -212,16 +208,16 @@ def closeness_centrality(G, nodes, normalized=True):
     In the bipartite case the minimum distance for a node in one bipartite 
     node set is 1 from all nodes in the other node set and 2 from all 
     other nodes in its own set [1]_. Thus the closeness centrality
-    for node :math:`v`  in the two bipartite sets :math:`U` with 
-    :math:`n` nodes and :math:`V` with :math:`m` nodes is 
+    for node `v`  in the two bipartite sets `U` with 
+    `n` nodes and `V` with `m` nodes is 
  
     .. math::
 
-        c_{v} = \\frac{m + 2(n - 1)}{d}, \mbox{for} v \in U,
+        c_{v} = \frac{m + 2(n - 1)}{d}, \mbox{for} v \in U,
 
-        c_{v} = \\frac{n + 2(m - 1)}{d}, \mbox{for} v \in V,
+        c_{v} = \frac{n + 2(m - 1)}{d}, \mbox{for} v \in V,
 
-    where :math:`d` is the sum of the distances from :math:`v` to all
+    where `d` is the sum of the distances from `v` to all
     other nodes.
 
     Higher values of closeness  indicate higher centrality.

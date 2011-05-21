@@ -209,17 +209,17 @@ def shortest_path_length(G, source=None, target=None, weight=None):
         
 
 def average_shortest_path_length(G, weight=None):
-    """ Return the average shortest path length.
+    r"""Return the average shortest path length.
 
     The average shortest path length is
 
     .. math::
 
-       a =\\sum_{s,t \\in V} \\frac{d(s, t)}{n(n-1)}
+       a =\sum_{s,t \in V} \frac{d(s, t)}{n(n-1)}
 
-    where :math:`V` is the set of nodes in :math:`G`,
-    :math:`d(s, t)` is the shortest path from :math:`s` to :math:`t`,
-    and :math:`n` is the number of nodes in :math:`G`.
+    where `V` is the set of nodes in `G`,
+    `d(s, t)` is the shortest path from `s` to `t`,
+    and `n` is the number of nodes in `G`.
 
     Parameters
     ----------

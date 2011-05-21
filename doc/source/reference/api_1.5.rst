@@ -7,6 +7,9 @@ This page reflects API changes from networkx-1.4 to networkx-1.5.
 Please send comments and questions to the networkx-discuss mailing list:
 http://groups.google.com/group/networkx-discuss .
 
+Weighted graph algorithms
+-------------------------
+
 Many 'weighted' graph algorithms now take optional parameter to 
 specifiy which edge attribute should be used for the weight
 (default='weight') (:ticket:`509`)
@@ -35,6 +38,10 @@ laplacian, normalized_laplacian, adj_matrix, adjacency_spectrum,
 shortest_path, shortest_path_length, average_shortest_path_length,
 single_source_dijkstra_path_basic, astar_path, astar_path_length
 
+Random geometric graph
+----------------------
 
-
+The random geometric graph generator has been simplified.  
+It no longer supports the create_using, repel, or verbose parameters.  
+An optional pos keyword was added to allow specification of node positions.
 

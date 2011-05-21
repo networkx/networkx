@@ -1,8 +1,7 @@
 """
 Betweenness centrality measures.
-
 """
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -12,30 +11,26 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['betweenness_centrality',
            'edge_betweenness_centrality',
-           'edge_betweenness'
-           ]
+           'edge_betweenness']
 
 import heapq
 import networkx as nx
 
-def betweenness_centrality(G,normalized=True,
-                           weight=None,
-                           endpoints=False):
-    """Compute the shortest-path betweenness centrality for nodes.
+def betweenness_centrality(G, normalized=True, weight=None, endpoints=False):
+    r"""Compute the shortest-path betweenness centrality for nodes.
 
-    Betweenness centrality of a node :math:`v` is the sum of the
-    fraction of all-pairs shortest paths that pass through :math:`v`:
+    Betweenness centrality of a node `v` is the sum of the
+    fraction of all-pairs shortest paths that pass through `v`:
 
     .. math::
 
-       c_B(v) =\\sum_{s,t \\in V} \\frac{\\sigma(s, t|v)}{\\sigma(s, t)}
+       c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}
 
-    where :math:`V` is the set of nodes,
-    :math:`\\sigma(s, t)` is the number of shortest :math:`(s, t)`-paths, 
-    and :math:`\\sigma(s, t|v)` is the number of those paths
-    passing through some  node :math:`v` other than :math:`s, t`. 
-    If :math:`s = t`, :math:`\\sigma(s, t) = 1`,
-    and if :math:`v \\in {s, t}`,  :math:`\\sigma(s, t|v) = 0` [2]_.
+    where `V` is the set of nodes, `\sigma(s, t)` is the number of 
+    shortest `(s, t)`-paths,  and `\sigma(s, t|v)` is the number of those 
+    paths  passing through some  node `v` other than `s, t`. 
+    If `s = t`, `\sigma(s, t) = 1`, and if `v \in {s, t}`,  
+    `\sigma(s, t|v) = 0` [2]_.
 
     Parameters
     ----------
@@ -44,7 +39,7 @@ def betweenness_centrality(G,normalized=True,
 
     normalized : bool, optional  
       If True the betweenness values are normalized by
-      :math:`1/(n-1)(n-2)` where :math:`n` is the number of nodes in G.
+      `1/(n-1)(n-2)` where `n` is the number of nodes in G.
 
     weight : None, True or string, optional  
       If None, all edge weights are considered equal.
@@ -105,19 +100,18 @@ def betweenness_centrality(G,normalized=True,
 
 
 def edge_betweenness_centrality(G,normalized=True,weight=None):
-    """Compute betweenness centrality for edges.
+    r"""Compute betweenness centrality for edges.
 
-    Betweenness centrality of an edge :math:`e` is the sum of the
-    fraction of all-pairs shortest paths that pass through :math:`e`:
+    Betweenness centrality of an edge `e` is the sum of the
+    fraction of all-pairs shortest paths that pass through `e`:
 
     .. math::
 
-       c_B(v) =\\sum_{s,t \\in V} \\frac{\\sigma(s, t|e)}{\\sigma(s, t)}
+       c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|e)}{\sigma(s, t)}
 
-    where :math:`V` is the set of nodes,
-    :math:`\\sigma(s, t)` is the number of shortest :math:`(s, t)`-paths,
-    and :math:`\\sigma(s, t|e)` is the number of those paths
-    passing through edge :math:`e` [2]_..
+    where `V` is the set of nodes,`\sigma(s, t)` is the number of 
+    shortest `(s, t)`-paths, and `\sigma(s, t|e)` is the number of 
+    those paths passing through edge `e` [2]_.
 
     Parameters
     ----------
@@ -126,7 +120,7 @@ def edge_betweenness_centrality(G,normalized=True,weight=None):
 
     normalized : bool, optional
       If True the betweenness values are normalized by 
-      :math:`1/(n-1)(n-2)` where :math:`n` is the number of nodes in G.
+      `1/(n-1)(n-2)` where `n` is the number of nodes in G.
        
     weight : None, True or string, optional  
       If None, all edge weights are considered equal.

@@ -24,40 +24,38 @@ modes={'dot':cc_dot,
        'max':cc_max}
 
 def clustering(G, nodes=None, mode='dot'):
-    """Compute a bipartite clustering coefficient for nodes.
+    r"""Compute a bipartite clustering coefficient for nodes.
 
     The bipartie clustering coefficient is a measure of local density
     of connections defined as [1]_
     
     .. math::
 
-       c_u = \\frac{\\sum_{v \in N(N(v))} c_{uv} }{|N(N(u))|}
+       c_u = \frac{\sum_{v \in N(N(v))} c_{uv} }{|N(N(u))|}
 
-    where  
-    :math:`N(N(u))` are the second order neighbors of 
-    :math:`u` in :math:`G` excluding :math:`u`. 
-    and :math:`c_{uv}` is the pairwise clustering coefficient between nodes 
-    u and v.
+    where `N(N(u))` are the second order neighbors of `u` in `G` excluding `u`, 
+    and `c_{uv}` is the pairwise clustering coefficient between nodes 
+    `u` and `v`.
 
-    The mode selects the function for :math:`c_{uv}`
+    The mode selects the function for `c_{uv}`
 
     'dot': 
 
     .. math::
 
-       c_{uv}=\\frac{|N(u)\cap N(v)|}{|N(u) \cup N(v)|}
+       c_{uv}=\frac{|N(u)\cap N(v)|}{|N(u) \cup N(v)|}
 
     'min': 
 
     .. math::
 
-       c_{uv}=\\frac{|N(u)\cap N(v)|}{min(|N(u)|,|N(v)|)}
+       c_{uv}=\frac{|N(u)\cap N(v)|}{min(|N(u)|,|N(v)|)}
 
     'max': 
 
     .. math::
 
-       c_{uv}=\\frac{|N(u)\cap N(v)|}{max(|N(u)|,|N(v)|)}
+       c_{uv}=\frac{|N(u)\cap N(v)|}{max(|N(u)|,|N(v)|)}
 
 
     Parameters
@@ -123,23 +121,23 @@ def clustering(G, nodes=None, mode='dot'):
     return ccs
 
 def average_clustering(G, nodes=None, mode='dot'):
-    """Compute the average bipartite clustering coefficient.
+    r"""Compute the average bipartite clustering coefficient.
 
     A clustering coefficient for the whole graph is the average, 
 
     .. math::
 
-       C = \\frac{1}{n}\\sum_{v \in G} c_v,
+       C = \frac{1}{n}\sum_{v \in G} c_v,
        
-    where :math:`n` is the number of nodes in :math:`G`.
+    where `n` is the number of nodes in `G`.
 
     Similar measures for the two bipartite sets can be defined [1]_
     
     .. math::
 
-       C_X = \\frac{1}{|X|}\\sum_{v \in X} c_v,
+       C_X = \frac{1}{|X|}\sum_{v \in X} c_v,
        
-    where :math:`X` is a bipartite set of :math:`G`.
+    where `X` is a bipartite set of `G`.
 
     Parameters
     ----------

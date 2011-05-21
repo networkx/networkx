@@ -204,7 +204,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
     return G
 
 def collaboration_weighted_projected_graph(B, nodes):
-    """Weighted unipartite projection of B onto the nodes of 
+    r"""Weighted unipartite projection of B onto the nodes of 
     one bipartite node set using the collaboration model.
 
     The collaboration weighted projection is the projection of the
@@ -213,14 +213,13 @@ def collaboration_weighted_projected_graph(B, nodes):
 
     ..math::
         
-        w_{v,u} = \sum_k \\frac{\delta_{v}^{w} \delta_{w}^{k}}{k_w - 1}
+        w_{v,u} = \sum_k \frac{\delta_{v}^{w} \delta_{w}^{k}}{k_w - 1}
 
-    where :math:`v` and :math:`u` are nodes from the same bipartite
-    node set and :math:`w` is a node of the opposite node
-    set. :math:`k_w` is the degree of node :math:`w` in the bipartite
-    network and :math:`\delta_{v}^{w}` is 1 if node :math:`v` is
-    linked to node :math:`w` in the original bipartite graph or 0
-    otherwise.
+    where `v` and `u` are nodes from the same bipartite node set,
+    and `w` is a node of the opposite node set. 
+    The value `k_w` is the degree of node `w` in the bipartite
+    network and `\delta_{v}^{w}` is 1 if node `v` is
+    linked to node `w` in the original bipartite graph or 0 otherwise.
  
     The nodes retain their names and are connected in the resulting
     graph if have an edge to a common node in the original bipartite
@@ -296,7 +295,7 @@ def collaboration_weighted_projected_graph(B, nodes):
     return G
 
 def overlap_weighted_projected_graph(B, nodes, jaccard=True):
-    """Return the overlap weighted projection of B onto the nodes of
+    r"""Return the overlap weighted projection of B onto the nodes of
     one bipartite node set.
 
     The overlap weighted projection is the projection of the bipartite 
@@ -306,7 +305,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
 
     ..math::
         
-        w_{v,u} = \\frac{|N(u) \cap N(v)|}{|N(u) \cup N(v)|}
+        w_{v,u} = \frac{|N(u) \cap N(v)|}{|N(u) \cup N(v)|}
 
     or if the parameter 'jaccard' is False, the fraction of common 
     neighbors by minimum of both nodes degree in the original 
@@ -314,7 +313,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     
     ..math::
 
-        w_{v,u} = \\frac{|N(u) \cap N(v)|}{min(|N(u)|,|N(v)|)}
+        w_{v,u} = \frac{|N(u) \cap N(v)|}{min(|N(u)|,|N(v)|)}
     
     The nodes retain their names and are connected in the resulting
     graph if have an edge to a common node in the original bipartite graph.
