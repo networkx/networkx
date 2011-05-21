@@ -90,8 +90,8 @@ def configuration_model(deg_sequence,create_using=None,seed=None):
 
     References
     ----------
-    .. [1] M.E.J. Newman, "The structure and function
-           of complex networks", SIAM REVIEW 45-2, pp 167-256, 2003.
+    .. [1] M.E.J. Newman, "The structure and function of complex networks", 
+       SIAM REVIEW 45-2, pp 167-256, 2003.
         
     Examples
     --------
@@ -285,10 +285,15 @@ def expected_degree_graph(w, seed=None):
     seed : hashable object, optional
         The seed for the random number generator.
 
+    Returns
+    -------
+    Graph
+
     Examples
     --------
     >>> z=[10 for i in range(100)]
     >>> G=nx.expected_degree_graph(z)
+
 
     References
     ----------
@@ -327,7 +332,8 @@ def expected_degree_graph(w, seed=None):
     return G
 
 def havel_hakimi_graph(deg_sequence,create_using=None):
-    """Return a simple graph with given degree sequence, constructed using the Havel-Hakimi algorithm.
+    """Return a simple graph with given degree sequence and constructed using the 
+    Havel-Hakimi algorithm.
 
     Parameters
     ----------
@@ -353,7 +359,7 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
     degree-associativity.  Nodes are labeled 1,.., len(deg_sequence),
     corresponding to their position in deg_sequence.
 
-    See Theorem 1.4 in [chartrand-graphs-1996].
+    See Theorem 1.4 in [1]_.
     This algorithm is also used in the function is_valid_degree_sequence.
 
     References
@@ -430,7 +436,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
 
     Notes
     -----
-    As described by Miller [1] (see also Newman [2] for an equivalent
+    As described by Miller [1]_ (see also Newman [2]_ for an equivalent
     description).
 	
     A non-graphical degree sequence (not realizable by some simple
@@ -546,7 +552,7 @@ def degree_sequence_tree(deg_sequence,create_using=None):
         
 
 def is_valid_degree_sequence(deg_sequence, method='hh'):
-    """Returns `True` if `deg_sequence` is a valid degree sequence.
+    """Returns True if deg_sequence is a valid degree sequence.
     
     A degree sequence is valid if some graph can realize it.
     
@@ -555,14 +561,15 @@ def is_valid_degree_sequence(deg_sequence, method='hh'):
     deg_sequence : list
         A list of integers where each element specifies the degree of a node
         in a graph.
-    method : 'eg' | 'hh'
-        The method used to validate the degree sequence.  'eg' corresponds to
-        the Erdős-Gallai algorithm and 'hh' to the Havel-Hakimi algorithm.
+    method : "eg" | "hh"
+        The method used to validate the degree sequence.  
+        "eg" corresponds to the Erdős-Gallai algorithm, and 
+        "hh" to the Havel-Hakimi algorithm.
 
     Returns
     -------
     valid : bool
-        `True` if `deg_sequence` is a valid degree sequence and `False` if not.
+        True if deg_sequence is a valid degree sequence and False if not.
     
     References
     ----------
@@ -585,7 +592,7 @@ def is_valid_degree_sequence(deg_sequence, method='hh'):
 
 
 def is_valid_degree_sequence_havel_hakimi(deg_sequence):
-    """Returns `True` if `deg_sequence` is a valid degree sequence.
+    """Returns True if deg_sequence is a valid degree sequence.
     
     A degree sequence is valid if some graph can realize it. 
     Validation proceeds via the Havel-Hakimi algorithm.
@@ -601,7 +608,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     Returns
     -------
     valid : bool
-        `True` if `deg_sequence` is a valid degree sequence and `False` if not.
+        True if deg_sequence is a valid degree sequence and False if not.
     
     References
     ----------
@@ -643,7 +650,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
 
 
 def is_valid_degree_sequence_erdos_gallai(deg_sequence):
-    """Returns `True` if `deg_sequence` is a valid degree sequence.
+    """Returns True if deg_sequence is a valid degree sequence.
     
     A degree sequence is valid if some graph can realize it. 
     Validation proceeds via the Erdős-Gallai algorithm.
@@ -659,7 +666,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     Returns
     -------
     valid : bool
-        `True` if `deg_sequence` is a valid degree sequence and `False` if not.
+        True if deg_sequence is a valid degree sequence and False if not.
     
     References
     ----------

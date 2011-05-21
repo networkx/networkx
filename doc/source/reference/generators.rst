@@ -112,6 +112,7 @@ Degree Sequence
    double_edge_swap
    connected_double_edge_swap
    li_smax_graph
+   random_clustered_graph
 
 Directed
 --------

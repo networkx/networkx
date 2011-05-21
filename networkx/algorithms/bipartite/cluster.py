@@ -38,7 +38,6 @@ def clustering(G, nodes=None, mode='dot'):
     `u` and `v`.
 
     The mode selects the function for `c_{uv}`
-
     'dot': 
 
     .. math::
