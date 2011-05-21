@@ -22,7 +22,7 @@ New features
  - :mod:`Maximal independent set <networkx.algorithms.mis>` algorithm
  - :mod:`Erdős-Gallai graphical degree sequence test <networkx.generators.degree_seq>`
  - :mod:`Negative edge cycle test <networkx.algorithms.shortest_paths.weighted>`
- - More memory effienct :mod:`Dijkstra path length <networkx.algorithms.shortest_paths.weighted>` with cutoff parameter
+ - More memory efficienct :mod:`Dijkstra path length <networkx.algorithms.shortest_paths.weighted>` with cutoff parameter
  - :mod:`Weighted clustering coefficient <networkx.algorithms.cluster>`
  - Read and write version 1.2 of :mod:`GEXF reader <networkx.readwrite.gexf>` format
  - :mod:`Neighbor degree correlation <networkx.algorithms.neighbor_degree>` 
@@ -37,7 +37,7 @@ New features
  - :mod:`Navigable small world  <networkx.generators.geometric>` generator
  - :mod:`Waxman model <networkx.generators.geometric>` generator
  - :mod:`Geographical threshold graph <networkx.generators.geometric>` generator
- - :mod:`Karate Club, Florentine Famlies, and Davis' Women's Club <networkx.generators.social>` graphs
+ - :mod:`Karate Club, Florentine Families, and Davis' Women's Club <networkx.generators.social>` graphs
 
 
 API Changes
