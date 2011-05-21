@@ -275,13 +275,15 @@ def directed_configuration_model(in_degree_sequence,
     return G
 
 
-def expected_degree_graph(w, seed=None):
+def expected_degree_graph(w, seed=None, selfloops=False):
     """Return a random graph with given expected degrees.
 
     Parameters
     ----------
     w : list 
         The list of expected degrees.
+    selfloops: bool (default=False)
+        Set to True to include the possibility of self-loop edges
     seed : hashable object, optional
         The seed for the random number generator.
 
@@ -294,6 +296,10 @@ def expected_degree_graph(w, seed=None):
     >>> z=[10 for i in range(100)]
     >>> G=nx.expected_degree_graph(z)
 
+    Notes
+    -----
+    The model in [1]_ includes the possibility of self-loop edges
+    (set selfloops=True).  
 
     References
     ----------
@@ -312,7 +318,9 @@ def expected_degree_graph(w, seed=None):
     rho = 1/float(sum(w))
     seq = sorted(w, reverse=True)
     for u in range(n-1):
-        v = u + 1 
+        v = u 
+        if not selfloops:
+            v += 1
         factor = seq[u] * rho
         p = seq[v]*factor  
         if p>1:
