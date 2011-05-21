@@ -69,22 +69,21 @@ def number_of_edges(G):
     return G.number_of_edges()
 
 def density(G):
-    """Return the density of a graph.
+    r"""Return the density of a graph.
 
     The density for undirected graphs is
 
     .. math::
 
-       d = \\frac{2m}{n(n-1)},
+       d = \frac{2m}{n(n-1)},
 
     and for directed graphs is
 
     .. math::
 
-       d = \\frac{m}{n(n-1)},
+       d = \frac{m}{n(n-1)},
 
-    where :math:`n` is the number of nodes and :math:`m`
-    is the number of edges in :math:`G`.
+    where `n` is the number of nodes and `m`  is the number of edges in `G`.
 
     Notes
     -----

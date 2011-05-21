@@ -117,15 +117,15 @@ def _weighted_triangles_and_degree_iter(G,nodes=None):
 
 
 def average_clustering(G,weighted=False):
-    """Compute average clustering coefficient.
+    r"""Compute average clustering coefficient.
 
     A clustering coefficient for the whole graph is the average, 
 
     .. math::
 
-       C = \\frac{1}{n}\\sum_{v \in G} c_v,
+       C = \frac{1}{n}\sum_{v \in G} c_v,
        
-    where :math:`n` is the number of nodes in :math:`G`.
+    where `n` is the number of nodes in `G`.
 
     Parameters
     ----------
@@ -164,15 +164,15 @@ def average_clustering(G,weighted=False):
     return s/float(order)
 
 def clustering(G,nodes=None,weighted=False):
-    """ Compute the clustering coefficient for nodes.
+    r"""Compute the clustering coefficient for nodes.
 
     For each node find the fraction of possible triangles that exist,
 
     .. math::
 
-      c_v = \\frac{2 T(v)}{deg(v)(deg(v)-1)}
+      c_v = \frac{2 T(v)}{deg(v)(deg(v)-1)}
 
-    where :math:`T(v)` is the number of triangles through node :math:`v`.       
+    where `T(v)` is the number of triangles through node `v`.       
 
     Parameters
     ----------
@@ -265,21 +265,20 @@ def transitivity(G):
         return triangles/float(contri)
 
 def square_clustering(G, nodes=None):
-    """ Compute the squares clustering coefficient for nodes.
+    r""" Compute the squares clustering coefficient for nodes.
 
     For each node return the fraction of possible squares that exist at
     the node [1]_
 
     .. math::
-       C_4(v) = \\frac{ \\sum_{u=1}^{k_v} 
-       \\sum_{w=u+1}^{k_v} q_v(u,w) }{ \\sum_{u=1}^{k_v} 
-       \\sum_{w=u+1}^{k_v} [a_v(u,w) + q_v(u,w)]}
+       C_4(v) = \frac{ \sum_{u=1}^{k_v} 
+       \sum_{w=u+1}^{k_v} q_v(u,w) }{ \sum_{u=1}^{k_v} 
+       \sum_{w=u+1}^{k_v} [a_v(u,w) + q_v(u,w)]}
     
-    where :math:`q_v(u,w)` are the number of common neighbors of :math:`u` and
-    :math:`w` other than :math:`v` (ie squares), and 
-    :math:`a_v(u,w) = (k_u - (1+q_v(u,w)+\\theta_{uv}))(k_w - (1+q_v(u,w)+\\theta_{uw}))`,
-    where :math:`\\theta_{uw} = 1` if :math:`u` and :math:`w` are connected and
-    0 otherwise.
+    where `q_v(u,w)` are the number of common neighbors of `u` and `w` 
+    other than `v` (ie squares), and 
+    `a_v(u,w) = (k_u - (1+q_v(u,w)+\theta_{uv}))(k_w - (1+q_v(u,w)+\theta_{uw}))`,
+    where `\theta_{uw} = 1` if `u` and `w` are connected and 0 otherwise.
 
     Parameters
     ----------
@@ -303,8 +302,8 @@ def square_clustering(G, nodes=None):
 
     Notes
     -----
-    While :math:`C_3(v)` gives the probability that two neighbors of node v are 
-    connected with each other, :math:`C_4(v)` is the probability that two 
+    While `C_3(v)` gives the probability that two neighbors of node v are 
+    connected with each other, `C_4(v)` is the probability that two 
     neighbors of node v share a common neighbor different from v. This algorithm
     can be applied to both bipartite and unipartite networks.
  

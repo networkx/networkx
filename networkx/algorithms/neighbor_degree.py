@@ -32,25 +32,25 @@ def _average_nbr_deg(G, degree_method, nodes=None, weighted=False):
     return avg_nbr_deg
 
 def average_neighbor_degree(G, nodes=None, weighted=False):
-    """Returns the average degree of the neighborhood of each node.
+    r"""Returns the average degree of the neighborhood of each node.
 
-    The average degree of a node :math:`i` is:
+    The average degree of a node `i` is
 
     .. math::
 
-        k_{nn,i} = \\frac{1}{|N(i)|} \\sum_{j \in N(i)} k_j
+        k_{nn,i} = \frac{1}{|N(i)|} \sum_{j \in N(i)} k_j
 
-    where :math:`N(i)` are the neighbors of node :math:`i` and :math:`k_j` is
-    the degree of node :math:`j` which belongs to :math:`N(i)`. For weighted 
+    where `N(i)` are the neighbors of node `i` and `k_j` is
+    the degree of node `j` which belongs to `N(i)`. For weighted 
     graphs, an analogous measure can be defined [1]_,
 
     .. math::
 
         k_{nn,i}^{w} = \\frac{1}{s_i} \sum_{j \in N(i)} w_{ij} k_j
 
-    where :math:`s_i` is the weighted degree of node :math:`i`, :math:`w_{ij}`
-    is the weight of the edge that links :math:`i` and :math:`j` and
-    :math:`N(i)` are the neighbors of node :math:`i`.
+    where `s_i` is the weighted degree of node `i`, `w_{ij}`
+    is the weight of the edge that links `i` and `j` and
+    `N(i)` are the neighbors of node `i`.
 
 
     Parameters
@@ -144,20 +144,20 @@ def _avg_deg_conn(G, degree_method, nodes=None, weighted=False):
     return dc
 
 def average_degree_connectivity(G, nodes=None, weighted=False):
-    """Compute the average degree connectivity of graph.
+    r"""Compute the average degree connectivity of graph.
 
     The average degree connectivity is the average nearest neighbor degree of
     nodes with degree k. For weighted graphs, an analogous measure can 
     be computed using the weighted average neighbors degree defined in 
-    [1]_, for a node :math:`i`, as:
+    [1]_, for a node `i`, as:
 
     .. math::
 
-        k_{nn,i}^{w} = \\frac{1}{s_i} \sum_{j \in N(i)} w_{ij} k_j
+        k_{nn,i}^{w} = \frac{1}{s_i} \sum_{j \in N(i)} w_{ij} k_j
 
-    where :math:`s_i` is the weighted degree of node :math:`i`, :math:`w_{ij}`
-    is the weight of the edge that links :math:`i` and :math:`j` and
-    :math:`N(i)` are the neighbors of node :math:`i`.
+    where `s_i` is the weighted degree of node `i`, 
+    `w_{ij}`is the weight of the edge that links `i` and `j`,
+    and `N(i)` are the neighbors of node `i`.
 
     Parameters
     ----------
