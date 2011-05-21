@@ -2,7 +2,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 G=nx.random_geometric_graph(200,0.125)
-pos=G.pos # position is stored as member data for random_geometric_graph
+# position is stored as node attribute data for random_geometric_graph
+pos=nx.get_node_attributes(G,'pos')
 
 # find node near center (0.5,0.5)
 dmin=1
