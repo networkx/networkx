@@ -58,6 +58,10 @@ def generate_pajek(G):
         shape=na.get('shape','ellipse')
         s=' '.join(map(make_str,(id,n,x,y,shape)))
         for k,v in na.items():
+            if is_string_like(v):
+                # add quotes to any values with a blank space
+                if " " in v: 
+                    v="\"%s\""%v
             s+=' %s %s'%(k,v)
         yield s
 
