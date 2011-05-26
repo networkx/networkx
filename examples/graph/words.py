@@ -70,13 +70,14 @@ if __name__ == '__main__':
     for (source,target) in [('chaos','order'),
                             ('nodes','graph'),
                             ('pound','marks')]:
-        sp=shortest_path(G, source, target)
         print("Shortest path between %s and %s is"%(source,target))
-        if sp is False:
-            print("None")
-        else:
+        try:
+            sp=shortest_path(G, source, target)
             for n in sp:
                 print(n)
+        except nx.NetworkXNoPath:
+            print("None")
+
 
 
 
