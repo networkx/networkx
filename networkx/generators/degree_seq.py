@@ -317,7 +317,10 @@ def expected_degree_graph(w, seed=None, selfloops=False):
         random.seed(seed)
     rho = 1/float(sum(w))
     seq = sorted(w, reverse=True)
-    for u in range(n-1):
+    last=n
+    if not selfloops:
+        last-=1
+    for u in range(last):
         v = u 
         if not selfloops:
             v += 1
