@@ -58,10 +58,19 @@ class TestDAG:
         assert_raises(nx.NetworkXError, nx.topological_sort, G)
         assert_raises(nx.NetworkXError, nx.topological_sort_recursive, G)
 
-    def test_topological_sort4(self):
+    def test_topological_sort5(self):
         G=nx.DiGraph()
         G.add_edge(0,1)
         assert_equal(nx.topological_sort_recursive(G), [0,1])
         assert_equal(nx.topological_sort(G), [0,1])
 
+    def test_nbunch_argument(self):
+        G=nx.DiGraph()
+        G.add_edges_from([(1,2), (2,3), (1,4), (1,5), (2,6)])
+        assert_equal(nx.topological_sort(G), [1, 2, 3, 6, 4, 5])
+        assert_equal(nx.topological_sort_recursive(G), [1, 5, 4, 2, 6, 3])
+        assert_equal(nx.topological_sort(G,[1]), [1, 2, 3, 6, 4, 5])
+        assert_equal(nx.topological_sort_recursive(G,[1]), [1, 5, 4, 2, 6, 3])
+        assert_equal(nx.topological_sort(G,[5]), [5])
+        assert_equal(nx.topological_sort_recursive(G,[5]), [5])
 
