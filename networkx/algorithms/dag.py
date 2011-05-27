@@ -85,7 +85,7 @@ def topological_sort(G,nbunch=None):
                      
     if nbunch is None:
         nbunch = G.nodes_iter() 
-    for v in G:     # process all vertices in G
+    for v in nbunch:     # process all vertices in G
         if v in explored: 
             continue
         fringe=[v]   # nodes yet to look at
