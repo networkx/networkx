@@ -349,13 +349,13 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
                 G.add_edges_from( (u,v,key,data)
                                   for u,nbrs in d.items() 
                                   for v,datadict in nbrs.items() 
-                                  for key,data in list(datadict.items())
+                                  for key,data in datadict.items()
                                 )
             else:
                 G.add_edges_from( (u,v,data)
                                   for u,nbrs in d.items() 
                                   for v,datadict in nbrs.items() 
-                                  for key,data in list(datadict.items())
+                                  for key,data in datadict.items()
                                 )
         else: # Undirected
             if G.is_multigraph():
@@ -364,7 +364,7 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
                     for v,datadict in nbrs.items():
                         if v not in seen:
                             G.add_edges_from( (u,v,key,data) 
-                                               for key,data in list(datadict.items())
+                                               for key,data in datadict.items()
                                           )
                     seen.add(u) 
             else:

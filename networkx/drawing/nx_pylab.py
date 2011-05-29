@@ -713,7 +713,7 @@ def draw_networkx_labels(G, pos,
     verticalalignment=kwds.get('verticalalignment','center')
 
     text_items={}  # there is no text collection so we'll fake one        
-    for (n,label) in list(labels.items()):
+    for n, label in labels.items():
         (x,y)=pos[n]
         if not cb.is_string_like(label):
             label=str(label) # this will cause "1" and 1 to be labeled the same
@@ -818,7 +818,7 @@ def draw_networkx_edge_labels(G, pos,
     else:
         labels = edge_labels
     text_items={} 
-    for ((n1,n2),label) in list(labels.items()):
+    for (n1,n2), label in labels.items():
         (x1,y1)=pos[n1]
         (x2,y2)=pos[n2]
         (x,y) = (float(x1+x2)/2.0, float(y1+y2)/2.0)

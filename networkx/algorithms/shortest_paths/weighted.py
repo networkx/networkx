@@ -223,7 +223,7 @@ def single_source_dijkstra_path_length(G, source, cutoff= None,
         #is about 30% slower than the following
         if G.is_multigraph():
             edata=[]
-            for w,keydata in list(G[v].items()):
+            for w,keydata in G[v].items():
                 minweight=min((dd.get(weight,1)
                                for k,dd in keydata.items()))
                 edata.append((w,{weight:minweight}))
@@ -317,7 +317,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
         #is about 30% slower than the following
         if G.is_multigraph():
             edata=[]
-            for w,keydata in list(G[v].items()):
+            for w,keydata in G[v].items():
                 minweight=min((dd.get(weight,1)
                                for k,dd in keydata.items()))
                 edata.append((w,{weight:minweight}))

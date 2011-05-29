@@ -374,7 +374,7 @@ class GEXFWriter(GEXF):
             mode='dynamic'
         else:
             mode='static'
-        for k,v in list(data.items()):
+        for k,v in data.items():
             # rename generic multigraph key to avoid any name conflict
             if k == 'key':
                 k='networkx_key' 

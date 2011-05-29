@@ -303,7 +303,7 @@ def generate_gml(G):
     if G.is_directed():
         yield indent+"directed 1"
     # write graph attributes 
-    for k,v in list(G.graph.items()):
+    for k,v in G.graph.items():
         if type(v)==dicttype: 
             v=listify(v,indent,2)
         elif is_string_like(v):
@@ -321,7 +321,7 @@ def generate_gml(G):
             label='"%s"'%label
         yield 2*indent+'label %s'%label
         if n in G:
-          for k,v in list(G.node[n].items()):
+          for k,v in G.node[n].items():
               if k=='id': continue
               if type(v)==dicttype: 
                   v=listify(v,indent,3)
@@ -335,7 +335,7 @@ def generate_gml(G):
         yield indent+"edge ["
         yield 2*indent+"source %s"%node_id[u]
         yield 2*indent+"target %s"%node_id[v]
-        for k,v in list(edgedata.items()):
+        for k,v in edgedata.items():
             if k=='source': continue
             if k=='target': continue
             if type(v)==dicttype: 

@@ -96,7 +96,7 @@ if __name__ == '__main__':
     for (white,black,game_info) in G.edges(data=True):
         if game_info['ECO']=='B97':
            print(white,"vs",black)
-           for k,v in list(game_info.items()):
+           for k,v in game_info.items():
                print("   ",k,": ",v)
            print("\n")
 

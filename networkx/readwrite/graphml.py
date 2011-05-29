@@ -241,7 +241,7 @@ class GraphMLWriter(GraphML):
     def add_attributes(self, scope, xml_obj, data, default):
         """Appends attributes to edges or nodes.
         """
-        for k,v in list(data.items()):
+        for k,v in data.items():
             default_value=default.get(k)
             obj=self.add_data(make_str(k), type(v), make_str(v), 
                               scope=scope, default=default_value)
