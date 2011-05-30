@@ -1,26 +1,22 @@
 # -*- coding: utf-8 -*-
+"""Shortest paths and path lengths using A* ("A star") algorithm.
 """
-Shortest paths and path lengths using A* ("A star") algorithm.
-
-"""
-__author__ =\
-"""Salim Fadhley <salimfadhley@gmail.com>
-Matteo Dell'Amico <matteodellamico@gmail.com>"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
 from heapq import heappush, heappop
 from networkx import NetworkXError
 import networkx as nx
-
+__author__ ="\n".join(["Salim Fadhley <salimfadhley@gmail.com>",
+                       "Matteo Dell'Amico <matteodellamico@gmail.com>"])
 __all__ = ['astar_path','astar_path_length']
 
 def astar_path(G, source, target, heuristic=None, weight='weight'):
-    """Return a list of nodes in a shortest path between source and target using the A* ("A-star") algorithm.
+    """Return a list of nodes in a shortest path between source and target 
+    using the A* ("A-star") algorithm.
 
     There may be more than one shortest path.  This returns only one.
     
@@ -63,7 +59,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
     See Also
     --------
-    shortest_path(), dijkstra_path()
+    shortest_path, dijkstra_path
 
     """
     if G.is_multigraph():
@@ -75,7 +71,11 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             return 0
     # The queue stores priority, node, cost to reach, and parent.
     # Uses Python heapq to keep in priority order.
-    queue = [(0, source, 0, None)]
+    # Add each node's hash to the queue to prevent the underlying heap from
+    # attempting to compare the nodes themselves. The hash breaks ties in the
+    # priority and is guarenteed unique for all nodes in the graph.
+    queue = [(0, hash(source), source, 0, None)]
+
     # Maps enqueued nodes to distance of discovered paths and the
     # computed heuristics to target. We avoid computing the heuristics
     # more than once and inserting the node into the queue too many times.
@@ -85,7 +85,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
     
     while queue:
         # Pop the smallest item from queue.
-        _, curnode, dist, parent = heappop(queue)
+        _, __, curnode, dist, parent = heappop(queue)
 
         if curnode == target:
             path = [curnode]
@@ -116,12 +116,14 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             else:
                 h = heuristic(neighbor, target)
             enqueued[neighbor] = ncost, h
-            heappush(queue, (ncost + h, neighbor, ncost, curnode))
+            heappush(queue, (ncost + h, hash(neighbor), neighbor, 
+                             ncost, curnode))
 
     raise nx.NetworkXNoPath("Node %s not reachable from %s"%(source,target))
 
 def astar_path_length(G, source, target, heuristic=None, weight='weight'):
-    """Return a list of nodes in a shortest path between source and target using the A* ("A-star") algorithm.
+    """Return a list of nodes in a shortest path between source and target 
+    using the A* ("A-star") algorithm.
 
     Parameters
     ----------
@@ -145,9 +147,9 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
 
     See Also
     --------
-    astar_path()
+    astar_path
 
-"""
+    """
     path=astar_path(G,source,target,heuristic)
     return sum(G[u][v].get(weight,1) for u,v in zip(path[:-1],path[1:]))
     

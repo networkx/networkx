@@ -116,3 +116,18 @@ class TestAStar:
         C=nx.cycle_graph(7)
         assert nx.astar_path(C,0,3)==[0, 1, 2, 3]
         assert nx.dijkstra_path(C,0,4)==[0, 6, 5, 4]
+
+
+    def test_orderable(self):
+        class UnorderableClass: pass
+        node_1 = UnorderableClass()
+        node_2 = UnorderableClass()
+        node_3 = UnorderableClass()
+        node_4 = UnorderableClass()
+        G = nx.Graph()
+        G.add_edge(node_1, node_2)
+        G.add_edge(node_1, node_3)
+        G.add_edge(node_2, node_4)
+        G.add_edge(node_3, node_4)
+        path=nx.algorithms.shortest_paths.astar.astar_path(G, node_1, node_4) 
+
