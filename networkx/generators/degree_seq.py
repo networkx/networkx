@@ -275,15 +275,23 @@ def directed_configuration_model(in_degree_sequence,
     return G
 
 
-def expected_degree_graph(w, seed=None, selfloops=False):
-    """Return a random graph with given expected degrees.
+def expected_degree_graph(w, seed=None, selfloops=True):
+    r"""Return a random graph with given expected degrees.
+
+    Given a sequence of expected degrees `W=(w_0,w_1,\ldots,w_{n-1}`)
+    of length `n` this algorithm assigns an edge between node `u` and
+    node `v` with probability
+
+    .. math::
+
+       p_{uv} = \frac{w_u w_v}{\sum_k w_k} .
 
     Parameters
     ----------
     w : list 
         The list of expected degrees.
-    selfloops: bool (default=False)
-        Set to True to include the possibility of self-loop edges
+    selfloops: bool (default=True)
+        Set to False to remove the possibility of self-loop edges.
     seed : hashable object, optional
         The seed for the random number generator.
 
@@ -298,16 +306,42 @@ def expected_degree_graph(w, seed=None, selfloops=False):
 
     Notes
     -----
-    The model in [1]_ includes the possibility of self-loop edges
-    (set selfloops=True).  
+    The complexity of this algorithm is `\mathcal{O}(n+m)` where `n` is the
+    number of nodes and `m` is the expected number of edges.
+
+    The model in [1]_ includes the possibility of self-loop edges.
+    Set selfloops=False to produce a graph without self loops.
+    
+    For finite graphs this model doesn't produce exactly the given 
+    expected degree sequence.  Instead the expected degrees are as
+    follows:
+
+    For the case without self loops (selfloops=False),
+
+    .. math::
+
+       E[k_{u}] = \sum_{v \ne u} p_{uv} 
+                = w_u \left( 1 - \frac{w_u}{\sum_k w_k} \right) .
+
+
+    NetworkX uses the standard convention that a self-loop edge counts 2 
+    in the degree of a node, so with self loops (selfloops=True),
+
+    .. math::
+
+       E[k_{u}] =  \sum_{v \ne u} p_{uv}  + 2 p_{uu} 
+                = w_u \left( 1 + \frac{w_u}{\sum_k w_k} \right) .
 
     References
     ----------
-    .. [1] Fan Chung and L. Lu, Connected components in random graphs with 
-       given expected degree sequences, Ann. Combinatorics, 6, pp. 125-145, 2002.
+    .. [1] Fan Chung and L. Lu, Connected components in random graphs with  
+       given expected degree sequences, Ann. Combinatorics, 6, 
+       pp. 125-145, 2002.
     .. [2] Joel Miller and Aric Hagberg, 
-       Efficient generation of networks with given expected degrees
-       To appear in Proceedings of WAW 2011, LNCS, 2011.
+       Efficient generation of networks with given expected degrees,
+       in Algorithms and Models for the Web-Graph (WAW 2011), 
+       Alan Frieze, Paul Horn, and Paweł Prałat (Eds), LNCS 6732,
+       pp. 115-126, 2011.
     """
     n = len(w)
     G=nx.empty_graph(n)
