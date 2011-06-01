@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Generate graphs with a given degree sequence or expected degree sequence.
-
+"""Generate graphs with a given degree sequence or expected degree sequence.
 """
 #    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -9,13 +7,17 @@ Generate graphs with a given degree sequence or expected degree sequence.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+import heapq
+import math
+import random
+import networkx as nx
+import networkx.utils
+from networkx.generators.classic import empty_graph
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Dan Schult (dschult@colgate.edu)'
                         'Joel Miller (joel.c.miller.research@gmail.com)'
                         'Ben Edwards'])
-
 __all__ = ['configuration_model',
            'directed_configuration_model',
            'expected_degree_graph',
@@ -30,16 +32,6 @@ __all__ = ['configuration_model',
            'connected_double_edge_swap',
            'li_smax_graph']
 
-import heapq
-import math
-import random
-import networkx as nx
-import networkx.utils
-from networkx.generators.classic import empty_graph
-
-#---------------------------------------------------------------------------
-#  Generating Graphs with a given degree sequence
-#---------------------------------------------------------------------------
 
 def configuration_model(deg_sequence,create_using=None,seed=None):
     """Return a random graph with the given degree sequence.
@@ -314,13 +306,13 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     
     For finite graphs this model doesn't produce exactly the given 
     expected degree sequence.  Instead the expected degrees are as
-    follows:
+    follows.
 
     For the case without self loops (selfloops=False),
 
     .. math::
 
-       E[k_{u}] = \sum_{v \ne u} p_{uv} 
+       E[deg(u)] = \sum_{v \ne u} p_{uv} 
                 = w_u \left( 1 - \frac{w_u}{\sum_k w_k} \right) .
 
 
@@ -329,7 +321,7 @@ def expected_degree_graph(w, seed=None, selfloops=True):
 
     .. math::
 
-       E[k_{u}] =  \sum_{v \ne u} p_{uv}  + 2 p_{uu} 
+       E[deg(u)] =  \sum_{v \ne u} p_{uv}  + 2 p_{uu} 
                 = w_u \left( 1 + \frac{w_u}{\sum_k w_k} \right) .
 
     References
@@ -377,8 +369,8 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     return G
 
 def havel_hakimi_graph(deg_sequence,create_using=None):
-    """Return a simple graph with given degree sequence and constructed using the 
-    Havel-Hakimi algorithm.
+    """Return a simple graph with given degree sequence and constructed 
+    using the Havel-Hakimi algorithm.
 
     Parameters
     ----------
@@ -396,7 +388,6 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
 
     Notes
     -----
-
     The Havel-Hakimi algorithm constructs a simple graph by
     successively connecting the node of highest degree to other nodes
     of highest degree, resorting remaining nodes by degree, and
@@ -509,9 +500,11 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
     >>> G = nx.random_clustered_graph(deg_tri)
 
     To remove parallel edges:
+
     >>> G=nx.Graph(G)
 	
     To remove self loops:
+
     >>> G.remove_edges_from(G.selfloop_edges())
 
     """
@@ -556,8 +549,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
 
 
 def degree_sequence_tree(deg_sequence,create_using=None):
-    """
-    Make a tree for the given degree sequence.
+    """Make a tree for the given degree sequence.
 
     A tree has #nodes-#edges=1 so
     the degree sequence must have
