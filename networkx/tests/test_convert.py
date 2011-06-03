@@ -169,9 +169,7 @@ class TestConvert():
         GI=MultiGraph(XGM)
         assert_equal(sorted(XGM.nodes()), sorted(GI.nodes()))
         assert_equal(sorted(XGM.edges()), sorted(GI.edges()))
-        print G.edges()
         GM=MultiGraph(G)
-        print GM.edges()
         assert_equal(sorted(GM.nodes()), sorted(G.nodes()))
         assert_equal(sorted(GM.edges()), sorted(G.edges()))
 
