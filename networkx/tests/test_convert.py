@@ -11,6 +11,11 @@ from networkx.algorithms.operators import *
 from networkx.generators.classic import barbell_graph,cycle_graph
 
 class TestConvert():
+    def edgelists_equal(self,e1,e2):
+        return sorted(sorted(e) for e in e1)==sorted(sorted(e) for e in e2)
+    
+        
+
     def test_simple_graphs(self):
         for dest, source in [(to_dict_of_dicts, from_dict_of_dicts),
                              (to_dict_of_lists, from_dict_of_lists)]:
@@ -164,7 +169,9 @@ class TestConvert():
         GI=MultiGraph(XGM)
         assert_equal(sorted(XGM.nodes()), sorted(GI.nodes()))
         assert_equal(sorted(XGM.edges()), sorted(GI.edges()))
+        print G.edges()
         GM=MultiGraph(G)
+        print GM.edges()
         assert_equal(sorted(GM.nodes()), sorted(G.nodes()))
         assert_equal(sorted(GM.edges()), sorted(G.edges()))
 
@@ -202,3 +209,18 @@ class TestConvert():
         assert_equal(sorted(G.edges()), sorted(P.edges()))
         assert_equal(sorted(G.edges(data=True)), sorted(P.edges(data=True)))
 
+    def test_directed_to_undirected(self):
+        edges1 = [(0, 1), (1, 2), (2, 0)]
+        edges2 = [(0, 1), (1, 2), (0, 2)]
+        assert_true(self.edgelists_equal(nx.Graph(nx.DiGraph(edges1)).edges(),edges1))
+        assert_true(self.edgelists_equal(nx.Graph(nx.DiGraph(edges2)).edges(),edges1))
+        assert_true(self.edgelists_equal(nx.MultiGraph(nx.DiGraph(edges1)).edges(),edges1))
+        assert_true(self.edgelists_equal(nx.MultiGraph(nx.DiGraph(edges2)).edges(),edges1))
+
+        assert_true(self.edgelists_equal(nx.MultiGraph(nx.MultiDiGraph(edges1)).edges(),
+                                         edges1))
+        assert_true(self.edgelists_equal(nx.MultiGraph(nx.MultiDiGraph(edges2)).edges(),
+                                         edges1))
+
+        assert_true(self.edgelists_equal(nx.Graph(nx.MultiDiGraph(edges1)).edges(),edges1))
+        assert_true(self.edgelists_equal(nx.Graph(nx.MultiDiGraph(edges2)).edges(),edges1))

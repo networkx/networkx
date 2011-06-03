@@ -256,7 +256,6 @@ def from_dict_of_lists(d,create_using=None):
     """
     G=_prep_create_using(create_using)
     G.add_nodes_from(d)        
-
     if G.is_multigraph() and not G.is_directed():
         # a dict_of_lists can't show multiedges.  BUT for undirected graphs,
         # each edge shows up twice in the dict_of_lists.  
@@ -340,7 +339,6 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
     """
     G=_prep_create_using(create_using)
     G.add_nodes_from(d)
-
     # is dict a MultiGraph or MultiDiGraph?
     if multigraph_input:
         # make a copy of the list of edge data (but not the edge data)
@@ -362,33 +360,35 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
                 seen=set()   # don't add both directions of undirected graph
                 for u,nbrs in d.items():
                     for v,datadict in nbrs.items():
-                        if v not in seen:
+                        if (u,v) not in seen:
                             G.add_edges_from( (u,v,key,data) 
                                                for key,data in datadict.items()
-                                          )
-                    seen.add(u) 
+                                              )
+                            seen.add((v,u)) 
             else:
                 seen=set()   # don't add both directions of undirected graph
                 for u,nbrs in d.items():
                     for v,datadict in nbrs.items():
-                        if v not in seen:
+                        if (u,v) not in seen:
                             G.add_edges_from( (u,v,data)
                                         for key,data in datadict.items() )
-                    seen.add(u) 
+                            seen.add((v,u)) 
 
     else: # not a multigraph to multigraph transfer
-        if G.is_directed():
-            G.add_edges_from( ( (u,v,data) 
-                                for u,nbrs in d.items() 
-                                for v,data in nbrs.items()) )
-        # need this if G is multigraph and slightly faster if not multigraph
-        else:
+        if G.is_multigraph() and not G.is_directed():
+            # d can have both representations u-v, v-u in dict.  Only add one.
+            # We don't need this check for digraphs since we add both directions,
+            # or for Graph() since it is done implicitly (parallel edges not allowed)
             seen=set()
             for u,nbrs in d.items():
                 for v,data in nbrs.items():
-                    if v not in seen:
+                    if (u,v) not in seen:
                         G.add_edge(u,v,attr_dict=data)
-                seen.add(u)
+                    seen.add((v,u))
+        else:
+            G.add_edges_from( ( (u,v,data) 
+                                for u,nbrs in d.items() 
+                                for v,data in nbrs.items()) )
     return G                         
 
 def to_edgelist(G,nodelist=None):
