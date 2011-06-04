@@ -40,7 +40,7 @@ class TestConvertNumpy(object):
         GG = nx.from_scipy_sparse_matrix(A, create_using=create_using)
         self.assert_equal(G, GG)
 
-        GW = nx.from_whatever(A, create_using=create_using)
+        GW = nx.to_networkx_graph(A, create_using=create_using)
         self.assert_equal(G, GW)
 
         GI = create_using.__class__(A)

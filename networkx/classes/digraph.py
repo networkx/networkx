@@ -1,23 +1,18 @@
-"""
-Base class for directed graphs.
-
-"""
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
-#    Copyright (C) 2004-2009 by
+"""Base class for directed graphs."""
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-#
-
+from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
 from networkx.exception import NetworkXError
 import networkx.convert as convert
-from copy import deepcopy
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Dan Schult(dschult@colgate.edu)'])
 
 class DiGraph(Graph):
     """
@@ -214,7 +209,7 @@ class DiGraph(Graph):
 
         # attempt to load graph with data
         if data is not None:
-            convert.from_whatever(data,create_using=self)
+            convert.to_networkx_graph(data,create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
         self.edge=self.adj

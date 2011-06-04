@@ -1,30 +1,22 @@
-"""
-Base class for MultiDiGraph.
-
-"""
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
-
-#    Copyright (C) 2004-2009 by
+"""Base class for MultiDiGraph."""
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-#
-
+from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph  # for doctests
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
 from networkx.exception import NetworkXError
-from copy import deepcopy
-
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Dan Schult(dschult@colgate.edu)'])
 
 class MultiDiGraph(MultiGraph,DiGraph):
-    """
-    A directed graph class that can store multiedges.
+    """A directed graph class that can store multiedges.
 
     Multiedges are multiple edges between two nodes.  Each edge
     can hold optional data or attributes.

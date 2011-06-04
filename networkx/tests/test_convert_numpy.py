@@ -39,7 +39,7 @@ class TestConvertNumpy(object):
     def identity_conversion(self, G, A, create_using):
         GG = nx.from_numpy_matrix(A, create_using=create_using)
         self.assert_equal(G, GG)
-        GW = nx.from_whatever(A, create_using=create_using)
+        GW = nx.to_networkx_graph(A, create_using=create_using)
         self.assert_equal(G, GW)
         GI = create_using.__class__(A)
         self.assert_equal(G, GI)

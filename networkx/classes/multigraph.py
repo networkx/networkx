@@ -1,22 +1,17 @@
-"""
-Base class for MultiGraph.
-"""
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
-#    Copyright (C) 2004-2009 by
+"""Base class for MultiGraph."""
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-#
-
+from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
 from networkx import NetworkXError
-from copy import deepcopy
-
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Dan Schult(dschult@colgate.edu)'])
 
 class MultiGraph(Graph):
     """

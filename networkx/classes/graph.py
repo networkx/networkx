@@ -1,5 +1,4 @@
-"""
-Base class for undirected graphs.
+"""Base class for undirected graphs.
 
 The Graph class allows any hashable object as a node
 and can associate key/value attribute pairs with each undirected edge.
@@ -7,25 +6,21 @@ and can associate key/value attribute pairs with each undirected edge.
 Self-loops are allowed but multiple edges are not (see MultiGraph).
 
 For directed graphs see DiGraph and MultiDiGraph.
-
 """
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                            'Pieter Swart (swart@lanl.gov)',
-                            'Dan Schult(dschult@colgate.edu)'])
 #    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-#
-__docformat__ = "restructuredtext en"
-
+from copy import deepcopy
 import networkx as nx
 from networkx.exception import NetworkXError
 import networkx.convert as convert
-from copy import deepcopy
 
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Dan Schult(dschult@colgate.edu)'])
 
 class Graph(object):
     """
@@ -218,7 +213,7 @@ class Graph(object):
         self.adj = {}     # empty adjacency dict
         # attempt to load graph with data
         if data is not None:
-            convert.from_whatever(data,create_using=self)
+            convert.to_networkx_graph(data,create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
         self.edge = self.adj

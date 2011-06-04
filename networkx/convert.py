@@ -34,7 +34,7 @@ nx_pygraphviz, nx_pydot
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
-#    Copyright (C) 2006-2010 by 
+#    Copyright (C) 2006-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -44,7 +44,7 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 import warnings
 import networkx as nx
 
-__all__ = ['to_networkx_graph','from_whatever', 
+__all__ = ['to_networkx_graph',
            'from_dict_of_dicts', 'to_dict_of_dicts',
            'from_dict_of_lists', 'to_dict_of_lists',
            'from_edgelist', 'to_edgelist',
@@ -180,19 +180,6 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
 
     return 
 
-    
-
-def from_whatever(data,create_using=None,multigraph_input=False):
-    """Deprecated. Use to_networkx_graph.
-
-    See Also
-    --------
-    to_networkx_graph()
-    """
-
-    return to_networkx_graph(data,
-                             create_using=create_using,
-                             multigraph_input=multigraph_input)
 
 def convert_to_undirected(G):
     """Return a new undirected representation of the graph G.
@@ -206,8 +193,6 @@ def convert_to_directed(G):
 
     """
     return G.to_directed()
-
-
 
 
 def to_dict_of_lists(G,nodelist=None):
