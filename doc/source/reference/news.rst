@@ -7,7 +7,7 @@ Release Log
 Networkx-1.5
 ------------
 
-Release date:  xx May 2011
+Release date:  4 June 2011
 
 For full details of the tickets closed for this release see:
 https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.5

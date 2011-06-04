@@ -4,7 +4,7 @@ NetworkX is distributed with the BSD license.
 
 ::
 
-   Copyright (C) 2004-2010, NetworkX Developers
+   Copyright (C) 2004-2011, NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
