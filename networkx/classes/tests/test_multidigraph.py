@@ -314,9 +314,9 @@ class TestMultiDiGraph(TestMultiGraph):
         G=networkx.MultiDiGraph([(0,1),(0,1)])
         R=G.reverse()
         assert_equal(sorted(R.edges()),[(1,0),(1,0)])
-#        R.remove_edge(1,0)
-#        assert_equal(sorted(R.edges()),[(1,0)])
-#        assert_equal(sorted(G.edges()),[(0,1),(0,1)])
+        R.remove_edge(1,0)
+        assert_equal(sorted(R.edges()),[(1,0)])
+        assert_equal(sorted(G.edges()),[(0,1),(0,1)])
 
     def test_reverse_nocopy(self):
         G=networkx.MultiDiGraph([(0,1),(0,1)])
