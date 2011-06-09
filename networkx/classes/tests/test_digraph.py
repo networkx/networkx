@@ -230,3 +230,19 @@ class TestDiGraph(TestGraph):
         assert_false(G.to_undirected(reciprocal=True).has_edge(1,2))
         G.add_edge(2,1)
         assert_true(G.to_undirected(reciprocal=True).has_edge(1,2))
+
+    def test_reverse_copy(self):
+        G=networkx.DiGraph([(0,1),(1,2)])
+        R=G.reverse()
+        assert_equal(sorted(R.edges()),[(1,0),(2,1)])
+        R.remove_edge(1,0)
+        assert_equal(sorted(R.edges()),[(2,1)])
+        assert_equal(sorted(G.edges()),[(0,1),(1,2)])
+
+    def test_reverse_nocopy(self):
+        G=networkx.DiGraph([(0,1),(1,2)])
+        R=G.reverse(copy=False)
+        assert_equal(sorted(R.edges()),[(1,0),(2,1)])
+        R.remove_edge(1,0)
+        assert_equal(sorted(R.edges()),[(2,1)])
+        assert_equal(sorted(G.edges()),[(2,1)])

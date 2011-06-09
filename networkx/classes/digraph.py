@@ -1145,11 +1145,11 @@ class DiGraph(Graph):
         """
         if copy:
             H = self.__class__(name="Reverse of (%s)"%self.name)
-            H.pred=self.succ.copy()
-            H.adj=self.pred.copy()
-            H.succ=H.adj
-            H.graph=self.graph.copy()
-            H.node=self.node.copy()
+            H.add_nodes_from(self)
+            H.add_edges_from( (v,u,deepcopy(d)) for u,v,d 
+                              in self.edges(data=True) )
+            H.graph=deepcopy(self.graph)
+            H.node=deepcopy(self.node)
         else:
             self.pred,self.succ=self.succ,self.pred
             self.adj=self.succ

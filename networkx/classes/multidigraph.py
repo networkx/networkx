@@ -812,3 +812,29 @@ class MultiDiGraph(MultiGraph,DiGraph):
             H.node[n]=self.node[n]
         H.graph=self.graph
         return H
+
+    def reverse(self, copy=True):
+        """Return the reverse of the graph.
+
+        The reverse is a graph with the same nodes and edges
+        but with the directions of the edges reversed.
+
+        Parameters
+        ----------
+        copy : bool optional (default=True)
+            If True, return a new DiGraph holding the reversed edges.
+            If False, reverse the reverse graph is created using
+            the original graph (this changes the original graph).
+        """
+        if copy:
+            H = self.__class__(name="Reverse of (%s)"%self.name)
+            H.add_nodes_from(self)
+            H.add_edges_from( (v,u,k,deepcopy(d)) for u,v,k,d 
+                              in self.edges(keys=True, data=True) )
+            H.graph=deepcopy(self.graph)
+            H.node=deepcopy(self.node)
+        else:
+            self.pred,self.succ=self.succ,self.pred
+            self.adj=self.succ
+            H=self
+        return H
