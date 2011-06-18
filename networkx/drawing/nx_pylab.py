@@ -660,7 +660,7 @@ def draw_networkx_labels(G, pos,
     alpha: float
        The text transparency (default=1.0) 
 
-    labels: dictionary
+    edge_labels: dictionary
        Node labels in a dictionary keyed by node of text labels (default=None)
 
     font_size: int
@@ -734,6 +734,7 @@ def draw_networkx_labels(G, pos,
 
 def draw_networkx_edge_labels(G, pos,
                               edge_labels=None,
+                              label_pos=0.5,
                               font_size=10,
                               font_color='k',
                               font_family='sans-serif',
@@ -765,6 +766,9 @@ def draw_networkx_edge_labels(G, pos,
        Node labels in a dictionary keyed by edge two-tuple of text
        labels (default=None), Only labels for the keys in the dictionary
        are drawn. 
+
+    label_pos: float
+       Position of edge label along edge (0=head, 0.5=center, 1=tail)
 
     font_size: int
        Font size for text labels (default=12)
@@ -821,7 +825,9 @@ def draw_networkx_edge_labels(G, pos,
     for (n1,n2), label in labels.items():
         (x1,y1)=pos[n1]
         (x2,y2)=pos[n2]
-        (x,y) = (float(x1+x2)/2.0, float(y1+y2)/2.0)
+        (x,y) = (x1 * label_pos + x2 * (1.0 - label_pos), 
+                 y1 * label_pos + y2 * (1.0 - label_pos)) 
+
         if rotate: 
             angle=numpy.arctan2(y2-y1,x2-x1)/(2.0*numpy.pi)*360 # degrees
             # make label orientation "right-side-up"
