@@ -676,9 +676,9 @@ class Graph(object):
         -----
         Adding an edge that already exists updates the edge data.
 
-        NetworkX algorithms designed for weighted graphs use as
-        the edge weight a numerical value assigned to the keyword
-        'weight'.
+        Many NetworkX algorithms designed for weighted graphs use as
+        the edge weight a numerical value assigned to a keyword
+        which by default is 'weight'.
 
         Examples
         --------
@@ -1204,7 +1204,7 @@ class Graph(object):
         """
         return iter(self.adj.items())
 
-    def degree(self, nbunch=None, weighted=False):
+    def degree(self, nbunch=None, weight=None):
         """Return the degree of a node or nodes.
 
         The node degree is the number of edges adjacent to that node.
@@ -1214,8 +1214,11 @@ class Graph(object):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights adjacent to the node.
 
         Returns
         -------
@@ -1236,11 +1239,11 @@ class Graph(object):
 
         """
         if nbunch in self:      # return a single node
-            return next(self.degree_iter(nbunch,weighted=weighted))[1]
+            return next(self.degree_iter(nbunch,weight))[1]
         else:           # return a dict
-            return dict(self.degree_iter(nbunch,weighted=weighted))
+            return dict(self.degree_iter(nbunch,weight))
 
-    def degree_iter(self, nbunch=None, weighted=False):
+    def degree_iter(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree).
 
         The node degree is the number of edges adjacent to the node.
@@ -1250,8 +1253,11 @@ class Graph(object):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights adjacent to the node.
 
         Returns
         -------
@@ -1272,19 +1278,20 @@ class Graph(object):
         [(0, 1), (1, 2)]
 
         """
+        if weight is False: weight=None # backward compatibility
         if nbunch is None:
             nodes_nbrs = iter(self.adj.items())
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
   
-        if weighted:                        
-        # edge weighted graph - degree is sum of nbr edge weights
-            for n,nbrs in nodes_nbrs:
-                yield (n, sum((nbrs[nbr].get('weight',1) for nbr in nbrs)) +
-                              (n in nbrs and nbrs[n].get('weight',1)))
-        else:
+        if weight is None:
             for n,nbrs in nodes_nbrs:
                 yield (n,len(nbrs)+(n in nbrs)) # return tuple (n,degree)
+        else:
+        # edge weighted graph - degree is sum of nbr edge weights
+            for n,nbrs in nodes_nbrs:
+                yield (n, sum((nbrs[nbr].get(weight,1) for nbr in nbrs)) +
+                              (n in nbrs and nbrs[n].get(weight,1)))
 
 
     def clear(self):
@@ -1578,18 +1585,19 @@ class Graph(object):
         return len(self.selfloop_edges())
 
 
-    def size(self, weighted=False):
+    def size(self, weight=None):
         """Return the number of edges.
 
         Parameters
         ----------
-        weighted : boolean, optional (default=False)
-           If True return the sum of the edge weights.
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
 
         Returns
         -------
         nedges : int
-            The number of edges in the graph.
+            The number of edges of sum of edge weights in the graph.
 
         See Also
         --------
@@ -1607,14 +1615,15 @@ class Graph(object):
         >>> G.add_edge('b','c',weight=4)
         >>> G.size()
         2
-        >>> G.size(weighted=True)
+        >>> G.size(weight='weight')
         6.0
         """
-        s=sum(self.degree(weighted=weighted).values())/2
-        if weighted:
-            return float(s)
-        else:
+        if weight is False: weight=None # backward compatibility
+        s=sum(self.degree(weight=weight).values())/2
+        if weight is None:
             return int(s)
+        else:
+            return float(s)
 
     def number_of_edges(self, u=None, v=None):
         """Return the number of edges between two nodes.

@@ -455,9 +455,9 @@ class DiGraph(Graph):
         -----
         Adding an edge that already exists updates the edge data.
 
-        NetworkX algorithms designed for weighted graphs use as
-        the edge weight a numerical value assigned to the keyword
-        'weight'.
+        Many NetworkX algorithms designed for weighted graphs use as
+        the edge weight a numerical value assigned to a keyword
+        which by default is 'weight'.
 
         Examples
         --------
@@ -789,7 +789,7 @@ class DiGraph(Graph):
         """
         return list(self.in_edges_iter(nbunch, data))
 
-    def degree_iter(self, nbunch=None, weighted=False):
+    def degree_iter(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree).
 
         The node degree is the number of edges adjacent to the node.
@@ -799,8 +799,11 @@ class DiGraph(Graph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights adjacent to the node.
 
         Returns
         -------
@@ -828,18 +831,19 @@ class DiGraph(Graph):
                 ((n,self.succ[n]) for n in self.nbunch_iter(nbunch)),
                 ((n,self.pred[n]) for n in self.nbunch_iter(nbunch)))
 
-        if weighted:                        
-        # edge weighted graph - degree is sum of edge weights
-            for (n,succ),(n2,pred) in nodes_nbrs:
-               yield (n, 
-                      sum((succ[nbr].get('weight',1) for nbr in succ))+
-                      sum((pred[nbr].get('weight',1) for nbr in pred)))
-        else:
+        if weight is False: weight=None # backward compatibility
+        if weight is None:
             for (n,succ),(n2,pred) in nodes_nbrs:
                 yield (n,len(succ)+len(pred)) 
+        else:
+        # edge weighted graph - degree is sum of edge weights
+            for (n,succ),(n2,pred) in nodes_nbrs:
+               yield (n,
+                      sum((succ[nbr].get(weight,1) for nbr in succ))+
+                      sum((pred[nbr].get(weight,1) for nbr in pred)))
 
 
-    def in_degree_iter(self, nbunch=None, weighted=False):
+    def in_degree_iter(self, nbunch=None, weight=None):
         """Return an iterator for (node, in-degree).
 
         The node in-degree is the number of edges pointing in to the node.
@@ -849,8 +853,11 @@ class DiGraph(Graph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights adjacent to the node.
 
         Returns
         -------
@@ -876,16 +883,17 @@ class DiGraph(Graph):
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
 
-        if weighted:
-        # edge weighted graph - degree is sum of edge weights
-            for n,nbrs in nodes_nbrs:
-                yield (n, sum(data.get('weight',1) for data in nbrs.values()))
-        else:
+        if weight is False: weight=None # backward compatibility
+        if weight is None:
             for n,nbrs in nodes_nbrs:
                 yield (n,len(nbrs))
+        else:
+        # edge weighted graph - degree is sum of edge weights
+            for n,nbrs in nodes_nbrs:
+                yield (n, sum(data.get(weight,1) for data in nbrs.values()))
 
 
-    def out_degree_iter(self, nbunch=None, weighted=False):
+    def out_degree_iter(self, nbunch=None, weight=None):
         """Return an iterator for (node, out-degree).
 
         The node out-degree is the number of edges pointing out of the node.
@@ -895,8 +903,11 @@ class DiGraph(Graph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights adjacent to the node.
 
         Returns
         -------
@@ -922,16 +933,16 @@ class DiGraph(Graph):
         else:
             nodes_nbrs=((n,self.succ[n]) for n in self.nbunch_iter(nbunch))
 
-        if weighted:
-        # edge weighted graph - degree is sum of edge weights
-            for n,nbrs in nodes_nbrs:
-                yield (n, sum(data.get('weight',1) for data in nbrs.values()))
-        else:
+        if weight is None or weight is False: # backward compatibility:
             for n,nbrs in nodes_nbrs:
                 yield (n,len(nbrs))
+        else:
+        # edge weighted graph - degree is sum of edge weights
+            for n,nbrs in nodes_nbrs:
+                yield (n, sum(data.get(weight,1) for data in nbrs.values()))
 
 
-    def in_degree(self, nbunch=None, weighted=False):
+    def in_degree(self, nbunch=None, weight=None):
         """Return the in-degree of a node or nodes.
 
         The node in-degree is the number of edges pointing in to the node.
@@ -941,8 +952,11 @@ class DiGraph(Graph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights adjacent to the node.
 
         Returns
         -------
@@ -966,11 +980,11 @@ class DiGraph(Graph):
         [0, 1]
         """
         if nbunch in self:      # return a single node
-            return next(self.in_degree_iter(nbunch,weighted=weighted))[1]
+            return next(self.in_degree_iter(nbunch,weight))[1]
         else:           # return a dict
-            return dict(self.in_degree_iter(nbunch,weighted=weighted))
+            return dict(self.in_degree_iter(nbunch,weight))
 
-    def out_degree(self, nbunch=None, weighted=False):
+    def out_degree(self, nbunch=None, weight=None):
         """Return the out-degree of a node or nodes.
 
         The node out-degree is the number of edges pointing out of the node.
@@ -980,8 +994,11 @@ class DiGraph(Graph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights adjacent to the node.
 
         Returns
         -------
@@ -1003,9 +1020,9 @@ class DiGraph(Graph):
 
         """
         if nbunch in self:      # return a single node
-            return next(self.out_degree_iter(nbunch,weighted=weighted))[1]
+            return next(self.out_degree_iter(nbunch,weight))[1]
         else:           # return a dict
-            return dict(self.out_degree_iter(nbunch,weighted=weighted))
+            return dict(self.out_degree_iter(nbunch,weight))
 
     def clear(self):
         """Remove all nodes and edges from the graph.

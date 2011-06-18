@@ -494,7 +494,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         return list(self.in_edges_iter(nbunch, keys=keys, data=data))
 
 
-    def degree_iter(self, nbunch=None, weighted=False):
+    def degree_iter(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree).
 
         The node degree is the number of edges adjacent to the node.
@@ -504,8 +504,11 @@ class MultiDiGraph(MultiGraph,DiGraph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights.
 
         Returns
         -------
@@ -532,24 +535,25 @@ class MultiDiGraph(MultiGraph,DiGraph):
             nodes_nbrs=zip(
                 ((n,self.succ[n]) for n in self.nbunch_iter(nbunch)),
                 ((n,self.pred[n]) for n in self.nbunch_iter(nbunch)))
-        if weighted:
-        # edge weighted graph - degree is sum of nbr edge weights
-            for (n,succ),(n2,pred) in nodes_nbrs:
-                deg = sum([d.get('weight',1)
-                           for data in pred.values()
-                           for d in data.values()])
-                deg += sum([d.get('weight',1) 
-                           for data in succ.values()
-                           for d in data.values()])
-                yield (n, deg)
-        else:
+
+        if weight is None or weight is False: # backward compatibility
             for (n,succ),(n2,pred) in nodes_nbrs:
                 indeg = sum([len(data) for data in pred.values()])
                 outdeg = sum([len(data) for data in succ.values()])
                 yield (n, indeg + outdeg)  
+        else:
+        # edge weighted graph - degree is sum of nbr edge weights
+            for (n,succ),(n2,pred) in nodes_nbrs:
+                deg = sum([d.get(weight,1)
+                           for data in pred.values()
+                           for d in data.values()])
+                deg += sum([d.get(weight,1) 
+                           for data in succ.values()
+                           for d in data.values()])
+                yield (n, deg)
 
 
-    def in_degree_iter(self, nbunch=None, weighted=False):
+    def in_degree_iter(self, nbunch=None, weight=None):
         """Return an iterator for (node, in-degree).
 
         The node in-degree is the number of edges pointing in to the node.
@@ -559,8 +563,11 @@ class MultiDiGraph(MultiGraph,DiGraph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights adjacent to the node.
 
         Returns
         -------
@@ -586,19 +593,19 @@ class MultiDiGraph(MultiGraph,DiGraph):
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
 
-        if weighted:
+        if weight is None or weight is False: # backward compatibility
+            for n,nbrs in nodes_nbrs:
+                yield (n, sum([len(data) for data in nbrs.values()]) )
+        else:
             # edge weighted graph - degree is sum of nbr edge weights
             for n,pred in nodes_nbrs:
-                deg = sum([d.get('weight',1)
+                deg = sum([d.get(weight,1)
                            for data in pred.values()
                            for d in data.values()])
                 yield (n, deg)
-        else:
-            for n,nbrs in nodes_nbrs:
-                yield (n, sum([len(data) for data in nbrs.values()]) )
 
 
-    def out_degree_iter(self, nbunch=None, weighted=False):
+    def out_degree_iter(self, nbunch=None, weight=None):
         """Return an iterator for (node, out-degree).
 
         The node out-degree is the number of edges pointing out of the node.
@@ -608,8 +615,11 @@ class MultiDiGraph(MultiGraph,DiGraph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights.
 
         Returns
         -------
@@ -635,15 +645,15 @@ class MultiDiGraph(MultiGraph,DiGraph):
         else:
             nodes_nbrs=((n,self.succ[n]) for n in self.nbunch_iter(nbunch))
 
-        if weighted:
+        if weight is None or weight is False: # backward compatibility
+            for n,nbrs in nodes_nbrs:
+                yield (n, sum([len(data) for data in nbrs.values()]) )
+        else:
             for n,succ in nodes_nbrs:
-                deg = sum([d.get('weight',1)
+                deg = sum([d.get(weight,1)
                            for data in succ.values()
                            for d in data.values()])
                 yield (n, deg)
-        else:
-            for n,nbrs in nodes_nbrs:
-                yield (n, sum([len(data) for data in nbrs.values()]) )
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""

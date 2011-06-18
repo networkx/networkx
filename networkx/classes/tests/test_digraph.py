@@ -194,9 +194,13 @@ class TestDiGraph(TestGraph):
 
     def test_in_degree_iter_weighted(self):
         G=self.K3
-        assert_equal(list(G.in_degree_iter(weighted=True)),[(0,2),(1,2),(2,2)])
-        assert_equal(dict(G.in_degree_iter(weighted=True)),{0:2,1:2,2:2})
-        assert_equal(list(G.in_degree_iter(0,weighted=True)),[(0,2)])
+        G.add_edge(0,1,weight=0.3,other=1.2)
+        assert_equal(list(G.in_degree_iter(weight='weight')),[(0,2),(1,1.3),(2,2)])
+        assert_equal(dict(G.in_degree_iter(weight='weight')),{0:2,1:1.3,2:2})
+        assert_equal(list(G.in_degree_iter(1,weight='weight')),[(1,1.3)])
+        assert_equal(list(G.in_degree_iter(weight='other')),[(0,2),(1,2.2),(2,2)])
+        assert_equal(dict(G.in_degree_iter(weight='other')),{0:2,1:2.2,2:2})
+        assert_equal(list(G.in_degree_iter(1,weight='other')),[(1,2.2)])
 
     def test_out_degree(self):
         G=self.K3
@@ -208,9 +212,13 @@ class TestDiGraph(TestGraph):
 
     def test_out_degree_iter_weighted(self):
         G=self.K3
-        assert_equal(list(G.out_degree_iter(weighted=True)),[(0,2),(1,2),(2,2)])
-        assert_equal(dict(G.out_degree_iter(weighted=True)),{0:2,1:2,2:2})
-        assert_equal(list(G.out_degree_iter(0,weighted=True)),[(0,2)])
+        G.add_edge(0,1,weight=0.3,other=1.2)
+        assert_equal(list(G.out_degree_iter(weight='weight')),[(0,1.3),(1,2),(2,2)])
+        assert_equal(dict(G.out_degree_iter(weight='weight')),{0:1.3,1:2,2:2})
+        assert_equal(list(G.out_degree_iter(0,weight='weight')),[(0,1.3)])
+        assert_equal(list(G.out_degree_iter(weight='other')),[(0,2.2),(1,2),(2,2)])
+        assert_equal(dict(G.out_degree_iter(weight='other')),{0:2.2,1:2,2:2})
+        assert_equal(list(G.out_degree_iter(0,weight='other')),[(0,2.2)])
 
     def test_out_degree_iter(self):
         G=self.K3

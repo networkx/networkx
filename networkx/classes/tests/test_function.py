@@ -35,8 +35,8 @@ class TestFunction(object):
         assert_equal(self.DG.degree(),networkx.degree(self.DG))
         assert_equal(self.G.degree(nbunch=[0,1]),networkx.degree(self.G,nbunch=[0,1]))
         assert_equal(self.DG.degree(nbunch=[0,1]),networkx.degree(self.DG,nbunch=[0,1]))
-        assert_equal(self.G.degree(weighted=True),networkx.degree(self.G,weighted=True))
-        assert_equal(self.DG.degree(weighted=True),networkx.degree(self.DG,weighted=True))
+        assert_equal(self.G.degree(weight='weight'),networkx.degree(self.G,weight='weight'))
+        assert_equal(self.DG.degree(weight='weight'),networkx.degree(self.DG,weight='weight'))
     def test_neighbors(self):
         assert_equal(self.G.neighbors(1),networkx.neighbors(self.G,1))
         assert_equal(self.DG.neighbors(1),networkx.neighbors(self.DG,1))

@@ -688,7 +688,7 @@ class MultiGraph(Graph):
         except KeyError:
             return default
 
-    def degree_iter(self, nbunch=None, weighted=False):
+    def degree_iter(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree).
 
         The node degree is the number of edges adjacent to the node.
@@ -698,8 +698,11 @@ class MultiGraph(Graph):
         nbunch : iterable container, optional (default=all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        weighted : bool, optional (default=False)
-           If True return the sum of edge weights adjacent to the node.
+
+        weight : string or None, optional (default=None)
+           The edge attribute that holds the numerical value used 
+           as a weight.  If None, then each edge has weight 1.
+           The degree is the sum of the edge weights adjacent to the node.
 
         Returns
         -------
@@ -725,21 +728,21 @@ class MultiGraph(Graph):
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
 
-        if weighted:
-        # edge weighted graph - degree is sum of nbr edge weights
-            for n,nbrs in nodes_nbrs:
-                deg = sum([d.get('weight',1)
-                           for data in nbrs.values()
-                           for d in data.values()])
-                if n in nbrs:
-                    deg += sum([d.get('weight',1) 
-                           for key,d in nbrs[n].items()])
-                yield (n, deg)
-
-        else:
+        if weight is None or weight is False: # backward compatibility
             for n,nbrs in nodes_nbrs:
                 deg = sum([len(data) for data in nbrs.values()])
                 yield (n, deg+(n in nbrs and len(nbrs[n])))
+        else:
+        # edge weighted graph - degree is sum of nbr edge weights
+            for n,nbrs in nodes_nbrs:
+                deg = sum([d.get(weight,1)
+                           for data in nbrs.values()
+                           for d in data.values()])
+                if n in nbrs:
+                    deg += sum([d.get(weight,1)
+                           for key,d in nbrs[n].items()])
+                yield (n, deg)
+
 
     def is_multigraph(self):
         """Return True if graph is a multigraph, False otherwise."""

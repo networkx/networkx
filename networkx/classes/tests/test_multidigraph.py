@@ -264,7 +264,9 @@ class TestMultiDiGraph(TestMultiGraph):
         assert_equal(list(G.degree_iter()),[(0,4),(1,4),(2,4)])
         assert_equal(dict(G.degree_iter()),{0:4,1:4,2:4})
         assert_equal(list(G.degree_iter(0)),[(0,4)])
-        assert_equal(list(G.degree_iter(weighted=True)),[(0,4),(1,4),(2,4)])
+        G.add_edge(0,1,weight=0.3,other=1.2)
+        assert_equal(list(G.degree_iter(weight='weight')),[(0,4.3),(1,4.3),(2,4)])
+        assert_equal(list(G.degree_iter(weight='other')),[(0,5.2),(1,5.2),(2,4)])
 
 
     def test_in_degree(self):
@@ -300,7 +302,9 @@ class TestMultiDiGraph(TestMultiGraph):
         G=self.K3
         assert_equal(G.size(),6)
         assert_equal(G.number_of_edges(),6)
-        assert_equal(G.size(weighted=True),6.0)
+        G.add_edge(0,1,weight=0.3,other=1.2)
+        assert_equal(G.size(weight='weight'),6.3)
+        assert_equal(G.size(weight='other'),7.2)
 
     def test_to_undirected_reciprocal(self):
         G=self.Graph()

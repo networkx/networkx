@@ -259,12 +259,17 @@ class TestGraph:
 
     def test_weighted_degree(self):
         G=networkx.Graph()
-        G.add_edge(1,2,weight=2)
-        G.add_edge(2,3,weight=3)
-        assert_equal(list(G.degree(weighted=True).values()),[2,5,3])
-        assert_equal(G.degree(weighted=True),{1:2,2:5,3:3})
-        assert_equal(G.degree(1,weighted=True),2)
-        assert_equal(G.degree([1],weighted=True),{1:2})
+        G.add_edge(1,2,weight=2,other=3)
+        G.add_edge(2,3,weight=3,other=4)
+        assert_equal(list(G.degree(weight='weight').values()),[2,5,3])
+        assert_equal(G.degree(weight='weight'),{1:2,2:5,3:3})
+        assert_equal(G.degree(1,weight='weight'),2)
+        assert_equal(G.degree([1],weight='weight'),{1:2})
+
+        assert_equal(list(G.degree(weight='other').values()),[3,7,4])
+        assert_equal(G.degree(weight='other'),{1:3,2:7,3:4})
+        assert_equal(G.degree(1,weight='other'),3)
+        assert_equal(G.degree([1],weight='other'),{1:3})
 
 
 

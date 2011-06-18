@@ -50,11 +50,11 @@ def edges_iter(G,nbunch=None):
     """
     return G.edges_iter(nbunch)
 
-def degree(G,nbunch=None,weighted=False):
+def degree(G,nbunch=None,weight=None):
     """Return degree of single node or of nbunch of nodes.
     If nbunch is ommitted, then return degrees of *all* nodes.
     """
-    return G.degree(nbunch,weighted=weighted)
+    return G.degree(nbunch,weight)
 
 def neighbors(G,n):
     """Return a list of nodes connected to node n. """
