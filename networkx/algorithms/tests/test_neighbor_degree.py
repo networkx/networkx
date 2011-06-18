@@ -26,19 +26,19 @@ class TestAverageNeighbor(object):
         G=nx.path_graph(4)
         G[1][2]['weight']=4
         answer={0:2,1:1.8,2:1.8,3:2}
-        nd = nx.average_neighbor_degree(G,weighted=True)
+        nd = nx.average_neighbor_degree(G,weight='weight')
         assert_equal(nd,answer)
         
         D=G.to_directed()
-        nd = nx.average_neighbor_degree(D,weighted=True)
+        nd = nx.average_neighbor_degree(D,weight='weight')
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_neighbor_out_degree(D,weighted=True)
+        nd = nx.average_neighbor_out_degree(D,weight='weight')
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_neighbor_in_degree(D,weighted=True)
+        nd = nx.average_neighbor_in_degree(D,weight='weight')
         assert_equal(nd,answer)
 
 
@@ -72,7 +72,7 @@ class TestAverageNeighbor(object):
         G[0][5]['weight']=5
         nd = nx.average_neighbor_degree(G)[5]
         assert_equal(nd,1.8)
-        nd = nx.average_neighbor_degree(G,weighted=True)[5]
+        nd = nx.average_neighbor_degree(G,weight='weight')[5]
         assert_almost_equal(nd,3.222222,places=5)
 
     
@@ -102,21 +102,48 @@ class TestNeighborConnectivity(object):
         G=nx.path_graph(4)
         G[1][2]['weight']=4
         answer={1:2.0,2:1.8}
-        nd = nx.average_degree_connectivity(G,weighted=True)
+        nd = nx.average_degree_connectivity(G,weight='weight')
+        assert_equal(nd,answer)
+        answer={1:2.0,2:1.5}
+        nd = nx.average_degree_connectivity(G)
         assert_equal(nd,answer)
         
         D=G.to_directed()
         answer={2:2.0,4:1.8}
-        nd = nx.average_degree_connectivity(D,weighted=True)
+        nd = nx.average_degree_connectivity(D,weight='weight')
         assert_equal(nd,answer)
 
         answer={1:2.0,2:1.8}
         D=G.to_directed()
-        nd = nx.average_in_degree_connectivity(D,weighted=True)
+        nd = nx.average_in_degree_connectivity(D,weight='weight')
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_out_degree_connectivity(D,weighted=True)
+        nd = nx.average_out_degree_connectivity(D,weight='weight')
+        assert_equal(nd,answer)
+
+    def test_weight_keyword(self):
+        G=nx.path_graph(4)
+        G[1][2]['other']=4
+        answer={1:2.0,2:1.8}
+        nd = nx.average_degree_connectivity(G,weight='other')
+        assert_equal(nd,answer)
+        answer={1:2.0,2:1.5}
+        nd = nx.average_degree_connectivity(G,weight=None)
+        assert_equal(nd,answer)
+        
+        D=G.to_directed()
+        answer={2:2.0,4:1.8}
+        nd = nx.average_degree_connectivity(D,weight='other')
+        assert_equal(nd,answer)
+
+        answer={1:2.0,2:1.8}
+        D=G.to_directed()
+        nd = nx.average_in_degree_connectivity(D,weight='other')
+        assert_equal(nd,answer)
+
+        D=G.to_directed()
+        nd = nx.average_out_degree_connectivity(D,weight='other')
         assert_equal(nd,answer)
 
     def test_degree_barrat(self):
@@ -125,7 +152,7 @@ class TestNeighborConnectivity(object):
         G[0][5]['weight']=5
         nd = nx.average_degree_connectivity(G)[5]
         assert_equal(nd,1.8)
-        nd = nx.average_degree_connectivity(G,weighted=True)[5]
+        nd = nx.average_degree_connectivity(G,weight='weight')[5]
         assert_almost_equal(nd,3.222222,places=5)
-        nd = nx.k_nearest_neighbors(G,weighted=True)[5]
+        nd = nx.k_nearest_neighbors(G,weight='weight')[5]
         assert_almost_equal(nd,3.222222,places=5)
