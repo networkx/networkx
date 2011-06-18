@@ -445,8 +445,10 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         An operator that determines how weights in multigraphs are handled.
         The default is to sum the weights of the multiple edges.
 
-    weight: string, optional       
-       Edge data key corresponding to the edge weight.
+    weight : string or None   optional (default='weight')
+        The edge attribute that holds the numerical value used for 
+        the edge weight.  If None then all edge weights are 1.
+
 
     Returns
     -------
@@ -707,7 +709,7 @@ def to_numpy_recarray(G,nodelist=None,
     return M.view(np.recarray)
 
 
-def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):
+def to_scipy_sparse_matrix(G,nodelist=None,dtype=None,weight='weight'):
     """Return the graph adjacency matrix as a SciPy sparse matrix.
 
     Parameters
@@ -723,6 +725,10 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):
         A valid NumPy dtype used to initialize the array. If None, then the
         NumPy default is used.
 
+    weight : string or None   optional (default='weight')
+        The edge attribute that holds the numerical value used for 
+        the edge weight.  If None then all edge weights are 1.
+
     Returns
     -------
     M : SciPy sparse matrix
@@ -730,8 +736,9 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):
 
     Notes
     -----
-    The matrix entries are populated using the 'weight' edge attribute. When
-    an edge does not have the 'weight' attribute, the value of the entry is 1.
+    The matrix entries are populated using the edge attribute held in 
+    parameter weight. When an edge does not have that attribute, the 
+    value of the entry is 1.
 
     For multiple edges the matrix values are the sums of the edge weights.
 
@@ -777,7 +784,7 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None):
     for u,v,attrs in G.edges_iter(data=True):
         if (u in nodeset) and (v in nodeset):
             i,j = index[u],index[v]
-            M[i,j] += attrs.get('weight', 1)
+            M[i,j] += attrs.get(weight, 1)
             if undirected:
                 M[j,i] = M[i,j]
 
