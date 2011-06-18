@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Algorithms to characterize the number of triangles in a graph.
-"""
+"""Algorithms to characterize the number of triangles in a graph."""
 from itertools import combinations
 import networkx as nx
 from networkx import NetworkXError
@@ -18,7 +16,7 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
 __all__= ['triangles', 'average_clustering', 'clustering', 'transitivity',
           'square_clustering']
 
-def triangles(G,nodes=None):
+def triangles(G, nodes=None):
     """Compute the number of triangles.
 
     Finds the number of triangles that include a node as one vertex.
@@ -117,9 +115,9 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
 
 
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):
-    r"""Compute average clustering coefficient.
+    r"""Compute the average clustering coefficient for the graph G.
 
-    A clustering coefficient for the whole graph is the average, 
+    The clustering coefficient for the graph is the average, 
 
     .. math::
 
@@ -140,6 +138,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
 
     count_zeros : bool (default=False)       
        If False include only the nodes with nonzero clustering in the average.
+
     Returns
     -------
     avg : float
@@ -154,7 +153,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     Notes
     -----
     This is a space saving routine; it might be faster
-    to use clustering to get a list and then take the average.
+    to use the clustering function to get a list and then take the average.
 
     Self loops are ignored.
 
@@ -164,6 +163,9 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
        complex networks by J. Saramäki, M. Kivelä, J.-P. Onnela, 
        K. Kaski, and J. Kertész, Physical Review E, 75 027105 (2007).  
        http://jponnela.com/web_documents/a9.pdf
+    .. [2] Marcus Kaiser,  Mean clustering coefficients: the role of isolated 
+       nodes and leafs on clustering measures for small-world networks.
+       http://arxiv.org/abs/0802.2512
     """
     c=clustering(G,nodes,weight=weight).values()
     if not count_zeros:
@@ -179,21 +181,21 @@ def clustering(G, nodes=None, weight=None):
 
     .. math::
 
-      c_u = \frac{2 T(u)}{deg(u)(deg(u)-1)}
+      c_u = \frac{2 T(u)}{deg(u)(deg(u)-1)},
 
     where `T(u)` is the number of triangles through node `u` and
     `deg(u)` is the degree of `u`.
 
     For weighted graphs the clustering is defined
-    as the geometric average of the subgraph edge weights [1]_.
+    as the geometric average of the subgraph edge weights [1]_,
 
     .. math::
 
-      c_u = \frac{1}{deg(u)(deg(u)-1))
+       c_u = \frac{1}{deg(u)(deg(u)-1))}
             \sum_{uv} (\hat{w}_{uv} \hat{w}_{uw} \hat{w}_{vw})^{1/3}.
       
     The edge weights `\hat{w}_{uv}` are normalized by the maximum weight in the
-    network `\hat{w}_{uv} = w_{uv}/\max(w)`
+    network `\hat{w}_{uv} = w_{uv}/\max(w)`.
 
     The value of `c_u` is assigned to 0 if `deg(u) < 2`.
 
@@ -253,9 +255,9 @@ def clustering(G, nodes=None, weight=None):
     return clusterc
 
 def transitivity(G):
-    r"""Compute transitivity.
+    r"""Compute graph transitivity, the fraction of all possible triangles 
+    present in G.
 
-    Computes the fraction of all possible triangles present in G.
     Possible triangles are identified by the number of "triads" 
     (two edges with a shared vertex).
 
@@ -263,7 +265,7 @@ def transitivity(G):
 
     .. math::
 
-        T = 3\frac{\#triangles}{\#triads}
+        T = 3\frac{\#triangles}{\#triads}.
 
     Parameters
     ----------
@@ -276,7 +278,7 @@ def transitivity(G):
 
     Examples
     --------
-    >>> G=nx.complete_graph(5)
+    >>> G = nx.complete_graph(5)
     >>> print(nx.transitivity(G))
     1.0
     """
@@ -299,7 +301,7 @@ def square_clustering(G, nodes=None):
     .. math::
        C_4(v) = \frac{ \sum_{u=1}^{k_v} 
        \sum_{w=u+1}^{k_v} q_v(u,w) }{ \sum_{u=1}^{k_v} 
-       \sum_{w=u+1}^{k_v} [a_v(u,w) + q_v(u,w)]}
+       \sum_{w=u+1}^{k_v} [a_v(u,w) + q_v(u,w)]},
     
     where `q_v(u,w)` are the number of common neighbors of `u` and `w` 
     other than `v` (ie squares), and 
@@ -309,7 +311,6 @@ def square_clustering(G, nodes=None):
     Parameters
     ----------
     G : graph
-       A NetworkX graph
 
     nodes : container of nodes, optional (default=all nodes in G)
        Compute clustering for nodes in this container. 
@@ -329,10 +330,11 @@ def square_clustering(G, nodes=None):
 
     Notes
     -----
-    While `C_3(v)` gives the probability that two neighbors of node v are 
-    connected with each other, `C_4(v)` is the probability that two 
-    neighbors of node v share a common neighbor different from v. This algorithm
-    can be applied to both bipartite and unipartite networks.
+    While `C_3(v)` (triangle clustering) gives the probability that
+    two neighbors of node v are connected with each other, `C_4(v)` is
+    the probability that two neighbors of node v share a common
+    neighbor different from v. This algorithm can be applied to both
+    bipartite and unipartite networks.
  
     References
     ----------
