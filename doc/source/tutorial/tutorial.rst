@@ -72,7 +72,7 @@ by adding a list of edges,
 
 >>> G.add_edges_from([(1,2),(1,3)])
 
-or by adding any :term:`ebunch` of edges,
+or by adding any :term:`ebunch` of edges.
 An *ebunch* is any iterable container
 of edge-tuples.  An edge-tuple can be a 2-tuple
 of nodes or a 3-tuple with 2 nodes followed by 
@@ -140,7 +140,7 @@ What to use as nodes and edges
 ------------------------------
 You might notice that nodes and edges are not specified as NetworkX
 objects.  This leaves you free to use meaningful items as nodes and
-edges. The most common choices are numbers or strings, buut a node can
+edges. The most common choices are numbers or strings, but a node can
 be any hashable object (except None), and an edge can be associated
 with any object x using G.add_edge(n1,n2,object=x).
 
