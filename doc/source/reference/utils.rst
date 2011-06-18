@@ -34,7 +34,7 @@ Random sequence generators
    uniform_sequence
    cumulative_distribution
    discrete_sequence
-
+   zipf_sequence
 
 SciPy random sequence generators
 ----------------------------------
@@ -47,3 +47,9 @@ SciPy random sequence generators
    scipy_uniform_sequence
    scipy_discrete_sequence
 
+Random number generators
+------------------------
+.. autosummary::
+   :toctree: generated/
+
+   zipf_rv

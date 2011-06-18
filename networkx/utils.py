@@ -11,21 +11,21 @@ can be accessed, for example, as
 >>> import networkx
 >>> networkx.utils.is_string_like('spam')
 True
-
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by 
+import random
+import networkx
+import uuid
+__author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
+                        'Dan Schult(dschult@colgate.edu)',
+                        'Ben Edwards(bedwards@cs.unm.edu)'])
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-import random
-import networkx
-import uuid
 
 ### some cookbook stuff
-
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
 def is_singleton(obj):
@@ -128,7 +128,6 @@ def cumulative_sum(numbers):
 def scipy_pareto_sequence(n,exponent=1.0):
     """
     Return sample sequence of length n from a Pareto distribution.
-
     """
     try: 
         import scipy.stats as stats
@@ -234,6 +233,78 @@ def powerlaw_sequence(n,exponent=2.0):
     """
     return [random.paretovariate(exponent-1) for i in range(n)]
 
+def zipf_rv(alpha, xmin=1, seed=None):
+    r"""Return a random value chosen from the Zipf distribution.
+
+    The return value is an integer drawn from the probability distribution
+    ::math::
+
+        p(x)=\frac{x^{-\alpha}}{\zeta(\alpha,x_{min})},
+
+    where `\zeta(\alpha,x_{min})` is the Hurwitz zeta function.        
+
+    Parameters
+    ----------
+    alpha : float 
+      Exponent value of the distribution
+    xmin : int
+      Minimum value
+    seed : int
+      Seed value for random number generator
+
+    Returns
+    -------
+    x : int
+      Random value from Zipf distribution
+
+    Raises
+    ------
+    ValueError:
+      If xmin < 1 or
+      If alpha <= 1
+
+    Notes
+    -----
+    The rejection algorithm generates random values for a the power-law
+    distribution in uniformly bounded expected time dependent on
+    parameters.  See [1] for details on its operation.
+
+    Examples
+    --------
+    >>> nx.zipf_rv(alpha=2, xmin=3, seed=42) # doctest: +SKIP
+
+    References
+    ----------
+    ..[1] Luc Devroye, Non-Uniform Random Variate Generation, 
+       Springer-Verlag, New York, 1986.
+       http://cg.scs.carleton.ca/~luc/rnbookindex.html
+    """
+    if xmin < 1:
+        raise ValueError("xmin < 1")
+    if alpha <= 1:
+        raise ValueError("a <= 1.0")
+    if not seed is None:
+        random.seed(seed)
+    a1 = alpha - 1.0
+    b = 2**a1
+    while True:
+        u = 1.0 - random.random() # u in (0,1]
+        v = random.random() # v in [0,1)
+        x = int(xmin*u**-(1.0/a1))
+        t = (1.0+(1.0/x))**a1
+        if v*x*(t-1.0)/(b-1.0) <= t/b:
+            break
+    return x
+
+def zipf_sequence(n, alpha=2.0, xmin=1):
+    """Return a sample sequence of length n from a Zipf distribution with
+    exponent parameter alpha and minimum value xmin.
+
+    See Also
+    --------
+    zipf_rv
+    """
+    return [ zipf_rv(alpha,xmin) for _ in range(n)]
 
 def uniform_sequence(n):
     """
