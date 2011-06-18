@@ -39,8 +39,8 @@ def stochastic_graph(G,copy=True):
     else:
         W=G # reference original graph, no copy
 
-    try:        
-        degree=W.out_degree(weighted=True)
+    try:
+        degree=W.out_degree(weight='weight')
     except:
         degree=W.out_degree()
 #    for n in W:

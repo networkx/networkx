@@ -57,7 +57,7 @@ def random_layout(G,dim=2):
         raise ImportError("random_layout() requires numpy: http://scipy.org/ ")
     n=len(G)
     pos=np.asarray(np.random.random((n,dim)),dtype=np.float32)
-    return dict(list(zip(G,pos)))
+    return dict(zip(G,pos))
 
 
 def circular_layout(G, dim=2, scale=1):
@@ -101,7 +101,7 @@ def circular_layout(G, dim=2, scale=1):
     t=np.arange(0,2.0*np.pi,2.0*np.pi/len(G),dtype=np.float32)
     pos=np.transpose(np.array([np.cos(t),np.sin(t)]))
     pos=_rescale_layout(pos,scale=scale)
-    return dict(list(zip(G,pos)))
+    return dict(zip(G,pos))
 
 def shell_layout(G,nlist=None,dim=2,scale=1):
     """Position nodes in concentric circles.
@@ -152,22 +152,23 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
     else:
         radius=1.0 # else start at r=1
 
-    npos={}        
+    npos={}
     for nodes in nlist:
         t=np.arange(0,2.0*np.pi,2.0*np.pi/len(nodes),dtype=np.float32)
         pos=np.transpose(np.array([radius*np.cos(t),radius*np.sin(t)]))
-        npos.update(dict(list(zip(nodes,pos))))
+        npos.update(zip(nodes,pos))
         radius+=1.0
 
     # FIXME: rescale        
-    return npos        
+    return npos
 
 
 def fruchterman_reingold_layout(G,dim=2,
                                 pos=None,
                                 fixed=None,
                                 iterations=50,
-                                weighted=True,scale=1):
+                                weight='weight',
+                                scale=1):
     """Position nodes using Fruchterman-Reingold force-directed algorithm. 
 
     Parameters
@@ -177,19 +178,20 @@ def fruchterman_reingold_layout(G,dim=2,
     dim : int 
        Dimension of layout
 
-    pos : dict
+    pos : dict or None  optional (default=None)
        Initial positions for nodes as a dictionary with node as keys
-       and values as a list or tuple.  
+       and values as a list or tuple.  If None, then nuse random initial
+       positions.
 
-    fixed : list
+    fixed : list or None  optional (default=None)
       Nodes to keep fixed at initial position.
 
-
-    iterations : int
+    iterations : int  optional (default=50)
        Number of iterations of spring-force relaxation 
 
-    weighted : boolean
-        If True, use edge weights in layout 
+    weight : string or None   optional (default='weight')
+        The edge attribute that holds the numerical value used for 
+        the edge weight.  If None, then all edge weights are 1.
 
     scale : float
         Scale factor for positions 
@@ -213,12 +215,12 @@ def fruchterman_reingold_layout(G,dim=2,
     except ImportError:
         raise ImportError("fruchterman_reingold_layout() requires numpy: http://scipy.org/ ")
     if fixed is not None:
-        nfixed=dict(list(zip(G,list(range(len(G))))))
+        nfixed=dict(zip(G,range(len(G))))
         fixed=np.asarray([nfixed[v] for v in fixed])
 
     if pos is not None:
         pos_arr=np.asarray(np.random.random((len(G),dim)))
-        for n,i in zip(G,list(range(len(G)))):
+        for i,n in enumerate(G):
             if n in pos:
                 pos_arr[i]=np.asarray(pos[n])
     else:
@@ -233,37 +235,18 @@ def fruchterman_reingold_layout(G,dim=2,
         # Sparse matrix 
         if len(G) < 500:  # sparse solver for large graphs
             raise ValueError
-        A=nx.to_scipy_sparse_matrix(G)
-        pos=_sparse_fruchterman_reingold(A,
-                                         pos=pos_arr,
-                                         fixed=fixed,
-                                         dim=dim,
-                                         iterations=iterations,
-                                         weighted=weighted)
+        A=nx.to_scipy_sparse_matrix(G,weight=weight)
+        pos=_sparse_fruchterman_reingold(A,dim,pos_arr,fixed,iterations)
     except:
-        A=nx.to_numpy_matrix(G)
-        pos=_fruchterman_reingold(A,
-                                  pos=pos_arr,
-                                  fixed=fixed,
-                                  dim=dim,
-                                  iterations=iterations,
-                                  weighted=weighted)
+        A=nx.to_numpy_matrix(G,weight=weight)
+        pos=_fruchterman_reingold(A,dim,pos_arr,fixed,iterations)
     if fixed is None:
         pos=_rescale_layout(pos,scale=scale)
-    return dict(list(zip(G,pos)))
-
-
-
-
+    return dict(zip(G,pos))
 
 spring_layout=fruchterman_reingold_layout
 
-
-def _fruchterman_reingold(A,dim=2,
-                          pos=None,
-                          fixed=None,
-                          iterations=50,
-                          weighted=True):
+def _fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold  
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     try:
@@ -278,8 +261,6 @@ def _fruchterman_reingold(A,dim=2,
             "fruchterman_reingold() takes an adjacency matrix as input")
     
     A=np.asarray(A) # make sure we have an array instead of a matrix
-    if not weighted: # use 0/1 adjacency instead of weights
-        A=np.where(A==0,A,A/A)
 
     if pos==None:
         # random initial positions
@@ -326,11 +307,7 @@ def _fruchterman_reingold(A,dim=2,
     return pos
 
 
-def _sparse_fruchterman_reingold(A,dim=2,
-                                 pos=None,
-                                 fixed=None,
-                                 iterations=50,
-                                 weighted=True):
+def _sparse_fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold  
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
@@ -354,9 +331,6 @@ def _sparse_fruchterman_reingold(A,dim=2,
         A=A.tolil() 
     except:
         A=(coo_matrix(A)).tolil()
-
-    if not weighted: # use 0/1 adjacency instead of weights
-        A=np.where(A==0,A,A/A)
 
     if pos==None:
         # random initial positions
@@ -406,7 +380,7 @@ def _sparse_fruchterman_reingold(A,dim=2,
     return pos
 
 
-def spectral_layout(G,dim=2,weighted=True,scale=1):
+def spectral_layout(G, dim=2, weight='weight', scale=1):
     """Position nodes using the eigenvectors of the graph Laplacian. 
 
     Parameters
@@ -416,8 +390,9 @@ def spectral_layout(G,dim=2,weighted=True,scale=1):
     dim : int 
        Dimension of layout
 
-    weighted : boolean
-        If True, use edge weights in layout 
+    weight : string or None   optional (default='weight')
+        The edge attribute that holds the numerical value used for 
+        the edge weight.  If None, then all edge weights are 1.
 
     scale : float
         Scale factor for positions 
@@ -452,29 +427,29 @@ def spectral_layout(G,dim=2,weighted=True,scale=1):
             pos=np.array([[1,1]])
         else:
             pos=np.array([[0,0.5],[1,0.5]])
-        return dict(list(zip(G,pos)))
+        return dict(zip(G,pos))
     try:
         # Sparse matrix 
         if len(G)< 500:  # dense solver is faster for small graphs
             raise ValueError
-        A=nx.to_scipy_sparse_matrix(G)
+        A=nx.to_scipy_sparse_matrix(G, weight=weight)
         # Symmetrize directed graphs
         if G.is_directed():
             A=A+np.transpose(A)
-        pos=_sparse_spectral(A,dim=dim,weighted=weighted)
+        pos=_sparse_spectral(A,dim)
     except (ImportError,ValueError):
         # Dense matrix
-        A=nx.to_numpy_matrix(G)
+        A=nx.to_numpy_matrix(G, weight=weight)
         # Symmetrize directed graphs
         if G.is_directed():
             A=A+np.transpose(A)
-        pos=_spectral(A,dim=dim,weighted=weighted)
+        pos=_spectral(A,dim)
 
-    pos=_rescale_layout(pos,scale=scale)
-    return dict(list(zip(G,pos)))
+    pos=_rescale_layout(pos,scale)
+    return dict(zip(G,pos))
 
 
-def _spectral(A,dim=2,weighted=True):
+def _spectral(A, dim=2):
     # Input adjacency matrix A
     # Uses dense eigenvalue solver from numpy
     try:
@@ -499,7 +474,7 @@ def _spectral(A,dim=2,weighted=True):
     index=np.argsort(eigenvalues)[1:dim+1] # 0 index is zero eigenvalue
     return np.real(eigenvectors[:,index])
 
-def _sparse_spectral(A,dim=2,weighted=True):
+def _sparse_spectral(A,dim=2):
     # Input adjacency matrix A
     # Uses sparse eigenvalue solver from scipy
     # Could use multilevel methods here, see Koren "On spectral graph drawing" 
