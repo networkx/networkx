@@ -275,9 +275,9 @@ that may feel inconsistent at times.
 
 >>> DG=nx.DiGraph()
 >>> DG.add_weighted_edges_from([(1,2,0.5), (3,1,0.75)])
->>> DG.out_degree(1,weighted=True)
+>>> DG.out_degree(1,weight='weight')
 0.5
->>> DG.degree(1,weighted=True)
+>>> DG.degree(1,weight='weight')
 1.25
 >>> DG.successors(1)
 [2]
@@ -309,7 +309,7 @@ well defined.
 
 >>> MG=nx.MultiGraph()
 >>> MG.add_weighted_edges_from([(1,2,.5), (1,2,.75), (2,3,.5)])
->>> MG.degree(weighted=True)
+>>> MG.degree(weight='weight')
 {1: 1.25, 2: 1.75, 3: 0.5}
 >>> GG=nx.Graph()
 >>> for n,nbrs in MG.adjacency_iter():
