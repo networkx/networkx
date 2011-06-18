@@ -202,7 +202,7 @@ def density(B, nodes):
             d= m/float(nb*nt)
     return d
 
-def degrees(B, nodes, weighted=False):
+def degrees(B, nodes, weight=None):
     """Return the degrees of the two node sets in the bipartite graph B.
 
     Parameters
@@ -211,6 +211,11 @@ def degrees(B, nodes, weighted=False):
 
     nodes: list or container
       Nodes in one set of the bipartite graph.
+
+    weight : string or None, optional (default=None)
+       The edge attribute that holds the numerical value used as a weight.
+       If None, then each edge has weight 1.
+       The degree is the sum of the edge weights adjacent to the node.
 
     Returns
     -------
@@ -232,4 +237,4 @@ def degrees(B, nodes, weighted=False):
     """
     bottom=set(nodes)
     top=set(B)-bottom
-    return (B.degree(top,weighted),B.degree(bottom,weighted))
+    return (B.degree(top,weight),B.degree(bottom,weight))

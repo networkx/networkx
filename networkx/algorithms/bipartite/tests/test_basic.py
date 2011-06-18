@@ -45,3 +45,15 @@ class TestBipartiteBasic:
         u,d=bipartite.degrees(G,Y)
         assert_equal(u,{1:2,3:2})
         assert_equal(d,{0:1,2:2,4:1})
+
+    def test_bipartite_weighted_degrees(self):
+        G=nx.path_graph(5)
+        G.add_edge(0,1,weight=0.1,other=0.2)
+        X=set([1,3])
+        Y=set([0,2,4])
+        u,d=bipartite.degrees(G,Y,weight='weight')
+        assert_equal(u,{1:1.1,3:2})
+        assert_equal(d,{0:0.1,2:2,4:1})
+        u,d=bipartite.degrees(G,Y,weight='other')
+        assert_equal(u,{1:1.2,3:2})
+        assert_equal(d,{0:0.2,2:2,4:1})
