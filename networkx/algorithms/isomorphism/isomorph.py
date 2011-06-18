@@ -124,7 +124,7 @@ def faster_could_be_isomorphic(G1,G2):
 
 faster_graph_could_be_isomorphic=faster_could_be_isomorphic
 
-def is_isomorphic(G1,G2,weighted=False,rtol=1e-6,atol=1e-9):
+def is_isomorphic(G1, G2, weight=None, rtol=1e-6, atol=1e-9):
     """Returns True if the graphs G1 and G2 are isomorphic and False otherwise.
 
     Parameters
@@ -132,9 +132,10 @@ def is_isomorphic(G1,G2,weighted=False,rtol=1e-6,atol=1e-9):
     G1, G2: NetworkX graph instances
        The two graphs G1 and G2 must be the same type.
        
-    weighted: bool, optional
-       Optionally check isomorphism for weighted graphs.
-       G1 and G2 must be valid weighted graphs.
+    weight : string or None, optional (default=None)
+       The edge attribute that holds the numerical value used as a weight.
+       If None, then don't check for weighted graphs.
+       Otherwise, G1 and G2 must be valid weighted graphs.
 
     rtol: float, optional
         The relative error tolerance when checking weighted edges
@@ -153,30 +154,30 @@ def is_isomorphic(G1,G2,weighted=False,rtol=1e-6,atol=1e-9):
 
     """
     gm=None
-    if weighted==True:
-#        assert(G1.weighted and G2.weighted)
-        if not G1.is_directed() and not G1.is_multigraph():
-            assert(not G2.is_directed() and not G2.is_multigraph())
-            gm = nx.WeightedGraphMatcher(G1,G2,rtol,atol)
-        elif not G1.is_directed() and G1.is_multigraph():
-            assert(not G2.is_directed() and G2.is_multigraph())
-            gm = nx.WeightedMultiGraphMatcher(G1,G2,rtol,atol)
-        elif G1.is_directed() and not G1.is_multigraph():
-            assert(G2.is_directed() and not G2.is_multigraph())
-            gm = nx.WeightedDiGraphMatcher(G1,G2,rtol,atol)
-        else:
-            assert(G2.is_directed() and G2.is_multigraph())
-            gm = nx.WeightedMultiDiGraphMatcher(G1,G2,rtol,atol)
-    else:
+    if weight is None:
         if G1.is_directed() and G2.is_directed():
             gm=  nx.DiGraphMatcher(G1,G2)
         elif not (G1.is_directed() and G2.is_directed()):
             gm = nx.GraphMatcher(G1,G2)
+    else:
+#        assert(G1.weighted and G2.weighted)
+        if not G1.is_directed() and not G1.is_multigraph():
+            assert(not G2.is_directed() and not G2.is_multigraph())
+            gm = nx.WeightedGraphMatcher(G1,G2,rtol,atol,weight)
+        elif not G1.is_directed() and G1.is_multigraph():
+            assert(not G2.is_directed() and G2.is_multigraph())
+            gm = nx.WeightedMultiGraphMatcher(G1,G2,rtol,atol,weight)
+        elif G1.is_directed() and not G1.is_multigraph():
+            assert(G2.is_directed() and not G2.is_multigraph())
+            gm = nx.WeightedDiGraphMatcher(G1,G2,rtol,atol,weight)
+        else:
+            assert(G2.is_directed() and G2.is_multigraph())
+            gm = nx.WeightedMultiDiGraphMatcher(G1,G2,rtol,atol,weight)
     if gm==None:
         # Graphs are of mixed type. We could just return False, 
         # but then there is the case of completely disconnected graphs...
         # which could be isomorphic.
         raise NetworkXError("Graphs G1 and G2 are not of the same type.")
     
-    return gm.is_isomorphic()  
+    return gm.is_isomorphic()
 
