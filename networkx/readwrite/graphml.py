@@ -435,8 +435,7 @@ class GraphMLReader(GraphML):
         G.add_edge(source, target, key=edge_id, **data)
             
     def decode_data_elements(self, graphml_keys, obj_xml):
-        """Use the key information to decode the data XML if present.
-        """
+        """Use the key information to decode the data XML if present."""
         data = {}
         for data_element in obj_xml.findall("{%s}data" % self.NS_GRAPHML): 
             key = data_element.get("key")
@@ -449,6 +448,16 @@ class GraphMLReader(GraphML):
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element))==0:
                 data[data_name] = data_type(text)
+            elif len(list(data_element)) > 0:
+                # Assume yfiles as subelements, try to extract node_label
+                node_label = data_element.find("{%s}ShapeNode/{%s}NodeLabel"% 
+                                               (self.NS_Y, self.NS_Y))
+                if node_label is not None:
+                    data['label'] = node_label.text
+                edge_label = data_element.find("{%s}PolyLineEdge/{%s}EdgeLabel"%
+                                               (self.NS_Y, (self.NS_Y)))
+                if edge_label is not None:
+                    data['label'] = edge_label.text
         return data
             
     def find_graphml_keys(self, graph_element):
