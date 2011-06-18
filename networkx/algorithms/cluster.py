@@ -21,19 +21,19 @@ __all__= ['triangles', 'average_clustering', 'clustering', 'transitivity',
 def triangles(G,nodes=None):
     """Compute the number of triangles.
 
-    Finds the number of triangles that include a node as one of the vertices.
+    Finds the number of triangles that include a node as one vertex.
 
     Parameters
     ----------
     G : graph
        A networkx graph
-    nodes : container of nodes, optional
-       Compute triangles for nodes. The default is all nodes in G.
+    nodes : container of nodes, optional (default= all nodes in G)
+       Compute triangles for nodes in this container. 
 
     Returns
     -------
     out : dictionary
-       Number of trianges keyed by node label.
+       Number of triangles keyed by node label.
     
     Examples
     --------
@@ -82,7 +82,7 @@ def _triangles_and_degree_iter(G,nodes=None):
         yield (v,len(vs),ntriangles)
 
 
-def _weighted_triangles_and_degree_iter(G,nodes=None):
+def _weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
     """ Return an iterator of (node, degree, weighted_triangles).  
     
     Used for weighted clustering.
@@ -91,10 +91,10 @@ def _weighted_triangles_and_degree_iter(G,nodes=None):
     if G.is_multigraph():
         raise NetworkXError("Not defined for multigraphs.")
 
-    if G.edges()==[]:
+    if weight is None or G.edges()==[]:
         max_weight=1.0
     else:
-        max_weight=float(max(d.get('weight',1.0) 
+        max_weight=float(max(d.get(weight,1.0) 
                              for u,v,d in G.edges(data=True)))
     if nodes is None:
         nodes_nbrs = iter(G.adj.items())
@@ -106,17 +106,17 @@ def _weighted_triangles_and_degree_iter(G,nodes=None):
         weighted_triangles=0.0
         seen=set()
         for j in inbrs:
-            wij=G[i][j].get('weight',1.0)/max_weight
+            wij=G[i][j].get(weight,1.0)/max_weight
             seen.add(j)
             jnbrs=set(G[j])-seen # this keeps from double counting
             for k in inbrs&jnbrs:
-                wjk=G[j][k].get('weight',1.0)/max_weight
-                wki=G[i][k].get('weight',1.0)/max_weight
+                wjk=G[j][k].get(weight,1.0)/max_weight
+                wki=G[i][k].get(weight,1.0)/max_weight
                 weighted_triangles+=(wij*wjk*wki)**(1.0/3.0)
         yield (i,len(inbrs),weighted_triangles*2)
 
 
-def average_clustering(G,weighted=False):
+def average_clustering(G, nodes=None, weight=None):
     r"""Compute average clustering coefficient.
 
     A clustering coefficient for the whole graph is the average, 
@@ -131,8 +131,13 @@ def average_clustering(G,weighted=False):
     ----------
     G : graph
        A networkx graph
-    weighted : bool, optional
-       If True use weights on edges in computing clustering coefficients.
+
+    nodes : container of nodes, optional (default=all nodes in G)
+       Compute average clustering for nodes in this container. 
+
+    weight : string or None, optional (default=None)
+       The edge attribute that holds the numerical value used as a weight.
+       If None, then each edge has weight 1.
 
     Returns
     -------
@@ -159,11 +164,11 @@ def average_clustering(G,weighted=False):
        K. Kaski, and J. Kertész, Physical Review E, 75 027105 (2007).  
        http://jponnela.com/web_documents/a9.pdf
     """
-    order=G.order()
-    s=sum(clustering(G,weighted=weighted).values())
-    return s/float(order)
+    c=clustering(G,nodes,weight=weight)
+    s=sum(c.values())
+    return s/float(len(c))
 
-def clustering(G,nodes=None,weighted=False):
+def clustering(G, nodes=None, weight=None):
     r"""Compute the clustering coefficient for nodes.
 
     For each node find the fraction of possible triangles that exist,
@@ -178,11 +183,14 @@ def clustering(G,nodes=None,weighted=False):
     ----------
     G : graph
        A networkx graph
-    nodes : container of nodes, optional
-       Limit to specified nodes. Default is entire graph.
-    weighted : bool, optional
-       If True use weights on edges in computing clustering coefficients.
-        
+
+    nodes : container of nodes, optional (default=all nodes in G)
+       Compute clustering for nodes in this container. 
+
+    weight : string or None, optional (default=None)
+       The edge attribute that holds the numerical value used as a weight.
+       If None, then each edge has weight 1.
+
     Returns
     -------
     out : float, dictionary or tuple of dictionaries
@@ -211,14 +219,14 @@ def clustering(G,nodes=None,weighted=False):
     if G.is_directed():
         raise NetworkXError('Clustering algorithms are not defined',
                             'for directed graphs.')
-    if weighted:
-        td_iter=_weighted_triangles_and_degree_iter
+    if weight is not None:
+        td_iter=_weighted_triangles_and_degree_iter(G,nodes,weight)
     else:
-        td_iter=_triangles_and_degree_iter
+        td_iter=_triangles_and_degree_iter(G,nodes)
 
     clusterc={}
 
-    for v,d,t in td_iter(G,nodes):
+    for v,d,t in td_iter:
         if t==0:
             clusterc[v]=0.0
         else:
@@ -284,8 +292,9 @@ def square_clustering(G, nodes=None):
     ----------
     G : graph
        A NetworkX graph
-    nodes : container of nodes, optional
-       Compute clustering only for specified nodes. Default is entire graph.
+
+    nodes : container of nodes, optional (default=all nodes in G)
+       Compute clustering for nodes in this container. 
         
     Returns
     -------

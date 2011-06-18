@@ -39,34 +39,34 @@ class TestWeightedClustering:
 
     def test_clustering(self):
         G = nx.Graph()
-        assert_equal(list(nx.clustering(G,weighted=True).values()),[])
+        assert_equal(list(nx.clustering(G,weight='weight').values()),[])
         assert_equal(nx.clustering(G),{})
 
     def test_path(self):
         G = nx.path_graph(10)
-        assert_equal(list(nx.clustering(G,weighted=True).values()),
+        assert_equal(list(nx.clustering(G,weight='weight').values()),
                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        assert_equal(nx.clustering(G,weighted=True),
+        assert_equal(nx.clustering(G,weight='weight'),
                      {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 
                       5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0})
 
     def test_cubical(self):
         G = nx.cubical_graph()
-        assert_equal(list(nx.clustering(G,weighted=True).values()),
+        assert_equal(list(nx.clustering(G,weight='weight').values()),
                      [0, 0, 0, 0, 0, 0, 0, 0])
         assert_equal(nx.clustering(G,1),0)
-        assert_equal(list(nx.clustering(G,[1,2],weighted=True).values()),[0, 0])
-        assert_equal(nx.clustering(G,1,weighted=True),0)
-        assert_equal(nx.clustering(G,[1,2],weighted=True),{1: 0, 2: 0})
+        assert_equal(list(nx.clustering(G,[1,2],weight='weight').values()),[0, 0])
+        assert_equal(nx.clustering(G,1,weight='weight'),0)
+        assert_equal(nx.clustering(G,[1,2],weight='weight'),{1: 0, 2: 0})
 
     def test_k5(self):
         G = nx.complete_graph(5)
-        assert_equal(list(nx.clustering(G,weighted=True).values()),[1, 1, 1, 1, 1])
-        assert_equal(nx.average_clustering(G,weighted=True),1)
+        assert_equal(list(nx.clustering(G,weight='weight').values()),[1, 1, 1, 1, 1])
+        assert_equal(nx.average_clustering(G,weight='weight'),1)
         G.remove_edge(1,2)
-        assert_equal(list(nx.clustering(G,weighted=True).values()),
+        assert_equal(list(nx.clustering(G,weight='weight').values()),
                      [5./6., 1.0, 1.0, 5./6., 5./6.])
-        assert_equal(nx.clustering(G,[1,4],weighted=True),{1: 1.0, 4: 0.83333333333333337})
+        assert_equal(nx.clustering(G,[1,4],weight='weight'),{1: 1.0, 4: 0.83333333333333337})
 
 
     def test_triangle_and_edge(self):
@@ -74,7 +74,7 @@ class TestWeightedClustering:
         G.add_cycle([0,1,2])
         G.add_edge(0,4,weight=2)
         assert_equal(nx.clustering(G)[0],1.0/3.0)
-        assert_equal(nx.clustering(G,weighted=True)[0],1.0/6.0)
+        assert_equal(nx.clustering(G,weight='weight')[0],1.0/6.0)
 
 class TestClustering:
 
