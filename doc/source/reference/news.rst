@@ -4,6 +4,16 @@
 Release Log
 ===========
 
+Networkx-1.6
+------------
+
+Release date:  2011
+
+For full details of the tickets closed for this release see:
+https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.6
+
+API changes at :doc:`api_1.6`
+
 Networkx-1.5
 ------------
 
