@@ -185,3 +185,11 @@ class TestSquareClustering:
         assert_equal(nx.square_clustering(G, [1])[1], 3/75.0)
         assert_equal(nx.square_clustering(G1, [1])[1], 2/6.0)
         assert_equal(nx.square_clustering(G2, [1])[1], 1/5.0)
+
+
+def test_average_clustering():
+    G=nx.cycle_graph(3)
+    G.add_edge(2,3)
+    assert_equal(nx.average_clustering(G),(1+1+1/3.0)/4.0)
+    assert_equal(nx.average_clustering(G,count_zeros=True),(1+1+1/3.0)/4.0)
+    assert_equal(nx.average_clustering(G,count_zeros=False),(1+1+1/3.0)/3.0)

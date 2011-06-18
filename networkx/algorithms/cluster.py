@@ -116,7 +116,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
         yield (i,len(inbrs),weighted_triangles*2)
 
 
-def average_clustering(G, nodes=None, weight=None):
+def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     r"""Compute average clustering coefficient.
 
     A clustering coefficient for the whole graph is the average, 
@@ -130,7 +130,6 @@ def average_clustering(G, nodes=None, weight=None):
     Parameters
     ----------
     G : graph
-       A networkx graph
 
     nodes : container of nodes, optional (default=all nodes in G)
        Compute average clustering for nodes in this container. 
@@ -139,9 +138,11 @@ def average_clustering(G, nodes=None, weight=None):
        The edge attribute that holds the numerical value used as a weight.
        If None, then each edge has weight 1.
 
+    count_zeros : bool (default=False)       
+       If False include only the nodes with nonzero clustering in the average.
     Returns
     -------
-    out : float
+    avg : float
        Average clustering
     
     Examples
@@ -164,25 +165,41 @@ def average_clustering(G, nodes=None, weight=None):
        K. Kaski, and J. Kertész, Physical Review E, 75 027105 (2007).  
        http://jponnela.com/web_documents/a9.pdf
     """
-    c=clustering(G,nodes,weight=weight)
-    s=sum(c.values())
-    return s/float(len(c))
+    c=clustering(G,nodes,weight=weight).values()
+    if not count_zeros:
+        c = [v for v in c if v > 0]
+    return sum(c)/float(len(c))
 
 def clustering(G, nodes=None, weight=None):
     r"""Compute the clustering coefficient for nodes.
 
+    For unweighted graphs the clustering of each node `u`
+    is the fraction of possible triangles that exist,
     For each node find the fraction of possible triangles that exist,
 
     .. math::
 
-      c_v = \frac{2 T(v)}{deg(v)(deg(v)-1)}
+      c_u = \frac{2 T(u)}{deg(u)(deg(u)-1)}
 
-    where `T(v)` is the number of triangles through node `v`.       
+    where `T(u)` is the number of triangles through node `u` and
+    `deg(u)` is the degree of `u`.
+
+    For weighted graphs the clustering is defined
+    as the geometric average of the subgraph edge weights [1]_.
+
+    .. math::
+
+      c_u = \frac{1}{deg(u)(deg(u)-1))
+            \sum_{uv} (\hat{w}_{uv} \hat{w}_{uw} \hat{w}_{vw})^{1/3}.
+      
+    The edge weights `\hat{w}_{uv}` are normalized by the maximum weight in the
+    network `\hat{w}_{uv} = w_{uv}/\max(w)`
+
+    The value of `c_u` is assigned to 0 if `deg(u) < 2`.
 
     Parameters
     ----------
     G : graph
-       A networkx graph
 
     nodes : container of nodes, optional (default=all nodes in G)
        Compute clustering for nodes in this container. 
@@ -193,7 +210,7 @@ def clustering(G, nodes=None, weight=None):
 
     Returns
     -------
-    out : float, dictionary or tuple of dictionaries
+    out : float, or dictionary
        Clustering coefficient at specified nodes
 
     Examples
@@ -203,7 +220,6 @@ def clustering(G, nodes=None, weight=None):
     1.0
     >>> print(nx.clustering(G))
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
-
 
     Notes
     -----
@@ -217,7 +233,7 @@ def clustering(G, nodes=None, weight=None):
        http://jponnela.com/web_documents/a9.pdf
     """
     if G.is_directed():
-        raise NetworkXError('Clustering algorithms are not defined',
+        raise NetworkXError('Clustering algorithms are not defined ',
                             'for directed graphs.')
     if weight is not None:
         td_iter=_weighted_triangles_and_degree_iter(G,nodes,weight)
@@ -237,19 +253,21 @@ def clustering(G, nodes=None, weight=None):
     return clusterc
 
 def transitivity(G):
-    """Compute transitivity.
+    r"""Compute transitivity.
 
-    Finds the fraction of all possible triangles which are in fact triangles.
-    Possible triangles are identified by the number of "triads" (two edges
-    with a shared vertex).
+    Computes the fraction of all possible triangles present in G.
+    Possible triangles are identified by the number of "triads" 
+    (two edges with a shared vertex).
 
-    T = 3*triangles/triads
+    The transitivity is
 
+    .. math::
+
+        T = 3\frac{\#triangles}{\#triads}
 
     Parameters
     ----------
     G : graph
-       A networkx graph
 
     Returns
     -------
