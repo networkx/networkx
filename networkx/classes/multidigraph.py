@@ -536,18 +536,18 @@ class MultiDiGraph(MultiGraph,DiGraph):
                 ((n,self.succ[n]) for n in self.nbunch_iter(nbunch)),
                 ((n,self.pred[n]) for n in self.nbunch_iter(nbunch)))
 
-        if weight is None or weight is False: # backward compatibility
+        if weight is None:
             for (n,succ),(n2,pred) in nodes_nbrs:
                 indeg = sum([len(data) for data in pred.values()])
                 outdeg = sum([len(data) for data in succ.values()])
-                yield (n, indeg + outdeg)  
+                yield (n, indeg + outdeg)
         else:
         # edge weighted graph - degree is sum of nbr edge weights
             for (n,succ),(n2,pred) in nodes_nbrs:
                 deg = sum([d.get(weight,1)
                            for data in pred.values()
                            for d in data.values()])
-                deg += sum([d.get(weight,1) 
+                deg += sum([d.get(weight,1)
                            for data in succ.values()
                            for d in data.values()])
                 yield (n, deg)
@@ -593,7 +593,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
 
-        if weight is None or weight is False: # backward compatibility
+        if weight is None:
             for n,nbrs in nodes_nbrs:
                 yield (n, sum([len(data) for data in nbrs.values()]) )
         else:
@@ -645,7 +645,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         else:
             nodes_nbrs=((n,self.succ[n]) for n in self.nbunch_iter(nbunch))
 
-        if weight is None or weight is False: # backward compatibility
+        if weight is None:
             for n,nbrs in nodes_nbrs:
                 yield (n, sum([len(data) for data in nbrs.values()]) )
         else:

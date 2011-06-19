@@ -831,10 +831,9 @@ class DiGraph(Graph):
                 ((n,self.succ[n]) for n in self.nbunch_iter(nbunch)),
                 ((n,self.pred[n]) for n in self.nbunch_iter(nbunch)))
 
-        if weight is False: weight=None # backward compatibility
         if weight is None:
             for (n,succ),(n2,pred) in nodes_nbrs:
-                yield (n,len(succ)+len(pred)) 
+                yield (n,len(succ)+len(pred))
         else:
         # edge weighted graph - degree is sum of edge weights
             for (n,succ),(n2,pred) in nodes_nbrs:
@@ -883,7 +882,6 @@ class DiGraph(Graph):
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
 
-        if weight is False: weight=None # backward compatibility
         if weight is None:
             for n,nbrs in nodes_nbrs:
                 yield (n,len(nbrs))
@@ -933,7 +931,7 @@ class DiGraph(Graph):
         else:
             nodes_nbrs=((n,self.succ[n]) for n in self.nbunch_iter(nbunch))
 
-        if weight is None or weight is False: # backward compatibility:
+        if weight is None:
             for n,nbrs in nodes_nbrs:
                 yield (n,len(nbrs))
         else:

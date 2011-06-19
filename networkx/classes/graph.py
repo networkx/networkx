@@ -1278,7 +1278,6 @@ class Graph(object):
         [(0, 1), (1, 2)]
 
         """
-        if weight is False: weight=None # backward compatibility
         if nbunch is None:
             nodes_nbrs = iter(self.adj.items())
         else:
@@ -1618,7 +1617,6 @@ class Graph(object):
         >>> G.size(weight='weight')
         6.0
         """
-        if weight is False: weight=None # backward compatibility
         s=sum(self.degree(weight=weight).values())/2
         if weight is None:
             return int(s)

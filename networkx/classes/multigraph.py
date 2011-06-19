@@ -728,7 +728,7 @@ class MultiGraph(Graph):
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
 
-        if weight is None or weight is False: # backward compatibility
+        if weight is None:
             for n,nbrs in nodes_nbrs:
                 deg = sum([len(data) for data in nbrs.values()])
                 yield (n, deg+(n in nbrs and len(nbrs[n])))
