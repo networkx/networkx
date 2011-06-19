@@ -209,27 +209,29 @@ class TestGraph:
         G=self.K3
         assert_equal(sorted(G.edges()),[(0,1),(0,2),(1,2)])
         assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
-        assert_raises((KeyError,networkx.NetworkXError), G.neighbors,-1)
+        assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
 
     def test_edges_data(self):
         G=self.K3
         assert_equal(sorted(G.edges(data=True)),[(0,1,{}),(0,2,{}),(1,2,{})])
         assert_equal(sorted(G.edges(0,data=True)),[(0,1,{}),(0,2,{})])
-        assert_raises((KeyError,networkx.NetworkXError), G.neighbors,-1)
+        assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
 
 
     def test_edges_iter(self):
         G=self.K3
         assert_equal(sorted(G.edges_iter()),[(0,1),(0,2),(1,2)])
         assert_equal(sorted(G.edges_iter(0)),[(0,1),(0,2)])
-        assert_raises((KeyError,networkx.NetworkXError), G.neighbors_iter,-1)
+        f=lambda x:list(G.edges_iter(x))
+        assert_raises((KeyError,networkx.NetworkXError), f, -1)
 
     def test_get_edge_data(self):
         G=self.K3
         assert_equal(G.get_edge_data(0,1),{})
         assert_equal(G[0][1],{})
         assert_equal(G.get_edge_data(10,20),None)
-#        assert_raises((KeyError,networkx.NetworkXError), G.get_edge_data,-1,0)
+        assert_equal(G.get_edge_data(-1,0),None)
+        assert_equal(G.get_edge_data(-1,0,default=1.0),1.0)
 
     def test_adjacency_list(self):
         G=self.K3
