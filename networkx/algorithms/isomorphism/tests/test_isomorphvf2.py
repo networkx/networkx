@@ -34,8 +34,7 @@ class TestWikipediaExample(object):
         gm = vf2.GraphMatcher(g1,g2)
         assert_true(gm.is_isomorphic())
 
-        mapping = list(gm.mapping.items())
-        mapping.sort()
+        mapping = sorted(gm.mapping.items())
         isomap = [('a', 1), ('b', 6), ('c', 3), ('d', 8), 
                   ('g', 2), ('h', 5), ('i', 4), ('j', 7)]
         assert_true(mapping==isomap)

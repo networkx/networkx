@@ -972,7 +972,7 @@ class Graph(object):
 
         """
         try:
-            return list(self.adj[n].keys())
+            return list(self.adj[n])
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
@@ -1713,7 +1713,7 @@ class Graph(object):
 
         """
         nlist = list(nodes)
-        edges=list(zip(nlist[:-1],nlist[1:]))
+        edges=zip(nlist[:-1],nlist[1:])
         self.add_edges_from(edges, **attr)
 
     def add_cycle(self, nodes, **attr):
@@ -1739,7 +1739,7 @@ class Graph(object):
 
         """
         nlist = list(nodes)
-        edges=list(zip(nlist,nlist[1:]+[nlist[0]]))
+        edges=zip(nlist,nlist[1:]+[nlist[0]])
         self.add_edges_from(edges, **attr)
 
 
