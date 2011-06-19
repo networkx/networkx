@@ -34,9 +34,8 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
       If True the betweenness values are normalized by b=b/(n-1)(n-2) where
       n is the number of nodes in G.
        
-    weight : None, True or string, optional  
+    weight : None or string, optional  
       If None, edge weights are ignored.
-      If True, edge attribute 'weight' is used as weight of each edge.
       Otherwise holds the name of the edge attribute used as weight.
 
     cutoff : bool, optional
@@ -63,13 +62,13 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
     """
     if v is not None:   # only one node
         betweenness=0.0
-        for source in G: 
+        for source in G:
             ubetween=_node_betweenness(G,source,cutoff,normalized,weight)
             betweenness+=ubetween[v]
         return betweenness
     else:
-        betweenness={}.fromkeys(G,0.0) 
-        for source in betweenness: 
+        betweenness={}.fromkeys(G,0.0)
+        for source in betweenness:
             ubetween=_node_betweenness(G,source,cutoff,False,weight)
             for vk in ubetween:
                 betweenness[vk]+=ubetween[vk]
@@ -104,7 +103,6 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weight=None):
     if weight is None:
         (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True)
     else:
-        if weight is True: weight='weight'
         (pred,length)=nx.dijkstra_predecessor_and_distance(G,source,weight=weight)
 
     # order the nodes by path length
@@ -115,7 +113,7 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weight=None):
     # intialize betweenness
     between={}.fromkeys(length,1.0)
 
-    while onodes:           
+    while onodes:
         v=onodes.pop()
         if v in pred:
             num_paths=len(pred[v])   # Discount betweenness if more than 
@@ -147,7 +145,7 @@ def edge_load(G,nodes=None,cutoff=False):
     This module is for demonstration and testing purposes.
 
     """
-    betweenness={} 
+    betweenness={}
     if not nodes:         # find betweenness for every node  in graph
         nodes=G.nodes()   # that probably is what you want...
     for source in nodes:
@@ -164,7 +162,7 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
     between={}
     # get the predecessor data
     #(pred,length)=_fast_predecessor(G,source,cutoff=cutoff) 
-    (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True) 
+    (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True)
     # order the nodes by path length
     onodes = [ nn for dd,nn in sorted( (dist,n) for n,dist in length.items() )]
     # intialize betweenness, doesn't account for any edge weights
@@ -179,7 +177,7 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
             for w in pred[v]:        # one shortest path.
                 if w in pred:
                     num_paths=len(pred[w])  # Discount betweenness, mult path  
-                    for x in pred[w]: 
+                    for x in pred[w]:
                         between[(w,x)]+=between[(v,w)]/num_paths
                         between[(x,w)]+=between[(w,v)]/num_paths
     return between

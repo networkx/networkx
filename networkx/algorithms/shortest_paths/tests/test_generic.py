@@ -17,10 +17,10 @@ class TestGenericPath:
         assert_equal(nx.shortest_path(self.grid,1,12),[1, 2, 3, 4, 8, 12])
         assert_equal(nx.shortest_path(self.directed_cycle,0,3),[0, 1, 2, 3])
         # now with weights
-        assert_equal(nx.shortest_path(self.cycle,0,3,weight=True),[0, 1, 2, 3])
-        assert_equal(nx.shortest_path(self.cycle,0,4,weight=True),[0, 6, 5, 4])
-        assert_equal(nx.shortest_path(self.grid,1,12,weight=True),[1, 2, 3, 4, 8, 12])
-        assert_equal(nx.shortest_path(self.directed_cycle,0,3,weight=True),
+        assert_equal(nx.shortest_path(self.cycle,0,3,weight='weight'),[0, 1, 2, 3])
+        assert_equal(nx.shortest_path(self.cycle,0,4,weight='weight'),[0, 6, 5, 4])
+        assert_equal(nx.shortest_path(self.grid,1,12,weight='weight'),[1, 2, 3, 4, 8, 12])
+        assert_equal(nx.shortest_path(self.directed_cycle,0,3,weight='weight'),
                      [0, 1, 2, 3])
 
 
@@ -29,9 +29,9 @@ class TestGenericPath:
         assert_equal(nx.shortest_path_length(self.grid,1,12),5)
         assert_equal(nx.shortest_path_length(self.directed_cycle,0,4),4)
         # now with weights
-        assert_equal(nx.shortest_path_length(self.cycle,0,3,weight=True),3)
-        assert_equal(nx.shortest_path_length(self.grid,1,12,weight=True),5)
-        assert_equal(nx.shortest_path_length(self.directed_cycle,0,4,weight=True),4)
+        assert_equal(nx.shortest_path_length(self.cycle,0,3,weight='weight'),3)
+        assert_equal(nx.shortest_path_length(self.grid,1,12,weight='weight'),5)
+        assert_equal(nx.shortest_path_length(self.directed_cycle,0,4,weight='weight'),4)
 
 
     def test_single_source_shortest_path(self):
@@ -41,10 +41,10 @@ class TestGenericPath:
         p=nx.shortest_path(self.grid,1)
         assert_equal(p[12],[1, 2, 3, 4, 8, 12])
         # now with weights
-        p=nx.shortest_path(self.cycle,0,weight=True)
+        p=nx.shortest_path(self.cycle,0,weight='weight')
         assert_equal(p[3],[0,1,2,3])
         assert_equal(p,nx.single_source_dijkstra_path(self.cycle,0))
-        p=nx.shortest_path(self.grid,1,weight=True)
+        p=nx.shortest_path(self.grid,1,weight='weight')
         assert_equal(p[12],[1, 2, 3, 4, 8, 12])
 
 
@@ -55,10 +55,10 @@ class TestGenericPath:
         l=nx.shortest_path_length(self.grid,1)
         assert_equal(l[16],6)
         # now with weights
-        l=nx.shortest_path_length(self.cycle,0,weight=True)
+        l=nx.shortest_path_length(self.cycle,0,weight='weight')
         assert_equal(l,{0:0,1:1,2:2,3:3,4:3,5:2,6:1})
         assert_equal(l,nx.single_source_dijkstra_path_length(self.cycle,0))
-        l=nx.shortest_path_length(self.grid,1,weight=True)
+        l=nx.shortest_path_length(self.grid,1,weight='weight')
         assert_equal(l[16],6)
 
 
@@ -69,10 +69,10 @@ class TestGenericPath:
         p=nx.shortest_path(self.grid)
         assert_equal(p[1][12],[1, 2, 3, 4, 8, 12])
         # now with weights
-        p=nx.shortest_path(self.cycle,weight=True)
+        p=nx.shortest_path(self.cycle,weight='weight')
         assert_equal(p[0][3],[0,1,2,3])
         assert_equal(p,nx.all_pairs_dijkstra_path(self.cycle))
-        p=nx.shortest_path(self.grid,weight=True)
+        p=nx.shortest_path(self.grid,weight='weight')
         assert_equal(p[1][12],[1, 2, 3, 4, 8, 12])
 
 
@@ -83,10 +83,10 @@ class TestGenericPath:
         l=nx.shortest_path_length(self.grid)
         assert_equal(l[1][16],6)
         # now with weights
-        l=nx.shortest_path_length(self.cycle,weight=True)
+        l=nx.shortest_path_length(self.cycle,weight='weight')
         assert_equal(l[0],{0:0,1:1,2:2,3:3,4:3,5:2,6:1})
         assert_equal(l,nx.all_pairs_dijkstra_path_length(self.cycle))
-        l=nx.shortest_path_length(self.grid,weight=True)
+        l=nx.shortest_path_length(self.grid,weight='weight')
         assert_equal(l[1][16],6)
 
     def test_average_shortest_path(self):
@@ -98,16 +98,16 @@ class TestGenericPath:
     def test_weighted_average_shortest_path(self):
         G=nx.Graph()
         G.add_cycle(range(7),weight=2)
-        l=nx.average_shortest_path_length(G,weight=True)
+        l=nx.average_shortest_path_length(G,weight='weight')
         assert_almost_equal(l,4)
         G=nx.Graph()
         G.add_path(range(5),weight=2)
-        l=nx.average_shortest_path_length(G,weight=True)
+        l=nx.average_shortest_path_length(G,weight='weight')
         assert_almost_equal(l,4)
 
 
     def test_average_shortest_disconnected(self):
         g = nx.Graph()
         g.add_nodes_from(range(3))
-        g.add_edge(0, 1) 
+        g.add_edge(0, 1)
         assert_raises(nx.NetworkXError,nx.average_shortest_path_length,g)

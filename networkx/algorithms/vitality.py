@@ -15,7 +15,7 @@ __all__ = ['closeness_vitality']
 
 import networkx as nx
 
-def weiner_index(G,weight=None):
+def weiner_index(G, weight=None):
     # compute sum of distances between all node pairs
     # (with optional weights) 
     weiner=0.0
@@ -24,7 +24,6 @@ def weiner_index(G,weight=None):
             path_length=nx.single_source_shortest_path_length(G,n)
             weiner+=sum(path_length.values())
     else:
-        if weight is True: weight='weight'
         for n in G:
             path_length=nx.single_source_dijkstra_path_length(G,
                     n,weight=weight)
@@ -32,7 +31,7 @@ def weiner_index(G,weight=None):
     return weiner
 
 
-def closeness_vitality(G,v=None,weight=None):
+def closeness_vitality(G, v=None, weight=None):
     """Compute closeness vitality for nodes.
 
     Closeness vitality at a node is the change in the sum of distances 
@@ -46,9 +45,8 @@ def closeness_vitality(G,v=None,weight=None):
     v : node, optional
       Return only the value for node v.
 
-    weight : None, True or string, optional  
+    weight : None or string, optional  
       If None, edge weights are ignored.
-      If True, edge attribute 'weight' is used as weight of each edge.
       Otherwise holds the name of the edge attribute used as weight.
       
     Returns

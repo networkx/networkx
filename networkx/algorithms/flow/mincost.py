@@ -291,11 +291,11 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
     >>> G.add_node('s', demand = -1)
     >>> G.add_node('v', demand = 1)
     >>> flowCost, flowDict = nx.network_simplex(G)
-    >>> flowCost == nx.shortest_path_length(G, 's', 'v', weight = True)
+    >>> flowCost == nx.shortest_path_length(G, 's', 'v', weight = 'weight')
     True
     >>> [(u, v) for u in flowDict for v in flowDict[u] if flowDict[u][v] > 0]
     [('x', 'u'), ('s', 'x'), ('u', 'v')]
-    >>> nx.shortest_path(G, 's', 'v', weight = True)
+    >>> nx.shortest_path(G, 's', 'v', weight = 'weight')
     ['s', 'x', 'u', 'v']
 
     It is possible to change the name of the attributes used for the

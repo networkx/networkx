@@ -41,7 +41,6 @@ def betweenness_centrality_subset(G,sources,targets,
     Parameters
     ----------
     G : graph
-      A networkx graph 
 
     sources: list of nodes
       Nodes to use as sources for shortest paths in betweenness
@@ -53,9 +52,8 @@ def betweenness_centrality_subset(G,sources,targets,
       If True the betweenness values are normalized by
       `1/(n-1)(n-2)` where `n` is the number of nodes in G.
        
-    weight : None, True or string, optional  
+    weight : None or string, optional  
       If None, all edge weights are considered equal.
-      If True, edge attribute 'weight' is used as weight of each edge.
       Otherwise holds the name of the edge attribute used as weight.
 
     Returns
@@ -98,7 +96,6 @@ def betweenness_centrality_subset(G,sources,targets,
         if weight is None:  # use BFS
             S,P,sigma=shortest_path(G,s)
         else:  # use Dijkstra's algorithm
-            if weight is True: weight='weight'
             S,P,sigma=dijkstra(G,s,weight)
         b=_accumulate_subset(b,S,P,sigma,s,targets)
     b=_rescale(b,normalized=normalized,directed=G.is_directed())
@@ -134,9 +131,8 @@ def edge_betweenness_centrality_subset(G,sources,targets,
       If True the betweenness values are normalized by 
       `b=b/(n-1)(n-2)` where n is the number of nodes in G.
        
-    weight : None, True or string, optional  
+    weight : None or string, optional  
       If None, all edge weights are considered equal.
-      If True, edge attribute 'weight' is used as weight of each edge.
       Otherwise holds the name of the edge attribute used as weight.
 
     Returns
@@ -181,7 +177,6 @@ def edge_betweenness_centrality_subset(G,sources,targets,
         if weight is None:  # use BFS
             S,P,sigma=shortest_path(G,s)
         else:  # use Dijkstra's algorithm
-            if weight is True: weight='weight'
             S,P,sigma=dijkstra(G,s,weight)
         b=_accumulate_edges_subset(b,S,P,sigma,s,targets)
     for n in G: # remove nodes to only return edges 
@@ -198,7 +193,7 @@ def betweenness_centrality_source(G,normalized=True,weight=None,sources=None):
 
 
 def _accumulate_subset(betweenness,S,P,sigma,s,targets):
-    delta=dict.fromkeys(S,0) 
+    delta=dict.fromkeys(S,0)
     target_set=set(targets)
     while S:
         w=S.pop()
@@ -212,7 +207,7 @@ def _accumulate_subset(betweenness,S,P,sigma,s,targets):
     return betweenness
 
 def _accumulate_edges_subset(betweenness,S,P,sigma,s,targets):
-    delta=dict.fromkeys(S,0) 
+    delta=dict.fromkeys(S,0)
     target_set=set(targets)
     while S:
         w=S.pop()

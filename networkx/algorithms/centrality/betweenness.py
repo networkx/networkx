@@ -41,9 +41,8 @@ def betweenness_centrality(G, normalized=True, weight=None, endpoints=False):
       If True the betweenness values are normalized by
       `1/(n-1)(n-2)` where `n` is the number of nodes in G.
 
-    weight : None, True or string, optional  
+    weight : None or string, optional  
       If None, all edge weights are considered equal.
-      If True, edge attribute 'weight' is used as weight of each edge.
       Otherwise holds the name of the edge attribute used as weight.
 
     endpoints : bool, optional  
@@ -85,18 +84,17 @@ def betweenness_centrality(G, normalized=True, weight=None, endpoints=False):
         if weight is None:  # use BFS
             S,P,sigma=_single_source_shortest_path_basic(G,s)
         else:  # use Dijkstra's algorithm
-            if weight is True: weight='weight'
             S,P,sigma=_single_source_dijkstra_path_basic(G,s,weight)
         # accumulation
-        if endpoints: 
-            betweenness=_accumulate_endpoints(betweenness,S,P,sigma,s)        
+        if endpoints:
+            betweenness=_accumulate_endpoints(betweenness,S,P,sigma,s)
         else:
             betweenness=_accumulate_basic(betweenness,S,P,sigma,s)
     # rescaling
     betweenness=_rescale(betweenness,
                          normalized=normalized,
                          directed=G.is_directed())
-    return betweenness            
+    return betweenness
 
 
 def edge_betweenness_centrality(G,normalized=True,weight=None):
@@ -122,9 +120,8 @@ def edge_betweenness_centrality(G,normalized=True,weight=None):
       If True the betweenness values are normalized by 
       `1/(n-1)(n-2)` where `n` is the number of nodes in G.
        
-    weight : None, True or string, optional  
+    weight : None or string, optional  
       If None, all edge weights are considered equal.
-      If True, edge attribute 'weight' is used as weight of each edge.
       Otherwise holds the name of the edge attribute used as weight.
 
     Returns
@@ -157,13 +154,12 @@ def edge_betweenness_centrality(G,normalized=True,weight=None):
     """
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
     # b[e]=0 for e in G.edges()
-    betweenness.update(dict.fromkeys(G.edges(),0.0)) 
+    betweenness.update(dict.fromkeys(G.edges(),0.0))
     for s in G:
         # single source shortest paths
         if weight is None:  # use BFS
             S,P,sigma=_single_source_shortest_path_basic(G,s)
         else:  # use Dijkstra's algorithm
-            if weight is True: weight='weight'
             S,P,sigma=_single_source_dijkstra_path_basic(G,s,weight)
         # accumulation
         betweenness=_accumulate_edges(betweenness,S,P,sigma,s)
@@ -173,7 +169,7 @@ def edge_betweenness_centrality(G,normalized=True,weight=None):
     betweenness=_rescale(betweenness,
                          normalized=normalized,
                          directed=G.is_directed())
-    return betweenness            
+    return betweenness
 
 # obsolete name
 def edge_betweenness(G,normalized=True,weight=None):
@@ -219,10 +215,10 @@ def _single_source_dijkstra_path_basic(G,s,weight='weight'):
     sigma[s]=1.0
     push=heapq.heappush
     pop=heapq.heappop
-    seen = {s:0} 
+    seen = {s:0}
     Q=[]   # use Q as heap with (distance,node id) tuples
     push(Q,(0,s,s))
-    while Q:   
+    while Q:
         (dist,pred,v)=pop(Q)
         if v in D:
             continue # already searched this node.
@@ -242,7 +238,7 @@ def _single_source_dijkstra_path_basic(G,s,weight='weight'):
     return S,P,sigma
 
 def _accumulate_basic(betweenness,S,P,sigma,s):
-    delta=dict.fromkeys(S,0) 
+    delta=dict.fromkeys(S,0)
     while S:
         w=S.pop()
         coeff=(1.0+delta[w])/sigma[w]
@@ -254,7 +250,7 @@ def _accumulate_basic(betweenness,S,P,sigma,s):
 
 def _accumulate_endpoints(betweenness,S,P,sigma,s):
     betweenness[s]+=len(S)-1
-    delta=dict.fromkeys(S,0) 
+    delta=dict.fromkeys(S,0)
     while S:
         w=S.pop()
         coeff=(1.0+delta[w])/sigma[w]
@@ -265,7 +261,7 @@ def _accumulate_endpoints(betweenness,S,P,sigma,s):
     return betweenness
 
 def _accumulate_edges(betweenness,S,P,sigma,s):
-    delta=dict.fromkeys(S,0) 
+    delta=dict.fromkeys(S,0)
     while S:
         w=S.pop()
         coeff=(1.0+delta[w])/sigma[w]
