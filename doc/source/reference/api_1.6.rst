@@ -26,7 +26,7 @@ In some cases the parameter name was changed from weighted, to weight.  Here is 
 
 - Use weight=None to consider all weights equally (unweighted case)
 
-- Use weight=True or weight='weight' to use the 'weight' edge atribute
+- Use weight='weight' to use the 'weight' edge atribute
 
 - Use weight='other' to use the 'other' edge attribute 
 
