@@ -370,7 +370,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         """
         if nbunch is None:
-            nodes_nbrs = iter(self.adj.items())
+            nodes_nbrs = self.adj.items()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
         if data:
@@ -449,7 +449,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         edges_iter : return an iterator of edges
         """
         if nbunch is None:
-            nodes_nbrs=iter(self.pred.items())
+            nodes_nbrs=self.pred.items()
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
         if data:
@@ -589,7 +589,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         """
         if nbunch is None:
-            nodes_nbrs=iter(self.pred.items())
+            nodes_nbrs=self.pred.items()
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
 
@@ -641,7 +641,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         """
         if nbunch is None:
-            nodes_nbrs=iter(self.succ.items())
+            nodes_nbrs=self.succ.items()
         else:
             nodes_nbrs=((n,self.succ[n]) for n in self.nbunch_iter(nbunch))
 

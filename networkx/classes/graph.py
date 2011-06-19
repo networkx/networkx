@@ -254,7 +254,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         """
-        return iter(self.adj.keys())
+        return iter(self.adj)
 
     def __contains__(self,n):
         """Return True if n is a node, False otherwise. Use the expression
@@ -557,7 +557,7 @@ class Graph(object):
         """
         if data:
             return iter(self.node.items())
-        return iter(self.adj.keys())
+        return iter(self.adj)
 
     def nodes(self, data=False):
         """Return a list of the nodes in the graph.
@@ -995,7 +995,7 @@ class Graph(object):
         [1]
         """
         try:
-            return iter(self.adj[n].keys())
+            return iter(self.adj[n])
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
@@ -1086,7 +1086,7 @@ class Graph(object):
         """
         seen={}     # helper dict to keep track of multiply stored edges
         if nbunch is None:
-            nodes_nbrs = iter(self.adj.items())
+            nodes_nbrs = self.adj.items()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
         if data:
@@ -1279,7 +1279,7 @@ class Graph(object):
 
         """
         if nbunch is None:
-            nodes_nbrs = iter(self.adj.items())
+            nodes_nbrs = self.adj.items()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
   

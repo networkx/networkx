@@ -607,7 +607,7 @@ class MultiGraph(Graph):
         """
         seen={}     # helper dict to keep track of multiply stored edges
         if nbunch is None:
-            nodes_nbrs = iter(self.adj.items())
+            nodes_nbrs = self.adj.items()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
         if data:
@@ -724,7 +724,7 @@ class MultiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs = iter(self.adj.items())
+            nodes_nbrs = self.adj.items()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
 

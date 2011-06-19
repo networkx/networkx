@@ -662,14 +662,14 @@ class DiGraph(Graph):
         neighbors_iter() and successors_iter() are the same.
         """
         try:
-            return iter(self.succ[n].keys())
+            return iter(self.succ[n])
         except KeyError:
             raise NetworkXError("The node %s is not in the digraph."%(n,))
 
     def predecessors_iter(self,n):
         """Return an iterator over predecessor nodes of n."""
         try:
-            return iter(self.pred[n].keys())
+            return iter(self.pred[n])
         except KeyError:
             raise NetworkXError("The node %s is not in the digraph."%(n,))
 
@@ -731,7 +731,7 @@ class DiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs=iter(self.adj.items())
+            nodes_nbrs=self.adj.items()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
         if data:
@@ -768,7 +768,7 @@ class DiGraph(Graph):
         edges_iter : return an iterator of edges
         """
         if nbunch is None:
-            nodes_nbrs=iter(self.pred.items())
+            nodes_nbrs=self.pred.items()
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
         if data:
@@ -878,7 +878,7 @@ class DiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs=iter(self.pred.items())
+            nodes_nbrs=self.pred.items()
         else:
             nodes_nbrs=((n,self.pred[n]) for n in self.nbunch_iter(nbunch))
 
@@ -927,7 +927,7 @@ class DiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs=iter(self.succ.items())
+            nodes_nbrs=self.succ.items()
         else:
             nodes_nbrs=((n,self.succ[n]) for n in self.nbunch_iter(nbunch))
 

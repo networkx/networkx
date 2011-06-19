@@ -67,7 +67,7 @@ def _triangles_and_degree_iter(G,nodes=None):
         raise NetworkXError("Not defined for multigraphs.")
 
     if nodes is None:
-        nodes_nbrs = iter(G.adj.items())
+        nodes_nbrs = G.adj.items()
     else:
         nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nodes) )
 
@@ -95,7 +95,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
         max_weight=float(max(d.get(weight,1.0) 
                              for u,v,d in G.edges(data=True)))
     if nodes is None:
-        nodes_nbrs = iter(G.adj.items())
+        nodes_nbrs = G.adj.items()
     else:
         nodes_nbrs= ( (n,G[n]) for n in G.nbunch_iter(nodes) )
 
