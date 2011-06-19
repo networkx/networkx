@@ -38,6 +38,14 @@ average_clustering,
 bipartite.degree,
 spectral_layout,
 neighbor_degree,
-is_isomorphic
+is_isomorphic,
+betweenness_centrality,
+betweenness_centrality_subset,
+vitality,
+load_centrality,
+mincost,
+shortest_path,
+shortest_path_length,
+average_shortest_path_length
 
 
