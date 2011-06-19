@@ -706,7 +706,7 @@ def draw_networkx_labels(G, pos,
         ax=pylab.gca()
 
     if labels is None:
-        labels=dict(list(zip(G.nodes(),G.nodes())))
+        labels=dict( (n,n) for n in G.nodes())
 
     # set optional alignment
     horizontalalignment=kwds.get('horizontalalignment','center')
@@ -818,7 +818,7 @@ def draw_networkx_edge_labels(G, pos,
     if ax is None:
         ax=pylab.gca()
     if edge_labels is None:
-        labels=dict(list(zip(G.edges(),[d for u,v,d in G.edges(data=True)])))
+        labels=dict( ((u,v), d) for u,v,d in G.edges(data=True) )
     else:
         labels = edge_labels
     text_items={} 
