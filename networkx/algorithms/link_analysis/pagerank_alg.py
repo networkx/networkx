@@ -14,7 +14,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['pagerank','pagerank_numpy','pagerank_scipy','google_matrix']
 
 def pagerank(G,alpha=0.85,personalization=None,
-             max_iter=100,tol=1.0e-8,nstart=None):
+             max_iter=100,tol=1.0e-8,nstart=None,weight='weight'):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -41,6 +41,9 @@ def pagerank(G,alpha=0.85,personalization=None,
 
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node. 
+
+    weight : key, optional       
+      Edge data key to use as weight.  If None weights are set to 1.
 
     Returns
     -------
@@ -86,7 +89,7 @@ def pagerank(G,alpha=0.85,personalization=None,
         D=G
 
     # create a copy in (right) stochastic form        
-    W=nx.stochastic_graph(D)
+    W=nx.stochastic_graph(D, weight=weight)
     scale=1.0/W.number_of_nodes()
 
     # choose fixed starting vector if not given
@@ -124,7 +127,7 @@ def pagerank(G,alpha=0.85,personalization=None,
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
             for nbr in W[n]:
-                x[nbr]+=alpha*xlast[n]*W[n][nbr]['weight']
+                x[nbr]+=alpha*xlast[n]*W[n][nbr][weight]
             x[n]+=danglesum+(1.0-alpha)*p[n]
         # normalize vector 
         s=1.0/sum(x.values())
@@ -141,7 +144,8 @@ def pagerank(G,alpha=0.85,personalization=None,
     return x
 
 
-def google_matrix(G,alpha=0.85,personalization=None,nodelist=None):
+def google_matrix(G, alpha=0.85, personalization=None,
+                  nodelist=None, weight='weight'):
     """Return the Google matrix of the graph.
 
     Parameters
@@ -159,6 +163,9 @@ def google_matrix(G,alpha=0.85,personalization=None,nodelist=None):
     nodelist : list, optional       
       The rows and columns are ordered according to the nodes in nodelist.
       If nodelist is None, then the ordering is produced by G.nodes().
+
+    weight : key, optional       
+      Edge data key to use as weight.  If None weights are set to 1.
 
     Returns
     -------
@@ -182,7 +189,7 @@ def google_matrix(G,alpha=0.85,personalization=None,nodelist=None):
         if set(nodelist)!=set(G):
             raise NetworkXError('Personalization vector dictionary'
                                 'must have a value for every node')
-    M=nx.to_numpy_matrix(G,nodelist=nodelist)
+    M=nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight)
     (n,m)=M.shape # should be square
     # add constant to dangling nodes' row
     dangling=np.where(M.sum(axis=1)==0)
@@ -201,7 +208,7 @@ def google_matrix(G,alpha=0.85,personalization=None,nodelist=None):
     return P
 
 
-def pagerank_numpy(G,alpha=0.85,personalization=None):
+def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -219,6 +226,9 @@ def pagerank_numpy(G,alpha=0.85,personalization=None):
     personalization: dict, optional      
        The "personalization vector" consisting of a dictionary with a
        key for every graph node and nonzero personalization value for each node.
+
+    weight : key, optional       
+      Edge data key to use as weight.  If None weights are set to 1.
 
     Returns
     -------
@@ -261,7 +271,8 @@ def pagerank_numpy(G,alpha=0.85,personalization=None):
         nodelist=G.nodes()
     else:  # use personalization "vector" ordering
         nodelist=personalization.keys()
-    M=google_matrix(G,alpha,personalization=personalization,nodelist=nodelist)
+    M=google_matrix(G, alpha, personalization=personalization,
+                    nodelist=nodelist, weight=weight)
     # use numpy LAPACK solver
     eigenvalues,eigenvectors=np.linalg.eig(M.T)
     ind=eigenvalues.argsort()
@@ -272,8 +283,8 @@ def pagerank_numpy(G,alpha=0.85,personalization=None):
     return centrality
 
 
-def pagerank_scipy(G,alpha=0.85,personalization=None,
-                   max_iter=100,tol=1.0e-6):
+def pagerank_scipy(G, alpha=0.85, personalization=None,
+                   max_iter=100, tol=1.0e-6, weight='weight'):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -297,6 +308,9 @@ def pagerank_scipy(G,alpha=0.85,personalization=None,
 
     tol : float, optional
       Error tolerance used to check convergence in power method solver.
+
+    weight : key, optional       
+      Edge data key to use as weight.  If None weights are set to 1.
 
     Returns
     -------
@@ -335,7 +349,7 @@ def pagerank_scipy(G,alpha=0.85,personalization=None,
         nodelist=G.nodes()
     else:  # use personalization "vector" ordering
         nodelist=personalization.keys()
-    M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist)
+    M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist,weight=weight)
     (n,m)=M.shape # should be square
     S=scipy.array(M.sum(axis=1)).flatten()
     for i, j, v in zip( *scipy.sparse.find(M) ):
