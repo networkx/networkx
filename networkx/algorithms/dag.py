@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-"""
-Algorithms for directed acyclic graphs (DAGs).
-"""
+from fractions import gcd
+import networkx as nx
+"""Algorithms for directed acyclic graphs (DAGs)."""
 #    Copyright (C) 2006-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-import networkx as nx
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult (dschult@colgate.edu)'])
 __all__ = ['topological_sort', 
            'topological_sort_recursive',
-           'is_directed_acyclic_graph']
+           'is_directed_acyclic_graph',
+           'is_aperiodic']
 
 def is_directed_acyclic_graph(G):
     """Return True if the graph G is a directed acyclic graph (DAG) or 
@@ -172,3 +172,60 @@ def topological_sort_recursive(G,nbunch=None):
                 raise nx.NetworkXUnfeasible("Graph contains a cycle.")
     return explored
 
+def is_aperiodic(G):
+    """Return True if G is aperiodic.
+
+    A directed graph is aperiodic if there is no integer k > 1 that 
+    divides the length of every cycle in the graph.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+      Graph
+
+    Returns
+    -------
+    aperiodic : boolean
+      True if the graph is aperiodic False otherwise
+
+    Raises
+    ------
+    NetworkXError
+      If G is not directed
+
+    Notes
+    -----
+    This uses the method outlined in [1]_, which runs in O(m) time
+    given m edges in G. Note that a graph is not aperiodic if it is
+    acyclic as every integer trivial divides length 0 cycles.
+
+    References
+    ----------
+    ..[1] Jarvis, J. P.; Shier, D. R. (1996),
+       Graph-theoretic analysis of finite Markov chains,
+       in Shier, D. R.; Wallenius, K. T., Applied Mathematical Modeling:
+       A Multidisciplinary Approach, CRC Press.
+    """
+    if not G.is_directed():
+        raise nx.NetworkXError("is_aperiodic not defined for undirected graphs")
+
+    s = next(G.nodes_iter())
+    levels = {s:0}
+    this_level = [s]
+    g = 0
+    l = 1
+    while this_level:
+        next_level = []
+        for u in this_level:
+            for v in G[u]:
+                if v in levels: # Non-Tree Edge
+                    g = gcd(g, levels[u]-levels[v] + 1)
+                else: # Tree Edge
+                    next_level.append(v)
+                    levels[v] = l
+        this_level = next_level
+        l += 1
+    if len(levels)==len(G): #All nodes in tree
+        return g==1
+    else:
+        return g==1 and nx.is_aperiodic(G.subgraph(set(G)-set(levels)))

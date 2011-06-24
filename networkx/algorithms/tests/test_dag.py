@@ -74,3 +74,63 @@ class TestDAG:
         assert_equal(nx.topological_sort(G,[5]), [5])
         assert_equal(nx.topological_sort_recursive(G,[5]), [5])
 
+
+def test_is_aperiodic_cycle():
+    G=nx.DiGraph()
+    G.add_cycle([1,2,3,4])
+    assert_false(nx.is_aperiodic(G))
+
+def test_is_aperiodic_cycle2():
+    G=nx.DiGraph()
+    G.add_cycle([1,2,3,4])
+    G.add_cycle([3,4,5,6,7])
+    assert_true(nx.is_aperiodic(G))
+
+def test_is_aperiodic_cycle3():
+    G=nx.DiGraph()
+    G.add_cycle([1,2,3,4])
+    G.add_cycle([3,4,5,6])
+    assert_false(nx.is_aperiodic(G))
+    
+def test_is_aperiodic_cycle4():
+    G = nx.DiGraph()
+    G.add_cycle([1,2,3,4])
+    G.add_edge(1,3)
+    assert_true(nx.is_aperiodic(G))
+
+def test_is_aperiodic_selfloop():
+    G = nx.DiGraph()
+    G.add_cycle([1,2,3,4])
+    G.add_edge(1,1)
+    assert_true(nx.is_aperiodic(G))
+
+def test_is_aperiodic_raise():
+    G = nx.Graph()
+    assert_raises(nx.NetworkXError,
+                  nx.is_aperiodic,
+                  G)
+
+def test_is_aperiodic_bipartite():
+    #Bipartite graph
+    G = nx.DiGraph(nx.davis_southern_women_graph())
+    assert_false(nx.is_aperiodic(G))
+
+def test_is_aperiodic_rary_tree():
+    G = nx.full_rary_tree(3,27,create_using=nx.DiGraph())
+    assert_false(nx.is_aperiodic(G))
+
+def test_is_aperiodic_disconnected():
+    #disconnected graph
+    G = nx.DiGraph()
+    G.add_cycle([1,2,3,4])
+    G.add_cycle([5,6,7,8])
+    assert_false(nx.is_aperiodic(G))
+    G.add_edge(1,3)
+    G.add_edge(5,7)
+    assert_true(nx.is_aperiodic(G))
+    
+def test_is_aperiodic_disconnected2():
+    G = nx.DiGraph()
+    G.add_cycle([0,1,2])
+    G.add_edge(3,3)
+    assert_false(nx.is_aperiodic(G))
