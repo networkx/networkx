@@ -9,7 +9,8 @@ import networkx as nx
 #    All rights reserved.
 #    BSD license.
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Dan Schult (dschult@colgate.edu)'])
+                            'Dan Schult (dschult@colgate.edu)',
+                            'Ben Edwards (bedwards@cs.unm.edu)'])
 __all__ = ['topological_sort', 
            'topological_sort_recursive',
            'is_directed_acyclic_graph',
@@ -201,7 +202,7 @@ def is_aperiodic(G):
 
     References
     ----------
-    ..[1] Jarvis, J. P.; Shier, D. R. (1996),
+    .. [1] Jarvis, J. P.; Shier, D. R. (1996),
        Graph-theoretic analysis of finite Markov chains,
        in Shier, D. R.; Wallenius, K. T., Applied Mathematical Modeling:
        A Multidisciplinary Approach, CRC Press.
