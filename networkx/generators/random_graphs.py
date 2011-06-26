@@ -96,10 +96,15 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
         while v < n:
             lr = math.log(1.0 - random.random())
             w = w + 1 + int(lr/lp)
-            while  w>= n and v < n:
+            if v == w: # avoid self loops
+                w = w + 1
+            while  w >= n and v < n:
                 w = w - n
                 v = v + 1
+                if v == w: # avoid self loops
+                    w = w + 1
             if v < n:
+                if v == w:
                 G.add_edge(v, w)
     else:
         while v < n:
