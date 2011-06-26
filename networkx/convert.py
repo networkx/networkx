@@ -709,7 +709,8 @@ def to_numpy_recarray(G,nodelist=None,
     return M.view(np.recarray)
 
 
-def to_scipy_sparse_matrix(G,nodelist=None,dtype=None,weight='weight'):
+def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, 
+                           weight='weight', format='csr'):
     """Return the graph adjacency matrix as a SciPy sparse matrix.
 
     Parameters
@@ -729,6 +730,12 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None,weight='weight'):
         The edge attribute that holds the numerical value used for 
         the edge weight.  If None then all edge weights are 1.
 
+    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'} 
+            (default = 'csr')
+        The type of the matrix to be returned. In general this need 
+        not be changed, but for some algorithms different implementations
+        of sparse matrices can perform better. See [1]_ for details.
+    
     Returns
     -------
     M : SciPy sparse matrix
@@ -745,8 +752,8 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None,weight='weight'):
     When `nodelist` does not contain every node in `G`, the matrix is built 
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
     
-    Uses lil_matrix format.  To convert to other formats see the documentation
-    for scipy.sparse.
+    Uses lil_matrix format. To convert to other formats specify the 
+    format= keyword.
 
     Examples
     --------
@@ -760,7 +767,12 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None,weight='weight'):
     matrix([[ 0.,  2.,  0.],
             [ 1.,  0.,  0.],
             [ 0.,  0.,  4.]])
-
+    
+    References
+    ----------
+    .. [1] Scipy Dev. References, 
+       "Sparse Matrices"  
+       http://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     try:
         from scipy import sparse
@@ -787,8 +799,11 @@ def to_scipy_sparse_matrix(G,nodelist=None,dtype=None,weight='weight'):
             M[i,j] += attrs.get(weight, 1)
             if undirected:
                 M[j,i] = M[i,j]
-
-    return M
+    try:
+        return M.asformat(format)
+    except AttributeError:
+        raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)
+    
 
 def from_scipy_sparse_matrix(A,create_using=None):
     """Return a graph from scipy sparse matrix adjacency list. 
