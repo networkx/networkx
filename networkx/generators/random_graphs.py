@@ -104,7 +104,6 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
                 if v == w: # avoid self loops
                     w = w + 1
             if v < n:
-                if v == w:
                 G.add_edge(v, w)
     else:
         while v < n:
