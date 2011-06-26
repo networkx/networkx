@@ -85,7 +85,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
         random.seed(seed)
 
     if p <= 0 or p >= 1:
-        return nx.gnp_random_graph(n,p)
+        return nx.gnp_random_graph(n,p,directed=directed)
 
     v = 1  # Nodes in graph are from 0,n-1 (this is the second node index).
     w = -1
