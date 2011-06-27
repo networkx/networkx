@@ -1,7 +1,6 @@
 """
-Fast checking to see if graphs are not isomorphic.
+Graph isomorphism functions.
 
-This isn't a graph isomorphism checker.
 """
 __author__ = """Pieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
 #    Copyright (C) 2004-2008 by 
@@ -50,8 +49,6 @@ def could_be_isomorphic(G1,G2):
     props2.sort()
 
     if props1 != props2: 
-#        print props1
-#        print props2
         return False
 
     # OK...
@@ -124,18 +121,33 @@ def faster_could_be_isomorphic(G1,G2):
 
 faster_graph_could_be_isomorphic=faster_could_be_isomorphic
 
-def is_isomorphic(G1, G2, weight=None, rtol=1e-6, atol=1e-9):
+def is_isomorphic(G1, G2, node_match=None, weight=None, default=1, 
+                          rtol=1.0000000000000001e-05, atol=1e-08):
     """Returns True if the graphs G1 and G2 are isomorphic and False otherwise.
 
     Parameters
     ----------
     G1, G2: NetworkX graph instances
-       The two graphs G1 and G2 must be the same type.
+        The two graphs G1 and G2 must be the same type.
        
+    node_match : callable
+        A function that returns True iff node `n1` in `G1` and `n2` in `G2`
+        should be considered equal during the isomorphism test. The 
+        function will be called like:
+        
+           node_match(G1.node[n1], G2.node[n2])
+           
+        That is, the function will receive the node attribute dictionaries
+        of the nodes under consideration. If `None`, then no attributes are
+        considered when testing for an isomorphism.
+           
     weight : string or None, optional (default=None)
-       The edge attribute that holds the numerical value used as a weight.
-       If None, then don't check for weighted graphs.
-       Otherwise, G1 and G2 must be valid weighted graphs.
+        The edge attribute that holds the numerical value used as a weight.
+        If None, then don't check for weighted graphs.
+        Otherwise, G1 and G2 must be valid weighted graphs.
+
+    default : float, optional
+        The default weight to use when an edge has no weight.
 
     rtol: float, optional
         The relative error tolerance when checking weighted edges
@@ -150,34 +162,32 @@ def is_isomorphic(G1, G2, weight=None, rtol=1e-6, atol=1e-9):
 
     See Also
     --------
-    isomorphvf2()
+    :mod:`isomorphvf2`
 
     """
-    gm=None
-    if weight is None:
+    if weight is None and node_match is None:
         if G1.is_directed() and G2.is_directed():
-            gm=  nx.DiGraphMatcher(G1,G2)
-        elif not (G1.is_directed() and G2.is_directed()):
-            gm = nx.GraphMatcher(G1,G2)
+            gm = nx.DiGraphMatcher(G1,G2)
+        elif (not G1.is_directed()) and (not G2.is_directed()):
+            gm = nx.GraphMatcher(G1,G2)            
+        else:
+           raise NetworkXError("Graphs G1 and G2 are not of the same type.")        
     else:
-#        assert(G1.weighted and G2.weighted)
         if not G1.is_directed() and not G1.is_multigraph():
             assert(not G2.is_directed() and not G2.is_multigraph())
-            gm = nx.WeightedGraphMatcher(G1,G2,rtol,atol,weight)
+            GM = nx.WeightedGraphMatcher
         elif not G1.is_directed() and G1.is_multigraph():
             assert(not G2.is_directed() and G2.is_multigraph())
-            gm = nx.WeightedMultiGraphMatcher(G1,G2,rtol,atol,weight)
+            GM = nx.WeightedMultiGraphMatcher
         elif G1.is_directed() and not G1.is_multigraph():
             assert(G2.is_directed() and not G2.is_multigraph())
-            gm = nx.WeightedDiGraphMatcher(G1,G2,rtol,atol,weight)
+            GM = nx.WeightedDiGraphMatcher
         else:
             assert(G2.is_directed() and G2.is_multigraph())
-            gm = nx.WeightedMultiDiGraphMatcher(G1,G2,rtol,atol,weight)
-    if gm==None:
-        # Graphs are of mixed type. We could just return False, 
-        # but then there is the case of completely disconnected graphs...
-        # which could be isomorphic.
-        raise NetworkXError("Graphs G1 and G2 are not of the same type.")
-    
+            GM = nx.WeightedMultiDiGraphMatcher
+            
+        gm = GM(G1, G2, node_match=node_match, weight=weight, default=default, 
+                        rtol=rtol, atol=atol)
+    print gm
     return gm.is_isomorphic()
 

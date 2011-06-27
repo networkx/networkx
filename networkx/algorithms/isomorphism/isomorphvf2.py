@@ -399,7 +399,6 @@ class GraphMatcher(object):
         ### Test at each step to get a return value as soon as possible.
         ###
                 
-        
         ### Look ahead 0
         
         # R_self
