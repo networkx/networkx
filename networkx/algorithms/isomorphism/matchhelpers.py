@@ -102,8 +102,8 @@ categorical_edge_match = copyfunc(categorical_node_match, 'categorical_edge_matc
 def categorical_multiedge_match(attr, default):
     if nx.utils.is_string_like(attr):
         def match(datasets1, datasets2):
-            values1 = set([data.get(attr, d) for data in datasets1])
-            values2 = set([data.get(attr, d) for data in datasets2])
+            values1 = set([data.get(attr, default) for data in datasets1.values()])
+            values2 = set([data.get(attr, default) for data in datasets2.values()])
             return values1 == values2
     else:
         attrs = list(zip(attr, default)) # Python 3
@@ -178,8 +178,8 @@ numerical_edge_match = copyfunc(numerical_node_match, 'numerical_edge_match')
 def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
     if nx.utils.is_string_like(attr):
         def match(datasets1, datasets2):
-            values1 = sorted([data.get(attr, d) for data in datasets1])
-            values2 = sorted([data.get(attr, d) for data in datasets2])
+            values1 = sorted([data.get(attr, default) for data in datasets1.values()])
+            values2 = sorted([data.get(attr, default) for data in datasets2.values()])
             return allclose(values1, values2, rtol=rtol, atol=atol)
     else:
         attrs = list(zip(attr, default))  # Python 3   
@@ -302,10 +302,10 @@ def generic_multiedge_match(attr, default, op):
     # We must test every possible isomorphism between the edges.
     if nx.utils.is_string_like(attr):
         def match(datasets1, datasets2):
-            values1 = [data.get(attr, d) for data in datasets1]
-            values2 = [data.get(attr, d) for data in datasets2]
+            values1 = [data.get(attr, default) for data in datasets1.values()]
+            values2 = [data.get(attr, default) for data in datasets2.values()]
             for vals2 in permutations(values2):
-                for xi, yi in zip(values1, vals):
+                for xi, yi in zip(values1, vals2):
                     if not op(xi, yi):
                         # This is not an isomorphism, go to next permutation.
                         break
@@ -316,7 +316,7 @@ def generic_multiedge_match(attr, default, op):
                 # Then there are no isomorphisms between the multiedges.
                 return False
     else:
-        attrs = list(zip(attr, default, op)) # Python 3    
+        attrs = list(zip(attr, default)) # Python 3    
         def match(datasets1, datasets2):
             values1 = []
             for data1 in datasets1.values():
@@ -326,11 +326,10 @@ def generic_multiedge_match(attr, default, op):
             for data2 in datasets2.values():
                 x = tuple( data2.get(attr, d) for attr, d in attrs )
                 values2.append(x)
-            values1.sort()
-            values2.sort()
-            for xi, yi in zip(values1, values2):
-                if not allclose(xi, yi, rtol=rtol, atol=atol):
-                    return False
+            for vals2 in permutations(values2):
+                for xi, yi, operator in zip(values1, vals2, op):
+                    if not operator(xi, yi):
+                        return False
             else:
                 return True
     return match

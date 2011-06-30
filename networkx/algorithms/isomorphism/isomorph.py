@@ -121,8 +121,7 @@ def faster_could_be_isomorphic(G1,G2):
 
 faster_graph_could_be_isomorphic=faster_could_be_isomorphic
 
-def is_isomorphic(G1, G2, node_match=None, weight=None, default=1,
-                          rtol=1.0000000000000001e-05, atol=1e-08):
+def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     """Returns True if the graphs G1 and G2 are isomorphic and False otherwise.
 
     Parameters
@@ -141,53 +140,40 @@ def is_isomorphic(G1, G2, node_match=None, weight=None, default=1,
         of the nodes under consideration. If `None`, then no attributes are
         considered when testing for an isomorphism.
 
-    weight : string or None, optional (default=None)
-        The edge attribute that holds the numerical value used as a weight.
-        If None, then don't check for weighted graphs.
-        Otherwise, G1 and G2 must be valid weighted graphs.
+    edge_match : callable
+        A function that returns True iff the edge attribute dictionary for
+        the pair of nodes (u1, v1) in G1 and (u2, v2) in G2 should be
+        considered equal during the isomorphism test. The function will be
+        called like:
 
-    default : float, optional
-        The default weight to use when an edge has no weight.
+           edge_match(G1[u1][v1], G2[u2][v2])
 
-    rtol: float, optional
-        The relative error tolerance when checking weighted edges
+        That is, the function will receive the edge attribute dictionaries
+        of the edges under consideration. If `None`, then no attributes are
+        considered when testing for an isomorphism.
 
-    atol: float, optional
-        The absolute error tolerance when checking weighted edges
 
     Notes
     -----
     Uses the vf2 algorithm.
-    Works for Graph, DiGraph, MultiGraph, and MultiDiGraph
+    Works for Graph, DiGraph, MultiGraph, and MultiDiGraph.
+
 
     See Also
     --------
-    :mod:`isomorphvf2`
+    :mod:`isomorphvf2`, :mod:`matchelpers`
+    numerical_node_match, numerical_edge_match, numerical_multiedge_match    
+    categorical_node_match, categorical_edge_match, categorical_multiedge_match        
 
     """
-    if weight is None and node_match is None:
-        if G1.is_directed() and G2.is_directed():
-            gm = nx.DiGraphMatcher(G1,G2)
-        elif (not G1.is_directed()) and (not G2.is_directed()):
-            gm = nx.GraphMatcher(G1,G2)
-        else:
-           raise NetworkXError("Graphs G1 and G2 are not of the same type.")
+    if G1.is_directed() and G2.is_directed():
+        GM = nx.DiGraphMatcher
+    elif (not G1.is_directed()) and (not G2.is_directed()):
+        GM = nx.GraphMatcher
     else:
-        if not G1.is_directed() and not G1.is_multigraph():
-            assert(not G2.is_directed() and not G2.is_multigraph())
-            GM = nx.WeightedGraphMatcher
-        elif not G1.is_directed() and G1.is_multigraph():
-            assert(not G2.is_directed() and G2.is_multigraph())
-            GM = nx.WeightedMultiGraphMatcher
-        elif G1.is_directed() and not G1.is_multigraph():
-            assert(G2.is_directed() and not G2.is_multigraph())
-            GM = nx.WeightedDiGraphMatcher
-        else:
-            assert(G2.is_directed() and G2.is_multigraph())
-            GM = nx.WeightedMultiDiGraphMatcher
+       raise NetworkXError("Graphs G1 and G2 are not of the same type.")
 
-        gm = GM(G1, G2, node_match=node_match, weight=weight, default=default,
-                        rtol=rtol, atol=atol)
+    gm = GM(G1, G2, node_match=node_match, edge_match=edge_match)
 
     return gm.is_isomorphic()
 
