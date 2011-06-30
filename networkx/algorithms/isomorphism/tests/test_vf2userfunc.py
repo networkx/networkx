@@ -80,10 +80,10 @@ class TestNodeMatch_Graph(object):
         self.build()
 
     def build(self):
-        
+
         self.nm = nxiso.categorical_node_match('color', '')
         self.em = nxiso.numerical_edge_match('weight', 1)
-        
+
         self.g1.add_node('A', color='red')
         self.g2.add_node('C', color='blue')
 
@@ -130,7 +130,7 @@ class TestEdgeMatch_MultiGraph(object):
         self.g2 = nx.MultiGraph()
         self.GM = nx.MultiGraphMatcher
         self.build()
-        
+
     def build(self):
         g1 = self.g1
         g2 = self.g2
@@ -154,8 +154,8 @@ class TestEdgeMatch_MultiGraph(object):
             self.em = nxiso.numerical_edge_match('weight', 1)
             self.emc = nxiso.categorical_edge_match('color', '')
             self.emcm = nxiso.categorical_edge_match(['color', 'weight'], ['', 1])
-            self.emg1 = nxiso.generic_multiedge_match('color', 'red', eq)            
-            self.emg2 = nxiso.generic_edge_match(['color', 'weight', 'size'], ['red', 1, .5], [eq, eq, nxiso.matchhelpers.close])            
+            self.emg1 = nxiso.generic_multiedge_match('color', 'red', eq)
+            self.emg2 = nxiso.generic_edge_match(['color', 'weight', 'size'], ['red', 1, .5], [eq, eq, nxiso.matchhelpers.close])
 
     def test_weights_only(self):
         assert_true( nx.is_isomorphic(self.g1, self.g2, edge_match=self.em) )
@@ -167,7 +167,7 @@ class TestEdgeMatch_MultiGraph(object):
     def test_colorsandweights(self):
         gm = self.GM(self.g1, self.g2, edge_match=self.emcm)
         assert_false( gm.is_isomorphic() )
-        
+
     def test_generic1(self):
         gm = self.GM(self.g1, self.g2, edge_match=self.emg1)
         assert_true( gm.is_isomorphic() )

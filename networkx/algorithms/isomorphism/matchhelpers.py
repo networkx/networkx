@@ -1,5 +1,5 @@
 """
-    Various functions which help end users define customize node_match and 
+    Various functions which help end users define customize node_match and
     edge_match functions to use during isomorphism checks.
 """
 
@@ -59,7 +59,7 @@ def close(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
 
 categorical_doc = """
 Returns a comparison function for a categorical node attribute.
-    
+
 The value(s) of the attr(s) must be hashable and comparable via the ==
 operator since they are placed into a set([]) object.  If the sets from
 G1 and G2 are the same, then the constructed function returns True.
@@ -72,7 +72,7 @@ attr : string | list
 default : value | list
     The default value for the categorical node attribute, or a list of
     default values for the categorical node attributes.
-   
+
 Returns
 -------
 match : function
@@ -93,7 +93,7 @@ def categorical_node_match(attr, default):
         attrs = list(zip(attr, default)) # Python 3
         def match(data1, data2):
             values1 = set([data1.get(attr, d) for attr, d in attrs])
-            values2 = set([data2.get(attr, d) for attr, d in attrs])            
+            values2 = set([data2.get(attr, d) for attr, d in attrs])
             return values1 == values2
     return match
 
@@ -129,8 +129,8 @@ categorical_multiedge_match.__doc__ = tmpdoc
 
 numerical_doc = """
 Returns a comparison function for a numerical node attribute.
-    
-The value(s) of the attr(s) must be numerical and sortable.  If the 
+
+The value(s) of the attr(s) must be numerical and sortable.  If the
 sorted list of values from G1 and G2 are the same within some
 tolerance, then the constructed function returns True.
 
@@ -146,7 +146,7 @@ rtol : float
     The relative error tolerance.
 atol : float
     The absolute error tolerance.
-   
+
 Returns
 -------
 match : function
@@ -162,7 +162,7 @@ Examples
 def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
     if nx.utils.is_string_like(attr):
         def match(data1, data2):
-            return close(data1.get(attr, default), 
+            return close(data1.get(attr, default),
                          data2.get(attr, default),
                          rtol=rtol, atol=atol)
     else:
@@ -182,7 +182,7 @@ def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1
             values2 = sorted([data.get(attr, default) for data in datasets2.values()])
             return allclose(values1, values2, rtol=rtol, atol=atol)
     else:
-        attrs = list(zip(attr, default))  # Python 3   
+        attrs = list(zip(attr, default))  # Python 3
         def match(datasets1, datasets2):
             values1 = []
             for data1 in datasets1.values():
@@ -219,7 +219,7 @@ function returns True.
 Parameters
 ----------
 attr : string | list
-    The node attribute to compare, or a list of node attributes 
+    The node attribute to compare, or a list of node attributes
     to compare.
 default : value | list
     The default value for the node attribute, or a list of
@@ -227,7 +227,7 @@ default : value | list
 op : callable | list
     The operator to use when comparing attribute values, or a list
     of operators to use when comparing values for each attribute.
-    
+
 Returns
 -------
 match : function
@@ -242,7 +242,7 @@ Examples
 >>> nm = generic_node_match(['weight', 'color'], [1.0, 'red'], [close, eq])
 
 """
-    
+
 def generic_node_match(attr, default, op):
     if nx.utils.is_string_like(attr):
         def match(data1, data2):
@@ -264,14 +264,14 @@ def generic_multiedge_match(attr, default, op):
 
     The value(s) of the attr(s) are compared using the specified
     operators. If all the attributes are equal, then the constructed
-    function returns True. Potentially, the constructed edge_match 
+    function returns True. Potentially, the constructed edge_match
     function can be slow since it must verify that no isomorphism
     exists between the multiedges before it returns False.
 
     Parameters
     ----------
     attr : string | list
-        The edge attribute to compare, or a list of node attributes 
+        The edge attribute to compare, or a list of node attributes
         to compare.
     default : value | list
         The default value for the edge attribute, or a list of
@@ -279,7 +279,7 @@ def generic_multiedge_match(attr, default, op):
     op : callable | list
         The operator to use when comparing attribute values, or a list
         of operators to use when comparing values for each attribute.
-        
+
     Returns
     -------
     match : function
@@ -291,8 +291,8 @@ def generic_multiedge_match(attr, default, op):
     >>> from nx.isomorphism import close
     >>> nm = generic_node_match('weight', 1.0, close)
     >>> nm = generic_node_match('color', 'red', eq)
-    >>> nm = generic_node_match(['weight', 'color'], 
-    ...                         [1.0, 'red'], 
+    >>> nm = generic_node_match(['weight', 'color'],
+    ...                         [1.0, 'red'],
     ...                         [close, eq])
     ...
 
@@ -316,7 +316,7 @@ def generic_multiedge_match(attr, default, op):
                 # Then there are no isomorphisms between the multiedges.
                 return False
     else:
-        attrs = list(zip(attr, default)) # Python 3    
+        attrs = list(zip(attr, default)) # Python 3
         def match(datasets1, datasets2):
             values1 = []
             for data1 in datasets1.values():

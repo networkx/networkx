@@ -159,11 +159,36 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     Works for Graph, DiGraph, MultiGraph, and MultiDiGraph.
 
 
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> import networkx.isomorphism as nxiso
+
+    For (di)graphs G1 and G2, using 'weight' edge attribute (default: 1)
+    >>> em = nxiso.numerical_edge_match('weight', 1)
+    >>> nx.is_isomorphic(G1, G2, edge_match=em)
+
+    For (multi)(di)graphs G1 and G2, using 'fill' node attribute (default: '')
+    >>> nm = nxiso.categorical_node_match('fill', 'red')
+    >>> nx.is_isomorphic(G1, G2, node_match=nm)
+
+    For multi(di)graphs G1 and G2, using 'weight' edge attribute (default: 2.3)
+    >>> em = nxiso.numerical_multiedge_match('weight', 2.3)
+    >>> nx.is_isomorphic(G1, G2, edge_match=em)
+
+    For (di)graphs G1 and G2, using 'weight' and 'linewidth' edge attributes
+    with default values 1 and 2.5. Also using 'fill' node attribute with
+    default value 'red'.
+    >>> em = nxiso.numerical_multiedge_match(['weight', 'lw'], [1, 2.5])
+    >>> nm = nxiso.categorical_node_match('fill', 'red')
+    >>> nx.is_isomorphic(G1, G2, edge_match=em, node_match=nm)
+
+
     See Also
     --------
     :mod:`isomorphvf2`, :mod:`matchelpers`
-    numerical_node_match, numerical_edge_match, numerical_multiedge_match    
-    categorical_node_match, categorical_edge_match, categorical_multiedge_match        
+    numerical_node_match, numerical_edge_match, numerical_multiedge_match
+    categorical_node_match, categorical_edge_match, categorical_multiedge_match
 
     """
     if G1.is_directed() and G2.is_directed():
