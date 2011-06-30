@@ -173,7 +173,7 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     >>> nx.is_isomorphic(G1, G2, node_match=nm)
 
     For multi(di)graphs G1 and G2, using 'weight' edge attribute (default: 2.3)
-    >>> em = nxiso.numerical_multiedge_match('weight', 2.3)
+    >>> em = nxiso.numerical_multiedge_match('weight', 2.3, rtol=1e-6)
     >>> nx.is_isomorphic(G1, G2, edge_match=em)
 
     For (di)graphs G1 and G2, using 'weight' and 'linewidth' edge attributes
