@@ -176,6 +176,7 @@ class TestDegreeMixingMatrixPearsonr(object):
              raise SkipTest('NumPy not available.')
         try:
             import scipy
+            import scipy.stats
         except ImportError:
              raise SkipTest('SciPy not available.')
 
