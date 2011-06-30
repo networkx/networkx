@@ -3,10 +3,43 @@
     edge_match functions to use during isomorphism checks.
 """
 
-__all__ = ['close',
-           'attrcompare_factory',
-           'multi_attrcompare_factory_setlike'
+__all__ = ['categorical_node_match',
+           'categorical_edge_match',
+           'categorical_multiedge_match',
+           'numerical_node_match',
+           'numerical_edge_match',
+           'numerical_multiedge_match',
+           'generic_node_match',
+           'generic_edge_match',
+           'generic_multiedge_match',
           ]
+
+import types
+from itertools import permutations
+
+import networkx as nx
+
+def copyfunc(f, name=None):
+    """Returns a deepcopy of a function."""
+    return types.FunctionType(f.func_code, f.func_globals, name or f.name,
+                              f.func_defaults, f.func_closure)
+
+def allclose(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
+    """Returns True if x and y are sufficiently close, elementwise.
+
+    Parameters
+    ----------
+    rtol : float
+        The relative error tolerance.
+    atol : float
+        The absolute error tolerance.
+
+    """
+    # assume finite weights, see numpy.allclose() for reference
+    for xi, yi in zip(x,y):
+        if not ( abs(xi-yi) <= atol + rtol * abs(yi) ):
+            return False
+    return True
 
 
 def close(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
@@ -20,101 +53,289 @@ def close(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
         The absolute error tolerance.
 
     """
-    # assumes finite weights
+    # assume finite weights, see numpy.allclose() for reference
     return abs(x-y) <= atol + rtol * abs(y)
 
-def attrcompare_factory(attrs):
-    """Returns a customized attribute comparison function.
 
-    For each attribute, the comparison functions are logically ANDed together.
-    The comparison function is suitable as a `node_match` function or as an
-    `edge_match` function for non-multi graphs and non-multi digraphs.
+categorical_doc = """
+Returns a comparison function for a categorical node attribute.
+    
+The value(s) of the attr(s) must be hashable and comparable via the ==
+operator since they are placed into a set([]) object.  If the sets from
+G1 and G2 are the same, then the constructed function returns True.
+
+Parameters
+----------
+attr : string | list
+    The categorical node attribute to compare, or a list of categorical
+    node attributes to compare.
+default : value | list
+    The default value for the categorical node attribute, or a list of
+    default values for the categorical node attributes.
+   
+Returns
+-------
+match : function
+    The customized, categorical `node_match` function.
+
+Examples
+--------
+>>> nm = categorical_node_match('size', 1)
+>>> nm = categorical_node_match(['color', 'size'], ['red', 2])
+
+"""
+
+def categorical_node_match(attr, default):
+    if nx.utils.is_string_like(attr):
+        def match(data1, data2):
+            return data1.get(attr, default) == data2.get(attr, default)
+    else:
+        attrs = list(zip(attr, default)) # Python 3
+        def match(data1, data2):
+            values1 = set([data1.get(attr, d) for attr, d in attrs])
+            values2 = set([data2.get(attr, d) for attr, d in attrs])            
+            return values1 == values2
+    return match
+
+categorical_edge_match = copyfunc(categorical_node_match, 'categorical_edge_match')
+
+def categorical_multiedge_match(attr, default):
+    if nx.utils.is_string_like(attr):
+        def match(datasets1, datasets2):
+            values1 = set([data.get(attr, d) for data in datasets1])
+            values2 = set([data.get(attr, d) for data in datasets2])
+            return values1 == values2
+    else:
+        attrs = list(zip(attr, default)) # Python 3
+        def match(datasets1, datasets2):
+            values1 = set([])
+            for data1 in datasets1.values():
+                x = tuple( data1.get(attr, d) for attr, d in attrs )
+                values1.add(x)
+            values2 = set([])
+            for data2 in datasets2.values():
+                x = tuple( data2.get(attr, d) for attr, d in attrs )
+                values2.add(x)
+            return values1 == values2
+    return match
+
+# Docstrings for categorical functions.
+categorical_node_match.__doc__ = categorical_doc
+categorical_edge_match.__doc__ = categorical_doc.replace('node', 'edge')
+tmpdoc = categorical_doc.replace('node', 'edge')
+tmpdoc = tmpdoc.replace('categorical_edge_match', 'categorical_multiedge_match')
+categorical_multiedge_match.__doc__ = tmpdoc
+
+
+numerical_doc = """
+Returns a comparison function for a numerical node attribute.
+    
+The value(s) of the attr(s) must be numerical and sortable.  If the 
+sorted list of values from G1 and G2 are the same within some
+tolerance, then the constructed function returns True.
+
+Parameters
+----------
+attr : string | list
+    The numerical node attribute to compare, or a list of numerical
+    node attributes to compare.
+default : value | list
+    The default value for the numerical node attribute, or a list of
+    default values for the numerical node attributes.
+rtol : float
+    The relative error tolerance.
+atol : float
+    The absolute error tolerance.
+   
+Returns
+-------
+match : function
+    The customized, numerical `node_match` function.
+
+Examples
+--------
+>>> nm = numerical_node_match('weight', 1.0)
+>>> nm = numerical_node_match(['weight', 'linewidth'], [.25, .5])
+
+"""
+
+def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
+    if nx.utils.is_string_like(attr):
+        def match(data1, data2):
+            return close(data1.get(attr, default), 
+                         data2.get(attr, default),
+                         rtol=rtol, atol=atol)
+    else:
+        attrs = list(zip(attr, default)) # Python 3
+        def match(data1, data2):
+            values1 = [data1.get(attr, d) for attr, d in attrs]
+            values2 = [data2.get(attr, d) for attr, d in attrs]
+            return allclose(values1, values2, rtol=rtol, atol=atol)
+    return match
+
+numerical_edge_match = copyfunc(numerical_node_match, 'numerical_edge_match')
+
+def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
+    if nx.utils.is_string_like(attr):
+        def match(datasets1, datasets2):
+            values1 = sorted([data.get(attr, d) for data in datasets1])
+            values2 = sorted([data.get(attr, d) for data in datasets2])
+            return allclose(values1, values2, rtol=rtol, atol=atol)
+    else:
+        attrs = list(zip(attr, default))  # Python 3   
+        def match(datasets1, datasets2):
+            values1 = []
+            for data1 in datasets1.values():
+                x = tuple( data1.get(attr, d) for attr, d in attrs )
+                values1.append(x)
+            values2 = []
+            for data2 in datasets2.values():
+                x = tuple( data2.get(attr, d) for attr, d in attrs )
+                values2.append(x)
+            values1.sort()
+            values2.sort()
+            for xi, yi in zip(values1, values2):
+                if not allclose(xi, yi, rtol=rtol, atol=atol):
+                    return False
+            else:
+                return True
+    return match
+
+# Docstrings for numerical functions.
+numerical_node_match.__doc__ = numerical_doc
+numerical_edge_match.__doc__ = numerical_doc.replace('node', 'edge')
+tmpdoc = numerical_doc.replace('node', 'edge')
+tmpdoc = tmpdoc.replace('numerical_edge_match', 'numerical_multiedge_match')
+numerical_multiedge_match.__doc__ = tmpdoc
+
+
+generic_doc = """
+Returns a comparison function for a generic attribute.
+
+The value(s) of the attr(s) are compared using the specified
+operators. If all the attributes are equal, then the constructed
+function returns True.
+
+Parameters
+----------
+attr : string | list
+    The node attribute to compare, or a list of node attributes 
+    to compare.
+default : value | list
+    The default value for the node attribute, or a list of
+    default values for the node attributes.
+op : callable | list
+    The operator to use when comparing attribute values, or a list
+    of operators to use when comparing values for each attribute.
+    
+Returns
+-------
+match : function
+    The customized, generic `node_match` function.
+
+Examples
+--------
+>>> from operator import eq
+>>> from nx.isomorphism import close
+>>> nm = generic_node_match('weight', 1.0, close)
+>>> nm = generic_node_match('color', 'red', eq)
+>>> nm = generic_node_match(['weight', 'color'], [1.0, 'red'], [close, eq])
+
+"""
+    
+def generic_node_match(attr, default, op):
+    if nx.utils.is_string_like(attr):
+        def match(data1, data2):
+            return op(data1.get(attr, default), data2.get(attr, default))
+    else:
+        attrs = list(zip(attr, default, op)) # Python 3
+        def match(data1, data2):
+            for attr, d, operator in attrs:
+                if not operator(data1.get(attr, d), data2.get(attr, d)):
+                    return False
+            else:
+                return True
+    return match
+
+generic_edge_match = copyfunc(generic_node_match, 'generic_edge_match')
+
+def generic_multiedge_match(attr, default, op):
+    """Returns a comparison function for a generic attribute.
+
+    The value(s) of the attr(s) are compared using the specified
+    operators. If all the attributes are equal, then the constructed
+    function returns True. Potentially, the constructed edge_match 
+    function can be slow since it must verify that no isomorphism
+    exists between the multiedges before it returns False.
 
     Parameters
     ----------
-    attrs : dict
-        A dictionary keyed by attributes. The values should be 2-tuples of the
-        form: (operator, default) where `operator` is the operator that should
-        be used to compare the attribute values and `default` is the deafult
-        value to use if an attribute does not exist in the dictionary.
-
+    attr : string | list
+        The edge attribute to compare, or a list of node attributes 
+        to compare.
+    default : value | list
+        The default value for the edge attribute, or a list of
+        default values for the dgeattributes.
+    op : callable | list
+        The operator to use when comparing attribute values, or a list
+        of operators to use when comparing values for each attribute.
+        
     Returns
     -------
-    match : callable
-        A customized match function that can be used in (di)graph matchers.
+    match : function
+        The customized, generic `edge_match` function.
 
     Examples
     --------
-    >>> from networkx.algorithms.isomorphism.vf2userfunc import close
     >>> from operator import eq
-    >>> attrs = { 'color': (eq, ''),
-    ...           'size':  (close, 10),
-    ...           'shape': (eq, 'circle') }
+    >>> from nx.isomorphism import close
+    >>> nm = generic_node_match('weight', 1.0, close)
+    >>> nm = generic_node_match('color', 'red', eq)
+    >>> nm = generic_node_match(['weight', 'color'], 
+    ...                         [1.0, 'red'], 
+    ...                         [close, eq])
     ...
-    >>> match = attrcompare_factory(attrs)
-    >>> # g1 and g2 can be any graph or digraph, multi or not
-    >>> gm = nx.is_isomorphic(g1, g2, node_match=match)
-    >>> # g1 and g2 can be any non-multi graph or non-multi digraph
-    >>> gm = nx.is_isomorphic(g1, g2, edge_match=match)
 
     """
-    # We perform the logical AND of the operators.
-    def match(attrs_g1, attrs_g2):
-        for attr, (op, default) in attrs.items():
-            v1 = attrs_g1.get(attr, default)
-            v2 = attrs_g2.get(attr, default)
-            if not op(v1, v2):
+
+    # This is slow, but generic.
+    # We must test every possible isomorphism between the edges.
+    if nx.utils.is_string_like(attr):
+        def match(datasets1, datasets2):
+            values1 = [data.get(attr, d) for data in datasets1]
+            values2 = [data.get(attr, d) for data in datasets2]
+            for vals2 in permutations(values2):
+                for xi, yi in zip(values1, vals):
+                    if not op(xi, yi):
+                        # This is not an isomorphism, go to next permutation.
+                        break
+                else:
+                    # Then we found an isomorphism.
+                    return True
+            else:
+                # Then there are no isomorphisms between the multiedges.
                 return False
-        else:
-            return True
-
+    else:
+        attrs = list(zip(attr, default, op)) # Python 3    
+        def match(datasets1, datasets2):
+            values1 = []
+            for data1 in datasets1.values():
+                x = tuple( data1.get(attr, d) for attr, d in attrs )
+                values1.append(x)
+            values2 = []
+            for data2 in datasets2.values():
+                x = tuple( data2.get(attr, d) for attr, d in attrs )
+                values2.append(x)
+            values1.sort()
+            values2.sort()
+            for xi, yi in zip(values1, values2):
+                if not allclose(xi, yi, rtol=rtol, atol=atol):
+                    return False
+            else:
+                return True
     return match
 
-def multi_attrcompare_factory_setlike(attrs):
-    """Returns a customized attribute comparison function for multi(di)graphs.
-
-    For each attribute in `attrs`, a set of tuples is built from all the edges
-    in each dictionary of dictionary of edge attributes. The comparison
-    function is suitable as an `edge_match` function for multigraphs and
-    multidigraphs.
-
-    Parameters
-    ----------
-    attrs : dict
-        A dictionary keyed by attributes. The values should be the default
-        attribute values to use when an edge does not have the attribute
-        specified.  The values of each edge attribute are assumed to be
-        hashable and comparable via the == operator.
-
-    Returns
-    -------
-    match : callable
-        A customized match function that can be used in multi(di)graph matchers.
-
-    Examples
-    --------
-    >>> from networkx.algorithms.isomorphism.vf2userfunc import close
-    >>> from operator import eq
-    >>> attrs = { 'color': '',
-    ...           'linewidth': 10,
-    ...           'shape': 'circle' }
-    ...
-    >>> match = multi_attrcompare_factory_setlike(attrs)
-    >>> # g1 and g2 are multigraphs or multidigraphs
-    >>> gm = nx.is_isomorphic(g1, g2, edge_match=match)
-
-    """
-    def match(attrs_g1, attrs_g2):
-        data1 = set([])
-        for eattrs in attrs_g1.values():
-            x = tuple( eattrs.get(attr, d) for attr, d in attrs.items() )
-            data1.add(x)
-        data2 = set([])
-        for eattrs in attrs_g2.values():
-            x = tuple( eattrs.get(attr, d) for attr, d in attrs.items() )
-            data2.add(x)
-
-        return data1 == data2
-
-    return match
+# Docstrings for numerical functions.
+generic_node_match.__doc__ = generic_doc
+generic_edge_match.__doc__ = generic_doc.replace('node', 'edge')
 
