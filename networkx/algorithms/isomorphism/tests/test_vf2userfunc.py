@@ -6,7 +6,7 @@ from nose.tools import assert_true, assert_false
 from operator import eq
 
 import networkx as nx
-import networkx.algorithms.isomorphism as nxiso
+import networkx.algorithms.isomorphism as iso
 def test_simple():
     # 16 simple tests
     w = 'weight'
@@ -20,9 +20,9 @@ def test_simple():
         g1.add_weighted_edges_from(edges)
         g2 = g1.subgraph(g1.nodes())
         if g1.is_multigraph():
-            em = nxiso.numerical_multiedge_match('weight', 1)
+            em = iso.numerical_multiedge_match('weight', 1)
         else:
-            em = nxiso.numerical_edge_match('weight', 1)
+            em = iso.numerical_edge_match('weight', 1)
         assert_true( nx.is_isomorphic(g1,g2,edge_match=em) )
 
         for mod1, mod2 in [(False, True), (True, False), (True, True)]:
@@ -64,9 +64,9 @@ def test_weightkey():
     g2.add_edge('C','D', weight=0)
 
     assert_true(  nx.is_isomorphic(g1, g2) )
-    em = nxiso.numerical_edge_match('nonexistent attribute', 1)
+    em = iso.numerical_edge_match('nonexistent attribute', 1)
     assert_true(  nx.is_isomorphic(g1, g2, edge_match=em) )
-    em = nxiso.numerical_edge_match('weight', 1)
+    em = iso.numerical_edge_match('weight', 1)
     assert_false( nx.is_isomorphic(g1, g2, edge_match=em) )
 
     g2 = nx.DiGraph()
@@ -81,8 +81,8 @@ class TestNodeMatch_Graph(object):
 
     def build(self):
 
-        self.nm = nxiso.categorical_node_match('color', '')
-        self.em = nxiso.numerical_edge_match('weight', 1)
+        self.nm = iso.categorical_node_match('color', '')
+        self.em = iso.numerical_edge_match('weight', 1)
 
         self.g1.add_node('A', color='red')
         self.g2.add_node('C', color='blue')
@@ -128,7 +128,7 @@ class TestEdgeMatch_MultiGraph(object):
     def setUp(self):
         self.g1 = nx.MultiGraph()
         self.g2 = nx.MultiGraph()
-        self.GM = nx.MultiGraphMatcher
+        self.GM = iso.MultiGraphMatcher
         self.build()
 
     def build(self):
@@ -145,17 +145,17 @@ class TestEdgeMatch_MultiGraph(object):
         g2.add_edge('C', 'D', color='red', weight=2, size=.65)
 
         if g1.is_multigraph():
-            self.em = nxiso.numerical_multiedge_match('weight', 1)
-            self.emc = nxiso.categorical_multiedge_match('color', '')
-            self.emcm = nxiso.categorical_multiedge_match(['color', 'weight'], ['', 1])
-            self.emg1 = nxiso.generic_multiedge_match('color', 'red', eq)
-            self.emg2 = nxiso.generic_multiedge_match(['color', 'weight', 'size'], ['red', 1, .5], [eq, eq, nxiso.matchhelpers.close])
+            self.em = iso.numerical_multiedge_match('weight', 1)
+            self.emc = iso.categorical_multiedge_match('color', '')
+            self.emcm = iso.categorical_multiedge_match(['color', 'weight'], ['', 1])
+            self.emg1 = iso.generic_multiedge_match('color', 'red', eq)
+            self.emg2 = iso.generic_multiedge_match(['color', 'weight', 'size'], ['red', 1, .5], [eq, eq, iso.matchhelpers.close])
         else:
-            self.em = nxiso.numerical_edge_match('weight', 1)
-            self.emc = nxiso.categorical_edge_match('color', '')
-            self.emcm = nxiso.categorical_edge_match(['color', 'weight'], ['', 1])
-            self.emg1 = nxiso.generic_multiedge_match('color', 'red', eq)
-            self.emg2 = nxiso.generic_edge_match(['color', 'weight', 'size'], ['red', 1, .5], [eq, eq, nxiso.matchhelpers.close])
+            self.em = iso.numerical_edge_match('weight', 1)
+            self.emc = iso.categorical_edge_match('color', '')
+            self.emcm = iso.categorical_edge_match(['color', 'weight'], ['', 1])
+            self.emg1 = iso.generic_multiedge_match('color', 'red', eq)
+            self.emg2 = iso.generic_edge_match(['color', 'weight', 'size'], ['red', 1, .5], [eq, eq, iso.matchhelpers.close])
 
     def test_weights_only(self):
         assert_true( nx.is_isomorphic(self.g1, self.g2, edge_match=self.em) )
@@ -187,6 +187,6 @@ class TestEdgeMatch_MultiDiGraph(TestEdgeMatch_MultiGraph):
     def setUp(self):
         self.g1 = nx.MultiDiGraph()
         self.g2 = nx.MultiDiGraph()
-        self.GM = nx.MultiDiGraphMatcher
+        self.GM = iso.MultiDiGraphMatcher
         self.build()
 

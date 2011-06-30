@@ -9,7 +9,6 @@ from networkx.algorithms.cycles import *
 from networkx.algorithms.dag import *
 from networkx.algorithms.distance_measures import *
 from networkx.algorithms.flow import *
-from networkx.algorithms.isomorphism import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.mis import *
 from networkx.algorithms.mixing import *
@@ -41,3 +40,5 @@ import networkx.algorithms.traversal
 import networkx.algorithms.chordal
 
 from networkx.algorithms.bipartite import projected_graph,project,is_bipartite
+from networkx.algorithms.isomorphism import is_isomorphic,could_be_isomorphic,\
+    fast_could_be_isomorphic,faster_could_be_isomorphic

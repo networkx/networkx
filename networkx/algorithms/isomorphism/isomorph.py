@@ -1,18 +1,17 @@
 """
 Graph isomorphism functions.
-
 """
-__author__ = """Pieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by
+import networkx as nx
+from networkx.exception import NetworkXError
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Christopher Ellison cellison@cse.ucdavis.edu)'])
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
-import networkx as nx
-from networkx.exception import NetworkXError
-
 __all__ = ['could_be_isomorphic',
            'fast_could_be_isomorphic',
            'faster_could_be_isomorphic',
@@ -130,71 +129,91 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
         The two graphs G1 and G2 must be the same type.
 
     node_match : callable
-        A function that returns True iff node `n1` in `G1` and `n2` in `G2`
-        should be considered equal during the isomorphism test. The
-        function will be called like:
+        A function that returns True if node n1 in G1 and n2 in G2
+        should be considered equal during the isomorphism test. 
+        If None`, then no node attributes are considered when testing 
+        for isomorphism.
 
-           node_match(G1.node[n1], G2.node[n2])
+        The function will be called like:
+
+           node_match(G1.node[n1], G2.node[n2]).
 
         That is, the function will receive the node attribute dictionaries
-        of the nodes under consideration. If `None`, then no attributes are
-        considered when testing for an isomorphism.
+        for  n1 and n2. 
 
     edge_match : callable
-        A function that returns True iff the edge attribute dictionary for
-        the pair of nodes (u1, v1) in G1 and (u2, v2) in G2 should be
-        considered equal during the isomorphism test. The function will be
-        called like:
+        A function that returns True if the edge attribute dictionary
+        for the pair of nodes (u1, v1) in G1 and (u2, v2) in G2 should
+        be considered equal during the isomorphism test.  If `None`,
+        then no attributes are considered when testing for an
+        isomorphism.
 
-           edge_match(G1[u1][v1], G2[u2][v2])
+        The function will be called like
+
+           edge_match(G1[u1][v1], G2[u2][v2]).
 
         That is, the function will receive the edge attribute dictionaries
-        of the edges under consideration. If `None`, then no attributes are
-        considered when testing for an isomorphism.
-
+        of the edges under consideration.
 
     Notes
     -----
     Uses the vf2 algorithm.
     Works for Graph, DiGraph, MultiGraph, and MultiDiGraph.
 
-
     Examples
     --------
     >>> import networkx as nx
-    >>> import networkx.isomorphism as nxiso
+    >>> import networkx.algorithms.isomorphism as iso
 
-    For (di)graphs G1 and G2, using 'weight' edge attribute (default: 1)
-    >>> em = nxiso.numerical_edge_match('weight', 1)
-    >>> nx.is_isomorphic(G1, G2, edge_match=em)
+    For digraphs G1 and G2, using 'weight' edge attribute (default: 1)
+    >>> G1 = nx.DiGraph()
+    >>> G2 = nx.DiGraph()
+    >>> G1.add_path([1,2,3,4],weight=1)
+    >>> G2.add_path([10,20,30,40],weight=2)
+    >>> em = iso.numerical_edge_match('weight', 1)
+    >>> nx.is_isomorphic(G1, G2)  # no weights considered
+    True
+    >>> nx.is_isomorphic(G1, G2, edge_match=em) # match weights
+    False
 
-    For (multi)(di)graphs G1 and G2, using 'fill' node attribute (default: '')
-    >>> nm = nxiso.categorical_node_match('fill', 'red')
+    For multidigraphs G1 and G2, using 'fill' node attribute (default: '')
+    >>> G1 = nx.MultiDiGraph()
+    >>> G2 = nx.MultiDiGraph()
+    >>> G1.add_nodes_from([1,2,3],fill='red')
+    >>> G2.add_nodes_from([10,20,30,40],fill='red')
+    >>> G1.add_path([1,2,3,4],weight=3, linewidth=2.5)
+    >>> G2.add_path([10,20,30,40],weight=3)
+    >>> nm = iso.categorical_node_match('fill', 'red')
     >>> nx.is_isomorphic(G1, G2, node_match=nm)
+    True
 
-    For multi(di)graphs G1 and G2, using 'weight' edge attribute (default: 2.3)
-    >>> em = nxiso.numerical_multiedge_match('weight', 2.3, rtol=1e-6)
+    For multidigraphs G1 and G2, using 'weight' edge attribute (default: 7)
+    >>> G1.add_edge(1,2, weight=7)
+    >>> G2.add_edge(10,20)
+    >>> em = iso.numerical_multiedge_match('weight', 7, rtol=1e-6)
     >>> nx.is_isomorphic(G1, G2, edge_match=em)
+    True
 
-    For (di)graphs G1 and G2, using 'weight' and 'linewidth' edge attributes
-    with default values 1 and 2.5. Also using 'fill' node attribute with
+    For multigraphs G1 and G2, using 'weight' and 'linewidth' edge attributes
+    with default values 7 and 2.5. Also using 'fill' node attribute with
     default value 'red'.
-    >>> em = nxiso.numerical_multiedge_match(['weight', 'lw'], [1, 2.5])
-    >>> nm = nxiso.categorical_node_match('fill', 'red')
+    >>> em = iso.numerical_multiedge_match(['weight', 'linewidth'], [7, 2.5])
+    >>> nm = iso.categorical_node_match('fill', 'red')
     >>> nx.is_isomorphic(G1, G2, edge_match=em, node_match=nm)
-
+    True
 
     See Also
     --------
-    :mod:`isomorphvf2`, :mod:`matchelpers`
+    :mod:`vf2userfunc`, :mod:`matchelpers`
+    GraphMatcher, DiGraphMatcher
     numerical_node_match, numerical_edge_match, numerical_multiedge_match
     categorical_node_match, categorical_edge_match, categorical_multiedge_match
 
     """
     if G1.is_directed() and G2.is_directed():
-        GM = nx.DiGraphMatcher
+        GM = nx.algorithms.isomorphism.DiGraphMatcher
     elif (not G1.is_directed()) and (not G2.is_directed()):
-        GM = nx.GraphMatcher
+        GM = nx.algorithms.isomorphism.GraphMatcher
     else:
        raise NetworkXError("Graphs G1 and G2 are not of the same type.")
 

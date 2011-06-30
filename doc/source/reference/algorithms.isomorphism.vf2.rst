@@ -6,8 +6,7 @@ VF2 Algorithm
 
 Graph Matcher
 -------------
-
-.. currentmodule:: networkx
+.. currentmodule:: networkx.algorithms.isomorphism
 
 .. autosummary::
    :toctree: generated/
@@ -26,6 +25,7 @@ Graph Matcher
 
 DiGraph Matcher
 ---------------
+.. currentmodule:: networkx.algorithms.isomorphism
 
 .. autosummary::
    :toctree: generated/
@@ -41,73 +41,21 @@ DiGraph Matcher
     DiGraphMatcher.semantic_feasibility
     DiGraphMatcher.syntactic_feasibility
 
-Weighted Graph Matcher
-----------------------
+
+Match helpers
+-------------
+.. currentmodule:: networkx.algorithms.isomorphism
 
 .. autosummary::
    :toctree: generated/
 
-    WeightedGraphMatcher.__init__
-    WeightedGraphMatcher.initialize
-    WeightedGraphMatcher.is_isomorphic
-    WeightedGraphMatcher.subgraph_is_isomorphic
-    WeightedGraphMatcher.isomorphisms_iter
-    WeightedGraphMatcher.subgraph_isomorphisms_iter
-    WeightedGraphMatcher.candidate_pairs_iter
-    WeightedGraphMatcher.match
-    WeightedGraphMatcher.semantic_feasibility
-    WeightedGraphMatcher.syntactic_feasibility
-
-
-Weighted DiGraph Matcher
-------------------------
-
-.. autosummary::
-   :toctree: generated/
-
-    WeightedDiGraphMatcher.__init__
-    WeightedDiGraphMatcher.initialize
-    WeightedDiGraphMatcher.is_isomorphic
-    WeightedDiGraphMatcher.subgraph_is_isomorphic
-    WeightedDiGraphMatcher.isomorphisms_iter
-    WeightedDiGraphMatcher.subgraph_isomorphisms_iter
-    WeightedDiGraphMatcher.candidate_pairs_iter
-    WeightedDiGraphMatcher.match
-    WeightedDiGraphMatcher.semantic_feasibility
-    WeightedDiGraphMatcher.syntactic_feasibility
-
-Weighted MultiGraph Matcher
----------------------------
-
-.. autosummary::
-   :toctree: generated/
-
-    WeightedMultiGraphMatcher.__init__
-    WeightedMultiGraphMatcher.initialize
-    WeightedMultiGraphMatcher.is_isomorphic
-    WeightedMultiGraphMatcher.subgraph_is_isomorphic
-    WeightedMultiGraphMatcher.isomorphisms_iter
-    WeightedMultiGraphMatcher.subgraph_isomorphisms_iter
-    WeightedMultiGraphMatcher.candidate_pairs_iter
-    WeightedMultiGraphMatcher.match
-    WeightedMultiGraphMatcher.semantic_feasibility
-    WeightedMultiGraphMatcher.syntactic_feasibility
-
-
-Weighted MultiDiGraph Matcher
------------------------------
-
-.. autosummary::
-   :toctree: generated/
-
-    WeightedMultiDiGraphMatcher.__init__
-    WeightedMultiDiGraphMatcher.initialize
-    WeightedMultiDiGraphMatcher.is_isomorphic
-    WeightedMultiDiGraphMatcher.subgraph_is_isomorphic
-    WeightedMultiDiGraphMatcher.isomorphisms_iter
-    WeightedMultiDiGraphMatcher.subgraph_isomorphisms_iter
-    WeightedMultiDiGraphMatcher.candidate_pairs_iter
-    WeightedMultiDiGraphMatcher.match
-    WeightedMultiDiGraphMatcher.semantic_feasibility
-    WeightedMultiDiGraphMatcher.syntactic_feasibility
+   categorical_node_match
+   categorical_edge_match
+   categorical_multiedge_match
+   numerical_node_match
+   numerical_edge_match
+   numerical_multiedge_match
+   generic_node_match
+   generic_edge_match
+   generic_multiedge_match
 

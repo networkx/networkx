@@ -8,7 +8,7 @@ import random
 
 from nose.tools import assert_true
 import networkx as nx
-import networkx.algorithms.isomorphism.isomorphvf2 as vf2
+from networkx.algorithms import isomorphism as iso
 
 class TestWikipediaExample(object):
     # Source: http://en.wikipedia.org/wiki/Graph_isomorphism
@@ -31,7 +31,7 @@ class TestWikipediaExample(object):
         g2 = nx.Graph()
         g1.add_edges_from(self.g1edges)
         g2.add_edges_from(self.g2edges)
-        gm = vf2.GraphMatcher(g1,g2)
+        gm = iso.GraphMatcher(g1,g2)
         assert_true(gm.is_isomorphic())
 
         mapping = sorted(gm.mapping.items())
@@ -45,7 +45,7 @@ class TestWikipediaExample(object):
         g1.add_edges_from(self.g1edges)
         g2.add_edges_from(self.g2edges)
         g3 = g2.subgraph([1,2,3,4])
-        gm = vf2.GraphMatcher(g1,g3)
+        gm = iso.GraphMatcher(g1,g3)
         assert_true(gm.subgraph_is_isomorphic())
 
 class TestVF2GraphDB(object):
@@ -86,7 +86,7 @@ class TestVF2GraphDB(object):
         head,tail = os.path.split(__file__)
         g1 = self.create_graph(os.path.join(head,'iso_r01_s80.A99'))
         g2 = self.create_graph(os.path.join(head,'iso_r01_s80.B99'))
-        gm = vf2.GraphMatcher(g1,g2)
+        gm = iso.GraphMatcher(g1,g2)
         assert_true(gm.is_isomorphic())
 
     def test_subgraph(self):
@@ -95,7 +95,7 @@ class TestVF2GraphDB(object):
         head,tail = os.path.split(__file__)
         subgraph = self.create_graph(os.path.join(head,'si2_b06_m200.A99'))
         graph = self.create_graph(os.path.join(head,'si2_b06_m200.B99'))
-        gm = vf2.GraphMatcher(graph, subgraph)
+        gm = iso.GraphMatcher(graph, subgraph)
         assert_true(gm.subgraph_is_isomorphic())
 
 def test_graph_atlas():
@@ -109,7 +109,7 @@ def test_graph_atlas():
             random.shuffle(labels)
             d = dict(zip(nlist,labels))
             relabel = nx.relabel_nodes(graph, d)
-            gm = vf2.GraphMatcher(graph, relabel)
+            gm = iso.GraphMatcher(graph, relabel)
             assert_true(gm.is_isomorphic())
 
 def test_multiedge():
@@ -132,9 +132,9 @@ def test_multiedge():
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
             if not g1.is_directed():
-                gm = vf2.GraphMatcher(g1,g2)
+                gm = iso.GraphMatcher(g1,g2)
             else:
-                gm = vf2.DiGraphMatcher(g1,g2)
+                gm = iso.DiGraphMatcher(g1,g2)
             assert_true(gm.is_isomorphic())
 
 def test_selfloop():
@@ -151,9 +151,9 @@ def test_selfloop():
             d = dict(zip(nodes, new_nodes))
             g2 = nx.relabel_nodes(g1, d)
             if not g1.is_directed():
-                gm = vf2.GraphMatcher(g1,g2)
+                gm = iso.GraphMatcher(g1,g2)
             else:
-                gm = vf2.DiGraphMatcher(g1,g2)
+                gm = iso.DiGraphMatcher(g1,g2)
             assert_true(gm.is_isomorphic())
 
 def test_isomorphism_iter1():
@@ -166,8 +166,8 @@ def test_isomorphism_iter1():
     g1.add_edge('B','C')
     g2.add_edge('Y','Z')
     g3.add_edge('Z','Y')
-    gm12 = vf2.DiGraphMatcher(g1,g2)
-    gm13 = vf2.DiGraphMatcher(g1,g3)
+    gm12 = iso.DiGraphMatcher(g1,g2)
+    gm13 = iso.DiGraphMatcher(g1,g3)
     x = list(gm12.subgraph_isomorphisms_iter())
     y = list(gm13.subgraph_isomorphisms_iter())
     assert_true({'A':'Y','B':'Z'} in x)
@@ -181,13 +181,13 @@ def test_isomorphism_iter2():
     # Path
     for L in range(2,10):
         g1 = nx.path_graph(L)
-        gm = vf2.GraphMatcher(g1,g1)
+        gm = iso.GraphMatcher(g1,g1)
         s = len(list(gm.isomorphisms_iter()))
         assert_true(s == 2, s)
     # Cycle
     for L in range(3,10):
         g1 = nx.cycle_graph(L)
-        gm = vf2.GraphMatcher(g1,g1)
+        gm = iso.GraphMatcher(g1,g1)
         s = len(list(gm.isomorphisms_iter()))
         assert_true(s == 2*L)
 
@@ -199,11 +199,11 @@ def test_multiple():
         g2.add_edges_from(edges)
         g3 = nx.subgraph(g2, ['A','B'])
         if not g1.is_directed():
-            gmA = nx.GraphMatcher(g1,g2)
-            gmB = nx.GraphMatcher(g1,g3)
+            gmA = iso.GraphMatcher(g1,g2)
+            gmB = iso.GraphMatcher(g1,g3)
         else:
-            gmA = nx.DiGraphMatcher(g1,g2)
-            gmB = nx.DiGraphMatcher(g1,g3)
+            gmA = iso.DiGraphMatcher(g1,g2)
+            gmB = iso.DiGraphMatcher(g1,g3)
         assert_true(gmA.is_isomorphic())
         g2.remove_node('C')
         assert_true(gmA.subgraph_is_isomorphic())

@@ -32,10 +32,10 @@ Examples
 
 Suppose G1 and G2 are isomorphic graphs. Verification is as follows:
 
-
+>>> from networkx.algorithms import isomorphism
 >>> G1 = nx.path_graph(4)
 >>> G2 = nx.path_graph(4)
->>> GM = nx.GraphMatcher(G1,G2)
+>>> GM = isomorphism.GraphMatcher(G1,G2)
 >>> GM.is_isomorphic()
 True
 
@@ -50,7 +50,7 @@ graphs. Verification is as follows:
 
 >>> G1 = nx.path_graph(4, create_using=nx.DiGraph())
 >>> G2 = nx.path_graph(4, create_using=nx.DiGraph())
->>> DiGM = nx.DiGraphMatcher(G1,G2)
+>>> DiGM = isomorphism.DiGraphMatcher(G1,G2)
 >>> DiGM.is_isomorphic()
 True
 
@@ -161,9 +161,10 @@ class GraphMatcher(object):
         --------
         To create a GraphMatcher which checks for syntactic feasibility:
 
+        >>> from networkx.algorithms import isomorphism
         >>> G1 = nx.path_graph(4)
         >>> G2 = nx.path_graph(4)
-        >>> GM = nx.GraphMatcher(G1,G2)
+        >>> GM = isomorphism.GraphMatcher(G1,G2)
 
         """
         self.G1 = G1
@@ -492,9 +493,10 @@ class DiGraphMatcher(GraphMatcher):
         --------
         To create a GraphMatcher which checks for syntactic feasibility:
 
+        >>> from networkx.algorithms import isomorphism
         >>> G1 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
         >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
-        >>> DiGM = nx.DiGraphMatcher(G1,G2)
+        >>> DiGM = isomorphism.DiGraphMatcher(G1,G2)
 
         """
         super(DiGraphMatcher, self).__init__(G1, G2)

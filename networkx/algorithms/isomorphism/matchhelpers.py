@@ -1,7 +1,9 @@
+"""Functions which help end users define customize node_match and
+edge_match functions to use during isomorphism checks.
 """
-    Various functions which help end users define customize node_match and
-    edge_match functions to use during isomorphism checks.
-"""
+from itertools import permutations
+import types
+import networkx as nx
 
 __all__ = ['categorical_node_match',
            'categorical_edge_match',
@@ -14,15 +16,15 @@ __all__ = ['categorical_node_match',
            'generic_multiedge_match',
           ]
 
-import types
-from itertools import permutations
-
-import networkx as nx
 
 def copyfunc(f, name=None):
     """Returns a deepcopy of a function."""
-    return types.FunctionType(f.func_code, f.func_globals, name or f.name,
-                              f.func_defaults, f.func_closure)
+    try:
+        return types.FunctionType(f.func_code, f.func_globals, name or f.name,
+                                  f.func_defaults, f.func_closure)
+    except AttributeError:
+        return types.FunctionType(f.__code__, f.__globals__, name or f.name,
+                                  f.__defaults__, f.__closure__)
 
 def allclose(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
     """Returns True if x and y are sufficiently close, elementwise.
@@ -80,8 +82,9 @@ match : function
 
 Examples
 --------
->>> nm = categorical_node_match('size', 1)
->>> nm = categorical_node_match(['color', 'size'], ['red', 2])
+>>> import networkx.algorithms.isomorphism as iso
+>>> nm = iso.categorical_node_match('size', 1)
+>>> nm = iso.categorical_node_match(['color', 'size'], ['red', 2])
 
 """
 
@@ -154,8 +157,9 @@ match : function
 
 Examples
 --------
->>> nm = numerical_node_match('weight', 1.0)
->>> nm = numerical_node_match(['weight', 'linewidth'], [.25, .5])
+>>> import networkx.algorithms.isomorphism as iso
+>>> nm = iso.numerical_node_match('weight', 1.0)
+>>> nm = iso.numerical_node_match(['weight', 'linewidth'], [.25, .5])
 
 """
 
@@ -236,7 +240,7 @@ match : function
 Examples
 --------
 >>> from operator import eq
->>> from nx.isomorphism import close
+>>> from networkx.algorithms.isomorphism.matchhelpers import close
 >>> nm = generic_node_match('weight', 1.0, close)
 >>> nm = generic_node_match('color', 'red', eq)
 >>> nm = generic_node_match(['weight', 'color'], [1.0, 'red'], [close, eq])
@@ -288,7 +292,7 @@ def generic_multiedge_match(attr, default, op):
     Examples
     --------
     >>> from operator import eq
-    >>> from nx.isomorphism import close
+    >>> from networkx.algorithms.isomorphism.matchhelpers import close
     >>> nm = generic_node_match('weight', 1.0, close)
     >>> nm = generic_node_match('color', 'red', eq)
     >>> nm = generic_node_match(['weight', 'color'],
