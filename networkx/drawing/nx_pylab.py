@@ -60,11 +60,11 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     ax : Matplotlib Axes object, optional
        Draw the graph in specified Matplotlib axes.  
 
-    hold: bool, optional
+    hold : bool, optional
        Set the Matplotlib hold state.  If True subsequent draw
        commands will be added to the current axes.
 
-    **kwds: optional keywords
+    **kwds : optional keywords
        See networkx.draw_networkx() for a description of optional keywords.
 
     Examples
@@ -162,74 +162,74 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
        If not specified a spring layout positioning will be computed.
        See networkx.layout for functions that compute node positions.
        
+    with_labels :  bool, optional (default=True)
+       Set to True to draw labels on the nodes.
+
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.  
 
-    with_labels:  bool, optional       
-       Set to True (default) to draw labels on the nodes.
+    nodelist : list, optional (default G.nodes())
+       Draw only specified nodes 
 
-    nodelist: list, optional
-       Draw only specified nodes (default G.nodes())
+    edgelist : list, optional (default=G.edges())
+       Draw only specified edges
 
-    edgelist: list
-       Draw only specified edges(default=G.edges())
-
-    node_size: scalar or array
-       Size of nodes (default=300).  If an array is specified it must be the
+    node_size : scalar or array, optional (default=300)
+       Size of nodes.  If an array is specified it must be the
        same length as nodelist. 
 
-    node_color: color string, or array of floats
-       Node color. Can be a single color format string (default='r'),
+    node_color : color string, or array of floats, (default='r')
+       Node color. Can be a single color format string,
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to
        colors using the cmap and vmin,vmax parameters.  See
        matplotlib.scatter for more details.
 
-    node_shape:  string
+    node_shape :  string, optional (default='o')
        The shape of the node.  Specification is as matplotlib.scatter
-       marker, one of 'so^>v<dph8' (default='o').
+       marker, one of 'so^>v<dph8'.
 
-    alpha: float
-       The node transparency (default=1.0) 
+    alpha : float, optional (default=1.0)
+       The node transparency
 
-    cmap: Matplotlib colormap
-       Colormap for mapping intensities of nodes (default=None)
+    cmap : Matplotlib colormap, optional (default=None)
+       Colormap for mapping intensities of nodes
 
-    vmin,vmax: floats
-       Minimum and maximum for node colormap scaling (default=None)
+    vmin,vmax : float, optional (default=None)
+       Minimum and maximum for node colormap scaling
 
-    width`: float
-       Line width of edges (default =1.0)
+    width : float, optional (default=1.0)
+       Line width of edges
 
-    edge_color: color string, or array of floats
-       Edge color. Can be a single color format string (default='r'),
+    edge_color : color string, or array of floats (default='r')
+       Edge color. Can be a single color format string,
        or a sequence of colors with the same length as edgelist.
        If numeric values are specified they will be mapped to
        colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
-    edge_ cmap: Matplotlib colormap
-       Colormap for mapping intensities of edges (default=None)
+    edge_ cmap : Matplotlib colormap, optional (default=None)
+       Colormap for mapping intensities of edges
 
-    edge_vmin,edge_vmax: floats
-       Minimum and maximum for edge colormap scaling (default=None)
+    edge_vmin,edge_vmax : floats, optional (default=None)
+       Minimum and maximum for edge colormap scaling
 
-    style: string
-       Edge line style (default='solid') (solid|dashed|dotted,dashdot)
+    style : string, optional (deafult='solid')
+       Edge line style (solid|dashed|dotted,dashdot)
 
-    labels: dictionary
-       Node labels in a dictionary keyed by node of text labels (default=None)
+    labels : dictionary, optional (deafult=None)
+       Node labels in a dictionary keyed by node of text labels
 
-    font_size: int
-       Font size for text labels (default=12)
+    font_size : int, optional (default=12)
+       Font size for text labels
 
-    font_color: string
-       Font color string (default='k' black)
+    font_color : string, optional (default='k' black)
+       Font color string 
 
-    font_weight: string
-       Font weight (default='normal')
+    font_weight : string, optional (default='normal')
+       Font weight 
 
-    font_family: string
-       Font family (default='sans-serif')
+    font_family : string, optional (default='sans-serif')
+       Font family 
 
     Examples
     --------
@@ -298,37 +298,34 @@ def draw_networkx_nodes(G, pos,
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.  
 
-    nodelist: list, optional
+    nodelist : list, optional
        Draw only specified nodes (default G.nodes())
 
-    edgelist: list
-       Draw only specified edges(default=G.edges())
-
-    node_size: scalar or array
+    node_size : scalar or array
        Size of nodes (default=300).  If an array is specified it must be the
        same length as nodelist. 
 
-    node_color: color string, or array of floats
+    node_color : color string, or array of floats
        Node color. Can be a single color format string (default='r'),
        or a  sequence of colors with the same length as nodelist.
        If numeric values are specified they will be mapped to
        colors using the cmap and vmin,vmax parameters.  See
        matplotlib.scatter for more details.
 
-    node_shape:  string
+    node_shape :  string
        The shape of the node.  Specification is as matplotlib.scatter
        marker, one of 'so^>v<dph8' (default='o').
 
-    alpha: float
+    alpha : float
        The node transparency (default=1.0) 
 
-    cmap: Matplotlib colormap
+    cmap : Matplotlib colormap
        Colormap for mapping intensities of nodes (default=None)
 
-    vmin,vmax: floats
+    vmin,vmax : floats
        Minimum and maximum for node colormap scaling (default=None)
 
-    width`: float
+    linewidths : float
        Line width of edges (default =1.0)
 
 
@@ -387,11 +384,12 @@ def draw_networkx_nodes(G, pos,
                                vmin=vmin,
                                vmax=vmax,
                                alpha=alpha,
-                               linewidths=linewidths)
+                               linewidths=linewidths,
+                               **kwds)
                                
 #    pylab.axes(ax)
     pylab.sci(node_collection)
-    node_collection.set_zorder(2)            
+    node_collection.set_zorder(2)
     return node_collection
 
 
@@ -421,29 +419,35 @@ def draw_networkx_edges(G, pos,
        If not specified a spring layout positioning will be computed.
        See networkx.layout for functions that compute node positions.
        
-    ax : Matplotlib Axes object, optional
-       Draw the graph in the specified Matplotlib axes.  
+    edgelist : collection of edge tuples
+       Draw only specified edges(default=G.edges())
 
-    alpha: float
-       The edge transparency (default=1.0) 
-
-    width`: float
+    width : float
        Line width of edges (default =1.0)
 
-    edge_color: color string, or array of floats
+    edge_color : color string, or array of floats
        Edge color. Can be a single color format string (default='r'),
        or a sequence of colors with the same length as edgelist.
        If numeric values are specified they will be mapped to
        colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
-    edge_ cmap: Matplotlib colormap
+    style : string
+       Edge line style (default='solid') (solid|dashed|dotted,dashdot)
+
+    alpha : float
+       The edge transparency (default=1.0) 
+
+    edge_ cmap : Matplotlib colormap
        Colormap for mapping intensities of edges (default=None)
 
-    edge_vmin,edge_vmax: floats
+    edge_vmin,edge_vmax : floats
        Minimum and maximum for edge colormap scaling (default=None)
 
-    style: string
-       Edge line style (default='solid') (solid|dashed|dotted,dashdot)
+    ax : Matplotlib Axes object, optional
+       Draw the graph in the specified Matplotlib axes.  
+
+    arrows : bool, optional (default=True) 
+       For directed graphs, if True draw arrowheads.
 
     Notes
     -----
@@ -654,26 +658,23 @@ def draw_networkx_labels(G, pos,
        If not specified a spring layout positioning will be computed.
        See networkx.layout for functions that compute node positions.
        
-    ax : Matplotlib Axes object, optional
-       Draw the graph in the specified Matplotlib axes.  
-
-    alpha: float
-       The text transparency (default=1.0) 
-
-    edge_labels: dictionary
-       Node labels in a dictionary keyed by node of text labels (default=None)
-
-    font_size: int
+    font_size : int
        Font size for text labels (default=12)
 
-    font_color: string
+    font_color : string
        Font color string (default='k' black)
 
-    font_weight: string
+    font_family : string
+       Font family (default='sans-serif')
+
+    font_weight : string
        Font weight (default='normal')
 
-    font_family: string
-       Font family (default='sans-serif')
+    alpha : float
+       The text transparency (default=1.0) 
+
+    ax : Matplotlib Axes object, optional
+       Draw the graph in the specified Matplotlib axes.  
 
 
     Examples
@@ -759,33 +760,33 @@ def draw_networkx_edge_labels(G, pos,
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.  
 
-    alpha: float
+    alpha : float
        The text transparency (default=1.0) 
 
-    labels: dictionary
-       Node labels in a dictionary keyed by edge two-tuple of text
-       labels (default=None), Only labels for the keys in the dictionary
+    edge_labels : dictionary
+       Edge labels in a dictionary keyed by edge two-tuple of text
+       labels (default=None). Only labels for the keys in the dictionary
        are drawn. 
 
-    label_pos: float
+    label_pos : float
        Position of edge label along edge (0=head, 0.5=center, 1=tail)
 
-    font_size: int
+    font_size : int
        Font size for text labels (default=12)
 
-    font_color: string
+    font_color : string
        Font color string (default='k' black)
 
-    font_weight: string
+    font_weight : string
        Font weight (default='normal')
 
-    font_family: string
+    font_family : string
        Font family (default='sans-serif')
 
-    bbox: Matplotlib bbox
+    bbox : Matplotlib bbox
        Specify text box shape and colors.
 
-    clip_on: bool
+    clip_on : bool
        Turn on clipping at axis boundaries (default=True)
 
     Examples
