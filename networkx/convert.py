@@ -731,10 +731,9 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         the edge weight.  If None then all edge weights are 1.
 
     format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'} 
-            (default = 'csr')
-        The type of the matrix to be returned. In general this need 
-        not be changed, but for some algorithms different implementations
-        of sparse matrices can perform better. See [1]_ for details.
+        The type of the matrix to be returned (default 'csr').  For
+        some algorithms different implementations of sparse matrices
+        can perform better.  See [1]_ for details.
     
     Returns
     -------
