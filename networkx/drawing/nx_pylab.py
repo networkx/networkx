@@ -384,8 +384,7 @@ def draw_networkx_nodes(G, pos,
                                vmin=vmin,
                                vmax=vmax,
                                alpha=alpha,
-                               linewidths=linewidths,
-                               **kwds)
+                               linewidths=linewidths)
                                
 #    pylab.axes(ax)
     pylab.sci(node_collection)
