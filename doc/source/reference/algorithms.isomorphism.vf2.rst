@@ -4,6 +4,8 @@
 VF2 Algorithm 
 *************
 
+.. automodule:: networkx.algorithms.isomorphism.isomorphvf2
+
 Graph Matcher
 -------------
 .. currentmodule:: networkx.algorithms.isomorphism
