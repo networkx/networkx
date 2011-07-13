@@ -7,6 +7,9 @@ Description: This is an example of how to interact with a restful wed-based API 
 			 a network from social graph data.  In this case, we will use Google's SocialGraph
 			 API to build the local star-graph for a given Twitter user
 			
+			 Warning: Google's TOS allow 50,000 API quieries per day. For more inforamtion
+			 see: http://code.google.com/apis/socialgraph/faq.html#limits
+			
 # Copyright (c) 2011, under the Simplified BSD License.  
 # For more information on FreeBSD see: http://www.opensource.org/licenses/bsd-license.php
 # All rights reserved.
@@ -86,7 +89,7 @@ def buildSocialGraph(user, twitter_only=True):
 	return gsg_graph
 	
 def main():
-	test_user = 'hmason'
+	test_user = 'drewconway'
 	test_graph = buildSocialGraph(test_user, twitter_only=True)
 	
 	print nx.info(test_graph)
