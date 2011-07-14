@@ -147,7 +147,6 @@ class GraphMatcher(object):
     """Implementation of VF2 algorithm for matching undirected graphs.
 
     Suitable for Graph and MultiGraph instances.
-
     """
     def __init__(self, G1, G2):
         """Initialize GraphMatcher.
@@ -165,7 +164,6 @@ class GraphMatcher(object):
         >>> G1 = nx.path_graph(4)
         >>> G2 = nx.path_graph(4)
         >>> GM = isomorphism.GraphMatcher(G1,G2)
-
         """
         self.G1 = G1
         self.G2 = G2
@@ -335,11 +333,12 @@ class GraphMatcher(object):
         The semantic checks might differ based on the what type of test is
         being performed.  A keyword description of the test is stored in
         self.test.  Here is a quick description of the currently implemented
-        tests:
+        tests::
 
           test='graph'
             Indicates that the graph matcher is looking for a graph-graph
             isomorphism.
+
           test='subgraph'
             Indicates that the graph matcher is looking for a subgraph-graph
             isomorphism such that a subgraph of G1 is isomorphic to G2.
@@ -347,7 +346,6 @@ class GraphMatcher(object):
         Any subclass which redefines semantic_feasibility() must maintain
         the above form to keep the match() method functional. Implementations
         should consider multigraphs.
-
         """
         return True
 
@@ -378,7 +376,6 @@ class GraphMatcher(object):
         to the current partial isomorphism mapping is allowable.  The addition
         is allowable if the inclusion of the candidate pair does not make it
         impossible for an isomorphism to be found.
-
         """
 
         # The VF2 algorithm was designed to work with graphs having, at most,
@@ -497,7 +494,6 @@ class DiGraphMatcher(GraphMatcher):
         >>> G1 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
         >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
         >>> DiGM = isomorphism.DiGraphMatcher(G1,G2)
-
         """
         super(DiGraphMatcher, self).__init__(G1, G2)
 
@@ -552,7 +548,6 @@ class DiGraphMatcher(GraphMatcher):
 
         This method should be redefined if using something other than DiGMState.
         If only subclassing GraphMatcher, a redefinition is not necessary.
-
         """
 
         # core_1[n] contains the index of the node paired with n, which is m,
@@ -589,7 +584,6 @@ class DiGraphMatcher(GraphMatcher):
         to the current partial isomorphism mapping is allowable.  The addition
         is allowable if the inclusion of the candidate pair does not make it
         impossible for an isomorphism to be found.
-
         """
 
         # The VF2 algorithm was designed to work with graphs having, at most,
@@ -789,7 +783,6 @@ class GMState(object):
     only to store state specific data. There will be at most G2.order() of
     these objects in memory at a time, due to the depth-first search
     strategy employed by the VF2 algorithm.
-
     """
     def __init__(self, GM, G1_node=None, G2_node=None):
         """Initializes GMState object.
