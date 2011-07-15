@@ -21,7 +21,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from networkx.utils import is_string_like,_get_fh,make_str
+from networkx.utils import is_string_like,get_file_handle,make_str
 
 __all__ = ['read_pajek', 'parse_pajek', 'generate_pajek', 'write_pajek']
 
@@ -103,7 +103,7 @@ def write_pajek(G, path, encoding='UTF-8'):
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
     for format information.
     """
-    fh=_get_fh(path, 'wb')
+    fh=get_file_handle(path, 'wb')
     for line in generate_pajek(G):
         line+='\n'
         fh.write(line.encode(encoding))
@@ -136,7 +136,7 @@ def read_pajek(path,encoding='UTF-8'):
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
     for format information.
     """
-    fh=_get_fh(path, 'rb')
+    fh=get_file_handle(path, 'rb')
     lines = (line.decode(encoding) for line in fh)
     return parse_pajek(lines)
 

@@ -44,7 +44,7 @@ __all__ = [ 'balanced_tree',
 #   Some Classic Graphs
 #-------------------------------------------------------------------
 import networkx as nx
-from networkx.utils import is_list_of_ints, flatten
+from networkx.utils import is_list_of_ints, flatten, get_file_handle
 
 def _tree_edges(n,r):
     # helper function for trees

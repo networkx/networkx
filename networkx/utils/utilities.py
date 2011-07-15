@@ -13,7 +13,7 @@ can be accessed, for example, as
 True
 """
 import random
-import networkx
+import networkx as nx
 import uuid
 from networkx.external.decorator import decorator
 __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
@@ -29,6 +29,8 @@ __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
 ### some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
+print("I've been imported!!!!")
+
 def is_singleton(obj):
     """Is string_like or not iterable."""
     return hasattr(obj,"capitalize") or not hasattr(obj,"__iter__")
@@ -71,7 +73,7 @@ def is_list_of_ints( intlist ):
         if not isinstance(i,int): return False
     return True
 
-def _get_fh(path, mode='r'):
+def get_file_handle(path, mode='r'):
     """ Return a file handle for given path.
 
     Path can be a string or a file handle.
@@ -344,7 +346,7 @@ def discrete_sequence(n, distribution=None, cdistribution=None):
     elif distribution is not None:
         cdf=cumulative_distribution(distribution)
     else:
-        raise networkx.NetworkXError(
+        raise nx.NetworkXError(
                 "discrete_sequence: distribution or cdistribution missing")
         
 

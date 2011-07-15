@@ -40,6 +40,7 @@ if sys.version_info[:2] < (2, 6):
 del sys
 
 # Release data
+"""
 from networkx import release
 
 __author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
@@ -49,27 +50,36 @@ __license__  = release.license
 
 __date__ = release.date
 __version__ = release.version
-
-# these packages work with Python >= 2.6
+"""
+#These are import orderwise
 from networkx.exception import  *
+import networkx.external
+import networkx.utils
+# these packages work with Python >= 2.6
+
 import networkx.classes
 from networkx.classes import *
+
+
 import networkx.convert
 from networkx.convert import *
+
 import networkx.relabel
 from networkx.relabel import *
+
 import networkx.generators
 from networkx.generators import *
-from networkx.readwrite import *
+
 import networkx.readwrite
+from networkx.readwrite import *
+
 #Need to test with SciPy, when available
 import networkx.algorithms
 from networkx.algorithms import *
 import networkx.linalg
+
 from networkx.linalg import *
 from networkx.tests.test import run as test
-import networkx.external
-import networkx.utils
 
 import networkx.drawing
 from networkx.drawing import *

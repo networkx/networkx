@@ -42,7 +42,7 @@ __all__ = ['write_graphml', 'read_graphml', 'generate_graphml',
            'GraphMLWriter', 'GraphMLReader']
 
 import networkx as nx
-from networkx.utils import _get_fh, make_str
+from networkx.utils import get_file_handle, make_str
 import warnings
 try:
     from xml.etree.cElementTree import Element, ElementTree, tostring
@@ -77,7 +77,7 @@ def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     This implementation does not support mixed graphs (directed and unidirected 
     edges together) hyperedges, nested graphs, or ports. 
     """
-    fh = _get_fh(path, mode='wb')
+    fh = get_file_handle(path, mode='wb')
     writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint)
     writer.add_graph_element(G)
     writer.dump(fh)
@@ -147,7 +147,7 @@ def read_graphml(path,node_type=str):
     the file to "file.graphml.gz".
 
     """
-    fh=_get_fh(path,mode='rb')
+    fh=get_file_handle(path,mode='rb')
     reader = GraphMLReader(node_type=node_type)
     # need to check for multiple graphs
     glist=list(reader(fh))

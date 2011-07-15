@@ -22,7 +22,7 @@ __all__ = ['read_leda', 'parse_leda']
 
 import networkx as nx 
 from networkx.exception import NetworkXError
-from networkx.utils import _get_fh, is_string_like
+from networkx.utils import get_file_handle, is_string_like
 	
 def read_leda(path, encoding='UTF-8'):
     """Read graph in LEDA format from path.
@@ -45,7 +45,7 @@ def read_leda(path, encoding='UTF-8'):
     ----------
     .. [1] http://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html
     """
-    fh=_get_fh(path,mode='rb')        
+    fh=get_file_handle(path,mode='rb')        
     lines=(line.decode(encoding) for line in fh)
     G=parse_leda(lines)
     fh.close()

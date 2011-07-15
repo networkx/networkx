@@ -26,7 +26,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
 
-from networkx.utils import _get_fh
+from networkx.utils import get_file_handle
 import networkx as nx
 
 
@@ -39,7 +39,7 @@ def write_dot(G,path):
         import pydot
     except ImportError:
         raise ImportError("write_dot() requires pydot http://dkbza.org/pydot.html/")
-    fh=_get_fh(path,'w')
+    fh=get_file_handle(path,'w')
     P=to_pydot(G)
     fh.write(P.to_string())
     fh.flush() # might be a user filehandle so leave open (but flush)
@@ -68,7 +68,7 @@ def read_dot(path):
         raise ImportError("read_dot() requires pydot",
                           "http://dkbza.org/pydot.html/")
 
-    fh=_get_fh(path,'r')
+    fh=get_file_handle(path,'r')
     data=fh.read()        
     P=pydot.graph_from_dot_data(data)
     return from_pydot(P)

@@ -41,7 +41,7 @@ __date__ = """2008-05-27"""
 #    BSD license.
 
 import networkx
-from networkx.utils import is_string_like,_get_fh
+from networkx.utils import is_string_like,get_file_handle
 
 def write_p2g(G, path):
     """Write NetworkX graph in p2g format.
@@ -49,7 +49,7 @@ def write_p2g(G, path):
     This format is meant to be used with directed graphs with
     possible self loops.
     """
-    fh=_get_fh(path,mode='w')
+    fh=get_file_handle(path,mode='w')
 
     fh.write("%s\n"%G.name)
     fh.write("%s %s\n"%(G.order(),G.size()))
@@ -74,7 +74,7 @@ def read_p2g(path):
     If you want a DiGraph (with no self loops allowed and no edge data)
     use D=networkx.DiGraph(read_p2g(path))
     """
-    fh=_get_fh(path,mode='r')        
+    fh=get_file_handle(path,mode='r')        
     G=parse_p2g(fh)
     return G
 

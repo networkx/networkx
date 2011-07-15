@@ -24,7 +24,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['read_yaml', 'write_yaml']
 
 import networkx as nx
-from networkx.utils import _get_fh
+from networkx.utils import get_file_handle
 
 def write_yaml(G, path, encoding='UTF-8', **kwds):
     """Write graph G in YAML format to path. 
@@ -55,7 +55,7 @@ def write_yaml(G, path, encoding='UTF-8', **kwds):
         import yaml
     except ImportError:
         raise ImportError("write_yaml() requires PyYAML: http://pyyaml.org/")
-    fh=_get_fh(path,mode='w')        
+    fh=get_file_handle(path,mode='w')        
     yaml.dump(G,fh,**kwds)
     fh.close()
     
@@ -92,7 +92,7 @@ def read_yaml(path):
     except ImportError:
         raise ImportError("read_yaml() requires PyYAML: http://pyyaml.org/")
 
-    fh=_get_fh(path,mode='r')        
+    fh=get_file_handle(path,mode='r')        
     G=yaml.load(fh)
     fh.close()
     return G

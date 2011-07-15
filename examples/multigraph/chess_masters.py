@@ -50,7 +50,7 @@ def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
     """
     G=nx.MultiDiGraph()
     game={}
-    datafile=nx.utils._get_fh(pgn_file)
+    datafile=nx.utils.get_file_handle(pgn_file)
     lines = (line.decode().rstrip('\r\n') for line in datafile)
     for line in lines:
         if line.startswith('['):

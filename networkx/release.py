@@ -131,12 +131,20 @@ def get_revision():
                                  cwd=basedir,
                                  stdout=subprocess.PIPE)
         except OSError:
+            # Couldn't find hg, so we'll just keep stuff empty
             pass
         else:
             stdout = p.communicate()[0]
-            revision, tag = stdout.decode().strip().split()
-            revision=str(revision) # force strings instead of unicode
-            tag=str(tag) # force strings instead of unicode
+            #Sometimes sage redirects output to a different place
+            #So even if the process looks like it succeeded we
+            # need to check if we actually got any information
+            try:
+                revision, tag = stdout.decode().strip().split()
+            except ValueError:
+                pass
+            else:
+                revision=str(revision) # force strings instead of unicode
+                tag=str(tag) # force strings instead of unicode
     elif os.path.isdir(gitdir):
         vcs = 'git'
         # For now, we are not bothering with revision and tag.
