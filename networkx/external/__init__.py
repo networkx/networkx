@@ -1,1 +1,1 @@
-import decorator
+import networkx.external.decorator
