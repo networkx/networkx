@@ -149,7 +149,7 @@ class FunctionMaker(object):
         try:
             code = compile(src, '<string>', 'single')
             # print >> sys.stderr, 'Compiling %s' % src
-            exec code in evaldict
+            exec(code,evaldict)
         except:
             print >> sys.stderr, 'Error in generated code:'
             print >> sys.stderr, src
