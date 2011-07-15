@@ -28,6 +28,7 @@ sys.path.append(os.path.abspath('../sphinxext'))
 # coming with Sphinx (named 'sphinx.addons.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 
               'sphinx.ext.pngmath',
+              'sphinx.ext.viewcode',
 #              'sphinx.ext.mathjax',
               'numpydoc',
               'sphinx.ext.coverage',

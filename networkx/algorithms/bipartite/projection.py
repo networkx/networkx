@@ -18,7 +18,7 @@ __all__ = ['project',
 
 
 def projected_graph(B, nodes, multigraph=False):
-    """Return the graph that is the projection of the bipartite graph B 
+    r"""Return the graph that is the projection of the bipartite graph B 
     onto the specified nodes.
 
     The nodes retain their names and are connected in the resulting
@@ -52,9 +52,9 @@ def projected_graph(B, nodes, multigraph=False):
     >>> print(G.edges())
     [(1, 3)]
     
-    If nodes 'a', and 'b' are connected through both nodes 1 and 2 then
+    If nodes `a`, and `b` are connected through both nodes 1 and 2 then
     building a multigraph results in two edges in the projection onto
-    ['a','b']:
+    [`a`,`b`]:
 
     >>> B = nx.Graph()
     >>> B.add_edges_from([('a', 1), ('b', 1), ('a', 2), ('b', 2)])
@@ -117,7 +117,7 @@ def projected_graph(B, nodes, multigraph=False):
     return G
 
 def weighted_projected_graph(B, nodes, ratio=False):
-    """Return a weighted unipartite projection of B onto the nodes of 
+    r"""Return a weighted unipartite projection of B onto the nodes of 
     one bipartite node set.
 
     The weighted projected graph is the projection of the bipartite
@@ -211,7 +211,7 @@ def collaboration_weighted_projected_graph(B, nodes):
     bipartite network B onto the specified nodes with weights assigned
     using Newman's collaboration model [1]_:
 
-    ..math::
+    .. math::
         
         w_{v,u} = \sum_k \frac{\delta_{v}^{w} \delta_{w}^{k}}{k_w - 1}
 
@@ -303,7 +303,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     the Jaccard index between the neighborhoods of the two nodes in the
     original bipartite network [1]_: 
 
-    ..math::
+    .. math::
         
         w_{v,u} = \frac{|N(u) \cap N(v)|}{|N(u) \cup N(v)|}
 
@@ -311,7 +311,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     neighbors by minimum of both nodes degree in the original 
     bipartite graph [1]_:
     
-    ..math::
+    .. math::
 
         w_{v,u} = \frac{|N(u) \cap N(v)|}{min(|N(u)|,|N(v)|)}
     
@@ -363,8 +363,8 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
 
     References
     ----------
-    .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation 
-        Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook 
+    .. [1] Borgatti, S.P. and Halgin, D. In press. Analyzing Affiliation 
+        Networks. In Carrington, P. and Scott, J. (eds) The Sage Handbook 
         of Social Network Analysis. Sage Publications.
     
     """
@@ -391,7 +391,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     return G
 
 def generic_weighted_projected_graph(B, nodes, weight_function=None):
-    """Return the weighted unipartite projection of B onto the nodes of 
+    r"""Return the weighted unipartite projection of B onto the nodes of 
     one bipartite node set with a user-specified weight function.
 
     The bipartite network B is projected on to the specified nodes
