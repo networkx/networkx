@@ -29,7 +29,7 @@ __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
 ### some cookbook stuff
 # used in deciding whether something is a bunch of nodes, edges, etc.
 # see G.add_nodes and others in Graph Class in networkx/base.py
-print("I've been imported!!!!")
+
 
 def is_singleton(obj):
     """Is string_like or not iterable."""
@@ -423,25 +423,3 @@ def generate_unique_node():
     """ Generate a unique node label."""
     return str(uuid.uuid1())
 
-def require(package):
-    @decorator
-    def _require(f,*args,**kwargs):
-        try:
-            __import__(package)
-        except:
-            raise nx.NetworkXError("%s requires %s"%(f.__name__,package))
-        return f(*args,**kwargs)
-    return _require
-
-
-def clean_io(open_for='rw'):
-    @decorator
-    def _clean_io(func,path,*args,**kwargs):
-        if is_string_like(path):
-            fh = open(path,open_for)
-        else:
-            fh = path
-        result = func(fh,*args,**kwargs)
-        fh.close()
-        return result
-    return _clean_io
