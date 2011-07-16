@@ -41,11 +41,13 @@ packages=["networkx",
           "networkx.algorithms.shortest_paths",
           "networkx.algorithms.link_analysis",
           "networkx.classes",
+          "networkx.external",
           "networkx.generators",
           "networkx.drawing",
           "networkx.linalg",
           "networkx.readwrite",
-          "networkx.tests"]
+          "networkx.tests",
+          "networkx.utils"]
 
 docdirbase  = 'share/doc/networkx-%s' % version
 # add basic documentation 

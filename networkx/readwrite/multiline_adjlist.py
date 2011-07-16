@@ -40,7 +40,7 @@ __all__ = ['generate_multiline_adjlist',
            'parse_multiline_adjlist',
            'read_multiline_adjlist']
 
-from networkx.utils import make_str, _get_fh
+from networkx.utils import make_str, get_file_handle
 import networkx as nx
 
 def generate_multiline_adjlist(G, delimiter = ' '):
@@ -174,7 +174,7 @@ def write_multiline_adjlist(G, path, delimiter=' ',
     import sys
     import time
 
-    fh=_get_fh(path,mode='wb')        
+    fh=get_file_handle(path,mode='wb')        
     pargs=comments+" ".join(sys.argv)
     header = ("%s\n" % (pargs)
              + comments + " GMT %s\n" % (time.asctime(time.gmtime()))
@@ -377,7 +377,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
     --------
     write_multiline_adjlist
     """
-    inp=_get_fh(path, 'rb')
+    inp=get_file_handle(path, 'rb')
     lines = (line.decode(encoding) for line in inp)
     return parse_multiline_adjlist(lines, 
                                    comments = comments,

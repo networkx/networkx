@@ -34,7 +34,7 @@ __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.utils import _get_fh, is_string_like
+from networkx.utils import get_file_handle, is_string_like
 
 	
 def read_gml(path,encoding='UTF-8',relabel=False):
@@ -80,7 +80,7 @@ def read_gml(path,encoding='UTF-8',relabel=False):
     >>> nx.write_gml(G,'test.gml')
     >>> H=nx.read_gml('test.gml')
     """
-    fh=_get_fh(path,'rb')
+    fh=get_file_handle(path,'rb')
     lines=(line.decode(encoding) for line in fh)
     G=parse_gml(lines,relabel=relabel)
     fh.close()
@@ -390,7 +390,7 @@ def write_gml(G, path):
 
     >>> nx.write_gml(G,"test.gml.gz")
     """
-    fh=_get_fh(path,mode='wb')
+    fh=get_file_handle(path,mode='wb')
     for line in generate_gml(G):
         line+='\n'
         fh.write(line.encode('latin-1'))

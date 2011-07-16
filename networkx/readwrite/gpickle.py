@@ -31,7 +31,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu
 __all__ = ['read_gpickle', 'write_gpickle']
 
 import networkx as nx
-from networkx.utils import _get_fh
+from networkx.utils import get_file_handle
 
 try:
     import cPickle as pickle
@@ -61,7 +61,7 @@ def write_gpickle(G, path):
     ----------
     .. [1] http://docs.python.org/library/pickle.html
     """
-    fh=_get_fh(path,mode='wb')        
+    fh=get_file_handle(path,mode='wb')        
     pickle.dump(G,fh,pickle.HIGHEST_PROTOCOL)
     fh.close()
 
@@ -92,7 +92,7 @@ def read_gpickle(path):
     ----------
     .. [1] http://docs.python.org/library/pickle.html
     """
-    fh=_get_fh(path,'rb')
+    fh=get_file_handle(path,'rb')
     return pickle.load(fh)
 
 # fixture for nose tests

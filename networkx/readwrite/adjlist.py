@@ -37,7 +37,7 @@ __all__ = ['generate_adjlist',
            'parse_adjlist',
            'read_adjlist']
 
-from networkx.utils import make_str, _get_fh
+from networkx.utils import make_str, get_file_handle
 import networkx as nx
 
 
@@ -133,7 +133,7 @@ def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
     """
     import sys
     import time
-    fh=_get_fh(path,mode='wb')        
+    fh=get_file_handle(path,mode='wb')        
     pargs=comments + " ".join(sys.argv) + '\n'
     header = (pargs
              + comments + " GMT %s\n" % (time.asctime(time.gmtime()))
@@ -300,7 +300,7 @@ def read_adjlist(path, comments="#", delimiter=None, create_using=None,
     --------
     write_adjlist
     """
-    fh=_get_fh(path, 'rb')
+    fh=get_file_handle(path, 'rb')
     lines = (line.decode(encoding) for line in fh)
     return parse_adjlist(lines,
                          comments = comments,

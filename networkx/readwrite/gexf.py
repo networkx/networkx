@@ -24,7 +24,7 @@ __all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
 
 import itertools
 import networkx as nx
-from networkx.utils import _get_fh, make_str
+from networkx.utils import get_file_handle, make_str
 try:
     from xml.etree.cElementTree import Element, ElementTree, tostring
 except ImportError:
@@ -70,7 +70,7 @@ def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
     ----------
     .. [1] GEXF graph format, http://gexf.net/format/
     """
-    fh = _get_fh(path, mode='wb')
+    fh = get_file_handle(path, mode='wb')
     writer = GEXFWriter(encoding=encoding,prettyprint=prettyprint,
                         version=version)
     writer.add_graph(G)
@@ -153,7 +153,7 @@ def read_gexf(path,node_type=str,relabel=False,version='1.1draft'):
     ----------
     .. [1] GEXF graph format, http://gexf.net/format/
     """
-    fh=_get_fh(path,mode='rb')
+    fh=get_file_handle(path,mode='rb')
     reader = GEXFReader(node_type=node_type,version=version)
     if relabel:
         G=relabel_gexf_graph(reader(fh))

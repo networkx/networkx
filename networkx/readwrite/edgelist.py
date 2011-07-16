@@ -41,7 +41,7 @@ __all__ = ['generate_edgelist',
            'read_weighted_edgelist',
            'write_weighted_edgelist']
 
-from networkx.utils import _get_fh, make_str
+from networkx.utils import get_file_handle, make_str
 import networkx as nx
 
 def generate_edgelist(G, delimiter=' ', data=True):
@@ -165,7 +165,7 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
     write_edgelist()
     write_weighted_edgelist()
     """
-    fh=_get_fh(path, 'wb')
+    fh=get_file_handle(path, 'wb')
 
     for line in generate_edgelist(G, delimiter, data):
         line+='\n'
@@ -358,7 +358,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     Since nodes must be hashable, the function nodetype must return hashable
     types (e.g. int, float, str, frozenset - or tuples of those, etc.) 
     """
-    fh=_get_fh(path, 'rb')
+    fh=get_file_handle(path, 'rb')
     lines = (line.decode(encoding) for line in fh)
     return parse_edgelist(lines,comments=comments, delimiter=delimiter,
                           create_using=create_using, nodetype=nodetype,
