@@ -131,12 +131,25 @@ def get_revision():
                                  cwd=basedir,
                                  stdout=subprocess.PIPE)
         except OSError:
+            # Could not run hg, even though this is a mercurial repository.
             pass
         else:
             stdout = p.communicate()[0]
-            revision, tag = stdout.decode().strip().split()
-            revision=str(revision) # force strings instead of unicode
-            tag=str(tag) # force strings instead of unicode
+            # Force strings instead of unicode.
+            x = map(str, stdout.decode().strip().split())
+            
+            if len(x) == 0:
+                # Somehow stdout was empty. This can happen, for example,
+                # if you're running in a terminal which has redirected stdout.
+                # In this case, we do not use any revision/tag info.
+                pass
+            elif len(x) == 1:
+                # We don't have 'tip' or anything similar...so no tag.
+                revision = str(x[0])
+            else:
+                revision = str(x[0])
+                tag = str(x[1])
+                
     elif os.path.isdir(gitdir):
         vcs = 'git'
         # For now, we are not bothering with revision and tag.
