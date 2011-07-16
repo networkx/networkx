@@ -40,7 +40,6 @@ if sys.version_info[:2] < (2, 6):
 del sys
 
 # Release data
-"""
 from networkx import release
 
 __author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
@@ -50,7 +49,7 @@ __license__  = release.license
 
 __date__ = release.date
 __version__ = release.version
-"""
+
 #These are import orderwise
 from networkx.exception import  *
 import networkx.external
