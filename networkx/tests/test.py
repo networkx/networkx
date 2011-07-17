@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from os import path
+from os import path,getcwd
 
 def run(verbosity=1,doctest=False):
     """Run NetworkX tests.
@@ -20,8 +20,12 @@ def run(verbosity=1,doctest=False):
             "The nose package is needed to run the NetworkX tests.")
 
     sys.stderr.write("Running NetworkX tests:")
-    
     nx_install_dir=path.join(path.dirname(__file__), path.pardir)
+    # stop if running from source directory
+    if getcwd() == path.abspath(path.join(nx_install_dir,path.pardir)):
+        raise RuntimeError("Can't run tests from source directory.\n"
+                           "Run 'nosetests' from the command line.")
+
     argv=[' ','--verbosity=%d'%verbosity,
           '-w',nx_install_dir,
           '-exe']
