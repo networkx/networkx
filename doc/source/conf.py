@@ -39,7 +39,7 @@ extensions = ['sphinx.ext.autodoc',
 autosummary_generate=True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['templates']
+templates_path = ['templates','../rst_templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -70,7 +70,7 @@ release = networkx.__version__.replace('_','')
 #today_fmt = '%B %d, %Y'
 
 # List of documents that shouldn't be included in the build.
-#unused_docs = ['examples/index']
+# unused_docs = ['examples/index']
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
@@ -78,7 +78,7 @@ release = networkx.__version__.replace('_','')
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
 
-#add_module_names = False
+add_module_names = False
 
 # show_authors = True
 
