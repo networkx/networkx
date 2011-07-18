@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 import sys
-import os
-import subprocess
+from os import path,getcwd
 
-def run():
+def run(verbosity=1,doctest=False):
     """Run NetworkX tests.
-    
+
+    Parameters
+    ----------
+    verbosity: integer, optional
+      Level of detail in test reports.  Higher numbers provide  more detail.  
+
+    doctest: bool, optional
+      True to run doctests in code modules
     """
     try:
         import nose
@@ -13,20 +19,20 @@ def run():
         raise ImportError(\
             "The nose package is needed to run the NetworkX tests.")
 
-    import networkx
-    olddir = os.path.abspath(os.path.curdir)
-    newdir = os.path.dirname(networkx.__file__)
-    try:
-        # Go to where NetworkX was imported
-        os.chdir(newdir)
-        # We still have trouble running nose.run().
-        # Instead, we call nosetests via subprocess.
-        try:
-            subprocess.call(['nosetests'])
-        except OSError:
-            print "'nosetests' must be in PATH"
-    finally:
-        os.chdir(olddir)
+    sys.stderr.write("Running NetworkX tests:")
+    nx_install_dir=path.join(path.dirname(__file__), path.pardir)
+    # stop if running from source directory
+    if getcwd() == path.abspath(path.join(nx_install_dir,path.pardir)):
+        raise RuntimeError("Can't run tests from source directory.\n"
+                           "Run 'nosetests' from the command line.")
+
+    argv=[' ','--verbosity=%d'%verbosity,
+          '-w',nx_install_dir,
+          '-exe']
+    if doctest:
+        argv.extend(['--with-doctest','--doctest-extension=txt'])
+
+    nose.run(argv=argv)
 
 if __name__=="__main__":
     run()

@@ -5,7 +5,7 @@ E that only connect nodes from opposite sets.
 NetworkX does not have a custom bipartite graph class but the Graph()
 or DiGraph() classes can be used to represent bipartite graphs.
 
-For example:`
+For example:
 
 >>> import networkx as nx
 >>> top_nodes=[1,1,2,3,3]

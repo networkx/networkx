@@ -252,6 +252,12 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
         This exception is raised if the digraph G has a cycle of
         negative cost and infinite capacity. Then, the cost of a flow
         satisfying all demands is unbounded below.
+
+    Notes
+    -----
+    This algorithm is not guaranteed to work if edge weights
+    are floating point numbers (overflows and roundoff errors can 
+    cause problems). 
         
     See also
     --------
