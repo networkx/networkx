@@ -188,7 +188,11 @@ def decorator(caller, func=None):
     decorator(caller, func) decorates a function using a caller.
     """
     if func is not None: # returns a decorated function
-        evaldict = func.func_globals.copy()
+        try:
+            evaldict = func.func_globals.copy()
+        except AttributeError:
+            # In Python 3, func_globals has been renamed to __globals__.
+            evaldict = caller.__globals__.copy()
         evaldict['_call_'] = caller
         evaldict['_func_'] = func
         return FunctionMaker.create(
@@ -199,7 +203,11 @@ def decorator(caller, func=None):
             return partial(decorator, caller)
         # otherwise assume caller is a function
         first = inspect.getargspec(caller)[0][0] # first arg
-        evaldict = caller.func_globals.copy()
+        try:
+            evaldict = caller.func_globals.copy()
+        except AttributeError:
+            # In Python 3, func_globals has been renamed to __globals__.
+            evaldict = caller.__globals__.copy()
         evaldict['_call_'] = caller
         evaldict['decorator'] = decorator
         return FunctionMaker.create(
