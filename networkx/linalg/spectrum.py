@@ -124,10 +124,16 @@ def laplacian(G,nodelist=None,weight='weight'):
 
 
 def normalized_laplacian(G,nodelist=None,weight='weight'):
-    """Return the normalized Laplacian matrix of G.
+    r"""Return the normalized Laplacian matrix of G.
 
-    The normalized graph Laplacian is the matrix NL=D^(-1/2) L D^(-1/2)
-    L is the graph Laplacian and D is the diagonal matrix of node degrees.
+    The normalized graph Laplacian is the matrix
+    
+    .. math::
+        
+        NL = D^{-1/2} L D^{-1/2}
+
+    where `L` is the graph Laplacian and `D` is the diagonal matrix of
+    node degrees.
 
     Parameters
     ----------
