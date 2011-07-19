@@ -15,7 +15,7 @@ Helper functions
    flatten
    iterable
    is_list_of_ints
-   _get_fh
+   get_file_handle
 
 Data structures and Algorithms
 ------------------------------
