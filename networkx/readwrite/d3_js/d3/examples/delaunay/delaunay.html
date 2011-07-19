@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Delaunay Triangulation</title>
+    <script type="text/javascript" src="../../d3.js"></script>
+    <script type="text/javascript" src="../../d3.geom.js"></script>
+    <style type="text/css">
+
+@import url("../../lib/colorbrewer/colorbrewer.css");
+
+path {
+  stroke: #000;
+  stroke-width: .5px;
+}
+
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+
+var w = 960,
+    h = 500;
+
+var vertices = d3.range(500).map(function(d) {
+  return [Math.random() * w, Math.random() * h];
+});
+
+var svg = d3.select("body")
+  .append("svg:svg")
+    .attr("width", w)
+    .attr("height", h)
+    .attr("class", "PiYG");
+
+svg.append("svg:g")
+  .selectAll("path")
+    .data(d3.geom.delaunay(vertices))
+  .enter().append("svg:path")
+    .attr("class", function(d, i) { return "q" + (i % 9) + "-9"; })
+    .attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+
+    </script>
+  </body>
+</html>

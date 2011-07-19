@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pie Chart</title>
+    <script type="text/javascript" src="../../d3.js"></script>
+    <script type="text/javascript" src="../../d3.layout.js"></script>
+    <style type="text/css">
+
+body {
+  font: 10px sans-serif;
+}
+
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+
+var w = 400,
+    h = 400,
+    r = Math.min(w, h) / 2,
+    data = d3.range(10).map(Math.random),
+    color = d3.scale.category20(),
+    arc = d3.svg.arc().outerRadius(r),
+    donut = d3.layout.pie();
+
+var vis = d3.select("body")
+  .append("svg:svg")
+    .data([data.sort(d3.descending)])
+    .attr("width", w)
+    .attr("height", h);
+
+var arcs = vis.selectAll("g.arc")
+    .data(donut)
+  .enter().append("svg:g")
+    .attr("class", "arc")
+    .attr("transform", "translate(" + r + "," + r + ")");
+
+var paths = arcs.append("svg:path")
+    .attr("fill", function(d, i) { return color(i); });
+
+paths.transition()
+    .ease("bounce")
+    .duration(2000)
+    .attrTween("d", tweenPie);
+
+paths.transition()
+    .ease("elastic")
+    .delay(function(d, i) { return 2000 + i * 50; })
+    .duration(750)
+    .attrTween("d", tweenDonut);
+
+function tweenPie(b) {
+  b.innerRadius = 0;
+  var i = d3.interpolate({startAngle: 0, endAngle: 0}, b);
+  return function(t) {
+    return arc(i(t));
+  };
+}
+
+function tweenDonut(b) {
+  b.innerRadius = r * .6;
+  var i = d3.interpolate({innerRadius: 0}, b);
+  return function(t) {
+    return arc(i(t));
+  };
+}
+
+    </script>
+  </body>
+</html>
