@@ -136,7 +136,7 @@ def get_revision():
         else:
             stdout = p.communicate()[0]
             # Force strings instead of unicode.
-            x = map(str, stdout.decode().strip().split())
+            x = list(map(str, stdout.decode().strip().split()))
             
             if len(x) == 0:
                 # Somehow stdout was empty. This can happen, for example,
