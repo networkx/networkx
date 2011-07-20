@@ -53,7 +53,7 @@ def projected_graph(B, nodes, multigraph=False):
     [(1, 3)]
     
     If nodes `a`, and `b` are connected through both nodes 1 and 2 then
-    building a multigraph results in two edges in the projection onto
+    building a multigraph results in two edges in the projection onto 
     [`a`,`b`]:
 
     >>> B = nx.Graph()
@@ -77,9 +77,9 @@ def projected_graph(B, nodes, multigraph=False):
 
     See Also
     --------
-    networkx.algorithms.bipartite.basic.is_bipartite, 
-    networkx.algorithms.bipartite.basic.is_bipartite_node_set, 
-    networkx.algorithms.bipartite.basic.sets, 
+    is_bipartite, 
+    is_bipartite_node_set, 
+    sets, 
     weighted_projected_graph,
     collaboration_weighted_projected_graph,
     overlap_weighted_projected_graph,
@@ -165,9 +165,9 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
     See Also
     --------
-    networkx.algorithms.bipartite.basic.is_bipartite, 
-    networkx.algorithms.bipartite.basic.is_bipartite_node_set, 
-    networkx.algorithms.bipartite.basic.sets, 
+    is_bipartite, 
+    is_bipartite_node_set, 
+    sets, 
     collaboration_weighted_projected_graph,
     overlap_weighted_projected_graph,
     generic_weighted_projected_graph
@@ -260,9 +260,9 @@ def collaboration_weighted_projected_graph(B, nodes):
 
     See Also
     --------
-    networkx.algorithms.bipartite.basic.is_bipartite, 
-    networkx.algorithms.bipartite.basic.is_bipartite_node_set, 
-    networkx.algorithms.bipartite.basic.sets, 
+    is_bipartite, 
+    is_bipartite_node_set, 
+    sets, 
     weighted_projected_graph,
     overlap_weighted_projected_graph,
     generic_weighted_projected_graph,
@@ -353,9 +353,9 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
 
     See Also
     --------
-    networkx.algorithms.bipartite.basic.is_bipartite, 
-    networkx.algorithms.bipartite.basic.is_bipartite_node_set, 
-    networkx.algorithms.bipartite.basic.sets, 
+    is_bipartite, 
+    is_bipartite_node_set, 
+    sets, 
     weighted_projected_graph,
     collaboration_weighted_projected_graph,
     generic_weighted_projected_graph,
@@ -448,9 +448,9 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
 
     See Also
     --------
-    networkx.algorithms.bipartite.basic.is_bipartite, 
-    networkx.algorithms.bipartite.basic.is_bipartite_node_set, 
-    networkx.algorithms.bipartite.basic.sets, 
+    is_bipartite, 
+    is_bipartite_node_set, 
+    sets, 
     weighted_projected_graph,
     collaboration_weighted_projected_graph,
     overlap_weighted_projected_graph,
