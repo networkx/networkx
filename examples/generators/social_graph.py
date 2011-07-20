@@ -21,6 +21,7 @@ __credits__ = """"""
 __revision__ = ""
 
 import networkx as nx
+from networkx import exception
 import urllib2
 import json
 import re
@@ -44,7 +45,7 @@ def getSocialGraph(user):
 	gsg_json = socialGraphAPI(user)
 	while gsg_json.find("Service Unavailable. Please try again later.") > -1:
 		gsg_json = socialGraphAPI(user)
-	# Decode the JSON, and check that the user existed
+	# Decode the JSON and return as dict
 	return json.loads(gsg_json)
 	
 def stripURL(twitter_url):
@@ -55,6 +56,7 @@ def buildSocialGraph(user, twitter_only=True):
 	"""Builds a NetworkX DiGraph object from a Twitter user's social graph"""
 	
 	gsg_data = getSocialGraph(user)
+	
 	
 	nodes_out = gsg_data['nodes']['http://twitter.com/'+user]['nodes_referenced'].keys()
 	nodes_in = gsg_data['nodes']['http://twitter.com/'+user]['nodes_referenced_by'].keys()

@@ -7,10 +7,10 @@ var vis = d3.select("#chart")
     .attr("width", w)
     .attr("height", h);
 
-d3.json("miserables.json", function(json) {
+d3.json("nx_js_d3_graph.json", function(json) {
   var force = d3.layout.force()
-      .charge(-120)
-      .linkDistance(30)
+      .charge(-100)
+      .linkDistance(75)
       .nodes(json.nodes)
       .links(json.links)
       .size([w, h])
@@ -26,18 +26,15 @@ d3.json("miserables.json", function(json) {
       .attr("x2", function(d) { return d.target.x; })
       .attr("y2", function(d) { return d.target.y; });
 
-  var node = vis.selectAll("circle.node")
+  var node = vis.selectAll("g.node")
       .data(json.nodes)
-    .enter().append("svg:circle")
+    .enter().append("svg:g")
       .attr("class", "node")
-      .attr("cx", function(d) { return d.x; })
-      .attr("cy", function(d) { return d.y; })
+
+  	node.append("svg:circle")
       .attr("r", 5)
       .style("fill", function(d) { return fill(d.group); })
       .call(force.drag);
-
-  node.append("svg:title")
-      .text(function(d) { return d.name; });
 
   vis.style("opacity", 1e-6)
     .transition()
@@ -49,8 +46,7 @@ d3.json("miserables.json", function(json) {
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
-
-    node.attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
+    
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   });
 });
