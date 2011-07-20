@@ -25,6 +25,12 @@ from networkx.utils import is_string_like,get_file_handle,make_str
 
 __all__ = ['read_pajek', 'parse_pajek', 'generate_pajek', 'write_pajek']
 
+def safe_string(s):
+    """add quotes to any values with a blank space"""
+    if " " in s:
+        return "\"%s\""%s
+    return s
+
 def generate_pajek(G):
     """Generate lines in Pajek graph format.
 
@@ -56,12 +62,10 @@ def generate_pajek(G):
         id=int(na.get('id',nodenumber[n]))
         nodenumber[n]=id
         shape=na.get('shape','ellipse')
-        s=' '.join(map(make_str,(id,n,x,y,shape)))
+        s=' '.join(map(make_str,(id,safe_string(n),x,y,shape)))
         for k,v in na.items():
             if is_string_like(v):
-                # add quotes to any values with a blank space
-                if " " in v: 
-                    v="\"%s\""%v
+                v=safe_string(v)
             s+=' %s %s'%(k,v)
         yield s
 
@@ -76,9 +80,7 @@ def generate_pajek(G):
         s=' '.join(map(make_str,(nodenumber[u],nodenumber[v],value)))
         for k,v in d.items():
             if is_string_like(v):
-                # add quotes to any values with a blank space
-                if " " in v: 
-                    v="\"%s\""%v
+                v=safe_string(v)
             s+=' %s %s'%(k,v)
         yield s
         
