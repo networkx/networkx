@@ -25,7 +25,7 @@ class TestLayout(object):
         self.Gi=nx.grid_2d_graph(5,5)
         self.Gs=nx.Graph()
         self.Gs.add_path('abcdef')
-
+        self.bigG=nx.grid_2d_graph(25,25) #bigger than 500 nodes for sparse
 
     def test_smoke_int(self):
         G=self.Gi
@@ -34,8 +34,8 @@ class TestLayout(object):
         vpos=nx.spring_layout(G)
         vpos=nx.fruchterman_reingold_layout(G)
         vpos=nx.spectral_layout(G)
+        vpos=nx.spectral_layout(self.bigG)
         vpos=nx.shell_layout(G)
-
 
     def test_smoke_string(self):
         G=self.Gs
@@ -61,6 +61,7 @@ class TestLayout(object):
 
         A=nx.to_scipy_sparse_matrix(self.Gs)
         pos=nx.drawing.layout._sparse_fruchterman_reingold(A)
+        pos=nx.drawing.layout._sparse_spectral(A)
 
         pos=nx.drawing.layout._sparse_fruchterman_reingold(A,dim=3)
         assert_equal(pos.shape,(6,3))

@@ -480,10 +480,15 @@ def _sparse_spectral(A,dim=2):
     # Could use multilevel methods here, see Koren "On spectral graph drawing" 
     
     try:
+        import numpy as np
         from scipy.sparse import spdiags
-        from scipy.sparse.linalg import eigen_symmetric
     except ImportError:
-        raise ImportError("_sparse_spectral() scipy numpy: http://scipy.org/ ")
+        raise ImportError("_sparse_spectral() requires scipy & numpy: http://scipy.org/ ")
+    try:
+        from scipy.sparse.linalg.eigen import eigsh
+    except ImportError:
+        # scipy <0.9.0 names eigsh differently 
+        from scipy.sparse.linalg import eigen_symmetric as eigsh
     try:
         nnodes,_=A.shape
     except AttributeError:
@@ -494,11 +499,13 @@ def _sparse_spectral(A,dim=2):
     data=np.asarray(A.sum(axis=1).T)
     D=spdiags(data,0,nnodes,nnodes)
     L=D-A
-    # number of Lanczos vectors for ARPACK solver, what is the right scaling?
-    ncv=int(np.sqrt(nnodes)) 
-    # return smalest dim+1 eigenvalues and eigenvectors
-    eigenvalues,eigenvectors=eigen_symmetric(L,dim+1,which='SM',ncv=ncv)
-    index=np.argsort(eigenvalues)[1:dim+1] # 0 index is zero eigenvalue
+
+    k=dim+1
+    # number of Lanczos vectors for ARPACK solver.What is the right scaling?
+    ncv=max(2*k+1,int(np.sqrt(nnodes)))
+    # return smallest k eigenvalues and eigenvectors
+    eigenvalues,eigenvectors=eigsh(L,k,which='SM',ncv=ncv)
+    index=np.argsort(eigenvalues)[1:k] # 0 index is zero eigenvalue
     return np.real(eigenvectors[:,index])
 
 
