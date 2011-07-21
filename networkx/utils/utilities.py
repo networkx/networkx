@@ -13,12 +13,17 @@ can be accessed, for example, as
 True
 """
 import random
-import networkx as nx
+import sys
+import subprocess
 import uuid
+
+import networkx as nx
 from networkx.external.decorator import decorator
+
 __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)',
                         'Ben Edwards(bedwards@cs.unm.edu)'])
+
 #    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -422,4 +427,20 @@ class UnionFind:
 def generate_unique_node():
     """ Generate a unique node label."""
     return str(uuid.uuid1())
+    
+def default_opener(filename):
+    """Opens `filename` using system's default program.
+
+    Parameters
+    ----------
+    filename : str
+        The path of the file to be opened.
+
+    """
+    cmds = {'darwin': ['open'],
+            'linux2': ['xdg-open'],
+            'win32': ['cmd.exe', '/C', 'start', '']}
+    cmd = cmds[sys.platform] + [filename]
+    subprocess.call(cmd)
+
 
