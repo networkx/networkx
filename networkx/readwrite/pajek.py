@@ -9,12 +9,10 @@ those with self loops and parallel edges.
 
 Format
 ------
-
 See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
 for format information.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2008-2010 by 
+#    Copyright (C) 2008-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -22,7 +20,7 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    BSD license.
 import networkx as nx
 from networkx.utils import is_string_like,get_file_handle,make_str
-
+__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['read_pajek', 'parse_pajek', 'generate_pajek', 'write_pajek']
 
 def generate_pajek(G):
@@ -56,13 +54,9 @@ def generate_pajek(G):
         id=int(na.get('id',nodenumber[n]))
         nodenumber[n]=id
         shape=na.get('shape','ellipse')
-        s=' '.join(map(make_str,(id,n,x,y,shape)))
+        s=' '.join(map(make_qstr,(id,n,x,y,shape)))
         for k,v in na.items():
-            if is_string_like(v):
-                # add quotes to any values with a blank space
-                if " " in v: 
-                    v="\"%s\""%v
-            s+=' %s %s'%(k,v)
+            s+=' %s %s'%(make_qstr(k),make_qstr(v))
         yield s
 
     # write edges with attributes         
@@ -73,12 +67,9 @@ def generate_pajek(G):
     for u,v,edgedata in G.edges(data=True):
         d=edgedata.copy()
         value=d.pop('weight',1.0) # use 1 as default edge value
-        s=' '.join(map(make_str,(nodenumber[u],nodenumber[v],value)))
+        s=' '.join(map(make_qstr,(nodenumber[u],nodenumber[v],value)))
         for k,v in d.items():
-            if is_string_like(v):
-                # add quotes to any values with a blank space
-                if " " in v: 
-                    v="\"%s\""%v
+            s+=' %s %s'%(make_qstr(k),make_qstr(v))
             s+=' %s %s'%(k,v)
         yield s
         
@@ -218,6 +209,18 @@ def parse_pajek(lines):
                 #     multigraph=True
                 G.add_edge(u,v,**edge_data)
     return G
+
+
+
+def make_qstr(t):
+    """Return the string representation of t. 
+    Add outer double-quotes if the string has a space.
+    """
+    if not is_string_like(t): 
+        t = str(t)
+    if " " in t: 
+        t=r'"%s"'%t
+    return t
 
 
 # fixture for nose tests
