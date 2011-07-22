@@ -270,8 +270,9 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
             node_pos[n]=(0.0,0.0)
     return node_pos
 
-def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
-                       suffix='', filename=None):
+@nx.utils.open_file(5, 'w')
+def view_pygraphviz(G, edgelabel=None, prog='dot', args='',
+                       suffix='', path=None):
     """Views the graph G using the specified layout algorithm.
 
     Parameters
@@ -291,13 +292,13 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
     suffix : str
         If `filename` is None, we save to a temporary file.  The value of
         `suffix` will appear at the tail end of the temporary filename.
-    filename : str, None
+    path : str, None
         The filename used to save the image.  If None, save to a temporary
         file.  File formats are the same as those from pygraphviz.agraph.draw.
 
     Returns
     -------
-    filename : str
+    path : str
         The filename of the generated image.
     A : PyGraphviz graph
         The PyGraphviz graph instance used to generate the image.
@@ -382,20 +383,20 @@ def view_pygraphviz(G, edgelabel=None, prog='neato', args='',
                 edge = A.get_edge(u,v)
                 edge.attr['label'] = str(func(data))
 
-    if filename is None:
+    if path is None:
         ext = 'png'
         if suffix:
             suffix = '_%s.%s' % (suffix, ext)
         else:
             suffix = '.%s' % (ext,)
-        fd, filename = tempfile.mkstemp(suffix=suffix)
-        path = (fd, filename)
+        path = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
     else:
-        path = (filename,)
+        # Assume the decorator worked and it is a file-object.
+        pass
 
     display_pygraphviz(A, path=path, prog=prog, args=args)
 
-    return filename, A
+    return path.name, A
 
 def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     """Internal function to display a graph in OS dependent manner.
@@ -404,10 +405,8 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     ----------
     graph : PyGraphviz graph
         A PyGraphviz AGraph instance.
-    path : tuple
-        For temporary files, path is a 2-tuple containing the file descriptor
-        as returned by os.open and the filename. If `path` is a 1-tuple, then
-        the only element is the filename.
+    path :  file object
+        An already opened file object that will be closed.
     format : str, None
         An attempt is made to guess the output format based on the extension
         of the filename. If that fails, the value of `format` is used.
@@ -423,34 +422,18 @@ def display_pygraphviz(graph, path, format=None, prog=None, args=''):
     calls if you experience problems.
 
     """
-    try:
-        import subprocess
-    except ImportError:
-        raise ImportError(
-            """display_pygraphviz requires subprocess module""")
-    # This would be more useful as part of PyGraphviz.
-    if len(path) == 2:
-        fd, filename = path
-        path = os.fdopen(fd, "w+b")  # grab file-object associated to fd
-        close = True
-    else:
-        filename = path[0]
-        path = filename              # graph.draw() will open the file-object
-        close = False
-    # If we are using a temporary file, the file-object does not contain the
-    # name of the file. This means that graph.draw() will fail to detect the
-    # format and will set it to 'dot' by default. Since we have the filename,
-    # we explicitly set the format.
     if format is None:
-        format = os.path.splitext(filename)[-1].lower()[1:]
+        filename = path.name
+        format = os.path.splitext(filename)[1].lower()[1:]
+    if not format:
+        # Let the draw() function use its default
+        format = None
 
     # Save to a file and display in the default viewer.
-    cmds = {'darwin': 'open', 'linux2': 'xdg-open', 'win32': 'start'}
+    # We must close the file before viewing it.
     graph.draw(path, format, prog, args)
-    if close:
-        # Causes trouble on MacOS if not closed.
-        path.close()
-    subprocess.call([cmds[sys.platform], filename])
+    path.close()
+    nx.utils.default_opener(filename)
 
 # fixture for nose tests
 def setup_module(module):
