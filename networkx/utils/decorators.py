@@ -38,7 +38,7 @@ def require(*packages):
         import numpy
         import scipy
         pass
-    
+
     """
     @decorator
     def _require(f,*args,**kwargs):
@@ -65,7 +65,7 @@ def _open_bz2(path, mode):
 _dispatch_dict = defaultdict(lambda : open)
 _dispatch_dict['.gz'] = _open_gz
 _dispatch_dict['.bz2'] = _open_bz2
-_dispatch_dict['.gzip'] = _open_gz    
+_dispatch_dict['.gzip'] = _open_gz
 
 
 def open_file(path_arg, mode='r'):
@@ -92,14 +92,14 @@ def open_file(path_arg, mode='r'):
     @open_file(1,'w')
     def write_function(G,pathname):
         pass
-        
+
     @open_file(path, 'w+')
     def another_function(arg, **kwargs):
         path = kwargs['path']
         pass
-        
-    """    
-    
+
+    """
+
     # Note that this decorator solves the problem when a path argument is
     # specified as a string, but it does not handle the situation when the
     # function wants to accept a default of None (and then handle it).
@@ -123,18 +123,23 @@ def open_file(path_arg, mode='r'):
     #
     # Normally, we'd want to use "with" to ensure that fh gets closed.
     # However, recall that the decorator will make `path` a file object for
-    # us, and using "with" would undesirably close that file object. Instead, 
+    # us, and using "with" would undesirably close that file object. Instead,
     # you use a try block, as shown above. When we exit the function,  fh will
-    # be closed, if it should be, by the decorator.   
-    
+    # be closed, if it should be, by the decorator.
+
     @decorator
     def _open_file(func, *args, **kwargs):
 
+        # Note that since we have used @decorator, *args, and **kwargs have
+        # already been resolved to match the function signature of func. This
+        # includes any default values. For example,  func(x, y, a=1, b=2, c=3)
+        # if called as func(0,1,b=5) would have args=(0,1,1,5,3). Very nice.
+
         # First we parse the arguments of the decorator. The path_arg could
-        # be a positional argument or a keyword argument.
-        
+        # be an arg or keyword, but not a vararg.
         try:
             # path_arg is a required positional argument
+            # This works precisely because we are using @decorator
             path = args[path_arg]
         except TypeError:
             # path_arg is a keyword argument. It is "required" in the sense
@@ -147,8 +152,6 @@ def open_file(path_arg, mode='r'):
                 # Could not find the keyword. Thus, no default was specified
                 # in the function signature and the user did not provide it.
                 msg = 'Missing required keyword argument: {0}'
-                print args
-                print kwargs
                 raise nx.NetworkXError(msg.format(path_arg))
             else:
                 is_kwarg = True
@@ -159,7 +162,7 @@ def open_file(path_arg, mode='r'):
             raise nx.NetworkXError(msg)
         else:
             is_kwarg = False
-        
+
         # Now we have the path_arg. There are two types of input to consider:
         #   1) string representing a path that should be opened
         #   2) an already opened file object
@@ -175,7 +178,7 @@ def open_file(path_arg, mode='r'):
             # could be None, in which case the algorithm will deal with it
             fh = path
             close_fh = False
-            
+
         # Insert file object into args or kwargs.
         if is_kwarg:
             new_args = args
@@ -183,14 +186,14 @@ def open_file(path_arg, mode='r'):
         else:
             new_args = list(args)
             new_args[path_arg] = fh
-                             
+
         # Finally, we call the original function, making sure to close the fh.
         try:
             result = func(*new_args, **kwargs)
         finally:
             if close_fh:
                 fh.close()
-                
+
         return result
-    
+
     return _open_file
