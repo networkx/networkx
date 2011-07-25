@@ -22,17 +22,19 @@ Created by Drew Conway (drew.conway@nyu.edu) on 2011-07-13
 __author__="""Drew Conway (drew.conway@nyu.edu)"""
 
 __all__=['write_d3_js',
-		 'ds_json',
+		 'd3_json',
 		 'export_d3_js']
 
 import os
+import sys
 from shutil import copyfile
 from networkx.utils import _get_fh, make_str
 import networkx as nx
+from networkx.readwrite.d3_js.d3_js_files import *
 import json
-import re
+import re	
 
-def write_d3_js(G, path, group='group'):
+def write_d3_js(G, path, group=None, encoding="utf-8"):
 	"""Writes a NetworkX graph in D3.js JSON graph format to disk.
 	
 	Parameters
@@ -45,20 +47,23 @@ def write_d3_js(G, path, group='group'):
 	group : string, optional
 		The name 'group' key for each node in the graph. This is used to 
 		assign nodes to exclusive partitions, and for node coloring if visualizing.
+	encoding: string, optional
+       Specify which encoding to use when writing file.
 		
 	Examples
 	--------
+	>>> from networkx.readwrite import d3_js
 	>>> G = nx.path_graph(4)
 	>>> G.add_nodes_from(map(lambda i: (i, {'group': i}), G.nodes()))
-	>>> nx.write_d3_js(G, 'four_color_line.json')
+	>>> d3_js.write_d3_js(G, 'four_color_line.json')
 	"""
 	fh = _get_fh(path, 'wb')
 	graph_json = d3_json(G, group)
 	graph_dump = json.dumps(graph_json, indent=2)
-	fh.write(graph_dump)
+	fh.write(graph_dump.encode(encoding))
 	
 
-def d3_json(G, group='group'):
+def d3_json(G, group=None):
 	"""Converts a NetworkX Graph to a properly D3.js JSON formatted dictionary
 	
 	Parameters
@@ -71,9 +76,10 @@ def d3_json(G, group='group'):
 		
 	Examples
 	--------
+	>>> from networkx.readwrite import d3_js
 	>>> G = nx.path_graph(4)
 	>>> G.add_nodes_from(map(lambda i: (i, {'group': i}), G.nodes()))
-	>>> nx.d3_json(G)
+	>>> d3_js.d3_json(G)
 	{'links': [{'source': 0, 'target': 1, 'value': 1},
 	  {'source': 1, 'target': 2, 'value': 1},
 	  {'source': 2, 'target': 3, 'value': 1}],
@@ -90,14 +96,14 @@ def d3_json(G, group='group'):
 	node_labels.sort()
 	
 	# Build up node dictionary in JSON format
-	node_attr = [(b) for (a,b) in graph_nodes]
-	if len(node_attr[0].keys()) >1:
-		raise nx.NetworkXError("Nodes in the D3.js format can only have a single attribute for 'group'.")
-	elif all(map(lambda v: v.keys()[0]==group, node_attr)):	
-		graph_json = {'nodes' : map(lambda n: {'name': str(node_labels[n][1]), 'group' : graph_nodes[n][1][group]}, xrange(len(node_labels)))}
-	else:
+	if group is None:
 		graph_json = {'nodes': map(lambda n: {'name': str(node_labels[n][1]), 'group' : 0}, xrange(len(node_labels)))}
-	
+	else:
+		try:
+			graph_json = {'nodes' : map(lambda n: {'name': str(node_labels[n][1]), 'group' : graph_nodes[n][1][group]}, xrange(len(node_labels)))}
+		except KeyError:
+			raise nx.NetworkXError("The graph had no node attribute for '"+group+"'")
+		
 	# Build up edge dictionary in JSON format
 	json_edges = list()
 	for j, k, w in graph_edges:
@@ -111,7 +117,8 @@ def d3_json(G, group='group'):
 	graph_json['links'] = json_edges
 	return graph_json
 	
-def export_d3_js(G, files_dir='nx_js_d3_graph', graphname="nx_js_d3_graph", group='group', width=960, height=500, node_labels=False):
+def export_d3_js(G, files_dir='nx_js_d3_graph', graphname="nx_js_d3_graph", group='group', 
+				width=960, height=500, node_labels=False, encoding="utf-8"):
 	"""
 	A function that exports a NetworkX graph as an interavtice D3.js object.  
 	The function builds a folder, containing the graph's formatted JSON, the D3.js 
@@ -134,40 +141,48 @@ def export_d3_js(G, files_dir='nx_js_d3_graph', graphname="nx_js_d3_graph", grou
 		height (px) of display frame for graph object in browser window
 	node_labels : bool, optional
 		If true, nodes are displayed with labels in browser
+	encoding: string, optional
+       Specify which encoding to use when writing file.
 		
 	Examples
 	--------
-	>>> num_nodes = 100
-	>>> m = 2
-	>>> G = nx.barabasi_albert_graph(num_nodes, m)
+	>>> from scipy import random
+	>>> from networkx.readwrite import d3_js
+	>>> G = nx.random_lobster(20, .8, .8)
 	>>> low = 0
 	>>> high = 5
 	>>> G.add_nodes_from(map(lambda i: (i, {'group': random.random_integers(low, high, 1)[0]}), G.nodes()))
 	>>> G.add_edges_from(map(lambda e: (e[0], e[1], {'weight': random.random_integers(low+1, high, 1)[0]}), G.edges()))
-	>>> export_d3_js(G, files_dir="barabasi_albert_test", graphname="random_barabasi_albert", node_labels=False)
+	>>> d3_js.export_d3_js(G, files_dir="random_lobster", graphname="random_lobster_graph", node_labels=False)
 	"""
 	if not os.path.exists(files_dir):
 	    os.makedirs(files_dir)
 	
-	write_d3_js(G, path=files_dir+"/"+graphname+".json", group=group)
+	write_d3_js(G, path=files_dir+"/"+graphname+".json", group=group, encoding=encoding)
 	
 	if not os.path.exists(files_dir+"/d3"):
 		os.makedirs(files_dir+"/d3")
 	
-	d3_js_files = ['d3/d3.js', 'd3/d3.geom.js', 'd3/d3.layout.js', 'd3/examples/force/force.css']
-	for f in d3_js_files:
-		copyfile(f, files_dir+'/d3/'+f.split('/')[-1])
+	# Begin by creating the necessary JS and HTML files
 	
-	force_js = open('d3/examples/force/force.js', "r")
-	nx_force_js = open(files_dir+'/'+graphname+'.js', "w")
-	for line in force_js.readlines():
+	# This part really sucks bad, someone needs to make this better.
+	d3_files = {'d3.js' : d3_js, 'd3.geom.js' : d3_geom, 'd3.layout.js' : d3_layout, 'force.css' : d3_css, 'LICENSE' : d3_license}
+	for f in d3_files.keys():
+		f_open = open(files_dir+'/d3/'+f, "w")
+		f_open.write(d3_files[f])
+		f_open.close()
+		
+	# Next, go through and customize force.js and html to the given export
+	
+	graph_force_js = open(files_dir+'/'+graphname+'.js', "w")
+	for line in d3_force.split('\n'):
 		if line.find('w = 960') > 0:
 			line = line.replace('w = 960', 'w = '+str(width))
 		if line.find('h = 500') > 0:
 			line = line.replace('h = 500', 'h = '+str(height))
-		if line.find('"nx_js_d3_graph.json"') > 0:
-			line = line.replace('"nx_js_d3_graph.json"', '"'+graphname+'.json"')
-		nx_force_js.write(line)
+		if line.find('"miserables.json"') > 0:
+			line = line.replace('"miserables.json"', '"'+graphname+'.json"')
+		graph_force_js.write(line+'\n'.encode(encoding))
 		if line.find('drag') > 0 and node_labels:
 			label_func = '''\n  node.append("svg:text")
     .attr("class", "nodetext")
@@ -177,13 +192,11 @@ def export_d3_js(G, files_dir='nx_js_d3_graph', graphname="nx_js_d3_graph", grou
 
   node.append("svg:title")
     .text(function(d) { return d.name; });\n'''
-			nx_force_js.write(label_func)
-	force_js.close()
-	nx_force_js.close()
+			graph_force_js.write(label_func.encode(encoding))
+	graph_force_js.close()
 	
-	force_html = open('d3/examples/force/force.html', "r")
-	nx_force_html = open(files_dir+'/'+graphname+'.html', "w")
-	for line in force_html.readlines():
+	graph_force_html = open(files_dir+'/'+graphname+'.html', 'w')
+	for line in d3_html.split("\n"):
 		if line.find('"../../d3.js"') > 0:
 			line = line.replace('"../../d3.js"', '"d3/d3.js"')
 		if line.find('"../../d3.geom.js"') > 0:
@@ -194,6 +207,9 @@ def export_d3_js(G, files_dir='nx_js_d3_graph', graphname="nx_js_d3_graph", grou
 			line = line.replace('"force.css"', '"d3/force.css"')
 		if line.find('"force.js"') > 0:
 			line = line.replace('"force.js"', '"'+graphname+'.js"')
-		nx_force_html.write(line)
-	force_html.close()
-	nx_force_html.close()
+		graph_force_html.write(line+'\n'.encode(encoding))
+	graph_force_html.close()
+
+
+
+
