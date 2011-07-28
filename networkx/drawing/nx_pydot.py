@@ -12,22 +12,18 @@ See Also
 Pydot: http://www.dkbza.org/pydot.html
 Graphviz:	   http://www.research.att.com/sw/tools/graphviz/
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
-
-
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
-__all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
-           'to_pydot', 'from_pydot']
-
 from networkx.utils import get_file_handle
 import networkx as nx
+__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+__all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
+           'to_pydot', 'from_pydot']
 
 
 def write_dot(G,path):
@@ -38,7 +34,8 @@ def write_dot(G,path):
     try:
         import pydot
     except ImportError:
-        raise ImportError("write_dot() requires pydot http://dkbza.org/pydot.html/")
+        raise ImportError("write_dot() requires pydot",
+                          "http://dkbza.org/pydot.html/")
     fh=get_file_handle(path,'w')
     P=to_pydot(G)
     fh.write(P.to_string())
@@ -73,7 +70,6 @@ def read_dot(path):
     P=pydot.graph_from_dot_data(data)
     return from_pydot(P)
 
-
 def from_pydot(P):
     """Return a NetworkX graph from a Pydot graph.
 
@@ -95,7 +91,6 @@ def from_pydot(P):
     >>> G=nx.Graph(nx.from_pydot(A)) # make a Graph instead of MultiGraph
 
     """
-
     if P.get_strict(None): # pydot bug: get_strict() shouldn't take argument 
         multiedges=False
     else:
@@ -115,7 +110,6 @@ def from_pydot(P):
     # assign defaults        
     N=nx.empty_graph(0,create_using)
     N.name=P.get_name()
-    node_attr={}
 
     # add nodes, attributes to N.node_attr
     for p in P.get_node_list():
@@ -133,17 +127,14 @@ def from_pydot(P):
 
     # add default attributes for graph, nodes, edges
     N.graph['graph']=P.get_attributes()
-    # get atributes not working for these?
-    # get_node_defaults()
-    N.graph['node']={}
-    if 'node' in P.obj_dict['nodes']:
-        N.graph['node']=P.obj_dict['nodes']['node'][0]['attributes']
-    # get_edge_defaults()
-    N.graph['edge']={}
-    if 'edge' in P.obj_dict['nodes']:
-        N.graph['edge']=P.obj_dict['nodes']['edge'][0]['attributes']
-    N.node_attr=node_attr
-
+    try:
+        N.graph['node']=P.get_node_defaults()[0]
+    except IndexError:
+        N.graph['node']={}
+    try:
+        N.graph['edge']=P.get_edge_defaults()[0]
+    except IndexError:
+        N.graph['edge']={}
     return N        
 
 def to_pydot(N, strict=True):
@@ -154,7 +145,6 @@ def to_pydot(N, strict=True):
     N : NetworkX graph
       A graph created with NetworkX
       
-
     Examples
     --------
     >>> K5=nx.complete_graph(5)
@@ -167,7 +157,8 @@ def to_pydot(N, strict=True):
     try:
         import pydot
     except ImportError:
-        raise ImportError("to_pydot() requires pydot http://dkbza.org/pydot.html/")
+        raise ImportError('to_pydot() requires pydot: '
+                          'http://dkbza.org/pydot.html/')
 
     # set Graphviz graph type
     if N.is_directed():
@@ -175,8 +166,14 @@ def to_pydot(N, strict=True):
     else:
         graph_type='graph'
     strict=N.number_of_selfloops()==0 and not N.is_multigraph() 
-
-    P = pydot.Dot(graph_type=graph_type,strict=strict)
+    
+    name = N.graph.get('name','')
+    graph_defaults=N.graph.get('graph',{})
+    P = pydot.Dot(name, graph_type=graph_type,strict=strict,**graph_defaults)
+    node_defaults=N.graph.get('node',{})
+    P.set_node_defaults(**node_defaults)
+    edge_defaults=N.graph.get('edge',{})
+    P.set_edge_defaults(**edge_defaults)
 
     for n,nodedata in N.nodes_iter(data=True):
         str_nodedata=dict((k,str(v)) for k,v in nodedata.items())
@@ -194,19 +191,6 @@ def to_pydot(N, strict=True):
             str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
             edge=pydot.Edge(str(u),str(v),**str_edgedata)
             P.add_edge(edge)
-
-    try:
-        P.obj_dict['attributes'].update(N.graph.get('graph',{}))
-    except:
-        pass
-    try:
-        P.obj_dict['nodes']['node'][0]['attributes'].update(N.graph.get('node',{}))
-    except:
-        pass
-    try:
-        P.obj_dict['nodes']['edge'][0]['attributes'].update(N.graph.get('edge',{}))
-    except:
-        pass
 
     return P
 
