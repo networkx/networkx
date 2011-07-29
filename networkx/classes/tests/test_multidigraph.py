@@ -1,124 +1,9 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx
-from test_multigraph import TestMultiGraph
+from test_multigraph import BaseMultiGraphTester, TestMultiGraph
 
-class TestMultiDiGraph(TestMultiGraph):
-    def setUp(self):
-        self.Graph=networkx.MultiDiGraph
-        # build K3
-        self.k3edges=[(0, 1), (0, 2), (1, 2)]
-        self.k3nodes=[0, 1, 2]
-        self.K3=self.Graph()
-        self.K3.adj={0:{},1:{},2:{}}
-        self.K3.succ=self.K3.adj
-        self.K3.pred={0:{},1:{},2:{}}
-        for u in self.k3nodes:
-            for v in self.k3nodes:
-                if u==v: continue
-                d={0:{}}
-                self.K3.succ[u][v]=d
-                self.K3.pred[v][u]=d
-        self.K3.adj=self.K3.succ
-        self.K3.edge=self.K3.adj
-        self.K3.node={}
-        self.K3.node[0]={}
-        self.K3.node[1]={}
-        self.K3.node[2]={}
-
-
-
-#     def test_data_input(self):
-#         G=self.Graph(data={1:[2],2:[1]}, name="test")
-#         assert_equal(G.name,"test")
-#         assert_equal(sorted(G.adj.items()),[(1, {2: [1]}), (2, {1: [1]})])
-#         assert_equal(sorted(G.succ.items()),[(1, {2: [1]}), (2, {1: [1]})])
-#         assert_equal(sorted(G.pred.items()),[(1, {2: [1]}), (2, {1: [1]})])
-
-
-    def test_add_edge(self):
-        G=self.Graph()
-        G.add_edge(0,1)
-        assert_equal(G.adj,{0: {1: {0:{}}}, 1: {}})
-        assert_equal(G.succ,{0: {1: {0:{}}}, 1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:{0:{}}}})
-        G=self.Graph()
-        G.add_edge(*(0,1))
-        assert_equal(G.adj,{0: {1: {0:{}}}, 1: {}})
-        assert_equal(G.succ,{0: {1: {0:{}}}, 1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:{0:{}}}})
-
-
-
-    def test_add_edges_from(self):
-        G=self.Graph()
-        G.add_edges_from([(0,1),(0,1,{'weight':3})])
-        assert_equal(G.adj,{0: {1: {0:{},1:{'weight':3}}}, 1: {}})
-        assert_equal(G.succ,{0: {1: {0:{},1:{'weight':3}}}, 1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:{0:{},1:{'weight':3}}}})
-
-        G.add_edges_from([(0,1),(0,1,{'weight':3})],weight=2)
-        assert_equal(G.succ,{0: {1: {0:{},
-                                     1:{'weight':3},
-                                     2:{'weight':2},
-                                     3:{'weight':3}}}, 
-                             1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:{0:{},1:{'weight':3},
-                                           2:{'weight':2},
-                                           3:{'weight':3}}}})
-
-        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,)])  # too few in tuple
-        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,1,2,3,4)])  # too many in tuple
-        assert_raises(TypeError, G.add_edges_from,[0])  # not a tuple
-
-
-    def test_remove_edge(self):
-        G=self.K3
-        G.remove_edge(0,1)
-        assert_equal(G.succ,{0:{2:{0:{}}},
-                             1:{0:{0:{}},2:{0:{}}},
-                             2:{0:{0:{}},1:{0:{}}}})        
-        assert_equal(G.pred,{0:{1:{0:{}}, 2:{0:{}}}, 
-                             1:{2:{0:{}}}, 
-                             2:{0:{0:{}},1:{0:{}}}})
-        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
-
-    def test_remove_multiedge(self):
-        G=self.K3
-        G.add_edge(0,1,key='parallel edge')
-        G.remove_edge(0,1,key='parallel edge')
-        assert_equal(G.adj,{0: {1: {0:{}}, 2: {0:{}}}, 
-                           1: {0: {0:{}}, 2: {0:{}}},
-                           2: {0: {0:{}}, 1: {0:{}}}})
-
-        assert_equal(G.succ,{0: {1: {0:{}}, 2: {0:{}}}, 
-                           1: {0: {0:{}}, 2: {0:{}}},
-                           2: {0: {0:{}}, 1: {0:{}}}})
-
-        assert_equal(G.pred,{0:{1: {0:{}},2:{0:{}}},
-                             1:{0:{0:{}},2:{0:{}}},
-                             2:{0:{0:{}},1:{0:{}}}})
-        G.remove_edge(0,1)
-        assert_equal(G.succ,{0:{2:{0:{}}},
-                             1:{0:{0:{}},2:{0:{}}},
-                             2:{0:{0:{}},1:{0:{}}}})        
-        assert_equal(G.pred,{0:{1:{0:{}}, 2:{0:{}}}, 
-                             1:{2:{0:{}}}, 
-                             2:{0:{0:{}},1:{0:{}}}})
-        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
-
-    def test_remove_edges_from(self):
-        G=self.K3
-        G.remove_edges_from([(0,1)])
-        assert_equal(G.succ,{0:{2:{0:{}}},
-                             1:{0:{0:{}},2:{0:{}}},
-                             2:{0:{0:{}},1:{0:{}}}})        
-        assert_equal(G.pred,{0:{1:{0:{}}, 2:{0:{}}}, 
-                             1:{2:{0:{}}}, 
-                             2:{0:{0:{}},1:{0:{}}}})
-        G.remove_edges_from([(0,0)]) # silent fail
-
-
+class BaseMultiDiGraphTester(BaseMultiGraphTester):
     def test_edges(self):
         G=self.K3
         assert_equal(sorted(G.edges()),[(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
@@ -142,8 +27,6 @@ class TestMultiDiGraph(TestMultiGraph):
         assert_equal(sorted(G.edges_iter()),
                      [(0,1),(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
 
-
-
     def test_out_edges(self):
         G=self.K3
         assert_equal(sorted(G.out_edges()),
@@ -151,7 +34,6 @@ class TestMultiDiGraph(TestMultiGraph):
         assert_equal(sorted(G.out_edges(0)),[(0,1),(0,2)])
         assert_raises((KeyError,networkx.NetworkXError), G.out_edges,-1)
         assert_equal(sorted(G.out_edges(0,keys=True)),[(0,1,0),(0,2,0)])
-
 
     def test_out_edges_iter(self):
         G=self.K3
@@ -211,7 +93,7 @@ class TestMultiDiGraph(TestMultiGraph):
         assert_not_equal(G[1][2][0]['foo'],H[1][2][0]['foo'])
 
     def test_to_undirected(self):
-        # MultiDiGraph -> MultiGraph changes number of edges so it is 
+        # MultiDiGraph -> MultiGraph changes number of edges so it is
         # not a copy operation... use is_shallow, not is_shallow_copy
         G=self.K3
         self.add_attributes(G)
@@ -329,3 +211,107 @@ class TestMultiDiGraph(TestMultiGraph):
         R.remove_edge(1,0)
         assert_equal(sorted(R.edges()),[(1,0)])
         assert_equal(sorted(G.edges()),[(1,0)])
+
+
+class TestMultiDiGraph(BaseMultiDiGraphTester,TestMultiGraph):
+    def setUp(self):
+        self.Graph=networkx.MultiDiGraph
+        # build K3
+        self.k3edges=[(0, 1), (0, 2), (1, 2)]
+        self.k3nodes=[0, 1, 2]
+        self.K3=self.Graph()
+        self.K3.adj={0:{},1:{},2:{}}
+        self.K3.succ=self.K3.adj
+        self.K3.pred={0:{},1:{},2:{}}
+        for u in self.k3nodes:
+            for v in self.k3nodes:
+                if u==v: continue
+                d={0:{}}
+                self.K3.succ[u][v]=d
+                self.K3.pred[v][u]=d
+        self.K3.adj=self.K3.succ
+        self.K3.edge=self.K3.adj
+        self.K3.node={}
+        self.K3.node[0]={}
+        self.K3.node[1]={}
+        self.K3.node[2]={}
+
+
+    def test_add_edge(self):
+        G=self.Graph()
+        G.add_edge(0,1)
+        assert_equal(G.adj,{0: {1: {0:{}}}, 1: {}})
+        assert_equal(G.succ,{0: {1: {0:{}}}, 1: {}})
+        assert_equal(G.pred,{0: {}, 1: {0:{0:{}}}})
+        G=self.Graph()
+        G.add_edge(*(0,1))
+        assert_equal(G.adj,{0: {1: {0:{}}}, 1: {}})
+        assert_equal(G.succ,{0: {1: {0:{}}}, 1: {}})
+        assert_equal(G.pred,{0: {}, 1: {0:{0:{}}}})
+
+    def test_add_edges_from(self):
+        G=self.Graph()
+        G.add_edges_from([(0,1),(0,1,{'weight':3})])
+        assert_equal(G.adj,{0: {1: {0:{},1:{'weight':3}}}, 1: {}})
+        assert_equal(G.succ,{0: {1: {0:{},1:{'weight':3}}}, 1: {}})
+        assert_equal(G.pred,{0: {}, 1: {0:{0:{},1:{'weight':3}}}})
+
+        G.add_edges_from([(0,1),(0,1,{'weight':3})],weight=2)
+        assert_equal(G.succ,{0: {1: {0:{},
+                                     1:{'weight':3},
+                                     2:{'weight':2},
+                                     3:{'weight':3}}},
+                             1: {}})
+        assert_equal(G.pred,{0: {}, 1: {0:{0:{},1:{'weight':3},
+                                           2:{'weight':2},
+                                           3:{'weight':3}}}})
+
+        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,)])  # too few in tuple
+        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,1,2,3,4)])  # too many in tuple
+        assert_raises(TypeError, G.add_edges_from,[0])  # not a tuple
+
+    def test_remove_edge(self):
+        G=self.K3
+        G.remove_edge(0,1)
+        assert_equal(G.succ,{0:{2:{0:{}}},
+                             1:{0:{0:{}},2:{0:{}}},
+                             2:{0:{0:{}},1:{0:{}}}})
+        assert_equal(G.pred,{0:{1:{0:{}}, 2:{0:{}}},
+                             1:{2:{0:{}}},
+                             2:{0:{0:{}},1:{0:{}}}})
+        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
+
+    def test_remove_multiedge(self):
+        G=self.K3
+        G.add_edge(0,1,key='parallel edge')
+        G.remove_edge(0,1,key='parallel edge')
+        assert_equal(G.adj,{0: {1: {0:{}}, 2: {0:{}}},
+                           1: {0: {0:{}}, 2: {0:{}}},
+                           2: {0: {0:{}}, 1: {0:{}}}})
+
+        assert_equal(G.succ,{0: {1: {0:{}}, 2: {0:{}}},
+                           1: {0: {0:{}}, 2: {0:{}}},
+                           2: {0: {0:{}}, 1: {0:{}}}})
+
+        assert_equal(G.pred,{0:{1: {0:{}},2:{0:{}}},
+                             1:{0:{0:{}},2:{0:{}}},
+                             2:{0:{0:{}},1:{0:{}}}})
+        G.remove_edge(0,1)
+        assert_equal(G.succ,{0:{2:{0:{}}},
+                             1:{0:{0:{}},2:{0:{}}},
+                             2:{0:{0:{}},1:{0:{}}}})
+        assert_equal(G.pred,{0:{1:{0:{}}, 2:{0:{}}},
+                             1:{2:{0:{}}},
+                             2:{0:{0:{}},1:{0:{}}}})
+        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
+
+    def test_remove_edges_from(self):
+        G=self.K3
+        G.remove_edges_from([(0,1)])
+        assert_equal(G.succ,{0:{2:{0:{}}},
+                             1:{0:{0:{}},2:{0:{}}},
+                             2:{0:{0:{}},1:{0:{}}}})
+        assert_equal(G.pred,{0:{1:{0:{}}, 2:{0:{}}},
+                             1:{2:{0:{}}},
+                             2:{0:{0:{}},1:{0:{}}}})
+        G.remove_edges_from([(0,0)]) # silent fail

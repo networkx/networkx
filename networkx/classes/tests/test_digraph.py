@@ -1,80 +1,9 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx
-from test_graph import TestGraph
+from test_graph import BaseGraphTester, BaseAttrGraphTester, TestGraph
 
-class TestDiGraph(TestGraph):
-
-    def setUp(self):
-        self.Graph=networkx.DiGraph
-        # build K3
-        ed1,ed2,ed3,ed4,ed5,ed6 = ({},{},{},{},{},{})
-        self.k3adj={0: {1: ed1, 2: ed2}, 1: {0: ed3, 2: ed4}, 2: {0: ed5, 1:ed6}}
-        self.k3edges=[(0, 1), (0, 2), (1, 2)]
-        self.k3nodes=[0, 1, 2]
-        self.K3=self.Graph()
-        self.K3.adj = self.K3.succ = self.K3.edge = self.k3adj
-        self.K3.pred={0: {1: ed3, 2: ed5}, 1: {0: ed1, 2: ed6}, 2: {0: ed2, 1:ed4}}
-
-        ed1,ed2 = ({},{})
-        self.P3=self.Graph()
-        self.P3.adj={0: {1: ed1}, 1: {2: ed2}, 2: {}}
-        self.P3.succ=self.P3.adj
-        self.P3.pred={0: {}, 1: {0: ed1}, 2: {1: ed2}}
-        self.K3.node={}
-        self.K3.node[0]={}
-        self.K3.node[1]={}
-        self.K3.node[2]={}
-
-
-
-    def test_data_input(self):
-        G=self.Graph(data={1:[2],2:[1]}, name="test")
-        assert_equal(G.name,"test")
-        assert_equal(sorted(G.adj.items()),[(1, {2: {}}), (2, {1: {}})])
-        assert_equal(sorted(G.succ.items()),[(1, {2: {}}), (2, {1: {}})])
-        assert_equal(sorted(G.pred.items()),[(1, {2: {}}), (2, {1: {}})])
-
-
-    def test_add_edge(self):
-        G=self.Graph()
-        G.add_edge(0,1)
-        assert_equal(G.adj,{0: {1: {}}, 1: {}})
-        assert_equal(G.succ,{0: {1: {}}, 1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:{}}})
-        G=self.Graph()
-        G.add_edge(*(0,1))
-        assert_equal(G.adj,{0: {1: {}}, 1: {}})
-        assert_equal(G.succ,{0: {1: {}}, 1: {}})
-        assert_equal(G.pred,{0: {}, 1: {0:{}}})
-
-    
-    def test_add_edges_from(self):
-        G=self.Graph()
-        G.add_edges_from([(0,1),(0,2,{'data':3})],data=2)
-        assert_equal(G.adj,{0: {1: {'data':2}, 2: {'data':3}}, 1: {}, 2: {}})
-        assert_equal(G.succ,{0: {1: {'data':2}, 2: {'data':3}}, 1: {}, 2: {}})
-        assert_equal(G.pred,{0: {}, 1: {0: {'data':2}}, 2: {0: {'data':3}}})
-
-        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,)])  # too few in tuple
-        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,1,2,3)])  # too many in tuple
-        assert_raises(TypeError, G.add_edges_from,[0])  # not a tuple
-
-    def test_remove_edge(self):
-        G=self.K3
-        G.remove_edge(0,1)
-        assert_equal(G.succ,{0:{2:{}},1:{0:{},2:{}},2:{0:{},1:{}}})        
-        assert_equal(G.pred,{0:{1:{}, 2:{}}, 1:{2:{}}, 2:{0:{},1:{}}})
-        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
-
-
-    def test_remove_edges_from(self):
-        G=self.K3
-        G.remove_edges_from([(0,1)])
-        assert_equal(G.succ,{0:{2:{}},1:{0:{},2:{}},2:{0:{},1:{}}})        
-        assert_equal(G.pred,{0:{1:{}, 2:{}}, 1:{2:{}}, 2:{0:{},1: {}}})
-        G.remove_edges_from([(0,0)]) # silent fail
-
+class BaseDiGraphTester(BaseGraphTester):
     def test_has_successor(self):
         G=self.K3
         assert_equal(G.has_successor(0,1),True)
@@ -105,7 +34,6 @@ class TestDiGraph(TestGraph):
         assert_equal(sorted(G.predecessors_iter(0)),[1,2])
         assert_raises((KeyError,networkx.NetworkXError), G.predecessors_iter,-1)
 
-
     def test_edges(self):
         G=self.K3
         assert_equal(sorted(G.edges()),[(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
@@ -123,8 +51,7 @@ class TestDiGraph(TestGraph):
         assert_equal(sorted(G.edges(data=True)),
                      [(0,1,{}),(0,2,{}),(1,0,{}),(1,2,{}),(2,0,{}),(2,1,{})])
         assert_equal(sorted(G.edges(0,data=True)),[(0,1,{}),(0,2,{})])
-        assert_raises((KeyError,networkx.NetworkXError), G.neighbors,-1)
-
+        assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
 
     def test_out_edges(self):
         G=self.K3
@@ -176,7 +103,6 @@ class TestDiGraph(TestGraph):
         assert_equal(list(G.degree_iter()),[(0,4),(1,4),(2,4)])
         assert_equal(dict(G.degree_iter()),{0:4,1:4,2:4})
         assert_equal(list(G.degree_iter(0)),[(0,4)])
-
 
     def test_in_degree(self):
         G=self.K3
@@ -254,3 +180,74 @@ class TestDiGraph(TestGraph):
         R.remove_edge(1,0)
         assert_equal(sorted(R.edges()),[(2,1)])
         assert_equal(sorted(G.edges()),[(2,1)])
+
+class BaseAttrDiGraphTester(BaseDiGraphTester,BaseAttrGraphTester):
+    pass
+
+
+class TestDiGraph(BaseAttrDiGraphTester,TestGraph):
+    """Tests specific to dict-of-dict-of-dict digraph data structure"""
+    def setUp(self):
+        self.Graph=networkx.DiGraph
+        # build dict-of-dict-of-dict K3
+        ed1,ed2,ed3,ed4,ed5,ed6 = ({},{},{},{},{},{})
+        self.k3adj={0: {1: ed1, 2: ed2}, 1: {0: ed3, 2: ed4}, 2: {0: ed5, 1:ed6}}
+        self.k3edges=[(0, 1), (0, 2), (1, 2)]
+        self.k3nodes=[0, 1, 2]
+        self.K3=self.Graph()
+        self.K3.adj = self.K3.succ = self.K3.edge = self.k3adj
+        self.K3.pred={0: {1: ed3, 2: ed5}, 1: {0: ed1, 2: ed6}, 2: {0: ed2, 1:ed4}}
+
+        ed1,ed2 = ({},{})
+        self.P3=self.Graph()
+        self.P3.adj={0: {1: ed1}, 1: {2: ed2}, 2: {}}
+        self.P3.succ=self.P3.adj
+        self.P3.pred={0: {}, 1: {0: ed1}, 2: {1: ed2}}
+        self.K3.node={}
+        self.K3.node[0]={}
+        self.K3.node[1]={}
+        self.K3.node[2]={}
+
+    def test_data_input(self):
+        G=self.Graph(data={1:[2],2:[1]}, name="test")
+        assert_equal(G.name,"test")
+        assert_equal(sorted(G.adj.items()),[(1, {2: {}}), (2, {1: {}})])
+        assert_equal(sorted(G.succ.items()),[(1, {2: {}}), (2, {1: {}})])
+        assert_equal(sorted(G.pred.items()),[(1, {2: {}}), (2, {1: {}})])
+
+    def test_add_edge(self):
+        G=self.Graph()
+        G.add_edge(0,1)
+        assert_equal(G.adj,{0: {1: {}}, 1: {}})
+        assert_equal(G.succ,{0: {1: {}}, 1: {}})
+        assert_equal(G.pred,{0: {}, 1: {0:{}}})
+        G=self.Graph()
+        G.add_edge(*(0,1))
+        assert_equal(G.adj,{0: {1: {}}, 1: {}})
+        assert_equal(G.succ,{0: {1: {}}, 1: {}})
+        assert_equal(G.pred,{0: {}, 1: {0:{}}})
+
+    def test_add_edges_from(self):
+        G=self.Graph()
+        G.add_edges_from([(0,1),(0,2,{'data':3})],data=2)
+        assert_equal(G.adj,{0: {1: {'data':2}, 2: {'data':3}}, 1: {}, 2: {}})
+        assert_equal(G.succ,{0: {1: {'data':2}, 2: {'data':3}}, 1: {}, 2: {}})
+        assert_equal(G.pred,{0: {}, 1: {0: {'data':2}}, 2: {0: {'data':3}}})
+
+        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,)])  # too few in tuple
+        assert_raises(networkx.NetworkXError, G.add_edges_from,[(0,1,2,3)])  # too many in tuple
+        assert_raises(TypeError, G.add_edges_from,[0])  # not a tuple
+
+    def test_remove_edge(self):
+        G=self.K3
+        G.remove_edge(0,1)
+        assert_equal(G.succ,{0:{2:{}},1:{0:{},2:{}},2:{0:{},1:{}}})
+        assert_equal(G.pred,{0:{1:{}, 2:{}}, 1:{2:{}}, 2:{0:{},1:{}}})
+        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
+
+    def test_remove_edges_from(self):
+        G=self.K3
+        G.remove_edges_from([(0,1)])
+        assert_equal(G.succ,{0:{2:{}},1:{0:{},2:{}},2:{0:{},1:{}}})
+        assert_equal(G.pred,{0:{1:{}, 2:{}}, 1:{2:{}}, 2:{0:{},1: {}}})
+        G.remove_edges_from([(0,0)]) # silent fail
