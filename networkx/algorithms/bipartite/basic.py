@@ -50,6 +50,14 @@ def color(G):
     >>> print(G.node[1]['bipartite'])
     0
     """
+    if G.is_directed():
+        import itertools
+        def neighbors(v):
+            return itertools.chain.from_iterable([G.predecessors_iter(v),
+                                                  G.successors_iter(v)])
+    else:
+        neighbors=G.neighbors_iter
+    
     color = {}
     for n in G: # handle disconnected graphs
         if n in color or len(G[n])==0: # skip isolates
@@ -59,7 +67,7 @@ def color(G):
         while queue:
             v = queue.pop()
             c = 1 - color[v] # opposite color of node v
-            for w in G[v]: 
+            for w in neighbors(v):
                 if w in color: 
                     if color[w] == color[v]:
                         raise nx.NetworkXError("Graph is not bipartite.")
