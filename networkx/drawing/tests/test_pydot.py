@@ -40,8 +40,6 @@ class TestPydot(object):
         assert_true( P.write_raw(fname) )
 
         Pin = pydot.graph_from_dot_file(fname)   
-        print fname
-        print "Pin",Pin
 
         n1 = sorted([p.get_name() for p in P.get_node_list()])
         n2 = sorted([p.get_name() for p in Pin.get_node_list()])
