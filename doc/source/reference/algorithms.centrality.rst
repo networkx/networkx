@@ -53,6 +53,17 @@ Eigenvector
    eigenvector_centrality_numpy
 
 
+Communicability
+---------------
+.. autosummary::
+   :toctree: generated/
+
+   communicability
+   communicability_exp
+   communicability_centrality
+   communicability_centrality_exp
+   communicability_betweenness_centrality
+
 Load
 ----
 .. autosummary::
