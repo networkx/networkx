@@ -16,6 +16,10 @@ Helper functions
    iterable
    is_list_of_ints
    get_file_handle
+   make_str
+   cumulative_sum
+   generate_unique_node
+   default_opener
 
 Data structures and Algorithms
 ------------------------------
@@ -35,17 +39,6 @@ Random sequence generators
    cumulative_distribution
    discrete_sequence
    zipf_sequence
-
-SciPy random sequence generators
-----------------------------------
-.. autosummary::
-   :toctree: generated/
-
-   scipy_pareto_sequence
-   scipy_powerlaw_sequence
-   scipy_poisson_sequence
-   scipy_uniform_sequence
-   scipy_discrete_sequence
 
 Random number generators
 ------------------------
