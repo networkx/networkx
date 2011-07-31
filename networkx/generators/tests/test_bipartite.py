@@ -168,3 +168,16 @@ class TestGeneratorsBipartite():
         X,Y=nx.algorithms.bipartite.sets(G)
         assert_equal(set(range(n)),X)
         assert_equal(set(range(n,n+m)),Y)
+
+    def test_bipartite_gnmk_random_graph(self):
+        n = 20
+        m = 30
+        edges = 100
+        G = bipartite_gnmk_random_graph(n, m, edges)
+        assert_equal(len(G),50)
+        assert_true(is_bipartite(G))
+        X,Y=nx.algorithms.bipartite.sets(G)
+        assert_equal(set(range(n)),X)
+        assert_equal(set(range(n,n+m)),Y)
+        assert_equal(edges, len(G.edges()))
+

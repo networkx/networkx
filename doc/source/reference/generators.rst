@@ -161,6 +161,7 @@ Bipartite
    bipartite_preferential_attachment_graph
    bipartite_random_regular_graph
    bipartite_random_graph
+   bipartite_gnm_random_graph
 
 
 Line Graph

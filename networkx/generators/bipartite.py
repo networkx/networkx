@@ -24,6 +24,7 @@ __all__=['bipartite_configuration_model',
          'bipartite_preferential_attachment_graph',
          'bipartite_random_regular_graph',
          'bipartite_random_graph',
+         'bipartite_gnmk_random_graph',
          ]
 
 
@@ -547,6 +548,59 @@ def bipartite_random_graph(n, m, p, seed=None, directed=False):
 
     return G
 
+def bipartite_gnmk_random_graph(n, m, k, seed=None, directed=False):
+    """Return a random bipartite graph G_{n,m,k}.
+
+    Produces a bipartite graph chosen randomly out of the set of all graphs
+    with n top nodes, m bottom nodes, and k edges.
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes in the first bipartite set.
+    m : int
+        The number of nodes in the second bipartite set.
+    k : int
+        The number of edges
+    seed : int, optional
+        Seed for random number generator (default=None). 
+    directed : bool, optional (default=False)
+        If True return a directed graph 
+        
+    Examples
+    -------
+    G = nx.bipartite_gnmk_random_graph(10,20,50)
+
+    Notes
+    -----
+    If k > m * n then a complete bipartite graph is returned.
+    """
+    G = networkx.Graph()
+    G=_add_nodes_with_bipartite_label(G,n,m)
+    if directed:
+        G=nx.DiGraph(G)
+    G.name="bipartite_gnm_random_graph(%s,%s,%s)"%(n,m,k)
+    if seed is not None:
+        random.seed(seed)
+    if n == 1 or m == 1:
+        return G
+    max_edges = n*m # max_edges for bipartite networks
+    if k >= max_edges: # Maybe we should raise an exception here
+        return networkx.complete_bipartite_graph(n, m, create_using=G)
+
+    top = [n for n,d in G.nodes(data=True) if d['bipartite']==0]
+    bottom = list(set(G) - set(top))
+    edge_count = 0
+    while edge_count < k:
+        # generate random edge,u,v
+        u = random.choice(top)
+        v = random.choice(bottom)
+        if v in G[u]:
+            continue
+        else:
+            G.add_edge(u,v)
+            edge_count += 1
+    return G
 
 def _add_nodes_with_bipartite_label(G, lena, lenb):
     G.add_nodes_from(range(0,lena+lenb))
