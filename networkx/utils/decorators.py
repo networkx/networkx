@@ -24,21 +24,20 @@ def require(*packages):
     Raises
     ------
     NetworkXError
-      If any of the packages cannot be imported
+    If any of the packages cannot be imported
 
     Examples
     --------
-    @require('scipy')
-    def sp_function():
-        import scipy
-        pass
+    >>> @require('scipy')
+    >>> def sp_function():
+    ...     import scipy
+    ...     pass
 
-    @require('numpy','scipy')
-    def sp_np_function():
-        import numpy
-        import scipy
-        pass
-
+    >>> @require('numpy','scipy')
+    >>> def sp_np_function():
+    ...     import numpy
+    ...     import scipy
+    ...     pass
     """
     @decorator
     def _require(f,*args,**kwargs):
@@ -85,19 +84,18 @@ def open_file(path_arg, mode='r'):
 
     Examples
     --------
-    @open_file(0,'r')
-    def read_function(pathname):
-        pass
+    >>> @open_file(0,'r')
+    >>> def read_function(pathname):
+    ...     pass
 
-    @open_file(1,'w')
-    def write_function(G,pathname):
-        pass
+    >>> @open_file(1,'w')
+    >>> def write_function(G,pathname):
+    ...     pass
 
-    @open_file(path, 'w+')
-    def another_function(arg, **kwargs):
-        path = kwargs['path']
-        pass
-
+    >>> @open_file(path, 'w+')
+    >>> def another_function(arg, **kwargs):
+    ...     path = kwargs['path']
+    ...     pass
     """
 
     # Note that this decorator solves the problem when a path argument is

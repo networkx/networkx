@@ -8,6 +8,7 @@ Utilities
 Helper functions
 ----------------
 
+.. automodule:: networkx.utils.misc
 .. autosummary::
    :toctree: generated/
 
@@ -23,6 +24,7 @@ Helper functions
 
 Data structures and Algorithms
 ------------------------------
+.. automodule:: networkx.utils.union_find
 .. autosummary::
    :toctree: generated/
 
@@ -30,6 +32,7 @@ Data structures and Algorithms
 
 Random sequence generators
 --------------------------
+.. automodule:: networkx.utils.random_sequence
 .. autosummary::
    :toctree: generated/
 
@@ -39,10 +42,18 @@ Random sequence generators
    cumulative_distribution
    discrete_sequence
    zipf_sequence
+   zipf_rv
 
-Random number generators
-------------------------
+
+
+Decorators
+----------
+.. automodule:: networkx.utils.decorators
 .. autosummary::
    :toctree: generated/
 
-   zipf_rv
+   open_file
+   require
+
+
+
