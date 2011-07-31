@@ -5,5 +5,6 @@ GIS Shapefile
    :toctree: generated/
 
    read_shp
+   write_shp
 
 
