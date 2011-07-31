@@ -32,12 +32,12 @@ def communicability_centrality_exp(G):
     Returns
     -------
     nodes:dictionary
-	Dictionary of nodes with communicability centrality as the value.
+        Dictionary of nodes with communicability centrality as the value.
     
     Raises
     ------
     NetworkXError
-	If the graph is not undirected and simple.
+        If the graph is not undirected and simple.
     
     See Also
     --------
@@ -54,8 +54,8 @@ def communicability_centrality_exp(G):
     
     .. math::
     
-	SC(u)=(e^A)_{uu} .
-	
+        SC(u)=(e^A)_{uu} .
+
     References
     ----------
     .. [1] Ernesto Estrada, Juan A. Rodriguez-Velazquez, 
@@ -107,12 +107,12 @@ def communicability_centrality(G):
     Returns
     -------
     nodes: dictionary
-	Dictionary of nodes with communicability centrality as the value.
+       Dictionary of nodes with communicability centrality as the value.
     
     Raises
     ------
     NetworkXError
-	If the graph is not undirected and simple.
+       If the graph is not undirected and simple.
     
     See Also
     --------
@@ -131,11 +131,11 @@ def communicability_centrality(G):
     
     .. math::
     
-	SC(u)=\sum_{j=1}^{N}(v_{j}^{u})^2 e^{\lambda_{j}},
-	
+       SC(u)=\sum_{j=1}^{N}(v_{j}^{u})^2 e^{\lambda_{j}},
+
     where `v_j` is an eigenvector of the adjacency matrix `A` of G 
     corresponding corresponding to the eigenvalue `\lambda_j`.
-    	
+
     Examples
     --------
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
@@ -190,12 +190,12 @@ def communicability_betweenness_centrality(G, normalized=True):
     Returns
     -------
     nodes:dictionary
-	Dictionary of nodes with communicability betweenness as the value.
-	
+        Dictionary of nodes with communicability betweenness as the value.
+
     Raises
     ------
     NetworkXError
-	If the graph is not undirected and simple.
+        If the graph is not undirected and simple.
     
     See Also
     --------
@@ -206,7 +206,7 @@ def communicability_betweenness_centrality(G, normalized=True):
     communicability_centrality_exp: 
        Communicability centrality for each node in G using 
        spectral decomposition.
-	
+
     Notes
     -----
     Let `G=(V,E)` be a simple undirected graph with `n` nodes and `m` edges,
@@ -221,9 +221,9 @@ def communicability_betweenness_centrality(G, normalized=True):
     The communicability betweenness of a node `r`  is [1]_
     
     .. math::
-	    \omega_{r} = \frac{1}{C}\sum_{p}\sum_{q}\frac{G_{prq}}{G_{pq}}, 
-	    p\neq q, q\neq r,
-	   
+         \omega_{r} = \frac{1}{C}\sum_{p}\sum_{q}\frac{G_{prq}}{G_{pq}}, 
+         p\neq q, q\neq r,
+
     where 
     `G_{prq}=(e^{A}_{pq} - (e^{A+E(r)})_{pq}`  is the number of walks 
     involving node r,  
@@ -241,7 +241,7 @@ def communicability_betweenness_centrality(G, normalized=True):
     .. [1] Ernesto Estrada, Desmond J. Higham, Naomichi Hatano,
        "Communicability Betweenness in Complex Networks"
        Physica A 388 (2009) 764-774. 
-       http://arxiv.org/abs/0905.4102	   
+       http://arxiv.org/abs/0905.4102
 
     Examples
     --------
@@ -314,14 +314,14 @@ def communicability(G):
     Returns
     -------
     comm: dictionary of dictionaries
-	Dictionary of dictionaries keyed by nodes with communicability 
+        Dictionary of dictionaries keyed by nodes with communicability 
         as the value.
-	
+
     Raises
     ------
     NetworkXError
-	If the graph is not undirected and simple.
-	
+       If the graph is not undirected and simple.
+
     See Also
     --------
     communicability_centrality_exp: 
@@ -331,7 +331,7 @@ def communicability(G):
        decomposition.
     communicability: 
        Communicability between pairs of nodes in G.
-	
+
     Notes
     -----
     This algorithm uses a spectral decomposition of the adjacency matrix.
@@ -341,8 +341,8 @@ def communicability(G):
     is [1]_
     
     .. math::
-	    C(u,v)=\sum_{j=1}^{n}\phi_{j}(u)\phi_{j}(v)e^{\lambda_{j}},
-	    
+        C(u,v)=\sum_{j=1}^{n}\phi_{j}(u)\phi_{j}(v)e^{\lambda_{j}},
+
     where `\phi_{j}(u)` is the `u\rm{th}` element of the `j\rm{th}` orthonormal 
     eigenvector of the adjacency matrix associated with the eigenvalue 
     `\lambda_{j}`.
@@ -360,7 +360,7 @@ def communicability(G):
     >>> c = communicability(G)
     """
     try:
-	import numpy
+        import numpy
         import scipy.linalg
     except ImportError:
         raise ImportError('communicability() requires SciPy: ',
@@ -382,13 +382,13 @@ def communicability(G):
     # computing communicabilities
     for u in G:
         sc[u]={}
-	for v in G:
-	    s = 0
+        for v in G:
+            s = 0
             p = mapping[u]
             q = mapping[v]
-	    for j in range(len(nodelist)):
-		s += vec[:,j][p,0]*vec[:,j][q,0]*expw[j]
-	    sc[u][v] = s
+            for j in range(len(nodelist)):
+                s += vec[:,j][p,0]*vec[:,j][q,0]*expw[j]
+            sc[u][v] = s
     return sc
     
 def communicability_exp(G):
@@ -404,14 +404,14 @@ def communicability_exp(G):
     Returns
     -------
     comm: dictionary of dictionaries
-	Dictionary of dictionaries keyed by nodes with communicability 
+        Dictionary of dictionaries keyed by nodes with communicability 
         as the value.
-	
+
     Raises
     ------
     NetworkXError
-	If the graph is not undirected and simple.
-	
+        If the graph is not undirected and simple.
+
     See Also
     --------
     communicability_centrality_exp: 
@@ -422,7 +422,7 @@ def communicability_exp(G):
     communicability_exp: 
        Communicability between all pairs of nodes in G  using spectral 
        decomposition.
-	
+
     Notes
     -----
     This algorithm uses matrix exponentiation of the adjacency matrix.
@@ -432,7 +432,7 @@ def communicability_exp(G):
     the communicability between nodes u and v is [1]_,
     
     .. math::
-	    C(u,v) = (e^A)_{uv},
+        C(u,v) = (e^A)_{uv},
     
     where `A` is the adjacency matrix of G.
     
@@ -469,8 +469,8 @@ def communicability_exp(G):
     sc = {}
     for u in G:
         sc[u]={}
-	for v in G:
-	    sc[u][v] = expA[mapping[u],mapping[v]]
+        for v in G:
+            sc[u][v] = expA[mapping[u],mapping[v]]
     return sc
     
 def estrada_index(G):
@@ -483,16 +483,16 @@ def estrada_index(G):
     Returns
     -------
     estrada index: float
-    	
+
     Raises
     ------
     NetworkXError
         If the graph is not undirected and simple.
-	
+
     See also
     --------
     estrada_index_exp
-	
+
     Notes
     -----
     Let `G=(V,E)` be a simple undirected graph with `n` nodes  and let
@@ -501,7 +501,7 @@ def estrada_index(G):
     matrix `A`.  The Estrada index is 
 
     .. math::
-	    EE(G)=\sum_{j=1}^n e^{\lambda _j}.
+        EE(G)=\sum_{j=1}^n e^{\lambda _j}.
     
     References
     ----------
