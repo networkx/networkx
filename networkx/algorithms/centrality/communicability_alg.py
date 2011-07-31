@@ -15,6 +15,7 @@ __all__ = ['communicability_centrality_exp',
            'communicability_betweenness_centrality',
            'communicability',
            'communicability_exp',
+           'estrada_index',
            ]
 
 def communicability_centrality_exp(G):
@@ -470,9 +471,50 @@ def communicability_exp(G):
         sc[u]={}
 	for v in G:
 	    sc[u][v] = expA[mapping[u],mapping[v]]
-#	    sc[(u,v)] = expA[mapping[u],mapping[v]]
     return sc
     
+def estrada_index(G):
+    r"""Return the Estrada index of a the graph G.
+    
+    Parameters
+    ----------
+    G: graph
+       
+    Returns
+    -------
+    estrada index: float
+    	
+    Raises
+    ------
+    NetworkXError
+        If the graph is not undirected and simple.
+	
+    See also
+    --------
+    estrada_index_exp
+	
+    Notes
+    -----
+    Let `G=(V,E)` be a simple undirected graph with `n` nodes  and let
+    `\lambda_{1}\leq\lambda_{2}\leq\cdots\lambda_{n}`
+    be a non-increasing ordering of the eigenvalues of its adjacency 
+    matrix `A`.  The Estrada index is 
+
+    .. math::
+	    EE(G)=\sum_{j=1}^n e^{\lambda _j}.
+    
+    References
+    ----------
+    .. [1] E. Estrada,  Characterization of 3D molecular structure,
+       Chem. Phys. Lett. 319, 713 (2000).
+    
+    Examples
+    --------
+    >>> G=nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
+    >>> ei=estrada_index(G)
+    """
+    return sum(communicability_centrality(G).values())
+
 # fixture for nose tests
 def setup_module(module):
     from nose import SkipTest

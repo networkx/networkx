@@ -63,6 +63,7 @@ Communicability
    communicability_centrality
    communicability_centrality_exp
    communicability_betweenness_centrality
+   estrada_index
 
 Load
 ----

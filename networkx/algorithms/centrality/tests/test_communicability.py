@@ -107,3 +107,9 @@ class TestCommunicability:
                 assert_almost_equal(answer[k1][k2],result[k1][k2],places=7)
 
 
+
+class TestEstradaIndex:
+    def test_estrada_index(self):
+        answer=1041.2470334195475
+        result=estrada_index(nx.karate_club_graph())
+        assert_almost_equal(answer,result,places=7)
