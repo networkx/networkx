@@ -3,7 +3,7 @@ from nose.tools import *
 import networkx as nx
 from networkx.algorithms.centrality.communicability_alg import *
 
-class TestDegreeCentrality:
+class TestCommunicability:
     def test_communicability_centrality(self):
         answer={0: 1.5430806348152433, 1: 1.5430806348152433}
         result=communicability_centrality(nx.path_graph(2))
