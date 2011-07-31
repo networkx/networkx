@@ -40,6 +40,9 @@ class TestPydot(object):
         assert_true( P.write_raw(fname) )
 
         Pin = pydot.graph_from_dot_file(fname)   
+        print fname
+        print "Pin",Pin
+
         n1 = sorted([p.get_name() for p in P.get_node_list()])
         n2 = sorted([p.get_name() for p in Pin.get_node_list()])
         assert_true( n1 == n2 )
@@ -51,7 +54,8 @@ class TestPydot(object):
         Hin = nx.drawing.nx_pydot.read_dot(fname)
         Hin = H.__class__(Hin)
         self.assert_equal(H, Hin)
-        os.unlink(fname)
+#        os.unlink(fname)
+
 
     def testUndirected(self):
         self.pydot_checks(nx.Graph())

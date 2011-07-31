@@ -129,11 +129,11 @@ def from_pydot(P):
     N.graph['graph']=P.get_attributes()
     try:
         N.graph['node']=P.get_node_defaults()[0]
-    except IndexError:
+    except:# IndexError,TypeError:
         N.graph['node']={}
     try:
         N.graph['edge']=P.get_edge_defaults()[0]
-    except IndexError:
+    except:# IndexError,TypeError:
         N.graph['edge']={}
     return N        
 
@@ -167,13 +167,21 @@ def to_pydot(N, strict=True):
         graph_type='graph'
     strict=N.number_of_selfloops()==0 and not N.is_multigraph() 
     
-    name = N.graph.get('name','')
+    name = N.graph.get('name')
     graph_defaults=N.graph.get('graph',{})
-    P = pydot.Dot(name, graph_type=graph_type,strict=strict,**graph_defaults)
-    node_defaults=N.graph.get('node',{})
-    P.set_node_defaults(**node_defaults)
-    edge_defaults=N.graph.get('edge',{})
-    P.set_edge_defaults(**edge_defaults)
+    if name is None:
+        P = pydot.Dot(graph_type=graph_type,strict=strict,**graph_defaults)
+    else:
+        P = pydot.Dot('"%s"'%name,graph_type=graph_type,strict=strict,
+                      **graph_defaults)
+    try:
+        P.set_node_defaults(**N.graph['node'])
+    except KeyError:
+        pass
+    try:
+        P.set_edge_defaults(**N.graph['edge'])
+    except KeyError:
+        pass
 
     for n,nodedata in N.nodes_iter(data=True):
         str_nodedata=dict((k,str(v)) for k,v in nodedata.items())
