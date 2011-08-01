@@ -55,6 +55,21 @@ Atrracting components
    attracting_component_subgraphs
 
 
+Biconnected components
+^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: networkx.algorithms.components.biconnected
+.. autosummary::
+   :toctree: generated/
+
+   is_biconnected
+   biconnected_components
+   biconnected_component_edges
+   biconnected_component_subgraphs
+   articulation_points
+
+
+
+
 
 
 
