@@ -568,12 +568,18 @@ def bipartite_gnmk_random_graph(n, m, k, seed=None, directed=False):
         If True return a directed graph 
         
     Examples
-    -------
+    --------
     G = nx.bipartite_gnmk_random_graph(10,20,50)
+
+    See Also
+    --------
+    gnm_random_graph
 
     Notes
     -----
     If k > m * n then a complete bipartite graph is returned.
+
+    This graph is a bipartite version of the `G_{nm}` random graph model.
     """
     G = networkx.Graph()
     G=_add_nodes_with_bipartite_label(G,n,m)
