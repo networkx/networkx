@@ -8,6 +8,7 @@
 #    All rights reserved.
 #    BSD license.
 import heapq
+from operator import itemgetter
 import math
 import random
 import networkx as nx
@@ -298,6 +299,9 @@ def expected_degree_graph(w, seed=None, selfloops=True):
 
     Notes
     -----
+    The nodes have integer labels corresponding to index of expected degrees
+    input sequence.
+
     The complexity of this algorithm is `\mathcal{O}(n+m)` where `n` is the
     number of nodes and `m` is the expected number of edges.
 
@@ -342,7 +346,11 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     if seed is not None:
         random.seed(seed)
     rho = 1/float(sum(w))
-    seq = sorted(w, reverse=True)
+    # sort weights, largest first
+    # preserve order of weights for integer node label mapping
+    order = sorted(enumerate(w),key=itemgetter(1),reverse=True)
+    mapping = dict((c,uv[0]) for c,uv in enumerate(order))
+    seq = [v for u,v in order]
     last=n
     if not selfloops:
         last-=1
@@ -363,7 +371,7 @@ def expected_degree_graph(w, seed=None, selfloops=True):
                 if q>1:
                     q = 1
                 if random.random() < q/p: 
-                    G.add_edge(u,v)
+                    G.add_edge(mapping[u],mapping[v])
                 v += 1
                 p = q 
     return G
