@@ -8,7 +8,7 @@ Biconnected components.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from itertools import chain
+from itertools import chain,ifilter
 import networkx as nx
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>',
                         'Dan Schult <dschult@colgate.edu>',
@@ -18,6 +18,7 @@ __all__ = ['biconnected_components',
            'biconnected_component_subgraphs',
            'is_biconnected',
            'articulation_points',
+           'articulation_points_and_biconnected_components',
            ]
 
 def is_biconnected(G):
@@ -62,14 +63,16 @@ def is_biconnected(G):
 
     Notes
     -----
-    The algorithm to find articulation points and biconnected components is 
-    implemented using a non-recursive depth-first-search (DFS) that keeps track 
-    of the highest level that back edges reach in the DFS tree. A node `n` is an
-    articulation point if, and only if, there exists a subtree rooted at `n` such
-    that there is no back edge from any successor of `n` that links to a 
-    predecessor of `n` in the DFS tree. By keeping track of all the edges traversed
-    by the DFS we can obtain the biconnected components because all edges of a
-    bicomponent will be traversed consecutively between articulation points. 
+    The algorithm to find articulation points and biconnected
+    components is implemented using a non-recursive depth-first-search
+    (DFS) that keeps track of the highest level that back edges reach
+    in the DFS tree. A node `n` is an articulation point if, and only
+    if, there exists a subtree rooted at `n` such that there is no
+    back edge from any successor of `n` that links to a predecessor of
+    `n` in the DFS tree. By keeping track of all the edges traversed
+    by the DFS we can obtain the biconnected components because all
+    edges of a bicomponent will be traversed consecutively between
+    articulation points.
 
     References
     ----------
@@ -133,22 +136,27 @@ def biconnected_component_edges(G):
 
     Notes
     -----
-    The algorithm to find articulation points and biconnected components is 
-    implemented using a non-recursive depth-first-search (DFS) that keeps track 
-    of the highest level that back edges reach in the DFS tree. A node `n` is an
-    articulation point if, and only if, there exists a subtree rooted at `n` such
-    that there is no back edge from any successor of `n` that links to a 
-    predecessor of `n` in the DFS tree. By keeping track of all the edges traversed
-    by the DFS we can obtain the biconnected components because all edges of a
-    bicomponent will be traversed consecutively between articulation points. 
-
+    The algorithm to find articulation points and biconnected
+    components is implemented using a non-recursive depth-first-search
+    (DFS) that keeps track of the highest level that back edges reach
+    in the DFS tree. A node `n` is an articulation point if, and only
+    if, there exists a subtree rooted at `n` such that there is no
+    back edge from any successor of `n` that links to a predecessor of
+    `n` in the DFS tree. By keeping track of all the edges traversed
+    by the DFS we can obtain the biconnected components because all
+    edges of a bicomponent will be traversed consecutively between
+    articulation points.
+ 
     References
     ----------
     .. [1] Hopcroft, J.; Tarjan, R. (1973). 
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    return sorted(_biconnected_dfs(G,components=True), key=len, reverse=True)
+    # less awkward?
+    #    return sorted(ifilter(lambda x: isinstance(x,list),_biconnected_dfs(G,components=True) ),key=len, reverse=True) 
+    return sorted( (comp for comp in _biconnected_dfs(G,components=True)
+                    if isinstance(comp,list)), key=len, reverse=True) 
 
 def biconnected_components(G):
     """Return a generator of sets of nodes, one set for each biconnected
@@ -197,16 +205,17 @@ def biconnected_components(G):
     biconnected_component_subgraphs
 
     Notes
-    Notes
     -----
-    The algorithm to find articulation points and biconnected components is 
-    implemented using a non-recursive depth-first-search (DFS) that keeps track 
-    of the highest level that back edges reach in the DFS tree. A node `n` is an
-    articulation point if, and only if, there exists a subtree rooted at `n` such
-    that there is no back edge from any successor of `n` that links to a 
-    predecessor of `n` in the DFS tree. By keeping track of all the edges traversed
-    by the DFS we can obtain the biconnected components because all edges of a
-    bicomponent will be traversed consecutively between articulation points. 
+    The algorithm to find articulation points and biconnected
+    components is implemented using a non-recursive depth-first-search
+    (DFS) that keeps track of the highest level that back edges reach
+    in the DFS tree. A node `n` is an articulation point if, and only
+    if, there exists a subtree rooted at `n` such that there is no
+    back edge from any successor of `n` that links to a predecessor of
+    `n` in the DFS tree. By keeping track of all the edges traversed
+    by the DFS we can obtain the biconnected components because all
+    edges of a bicomponent will be traversed consecutively between
+    articulation points.
 
     References
     ----------
@@ -214,8 +223,8 @@ def biconnected_components(G):
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    bicomponents = (set(chain.from_iterable(comp))
-                        for comp in _biconnected_dfs(G,components=True))
+    bicomponents = ( set(chain.from_iterable(comp))
+                     for comp in biconnected_component_edges(G) )
     return sorted(bicomponents, key=len, reverse=True)
 
 def biconnected_component_subgraphs(G):
@@ -262,14 +271,16 @@ def biconnected_component_subgraphs(G):
 
     Notes
     -----
-    The algorithm to find articulation points and biconnected components is 
-    implemented using a non-recursive depth-first-search (DFS) that keeps track 
-    of the highest level that back edges reach in the DFS tree. A node `n` is an
-    articulation point if, and only if, there exists a subtree rooted at `n` such
-    that there is no back edge from any successor of `n` that links to a 
-    predecessor of `n` in the DFS tree. By keeping track of all the edges traversed
-    by the DFS we can obtain the biconnected components because all edges of a
-    bicomponent will be traversed consecutively between articulation points. 
+    The algorithm to find articulation points and biconnected
+    components is implemented using a non-recursive depth-first-search
+    (DFS) that keeps track of the highest level that back edges reach
+    in the DFS tree. A node `n` is an articulation point if, and only
+    if, there exists a subtree rooted at `n` such that there is no
+    back edge from any successor of `n` that links to a predecessor of
+    `n` in the DFS tree. By keeping track of all the edges traversed
+    by the DFS we can obtain the biconnected components because all
+    edges of a bicomponent will be traversed consecutively between
+    articulation points.
 
     References
     ----------
@@ -278,7 +289,7 @@ def biconnected_component_subgraphs(G):
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
     return (nx.Graph(edges) for edges in 
-            sorted(_biconnected_dfs(G,components=True), key=len, reverse=True))
+            sorted(biconnected_component_edges(G), key=len, reverse=True))
 
 def articulation_points(G):
     """Return a generator of articulation points, or cut vertices, of a graph.
@@ -328,14 +339,16 @@ def articulation_points(G):
 
     Notes
     -----
-    The algorithm to find articulation points and biconnected components is 
-    implemented using a non-recursive depth-first-search (DFS) that keeps track 
-    of the highest level that back edges reach in the DFS tree. A node `n` is an
-    articulation point if, and only if, there exists a subtree rooted at `n` such
-    that there is no back edge from any successor of `n` that links to a 
-    predecessor of `n` in the DFS tree. By keeping track of all the edges traversed
-    by the DFS we can obtain the biconnected components because all edges of a
-    bicomponent will be traversed consecutively between articulation points. 
+    The algorithm to find articulation points and biconnected
+    components is implemented using a non-recursive depth-first-search
+    (DFS) that keeps track of the highest level that back edges reach
+    in the DFS tree. A node `n` is an articulation point if, and only
+    if, there exists a subtree rooted at `n` such that there is no
+    back edge from any successor of `n` that links to a predecessor of
+    `n` in the DFS tree. By keeping track of all the edges traversed
+    by the DFS we can obtain the biconnected components because all
+    edges of a bicomponent will be traversed consecutively between
+    articulation points.
 
     References
     ----------
@@ -343,9 +356,23 @@ def articulation_points(G):
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    return _biconnected_dfs(G,components=False)
+    return (node for node in _biconnected_dfs(G,components=False) 
+            if not isinstance(node,list))
 
+def articulation_points_and_biconnected_components(G):
+    articulation_points = []
+    biconnected_components = [] 
+    for element in  _biconnected_dfs(G,components=False):
+        if isinstance(element,list):
+            biconnected_components.append(element)
+        else:
+            articulation_points.append(element)
+    return articulation_points, biconnected_components
+
+    
 def _biconnected_dfs(G, components=True):
+    # depth-first search algorithm to generate articulation points 
+    # and biconnected components
     if G.is_directed():
         raise nx.NetworkXError('Not allowed for directed graph G. '
                                'Use UG=G.to_undirected() to create an '
@@ -369,32 +396,26 @@ def _biconnected_dfs(G, components=True):
                 if child in visited:
                     if discovery[child] <= discovery[parent]: # back edge
                         low[parent] = min(low[parent],discovery[child])
-                        if components:
-                            edge_stack.append((parent,child))
+                        edge_stack.append((parent,child))
                 else:
                     low[child] = discovery[child] = len(discovery)
                     visited.add(child)
                     stack.append((parent, child, iter(G[child])))
-                    if components:
-                        edge_stack.append((parent,child))
+                    edge_stack.append((parent,child))
             except StopIteration:
                 stack.pop()
                 if len(stack) > 1:
                     if low[parent] >= discovery[grandparent]:
-                        if components:
-                            ind = edge_stack.index((grandparent,parent))
-                            yield edge_stack[ind:]
-                            edge_stack=edge_stack[:ind]
-                        else:
-                            yield grandparent
+                        ind = edge_stack.index((grandparent,parent))
+                        yield edge_stack[ind:]
+                        edge_stack=edge_stack[:ind]
+                        yield grandparent
                     low[grandparent] = min(low[parent], low[grandparent])
                 elif stack: # length 1 so grandparent is root
                     root_children += 1
-                    if components:
-                        ind = edge_stack.index((grandparent,parent))
-                        yield edge_stack[ind:]
-        if not components:
-            # root node is articulation point if it has more than 1 child
-            if root_children > 1:
-                yield start
+                    ind = edge_stack.index((grandparent,parent))
+                    yield edge_stack[ind:]
+        # root node is articulation point if it has more than 1 child
+        if root_children > 1:
+            yield start
 
