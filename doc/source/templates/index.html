@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
 {% set title = 'Overview' %}
+{% set script_files = script_files + ["_static/force/d3js/d3.min.js"] %}
+{% set script_files = script_files + ["_static/force/d3js/d3.geom.min.js"] %}
+{% set script_files = script_files + ["_static/force/d3js/d3.layout.min.js"] %}
+{% set css_files = css_files + ["_static/force/force.css"] %}
 {% block body %}
 
 
@@ -28,7 +32,8 @@ study of the structure, dynamics, and functions of complex networks.</p>
 </pre></div>
     </td>
     <td width="50%">
-<img align="right" src="{{ pathto("_static/art1.png", 1) }}" alt="NetworkX art" />
+    <div id="chart"></div>
+    <script type="text/javascript" src="_static/force/force.js"></script>
 </td></tr>
 </blockquote>
 </table>
