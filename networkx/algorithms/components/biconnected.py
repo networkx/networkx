@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Biconnected components.
+Biconnected components and articulation points.
 """
 #    Copyright (C) 2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -8,7 +8,7 @@ Biconnected components.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from itertools import chain,ifilter
+from itertools import chain
 import networkx as nx
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>',
                         'Dan Schult <dschult@colgate.edu>',
@@ -18,7 +18,6 @@ __all__ = ['biconnected_components',
            'biconnected_component_subgraphs',
            'is_biconnected',
            'articulation_points',
-           'articulation_points_and_biconnected_components',
            ]
 
 def is_biconnected(G):
@@ -80,14 +79,10 @@ def is_biconnected(G):
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    # It is slow because we perform a BFS for is_connected + DFS for art points
-    #if not nx.is_connected(G): # To avoid false positives when G is empty
-    #    return False
-    #return len(list(_biconnected_dfs(G,components=False))) == 0
     bcc = list(biconnected_components(G))
     if not bcc: # No bicomponents (it could be an empty graph)
         return False
-    return len(bcc[0]) == len(G) # component should contain all nodes in G
+    return len(bcc[0]) == len(G)
 
 def biconnected_component_edges(G):
     """Return a generator of lists of edges, one list for each biconnected
@@ -153,10 +148,7 @@ def biconnected_component_edges(G):
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    # less awkward?
-    #    return sorted(ifilter(lambda x: isinstance(x,list),_biconnected_dfs(G,components=True) ),key=len, reverse=True) 
-    return sorted( (comp for comp in _biconnected_dfs(G,components=True)
-                    if isinstance(comp,list)), key=len, reverse=True) 
+    return sorted(_biconnected_dfs(G,components=True), key=len, reverse=True)
 
 def biconnected_components(G):
     """Return a generator of sets of nodes, one set for each biconnected
@@ -223,8 +215,8 @@ def biconnected_components(G):
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    bicomponents = ( set(chain.from_iterable(comp))
-                     for comp in biconnected_component_edges(G) )
+    bicomponents = (set(chain.from_iterable(comp))
+                        for comp in _biconnected_dfs(G,components=True))
     return sorted(bicomponents, key=len, reverse=True)
 
 def biconnected_component_subgraphs(G):
@@ -289,7 +281,7 @@ def biconnected_component_subgraphs(G):
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
     return (nx.Graph(edges) for edges in 
-            sorted(biconnected_component_edges(G), key=len, reverse=True))
+            sorted(_biconnected_dfs(G,components=True), key=len, reverse=True))
 
 def articulation_points(G):
     """Return a generator of articulation points, or cut vertices, of a graph.
@@ -356,20 +348,8 @@ def articulation_points(G):
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    return (node for node in _biconnected_dfs(G,components=False) 
-            if not isinstance(node,list))
+    return _biconnected_dfs(G,components=False)
 
-def articulation_points_and_biconnected_components(G):
-    articulation_points = []
-    biconnected_components = [] 
-    for element in  _biconnected_dfs(G,components=False):
-        if isinstance(element,list):
-            biconnected_components.append(element)
-        else:
-            articulation_points.append(element)
-    return articulation_points, biconnected_components
-
-    
 def _biconnected_dfs(G, components=True):
     # depth-first search algorithm to generate articulation points 
     # and biconnected components
@@ -396,26 +376,32 @@ def _biconnected_dfs(G, components=True):
                 if child in visited:
                     if discovery[child] <= discovery[parent]: # back edge
                         low[parent] = min(low[parent],discovery[child])
-                        edge_stack.append((parent,child))
+                        if components:
+                            edge_stack.append((parent,child))
                 else:
                     low[child] = discovery[child] = len(discovery)
                     visited.add(child)
                     stack.append((parent, child, iter(G[child])))
-                    edge_stack.append((parent,child))
+                    if components:
+                        edge_stack.append((parent,child))
             except StopIteration:
                 stack.pop()
                 if len(stack) > 1:
                     if low[parent] >= discovery[grandparent]:
-                        ind = edge_stack.index((grandparent,parent))
-                        yield edge_stack[ind:]
-                        edge_stack=edge_stack[:ind]
-                        yield grandparent
+                        if components:
+                            ind = edge_stack.index((grandparent,parent))
+                            yield edge_stack[ind:]
+                            edge_stack=edge_stack[:ind]
+                        else:
+                            yield grandparent
                     low[grandparent] = min(low[parent], low[grandparent])
                 elif stack: # length 1 so grandparent is root
                     root_children += 1
-                    ind = edge_stack.index((grandparent,parent))
-                    yield edge_stack[ind:]
-        # root node is articulation point if it has more than 1 child
-        if root_children > 1:
-            yield start
+                    if components:
+                        ind = edge_stack.index((grandparent,parent))
+                        yield edge_stack[ind:]
+        if not components:
+            # root node is articulation point if it has more than 1 child
+            if root_children > 1:
+                yield start
 
