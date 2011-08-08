@@ -1,9 +1,24 @@
 from collections import defaultdict
 from nose.tools import *
+from nose import SkipTest
 import networkx as nx
 from networkx.algorithms.centrality.communicability_alg import *
 
 class TestCommunicability:
+    @classmethod
+    def setupClass(cls):
+        global numpy
+        global scipy
+        try:
+            import numpy
+        except ImportError:
+             raise SkipTest('NumPy not available.')
+        try:
+            import scipy
+        except ImportError:
+             raise SkipTest('SciPy not available.')
+
+
     def test_communicability_centrality(self):
         answer={0: 1.5430806348152433, 1: 1.5430806348152433}
         result=communicability_centrality(nx.path_graph(2))
@@ -107,8 +122,6 @@ class TestCommunicability:
                 assert_almost_equal(answer[k1][k2],result[k1][k2],places=7)
 
 
-
-class TestEstradaIndex:
     def test_estrada_index(self):
         answer=1041.2470334195475
         result=estrada_index(nx.karate_club_graph())

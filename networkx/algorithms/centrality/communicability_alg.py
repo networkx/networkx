@@ -513,6 +513,12 @@ def estrada_index(G):
     >>> G=nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
     >>> ei=estrada_index(G)
     """
+    try:
+        import numpy
+        import numpy.linalg
+    except ImportError:
+        raise ImportError('estrada_index() requires NumPy: ',
+                          'http://scipy.org/')
     return sum(communicability_centrality(G).values())
 
 # fixture for nose tests
