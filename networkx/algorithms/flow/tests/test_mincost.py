@@ -183,7 +183,7 @@ class TestNetworkSimplex:
         admits multiple solutions, so I alter it a bit. From ticket #430
         by mfrasca."""
 
-        G = G = nx.DiGraph()
+        G = nx.DiGraph()
         G.add_edge('s', 'a', {0: 2, 1: 4})
         G.add_edge('s', 'b', {0: 2, 1: 1})
         G.add_edge('a', 'b', {0: 5, 1: 2})
@@ -201,4 +201,29 @@ class TestNetworkSimplex:
         assert_equal(sol['b'], {'a': 0, 't': 3})
         assert_equal(sol['t'], {})
 
+    def test_zero_capacity_edges(self):
+        """Address issue raised in ticket #617 by arv."""
+        G = nx.DiGraph()
+        G.add_edges_from([(1, 2, {'capacity': 1, 'weight': 1}),
+                          (1, 5, {'capacity': 1, 'weight': 1}),
+                          (2, 3, {'capacity': 0, 'weight': 1}),
+                          (2, 5, {'capacity': 1, 'weight': 1}),
+                          (5, 3, {'capacity': 2, 'weight': 1}),
+                          (5, 4, {'capacity': 0, 'weight': 1}),
+                          (3, 4, {'capacity': 2, 'weight': 1})])
+        G.node[1]['demand'] = -1
+        G.node[2]['demand'] = -1
+        G.node[4]['demand'] = 2
+
+        flowCost, H = nx.network_simplex(G)
+        soln = {1: {2: 0, 5: 1},
+                2: {3: 0, 5: 1},
+                3: {4: 2},
+                4: {},
+                5: {3: 2, 4: 0}}
+        assert_equal(flowCost, 6)
+        assert_equal(nx.min_cost_flow_cost(G), 6)
+        assert_equal(H, soln)
+        assert_equal(nx.min_cost_flow(G), soln)
+        assert_equal(nx.cost_of_flow(G, H), 6)
 

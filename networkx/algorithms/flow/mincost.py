@@ -18,7 +18,7 @@ __all__ = ['network_simplex',
 import networkx as nx
 from networkx.utils import generate_unique_node
 
-def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
+def _initial_tree_solution(G, demand = 'demand', capacity = 'capacity',
                            weight = 'weight'):
     """Find a initial tree solution rooted at r.
 
@@ -27,33 +27,39 @@ def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
     with negative demand. If these edges do not exist, we add them to
     the graph and call them artificial edges.
     """
-    H = nx.DiGraph(G)
+    H = nx.DiGraph((edge for edge in G.edges(data=True) if
+                    edge[2].get(capacity, 1) > 0))
+    demand_nodes = (node for node in G.nodes_iter(data=True) if
+                    node[1].get(demand, 0) != 0)
+    H.add_nodes_from(demand_nodes)
+    r = H.nodes()[0]
+
     T = nx.DiGraph()
     y = {r: 0}
     artificialEdges = []
     flowCost = 0
 
-    n = G.number_of_nodes()
+    n = H.number_of_nodes()
     try:
-        maxWeight = max(abs(d[weight]) for u, v, d in G.edges(data = True)
+        maxWeight = max(abs(d[weight]) for u, v, d in H.edges(data = True)
                         if weight in d)
     except ValueError:
         maxWeight = 0
     hugeWeight = 1 + n * maxWeight
 
-    for v, d in G.nodes(data = True)[1:]:
+    for v, d in H.nodes(data = True)[1:]:
         vDemand = d.get(demand, 0)
         if vDemand >= 0:
-            if not (r, v) in G.edges():
+            if not (r, v) in H.edges():
                 H.add_edge(r, v, {weight: hugeWeight, 'flow': vDemand})
                 artificialEdges.append((r, v))
                 y[v] = H[r][v].get(weight, 0)
                 T.add_edge(r, v)
                 flowCost += vDemand * H[r][v].get(weight, 0)
 
-            else: # (r, v) in G.edges()
-                if (not capacity in G[r][v]
-                    or vDemand <= G[r][v][capacity]):
+            else: # (r, v) in H.edges()
+                if (not capacity in H[r][v]
+                    or vDemand <= H[r][v][capacity]):
                     H[r][v]['flow'] = vDemand
                     y[v] = H[r][v].get(weight, 0)
                     T.add_edge(r, v)
@@ -72,7 +78,7 @@ def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
                     flowCost += 2 * vDemand * hugeWeight
 
         else: # vDemand < 0
-            if not (v, r) in G.edges():
+            if not (v, r) in H.edges():
                 H.add_edge(v, r, {weight: hugeWeight, 'flow': -vDemand})
                 artificialEdges.append((v, r))
                 y[v] = -H[v][r].get(weight, 0)
@@ -80,8 +86,8 @@ def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
                 flowCost += -vDemand * H[v][r].get(weight, 0)
 
             else:
-                if (not capacity in G[v][r]
-                    or -vDemand <= G[v][r][capacity]):
+                if (not capacity in H[v][r]
+                    or -vDemand <= H[v][r][capacity]):
                     H[v][r]['flow'] = -vDemand
                     y[v] = -H[v][r].get(weight, 0)
                     T.add_edge(v, r)
@@ -100,7 +106,7 @@ def _initial_tree_solution(G, r, demand = 'demand', capacity = 'capacity',
                     T.add_edge(newLabel, r)
                     flowCost += 2 * -vDemand * hugeWeight
             
-    return H, T, y, artificialEdges, flowCost
+    return H, T, y, artificialEdges, flowCost, r
 
 
 def _find_entering_edge(H, c, capacity = 'capacity'):
@@ -177,13 +183,16 @@ def _find_leaving_edge(H, T, cycle, newEdge, capacity = 'capacity'):
     return leavingEdge, eps
 
 
-def _create_flow_dict(G):
-    """Creates the flow dict of dicts of graph G."""
+def _create_flow_dict(G, H):
+    """Creates the flow dict of dicts of graph G with auxiliary graph H."""
     flowDict = dict([(u, {}) for u in G])
 
     for u in G.nodes_iter():
         for v in G.neighbors(u):
-            flowDict[u][v] = G[u][v].get('flow', 0)
+            if H.has_edge(u, v):
+                flowDict[u][v] = H[u][v].get('flow', 0)
+            else:
+                flowDict[u][v] = 0
     return flowDict
 
 
@@ -345,9 +354,8 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
         raise nx.NetworkXUnfeasible("Sum of the demands should be 0.")
 
     # Fix an arbitrarily chosen root node and find an initial tree solution.
-    r = G.nodes()[0]
-    H, T, y, artificialEdges, flowCost = \
-            _initial_tree_solution(G, r, demand = demand, capacity = capacity,
+    H, T, y, artificialEdges, flowCost, r = \
+            _initial_tree_solution(G, demand = demand, capacity = capacity,
                                    weight = weight)
 
     # Initialize the reduced costs.
@@ -461,7 +469,7 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
         if not u in G:
             H.remove_node(u)
 
-    flowDict = _create_flow_dict(H)
+    flowDict = _create_flow_dict(G, H)
 
     return flowCost, flowDict
 
