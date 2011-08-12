@@ -166,12 +166,17 @@ class GraphML(object):
     try:
         chr(12345)     # Fails on Py!=3.
         unicode = str  # Py3k's str is our unicode type
+        long = int     # Py3K's int is our long type
     except ValueError:
+        # Python 2.x
         pass
 
-    types=((str,"yfiles"),(str,"string"), (unicode,"string"),
-           (int,"int"), (float,"float"), (float,"double"),
-           (bool, "boolean"))
+    types=[(int,"integer"), # for Gephi GraphML bug
+           (str,"yfiles"),(str,"string"), (unicode,"string"),
+           (int,"int"), (long,"long"),
+           (float,"float"), (float,"double"),
+           (bool, "boolean")]
+    
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
 
