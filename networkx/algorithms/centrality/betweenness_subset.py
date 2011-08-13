@@ -49,8 +49,9 @@ def betweenness_centrality_subset(G,sources,targets,
       Nodes to use as targets for shortest paths in betweenness
 
     normalized : bool, optional
-      If True the betweenness values are normalized by
-      `1/(n-1)(n-2)` where `n` is the number of nodes in G.
+      If True the betweenness values are normalized by `2/((n-1)(n-2))` 
+      for graphs, and `1/((n-1)(n-2))` for directed graphs where `n` 
+      is the number of nodes in G.
        
     weight : None or string, optional  
       If None, all edge weights are considered equal.
@@ -98,7 +99,7 @@ def betweenness_centrality_subset(G,sources,targets,
         else:  # use Dijkstra's algorithm
             S,P,sigma=dijkstra(G,s,weight)
         b=_accumulate_subset(b,S,P,sigma,s,targets)
-    b=_rescale(b,normalized=normalized,directed=G.is_directed())
+    b=_rescale(b,len(G),normalized=normalized,directed=G.is_directed())
     return b
 
 
@@ -128,8 +129,9 @@ def edge_betweenness_centrality_subset(G,sources,targets,
       Nodes to use as targets for shortest paths in betweenness
 
     normalized : bool, optional
-      If True the betweenness values are normalized by 
-      `b=b/(n-1)(n-2)` where n is the number of nodes in G.
+      If True the betweenness values are normalized by `2/(n(n-1))` 
+      for graphs, and `1/(n(n-1))` for directed graphs where `n` 
+      is the number of nodes in G.
        
     weight : None or string, optional  
       If None, all edge weights are considered equal.
@@ -181,7 +183,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
         b=_accumulate_edges_subset(b,S,P,sigma,s,targets)
     for n in G: # remove nodes to only return edges 
         del b[n]
-    b=_rescale(b,normalized=normalized,directed=G.is_directed())
+    b=_rescale_e(b,len(G),normalized=normalized,directed=G.is_directed())
     return b
 
 # obsolete name
@@ -227,13 +229,29 @@ def _accumulate_edges_subset(betweenness,S,P,sigma,s,targets):
 
 
 
-def _rescale(betweenness,normalized,directed=False):
+
+def _rescale(betweenness,n,normalized,directed=False):
     if normalized is True:
-        order=len(betweenness)
-        if order <=2:
+        if n <=2:
             scale=None  # no normalization b=0 for all nodes
         else:
-            scale=1.0/((order-1)*(order-2))
+            scale=1.0/((n-1)*(n-2))
+    else: # rescale by 2 for undirected graphs
+        if not directed:
+            scale=1.0/2.0
+        else:
+            scale=None
+    if scale is not None:
+        for v in betweenness:
+            betweenness[v] *= scale
+    return betweenness
+
+def _rescale_e(betweenness,n,normalized,directed=False):
+    if normalized is True:
+        if n <=1:
+            scale=None  # no normalization b=0 for all nodes
+        else:
+            scale=1.0/(n*(n-1))
     else: # rescale by 2 for undirected graphs
         if not directed:
             scale=1.0/2.0
