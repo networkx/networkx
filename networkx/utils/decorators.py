@@ -128,73 +128,73 @@ def open_file(path_arg, mode='r'):
     # you use a try block, as shown above. When we exit the function,  fh will
     # be closed, if it should be, by the decorator.
 
-    @decorator
-    def _open_file(func, *args, **kwargs):
+    def _open_file(func):
+        def __open_file(*args, **kwargs):
 
-        # Note that since we have used @decorator, *args, and **kwargs have
-        # already been resolved to match the function signature of func. This
-        # includes any default values. For example,  func(x, y, a=1, b=2, c=3)
-        # if called as func(0,1,b=5) would have args=(0,1,1,5,3). Very nice.
+            # Note that since we have used @decorator, *args, and **kwargs have
+            # already been resolved to match the function signature of func. This
+            # includes any default values. For example,  func(x, y, a=1, b=2, c=3)
+            # if called as func(0,1,b=5) would have args=(0,1,1,5,3). Very nice.
 
-        # First we parse the arguments of the decorator. The path_arg could
-        # be an arg or keyword, but not a vararg.
-        try:
-            # path_arg is a required positional argument
-            # This works precisely because we are using @decorator
-            path = args[path_arg]
-        except TypeError:
-            # path_arg is a keyword argument. It is "required" in the sense
-            # that it must exist, according to the decorator specification,
-            # It can exist in `kwargs` by a developer specified default value
-            # or it could have been explicitly set by the user.
+            # First we parse the arguments of the decorator. The path_arg could
+            # be an arg or keyword, but not a vararg.
             try:
-                path = kwargs[path_arg]
-            except KeyError:
-                # Could not find the keyword. Thus, no default was specified
-                # in the function signature and the user did not provide it.
-                msg = 'Missing required keyword argument: {0}'
-                raise nx.NetworkXError(msg.format(path_arg))
+                # path_arg is a required positional argument
+                # This works precisely because we are using @decorator
+                path = args[path_arg]
+            except TypeError:
+                # path_arg is a keyword argument. It is "required" in the sense
+                # that it must exist, according to the decorator specification,
+                # It can exist in `kwargs` by a developer specified default value
+                # or it could have been explicitly set by the user.
+                try:
+                    path = kwargs[path_arg]
+                except KeyError:
+                    # Could not find the keyword. Thus, no default was specified
+                    # in the function signature and the user did not provide it.
+                    msg = 'Missing required keyword argument: {0}'
+                    raise nx.NetworkXError(msg.format(path_arg))
+                else:
+                    is_kwarg = True
+            except IndexError:
+                # A "required" argument was missing. This can only happen if
+                # the decorator of the function was incorrectly specified.
+                msg = "path_arg of open_file decorator is incorrect"
+                raise nx.NetworkXError(msg)
             else:
-                is_kwarg = True
-        except IndexError:
-            # A "required" argument was missing. This can only happen if
-            # the decorator of the function was incorrectly specified.
-            msg = "path_arg of open_file decorator is incorrect"
-            raise nx.NetworkXError(msg)
-        else:
-            is_kwarg = False
+                is_kwarg = False
 
-        # Now we have the path_arg. There are two types of input to consider:
-        #   1) string representing a path that should be opened
-        #   2) an already opened file object
-        if is_string_like(path):
-            ext = splitext(path)[1]
-            fh = _dispatch_dict[ext](path, mode=mode)
-            close_fh = True
-        elif hasattr(path, 'read'):
-            # path is already a file-like object
-            fh = path
-            close_fh = False
-        else:
-            # could be None, in which case the algorithm will deal with it
-            fh = path
-            close_fh = False
+            # Now we have the path_arg. There are two types of input to consider:
+            #   1) string representing a path that should be opened
+            #   2) an already opened file object
+            if is_string_like(path):
+                ext = splitext(path)[1]
+                fh = _dispatch_dict[ext](path, mode=mode)
+                close_fh = True
+            elif hasattr(path, 'read'):
+                # path is already a file-like object
+                fh = path
+                close_fh = False
+            else:
+                # could be None, in which case the algorithm will deal with it
+                fh = path
+                close_fh = False
 
-        # Insert file object into args or kwargs.
-        if is_kwarg:
-            new_args = args
-            kwargs[path_arg] = fh
-        else:
-            new_args = list(args)
-            new_args[path_arg] = fh
+            # Insert file object into args or kwargs.
+            if is_kwarg:
+                new_args = args
+                kwargs[path_arg] = fh
+            else:
+                new_args = list(args)
+                new_args[path_arg] = fh
 
-        # Finally, we call the original function, making sure to close the fh.
-        try:
-            result = func(*new_args, **kwargs)
-        finally:
-            if close_fh:
-                fh.close()
+            # Finally, we call the original function, making sure to close the fh.
+            try:
+                result = func(*new_args, **kwargs)
+            finally:
+                if close_fh:
+                    fh.close()
 
-        return result
-
+            return result
+        return __open_file
     return _open_file
