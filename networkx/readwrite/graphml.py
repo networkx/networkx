@@ -179,6 +179,7 @@ class GraphML(object):
     
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
+    convert_bool={'true':True,'false':False}
 
     
 class GraphMLWriter(GraphML):
@@ -452,7 +453,10 @@ class GraphMLReader(GraphML):
             text=data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element))==0:
-                data[data_name] = data_type(text)
+                if data_type=='boolean':
+                    data[data_name] = self.convert_bool[default.text]
+                else:
+                    data[data_name] = data_type(text)
             elif len(list(data_element)) > 0:
                 # Assume yfiles as subelements, try to extract node_label
                 node_label = data_element.find("{%s}ShapeNode/{%s}NodeLabel"% 
