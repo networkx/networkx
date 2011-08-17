@@ -179,7 +179,9 @@ class GraphML(object):
     
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
-    convert_bool={'true':True,'false':False}
+    convert_bool={'true':True,'false':False, 
+                  'True': True, 'False': False}
+
 
     
 class GraphMLWriter(GraphML):
@@ -454,7 +456,7 @@ class GraphMLReader(GraphML):
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element))==0:
                 if data_type=='boolean':
-                    data[data_name] = self.convert_bool[default.text]
+                    data[data_name] = self.convert_bool[text]
                 else:
                     data[data_name] = data_type(text)
             elif len(list(data_element)) > 0:
