@@ -41,18 +41,19 @@ __date__ = """2008-05-27"""
 #    BSD license.
 
 import networkx
-from networkx.utils import is_string_like,get_file_handle
+from networkx.utils import is_string_like,open_file
 
+
+@open_file(1,mode='w')
 def write_p2g(G, path):
     """Write NetworkX graph in p2g format.
 
     This format is meant to be used with directed graphs with
     possible self loops.
     """
-    fh=get_file_handle(path,mode='w')
 
-    fh.write("%s\n"%G.name)
-    fh.write("%s %s\n"%(G.order(),G.size()))
+    path.write("%s\n"%G.name)
+    path.write("%s %s\n"%(G.order(),G.size()))
 
     nodes = G.nodes()
 
@@ -60,12 +61,12 @@ def write_p2g(G, path):
     nodenumber=dict(zip(nodes,range(len(nodes)))) 
 
     for n in nodes:
-        fh.write("%s\n"%n)
+        path.write("%s\n"%n)
         for nbr in G.neighbors(n):
-            fh.write("%s "%nodenumber[nbr])
-        fh.write("\n")
-    fh.close()
+            path.write("%s "%nodenumber[nbr])
+        path.write("\n")
 
+@open_file(0,mode='r')
 def read_p2g(path):
     """Read graph in p2g format from path. 
 
@@ -74,8 +75,7 @@ def read_p2g(path):
     If you want a DiGraph (with no self loops allowed and no edge data)
     use D=networkx.DiGraph(read_p2g(path))
     """
-    fh=get_file_handle(path,mode='r')        
-    G=parse_p2g(fh)
+    G=parse_p2g(path)
     return G
 
 def parse_p2g(lines):
