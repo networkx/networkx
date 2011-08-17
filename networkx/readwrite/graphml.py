@@ -455,7 +455,7 @@ class GraphMLReader(GraphML):
             text=data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element))==0:
-                if data_type=='boolean':
+                if data_type==bool:
                     data[data_name] = self.convert_bool[text]
                 else:
                     data[data_name] = data_type(text)
