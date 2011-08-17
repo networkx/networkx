@@ -151,6 +151,15 @@ def _find_leaving_edge(H, T, cycle, newEdge, capacity = 'capacity'):
     eps = False
     leavingEdge = ()
 
+    # If cycle is a digon, newEdge is always a reverse edge (otherwise,
+    # there would be no leaving edge).
+    if len(cycle) == 3:
+        u, v = newEdge
+        if H[u][v].get('flow', 0) > H[v][u].get('flow', 0):
+            return (v, u), H[v][u].get('flow', 0)
+        else:
+            return (u, v), H[u][v].get('flow', 0)
+
     # Find the forward edge with the minimum value for capacity - 'flow'
     # and the reverse edge with the minimum value for 'flow'.
     for index, u in enumerate(cycle[:-1]):
@@ -412,12 +421,17 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
         # Actual augmentation happens here. If eps = 0, don't bother.
         if eps:
             flowCost -= cycleCost * eps
-            for index, u in enumerate(cycle[:-1]):
-                v = cycle[index + 1]
-                if (u, v) in T.edges() + [newEdge]:
-                    H[u][v]['flow'] = H[u][v].get('flow', 0) + eps
-                else: # (v, u) in T.edges():
-                    H[v][u]['flow'] -= eps
+            if len(cycle) == 3:
+                u, v = newEdge
+                H[u][v]['flow'] -= eps
+                H[v][u]['flow'] -= eps
+            else:
+                for index, u in enumerate(cycle[:-1]):
+                    v = cycle[index + 1]
+                    if (u, v) in T.edges() + [newEdge]:
+                        H[u][v]['flow'] = H[u][v].get('flow', 0) + eps
+                    else: # (v, u) in T.edges():
+                        H[v][u]['flow'] -= eps
 
         # Update tree solution.
         T.add_edge(*newEdge)
@@ -448,6 +462,7 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
         # print('New edge:      (%s, %s)' % (newEdge[0], newEdge[1]))
         # print('Leaving edge:  (%s, %s)' % (leavingEdge[0], leavingEdge[1]))
         # print('Cycle:         %s' % cycle)
+        # print('eps:           %d' % eps)
         # print(' Edge %11s%10s' % ('Flow', 'Red Cost'))
         # for u, v, d in H.edges(data = True):
         #     flag = ''

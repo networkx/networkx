@@ -377,4 +377,36 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         os.unlink(fname)
 
 
+    def test_bool(self):
+        s="""<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns 
+        http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="node" attr.name="test" attr.type="boolean">
+    <default>false</default>
+  </key>
+  <graph id="G" edgedefault="directed">
+    <node id="n0">
+      <data key="d0">True</data>
+    </node>
+    <node id="n1"/>
+    <node id="n2">
+      <data key="d0">False</data>
+    </node>
+    <node id="n3">
+      <data key="d0">true</data>
+    </node>
+    <node id="n4">
+      <data key="d0">false</data>
+    </node>
 
+
+  </graph>
+</graphml>
+"""
+        fh = io.BytesIO(s.encode('UTF-8'))
+        G=nx.read_graphml(fh)
+        print G.node
+        assert_equal(G.node['n0']['test'],True)
+        assert_equal(G.node['n2']['test'],False)
