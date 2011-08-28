@@ -21,6 +21,14 @@ class TestCliques:
         assert_equal(cl,
                      [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]])
 
+    def test_selfloops(self):
+        self.G.add_edge(1,1)
+        cl=list(nx.find_cliques(self.G))
+        rcl=nx.find_cliques_recursive(self.G)
+        assert_equal(sorted(map(sorted,cl)), sorted(map(sorted,rcl)))
+        assert_equal(cl,
+                     [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]])
+
     def test_find_cliques2(self):
         hcl=list(nx.find_cliques(self.H))
         assert_equal(sorted(map(sorted,hcl)),
