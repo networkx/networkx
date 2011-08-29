@@ -31,13 +31,14 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu
 __all__ = ['read_gpickle', 'write_gpickle']
 
 import networkx as nx
-from networkx.utils import get_file_handle
+from networkx.utils import open_file
 
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
 
+@open_file(1,mode='wb')
 def write_gpickle(G, path):
     """Write graph in Python pickle format.
 
@@ -61,10 +62,9 @@ def write_gpickle(G, path):
     ----------
     .. [1] http://docs.python.org/library/pickle.html
     """
-    fh=get_file_handle(path,mode='wb')        
-    pickle.dump(G,fh,pickle.HIGHEST_PROTOCOL)
-    fh.close()
+    pickle.dump(G, path, pickle.HIGHEST_PROTOCOL)
 
+@open_file(0,mode='rb')
 def read_gpickle(path):
     """Read graph object in Python pickle format.
 
@@ -92,8 +92,7 @@ def read_gpickle(path):
     ----------
     .. [1] http://docs.python.org/library/pickle.html
     """
-    fh=get_file_handle(path,'rb')
-    return pickle.load(fh)
+    return pickle.load(path)
 
 # fixture for nose tests
 def teardown_module(module):

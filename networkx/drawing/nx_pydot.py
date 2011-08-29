@@ -19,13 +19,13 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from networkx.utils import get_file_handle
+from networkx.utils import open_file
 import networkx as nx
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
 
-
+@open_file(1,mode='w')
 def write_dot(G,path):
     """Write NetworkX graph G to Graphviz dot format on path.
 
@@ -36,12 +36,11 @@ def write_dot(G,path):
     except ImportError:
         raise ImportError("write_dot() requires pydot",
                           "http://dkbza.org/pydot.html/")
-    fh=get_file_handle(path,'w')
     P=to_pydot(G)
-    fh.write(P.to_string())
-    fh.flush() # might be a user filehandle so leave open (but flush)
+    path.write(P.to_string())
     return
 
+@open_file(0,mode='r')
 def read_dot(path):
     """Return a NetworkX MultiGraph or MultiDiGraph from a dot file on path.
 
@@ -65,8 +64,7 @@ def read_dot(path):
         raise ImportError("read_dot() requires pydot",
                           "http://dkbza.org/pydot.html/")
 
-    fh=get_file_handle(path,'r')
-    data=fh.read()        
+    data=path.read()        
     P=pydot.graph_from_dot_data(data)
     return from_pydot(P)
 

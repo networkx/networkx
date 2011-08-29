@@ -29,7 +29,7 @@ __all__ = ['read_graph6', 'parse_graph6', 'read_graph6_list',
 
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.utils import get_file_handle
+from networkx.utils import open_file
 	
 # graph6
 
@@ -67,14 +67,14 @@ def parse_graph6(str):
         if b: G.add_edge(i,j)
     return G
 
+@open_file(0,mode='rt')
 def read_graph6_list(path):
     """Read simple undirected graphs in graph6 format from path.
 
     Returns a list of Graphs, one for each line in file.
     """
-    fh=get_file_handle(path,mode='rt')        
     glist=[]
-    for line in fh:
+    for line in path:
         line = line.strip()
         if not len(line): continue
         glist.append(parse_graph6(line))
@@ -88,13 +88,13 @@ def read_sparse6(path):
     Returns a single MultiGraph."""
     return read_sparse6_list(path)[0]
 
+@open_file(0,mode='rt')
 def read_sparse6_list(path):
     """Read undirected graphs in sparse6 format from path.
 
     Returns a list of MultiGraphs, one for each line in file."""
-    fh=get_file_handle(path,mode='rt')        
     glist=[]
-    for line in fh:
+    for line in path:
         line = line.strip()
         if not len(line): continue
         glist.append(parse_sparse6(line))

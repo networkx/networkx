@@ -40,7 +40,7 @@ __all__ = ['generate_multiline_adjlist',
            'parse_multiline_adjlist',
            'read_multiline_adjlist']
 
-from networkx.utils import make_str, get_file_handle
+from networkx.utils import make_str, open_file
 import networkx as nx
 
 def generate_multiline_adjlist(G, delimiter = ' '):
@@ -135,6 +135,7 @@ def generate_multiline_adjlist(G, delimiter = ' '):
                         yield make_str(u)+delimiter+make_str(d)
                 seen.add(s)
 
+@open_file(1,mode='wb')
 def write_multiline_adjlist(G, path, delimiter=' ', 
                             comments='#', encoding = 'utf-8'):
     """ Write the graph G in multiline adjacency list format to path
@@ -174,16 +175,15 @@ def write_multiline_adjlist(G, path, delimiter=' ',
     import sys
     import time
 
-    fh=get_file_handle(path,mode='wb')        
     pargs=comments+" ".join(sys.argv)
     header = ("%s\n" % (pargs)
              + comments + " GMT %s\n" % (time.asctime(time.gmtime()))
              + comments + " %s\n" % (G.name))
-    fh.write(header.encode(encoding))
+    path.write(header.encode(encoding))
 
     for multiline in generate_multiline_adjlist(G, delimiter):
         multiline+='\n'
-        fh.write(multiline.encode(encoding))
+        path.write(multiline.encode(encoding))
 
 def parse_multiline_adjlist(lines, comments = '#', delimiter = None,
                             create_using = None, nodetype = None,
@@ -297,7 +297,7 @@ def parse_multiline_adjlist(lines, comments = '#', delimiter = None,
 
     return G
 
-
+@open_file(0,mode='rb')
 def read_multiline_adjlist(path, comments="#", delimiter=None,
                            create_using=None,
                            nodetype=None, edgetype=None,
@@ -377,8 +377,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
     --------
     write_multiline_adjlist
     """
-    inp=get_file_handle(path, 'rb')
-    lines = (line.decode(encoding) for line in inp)
+    lines = (line.decode(encoding) for line in path)
     return parse_multiline_adjlist(lines, 
                                    comments = comments,
                                    delimiter = delimiter,
