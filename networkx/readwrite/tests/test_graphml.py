@@ -58,15 +58,15 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
                                                    ('n8','n7'),
                                                    ('n8','n9'),
                                                    ])
-                            
+
         self.simple_directed_fh = \
             io.BytesIO(self.simple_directed_data.encode('UTF-8'))
 
 
         self.attribute_data="""<?xml version="1.0" encoding="UTF-8"?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns 
+      xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
   <key id="d0" for="node" attr.name="color" attr.type="string">
     <default>yellow</default>
@@ -199,7 +199,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 </graphml>"""
         fh = io.BytesIO(s.encode('UTF-8'))
         assert_raises(nx.NetworkXError,nx.read_graphml,fh)
-    
+
     def test_undirected_edge_in_directed(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -217,9 +217,9 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 
     def test_key_error(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns 
+      xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
   <key id="d0" for="node" attr.name="color" attr.type="string">
     <default>yellow</default>
@@ -244,9 +244,9 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 
     def test_hyperedge_error(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns 
+      xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
   <key id="d0" for="node" attr.name="color" attr.type="string">
     <default>yellow</default>
@@ -272,7 +272,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         assert_raises(nx.NetworkXError,nx.read_graphml,fh)
 
     # remove test until we get the "name" issue sorted
-    # https://networkx.lanl.gov/trac/ticket/544        
+    # https://networkx.lanl.gov/trac/ticket/544
     def test_default_attribute(self):
         G=nx.Graph()
         G.add_node(1,label=1,color='green')
@@ -297,7 +297,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
     def test_multigraph_to_graph(self):
         # test converting multigraph to graph if no parallel edges are found
         pass
-    
+
     def test_yfiles_extension(self):
         data="""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
@@ -379,9 +379,9 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 
     def test_bool(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
-<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns 
+      xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
   <key id="d0" for="node" attr.name="test" attr.type="boolean">
     <default>false</default>
@@ -407,6 +407,5 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 """
         fh = io.BytesIO(s.encode('UTF-8'))
         G=nx.read_graphml(fh)
-        print G.node
         assert_equal(G.node['n0']['test'],True)
         assert_equal(G.node['n2']['test'],False)

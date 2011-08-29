@@ -8,7 +8,7 @@ can be accessed, for example, as
 >>> networkx.utils.is_string_like('spam')
 True
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -19,10 +19,7 @@ import subprocess
 import uuid
 
 import networkx as nx
-if sys.version >= '3':
-    from networkx.external.decorator3 import decorator
-else:
-    from networkx.external.decorator import decorator
+from networkx.external.decorator import decorator
 
 __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)',
@@ -84,7 +81,7 @@ def get_file_handle(path, mode='r'):
             import bz2
             fh = bz2.BZ2File(path,mode=mode)
         else:
-            fh = open(path,mode = mode)           
+            fh = open(path,mode = mode)
     elif hasattr(path, 'read'):
         fh = path
     else:
@@ -98,7 +95,7 @@ def make_str(t):
 
 def cumulative_sum(numbers):
     """Yield cumulative sum of numbers.
-    
+
     >>> import networkx.utils as utils
     >>> list(utils.cumulative_sum([1,2,3,4]))
     [1, 3, 6, 10]
@@ -107,11 +104,11 @@ def cumulative_sum(numbers):
     for n in numbers:
         csum += n
         yield csum
-        
+
 def generate_unique_node():
     """ Generate a unique node label."""
     return str(uuid.uuid1())
-    
+
 def default_opener(filename):
     """Opens `filename` using system's default program.
 

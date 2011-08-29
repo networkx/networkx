@@ -1,14 +1,11 @@
 import sys
 
-if sys.version >= '3':
-    from networkx.external.decorator3 import decorator
-else:
-    from networkx.external.decorator import decorator
-from networkx.utils import is_string_like
 from collections import defaultdict
 from os.path import splitext
-import networkx as nx
 
+import networkx as nx
+from networkx.external.decorator import decorator
+from networkx.utils import is_string_like
 
 def require(*packages):
     """Decorator to check whether specific packages can be imported.
