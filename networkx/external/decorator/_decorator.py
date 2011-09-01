@@ -28,7 +28,7 @@ Decorator module, see http://pypi.python.org/pypi/decorator
 for the documentation.
 """
 
-__version__ = '3.3.1'
+__version__ = '3.3.2'
 
 __all__ = ["decorator", "FunctionMaker", "partial"]
 
@@ -127,7 +127,7 @@ class FunctionMaker(object):
         func.__doc__ = getattr(self, 'doc', None)
         func.__dict__ = getattr(self, 'dict', {})
         func.func_defaults = getattr(self, 'defaults', ())
-        func.__kwdefaults__ = getattr(self, 'kwonlydefaults', None)        
+        func.__kwdefaults__ = getattr(self, 'kwonlydefaults', None)
         callermodule = sys._getframe(3).f_globals.get('__name__', '?')
         func.__module__ = getattr(self, 'module', callermodule)
         func.__dict__.update(kw)
