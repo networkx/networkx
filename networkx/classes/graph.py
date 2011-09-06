@@ -791,7 +791,7 @@ class Graph(object):
             self.adj[v][u] = datadict
 
 
-    def add_weighted_edges_from(self, ebunch, **attr):
+    def add_weighted_edges_from(self, ebunch, weight='weight', **attr):
         """Add all the edges in ebunch as weighted edges with specified
         weights.
 
@@ -801,6 +801,8 @@ class Graph(object):
             Each edge given in the list or container will be added
             to the graph. The edges must be given as 3-tuples (u,v,w)
             where w is a number.
+        weight : string, optional (default= 'weight')
+            The attribute name for the edge weights to be added.
         attr : keyword arguments, optional (default= no attributes)
             Edge attributes to add/update for all edges.
 
@@ -811,15 +813,16 @@ class Graph(object):
 
         Notes
         -----
-        Adding the same edge twice has no effect but any edge data
-        will be updated when each duplicate edge is added.
+        Adding the same edge twice for Graph/DiGraph simply updates 
+        the edge data.  For MultiGraph/MultiDiGraph, duplicate edges 
+        are stored.
 
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_weighted_edges_from([(0,1,3.0),(1,2,7.5)])
         """
-        self.add_edges_from(((u,v,{'weight':d}) for u,v,d in ebunch),**attr)
+        self.add_edges_from(((u,v,{weight:d}) for u,v,d in ebunch),**attr)
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
