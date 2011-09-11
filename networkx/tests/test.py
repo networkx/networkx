@@ -2,7 +2,7 @@
 import sys
 from os import path,getcwd
 
-def run(verbosity=1,doctest=False):
+def run(verbosity=1,doctest=False,numpy=True):
     """Run NetworkX tests.
 
     Parameters
@@ -12,6 +12,9 @@ def run(verbosity=1,doctest=False):
 
     doctest: bool, optional
       True to run doctests in code modules
+
+    numpy: bool, optional
+      True to test modules dependent on numpy
     """
     try:
         import nose
@@ -31,6 +34,9 @@ def run(verbosity=1,doctest=False):
           '-exe']
     if doctest:
         argv.extend(['--with-doctest','--doctest-extension=txt'])
+    if not numpy:
+        argv.extend(['-A not numpy'])
+
 
     nose.run(argv=argv)
 
