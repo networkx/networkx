@@ -4,6 +4,7 @@ import networkx as nx
 from networkx.generators.degree_seq import havel_hakimi_graph
 
 class TestSpectrum(object):
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
         global numpy

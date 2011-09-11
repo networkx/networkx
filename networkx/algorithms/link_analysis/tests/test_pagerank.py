@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 from nose import SkipTest
+from nose.plugins.attrib import attr
 import networkx
 
 # Example from
@@ -30,6 +31,7 @@ class TestPageRank:
         for n in G:
             assert_almost_equal(p[n],G.pagerank[n],places=4)
 
+    @attr('numpy')
     def test_numpy_pagerank(self):
         try:
             import numpy
@@ -41,6 +43,7 @@ class TestPageRank:
             assert_almost_equal(p[n],G.pagerank[n],places=4)    
 
 
+    @attr('numpy')
     def test_google_matrix(self):
         try:
             import numpy.linalg

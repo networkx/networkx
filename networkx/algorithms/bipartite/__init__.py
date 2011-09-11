@@ -12,8 +12,6 @@ For example:
 >>> bottom_nodes=['a','b','b','b','c']
 >>> edges=zip(top_nodes,bottom_nodes) # create 2-tuples of edges
 >>> B=nx.Graph(edges) 
->>> print(B.edges())
-[('a', 1), (1, 'b'), (2, 'b'), ('b', 3), ('c', 3)]
 
 
 The bipartite algorithms are not imported into the networkx namespace

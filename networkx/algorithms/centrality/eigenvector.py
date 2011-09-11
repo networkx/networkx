@@ -168,5 +168,6 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
+        import numpy.linalg
     except:
         raise SkipTest("numpy not available")

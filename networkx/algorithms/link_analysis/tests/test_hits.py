@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 from nose import SkipTest
+from nose.plugins.attrib import attr
 import networkx
 
 # Example from
@@ -41,6 +42,7 @@ class TestHITS:
         nstart = dict([(i, 1./2) for i in G])
         h, a = networkx.hits(G, nstart = nstart)
 
+    @attr('numpy')
     def test_hits_numpy(self):
         try:
             import numpy as np

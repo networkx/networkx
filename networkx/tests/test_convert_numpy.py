@@ -5,6 +5,7 @@ import networkx as nx
 from networkx.generators.classic import barbell_graph,cycle_graph,path_graph
 
 class TestConvertNumpy(object):
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
         global np

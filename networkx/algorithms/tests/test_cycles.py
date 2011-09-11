@@ -11,6 +11,13 @@ class TestCycles:
         G.add_cycle([0,1,6,7,8])
         G.add_edge(8,9)
         self.G=G
+        
+    def is_cyclic_permuatation(self,a,b):
+        n=len(a)
+        if len(b)!=n:
+            return False
+        l=a+a
+        return any(l[i:i+n]==b for i in range(2*n-n+1))
 
     def test_cycle_basis(self):
         G=self.G
@@ -29,11 +36,12 @@ class TestCycles:
         sort_cy= sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5],['A','B','C']])
 
-
     def test_simple_cycles(self):
         G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
         c=sorted(nx.simple_cycles(G))
-        assert_equal(c,[[0, 0], [0, 1, 2, 0], [0, 2, 0], [1, 2, 1], [2, 2]])
+        ca=[[0, 0], [0, 1, 2, 0], [0, 2, 0], [1, 2, 1], [2, 2]]
+        for (a,b) in zip(c,ca):
+            assert_true(self.is_cyclic_permuatation(a[:-1],b[:-1]))
 
     def test_simple_cycles_graph(self):
         G = nx.Graph()
@@ -51,7 +59,9 @@ class TestCycles:
         assert_equal(c,[[1,2,3,1]])
         G.add_path([10,20,30,10])
         c=sorted(nx.simple_cycles(G))
-        assert_equal(c,[[1,2,3,1],[10,20,30,10]])
+        ca=[[1,2,3,1],[10,20,30,10]]
+        for (a,b) in zip(c,ca):
+            assert_true(self.is_cyclic_permuatation(a[:-1],b[:-1]))
 
     def test_simple_cycles_empty(self):
         G = nx.DiGraph()

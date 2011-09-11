@@ -431,7 +431,7 @@ def complement(G,create_using=None,name=None):
     R.add_edges_from( ((n,n2) 
                        for n,nbrs in G.adjacency_iter() 
                        for n2 in G if n2 not in nbrs 
-                       if n is not n2) )
+                       if n != n2) )
     return R
 
 

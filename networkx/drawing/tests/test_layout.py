@@ -10,6 +10,7 @@ from nose.tools import assert_equal
 import networkx as nx
 
 class TestLayout(object):
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
         global numpy

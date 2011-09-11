@@ -2,11 +2,13 @@
 from nose.tools import *
 from nose import SkipTest
 import networkx
+from nose.plugins.attrib import attr
 
 from networkx import edge_current_flow_betweenness_centrality \
     as edge_current_flow
 
 class TestFlowBetweennessCentrality(object):
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
         global np
@@ -77,6 +79,7 @@ class TestWeightedFlowBetweennessCentrality(object):
 
 
 class TestEdgeFlowBetweennessCentrality(object):
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
         global np

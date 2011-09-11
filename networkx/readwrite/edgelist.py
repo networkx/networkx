@@ -333,6 +333,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
 
     >>> fh=open("test.edgelist", 'rb')
     >>> G=nx.read_edgelist(fh)
+    >>> fh.close()
 
     >>> G=nx.read_edgelist("test.edgelist", nodetype=int)
     >>> G=nx.read_edgelist("test.edgelist",create_using=nx.DiGraph())
@@ -340,7 +341,9 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     Edgelist with data in a list:
 
     >>> textline = '1 2 3'
-    >>> n=open('test.edgelist','w').write(textline)
+    >>> fh = open('test.edgelist','w')
+    >>> d = fh.write(textline)
+    >>> fh.close()
     >>> G = nx.read_edgelist('test.edgelist', nodetype=int, data=(('weight',float),))
     >>> G.nodes()
     [1, 2]
