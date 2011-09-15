@@ -407,6 +407,5 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 """
         fh = io.BytesIO(s.encode('UTF-8'))
         G=nx.read_graphml(fh)
-        print G.node
         assert_equal(G.node['n0']['test'],True)
         assert_equal(G.node['n2']['test'],False)

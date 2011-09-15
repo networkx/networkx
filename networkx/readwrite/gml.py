@@ -36,7 +36,6 @@ import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import get_file_handle, is_string_like
 
-	
 def read_gml(path,encoding='UTF-8',relabel=False):
     """Read graph in GML format from path.
 
@@ -275,15 +274,23 @@ def generate_gml(G):
        ]
     """
     # recursively make dicts into gml brackets
-    dicttype=type({})
     def listify(d,indent,indentlevel):
         result='[ \n'
-        dicttype=type({})
         for k,v in d.items():
-            if type(v)==dicttype:
+            if type(v)==dict:
                 v=listify(v,indent,indentlevel+1)
             result += indentlevel*indent+"%s %s\n"%(k,v)
         return result+indentlevel*indent+"]"
+
+    def string_item(k,v,indent):
+        # try to make a string of the data
+        if type(v)==dict: 
+            v=listify(v,indent,2)
+        elif is_string_like(v):
+            v='"%s"'%v
+        elif type(v)==bool:
+            v=int(v)
+        return "%s %s"%(k,v)
 
     # check for attributes or assign empty dict
     if hasattr(G,'graph_attr'):
@@ -304,11 +311,7 @@ def generate_gml(G):
         yield indent+"directed 1"
     # write graph attributes 
     for k,v in G.graph.items():
-        if type(v)==dicttype: 
-            v=listify(v,indent,2)
-        elif is_string_like(v):
-            v='"%s"'%v
-        yield indent+"%s %s"%(k,v)
+        yield indent+string_item(k,v,indent)
     # write nodes
     for n in G:
         yield indent+"node ["
@@ -323,26 +326,17 @@ def generate_gml(G):
         if n in G:
           for k,v in G.node[n].items():
               if k=='id': continue
-              if type(v)==dicttype: 
-                  v=listify(v,indent,3)
-              elif is_string_like(v):
-                  v='"%s"'%v
-              yield 2*indent+"%s %s"%(k,v)
+              yield 2*indent+string_item(k,v,indent)
         yield indent+"]"
     # write edges
     for u,v,edgedata in G.edges_iter(data=True):
-        # try to guess what is on the edge and do something reasonable
         yield indent+"edge ["
         yield 2*indent+"source %s"%node_id[u]
         yield 2*indent+"target %s"%node_id[v]
         for k,v in edgedata.items():
             if k=='source': continue
             if k=='target': continue
-            if type(v)==dicttype: 
-                v=listify(v,indent,3)
-            elif is_string_like(v):
-                v='"%s"'%v
-            yield 2*indent+"%s %s"%(k,v)
+            yield 2*indent+string_item(k,v,indent)
         yield indent+"]"
     yield "]"
 

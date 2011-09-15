@@ -89,7 +89,7 @@ graph [
         os.close(fd)
         os.unlink(fname)
 
-    def test_relabel_dupliate(self):
+    def test_relabel_duplicate(self):
         data="""
 graph
 [
@@ -110,3 +110,26 @@ graph
         fh = io.BytesIO(data.encode('UTF-8'))
         fh.seek(0)
         assert_raises(networkx.NetworkXError,networkx.read_gml,fh,relabel=True)
+
+    def test_bool(self):
+        G=networkx.Graph()
+        G.add_node(1,on=True)
+        G.add_edge(1,2,on=False)
+        data = '\n'.join(list(networkx.generate_gml(G)))
+        answer ="""graph [
+  node [
+    id 0
+    label 1
+    on 1
+  ]
+  node [
+    id 1
+    label 2
+  ]
+  edge [
+    source 0
+    target 1
+    on 0
+  ]
+]"""
+        assert_equal(data,answer)
