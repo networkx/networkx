@@ -19,7 +19,7 @@ for format information.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from networkx.utils import is_string_like,get_file_handle,make_str
+from networkx.utils import is_string_like, open_file, make_str
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['read_pajek', 'parse_pajek', 'generate_pajek', 'write_pajek']
 
@@ -72,7 +72,8 @@ def generate_pajek(G):
             s+=' %s %s'%(make_qstr(k),make_qstr(v))
             s+=' %s %s'%(k,v)
         yield s
-        
+
+@open_file(1,mode='wb')
 def write_pajek(G, path, encoding='UTF-8'):
     """Write graph in Pajek format to path.
 
@@ -94,11 +95,11 @@ def write_pajek(G, path, encoding='UTF-8'):
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
     for format information.
     """
-    fh=get_file_handle(path, 'wb')
     for line in generate_pajek(G):
         line+='\n'
-        fh.write(line.encode(encoding))
+        path.write(line.encode(encoding))
 
+@open_file(0,mode='rb')
 def read_pajek(path,encoding='UTF-8'):
     """Read graph in Pajek format from path. 
 
@@ -127,8 +128,7 @@ def read_pajek(path,encoding='UTF-8'):
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
     for format information.
     """
-    fh=get_file_handle(path, 'rb')
-    lines = (line.decode(encoding) for line in fh)
+    lines = (line.decode(encoding) for line in path)
     return parse_pajek(lines)
 
 def parse_pajek(lines):

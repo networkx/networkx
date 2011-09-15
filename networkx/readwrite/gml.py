@@ -34,8 +34,10 @@ __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.utils import get_file_handle, is_string_like
+from networkx.utils import is_string_like, open_file
 
+
+@open_file(0,mode='rb')
 def read_gml(path,encoding='UTF-8',relabel=False):
     """Read graph in GML format from path.
 
@@ -79,10 +81,8 @@ def read_gml(path,encoding='UTF-8',relabel=False):
     >>> nx.write_gml(G,'test.gml')
     >>> H=nx.read_gml('test.gml')
     """
-    fh=get_file_handle(path,'rb')
-    lines=(line.decode(encoding) for line in fh)
+    lines=(line.decode(encoding) for line in path)
     G=parse_gml(lines,relabel=relabel)
-    fh.close()
     return G
 
 def parse_gml(lines, relabel=True):
@@ -340,7 +340,7 @@ def generate_gml(G):
         yield indent+"]"
     yield "]"
 
-
+@open_file(1,mode='wb')
 def write_gml(G, path):
     """
     Write the graph G in GML format to the file or file handle path.
@@ -384,10 +384,9 @@ def write_gml(G, path):
 
     >>> nx.write_gml(G,"test.gml.gz")
     """
-    fh=get_file_handle(path,mode='wb')
     for line in generate_gml(G):
         line+='\n'
-        fh.write(line.encode('latin-1'))
+        path.write(line.encode('latin-1'))
 
 
 # fixture for nose tests

@@ -56,6 +56,9 @@ def find_cliques(G):
     as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
     and discussed in Cazals and Karande (2008) [3]_.
 
+    This algorithm ignores self-loops and parallel edges as
+    clique is not conventionally defined with such edges.
+
     There are often many cliques in graphs.  This algorithm can
     run out of memory for large graphs.
 
@@ -87,12 +90,14 @@ def find_cliques(G):
     nnbrs={}
     pivotnbrs=set() # handle empty graph
     for n,nbrs in G.adjacency_iter():
+        nbrs=set(nbrs)
+        nbrs.discard(n)
         conn = len(nbrs)
         if conn > maxconn:
-            nnbrs[n] = pivotnbrs = set(nbrs)
+            nnbrs[n] = pivotnbrs = nbrs
             maxconn = conn
         else:
-            nnbrs[n] = set(nbrs)
+            nnbrs[n] = nbrs
     # Initial setup
     cand=set(nnbrs)
     smallcand = cand - pivotnbrs
@@ -187,6 +192,9 @@ def find_cliques_recursive(G):
     as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
     and discussed in Cazals and Karande (2008) [3]_.
 
+    This algorithm ignores self-loops and parallel edges as
+    clique is not conventionally defined with such edges.
+
     References
     ----------
     .. [1] Bron, C. and Kerbosch, J. 1973. 
@@ -211,7 +219,9 @@ def find_cliques_recursive(G):
     """
     nnbrs={}
     for n,nbrs in G.adjacency_iter():
-        nnbrs[n]=set(nbrs)
+        nbrs=set(nbrs)
+        nbrs.discard(n)
+        nnbrs[n]=nbrs
     if not nnbrs: return [] # empty graph
     cand=set(nnbrs)
     done=set()

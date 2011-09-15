@@ -6,6 +6,7 @@
 
 from nose.tools import *
 from nose import SkipTest
+from nose.plugins.attrib import attr
 import networkx as nx
 import networkx.generators.threshold as nxt
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
@@ -150,6 +151,8 @@ class TestGeneratorThreshold():
         s=nxt.right_d_threshold_sequence(5,7)
         s1=nxt.swap_d(s,1.0,1.0)
 
+        
+    @attr('numpy')
     def test_eigenvectors(self):
         try:
             import numpy as N

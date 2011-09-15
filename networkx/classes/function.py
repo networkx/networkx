@@ -342,10 +342,10 @@ def set_edge_attributes(G,name,attributes):
     Examples
     --------
     >>> G=nx.path_graph(3)
-    >>> bb=nx.edge_betweenness_centrality(G)
+    >>> bb=nx.edge_betweenness_centrality(G, normalized=False)
     >>> nx.set_edge_attributes(G,'betweenness',bb)
     >>> G[1][2]['betweenness']
-    4.0
+    2.0
     """
     for (u,v),value in attributes.items():
         G[u][v][name]=value

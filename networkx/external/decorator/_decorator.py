@@ -3,12 +3,12 @@
 ##   Copyright (c) 2005-2011, Michele Simionato
 ##   All rights reserved.
 ##
-##   Redistributions of source code must retain the above copyright 
+##   Redistributions of source code must retain the above copyright
 ##   notice, this list of conditions and the following disclaimer.
 ##   Redistributions in bytecode form must reproduce the above copyright
 ##   notice, this list of conditions and the following disclaimer in
 ##   the documentation and/or other materials provided with the
-##   distribution. 
+##   distribution.
 
 ##   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 ##   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,7 +28,7 @@ Decorator module, see http://pypi.python.org/pypi/decorator
 for the documentation.
 """
 
-__version__ = '3.3.1'
+__version__ = '3.3.2'
 
 __all__ = ["decorator", "FunctionMaker", "partial"]
 
@@ -81,7 +81,7 @@ class FunctionMaker(object):
             # func can be a class or a callable, but not an instance method
             self.name = func.__name__
             if self.name == '<lambda>': # small hack for lambda functions
-                self.name = '_lambda_' 
+                self.name = '_lambda_'
             self.doc = func.__doc__
             self.module = func.__module__
             if inspect.isfunction(func):
@@ -127,6 +127,7 @@ class FunctionMaker(object):
         func.__doc__ = getattr(self, 'doc', None)
         func.__dict__ = getattr(self, 'dict', {})
         func.func_defaults = getattr(self, 'defaults', ())
+        func.__kwdefaults__ = getattr(self, 'kwonlydefaults', None)
         callermodule = sys._getframe(3).f_globals.get('__name__', '?')
         func.__module__ = getattr(self, 'module', callermodule)
         func.__dict__.update(kw)
@@ -139,7 +140,7 @@ class FunctionMaker(object):
         if mo is None:
             raise SyntaxError('not a valid function template\n%s' % src)
         name = mo.group(1) # extract the function name
-        names = set([name] + [arg.strip(' *') for arg in 
+        names = set([name] + [arg.strip(' *') for arg in
                              self.shortsignature.split(',')])
         for n in names:
             if n in ('_func_', '_call_'):
@@ -149,7 +150,7 @@ class FunctionMaker(object):
         try:
             code = compile(src, '<string>', 'single')
             # print >> sys.stderr, 'Compiling %s' % src
-            exec(code,evaldict)
+            exec code in evaldict
         except:
             print >> sys.stderr, 'Error in generated code:'
             print >> sys.stderr, src
@@ -171,7 +172,7 @@ class FunctionMaker(object):
         """
         if isinstance(obj, str): # "name(signature)"
             name, rest = obj.strip().split('(', 1)
-            signature = rest[:-1] #strip a right parens            
+            signature = rest[:-1] #strip a right parens
             func = None
         else: # a function
             name = None
@@ -179,16 +180,16 @@ class FunctionMaker(object):
             func = obj
         self = cls(func, name, signature, defaults, doc, module)
         ibody = '\n'.join('    ' + line for line in body.splitlines())
-        return self.make('def %(name)s(%(signature)s):\n' + ibody, 
+        return self.make('def %(name)s(%(signature)s):\n' + ibody,
                         evaldict, addsource, **attrs)
-  
+
 def decorator(caller, func=None):
     """
     decorator(caller) converts a caller function into a decorator;
     decorator(caller, func) decorates a function using a caller.
     """
     if func is not None: # returns a decorated function
-        evaldict = func.__globals__.copy()
+        evaldict = func.func_globals.copy()
         evaldict['_call_'] = caller
         evaldict['_func_'] = func
         return FunctionMaker.create(
@@ -199,11 +200,11 @@ def decorator(caller, func=None):
             return partial(decorator, caller)
         # otherwise assume caller is a function
         first = inspect.getargspec(caller)[0][0] # first arg
-        evaldict = caller.__globals__.copy()
+        evaldict = caller.func_globals.copy()
         evaldict['_call_'] = caller
         evaldict['decorator'] = decorator
         return FunctionMaker.create(
-            '%s(%s)' % (caller.__name__, first), 
+            '%s(%s)' % (caller.__name__, first),
             'return decorator(_call_, %s)' % first,
             evaldict, undecorated=caller, __wrapped__=caller,
             doc=caller.__doc__, module=caller.__module__)

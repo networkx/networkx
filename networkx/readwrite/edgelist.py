@@ -41,7 +41,7 @@ __all__ = ['generate_edgelist',
            'read_weighted_edgelist',
            'write_weighted_edgelist']
 
-from networkx.utils import get_file_handle, make_str
+from networkx.utils import open_file, make_str
 import networkx as nx
 
 def generate_edgelist(G, delimiter=' ', data=True):
@@ -121,6 +121,7 @@ def generate_edgelist(G, delimiter=' ', data=True):
                 pass # missing data for this edge, should warn?
             yield delimiter.join(map(make_str,e))
 
+@open_file(1,mode='wb')
 def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
                    encoding = 'utf-8'):
     """Write graph as a list of edges.
@@ -165,11 +166,10 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
     write_edgelist()
     write_weighted_edgelist()
     """
-    fh=get_file_handle(path, 'wb')
 
     for line in generate_edgelist(G, delimiter, data):
         line+='\n'
-        fh.write(line.encode(encoding))
+        path.write(line.encode(encoding))
 
 def parse_edgelist(lines, comments='#', delimiter=None,
                    create_using=None, nodetype=None, data=True):
@@ -294,7 +294,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
         G.add_edge(u, v, attr_dict=edgedata)
     return G
 
-
+@open_file(0,mode='rb')
 def read_edgelist(path, comments="#", delimiter=None, create_using=None, 
                   nodetype=None, data=True, edgetype=None, encoding='utf-8'):
     """Read a graph from a list of edges.
@@ -333,6 +333,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
 
     >>> fh=open("test.edgelist", 'rb')
     >>> G=nx.read_edgelist(fh)
+    >>> fh.close()
 
     >>> G=nx.read_edgelist("test.edgelist", nodetype=int)
     >>> G=nx.read_edgelist("test.edgelist",create_using=nx.DiGraph())
@@ -340,7 +341,9 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     Edgelist with data in a list:
 
     >>> textline = '1 2 3'
-    >>> n=open('test.edgelist','w').write(textline)
+    >>> fh = open('test.edgelist','w')
+    >>> d = fh.write(textline)
+    >>> fh.close()
     >>> G = nx.read_edgelist('test.edgelist', nodetype=int, data=(('weight',float),))
     >>> G.nodes()
     [1, 2]
@@ -358,8 +361,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     Since nodes must be hashable, the function nodetype must return hashable
     types (e.g. int, float, str, frozenset - or tuples of those, etc.) 
     """
-    fh=get_file_handle(path, 'rb')
-    lines = (line.decode(encoding) for line in fh)
+    lines = (line.decode(encoding) for line in path)
     return parse_edgelist(lines,comments=comments, delimiter=delimiter,
                           create_using=create_using, nodetype=nodetype,
                           data=data)

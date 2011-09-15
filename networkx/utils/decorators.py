@@ -1,9 +1,11 @@
-from networkx.external.decorator import decorator
-from networkx.utils import is_string_like
+import sys
+
 from collections import defaultdict
 from os.path import splitext
-import networkx as nx
 
+import networkx as nx
+from networkx.external.decorator import decorator
+from networkx.utils import is_string_like
 
 def require(*packages):
     """Decorator to check whether specific packages can be imported.
@@ -163,7 +165,6 @@ def open_file(path_arg, mode='r'):
             raise nx.NetworkXError(msg)
         else:
             is_kwarg = False
-
         # Now we have the path_arg. There are two types of input to consider:
         #   1) string representing a path that should be opened
         #   2) an already opened file object
@@ -187,10 +188,12 @@ def open_file(path_arg, mode='r'):
         else:
             new_args = list(args)
             new_args[path_arg] = fh
-
         # Finally, we call the original function, making sure to close the fh.
         try:
             result = func(*new_args, **kwargs)
+        except TypeError:
+            new_args += func.func_defaults
+            result = func(*new_args,**kwargs)
         finally:
             if close_fh:
                 fh.close()

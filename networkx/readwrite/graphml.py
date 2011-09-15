@@ -42,7 +42,7 @@ __all__ = ['write_graphml', 'read_graphml', 'generate_graphml',
            'GraphMLWriter', 'GraphMLReader']
 
 import networkx as nx
-from networkx.utils import get_file_handle, make_str
+from networkx.utils import open_file, make_str
 import warnings
 try:
     from xml.etree.cElementTree import Element, ElementTree, tostring
@@ -51,7 +51,8 @@ except ImportError:
         from xml.etree.ElementTree import Element, ElementTree, tostring
     except ImportError:
         pass
-    
+
+@open_file(1,mode='wb')
 def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     """Write G in GraphML XML format to path
 
@@ -77,10 +78,9 @@ def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     This implementation does not support mixed graphs (directed and unidirected 
     edges together) hyperedges, nested graphs, or ports. 
     """
-    fh = get_file_handle(path, mode='wb')
     writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint)
     writer.add_graph_element(G)
-    writer.dump(fh)
+    writer.dump(path)
 
 def generate_graphml(G, encoding='utf-8',prettyprint=True):
     """Generate GraphML lines for G
@@ -112,6 +112,7 @@ def generate_graphml(G, encoding='utf-8',prettyprint=True):
     for line in str(writer).splitlines():
         yield line
 
+@open_file(0,mode='rb')
 def read_graphml(path,node_type=str):
     """Read graph in GraphML format from path.
 
@@ -147,10 +148,9 @@ def read_graphml(path,node_type=str):
     the file to "file.graphml.gz".
 
     """
-    fh=get_file_handle(path,mode='rb')
     reader = GraphMLReader(node_type=node_type)
     # need to check for multiple graphs
-    glist=list(reader(fh))
+    glist=list(reader(path))
     return glist[0]
 
 

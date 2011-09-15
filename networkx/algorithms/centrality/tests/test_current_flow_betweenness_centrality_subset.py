@@ -10,6 +10,7 @@ from networkx import edge_current_flow_betweenness_centrality_subset \
     as edge_current_flow_subset
 
 class TestFlowBetweennessCentrality(object):
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
         global np
@@ -109,6 +110,7 @@ class TestFlowBetweennessCentrality(object):
 
 
 class TestEdgeFlowBetweennessCentrality(object):
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
         global np

@@ -44,7 +44,7 @@ __all__ = [ 'balanced_tree',
 #   Some Classic Graphs
 #-------------------------------------------------------------------
 import networkx as nx
-from networkx.utils import is_list_of_ints, flatten, get_file_handle
+from networkx.utils import is_list_of_ints, flatten
 
 def _tree_edges(n,r):
     # helper function for trees
@@ -182,6 +182,7 @@ def complete_graph(n,create_using=None):
     Node labels are the integers 0 to n-1.
     """
     G=empty_graph(n,create_using)
+    G.name="complete_graph(%d)"%(n)
     if n>1:
         if G.is_directed():
             edges=itertools.permutations(range(n),2)

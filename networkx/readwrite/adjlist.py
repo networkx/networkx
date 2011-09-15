@@ -37,7 +37,7 @@ __all__ = ['generate_adjlist',
            'parse_adjlist',
            'read_adjlist']
 
-from networkx.utils import make_str, get_file_handle
+from networkx.utils import make_str, open_file
 import networkx as nx
 
 
@@ -90,7 +90,7 @@ def generate_adjlist(G, delimiter = ' '):
             seen.add(s)
         yield line
 
-
+@open_file(1,mode='wb')
 def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
     """Write graph G in single-line adjacency-list format to path.
 
@@ -133,16 +133,15 @@ def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
     """
     import sys
     import time
-    fh=get_file_handle(path,mode='wb')        
     pargs=comments + " ".join(sys.argv) + '\n'
     header = (pargs
              + comments + " GMT %s\n" % (time.asctime(time.gmtime()))
              + comments + " %s\n" % (G.name))
-    fh.write(header.encode(encoding))
+    path.write(header.encode(encoding))
 
     for line in generate_adjlist(G, delimiter):
         line+='\n'
-        fh.write(line.encode(encoding))
+        path.write(line.encode(encoding))
 
 
 def parse_adjlist(lines, comments = '#', delimiter = None,
@@ -227,6 +226,7 @@ def parse_adjlist(lines, comments = '#', delimiter = None,
         G.add_edges_from([(u, v) for v in vlist])
     return G
 
+@open_file(0,mode='rb')
 def read_adjlist(path, comments="#", delimiter=None, create_using=None, 
                  nodetype=None, encoding = 'utf-8'):
     """Read graph in adjacency list format from path.
@@ -300,8 +300,7 @@ def read_adjlist(path, comments="#", delimiter=None, create_using=None,
     --------
     write_adjlist
     """
-    fh=get_file_handle(path, 'rb')
-    lines = (line.decode(encoding) for line in fh)
+    lines = (line.decode(encoding) for line in path)
     return parse_adjlist(lines,
                          comments = comments,
                          delimiter = delimiter,

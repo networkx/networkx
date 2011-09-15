@@ -62,7 +62,7 @@ def _semantic_feasibility(self, G1_node, G2_node):
 
         for neighbor in G1_adj[G1_node]:
             # G1_node is not in core_1, so we must handle R_self separately
-            if neighbor is G1_node:
+            if neighbor == G1_node:
                 if not edge_match(G1_adj[G1_node][G1_node],
                                   G2_adj[G2_node][G2_node]):
                     return False

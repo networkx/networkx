@@ -5,6 +5,7 @@ from nose.tools import *
 import networkx
 
 class TestEigenvectorCentrality(object):
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
         global np
@@ -35,6 +36,7 @@ class TestEigenvectorCentrality(object):
 
 
 class TestEigenvectorCentralityDirected(object):
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
         global np
@@ -66,7 +68,6 @@ class TestEigenvectorCentralityDirected(object):
         self.H=G
         self.H.evc=[0.25368793,  0.19576478,  0.32817092,  0.40430835,  
                     0.48199885, 0.15724483,  0.51346196,  0.32475403]
-
 
 
     def test_eigenvector_centrality_weighted(self):

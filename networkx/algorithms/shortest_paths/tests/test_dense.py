@@ -4,7 +4,7 @@ from nose import SkipTest
 import networkx as nx
 
 class TestFloyd:
-
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     def setUp(self):
         pass
 
