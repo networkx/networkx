@@ -14,9 +14,90 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
 
 import networkx as nx
 
-__all__ = ['adj_matrix', 'laplacian', 'generalized_laplacian',
+__all__ = ['incidence_matrix','adj_matrix', 'laplacian', 'generalized_laplacian',
            'laplacian_spectrum', 'adjacency_spectrum','normalized_laplacian']
 
+
+def incidence_matrix(G,nodelist=None,edgelist=None,oriented=False,weight=None):
+    """Return incidence matrix of G.
+
+    The incidence matrix assigns each row to a node and each column to an edge.
+    For a standard incidence matrix a 1 appears wherever a row's node is 
+    incident on the column's edge.  For an oriented incidence matrix each
+    edge is assigned an orientation (arbitrarily for undirected and aligning to
+    direction for directed).  A -1 appears for the tail of an edge and 1 
+    for the head of the edge.  The elements are zero otherwise.
+    
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph 
+
+    nodelist : list, optional   (default= all nodes in G)
+       The rows are ordered according to the nodes in nodelist.
+       If nodelist is None, then the ordering is produced by G.nodes().
+
+    edgelist : list, optional (default= all edges in G) 
+       The columns are ordered according to the edges in edgelist.
+       If edgelist is None, then the ordering is produced by G.edges().
+
+    oriented: bool, optional (default=False)
+       If True, matrix elements are +1 or -1 for the head or tail node 
+       respectively of each edge.  If False, +1 occurs at both nodes.
+
+    weight : string or None, optional (default=None)
+       The edge data key used to provide each value in the matrix.
+       If None, then each edge has weight 1.  Edge weights, if used,
+       should be positive so that the orientation can provide the sign.
+
+    Returns
+    -------
+    In : numpy matrix
+      Incidence matrix representation of G.
+
+    Notes
+    -----
+    For MultiGraph/MultiDiGraph, the edges in edgelist should be 
+    (u,v,key) 3-tuples.
+    """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+          "incidence_matrix() requires numpy: http://scipy.org/ ")
+    if nodelist is None:
+        nodelist=G.nodes()
+    if edgelist is None:
+        if G.is_multigraph():
+            edgelist=G.edges(keys=True)
+        else:
+            edgelist=G.edges()
+    N=len(nodelist)
+    M=len(edgelist)
+    node_index=dict( (n,i) for i,n in enumerate(nodelist) )
+    Inc = np.zeros((N,M))
+    for ei,e in enumerate(edgelist):
+        (u,v)=e[:2]
+        if u==v: continue  #selfloops give zero column
+        try:
+            ui=node_index[u]
+            vi=node_index[v]
+        except KeyError:
+            raise NetworkXError("node %s or %s in edgelist but not in nodelist"%(u,v))
+        wt=1
+        if weight is not None:
+            if G.is_multigraph():
+                ekey=e[2]
+                wt=G[u][v][ekey].get(weight,1)
+            else:
+                wt=G[u][v].get(weight,1)
+        if oriented:
+            Inc[ui,ei]=-wt
+            Inc[vi,ei]=wt
+        else:
+            Inc[ui,ei]=wt
+            Inc[vi,ei]=wt
+    return Inc
 
 def adj_matrix(G,nodelist=None,weight='weight'):
     """Return adjacency matrix of G.
