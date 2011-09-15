@@ -18,7 +18,8 @@ __all__ = ['incidence_matrix','adj_matrix', 'laplacian', 'generalized_laplacian'
            'laplacian_spectrum', 'adjacency_spectrum','normalized_laplacian']
 
 
-def incidence_matrix(G,nodelist=None,edgelist=None,oriented=False,weight=None):
+def incidence_matrix(G, nodelist=None, edgelist=None, 
+                     oriented=False, weight=None):
     """Return incidence matrix of G.
 
     The incidence matrix assigns each row to a node and each column to an edge.
@@ -52,13 +53,21 @@ def incidence_matrix(G,nodelist=None,edgelist=None,oriented=False,weight=None):
 
     Returns
     -------
-    In : numpy matrix
-      Incidence matrix representation of G.
+    A : NumPy matrix
+      The incidence matrix of G.
 
     Notes
     -----
     For MultiGraph/MultiDiGraph, the edges in edgelist should be 
     (u,v,key) 3-tuples.
+
+    "Networks are the best discrete model for so many problems in 
+    applied mathematics" [1]_.
+
+    References
+    ----------
+    .. [1] Gil Strang, Network applications: A = incidence matrix,
+       http://academicearth.org/lectures/network-applications-incidence-matrix
     """
     try:
         import numpy as np
@@ -66,38 +75,38 @@ def incidence_matrix(G,nodelist=None,edgelist=None,oriented=False,weight=None):
         raise ImportError(
           "incidence_matrix() requires numpy: http://scipy.org/ ")
     if nodelist is None:
-        nodelist=G.nodes()
+        nodelist = G.nodes()
     if edgelist is None:
         if G.is_multigraph():
-            edgelist=G.edges(keys=True)
+            edgelist = G.edges(keys=True)
         else:
-            edgelist=G.edges()
-    N=len(nodelist)
-    M=len(edgelist)
-    node_index=dict( (n,i) for i,n in enumerate(nodelist) )
-    Inc = np.zeros((N,M))
+            edgelist = G.edges()
+    A = np.zeros((len(nodelist),len(edgelist)))
+    node_index = dict( (node,i) for i,node in enumerate(nodelist) )
     for ei,e in enumerate(edgelist):
-        (u,v)=e[:2]
-        if u==v: continue  #selfloops give zero column
+        (u,v) = e[:2]
+        if u == v: continue  # self loops give zero column
         try:
-            ui=node_index[u]
-            vi=node_index[v]
+            ui = node_index[u]
+            vi = node_index[v]
         except KeyError:
-            raise NetworkXError("node %s or %s in edgelist but not in nodelist"%(u,v))
-        wt=1
-        if weight is not None:
-            if G.is_multigraph():
-                ekey=e[2]
-                wt=G[u][v][ekey].get(weight,1)
-            else:
-                wt=G[u][v].get(weight,1)
-        if oriented:
-            Inc[ui,ei]=-wt
-            Inc[vi,ei]=wt
+            raise NetworkXError('node %s or %s in edgelist '
+                                'but not in nodelist"%(u,v)')
+        if weight is None:
+            wt = 1
         else:
-            Inc[ui,ei]=wt
-            Inc[vi,ei]=wt
-    return Inc
+            if G.is_multigraph():
+                ekey = e[2]
+                wt = G[u][v][ekey].get(weight,1)
+            else:
+                wt = G[u][v].get(weight,1)
+        if oriented:
+            A[ui,ei] = -wt
+            A[vi,ei] = wt
+        else:
+            A[ui,ei] = wt
+            A[vi,ei] = wt
+    return np.asmatrix(A)
 
 def adj_matrix(G,nodelist=None,weight='weight'):
     """Return adjacency matrix of G.
