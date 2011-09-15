@@ -13,6 +13,7 @@ Spectrum
    :toctree: generated/
 
    adj_matrix
+   incidence_matrix
    laplacian
    normalized_laplacian
    laplacian_spectrum
