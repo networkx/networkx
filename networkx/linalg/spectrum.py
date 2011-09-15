@@ -5,7 +5,7 @@ Laplacian, adjacency matrix, and spectrum of graphs.
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)'])
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -14,8 +14,12 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
 
 import networkx as nx
 
-__all__ = ['incidence_matrix','adj_matrix', 'laplacian', 'generalized_laplacian',
-           'laplacian_spectrum', 'adjacency_spectrum','normalized_laplacian']
+__all__ = ['incidence_matrix',
+           'adj_matrix', 'adjacency_matrix',
+           'laplacian', 'generalized_laplacian','normalized_laplacian',
+           'laplacian_matrix', 'generalized_laplacian','normalized_laplacian',
+           'laplacian_spectrum', 'adjacency_spectrum',
+           ]
 
 
 def incidence_matrix(G, nodelist=None, edgelist=None, 
@@ -108,7 +112,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
             A[vi,ei] = wt
     return np.asmatrix(A)
 
-def adj_matrix(G,nodelist=None,weight='weight'):
+def adjacency_matrix(G,nodelist=None,weight='weight'):
     """Return adjacency matrix of G.
 
     Parameters
@@ -147,7 +151,7 @@ def adj_matrix(G,nodelist=None,weight='weight'):
     return nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight)
 
 
-def laplacian(G,nodelist=None,weight='weight'):
+def laplacian_matrix(G,nodelist=None,weight='weight'):
     """Return the Laplacian matrix of G.
 
     The graph Laplacian is the matrix L = D - A, where
@@ -213,7 +217,7 @@ def laplacian(G,nodelist=None,weight='weight'):
     return L
 
 
-def normalized_laplacian(G,nodelist=None,weight='weight'):
+def normalized_laplacian_matrix(G,nodelist=None,weight='weight'):
     r"""Return the normalized Laplacian matrix of G.
 
     The normalized graph Laplacian is the matrix
@@ -366,8 +370,11 @@ def adjacency_spectrum(G,weight='weight'):
     return np.linalg.eigvals(adj_matrix(G,weight=weight))
 
 
-combinatorial_laplacian=laplacian
-generalized_laplacian=normalized_laplacian
+combinatorial_laplacian=laplacian_matrix
+generalized_laplacian=normalized_laplacian_matrix
+normalized_laplacian=normalized_laplacian_matrix
+adj_matrix=adjacency_matrix
+laplacian=laplacian_matrix
 
 
 # fixture for nose tests

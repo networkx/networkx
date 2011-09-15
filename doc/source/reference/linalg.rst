@@ -12,10 +12,10 @@ Spectrum
 .. autosummary::
    :toctree: generated/
 
-   adj_matrix
-   incidence_matrix
-   laplacian
-   normalized_laplacian
+   adjacency_matrix
+   incidence_matrix 
+   laplacian_matrix
+   normalized_laplacian_matrix
    laplacian_spectrum
    adjacency_spectrum
 
