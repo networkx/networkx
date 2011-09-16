@@ -465,7 +465,7 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, create_using=None, seed=N
     return G
 
 
-def random_regular_graph(d, n, create_using=None, seed=None):
+def random_regular_graph(d, n, seed=None):
     """Return a random regular graph of n nodes each with degree d.
     
     The resulting graph G has no self-loops or parallel edges.
@@ -476,15 +476,12 @@ def random_regular_graph(d, n, create_using=None, seed=None):
       Degree
     n : integer
       Number of nodes. The value of n*d must be even.
-    create_using : graph, optional (default Graph)
-        The graph instance used to build the graph.
     seed : hashable object
         The seed for random number generator.
 
     Notes
     -----
     The nodes are numbered form 0 to n-1.
-
 
     Kim and Vu's paper [2]_ shows that this algorithm samples in an
     asymptotically uniform way from the space of random graphs when
@@ -508,14 +505,6 @@ def random_regular_graph(d, n, create_using=None, seed=None):
 
     if not 0 <= d < n:
         raise nx.NetworkXError("the 0 <= d < n inequality must be satisfied")
-
-    if create_using is None:
-        G = nx.Graph()
-    elif create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-    else:
-        G = create_using
-        G.clear()
 
     if seed is not None:
         random.seed(seed)
@@ -572,6 +561,7 @@ def random_regular_graph(d, n, create_using=None, seed=None):
     while edges is None:
         edges = _try_creation()
     
+    G = nx.Graph()
     G.name = "random_regular_graph(%s, %s)" % (d, n)
     G.add_edges_from(edges)
 
