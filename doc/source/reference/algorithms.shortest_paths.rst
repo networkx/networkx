@@ -7,7 +7,7 @@ Shortest Paths
    shortest_path
    shortest_path_length
    average_shortest_path_length
-
+   has_path
 
 
 Advanced Interface

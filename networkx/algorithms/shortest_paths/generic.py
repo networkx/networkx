@@ -18,9 +18,30 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['shortest_path',
            'shortest_path_length',
-           'average_shortest_path_length']
+           'average_shortest_path_length',
+           'has_path']
 
 import networkx as nx
+
+def has_path(G, source ,target):
+    """Return true if G has a path from source to target. 
+    False otherwise.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node
+       Starting node for path.  
+
+    target : node
+       Ending node for path.  
+    """
+    try:
+        sp = nx.shortest_path(G,source, target)
+    except nx.NetworkXNoPath:
+        return False
+    return True
 
 def shortest_path(G, source=None, target=None, weight=None):
     """Compute shortest paths in the graph.

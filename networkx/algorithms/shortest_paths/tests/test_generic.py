@@ -111,3 +111,11 @@ class TestGenericPath:
         g.add_nodes_from(range(3))
         g.add_edge(0, 1)
         assert_raises(nx.NetworkXError,nx.average_shortest_path_length,g)
+
+
+    def test_has_path(self):
+        G = nx.Graph()
+        G.add_path(range(3))
+        G.add_path(range(3,5))
+        assert_true(nx.has_path(G,0,2))
+        assert_false(nx.has_path(G,0,4))
