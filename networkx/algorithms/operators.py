@@ -17,6 +17,7 @@ __all__ = ['union','compose', 'complement',
            'difference', 'symmetric_difference',
            'cartesian_product']
 
+
 import networkx as nx
 from networkx.utils import is_string_like
                                                                                 
@@ -405,6 +406,9 @@ def cartesian_product(G,H):
     Only tested with Graph class.  Graph, node, and edge attributes
     are not copied to the new graph.
     """
+    if not G.is_directed() == H.is_directed():
+        raise nx.NetworkXError("G and H must be both directed or",
+                               "both undirected")
     Prod=G.__class__()
     for v in G:
         for w in H:
