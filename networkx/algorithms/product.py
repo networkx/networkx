@@ -14,7 +14,7 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'
                             'Ben Edwards(bedwards@cs.unm.edu)'])
-__all__ = ['cartesian_product', 'tensor_product',
+__all__ = ['tensor_product',
            'lexicographic_product', 'strong_product']
 
 def _dict_product(d1,d2):
@@ -148,7 +148,7 @@ def tensor_product(G,H):
     >>> H.add_node('a',a2='Spam')
     >>> GH = nx.tensor_product(G,H)
     >>> GH.nodes(data=True)
-    [((0,'a'),{'a1':(True,True),'a2':(None,'Spam')})]
+    [((0, 'a'), {'a1': (True, True), 'a2': (None, 'Spam')})]
 
     Edge attributs are also copied, as well as Multigraph edge keys.
     """
@@ -211,7 +211,7 @@ def cartesian_product(G,H):
     >>> H.add_node('a',a2='Spam')
     >>> GH = nx.cartesian_product(G,H)
     >>> GH.nodes(data=True)
-    [((0,'a'),{'a1':(True,True),'a2':(None,'Spam')})]
+    [((0, 'a'), {'a1': (True, True), 'a2': (None, 'Spam')})]
 
     Edge attributs are also copied, as well as Multigraph edge keys.
     """

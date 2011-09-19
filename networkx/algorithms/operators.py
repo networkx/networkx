@@ -14,7 +14,8 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 
 __all__ = ['union','compose', 'complement',
            'disjoint_union', 'intersection', 
-           'difference', 'symmetric_difference']
+           'difference', 'symmetric_difference',
+           'cartesian_product']
 
 import networkx as nx
 from networkx.utils import is_string_like
@@ -387,3 +388,45 @@ def complement(G,create_using=None,name=None):
 
 
 
+def cartesian_product(G,H):
+    """ Return the Cartesian product of G and H.
+
+    Parameters
+    ----------
+    G,H : graph
+       A NetworkX graph 
+
+    create_using : NetworkX graph
+       Use specified graph for result.  Otherwise a new graph is created
+       with the same type as G.
+
+    Notes
+    -----
+    Only tested with Graph class.  Graph, node, and edge attributes
+    are not copied to the new graph.
+    """
+    Prod=G.__class__()
+    for v in G:
+        for w in H:
+            Prod.add_node((v,w)) 
+
+    if G.is_multigraph():
+        Prod.add_edges_from( (((v,w1),(v,w2),k,d) 
+                              for w1,w2,k,d 
+                              in H.edges_iter(keys=True,data=True) 
+                              for v in G) )
+        Prod.add_edges_from( (((v1,w),(v2,w),k,d) 
+                              for v1,v2,k,d 
+                              in G.edges_iter(keys=True,data=True) 
+                              for w in H) )
+
+    else:
+        Prod.add_edges_from( (((v,w1),(v,w2),d) 
+                              for w1,w2,d in H.edges_iter(data=True) 
+                              for v in G) )
+        Prod.add_edges_from( (((v1,w),(v2,w),d) 
+                              for v1,v2,d in G.edges_iter(data=True) 
+                              for w in H) )
+
+    Prod.name="Cartesian Product("+G.name+","+H.name+")"
+    return Prod
