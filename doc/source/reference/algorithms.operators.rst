@@ -7,7 +7,6 @@ Operators
 .. autosummary::
    :toctree: generated/
 
-   cartesian_product
    compose
    complement
    union
