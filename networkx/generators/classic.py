@@ -344,7 +344,7 @@ def grid_2d_graph(m,n,periodic=False,create_using=None):
     return G
 
 
-def grid_graph(dim,periodic=False,create_using=None):
+def grid_graph(dim,periodic=False):
     """ Return the n-dimensional grid graph.
 
     The dimension is the length of the list 'dim' and the
@@ -355,11 +355,9 @@ def grid_graph(dim,periodic=False,create_using=None):
     If periodic=True then join grid edges with periodic boundary conditions.
 
     """    
-    if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
     dlabel="%s"%dim
     if dim==[]:
-        G=empty_graph(0,create_using)
+        G=empty_graph(0)
         G.name="grid_graph(%s)"%dim
         return G
     if not is_list_of_ints(dim):
@@ -373,29 +371,29 @@ def grid_graph(dim,periodic=False,create_using=None):
         func=path_graph
 
     current_dim=dim.pop()
-    G=func(current_dim,create_using)
+    G=func(current_dim)
     while len(dim)>0:
         current_dim=dim.pop() 
         # order matters: copy before it is cleared during the creation of Gnew
         Gold=G.copy() 
-        Gnew=func(current_dim,create_using)
+        Gnew=func(current_dim)
         # explicit: create_using=None 
         # This is so that we get a new graph of Gnew's class.
-        G=nx.cartesian_product(Gnew,Gold,create_using=None)
+        G=nx.cartesian_product(Gnew,Gold)
     # graph G is done but has labels of the form (1,(2,(3,1)))
     # so relabel
     H=nx.relabel_nodes(G, flatten)
     H.name="grid_graph(%s)"%dlabel
     return H
 
-def hypercube_graph(n,create_using=None):
+def hypercube_graph(n):
     """Return the n-dimensional hypercube.
 
     Node labels are the integers 0 to 2**n - 1.
 
     """
     dim=n*[2]
-    G=grid_graph(dim,create_using=create_using)
+    G=grid_graph(dim)
     G.name="hypercube_graph_(%d)"%n
     return G
 

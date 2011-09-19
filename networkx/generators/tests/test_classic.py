@@ -263,11 +263,8 @@ class TestGeneratorClassic():
             assert_equal(number_of_nodes(g), n*m)
             assert_true(is_isomorphic(g,path_graph(5)))
 
-        assert_raises(networkx.exception.NetworkXError,
-                      grid_graph, [n,m], create_using=DiGraph())
-        
-        mg=grid_graph([n,m], create_using=MultiGraph())
-        assert_equal(mg.edges(), g.edges())
+#        mg=grid_graph([n,m], create_using=MultiGraph())
+#        assert_equal(mg.edges(), g.edges())
 
     def test_hypercube_graph(self):
         for n, G in [(0, null_graph()), (1, path_graph(2)),
@@ -282,11 +279,8 @@ class TestGeneratorClassic():
         g=hypercube_graph(6)
         assert_equal(degree_histogram(g), [0, 0, 0, 0, 0, 0, 64])
         
-        assert_raises(networkx.exception.NetworkXError,
-                      hypercube_graph, 6, create_using=DiGraph())
-        
-        mg=hypercube_graph(6, create_using=MultiGraph())
-        assert_equal(mg.edges(), g.edges())
+#        mg=hypercube_graph(6, create_using=MultiGraph())
+#        assert_equal(mg.edges(), g.edges())
 
     def test_ladder_graph(self):
         for i, G in [(0, empty_graph(0)), (1, path_graph(2)),
