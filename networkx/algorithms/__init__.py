@@ -15,6 +15,7 @@ from networkx.algorithms.mixing import *
 from networkx.algorithms.mst import *
 from networkx.algorithms.link_analysis import *
 from networkx.algorithms.operators import *
+from networkx.algorithms.product import *
 from networkx.algorithms.shortest_paths import *
 from networkx.algorithms.smetric import *
 from networkx.algorithms.traversal import *

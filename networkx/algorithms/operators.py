@@ -2,7 +2,7 @@
 Operations on graphs including union, intersection, difference,
 complement, subgraph. 
 """
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -12,8 +12,7 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
 
-__all__ = ['union', 'cartesian_product', 
-           'compose', 'complement',
+__all__ = ['union','compose', 'complement',
            'disjoint_union', 'intersection', 
            'difference', 'symmetric_difference']
 
@@ -293,54 +292,6 @@ def symmetric_difference(G,H,create_using=None ):
         if not G.has_edge(*e):
             R.add_edge(*e)
     return R
-
-def cartesian_product(G,H,create_using=None):
-    """ Return the Cartesian product of G and H.
-
-    Parameters
-    ----------
-    G,H : graph
-       A NetworkX graph 
-
-    create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created
-       with the same type as G.
-
-    Notes
-    -----
-    Only tested with Graph class.  Graph, node, and edge attributes
-    are not copied to the new graph.
-    """
-    if create_using is None:
-        Prod=G.__class__()
-    else:
-        Prod=create_using
-        Prod.clear()
-
-    for v in G:
-        for w in H:
-            Prod.add_node((v,w)) 
-
-    if G.is_multigraph():
-        Prod.add_edges_from( (((v,w1),(v,w2),k,d) 
-                              for w1,w2,k,d 
-                              in H.edges_iter(keys=True,data=True) 
-                              for v in G) )
-        Prod.add_edges_from( (((v1,w),(v2,w),k,d) 
-                              for v1,v2,k,d 
-                              in G.edges_iter(keys=True,data=True) 
-                              for w in H) )
-
-    else:
-        Prod.add_edges_from( (((v,w1),(v,w2),d) 
-                              for w1,w2,d in H.edges_iter(data=True) 
-                              for v in G) )
-        Prod.add_edges_from( (((v1,w),(v2,w),d) 
-                              for v1,v2,d in G.edges_iter(data=True) 
-                              for w in H) )
-
-    Prod.name="Cartesian Product("+G.name+","+H.name+")"
-    return Prod
 
 
 def compose(G,H,create_using=None, name=None):
