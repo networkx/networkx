@@ -8,31 +8,24 @@ Graph products.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from networkx.utils import is_string_like
 from itertools import product
+
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Dan Schult(dschult@colgate.edu)'
                             'Ben Edwards(bedwards@cs.unm.edu)'])
-__all__ = ['tensor_product',
+
+__all__ = ['tensor_product','cartesian_product',
            'lexicographic_product', 'strong_product']
 
 def _dict_product(d1,d2):
-    prod_dict = {}
-    for k in list(d1.keys()) + list(d2.keys()):
-        if k in d1 and k in d2:
-            prod_dict[k] = (d1[k],d2[k])
-        elif k in d1 and not k in d2:
-            prod_dict[k] = (d1[k],None)
-        elif not k in d1 and k in d2:
-            prod_dict[k] = (None,d2[k])
-    return prod_dict
+    return dict((k,(d1.get(k),d2.get(k))) for k in set(d1)|set(d2))
 
 
 """A bunch of generators for producting graph products"""
 def _node_product(G,H):
     for ((u_G,d_G),(u_H,d_H)) in product(G.nodes_iter(data=True),
-                                       H.nodes_iter(data=True)):
+                                         H.nodes_iter(data=True)):
         yield ((u_G,u_H),_dict_product(d_G,d_H))
         
 def _directed_edges_cross_edges(G,H):
@@ -82,7 +75,7 @@ def _edges_cross_nodes(G,H):
                 if H.is_multigraph():
                     yield ((u_G,x),(v_G,x),None,d_G)
                 else:
-                    yield ((u_G,x),(v_G),d_G)
+                    yield ((u_G,x),(v_G,x),d_G)
 
 
 def _nodes_cross_edges(G,H):
@@ -147,9 +140,8 @@ def tensor_product(G,H):
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
     >>> GH = nx.tensor_product(G,H)
- 
-    GH.nodes(data=True)
-    [((0, 'a'), {'a1': (True, True), 'a2': (None, 'Spam')})]
+    >>> GH.nodes(data=True)
+    [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
 
     Edge attributs are also copied, as well as Multigraph edge keys.
     """
@@ -211,9 +203,8 @@ def cartesian_product(G,H):
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
     >>> GH = nx.cartesian_product(G,H)
-
-    GH.nodes(data=True)
-    [((0, 'a'), {'a1': (True, True), 'a2': (None, 'Spam')})]
+    >>> GH.nodes(data=True)
+    [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
 
     Edge attributs are also copied, as well as Multigraph edge keys.
     """
@@ -236,7 +227,7 @@ def cartesian_product(G,H):
     
     GH.add_edges_from(_edges_cross_nodes(G,H))
 
-    GH.add_edges_from(_edges_cross_nodes(H,G))
+    GH.add_edges_from(_nodes_cross_edges(G,H))
 
     GH.name = "Cartesian product("+G.name+","+H.name+")"
     return GH
@@ -275,9 +266,8 @@ def lexicographic_product(G,H):
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
     >>> GH = nx.lexicographic_product(G,H)
-    
-    GH.nodes(data=True)
-    [((0,'a'),{'a1':(True,True),'a2':(None,'Spam')})]
+    >>> GH.nodes(data=True)
+    [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
 
     Edge attributs are also copied, as well as Multigraph edge keys.
     """
@@ -342,9 +332,8 @@ def strong_product(G,H):
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
     >>> GH = nx.strong_product(G,H)
-    
-    GH.nodes(data=True)
-    [((0,'a'),{'a1':(True,True),'a2':(None,'Spam')})]
+    >>> GH.nodes(data=True)
+    [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
 
     Edge attributs are also copied, as well as Multigraph edge keys.
     """
@@ -366,15 +355,13 @@ def strong_product(G,H):
 
     GH.add_nodes_from(_node_product(G,H))
 
-
     GH.add_edges_from(_nodes_cross_edges(G,H))
-    GH.add_edges_from(_nodes_cross_edges(H,G))
+    GH.add_edges_from(_edges_cross_nodes(G,H))
 
-    GH.add_edges_from(_undirected_edges_cross_edges(G,H))
-    GH.add_edges_from(_undirected_edges_cross_edges(H,G))
+    GH.add_edges_from(_directed_edges_cross_edges(G,H))
 
     if not GH.is_directed():
-        GH.add_edges_from(_directed_edges_cross_edges(G,H))
+        GH.add_edges_from(_undirected_edges_cross_edges(G,H))
 
     GH.name = "Strong product("+G.name+","+H.name+")"
     return GH
