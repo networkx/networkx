@@ -47,6 +47,7 @@ packages=["networkx",
           "networkx.drawing",
           "networkx.linalg",
           "networkx.readwrite",
+          "networkx.readwrite.json_graph",
           "networkx.tests",
           "networkx.utils"]
 
