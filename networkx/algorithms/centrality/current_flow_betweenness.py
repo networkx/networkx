@@ -16,7 +16,8 @@ __all__ = ['current_flow_betweenness_centrality',
 import networkx as nx
 
 
-def current_flow_betweenness_centrality(G,normalized=True,weight='weight'):
+def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
+                                        dtype=float):
     """Compute current-flow betweenness centrality for nodes.
 
     Current-flow betweenness centrality uses an electrical current
@@ -38,6 +39,10 @@ def current_flow_betweenness_centrality(G,normalized=True,weight='weight'):
     weight : string or None, optional (default='weight')
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+
+    dtype: data type (float)
+      Default data type for internal matrices.
+      Set to np.float32 for lower memory consumption.
 
     Returns
     -------
@@ -71,21 +76,17 @@ def current_flow_betweenness_centrality(G,normalized=True,weight='weight'):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(
-            """current_flow_betweenness_centrality() requires NumPy 
-http://scipy.org/""")
-
+        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
+                          'http://scipy.org/')
     if G.is_directed():
         raise nx.NetworkXError(\
             "current_flow_betweenness_centrality() not defined for digraphs.")
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     betweenness=dict.fromkeys(G,0.0) # b[v]=0 for v in G
-    F=_compute_F(G,weight) # Current-flow matrix
-    m,n=F.shape # m edges and n nodes
-    for (ei,(s,t)) in enumerate(G.edges_iter()): 
-        # ei is index of edge
-        Fe=F[ei,:] # ei row of F
+    m = G.number_of_edges()
+    n = G.number_of_nodes()
+    for Fe,(s,t) in flow_matrix_row(G,weight,dtype=dtype):
         # rank of F[ei,v] in row Fe sorted in non-increasing order
         pos=dict(zip(Fe.argsort()[::-1],range(1,n+1)))
         for i in range(n):
@@ -100,7 +101,8 @@ http://scipy.org/""")
     return betweenness
 
 
-def edge_current_flow_betweenness_centrality(G,normalized=True,weight='weight'):
+def edge_current_flow_betweenness_centrality(G, normalized=True,weight='weight',
+                                             dtype=float):
     """Compute current-flow betweenness centrality for edges.
 
     Current-flow betweenness centrality uses an electrical current
@@ -122,6 +124,10 @@ def edge_current_flow_betweenness_centrality(G,normalized=True,weight='weight'):
     weight : string or None, optional (default='weight')
       Key for edge data used as the edge weight.
       If None, then use 1 as each edge weight.
+
+    dtype: data type (float)
+      Default data type for internal matrices.
+      Set to np.float32 for lower memory consumption.
 
     Returns
     -------
@@ -155,25 +161,21 @@ def edge_current_flow_betweenness_centrality(G,normalized=True,weight='weight'):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(
-            """current_flow_betweenness_centrality() requires NumPy 
-http://scipy.org/""")
-
+        raise ImportError('current_flow_betweenness_centrality requires NumPy ',
+                          'http://scipy.org/')
     if G.is_directed():
-        raise nx.NetworkXError(\
-            "current_flow_closeness_centrality() not defined for digraphs.")
+        raise nx.NetworkXError('current_flow_closeness_centrality ',
+                               'not defined for digraphs.')
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     betweenness=(dict.fromkeys(G.edges(),0.0))
-    F=_compute_F(G,weight) # Current-flow matrix
-    m,n=F.shape # m edges and n nodes
+    m = G.number_of_edges()
+    n = G.number_of_nodes()
     if normalized:
         nb=(n-1.0)*(n-2.0) # normalization factor
     else:
         nb=2.0
-    for (ei,e) in enumerate(G.edges_iter()): 
-        # ei is index of edge
-        Fe=F[ei,:] # ei row of F
+    for Fe,(e) in flow_matrix_row(G,weight,dtype=dtype):
         # rank of F[ei,v] in row Fe sorted in non-increasing order
         pos=dict(zip(Fe.argsort()[::-1],range(1,n+1)))
         for i in range(n):
@@ -182,47 +184,23 @@ http://scipy.org/""")
         betweenness[e]/=nb
     return betweenness
 
-
-
-def _compute_C(G,weight='weight'):
-    """Inverse of Laplacian."""
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-            """current_flow_betweenness_centrality() requires NumPy 
-http://scipy.org/""")
-    L=nx.laplacian(G,weight=weight) # use ordering of G.nodes() 
-    # remove first row and column
-    LR=L[1:,1:]
-    LRinv=np.linalg.inv(LR)
-    C=np.zeros(L.shape)
-    C[1:,1:]=LRinv
-    return C
-
-def _compute_F(G,weight='weight'):
+def flow_matrix_row(G, weight='weight', dtype=float):
     """Current flow matrix."""
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-            """current_flow_betweenness_centrality() requires NumPy 
-http://scipy.org/""")
-
-    C=np.asmatrix(_compute_C(G,weight))
-    n=G.number_of_nodes()
-    m=G.number_of_edges()
-    B=np.zeros((n,m))
-    # use G.nodes() and G.edges() ordering of edges for B  
+    import numpy as np
+    L = nx.laplacian(G,weight=weight).astype(dtype)
+    C = np.zeros(L.shape).astype(dtype)
+    C[1:,1:] = np.linalg.inv(L[1:,1:])
+    n = len(G)
     mapping=dict(zip(G,range(n)))  # map nodes to integers
-    for (ei,(v,w,d)) in enumerate(G.edges_iter(data=True)): 
-        c=d.get(weight,1.0)
-        vi=mapping[v]
-        wi=mapping[w]
-        B[vi,ei]=c
-        B[wi,ei]=-c
-    return np.asarray(B.T*C)
-
+    for (ei,(u,v,d)) in enumerate(G.edges_iter(data=True)): 
+        B = np.zeros(n)
+        c = d.get(weight,1.0)
+        ui = mapping[u]
+        vi = mapping[v]
+        B[ui] = c
+        B[vi] = -c
+        row = np.dot(B,C)
+        yield row,(u,v) # ei row of F with edge
 
 # fixture for nose tests
 def setup_module(module):
