@@ -461,8 +461,11 @@ class GraphMLReader(GraphML):
                     data[data_name] = data_type(text)
             elif len(list(data_element)) > 0:
                 # Assume yfiles as subelements, try to extract node_label
-                node_label = data_element.find("{%s}ShapeNode/{%s}NodeLabel"% 
-                                               (self.NS_Y, self.NS_Y))
+                node_label = None
+                for node_type in ['ShapeNode', 'SVGNode', 'ImageNode']:
+                    if node_label is None:
+                        node_label = data_element.find("{%s}%s/{%s}NodeLabel" % 
+                                (self.NS_Y, node_type, self.NS_Y))
                 if node_label is not None:
                     data['label'] = node_label.text
                 edge_label = data_element.find("{%s}PolyLineEdge/{%s}EdgeLabel"%
