@@ -8,7 +8,7 @@ Products
    :toctree: generated/
 
    cartesian_product
-   lexographic_product
+   lexicographic_product
    strong_product
    tensor_product
 

@@ -22,108 +22,124 @@ def _dict_product(d1,d2):
     return dict((k,(d1.get(k),d2.get(k))) for k in set(d1)|set(d2))
 
 
-"""A bunch of generators for producting graph products"""
+# Generators for producting graph products
 def _node_product(G,H):
-    for ((u_G,d_G),(u_H,d_H)) in product(G.nodes_iter(data=True),
-                                         H.nodes_iter(data=True)):
-        yield ((u_G,u_H),_dict_product(d_G,d_H))
-        
+    for u,v in product(G, H):
+        yield ((u,v), _dict_product(G.node[u], H.node[v]))
+
 def _directed_edges_cross_edges(G,H):
     if not G.is_multigraph() and not H.is_multigraph():
-        for (u_G,v_G,d_G) in G.edges_iter(data=True):
-            for (u_H,v_H,d_H) in H.edges_iter(data=True):
-                yield ((u_G,u_H),(v_G,v_H),_dict_product(d_G,d_H))
+        for u,v,c in G.edges_iter(data=True):
+            for x,y,d in H.edges_iter(data=True):
+                yield (u,x),(v,y),_dict_product(c,d)
     if not G.is_multigraph() and H.is_multigraph():
-        for (u_G,v_G,d_G) in G.edges_iter(data=True):
-            for (u_H,v_H,k_H,d_H) in H.edges_iter(data=True,keys=True):
-                yield ((u_G,u_H),(v_G,v_H),k_H,_dict_product(d_G,d_H))
+        for u,v,c in G.edges_iter(data=True):
+            for x,y,k,d in H.edges_iter(data=True,keys=True):
+                yield (u,x),(v,y),k,_dict_product(c,d)
     if G.is_multigraph() and not H.is_multigraph():
-        for (u_G,v_G,k_G,d_G) in G.edges_iter(data=True,keys=True):
-            for (u_H,v_H,d_H) in H.edges_iter(data=True):
-                yield ((u_G,u_H),(v_G,v_H),k_G,_dict_product(d_G,d_H))
+        for u,v,k,c in G.edges_iter(data=True,keys=True):
+            for x,y,d in H.edges_iter(data=True):
+                yield (u,x),(v,y),k,_dict_product(c,d)
     if G.is_multigraph() and H.is_multigraph():
-        for (u_G,v_G,k_G,d_G) in G.edges_iter(data=True,keys=True):
-            for (u_H,v_H,k_H,d_H) in H.edges_iter(data=True,keys=True):
-                yield ((u_G,u_H),(v_G,v_H),(k_G,k_H),_dict_product(d_G,d_H))
+        for u,v,j,c in G.edges_iter(data=True,keys=True):
+            for x,y,k,d in H.edges_iter(data=True,keys=True):
+                yield (u,x),(v,y),(j,k),_dict_product(c,d)
 
 def _undirected_edges_cross_edges(G,H):
     if not G.is_multigraph() and not H.is_multigraph():
-        for (u_G,v_G,d_G) in G.edges_iter(data=True):
-            for (u_H,v_H,d_H) in H.edges_iter(data=True):
-                yield ((v_G,u_H),(u_G,v_H),_dict_product(d_G,d_H))
+        for u,v,c in G.edges_iter(data=True):
+            for x,y,d in H.edges_iter(data=True):
+                yield (v,x),(u,y),_dict_product(c,d)
     if not G.is_multigraph() and H.is_multigraph():
-        for (u_G,v_G,d_G) in G.edges_iter(data=True):
-            for (u_H,v_H,k_H,d_H) in H.edges_iter(data=True,keys=True):
-                yield ((v_G,u_H),(u_G,v_H),k_H,_dict_product(d_G,d_H))
+        for u,v,c in G.edges_iter(data=True):
+            for x,y,k,d in H.edges_iter(data=True,keys=True):
+                yield (v,x),(u,y),k,_dict_product(c,d)
     if G.is_multigraph() and not H.is_multigraph():
-        for (u_G,v_G,k_G,d_G) in G.edges_iter(data=True,keys=True):
-            for (u_H,v_H,d_H) in H.edges_iter(data=True):
-                yield ((v_G,u_H),(u_G,v_H),k_G,_dict_product(d_G,d_H))
+        for u,v,k,c in G.edges_iter(data=True,keys=True):
+            for x,y,d in H.edges_iter(data=True):
+                yield (v,x),(u,y),k,_dict_product(c,d)
     if G.is_multigraph() and H.is_multigraph():
-        for (u_G,v_G,k_G,d_G) in G.edges_iter(data=True,keys=True):
-            for (u_H,v_H,k_H,d_H) in H.edges_iter(data=True,keys=True):
-                yield ((v_G,u_H),(u_G,v_H),(k_G,k_H),_dict_product(d_G,d_H))
+        for u,v,j,c in G.edges_iter(data=True,keys=True):
+            for x,y,k,d in H.edges_iter(data=True,keys=True):
+                yield (v,x),(u,y),(j,k),_dict_product(c,d)
 
 def _edges_cross_nodes(G,H):
     if G.is_multigraph():
-        for (u_G,v_G,k_G,d_G) in G.edges_iter(data=True,keys=True):
-            for x in H.nodes_iter():
-                yield ((u_G,x),(v_G,x),k_G,d_G)
+        for u,v,k,d in G.edges_iter(data=True,keys=True):
+            for x in H:
+                yield (u,x),(v,x),k,d
     else:
-        for (u_G,v_G,d_G) in G.edges_iter(data=True):
-            for x in H.nodes_iter():
+        for u,v,d in G.edges_iter(data=True):
+            for x in H:
                 if H.is_multigraph():
-                    yield ((u_G,x),(v_G,x),None,d_G)
+                    yield (u,x),(v,x),None,d
                 else:
-                    yield ((u_G,x),(v_G,x),d_G)
+                    yield (u,x),(v,x),d
 
 
 def _nodes_cross_edges(G,H):
     if H.is_multigraph():
-        for x in G.nodes_iter():
-            for (u_H,v_H,k_H,d_H) in H.edges_iter(data=True,keys=True):
-                yield ((x,u_H),(x,v_H),k_H,d_H)
+        for x in G:
+            for u,v,k,d in H.edges_iter(data=True,keys=True):
+                yield (x,u),(x,v),k,d
     else:
-        for x in G.nodes_iter():
-            for (u_H,v_H,d_H) in H.edges_iter(data=True):
+        for x in G:
+            for u,v,d in H.edges_iter(data=True):
                 if G.is_multigraph():
-                    yield ((x,u_H),(x,v_H),None,d_H)
+                    yield (x,u),(x,v),None,d
                 else:
-                    yield ((x,u_H),(x,v_H),d_H)
+                    yield (x,u),(x,v),d
 
 def _edges_cross_nodes_and_nodes(G,H):
     if G.is_multigraph():
-        for (u_G,v_G,k_G,d_G) in G.edges_iter(data=True,keys=True):
-            for u_H in H.nodes_iter():
-                for v_H in H.nodes_iter():
-                    yield ((u_G,u_H),(v_G,v_H),k_G,d_G)
+        for u,v,k,d in G.edges_iter(data=True,keys=True):
+            for x in H:
+                for y in H:
+                    yield (u,x),(v,y),k,d
     else:
-        for (u_G,v_G,d_G) in G.edges_iter(data=True):
-            for u_H in H.nodes_iter():
-                for v_H in H.nodes_iter():
+        for u,v,d in G.edges_iter(data=True):
+            for x in H:
+                for y in H:
                     if H.is_multigraph():
-                        yield ((u_G,u_H),(v_G,v_H),None,d_G)
+                        yield (u,x),(v,y),None,d
                     else:
-                        yield((u_G,u_H),(v_G,v_H),d_G)
+                        yield (u,x),(v,y),d
+
+def _init_product_graph(G,H):
+    if not G.is_directed() == H.is_directed():
+        raise nx.NetworkXError("G and H must be both directed or",
+                               "both undirected")
+    if G.is_multigraph() or H.is_multigraph():
+        GH = nx.MultiGraph()
+    else:
+        GH = nx.Graph()
+    if G.is_directed():
+        GH = GH.to_directed()
+    return GH
+
 
 def tensor_product(G,H):
-    """Return the Tensor product of G and H.
+    r"""Return the tensor product of G and H.
 
-    Sometimes referred to as the Categorical Product. If GH =
-    tensor_product(G,H), ((u_G,u_H),(v_G,v_H)) is an edge in GH if and
-    only if (u_G,v_G) is in G and (u_H,v_H) is in H.
+    The tensor product P of the graphs G and H has a node set that
+    is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
+    P has an edge ((u,v),(x,y)) if and only if (u,v) is an edge in G
+    and (x,y) is an edge in H.
+
+    Sometimes referred to as the categorical product. 
+
 
     Parameters
     ----------
-    G,H: graph
-     A NetworkX Graph
+    G, H: graphs
+     Networkx graphs. 
 
     Returns
     -------
-    GH: NetworkX graph
-     The tensor product of G and H. GH will be a multi-graph if either G
-     or H is a multi-graph. Will be a directed if both G and H are directed,
-     and undirected if G and H are both undirected.
+    P: NetworkX graph
+     The tensor product of G and H. P will be a multi-graph if either G
+     or H is a multi-graph. Will be a directed if G and H are directed,
+     and undirected if G and H are undirected.
 
     Raises
     ------
@@ -132,61 +148,49 @@ def tensor_product(G,H):
 
     Notes
     -----
-    Tested with Graph Class
-    This produces nodes which have attributes that have the 'product'
-    of the G and H's nodes attributes. For example
+    Node attributes in P are two-tuple of the G and H node attributes.
+    Missing attributes are assigned None.
+
+    For example
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
-    >>> GH = nx.tensor_product(G,H)
-    >>> GH.nodes(data=True)
+    >>> P = nx.tensor_product(G,H)
+    >>> P.nodes(data=True)
     [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
 
-    Edge attributs are also copied, as well as Multigraph edge keys.
+    Edge attributes and edge keys (for multigraphs) are also copied to the
+    new product graph
     """
-    if not G.is_directed() == H.is_directed():
-        raise nx.NetworkXError("G and H must be both directed or",
-                               "both undirected")
-
-    if G.is_directed():
-        if G.is_multigraph() or H.is_multigraph():
-            GH = nx.MultiDiGraph()
-        else:
-            GH = nx.DiGraph()
-    else:
-        if G.is_multigraph() or H.is_multigraph():
-            GH = nx.MultiGraph()
-        else:
-            GH = nx.Graph()
-
+    GH = _init_product_graph(G,H)
     GH.add_nodes_from(_node_product(G,H))
-    
     GH.add_edges_from(_directed_edges_cross_edges(G,H))
     if not GH.is_directed():
         GH.add_edges_from(_undirected_edges_cross_edges(G,H))
-
     GH.name = "Tensor product("+G.name+","+H.name+")"
     return GH
 
 def cartesian_product(G,H):
     """Return the Cartesian product of G and H.
 
-    If GH = cartesian_product(G,H), ((u_G,u_H),(v_G,v_H)) is an edge
-    in GH if and only if (u_G,v_G) is an edge in G and u_H==v_H or
-    (u_H,v_H) is an edge in H and u_G==v_G.
+    The tensor product P of the graphs G and H has a node set that
+    is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
+    P has an edge ((u,v),(x,y)) if and only if (u,v) is an edge in G 
+    and x==y or  and (x,y) is an edge in H and u==v.
+    and (x,y) is an edge in H.
 
     Parameters
     ----------
-    G,H: graph
-     A NetworkX Graph
+    G, H: graphs
+     Networkx graphs. 
 
     Returns
     -------
-    GH: NetworkX graph
-     The cartesian product of G and H. GH will be a multi-graph if either G
-     or H is a multi-graph. Will be a directed if both G and H are directed,
-     and undirected if G and H are both undirected.
+    P: NetworkX graph
+     The Cartesian product of G and H. P will be a multi-graph if either G
+     or H is a multi-graph. Will be a directed if G and H are directed,
+     and undirected if G and H are undirected.
 
     Raises
     ------
@@ -195,61 +199,50 @@ def cartesian_product(G,H):
 
     Notes
     -----
-    Tested with Graph Class
-    This produces nodes which have attributes that have the 'product'
-    of the G and H's nodes attributes. For example
+    Node attributes in P are two-tuple of the G and H node attributes.
+    Missing attributes are assigned None.
+
+    For example
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
-    >>> GH = nx.cartesian_product(G,H)
-    >>> GH.nodes(data=True)
+    >>> P = nx.tensor_product(G,H)
+    >>> P.nodes(data=True)
     [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
 
-    Edge attributs are also copied, as well as Multigraph edge keys.
+    Edge attributes and edge keys (for multigraphs) are also copied to the
+    new product graph
     """
     if not G.is_directed() == H.is_directed():
         raise nx.NetworkXError("G and H must be both directed or",
                                "both undirected")
-
-    if G.is_directed():
-        if G.is_multigraph() or H.is_multigraph():
-            GH = nx.MultiDiGraph()
-        else:
-            GH = nx.DiGraph()
-    else:
-        if G.is_multigraph() or H.is_multigraph():
-            GH = nx.MultiGraph()
-        else:
-            GH = nx.Graph()
-
+    GH = _init_product_graph(G,H)
     GH.add_nodes_from(_node_product(G,H))
-    
     GH.add_edges_from(_edges_cross_nodes(G,H))
-
     GH.add_edges_from(_nodes_cross_edges(G,H))
-
     GH.name = "Cartesian product("+G.name+","+H.name+")"
     return GH
 
 def lexicographic_product(G,H):
     """Return the lexicographic product of G and H.
 
-    If GH = lexicographic_product(G,H), ((u_G,u_H),(v_G,v_H)) is an
-    edge in GH if and only if (u_G,v_G) is in G or u_G==v_G and
-    (u_H,v_H) is an edge in H.
+    The lexicographical product P of the graphs G and H has a node set that
+    is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
+    P has an edge ((u,v),(x,y)) if and only if (u,v) is an edge in G 
+    or u==v and (x,y) is an edge in H.
 
     Parameters
     ----------
-    G,H: graph
-     A NetworkX Graph
+    G, H: graphs
+     Networkx graphs. 
 
     Returns
     -------
-    GH: NetworkX graph
-     The lexicographic product of G and H. GH will be a multi-graph if either G
-     or H is a multi-graph. Will be a directed if both G and H are directed,
-     and undirected if G and H are both undirected.
+    P: NetworkX graph
+     The Cartesian product of G and H. P will be a multi-graph if either G
+     or H is a multi-graph. Will be a directed if G and H are directed,
+     and undirected if G and H are undirected.
 
     Raises
     ------
@@ -258,110 +251,80 @@ def lexicographic_product(G,H):
 
     Notes
     -----
-    Tested with Graph Class
-    This produces nodes which have attributes that have the 'product'
-    of the G and H's nodes attributes. For example
+    Node attributes in P are two-tuple of the G and H node attributes.
+    Missing attributes are assigned None.
+
+    For example
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
-    >>> GH = nx.lexicographic_product(G,H)
-    >>> GH.nodes(data=True)
+    >>> P = nx.tensor_product(G,H)
+    >>> P.nodes(data=True)
     [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
 
-    Edge attributs are also copied, as well as Multigraph edge keys.
+    Edge attributes and edge keys (for multigraphs) are also copied to the
+    new product graph
     """
-
-    if not G.is_directed() == H.is_directed():
-        raise nx.NetworkXError("G and H must be both directed or",
-                               "both undirected")
-
-    if G.is_directed():
-        if G.is_multigraph() or H.is_multigraph():
-            GH = nx.MultiDiGraph()
-        else:
-            GH = nx.DiGraph()
-    else:
-        if G.is_multigraph() or H.is_multigraph():
-            GH = nx.MultiGraph()
-        else:
-            GH = nx.Graph()
-
+    GH = _init_product_graph(G,H)
     GH.add_nodes_from(_node_product(G,H))
-    
     # Edges in G regardless of H designation
     GH.add_edges_from(_edges_cross_nodes_and_nodes(G,H))
-                
     # For each x in G, only if there is an edge in H
     GH.add_edges_from(_nodes_cross_edges(G,H))
-                                            
     GH.name = "Lexographic product("+G.name+","+H.name+")"
     return GH
 
 def strong_product(G,H):
     """Return the strong product of G and H.
 
-    If GH = strong_product(G,H), ((u_G,u_H),(v_G,v_H)) is an edge in
-    GH if and only if ((u_G,v_G) is in G and u_H==v_H) or (u_G==v_G
-    and (u_H,v_H) is an edge in H) or ((u_G,v_G) is an edge in G and
-    (u_H,v_H) is an edge in H).
+    The strong product P of the graphs G and H has a node set that
+    is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
+    P has an edge ((u,v),(x,y)) if and only if 
+    u==v and (x,y) is an edge in H, or
+    x==y and (u,v) is an edge in G, or
+    (u,v) is an edge in G and (x,y) is an edge in H.
 
     Parameters
     ----------
-    G,H: graph
-     A NetworkX Graph
+    G, H: graphs
+     Networkx graphs. 
 
     Returns
     -------
-    GH: NetworkX graph
-     The strong product of G and H. GH will be a multi-graph if either G
-     or H is a multi-graph. Will be a directed if both G and H are directed,
-     and undirected if G and H are both undirected.
+    P: NetworkX graph
+     The Cartesian product of G and H. P will be a multi-graph if either G
+     or H is a multi-graph. Will be a directed if G and H are directed,
+     and undirected if G and H are undirected.
 
     Raises
     ------
     NetworkXError
      If G and H are not both directed or both undirected.
+
     Notes
     -----
-    Tested with Graph Class
-    This produces nodes which have attributes that have the 'product'
-    of the G and H's nodes attributes. For example
+    Node attributes in P are two-tuple of the G and H node attributes.
+    Missing attributes are assigned None.
+
+    For example
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
-    >>> GH = nx.strong_product(G,H)
-    >>> GH.nodes(data=True)
+    >>> P = nx.tensor_product(G,H)
+    >>> P.nodes(data=True)
     [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
 
-    Edge attributs are also copied, as well as Multigraph edge keys.
+    Edge attributes and edge keys (for multigraphs) are also copied to the
+    new product graph
     """
-    
-    if not G.is_directed() == H.is_directed():
-        raise nx.NetworkXError("G and H must be both directed or",
-                               "both undirected")
-
-    if G.is_directed():
-        if G.is_multigraph() or H.is_multigraph():
-            GH = nx.MultiDiGraph()
-        else:
-            GH = nx.DiGraph()
-    else:
-        if G.is_multigraph() or H.is_multigraph():
-            GH = nx.MultiGraph()
-        else:
-            GH = nx.Graph()
-
+    GH = _init_product_graph(G,H)
     GH.add_nodes_from(_node_product(G,H))
-
     GH.add_edges_from(_nodes_cross_edges(G,H))
     GH.add_edges_from(_edges_cross_nodes(G,H))
-
     GH.add_edges_from(_directed_edges_cross_edges(G,H))
-
     if not GH.is_directed():
         GH.add_edges_from(_undirected_edges_cross_edges(G,H))
-
     GH.name = "Strong product("+G.name+","+H.name+")"
     return GH

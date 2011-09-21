@@ -28,11 +28,12 @@ Algorithms
    algorithms.isomorphism
    algorithms.link_analysis
    algorithms.matching
-   algorithms.mixing
    algorithms.mis
+   algorithms.mixing
    algorithms.mst
-   algorithms.operators
    algorithms.neighbor_degree
+   algorithms.operators
+   algorithms.product
    algorithms.rich_club
    algorithms.shortest_paths
    algorithms.traversal
