@@ -61,7 +61,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
 
     Notes
     -----
-    Current-flow betweenness can be computed in `O(I(n−1)+mn \log n)`
+    Current-flow betweenness can be computed in `O(I(n-1)+mn \log n)`
     time [1]_, where `I(n-1)` is the time needed to compute the 
     inverse Laplacian.  For a full matrix this is `O(n^3)` but using
     sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
@@ -168,7 +168,7 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
 
     Notes
     -----
-    Current-flow betweenness can be computed in `O(I(n−1)+mn \log n)`
+    Current-flow betweenness can be computed in `O(I(n-1)+mn \log n)`
     time [1]_, where `I(n-1)` is the time needed to compute the 
     inverse Laplacian.  For a full matrix this is `O(n^3)` but using
     sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
