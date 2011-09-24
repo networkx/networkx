@@ -40,10 +40,12 @@ class TestFlowBetweennessCentrality(object):
     def test_K4(self):
         """Betweenness centrality: K4"""
         G=networkx.complete_graph(4)
-        b=networkx.current_flow_betweenness_centrality(G,normalized=False)
-        b_answer={0: 0.75, 1: 0.75, 2: 0.75, 3: 0.75}
-        for n in sorted(G):
-            assert_almost_equal(b[n],b_answer[n])
+        for solver in ['full','lu','cg']:
+            b=networkx.current_flow_betweenness_centrality(G, normalized=False, 
+                                                           solver=solver)
+            b_answer={0: 0.75, 1: 0.75, 2: 0.75, 3: 0.75}
+            for n in sorted(G):
+                assert_almost_equal(b[n],b_answer[n])
 
 
     def test_P4_normalized(self):
@@ -88,29 +90,32 @@ class TestEdgeFlowBetweennessCentrality(object):
         except ImportError:
             raise SkipTest('NumPy not available.')
 
-    def test_K4_normalized(self):
-        """Betweenness centrality: K4"""
+    def test_K4(self):
+        """Edge flow betweenness centrality: K4"""
         G=networkx.complete_graph(4)
         b=edge_current_flow(G,normalized=True)
         b_answer=dict.fromkeys(G.edges(),0.25)
-        for n in sorted(G.edges()):
-            assert_almost_equal(b[n],b_answer[n])
+        for (s,t),v1 in b_answer.items():
+            v2=b.get((s,t),b.get((t,s)))
+            assert_almost_equal(v1,v2)
 
     def test_K4_normalized(self):
-        """Betweenness centrality: K4"""
+        """Edge flow betweenness centrality: K4"""
         G=networkx.complete_graph(4)
         b=edge_current_flow(G,normalized=False)
         b_answer=dict.fromkeys(G.edges(),0.75)
-        for n in sorted(G.edges()):
-            assert_almost_equal(b[n],b_answer[n])
+        for (s,t),v1 in b_answer.items():
+            v2=b.get((s,t),b.get((t,s)))
+            assert_almost_equal(v1,v2)
 
     def test_C4(self):
-        """Edge betweenness centrality: C4"""
+        """Edge flow betweenness centrality: C4"""
         G=networkx.cycle_graph(4)
         b=edge_current_flow(G,normalized=False)
         b_answer={(0, 1):1.25,(0, 3):1.25, (1, 2):1.25, (2, 3): 1.25}
-        for n in sorted(G.edges()):
-            assert_almost_equal(b[n],b_answer[n])
+        for (s,t),v1 in b_answer.items():
+            v2=b.get((s,t),b.get((t,s)))
+            assert_almost_equal(v1,v2)
 
 
     def test_P4(self):
@@ -118,6 +123,7 @@ class TestEdgeFlowBetweennessCentrality(object):
         G=networkx.path_graph(4)
         b=edge_current_flow(G,normalized=False)
         b_answer={(0, 1):1.5,(1, 2):2.0, (2, 3):1.5}
-        for n in sorted(G.edges()):
-            assert_almost_equal(b[n],b_answer[n])
+        for (s,t),v1 in b_answer.items():
+            v2=b.get((s,t),b.get((t,s)))
+            assert_almost_equal(v1,v2)
 
