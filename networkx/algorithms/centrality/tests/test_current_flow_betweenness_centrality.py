@@ -76,6 +76,20 @@ class TestFlowBetweennessCentrality(object):
 
 
 
+    def test_solers(self):
+        """Betweenness centrality: alternate solvers"""
+        G=networkx.complete_graph(4)
+        for solver in ['full','lu','cg']:
+            b=networkx.current_flow_betweenness_centrality(G,normalized=False, 
+                                                           solver=solver)
+            b_answer={0: 0.75, 1: 0.75, 2: 0.75, 3: 0.75}
+            for n in sorted(G):
+                assert_almost_equal(b[n],b_answer[n])
+
+
+
+
+
 class TestWeightedFlowBetweennessCentrality(object):
     pass
 
