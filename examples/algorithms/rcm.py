@@ -1,32 +1,32 @@
-# Cuthill McKee ordering of matrices
+# Cuthill-McKee ordering of matrices
+# The reverse Cuthill-McKee algorithm gives a sparse matrix ordering that 
+# reduces the matrix bandwidth.
+# Requires NumPy
 # Copyright (C) 2011 by 
 # Aric Hagberg <aric.hagberg@gmail.com>
 # BSD License
 import networkx as nx
 from networkx.utils import reverse_cuthill_mckee_ordering
+import numpy as np
 
-import networkx as nx
-# example from 
-# http://www.boost.org/doc/libs/1_37_0/libs/graph/example/cuthill_mckee_ordering.cpp
-G = nx.Graph([(0,3),(0,5),(1,2),(1,4),(1,6),(1,9),(2,3),
-        (2,4),(3,5),(3,8),(4,6),(5,6),(5,7),(6,7)])
-rcm = list(reverse_cuthill_mckee_ordering(G,start=0))    
-assert(rcm==[9, 1, 4, 6, 7, 2, 8, 5, 3, 0])
-rcm = list(reverse_cuthill_mckee_ordering(G))    
-assert(rcm==[0, 8, 5, 7, 3, 6, 4, 2, 1, 9])
-print "ordering",rcm
 # build low-bandwidth numpy matrix
-try:
-    import numpy as np
-    print "unordered matrix"
-    A = nx.to_numpy_matrix(G)
-    print A
-    x,y = np.nonzero(A)
-    print("bandwidth:",np.abs(x-y).max())
-    B = nx.to_numpy_matrix(G,nodelist=rcm)
-    print("low-bandwidth matrix")
-    print B
-    x,y = np.nonzero(B)
-    print("bandwidth:",np.abs(x-y).max())
-except:
-    pass
+G=nx.grid_2d_graph(3,3)
+rcm = list(reverse_cuthill_mckee_ordering(G))    
+print "ordering",rcm
+
+print("unordered Laplacian matrix")
+A = nx.laplacian_matrix(G)
+x,y = np.nonzero(A)
+#print("lower bandwidth:",(y-x).max())
+#print("upper bandwidth:",(x-y).max())
+print("bandwidth: %d"%((y-x).max()+(x-y).max()+1))
+print A
+
+B = nx.laplacian_matrix(G,nodelist=rcm)
+print("low-bandwidth Laplacian matrix")
+x,y = np.nonzero(B)
+#print("lower bandwidth:",(y-x).max())
+#print("upper bandwidth:",(x-y).max())
+print("bandwidth: %d"%((y-x).max()+(x-y).max()+1))
+print B
+

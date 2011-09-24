@@ -1,22 +1,113 @@
-# Cuthill McKee ordering of matrices
-# Copyright (C) 2011 by 
-# Aric Hagberg <aric.hagberg@gmail.com>
-# BSD License
+"""
+Cuthill-McKee ordering of graph nodes to produce sparse matrices
+"""
+#    Copyright (C) 2011 by 
+#    Aric Hagberg <hagberg@lanl.gov>
+#    All rights reserved.
+#    BSD license.
 from operator import itemgetter
 import networkx as nx
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)'])
+__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['cuthill_mckee_ordering',
            'reverse_cuthill_mckee_ordering']
 
 def cuthill_mckee_ordering(G, start=None):
+    """Generate an ordering (permutation) of the graph nodes to make 
+    a sparse matrix.
+
+    Uses the Cuthill-McKee heuristic (based on breadth-first search) [1]_.
+
+    Parameters
+    ----------
+    G : graph
+      A NetworkX graph 
+
+    start : node, optional
+      Start algorithm and specified node.  The node should be on the 
+      periphery of the graph for best results.  
+
+    Returns
+    -------
+    nodes : generator
+       Generator of nodes in Cuthill-McKee ordering.
+
+    Examples
+    --------
+    >>> from networkx.utils import cuthill_mckee_ordering
+    >>> G = nx.path_graph(4)
+    >>> rcm = list(cuthill_mckee_ordering(G))
+    >>> A = nx.adjacency_matrix(G, nodelist=rcm)
+
+    See Also
+    --------
+    reverse_cuthill_mckee_ordering
+    
+    Notes
+    -----
+    The optimal solution the the bandwidth reduction is NP-complete [2]_.
+
+    References
+    ----------
+    .. [1] E. Cuthill and J. McKee.
+       Reducing the bandwidth of sparse symmetric matrices,
+       In Proc. 24th Nat. Conf. ACM, pages 157–172, 1969.
+       http://doi.acm.org/10.1145/800195.805928
+    .. [2]  Steven S. Skiena. 1997. The Algorithm Design Manual. 
+       Springer-Verlag New York, Inc., New York, NY, USA.
+    """
     for g in nx.connected_component_subgraphs(G):
         for n in connected_cuthill_mckee_ordering(g, start):
             yield n
 
 def reverse_cuthill_mckee_ordering(G, start=None):
+    """Generate an ordering (permutation) of the graph nodes to make 
+    a sparse matrix.
+
+    Uses the reverse Cuthill-McKee heuristic (based on breadth-first search) 
+    [1]_.
+
+    Parameters
+    ----------
+    G : graph
+      A NetworkX graph 
+
+    start : node, optional
+      Start algorithm and specified node.  The node should be on the 
+      periphery of the graph for best results.  
+
+    Returns
+    -------
+    nodes : generator
+       Generator of nodes in reverse Cuthill-McKee ordering.
+
+    Examples
+    --------
+    >>> from networkx.utils import reverse_cuthill_mckee_ordering
+    >>> G = nx.path_graph(4)
+    >>> rcm = list(reverse_cuthill_mckee_ordering(G))
+    >>> A = nx.adjacency_matrix(G, nodelist=rcm)
+
+    See Also
+    --------
+    cuthill_mckee_ordering
+    
+    Notes
+    -----
+    The optimal solution the the bandwidth reduction is NP-complete [2]_.
+
+    References
+    ----------
+    .. [1] E. Cuthill and J. McKee.
+       Reducing the bandwidth of sparse symmetric matrices,
+       In Proc. 24th Nat. Conf. ACM, pages 157–172, 1969.
+       http://doi.acm.org/10.1145/800195.805928
+    .. [2]  Steven S. Skiena. 1997. The Algorithm Design Manual. 
+       Springer-Verlag New York, Inc., New York, NY, USA.
+    """
     return reversed(list(cuthill_mckee_ordering(G, start=start)))
 
 def connected_cuthill_mckee_ordering(G, start=None):
+    # the cuthill mckee algorithm for connected graphs
     if start is None:
         (_, start) = find_pseudo_peripheral_node_pair(G)
     yield start
@@ -39,6 +130,8 @@ def connected_cuthill_mckee_ordering(G, start=None):
             stack.pop(0)
 
 def find_pseudo_peripheral_node_pair(G, start=None):
+    # helper for cuthill-mckee to find a "pseudo peripheral pair"
+    # to use as good starting node 
     if start is None:
         u = next(G.nodes_iter())
     else:
@@ -55,29 +148,3 @@ def find_pseudo_peripheral_node_pair(G, start=None):
         v, deg = sorted(G.degree(farthest).items(), key=itemgetter(1))[0]
     return u, v
     
-if __name__=='__main__':
-    import networkx as nx
-    # example from 
-    # http://www.boost.org/doc/libs/1_37_0/libs/graph/example/cuthill_mckee_ordering.cpp
-    G = nx.Graph([(0,3),(0,5),(1,2),(1,4),(1,6),(1,9),(2,3),
-            (2,4),(3,5),(3,8),(4,6),(5,6),(5,7),(6,7)])
-    rcm = list(reverse_cuthill_mckee_ordering(G,start=0))    
-    assert(rcm==[9, 1, 4, 6, 7, 2, 8, 5, 3, 0])
-    rcm = list(reverse_cuthill_mckee_ordering(G))    
-    assert(rcm==[0, 8, 5, 7, 3, 6, 4, 2, 1, 9])
-    print "ordering",rcm
-    # build low-bandwidth numpy matrix
-    try:
-        import numpy as np
-        print "matrix"
-        A = nx.to_numpy_matrix(G)
-        print A
-        x,y = np.nonzero(A)
-        print("bandwidth:",np.abs(x-y).max())
-        B = nx.to_numpy_matrix(G,nodelist=rcm)
-        print("low-bandwidth matrix")
-        print B
-        x,y = np.nonzero(B)
-        print("bandwidth:",np.abs(x-y).max())
-    except:
-        pass
