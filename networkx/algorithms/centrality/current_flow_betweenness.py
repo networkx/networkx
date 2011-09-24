@@ -17,7 +17,7 @@ from networkx.algorithms.centrality.flow_matrix import flow_matrix_row
 
 def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
                                         dtype=float, solver='lu'):
-    """Compute current-flow betweenness centrality for nodes.
+    r"""Compute current-flow betweenness centrality for nodes.
 
     Current-flow betweenness centrality uses an electrical current
     model for information spreading in contrast to betweenness
@@ -61,7 +61,14 @@ def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
 
     Notes
     -----
-    The algorithm is from Brandes [1]_.
+    Current-flow betweenness can be computed in `O(I(n−1)+mn \log n)`
+    time [1]_, where `I(n-1)` is the time needed to compute the 
+    inverse Laplacian.  For a full matrix this is `O(n^3)` but using
+    sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
+    Laplacian matrix condition number.  
+
+    The space required is  where w is the width of the sparse
+    Laplacian matrix.  Worse case is `w=n` for `O(n^2)`.
 
     If the edges have a 'weight' attribute they will be used as 
     weights in this algorithm.  Unspecified weights are set to 1.
@@ -89,8 +96,8 @@ def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
         raise ImportError('current_flow_betweenness_centrality requires SciPy ',
                           'http://scipy.org/')
     if G.is_directed():
-        raise nx.NetworkXError(\
-            "current_flow_betweenness_centrality() not defined for digraphs.")
+        raise nx.NetworkXError('current_flow_betweenness_centrality() ',
+                               'not defined for digraphs.')
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
     n = G.number_of_nodes()
@@ -161,7 +168,14 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
 
     Notes
     -----
-    The algorithm is from Brandes [1]_.
+    Current-flow betweenness can be computed in `O(I(n−1)+mn \log n)`
+    time [1]_, where `I(n-1)` is the time needed to compute the 
+    inverse Laplacian.  For a full matrix this is `O(n^3)` but using
+    sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
+    Laplacian matrix condition number.  
+
+    The space required is  where w is the width of the sparse
+    Laplacian matrix.  Worse case is `w=n` for `O(n^2)`.
 
     If the edges have a 'weight' attribute they will be used as 
     weights in this algorithm.  Unspecified weights are set to 1.
@@ -189,7 +203,7 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
         raise ImportError('current_flow_betweenness_centrality requires SciPy ',
                           'http://scipy.org/')
     if G.is_directed():
-        raise nx.NetworkXError('current_flow_closeness_centrality ',
+        raise nx.NetworkXError('edge_current_flow_betweenness_centrality ',
                                'not defined for digraphs.')
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
