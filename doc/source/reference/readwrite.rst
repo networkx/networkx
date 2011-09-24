@@ -14,6 +14,7 @@ Reading and writing graphs
    readwrite.gml
    readwrite.gpickle
    readwrite.graphml
+   readwrite.json_graph
    readwrite.leda
    readwrite.yaml
    readwrite.sparsegraph6
