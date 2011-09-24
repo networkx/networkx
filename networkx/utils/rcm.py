@@ -50,7 +50,7 @@ def cuthill_mckee_ordering(G, start=None):
     ----------
     .. [1] E. Cuthill and J. McKee.
        Reducing the bandwidth of sparse symmetric matrices,
-       In Proc. 24th Nat. Conf. ACM, pages 157–172, 1969.
+       In Proc. 24th Nat. Conf. ACM, pages 157-172, 1969.
        http://doi.acm.org/10.1145/800195.805928
     .. [2]  Steven S. Skiena. 1997. The Algorithm Design Manual. 
        Springer-Verlag New York, Inc., New York, NY, USA.
@@ -99,7 +99,7 @@ def reverse_cuthill_mckee_ordering(G, start=None):
     ----------
     .. [1] E. Cuthill and J. McKee.
        Reducing the bandwidth of sparse symmetric matrices,
-       In Proc. 24th Nat. Conf. ACM, pages 157–172, 1969.
+       In Proc. 24th Nat. Conf. ACM, pages 157-72, 1969.
        http://doi.acm.org/10.1145/800195.805928
     .. [2]  Steven S. Skiena. 1997. The Algorithm Design Manual. 
        Springer-Verlag New York, Inc., New York, NY, USA.
