@@ -98,7 +98,7 @@ def generate_graphml(G, encoding='utf-8',prettyprint=True):
     --------
     >>> G=nx.path_graph(4)
     >>> linefeed=chr(10) # linefeed=\n
-    >>> s=linefeed.join(nx.generate_graphml(G))  # a string
+    >>> s=linefeed.join(nx.generate_graphml(G))  # doctest: +SKIP
     >>> for line in nx.generate_graphml(G):  # doctest: +SKIP
     ...    print(line)
 
