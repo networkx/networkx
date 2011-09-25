@@ -10,6 +10,7 @@ class TestFlowClosenessCentrality(object):
         global np
         try:
             import numpy as np
+            import scipy
         except ImportError:
             raise SkipTest('NumPy not available.')
         
