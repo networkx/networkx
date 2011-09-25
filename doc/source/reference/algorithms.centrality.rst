@@ -42,6 +42,7 @@ Current-Flow Betweenness
 
    current_flow_betweenness_centrality 
    edge_current_flow_betweenness_centrality
+   approximate_current_flow_betweenness_centrality 
 
 
 Eigenvector

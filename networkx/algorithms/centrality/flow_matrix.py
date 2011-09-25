@@ -51,13 +51,17 @@ class InverseLaplacian(object):
     def solve(self,r):
         raise("Implement solver")
 
+    def solve_inverse(self,r):
+        raise("Implement solver")
+
+
     def get_rows(self, r1, r2):
         for r in range(r1, r2+1):
-            self.C[r%self.w, 1:] = self.solve(r)
+            self.C[r%self.w, 1:] = self.solve_inverse(r)
         return self.C
 
     def get_row(self, r):
-        self.C[r%self.w, 1:] = self.solve(r)
+        self.C[r%self.w, 1:] = self.solve_inverse(r)
         return self.C[r%self.w]
 
 
@@ -77,18 +81,31 @@ class FullInverseLaplacian(InverseLaplacian):
         self.IL = np.zeros(L.shape, dtype=self.dtype)
         self.IL[1:,1:] = np.linalg.inv(self.L1.todense())
 
-    def solve(self,r):
+    def solve(self,rhs):
+        s = np.zeros(rhs.shape, dtype=self.dtype)
+        s = np.dot(self.IL,rhs)
+        return s
+
+    def solve_inverse(self,r):
         return self.IL[r,1:]
+
 
 class SuperLUInverseLaplacian(InverseLaplacian):
     def init_solver(self,L):
         from scipy.sparse import linalg
         self.lusolve = linalg.factorized(self.L1.tocsc())
 
-    def solve(self,r):
+    def solve_inverse(self,r):
         rhs = np.zeros(self.n, dtype=self.dtype)
         rhs[r]=1
         return self.lusolve(rhs[1:])
+
+    def solve(self,rhs):
+        s = np.zeros(rhs.shape, dtype=self.dtype)
+        s[1:]=self.lusolve(rhs[1:])
+        return s
+
+
 
 class CGInverseLaplacian(InverseLaplacian):
     def init_solver(self,L):
@@ -98,7 +115,12 @@ class CGInverseLaplacian(InverseLaplacian):
         n=self.n-1
         self.M = linalg.LinearOperator(shape=(n,n), matvec=ilu.solve)
 
-    def solve(self,r):
+    def solve(self,rhs):
+        s = np.zeros(rhs.shape, dtype=self.dtype)
+        s[1:]=linalg.cg(self.L1, rhs[1:], M=self.M)[0]
+        return s
+
+    def solve_inverse(self,r):
         rhs = np.zeros(self.n, self.dtype)
         rhs[r] = 1
         return linalg.cg(self.L1, rhs[1:], M=self.M)[0]
