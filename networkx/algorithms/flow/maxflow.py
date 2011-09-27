@@ -22,8 +22,8 @@ def _create_auxiliary_digraph(G, capacity='capacity'):
     Ignore edges with capacity <= 0.
     """
     auxiliary = nx.DiGraph()
+    auxiliary.add_nodes_from(G)
     inf_capacity_flows = {}
-
     if nx.is_directed(G):
         for edge in G.edges(data = True):
             if capacity in edge[2]:
@@ -150,6 +150,11 @@ def ford_fulkerson(G, s, t, capacity='capacity'):
     if G.is_multigraph():
         raise nx.NetworkXError(
                 'MultiGraph and MultiDiGraph not supported (yet).')
+
+    if s not in G:
+        raise nx.NetworkXError('node %s not in graph'%s)
+    if t not in G:
+        raise nx.NetworkXError('node %s not in graph'%t)
 
     auxiliary, inf_capacity_flows = _create_auxiliary_digraph(G,
                                                         capacity=capacity)

@@ -257,3 +257,17 @@ class TestMaxflow:
         compare_flows(G, 's', 't', flowSoln, 4)
 
 
+    def test_disconnected(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
+        G.remove_node(1)
+        assert_equal(nx.max_flow(G,0,3),0)
+
+    def test_source_target_not_in_graph(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
+        G.remove_node(0)
+        assert_raises(nx.NetworkXError,nx.max_flow,G,0,3)
+        G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
+        G.remove_node(3)
+        assert_raises(nx.NetworkXError,nx.max_flow,G,0,3)

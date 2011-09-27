@@ -257,8 +257,8 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
     Raises
     ------
     NetworkXError
-        This exception is raised if the input graph is not directed or
-        not connected.
+        This exception is raised if the input graph is not directed,
+        not connected or is a multigraph.
 
     NetworkXUnfeasible
         This exception is raised in the following situations:
@@ -355,9 +355,11 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
     """
 
     if not G.is_directed():
-        raise nx.NetworkXError("Undirected graph not supported (yet).")
+        raise nx.NetworkXError("Undirected graph not supported.")
     if not nx.is_connected(G.to_undirected()):
-        raise nx.NetworkXError("Not connected graph not supported (yet).")
+        raise nx.NetworkXError("Not connected graph not supported.")
+    if G.is_multigraph():
+        raise nx.NetworkXError("MultiDiGraph not supported.")
     if sum(d[demand] for v, d in G.nodes(data = True) 
            if demand in d) != 0:
         raise nx.NetworkXUnfeasible("Sum of the demands should be 0.")

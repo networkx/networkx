@@ -251,3 +251,9 @@ class TestNetworkSimplex:
         assert_equal(nx.min_cost_flow(G), soln)
         assert_equal(nx.cost_of_flow(G, H), 2857140)
 
+    def test_multidigraph(self):
+        """Raise an exception for multidigraph."""
+        G = nx.MultiDiGraph()
+        G.add_weighted_edges_from([(1, 2, 1), (2, 3, 2)], weight='capacity')
+        assert_raises(nx.NetworkXError, nx.network_simplex, G)
+
