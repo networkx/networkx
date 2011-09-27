@@ -125,3 +125,24 @@ def default_opener(filename):
     subprocess.call(cmd)
 
 
+def dict_to_numpy_array(d,mapping=None):
+    """Convert a dictionary to numpy array with optional mapping."""
+    try:
+        import numpy 
+    except ImportError:
+        raise ImportError(
+          "dict_to_numpy_array requires numpy : http://scipy.org/ ")
+    if mapping is None:
+        s=set(d.keys())
+        for k,v in d.items():
+            s.update(v.keys())
+        mapping=dict(zip(s,range(len(s))))
+    n=len(mapping)
+    a = numpy.zeros((n, n))
+    for k1, row in d.items():
+        for k2, value in row.items():
+            i=mapping[k1]
+            j=mapping[k2]
+            a[i,j] = value 
+    return a
+

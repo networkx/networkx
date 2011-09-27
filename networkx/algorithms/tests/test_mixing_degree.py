@@ -55,6 +55,17 @@ class TestDegreeMixing(object):
                           (2,2)])
         assert_equal(xy,xy_result)
 
+    def test_node_degree_xy_weighted(self):
+        G = networkx.Graph()
+        G.add_edge(1,2,weight=7)
+        G.add_edge(2,3,weight=10)
+        xy=sorted(mixing.node_degree_xy(G,weight='weight'))
+        xy_result=sorted([(7,17),
+                          (17,10),
+                          (17,7),
+                          (10,17)])
+        assert_equal(xy,xy_result)
+
 
     def test_degree_mixing_dict_undirected(self):
         d=mixing.degree_mixing_dict(self.P4)
