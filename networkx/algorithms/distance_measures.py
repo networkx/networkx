@@ -63,7 +63,8 @@ def eccentricity(G, v=None, sp=None):
             
         e[v]=max(length.values())
 
-    if len(e)==1: return list(e.values())[0] # return single value
+    if len(e)==1: 
+        return list(e.values())[0] # return single value
     else:
         return e
 
