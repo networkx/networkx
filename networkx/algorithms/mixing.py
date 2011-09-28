@@ -27,10 +27,10 @@ def degree_assortativity(G, x='out', y='in', weight=None, nodes=None):
     G : NetworkX graph
 
     x: string ('in','out')
-       For directed graphs - degree type for rows.
+       The degree type for source node (directed graphs only).
     
     y: string ('in','out')
-       For directed graphs - degree type for columns.
+       The degree type for target node (directed graphs only).
 
     weight: string or None, optional (default=None)
        The edge attribute that holds the numerical value used 
@@ -65,8 +65,8 @@ def degree_assortativity(G, x='out', y='in', weight=None, nodes=None):
     -----
     This computes Eq. (21) in Ref. [1]_ , where e is the joint
     probability distribution (mixing matrix) of the degrees.  If G is
-    directed than the matrix e is the joint probability of out-degree
-    and in-degree.
+    directed than the matrix e is the joint probability of the 
+    user-specified degree type for the source and target.
 
     References
     ----------
@@ -90,10 +90,10 @@ def degree_pearsonr(G, x='out', y='in', weight=None, nodes=None):
     G : NetworkX graph
 
     x: string ('in','out')
-       For directed graphs - degree type for rows.
-    
+       The degree type for source node (directed graphs only).
+
     y: string ('in','out')
-       For directed graphs - degree type for columns.
+       The degree type for target node (directed graphs only).
 
     weight: string or None, optional (default=None)
        The edge attribute that holds the numerical value used 
@@ -360,10 +360,10 @@ def degree_mixing_dict(G, x='out', y='in', weight=None,
         NetworkX graph object.
 
     x: string ('in','out')
-       For directed graphs - degree type for first item
-    
+       The degree type for source node (directed graphs only).
+
     y: string ('in','out')
-       For directed graphs - degree type for second item
+       The degree type for target node (directed graphs only).
 
     weight: string or None, optional (default=None)
        The edge attribute that holds the numerical value used 
@@ -429,10 +429,10 @@ def degree_mixing_matrix(G, x='out', y='in', weight=None,
        NetworkX graph object.
 
     x: string ('in','out')
-       For directed graphs - degree type for rows.
-    
+       The degree type for source node (directed graphs only).
+
     y: string ('in','out')
-       For directed graphs - degree type for columns.
+       The degree type for target node (directed graphs only).
 
     nodes: list or iterable (optional)
         Build the matrix using only nodes in container. 
@@ -554,10 +554,10 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
     G: NetworkX graph
 
     x: string ('in','out')
-       For directed graphs - degree type for first element of pair.
-    
+       The degree type for source node (directed graphs only).
+
     y: string ('in','out')
-       For directed graphs - degree type for second element of pair.
+       The degree type for target node (directed graphs only).
 
     weight: string or None, optional (default=None)
        The edge attribute that holds the numerical value used 
