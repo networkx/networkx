@@ -15,11 +15,11 @@ class TestAverageNeighbor(object):
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_neighbor_out_degree(D)
+        nd = nx.average_neighbor_degree(D)
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_neighbor_in_degree(D)
+        nd = nx.average_neighbor_degree(D, source='in', target='in')
         assert_equal(nd,answer)
 
     def test_degree_p4_weighted(self):
@@ -34,11 +34,15 @@ class TestAverageNeighbor(object):
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_neighbor_out_degree(D,weight='weight')
+        nd = nx.average_neighbor_degree(D,weight='weight')
+        assert_equal(nd,answer)
+        nd = nx.average_neighbor_degree(D,source='out',target='out',
+                                        weight='weight')
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_neighbor_in_degree(D,weight='weight')
+        nd = nx.average_neighbor_degree(D,source='in',target='in',
+                                           weight='weight')
         assert_equal(nd,answer)
 
 
@@ -53,11 +57,11 @@ class TestAverageNeighbor(object):
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_neighbor_out_degree(D)
+        nd = nx.average_neighbor_degree(D)
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_neighbor_in_degree(D)
+        nd = nx.average_neighbor_degree(D,source='in',target='in')
         assert_equal(nd,answer)
 
     def test_degree_k4_nodes(self):

@@ -22,8 +22,7 @@ Average neighbor degree
    :toctree: generated/
 
    average_neighbor_degree
-   average_neighbor_in_degree
-   average_neighbor_out_degree
+
 
 Average degree connectivity
 ---------------------------

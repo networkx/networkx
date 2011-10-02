@@ -7,27 +7,26 @@
 import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg (hagberg@lanl.gov)'])
-__all__ = ["average_neighbor_degree",
-           "average_neighbor_in_degree",
-           "average_neighbor_out_degree"]
+__all__ = ["average_neighbor_degree"]
 
 
-def _average_nbr_deg(G, degree_method, nodes=None, weight=None):
+def _average_nbr_deg(G, source_degree, target_degree, nodes=None, weight=None):
     # average degree of neighbors
-    avg_nbr_deg = {}
-    for n in G.nbunch_iter(nodes):
-        nbrdeg = degree_method(G[n])
+    avg = {}
+    for n,deg in source_degree(nodes,weight=weight).items():
+        # normalize but not by zero degree
+        if deg == 0:
+            deg == 1
+        nbrdeg = target_degree(G[n])
         if weight is None:
-            nbrv = nbrdeg.values()
+            avg[n] = sum(nbrdeg.values())/float(deg)
         else:
-            nbrv = [G[n][nbr].get(weight,1)*d for nbr,d in nbrdeg.items()]
-        norm = degree_method(n,weight=weight)
-        avg_nbr_deg[n] = float(sum(nbrv))
-        if norm > 0:
-            avg_nbr_deg[n] /= norm
-    return avg_nbr_deg
+            avg[n] = sum((G[n][nbr].get(weight,1)*d 
+                          for nbr,d in nbrdeg.items()))/float(deg)
+    return avg
 
-def average_neighbor_degree(G, nodes=None, weight=None):
+def average_neighbor_degree(G, source='out', target='out',
+                            nodes=None, weight=None):
     r"""Returns the average degree of the neighborhood of each node.
 
     The average degree of a node `i` is
@@ -98,20 +97,26 @@ def average_neighbor_degree(G, nodes=None, weight=None):
        "The architecture of complex weighted networks". 
        PNAS 101 (11): 3747–3752 (2004).
     """
-    degree_method = G.degree
-    return _average_nbr_deg(G, degree_method, nodes, weight)
+    source_degree = G.degree
+    target_degree = G.degree
+    if G.is_directed():
+        direction = {'out':G.out_degree,
+                     'in':G.in_degree}
+        source_degree = direction[source]
+        target_degree = direction[target]
+    return _average_nbr_deg(G, source_degree, target_degree, 
+                            nodes=nodes, weight=weight)
 
-def average_neighbor_in_degree(G, nodes=None, weight=None):
-    if not G.is_directed():
-        raise nx.NetworkXError("Not defined for undirected graphs.")
-    degree_method = G.in_degree
-    return _average_nbr_deg(G, degree_method, nodes, weight)
-average_neighbor_in_degree.__doc__=average_neighbor_degree.__doc__
+# obsolete
+# def average_neighbor_in_degree(G, nodes=None, weight=None):
+#     if not G.is_directed():
+#         raise nx.NetworkXError("Not defined for undirected graphs.")
+#     return _average_nbr_deg(G, G.in_degree, G.in_degree, nodes, weight)
+# average_neighbor_in_degree.__doc__=average_neighbor_degree.__doc__
 
-def average_neighbor_out_degree(G, nodes=None, weight=None):
-    if not G.is_directed():
-        raise nx.NetworkXError("Not defined for undirected graphs.")
-    degree_method = G.out_degree
-    return _average_nbr_deg(G, degree_method, nodes, weight)
-average_neighbor_out_degree.__doc__=average_neighbor_degree.__doc__
+# def average_neighbor_out_degree(G, nodes=None, weight=None):
+#     if not G.is_directed():
+#         raise nx.NetworkXError("Not defined for undirected graphs.")
+#     return _average_nbr_deg(G, G.out_degree, G.out_degree, nodes, weight)
+# average_neighbor_out_degree.__doc__=average_neighbor_degree.__doc__
 
