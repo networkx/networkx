@@ -48,11 +48,7 @@ def attribute_mixing_dict(G,attribute,nodes=None,normalized=False):
     d : dictionary
        Counts or joint probability of occurrence of attribute pairs.
     """
-    if nodes is None:
-        node_iter = G
-    else:
-        node_iter = G.nbunch_iter(nodes)
-    xy_iter=node_attribute_xy(G,attribute,node_iter)
+    xy_iter=node_attribute_xy(G,attribute,nodes)
     return mixing_dict(xy_iter,normalized=normalized)
 
 
@@ -84,11 +80,7 @@ def attribute_mixing_matrix(G,attribute,nodes=None,mapping=None,
     m: numpy array
        Counts or joint probability of occurrence of attribute pairs.
     """
-    if nodes is None:
-        node_iter = G
-    else:
-        node_iter = G.nbunch_iter(nodes)
-    d=attribute_mixing_dict(G,attribute,node_iter)
+    d=attribute_mixing_dict(G,attribute,nodes)
     a=dict_to_numpy_array(d,mapping=mapping)
     if normalized:
         a=a/a.sum()
@@ -193,11 +185,7 @@ def numeric_mixing_matrix(G,attribute,nodes=None,normalized=True):
     m: numpy array
        Counts, or joint, probability of occurrence of node attribute pairs.
     """
-    if nodes is None:
-        node_iter = G
-    else:
-        node_iter = G.nbunch_iter(nodes)
-    d=attribute_mixing_dict(G,attribute,node_iter)
+    d=attribute_mixing_dict(G,attribute,nodes)
     s=set(d.keys())
     for k,v in d.items():
         s.update(v.keys())
