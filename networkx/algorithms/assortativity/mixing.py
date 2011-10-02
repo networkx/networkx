@@ -1,140 +1,18 @@
 #-*- coding: utf-8 -*-
 """
-Mixing matrices and assortativity coefficients.
+Mixing matrices for node attributes and degree.
 """
 import networkx as nx
 from networkx.utils import dict_to_numpy_array
-__author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                       'Oleguer Sagarra <oleguer.sagarra@gmail.com>'])
-__all__ = ['degree_assortativity',
-           'attribute_assortativity',
-           'numeric_assortativity',
-           'attribute_mixing_matrix',
-           'degree_mixing_matrix',
-           'degree_pearsonr',
-           'degree_mixing_dict',
+from networkx.algorithms.assortativity.pairs import node_degree_xy, \
+    node_attribute_xy
+__author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>'])
+__all__ = ['attribute_mixing_matrix',
            'attribute_mixing_dict',
-           ]
-
-def degree_assortativity(G, x='out', y='in', weight=None, nodes=None):
-    """Compute degree assortativity of graph.
-
-    Assortativity measures the similarity of connections
-    in the graph with respect to the node degree.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    x: string ('in','out')
-       The degree type for source node (directed graphs only).
-    
-    y: string ('in','out')
-       The degree type for target node (directed graphs only).
-
-    weight: string or None, optional (default=None)
-       The edge attribute that holds the numerical value used 
-       as a weight.  If None, then each edge has weight 1.
-       The degree is the sum of the edge weights adjacent to the node.
-
-    nodes: list or iterable (optional)
-        Compute degree assortativity only for nodes in container. 
-        The default is all nodes.
-
-    Returns
-    -------
-    r : float
-       Assortativity of graph by degree.
-    
-    Examples
-    --------
-    >>> G=nx.path_graph(4)
-    >>> r=nx.degree_assortativity(G)
-    >>> print("%3.1f"%r)
-    -0.5
-
-    See Also
-    --------
-    attribute_assortativity
-    numeric_assortativity
-    neighbor_connectivity
-    degree_mixing_dict
-    degree_mixing_matrix
-
-    Notes
-    -----
-    This computes Eq. (21) in Ref. [1]_ , where e is the joint
-    probability distribution (mixing matrix) of the degrees.  If G is
-    directed than the matrix e is the joint probability of the 
-    user-specified degree type for the source and target.
-
-    References
-    ----------
-    .. [1] M. E. J. Newman, Mixing patterns in networks,
-       Physical Review E, 67 026126, 2003
-    .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M. 
-       Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
-    """
-    M = degree_mixing_matrix(G, x=x, y=y, nodes=nodes, weight=weight)
-    return numeric_assortativity_coefficient(M)
-
-
-def degree_pearsonr(G, x='out', y='in', weight=None, nodes=None):
-    """Compute degree assortativity of graph. 
-
-    Assortativity measures the similarity of connections
-    in the graph with respect to the node degree.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    x: string ('in','out')
-       The degree type for source node (directed graphs only).
-
-    y: string ('in','out')
-       The degree type for target node (directed graphs only).
-
-    weight: string or None, optional (default=None)
-       The edge attribute that holds the numerical value used 
-       as a weight.  If None, then each edge has weight 1.
-       The degree is the sum of the edge weights adjacent to the node.
-
-    nodes: list or iterable (optional)
-        Compute pearson correlation of degrees only for specified nodes.
-        The default is all nodes.
-
-    Returns
-    -------
-    r : float
-       Assortativity of graph by degree.
-    
-    Examples
-    --------
-    >>> G=nx.path_graph(4)
-    >>> r=nx.degree_pearsonr(G) 
-    >>> r 
-    -0.5
-
-    Notes
-    -----
-    This calls scipy.stats.pearsonr().
-
-    References
-    ----------
-    .. [1] M. E. J. Newman, Mixing patterns in networks
-           Physical Review E, 67 026126, 2003
-    .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M. 
-       Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
-    """
-    try:
-        import scipy.stats as stats
-    except ImportError:
-        raise ImportError(
-          "Assortativity requires SciPy: http://scipy.org/ ")
-    xy=node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
-    x,y=zip(*xy)
-    return stats.pearsonr(x,y)[0]
+           'degree_mixing_matrix',
+           'degree_mixing_dict',
+           'numeric_mixing_matrix',
+           'mixing_dict']
 
 def attribute_mixing_dict(G,attribute,nodes=None,normalized=False):
     """Return dictionary representation of mixing matrix for attribute.
@@ -217,139 +95,6 @@ def attribute_mixing_matrix(G,attribute,nodes=None,mapping=None,
     return a
 
 
-def attribute_assortativity(G,attribute,nodes=None):
-    """Compute assortativity for node attributes.
-
-    Assortativity measures the similarity of connections
-    in the graph with respect to the given attribute.
-    
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    attribute : string 
-        Node attribute key
-
-    nodes: list or iterable (optional)
-        Compute attribute assortativity for nodes in container. 
-        The default is all nodes. 
-
-    Returns
-    -------
-    a: float
-       Assortativity of given attribute
-    
-    Examples
-    --------
-    >>> G=nx.Graph()
-    >>> G.add_nodes_from([0,1],color='red')
-    >>> G.add_nodes_from([2,3],color='blue')
-    >>> G.add_edges_from([(0,1),(2,3)])
-    >>> print(nx.attribute_assortativity(G,'color'))
-    1.0
-
-    Notes
-    -----
-    This computes Eq. (2) in Ref. [1]_ , (trace(e)-sum(e))/(1-sum(e)),
-    where e is the joint probability distribution (mixing matrix)
-    of the specified attribute.
-
-    References
-    ----------
-    .. [1] M. E. J. Newman, Mixing patterns in networks,
-       Physical Review E, 67 026126, 2003
-    """
-    if nodes is None:
-        node_iter = G
-    else:
-        node_iter = G.nbunch_iter(nodes)
-    a=attribute_mixing_matrix(G,attribute,node_iter)
-    return attribute_assortativity_coefficient(a)
-
-
-def numeric_assortativity(G,attribute,nodes=None):
-    """Compute assortativity for numerical node attributes.
-
-    Assortativity measures the similarity of connections
-    in the graph with respect to the given numeric attribute.
-    
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    attribute : string 
-        Node attribute key
-
-    nodes: list or iterable (optional)
-        Compute numeric assortativity only for attributes of nodes in 
-        container. The default is all nodes.
-
-    Returns
-    -------
-    a: float
-       Assortativity of given attribute
-    
-    Examples
-    --------
-    >>> G=nx.Graph()
-    >>> G.add_nodes_from([0,1],size=2)
-    >>> G.add_nodes_from([2,3],size=3)
-    >>> G.add_edges_from([(0,1),(2,3)])
-    >>> print(nx.numeric_assortativity(G,'size'))
-    1.0
-
-    Notes
-    -----
-    This computes Eq. (21) in Ref. [1]_ ,
-    where e is the joint probability distribution (mixing matrix)
-    of the specified attribute.
-
-    References
-    ----------
-    .. [1] M. E. J. Newman, Mixing patterns in networks
-           Physical Review E, 67 026126, 2003
-    """
-    if nodes is None:
-        node_iter = G
-    else:
-        node_iter = G.nbunch_iter(nodes)
-    a=numeric_mixing_matrix(G,attribute,node_iter)
-    return numeric_assortativity_coefficient(a)
-
-
-def attribute_assortativity_coefficient(e):
-    """Compute assortativity for attribute matrix e.
-
-    Parameters
-    ----------
-    e : numpy array or matrix
-        Attribute mixing matrix.
-
-    Notes
-    -----
-    This computes Eq. (2) in Ref. [1]_ , (trace(e)-sum(e))/(1-sum(e)),
-    where e is the joint probability distribution (mixing matrix)
-    of the specified attribute.
-
-    References
-    ----------
-    .. [1] M. E. J. Newman, Mixing patterns in networks,
-       Physical Review E, 67 026126, 2003
-    """
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError(
-          "attribute_assortativity requires NumPy: http://scipy.org/ ")
-    if e.sum() != 1.0:
-        e=e/float(e.sum())
-    e=numpy.asmatrix(e)
-    s=(e*e).sum()
-    t=e.trace()
-    r=(t-s)/(1-s)
-    return float(r)
-
-
 def degree_mixing_dict(G, x='out', y='in', weight=None, 
                        nodes=None, normalized=False):
     """Return dictionary representation of mixing matrix for degree.
@@ -382,42 +127,6 @@ def degree_mixing_dict(G, x='out', y='in', weight=None,
     return mixing_dict(xy_iter,normalized=normalized)
 
 
-def numeric_mixing_matrix(G,attribute,nodes=None,normalized=True):
-    """Return numeric mixing matrix for attribute.
-
-    Parameters
-    ----------
-    G : graph 
-       NetworkX graph object.
-
-    attribute : string 
-       Node attribute key.
-
-    nodes: list or iterable (optional)
-        Build the matrix only with nodes in container. The default is all nodes.
-    
-    normalized : bool (default=False)
-       Return counts if False or probabilities if True.
-
-    Returns
-    -------
-    m: numpy array
-       Counts, or joint, probability of occurrence of node attribute pairs.
-    """
-    if nodes is None:
-        node_iter = G
-    else:
-        node_iter = G.nbunch_iter(nodes)
-    d=attribute_mixing_dict(G,attribute,node_iter)
-    s=set(d.keys())
-    for k,v in d.items():
-        s.update(v.keys())
-    m=max(s)            
-    mapping=dict(zip(range(m+1),range(m+1)))
-    a=dict_to_numpy_array(d,mapping=mapping)
-    if normalized:
-        a=a/a.sum()
-    return a
 
 def degree_mixing_matrix(G, x='out', y='in', weight=None, 
                          nodes=None, normalized=True):
@@ -462,24 +171,42 @@ def degree_mixing_matrix(G, x='out', y='in', weight=None,
         a=a/a.sum()
     return a
 
-def numeric_assortativity_coefficient(e):
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError('numeric_assortativity_coefficient requires ',
-                          'NumPy: http://scipy.org/')
-    if e.sum() != 1.0:
-        e=e/float(e.sum())
-    nx,ny=e.shape # nx=ny
-    x=numpy.arange(nx)
-    y=numpy.arange(ny)
-    a=e.sum(axis=0)
-    b=e.sum(axis=1)
-    vara=(a*x**2).sum()-((a*x).sum())**2
-    varb=(b*x**2).sum()-((b*x).sum())**2
-    xy=numpy.outer(x,y)
-    ab=numpy.outer(a,b)
-    return (xy*(e-ab)).sum()/numpy.sqrt(vara*varb)
+def numeric_mixing_matrix(G,attribute,nodes=None,normalized=True):
+    """Return numeric mixing matrix for attribute.
+
+    Parameters
+    ----------
+    G : graph 
+       NetworkX graph object.
+
+    attribute : string 
+       Node attribute key.
+
+    nodes: list or iterable (optional)
+        Build the matrix only with nodes in container. The default is all nodes.
+    
+    normalized : bool (default=False)
+       Return counts if False or probabilities if True.
+
+    Returns
+    -------
+    m: numpy array
+       Counts, or joint, probability of occurrence of node attribute pairs.
+    """
+    if nodes is None:
+        node_iter = G
+    else:
+        node_iter = G.nbunch_iter(nodes)
+    d=attribute_mixing_dict(G,attribute,node_iter)
+    s=set(d.keys())
+    for k,v in d.items():
+        s.update(v.keys())
+    m=max(s)            
+    mapping=dict(zip(range(m+1),range(m+1)))
+    a=dict_to_numpy_array(d,mapping=mapping)
+    if normalized:
+        a=a/a.sum()
+    return a
 
 def mixing_dict(xy,normalized=False):
     """Return a dictionary representation of mixing matrix.
@@ -519,83 +246,6 @@ def mixing_dict(xy,normalized=False):
     return d
 
 
-def node_attribute_xy(G,attribute,nodes=None):
-    """Return iterator of node attribute pairs for all edges in G.
-
-    For undirected graphs each edge is produced twice, once for each
-    representation u-v and v-u, with the exception of self loop edges
-    that only appear once.
-    """
-    if nodes is None:
-        node_set = G
-    else:
-        node_set = G.subgraph(nodes)
-    node=G.node
-    for u,nbrsdict in G.adjacency_iter():
-        if u not in node_set:
-            continue
-        uattr=node[u].get(attribute,None)
-        if G.is_multigraph():
-            for v,keys in nbrsdict.items():
-                vattr=node[v].get(attribute,None)                
-                for k,d in keys.items():
-                    yield (uattr,vattr)
-        else:
-            for v,eattr in nbrsdict.items():
-                vattr=node[v].get(attribute,None)
-                yield (uattr,vattr)
-
-
-def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
-    """Generate degree-degree pairs for edges in G.
-
-    Parameters
-    ----------
-    G: NetworkX graph
-
-    x: string ('in','out')
-       The degree type for source node (directed graphs only).
-
-    y: string ('in','out')
-       The degree type for target node (directed graphs only).
-
-    weight: string or None, optional (default=None)
-       The edge attribute that holds the numerical value used 
-       as a weight.  If None, then each edge has weight 1.
-       The degree is the sum of the edge weights adjacent to the node.
-
-    nodes: list or iterable (optional)
-        Use only edges that start or end in nodes in this container. 
-        The default is all nodes.
-
-    Returns
-    -------
-    (x,y): 2-tuple
-        Generates 2-tuple of degree-degree values.
-
-    Notes
-    -----
-    For undirected graphs each edge is produced twice, once for each 
-    representation u-v and v-u, with the exception of self loop edges 
-    that only appear once.
-    """
-    if nodes is None:
-        nodes = set(G)
-    else:
-        nodes = set(nodes)
-    xdeg = G.degree_iter
-    ydeg = G.degree_iter
-    if G.is_directed():
-        direction = {'out':G.out_degree_iter,
-                     'in':G.in_degree_iter}
-        xdeg = direction[x]
-        ydeg = direction[y]
-
-    for u,degu in xdeg(nodes, weight=weight):
-        neighbors = (nbr for _,nbr in G.edges_iter(u) if nbr in nodes)
-        for v,degv in ydeg(neighbors, weight=weight):
-            yield degu,degv
- 
 
 # fixture for nose tests
 def setup_module(module):
