@@ -11,10 +11,10 @@ Assortativity
 .. autosummary::
    :toctree: generated/
 
-   degree_assortativity
-   attribute_assortativity
-   numeric_assortativity
-   degree_pearsonr
+   degree_assortativity_coefficient
+   attribute_assortativity_coefficient
+   numeric_assortativity_coefficient
+   degree_pearson_correlation_coefficient
 
 Average neighbor degree
 -----------------------   

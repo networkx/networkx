@@ -15,28 +15,27 @@ __all__ = ['average_degree_connectivity',
 
 def _avg_deg_conn(G, degree_method, nodes=None, weight=None):
     # "k nearest neighbors, or neighbor_connectivity
-    if nodes is None:
-        node_iter = G
-    else:
-        node_iter = G.nbunch_iter(nodes)
     dsum = defaultdict(float)
     dnorm = defaultdict(float)
-    for n,k in degree_method(node_iter).items():
+
+    for n,k in degree_method(nodes).items():
         nbrdeg = degree_method(G[n])
         if weight is None:
-            nbrv = nbrdeg.values()
-            dnorm[k] += k
-        else:
-            nbrv = [G[n][nbr].get(weight,1)*d for nbr,d in nbrdeg.items()]
-            dnorm[k] += degree_method(n, weight=weight)
-        dsum[k] += float(sum(nbrv))
+            s = float(sum(nbrdeg.values()))
+        else: # weight nbr degree by weight of (n,nbr) edge
+            s = float(sum((G[n][nbr].get(weight,1)*d 
+                           for nbr,d in nbrdeg.items())))
+        dnorm[k] += degree_method(n, weight=weight)
+        dsum[k] += s
 
+    # normalize
     dc = {}
     for k,avg in dsum.items():
         dc[k]=avg
         if avg > 0:
             dc[k]/=dnorm[k]
     return dc
+
 
 def average_degree_connectivity(G, nodes=None, weight=None):
     r"""Compute the average degree connectivity of graph.

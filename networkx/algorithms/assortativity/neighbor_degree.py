@@ -13,6 +13,7 @@ __all__ = ["average_neighbor_degree",
 
 
 def _average_nbr_deg(G, degree_method, nodes=None, weight=None):
+    # average degree of neighbors
     avg_nbr_deg = {}
     for n in G.nbunch_iter(nodes):
         nbrdeg = degree_method(G[n])
