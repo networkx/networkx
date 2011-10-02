@@ -11,6 +11,7 @@ __author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>',
 __all__ = ['degree_pearsonr',
            'degree_assortativity',
            'attribute_assortativity',
+           'attribute_assortativity_coefficient',
            'numeric_assortativity']
 
 def degree_assortativity(G, x='out', y='in', weight=None, nodes=None):
