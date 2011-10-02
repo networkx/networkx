@@ -17,11 +17,11 @@ class TestNeighborConnectivity(object):
 
         answer={1:2.0,2:1.5}
         D=G.to_directed()
-        nd = nx.average_in_degree_connectivity(D)
+        nd = nx.average_degree_connectivity(D, source='in', target='in')
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_out_degree_connectivity(D)
+        nd = nx.average_degree_connectivity(D, source='in', target='in')
         assert_equal(nd,answer)
 
     def test_degree_p4_weighted(self):
@@ -41,11 +41,13 @@ class TestNeighborConnectivity(object):
 
         answer={1:2.0,2:1.8}
         D=G.to_directed()
-        nd = nx.average_in_degree_connectivity(D,weight='weight')
+        nd = nx.average_degree_connectivity(D,weight='weight', source='in',
+                                            target='in')
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_out_degree_connectivity(D,weight='weight')
+        nd = nx.average_degree_connectivity(D,source='in',target='out',
+                                            weight='weight')
         assert_equal(nd,answer)
 
     def test_weight_keyword(self):
@@ -65,11 +67,13 @@ class TestNeighborConnectivity(object):
 
         answer={1:2.0,2:1.8}
         D=G.to_directed()
-        nd = nx.average_in_degree_connectivity(D,weight='other')
+        nd = nx.average_degree_connectivity(D,weight='other', source='in',
+                                            target='in')
         assert_equal(nd,answer)
 
         D=G.to_directed()
-        nd = nx.average_out_degree_connectivity(D,weight='other')
+        nd = nx.average_degree_connectivity(D,weight='other',source='in',
+                                            target='in')
         assert_equal(nd,answer)
 
     def test_degree_barrat(self):
