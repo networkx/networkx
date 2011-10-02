@@ -227,7 +227,6 @@ def mixing_dict(xy,normalized=False):
     d: dictionary
        Counts or Joint probability of occurrence of values in xy.
     """
-
     d={}
     psum=0.0
     for x,y in xy:
@@ -235,9 +234,10 @@ def mixing_dict(xy,normalized=False):
             d[x]={}
         if y not in d:
             d[y]={}
-        v=d[x].setdefault(y,0)
-        d[x][y]=v+1
+        v = d[x].get(y,0)
+        d[x][y] = v+1
         psum+=1
+
 
     if normalized:
         for k,jdict in d.items():
