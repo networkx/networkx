@@ -9,6 +9,7 @@ Algorithms
 .. toctree::
    :maxdepth: 2
 
+   algorithms.assortativity
    algorithms.bipartite
    algorithms.block
    algorithms.boundary
@@ -29,9 +30,7 @@ Algorithms
    algorithms.link_analysis
    algorithms.matching
    algorithms.mis
-   algorithms.mixing
    algorithms.mst
-   algorithms.neighbor_degree
    algorithms.operators
    algorithms.product
    algorithms.rich_club

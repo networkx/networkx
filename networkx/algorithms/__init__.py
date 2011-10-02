@@ -1,3 +1,4 @@
+from networkx.algorithms.assortativity import *
 from networkx.algorithms.block import *
 from networkx.algorithms.boundary import *
 from networkx.algorithms.centrality import *
@@ -11,7 +12,6 @@ from networkx.algorithms.distance_measures import *
 from networkx.algorithms.flow import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.mis import *
-from networkx.algorithms.mixing import *
 from networkx.algorithms.mst import *
 from networkx.algorithms.link_analysis import *
 from networkx.algorithms.operators import *
@@ -24,9 +24,9 @@ from networkx.algorithms.euler import *
 from networkx.algorithms.vitality import *
 from networkx.algorithms.chordal import *
 from networkx.algorithms.richclub import *
-from networkx.algorithms.neighbor_degree import *
 from networkx.algorithms.distance_regular import *
 
+import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
 import networkx.algorithms.centrality
 import networkx.algorithms.cluster
