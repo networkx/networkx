@@ -52,8 +52,18 @@ def average_neighbor_degree(G, source='out', target='out',
     ----------
     G : NetworkX graph
 
-    nodes : list or iterable, optional (default is all nodes)
-        Compute neighbor connectivity for these nodes. 
+    source : string ("in"|"out")
+       Directed graphs only.
+       Use "in"- or "out"-degree for source node.  
+
+    target : string ("in"|"out")
+       Directed graphs only.
+       Use "in"- or "out"-degree for target node.
+
+    nodes : list or iterable, optional 
+        Compute neighbor degree for specified nodes.  The default is
+        all nodes in the graph.
+
 
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
@@ -76,19 +86,18 @@ def average_neighbor_degree(G, source='out', target='out',
 
     >>> G=nx.DiGraph()
     >>> G.add_path([0,1,2,3])
-    >>> nx.average_neighbor_in_degree(G)
+    >>> nx.average_neighbor_degree(G, source='in', target='in')
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0}
-    >>> nx.average_neighbor_out_degree(G)
+    >>> nx.average_neighbor_degree(G, source='out', target='out')
     {0: 1.0, 1: 1.0, 2: 0.0, 3: 0.0}
  
     Notes
     -----
     For directed graphs you can also specify in-degree or out-degree 
-    by calling the relevant functions.  
+    by passing keyword arguments.
 
     See Also
     --------
-    average_neighbor_out_degree, average_neighbor_in_degree, 
     average_degree_connectivity 
     
     References

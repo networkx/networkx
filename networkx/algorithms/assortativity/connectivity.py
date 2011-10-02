@@ -17,7 +17,6 @@ def _avg_deg_conn(G, degree_method, nodes=None, weight=None):
     # "k nearest neighbors, or neighbor_connectivity
     dsum = defaultdict(float)
     dnorm = defaultdict(float)
-
     for n,k in degree_method(nodes).items():
         nbrdeg = degree_method(G[n])
         if weight is None:
@@ -108,4 +107,3 @@ average_out_degree_connectivity.__doc__=average_degree_connectivity.__doc__
 
 
 k_nearest_neighbors=average_degree_connectivity
-neighbor_connectivity=average_degree_connectivity
