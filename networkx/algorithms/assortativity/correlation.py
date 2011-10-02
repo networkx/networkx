@@ -120,7 +120,7 @@ def degree_pearson_correlation_coefficient(G, x='out', y='in',
 
     Notes
     -----
-    This calls scipy.stats.pearsonr().
+    This calls scipy.stats.pearsonr.
 
     References
     ----------
@@ -158,8 +158,8 @@ def attribute_assortativity_coefficient(G,attribute,nodes=None):
 
     Returns
     -------
-    a: float
-       Assortativity of given attribute
+    r: float
+       Assortativity of graph for given attribute
     
     Examples
     --------
@@ -172,8 +172,8 @@ def attribute_assortativity_coefficient(G,attribute,nodes=None):
 
     Notes
     -----
-    This computes Eq. (2) in Ref. [1]_ , (trace(e)-sum(e))/(1-sum(e)),
-    where e is the joint probability distribution (mixing matrix)
+    This computes Eq. (2) in Ref. [1]_ , trace(M)-sum(M))/(1-sum(M),
+    where M is the joint probability distribution (mixing matrix)
     of the specified attribute.
 
     References
@@ -185,7 +185,7 @@ def attribute_assortativity_coefficient(G,attribute,nodes=None):
     return attribute_ac(M)
 
 
-def numeric_assortativity_coefficient(G,attribute,nodes=None):
+def numeric_assortativity_coefficient(G, attribute, nodes=None):
     """Compute assortativity for numerical node attributes.
 
     Assortativity measures the similarity of connections
@@ -204,8 +204,8 @@ def numeric_assortativity_coefficient(G,attribute,nodes=None):
 
     Returns
     -------
-    a: float
-       Assortativity of given attribute
+    r: float
+       Assortativity of graph for given attribute
     
     Examples
     --------
@@ -218,8 +218,7 @@ def numeric_assortativity_coefficient(G,attribute,nodes=None):
 
     Notes
     -----
-    This computes Eq. (21) in Ref. [1]_ ,
-    where e is the joint probability distribution (mixing matrix)
+    This computes Eq. (21) in Ref. [1]_ , for the mixing matrix of 
     of the specified attribute.
 
     References
@@ -264,25 +263,26 @@ def attribute_ac(M):
     return float(r)
 
 
-def numeric_ac(e):
+def numeric_ac(M):
+    # M is a numpy matrix or array
     # numeric assortativity coefficient, pearsonr
     try:
         import numpy
     except ImportError:
         raise ImportError('numeric_assortativity requires ',
                           'NumPy: http://scipy.org/')
-    if e.sum() != 1.0:
-        e=e/float(e.sum())
-    nx,ny=e.shape # nx=ny
+    if M.sum() != 1.0:
+        M=M/float(M.sum())
+    nx,ny=M.shape # nx=ny
     x=numpy.arange(nx)
     y=numpy.arange(ny)
-    a=e.sum(axis=0)
-    b=e.sum(axis=1)
+    a=M.sum(axis=0)
+    b=M.sum(axis=1)
     vara=(a*x**2).sum()-((a*x).sum())**2
     varb=(b*x**2).sum()-((b*x).sum())**2
     xy=numpy.outer(x,y)
     ab=numpy.outer(a,b)
-    return (xy*(e-ab)).sum()/numpy.sqrt(vara*varb)
+    return (xy*(M-ab)).sum()/numpy.sqrt(vara*varb)
 
 
 # fixture for nose tests
