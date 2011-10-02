@@ -8,13 +8,13 @@ from networkx.algorithms.assortativity.pairs import node_degree_xy, \
     node_attribute_xy
 __author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>',
                        'Oleguer Sagarra <oleguer.sagarra@gmail.com>'])
-__all__ = ['degree_pearsonr',
-           'degree_assortativity',
-           'attribute_assortativity',
+__all__ = ['degree_pearson_correlation_coefficient',
+           'degree_assortativity_coefficient',
            'attribute_assortativity_coefficient',
-           'numeric_assortativity']
+           'numeric_assortativity_coefficient']
 
-def degree_assortativity(G, x='out', y='in', weight=None, nodes=None):
+def degree_assortativity_coefficient(G, x='out', y='in', weight=None, 
+                                     nodes=None):
     """Compute degree assortativity of graph.
 
     Assortativity measures the similarity of connections
@@ -47,14 +47,14 @@ def degree_assortativity(G, x='out', y='in', weight=None, nodes=None):
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> r=nx.degree_assortativity(G)
+    >>> r=nx.degree_assortativity_coefficient(G)
     >>> print("%3.1f"%r)
     -0.5
 
     See Also
     --------
-    attribute_assortativity
-    numeric_assortativity
+    attribute_assortativity_coefficient
+    numeric_assortativity_coefficient
     neighbor_connectivity
     degree_mixing_dict
     degree_mixing_matrix
@@ -74,14 +74,18 @@ def degree_assortativity(G, x='out', y='in', weight=None, nodes=None):
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
     M = degree_mixing_matrix(G, x=x, y=y, nodes=nodes, weight=weight)
-    return numeric_assortativity_coefficient(M)
+    return numeric_ac(M)
 
 
-def degree_pearsonr(G, x='out', y='in', weight=None, nodes=None):
+def degree_pearson_correlation_coefficient(G, x='out', y='in', 
+                                           weight=None, nodes=None):
     """Compute degree assortativity of graph. 
 
     Assortativity measures the similarity of connections
     in the graph with respect to the node degree.
+
+    This is the same as degree_assortativity_coefficient but uses the 
+    potentially faster scipy.stats.pearsonr function.
 
     Parameters
     ----------
@@ -110,7 +114,7 @@ def degree_pearsonr(G, x='out', y='in', weight=None, nodes=None):
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> r=nx.degree_pearsonr(G) 
+    >>> r=nx.degree_pearson_correlation_coefficient(G) 
     >>> r 
     -0.5
 
@@ -135,7 +139,7 @@ def degree_pearsonr(G, x='out', y='in', weight=None, nodes=None):
     return stats.pearsonr(x,y)[0]
 
 
-def attribute_assortativity(G,attribute,nodes=None):
+def attribute_assortativity_coefficient(G,attribute,nodes=None):
     """Compute assortativity for node attributes.
 
     Assortativity measures the similarity of connections
@@ -163,7 +167,7 @@ def attribute_assortativity(G,attribute,nodes=None):
     >>> G.add_nodes_from([0,1],color='red')
     >>> G.add_nodes_from([2,3],color='blue')
     >>> G.add_edges_from([(0,1),(2,3)])
-    >>> print(nx.attribute_assortativity(G,'color'))
+    >>> print(nx.attribute_assortativity_coefficient(G,'color'))
     1.0
 
     Notes
@@ -177,15 +181,11 @@ def attribute_assortativity(G,attribute,nodes=None):
     .. [1] M. E. J. Newman, Mixing patterns in networks,
        Physical Review E, 67 026126, 2003
     """
-    if nodes is None:
-        node_iter = G
-    else:
-        node_iter = G.nbunch_iter(nodes)
-    a=attribute_mixing_matrix(G,attribute,node_iter)
-    return attribute_assortativity_coefficient(a)
+    M = attribute_mixing_matrix(G,attribute,nodes)
+    return attribute_ac(M)
 
 
-def numeric_assortativity(G,attribute,nodes=None):
+def numeric_assortativity_coefficient(G,attribute,nodes=None):
     """Compute assortativity for numerical node attributes.
 
     Assortativity measures the similarity of connections
@@ -213,7 +213,7 @@ def numeric_assortativity(G,attribute,nodes=None):
     >>> G.add_nodes_from([0,1],size=2)
     >>> G.add_nodes_from([2,3],size=3)
     >>> G.add_edges_from([(0,1),(2,3)])
-    >>> print(nx.numeric_assortativity(G,'size'))
+    >>> print(nx.numeric_assortativity_coefficient(G,'size'))
     1.0
 
     Notes
@@ -227,20 +227,16 @@ def numeric_assortativity(G,attribute,nodes=None):
     .. [1] M. E. J. Newman, Mixing patterns in networks
            Physical Review E, 67 026126, 2003
     """
-    if nodes is None:
-        node_iter = G
-    else:
-        node_iter = G.nbunch_iter(nodes)
-    a=numeric_mixing_matrix(G,attribute,node_iter)
-    return numeric_assortativity_coefficient(a)
+    a = numeric_mixing_matrix(G,attribute,nodes)
+    return numeric_ac(a)
 
 
-def attribute_assortativity_coefficient(e):
-    """Compute assortativity for attribute matrix e.
+def attribute_ac(M):
+    """Compute assortativity for attribute matrix M.
 
     Parameters
     ----------
-    e : numpy array or matrix
+    M : numpy array or matrix
         Attribute mixing matrix.
 
     Notes
@@ -259,20 +255,21 @@ def attribute_assortativity_coefficient(e):
     except ImportError:
         raise ImportError(
           "attribute_assortativity requires NumPy: http://scipy.org/ ")
-    if e.sum() != 1.0:
-        e=e/float(e.sum())
-    e=numpy.asmatrix(e)
-    s=(e*e).sum()
-    t=e.trace()
+    if M.sum() != 1.0:
+        M=M/float(M.sum())
+    M=numpy.asmatrix(M)
+    s=(M*M).sum()
+    t=M.trace()
     r=(t-s)/(1-s)
     return float(r)
 
 
-def numeric_assortativity_coefficient(e):
+def numeric_ac(e):
+    # numeric assortativity coefficient, pearsonr
     try:
         import numpy
     except ImportError:
-        raise ImportError('numeric_assortativity_coefficient requires ',
+        raise ImportError('numeric_assortativity requires ',
                           'NumPy: http://scipy.org/')
     if e.sum() != 1.0:
         e=e/float(e.sum())
