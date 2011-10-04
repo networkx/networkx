@@ -46,6 +46,7 @@ def ego_graph(G,n,radius=1,center=True,undirected=False,distance=None):
     first reverse the graph with D.reverse().  If you want both
     directions use the keyword argument undirected=True.
 
+    Node, edge, and graph attributes are copied to the returned subgraph.
     """
     if undirected:
         if distance is not None:
@@ -63,7 +64,7 @@ def ego_graph(G,n,radius=1,center=True,undirected=False,distance=None):
         else:
             sp=nx.single_source_shortest_path_length(G,n,cutoff=radius)
 
-    H=G.subgraph(sp)
+    H=G.subgraph(sp).copy()
     if not center:
         H.remove_node(n)
     return  H

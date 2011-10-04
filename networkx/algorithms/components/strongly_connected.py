@@ -223,11 +223,13 @@ def strongly_connected_component_subgraphs(G):
     Notes
     -----
     The list is ordered from largest strongly connected component to smallest.
+
+    Graph, node, and edge attributes are copied to the subgraphs.
     """
     cc=strongly_connected_components(G)
     graph_list=[]
     for c in cc:
-        graph_list.append(G.subgraph(c))
+        graph_list.append(G.subgraph(c).copy())
     return graph_list
 
 

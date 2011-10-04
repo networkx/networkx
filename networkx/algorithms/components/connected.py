@@ -150,11 +150,13 @@ def connected_component_subgraphs(G):
     -----
     The list is ordered from largest connected component to smallest.
     For undirected graphs only. 
+
+    Graph, node, and edge attributes are copied to the subgraphs.
     """
     cc=connected_components(G)
     graph_list=[]
     for c in cc:
-        graph_list.append(G.subgraph(c))
+        graph_list.append(G.subgraph(c).copy())
     return graph_list
 
 

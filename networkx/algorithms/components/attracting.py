@@ -118,6 +118,10 @@ def attracting_component_subgraphs(G):
     subgraphs : list
         A list of node-induced subgraphs of the attracting components of `G`.
     
+    Notes
+    -----
+    Graph, node, and edge attributes are copied to the subgraphs.
+
     See Also
     --------
     attracting_components
@@ -125,6 +129,6 @@ def attracting_component_subgraphs(G):
     is_attracting_component
 
     """
-    subgraphs = [G.subgraph(ac) for ac in attracting_components(G)]
+    subgraphs = [G.subgraph(ac).copy() for ac in attracting_components(G)]
     return subgraphs
 

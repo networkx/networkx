@@ -137,6 +137,8 @@ def k_core(G,k=None,core_number=None):
     For directed graphs the node degree is defined to be the 
     in-degree + out-degree. 
 
+    Graph, node, and edge attributes are copied to the subgraph.
+
     See Also
     --------
     core_number
@@ -152,7 +154,7 @@ def k_core(G,k=None,core_number=None):
     if k is None:
         k=max(core_number.values()) # max core 
     nodes=(n for n in core_number if core_number[n]>=k)
-    return G.subgraph(nodes)
+    return G.subgraph(nodes).copy()
 
 def k_shell(G,k=None,core_number=None):
     """Return the k-shell of G.
@@ -187,6 +189,8 @@ def k_shell(G,k=None,core_number=None):
     For directed graphs the node degree is defined to be the 
     in-degree + out-degree. 
 
+    Graph, node, and edge attributes are copied to the subgraph.
+
     See Also
     --------
     core_number
@@ -203,7 +207,7 @@ def k_shell(G,k=None,core_number=None):
     if k is None:
         k=max(core_number.values()) # max core
     nodes=(n for n in core_number if core_number[n]==k)
-    return G.subgraph(nodes)
+    return G.subgraph(nodes).copy()
 
 def k_crust(G,k=None,core_number=None):
     """Return the k-crust of G.
@@ -239,6 +243,8 @@ def k_crust(G,k=None,core_number=None):
     For directed graphs the node degree is defined to be the 
     in-degree + out-degree. 
 
+    Graph, node, and edge attributes are copied to the subgraph.
+
     See Also
     --------
     core_number
@@ -255,7 +261,7 @@ def k_crust(G,k=None,core_number=None):
     if k is None:
         k=max(core_number.values())-1
     nodes=(n for n in core_number if core_number[n]<=k)
-    return G.subgraph(nodes)
+    return G.subgraph(nodes).copy()
 
 
 def k_corona(G, k, core_number=None):
@@ -291,6 +297,8 @@ def k_corona(G, k, core_number=None):
     For directed graphs the node degree is defined to be the 
     in-degree + out-degree. 
 
+    Graph, node, and edge attributes are copied to the subgraph.
+
     See Also
     --------
     core_number
@@ -309,4 +317,4 @@ def k_corona(G, k, core_number=None):
     nodes = (n for n in core_number 
              if core_number[n] >= k 
              and len([v for v in G[n] if core_number[v] >= k]) == k)
-    return G.subgraph(nodes)
+    return G.subgraph(nodes).copy()

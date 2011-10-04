@@ -274,13 +274,24 @@ def biconnected_component_subgraphs(G):
     edges of a bicomponent will be traversed consecutively between
     articulation points.
 
+    Graph, node, and edge attributes are copied to the subgraphs.
+
     References
     ----------
     .. [1] Hopcroft, J.; Tarjan, R. (1973). 
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    return (nx.Graph(edges) for edges in 
+    def edge_subgraph(G,edges):
+        # create new graph and copy subgraph into it
+        H = G.__class__()
+        for u,v in edges:
+            H.add_edge(u,v,*G[u][v])
+        for n in H:
+            H.node[n]=G.node[n].copy()
+        H.graph=G.graph.copy()
+        return H
+    return (edge_subgraph(G,edges) for edges in 
             sorted(_biconnected_dfs(G,components=True), key=len, reverse=True))
 
 def articulation_points(G):
@@ -404,4 +415,3 @@ def _biconnected_dfs(G, components=True):
             # root node is articulation point if it has more than 1 child
             if root_children > 1:
                 yield start
-

@@ -44,11 +44,13 @@ def number_weakly_connected_components(G):
 
 def weakly_connected_component_subgraphs(G):
     """Return weakly connected components as subgraphs.
+
+    Graph, node, and edge attributes are copied to the subgraphs.
     """
     wcc=weakly_connected_components(G)
     graph_list=[]
     for c in wcc:
-        graph_list.append(G.subgraph(c))
+        graph_list.append(G.subgraph(c).copy())
     return graph_list
 
 def is_weakly_connected(G):
