@@ -35,7 +35,6 @@ import networkx.algorithms.components
 import networkx.algorithms.flow
 import networkx.algorithms.isomorphism
 import networkx.algorithms.link_analysis
-import networkx.algorithms.mixing
 import networkx.algorithms.shortest_paths
 import networkx.algorithms.traversal
 import networkx.algorithms.chordal
