@@ -27,12 +27,13 @@
 Decorator module, see http://pypi.python.org/pypi/decorator
 for the documentation.
 """
-
+from __future__ import print_function
 __version__ = '3.3.1'
 
 __all__ = ["decorator", "FunctionMaker", "partial"]
 
 import sys, re, inspect
+
 
 try:
     from functools import partial
