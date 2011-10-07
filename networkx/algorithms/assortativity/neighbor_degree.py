@@ -16,7 +16,7 @@ def _average_nbr_deg(G, source_degree, target_degree, nodes=None, weight=None):
     for n,deg in source_degree(nodes,weight=weight).items():
         # normalize but not by zero degree
         if deg == 0:
-            deg == 1
+            deg = 1
         nbrdeg = target_degree(G[n])
         if weight is None:
             avg[n] = sum(nbrdeg.values())/float(deg)
@@ -79,6 +79,7 @@ def average_neighbor_degree(G, source='out', target='out',
     >>> G=nx.path_graph(4)
     >>> G.edge[0][1]['weight'] = 5
     >>> G.edge[2][3]['weight'] = 3
+
     >>> nx.average_neighbor_degree(G)
     {0: 2.0, 1: 1.5, 2: 1.5, 3: 2.0}
     >>> nx.average_neighbor_degree(G, weight='weight')
@@ -88,6 +89,7 @@ def average_neighbor_degree(G, source='out', target='out',
     >>> G.add_path([0,1,2,3])
     >>> nx.average_neighbor_degree(G, source='in', target='in')
     {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0}
+
     >>> nx.average_neighbor_degree(G, source='out', target='out')
     {0: 1.0, 1: 1.0, 2: 0.0, 3: 0.0}
  
