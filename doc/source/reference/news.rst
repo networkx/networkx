@@ -7,12 +7,26 @@ Release Log
 Networkx-1.6
 ------------
 
-Release date:  2011
+Highlights
+~~~~~~~~~~
 
-For full details of the tickets closed for this release see:
+New functions for finding articulation points, generating random bipartite graphs, constructing adjacency matrix representations, forming graph products, computing assortativity coefficients, measuring subgraph centrality and communicability, and writing JSON format output.
+
+New examples for drawing with D3 Javascript library, and ordering matrices with the Cuthill-McKee algorithm.
+
+More memory efficient implementation of current-flow betweenness and new approximation algorithms for current-flow betweenness and shortest-path betweenness.
+
+Simplified handling of "weight" attributes for algorithms that use weights/costs/values.  See :doc:`api_1.6`.
+
+Updated all code to work with the PyPy Python implementation http://pypy.org which produces faster performance on many algorithms.
+
+For full details of the tickets closed for this release (added features and bug fixes) see:
 https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.6
 
-API changes at :doc:`api_1.6`
+API Changes
+~~~~~~~~~~~
+See :doc:`api_1.6`
+
 
 Networkx-1.5
 ------------
@@ -32,7 +46,7 @@ New features
  - :mod:`Maximal independent set <networkx.algorithms.mis>` algorithm
  - :mod:`Erdős-Gallai graphical degree sequence test <networkx.generators.degree_seq>`
  - :mod:`Negative edge cycle test <networkx.algorithms.shortest_paths.weighted>`
- - More memory efficienct :mod:`Dijkstra path length <networkx.algorithms.shortest_paths.weighted>` with cutoff parameter
+ - More memory efficient :mod:`Dijkstra path length <networkx.algorithms.shortest_paths.weighted>` with cutoff parameter
  - :mod:`Weighted clustering coefficient <networkx.algorithms.cluster>`
  - Read and write version 1.2 of :mod:`GEXF reader <networkx.readwrite.gexf>` format
  - :mod:`Neighbor degree correlation <networkx.algorithms.neighbor_degree>` 
@@ -63,7 +77,7 @@ Bug fixes
    (:ticket:`506`), (:ticket:`535`)
  - Fix negative cycle handling in Bellman-Ford (:ticket:`502`)
  - Write more attributes with GraphML and GML formats (:ticket:`480`)
- - Handle whitespace better in read_edgelist (:ticket:`513`)
+ - Handle white space better in read_edgelist (:ticket:`513`)
  - Better parsing of Pajek format files (:ticket:`524`) (:ticket:`542`)
  - Isolates functions work with directed graphs (:ticket:`526`)
  - Faster conversion to numpy matrices (:ticket:`529`)
@@ -80,7 +94,7 @@ Release date:  23 January 2011
 
 New features
 ~~~~~~~~~~~~
- - :mod:`k-shell,k-crust,k-coronoa <networkx.algorithms.core>`
+ - :mod:`k-shell,k-crust,k-corona <networkx.algorithms.core>`
  - :mod:`read GraphML files from yEd <networkx.readwrite.graphml>`
  - :mod:`read/write GEXF format files <networkx.readwrite.gexf>`
  - :mod:`find cycles in a directed graph <networkx.algorithms.cycles>`
@@ -143,7 +157,7 @@ See: https://networkx.lanl.gov/trac/timeline
 New features
 ~~~~~~~~~~~~
  - :mod:`Ford-Fulkerson max flow and min cut <networkx.algorithms.flow>` 
- - :mod:`Closness vitality <networkx.algorithms.vitality>` 
+ - :mod:`Closeness vitality <networkx.algorithms.vitality>` 
  - :mod:`Eulerian circuits <networkx.algorithms.euler>` 
  - :mod:`Functions for isolates <networkx.algorithms.isolates>` 
  - :mod:`Simpler s_max generator <networkx.generators.degree_seq>` 
@@ -248,7 +262,7 @@ Bug fixes
    connected_components_subgraphs())
  - Handle multigraphs in more operators (e.g. union)   
  - Handle double-quoted labels with pydot
- - Normalize betweeness_centrality for undirected graphs correctly 
+ - Normalize betweenness_centrality for undirected graphs correctly 
  - Normalize eigenvector_centrality by l2 norm
  - :func:`read_gml` now returns multigraphs
 
@@ -271,7 +285,7 @@ See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
-This release has sigificant changes to parts of the graph API
+This release has significant changes to parts of the graph API
 to allow graph, node, and edge attributes.
 See http://networkx.lanl.gov//reference/api_changes.html
 
@@ -306,7 +320,7 @@ See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
-This release has sigificant changes to parts of the graph API.
+This release has significant changes to parts of the graph API.
 See http://networkx.lanl.gov//reference/api_changes.html
 
  - Update Graph and DiGraph classes to use weighted graphs as default
@@ -596,7 +610,7 @@ See: https://networkx.lanl.gov/trac/timeline
 
 New features
 ~~~~~~~~~~~~
-   - Algorithms for betweeenness, eigenvalues, eigenvectors, and
+   - Algorithms for betweenness, eigenvalues, eigenvectors, and
      spectral projection for threshold graphs  
    - Use numpy when available
    - dense_gnm_random_graph generator
@@ -611,7 +625,7 @@ Bug fixes
 ~~~~~~~~~
    - Betweenness centrality now correctly uses Brandes definition and
      has normalization option outside main loop
-   - Empty graph now labled as empty_graph(n)
+   - Empty graph now labeled as empty_graph(n)
    - shortest_path_length used python2.4 generator feature
    - degree_sequence_tree off by one error caused nonconsecutive labeling
    - periodic_grid_2d_graph removed in favor of grid_2d_graph with
@@ -752,7 +766,7 @@ Bug fixes
    - missing weights for degree 0 and 1 nodes in clustering     
    - configuration model now uses XGraph, returns graph with identical
      degree sequence as input sequence	   
-   - fixed dijstra priority queue
+   - fixed Dijkstra priority queue
    - fixed non-recursive toposort and is_directed_acyclic graph
 
 NetworkX-0.24
@@ -762,9 +776,9 @@ Release date: 20 August 2005
 
 Bug fixes
 ~~~~~~~~~
-   - Update of dijstra algorithm code
+   - Update of Dijkstra algorithm code
    - dfs_successor now calls proper search method
-   - Changed to list compehension in DiGraph.reverse() for python2.3
+   - Changed to list comprehension in DiGraph.reverse() for python2.3
      compatibility
    - Barabasi-Albert graph generator fixed
    - Attempt to add self loop should add node even if parallel edges not 
@@ -823,7 +837,7 @@ Release date: 17 June 2005
 New features
 ~~~~~~~~~~~~
   - Topological sort, testing for directed acyclic graphs (DAGs)
-  - Dikjstra's algorithm for shortest paths in weighted graphs
+  - Dijkstra's algorithm for shortest paths in weighted graphs
   - Multidimensional layout with dim=n for drawing
   - 3d rendering demonstration with vtk
   - Graph generators
