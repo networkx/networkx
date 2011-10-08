@@ -59,6 +59,17 @@ class TestWeaklyConnected:
             w=sorted([sorted(g.nodes()) for g in wcc(G)])
             c=sorted([sorted(g.nodes()) for g in cc(U)])
             assert_equal(w,c)
+        G,C=self.gc[0]
+        G.add_edge(1,2,eattr='red')
+        G.node[1]['nattr']='blue'
+        G.graph['gattr']='green'
+        sgs=wcc(G)[0]
+        assert_equal(sgs[1][2]['eattr'],'red')
+        assert_equal(sgs.node[1]['nattr'],'blue')
+        assert_equal(sgs.graph['gattr'],'green')
+        sgs[1][2]['eattr']='blue'
+        assert_equal(G[1][2]['eattr'],'red')
+        assert_equal(sgs[1][2]['eattr'],'blue')
 
     def test_is_weakly_connected(self):
         wcc=nx.is_weakly_connected

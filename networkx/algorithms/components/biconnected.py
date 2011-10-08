@@ -286,7 +286,7 @@ def biconnected_component_subgraphs(G):
         # create new graph and copy subgraph into it
         H = G.__class__()
         for u,v in edges:
-            H.add_edge(u,v,*G[u][v])
+            H.add_edge(u,v,**G[u][v])
         for n in H:
             H.node[n]=G.node[n].copy()
         H.graph=G.graph.copy()
