@@ -1,5 +1,5 @@
-Overview
-~~~~~~~~
+Introduction
+~~~~~~~~~~~~
 .. currentmodule:: networkx
 
 .. only:: html
