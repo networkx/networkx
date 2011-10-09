@@ -67,6 +67,17 @@ class TestStronglyConnected:
         scc=nx.strongly_connected_component_subgraphs
         for G,C in self.gc:
             assert_equal(sorted([sorted(g.nodes()) for g in scc(G)]),sorted(C))
+        G,C=self.gc[0]
+        G.add_edge(1,2,eattr='red')
+        G.node[1]['nattr']='blue'
+        G.graph['gattr']='green'
+        sgs=scc(G)[1]
+        assert_equal(sgs[1][2]['eattr'],'red')
+        assert_equal(sgs.node[1]['nattr'],'blue')
+        assert_equal(sgs.graph['gattr'],'green')
+        sgs[1][2]['eattr']='blue'
+        assert_equal(G[1][2]['eattr'],'red')
+        assert_equal(sgs[1][2]['eattr'],'blue')
 
 
     def test_contract_scc1(self):

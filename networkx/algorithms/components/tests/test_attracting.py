@@ -48,8 +48,18 @@ class TestAttractingComponents(object):
         for subgraph in subgraphs:
             assert_equal(len(subgraph), 1)
 
+        self.G2.add_edge(1,2,eattr='red')  # test attrs copied to subgraphs
+        self.G2.node[2]['nattr']='blue'
+        self.G2.graph['gattr']='green'
         subgraphs = nx.attracting_component_subgraphs(self.G2)
         assert_equal(len(subgraphs), 1)
-        assert_true(1 in subgraphs[0])
-        assert_true(2 in subgraphs[0])
+        SG2=subgraphs[0]
+        assert_true(1 in SG2)
+        assert_true(2 in SG2)
+        assert_equal(SG2[1][2]['eattr'],'red')
+        assert_equal(SG2.node[2]['nattr'],'blue')
+        assert_equal(SG2.graph['gattr'],'green')
+        SG2.add_edge(1,2,eattr='blue')
+        assert_equal(SG2[1][2]['eattr'],'blue')
+        assert_equal(self.G2[1][2]['eattr'],'red')
         

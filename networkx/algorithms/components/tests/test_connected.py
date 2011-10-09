@@ -42,10 +42,21 @@ class TestConnected:
         assert_equal(sorted(ncc(G,1)),sorted(C))
 
     def test_connected_component_subgraphs(self):
-        ncc=nx.connected_component_subgraphs
         G=self.grid
-        C=[[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]]
-        assert_equal(sorted([sorted(g.nodes()) for g in ncc(G)]),sorted(C))
+        G.add_edge(1,2,eattr='red') # test attributes copied to subgraphs
+        G.node[1]['nattr']='blue'
+        G.graph['gattr']='green'
+        ccs=nx.connected_component_subgraphs(G)
+        assert_equal(len(ccs),1)
+        sg=ccs[0]
+        assert_equal(sorted(sg.nodes()),range(1,17))
+        assert_equal(sg[1][2]['eattr'],'red')
+        assert_equal(sg.node[1]['nattr'],'blue')
+        assert_equal(sg.graph['gattr'],'green')
+        sg[1][2]['eattr']='blue'
+        assert_equal(G[1][2]['eattr'],'red')
+        assert_equal(sg[1][2]['eattr'],'blue')
+
 
     def test_is_connected(self):
         assert_true(nx.is_connected(self.grid))

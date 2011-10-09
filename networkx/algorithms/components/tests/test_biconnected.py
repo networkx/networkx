@@ -60,16 +60,31 @@ def test_biconnected_components_cycle():
 
 def test_biconnected_component_subgraphs_cycle():
     G=nx.cycle_graph(3)
-    G.add_cycle([1,3,4])
+    G.add_cycle([1,3,4,5])
+    G.add_edge(1,3,eattr='red')  # test copying of edge data
+    G.node[1]['nattr']='blue'
+    G.graph['gattr']='green'
     Gc = set(biconnected.biconnected_component_subgraphs(G))
     assert_equal(len(Gc),2)
     g1,g2=Gc
     if 0 in g1:
-        nx.is_isomorphic(g1,nx.Graph([(0,1),(0,2),(1,2)]))
-        nx.is_isomorphic(g2,nx.Graph([(1,3),(1,4),(3,4)]))
+        assert_true(nx.is_isomorphic(g1,nx.Graph([(0,1),(0,2),(1,2)])))
+        assert_true(nx.is_isomorphic(g2,nx.Graph([(1,3),(1,5),(3,4),(4,5)])))
+        assert_equal(g2[1][3]['eattr'],'red')
+        assert_equal(g2.node[1]['nattr'],'blue')
+        assert_equal(g2.graph['gattr'],'green')
+        g2[1][3]['eattr']='blue'
+        assert_equal(g2[1][3]['eattr'],'blue')
+        assert_equal(G[1][3]['eattr'],'red')
     else:
-        nx.is_isomorphic(g1,nx.Graph([(1,3),(1,4),(3,4)]))
-        nx.is_isomorphic(g2,nx.Graph([(0,1),(0,2),(1,2)]))
+        assert_true(nx.is_isomorphic(g1,nx.Graph([(1,3),(1,5),(3,4),(4,5)])))
+        assert_true(nx.is_isomorphic(g2,nx.Graph([(0,1),(0,2),(1,2)])))
+        assert_equal(g1[1][3]['eattr'],'red')
+        assert_equal(g1.node[1]['nattr'],'blue')
+        assert_equal(g1.graph['gattr'],'green')
+        g1[1][3]['eattr']='blue'
+        assert_equal(g1[1][3]['eattr'],'blue')
+        assert_equal(G[1][3]['eattr'],'red')
 
 
 def test_biconnected_components1():
