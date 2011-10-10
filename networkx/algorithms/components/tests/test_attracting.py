@@ -16,13 +16,12 @@ class TestAttractingComponents(object):
 
     def test_attracting_components(self):
         ac = nx.attracting_components(self.G1)
-        assert_true((2,) in ac)
-        assert_true((9,) in ac)
-        assert_true((10,) in ac)
+        assert_true([2] in ac)
+        assert_true([9] in ac)
+        assert_true([10] in ac)
 
         ac = nx.attracting_components(self.G2)
         ac = [tuple(sorted(x)) for x in ac]
-        print(ac)
         assert_true(ac == [(1,2)])
 
         ac = nx.attracting_components(self.G3)

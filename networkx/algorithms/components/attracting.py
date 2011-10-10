@@ -2,21 +2,19 @@
 """
 Attracting components.
 """
-__authors__ = "\n".join(['Christopher Ellison'])
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+import networkx as nx
+__authors__ = "\n".join(['Christopher Ellison'])
 __all__ = ['number_attracting_components', 
            'attracting_components',
            'is_attracting_component', 
            'attracting_component_subgraphs',
            ]
-
-import networkx as nx
 
 def attracting_components(G):
     """Returns a list of attracting components in `G`.
@@ -47,8 +45,9 @@ def attracting_components(G):
     attracting_component_subgraphs
 
     """
-    cG = nx.condensation(G)
-    attractors = [scc for scc in cG if cG.out_degree(scc) == 0]
+    scc = nx.strongly_connected_components(G)
+    cG = nx.condensation(G, scc)
+    attractors = [scc[n] for n in cG if cG.out_degree(n) == 0]
     attractors.sort(key=len,reverse=True)
     return attractors
 

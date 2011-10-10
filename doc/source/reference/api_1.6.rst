@@ -87,6 +87,12 @@ A useful import statement that will be repeated throughout documentation is::
 
     import networkx.algorithms.isomorphism as iso
 
+Other
+-----
 
+* condensation
+
+  The condensation algorithm now takes a second argument (scc) and returns a   
+  graph with node labeled with integers instead of node tuples.
 
 

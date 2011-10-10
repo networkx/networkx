@@ -85,27 +85,50 @@ class TestStronglyConnected:
         G.add_edges_from([(1,2),(2,3),(2,11),(2,12),(3,4),(4,3),(4,5),
                           (5,6),(6,5),(6,7),(7,8),(7,9),(7,10),(8,9),
                           (9,7),(10,6),(11,2),(11,4),(11,6),(12,6),(12,11)])
-        cG = nx.condensation(G)
-        # nodes
-        assert_true((1,) in cG)
-        assert_true((2,11,12) in cG)
-        assert_true((3,4) in cG)
-        assert_true((5,6,7,8,9,10) in cG)
-        assert_true((2,11,12) in cG[(1,)])
-        # edges
-        assert_true((3,4) in cG[(2,11,12)])
-        assert_true((5,6,7,8,9,10) in cG[(2,11,12)])
-        assert_true((5,6,7,8,9,10) in cG[(3,4)])
+        scc = nx.strongly_connected_components(G)
+        cG = nx.condensation(G, scc)
         # DAG
         assert_true(nx.is_directed_acyclic_graph(cG))
+        # # nodes
+        assert_equal(sorted(cG.nodes()),[0,1,2,3])
+        # # edges
+        mapping={}
+        for i,component in enumerate(scc):
+            for n in component:
+                mapping[n] = i
+        edge=(mapping[2],mapping[3])
+        assert_true(cG.has_edge(*edge))
+        edge=(mapping[2],mapping[5])
+        assert_true(cG.has_edge(*edge))
+        edge=(mapping[3],mapping[5])
+        assert_true(cG.has_edge(*edge))
 
-    def test_contract_scc2(self):
+    def test_contract_scc_isolate(self):
         # Bug found and fixed in [1687].
         G = nx.DiGraph()
         G.add_edge(1,2)
         G.add_edge(2,1)
-        cG = nx.condensation(G)
-        assert_true((1,2) in cG)
+        scc = nx.strongly_connected_components(G)        
+        cG = nx.condensation(G, scc)
+        assert_equal(cG.nodes(),[0])
+        assert_equal(cG.edges(),[])
+
+    def test_contract_scc_edge(self):
+        G = nx.DiGraph()
+        G.add_edge(1,2)
+        G.add_edge(2,1)
+        G.add_edge(2,3)
+        G.add_edge(3,4)
+        G.add_edge(4,3)
+        scc = nx.strongly_connected_components(G)        
+        cG = nx.condensation(G, scc)
+        assert_equal(cG.nodes(),[0,1])
+        if 1 in scc[0]:
+            edge = (0,1)
+        else:
+            edge = (1,0)
+        assert_equal(cG.edges(),[edge])
+
 
 
 

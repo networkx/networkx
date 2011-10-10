@@ -49,7 +49,7 @@ class TestConnected:
         ccs=nx.connected_component_subgraphs(G)
         assert_equal(len(ccs),1)
         sg=ccs[0]
-        assert_equal(sorted(sg.nodes()),range(1,17))
+        assert_equal(sorted(sg.nodes()),list(range(1,17)))
         assert_equal(sg[1][2]['eattr'],'red')
         assert_equal(sg.node[1]['nattr'],'blue')
         assert_equal(sg.graph['gattr'],'green')

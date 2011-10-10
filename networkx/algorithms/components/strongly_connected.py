@@ -2,15 +2,16 @@
 """
 Strongly connected components.
 """
-__authors__ = "\n".join(['Eben Kenah',
-                         'Aric Hagberg (hagberg@lanl.gov)'
-                         'Christopher Ellison'])
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import networkx as nx
+__authors__ = "\n".join(['Eben Kenah',
+                         'Aric Hagberg (hagberg@lanl.gov)'
+                         'Christopher Ellison'])
 
 __all__ = ['number_strongly_connected_components', 
            'strongly_connected_components',
@@ -20,8 +21,6 @@ __all__ = ['number_strongly_connected_components',
            'kosaraju_strongly_connected_components',
            'condensation',
            ]
-
-import networkx as nx
 
 def strongly_connected_components(G):
     """Return nodes in strongly connected components of graph.
@@ -289,35 +288,40 @@ def is_strongly_connected(G):
     return len(strongly_connected_components(G)[0])==len(G)
 
 
-def condensation(G):
+def condensation(G, scc):
     """Returns the condensation of G.
 
     The condensation of G is the graph with each of the strongly connected 
-    components contracted into a single node.
+    components contracted into a single node.  
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : NetworkX DiGraph
        A directed graph.
+
+    scc:  list
+       A list of strongly connected components.  
+       Use scc=nx.strongly_connected_components(G) to compute the components.
 
     Returns
     -------
-    cG : NetworkX DiGraph
-       The condensation of G.
+    C : NetworkX DiGraph
+       The condensation of G. The node labels are integers corresponding
+       to the index of the component in the list of strongly connected 
+       components.
 
     Notes
     -----
     After contracting all strongly connected components to a single node,
-    the resulting graph is a directed acyclic graph.
-
+    the resulting graph is a directed acyclic graph.  
     """
-    scc = strongly_connected_components(G)
-    mapping = dict([(n,tuple(sorted(c))) for c in scc for n in c])
-    cG = nx.DiGraph()
-    for u in mapping:
-        cG.add_node(mapping[u])
-        for _,v,d in G.edges_iter(u, data=True):
-            if v not in mapping[u]:
-                cG.add_edge(mapping[u], mapping[v])
-    return cG
-
+    mapping = {}
+    C = nx.DiGraph()
+    for i,component in enumerate(scc):
+        for n in component:
+            mapping[n] = i
+    C.add_nodes_from(range(len(scc)))
+    for u,v in G.edges():
+        if mapping[u] != mapping[v]:
+            C.add_edge(mapping[u],mapping[v])
+    return C
