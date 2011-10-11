@@ -198,6 +198,9 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     vmin,vmax : float, optional (default=None)
        Minimum and maximum for node colormap scaling
 
+    linewidths : [None | scalar | sequence]
+       Line width of symbol border (default =1.0)
+
     width : float, optional (default=1.0)
        Line width of edges
 
@@ -325,9 +328,8 @@ def draw_networkx_nodes(G, pos,
     vmin,vmax : floats
        Minimum and maximum for node colormap scaling (default=None)
 
-    linewidths : float
-       Line width of edges (default =1.0)
-
+    linewidths : [None | scalar | sequence]
+       Line width of symbol border (default =1.0)
 
     Examples
     --------
