@@ -23,7 +23,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
                                                     epsilon=0.5, kmax=10000):
     r"""Compute the approximate current-flow betweenness centrality for nodes.
 
-    Apprxoximates the current-flow betweenness centrality within absolute
+    Approximates the current-flow betweenness centrality within absolute
     error of epsilon with high probability [1]_.
 
 
@@ -53,7 +53,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
         Absolute error tolerance.
        
     kmax: int
-       Maximum number of sample node pairs to use for aproximation.
+       Maximum number of sample node pairs to use for approximation.
 
     Returns
     -------
