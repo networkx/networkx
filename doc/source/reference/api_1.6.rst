@@ -95,4 +95,25 @@ Other
   The condensation algorithm now takes a second argument (scc) and returns a   
   graph with node labeled with integers instead of node tuples.
 
+* degree connectivity
+
+  average_in_degree_connectivity and average_out_degree_connectivity have 
+  have been replaced with 
+
+  average_degree_connectivity(G, source='in', target='in')
+
+  and
+
+  average_degree_connectivity(G, source='out', target='out')
+
+* neighbor degree
+
+  average_neighbor_in_degree and  average_neighbor_out_degreey have 
+  have been replaced with 
+
+  average_neighbor_degree(G, source='in', target='in')
+
+  and
+
+  average_neighbor_degree(G, source='out', target='out')
 

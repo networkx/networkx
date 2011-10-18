@@ -47,7 +47,7 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
         k_{nn,i}^{w} = \frac{1}{s_i} \sum_{j \in N(i)} w_{ij} k_j
 
     where `s_i` is the weighted degree of node `i`, 
-    `w_{ij}`is the weight of the edge that links `i` and `j`,
+    `w_{ij}` is the weight of the edge that links `i` and `j`,
     and `N(i)` are the neighbors of node `i`.
 
     Parameters
