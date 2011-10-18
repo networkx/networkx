@@ -1,4 +1,4 @@
-YAML
+JSON
 ====
 .. automodule:: networkx.readwrite.json_graph
 .. autosummary::
