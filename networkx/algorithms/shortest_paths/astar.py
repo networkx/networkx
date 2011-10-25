@@ -1,25 +1,29 @@
 # -*- coding: utf-8 -*-
 """Shortest paths and path lengths using A* ("A star") algorithm.
 """
-#    Copyright (C) 2004-2011 by 
+
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+
 from heapq import heappush, heappop
 from networkx import NetworkXError
 import networkx as nx
-__author__ ="\n".join(["Salim Fadhley <salimfadhley@gmail.com>",
-                       "Matteo Dell'Amico <matteodellamico@gmail.com>"])
-__all__ = ['astar_path','astar_path_length']
+
+__author__ = "\n".join(["Salim Fadhley <salimfadhley@gmail.com>",
+                        "Matteo Dell'Amico <matteodellamico@gmail.com>"])
+__all__ = ['astar_path', 'astar_path_length']
+
 
 def astar_path(G, source, target, heuristic=None, weight='weight'):
-    """Return a list of nodes in a shortest path between source and target 
+    """Return a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
 
     There may be more than one shortest path.  This returns only one.
-    
+
     Parameters
     ----------
     G : NetworkX graph
@@ -28,7 +32,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
        Starting node for path
 
     target : node
-       Ending node for path 
+       Ending node for path
 
     heuristic : function
        A function to evaluate the estimate of the distance
@@ -67,7 +71,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
     if heuristic is None:
         # The default heuristic is h=0 - same as Dijkstra's algorithm
-        def heuristic(u,v):
+        def heuristic(u, v):
             return 0
     # The queue stores priority, node, cost to reach, and parent.
     # Uses Python heapq to keep in priority order.
@@ -82,7 +86,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
     enqueued = {}
     # Maps explored nodes to parent closest to the source.
     explored = {}
-    
+
     while queue:
         # Pop the smallest item from queue.
         _, __, curnode, dist, parent = heappop(queue)
@@ -104,7 +108,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
         for neighbor, w in G[curnode].items():
             if neighbor in explored:
                 continue
-            ncost = dist + w.get(weight,1)
+            ncost = dist + w.get(weight, 1)
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
                 # if qcost < ncost, a longer path to neighbor remains
@@ -116,14 +120,15 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             else:
                 h = heuristic(neighbor, target)
             enqueued[neighbor] = ncost, h
-            heappush(queue, (ncost + h, hash(neighbor), neighbor, 
+            heappush(queue, (ncost + h, hash(neighbor), neighbor,
                              ncost, curnode))
 
-    raise nx.NetworkXNoPath("Node %s not reachable from %s"%(source,target))
+    raise nx.NetworkXNoPath("Node %s not reachable from %s" % (source, target))
+
 
 def astar_path_length(G, source, target, heuristic=None, weight='weight'):
-    """Return a list of nodes in a shortest path between source and target 
-    using the A* ("A-star") algorithm.
+    """Return the length of the shortest path between source and target using
+    the A* ("A-star") algorithm.
 
     Parameters
     ----------
@@ -133,7 +138,7 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
        Starting node for path
 
     target : node
-       Ending node for path 
+       Ending node for path
 
     heuristic : function
        A function to evaluate the estimate of the distance
@@ -150,6 +155,5 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
     astar_path
 
     """
-    path=astar_path(G,source,target,heuristic)
-    return sum(G[u][v].get(weight,1) for u,v in zip(path[:-1],path[1:]))
-    
+    path = astar_path(G, source, target, heuristic)
+    return sum(G[u][v].get(weight, 1) for u, v in zip(path[:-1], path[1:]))
