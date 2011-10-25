@@ -127,8 +127,8 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
 
 def astar_path_length(G, source, target, heuristic=None, weight='weight'):
-    """Return a list of nodes in a shortest path between source and target
-    using the A* ("A-star") algorithm.
+    """Return the length of the shortest path between source and target using
+    the A* ("A-star") algorithm.
 
     Parameters
     ----------
