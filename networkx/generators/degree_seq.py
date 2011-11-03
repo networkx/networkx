@@ -8,12 +8,13 @@
 #    All rights reserved.
 #    BSD license.
 import heapq
-from operator import itemgetter
+from itertools import combinations, permutations
 import math
+from operator import itemgetter
 import random
 import networkx as nx
-import networkx.utils
-from networkx.generators.classic import empty_graph
+from networkx.utils import random_weighted_sample
+
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Dan Schult (dschult@colgate.edu)'
@@ -23,7 +24,8 @@ __all__ = ['configuration_model',
            'directed_configuration_model',
            'expected_degree_graph',
            'havel_hakimi_graph',
-           'degree_sequence_tree']
+           'degree_sequence_tree',
+           'random_degree_sequence_graph']
 
 
 def configuration_model(deg_sequence,create_using=None,seed=None):
@@ -454,7 +456,7 @@ def degree_sequence_tree(deg_sequence,create_using=None):
 
     # single node tree
     if len(deg_sequence)==1:
-        G=empty_graph(0,create_using)
+        G=nx.empty_graph(0,create_using)
         return G
 
     # all degrees greater than 1
@@ -478,4 +480,165 @@ def degree_sequence_tree(deg_sequence,create_using=None):
         G.remove_node(0)
     return G
         
- 
+def random_degree_sequence_graph(sequence, seed=None, tries=10):
+    r"""Return a simple random graph with the given degree sequence.
+
+    If the maximum degree `d_m` in the sequence is `O(m^{1/4})` then the 
+    algorithm produces almost uniform random graphs in `O(m d_m)` where
+    `m` is the number of edges.
+
+    Parameters
+    ----------
+    sequence :  list of integers 
+        Sequence of degrees
+    seed : hashable object, optional
+        Seed for random number generator   
+    tries : int, optional        
+        Maximum number of tries to create a graph
+
+    Returns
+    -------
+    G : Graph
+        A graph with the specified degree sequence.
+        Nodes are labeled starting at 0 with an index
+        corresponding to the position in the sequence.
+
+    Raises
+    ------
+    NetworkXError
+        If the degree sequence is not graphical.
+
+    See Also
+    --------
+    is_valid_degree_sequence, configuration_model
+    
+    Notes
+    -----
+
+    References
+    ----------
+    .. [1] Moshen Bayati, Jeong Han Kim, and Amin Saberi,
+       A sequential algorithm for generating random graphs.
+       Algorithmica, Volume 58, Number 4, 860-910, 
+       DOI: 10.1007/s00453-009-9340-1
+        
+    Examples
+    --------
+    >>> sequence = [1, 2, 2, 3]
+    >>> G = nx.random_degree_sequence_graph(sequence)
+    >>> sorted(G.degree().values())
+    [1, 2, 2, 3]
+    """
+    DSRG = DegreeSequenceRandomGraph(sequence, seed=seed)
+    for try_n in range(tries):
+        try:
+            return DSRG.generate()
+        except nx.NetworkXUnfeasible:
+            pass
+    raise nx.NetworkXError('failed to generate graph in %d tries'%tries)
+
+class DegreeSequenceRandomGraph(object):
+    def __init__(self, degree, seed=None):
+        if not nx.is_valid_degree_sequence(degree):
+            raise nx.NetworkXError('degree sequence is not graphical')
+        if seed is not None:
+            random.seed(seed)
+        self.degree = degree
+        # node labels are integers 0,...,n-1
+        self.m = sum(self.degree)/2.0 # number of edges
+        self.dmax = max(self.degree) # maximum degree
+    
+    def generate(self):
+        # remaining_degree is mapping from int->remaining degree
+        self.remaining_degree = dict(enumerate(self.degree)) 
+        # add all nodes to make sure we get isolated nodes
+        self.graph = nx.Graph()
+        self.graph.add_nodes_from(self.remaining_degree)
+        # remove zero degree nodes
+        for n,d in self.remaining_degree.items():
+            if d == 0:
+                del self.remaining_degree[n]
+        # build graph in three phases according to how many unmatched edges
+        self.phase1() 
+        self.phase2()
+        self.phase3()
+        return self.graph
+
+    def update_remaining(self, u, v, aux_graph=None):
+        # decrement remaining nodes, modify auxilliary graph if in phase3
+        if aux_graph is not None:
+            # remove edges from auxilliary graph
+            aux_graph.remove_edge(u,v)
+        if self.remaining_degree[u] == 1:
+            del self.remaining_degree[u]
+            if aux_graph is not None:
+                aux_graph.remove_node(u)
+        else:
+            self.remaining_degree[u] -= 1
+        if self.remaining_degree[v] == 1:
+            del self.remaining_degree[v]
+            if aux_graph is not None:
+                aux_graph.remove_node(v)
+        else:
+            self.remaining_degree[v] -= 1
+
+    def p(self,u,v):
+        # degree probability
+        return 1 - self.degree[u]*self.degree[v]/(4.0*self.m)
+
+    def q(self,u,v):
+        # remaining degree probability
+        norm = float(max(self.remaining_degree.values()))**2
+        return self.remaining_degree[u]*self.remaining_degree[v]/norm
+
+    def suitable_edge(self):
+        # Check if there is a suitable edge that is not in the graph
+        # True if an (arbitrary) remaining node has at least one possible 
+        # connection to another remaining node
+        nodes = iter(self.remaining_degree)
+        u = next(nodes) # one arbitrary node
+        for v in nodes: # loop over all other remaining nodes
+            if not self.graph.has_edge(u, v):
+                return True
+        return False
+
+    def phase1(self):
+        # choose node pairs from (degree) weighted distribution
+        while sum(self.remaining_degree.values()) >= 2 * self.dmax**2:
+            u,v = sorted(random_weighted_sample(self.remaining_degree, 2))
+            if self.graph.has_edge(u,v):
+                continue
+            if random.random() < self.p(u,v):  # accept edge
+                self.graph.add_edge(u,v)
+                self.update_remaining(u,v)
+
+    def phase2(self):
+        # choose remaining nodes uniformly at random and use rejection sampling
+        while len(self.remaining_degree) >= 2 * self.dmax:
+            norm = float(max(self.remaining_degree.values()))**2
+            while True:
+                u,v = sorted(random.sample(self.remaining_degree, 2))
+                if self.graph.has_edge(u,v):
+                    continue
+                if random.random() < self.q(u,v):
+                    break 
+            if random.random() < self.p(u,v):  # accept edge
+                self.graph.add_edge(u,v)
+                self.update_remaining(u,v)
+        
+    def phase3(self):
+        # build potential remaining edges and choose with rejection sampling
+        potential_edges = combinations(self.remaining_degree, 2)
+        # build auxilliary graph of potential edges not already in graph
+        H = nx.Graph([(u,v) for (u,v) in potential_edges 
+                      if not self.graph.has_edge(u,v)])
+        while self.remaining_degree:
+            if not self.suitable_edge():
+                raise nx.NetworkXUnfeasible('no suitable edges left')
+            while True:
+                u,v = sorted(random.choice(H.edges()))
+                if random.random() < self.q(u,v):
+                    break
+            if random.random() < self.p(u,v): # accept edge
+                self.graph.add_edge(u,v)
+                self.update_remaining(u,v, aux_graph=H)

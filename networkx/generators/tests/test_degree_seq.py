@@ -89,3 +89,7 @@ def test_degree_sequence_tree():
     assert_raises(networkx.exception.NetworkXError,
                   degree_sequence_tree, z)
 
+def test_random_degree_sequence_graph():
+    d=[1,2,2,3]
+    G = nx.random_degree_sequence_graph(d)
+    assert_equal(d, list(G.degree().values()))
