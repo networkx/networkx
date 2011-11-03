@@ -25,6 +25,7 @@ Algorithms
    algorithms.distance_regular
    algorithms.euler
    algorithms.flow
+   algorithms.graphical
    algorithms.isolates
    algorithms.isomorphism
    algorithms.link_analysis
@@ -35,6 +36,7 @@ Algorithms
    algorithms.product
    algorithms.rich_club
    algorithms.shortest_paths
+   algorithms.swap
    algorithms.traversal
    algorithms.vitality
 

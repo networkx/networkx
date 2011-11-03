@@ -25,6 +25,8 @@ from networkx.algorithms.vitality import *
 from networkx.algorithms.chordal import *
 from networkx.algorithms.richclub import *
 from networkx.algorithms.distance_regular import *
+from networkx.algorithms.swap import *
+from networkx.algorithms.graphical import *
 
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite

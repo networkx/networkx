@@ -13,6 +13,49 @@ import networkx as nx
 __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)',
                         'Ben Edwards(bedwards@cs.unm.edu)'])
+
+def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
+    """ Attempt to create a valid degree sequence of length n using
+    specified function sfunction(n,**kwds).
+
+    Parameters
+    ----------
+    n : int
+        Length of degree sequence = number of nodes
+    sfunction: function
+        Function which returns a list of n real or integer values.
+        Called as "sfunction(n,**kwds)".
+    max_tries: int
+        Max number of attempts at creating valid degree sequence.
+
+    Notes
+    -----
+    Repeatedly create a degree sequence by calling sfunction(n,**kwds)
+    until achieving a valid degree sequence. If unsuccessful after
+    max_tries attempts, raise an exception.
+    
+    For examples of sfunctions that return sequences of random numbers,
+    see networkx.Utils.
+
+    Examples
+    --------
+    >>> from networkx.utils import uniform_sequence, create_degree_sequence
+    >>> seq=create_degree_sequence(10,uniform_sequence)
+    """
+    tries=0
+    max_deg=n
+    while tries < max_tries:
+        trialseq=sfunction(n,**kwds)
+        # round to integer values in the range [0,max_deg]
+        seq=[min(max_deg, max( int(round(s)),0 )) for s in trialseq]
+        # if graphical return, else throw away and try again
+        if nx.is_valid_degree_sequence(seq):
+            return seq
+        tries+=1
+    raise nx.NetworkXError(\
+          "Exceeded max (%d) attempts at a valid sequence."%max_tries)
+
+
 # The same helpers for choosing random sequences from distributions
 # uses Python's random module
 # http://www.python.org/doc/current/lib/module-random.html

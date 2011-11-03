@@ -106,13 +106,25 @@ Degree Sequence
    expected_degree_graph
    havel_hakimi_graph
    degree_sequence_tree
-   is_valid_degree_sequence_havel_hakimi
-   is_valid_degree_sequence_erdos_gallai
-   create_degree_sequence
-   double_edge_swap
-   connected_double_edge_swap
-   li_smax_graph
+
+Random Clustered
+----------------
+.. automodule:: networkx.generators.random_clustered
+
+.. autosummary::
+   :toctree: generated/
+
    random_clustered_graph
+
+SMax
+----
+.. automodule:: networkx.generators.smax
+
+.. autosummary::
+   :toctree: generated/
+
+   li_smax_graph
+
 
 Directed
 --------

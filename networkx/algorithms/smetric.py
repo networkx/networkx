@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.generators.degree_seq import li_smax_graph
+from networkx.generators.smax import li_smax_graph
 
 def s_metric(G, normalized=True):
     """Return the s-metric of graph.
