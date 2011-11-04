@@ -550,33 +550,17 @@ def draw_networkx_edges(G, pos,
     if cb.is_numlike(alpha):
         edge_collection.set_alpha(alpha)
 
-    # need 0.87.7 or greater for edge colormaps
-    mpl_version=matplotlib.__version__
-    if mpl_version.endswith('.svn'):
-        mpl_version=matplotlib.__version__[0:-4]
-    elif mpl_version.endswith('svn'):
-        mpl_version=matplotlib.__version__[0:-3]
-    elif mpl_version.endswith('pre'):
-        mpl_version=matplotlib.__version__[0:-3]
-    if list(map(int,mpl_version.split('.')))>=[0,87,7]:
-        if edge_colors is None:
-            if edge_cmap is not None: assert(isinstance(edge_cmap, Colormap))
-            edge_collection.set_array(numpy.asarray(edge_color))
-            edge_collection.set_cmap(edge_cmap)
-            if edge_vmin is not None or edge_vmax is not None:
-                edge_collection.set_clim(edge_vmin, edge_vmax)
-            else:
-                edge_collection.autoscale()
-#            pylab.axes(ax)
-            pylab.sci(edge_collection)
-
-#    else:
-#        sys.stderr.write(\
-#            """matplotlib version >= 0.87.7 required for colormapped edges.
-#        (version %s detected)."""%matplotlib.__version__)
-#        raise UserWarning(\
-#            """matplotlib version >= 0.87.7 required for colormapped edges.
-#        (version %s detected)."""%matplotlib.__version__)
+    if edge_colors is None:
+        if edge_cmap is not None: 
+            assert(isinstance(edge_cmap, Colormap))
+        edge_collection.set_array(numpy.asarray(edge_color))
+        edge_collection.set_cmap(edge_cmap)
+        if edge_vmin is not None or edge_vmax is not None:
+            edge_collection.set_clim(edge_vmin, edge_vmax)
+        else:
+            edge_collection.autoscale()
+        pylab.axes(ax)
+        pylab.sci(edge_collection)
 
     arrow_collection=None
 
