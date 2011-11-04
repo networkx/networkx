@@ -559,7 +559,6 @@ def draw_networkx_edges(G, pos,
             edge_collection.set_clim(edge_vmin, edge_vmax)
         else:
             edge_collection.autoscale()
-        pylab.axes(ax)
         pylab.sci(edge_collection)
 
     arrow_collection=None
