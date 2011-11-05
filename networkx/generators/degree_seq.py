@@ -561,7 +561,7 @@ class DegreeSequenceRandomGraph(object):
         self.graph = nx.Graph()
         self.graph.add_nodes_from(self.remaining_degree)
         # remove zero degree nodes
-        for n,d in self.remaining_degree.items():
+        for n,d in list(self.remaining_degree.items()):
             if d == 0:
                 del self.remaining_degree[n]
         # build graph in three phases according to how many unmatched edges
