@@ -14,10 +14,9 @@ __revision__ = "$Revision: 503 $"
 #    BSD license.
 
 from networkx import *
-from networkx.generators.degree_seq import *
 
 z=[5,3,3,3,3,2,2,2,1,1,1]
-is_valid_degree_sequence(z)
+print is_valid_degree_sequence(z)
 
 print("Configuration model")
 G=configuration_model(z)  # configuration model

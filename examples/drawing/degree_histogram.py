@@ -14,7 +14,7 @@ except:
 
 import networkx as nx
 
-z=nx.create_degree_sequence(100,nx.utils.powerlaw_sequence,exponent=2.1)
+z=nx.utils.create_degree_sequence(100,nx.utils.powerlaw_sequence,exponent=2.1)
 nx.is_valid_degree_sequence(z)
 
 print "Configuration model"
