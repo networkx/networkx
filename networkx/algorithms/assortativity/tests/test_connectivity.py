@@ -86,3 +86,25 @@ class TestNeighborConnectivity(object):
         assert_almost_equal(nd,3.222222,places=5)
         nd = nx.k_nearest_neighbors(G,weight='weight')[5]
         assert_almost_equal(nd,3.222222,places=5)
+
+    def test_zero_deg(self):
+        G=nx.DiGraph()
+        G.add_edge(1,2)
+        G.add_edge(1,3)
+        G.add_edge(1,4)
+        c = nx.average_degree_connectivity(G)
+        assert_equal(c,{1:0,3:1})
+        c = nx.average_degree_connectivity(G, source='in', target='in')
+        assert_equal(c,{0:0,1:0})
+        c = nx.average_degree_connectivity(G, source='in', target='out')
+        assert_equal(c,{0:0,1:3})
+        c = nx.average_degree_connectivity(G, source='in', target='in+out')
+        assert_equal(c,{0:0,1:3})
+        c = nx.average_degree_connectivity(G, source='out', target='out')
+        assert_equal(c,{0:0,3:0})
+        c = nx.average_degree_connectivity(G, source='out', target='in')
+        assert_equal(c,{0:0,3:1})
+        c = nx.average_degree_connectivity(G, source='out', target='in+out')
+        assert_equal(c,{0:0,3:1})
+
+

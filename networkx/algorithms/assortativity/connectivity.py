@@ -11,12 +11,13 @@ __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
 __all__ = ['average_degree_connectivity',
            'k_nearest_neighbors']
 
-def _avg_deg_conn(G, source_degree, target_degree, nodes=None, weight=None):
+def _avg_deg_conn(G, neighbors, source_degree, target_degree, 
+                  nodes=None, weight=None):
     # "k nearest neighbors, or neighbor_connectivity
     dsum = defaultdict(float)
     dnorm = defaultdict(float)
     for n,k in source_degree(nodes).items():
-        nbrdeg = target_degree(G[n])
+        nbrdeg = target_degree(neighbors(n))
         if weight is None:
             s = float(sum(nbrdeg.values()))
         else: # weight nbr degree by weight of (n,nbr) edge
@@ -24,13 +25,14 @@ def _avg_deg_conn(G, source_degree, target_degree, nodes=None, weight=None):
                            for nbr,d in nbrdeg.items())))
         dnorm[k] += source_degree(n, weight=weight)
         dsum[k] += s
-
+        
     # normalize
     dc = {}
     for k,avg in dsum.items():
         dc[k]=avg
-        if avg > 0:
-            dc[k]/=dnorm[k]
+        norm = dnorm[k]
+        if avg > 0 and norm > 0:
+            dc[k]/=norm
     return dc
 
 def average_degree_connectivity(G, source="in+out", target="in+out",
@@ -97,27 +99,18 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     """
     source_degree = G.degree
     target_degree = G.degree
+    neighbors = G.neighbors
     if G.is_directed():
         direction = {'out':G.out_degree,
                      'in':G.in_degree,
                      'in+out': G.degree}
         source_degree = direction[source]
         target_degree = direction[target]
-    return _avg_deg_conn(G, source_degree, target_degree,
+        if source == 'in':
+            neighbors=G.predecessors
+        elif source == 'out':
+            neighbors=G.successors
+    return _avg_deg_conn(G, neighbors, source_degree, target_degree,
                          nodes=nodes, weight=weight)
-
-# obsolete
-# def average_in_degree_connectivity(G, nodes=None, weight=None):
-#     if not G.is_directed():
-#         raise nx.NetworkXError("Not defined for undirected graphs.")
-#     return _avg_deg_conn(G, G.in_degree, nodes, weight)
-# average_in_degree_connectivity.__doc__=average_degree_connectivity.__doc__
-
-# def average_out_degree_connectivity(G, nodes=None, weight=None):
-#     if not G.is_directed():
-#         raise nx.NetworkXError("Not defined for undirected graphs.")
-#     return _avg_deg_conn(G, G.out_degree, nodes, weight)
-# average_out_degree_connectivity.__doc__=average_degree_connectivity.__doc__
-
 
 k_nearest_neighbors=average_degree_connectivity
