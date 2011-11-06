@@ -93,3 +93,8 @@ def test_random_degree_sequence_graph():
     d=[1,2,2,3]
     G = nx.random_degree_sequence_graph(d)
     assert_equal(d, list(G.degree().values()))
+
+def test_random_degree_sequence_graph_raise():
+    z=[1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
+    assert_raises(networkx.exception.NetworkXUnfeasible,
+                  random_degree_sequence_graph, z)

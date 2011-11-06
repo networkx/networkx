@@ -15,11 +15,12 @@ import random
 import networkx as nx
 from networkx.utils import random_weighted_sample
 
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)'
-                        'Joel Miller (joel.c.miller.research@gmail.com)'
-                        'Ben Edwards'])
+__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
+                        'Pieter Swart <swart@lanl.gov>',
+                        'Dan Schult <dschult@colgate.edu>'
+                        'Joel Miller <joel.c.miller.research@gmail.com>',
+                        'Nathan Lemons <nlemons@gmail.com>'])
+
 __all__ = ['configuration_model',
            'directed_configuration_model',
            'expected_degree_graph',
@@ -484,8 +485,8 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
     r"""Return a simple random graph with the given degree sequence.
 
     If the maximum degree `d_m` in the sequence is `O(m^{1/4})` then the 
-    algorithm produces almost uniform random graphs in `O(m d_m)` where
-    `m` is the number of edges.
+    algorithm produces almost uniform random graphs in `O(m d_m)` time 
+    where `m` is the number of edges.
 
     Parameters
     ----------
@@ -505,8 +506,10 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
 
     Raises
     ------
-    NetworkXError
+    NetworkXUnfeasible
         If the degree sequence is not graphical.
+    NetworkXError
+        If a graph is not produced in specified number of tries
 
     See Also
     --------
@@ -514,6 +517,7 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
     
     Notes
     -----
+    The generator algorithm [1]_ is not guaranteed to produce a graph.  
 
     References
     ----------
@@ -538,9 +542,11 @@ def random_degree_sequence_graph(sequence, seed=None, tries=10):
     raise nx.NetworkXError('failed to generate graph in %d tries'%tries)
 
 class DegreeSequenceRandomGraph(object):
+    # class to generate random graphs with a given degree sequence
+    # use random_degree_sequence_graph() 
     def __init__(self, degree, seed=None):
         if not nx.is_valid_degree_sequence(degree):
-            raise nx.NetworkXError('degree sequence is not graphical')
+            raise nx.NetworkXUnfeasible('degree sequence is not graphical')
         if seed is not None:
             random.seed(seed)
         self.degree = degree
@@ -555,7 +561,7 @@ class DegreeSequenceRandomGraph(object):
         self.graph = nx.Graph()
         self.graph.add_nodes_from(self.remaining_degree)
         # remove zero degree nodes
-        for n,d in self.remaining_degree.items():
+        for n,d in list(self.remaining_degree.items()):
             if d == 0:
                 del self.remaining_degree[n]
         # build graph in three phases according to how many unmatched edges
