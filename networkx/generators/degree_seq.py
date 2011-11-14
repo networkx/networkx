@@ -552,7 +552,10 @@ class DegreeSequenceRandomGraph(object):
         self.degree = degree
         # node labels are integers 0,...,n-1
         self.m = sum(self.degree)/2.0 # number of edges
-        self.dmax = max(self.degree) # maximum degree
+        try:
+            self.dmax = max(self.degree) # maximum degree
+        except ValueError:
+            self.dmax = 0
     
     def generate(self):
         # remaining_degree is mapping from int->remaining degree
@@ -564,10 +567,11 @@ class DegreeSequenceRandomGraph(object):
         for n,d in list(self.remaining_degree.items()):
             if d == 0:
                 del self.remaining_degree[n]
+        if len(self.remaining_degree) > 0:
         # build graph in three phases according to how many unmatched edges
-        self.phase1() 
-        self.phase2()
-        self.phase3()
+            self.phase1() 
+            self.phase2()
+            self.phase3()
         return self.graph
 
     def update_remaining(self, u, v, aux_graph=None):
