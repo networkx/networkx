@@ -17,6 +17,7 @@ class TestFlowBetweennessCentrality(object):
         global np
         try:
             import numpy as np
+            import scipy
         except ImportError:
             raise SkipTest('NumPy not available.')
 
@@ -117,6 +118,7 @@ class TestEdgeFlowBetweennessCentrality(object):
         global np
         try:
             import numpy as np
+            import scipy
         except ImportError:
             raise SkipTest('NumPy not available.')
       
