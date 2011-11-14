@@ -1,5 +1,6 @@
 """
-Generators of random numbers and random sequences.
+Utilities for generating random numbers, random sequences, and 
+random selections.
 """
 #    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -195,19 +196,24 @@ def discrete_sequence(n, distribution=None, cdistribution=None):
     return seq
 
 
-def random_weighted_sample(mapping, n):
-    # sample n items with rejection if already in sample
-    # could make this simpler for the n=2 case which is all we need
-    if n > len(mapping):
+def random_weighted_sample(mapping, k):
+    """Return k items without replacement from a weighted sample.
+
+    The input is a dictionary of items with weights as values.
+    """
+    if k > len(mapping):
         raise ValueError("sample larger than population")
     sample = set()
-    while len(sample) < n:
+    while len(sample) < k:
         sample.add(weighted_choice(mapping))
     return list(sample)
 
 def weighted_choice(mapping):
-    # return single element from mapping of item->weight
-    # using roulette method
+    """Return a single element from a weighted sample.
+
+    The input is a dictionary of items with weights as values.
+    """
+    # use roulette method
     rnd = random.random() * sum(mapping.values())
     for k, w in mapping.items():
         rnd -= w

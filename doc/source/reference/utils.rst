@@ -44,6 +44,8 @@ Random sequence generators
    discrete_sequence
    zipf_sequence
    zipf_rv
+   random_weighted_sample
+   weighted_choice
 
 
 
