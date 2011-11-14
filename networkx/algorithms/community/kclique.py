@@ -35,8 +35,9 @@ def k_clique_communities(G, k, cliques=None):
     >>> G = nx.complete_graph(5)
     >>> K5 = nx.convert_node_labels_to_integers(G,first_label=2)
     >>> G.add_edges_from(K5.edges())
-    >>> list(nx.k_clique_communities(G, 4))
-    [frozenset({0, 1, 2, 3, 4, 5, 6})]
+    >>> c = list(nx.k_clique_communities(G, 4))
+    >>> list(c[0])
+    [0, 1, 2, 3, 4, 5, 6]
     >>> list(nx.k_clique_communities(G, 5))
     []
 
