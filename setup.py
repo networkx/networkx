@@ -77,8 +77,11 @@ for d in ['advanced',
 package_data     = {
     'networkx': ['tests/*.py'],
     'networkx.algorithms': ['tests/*.py'],
+    'networkx.algorithms.assortativity': ['tests/*.py'],
     'networkx.algorithms.bipartite': ['tests/*.py'],
     'networkx.algorithms.centrality': ['tests/*.py'],
+    'networkx.algorithms.chordal': ['tests/*.py'],
+    'networkx.algorithms.community': ['tests/*.py'],
     'networkx.algorithms.components': ['tests/*.py'],
     'networkx.algorithms.flow': ['tests/*.py'],
     'networkx.algorithms.traversal': ['tests/*.py'],
@@ -90,7 +93,9 @@ package_data     = {
     'networkx.generators': ['tests/*.py'],
     'networkx.drawing': ['tests/*.py'],
     'networkx.linalg': ['tests/*.py'],
-    'networkx.readwrite': ['tests/*.py']
+    'networkx.readwrite': ['tests/*.py'],
+    'networkx.readwrite.json_graph': ['tests/*.py'],
+    'networkx.utils': ['tests/*.py']
     }
 
 if __name__ == "__main__":
