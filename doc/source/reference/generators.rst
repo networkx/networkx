@@ -117,15 +117,6 @@ Random Clustered
 
    random_clustered_graph
 
-SMax
-----
-.. automodule:: networkx.generators.smax
-
-.. autosummary::
-   :toctree: generated/
-
-   li_smax_graph
-
 
 Directed
 --------
