@@ -2,8 +2,8 @@
 [run]
 branch = False
 source = networkx
-omit = */tests/*
-omit = *release.py
+omit = */tests/*,*release.py
+
 
 [report]
 # Regexes for lines to exclude from consideration
