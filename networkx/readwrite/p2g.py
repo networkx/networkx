@@ -31,35 +31,31 @@ edges. Observe that node labeled "c" has an outgoing edge to
 itself. Indeed, self-loops are allowed. Node index starts from 0.
 
 """
-__author__ = """Willem Ligtenberg (w.p.a.ligtenberg@tue.nl)\n Aric Hagberg (hagberg@lanl.gov)"""
-__date__ = """2008-05-27"""
-#    Copyright (C) 2008 by 
+#    Copyright (C) 2008-2012 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
 import networkx
 from networkx.utils import is_string_like,open_file
-
+__author__ = '\n'.join(['Willem Ligtenberg (w.p.a.ligtenberg@tue.nl)',
+                      'Aric Hagberg (aric.hagberg@gmail.com)'])
 
 @open_file(1,mode='w')
 def write_p2g(G, path):
     """Write NetworkX graph in p2g format.
 
+    Notes
+    -----
     This format is meant to be used with directed graphs with
     possible self loops.
     """
-
     path.write("%s\n"%G.name)
     path.write("%s %s\n"%(G.order(),G.size()))
-
     nodes = G.nodes()
-
     # make dictionary mapping nodes to integers
     nodenumber=dict(zip(nodes,range(len(nodes)))) 
-
     for n in nodes:
         path.write("%s\n"%n)
         for nbr in G.neighbors(n):
@@ -70,8 +66,12 @@ def write_p2g(G, path):
 def read_p2g(path):
     """Read graph in p2g format from path. 
 
-    Returns an MultiDiGraph.
+    Returns
+    -------
+    MultiDiGraph
 
+    Notes
+    -----
     If you want a DiGraph (with no self loops allowed and no edge data)
     use D=networkx.DiGraph(read_p2g(path))
     """
@@ -81,16 +81,16 @@ def read_p2g(path):
 def parse_p2g(lines):
     """Parse p2g format graph from string or iterable. 
 
-    Returns an MultiDiGraph.
+    Returns
+    -------
+    MultiDiGraph
     """
     if is_string_like(lines): lines=iter(lines.split('\n'))
     lines = iter([line.rstrip('\n') for line in lines])
-
     description = lines.next()
     # are multiedges (parallel edges) allowed?
     G=networkx.MultiDiGraph(name=description,selfloops=True)
     nnodes,nedges=map(int,lines.next().split())
-
     nodelabel={}
     nbrs={}
     # loop over the nodes keeping track of node labels and out neighbors
@@ -100,7 +100,6 @@ def parse_p2g(lines):
         nodelabel[i]=n
         G.add_node(n)
         nbrs[n]=map(int,lines.next().split())
-
     # now we know all of the node labels so we can add the edges
     # with the correct labels        
     for n in G:
