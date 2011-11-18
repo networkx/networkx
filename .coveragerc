@@ -25,10 +25,15 @@ exclude_lines =
 
     # ignore fixtures
     def setup_module
+    def teardown_module
 
     # ignore missing import
     except ImportError
     raise ImportError
+
+    # hard to test (potentially long running)
+    def random_powerlaw_tree_sequence
+    def random_powerlaw_tree
 
 ignore_errors = True
 
