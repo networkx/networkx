@@ -36,4 +36,6 @@ class TestPylab(object):
         pylab.savefig("test.ps")
         nx.draw_spectral(N)
         pylab.savefig("test.ps")
+        nx.draw_spring(N.to_directed())
+        pylab.savefig("test.ps")
         os.unlink('test.ps')
