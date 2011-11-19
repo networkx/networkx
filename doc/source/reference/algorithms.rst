@@ -17,6 +17,7 @@ Algorithms
    algorithms.chordal
    algorithms.clique
    algorithms.clustering
+   algorithms.community
    algorithms.component
    algorithms.core
    algorithms.cycles

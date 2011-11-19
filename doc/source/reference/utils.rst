@@ -16,7 +16,6 @@ Helper functions
    flatten
    iterable
    is_list_of_ints
-   get_file_handle
    make_str
    cumulative_sum
    generate_unique_node
