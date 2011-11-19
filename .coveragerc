@@ -31,6 +31,9 @@ exclude_lines =
     except ImportError
     raise ImportError
 
+    # runtime errors
+    except RuntimeError 
+
     # hard to test (potentially long running)
     def random_powerlaw_tree_sequence
     def random_powerlaw_tree
