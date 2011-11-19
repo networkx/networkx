@@ -65,29 +65,6 @@ def is_list_of_ints( intlist ):
         if not isinstance(i,int): return False
     return True
 
-def get_file_handle(path, mode='r'):
-    """ Return a file handle for given path.
-
-    Path can be a string or a file handle.
-
-    Attempt to uncompress/compress files ending in '.gz' and '.bz2'.
-
-    """
-    if is_string_like(path):
-        if path.endswith('.gz'):
-            import gzip
-            fh = gzip.open(path,mode=mode)
-        elif path.endswith('.bz2'):
-            import bz2
-            fh = bz2.BZ2File(path,mode=mode)
-        else:
-            fh = open(path,mode = mode)
-    elif hasattr(path, 'read'):
-        fh = path
-    else:
-        raise ValueError('path must be a string or file handle')
-    return fh
-
 def make_str(t):
     """Return the string representation of t."""
     if is_string_like(t): return t
