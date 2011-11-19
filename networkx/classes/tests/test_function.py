@@ -70,6 +70,9 @@ class TestFunction(object):
     def test_density(self):
         assert_equal(networkx.density(self.G), 0.5)
         assert_equal(networkx.density(self.DG), 0.3)
+        G=networkx.Graph()
+        G.add_node(1)
+        assert_equal(networkx.density(G), 0.0)
     def test_freeze(self):
         G=networkx.freeze(self.G)
         assert_equal(G.frozen,True)
@@ -124,3 +127,5 @@ class TestFunction(object):
              'Degree: 2',
              'Neighbors: 2'])
         assert_equal(info,expected_node_info)
+
+        assert_raises(networkx.NetworkXError,networkx.info,G,n=-1)

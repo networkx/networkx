@@ -166,6 +166,7 @@ class BaseGraphTester(object):
         assert_equal(G.degree(),{1:2})
         assert_equal(G.degree(1),2)
         assert_equal(G.degree([1]),{1:2})
+        assert_equal(G.degree([1],weight='weight'),{1:2})
 
     def test_selfloops(self):
         G=self.K3.copy()
@@ -206,6 +207,8 @@ class BaseAttrGraphTester(BaseGraphTester):
         ll=[]
         G.add_edge(1,2,foo=ll)
         G.add_edge(2,1,foo=ll)
+        # attr_dict must be dict
+        assert_raises(networkx.NetworkXError,G.add_edge,0,1,attr_dict=[])
 
     def test_name(self):
         G=self.Graph(name='')
@@ -391,6 +394,13 @@ class BaseAttrGraphTester(BaseGraphTester):
         assert_equal(G.edges(data=True),
                      [(1,2,{'data':20,'spam':'bar',
                             'bar':'foo','listdata':[20,200],'weight':20})])
+
+    def test_attr_dict_not_dict(self):
+        # attr_dict must be dict
+        G=self.Graph()
+        edges=[(1,2)]
+        assert_raises(networkx.NetworkXError,G.add_edges_from,edges,
+                      attr_dict=[])
 
     def test_to_undirected(self):
         G=self.K3

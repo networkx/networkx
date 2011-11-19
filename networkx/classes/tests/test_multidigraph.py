@@ -64,6 +64,11 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert_equal(sorted(G.in_edges_iter()),
                      [(0,1),(0,1),(0,2),(1,0),(1,2),(2,0),(2,1)])
 
+        assert_equal(sorted(G.in_edges_iter(data=True,keys=False)),
+                     [(0,1,{}),(0,1,{}),(0,2,{}),(1,0,{}),(1,2,{}),
+                      (2,0,{}),(2,1,{})])
+
+
     def is_shallow(self,H,G):
         # graph
         assert_equal(G.graph['foo'],H.graph['foo'])
@@ -164,6 +169,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert_equal(list(G.in_degree_iter()),[(0,2),(1,2),(2,2)])
         assert_equal(dict(G.in_degree_iter()),{0:2,1:2,2:2})
         assert_equal(list(G.in_degree_iter(0)),[(0,2)])
+        assert_equal(list(G.in_degree_iter(0,weight='weight')),[(0,2)])
 
     def test_out_degree(self):
         G=self.K3
@@ -178,6 +184,7 @@ class BaseMultiDiGraphTester(BaseMultiGraphTester):
         assert_equal(list(G.out_degree_iter()),[(0,2),(1,2),(2,2)])
         assert_equal(dict(G.out_degree_iter()),{0:2,1:2,2:2})
         assert_equal(list(G.out_degree_iter(0)),[(0,2)])
+        assert_equal(list(G.out_degree_iter(0,weight='weight')),[(0,2)])
 
 
     def test_size(self):
@@ -280,6 +287,9 @@ class TestMultiDiGraph(BaseMultiDiGraphTester,TestMultiGraph):
                              1:{2:{0:{}}},
                              2:{0:{0:{}},1:{0:{}}}})
         assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,-1,0)
+        assert_raises((KeyError,networkx.NetworkXError), G.remove_edge,0,2,
+                      key=1)
+
 
     def test_remove_multiedge(self):
         G=self.K3
