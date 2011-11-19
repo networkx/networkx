@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.generators.smax import li_smax_graph
+#from networkx.generators.smax import li_smax_graph
 
 def s_metric(G, normalized=True):
     """Return the s-metric of graph.
@@ -29,8 +29,9 @@ def s_metric(G, normalized=True):
            http://arxiv.org/abs/cond-mat/0501169
     """
     if normalized:
-        Gmax = li_smax_graph(list(G.degree().values()))
-        return s_metric(G,normalized=False)/s_metric(Gmax,normalized=False)
-    else:    
-        return float(sum([G.degree(u)*G.degree(v) for (u,v) in G.edges_iter()]))
+        raise nx.NetworkXError("Normalization not implemented")
+#        Gmax = li_smax_graph(list(G.degree().values()))
+#        return s_metric(G,normalized=False)/s_metric(Gmax,normalized=False)
+#    else:    
+    return float(sum([G.degree(u)*G.degree(v) for (u,v) in G.edges_iter()]))
 
