@@ -17,6 +17,5 @@ from networkx.generators.stochastic import *
 from networkx.generators.social import *
 from networkx.generators.threshold import *
 from networkx.generators.intersection import *
-from networkx.generators.smax import *
 from networkx.generators.random_clustered import *
 
