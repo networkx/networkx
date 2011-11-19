@@ -60,6 +60,7 @@ data = [(docdirbase, glob("*.txt"))]
 for d in ['advanced',
           'algorithms',
           'basic',
+          '3d_drawing',
           'drawing',
           'graph',
           'multigraph',
