@@ -75,3 +75,4 @@ Thanks especially to the following contributors:
    algorithms
  - Simon Knight improved the GraphML functions to handle yEd/yfiles data,
    and to handle types correctly.
+ - Conrad Lee contributed the k-clique community finding algorithm.

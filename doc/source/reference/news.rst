@@ -7,6 +7,8 @@ Release Log
 Networkx-1.6
 ------------
 
+Release date:  20 November 2011
+
 Highlights
 ~~~~~~~~~~
 
