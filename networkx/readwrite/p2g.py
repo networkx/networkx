@@ -43,7 +43,7 @@ __author__ = '\n'.join(['Willem Ligtenberg (w.p.a.ligtenberg@tue.nl)',
                       'Aric Hagberg (aric.hagberg@gmail.com)'])
 
 @open_file(1,mode='w')
-def write_p2g(G, path):
+def write_p2g(G, path, encoding = 'utf-8'):
     """Write NetworkX graph in p2g format.
 
     Notes
@@ -51,19 +51,19 @@ def write_p2g(G, path):
     This format is meant to be used with directed graphs with
     possible self loops.
     """
-    path.write("%s\n"%G.name)
-    path.write("%s %s\n"%(G.order(),G.size()))
+    path.write(("%s\n"%G.name).encode(encoding))
+    path.write(("%s %s\n"%(G.order(),G.size())).encode(encoding))
     nodes = G.nodes()
     # make dictionary mapping nodes to integers
     nodenumber=dict(zip(nodes,range(len(nodes)))) 
     for n in nodes:
-        path.write("%s\n"%n)
+        path.write(("%s\n"%n).encode(encoding))
         for nbr in G.neighbors(n):
-            path.write("%s "%nodenumber[nbr])
-        path.write("\n")
+            path.write(("%s "%nodenumber[nbr]).encode(encoding))
+        path.write("\n".encode(encoding))
 
 @open_file(0,mode='r')
-def read_p2g(path):
+def read_p2g(path, encoding='utf-8'):
     """Read graph in p2g format from path. 
 
     Returns
@@ -75,7 +75,8 @@ def read_p2g(path):
     If you want a DiGraph (with no self loops allowed and no edge data)
     use D=networkx.DiGraph(read_p2g(path))
     """
-    G=parse_p2g(path)
+    lines = (line.decode(encoding) for line in path)
+    G=parse_p2g(lines)
     return G
 
 def parse_p2g(lines):
@@ -85,21 +86,19 @@ def parse_p2g(lines):
     -------
     MultiDiGraph
     """
-    if is_string_like(lines): lines=iter(lines.split('\n'))
-    lines = iter([line.rstrip('\n') for line in lines])
-    description = lines.next()
+    description = next(lines).strip()
     # are multiedges (parallel edges) allowed?
     G=networkx.MultiDiGraph(name=description,selfloops=True)
-    nnodes,nedges=map(int,lines.next().split())
+    nnodes,nedges=map(int,next(lines).split())
     nodelabel={}
     nbrs={}
     # loop over the nodes keeping track of node labels and out neighbors
     # defer adding edges until all node labels are known
     for i in range(nnodes):
-        n=lines.next()
+        n=next(lines).strip()
         nodelabel[i]=n
         G.add_node(n)
-        nbrs[n]=map(int,lines.next().split())
+        nbrs[n]=map(int,next(lines).split())
     # now we know all of the node labels so we can add the edges
     # with the correct labels        
     for n in G:

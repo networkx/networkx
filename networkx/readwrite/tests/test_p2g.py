@@ -56,8 +56,6 @@ c
         write_p2g(G,fh)
         fh.seek(0)
         r=fh.read()
-        print r
-        print s
         assert_equal(r,s)
 
     def test_write_read_p2g(self):
