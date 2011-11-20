@@ -157,7 +157,7 @@ In conjunction with either
 
       or
 
-      - pydot: http://dkbza.org/pydot.html
+      - pydot: http://code.google.com/p/pydot/
 
 provides graph drawing and graph layout algorithms.
 

@@ -9,7 +9,7 @@ Either this module or nx_pygraphviz can be used to interface with graphviz.
 
 See Also
 --------
-Pydot: http://www.dkbza.org/pydot.html
+Pydot: http://code.google.com/p/pydot/
 Graphviz:	   http://www.research.att.com/sw/tools/graphviz/
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
@@ -35,7 +35,7 @@ def write_dot(G,path):
         import pydot
     except ImportError:
         raise ImportError("write_dot() requires pydot",
-                          "http://dkbza.org/pydot.html/")
+                          "http://code.google.com/p/pydot/")
     P=to_pydot(G)
     path.write(P.to_string())
     return
@@ -62,7 +62,7 @@ def read_dot(path):
         import pydot
     except ImportError:
         raise ImportError("read_dot() requires pydot",
-                          "http://dkbza.org/pydot.html/")
+                          "http://code.google.com/p/pydot/")
 
     data=path.read()        
     P=pydot.graph_from_dot_data(data)
@@ -156,7 +156,7 @@ def to_pydot(N, strict=True):
         import pydot
     except ImportError:
         raise ImportError('to_pydot() requires pydot: '
-                          'http://dkbza.org/pydot.html/')
+                          'http://code.google.com/p/pydot/')
 
     # set Graphviz graph type
     if N.is_directed():
@@ -248,7 +248,8 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     try:
         import pydot
     except ImportError:
-        raise ImportError("pydot_layout() requires pydot http://dkbza.org/pydot.html/")
+        raise ImportError('pydot_layout() requires pydot ',
+                          'http://code.google.com/p/pydot/')
 
     P=to_pydot(G)
     if root is not None :
