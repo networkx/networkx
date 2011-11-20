@@ -71,7 +71,7 @@ def communicability_centrality_exp(G):
     Examples
     --------
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
-    >>> sc = communicability_centrality_exp(G)
+    >>> sc = nx.communicability_centrality_exp(G)
     """
     # alternative implementation that calculates the matrix exponential
     try:
@@ -139,7 +139,7 @@ def communicability_centrality(G):
     Examples
     --------
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
-    >>> sc = communicability_centrality(G)
+    >>> sc = nx.communicability_centrality(G)
 
     References
     ----------
@@ -246,7 +246,7 @@ def communicability_betweenness_centrality(G, normalized=True):
     Examples
     --------
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
-    >>> cbc = communicability_betweenness_centrality(G)
+    >>> cbc = nx.communicability_betweenness_centrality(G)
     """
     try:
         import scipy
@@ -357,7 +357,7 @@ def communicability(G):
     Examples
     --------
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
-    >>> c = communicability(G)
+    >>> c = nx.communicability(G)
     """
     try:
         import numpy
@@ -446,7 +446,7 @@ def communicability_exp(G):
     Examples
     --------
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
-    >>> c = communicability_exp(G)
+    >>> c = nx.communicability_exp(G)
     """
     try:
         import scipy.linalg
@@ -511,7 +511,7 @@ def estrada_index(G):
     Examples
     --------
     >>> G=nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
-    >>> ei=estrada_index(G)
+    >>> ei=nx.estrada_index(G)
     """
     try:
         import numpy
