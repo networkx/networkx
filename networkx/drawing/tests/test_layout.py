@@ -18,8 +18,6 @@ class TestLayout(object):
             import numpy
         except ImportError:
             raise SkipTest('numpy not available.')
-        if sys.version_info[0] > 2:
-            raise SkipTest('Drawing not implemented for Python 3.x')
 
 
     def setUp(self):
