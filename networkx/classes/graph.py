@@ -1542,7 +1542,7 @@ class Graph(object):
 
         See Also
         --------
-        selfloop_nodes, number_of_selfloops
+        nodes_with_selfloops, number_of_selfloops
 
         Examples
         --------
@@ -1574,7 +1574,7 @@ class Graph(object):
 
         See Also
         --------
-        selfloop_nodes, selfloop_edges
+        nodes_with_selfloops, selfloop_edges
 
         Examples
         --------

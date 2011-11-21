@@ -823,7 +823,7 @@ class MultiGraph(Graph):
 
         See Also
         --------
-        selfloop_nodes, number_of_selfloops
+        nodes_with_selfloops, number_of_selfloops
 
         Examples
         --------
