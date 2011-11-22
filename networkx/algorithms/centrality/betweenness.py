@@ -73,7 +73,7 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
 
     For approximate betweenness calculations set k=#samples to use 
     k nodes ("pivots") to estimate the betweenness values. For an estimate
-    of the number of pivots needed see 
+    of the number of pivots needed see [3]_.
 
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length 
