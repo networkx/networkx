@@ -110,7 +110,7 @@ class TestApproximateFlowBetweennessCentrality(object):
         G=networkx.complete_graph(4)
         b=networkx.current_flow_betweenness_centrality(G,normalized=True)
         epsilon=0.1
-        ba = approximate_cfbc(G,normalized=True, epsilon=epsilon)
+        ba = approximate_cfbc(G,normalized=True, epsilon=0.5*epsilon)
         for n in sorted(G):
             assert_allclose(b[n],ba[n],atol=epsilon)
 
@@ -119,7 +119,7 @@ class TestApproximateFlowBetweennessCentrality(object):
         G=networkx.complete_graph(4)
         b=networkx.current_flow_betweenness_centrality(G,normalized=False)
         epsilon=0.1
-        ba = approximate_cfbc(G,normalized=False, epsilon=epsilon)
+        ba = approximate_cfbc(G,normalized=False, epsilon=0.5*epsilon)
         for n in sorted(G):
             assert_allclose(b[n],ba[n],atol=epsilon*len(G)**2)
 
@@ -129,7 +129,7 @@ class TestApproximateFlowBetweennessCentrality(object):
         G.add_star(['a','b','c','d'])
         b=networkx.current_flow_betweenness_centrality(G,normalized=True)
         epsilon=0.1
-        ba = approximate_cfbc(G,normalized=True, epsilon=epsilon)
+        ba = approximate_cfbc(G,normalized=True, epsilon=0.5*epsilon)
         for n in sorted(G):
             assert_allclose(b[n],ba[n],atol=epsilon)
 
@@ -138,7 +138,7 @@ class TestApproximateFlowBetweennessCentrality(object):
         G=networkx.grid_2d_graph(4,4)
         b=networkx.current_flow_betweenness_centrality(G,normalized=True)
         epsilon=0.1
-        ba = approximate_cfbc(G,normalized=True, epsilon=epsilon)
+        ba = approximate_cfbc(G,normalized=True, epsilon=0.5*epsilon)
         for n in sorted(G):
             assert_allclose(b[n],ba[n],atol=epsilon)
 
@@ -147,7 +147,8 @@ class TestApproximateFlowBetweennessCentrality(object):
         G=networkx.complete_graph(4)
         epsilon=0.1
         for solver in ['full','lu','cg']:
-            b=approximate_cfbc(G,normalized=False,solver=solver,epsilon=epsilon)
+            b=approximate_cfbc(G,normalized=False,solver=solver,
+                               epsilon=0.5*epsilon)
             b_answer={0: 0.75, 1: 0.75, 2: 0.75, 3: 0.75}
             for n in sorted(G):
                 assert_allclose(b[n],b_answer[n],atol=epsilon)
