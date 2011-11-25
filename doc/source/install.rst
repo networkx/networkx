@@ -15,7 +15,7 @@ or install it with::
 and an attempt will be made to find and install an appropriate version
 that matches your operating system and Python version. 
 
-More download options are at http://networkx.lanl.gov/download.html
+More download file options are at http://networkx.lanl.gov/download.html
 
 Installing from source
 ======================
@@ -30,21 +30,25 @@ or install it.
 Source archive file
 -------------------
 
-  1. Download the source (tar.gz or zip file).
+  1. Download the source (tar.gz or zip file) from 
+     http://cheeseshop.python.org/pypi/networkx/
+     or get the latest development version from
+     http://networkx.lanl.gov/hg/networkx
 
-  2. Unpack and change directory to networkx-"version" 
+  2. Unpack and change directory to the source directory 
+     (it should have the files README.txt and setup.py).
 
   3. Run "python setup.py install" to build and install 
 
   4. (optional) Run "python setup_egg.py nosetests" to execute the tests
 
 
-SVN repository
---------------
+Mercurial repository
+--------------------
 
-  1. Check out the networkx trunk::
+  1. Clone the networkx repostitory 
 
-       svn co https://networkx.lanl.gov/svn/networkx/trunk networkx
+       hg clone http://networkx.lanl.gov/hg/networkx
 
   2. Change directory to "networkx"   
 
@@ -55,7 +59,7 @@ SVN repository
 
 If you don't have permission to install software on your
 system, you can install into another directory using
-the --prefix or --home flags to setup.py.
+the --user, --prefix, or --home flags to setup.py.
 
 For example
 
@@ -64,6 +68,8 @@ For example
     python setup.py install --prefix=/home/username/python
     or
     python setup.py install --home=~
+    or 
+    python setup.py install --user
 
 If you didn't install in the standard Python site-packages directory
 you will need to set your PYTHONPATH variable to the alternate location.
@@ -87,7 +93,6 @@ Python
 To use NetworkX you need Python version 2.6 or later.  
 Most of NetworkX works with Python version 3.1.2 or later.
 http://www.python.org/
-
 
 The easiest way to get Python and most optional packages is to install
 the Enthought Python distribution
