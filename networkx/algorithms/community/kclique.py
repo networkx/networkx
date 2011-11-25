@@ -60,6 +60,7 @@ def k_clique_communities(G, k, cliques=None):
 
     # For each clique, see which adjacent cliques percolate
     perc_graph = nx.Graph()
+    perc_graph.add_nodes_from(cliques)
     for clique in cliques:
         for adj_clique in _get_adjacent_cliques(clique, membership_dict):
             if len(clique.intersection(adj_clique)) >= (k - 1):
