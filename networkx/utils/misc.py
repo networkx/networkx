@@ -103,7 +103,8 @@ def default_opener(filename):
 
 
 def dict_to_numpy_array(d,mapping=None):
-    """Convert a dictionary to numpy array with optional mapping."""
+    """Convert a dictionary of dictionaries to a 2d numpy array 
+    with optional mapping."""
     try:
         import numpy 
     except ImportError:
