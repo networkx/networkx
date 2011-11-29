@@ -90,18 +90,25 @@ class TestStronglyConnected:
         # DAG
         assert_true(nx.is_directed_acyclic_graph(cG))
         # # nodes
-        assert_equal(sorted(cG.nodes()),[0,1,2,3])
+        assert_equal(len(cG.nodes()),4)
+        assert_equal(set(map(frozenset,cG.nodes())),set([frozenset([1]),
+                                                         frozenset([2,11,12]),
+                                                         frozenset([3,4]),
+                                                         frozenset([5,6,7,10,8,9])]))
         # # edges
         mapping={}
-        for i,component in enumerate(scc):
+        for component in cG.nodes(): # since we know the nodes are correct
             for n in component:
-                mapping[n] = i
+                mapping[n] = component
         edge=(mapping[2],mapping[3])
         assert_true(cG.has_edge(*edge))
         edge=(mapping[2],mapping[5])
         assert_true(cG.has_edge(*edge))
         edge=(mapping[3],mapping[5])
         assert_true(cG.has_edge(*edge))
+        edge=(mapping[1],mapping[11])
+        assert_true(cG.has_edge(*edge))
+        
 
     def test_contract_scc_isolate(self):
         # Bug found and fixed in [1687].
@@ -110,7 +117,8 @@ class TestStronglyConnected:
         G.add_edge(2,1)
         scc = nx.strongly_connected_components(G)        
         cG = nx.condensation(G, scc)
-        assert_equal(cG.nodes(),[0])
+        assert_equal(len(cG.nodes()),1)
+        assert_equal(set(cG.nodes()[0]),set([1,2]))
         assert_equal(cG.edges(),[])
 
     def test_contract_scc_edge(self):
@@ -122,14 +130,9 @@ class TestStronglyConnected:
         G.add_edge(4,3)
         scc = nx.strongly_connected_components(G)        
         cG = nx.condensation(G, scc)
-        assert_equal(cG.nodes(),[0,1])
-        if 1 in scc[0]:
-            edge = (0,1)
-        else:
-            edge = (1,0)
-        assert_equal(cG.edges(),[edge])
-
-
-
-
-
+        assert_equal(len(cG.nodes()),2)
+        assert_equal(set(map(frozenset,cG.nodes())),set([frozenset([1,2]),
+                                                         frozenset([3,4])]))
+        assert_equal(len(cG.edges()),1)
+        assert_equal(map(set,cG.edges()[0]),[set([1,2]),set([3,4])])
+        assert_equal(map(set,cG.edges(keys=True)[0]),[set([1,2]),set([3,4]),set([2,3])])

@@ -45,9 +45,8 @@ def attracting_components(G):
     attracting_component_subgraphs
 
     """
-    scc = nx.strongly_connected_components(G)
-    cG = nx.condensation(G, scc)
-    attractors = [scc[n] for n in cG if cG.out_degree(n) == 0]
+    cG = nx.condensation(G)
+    attractors = [list(c) for c in cG if cG.out_degree(c) == 0]
     attractors.sort(key=len,reverse=True)
     return attractors
 

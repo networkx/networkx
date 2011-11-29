@@ -288,7 +288,7 @@ def is_strongly_connected(G):
     return len(strongly_connected_components(G)[0])==len(G)
 
 
-def condensation(G, scc):
+def condensation(G, scc=None):
     """Returns the condensation of G.
 
     The condensation of G is the graph with each of the strongly connected 
@@ -299,29 +299,42 @@ def condensation(G, scc):
     G : NetworkX DiGraph
        A directed graph.
 
-    scc:  list
-       A list of strongly connected components.  
+    scc:  list (optional, default=None)
+       A list of strongly connected components.
+       If not provided will calculate strongly connected component subgraphs
        Use scc=nx.strongly_connected_components(G) to compute the components.
 
     Returns
     -------
-    C : NetworkX DiGraph
-       The condensation of G. The node labels are integers corresponding
-       to the index of the component in the list of strongly connected 
-       components.
+    C : NetworkX MultiDiGraph
+       The condensation of G. Nodes are the subgraph of each strongly
+       connected component subgraph in G. Multiple edges are keyed by the
+       original nodes they connected in the input graph.
 
     Notes
     -----
     After contracting all strongly connected components to a single node,
     the resulting graph is a directed acyclic graph.  
     """
+    if scc is None:
+        scc = nx.strongly_connected_component_subgraphs(G)
+    else:
+        scc = map(G.subgraph,scc)
+
+    C = nx.MultiDiGraph()
+    C.add_nodes_from(scc)
+
+    if G.is_multigraph():
+        edges = G.edges_iter(keys=True)
+    else:
+        edges = G.edges_iter()
+
     mapping = {}
-    C = nx.DiGraph()
-    for i,component in enumerate(scc):
+    for component in scc:
         for n in component:
-            mapping[n] = i
-    C.add_nodes_from(range(len(scc)))
-    for u,v in G.edges():
-        if mapping[u] != mapping[v]:
-            C.add_edge(mapping[u],mapping[v])
+            mapping[n] = component
+    
+    for e in edges:
+        if mapping[e[0]] != mapping[e[1]]:
+            C.add_edge(mapping[e[0]],mapping[e[1]],key=e)
     return C
