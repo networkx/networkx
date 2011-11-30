@@ -38,7 +38,7 @@ def k_clique_communities(G, k, cliques=None):
     >>> c = list(nx.k_clique_communities(G, 4))
     >>> list(c[0])
     [0, 1, 2, 3, 4, 5, 6]
-    >>> list(nx.k_clique_communities(G, 5))
+    >>> list(nx.k_clique_communities(G, 6))
     []
 
     References
