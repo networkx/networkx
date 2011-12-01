@@ -11,7 +11,8 @@ Strongly connected components.
 import networkx as nx
 __authors__ = "\n".join(['Eben Kenah',
                          'Aric Hagberg (hagberg@lanl.gov)'
-                         'Christopher Ellison'])
+                         'Christopher Ellison',
+                         'Ben Edwards (bedwards@cs.unm.edu)'])
 
 __all__ = ['number_strongly_connected_components', 
            'strongly_connected_components',
@@ -20,6 +21,7 @@ __all__ = ['number_strongly_connected_components',
            'strongly_connected_components_recursive',
            'kosaraju_strongly_connected_components',
            'condensation',
+           'condensation_multigraph'
            ]
 
 def strongly_connected_components(G):
@@ -287,7 +289,6 @@ def is_strongly_connected(G):
 
     return len(strongly_connected_components(G)[0])==len(G)
 
-
 def condensation(G, scc=None):
     """Returns the condensation of G.
 
@@ -300,9 +301,52 @@ def condensation(G, scc=None):
        A directed graph.
 
     scc:  list (optional, default=None)
+       A list of strongly connected components.  
+       If not provided will be calculated with as
+       scc=nx.strongly_connected_components(G).
+
+    Returns
+    -------
+    C : NetworkX DiGraph
+       The condensation of G. The node labels are integers corresponding
+       to the index of the component in the list of strongly connected 
+       components.
+
+    Notes
+    -----
+    After contracting all strongly connected components to a single node,
+    the resulting graph is a directed acyclic graph.  
+    """
+    if scc is None:
+        scc = nx.strongly_connected_components(G)
+    mapping = {}
+    C = nx.DiGraph()
+    for i,component in enumerate(scc):
+        for n in component:
+            mapping[n] = i
+    C.add_nodes_from(range(len(scc)))
+    for u,v in G.edges():
+        if mapping[u] != mapping[v]:
+            C.add_edge(mapping[u],mapping[v])
+    return C
+
+def condensation_multigraph(G, scc=None):
+    """Returns the condensation of G as a multigraph.
+
+    The condensation of G is the graph with each of the strongly connected 
+    components contracted into a single node. Each node in this graph is a
+    subgraph of the strongly connected components.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+       A directed graph.
+
+    scc:  list (optional, default=None)
        A list of strongly connected components.
        If not provided will calculate strongly connected component subgraphs
        Use scc=nx.strongly_connected_components(G) to compute the components.
+       This can either be the subgraphs themselves or lists of nodes.
 
     Returns
     -------
@@ -314,7 +358,8 @@ def condensation(G, scc=None):
     Notes
     -----
     After contracting all strongly connected components to a single node,
-    the resulting graph is a directed acyclic graph.  
+    the resulting graph is a directed acyclic graph. If scc is provided it
+    must be a partition of the graph.3
     """
     if scc is None:
         scc = nx.strongly_connected_component_subgraphs(G)
