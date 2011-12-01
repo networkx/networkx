@@ -67,6 +67,42 @@ def karate_club_graph():
             if thisrow[col]==1:
                 G.add_edge(row,col) # col goes from 0,33
         row+=1
+    club1 = 'Mr. Hi' 
+    club2 = 'Officer'
+    G.node[0]['club'] = club1 
+    G.node[1]['club'] = club1 
+    G.node[2]['club'] = club1 
+    G.node[3]['club'] = club1 
+    G.node[4]['club'] = club1 
+    G.node[5]['club'] = club1 
+    G.node[6]['club'] = club1 
+    G.node[7]['club'] = club1 
+    G.node[8]['club'] = club1 
+    G.node[9]['club'] = club2 
+    G.node[10]['club'] = club1 
+    G.node[11]['club'] = club1 
+    G.node[12]['club'] = club1 
+    G.node[13]['club'] = club1 
+    G.node[14]['club'] = club2 
+    G.node[15]['club'] = club2 
+    G.node[16]['club'] = club1 
+    G.node[17]['club'] = club1 
+    G.node[18]['club'] = club2 
+    G.node[19]['club'] = club1 
+    G.node[20]['club'] = club2 
+    G.node[21]['club'] = club1 
+    G.node[22]['club'] = club2 
+    G.node[23]['club'] = club2 
+    G.node[24]['club'] = club2 
+    G.node[25]['club'] = club2 
+    G.node[26]['club'] = club2 
+    G.node[27]['club'] = club2 
+    G.node[28]['club'] = club2 
+    G.node[29]['club'] = club2 
+    G.node[30]['club'] = club2 
+    G.node[31]['club'] = club2 
+    G.node[32]['club'] = club2 
+    G.node[33]['club'] = club2 
     return G
 
 
