@@ -21,8 +21,7 @@ __all__ = ['number_strongly_connected_components',
            'strongly_connected_components_recursive',
            'kosaraju_strongly_connected_components',
            'condensation',
-           'condensation_multigraph'
-           ]
+           'condensation_multigraph']
 
 def strongly_connected_components(G):
     """Return nodes in strongly connected components of graph.
@@ -381,5 +380,9 @@ def condensation_multigraph(G, scc=None):
     
     for e in edges:
         if mapping[e[0]] != mapping[e[1]]:
-            C.add_edge(mapping[e[0]],mapping[e[1]],key=e)
+            if len(e) ==3:
+                d = G.get_edge_data(e[0],e[1],key=e[2])
+            else:
+                d = G.get_edge_data(e[0],e[1])
+            C.add_edge(mapping[e[0]],mapping[e[1]],key=e,attr_dict=d)
     return C
