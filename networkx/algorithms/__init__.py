@@ -11,6 +11,7 @@ from networkx.algorithms.cycles import *
 from networkx.algorithms.dag import *
 from networkx.algorithms.distance_measures import *
 from networkx.algorithms.flow import *
+from networkx.algorithms.hierarchy import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.mis import *
 from networkx.algorithms.mst import *
