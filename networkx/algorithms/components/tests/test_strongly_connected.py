@@ -182,5 +182,7 @@ class TestStronglyConnected:
         assert_equal(set(map(frozenset,cG.nodes())),set([frozenset([1,2]),
                                                          frozenset([3,4])]))
         assert_equal(len(cG.edges()),1)
-        assert_equal(map(set,cG.edges()[0]),[set([1,2]),set([3,4])])
-        assert_equal(map(set,cG.edges(keys=True)[0]),[set([1,2]),set([3,4]),set([2,3])])
+        assert_equal(list(map(set,cG.edges()[0])),
+                     [set([1,2]),set([3,4])])
+        assert_equal(list(map(set,cG.edges(keys=True)[0])),
+                     [set([1,2]),set([3,4]),set([2,3])])

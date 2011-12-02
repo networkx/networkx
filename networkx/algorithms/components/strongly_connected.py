@@ -363,7 +363,7 @@ def condensation_multigraph(G, scc=None):
     if scc is None:
         scc = nx.strongly_connected_component_subgraphs(G)
     else:
-        scc = map(G.subgraph,scc)
+        scc = list(map(G.subgraph,scc))
 
     C = nx.MultiDiGraph()
     C.add_nodes_from(scc)
