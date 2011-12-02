@@ -27,6 +27,7 @@ Algorithms
    algorithms.euler
    algorithms.flow
    algorithms.graphical
+   algorithms.hierarchy
    algorithms.isolates
    algorithms.isomorphism
    algorithms.link_analysis
