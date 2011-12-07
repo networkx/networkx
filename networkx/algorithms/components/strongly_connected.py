@@ -2,7 +2,7 @@
 """
 Strongly connected components.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -14,10 +14,10 @@ __authors__ = "\n".join(['Eben Kenah',
                          'Christopher Ellison',
                          'Ben Edwards (bedwards@cs.unm.edu)'])
 
-__all__ = ['number_strongly_connected_components', 
+__all__ = ['number_strongly_connected_components',
            'strongly_connected_components',
            'strongly_connected_component_subgraphs',
-           'is_strongly_connected', 
+           'is_strongly_connected',
            'strongly_connected_components_recursive',
            'kosaraju_strongly_connected_components',
            'condensation',
@@ -37,7 +37,7 @@ def strongly_connected_components(G):
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
-    See Also       
+    See Also
     --------
     connected_components
 
@@ -52,11 +52,11 @@ def strongly_connected_components(G):
        SIAM Journal of Computing 1(2):146-160, (1972).
 
     .. [2] On finding the strongly connected components in a directed graph.
-       E. Nuutila and E. Soisalon-Soinen 
+       E. Nuutila and E. Soisalon-Soinen
        Information Processing Letters 49(1): 9-14, (1994)..
     """
     preorder={}
-    lowlink={}    
+    lowlink={}
     scc_found={}
     scc_queue = []
     scc_list=[]
@@ -95,7 +95,7 @@ def strongly_connected_components(G):
                         scc_list.append(scc)
                     else:
                         scc_queue.append(v)
-    scc_list.sort(key=len,reverse=True)            
+    scc_list.sort(key=len,reverse=True)
     return scc_list
 
 
@@ -113,7 +113,7 @@ def kosaraju_strongly_connected_components(G,source=None):
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
-    See Also       
+    See Also
     --------
     connected_components
 
@@ -134,8 +134,8 @@ def kosaraju_strongly_connected_components(G,source=None):
         new=[v for v in c if v not in seen]
         seen.update([(u,True) for u in new])
         components.append(new)
-    components.sort(key=len,reverse=True)            
-    return components            
+    components.sort(key=len,reverse=True)
+    return components
 
 
 def strongly_connected_components_recursive(G):
@@ -154,7 +154,7 @@ def strongly_connected_components_recursive(G):
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
-    See Also       
+    See Also
     --------
     connected_components
 
@@ -168,7 +168,7 @@ def strongly_connected_components_recursive(G):
        SIAM Journal of Computing 1(2):146-160, (1972).
 
     .. [2] On finding the strongly connected components in a directed graph.
-       E. Nuutila and E. Soisalon-Soinen 
+       E. Nuutila and E. Soisalon-Soinen
        Information Processing Letters 49(1): 9-14, (1994)..
     """
     def visit(v,cnt):
@@ -184,22 +184,22 @@ def strongly_connected_components_recursive(G):
             component[v]=root[v]
             tmpc=[v] # hold nodes in this component
             while stack[-1]!=v:
-                w=stack.pop()                
+                w=stack.pop()
                 component[w]=root[v]
                 tmpc.append(w)
-            stack.remove(v) 
+            stack.remove(v)
             scc.append(tmpc) # add to scc list
     scc=[]
-    visited={}   
+    visited={}
     component={}
     root={}
     cnt=0
     stack=[]
     for source in G:
-        if source not in visited: 
+        if source not in visited:
             visit(source,cnt)
 
-    scc.sort(key=len,reverse=True)            
+    scc.sort(key=len,reverse=True)
     return scc
 
 
@@ -246,13 +246,13 @@ def number_strongly_connected_components(G):
     n : integer
        Number of strongly connected components
 
-    See Also       
+    See Also
     --------
     connected_components
 
     Notes
     -----
-    For directed graphs only. 
+    For directed graphs only.
     """
     return len(strongly_connected_components(G))
 
@@ -276,7 +276,7 @@ def is_strongly_connected(G):
 
     Notes
     -----
-    For directed graphs only. 
+    For directed graphs only.
     """
     if not G.is_directed():
         raise nx.NetworkXError("""Not allowed for undirected graph G.
@@ -291,8 +291,8 @@ def is_strongly_connected(G):
 def condensation(G, scc=None):
     """Returns the condensation of G.
 
-    The condensation of G is the graph with each of the strongly connected 
-    components contracted into a single node.  
+    The condensation of G is the graph with each of the strongly connected
+    components contracted into a single node.
 
     Parameters
     ----------
@@ -300,21 +300,21 @@ def condensation(G, scc=None):
        A directed graph.
 
     scc:  list (optional, default=None)
-       A list of strongly connected components.  
-       If not provided will be calculated with as
-       scc=nx.strongly_connected_components(G).
+       A list of strongly connected components.  If provided, the elements in
+       `scc` must partition the nodes in `G`. If not provided, it will be
+       calculated as scc=nx.strongly_connected_components(G).
 
     Returns
     -------
     C : NetworkX DiGraph
        The condensation of G. The node labels are integers corresponding
-       to the index of the component in the list of strongly connected 
+       to the index of the component in the list of strongly connected
        components.
 
     Notes
     -----
     After contracting all strongly connected components to a single node,
-    the resulting graph is a directed acyclic graph.  
+    the resulting graph is a directed acyclic graph.
     """
     if scc is None:
         scc = nx.strongly_connected_components(G)
@@ -332,7 +332,7 @@ def condensation(G, scc=None):
 def condensation_multigraph(G, scc=None):
     """Returns the condensation of G as a multigraph.
 
-    The condensation of G is the graph with each of the strongly connected 
+    The condensation of G is the graph with each of the strongly connected
     components contracted into a single node. Each node in this graph is a
     subgraph of the strongly connected components.
 
@@ -342,10 +342,10 @@ def condensation_multigraph(G, scc=None):
        A directed graph.
 
     scc:  list (optional, default=None)
-       A list of strongly connected components.
-       If not provided will calculate strongly connected component subgraphs
-       Use scc=nx.strongly_connected_components(G) to compute the components.
-       This can either be the subgraphs themselves or lists of nodes.
+       A list of strongly connected components that will be converted into
+       strongly connected subgraphs of `G`. If provided, the elements of `scc`
+       must partition the nodes of `G`. If not provided, it will be calculated
+       as: scc=nx.strongly connected component subgraphs(G).
 
     Returns
     -------
@@ -363,6 +363,7 @@ def condensation_multigraph(G, scc=None):
     if scc is None:
         scc = nx.strongly_connected_component_subgraphs(G)
     else:
+        # Assumes elements of scc are iterables of nodes in G.
         scc = list(map(G.subgraph,scc))
 
     C = nx.MultiDiGraph()
@@ -377,7 +378,7 @@ def condensation_multigraph(G, scc=None):
     for component in scc:
         for n in component:
             mapping[n] = component
-    
+
     for e in edges:
         if mapping[e[0]] != mapping[e[1]]:
             if len(e) ==3:
