@@ -19,6 +19,16 @@ def test_valid_degree_sequence2():
         assert_true( nx.is_valid_degree_sequence(deg, method='eg') )
         assert_true( nx.is_valid_degree_sequence(deg, method='hh') )        
 
+@raises(nx.NetworkXException)
+def test_string_input():
+    a = nx.is_valid_degree_sequence([],'foo')
+
+def test_negative_input():
+    assert_false(nx.is_valid_degree_sequence([-1],'hh'))
+    assert_false(nx.is_valid_degree_sequence([-1],'eg'))
+    assert_false(nx.is_valid_degree_sequence([72.5],'eg'))
+
+
 def test_atlas():
     for graph in nx.graph_atlas_g():
         deg = list(graph.degree().values())
