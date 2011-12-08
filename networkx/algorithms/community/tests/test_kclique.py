@@ -40,3 +40,7 @@ def test_zachary():
     assert set(k_clique_communities(z, 4)) == zachary_k4_ground_truth
     assert set(k_clique_communities(z, 5)) == zachary_k5_ground_truth
     assert set(k_clique_communities(z, 6)) == zachary_k6_ground_truth
+
+@raises(nx.NetworkXError)
+def test_bad_k():
+    c = list(k_clique_communities(nx.Graph(),1))
