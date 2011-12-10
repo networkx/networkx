@@ -23,6 +23,10 @@ class TestGenericPath:
         assert_equal(nx.shortest_path(self.directed_cycle,0,3,weight='weight'),
                      [0, 1, 2, 3])
 
+    @raises(nx.NetworkXError)
+    def test_shortest_path_target(self):
+        sp = nx.shortest_path(nx.path_graph(3), target=1)
+
 
     def test_shortest_path_length(self):
         assert_equal(nx.shortest_path_length(self.cycle,0,3),3)
@@ -33,6 +37,10 @@ class TestGenericPath:
         assert_equal(nx.shortest_path_length(self.grid,1,12,weight='weight'),5)
         assert_equal(nx.shortest_path_length(self.directed_cycle,0,4,weight='weight'),4)
 
+
+    @raises(nx.NetworkXError)
+    def test_shortest_path_length_target(self):
+        sp = nx.shortest_path_length(nx.path_graph(3), target=1)
 
     def test_single_source_shortest_path(self):
         p=nx.shortest_path(self.cycle,0)
@@ -95,6 +103,7 @@ class TestGenericPath:
         l=nx.average_shortest_path_length(nx.path_graph(5))
         assert_almost_equal(l,2)
 
+
     def test_weighted_average_shortest_path(self):
         G=nx.Graph()
         G.add_cycle(range(7),weight=2)
@@ -111,7 +120,8 @@ class TestGenericPath:
         g.add_nodes_from(range(3))
         g.add_edge(0, 1)
         assert_raises(nx.NetworkXError,nx.average_shortest_path_length,g)
-
+        g = g.to_directed()
+        assert_raises(nx.NetworkXError,nx.average_shortest_path_length,g)
 
     def test_has_path(self):
         G = nx.Graph()

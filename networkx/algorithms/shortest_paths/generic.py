@@ -8,34 +8,31 @@ For directed graphs the paths can be computed in the reverse
 order by first flipping the edge orientation using R=G.reverse(copy=False).
 
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+import networkx as nx
+__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['shortest_path',
            'shortest_path_length',
            'average_shortest_path_length',
            'has_path']
 
-import networkx as nx
-
-def has_path(G, source ,target):
-    """Return true if G has a path from source to target. 
-    False otherwise.
+def has_path(G, source, target):
+    """Return True if G has a path from source to target, False otherwise.
 
     Parameters
     ----------
     G : NetworkX graph
 
     source : node
-       Starting node for path.  
+       Starting node for path  
 
     target : node
-       Ending node for path.  
+       Ending node for path  
     """
     try:
         sp = nx.shortest_path(G,source, target)
@@ -92,8 +89,8 @@ def shortest_path(G, source=None, target=None, weight=None):
     This returns only one of them.
 
     For digraphs this returns a shortest directed path.  
-    To find paths in the reverse direction use G.reverse(copy=False)
-    first to flip the edge orientation.
+    To find paths in the reverse direction first use G.reverse(copy=False)
+    to flip the edge orientation.
 
     See Also
     --------
@@ -101,7 +98,6 @@ def shortest_path(G, source=None, target=None, weight=None):
     all_pairs_dijkstra_path()
     single_source_shortest_path()
     single_source_dijkstra_path()
-
     """
     if source is None:
         if target is None:
@@ -202,8 +198,7 @@ def shortest_path_length(G, source=None, target=None, weight=None):
             else:
                 paths=nx.all_pairs_dijkstra_path_length(G, weight=weight)
         else:
-            raise nx.NetworkXError(\
-                "Target given but no source specified.")
+            raise nx.NetworkXError("Target given but no source specified.")
     else: # source specified
         if target is None:
             if weight is None:
