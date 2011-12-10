@@ -160,9 +160,6 @@ def _bidirectional_pred_succ(G, source, target):
        succ is a dictionary of successors from w to the target.
     """
     # does BFS from both source and target and meets in the middle
-    if source is None or target is None:
-        raise nx.NetworkXException(\
-            "Bidirectional shortest path called without source or target")
     if target == source:
         return ({target:None},{source:None},source)
 

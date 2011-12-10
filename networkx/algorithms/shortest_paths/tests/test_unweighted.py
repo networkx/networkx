@@ -34,6 +34,8 @@ class TestUnweightedPath:
     def test_single_source_shortest_path(self):
         p=nx.single_source_shortest_path(self.cycle,0)
         assert_equal(p[3],[0,1,2,3])
+        p=nx.single_source_shortest_path(self.cycle,0, cutoff=0)
+        assert_equal(p,{0 : [0]})
 
     def test_single_source_shortest_path_length(self):
         assert_equal(nx.single_source_shortest_path_length(self.cycle,0),
@@ -60,4 +62,20 @@ class TestUnweightedPath:
                      [((0, 0), []), ((0, 1), [(0, 0)]), 
                       ((1, 0), [(0, 0)]), ((1, 1), [(0, 1), (1, 0)])])
 
+    def test_predecessor_cutoff(self):
+        G=nx.path_graph(4)
+        p = nx.predecessor(G,0,3)
+        assert_false(4 in p)
 
+    def test_predecessor_target(self):
+        G=nx.path_graph(4)
+        p = nx.predecessor(G,0,3)
+        assert_equal(p,[2])
+        p = nx.predecessor(G,0,3,cutoff=2)
+        assert_equal(p,[])
+        p,s = nx.predecessor(G,0,3,return_seen=True)
+        assert_equal(p,[2])
+        assert_equal(s,3)
+        p,s = nx.predecessor(G,0,3,cutoff=2,return_seen=True)
+        assert_equal(p,[])
+        assert_equal(s,-1)
