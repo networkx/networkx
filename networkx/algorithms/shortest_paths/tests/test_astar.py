@@ -109,11 +109,9 @@ class TestAStar:
         assert nx.astar_path(G,'s','v')==['s', 'u', 'v']
         assert nx.astar_path_length(G,'s','v')== 2
 
+    @raises(nx.NetworkXNoPath)
     def test_astar_nopath(self):
-        G=self.XG
-        assert_raises((TypeError,nx.NetworkXError),
-                      nx.astar_path, [G,'s','moon'])
-        
+        p = nx.astar_path(self.XG,'s','moon')
 
     def test_cycle(self):        
         C=nx.cycle_graph(7)
@@ -133,4 +131,5 @@ class TestAStar:
         G.add_edge(node_2, node_4)
         G.add_edge(node_3, node_4)
         path=nx.algorithms.shortest_paths.astar.astar_path(G, node_1, node_4) 
+
 
