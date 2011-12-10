@@ -25,6 +25,14 @@ def test_star_graph():
     assert_equal(bipartite.clustering(G,mode='min'),answer)
     assert_equal(bipartite.clustering(G,mode='max'),answer)
 
+@raises(nx.NetworkXError)
+def test_not_bipartite():
+    bipartite.clustering(nx.complete_graph(4))
+
+@raises(nx.NetworkXError)
+def test_bad_mode():
+    bipartite.clustering(nx.path_graph(4),mode='foo')
+
 def test_path_graph():
     G=nx.path_graph(4)
     answer={0:0.5,1:0.5,2:0.5,3:0.5}
