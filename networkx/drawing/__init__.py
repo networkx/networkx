@@ -10,11 +10,11 @@ try:
     import pydot
     import networkx.drawing.nx_pydot
     from networkx.drawing.nx_pydot import *
-except:
+except ImportError:
     pass
 try:
     import pygraphviz
     from networkx.drawing.nx_agraph import *
-except:    
+except ImportError:    
     pass 
 
