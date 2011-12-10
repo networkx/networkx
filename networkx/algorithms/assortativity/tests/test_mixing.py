@@ -15,6 +15,13 @@ class TestDegreeMixingDict(BaseTestDegreeMixing):
                   }
         assert_equal(d,d_result)
 
+    def test_degree_mixing_dict_undirected_normalized(self):
+        d=nx.degree_mixing_dict(self.P4, normalized=True)
+        d_result={1:{2:1.0/3},
+                  2:{1:1.0/3,2:1.0/3},
+                  }
+        assert_equal(d,d_result)
+
     def test_degree_mixing_dict_directed(self):
         d=nx.degree_mixing_dict(self.D)
         print(d)
