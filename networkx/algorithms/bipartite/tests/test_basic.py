@@ -5,15 +5,20 @@ from networkx.algorithms import bipartite
 class TestBipartiteBasic:
 
     def test_is_bipartite(self):
-        G=nx.path_graph(4)
-        assert_true(bipartite.is_bipartite(G))
-        G=nx.DiGraph([(1,0)])
-        assert_true(bipartite.is_bipartite(G))
+        assert_true(bipartite.is_bipartite(nx.path_graph(4)))
+        assert_true(bipartite.is_bipartite(nx.DiGraph([(1,0)])))
+        assert_false(bipartite.is_bipartite(nx.complete_graph(3)))
+
 
     def test_bipartite_color(self):
         G=nx.path_graph(4)
         c=bipartite.color(G)
         assert_equal(c,{0: 1, 1: 0, 2: 1, 3: 0})
+
+    @raises(nx.NetworkXError)
+    def test_not_bipartite_color(self):
+        c=bipartite.color(nx.complete_graph(4))
+
 
     def test_bipartite_directed(self):
         G = nx.bipartite_random_graph(10, 10, 0.1, directed=True)
@@ -29,6 +34,7 @@ class TestBipartiteBasic:
         G=nx.path_graph(4)
         assert_true(bipartite.is_bipartite_node_set(G,[0,2]))
         assert_true(bipartite.is_bipartite_node_set(G,[1,3]))
+        assert_false(bipartite.is_bipartite_node_set(G,[1,2]))
         G.add_path([10,20])
         assert_true(bipartite.is_bipartite_node_set(G,[0,2,10]))
         assert_true(bipartite.is_bipartite_node_set(G,[0,2,20]))
@@ -40,6 +46,9 @@ class TestBipartiteBasic:
         X,Y=bipartite.sets(G)
         density=float(len(G.edges()))/(len(X)*len(Y))
         assert_equal(bipartite.density(G,X),density)
+        D = nx.DiGraph(G.edges())
+        assert_equal(bipartite.density(D,X),density/2.0)
+        assert_equal(bipartite.density(nx.Graph(),{}),0.0)
 
     def test_bipartite_degrees(self):
         G=nx.path_graph(5)

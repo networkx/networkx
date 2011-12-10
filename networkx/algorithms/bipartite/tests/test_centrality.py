@@ -44,6 +44,13 @@ class TestBipartiteCentrality(object):
         c = bipartite.closeness_centrality(self.C4, [0,2])
         answer = {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0}
         assert_equal(c, answer)
+        G = nx.Graph()
+        G.add_node(0)
+        G.add_node(1)
+        c = bipartite.closeness_centrality(G, [0])
+        assert_equal(c, {1: 0.0})
+        c = bipartite.closeness_centrality(G, [1])
+        assert_equal(c, {1: 0.0})
 
     def test_davis_degree_centrality(self):
         G = self.davis
