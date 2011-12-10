@@ -2,6 +2,7 @@
 from nose.tools import *
 from nose import SkipTest
 from nose.plugins.attrib import attr
+import random
 import networkx
 
 # Example from
@@ -31,6 +32,15 @@ class TestPageRank:
         for n in G:
             assert_almost_equal(p[n],G.pagerank[n],places=4)
 
+        nstart = dict((n,random.random()) for n in G)
+        p=networkx.pagerank(G,alpha=0.9,tol=1.e-08, nstart=nstart)
+        for n in G:
+            assert_almost_equal(p[n],G.pagerank[n],places=4)
+
+        assert_raises(networkx.NetworkXError,networkx.pagerank,G,
+                      max_iter=0)
+
+
     @attr('numpy')
     def test_numpy_pagerank(self):
         try:
@@ -41,6 +51,9 @@ class TestPageRank:
         p=networkx.pagerank_numpy(G,alpha=0.9)
         for n in G:
             assert_almost_equal(p[n],G.pagerank[n],places=4)    
+        personalize = dict((n,random.random()) for n in G)
+        p=networkx.pagerank_numpy(G,alpha=0.9, personalization=personalize)
+
 
 
     @attr('numpy')
@@ -56,6 +69,13 @@ class TestPageRank:
         for (a,b) in zip(p,self.G.pagerank.values()):
             assert_almost_equal(a,b)
 
+        personalize = dict((n,random.random()) for n in G)
+        M=networkx.google_matrix(G,alpha=0.9, personalization=personalize)
+        _ = personalize.pop(1)
+        assert_raises(networkx.NetworkXError,networkx.google_matrix,G,
+                      personalization=personalize)
+
+        
 
     def test_scipy_pagerank(self):
         G=self.G
@@ -66,6 +86,12 @@ class TestPageRank:
         p=networkx.pagerank_scipy(G,alpha=0.9,tol=1.e-08)
         for n in G:
             assert_almost_equal(p[n],G.pagerank[n],places=4)    
+        personalize = dict((n,random.random()) for n in G)
+        p=networkx.pagerank_scipy(G,alpha=0.9,tol=1.e-08, 
+                                  personalization=personalize)
+
+        assert_raises(networkx.NetworkXError,networkx.pagerank_scipy,G,
+                      max_iter=0)
 
     def test_personalization(self):
         G=networkx.complete_graph(4)
@@ -74,6 +100,8 @@ class TestPageRank:
         p=networkx.pagerank(G,alpha=0.0,personalization=personalize)
         for n in G:
             assert_almost_equal(p[n],answer[n],places=4)    
-
+        _ = personalize.pop(0)
+        assert_raises(networkx.NetworkXError,networkx.pagerank,G,
+                      personalization=personalize)
 
 
