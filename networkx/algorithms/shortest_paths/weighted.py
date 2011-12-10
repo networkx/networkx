@@ -694,9 +694,6 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
     shortest_path
     shortest_path_length
     """
-    if source is None or target is None:
-        raise nx.NetworkXException(
-            "Bidirectional Dijkstra called with no source or target")
     if source == target: return (0, [source])
     #Init:   Forward             Backward
     dists =  [{},                {}]# dictionary of final distances
@@ -766,6 +763,3 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
                         finalpath = paths[0][w] + revpath[1:]
     raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
 
-
-#def dijkstra(G,source,target):
-#    return bidirectional_dijkstra(G,source,target)

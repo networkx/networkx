@@ -69,7 +69,6 @@ class TestWeightedPath:
         assert_equal(nx.dijkstra_path(self.XG4,0,2), [0, 1, 2])
         assert_equal(nx.dijkstra_path_length(self.XG4,0,2), 4)
         assert_equal(nx.dijkstra_path(self.MXG4,0,2), [0, 1, 2])
-
         assert_equal(nx.single_source_dijkstra(self.G,'s','v')[1]['v'],
                      ['s', 'u', 'v'])
         assert_equal(nx.single_source_dijkstra(self.G,'s')[1]['v'],
@@ -85,6 +84,7 @@ class TestWeightedPath:
         assert_equal(nx.dijkstra_path(self.cycle,0,3),[0, 1, 2, 3])
         assert_equal(nx.dijkstra_path(self.cycle,0,4), [0, 6, 5, 4])
 
+        assert_equal(nx.single_source_dijkstra(self.cycle,0,0),(0, [0]) )
 
     def test_bidirectional_dijkstra(self):
         assert_equal(nx.bidirectional_dijkstra(self.XG, 's', 'v'),
@@ -103,6 +103,14 @@ class TestWeightedPath:
         # need more tests here
         assert_equal(nx.dijkstra_path(self.XG,'s','v'),
                      nx.single_source_dijkstra_path(self.XG,'s')['v'])
+
+
+    @raises(nx.NetworkXNoPath)
+    def test_bidirectional_dijkstra_no_path(self):
+        G = nx.Graph()
+        G.add_path([1,2,3])
+        G.add_path([4,5,6])
+        path = nx.bidirectional_dijkstra(G,1,6)
 
     def test_dijkstra_predecessor(self):
         G=nx.path_graph(4)
@@ -125,6 +133,14 @@ class TestWeightedPath:
         (P,D)= nx.dijkstra_predecessor_and_distance(XG,'s')
         assert_equal(P['v'],['u'])
         assert_equal(D['v'],9)
+        (P,D)= nx.dijkstra_predecessor_and_distance(XG,'s',cutoff=8)
+        assert_false('v' in D)
+
+    def test_single_source_dijkstra_path_length(self):
+        pl = nx.single_source_dijkstra_path_length
+        assert_equal(pl(self.MXG4,0)[2], 4)
+        spl = pl(self.MXG4,0,cutoff=2)
+        assert_false(2 in spl)
 
     def test_bidirectional_dijkstra_multigraph(self):
         G = nx.MultiGraph() 
@@ -148,6 +164,11 @@ class TestWeightedPath:
         G.add_edge(8, 9, weight = -7)
         G.add_edge(9, 8, weight = 3)
         assert_equal(nx.negative_edge_cycle(G), True)
+        assert_raises(ValueError,nx.single_source_dijkstra_path_length,G,8)
+        assert_raises(ValueError,nx.single_source_dijkstra,G,8)
+        assert_raises(ValueError,nx.dijkstra_predecessor_and_distance,G,8)
+        G.add_edge(9,10)
+        assert_raises(ValueError,nx.bidirectional_dijkstra,G,8,10)
 
     def test_bellman_ford(self):
         # single node graph
