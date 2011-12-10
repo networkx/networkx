@@ -11,7 +11,7 @@ __author__ = """\n""".join(['Conrad Lee <conradlee@gmail.com>',
 __all__ = ['k_clique_communities']
 
 def k_clique_communities(G, k, cliques=None):
-    """Find k-clique communities in graph using percolation method.
+    """Find k-clique communities in graph using the percolation method.
 
     A k-clique community is the union of all cliques of size k that
     can be reached through adjacent (sharing k-1 nodes) k-cliques.
@@ -48,6 +48,8 @@ def k_clique_communities(G, k, cliques=None):
        in nature and society Nature 435, 814-818, 2005,
        doi:10.1038/nature03607
     """
+    if k < 2:
+        raise nx.NetworkXError("k=%d, k must be greater than 1."%k)
     if cliques is None:
         cliques = nx.find_cliques(G)
     cliques = [frozenset(c) for c in cliques if len(c) >= k]

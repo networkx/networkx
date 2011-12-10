@@ -19,8 +19,25 @@ class TestEuler:
         assert_false(is_eulerian(nx.hypercube_graph(5)))
 
         assert_false(is_eulerian(nx.petersen_graph()))
-
         assert_false(is_eulerian(nx.path_graph(4)))
+
+    def test_is_eulerian2(self):
+        # not connected
+        G = nx.Graph()
+        G.add_nodes_from([1,2,3])
+        assert_false(is_eulerian(G))
+        # not strongly connected
+        G = nx.DiGraph()
+        G.add_nodes_from([1,2,3])
+        assert_false(is_eulerian(G))
+        G = nx.MultiDiGraph()
+        G.add_edge(1,2)
+        G.add_edge(2,3)
+        G.add_edge(2,3)
+        G.add_edge(3,1)
+        assert_false(is_eulerian(G))
+
+        
 
     def test_eulerian_circuit_cycle(self):
         G=nx.cycle_graph(4)
@@ -62,3 +79,6 @@ class TestEuler:
         assert_equal(edges,[(0,1),(1,2),(2,1),(1,2),(2,3),(3,0)])
 
 
+    @raises(nx.NetworkXError)
+    def test_not_eulerian(self):    
+        f=list(eulerian_circuit(nx.complete_graph(4)))

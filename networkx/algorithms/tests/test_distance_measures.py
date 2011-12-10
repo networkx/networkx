@@ -14,6 +14,15 @@ class TestDistance:
         assert_equal(networkx.eccentricity(self.G,1),6)
         e=networkx.eccentricity(self.G)
         assert_equal(e[1],6) 
+        sp=networkx.shortest_path_length(self.G)
+        e=networkx.eccentricity(self.G,sp=sp)
+        assert_equal(e[1],6) 
+        e=networkx.eccentricity(self.G,v=1)
+        assert_equal(e,6) 
+        e=networkx.eccentricity(self.G,v=[1,1])
+        assert_equal(e,6) 
+
+
         
     def test_diameter(self):
         assert_equal(networkx.diameter(self.G),6)
@@ -33,9 +42,14 @@ class TestDistance:
         G.add_edge(3,4)
         assert_raises(networkx.NetworkXError, networkx.diameter, G)
 
-    def test_eccentricity_exception(self):
-        G=networkx.Graph()
-        G.add_edge(1,2)
-        G.add_edge(3,4)
-        assert_raises(networkx.NetworkXError, networkx.eccentricity, G)
+    @raises(networkx.NetworkXError)
+    def test_eccentricity_infinite(self):
+        G=networkx.Graph([(1,2),(3,4)])
+        e = networkx.eccentricity(G)
+
+    @raises(networkx.NetworkXError)
+    def test_eccentricity_invalid(self):
+        G=networkx.Graph([(1,2),(3,4)])
+        e = networkx.eccentricity(G,sp=1)
+
 
