@@ -41,6 +41,9 @@ class TestFloyd:
         assert_equal(dist['s']['v'],2)
         assert_equal(path['s']['v'],'x')
 
+        # alternate interface
+        dist = nx.floyd_warshall(G)
+        assert_equal(dist['s']['v'],2)
 
     def test_cycle(self):
         path, dist = nx.floyd_warshall_predecessor_and_distance(nx.cycle_graph(7))
