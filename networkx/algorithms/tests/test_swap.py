@@ -4,19 +4,39 @@ from networkx import *
 
 def test_double_edge_swap():
     graph = barabasi_albert_graph(200,1)
-    degreeStart = sorted(graph.degree().values())
+    degrees = sorted(graph.degree().values())
+    G = double_edge_swap(graph, 40)
+    assert_equal(degrees, sorted(graph.degree().values()))
+
+def test_connected_double_edge_swap():
+    graph = barabasi_albert_graph(200,1)
+    degrees = sorted(graph.degree().values())
     G = connected_double_edge_swap(graph, 40)
     assert_true(is_connected(graph))
-    degseq = sorted(graph.degree().values())
-    assert_true(degreeStart == degseq)
-    G = double_edge_swap(graph, 40)
-    degseq2 = sorted(graph.degree().values())
-    assert_true(degreeStart == degseq2)
+    assert_equal(degrees, sorted(graph.degree().values()))
+
+@raises(NetworkXError)
+def test_double_edge_swap_small():
+    G = nx.double_edge_swap(nx.path_graph(3))
+
+@raises(NetworkXAlgorithmError)
+def test_double_edge_swap_tries():
+    G = nx.double_edge_swap(nx.path_graph(10),nswap=1,max_tries=0)
+
+@raises(NetworkXError)
+def test_connected_double_edge_swap_small():
+    G = nx.connected_double_edge_swap(nx.path_graph(3))
+
+@raises(NetworkXError)
+def test_connected_double_edge_swap_not_connected():
+    G = nx.path_graph(3)
+    G.add_path([10,11,12])
+    G = nx.connected_double_edge_swap(G)
+
 
 def test_degree_seq_c4():
     G = cycle_graph(4)
-    degree_start = sorted(G.degree().values())
+    degrees = sorted(G.degree().values())
     G = double_edge_swap(G,1,100)
-    degseq = sorted(G.degree().values())
-    assert_true(degree_start == degseq)
+    assert_equal(degrees, sorted(G.degree().values()))
 
