@@ -20,6 +20,11 @@ class TestGeneratorEgo():
         G=nx.path_graph(3)
         H=nx.ego_graph(G,0)
         assert_equal(H.edges(), [(0, 1)])
+        H=nx.ego_graph(G,0,undirected=True)
+        assert_equal(H.edges(), [(0, 1)])
+        H=nx.ego_graph(G,0,center=False)
+        assert_equal(H.edges(), [])
+
 
     def test_ego_distance(self):
         G=nx.Graph()                                                            
@@ -29,6 +34,9 @@ class TestGeneratorEgo():
         assert_equal(sorted(nx.ego_graph(G,0,radius=3).nodes()),[0,1,2,3])
         eg=nx.ego_graph(G,0,radius=3,distance='weight')
         assert_equal(sorted(eg.nodes()),[0,1])
+        eg=nx.ego_graph(G,0,radius=3,distance='weight',undirected=True)
+        assert_equal(sorted(eg.nodes()),[0,1])
         eg=nx.ego_graph(G,0,radius=3,distance='distance')
         assert_equal(sorted(eg.nodes()),[0,1,2])
+
 
