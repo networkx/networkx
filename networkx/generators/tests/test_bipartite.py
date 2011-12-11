@@ -141,14 +141,6 @@ class TestGeneratorsBipartite():
                       bipartite_preferential_attachment_graph, aseq, 0.5,
                       create_using=DiGraph())
 
-    """def test_random_regular_bipartite(self):
-        # FIXME: test this somehow
-        G=bipartite_random_regular_graph(2,12)
-        assert_equal(list(G.degree().values()),
-                [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4])
-        assert_true(is_bipartite(G))
-    """
-
     def test_bipartite_random_graph(self):
         n=10
         m=20

@@ -163,7 +163,6 @@ Bipartite
    bipartite_reverse_havel_hakimi_graph
    bipartite_alternating_havel_hakimi_graph
    bipartite_preferential_attachment_graph
-   bipartite_random_regular_graph
    bipartite_random_graph
    bipartite_gnmk_random_graph
 

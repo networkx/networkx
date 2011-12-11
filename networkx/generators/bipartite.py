@@ -22,7 +22,6 @@ __all__=['bipartite_configuration_model',
          'bipartite_reverse_havel_hakimi_graph',
          'bipartite_alternating_havel_hakimi_graph',
          'bipartite_preferential_attachment_graph',
-         'bipartite_random_regular_graph',
          'bipartite_random_graph',
          'bipartite_gnmk_random_graph',
          ]
@@ -379,92 +378,6 @@ def bipartite_preferential_attachment_graph(aseq,p,create_using=None,seed=None):
     G.name="bipartite_preferential_attachment_model"
     return G
 
-
-def bipartite_random_regular_graph(d, n, create_using=None,seed=None):
-    """Experimental: Generate a random regular bipartite graph.
-
-    Parameters
-    ----------
-    d : integer
-      Degree of graph.
-    n : integer
-      Number of nodes in graph.
-    create_using : NetworkX graph instance, optional
-      Return graph of this type.
-    seed : integer, optional
-       Seed for random number generator. 
-
-    Notes
-    ------
-    This is an untested, unproved algorithm.
-
-    Nodes are numbered 0...n-1. 
-
-    Restrictions on n and d:
-       -  n must be even
-       -  n>=2*d
-
-    Algorithm inspired by random_regular_graph()
-    """
-    # This algorithm could be improved - see random_regular_graph()
-    # helper subroutine to check for suitable edges
-    def suitable(leftstubs,rightstubs):
-        for s in leftstubs:
-            for t in rightstubs:
-                if not t in seen_edges[s]:
-                    return True
-        # else no suitable possible edges
-        return False  
-
-    if not n*d%2==0:
-        print("n*d must be even")
-        return False
-
-
-    if not n%2==0:
-        print("n must be even")
-        return False
-
-    if not n>=2*d:
-        print("n must be >= 2*d")
-        return False
-
-
-    if create_using is None:
-        create_using=networkx.Graph()
-    elif create_using.is_directed():
-        raise networkx.NetworkXError(\
-                "Directed Graph not supported")
-
-    if not seed is None:
-        random.seed(seed)    
-
-    G=networkx.empty_graph(0,create_using)
-    G=_add_nodes_with_bipartite_label(G,n/2,n/2)
-    nodes=range(0,n)
-    seen_edges={} 
-    [seen_edges.setdefault(v,{}) for v in nodes]
-
-    vv=[ [v]*d for v in nodes ]   # List of degree-repeated vertex numbers
-    stubs=reduce(lambda x,y: x+y ,vv)  # flatten the list of lists to a list
-
-    leftstubs=stubs[:(n*d // 2)]
-    rightstubs=stubs[n*d // 2:]
-
-    while leftstubs:
-       source=random.choice(leftstubs)
-       target=random.choice(rightstubs)
-       if source!=target and not target in seen_edges[source]:
-           leftstubs.remove(source)
-           rightstubs.remove(target)
-           seen_edges[source][target]=1
-           seen_edges[target][source]=1
-           G.add_edge(source,target)
-       else:
-           # further check to see if suitable 
-           if suitable(leftstubs,rightstubs)==False: 
-               return False
-    return G
 
 
 def bipartite_random_graph(n, m, p, seed=None, directed=False):
