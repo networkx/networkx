@@ -15,6 +15,47 @@ class TestBlock:
             assert_equal(M.node[n]['nnodes'],2)
             assert_equal(M.node[n]['density'],1.0)
 
+    def test_multigraph_path(self):
+        G=networkx.MultiGraph(networkx.path_graph(6))
+        partition=[[0,1],[2,3],[4,5]]
+        M=networkx.blockmodel(G,partition,multigraph=True)
+        assert_equal(sorted(M.nodes()),[0,1,2])
+        assert_equal(sorted(M.edges()),[(0,1),(1,2)])
+        for n in M.nodes():
+            assert_equal(M.node[n]['nedges'],1)
+            assert_equal(M.node[n]['nnodes'],2)
+            assert_equal(M.node[n]['density'],1.0)
+
+    def test_directed_path(self):
+        G = networkx.DiGraph()
+        G.add_path(list(range(6)))
+        partition=[[0,1],[2,3],[4,5]]
+        M=networkx.blockmodel(G,partition)
+        assert_equal(sorted(M.nodes()),[0,1,2])
+        assert_equal(sorted(M.edges()),[(0,1),(1,2)])
+        for n in M.nodes():
+            assert_equal(M.node[n]['nedges'],1)
+            assert_equal(M.node[n]['nnodes'],2)
+            assert_equal(M.node[n]['density'],0.5)
+
+    def test_directed_multigraph_path(self):
+        G = networkx.MultiDiGraph()
+        G.add_path(list(range(6)))
+        partition=[[0,1],[2,3],[4,5]]
+        M=networkx.blockmodel(G,partition,multigraph=True)
+        assert_equal(sorted(M.nodes()),[0,1,2])
+        assert_equal(sorted(M.edges()),[(0,1),(1,2)])
+        for n in M.nodes():
+            assert_equal(M.node[n]['nedges'],1)
+            assert_equal(M.node[n]['nnodes'],2)
+            assert_equal(M.node[n]['density'],0.5)
+
+    @raises(networkx.NetworkXException)
+    def test_overlapping(self):
+        G=networkx.path_graph(6)
+        partition=[[0,1,2],[2,3],[4,5]]
+        M=networkx.blockmodel(G,partition)
+
     def test_weighted_path(self):
         G=networkx.path_graph(6)
         G[0][1]['weight']=1
