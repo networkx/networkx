@@ -1,11 +1,10 @@
 import networkx as nx
 from networkx import tensor_product,cartesian_product,lexicographic_product,strong_product
-from nose.tools import assert_raises, assert_true, assert_equal
+from nose.tools import assert_raises, assert_true, assert_equal, raises
 
+@raises(nx.NetworkXError)
 def test_tensor_product_raises():
-    G = nx.DiGraph()
-    H = nx.Graph()
-    assert_raises(nx.NetworkXError,tensor_product,G,H)
+    P = tensor_product(nx.DiGraph(),nx.Graph())
 
 def test_tensor_product_null():
     null=nx.null_graph()
@@ -49,6 +48,24 @@ def test_tensor_product_size():
     G=tensor_product(K3,K5)
     assert_equal(nx.number_of_nodes(G),3*5)
 
+
+def test_tensor_product_combinations():
+    # basic smoke test, more realistic tests would be usefule
+    P5 = nx.path_graph(5)
+    K3 = nx.complete_graph(3)
+    G=tensor_product(P5,K3)
+    assert_equal(nx.number_of_nodes(G),5*3)
+    G=tensor_product(P5,nx.MultiGraph(K3))
+    assert_equal(nx.number_of_nodes(G),5*3)
+    G=tensor_product(nx.MultiGraph(P5),K3)
+    assert_equal(nx.number_of_nodes(G),5*3)
+    G=tensor_product(nx.MultiGraph(P5),nx.MultiGraph(K3))
+    assert_equal(nx.number_of_nodes(G),5*3)
+
+    G=tensor_product(nx.DiGraph(P5),nx.DiGraph(K3))
+    assert_equal(nx.number_of_nodes(G),5*3)
+
+
 def test_tensor_product_classic_result():
     K2 = nx.complete_graph(2)
     G = nx.petersen_graph()
@@ -91,10 +108,9 @@ def test_cartesian_product_multigraph():
                        ((2, 3), (2, 4), 0), ((2, 3), (2, 4), 1), 
                        ((2, 4), (1, 4), 0), ((2, 4), (1, 4), 1)]))    
 
+@raises(nx.NetworkXError)
 def test_cartesian_product_raises():
-    G = nx.DiGraph()
-    H = nx.Graph()
-    assert_raises(nx.NetworkXError,cartesian_product,G,H)
+    P = cartesian_product(nx.DiGraph(),nx.Graph())
 
 def test_cartesian_product_null():
     null=nx.null_graph()
@@ -170,10 +186,9 @@ def test_cartesian_product_random():
             else:
                 assert_true(not GH.has_edge((u_G,u_H),(v_G,v_H)))
 
+@raises(nx.NetworkXError)
 def test_lexicographic_product_raises():
-    G = nx.DiGraph()
-    H = nx.Graph()
-    assert_raises(nx.NetworkXError,lexicographic_product,G,H)
+    P=lexicographic_product(nx.DiGraph(),nx.Graph())
 
 def test_lexicographic_product_null():
     null=nx.null_graph()
@@ -216,6 +231,21 @@ def test_lexicographic_product_size():
     G=lexicographic_product(K3,K5)
     assert_equal(nx.number_of_nodes(G),3*5)
 
+def test_lexicographic_product_combinations():
+    P5=nx.path_graph(5)
+    K3=nx.complete_graph(3)
+    G=lexicographic_product(P5,K3)
+    assert_equal(nx.number_of_nodes(G),5*3)
+    G=lexicographic_product(nx.MultiGraph(P5),K3)
+    assert_equal(nx.number_of_nodes(G),5*3)
+    G=lexicographic_product(P5,nx.MultiGraph(K3))
+    assert_equal(nx.number_of_nodes(G),5*3)
+    G=lexicographic_product(nx.MultiGraph(P5),nx.MultiGraph(K3))
+    assert_equal(nx.number_of_nodes(G),5*3)
+
+
+
+
     #No classic easily found classic results for lexicographic product
 def test_lexicographic_product_random():
     G = nx.erdos_renyi_graph(10,2/10.)
@@ -229,10 +259,9 @@ def test_lexicographic_product_random():
             else:
                 assert_true(not GH.has_edge((u_G,u_H),(v_G,v_H)))
 
+@raises(nx.NetworkXError)
 def test_strong_product_raises():
-    G = nx.DiGraph()
-    H = nx.Graph()
-    assert_raises(nx.NetworkXError,strong_product,G,H)
+    P = strong_product(nx.DiGraph(),nx.Graph())
 
 def test_strong_product_null():
     null=nx.null_graph()
@@ -274,6 +303,20 @@ def test_strong_product_size():
     assert_equal(nx.number_of_nodes(G),5*3)
     G=strong_product(K3,K5)
     assert_equal(nx.number_of_nodes(G),3*5)
+
+def test_strong_product_combinations():
+    P5=nx.path_graph(5)
+    K3 = nx.complete_graph(3)
+    G=strong_product(P5,K3)
+    assert_equal(nx.number_of_nodes(G),5*3)
+    G=strong_product(nx.MultiGraph(P5),K3)
+    assert_equal(nx.number_of_nodes(G),5*3)
+    G=strong_product(P5,nx.MultiGraph(K3))
+    assert_equal(nx.number_of_nodes(G),5*3)
+    G=strong_product(nx.MultiGraph(P5),nx.MultiGraph(K3))
+    assert_equal(nx.number_of_nodes(G),5*3)
+
+
 
     #No classic easily found classic results for strong product
 def test_strong_product_random():
