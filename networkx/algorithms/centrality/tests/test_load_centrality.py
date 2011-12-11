@@ -62,6 +62,19 @@ class TestLoadCentrality:
            2: 0.000}
         for n in sorted(G):
             assert_almost_equal(c[n],d[n],places=3)
+        c=nx.load_centrality(G,v=1)
+        assert_almost_equal(c,1.0)
+        c=nx.load_centrality(G,v=1,normalized=True)
+        assert_almost_equal(c,1.0)
+
+
+    def test_p2_load(self):
+        G=nx.path_graph(2)
+        c=nx.load_centrality(G)
+        d={0: 0.000,
+           1: 0.000}
+        for n in sorted(G):
+            assert_almost_equal(c[n],d[n],places=3)
 
 
     def test_krackhardt_load(self):
