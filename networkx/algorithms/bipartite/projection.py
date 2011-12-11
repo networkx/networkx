@@ -290,7 +290,7 @@ def collaboration_weighted_projected_graph(B, nodes):
         for v in nbrs2:
             vnbrs = set(pred[v])
             common = unbrs & vnbrs
-            weight = sum([1.0/(len(B[n]) - 1) for n in common])
+            weight = sum([1.0/(len(B[n]) - 1) for n in common if len(B[n])>1])
             G.add_edge(u,v,weight=weight)
     return G
 
