@@ -22,9 +22,16 @@ class TestEigenvectorCentrality(object):
         b_answer=dict.fromkeys(G,v)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
+        nstart = dict([(n,1) for n in G]) 
+        b=networkx.eigenvector_centrality(G,nstart=nstart)
+        for n in sorted(G):
+            assert_almost_equal(b[n],b_answer[n])
+
+
         b=networkx.eigenvector_centrality_numpy(G)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n],places=3)
+
 
     def test_P3(self):
         """Eigenvector centrality: P3"""
@@ -34,6 +41,11 @@ class TestEigenvectorCentrality(object):
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n],places=4)
 
+
+    @raises(networkx.NetworkXError)
+    def test_maxiter(self):
+        G=networkx.path_graph(3)
+        b=networkx.eigenvector_centrality(G,max_iter=0)
 
 class TestEigenvectorCentralityDirected(object):
     numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
@@ -81,3 +93,21 @@ class TestEigenvectorCentralityDirected(object):
         p=networkx.eigenvector_centrality_numpy(G)
         for (a,b) in zip(list(p.values()),self.G.evc):
             assert_almost_equal(a,b)
+
+
+@raises(networkx.NetworkXException)
+def test_multigraph():
+    e = networkx.eigenvector_centrality(networkx.MultiGraph())
+
+@raises(networkx.NetworkXException)
+def test_multigraph_numpy():
+    e = networkx.eigenvector_centrality_numpy(networkx.MultiGraph())
+
+
+@raises(networkx.NetworkXException)
+def test_empty():
+    e = networkx.eigenvector_centrality(networkx.Graph())
+
+@raises(networkx.NetworkXException)
+def test_empty_numpy():
+    e = networkx.eigenvector_centrality_numpy(networkx.Graph())
