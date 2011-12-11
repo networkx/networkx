@@ -1,5 +1,5 @@
 
-from nose.tools import assert_equal
+from nose.tools import assert_equal,raises
 
 import networkx as nx
 
@@ -14,3 +14,6 @@ def test_smetric():
 #    smNorm = nx.s_metric(g,normalized=True)
 #    assert_equal(smNorm, 0.95)
 
+@raises(nx.NetworkXError)
+def test_normalized():
+        sm = nx.s_metric(nx.Graph(),normalized=True)
