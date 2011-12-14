@@ -1,13 +1,13 @@
 """
 PageRank analysis of graph structure.
 """
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-#    NetworkX:http://networkx.lanl.gov/. 
+#    NetworkX:http://networkx.lanl.gov/
 import networkx as nx
 from networkx.exception import NetworkXError
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
@@ -20,16 +20,16 @@ def pagerank(G,alpha=0.85,personalization=None,
     PageRank computes a ranking of the nodes in the graph G based on
     the structure of the incoming links. It was originally designed as
     an algorithm to rank web pages.
-    
+
     Parameters
     -----------
     G : graph
-      A NetworkX graph 
+      A NetworkX graph
 
     alpha : float, optional
       Damping parameter for PageRank, default=0.85
-       
-    personalization: dict, optional      
+
+    personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
        key for every graph node and nonzero personalization value for each node.
 
@@ -40,9 +40,9 @@ def pagerank(G,alpha=0.85,personalization=None,
       Error tolerance used to check convergence in power method solver.
 
     nstart : dictionary, optional
-      Starting value of PageRank iteration for each node. 
+      Starting value of PageRank iteration for each node.
 
-    weight : key, optional       
+    weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
     Returns
@@ -66,7 +66,7 @@ def pagerank(G,alpha=0.85,personalization=None,
     algorithm does not check if the input graph is directed and will
     execute on undirected graphs by converting each oriented edge in the
     directed graph to two edges.
-    
+
     See Also
     --------
     pagerank_numpy, pagerank_scipy, google_matrix
@@ -88,7 +88,7 @@ def pagerank(G,alpha=0.85,personalization=None,
     else:
         D=G
 
-    # create a copy in (right) stochastic form        
+    # create a copy in (right) stochastic form
     W=nx.stochastic_graph(D, weight=weight)
     scale=1.0/W.number_of_nodes()
 
@@ -97,7 +97,7 @@ def pagerank(G,alpha=0.85,personalization=None,
         x=dict.fromkeys(W,scale)
     else:
         x=nstart
-        # normalize starting vector to 1                
+        # normalize starting vector to 1
         s=1.0/sum(x.values())
         for k in x: x[k]*=s
 
@@ -106,18 +106,18 @@ def pagerank(G,alpha=0.85,personalization=None,
         p=dict.fromkeys(W,scale)
     else:
         p=personalization
-        # normalize starting vector to 1                
+        # normalize starting vector to 1
         s=1.0/sum(p.values())
-        for k in p: 
+        for k in p:
             p[k]*=s
         if set(p)!=set(G):
-            raise NetworkXError('Personalization vector ' 
+            raise NetworkXError('Personalization vector '
                                 'must have a value for every node')
 
 
     # "dangling" nodes, no links out from them
     out_degree=W.out_degree()
-    dangle=[n for n in W if out_degree[n]==0.0]  
+    dangle=[n for n in W if out_degree[n]==0.0]
     i=0
     while True: # power iteration: make up to max_iter iterations
         xlast=x
@@ -129,11 +129,11 @@ def pagerank(G,alpha=0.85,personalization=None,
             for nbr in W[n]:
                 x[nbr]+=alpha*xlast[n]*W[n][nbr][weight]
             x[n]+=danglesum+(1.0-alpha)*p[n]
-        # normalize vector 
+        # normalize vector
         s=1.0/sum(x.values())
-        for n in x: 
+        for n in x:
             x[n]*=s
-        # check convergence, l1 norm            
+        # check convergence, l1 norm
         err=sum([abs(x[n]-xlast[n]) for n in x])
         if err < tol:
             break
@@ -151,20 +151,20 @@ def google_matrix(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph 
+      A NetworkX graph
 
     alpha : float
       The damping factor
 
-    personalization: dict, optional      
+    personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
        key for every graph node and nonzero personalization value for each node.
 
-    nodelist : list, optional       
+    nodelist : list, optional
       The rows and columns are ordered according to the nodes in nodelist.
       If nodelist is None, then the ordering is produced by G.nodes().
 
-    weight : key, optional       
+    weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
     Returns
@@ -195,7 +195,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
     dangling=np.where(M.sum(axis=1)==0)
     for d in dangling[0]:
         M[d]=1.0/n
-    # normalize        
+    # normalize
     M=M/M.sum(axis=1)
     # add "teleportation"/personalization
     e=np.ones((n))
@@ -214,20 +214,20 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     PageRank computes a ranking of the nodes in the graph G based on
     the structure of the incoming links. It was originally designed as
     an algorithm to rank web pages.
-    
+
     Parameters
     -----------
     G : graph
-      A NetworkX graph 
+      A NetworkX graph
 
     alpha : float, optional
       Damping parameter for PageRank, default=0.85
-       
-    personalization: dict, optional      
+
+    personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
        key for every graph node and nonzero personalization value for each node.
 
-    weight : key, optional       
+    weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
     Returns
@@ -247,17 +247,17 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     for small graphs.
 
     This implementation works with Multi(Di)Graphs.
-    
+
     See Also
     --------
     pagerank, pagerank_scipy, google_matrix
 
     References
     ----------
-    .. [1] A. Langville and C. Meyer, 
-       "A survey of eigenvector methods of web information retrieval."  
+    .. [1] A. Langville and C. Meyer,
+       "A survey of eigenvector methods of web information retrieval."
        http://citeseer.ist.psu.edu/713792.html
-    .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry, 
+    .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry,
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
@@ -290,16 +290,16 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     PageRank computes a ranking of the nodes in the graph G based on
     the structure of the incoming links. It was originally designed as
     an algorithm to rank web pages.
-    
+
     Parameters
     -----------
     G : graph
-      A NetworkX graph 
+      A NetworkX graph
 
     alpha : float, optional
       Damping parameter for PageRank, default=0.85
-       
-    personalization: dict, optional      
+
+    personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
        key for every graph node and nonzero personalization value for each node.
 
@@ -309,7 +309,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     tol : float, optional
       Error tolerance used to check convergence in power method solver.
 
-    weight : key, optional       
+    weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
     Returns
@@ -326,17 +326,17 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     -----
     The eigenvector calculation uses power iteration with a SciPy
     sparse matrix representation.
-    
+
     See Also
     --------
     pagerank, pagerank_numpy, google_matrix
 
     References
     ----------
-    .. [1] A. Langville and C. Meyer, 
-       "A survey of eigenvector methods of web information retrieval."  
+    .. [1] A. Langville and C. Meyer,
+       "A survey of eigenvector methods of web information retrieval." 
        http://citeseer.ist.psu.edu/713792.html
-    .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry, 
+    .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry,
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
@@ -368,7 +368,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         xlast=x
         x=alpha*(x*M+scipy.dot(dangle,xlast))+(1-alpha)*v
         x=x/x.sum()
-        # check convergence, l1 norm            
+        # check convergence, l1 norm
         err=scipy.absolute(x-xlast).sum()
         if err < n*tol:
             return dict(zip(nodelist,x))
