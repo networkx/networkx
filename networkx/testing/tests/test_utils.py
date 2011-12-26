@@ -32,15 +32,17 @@ class TestEdgesEqual(_GenericTest):
         self._test_not_equal(e1,e2)
 
     def test_edges_with_data_equal(self):
-        G = nx.Graph()
+        G = nx.MultiGraph()
         G.add_path([0,1,2],weight=1)
-        H = nx.Graph()
+        H = nx.MultiGraph()
         H.add_path([0,1,2],weight=1)
-        self._test_equal(G.edges(data=True),H.edges(data=True))
+        self._test_equal(G.edges(data=True, keys=True),
+                         H.edges(data=True, keys=True))
 
     def test_edges_with_data_not_equal(self):
-        G = nx.Graph()
+        G = nx.MultiGraph()
         G.add_path([0,1,2],weight=1)
-        H = nx.Graph()
+        H = nx.MultiGraph()
         H.add_path([0,1,2],weight=2)
-        self._test_not_equal(G.edges(data=True),H.edges(data=True))
+        self._test_not_equal(G.edges(data=True, keys=True),
+                             H.edges(data=True, keys=True))
