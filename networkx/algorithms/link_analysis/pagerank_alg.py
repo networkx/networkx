@@ -350,8 +350,11 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist,weight=weight,dtype='f')
     (n,m)=M.shape # should be square
     S=scipy.array(M.sum(axis=1)).flatten()
-    for i, j, v in zip( *scipy.sparse.find(M) ):
-        M[i,j] = v / S[i]
+#    for i, j, v in zip( *scipy.sparse.find(M) ):
+#        M[i,j] = v / S[i]
+    S[S>0] = 1.0 / S[S>0]
+    Q = scipy.sparse.spdiags(S.T, 0, *M.shape, format='csr')
+    M = Q * M
     x=scipy.ones((n))/n  # initial guess
     dangle=scipy.array(scipy.where(M.sum(axis=1)==0,1.0/n,0)).flatten()
     # add "teleportation"/personalization
