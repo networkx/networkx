@@ -1,7 +1,5 @@
-"""
-PageRank analysis of graph structure.
-"""
-#    Copyright (C) 2004-2010 by
+"""PageRank analysis of graph structure. """
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

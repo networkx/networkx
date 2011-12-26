@@ -78,7 +78,7 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
 
     >>> d={0: {1: {'weight':1}}} # dict-of-dicts single edge (0,1)
     >>> G=nx.Graph(d)
-    
+
     instead of the equivalent
 
     >>> G=nx.from_dict_of_dicts(d)
@@ -182,16 +182,12 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
 
 
 def convert_to_undirected(G):
-    """Return a new undirected representation of the graph G.
-
-    """
+    """Return a new undirected representation of the graph G."""
     return G.to_undirected()
 
 
 def convert_to_directed(G):
-    """Return a new directed representation of the graph G.
-
-    """
+    """Return a new directed representation of the graph G."""
     return G.to_directed()
 
 
@@ -201,9 +197,9 @@ def to_dict_of_lists(G,nodelist=None):
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
-    nodelist : list       
+    nodelist : list
        Use only nodes specified in nodelist
 
     Notes
@@ -217,7 +213,7 @@ def to_dict_of_lists(G,nodelist=None):
     d = {}
     for n in nodelist:
         d[n]=[nbr for nbr in G.neighbors(n) if nbr in nodelist]
-    return d            
+    return d
 
 def from_dict_of_lists(d,create_using=None):
     """Return a graph from a dictionary of lists.
@@ -240,21 +236,21 @@ def from_dict_of_lists(d,create_using=None):
 
     """
     G=_prep_create_using(create_using)
-    G.add_nodes_from(d)        
+    G.add_nodes_from(d)
     if G.is_multigraph() and not G.is_directed():
         # a dict_of_lists can't show multiedges.  BUT for undirected graphs,
-        # each edge shows up twice in the dict_of_lists.  
+        # each edge shows up twice in the dict_of_lists.
         # So we need to treat this case separately.
         seen={}
         for node,nbrlist in d.items():
             for nbr in nbrlist:
                 if nbr not in seen:
                     G.add_edge(node,nbr)
-            seen[node]=1  # don't allow reverse edge to show up 
+            seen[node]=1  # don't allow reverse edge to show up
     else:
-        G.add_edges_from( ((node,nbr) for node,nbrlist in d.items() 
+        G.add_edges_from( ((node,nbr) for node,nbrlist in d.items()
                            for nbr in nbrlist) )
-    return G                         
+    return G
 
 
 def to_dict_of_dicts(G,nodelist=None,edge_data=None):
@@ -263,18 +259,17 @@ def to_dict_of_dicts(G,nodelist=None,edge_data=None):
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
-    nodelist : list       
+    nodelist : list
        Use only nodes specified in nodelist
 
-    edge_data : list, optional       
+    edge_data : list, optional
        If provided,  the value of the dictionary will be
        set to edge_data for all edges.  This is useful to make
        an adjacency matrix type representation with 1 as the edge data.
        If edgedata is None, the edgedata in G is used to fill the values.
        If G is a multigraph, the edgedata is a dict for each pair (u,v).
-    
     """
     dod={}
     if nodelist is None:
@@ -309,7 +304,7 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
        Use specified graph for result.  Otherwise a new graph is created.
 
     multigraph_input : bool (default False)
-       When True, the values of the inner dict are assumed 
+       When True, the values of the inner dict are assumed
        to be containers of edge data for multiple edges.
        Otherwise this routine assumes the edge data are singletons.
 
@@ -327,17 +322,17 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
     # is dict a MultiGraph or MultiDiGraph?
     if multigraph_input:
         # make a copy of the list of edge data (but not the edge data)
-        if G.is_directed():  
+        if G.is_directed():
             if G.is_multigraph():
                 G.add_edges_from( (u,v,key,data)
-                                  for u,nbrs in d.items() 
-                                  for v,datadict in nbrs.items() 
+                                  for u,nbrs in d.items()
+                                  for v,datadict in nbrs.items()
                                   for key,data in datadict.items()
                                 )
             else:
                 G.add_edges_from( (u,v,data)
-                                  for u,nbrs in d.items() 
-                                  for v,datadict in nbrs.items() 
+                                  for u,nbrs in d.items()
+                                  for v,datadict in nbrs.items()
                                   for key,data in datadict.items()
                                 )
         else: # Undirected
@@ -346,10 +341,10 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
                 for u,nbrs in d.items():
                     for v,datadict in nbrs.items():
                         if (u,v) not in seen:
-                            G.add_edges_from( (u,v,key,data) 
+                            G.add_edges_from( (u,v,key,data)
                                                for key,data in datadict.items()
                                               )
-                            seen.add((v,u)) 
+                            seen.add((v,u))
             else:
                 seen=set()   # don't add both directions of undirected graph
                 for u,nbrs in d.items():
@@ -357,7 +352,7 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
                         if (u,v) not in seen:
                             G.add_edges_from( (u,v,data)
                                         for key,data in datadict.items() )
-                            seen.add((v,u)) 
+                            seen.add((v,u))
 
     else: # not a multigraph to multigraph transfer
         if G.is_multigraph() and not G.is_directed():
@@ -371,10 +366,10 @@ def from_dict_of_dicts(d,create_using=None,multigraph_input=False):
                         G.add_edge(u,v,attr_dict=data)
                     seen.add((v,u))
         else:
-            G.add_edges_from( ( (u,v,data) 
-                                for u,nbrs in d.items() 
+            G.add_edges_from( ( (u,v,data)
+                                for u,nbrs in d.items()
                                 for v,data in nbrs.items()) )
-    return G                         
+    return G
 
 def to_edgelist(G,nodelist=None):
     """Return a list of edges in the graph.
@@ -382,9 +377,9 @@ def to_edgelist(G,nodelist=None):
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
-    nodelist : list       
+    nodelist : list
        Use only nodes specified in nodelist
 
     """
@@ -399,7 +394,7 @@ def from_edgelist(edgelist,create_using=None):
     Parameters
     ----------
     edgelist : list or iterator
-      Edge tuples 
+      Edge tuples
 
     create_using : NetworkX graph
        Use specified graph for result.  Otherwise a new graph is created.
@@ -415,7 +410,7 @@ def from_edgelist(edgelist,create_using=None):
     """
     G=_prep_create_using(create_using)
     G.add_edges_from(edgelist)
-    return G                         
+    return G
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     multigraph_weight=sum, weight='weight'):
@@ -426,7 +421,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     G : graph
         The NetworkX graph used to construct the NumPy matrix.
 
-    nodelist : list, optional       
+    nodelist : list, optional
        The rows and columns are ordered according to the nodes in `nodelist`.
        If `nodelist` is None, then the ordering is produced by G.nodes().
 
@@ -441,7 +436,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         (row- or column-wise) order in memory. If None, then the NumPy default 
         is used.
 
-    multigraph_weight : {sum, min, max}, optional        
+    multigraph_weight : {sum, min, max}, optional
         An operator that determines how weights in multigraphs are handled.
         The default is to sum the weights of the multiple edges.
 
@@ -468,7 +463,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
 
     When `nodelist` does not contain every node in `G`, the matrix is built 
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
-    
+
     Examples
     --------
     >>> G = nx.MultiDiGraph()
@@ -480,7 +475,6 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     matrix([[ 0.,  2.,  0.],
             [ 1.,  0.,  0.],
             [ 0.,  0.,  4.]])
-
     """
     try:
         import numpy as np
@@ -549,11 +543,11 @@ def from_numpy_matrix(A,create_using=None):
 
     Notes
     -----
-    If the numpy matrix has a single data type for each matrix entry it 
-    will be converted to an appropriate Python data type.  
+    If the numpy matrix has a single data type for each matrix entry it
+    will be converted to an appropriate Python data type.
 
     If the numpy matrix has a user-specified compound data type the names
-    of the data fields will be used as attribute keys in the resulting 
+    of the data fields will be used as attribute keys in the resulting
     NetworkX graph.
 
     See Also
@@ -572,7 +566,7 @@ def from_numpy_matrix(A,create_using=None):
 
     >>> import numpy
     >>> dt=[('weight',float),('cost',int)]
-    >>> A=numpy.matrix([[(1.0,2)]],dtype=dt)                      
+    >>> A=numpy.matrix([[(1.0,2)]],dtype=dt)
     >>> G=nx.from_numpy_matrix(A)
     >>> G.edges(data=True)
     [(0, 0, {'cost': 2, 'weight': 1.0})]
@@ -610,15 +604,15 @@ def from_numpy_matrix(A,create_using=None):
         raise TypeError("Unknown numpy data type: %s"%dt)
 
     # make sure we get isolated nodes
-    G.add_nodes_from(range(n)) 
+    G.add_nodes_from(range(n))
     # get a list of edges
-    x,y=np.asarray(A).nonzero()         
+    x,y=np.asarray(A).nonzero()
 
     # handle numpy constructed data type
     if python_type is 'void':
         fields=sorted([(offset,dtype,name) for name,(dtype,offset) in
                        A.dtype.fields.items()])
-        for (u,v) in zip(x,y):         
+        for (u,v) in zip(x,y):
             attr={}
             for (offset,dtype,name),val in zip(fields,A[u,v]):
                 attr[name]=kind_to_python_type[dtype.kind](val)
@@ -639,7 +633,7 @@ def to_numpy_recarray(G,nodelist=None,
     G : graph
         The NetworkX graph used to construct the NumPy matrix.
 
-    nodelist : list, optional       
+    nodelist : list, optional
        The rows and columns are ordered according to the nodes in `nodelist`.
        If `nodelist` is None, then the ordering is produced by G.nodes().
 
@@ -662,7 +656,7 @@ def to_numpy_recarray(G,nodelist=None,
     -----
     When `nodelist` does not contain every node in `G`, the matrix is built 
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
-    
+
     Examples
     --------
     >>> G = nx.Graph()
@@ -718,7 +712,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     G : graph
         The NetworkX graph used to construct the NumPy matrix.
 
-    nodelist : list, optional       
+    nodelist : list, optional
        The rows and columns are ordered according to the nodes in `nodelist`.
        If `nodelist` is None, then the ordering is produced by G.nodes().
 
@@ -734,7 +728,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         The type of the matrix to be returned (default 'csr').  For
         some algorithms different implementations of sparse matrices
         can perform better.  See [1]_ for details.
-    
+
     Returns
     -------
     M : SciPy sparse matrix
@@ -742,16 +736,16 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
 
     Notes
     -----
-    The matrix entries are populated using the edge attribute held in 
-    parameter weight. When an edge does not have that attribute, the 
+    The matrix entries are populated using the edge attribute held in
+    parameter weight. When an edge does not have that attribute, the
     value of the entry is 1.
 
     For multiple edges the matrix values are the sums of the edge weights.
 
-    When `nodelist` does not contain every node in `G`, the matrix is built 
+    When `nodelist` does not contain every node in `G`, the matrix is built
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
-    
-    Uses lil_matrix format. To convert to other formats specify the 
+
+    Uses lil_matrix format. To convert to other formats specify the
     format= keyword.
 
     Examples
@@ -797,10 +791,10 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     try:
         return M.asformat(format)
     except AttributeError:
-        raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)    
+        raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)
 
 def from_scipy_sparse_matrix(A,create_using=None):
-    """Return a graph from scipy sparse matrix adjacency list. 
+    """Return a graph from scipy sparse matrix adjacency list.
 
     Parameters
     ----------
@@ -819,7 +813,7 @@ def from_scipy_sparse_matrix(A,create_using=None):
     """
     G=_prep_create_using(create_using)
 
-    # convert all formats to lil - not the most efficient way       
+    # convert all formats to lil - not the most efficient way
     AA=A.tolil()
     n,m=AA.shape
 

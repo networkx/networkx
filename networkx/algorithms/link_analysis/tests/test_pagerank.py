@@ -19,7 +19,6 @@ class TestPageRank:
            (4,5),(4,6),\
            (5,4),(5,6),\
            (6,4)]
-           
         G.add_edges_from(edges)
         self.G=G
         self.G.pagerank=dict(zip(G,
@@ -50,7 +49,7 @@ class TestPageRank:
         G=self.G
         p=networkx.pagerank_numpy(G,alpha=0.9)
         for n in G:
-            assert_almost_equal(p[n],G.pagerank[n],places=4)    
+            assert_almost_equal(p[n],G.pagerank[n],places=4)
         personalize = dict((n,random.random()) for n in G)
         p=networkx.pagerank_numpy(G,alpha=0.9, personalization=personalize)
 
@@ -75,8 +74,6 @@ class TestPageRank:
         assert_raises(networkx.NetworkXError,networkx.google_matrix,G,
                       personalization=personalize)
 
-        
-
     def test_scipy_pagerank(self):
         G=self.G
         try:
@@ -85,9 +82,9 @@ class TestPageRank:
             raise SkipTest('scipy not available.')
         p=networkx.pagerank_scipy(G,alpha=0.9,tol=1.e-08)
         for n in G:
-            assert_almost_equal(p[n],G.pagerank[n],places=4)    
+            assert_almost_equal(p[n],G.pagerank[n],places=4)
         personalize = dict((n,random.random()) for n in G)
-        p=networkx.pagerank_scipy(G,alpha=0.9,tol=1.e-08, 
+        p=networkx.pagerank_scipy(G,alpha=0.9,tol=1.e-08,
                                   personalization=personalize)
 
         assert_raises(networkx.NetworkXError,networkx.pagerank_scipy,G,
@@ -99,9 +96,7 @@ class TestPageRank:
         answer={0:0.1,1:0.1,2:0.4,3:0.4}
         p=networkx.pagerank(G,alpha=0.0,personalization=personalize)
         for n in G:
-            assert_almost_equal(p[n],answer[n],places=4)    
+            assert_almost_equal(p[n],answer[n],places=4)
         _ = personalize.pop(0)
         assert_raises(networkx.NetworkXError,networkx.pagerank,G,
                       personalization=personalize)
-
-

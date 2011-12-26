@@ -1,12 +1,7 @@
-"""
-    Unit tests for layout functions.
-"""
-
+"""Unit tests for layout functions."""
 import sys
-
 from nose import SkipTest
 from nose.tools import assert_equal
-
 import networkx as nx
 
 class TestLayout(object):
@@ -64,5 +59,3 @@ class TestLayout(object):
 
         pos=nx.drawing.layout._sparse_fruchterman_reingold(A,dim=3)
         assert_equal(pos.shape,(6,3))
-
-

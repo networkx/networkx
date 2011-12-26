@@ -4,25 +4,21 @@ Layout
 ******
 
 Node positioning algorithms for graph drawing.
-
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
-#    Copyright (C) 2004-2009 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+import networkx as nx
+__author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 __all__ = ['circular_layout',
            'random_layout',
            'shell_layout',
            'spring_layout',
            'spectral_layout',
            'fruchterman_reingold_layout']
-
-import networkx as nx
-
 
 def random_layout(G,dim=2):
     """Position nodes uniformly at random in the unit square.
@@ -37,12 +33,12 @@ def random_layout(G,dim=2):
     G : NetworkX graph
        A position will be assigned to every node in G.
 
-    dim : int 
+    dim : int
        Dimension of layout.
 
     Returns
     -------
-    dict : 
+    dict :
        A dictionary of positions keyed by node
 
     Examples
@@ -66,24 +62,24 @@ def circular_layout(G, dim=2, scale=1):
 
     Parameters
     ----------
-    G : NetworkX graph 
+    G : NetworkX graph
 
-    dim : int 
+    dim : int
        Dimension of layout, currently only dim=2 is supported
 
     scale : float
-        Scale factor for positions 
+        Scale factor for positions
 
     Returns
     -------
-    dict : 
+    dict :
        A dictionary of positions keyed by node
 
     Examples
     --------
     >>> G=nx.path_graph(4)
     >>> pos=nx.circular_layout(G)
-    
+
     Notes
     ------
     This algorithm currently only works in two dimensions and does not
@@ -108,20 +104,20 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
 
     Parameters
     ----------
-    G : NetworkX graph 
+    G : NetworkX graph
 
     nlist : list of lists
        List of node lists for each shell.
 
-    dim : int 
+    dim : int
        Dimension of layout, currently only dim=2 is supported
 
     scale : float
-        Scale factor for positions 
+        Scale factor for positions
 
     Returns
     -------
-    dict : 
+    dict :
        A dictionary of positions keyed by node
 
     Examples
@@ -129,7 +125,7 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
     >>> G=nx.path_graph(4)
     >>> shells=[[0],[1,2,3]]
     >>> pos=nx.shell_layout(G,shells)
-    
+
     Notes
     ------
     This algorithm currently only works in two dimensions and does not
@@ -159,7 +155,7 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
         npos.update(zip(nodes,pos))
         radius+=1.0
 
-    # FIXME: rescale        
+    # FIXME: rescale
     return npos
 
 
@@ -173,9 +169,9 @@ def fruchterman_reingold_layout(G,dim=2,
 
     Parameters
     ----------
-    G : NetworkX graph 
+    G : NetworkX graph
 
-    dim : int 
+    dim : int
        Dimension of layout
 
     pos : dict or None  optional (default=None)
@@ -187,18 +183,18 @@ def fruchterman_reingold_layout(G,dim=2,
       Nodes to keep fixed at initial position.
 
     iterations : int  optional (default=50)
-       Number of iterations of spring-force relaxation 
+       Number of iterations of spring-force relaxation
 
     weight : string or None   optional (default='weight')
-        The edge attribute that holds the numerical value used for 
+        The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
     scale : float
-        Scale factor for positions 
+        Scale factor for positions
 
     Returns
     -------
-    dict : 
+    dict :
        A dictionary of positions keyed by node
 
     Examples
@@ -208,7 +204,6 @@ def fruchterman_reingold_layout(G,dim=2,
 
     # The same using longer function name
     >>> pos=nx.fruchterman_reingold_layout(G)
-    
     """
     try:
         import numpy as np
@@ -232,7 +227,7 @@ def fruchterman_reingold_layout(G,dim=2,
         return {G.nodes()[0]:(1,)*dim}
 
     try:
-        # Sparse matrix 
+        # Sparse matrix
         if len(G) < 500:  # sparse solver for large graphs
             raise ValueError
         A=nx.to_scipy_sparse_matrix(G,weight=weight)
@@ -247,7 +242,7 @@ def fruchterman_reingold_layout(G,dim=2,
 spring_layout=fruchterman_reingold_layout
 
 def _fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
-    # Position nodes in adjacency matrix A using Fruchterman-Reingold  
+    # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     try:
         import numpy as np
@@ -259,7 +254,7 @@ def _fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
     except AttributeError:
         raise nx.NetworkXError(
             "fruchterman_reingold() takes an adjacency matrix as input")
-    
+
     A=np.asarray(A) # make sure we have an array instead of a matrix
 
     if pos==None:
@@ -270,13 +265,13 @@ def _fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
         pos=pos.astype(A.dtype)
 
     # optimal distance between nodes
-    k=np.sqrt(1.0/nnodes) 
+    k=np.sqrt(1.0/nnodes)
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
     t=0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt=t/float(iterations+1) 
+    dt=t/float(iterations+1)
     delta = np.zeros((pos.shape[0],pos.shape[0],pos.shape[1]),dtype=A.dtype)
     # the inscrutable (but fast) version
     # this is still O(V^2)
@@ -293,7 +288,7 @@ def _fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
         displacement=np.transpose(np.transpose(delta)*\
                                   (k*k/distance**2-A*distance/k))\
                                   .sum(axis=1)
-        # update positions            
+        # update positions
         length=np.sqrt((displacement**2).sum(axis=1))
         length=np.where(length<0.01,0.1,length)
         delta_pos=np.transpose(np.transpose(displacement)*t/length)
@@ -320,15 +315,13 @@ def _sparse_fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
     except AttributeError:
         raise nx.NetworkXError(
             "fruchterman_reingold() takes an adjacency matrix as input")
-    
     try:
         from scipy.sparse import spdiags,coo_matrix
     except ImportError:
         raise ImportError("_sparse_fruchterman_reingold() scipy numpy: http://scipy.org/ ")
-    
     # make sure we have a LIst of Lists representation
     try:
-        A=A.tolil() 
+        A=A.tolil()
     except:
         A=(coo_matrix(A)).tolil()
 
@@ -344,13 +337,13 @@ def _sparse_fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
         fixed=[]
 
     # optimal distance between nodes
-    k=np.sqrt(1.0/nnodes) 
+    k=np.sqrt(1.0/nnodes)
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
     t=0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
-    dt=t/float(iterations+1) 
+    dt=t/float(iterations+1)
 
     displacement=np.zeros((dim,nnodes))
     for iteration in range(iterations):
@@ -370,9 +363,9 @@ def _sparse_fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
             # displacement "force"
             displacement[:,i]+=\
                 (delta*(k*k/distance**2-Ai*distance/k)).sum(axis=1)
-        # update positions            
+        # update positions
         length=np.sqrt((displacement**2).sum(axis=0))
-        length=np.where(length<0.01,0.1,length) 
+        length=np.where(length<0.01,0.1,length)
         pos+=(displacement*t/length).T
         # cool temperature
         t-=dt
@@ -385,21 +378,21 @@ def spectral_layout(G, dim=2, weight='weight', scale=1):
 
     Parameters
     ----------
-    G : NetworkX graph 
+    G : NetworkX graph
 
-    dim : int 
+    dim : int
        Dimension of layout
 
     weight : string or None   optional (default='weight')
-        The edge attribute that holds the numerical value used for 
+        The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
     scale : float
-        Scale factor for positions 
+        Scale factor for positions
 
     Returns
     -------
-    dict : 
+    dict :
        A dictionary of positions keyed by node
 
     Examples
@@ -429,7 +422,7 @@ def spectral_layout(G, dim=2, weight='weight', scale=1):
             pos=np.array([[0,0.5],[1,0.5]])
         return dict(zip(G,pos))
     try:
-        # Sparse matrix 
+        # Sparse matrix
         if len(G)< 500:  # dense solver is faster for small graphs
             raise ValueError
         A=nx.to_scipy_sparse_matrix(G, weight=weight,dtype='f')
@@ -461,24 +454,23 @@ def _spectral(A, dim=2):
     except AttributeError:
         raise nx.NetworkXError(\
             "spectral() takes an adjacency matrix as input")
-    
+
     # form Laplacian matrix
     # make sure we have an array instead of a matrix
-    A=np.asarray(A) 
+    A=np.asarray(A)
     I=np.identity(nnodes,dtype=A.dtype)
     D=I*np.sum(A,axis=1) # diagonal of degrees
-    L=D-A 
+    L=D-A
 
     eigenvalues,eigenvectors=np.linalg.eig(L)
-    # sort and keep smallest nonzero 
+    # sort and keep smallest nonzero
     index=np.argsort(eigenvalues)[1:dim+1] # 0 index is zero eigenvalue
     return np.real(eigenvectors[:,index])
 
 def _sparse_spectral(A,dim=2):
     # Input adjacency matrix A
     # Uses sparse eigenvalue solver from scipy
-    # Could use multilevel methods here, see Koren "On spectral graph drawing" 
-    
+    # Could use multilevel methods here, see Koren "On spectral graph drawing"
     try:
         import numpy as np
         from scipy.sparse import spdiags
@@ -494,7 +486,7 @@ def _sparse_spectral(A,dim=2):
     except AttributeError:
         raise nx.NetworkXError(\
             "sparse_spectral() takes an adjacency matrix as input")
-    
+
     # form Laplacian matrix
     data=np.asarray(A.sum(axis=1).T)
     D=spdiags(data,0,nnodes,nnodes)

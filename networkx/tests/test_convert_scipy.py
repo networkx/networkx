@@ -98,7 +98,7 @@ class TestConvertNumpy(object):
         P3 = path_graph(3)
         nodelist = P3.nodes()
         A = nx.to_scipy_sparse_matrix(P4, nodelist=nodelist)
-        GA = nx.Graph(A)    
+        GA = nx.Graph(A)
         self.assert_equal(GA, P3)
 
         # Make nodelist ambiguous by containing duplicates.
@@ -112,51 +112,50 @@ class TestConvertNumpy(object):
                             for n in range(3) )
         P4 = path_graph(4)
         A = nx.to_scipy_sparse_matrix(P4)
-        np_assert_equal(A.todense(), 
+        np_assert_equal(A.todense(),
                         nx.to_scipy_sparse_matrix(WP4,weight=None).todense())
-        np_assert_equal(0.5*A.todense(), 
+        np_assert_equal(0.5*A.todense(),
                         nx.to_scipy_sparse_matrix(WP4).todense())
-        np_assert_equal(0.3*A.todense(), 
+        np_assert_equal(0.3*A.todense(),
                         nx.to_scipy_sparse_matrix(WP4,weight='other').todense())
 
     def test_format_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3)) 
+        WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3))
                             for n in range(3) )
         P4 = path_graph(4)
-        
         A = nx.to_scipy_sparse_matrix(P4, format='csr')
-        np_assert_equal(A.todense(), 
+        np_assert_equal(A.todense(),
                         nx.to_scipy_sparse_matrix(WP4,weight=None).todense())
-        
+
         A = nx.to_scipy_sparse_matrix(P4, format='csc')
-        np_assert_equal(A.todense(), 
+        np_assert_equal(A.todense(),
                         nx.to_scipy_sparse_matrix(WP4,weight=None).todense())
-        
+
         A = nx.to_scipy_sparse_matrix(P4, format='coo')
-        np_assert_equal(A.todense(), 
+        np_assert_equal(A.todense(),
                         nx.to_scipy_sparse_matrix(WP4,weight=None).todense())
-        
+
         A = nx.to_scipy_sparse_matrix(P4, format='bsr')
-        np_assert_equal(A.todense(), 
+        np_assert_equal(A.todense(),
                         nx.to_scipy_sparse_matrix(WP4,weight=None).todense())
-        
+
         A = nx.to_scipy_sparse_matrix(P4, format='lil')
-        np_assert_equal(A.todense(), 
+        np_assert_equal(A.todense(),
                         nx.to_scipy_sparse_matrix(WP4,weight=None).todense())
-        
+
         A = nx.to_scipy_sparse_matrix(P4, format='dia')
-        np_assert_equal(A.todense(), 
+        np_assert_equal(A.todense(),
                         nx.to_scipy_sparse_matrix(WP4,weight=None).todense())
-        
+
         A = nx.to_scipy_sparse_matrix(P4, format='dok')
-        np_assert_equal(A.todense(), 
+        np_assert_equal(A.todense(),
                         nx.to_scipy_sparse_matrix(WP4,weight=None).todense())
-    
+
     @raises(nx.NetworkXError)
     def test_format_keyword_fail(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3)) 
+        WP4.add_edges_from( (n,n+1,dict(weight=0.5,other=0.3))
                             for n in range(3) )
         P4 = path_graph(4)
         nx.to_scipy_sparse_matrix(P4, format='any_other')
