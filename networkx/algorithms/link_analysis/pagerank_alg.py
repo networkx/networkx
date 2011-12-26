@@ -71,10 +71,10 @@ def pagerank(G,alpha=0.85,personalization=None,
 
     References
     ----------
-    .. [1] A. Langville and C. Meyer, 
-       "A survey of eigenvector methods of web information retrieval."  
+    .. [1] A. Langville and C. Meyer,
+       "A survey of eigenvector methods of web information retrieval."
        http://citeseer.ist.psu.edu/713792.html
-    .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry, 
+    .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry,
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
@@ -332,7 +332,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     References
     ----------
     .. [1] A. Langville and C. Meyer,
-       "A survey of eigenvector methods of web information retrieval." 
+       "A survey of eigenvector methods of web information retrieval."
        http://citeseer.ist.psu.edu/713792.html
     .. [2] Page, Lawrence; Brin, Sergey; Motwani, Rajeev and Winograd, Terry,
        The PageRank citation ranking: Bringing order to the Web. 1999
