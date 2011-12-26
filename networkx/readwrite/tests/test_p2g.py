@@ -4,14 +4,8 @@ import io
 import tempfile
 import os
 from networkx.readwrite.p2g import *
+from networkx.testing import *
 
-def assert_equal_edges(elist1,elist2):
-    if len(elist1[0]) == 2:
-        return assert_equal(sorted(sorted(e) for e in elist1), 
-                            sorted(sorted(e) for e in elist2))
-    else:
-        return assert_equal(sorted((sorted((u, v)), d) for u, v, d in elist1),
-                            sorted((sorted((u, v)), d) for u, v, d in elist2))
 
 class TestP2G:
 
@@ -37,7 +31,7 @@ c
         G = read_p2g(bytesIO)
         assert_equal(G.name,'name')
         assert_equal(sorted(G),['a','b','c'])
-        assert_equal_edges(G.edges(),[('a','b'),('a','c'),('c','a'),('c','c')])
+        assert_edges_equal(G.edges(),[('a','b'),('a','c'),('c','a'),('c','c')])
 
     def test_write_p2g(self):
         s=b"""foo
@@ -66,4 +60,4 @@ c
         write_p2g(G,fh)
         fh.seek(0)
         H=read_p2g(fh)
-        assert_equal_edges(G.edges(),H.edges())
+        assert_edges_equal(G.edges(),H.edges())
