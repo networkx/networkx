@@ -4,7 +4,28 @@ import os
 from nose.tools import *
 
 import networkx as nx
-from networkx.utils.decorators import open_file,require
+from networkx.utils.decorators import open_file,require,not_implemented_for
+
+def test_not_implemented_decorator():
+    @not_implemented_for('directed')
+    def test1(G):
+        pass
+    test1(nx.Graph())
+
+@raises(KeyError)
+def test_not_implemented_decorator_key():
+    @not_implemented_for('foo')
+    def test1(G):
+        pass
+    test1(nx.Graph())
+
+@raises(nx.NetworkXNotImplemented)
+def test_not_implemented_decorator_raise():
+    @not_implemented_for('graph')
+    def test1(G):
+        pass
+    test1(nx.Graph())
+
 
 def test_require_decorator1():
     @require('os','sys')

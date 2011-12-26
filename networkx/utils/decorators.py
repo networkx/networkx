@@ -7,6 +7,63 @@ import networkx as nx
 from networkx.external.decorator import decorator
 from networkx.utils import is_string_like
 
+def not_implemented_for(*graph_types):
+    """Decorator to mark algorithms as not implemented
+
+    Parameters
+    ----------
+    graph_types : container of strings
+        Entries must be one of 'directed','undirected', 'multigraph', 'graph'.
+
+    Returns
+    -------
+    _require : function
+        The decorated function.
+
+    Raises
+    ------
+    NetworkXNotImplemnted
+    If any of the packages cannot be imported
+
+    Notes
+    -----
+    Multiple types are joined logically with "and".
+    For "or" use multiple @not_implemented_for() lines.
+
+    Examples
+    --------
+    Decorate functions like this::
+
+       @not_implemnted_for('directed')
+       def sp_function():
+           pass
+
+       @not_implemnted_for('directed','multigraph')
+       def sp_np_function():
+           pass
+    """
+    @decorator
+    def _not_implemented_for(f,*args,**kwargs):
+        graph = args[0]
+        terms= {'directed':graph.is_directed(),
+                'undirected':not graph.is_directed(),
+                'multigraph':graph.is_multigraph(),
+                'graph':not graph.is_multigraph()}
+        match = True
+        try:
+            for t in graph_types:
+                match = match and terms[t]
+        except KeyError:
+            raise KeyError('use one or more of ',
+                           'directed, undirected, multigraph, graph')
+        if match:
+            raise nx.NetworkXNotImplemented('not implemented for %s type'%
+                                            ' '.join(graph_types))
+        else:
+            return f(*args,**kwargs)
+    return _not_implemented_for
+
+
 def require(*packages):
     """Decorator to check whether specific packages can be imported.
 
