@@ -5,10 +5,10 @@ Exceptions
 **********
 
 Base exceptions and errors for NetworkX.
-    
+
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)\nLoïc Séguin-C. <loicseguin@gmail.com>"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -26,7 +26,7 @@ class NetworkXError(NetworkXException):
     """Exception for a serious error in NetworkX"""
 
 class NetworkXPointlessConcept(NetworkXException):
-    """Harary, F. and Read, R. "Is the Null Graph a Pointless Concept?" 
+    """Harary, F. and Read, R. "Is the Null Graph a Pointless Concept?"
 In Graphs and Combinatorics Conference, George Washington University.
 New York: Springer-Verlag, 1973.
 """
@@ -46,4 +46,5 @@ class NetworkXUnbounded(NetworkXAlgorithmError):
     """Exception raised by algorithms trying to solve a maximization
     or a minimization problem instance that is unbounded."""
 
-
+class NetworkXNotImplemented(NetworkXException):
+    """Exception raised by algorithms not implemented for a type of graph."""
