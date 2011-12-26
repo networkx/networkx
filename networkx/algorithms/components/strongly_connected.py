@@ -20,8 +20,7 @@ __all__ = ['number_strongly_connected_components',
            'is_strongly_connected',
            'strongly_connected_components_recursive',
            'kosaraju_strongly_connected_components',
-           'condensation',
-           'condensation_multigraph']
+           'condensation']
 
 def strongly_connected_components(G):
     """Return nodes in strongly connected components of graph.
@@ -327,63 +326,4 @@ def condensation(G, scc=None):
     for u,v in G.edges():
         if mapping[u] != mapping[v]:
             C.add_edge(mapping[u],mapping[v])
-    return C
-
-def condensation_multigraph(G, scc=None):
-    """Returns the condensation of G as a multigraph.
-
-    The condensation of G is the graph with each of the strongly connected
-    components contracted into a single node. Each node in this graph is a
-    subgraph of the strongly connected components.
-
-    Parameters
-    ----------
-    G : NetworkX DiGraph
-       A directed graph.
-
-    scc:  list (optional, default=None)
-       A list of strongly connected components that will be converted into
-       strongly connected subgraphs of `G`. If provided, the elements of `scc`
-       must partition the nodes of `G`. If not provided, it will be calculated
-       as: scc=nx.strongly connected component subgraphs(G).
-
-    Returns
-    -------
-    C : NetworkX MultiDiGraph
-       The condensation of G. Nodes are the subgraph of each strongly
-       connected component subgraph in G. Multiple edges are keyed by the
-       original nodes they connected in the input graph.
-
-    Notes
-    -----
-    After contracting all strongly connected components to a single node,
-    the resulting graph is a directed acyclic graph. If scc is provided it
-    must be a partition of the graph.3
-    """
-    if scc is None:
-        scc = nx.strongly_connected_component_subgraphs(G)
-    else:
-        # Assumes elements of scc are iterables of nodes in G.
-        scc = list(map(G.subgraph,scc))
-
-    C = nx.MultiDiGraph()
-    C.add_nodes_from(scc)
-
-    if G.is_multigraph():
-        edges = G.edges_iter(keys=True)
-    else:
-        edges = G.edges_iter()
-
-    mapping = {}
-    for component in scc:
-        for n in component:
-            mapping[n] = component
-
-    for e in edges:
-        if mapping[e[0]] != mapping[e[1]]:
-            if len(e) ==3:
-                d = G.get_edge_data(e[0],e[1],key=e[2])
-            else:
-                d = G.get_edge_data(e[0],e[1])
-            C.add_edge(mapping[e[0]],mapping[e[1]],key=e,attr_dict=d)
     return C
