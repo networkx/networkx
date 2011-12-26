@@ -762,15 +762,14 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     >>> G.add_edge(2,2,weight=3)
     >>> G.add_edge(2,2)
     >>> S = nx.to_scipy_sparse_matrix(G, nodelist=[0,1,2])
-    >>> S.todense()
-    matrix([[ 0.,  2.,  0.],
-            [ 1.,  0.,  0.],
-            [ 0.,  0.,  4.]])
-    
+    >>> print(S.todense())
+    [[0 2 0]
+     [1 0 0]
+     [0 0 4]]
+
     References
     ----------
-    .. [1] Scipy Dev. References, 
-       "Sparse Matrices"  
+    .. [1] Scipy Dev. References, "Sparse Matrices",
        http://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     try:
@@ -780,29 +779,25 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
           "to_scipy_sparse_matrix() requires scipy: http://scipy.org/ ")
 
     if nodelist is None:
-        nodelist = G.nodes()
-
-    nodeset = set(nodelist)
-    if len(nodelist) != len(nodeset):
+        nodelist = G
+    nlen = len(nodelist)
+    index = dict(zip(set(nodelist),range(nlen)))
+    if len(nodelist) != len(index):
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
         raise nx.NetworkXError(msg)
-
-    nlen=len(nodelist)
-    undirected = not G.is_directed()
-    index=dict(zip(nodelist,range(nlen)))
-    M = sparse.lil_matrix((nlen,nlen), dtype=dtype)
-
-    for u,v,attrs in G.edges_iter(data=True):
-        if (u in nodeset) and (v in nodeset):
-            i,j = index[u],index[v]
-            M[i,j] += attrs.get(weight, 1)
-            if undirected:
-                M[j,i] = M[i,j]
+    row,col,data=zip(*((index[u],index[v],d.get(weight,1)) 
+                       for u,v,d in G.edges(nodelist, data=True)
+                       if u in index and v in index))
+    if G.is_directed():
+        M = sparse.coo_matrix((data,(row,col)),shape=(nlen,nlen), dtype=dtype)
+    else:
+        # symmetrize matrix
+        M = sparse.coo_matrix((data+data,(row+col,col+row)),shape=(nlen,nlen),
+                              dtype=dtype)
     try:
         return M.asformat(format)
     except AttributeError:
-        raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)
-    
+        raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)    
 
 def from_scipy_sparse_matrix(A,create_using=None):
     """Return a graph from scipy sparse matrix adjacency list. 
@@ -849,4 +844,3 @@ def setup_module(module):
         import scipy
     except:
         raise SkipTest("SciPy not available")
-
