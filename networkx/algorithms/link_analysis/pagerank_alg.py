@@ -200,7 +200,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
     # add "teleportation"/personalization
     e=np.ones((n))
     if personalization is not None:
-        v=np.array(personalization.values()).astype(np.float)
+        v=np.array(list(personalization.values()),dtype=float)
     else:
         v=e
     v=v/v.sum()
@@ -277,7 +277,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     eigenvalues,eigenvectors=np.linalg.eig(M.T)
     ind=eigenvalues.argsort()
     # eigenvector of largest eigenvalue at ind[-1], normalized
-    largest=np.array(eigenvectors[:,ind[-1]]).flatten().astype(np.float)
+    largest=np.array(eigenvectors[:,ind[-1]]).flatten().real
     norm=largest.sum()
     centrality=dict(zip(nodelist,largest/norm))
     return centrality
@@ -349,7 +349,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         nodelist=G.nodes()
     else:  # use personalization "vector" ordering
         nodelist=personalization.keys()
-    M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist,weight=weight)
+    M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist,weight=weight,dtype='f')
     (n,m)=M.shape # should be square
     S=scipy.array(M.sum(axis=1)).flatten()
     for i, j, v in zip( *scipy.sparse.find(M) ):
@@ -358,7 +358,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     dangle=scipy.array(scipy.where(M.sum(axis=1)==0,1.0/n,0)).flatten()
     # add "teleportation"/personalization
     if personalization is not None:
-        v=scipy.array(personalization.values()).astype(scipy.float_)
+        v=scipy.array(list(personalization.values()),dtype=float)
         v=v/v.sum()
     else:
         v=x
