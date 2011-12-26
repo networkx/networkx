@@ -1,1 +1,1 @@
-from utils import *
+from networkx.testing.utils import *
