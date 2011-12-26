@@ -51,6 +51,7 @@ packages=["networkx",
           "networkx.readwrite",
           "networkx.readwrite.json_graph",
           "networkx.tests",
+          "networkx.testing",
           "networkx.utils"]
 
 docdirbase  = 'share/doc/networkx-%s' % version
@@ -96,6 +97,7 @@ package_data     = {
     'networkx.linalg': ['tests/*.py'],
     'networkx.readwrite': ['tests/*.py'],
     'networkx.readwrite.json_graph': ['tests/*.py'],
+    'networkx.testing': ['tests/*.py']
     'networkx.utils': ['tests/*.py']
     }
 
