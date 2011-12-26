@@ -36,6 +36,16 @@ class TestCycles:
         sort_cy= sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5],['A','B','C']])
 
+    @raises(nx.NetworkXNotImplemented)
+    def test_cycle_basis(self):
+        G=nx.DiGraph()
+        cy=networkx.cycle_basis(G,0)
+
+    @raises(nx.NetworkXNotImplemented)
+    def test_cycle_basis(self):
+        G=nx.MultiGraph()
+        cy=networkx.cycle_basis(G,0)
+
     def test_simple_cycles(self):
         G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
         c=sorted(nx.simple_cycles(G))
@@ -43,9 +53,10 @@ class TestCycles:
         for (a,b) in zip(c,ca):
             assert_true(self.is_cyclic_permuatation(a[:-1],b[:-1]))
 
+    @raises(nx.NetworkXNotImplemented)
     def test_simple_cycles_graph(self):
         G = nx.Graph()
-        assert_raises(nx.NetworkXError,nx.simple_cycles,G)
+        c = sorted(nx.simple_cycles(G))
 
     def test_unsortable(self):
         G=nx.DiGraph()

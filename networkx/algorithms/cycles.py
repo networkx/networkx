@@ -11,6 +11,7 @@ Cycle finding algorithms
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from networkx.utils import *
 from collections import defaultdict 
 
 __all__ = ['cycle_basis','simple_cycles']
@@ -18,6 +19,8 @@ __all__ = ['cycle_basis','simple_cycles']
 __author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>', 
                         'Aric Hagberg <hagberg@lanl.gov>'])
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def cycle_basis(G,root=None):
     """ Returns a list of cycles which form a basis for cycles of G.
 
@@ -60,12 +63,12 @@ def cycle_basis(G,root=None):
     --------
     simple_cycles
     """
-    if G.is_directed():
-        e='cycle_basis() not implemented for directed graphs'
-        raise Exception(e)
-    if G.is_multigraph():
-        e='cycle_basis() not implemented for multigraphs'
-        raise Exception(e)
+    # if G.is_directed():
+    #     e='cycle_basis() not implemented for directed graphs'
+    #     raise Exception(e)
+    # if G.is_multigraph():
+    #     e='cycle_basis() not implemented for multigraphs'
+    #     raise Exception(e)
 
     gnodes=set(G.nodes())
     cycles=[]
@@ -100,6 +103,7 @@ def cycle_basis(G,root=None):
     return cycles
 
 
+@not_implemented_for('undirected')
 def simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
     
@@ -172,9 +176,9 @@ def simple_cycles(G):
         path.pop() # remove thisnode from path
         return closed
     
-    if not G.is_directed():
-        raise nx.NetworkXError(\
-            "simple_cycles() not implemented for undirected graphs.")
+#    if not G.is_directed():
+#        raise nx.NetworkXError(\
+#            "simple_cycles() not implemented for undirected graphs.")
     path = [] # stack of nodes in current path
     blocked = defaultdict(bool) # vertex: blocked from search?
     B = defaultdict(list) # graph portions that yield no elementary circuit
