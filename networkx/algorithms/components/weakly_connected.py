@@ -112,10 +112,10 @@ def _single_source_shortest_unipath_length(G,source,cutoff=None):
 
     seen={}                  # level (number of hops) when seen in BFS
     level=0                  # the current level
-    nextlevel={source:1}  # dict of nodes to check at next level
+    nextlevel = set([1]) # set of nodes to check at next level
     while nextlevel:
         thislevel=nextlevel  # advance to next level
-        nextlevel={}         # and start a new list (fringe)
+        nextlevel = set()         # and start a new list (fringe)
         for v in thislevel:
             if v not in seen:
                 seen[v]=level # set the level of vertex v
