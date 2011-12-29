@@ -121,20 +121,35 @@ def write_shp(G, outdir):
         from osgeo import ogr
     except ImportError:
         raise ImportError("write_shp requires OGR: http://www.gdal.org/")
+    # easier to debug in python if ogr throws exceptions
+    ogr.UseExceptions()
 
     def netgeometry(key, data):
         if data.has_key('Wkb'):
             geom = ogr.CreateGeometryFromWkb(data['Wkb'])
         elif data.has_key('Wkt'):
             geom = ogr.CreateGeometryFromWkt(data['Wkt'])
-        elif type(key[0]) == 'tuple': # edge keys are packed tuples
+        elif type(key[0]).__name__ == 'tuple': # edge keys are packed tuples
             geom = ogr.Geometry(ogr.wkbLineString)
             _from, _to = key[0], key[1]
-            geom.SetPoint(0, *_from)
-            geom.SetPoint(1, *_to)
+            try:
+                geom.SetPoint(0, *_from)
+                geom.SetPoint(1, *_to)
+            except TypeError:
+                # assume user used tuple of int and choked ogr
+                _ffrom = [float(x) for x in _from]
+                _fto = [float(x) for x in _to]
+                geom.SetPoint(0, *_ffrom)
+                geom.SetPoint(1, *_fto)
         else:
             geom = ogr.Geometry(ogr.wkbPoint)
-            geom.SetPoint(0, *key)
+            try:
+                geom.SetPoint(0, *key)
+            except TypeError:
+                # assume user used tuple of int and choked ogr
+                fkey = [float(x) for x in key]
+                geom.SetPoint(0, *fkey)
+
         return geom
 
     def create_feature(geometry, lyr):
@@ -145,11 +160,21 @@ def write_shp(G, outdir):
 
     drv = ogr.GetDriverByName("ESRI Shapefile")
     shpdir = drv.CreateDataSource(outdir)
+    # delete pre-existing output first otherwise ogr chokes
+    try: shpdir.DeleteLayer("nodes")
+    except: pass
     nodes = shpdir.CreateLayer("nodes", None, ogr.wkbPoint)
     for n in G:
-        data = G.node[n].values() or [{}]
-        g = netgeometry(n, data[0])
+        # this i am not completely sure what the original intention was.
+        # but since netgeometry() uses .has_key(), shouldnt I pass some sort
+        # of dict?
+        #data = G.node[n].values() or [{}]
+        #g = netgeometry(n, data[0])
+        data = G.node[n] or {}
+        g = netgeometry(n, data)
         create_feature(g, nodes)
+    try: shpdir.DeleteLayer("edges")
+    except: pass
     edges = shpdir.CreateLayer("edges", None, ogr.wkbLineString)
     for e in G.edges():
         data = G.get_edge_data(*e)
@@ -165,3 +190,4 @@ def setup_module(module):
         import ogr
     except:
         raise SkipTest("OGR not available")
+# vim: et sw=4 ts=4 tw=76
