@@ -1,51 +1,47 @@
 """
 Operations on graphs including union, intersection, difference,
-complement, subgraph. 
+complement, subgraph.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import networkx as nx
+from networkx.utils import is_string_like
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
-
 __all__ = ['union', 'compose', 'complement',
-           'disjoint_union', 'intersection', 
+           'disjoint_union', 'intersection',
            'difference', 'symmetric_difference']
-
-import networkx as nx
-from networkx.utils import is_string_like
-
 def union(G,H,rename=False,name=None):
     """ Return the union of graphs G and H.
-    
-    Graphs G and H must be disjoint, otherwise an exception is raised.
 
+    Graphs G and H must be disjoint, otherwise an exception is raised.
 
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph 
+       A NetworkX graph
 
     create_using : NetworkX graph
-       Use specified graph for result.  Otherwise 
+       Use specified graph for result.  Otherwise
 
-    rename : bool (default=False)         
+    rename : bool (default=False)
        Node names of G and H can be changed be specifying the tuple
        rename=('G-','H-') (for example).  Node u in G is then renamed
        "G-u" and v in H is renamed "H-v".
 
-    name : string       
+    name : string
        Specify the name for the union graph
 
     Returns
     -------
     U : A union graph with the same type as G.
 
-    Notes       
+    Notes
     -----
     To force a disjoint union with node relabeling, use
     disjoint_union(G,H) or convert_node_labels_to integers().
@@ -86,7 +82,7 @@ def union(G,H,rename=False,name=None):
 
     if set(G) & set(H):
         raise nx.NetworkXError(\
-            """The node sets of G and H are not disjoint. 
+            """The node sets of G and H are not disjoint.
 Use appropriate rename=('Gprefix','Hprefix') or use disjoint_union(G,H).""")
     # node names OK, now build union
     R.add_nodes_from(G)
@@ -116,7 +112,7 @@ def disjoint_union(G,H):
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph 
+       A NetworkX graph
 
     Notes
     -----
@@ -132,14 +128,15 @@ def disjoint_union(G,H):
 
 
 def intersection(G, H):
-    """Return a new graph that contains only the edges that exist in both G and H.   
+    """Return a new graph that contains only the edges that exist in
+    both G and H.
 
     The node sets of H and G must be the same.
 
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph.  G and H must have the same node sets. 
+       A NetworkX graph.  G and H must have the same node sets.
 
     Returns
     -------
@@ -194,7 +191,7 @@ def difference(G, H):
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph.  G and H must have the same node sets. 
+       A NetworkX graph.  G and H must have the same node sets.
 
     Returns
     -------
@@ -237,7 +234,7 @@ def symmetric_difference(G, H):
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph.  G and H must have the same node sets. 
+       A NetworkX graph.  G and H must have the same node sets.
 
     Returns
     -------
@@ -246,20 +243,20 @@ def symmetric_difference(G, H):
     Notes
     -----
     Attributes from the graph, nodes, and edges are not copied to the new
-    graph. 
+    graph.
     """
     # create new graph
     R=nx.create_empty_copy(G)
     R.name="Symmetric difference of (%s and %s)"%(G.name, H.name)
 
     if set(G)!=set(H):
-        raise nx.NetworkXError("Node sets of graphs not equal")        
-    
+        raise nx.NetworkXError("Node sets of graphs not equal")
+
     gnodes=set(G) # set of nodes in G
     hnodes=set(H) # set of nodes in H
     nodes=gnodes.symmetric_difference(hnodes)
     R.add_nodes_from(nodes)
-    
+
     if G.is_multigraph():
         edges=G.edges_iter(keys=True)
     else:
@@ -280,7 +277,7 @@ def symmetric_difference(G, H):
     return R
 
 def compose(G, H, name=None):
-    """ Return a new graph of G composed with H.
+    """Return a new graph of G composed with H.
 
     Composition is the simple union of the node sets and edge sets.
     The node sets of G and H need not be disjoint.
@@ -288,9 +285,9 @@ def compose(G, H, name=None):
     Parameters
     ----------
     G,H : graph
-       A NetworkX graph 
+       A NetworkX graph
 
-    name : string       
+    name : string
        Specify name for new graph
 
 
@@ -332,14 +329,14 @@ def compose(G, H, name=None):
 
 
 def complement(G, name=None):
-    """ Return the graph complement of G.
+    """Return the graph complement of G.
 
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
-    name : string       
+    name : string
        Specify name for new graph
 
     Returns
@@ -348,18 +345,18 @@ def complement(G, name=None):
 
     Notes
     ------
-    Note that complement() does not create self-loops and also 
+    Note that complement() does not create self-loops and also
     does not produce parallel edges for MultiGraphs.
 
     Graph, node, and edge data are not propagated to the new graph.
     """
     if name is None:
-        name="complement(%s)"%(G.name) 
+        name="complement(%s)"%(G.name)
     R=G.__class__()
     R.name=name
     R.add_nodes_from(G)
-    R.add_edges_from( ((n,n2) 
-                       for n,nbrs in G.adjacency_iter() 
-                       for n2 in G if n2 not in nbrs 
+    R.add_edges_from( ((n,n2)
+                       for n,nbrs in G.adjacency_iter()
+                       for n2 in G if n2 not in nbrs
                        if n != n2) )
     return R
