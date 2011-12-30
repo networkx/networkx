@@ -1,7 +1,6 @@
-from nose.tools import assert_raises, assert_true, assert_false, assert_equal
-
+from nose.tools import *
 import networkx as nx
-from networkx import *    
+from networkx import *
 
 
 def test_union_attributes():
@@ -95,6 +94,7 @@ def test_difference():
     assert_equal( set(D.nodes()) , set([1,2,3,4]) )    
     assert_equal( sorted(D.edges()) , [(1,2),(3,4)] )    
 
+
 def test_difference2():
     G=nx.Graph()
     H=nx.Graph()
@@ -150,6 +150,12 @@ def test_difference_multigraph_attributes():
     assert_equal( sorted(gh.edges(keys=True)) , [(0,1,1),(0,1,2)] )
 
 
+@raises(nx.NetworkXError)
+def test_difference_raise():
+    G = nx.path_graph(4)
+    H = nx.path_graph(3)
+    GH = nx.difference(G, H)
+
 def test_symmetric_difference_multigraph():
     g = nx.MultiGraph()
     g.add_edge(0, 1, key=0)
@@ -165,15 +171,21 @@ def test_symmetric_difference_multigraph():
     assert_equal( sorted(sorted(e) for e in gh.edges(keys=True)), 
                   [[0,1,1],[0,1,2],[0,1,3]] )
 
+@raises(nx.NetworkXError)
+def test_symmetric_difference_raise():
+    G = nx.path_graph(4)
+    H = nx.path_graph(3)
+    GH = nx.symmetric_difference(G, H)
+
 def test_union_and_compose():
     K3=complete_graph(3)
     P3=path_graph(3)
 
-    G1=DiGraph()
+    G1=nx.DiGraph()
     G1.add_edge('A','B')
     G1.add_edge('A','C')
     G1.add_edge('A','D')
-    G2=DiGraph()
+    G2=nx.DiGraph()
     G2.add_edge(1,2)
     G2.add_edge(1,3)
     G2.add_edge(1,4)
@@ -267,7 +279,7 @@ def test_complement():
     assert_true(is_isomorphic(b,bcc))
 
 def test_complement_2():
-    G1=DiGraph()
+    G1=nx.DiGraph()
     G1.add_edge('A','B')
     G1.add_edge('A','C')
     G1.add_edge('A','D')
