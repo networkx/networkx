@@ -209,9 +209,9 @@ def directed_configuration_model(in_degree_sequence,
     
     >>> D.remove_edges_from(D.selfloop_edges())
     """
-    if not sum(in_degree_sequence) == sum(in_degree_sequence):
-        raise nx.NetworkXError(
-            'Invalid degree sequences. Sequences must have equal sums.')
+    if not sum(in_degree_sequence) == sum(out_degree_sequence):
+        raise nx.NetworkXError('Invalid degree sequences. '
+                               'Sequences must have equal sums.')
 
     if create_using is None:
         create_using = nx.MultiDiGraph()
