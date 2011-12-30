@@ -97,7 +97,7 @@ package_data     = {
     'networkx.linalg': ['tests/*.py'],
     'networkx.readwrite': ['tests/*.py'],
     'networkx.readwrite.json_graph': ['tests/*.py'],
-    'networkx.testing': ['tests/*.py']
+    'networkx.testing': ['tests/*.py'],
     'networkx.utils': ['tests/*.py']
     }
 
