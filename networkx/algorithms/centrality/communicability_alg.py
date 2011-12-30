@@ -8,6 +8,7 @@ Communicability and centrality measures.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from networkx.utils import *
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Franck Kalala (franckkalala@yahoo.fr'])
 __all__ = ['communicability_centrality_exp',
@@ -18,6 +19,8 @@ __all__ = ['communicability_centrality_exp',
            'estrada_index',
            ]
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def communicability_centrality_exp(G):
     r"""Return the communicability centrality for each node of G
 
@@ -79,12 +82,6 @@ def communicability_centrality_exp(G):
     except ImportError:
         raise ImportError('subgraph_centrality_exp() requires SciPy: ',
                           'http://scipy.org/')
-    if G.is_directed():
-        raise nx.NetworkXError(\
-            "subgraph_centrality() not defined for digraphs.")
-    if G.is_multigraph():
-        raise nx.NetworkXError(\
-            "subgraph_centrality() not defined for multigraphs.")
     nodelist = G.nodes() # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
@@ -94,6 +91,8 @@ def communicability_centrality_exp(G):
     sc = dict(zip(nodelist,expA.diagonal()))
     return sc
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def communicability_centrality(G):
     r"""Return communicability centrality for each node in G.
 
@@ -158,12 +157,6 @@ def communicability_centrality(G):
     except ImportError:
         raise ImportError('subgraph_centrality() requires NumPy: ',
                           'http://scipy.org/')
-    if G.is_directed():
-        raise nx.NetworkXError(\
-            "communicability_centrality() not defined for digraphs.")
-    if G.is_multigraph():
-        raise nx.NetworkXError(\
-            "communicability_centrality() not defined for multigraphs.")
     nodelist = G.nodes() # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
@@ -176,6 +169,8 @@ def communicability_centrality(G):
     sc = dict(zip(nodelist,xg))
     return sc
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def communicability_betweenness_centrality(G, normalized=True):
     r"""Return communicability betweenness for all pairs of nodes in G.
 
@@ -254,12 +249,6 @@ def communicability_betweenness_centrality(G, normalized=True):
     except ImportError:
         raise ImportError('comunicability_betweenness() requires SciPy: ',
                           'http://scipy.org/')
-    if G.is_directed():
-        raise nx.NetworkXError(\
-            "communicability_betweenness() not defined for digraphs.")
-    if G.is_multigraph():
-        raise nx.NetworkXError(\
-            "communicability_betweenness() not defined for multigraphs.")
     nodelist = G.nodes() # ordering of nodes in matrix
     n = len(nodelist)
     A = nx.to_numpy_matrix(G,nodelist)
@@ -301,6 +290,9 @@ def _rescale(sc,normalized):
             sc[v] *= scale
     return sc
 
+
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def communicability(G):
     r"""Return communicability between all pairs of nodes in G.
 
@@ -365,12 +357,6 @@ def communicability(G):
     except ImportError:
         raise ImportError('communicability() requires SciPy: ',
                           'http://scipy.org/')
-    if G.is_directed():
-        raise nx.NetworkXError(\
-            "communicability() not defined for digraphs.")
-    if G.is_multigraph():
-        raise nx.NetworkXError(\
-            "communicability() not defined for multigraphs.")
     nodelist = G.nodes() # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
@@ -391,6 +377,8 @@ def communicability(G):
             sc[u][v] = s
     return sc
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def communicability_exp(G):
     r"""Return communicability between all pairs of nodes in G.
 
@@ -453,12 +441,6 @@ def communicability_exp(G):
     except ImportError:
         raise ImportError('communicability() requires SciPy: ',
                           'http://scipy.org/')
-    if G.is_directed():
-        raise nx.NetworkXError(\
-            "communicability() not defined for digraphs.")
-    if G.is_multigraph():
-        raise nx.NetworkXError(\
-            "communicability() not defined for multigraphs.")
     nodelist = G.nodes() # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
