@@ -1,7 +1,7 @@
 """
 Communicability and centrality measures.
 """
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -28,16 +28,15 @@ def communicability_centrality_exp(G):
     Communicability centrality, also called subgraph centrality, of a node `n`
     is the sum of closed walks of all lengths starting and ending at node `n`.
 
-    
     Parameters
     ----------
     G: graph
-       
+
     Returns
     -------
     nodes:dictionary
         Dictionary of nodes with communicability centrality as the value.
-    
+
     Raises
     ------
     NetworkXError
@@ -290,7 +289,7 @@ def communicability(G):
 
     The communicability between pairs of nodes in G is the sum of
     closed walks of different lengths starting at node u and ending at node v.
- 
+
     Parameters
     ----------
     G: graph
