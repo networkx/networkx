@@ -169,7 +169,6 @@ def test_union_and_compose():
     K3=complete_graph(3)
     P3=path_graph(3)
 
-    R=DiGraph()
     G1=DiGraph()
     G1.add_edge('A','B')
     G1.add_edge('A','C')
@@ -179,7 +178,7 @@ def test_union_and_compose():
     G2.add_edge(1,3)
     G2.add_edge(1,4)
 
-    G=union(G1,G2,create_using=R)
+    G=union(G1,G2)
     H=compose(G1,G2)
     assert_true(G.edges()==H.edges())
     assert_false(G.has_edge('A',1))

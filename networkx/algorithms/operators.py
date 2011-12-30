@@ -19,10 +19,11 @@ __all__ = ['union', 'compose', 'complement',
 import networkx as nx
 from networkx.utils import is_string_like
 
-def union(G,H,create_using=None,rename=False,name=None):
+def union(G,H,rename=False,name=None):
     """ Return the union of graphs G and H.
     
     Graphs G and H must be disjoint, otherwise an exception is raised.
+
 
     Parameters
     ----------
@@ -30,8 +31,7 @@ def union(G,H,create_using=None,rename=False,name=None):
        A NetworkX graph 
 
     create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created
-       with the same type as G.
+       Use specified graph for result.  Otherwise 
 
     rename : bool (default=False)         
        Node names of G and H can be changed be specifying the tuple
@@ -40,6 +40,10 @@ def union(G,H,create_using=None,rename=False,name=None):
 
     name : string       
        Specify the name for the union graph
+
+    Returns
+    -------
+    U : A union graph with the same type as G.
 
     Notes       
     -----
@@ -58,11 +62,7 @@ def union(G,H,create_using=None,rename=False,name=None):
     """
     if name is None:
         name="union( %s, %s )"%(G.name,H.name)
-    if create_using is None:
-        R=G.__class__()
-    else:
-        R=create_using
-        R.clear()
+    R=G.__class__()
     R.name=name
 
     # rename graph to obtain disjoint node labels
@@ -110,7 +110,8 @@ Use appropriate rename=('Gprefix','Hprefix') or use disjoint_union(G,H).""")
 
 
 def disjoint_union(G,H):
-    """ Return the disjoint union of graphs G and H, forcing distinct integer node labels.
+    """ Return the disjoint union of graphs G and H,
+    forcing distinct integer node labels.
 
     Parameters
     ----------
@@ -130,7 +131,7 @@ def disjoint_union(G,H):
     return R
 
 
-def intersection(G,H,create_using=None ):
+def intersection(G, H):
     """Return a new graph that contains only the edges that exist in both G and H.   
 
     The node sets of H and G must be the same.
@@ -140,9 +141,9 @@ def intersection(G,H,create_using=None ):
     G,H : graph
        A NetworkX graph.  G and H must have the same node sets. 
 
-    create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created
-       with the same type as G.
+    Returns
+    -------
+    GH : A new graph with the same type as G.
 
     Notes
     -----
@@ -157,18 +158,14 @@ def intersection(G,H,create_using=None ):
     >>> R.remove_nodes_from(n for n in G if n not in H)
 
     """
-    # create new graph         
-    if create_using is None:  # Graph object of the same type as G
-        R=nx.create_empty_copy(G)
-    else:                     # user specified graph 
-        R=create_using 
-        R.clear() 
+    # create new graph
+    R=nx.create_empty_copy(G)
 
     R.name="Intersection of (%s and %s)"%(G.name, H.name)
 
     if set(G)!=set(H):
-        raise nx.NetworkXError("Node sets of graphs are not equal")     
-    
+        raise nx.NetworkXError("Node sets of graphs are not equal")
+
     if G.number_of_edges()<=H.number_of_edges():
         if G.is_multigraph():
             edges=G.edges_iter(keys=True)
@@ -188,9 +185,9 @@ def intersection(G,H,create_using=None ):
 
     return R
 
-def difference(G,H,create_using=None):
-    """Return a new graph that contains the edges that exist in G 
-    but not in H.  
+def difference(G, H):
+    """Return a new graph that contains the edges that exist in G
+    but not in H.
 
     The node sets of H and G must be the same.
 
@@ -199,9 +196,9 @@ def difference(G,H,create_using=None):
     G,H : graph
        A NetworkX graph.  G and H must have the same node sets. 
 
-    create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created
-       with the same type as G.
+    Returns
+    -------
+    GH : A new graph with the same type as G.
 
     Notes
     -----
@@ -216,18 +213,13 @@ def difference(G,H,create_using=None):
     >>> R.remove_nodes_from(n for n in G if n in H)
 
     """
-    # create new graph         
-    if create_using is None:  # Graph object of the same type as G
-        R=nx.create_empty_copy(G)
-    else:                     # user specified graph 
-        R=create_using 
-        R.clear() 
-
+    # create new graph
+    R=nx.create_empty_copy(G)
     R.name="Difference of (%s and %s)"%(G.name, H.name)
 
     if set(G)!=set(H):
-        raise nx.NetworkXError("Node sets of graphs not equal")        
-    
+        raise nx.NetworkXError("Node sets of graphs not equal")
+
     if G.is_multigraph():
         edges=G.edges_iter(keys=True)
     else:
@@ -237,7 +229,7 @@ def difference(G,H,create_using=None):
             R.add_edge(*e)
     return R
 
-def symmetric_difference(G,H,create_using=None ):
+def symmetric_difference(G, H):
     """Return new graph with edges that exist in either G or H but not both.
 
     The node sets of H and G must be the same.
@@ -247,22 +239,17 @@ def symmetric_difference(G,H,create_using=None ):
     G,H : graph
        A NetworkX graph.  G and H must have the same node sets. 
 
-    create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created
-       with the same type as G.
+    Returns
+    -------
+    GH : A new graph with the same type as G.
 
     Notes
     -----
     Attributes from the graph, nodes, and edges are not copied to the new
     graph. 
     """
-    # create new graph         
-    if create_using is None:  # Graph object of the same type as G
-        R=nx.create_empty_copy(G)
-    else:                     # user specified graph 
-        R=create_using 
-        R.clear() 
-
+    # create new graph
+    R=nx.create_empty_copy(G)
     R.name="Symmetric difference of (%s and %s)"%(G.name, H.name)
 
     if set(G)!=set(H):
@@ -292,9 +279,9 @@ def symmetric_difference(G,H,create_using=None ):
             R.add_edge(*e)
     return R
 
-def compose(G,H,create_using=None, name=None):
+def compose(G, H, name=None):
     """ Return a new graph of G composed with H.
-    
+
     Composition is the simple union of the node sets and edge sets.
     The node sets of G and H need not be disjoint.
 
@@ -303,12 +290,13 @@ def compose(G,H,create_using=None, name=None):
     G,H : graph
        A NetworkX graph 
 
-    create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created
-       with the same type as G
-
     name : string       
        Specify name for new graph
+
+
+    Returns
+    -------
+    GH: A new graph  with the same type as G
 
     Notes
     -----
@@ -320,11 +308,7 @@ def compose(G,H,create_using=None, name=None):
     """
     if name is None:
         name="compose( %s, %s )"%(G.name,H.name)
-    if create_using is None:
-        R=G.__class__()
-    else:
-        R=create_using
-        R.clear()
+    R=G.__class__()
     R.name=name
     R.add_nodes_from(H.nodes())
     R.add_nodes_from(G.nodes())
@@ -347,19 +331,20 @@ def compose(G,H,create_using=None, name=None):
     return R
 
 
-def complement(G,create_using=None,name=None):
-    """ Return graph complement of G.
+def complement(G, name=None):
+    """ Return the graph complement of G.
 
     Parameters
     ----------
     G : graph
        A NetworkX graph 
 
-    create_using : NetworkX graph
-       Use specified graph for result.  Otherwise a new graph is created.
-
     name : string       
        Specify name for new graph
+
+    Returns
+    -------
+    GC : A new graph.
 
     Notes
     ------
@@ -370,11 +355,7 @@ def complement(G,create_using=None,name=None):
     """
     if name is None:
         name="complement(%s)"%(G.name) 
-    if create_using is None:
-        R=G.__class__()
-    else:
-        R=create_using
-        R.clear()
+    R=G.__class__()
     R.name=name
     R.add_nodes_from(G)
     R.add_edges_from( ((n,n2) 
@@ -382,6 +363,3 @@ def complement(G,create_using=None,name=None):
                        for n2 in G if n2 not in nbrs 
                        if n != n2) )
     return R
-
-
-
