@@ -5,11 +5,6 @@ Shapefile
 
 Generates a networkx.DiGraph from point and line shapefiles.
 
-Point geometries are translated into nodes, lines into edges. Coordinate tuples
-are used as keys. Attributes are preserved, line geometries are simplified into
-start and end coordinates. Accepts a single shapefile or directory of many
-shapefiles.
-
 "The Esri Shapefile or simply a shapefile is a popular geospatial vector
 data format for geographic information systems software. It is developed
 and regulated by Esri as a (mostly) open specification for data
@@ -165,11 +160,6 @@ def write_shp(G, outdir):
     except: pass
     nodes = shpdir.CreateLayer("nodes", None, ogr.wkbPoint)
     for n in G:
-        # this i am not completely sure what the original intention was.
-        # but since netgeometry() uses .has_key(), shouldnt I pass some sort
-        # of dict?
-        #data = G.node[n].values() or [{}]
-        #g = netgeometry(n, data[0])
         data = G.node[n] or {}
         g = netgeometry(n, data)
         create_feature(g, nodes)
@@ -190,4 +180,3 @@ def setup_module(module):
         import ogr
     except:
         raise SkipTest("OGR not available")
-# vim: et sw=4 ts=4 tw=76

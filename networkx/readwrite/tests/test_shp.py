@@ -65,14 +65,15 @@ class TestShp(object):
         names = [G.get_edge_data(s,e)['Name'] for s,e in G.edges()]
         assert_equal(self.names, sorted(names))
     
-    def test_geometryexport(self):
-        def testgeom(lyr, expected):
+    def checkgeom(self, lyr, expected):
+        feature = lyr.GetNextFeature()
+        actualwkt = []
+        while feature:
+            actualwkt.append(feature.GetGeometryRef().ExportToWkt())
             feature = lyr.GetNextFeature()
-            actualwkt = []
-            while feature:
-                actualwkt.append(feature.GetGeometryRef().ExportToWkt())
-                feature = lyr.GetNextFeature()
-            assert_equal(sorted(expected), sorted(actualwkt))
+        assert_equal(sorted(expected), sorted(actualwkt))
+
+    def test_geometryexport(self):
         expectedpoints = (
             "POINT (1 1)",
             "POINT (2 2)",
@@ -89,8 +90,8 @@ class TestShp(object):
         G = nx.read_shp(self.shppath)
         nx.write_shp(G, tpath)
         shpdir = ogr.Open(tpath)
-        testgeom(shpdir.GetLayerByName("nodes"), expectedpoints)
-        testgeom(shpdir.GetLayerByName("edges"), expectedlines)
+        self.checkgeom(shpdir.GetLayerByName("nodes"), expectedpoints)
+        self.checkgeom(shpdir.GetLayerByName("edges"), expectedlines)
     
     def test_attributeexport(self):
         def testattributes(lyr, expected):
@@ -107,6 +108,27 @@ class TestShp(object):
         shpdir = ogr.Open(tpath)
         nodes = shpdir.GetLayerByName("nodes")
     
+    def test_wkt_export(self):
+        G = nx.DiGraph()
+        tpath = os.path.join(tempfile.gettempdir(),'shpdir')
+        points = (
+            "POINT (0.9 0.9)",
+            "POINT (4 2)"
+        )
+        line = (
+            "LINESTRING (0.9 0.9,4 2)",
+        )
+        G.add_node(1, Wkb=points[0])
+        G.add_node(2, Wkt=points[1])
+        G.add_edge(1, 2, Wkt=line[0])
+        try:
+            nx.write_shp(G, tpath)
+        except Exception as e:
+            assert 'a'=='b', e
+        shpdir = ogr.Open(tpath)
+        self.checkgeom(shpdir.GetLayerByName("nodes"), points)
+        self.checkgeom(shpdir.GetLayerByName("edges"), line)
+
     def tearDown(self):
         self.deletetmp(self.drv, self.testdir, self.shppath)
 
