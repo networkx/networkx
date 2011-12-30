@@ -19,6 +19,7 @@ __all__ = ['communicability_centrality_exp',
            'estrada_index',
            ]
 
+@require('scipy')
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_centrality_exp(G):
@@ -77,11 +78,7 @@ def communicability_centrality_exp(G):
     >>> sc = nx.communicability_centrality_exp(G)
     """
     # alternative implementation that calculates the matrix exponential
-    try:
-        import scipy.linalg
-    except ImportError:
-        raise ImportError('subgraph_centrality_exp() requires SciPy: ',
-                          'http://scipy.org/')
+    import scipy.linalg
     nodelist = G.nodes() # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
@@ -91,6 +88,7 @@ def communicability_centrality_exp(G):
     sc = dict(zip(nodelist,expA.diagonal()))
     return sc
 
+@require('numpy')
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_centrality(G):
@@ -151,12 +149,8 @@ def communicability_centrality(G):
        Phys. Rev. E 77, 036111 (2008).
        http://arxiv.org/abs/0707.0756
     """
-    try:
-        import numpy
-        import numpy.linalg
-    except ImportError:
-        raise ImportError('subgraph_centrality() requires NumPy: ',
-                          'http://scipy.org/')
+    import numpy
+    import numpy.linalg
     nodelist = G.nodes() # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
@@ -169,6 +163,7 @@ def communicability_centrality(G):
     sc = dict(zip(nodelist,xg))
     return sc
 
+@require('scipy')
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_betweenness_centrality(G, normalized=True):
@@ -243,12 +238,8 @@ def communicability_betweenness_centrality(G, normalized=True):
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
     >>> cbc = nx.communicability_betweenness_centrality(G)
     """
-    try:
-        import scipy
-        import scipy.linalg
-    except ImportError:
-        raise ImportError('comunicability_betweenness() requires SciPy: ',
-                          'http://scipy.org/')
+    import scipy
+    import scipy.linalg
     nodelist = G.nodes() # ordering of nodes in matrix
     n = len(nodelist)
     A = nx.to_numpy_matrix(G,nodelist)
@@ -291,6 +282,7 @@ def _rescale(sc,normalized):
     return sc
 
 
+@require('numpy','scipy')
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability(G):
@@ -351,12 +343,8 @@ def communicability(G):
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
     >>> c = nx.communicability(G)
     """
-    try:
-        import numpy
-        import scipy.linalg
-    except ImportError:
-        raise ImportError('communicability() requires SciPy: ',
-                          'http://scipy.org/')
+    import numpy
+    import scipy.linalg
     nodelist = G.nodes() # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
@@ -377,6 +365,7 @@ def communicability(G):
             sc[u][v] = s
     return sc
 
+@require('scipy')
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_exp(G):
@@ -436,11 +425,7 @@ def communicability_exp(G):
     >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
     >>> c = nx.communicability_exp(G)
     """
-    try:
-        import scipy.linalg
-    except ImportError:
-        raise ImportError('communicability() requires SciPy: ',
-                          'http://scipy.org/')
+    import scipy.linalg
     nodelist = G.nodes() # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G,nodelist)
     # convert to 0-1 matrix
@@ -455,6 +440,7 @@ def communicability_exp(G):
             sc[u][v] = expA[mapping[u],mapping[v]]
     return sc
 
+@require('numpy')
 def estrada_index(G):
     r"""Return the Estrada index of a the graph G.
 
@@ -495,12 +481,6 @@ def estrada_index(G):
     >>> G=nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
     >>> ei=nx.estrada_index(G)
     """
-    try:
-        import numpy
-        import numpy.linalg
-    except ImportError:
-        raise ImportError('estrada_index() requires NumPy: ',
-                          'http://scipy.org/')
     return sum(communicability_centrality(G).values())
 
 # fixture for nose tests
