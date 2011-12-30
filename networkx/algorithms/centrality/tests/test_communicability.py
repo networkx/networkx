@@ -58,6 +58,12 @@ class TestCommunicability:
         for k,v in result1.items():
             assert_almost_equal(answer1[k],result1[k],places=7)
 
+    def test_communicability_betweenness_centrality_small(self):
+        G = nx.Graph([(1,2)])
+        result=communicability_betweenness_centrality(G)
+        assert_equal(result, {1:0,2:0})
+
+
     def test_communicability(self):
         answer={0 :{0: 1.5430806348152435,
                     1: 1.1752011936438012
