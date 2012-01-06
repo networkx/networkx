@@ -14,14 +14,8 @@ Format
 ------
 GEXF is an XML format.  See http://gexf.net/format/schema.html for the
 specification and http://gexf.net/format/basic.html for examples.
-
 """
-
 # Based on GraphML NetworkX GraphML reader
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)'])
-
-__all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
-
 import itertools
 import networkx as nx
 from networkx.utils import open_file, make_str
@@ -32,6 +26,9 @@ except ImportError:
         from xml.etree.ElementTree import Element, ElementTree, tostring
     except ImportError:
         pass
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)'])
+__all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
+
 
 @open_file(1,mode='wb')
 def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
@@ -45,7 +42,7 @@ def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
     G : graph
        A NetworkX graph
     path : file or string
-       File or filename to write.  
+       File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
     encoding : string (optional)
        Encoding for text data.
@@ -59,10 +56,10 @@ def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
 
     Notes
     -----
-    This implementation does not support mixed graphs (directed and unidirected 
+    This implementation does not support mixed graphs (directed and unidirected
     edges together).
-    
-    The node id attribute is set to be the string of the node label.  
+
+    The node id attribute is set to be the string of the node label.
     If you want to specify an id use set it as node data, e.g.
     node['a']['id']=1 to set the id of node 'a' to 1.
 
@@ -96,14 +93,14 @@ def generate_gexf(G, encoding='utf-8',prettyprint=True,version='1.1draft'):
     >>> linefeed=chr(10) # linefeed=\n
     >>> s=linefeed.join(nx.generate_gexf(G))  # doctest: +SKIP
     >>> for line in nx.generate_gexf(G):  # doctest: +SKIP
-    ...    print line                   
+    ...    print line
 
     Notes
     -----
-    This implementation does not support mixed graphs (directed and unidirected 
+    This implementation does not support mixed graphs (directed and unidirected
     edges together).
-    
-    The node id attribute is set to be the string of the node label.  
+
+    The node id attribute is set to be the string of the node label.
     If you want to specify an id use set it as node data, e.g.
     node['a']['id']=1 to set the id of node 'a' to 1.
 
@@ -127,14 +124,14 @@ def read_gexf(path,node_type=str,relabel=False,version='1.1draft'):
     Parameters
     ----------
     path : file or string
-       File or filename to write.  
+       File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
 
     node_type: Python type (default: str)
-       Convert node ids to this type 
+       Convert node ids to this type
 
-    relabel : bool (default: False)       
-       If True relabel the nodes to use the GEXF node "label" attribute 
+    relabel : bool (default: False)
+       If True relabel the nodes to use the GEXF node "label" attribute
        instead of the node "id" attribute as the NetworkX node label.
 
     Returns
@@ -145,7 +142,7 @@ def read_gexf(path,node_type=str,relabel=False,version='1.1draft'):
 
     Notes
     -----
-    This implementation does not support mixed graphs (directed and unidirected 
+    This implementation does not support mixed graphs (directed and unidirected
     edges together).
 
     References
@@ -183,8 +180,8 @@ class GEXF(object):
     versions['1.2draft']=d
 
 
-    types=[(int,"integer"), 
-           (float,"float"), 
+    types=[(int,"integer"),
+           (float,"float"),
            (float,"double"),
            (bool,"boolean"),
            (list,"string"),
@@ -206,7 +203,7 @@ class GEXF(object):
            (unicode,"anyURI"),
            (unicode,"string")])
 
-    xml_type = dict(types)               
+    xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
     convert_bool={'true':True,'false':False}
 
@@ -227,13 +224,13 @@ class GEXF(object):
         self.SCHEMALOCATION = d['NS_XSI']
         self.VERSION=d['VERSION']
         self.version=version
-        
+
 #        register_namespace('viz', d['NS_VIZ'])
 
 
 class GEXFWriter(GEXF):
     # class for writing GEXF format files
-    # use write_gexf() function 
+    # use write_gexf() function
     def __init__(self, graph=None, encoding="utf-8",
                  mode='static',prettyprint=True,
                  version='1.1draft'):
@@ -264,7 +261,7 @@ class GEXFWriter(GEXF):
         self.attr['node']['static']={}
         self.attr['edge']['dynamic']={}
         self.attr['edge']['static']={}
-    
+
         if graph is not None:
             self.add_graph(graph)
 
@@ -291,7 +288,7 @@ class GEXFWriter(GEXF):
         nodes_element = Element('nodes')
         for node,data in G.nodes_iter(data=True):
             node_data=data.copy()
-            # 
+            #
             node_id=make_str(node_data.pop('id',node))
             kw={'id':node_id}
             label=make_str(node_data.pop('label',node))
@@ -302,8 +299,8 @@ class GEXFWriter(GEXF):
                 kw['pid']=pid
             except KeyError:
                 pass
-                
-            # add node element with attributes                
+
+            # add node element with attributes
             node_element = Element("node", **kw)
 
             # add node element and attr subelements
@@ -314,13 +311,13 @@ class GEXFWriter(GEXF):
             else:
                 node_data=self.add_spells(node_element, node_data)
             node_data=self.add_viz(node_element,node_data)
-            node_data=self.add_attributes("node", node_element, 
+            node_data=self.add_attributes("node", node_element,
                                           node_data, default)
             nodes_element.append(node_element)
         graph_element.append(nodes_element)
 
 
-    def add_edges(self, G, graph_element):        
+    def add_edges(self, G, graph_element):
         def edge_key_data(G):
             # helper function to unify multigraph and graph edge iterator
             if G.is_multigraph():
@@ -353,16 +350,16 @@ class GEXFWriter(GEXF):
             except KeyError:
                 pass
             edge_element = Element("edge",
-                                   source=make_str(u),target=make_str(v), 
+                                   source=make_str(u),target=make_str(v),
                                    **kw)
             default=G.graph.get('edge_default',{})
             edge_data=self.add_viz(edge_element,edge_data)
-            edge_data=self.add_attributes("edge", edge_element, 
+            edge_data=self.add_attributes("edge", edge_element,
                                           edge_data, default)
-            edges_element.append(edge_element)                
+            edges_element.append(edge_element)
         graph_element.append(edges_element)
 
-    
+
     def add_attributes(self, node_or_edge, xml_obj, data, default):
         # Add attrvalues to node or edge
         attvalues=Element('attvalues')
@@ -375,18 +372,18 @@ class GEXFWriter(GEXF):
         for k,v in data.items():
             # rename generic multigraph key to avoid any name conflict
             if k == 'key':
-                k='networkx_key' 
+                k='networkx_key'
             attr_id = self.get_attr_id(make_str(k), self.xml_type[type(v)],
                                        node_or_edge, default, mode)
             if type(v)==list:
                 # dynamic data
                 for val,start,end in v:
-                    e=Element("attvalue")                
+                    e=Element("attvalue")
                     e.attrib['for']=attr_id
                     e.attrib['value']=make_str(val)
                     e.attrib['start']=make_str(start)
                     e.attrib['end']=make_str(end)
-                    attvalues.append(e)                    
+                    attvalues.append(e)
             else:
                 # static data
                 e=Element("attvalue")
@@ -395,7 +392,7 @@ class GEXFWriter(GEXF):
                 attvalues.append(e)
         xml_obj.append(attvalues)
         return data
-            
+
     def get_attr_id(self, title, attr_type, edge_or_node, default, mode):
         # find the id of the attribute or generate a new id
         try:
@@ -421,7 +418,7 @@ class GEXFWriter(GEXF):
                 if a_class==edge_or_node and a_mode==mode:
                     attributes_element=a
             if attributes_element is None:
-                # create new attributes element 
+                # create new attributes element
                 attr_kwargs = {"mode":mode,"class":edge_or_node}
                 attributes_element=Element('attributes', **attr_kwargs)
                 self.graph_element.insert(0,attributes_element)
@@ -564,7 +561,7 @@ class GEXFReader(GEXF):
             if g is not None:
                 return self.make_graph(g)
         raise nx.NetworkXError("No <graph> element in GEXF file")
- 
+
 
     def make_graph(self, graph_xml):
         # mode is "static" or "dynamic"
@@ -578,7 +575,7 @@ class GEXFReader(GEXF):
         else:
             G=nx.MultiGraph()
 
-        # graph attributes 
+        # graph attributes
         graph_start=graph_xml.get('start')
         if graph_start is not None:
             G.graph['start']=graph_start
@@ -609,7 +606,7 @@ class GEXFReader(GEXF):
                 raise # unknown attribute class
 
         # Hack to handle Gephi0.7beta bug
-        # add weight attribute 
+        # add weight attribute
         ea={'weight':{'type': 'double', 'mode': 'static', 'title': 'weight'}}
         ed={}
         edge_attr.update(ea)
@@ -617,25 +614,25 @@ class GEXFReader(GEXF):
         G.graph['edge_default']=edge_default
 
         # add nodes
-        nodes_element=graph_xml.find("{%s}nodes" % self.NS_GEXF)        
+        nodes_element=graph_xml.find("{%s}nodes" % self.NS_GEXF)
         if nodes_element is not None:
             for node_xml in nodes_element.findall("{%s}node" % self.NS_GEXF):
                 self.add_node(G, node_xml, node_attr)
 
         # add edges
-        edges_element=graph_xml.find("{%s}edges" % self.NS_GEXF)        
+        edges_element=graph_xml.find("{%s}edges" % self.NS_GEXF)
         if edges_element is not None:
-            for edge_xml in edges_element.findall("{%s}edge" % self.NS_GEXF): 
-                self.add_edge(G, edge_xml, edge_attr) 
+            for edge_xml in edges_element.findall("{%s}edge" % self.NS_GEXF):
+                self.add_edge(G, edge_xml, edge_attr)
 
         # switch to Graph or DiGraph if no parallel edges were found.
-        if self.simple_graph: 
+        if self.simple_graph:
             if G.is_directed():
                 G=nx.DiGraph(G)
             else:
                 G=nx.Graph(G)
         return G
-            
+
     def add_node(self, G, node_xml, node_attr, node_pid=None):
         # add a single node with attributes to the graph
 
@@ -643,7 +640,7 @@ class GEXFReader(GEXF):
         data = self.decode_attr_elements(node_attr, node_xml)
         data = self.add_parents(data, node_xml) # add any parents
         if self.version=='1.1':
-            data = self.add_slices(data, node_xml)  # add slices 
+            data = self.add_slices(data, node_xml)  # add slices
         else:
             data = self.add_spells(data, node_xml)  # add spells
         data = self.add_viz(data, node_xml) # add viz
@@ -664,13 +661,13 @@ class GEXFReader(GEXF):
             data['pid']=node_pid
 
         # check for subnodes, recursive
-        subnodes=node_xml.find("{%s}nodes" % self.NS_GEXF)             
+        subnodes=node_xml.find("{%s}nodes" % self.NS_GEXF)
         if subnodes is not None:
             for node_xml in subnodes.findall("{%s}node" % self.NS_GEXF):
                 self.add_node(G, node_xml, node_attr, node_pid=node_id)
 
         G.add_node(node_id, data)
-        
+
     def add_start_end(self, data, xml):
         # start and end times
         node_start = xml.get("start")
@@ -711,7 +708,7 @@ class GEXFReader(GEXF):
             viz['shape']=shape.get('shape')
             if viz['shape']=='image':
                 viz['shape']=shape.get('uri')
-                
+
         position=node_xml.find("{%s}position"%self.NS_VIZ)
         if position is not None:
             viz['position']={'x':float(position.get('x',0)),
@@ -723,29 +720,29 @@ class GEXFReader(GEXF):
         return data
 
     def add_parents(self, data, node_xml):
-        parents_element=node_xml.find("{%s}parents"%self.NS_GEXF) 
+        parents_element=node_xml.find("{%s}parents"%self.NS_GEXF)
         if parents_element is not None:
             data['parents']=[]
-            for p in parents_element.findall("{%s}parent"%self.NS_GEXF): 
+            for p in parents_element.findall("{%s}parent"%self.NS_GEXF):
                 parent=p.get('for')
                 data['parents'].append(parent)
         return data
 
     def add_slices(self, data,  node_xml):
-        slices_element=node_xml.find("{%s}slices"%self.NS_GEXF) 
+        slices_element=node_xml.find("{%s}slices"%self.NS_GEXF)
         if slices_element is not None:
             data['slices']=[]
-            for s in slices_element.findall("{%s}slice"%self.NS_GEXF): 
+            for s in slices_element.findall("{%s}slice"%self.NS_GEXF):
                 start=s.get('start')
                 end=s.get('end')
                 data['slices'].append((start,end))
         return data
 
     def add_spells(self, data,  node_xml):
-        spells_element=node_xml.find("{%s}spells"%self.NS_GEXF) 
+        spells_element=node_xml.find("{%s}spells"%self.NS_GEXF)
         if spells_element is not None:
             data['spells']=[]
-            for s in spells_element.findall("{%s}spell"%self.NS_GEXF): 
+            for s in spells_element.findall("{%s}spell"%self.NS_GEXF):
                 start=s.get('start')
                 end=s.get('end')
                 data['spells'].append((start,end))
@@ -780,7 +777,7 @@ class GEXFReader(GEXF):
         edge_id = edge_element.get("id")
         if edge_id is not None:
             data["id"] = edge_id
-        
+
         # check if there is a 'multigraph_key' and use that as edge_id
         multigraph_key = data.pop('networkx_key',None)
         if multigraph_key is not None:
@@ -794,9 +791,9 @@ class GEXFReader(GEXF):
         if edge_label is not None:
             data['label']=edge_label
 
-   
 
-        if G.has_edge(source,target): 
+
+        if G.has_edge(source,target):
             # seen this edge before - this is a multigraph
             self.simple_graph=False
         G.add_edge(source, target, key=edge_id, **data)
@@ -807,10 +804,10 @@ class GEXFReader(GEXF):
         # Use the key information to decode the attr XML
         attr = {}
         # look for outer "<attvalues>" element
-        attr_element=obj_xml.find("{%s}attvalues" % self.NS_GEXF) 
+        attr_element=obj_xml.find("{%s}attvalues" % self.NS_GEXF)
         if attr_element is not None:
-            # loop over <attvalue> elements 
-            for a in attr_element.findall("{%s}attvalue" % self.NS_GEXF): 
+            # loop over <attvalue> elements
+            for a in attr_element.findall("{%s}attvalue" % self.NS_GEXF):
                 key = a.get('for') # for is required
                 try: # should be in our gexf_keys dictionary
                     title=gexf_keys[key]['title']
@@ -835,7 +832,7 @@ class GEXFReader(GEXF):
                     # for static graphs just assign the value
                     attr[title] = value
         return attr
-            
+
     def find_gexf_attributes(self, attributes_element):
         # Extract all the attributes and defaults
         attrs = {}

@@ -30,7 +30,7 @@ class TestGEXF(object):
         self.simple_directed_graph.add_node('0',label='Hello')
         self.simple_directed_graph.add_node('1',label='World')
         self.simple_directed_graph.add_edge('0','1',id='0')
-                            
+
         self.simple_directed_fh = \
             io.BytesIO(self.simple_directed_data.encode('UTF-8'))
 
@@ -191,7 +191,7 @@ class TestGEXF(object):
 """
         fh = io.BytesIO(s.encode('UTF-8'))
         assert_raises(nx.NetworkXError,nx.read_gexf,fh)
-    
+
     def test_undirected_edge_in_directed(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
 <gexf xmlns="http://www.gexf.net/1.1draft" version="1.1">
@@ -216,9 +216,9 @@ class TestGEXF(object):
     <graph mode="static" defaultedgetype="directed">
         <nodes>
             <node id="0" label="Hello">
-	      <attvalues>
-		<attvalue for='0' value='1'/>
-              </attvalues>		
+              <attvalues>
+                <attvalue for='0' value='1'/>
+              </attvalues>
             </node>
             <node id="1" label="Word" />
         </nodes>
@@ -266,7 +266,7 @@ class TestGEXF(object):
             sorted(sorted(e) for e in G.edges()),
             sorted(sorted(e) for e in H.edges()))
         assert_equal(G.graph,H.graph)
-    
+
     def test_serialize_ints_to_strings(self):
         G=nx.Graph()
         G.add_node(1,id=7,label=77)
