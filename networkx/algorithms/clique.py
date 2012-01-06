@@ -19,7 +19,8 @@ __author__ = """Dan Schult (dschult@colgate.edu)"""
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+import networkx
+from networkx.utils.decorators import *
 
 __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'make_clique_bipartite' ,'graph_clique_number',
@@ -28,8 +29,7 @@ __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'project_down', 'project_up']
 
 
-import networkx
-
+@not_implemented_for('directed')
 def find_cliques(G):
     """
     Search for all maximal cliques in a graph.
@@ -55,6 +55,8 @@ def find_cliques(G):
     Based on the algorithm published by Bron & Kerbosch (1973) [1]_
     as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
     and discussed in Cazals and Karande (2008) [3]_.
+
+    This algorithm is not suitable for directed graphs.
 
     This algorithm ignores self-loops and parallel edges as
     clique is not conventionally defined with such edges.
