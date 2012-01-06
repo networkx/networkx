@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Generate graphs with a given degree sequence or expected degree sequence.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -18,90 +18,92 @@ __all__ = ['is_valid_degree_sequence',
            'is_valid_degree_sequence_erdos_gallai',
            'is_valid_degree_sequence_havel_hakimi']
 
-def is_valid_degree_sequence(deg_sequence, method='hh'):
-    """Returns True if deg_sequence is a valid degree sequence.
-    
+def is_valid_degree_sequence(sequence, method='hh'):
+    """Returns True if the sequence is a valid degree sequence.
+
     A degree sequence is valid if some graph can realize it.
-    
+
     Parameters
     ----------
-    deg_sequence : list
-        A list of integers where each element specifies the degree of a node
-        in a graph.
+    sequence : list or iterable container
+        A sequence of integer node degrees
+
     method : "eg" | "hh"
-        The method used to validate the degree sequence.  
-        "eg" corresponds to the Erdős-Gallai algorithm, and 
+        The method used to validate the degree sequence.
+        "eg" corresponds to the Erdős-Gallai algorithm, and
         "hh" to the Havel-Hakimi algorithm.
 
     Returns
     -------
     valid : bool
-        True if deg_sequence is a valid degree sequence and False if not.
-    
+        True if the sequence is a valid degree sequence and False if not.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> sequence = G.degree().values()
+    >>> nx.is_valid_degree_sequence(sequence)
+    True
+
     References
     ----------
     Erdős-Gallai
         [EG1960]_, [choudum1986]_
-    
+
     Havel-Hakimi
         [havel1955]_, [hakimi1962]_, [CL1996]_
-    
     """
     if method == 'eg':
-        valid = is_valid_degree_sequence_erdos_gallai(deg_sequence)
+        valid = is_valid_degree_sequence_erdos_gallai(sequence)
     elif method == 'hh':
-        valid = is_valid_degree_sequence_havel_hakimi(deg_sequence)
+        valid = is_valid_degree_sequence_havel_hakimi(sequence)
     else:
         msg = "`method` must be 'eg' or 'hh'"
         raise nx.NetworkXException(msg)
-    
     return valid
 
 
-def is_valid_degree_sequence_havel_hakimi(deg_sequence):
-    """Returns True if deg_sequence is a valid degree sequence.
-    
-    A degree sequence is valid if some graph can realize it. 
+def is_valid_degree_sequence_havel_hakimi(sequence):
+    r"""Returns True if the sequence is a valid degree sequence.
+
+    A degree sequence is valid if some graph can realize it.
     Validation proceeds via the Havel-Hakimi algorithm.
-    
-    Worst-case run time is: O( n**(log n) )
-    
+
+    Worst-case run time is: `O(n^(log n))`
+
     Parameters
     ----------
-    deg_sequence : list
-        A list of integers where each element specifies the degree of a node
-        in a graph.
+    sequence : list or iterable container
+        A sequence of integer node degrees
 
     Returns
     -------
     valid : bool
-        True if deg_sequence is a valid degree sequence and False if not.
-    
+        True if the sequence is a valid degree sequence and False if not.
+
     References
     ----------
     [havel1955]_, [hakimi1962]_, [CL1996]_
-    
     """
-    # some simple tests 
-    if deg_sequence==[]:
-        return True # empty sequence = empty graph 
-    if not nx.utils.is_list_of_ints(deg_sequence):
+    s = list(sequence)  # copy to list
+    # some simple tests
+    if len(s) == 0:
+        return True # empty sequence = empty graph
+    if not nx.utils.is_list_of_ints(s):
         return False   # list of ints
-    if min(deg_sequence)<0:
+    if min(s)<0:
         return False      # each int not negative
-    if sum(deg_sequence)%2:
+    if sum(s)%2:
         return False      # must be even
-    
+
     # successively reduce degree sequence by removing node of maximum degree
     # as in Havel-Hakimi algorithm
-        
-    s=deg_sequence[:]  # copy to s
-    while s:      
+    while s:
         s.sort()    # sort in increasing order
-        if s[0]<0: 
+        if s[0]<0:
             return False  # check if removed too many from some node
 
-        d=s.pop()             # pop largest degree 
+        d=s.pop()             # pop largest degree
         if d==0: return True  # done! rest must be zero due to ordering
 
         # degree must be <= number of available nodes
@@ -116,48 +118,45 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     return False
 
 
-def is_valid_degree_sequence_erdos_gallai(deg_sequence):
-    """Returns True if deg_sequence is a valid degree sequence.
-    
-    A degree sequence is valid if some graph can realize it. 
+def is_valid_degree_sequence_erdos_gallai(sequence):
+    r"""Returns True if the sequence is a valid degree sequence.
+
+    A degree sequence is valid if some graph can realize it.
     Validation proceeds via the Erdős-Gallai algorithm.
-    
-    Worst-case run time is: O( n**2 )
-    
+
+    Worst-case run time is: `O(n^2)`
+
     Parameters
     ----------
-    deg_sequence : list
-        A list of integers where each element specifies the degree of a node
-        in a graph.
+    sequence : list or iterable container
+        A sequence of integer node degrees 
 
     Returns
     -------
     valid : bool
-        True if deg_sequence is a valid degree sequence and False if not.
-    
+        True if the sequence is a valid degree sequence and False if not.
+
     References
     ----------
-    [EG1960]_, [choudum1986]_    
-
+    [EG1960]_, [choudum1986]_
     """
-    # some simple tests 
-    if deg_sequence==[]:
-        return True # empty sequence = empty graph 
-    if not nx.utils.is_list_of_ints(deg_sequence):
+    deg_seq = sorted(sequence,reverse=True)
+    n = len(deg_seq)
+    # some simple tests
+    if n == 0:
+        return True # empty sequence = empty graph
+    if not nx.utils.is_list_of_ints(deg_seq):
         return False   # list of ints
-    if min(deg_sequence)<0:
+    if min(deg_seq)<0:
         return False      # each int not negative
-    if sum(deg_sequence)%2:
+    if sum(deg_seq)%2:
         return False      # must be even
 
-    n = len(deg_sequence)
-    deg_seq = sorted(deg_sequence,reverse=True)
     sigk = [i for i in range(1, len(deg_seq)) if deg_seq[i] < deg_seq[i-1]]
     for k in sigk:
         sum_deg = sum(deg_seq[0:k])
-        sum_min = k*(k-1) + sum([min([k,deg_seq[i]]) 
+        sum_min = k*(k-1) + sum([min([k,deg_seq[i]])
                                  for i in range(k,n)])
         if sum_deg>sum_min:
             return False
     return True
- 

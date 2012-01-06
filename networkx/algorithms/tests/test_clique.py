@@ -108,3 +108,7 @@ class TestCliques:
         assert_equal(H1.nodes(),[1, 2, 3, 4, 5])
         H2=nx.make_max_clique_graph(G)
         assert_equal(H1.adj,H2.adj)
+
+    @raises(nx.NetworkXNotImplemented)
+    def test_directed(self):
+        cliques=nx.find_cliques(nx.DiGraph())

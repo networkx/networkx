@@ -7,20 +7,19 @@ Find and manipulate cliques of graphs.
 
 Note that finding the largest clique of a graph has been
 shown to be an NP-complete problem; the algorithms here
-could take a long time to run. 
+could take a long time to run.
 
 http://en.wikipedia.org/wiki/Clique_problem
-
 """
-__author__ = """Dan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2008 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
-
+import networkx
+from networkx.utils.decorators import *
+__author__ = """Dan Schult (dschult@colgate.edu)"""
 __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'make_clique_bipartite' ,'graph_clique_number',
            'graph_number_of_cliques', 'node_clique_number',
@@ -28,33 +27,34 @@ __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'project_down', 'project_up']
 
 
-import networkx
-
+@not_implemented_for('directed')
 def find_cliques(G):
-    """
-    Search for all maximal cliques in a graph.
- 
-    This algorithm searches for maximal cliques in a graph.
-    maximal cliques are the largest complete subgraph containing
-    a given point.  The largest maximal clique is sometimes called
+    """Search for all maximal cliques in a graph.
+
+    Maximal cliques are the largest complete subgraph containing
+    a given node.  The largest maximal clique is sometimes called
     the maximum clique.
- 
-    This implementation is a generator of lists each
-    of which contains the members of a maximal clique.
-    To obtain a list of cliques, use list(find_cliques(G)).
-    The method essentially unrolls the recursion used in
-    the references to avoid issues of recursion stack depth.
-    
+
+    Returns
+    -------
+    generator of lists: genetor of member list for each maximal clique
+
     See Also
     --------
-    find_cliques_recursive : 
+    find_cliques_recursive :
     A recursive version of the same algorithm
 
     Notes
     -----
+    To obtain a list of cliques, use list(find_cliques(G)).
+
     Based on the algorithm published by Bron & Kerbosch (1973) [1]_
     as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
     and discussed in Cazals and Karande (2008) [3]_.
+    The method essentially unrolls the recursion used in
+    the references to avoid issues of recursion stack depth.
+
+    This algorithm is not suitable for directed graphs.
 
     This algorithm ignores self-loops and parallel edges as
     clique is not conventionally defined with such edges.
@@ -64,27 +64,26 @@ def find_cliques(G):
 
     References
     ----------
-    .. [1] Bron, C. and Kerbosch, J. 1973. 
-       Algorithm 457: finding all cliques of an undirected graph. 
-       Commun. ACM 16, 9 (Sep. 1973), 575-577. 
+    .. [1] Bron, C. and Kerbosch, J. 1973.
+       Algorithm 457: finding all cliques of an undirected graph.
+       Commun. ACM 16, 9 (Sep. 1973), 575-577.
        http://portal.acm.org/citation.cfm?doid=362342.362367
-   
-    .. [2] Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi, 
-       The worst-case time complexity for generating all maximal 
-       cliques and computational experiments, 
-       Theoretical Computer Science, Volume 363, Issue 1, 
-       Computing and Combinatorics, 
-       10th Annual International Conference on 
+
+    .. [2] Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi,
+       The worst-case time complexity for generating all maximal
+       cliques and computational experiments,
+       Theoretical Computer Science, Volume 363, Issue 1,
+       Computing and Combinatorics,
+       10th Annual International Conference on
        Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28-42
        http://dx.doi.org/10.1016/j.tcs.2006.06.015
 
-    .. [3] F. Cazals, C. Karande, 
-       A note on the problem of reporting maximal cliques, 
+    .. [3] F. Cazals, C. Karande,
+       A note on the problem of reporting maximal cliques,
        Theoretical Computer Science,
-       Volume 407, Issues 1-3, 6 November 2008, Pages 564-568, 
+       Volume 407, Issues 1-3, 6 November 2008, Pages 564-568,
        http://dx.doi.org/10.1016/j.tcs.2008.05.010
     """
-
     # Cache nbrs and find first pivot (highest degree)
     maxconn=-1
     nnbrs={}
@@ -122,7 +121,7 @@ def find_cliques(G):
         new_cand = cand & nn
         new_done = done & nn
         # check if we have more to search
-        if not new_cand: 
+        if not new_cand:
             if not new_done:
                 # Found a clique!
                 yield clique_so_far[:]
@@ -146,7 +145,7 @@ def find_cliques(G):
                 if maxconndone==numb_cand:
                     break
         # Shortcut--this part of tree already searched
-        if maxconndone == numb_cand:  
+        if maxconndone == numb_cand:
             clique_so_far.pop()
             continue
         # still finding pivot node
@@ -171,17 +170,16 @@ def find_cliques(G):
 
 
 def find_cliques_recursive(G):
-    """
-    Recursive search for all maximal cliques in a graph.
- 
-    This algorithm searches for maximal cliques in a graph.
+    """Recursive search for all maximal cliques in a graph.
+
     Maximal cliques are the largest complete subgraph containing
     a given point.  The largest maximal clique is sometimes called
     the maximum clique.
- 
-    This implementation returns a list of lists each of
-    which contains the members of a maximal clique.
-    
+
+    Returns
+    -------
+    list of lists: list of members in each maximal clique
+
     See Also
     --------
     find_cliques : An nonrecursive version of the same algorithm
@@ -192,29 +190,32 @@ def find_cliques_recursive(G):
     as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
     and discussed in Cazals and Karande (2008) [3]_.
 
+    This implementation returns a list of lists each of
+    which contains the members of a maximal clique.
+
     This algorithm ignores self-loops and parallel edges as
     clique is not conventionally defined with such edges.
 
     References
     ----------
-    .. [1] Bron, C. and Kerbosch, J. 1973. 
-       Algorithm 457: finding all cliques of an undirected graph. 
-       Commun. ACM 16, 9 (Sep. 1973), 575-577. 
+    .. [1] Bron, C. and Kerbosch, J. 1973.
+       Algorithm 457: finding all cliques of an undirected graph.
+       Commun. ACM 16, 9 (Sep. 1973), 575-577.
        http://portal.acm.org/citation.cfm?doid=362342.362367
-   
-    .. [2] Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi, 
-       The worst-case time complexity for generating all maximal 
-       cliques and computational experiments, 
-       Theoretical Computer Science, Volume 363, Issue 1, 
-       Computing and Combinatorics, 
-       10th Annual International Conference on 
+
+    .. [2] Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi,
+       The worst-case time complexity for generating all maximal
+       cliques and computational experiments,
+       Theoretical Computer Science, Volume 363, Issue 1,
+       Computing and Combinatorics,
+       10th Annual International Conference on
        Computing and Combinatorics (COCOON 2004), 25 October 2006, Pages 28-42
        http://dx.doi.org/10.1016/j.tcs.2006.06.015
 
-    .. [3] F. Cazals, C. Karande, 
-       A note on the problem of reporting maximal cliques, 
+    .. [3] F. Cazals, C. Karande,
+       A note on the problem of reporting maximal cliques,
        Theoretical Computer Science,
-       Volume 407, Issues 1-3, 6 November 2008, Pages 564-568, 
+       Volume 407, Issues 1-3, 6 November 2008, Pages 564-568,
        http://dx.doi.org/10.1016/j.tcs.2008.05.010
     """
     nnbrs={}
@@ -269,10 +270,10 @@ def _extend(nnbrs,cand,done,so_far,cliques):
 
 
 def make_max_clique_graph(G,create_using=None,name=None):
-    """ Create the maximal clique graph of a graph. 
-   
+    """ Create the maximal clique graph of a graph.
+
     Finds the maximal cliques and treats these as nodes.
-    The nodes are connected if they have common members in 
+    The nodes are connected if they have common members in
     the original graph.  Theory has done a lot with clique
     graphs, but I haven't seen much on maximal clique graphs.
 
@@ -295,25 +296,24 @@ def make_max_clique_graph(G,create_using=None,name=None):
         for j,other_cl in enumerate(cliq[:i]):
             # if not cl.isdisjoint(other_cl): #Requires 2.6
             intersect=cl & other_cl
-            if intersect:     # Not empty 
+            if intersect:     # Not empty
                 B.add_edge(i+1,j+1)
     return B
 
 def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
-    """ Create a bipartite clique graph from a graph G. 
-   
-    Nodes of G are retained as the "bottom nodes" of B and 
+    """Create a bipartite clique graph from a graph G.
+
+    Nodes of G are retained as the "bottom nodes" of B and
     cliques of G become "top nodes" of B.
-    Edges are present if a bottom node belongs to the clique 
+    Edges are present if a bottom node belongs to the clique
     represented by the top node.
- 
+
     Returns a Graph with additional attribute dict B.node_type
     which is keyed by nodes to "Bottom" or "Top" appropriately.
 
     if fpos is not None, a second additional attribute dict B.pos
     is created to hold the position tuple of each node for viewing
     the bipartite graph.
-
     """
     cliq=list(find_cliques(G))
     if create_using:
@@ -328,7 +328,7 @@ def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
     B.node_type={}   # New Attribute for B
     for n in B:
         B.node_type[n]="Bottom"
- 
+
     if fpos:
        B.pos={}     # New Attribute for B
        delta_cpos=1./len(cliq)
@@ -350,10 +350,10 @@ def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
                 B.pos[v]=(0.8,ppos)
                 ppos +=delta_ppos
     return B
-   
+
 def project_down(B,create_using=None,name=None):
-    """Project a bipartite graph B down onto its "bottom nodes". 
-    
+    """Project a bipartite graph B down onto its "bottom nodes".
+
     The nodes retain their names and are connected if they
     share a common top node in the bipartite graph.
 
@@ -373,10 +373,10 @@ def project_down(B,create_using=None,name=None):
           for cv in Bvnbrs:
              G.add_edges_from([(v,u) for u in B[cv] if u!=v])
     return G
- 
+
 def project_up(B,create_using=None,name=None):
-    """ Project a bipartite graph B down onto its "bottom nodes".
-    
+    """Project a bipartite graph B down onto its "bottom nodes".
+
     The nodes retain their names and are connected if they
     share a common Bottom Node in the Bipartite Graph.
 
@@ -398,12 +398,11 @@ def project_up(B,create_using=None,name=None):
              # Note: -u changes the name (not Top node anymore)
              G.add_edges_from([(vname,-u) for u in B[cv] if u!=v])
     return G
- 
+
 def graph_clique_number(G,cliques=None):
     """Return the clique number (size of the largest clique) for G.
 
-       An optional list of cliques can be input if already computed.
-
+    An optional list of cliques can be input if already computed.
     """
     if cliques is None:
         cliques=find_cliques(G)
@@ -411,25 +410,23 @@ def graph_clique_number(G,cliques=None):
 
 
 def graph_number_of_cliques(G,cliques=None):
-    """  Returns the number of maximal cliques in G.
+    """Returns the number of maximal cliques in G.
 
-       An optional list of cliques can be input if already computed.
-
+    An optional list of cliques can be input if already computed.
     """
     if cliques is None:
         cliques=list(find_cliques(G))
     return   len(cliques)
 
- 
+
 def node_clique_number(G,nodes=None,cliques=None):
     """ Returns the size of the largest maximal clique containing
-        each given node.  
+    each given node.
 
-        Returns a single or list depending on input nodes.
-        Optional list of cliques can be input if already computed.
-
+    Returns a single or list depending on input nodes.
+    Optional list of cliques can be input if already computed.
     """
-    if cliques is None: 
+    if cliques is None:
         if nodes is not None:
             # Use ego_graph to decrease size of graph
             if isinstance(nodes,list):
@@ -467,18 +464,17 @@ def node_clique_number(G,nodes=None,cliques=None):
     # d={}
     # for v in nodes:
     #     d[v]=max([len(c) for c in cliques if v in c])
-    
+
     # if nodes in G:
     #     return d[v] #return single value
     # return d
 
 
 def number_of_cliques(G,nodes=None,cliques=None):
-    """ Returns the number of maximal cliques for each node.
+    """Returns the number of maximal cliques for each node.
 
-        Returns a single or list depending on input nodes.
-        Optional list of cliques can be input if already computed.
-
+    Returns a single or list depending on input nodes.
+    Optional list of cliques can be input if already computed.
     """
     if cliques is None:
         cliques=list(find_cliques(G))
@@ -496,13 +492,12 @@ def number_of_cliques(G,nodes=None,cliques=None):
             numcliq[v]=len([1 for c in cliques if v in c])
     return numcliq
 
-    
+
 def cliques_containing_node(G,nodes=None,cliques=None):
-    """ Returns a list of cliques containing the given node.
+    """Returns a list of cliques containing the given node.
 
-        Returns a single list or list of lists depending on input nodes.
-        Optional list of cliques can be input if already computed.
-
+    Returns a single list or list of lists depending on input nodes.
+    Optional list of cliques can be input if already computed.
     """
     if cliques is None:
         cliques=list(find_cliques(G))
@@ -519,4 +514,3 @@ def cliques_containing_node(G,nodes=None,cliques=None):
         for v in nodes:
             vcliques[v]=[c for c in cliques if v in c]
     return vcliques
-

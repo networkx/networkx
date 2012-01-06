@@ -549,7 +549,7 @@ class DegreeSequenceRandomGraph(object):
             raise nx.NetworkXUnfeasible('degree sequence is not graphical')
         if seed is not None:
             random.seed(seed)
-        self.degree = degree
+        self.degree = list(degree)
         # node labels are integers 0,...,n-1
         self.m = sum(self.degree)/2.0 # number of edges
         try:
@@ -627,7 +627,7 @@ class DegreeSequenceRandomGraph(object):
         while len(self.remaining_degree) >= 2 * self.dmax:
             norm = float(max(self.remaining_degree.values()))**2
             while True:
-                u,v = sorted(random.sample(self.remaining_degree, 2))
+                u,v = sorted(random.sample(self.remaining_degree.keys(), 2))
                 if self.graph.has_edge(u,v):
                     continue
                 if random.random() < self.q(u,v):

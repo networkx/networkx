@@ -1,11 +1,6 @@
+"""Functional interface to graph methods and assorted utilities.
 """
-Functional interface to graph methods and assorted utilities.
-
-"""
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
-#    Copyright (C) 2004-2010 by
+#    Copyright (C) 2004-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -13,10 +8,9 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 #    BSD license.
 #
 import networkx as nx
-
-# functional style helpers
-
-
+__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
+                           'Pieter Swart (swart@lanl.gov)',
+                           'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
            'nodes_iter', 'edges_iter', 'is_directed','info',
@@ -90,7 +84,6 @@ def density(G):
     The density is 0 for an graph without edges and 1.0 for a complete graph.
 
     The density of multigraphs can be higher than 1.
-
     """
     n=number_of_nodes(G)
     m=number_of_edges(G)
@@ -135,7 +128,10 @@ def is_directed(G):
 
 
 def freeze(G):
-    """Modify graph to prevent addition of nodes or edges.
+    """Modify graph to prevent further change by adding or removing
+    nodes or edges.
+
+    Node and edge data can still be modified.
 
     Parameters
     -----------
@@ -155,14 +151,17 @@ def freeze(G):
 
     Notes
     -----
-    This does not prevent modification of edge data.
+    To "unfreeze" a graph you must make a copy by creating a new graph object:
 
-    To "unfreeze" a graph you must make a copy.
+    >>> graph = nx.path_graph(4)
+    >>> frozen_graph = nx.freeze(graph)
+    >>> unfrozen_graph = nx.Graph(frozen_graph)
+    >>> nx.is_frozen(unfrozen_graph)
+    False
 
     See Also
     --------
     is_frozen
-
     """
     def frozen(*args):
         raise nx.NetworkXError("Frozen graph can't be modified")
@@ -214,7 +213,6 @@ def subgraph(G, nbunch):
     Notes
     -----
     subgraph(G) calls G.subgraph()
-
     """
     return G.subgraph(nbunch)
 
@@ -283,7 +281,7 @@ def set_node_attributes(G,name,attributes):
     Parameters
     ----------
     G : NetworkX Graph
-    
+
     name : string
        Attribute name
 
@@ -307,7 +305,7 @@ def get_node_attributes(G,name):
     Parameters
     ----------
     G : NetworkX Graph
-    
+
     name : string
        Attribute name
 
@@ -332,7 +330,7 @@ def set_edge_attributes(G,name,attributes):
     Parameters
     ----------
     G : NetworkX Graph
-    
+
     name : string
        Attribute name
 
@@ -356,7 +354,7 @@ def get_edge_attributes(G,name):
     Parameters
     ----------
     G : NetworkX Graph
-    
+
     name : string
        Attribute name
 
