@@ -267,3 +267,13 @@ class TestGEXF(object):
             sorted(sorted(e) for e in H.edges()))
         assert_equal(G.graph,H.graph)
     
+    def test_serialize_ints_to_strings(self):
+        G=nx.Graph()
+        G.add_node(1,id=7,label=77)
+        fh = io.BytesIO()
+        nx.write_gexf(G,fh)
+        fh.seek(0)
+        H=nx.read_gexf(fh,node_type=int)
+        assert_equal(H.nodes(),[7])
+        print(H.node)
+        assert_equal(H.node[7]['label'],'77')
