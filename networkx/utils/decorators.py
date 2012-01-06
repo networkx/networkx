@@ -248,9 +248,6 @@ def open_file(path_arg, mode='r'):
         # Finally, we call the original function, making sure to close the fh.
         try:
             result = func(*new_args, **kwargs)
-        except TypeError:
-            new_args += func.func_defaults
-            result = func(*new_args,**kwargs)
         finally:
             if close_fh:
                 fh.close()
