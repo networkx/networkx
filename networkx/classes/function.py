@@ -135,7 +135,10 @@ def is_directed(G):
 
 
 def freeze(G):
-    """Modify graph to prevent addition of nodes or edges.
+    """Modify graph to prevent further change by adding or removing
+    nodes or edges.
+
+    Node and edge data can still be modified.
 
     Parameters
     -----------
@@ -155,14 +158,17 @@ def freeze(G):
 
     Notes
     -----
-    This does not prevent modification of edge data.
+    To "unfreeze" a graph you must make a copy by creating a new graph object:
 
-    To "unfreeze" a graph you must make a copy.
+    >>> graph = nx.path_graph(4)
+    >>> frozen_graph = nx.freeze(graph)
+    >>> unfrozen_graph = nx.Graph(frozen_graph)
+    >>> nx.is_frozen(unfrozen_graph)
+    False
 
     See Also
     --------
     is_frozen
-
     """
     def frozen(*args):
         raise nx.NetworkXError("Frozen graph can't be modified")
