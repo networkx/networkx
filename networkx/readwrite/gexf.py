@@ -292,14 +292,14 @@ class GEXFWriter(GEXF):
         for node,data in G.nodes_iter(data=True):
             node_data=data.copy()
             # 
-            node_id=node_data.pop('id',make_str(node))
+            node_id = make_str(node_data.pop('id', node))
             kw={'id':node_id}
-            label=node_data.pop('label',make_str(node))
+            label = make_str(node_data.pop('label', node))
             kw['label']=label
 
             try:
                 pid=node_data.pop('pid')
-                kw['pid']=pid
+                kw['pid'] = make_str(pid)
             except KeyError:
                 pass
                 

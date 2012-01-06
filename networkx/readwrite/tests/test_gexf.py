@@ -266,4 +266,29 @@ class TestGEXF(object):
             sorted(sorted(e) for e in G.edges()),
             sorted(sorted(e) for e in H.edges()))
         assert_equal(G.graph,H.graph)
+        
+def test_write_with_integer_ids():
+    # Addresses #673.
+    G = nx.path_graph(4)
+    for i in range(4):
+        G.node[i]['id'] = i
+        
+    expected = """<gexf version="1.1" xmlns="http://www.gexf.net/1.1draft" xmlns:viz="http://www.gexf.net/1.1draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+  <graph defaultedgetype="undirected" mode="static">
+    <nodes>
+      <node id="0" label="0" />
+      <node id="1" label="1" />
+      <node id="2" label="2" />
+      <node id="3" label="3" />
+    </nodes>
+    <edges>
+      <edge id="0" source="0" target="1" />
+      <edge id="1" source="1" target="2" />
+      <edge id="2" source="2" target="3" />
+    </edges>
+  </graph>
+</gexf>"""
+
+    obtained = '\n'.join(nx.generate_gexf(G))
+    assert_equal( expected, obtained )
     
