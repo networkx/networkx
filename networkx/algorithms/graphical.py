@@ -18,16 +18,16 @@ __all__ = ['is_valid_degree_sequence',
            'is_valid_degree_sequence_erdos_gallai',
            'is_valid_degree_sequence_havel_hakimi']
 
-def is_valid_degree_sequence(deg_sequence, method='hh'):
-    """Returns True if deg_sequence is a valid degree sequence.
+def is_valid_degree_sequence(sequence, method='hh'):
+    """Returns True if the sequence is a valid degree sequence.
 
     A degree sequence is valid if some graph can realize it.
 
     Parameters
     ----------
-    deg_sequence : list or iterable container
-        A sequence of integers where each element specifies the degree of a node
-        in a graph.
+    sequence : list or iterable container
+        A sequence of integer node degrees
+
     method : "eg" | "hh"
         The method used to validate the degree sequence.
         "eg" corresponds to the Erdős-Gallai algorithm, and
@@ -36,7 +36,14 @@ def is_valid_degree_sequence(deg_sequence, method='hh'):
     Returns
     -------
     valid : bool
-        True if deg_sequence is a valid degree sequence and False if not.
+        True if the sequence is a valid degree sequence and False if not.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> sequence = G.degree().values()
+    >>> nx.is_valid_degree_sequence(sequence)
+    True
 
     References
     ----------
@@ -47,39 +54,38 @@ def is_valid_degree_sequence(deg_sequence, method='hh'):
         [havel1955]_, [hakimi1962]_, [CL1996]_
     """
     if method == 'eg':
-        valid = is_valid_degree_sequence_erdos_gallai(deg_sequence)
+        valid = is_valid_degree_sequence_erdos_gallai(sequence)
     elif method == 'hh':
-        valid = is_valid_degree_sequence_havel_hakimi(deg_sequence)
+        valid = is_valid_degree_sequence_havel_hakimi(sequence)
     else:
         msg = "`method` must be 'eg' or 'hh'"
         raise nx.NetworkXException(msg)
     return valid
 
 
-def is_valid_degree_sequence_havel_hakimi(deg_sequence):
-    """Returns True if deg_sequence is a valid degree sequence.
+def is_valid_degree_sequence_havel_hakimi(sequence):
+    r"""Returns True if the sequence is a valid degree sequence.
 
     A degree sequence is valid if some graph can realize it.
     Validation proceeds via the Havel-Hakimi algorithm.
 
-    Worst-case run time is: O( n**(log n) )
+    Worst-case run time is: `O(n^(log n))`
 
     Parameters
     ----------
-    deg_sequence : list or iterable container
-        A sequence of integers where each element specifies the degree of a node
-        in a graph.
+    sequence : list or iterable container
+        A sequence of integer node degrees
 
     Returns
     -------
     valid : bool
-        True if deg_sequence is a valid degree sequence and False if not.
+        True if the sequence is a valid degree sequence and False if not.
 
     References
     ----------
     [havel1955]_, [hakimi1962]_, [CL1996]_
     """
-    s = list(deg_sequence)  # copy to list
+    s = list(sequence)  # copy to list
     # some simple tests
     if len(s) == 0:
         return True # empty sequence = empty graph
@@ -112,8 +118,8 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     return False
 
 
-def is_valid_degree_sequence_erdos_gallai(deg_sequence):
-    r"""Returns True if deg_sequence is a valid degree sequence.
+def is_valid_degree_sequence_erdos_gallai(sequence):
+    r"""Returns True if the sequence is a valid degree sequence.
 
     A degree sequence is valid if some graph can realize it.
     Validation proceeds via the Erdős-Gallai algorithm.
@@ -122,20 +128,19 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
 
     Parameters
     ----------
-    deg_sequence : list or iterable container
-        A sequence of integers where each element specifies the degree of a node
-        in a graph.
+    sequence : list or iterable container
+        A sequence of integer node degrees 
 
     Returns
     -------
     valid : bool
-        True if deg_sequence is a valid degree sequence and False if not.
+        True if the sequence is a valid degree sequence and False if not.
 
     References
     ----------
     [EG1960]_, [choudum1986]_
     """
-    deg_seq = sorted(deg_sequence,reverse=True)
+    deg_seq = sorted(sequence,reverse=True)
     n = len(deg_seq)
     # some simple tests
     if n == 0:
