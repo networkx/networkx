@@ -25,8 +25,8 @@ def is_valid_degree_sequence(deg_sequence, method='hh'):
     
     Parameters
     ----------
-    deg_sequence : list
-        A list of integers where each element specifies the degree of a node
+    deg_sequence : list or iterable container
+        A sequence of integers where each element specifies the degree of a node
         in a graph.
     method : "eg" | "hh"
         The method used to validate the degree sequence.  
@@ -68,8 +68,8 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     
     Parameters
     ----------
-    deg_sequence : list
-        A list of integers where each element specifies the degree of a node
+    deg_sequence : list or iterable container
+        A sequence of integers where each element specifies the degree of a node
         in a graph.
 
     Returns
@@ -82,20 +82,20 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     [havel1955]_, [hakimi1962]_, [CL1996]_
     
     """
+    s = list(deg_sequence)  # copy to list
     # some simple tests 
-    if deg_sequence==[]:
+    if len(s) == 0:
         return True # empty sequence = empty graph 
-    if not nx.utils.is_list_of_ints(deg_sequence):
+    if not nx.utils.is_list_of_ints(s):
         return False   # list of ints
-    if min(deg_sequence)<0:
+    if min(s)<0:
         return False      # each int not negative
-    if sum(deg_sequence)%2:
+    if sum(s)%2:
         return False      # must be even
     
     # successively reduce degree sequence by removing node of maximum degree
     # as in Havel-Hakimi algorithm
         
-    s=deg_sequence[:]  # copy to s
     while s:      
         s.sort()    # sort in increasing order
         if s[0]<0: 
@@ -126,8 +126,8 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     
     Parameters
     ----------
-    deg_sequence : list
-        A list of integers where each element specifies the degree of a node
+    deg_sequence : list or iterable container
+        A sequence of integers where each element specifies the degree of a node
         in a graph.
 
     Returns
@@ -140,18 +140,18 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     [EG1960]_, [choudum1986]_    
 
     """
+    deg_seq = sorted(deg_sequence,reverse=True)
+    n = len(deg_seq)
     # some simple tests 
-    if deg_sequence==[]:
+    if n == 0:
         return True # empty sequence = empty graph 
-    if not nx.utils.is_list_of_ints(deg_sequence):
+    if not nx.utils.is_list_of_ints(deg_seq):
         return False   # list of ints
-    if min(deg_sequence)<0:
+    if min(deg_seq)<0:
         return False      # each int not negative
-    if sum(deg_sequence)%2:
+    if sum(deg_seq)%2:
         return False      # must be even
 
-    n = len(deg_sequence)
-    deg_seq = sorted(deg_sequence,reverse=True)
     sigk = [i for i in range(1, len(deg_seq)) if deg_seq[i] < deg_seq[i-1]]
     for k in sigk:
         sum_deg = sum(deg_seq[0:k])
