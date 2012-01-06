@@ -134,7 +134,9 @@ def open_file(path_arg, mode='r'):
     Parameters
     ----------
     path_arg : int
-        Location of the path argument in args.
+        Location of the path argument in args.  Even if the argument is a
+        named positional argument (with a default value), you must specify its
+        index as a positional argument.
     mode : str
         String for opening mode.
 
@@ -155,7 +157,11 @@ def open_file(path_arg, mode='r'):
        def write_function(G,pathname):
            pass
 
-       @open_file(path, 'w+')
+       @open_file(1,'w')
+       def write_function(G, pathname='graph.dot')
+           pass
+
+       @open_file('path', 'w+')
        def another_function(arg, **kwargs):
            path = kwargs['path']
            pass
@@ -168,23 +174,25 @@ def open_file(path_arg, mode='r'):
     # @open_file('path')
     # def some_function(arg1, arg2, path=None):
     #    if path is None:
-    #        fh = tempfile.NamedTemporaryFile(delete=False)
-    #        close_fh = True
+    #        fobj = tempfile.NamedTemporaryFile(delete=False)
+    #        close_fobj = True
     #    else:
-    #        # The decorator has given us a file object
-    #        fh = path
-    #        close_fh = False
+    #        # `path` could have been a string or file object or something
+    #        # similar. In any event, the decorator has given us a file object
+    #        # and it will close it for us, if it should.
+    #        fobj = path
+    #        close_fobj = False
     #
     #    try:
-    #        fh.write('blah')
+    #        fobj.write('blah')
     #    finally:
-    #        if close_fh:
-    #            fh.close()
+    #        if close_fobj:
+    #            fobj.close()
     #
-    # Normally, we'd want to use "with" to ensure that fh gets closed.
+    # Normally, we'd want to use "with" to ensure that fobj gets closed.
     # However, recall that the decorator will make `path` a file object for
     # us, and using "with" would undesirably close that file object. Instead,
-    # you use a try block, as shown above. When we exit the function,  fh will
+    # you use a try block, as shown above. When we exit the function, fobj will
     # be closed, if it should be, by the decorator.
 
     @decorator
@@ -192,11 +200,12 @@ def open_file(path_arg, mode='r'):
 
         # Note that since we have used @decorator, *args, and **kwargs have
         # already been resolved to match the function signature of func. This
-        # includes any default values. For example,  func(x, y, a=1, b=2, c=3)
-        # if called as func(0,1,b=5) would have args=(0,1,1,5,3). Very nice.
+        # means default values have been propagated. For example,  the function
+        # func(x, y, a=1, b=2, **kwargs) if called as func(0,1,b=5,c=10) would
+        # have args=(0,1,1,5) and kwargs={'c':10}.
 
         # First we parse the arguments of the decorator. The path_arg could
-        # be an arg or keyword, but not a vararg.
+        # be an positional argument or a keyword argument.  Even if it is
         try:
             # path_arg is a required positional argument
             # This works precisely because we are using @decorator
@@ -218,39 +227,43 @@ def open_file(path_arg, mode='r'):
         except IndexError:
             # A "required" argument was missing. This can only happen if
             # the decorator of the function was incorrectly specified.
+            # So this probably is not a user error, but a developer error.
             msg = "path_arg of open_file decorator is incorrect"
             raise nx.NetworkXError(msg)
         else:
             is_kwarg = False
+
         # Now we have the path_arg. There are two types of input to consider:
         #   1) string representing a path that should be opened
         #   2) an already opened file object
         if is_string_like(path):
             ext = splitext(path)[1]
-            fh = _dispatch_dict[ext](path, mode=mode)
-            close_fh = True
+            fobj = _dispatch_dict[ext](path, mode=mode)
+            close_fobj = True
         elif hasattr(path, 'read'):
             # path is already a file-like object
-            fh = path
-            close_fh = False
+            fobj = path
+            close_fobj = False
         else:
             # could be None, in which case the algorithm will deal with it
-            fh = path
-            close_fh = False
+            fobj = path
+            close_fobj = False
 
         # Insert file object into args or kwargs.
         if is_kwarg:
             new_args = args
-            kwargs[path_arg] = fh
+            kwargs[path_arg] = fobj
         else:
+            # args is a tuple, so we must convert to list before modifying it.
             new_args = list(args)
-            new_args[path_arg] = fh
-        # Finally, we call the original function, making sure to close the fh.
+            new_args[path_arg] = fobj
+
+        # Finally, we call the original function, making sure to close the fobj.
         try:
             result = func(*new_args, **kwargs)
         finally:
-            if close_fh:
-                fh.close()
+            if close_fobj:
+                fobj.close()
 
         return result
 
