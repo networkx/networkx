@@ -150,3 +150,11 @@ class TestRelabel():
         G=nx.relabel_nodes(G,dict( [(i,i-1) for i in range(4)]),copy=False)
         nx.is_isomorphic(K5,G)
 
+
+    def test_relabel_selfloop(self):
+        G = nx.DiGraph([(1, 1), (1, 2), (2, 3)])
+        G = nx.relabel_nodes(G, {1: 'One', 2: 'Two', 3: 'Three'}, copy=False)
+        assert_equal(sorted(G.nodes()),['One','Three','Two'])
+        G = nx.MultiDiGraph([(1, 1), (1, 2), (2, 3)])
+        G = nx.relabel_nodes(G, {1: 'One', 2: 'Two', 3: 'Three'}, copy=False)
+        assert_equal(sorted(G.nodes()),['One','Three','Two'])

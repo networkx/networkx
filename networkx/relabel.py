@@ -112,17 +112,19 @@ def _relabel_inplace(G, mapping):
         except KeyError:
             raise KeyError("Node %s is not in the graph"%old)
         if multigraph:
-            new_edges=[(new,target,key,data) for (_,target,key,data)
+            new_edges=[(new,old == target and new or target,key,data) 
+                       for (_,target,key,data)
                        in G.edges(old,data=True,keys=True)]
             if directed:
-                new_edges+=[(source,new,key,data) for (source,_,key,data)
+                new_edges+=[(old == source and new or source,new,key,data) 
+                            for (source,_,key,data)
                             in G.in_edges(old,data=True,keys=True)]
         else:
-            new_edges=[(new,target,data) for (_,target,data)
-                       in G.edges(old,data=True)]
+            new_edges=[(new,old == target and new or target,data) 
+                       for (_,target,data) in G.edges(old,data=True)]
             if directed:
-                new_edges+=[(source,new,data) for (source,_,data)
-                       in G.in_edges(old,data=True)]
+                new_edges+=[(old == source and new or source,new,data) 
+                            for (source,_,data) in G.in_edges(old,data=True)]
         G.remove_node(old)
         G.add_edges_from(new_edges)
     return G
