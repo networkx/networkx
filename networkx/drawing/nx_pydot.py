@@ -19,7 +19,7 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from networkx.utils import open_file
+from networkx.utils import open_file, make_str
 import networkx as nx
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
@@ -182,20 +182,20 @@ def to_pydot(N, strict=True):
         pass
 
     for n,nodedata in N.nodes_iter(data=True):
-        str_nodedata=dict((k,str(v)) for k,v in nodedata.items())
-        p=pydot.Node(str(n),**str_nodedata)
+        str_nodedata=dict((k,make_str(v)) for k,v in nodedata.items())
+        p=pydot.Node(make_str(n),**str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
         for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
-            str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
-            edge=pydot.Edge(str(u),str(v),key=str(key),**str_edgedata)
+            str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
+            edge=pydot.Edge(make_str(u),make_str(v),key=make_str(key),**str_edgedata)
             P.add_edge(edge)
         
     else:
         for u,v,edgedata in N.edges_iter(data=True):
-            str_edgedata=dict((k,str(v)) for k,v in edgedata.items())
-            edge=pydot.Edge(str(u),str(v),**str_edgedata)
+            str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
+            edge=pydot.Edge(make_str(u),make_str(v),**str_edgedata)
             P.add_edge(edge)
 
     return P
@@ -253,7 +253,7 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
 
     P=to_pydot(G)
     if root is not None :
-        P.set("root",str(root))
+        P.set("root",make_str(root))
 
     D=P.create_dot(prog=prog)
 
@@ -270,7 +270,9 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
 
     node_pos={}
     for n in G.nodes():
-        node=Q.get_node(pydot.Node(str(n)).get_name())
+        pydot_node = pydot.Node(make_str(n)).get_name().encode('utf-8')
+        node=Q.get_node(pydot_node)
+
         if isinstance(node,list):
             node=node[0]
         pos=node.get_pos()[1:-1] # strip leading and trailing double quotes
