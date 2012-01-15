@@ -112,7 +112,7 @@ def _single_source_shortest_unipath_length(G,source,cutoff=None):
 
     seen={}                  # level (number of hops) when seen in BFS
     level=0                  # the current level
-    nextlevel = set([1]) # set of nodes to check at next level
+    nextlevel = set([source]) # set of nodes to check at next level
     while nextlevel:
         thislevel=nextlevel  # advance to next level
         nextlevel = set()         # and start a new list (fringe)
