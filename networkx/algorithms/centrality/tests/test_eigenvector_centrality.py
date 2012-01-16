@@ -95,19 +95,21 @@ class TestEigenvectorCentralityDirected(object):
             assert_almost_equal(a,b)
 
 
-@raises(networkx.NetworkXException)
-def test_multigraph():
-    e = networkx.eigenvector_centrality(networkx.MultiGraph())
+class TestEigenvectorCentralityExceptions(object):
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
+    @raises(networkx.NetworkXException)
+    def test_multigraph(self):
+        e = networkx.eigenvector_centrality(networkx.MultiGraph())
 
-@raises(networkx.NetworkXException)
-def test_multigraph_numpy():
-    e = networkx.eigenvector_centrality_numpy(networkx.MultiGraph())
+    @raises(networkx.NetworkXException)
+    def test_multigraph_numpy(self):
+        e = networkx.eigenvector_centrality_numpy(networkx.MultiGraph())
 
 
-@raises(networkx.NetworkXException)
-def test_empty():
-    e = networkx.eigenvector_centrality(networkx.Graph())
+    @raises(networkx.NetworkXException)
+    def test_empty(self):
+        e = networkx.eigenvector_centrality(networkx.Graph())
 
-@raises(networkx.NetworkXException)
-def test_empty_numpy():
-    e = networkx.eigenvector_centrality_numpy(networkx.Graph())
+    @raises(networkx.NetworkXException)
+    def test_empty_numpy(self):
+        e = networkx.eigenvector_centrality_numpy(networkx.Graph())
