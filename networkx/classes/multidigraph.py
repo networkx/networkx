@@ -798,13 +798,16 @@ class MultiDiGraph(MultiGraph,DiGraph):
         bunch = self.nbunch_iter(nbunch)
         # create new graph and copy subgraph into it
         H = self.__class__()
+        # copy node and attribute dictionaries
+        for n in bunch:
+            H.node[n]=self.node[n]
         # namespace shortcuts for speed
         H_succ=H.succ
         H_pred=H.pred
         self_succ=self.succ
         self_pred=self.pred
         # add nodes
-        for n in bunch:
+        for n in H:
             H_succ[n]={}
             H_pred[n]={}
         # add edges
@@ -817,9 +820,6 @@ class MultiDiGraph(MultiGraph,DiGraph):
                     ed=edgedict.copy()
                     Hnbrs[v]=ed
                     H_pred[v][u]=ed
-        # copy node and attribute dictionaries
-        for n in H:
-            H.node[n]=self.node[n]
         H.graph=self.graph
         return H
 

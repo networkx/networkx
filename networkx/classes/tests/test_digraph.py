@@ -207,6 +207,10 @@ class TestDiGraph(BaseAttrDiGraphTester,TestGraph):
         self.K3.node[0]={}
         self.K3.node[1]={}
         self.K3.node[2]={}
+        self.P3.node={}
+        self.P3.node[0]={}
+        self.P3.node[1]={}
+        self.P3.node[2]={}
 
     def test_data_input(self):
         G=self.Graph(data={1:[2],2:[1]}, name="test")

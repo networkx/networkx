@@ -1214,12 +1214,15 @@ class DiGraph(Graph):
         bunch = self.nbunch_iter(nbunch)
         # create new graph and copy subgraph into it
         H = self.__class__()
+        # copy node and attribute dictionaries
+        for n in bunch:
+            H.node[n]=self.node[n]
         # namespace shortcuts for speed
         H_succ=H.succ
         H_pred=H.pred
         self_succ=self.succ
         # add nodes
-        for n in bunch:
+        for n in H:
             H_succ[n]={}
             H_pred[n]={}
         # add edges
@@ -1230,8 +1233,5 @@ class DiGraph(Graph):
                     # add both representations of edge: u-v and v-u
                     Hnbrs[v]=datadict
                     H_pred[v][u]=datadict
-        # copy node and attribute dictionaries
-        for n in H:
-            H.node[n]=self.node[n]
         H.graph=self.graph
         return H

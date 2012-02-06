@@ -254,7 +254,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         """
-        return iter(self.adj)
+        return iter(self.node)
 
     def __contains__(self,n):
         """Return True if n is a node, False otherwise. Use the expression
@@ -268,7 +268,7 @@ class Graph(object):
         True
         """
         try:
-            return n in self.adj
+            return n in self.node
         except TypeError:
             return False
 
@@ -288,7 +288,7 @@ class Graph(object):
         4
 
         """
-        return len(self.adj)
+        return len(self.node)
 
     def __getitem__(self, n):
         """Return a dict of neighbors of node n.  Use the expression 'G[n]'.
@@ -372,7 +372,7 @@ class Graph(object):
             except AttributeError:
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
-        if n not in self.adj:
+        if n not in self.node:
             self.adj[n] = {}
             self.node[n] = attr_dict
         else: # update attr even if node already exists
@@ -426,10 +426,10 @@ class Graph(object):
         """
         for n in nodes:
             try:
-                newnode=n not in self.adj
+                newnode=n not in self.node
             except TypeError:
                 nn,ndict = n
-                if nn not in self.adj:
+                if nn not in self.node:
                     self.adj[nn] = {}
                     newdict = attr.copy()
                     newdict.update(ndict)
@@ -557,7 +557,7 @@ class Graph(object):
         """
         if data:
             return iter(self.node.items())
-        return iter(self.adj)
+        return iter(self.node)
 
     def nodes(self, data=False):
         """Return a list of the nodes in the graph.
@@ -605,7 +605,7 @@ class Graph(object):
         >>> len(G)
         3
         """
-        return len(self.adj)
+        return len(self.node)
 
     def order(self):
         """Return the number of nodes in the graph.
@@ -620,7 +620,7 @@ class Graph(object):
         number_of_nodes, __len__  which are identical
 
         """
-        return len(self.adj)
+        return len(self.node)
 
     def has_node(self, n):
         """Return True if the graph contains the node n.
@@ -643,7 +643,7 @@ class Graph(object):
 
         """
         try:
-            return n in self.adj
+            return n in self.node
         except TypeError:
             return False
 
@@ -705,10 +705,10 @@ class Graph(object):
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
         # add nodes
-        if u not in self.adj:
+        if u not in self.node:
             self.adj[u] = {}
             self.node[u] = {}
-        if v not in self.adj:
+        if v not in self.node:
             self.adj[v] = {}
             self.node[v] = {}
         # add the edge
@@ -778,10 +778,10 @@ class Graph(object):
             else:
                 raise NetworkXError(\
                     "Edge tuple %s must be a 2-tuple or 3-tuple."%(e,))
-            if u not in self.adj:
+            if u not in self.node:
                 self.adj[u] = {}
                 self.node[u] = {}
-            if v not in self.adj:
+            if v not in self.node:
                 self.adj[v] = {}
                 self.node[v] = {}
             datadict=self.adj[u].get(v,{})
@@ -887,12 +887,13 @@ class Graph(object):
         >>> ebunch=[(1,2),(2,3)]
         >>> G.remove_edges_from(ebunch)
         """
+        adj=self.adj
         for e in ebunch:
             u,v = e[:2]  # ignore edge data if present
-            if u in self.adj and v in self.adj[u]:
-                del self.adj[u][v]
+            if u in adj and v in adj[u]:
+                del adj[u][v]
                 if u != v:  # self loop needs only one entry removed
-                    del self.adj[v][u]
+                    del adj[v][u]
 
 
     def has_edge(self, u, v):
@@ -1480,11 +1481,14 @@ class Graph(object):
         bunch =self.nbunch_iter(nbunch)
         # create new graph and copy subgraph into it
         H = self.__class__()
+        # copy node and attribute dictionaries
+        for n in bunch:
+            H.node[n]=self.node[n]
         # namespace shortcuts for speed
         H_adj=H.adj
         self_adj=self.adj
         # add nodes and edges (undirected method)
-        for n in bunch:
+        for n in H.node:
             Hnbrs={}
             H_adj[n]=Hnbrs
             for nbr,d in self_adj[n].items():
@@ -1492,9 +1496,6 @@ class Graph(object):
                     # add both representations of edge: n-nbr and nbr-n
                     Hnbrs[nbr]=d
                     H_adj[nbr][n]=d
-        # copy node and attribute dictionaries
-        for n in H:
-            H.node[n]=self.node[n]
         H.graph=self.graph
         return H
 
@@ -1799,7 +1800,8 @@ class Graph(object):
                             yield n
                 except TypeError as e:
                     message=e.args[0]
-#                    sys.stdout.write(message)
+                    import sys
+                    sys.stdout.write(message)
                     # capture error for non-sequence/iterator nbunch.
                     if 'iter' in message:
                         raise NetworkXError(\
