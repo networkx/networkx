@@ -279,7 +279,8 @@ def generate_gml(G):
         for k,v in d.items():
             if type(v)==dict:
                 v=listify(v,indent,indentlevel+1)
-            result += indentlevel*indent+"%s %s\n"%(k,v)
+            result += (indentlevel+1)*indent + \
+                string_item(k,v,indentlevel*indent)+'\n'
         return result+indentlevel*indent+"]"
 
     def string_item(k,v,indent):
@@ -311,6 +312,8 @@ def generate_gml(G):
         yield indent+"directed 1"
     # write graph attributes 
     for k,v in G.graph.items():
+        if k == 'directed':
+            continue
         yield indent+string_item(k,v,indent)
     # write nodes
     for n in G:
