@@ -11,6 +11,7 @@ Bipartite Graph Algorithms
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from itertools import count
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = [ 'is_bipartite',
@@ -81,23 +82,17 @@ def biadjacency_matrix(G, row_order, column_order=None,
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(\
-          "adjacency_matrix() requires numpy: http://scipy.org/ ")
-
+        raise ImportError('adjacency_matrix() requires numpy ',
+                          'http://scipy.org/')
     if column_order is None:
         column_order = list(set(G) - set(row_order))
-
-    index_top = dict(zip(row_order,range(len(row_order))))
-    index_bot = dict(zip(column_order,range(len(column_order))))
-
-    M = np.zeros((len(row_order),len(column_order)), dtype=dtype)
-
+    row = dict(zip(row_order,count()))
+    col = dict(zip(column_order,count()))
+    M = np.zeros((len(row),len(col)), dtype=dtype)
     for u in row_order:
         for v, d in G[u].items():
-            M[index_top[u],index_bot[v]] = d.get(weight, 1)
-
-    M = np.asmatrix(M)
-    return M
+            M[row[u],col[v]] = d.get(weight, 1)
+    return np.asmatrix(M)
 
 def color(G):
     """Returns a two-coloring of the graph.
