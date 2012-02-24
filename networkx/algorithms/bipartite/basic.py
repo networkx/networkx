@@ -37,11 +37,11 @@ def biadjacency_matrix(G, row_order, column_order=None,
     G : graph
        A NetworkX graph
 
-    row_order : list
-       The rows are ordered according to the nodes in row_order.
+    row_order : list of nodes
+       The rows of the matrix are ordered according to the list of nodes.
 
     column_order : list, optional
-       The columns are ordered according to the nodes in column_order.
+       The columns of the matrix are ordered according to the list of nodes.
        If column_order is None, then the ordering of columns is arbitrary.
 
     weight : string or None, optional (default='weight')
@@ -61,7 +61,7 @@ def biadjacency_matrix(G, row_order, column_order=None,
 
     Notes
     -----
-    No attempt to check that the input network is actually bipartite is made.
+    No attempt is made to check that the input graph is bipartite.
 
     For directed bipartite graphs only successors are considered as neighbors.
     To obtain an adjacency matrix with ones (or weight values) for both
