@@ -12,9 +12,91 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__all__ = ['is_bipartite', 'is_bipartite_node_set',
-           'color', 'sets',
-           'density', 'degrees']
+__all__ = [ 'is_bipartite',
+            'is_bipartite_node_set',
+            'color',
+            'sets',
+            'density',
+            'degrees',
+            'biadjacency_matrix']
+
+def biadjacency_matrix(G, row_order, column_order=None, 
+                            weight='weight', dtype=None):
+    r"""Return the biadjacency matrix of the bipartite graph G.
+
+    Let `G = (U, V, E)` be a bipartite graph with node sets 
+    `U = u_{1},...,u_{r}` and `V = v_{1},...,v_{s}`. The biadjacency 
+    matrix [1] is the `r` x `s` matrix `B` in which `b_{i,j} = 1` 
+    if, and only if, `(u_i, v_j) \in E`. If the parameter `weight` is
+    not `None` and matches the name of an edge attribute, its value is 
+    used instead of 1.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph
+
+    row_order : list
+       The rows are ordered according to the nodes in row_order.
+
+    column_order : list, optional
+       The columns are ordered according to the nodes in column_order.
+       If column_order is None, then the ordering of columns is arbitrary.
+
+    weight : string or None, optional (default='weight')
+       The edge data key used to provide each value in the matrix.
+       If None, then each edge has weight 1.
+
+    dtype : NumPy data type, optional
+        A valid single NumPy data type used to initialize the array. 
+        This must be a simple type such as int or numpy.float64 and
+        not a compound data type (see to_numpy_recarray)
+        If None, then the NumPy default is used.
+
+    Returns
+    -------
+    B : numpy matrix
+      Biadjacency matrix representation of the bipartite graph G.
+
+    Notes
+    -----
+    No attempt to check that the input network is actually bipartite is made.
+
+    For directed bipartite graphs only successors are considered as neighbors.
+    To obtain an adjacency matrix with ones (or weight values) for both 
+    predecessors and successors you have to generate two biadjacency matrices
+    where the rows of one of them are the columns of the other, and then add
+    one to the transpose of the other.
+
+    See Also
+    --------
+    to_numpy_matrix
+    adjacency_matrix
+
+    References
+    ----------
+    [1] http://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph
+    """
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(\
+          "adjacency_matrix() requires numpy: http://scipy.org/ ")
+
+    if column_order is None:
+        column_order = list(set(G) - set(row_order))
+
+    index_top = dict(zip(row_order,range(len(row_order))))
+    index_bot = dict(zip(column_order,range(len(column_order))))
+
+    M = np.zeros((len(row_order),len(column_order)), dtype=dtype)
+
+    for u in row_order:
+        for v, d in G[u].items():
+            M[index_top[u],index_bot[v]] = d.get(weight, 1)
+
+    M = np.asmatrix(M)
+    return M
 
 def color(G):
     """Returns a two-coloring of the graph.

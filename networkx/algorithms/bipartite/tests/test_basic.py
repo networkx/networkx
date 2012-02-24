@@ -69,3 +69,31 @@ class TestBipartiteBasic:
         u,d=bipartite.degrees(G,Y,weight='other')
         assert_equal(u,{1:1.2,3:2})
         assert_equal(d,{0:0.2,2:2,4:1})
+
+    def test_biadjacency_matrix_weight(self):
+        G=nx.path_graph(5)
+        G.add_edge(0,1,weight=2,other=4)
+        X=[1,3]
+        Y=[0,2,4]
+        M = bipartite.biadjacency_matrix(G,X,weight='weight')
+        assert_equal(M[0,0], 2)
+        M = bipartite.biadjacency_matrix(G, X, weight='other')
+        assert_equal(M[0,0], 4)
+
+    def test_biadjacency_matrix(self):
+        tops = [2,5,10]
+        bots = [5,10,15]
+        for i in range(len(tops)):
+            G = nx.bipartite_random_graph(tops[i], bots[i], 0.2)
+            top = [n for n,d in G.nodes(data=True) if d['bipartite']==0]
+            M = bipartite.biadjacency_matrix(G, top)
+            assert_equal(M.shape[0],tops[i])
+            assert_equal(M.shape[1],bots[i])
+
+    def test_biadjacency_matrix_order(self):
+        G=nx.path_graph(5)
+        G.add_edge(0,1,weight=2)
+        X=[3,1]
+        Y=[4,2,0]
+        M = bipartite.biadjacency_matrix(G,X,Y,weight='weight')
+        assert_equal(M[1,2], 2)

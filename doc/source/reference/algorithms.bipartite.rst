@@ -17,6 +17,7 @@ Basic functions
    color
    density
    degrees
+   biadjacency_matrix
 
 Projections
 -----------
