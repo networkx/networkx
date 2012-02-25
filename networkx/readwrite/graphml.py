@@ -240,7 +240,7 @@ class GraphMLWriter(GraphML):
         """
         if element_type not in self.xml_type:
             raise nx.NetworkXError('GraphML writer does not support '
-                                   'dict types as data values.')
+                                   '%s as data values.'%element_type)
         key_id = self.get_key(name, self.xml_type[element_type], scope, default)
         data_element = Element("data", key=key_id)
         data_element.text = make_str(value)
