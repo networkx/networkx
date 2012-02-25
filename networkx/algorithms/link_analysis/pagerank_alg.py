@@ -276,8 +276,8 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     ind=eigenvalues.argsort()
     # eigenvector of largest eigenvalue at ind[-1], normalized
     largest=np.array(eigenvectors[:,ind[-1]]).flatten().real
-    norm=largest.sum()
-    centrality=dict(zip(nodelist,largest/norm))
+    norm=float(largest.sum())
+    centrality=dict(zip(nodelist,map(float,largest/norm)))
     return centrality
 
 
@@ -372,7 +372,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         # check convergence, l1 norm
         err=scipy.absolute(x-xlast).sum()
         if err < n*tol:
-            return dict(zip(nodelist,x))
+            return dict(zip(nodelist,map(float,x)))
         i+=1
     raise NetworkXError('pagerank_scipy: power iteration failed to converge'
                         'in %d iterations.'%(i+1))
