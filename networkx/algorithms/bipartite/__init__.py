@@ -31,10 +31,10 @@ algorithm:
 >>> nx.is_connected(B)
 True
 >>> bottom_nodes, top_nodes = bipartite.sets(B)
->>> top_nodes
-set([1, 2, 3, 4])
->>> bottom_nodes
-set(['a', 'c', 'b'])
+>>> list(top_nodes)
+[1, 2, 3, 4]
+>>> list(bottom_nodes)
+['a', 'c', 'b']
 
 However, if the input graph is not connected, there are more than one possible
 colorations. Thus, the following result is correct:
@@ -43,19 +43,19 @@ colorations. Thus, the following result is correct:
 >>> nx.is_connected(B)
 False
 >>> bottom_nodes, top_nodes = bipartite.sets(B)
->>> top_nodes
-set([1, 2, 4, 'c'])
->>> bottom_nodes
-set(['a', 3, 'b'])
+>>> list(top_nodes)
+[1, 2, 4, 'c']
+>>> list(bottom_nodes)
+['a', 3, 'b']
 
 Using the "bipartite" node attribute, you can easily get the two node sets:
 
 >>> top_nodes = set(n for n,d in B.nodes(data=True) if d['bipartite']==0)
 >>> bottom_nodes = set(B) - top_nodes
->>> top_nodes
-set([1, 2, 3, 4])
->>> bottom_nodes
-set(['a', 'c', 'b'])
+>>> list(top_nodes)
+[1, 2, 3, 4]
+>>> list(bottom_nodes)
+['a', 'c', 'b']
 
 So you can easily use the bipartite algorithms that require, as an argument, a
 container with all nodes that belong to one node set:
@@ -74,10 +74,10 @@ All bipartite graph generators in NetworkX build bipartite graphs with the
 False
 >>> RB_top = set(n for n,d in RB.nodes(data=True) if d['bipartite']==0)
 >>> RB_bottom = set(RB) - RB_top
->>> RB_top
-set([0, 1, 2, 3, 4])
->>> RB_bottom
-set([5, 6, 7, 8, 9, 10, 11])
+>>> list(RB_top)
+[0, 1, 2, 3, 4]
+>>> list(RB_bottom)
+[5, 6, 7, 8, 9, 10, 11]
 
 For other bipartite graph generators see the bipartite section of
 :doc:`generators`.
