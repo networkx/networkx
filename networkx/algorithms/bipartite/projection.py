@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Create one-mode (unipartite) projections from bipartite graphs.
+"""One-mode (unipartite) projections of bipartite graphs.
 """
 import networkx as nx
 #    Copyright (C) 2011 by 
@@ -8,7 +8,8 @@ import networkx as nx
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
+                            'Jordi Torrents <jtorrents@milnou.net>'])
 __all__ = ['project',
            'projected_graph',
            'weighted_projected_graph',
@@ -16,13 +17,12 @@ __all__ = ['project',
            'overlap_weighted_projected_graph',
            'generic_weighted_projected_graph']
 
-
 def projected_graph(B, nodes, multigraph=False):
-    r"""Return the graph that is the projection of the bipartite graph B 
-    onto the specified nodes.
+    r"""Returns the projection of B onto one of its node sets.
 
-    The nodes retain their names and are connected in the resulting
-    graph if have an edge to a common node in the original graph.
+    Returns the graph G that is the projection of the bipartite graph B 
+    onto the specified nodes. They retain their attributes and are connected
+    in G if they have a common neighbor in B.
 
     Parameters
     ----------
@@ -117,14 +117,13 @@ def projected_graph(B, nodes, multigraph=False):
     return G
 
 def weighted_projected_graph(B, nodes, ratio=False):
-    r"""Return a weighted unipartite projection of B onto the nodes of 
-    one bipartite node set.
+    r"""Returns a weighted projection of B onto one of its node sets.
 
     The weighted projected graph is the projection of the bipartite
     network B onto the specified nodes with weights representing the
     number of shared neighbors or the ratio between actual shared
     neighbors and possible shared neighbors if ratio=True [1]_. The
-    nodes retain their names and are connected in the resulting graph
+    nodes retain their attributes and are connected in the resulting graph
     if they have an edge to a common node in the original graph.
 
     Parameters
@@ -204,8 +203,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
     return G
 
 def collaboration_weighted_projected_graph(B, nodes):
-    r"""Weighted unipartite projection of B onto the nodes of 
-    one bipartite node set using the collaboration model.
+    r"""Newman's weighted projection of B onto one of its node sets.
 
     The collaboration weighted projection is the projection of the
     bipartite network B onto the specified nodes with weights assigned
@@ -221,7 +219,7 @@ def collaboration_weighted_projected_graph(B, nodes):
     network and `\delta_{v}^{w}` is 1 if node `v` is
     linked to node `w` in the original bipartite graph or 0 otherwise.
  
-    The nodes retain their names and are connected in the resulting
+    The nodes retain their attributes and are connected in the resulting
     graph if have an edge to a common node in the original bipartite
     graph.
 
@@ -295,8 +293,7 @@ def collaboration_weighted_projected_graph(B, nodes):
     return G
 
 def overlap_weighted_projected_graph(B, nodes, jaccard=True):
-    r"""Return the overlap weighted projection of B onto the nodes of
-    one bipartite node set.
+    r"""Overlap weighted projection of B onto one of its node sets.
 
     The overlap weighted projection is the projection of the bipartite 
     network B onto the specified nodes with weights representing 
@@ -315,7 +312,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
 
         w_{v,u} = \frac{|N(u) \cap N(v)|}{min(|N(u)|,|N(v)|)}
     
-    The nodes retain their names and are connected in the resulting
+    The nodes retain their attributes and are connected in the resulting
     graph if have an edge to a common node in the original bipartite graph.
 
     Parameters
@@ -391,15 +388,14 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     return G
 
 def generic_weighted_projected_graph(B, nodes, weight_function=None):
-    r"""Return the weighted unipartite projection of B onto the nodes of 
-    one bipartite node set with a user-specified weight function.
+    r"""Weighted projection of B with a user-specified weight function.
 
     The bipartite network B is projected on to the specified nodes
     with weights computed by a user-specified function.  This function
     must accept as a parameter the neighborhood sets of two nodes and
     return an integer or a float.
 
-    The nodes retain their names and are connected in the resulting graph 
+    The nodes retain their attributes and are connected in the resulting graph 
     if they have an edge to a common node in the original graph.
 
     Parameters
