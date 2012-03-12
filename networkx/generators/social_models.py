@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Generator for online social network models, Updated 03/12/2012
+Generator for online social network models
 
 References
 ----------
