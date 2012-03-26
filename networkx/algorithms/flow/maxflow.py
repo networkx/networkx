@@ -152,9 +152,9 @@ def ford_fulkerson(G, s, t, capacity='capacity'):
                 'MultiGraph and MultiDiGraph not supported (yet).')
 
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph'%s)
+        raise nx.NetworkXError('node %s not in graph' % str(s))
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph'%t)
+        raise nx.NetworkXError('node %s not in graph' % str(t))
 
     auxiliary, inf_capacity_flows = _create_auxiliary_digraph(G,
                                                         capacity=capacity)
