@@ -72,3 +72,10 @@ class TestHITS:
             assert_almost_equal(a[n],G.a[n],places=4)
 
 
+    def test_empty(self):
+        G=networkx.Graph()
+        assert_equal(networkx.hits(G),({},{}))
+        assert_equal(networkx.hits_numpy(G),({},{}))
+        assert_equal(networkx.hits_scipy(G),({},{}))
+        assert_equal(networkx.authority_matrix(G).shape,(0,0))
+        assert_equal(networkx.hub_matrix(G).shape,(0,0))

@@ -72,7 +72,8 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
     """
     if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception("hits() not defined for graphs with multiedges.")
-
+    if len(G) == 0:
+        return {},{}
     # choose fixed starting vector if not given
     if nstart is None:
         h=dict.fromkeys(G,1.0/G.number_of_nodes())
@@ -171,6 +172,8 @@ def hits_numpy(G):
     except ImportError:
         raise ImportError(\
             "hits_numpy() requires NumPy: http://scipy.org/")
+    if len(G) == 0:
+        return {},{}
     H=nx.hub_matrix(G,G.nodes())
     e,ev=np.linalg.eig(H)
     m=e.argsort()[-1] # index of maximum eigenvalue
@@ -246,6 +249,8 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
     except ImportError:
         raise ImportError(\
             "hits_scipy() requires SciPy: http://scipy.org/")
+    if len(G) == 0:
+        return {},{}
     M=nx.to_scipy_sparse_matrix(G,nodelist=G.nodes())
     (n,m)=M.shape # should be square
     A=M.T*M # authority matrix
