@@ -81,6 +81,9 @@ def pagerank(G,alpha=0.85,personalization=None,
     if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception("pagerank() not defined for graphs with multiedges.")
 
+    if len(G) == 0:
+        return {}
+
     if not G.is_directed():
         D=G.to_directed()
     else:
@@ -189,6 +192,8 @@ def google_matrix(G, alpha=0.85, personalization=None,
                                 'must have a value for every node')
     M=nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight)
     (n,m)=M.shape # should be square
+    if n == 0:
+        return M
     # add constant to dangling nodes' row
     dangling=np.where(M.sum(axis=1)==0)
     for d in dangling[0]:
@@ -263,7 +268,8 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
         import numpy as np
     except ImportError:
         raise ImportError("pagerank_numpy() requires NumPy: http://scipy.org/")
-
+    if len(G) == 0:
+        return {}
     # choose ordering in matrix
     if personalization is None: # use G.nodes() ordering
         nodelist=G.nodes()
@@ -342,6 +348,8 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         import scipy.sparse
     except ImportError:
         raise ImportError("pagerank_scipy() requires SciPy: http://scipy.org/")
+    if len(G) == 0:
+        return {}
     # choose ordering in matrix
     if personalization is None: # use G.nodes() ordering
         nodelist=G.nodes()

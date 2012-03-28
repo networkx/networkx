@@ -100,3 +100,11 @@ class TestPageRank:
         _ = personalize.pop(0)
         assert_raises(networkx.NetworkXError,networkx.pagerank,G,
                       personalization=personalize)
+
+
+    def test_empty(self):
+        G=networkx.Graph()
+        assert_equal(networkx.pagerank(G),{})
+        assert_equal(networkx.pagerank_numpy(G),{})
+        assert_equal(networkx.pagerank_scipy(G),{})
+        assert_equal(networkx.google_matrix(G).shape,(0,0))
