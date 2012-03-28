@@ -19,7 +19,7 @@ def test_connected_double_edge_swap():
 def test_double_edge_swap_small():
     G = nx.double_edge_swap(nx.path_graph(3))
 
-@raises(NetworkXAlgorithmError)
+@raises(NetworkXError)
 def test_double_edge_swap_tries():
     G = nx.double_edge_swap(nx.path_graph(10),nswap=1,max_tries=0)
 

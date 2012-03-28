@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Swap edges in a graph.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -30,16 +30,16 @@ def double_edge_swap(G, nswap=1, max_tries=100):
             becomes  |  |
      x--y            x  y
 
-    If either the edge u-x or v-y already exist no swap is performed 
+    If either the edge u-x or v-y already exist no swap is performed
     and another attempt is made to find a suitable edge pair.
-    
+
     Parameters
     ----------
     G : graph
        An undirected graph
 
     nswap : integer (optional, default=1)
-       Number of double-edge swaps to perform 
+       Number of double-edge swaps to perform
 
     max_tries : integer (optional)
        Maximum number of attempts to swap edges
@@ -58,9 +58,11 @@ def double_edge_swap(G, nswap=1, max_tries=100):
     if G.is_directed():
         raise nx.NetworkXError(\
             "double_edge_swap() not defined for directed graphs.")
+    if nswap>max_tries:
+        raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
-    # Instead of choosing uniformly at random from a generated edge list, 
+    # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
     n=0
@@ -71,15 +73,15 @@ def double_edge_swap(G, nswap=1, max_tries=100):
 #        if random.random() < 0.5: continue # trick to avoid periodicities?
         # pick two random edges without creating edge list
         # choose source node indices from discrete distribution
-        (ui,xi)=nx.utils.discrete_sequence(2,cdistribution=cdf) 
-        if ui==xi: 
+        (ui,xi)=nx.utils.discrete_sequence(2,cdistribution=cdf)
+        if ui==xi:
             continue # same source, skip
         u=keys[ui] # convert index to label
-        x=keys[xi] 
+        x=keys[xi]
         # choose target uniformly from neighbors
         v=random.choice(list(G[u]))
         y=random.choice(list(G[x]))
-        if v==y: 
+        if v==y:
             continue # same target, skip
         if (x not in G[u]) and (y not in G[v]): # don't create parallel edges
             G.add_edge(u,x)
@@ -113,7 +115,7 @@ def connected_double_edge_swap(G, nswap=1):
        An undirected graph
 
     nswap : integer (optional, default=1)
-       Number of double-edge swaps to perform 
+       Number of double-edge swaps to perform
 
     Returns
     -------
@@ -141,7 +143,7 @@ def connected_double_edge_swap(G, nswap=1):
     swapcount=0
     deg=G.degree()
     dk=list(deg.keys()) # Label key for nodes
-    cdf=nx.utils.cumulative_distribution(list(G.degree().values())) 
+    cdf=nx.utils.cumulative_distribution(list(G.degree().values()))
     window=1
     while n < nswap:
         wcount=0
@@ -149,13 +151,13 @@ def connected_double_edge_swap(G, nswap=1):
         while wcount < window and n < nswap:
             # Pick two random edges without creating edge list
             # Choose source nodes from discrete degree distribution
-            (ui,xi)=nx.utils.discrete_sequence(2,cdistribution=cdf) 
-            if ui==xi: 
+            (ui,xi)=nx.utils.discrete_sequence(2,cdistribution=cdf)
+            if ui==xi:
                 continue # same source, skip
             u=dk[ui] # convert index to label
-            x=dk[xi] 
+            x=dk[xi]
             # Choose targets uniformly from neighbors
-            v=random.choice(G.neighbors(u)) 
+            v=random.choice(G.neighbors(u))
             y=random.choice(G.neighbors(x)) #
             if v==y: continue # same target, skip
             if (not G.has_edge(u,x)) and (not G.has_edge(v,y)):
