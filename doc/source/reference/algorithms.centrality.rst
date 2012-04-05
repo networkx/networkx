@@ -88,3 +88,11 @@ Harmonic Centrality
    :toctree: generated/
 
    harmonic_centrality
+
+Reaching
+--------
+.. autosummary::
+   :toctree: generated/
+
+   local_reaching_centrality
+   global_reaching_centrality
