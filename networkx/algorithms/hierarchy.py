@@ -118,8 +118,9 @@ def global_reaching_centrality(G, weight=None):
              }
     """
     lengths_key = "grc_lengths"
-    if not G.is_directed():
-        raise nx.NetworkXError("G must be a digraph in global_reaching_centrality")
+
+    if G.size() < 1:
+        raise nx.NetworkXError("Size of G must be positive for global_reaching_centrality")
 
     # Transform weights to lengths in order to use nx.all_pairs_dijkstra_path
     if not(weight is None):
@@ -128,17 +129,28 @@ def global_reaching_centrality(G, weight=None):
     denom = float(G.order() - 1)
     local_reaching_centralities = []
     for node, path_dict in nx.all_pairs_dijkstra_path(G, weight=lengths_key).iteritems():
-        sum_avg_weight = len(path_dict) - 1
-        if not(weight is None):
+
+        if (weight is None) and G.is_directed():
+            sum_avg_weight = len(path_dict) - 1
+        else:
             avg_weights = []
-            for neighbor, path in path_dict.iteritems():
-                path_weights = [G.edge[i][j][weight] for i, j in pairwise(path)]
-                avg_path_weight = sum(path_weights) / float(len(path_weights))
-                avg_weights.append(avg_path_weight)
+            for neighbor, p in path_dict.iteritems():
+                path = list(pairwise(p))
+                if len(path) > 0:
+                    if (weight is None):
+                        path_weight = 1.
+                    else:
+                        path_weight = float(sum([G.edge[i][j][weight] for i, j in path]))
+                    avg_weights.append(path_weight / len(path))
             sum_avg_weight = sum(avg_weights)
         local_reaching_centralities.append(sum_avg_weight / denom)
     max_lrc = max(local_reaching_centralities)
+    grc = sum(max_lrc - lrc for lrc in local_reaching_centralities) / denom
 
     # Clean up
-    return sum(max_lrc - lrc for lrc in local_reaching_centralities) / denom
+    if (not weight is None):
+        for i, j in G.edges_iter():
+            del G.edge[i][j][lengths_key]
+
+    return grc
     
