@@ -54,20 +54,6 @@ def flow_hierarchy(G, weight=None):
     scc = nx.strongly_connected_components(G)
     return 1.-sum(G.subgraph(c).size(weight) for c in scc)/float(G.size(weight))
 
-def pairwise(iterable):
-    a, b = itertools.tee(iterable)
-    next(b, None)
-    return itertools.izip(a, b)
-
-def weights_to_lengths(G, weight_key, length_key):
-    total_weight = float(G.size(weight=weight_key))
-    for i, j, attr_dict in G.edges_iter(data=True):
-        if attr_dict[weight_key] <= 0.:
-            raise nx.NetworkXError("All edges must have a positive weight to be converted into a length")
-        length = total_weight / attr_dict[weight_key]
-        G.edge[i][j][length_key] = length
-
-
 def global_reaching_centrality(G, weight=None):
     """Returns the global reaching centrality of a directed network.
 
@@ -116,19 +102,27 @@ def global_reaching_centrality(G, weight=None):
              year={2012}
              }
     """
-    lengths_key = "grc_lengths"
+
 
     if G.size() < 1:
         raise nx.NetworkXError("Size of G must be positive for global_reaching_centrality")
 
     # Transform weights to lengths in order to use nx.all_pairs_dijkstra_path
+    # Will stomp all over edge attribute "grc_lengths" if in use
     if not(weight is None):
-        weights_to_lengths(G, weight, lengths_key)
+        lengths_key = "grc_lengths"
+        total_weight = float(G.size(weight=weight))
+        for i, j, attr_dict in G.edges_iter(data=True):
+            if attr_dict[weight] <= 0.:
+                raise nx.NetworkXError("All edges must have a positive weight to be converted into a length")
+            length = total_weight / attr_dict[weight]
+            G.edge[i][j][lengths_key] = length
+    else:
+        lengths_key = None
 
     denom = float(G.order() - 1)
     local_reaching_centralities = []
     for node, path_dict in nx.all_pairs_dijkstra_path(G, weight=lengths_key).iteritems():
-
         if (weight is None) and G.is_directed():
             sum_avg_weight = len(path_dict) - 1
         else:
@@ -146,10 +140,16 @@ def global_reaching_centrality(G, weight=None):
     max_lrc = max(local_reaching_centralities)
     grc = sum(max_lrc - lrc for lrc in local_reaching_centralities) / denom
 
-    # Clean up
+    # Clean up by removing "grc_lengths" edge attribute, if necessary
     if (not weight is None):
         for i, j in G.edges_iter():
             del G.edge[i][j][lengths_key]
 
     return grc
     
+# Helper functions for global_reaching_centrality
+
+def pairwise(iterable):
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return itertools.izip(a, b)
