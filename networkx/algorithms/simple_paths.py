@@ -44,7 +44,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     References
     ----------
-    ..[1] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
+    .. [1] R. Sedgewick, "Algorithms in C, Part 5: Graph Algorithms",
        Addison Wesley Professional, 3rd ed., 2001.
 
     See Also

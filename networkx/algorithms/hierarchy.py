@@ -2,7 +2,7 @@
 """
 Flow Hierarchy.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -21,23 +21,24 @@ def flow_hierarchy(G, weight=None):
     Parameters
     ----------
     G : DiGraph or MultiDiGraph
+       A directed graph
 
     weight : key,optional (default=None)
-l        Attribute to use for node weights. If None the weight defaults to 1.
+       Attribute to use for node weights. If None the weight defaults to 1.
 
     Returns
     -------
     h : float
-       Flow heirarchy value 
+       Flow heirarchy value
 
     Notes
     -----
     The algorithm described in [1]_ computes the flow hierarchy through
     exponentiation of the adjacency matrix.  This function implements an
-    alternative approach that finds strongly connected components.    
-    An edge is in a cycle if and only if it is in a strongly connected 
-    component, which can be found in `O(m)`time using Tarjan's algorithm.
-    
+    alternative approach that finds strongly connected components.
+    An edge is in a cycle if and only if it is in a strongly connected
+    component, which can be found in `O(m)` time using Tarjan's algorithm.
+
     References
     ----------
     .. [1] Luo, J.; Magee, C.L. (2011),
