@@ -76,3 +76,4 @@ Thanks especially to the following contributors:
  - Simon Knight improved the GraphML functions to handle yEd/yfiles data,
    and to handle types correctly.
  - Conrad Lee contributed the k-clique community finding algorithm.
+ - Sérgio Nery Simões wrote the function for finding all simple paths.
