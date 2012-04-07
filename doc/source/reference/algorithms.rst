@@ -38,6 +38,7 @@ Algorithms
    algorithms.product
    algorithms.rich_club
    algorithms.shortest_paths
+   algorithms.simple_paths
    algorithms.swap
    algorithms.traversal
    algorithms.vitality

@@ -29,6 +29,7 @@ from networkx.algorithms.richclub import *
 from networkx.algorithms.distance_regular import *
 from networkx.algorithms.swap import *
 from networkx.algorithms.graphical import *
+from networkx.algorithms.simple_paths import *
 
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
