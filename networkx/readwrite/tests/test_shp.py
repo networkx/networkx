@@ -117,16 +117,16 @@ class TestShp(object):
         line = (
             "LINESTRING (0.9 0.9,4 2)",
         )
-        G.add_node(1, Wkb=points[0])
+        G.add_node(1, Wkt=points[0])
         G.add_node(2, Wkt=points[1])
         G.add_edge(1, 2, Wkt=line[0])
-        # try:
-        #     nx.write_shp(G, tpath)
-        # except Exception as e:
-        #     assert 'a'=='b', e
-    #     shpdir = ogr.Open(tpath)
-    #     self.checkgeom(shpdir.GetLayerByName("nodes"), points)
-    #     self.checkgeom(shpdir.GetLayerByName("edges"), line)
+        try:
+            nx.write_shp(G, tpath)
+        except Exception as e:
+            assert False, e
+        shpdir = ogr.Open(tpath)
+        self.checkgeom(shpdir.GetLayerByName("nodes"), points)
+        self.checkgeom(shpdir.GetLayerByName("edges"), line)
 
     def tearDown(self):
         self.deletetmp(self.drv, self.testdir, self.shppath)
