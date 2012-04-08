@@ -84,7 +84,7 @@ def communicability_centrality_exp(G):
     A[A!=0.0] = 1
     expA = scipy.linalg.expm(A)
     # convert diagonal to dictionary keyed by node
-    sc = dict(zip(nodelist,expA.diagonal()))
+    sc = dict(zip(nodelist,map(float,expA.diagonal())))
     return sc
 
 @require('numpy')
@@ -159,7 +159,7 @@ def communicability_centrality(G):
     expw = numpy.exp(w)
     xg = numpy.dot(vsquare,expw)
     # convert vector dictionary keyed by node
-    sc = dict(zip(nodelist,xg))
+    sc = dict(zip(nodelist,map(float,xg)))
     return sc
 
 @require('scipy')
@@ -259,7 +259,7 @@ def communicability_betweenness_centrality(G, normalized=True):
         B[i,:] = 0
         B[:,i] = 0
         B -= scipy.diag(scipy.diag(B))
-        sc[v] = B.sum()
+        sc[v] = float(B.sum())
         # put row and col back
         A[i,:] = row
         A[:,i] = col
@@ -361,7 +361,7 @@ def communicability(G):
             q = mapping[v]
             for j in range(len(nodelist)):
                 s += vec[:,j][p,0]*vec[:,j][q,0]*expw[j]
-            sc[u][v] = s
+            sc[u][v] = float(s)
     return sc
 
 @require('scipy')
@@ -436,7 +436,7 @@ def communicability_exp(G):
     for u in G:
         sc[u]={}
         for v in G:
-            sc[u][v] = expA[mapping[u],mapping[v]]
+            sc[u][v] = float(expA[mapping[u],mapping[v]])
     return sc
 
 @require('numpy')
