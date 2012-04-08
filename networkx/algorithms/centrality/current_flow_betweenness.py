@@ -134,7 +134,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     else:
         factor = nb/2.0
     # remap to original node names and "unnormalize" if required
-    return dict((ordering[k],v*factor) for k,v in betweenness.items())
+    return dict((ordering[k],float(v*factor)) for k,v in betweenness.items())
 
 
 def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
@@ -240,7 +240,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
     else:
         nb = 2.0
     for i,v in enumerate(H): # map integers to nodes
-        betweenness[v] = (betweenness[v]-i)*2.0/nb
+        betweenness[v] = float((betweenness[v]-i)*2.0/nb)
     return dict((ordering[k],v) for k,v in betweenness.items())
 
 
@@ -347,7 +347,7 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
             betweenness[e]+=(i+1-pos[i])*row[i]
             betweenness[e]+=(n-i-pos[i])*row[i]
         betweenness[e]/=nb
-    return dict(((ordering[s],ordering[t]),v) 
+    return dict(((ordering[s],ordering[t]),float(v))
                 for (s,t),v in betweenness.items())
 
 
