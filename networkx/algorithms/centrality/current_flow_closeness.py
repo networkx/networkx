@@ -114,7 +114,7 @@ def current_flow_closeness_centrality(G, normalized=True, weight='weight',
         nb=1.0
     for v in H:
         betweenness[v]=nb/(betweenness[v])
-    return dict((ordering[k],v) for k,v in betweenness.items())
+    return dict((ordering[k],float(v)) for k,v in betweenness.items())
 
 information_centrality=current_flow_closeness_centrality
 
@@ -125,4 +125,3 @@ def setup_module(module):
         import numpy
     except:
         raise SkipTest("NumPy not available")
-
