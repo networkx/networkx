@@ -234,6 +234,9 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     font_family : string, optional (default='sans-serif')
        Font family 
 
+    label : string, optional
+        Label for graph legend
+
     Examples
     --------
     >>> G=nx.dodecahedral_graph()
@@ -283,6 +286,7 @@ def draw_networkx_nodes(G, pos,
                         vmax=None, 
                         ax=None,
                         linewidths=None,
+                        label = None,
                         **kwds):
     """Draw the nodes of the graph G.
 
@@ -330,6 +334,9 @@ def draw_networkx_nodes(G, pos,
 
     linewidths : [None | scalar | sequence]
        Line width of symbol border (default =1.0)
+
+    label : [None| string]
+       Label for legend
 
     Examples
     --------
@@ -386,8 +393,9 @@ def draw_networkx_nodes(G, pos,
                                vmin=vmin,
                                vmax=vmax,
                                alpha=alpha,
-                               linewidths=linewidths)
-                               
+                               linewidths=linewidths,
+                               label=label)
+
 #    pylab.axes(ax)
     pylab.sci(node_collection)
     node_collection.set_zorder(2)
@@ -405,6 +413,7 @@ def draw_networkx_edges(G, pos,
                         edge_vmax=None, 
                         ax=None,
                         arrows=True,
+                        label=None,
                         **kwds):
     """Draw the edges of the graph G.
 
@@ -449,6 +458,9 @@ def draw_networkx_edges(G, pos,
 
     arrows : bool, optional (default=True) 
        For directed graphs, if True draw arrowheads.
+
+    label : [None| string]
+       Label for legend
 
     Notes
     -----
@@ -540,6 +552,7 @@ def draw_networkx_edges(G, pos,
 
 
     edge_collection.set_zorder(1) # edges go behind nodes            
+    edge_collection.set_label(label)
     ax.add_collection(edge_collection)
 
     # Note: there was a bug in mpl regarding the handling of alpha values for
@@ -600,6 +613,7 @@ def draw_networkx_edges(G, pos,
                                 )
         
         arrow_collection.set_zorder(1) # edges go behind nodes            
+        arrrow_collection.set_label(label)
         ax.add_collection(arrow_collection)
 
 
