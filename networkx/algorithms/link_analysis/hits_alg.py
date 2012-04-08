@@ -182,8 +182,8 @@ def hits_numpy(G):
     e,ev=np.linalg.eig(A)
     m=e.argsort()[-1] # index of maximum eigenvalue
     a=np.array(ev[:,m]).flatten()
-    hubs=dict(zip(G.nodes(),h/h.sum()))
-    authorities=dict(zip(G.nodes(),a/a.sum()))
+    hubs=dict(zip(G.nodes(),map(float,h/h.sum())))
+    authorities=dict(zip(G.nodes(),map(float,a/a.sum())))
     return hubs,authorities
 
 
@@ -273,8 +273,8 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
     a=np.asarray(x).flatten()
     # h=M*a
     h=np.asarray(M*a).flatten()
-    hubs=dict(zip(G.nodes(),h/h.sum()))
-    authorities=dict(zip(G.nodes(),a/a.sum()))
+    hubs=dict(zip(G.nodes(),map(float,h/h.sum())))
+    authorities=dict(zip(G.nodes(),map(float,a/a.sum())))
     return hubs,authorities
 
 
