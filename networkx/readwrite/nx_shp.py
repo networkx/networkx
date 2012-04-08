@@ -146,10 +146,14 @@ def write_shp(G, outdir):
                 geom.SetPoint(0, *fkey)
 
         return geom
-
-    def create_feature(geometry, lyr):
+    # Create_feature with new optional attributes arg (should be dict type)
+    def create_feature(geometry, lyr, attributes=None):
         feature = ogr.Feature(lyr.GetLayerDefn())
         feature.SetGeometry(g)
+        if attributes != None:
+            # Loop through attributes, assigning data to each field
+            for field, data in attributes.iteritems(): 
+               feature.SetField(field,data)
         lyr.CreateFeature(feature)
         feature.Destroy()
 
@@ -166,10 +170,41 @@ def write_shp(G, outdir):
     try: shpdir.DeleteLayer("edges")
     except: pass
     edges = shpdir.CreateLayer("edges", None, ogr.wkbLineString)
-    for e in G.edges():
+    
+    # New edge attribute write support merged into edge loop
+    fields = {}      # storage for field names and their data types
+    attributes = {}  # storage for attribute data (indexed by field names)
+
+    # Conversion dict between python and ogr types
+    OGRTypes = {int:ogr.OFTInteger, str:ogr.OFTString, float:ogr.OFTReal}
+    
+    # Edge loop
+    for e in G.edges(data=True):
         data = G.get_edge_data(*e)
         g = netgeometry(e, data)
-        create_feature(g, edges)
+        # Loop through attribute data in edges
+        for key, data in e[2].iteritems():
+            # Reject spatial data not required for attribute table
+            if (key != 'Json' and key != 'Wkt' and key != 'Wkb' 
+                and key != 'ShpName'):
+                  # For all edges check/add field and data type to fields dict
+                  if key not in fields:
+                  # Field not in previous edges so add to dict
+                     if type(data) in OGRTypes:
+                         fields[key] = OGRTypes[type(data)]
+                     else:
+                         # Data type not supported, default to string (char 80)
+                         fields[key] = ogr.OFTString
+                     # Create the new field
+                     newfield = ogr.FieldDefn(key, fields[key])
+                     edges.CreateField(newfield)
+                     # Store the data from new field to dict for CreateLayer()
+                     attributes[key] = data
+                  else:
+                     # Field already exists, add data to dict for CreateLayer()
+                     attributes[key] = data
+        # Create the feature with, passing new attribute data
+        create_feature(g, edges, attributes)
 
     nodes, edges = None, None
 
