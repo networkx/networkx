@@ -155,7 +155,7 @@ def eigenvector_centrality_numpy(G):
     # eigenvector of largest eigenvalue at ind[0], normalized
     largest=np.array(eigenvectors[:,ind[0]]).flatten()
     norm=np.sign(largest.sum())*np.linalg.norm(largest)
-    centrality=dict(zip(G,largest/norm))
+    centrality=dict(zip(G,map(float,largest/norm)))
     return centrality
 
 
