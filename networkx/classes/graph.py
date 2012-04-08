@@ -1030,6 +1030,7 @@ class Graph(object):
         Notes
         -----
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
+        For directed graphs this returns the out-edges.
 
         Examples
         --------
@@ -1073,6 +1074,7 @@ class Graph(object):
         Notes
         -----
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
+        For directed graphs this returns the out-edges.
 
         Examples
         --------

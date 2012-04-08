@@ -353,7 +353,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Notes
         -----
         Nodes in nbunch that are not in the graph will be (quietly) ignored.
-        For directed graphs edges() is the same as out_edges().
+        For directed graphs this returns the out-edges.
 
         Examples
         --------
