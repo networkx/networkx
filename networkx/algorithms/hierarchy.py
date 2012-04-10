@@ -11,9 +11,11 @@ and the 'Global reaching centrality'.
 #    BSD license.
 import networkx as nx
 import itertools
+
 __authors__ = "\n".join(['Ben Edwards (bedwards@cs.unm.edu)',
                          'Conrad Lee (conradlee@gmail.com)'])
 __all__ = ['flow_hierarchy', 'global_reaching_centrality']
+
 
 def flow_hierarchy(G, weight=None):
     """Returns the flow hierarchy of a directed network.
@@ -55,7 +57,7 @@ def flow_hierarchy(G, weight=None):
     scc = nx.strongly_connected_components(G)
     return 1.-sum(G.subgraph(c).size(weight) for c in scc)/float(G.size(weight))
 
-def global_reaching_centrality(G, weight=None):
+def global_reaching_centrality(G, weight=None, normalized=True):
     """Returns the global reaching centrality of a directed network.
 
     The global reaching centrality is based on the local reaching centrality,
@@ -104,9 +106,14 @@ def global_reaching_centrality(G, weight=None):
              }
     """
 
-
-    if G.size() < 1:
+    if G.size(weight=weight) < 1:
         raise nx.NetworkXError("Size of G must be positive for global_reaching_centrality")
+
+    if normalized and not(weight is None):
+        print "Num edges: %d \t Sum edge weight: %0.2f" % (G.size(), G.size(weight=weight))
+        norm = G.size(weight=weight) / G.size()
+    else:
+        norm = 1.
 
     # Transform weights to lengths in order to use nx.all_pairs_dijkstra_path
     # Will stomp all over edge attribute "grc_lengths" if in use
@@ -136,9 +143,9 @@ def global_reaching_centrality(G, weight=None):
                     else:
                         path_weight = float(sum([G.edge[i][j][weight] for i, j in path]))
                     avg_weights.append(path_weight / len(path))
-            sum_avg_weight = sum(avg_weights)
+            sum_avg_weight = sum(avg_weights) / norm
         local_reaching_centralities.append(sum_avg_weight / denom)
-    max_lrc = max(local_reaching_centralities)
+    max_lrc = max(local_reaching_centralities)   
     grc = sum(max_lrc - lrc for lrc in local_reaching_centralities) / denom
 
     # Clean up by removing "grc_lengths" edge attribute, if necessary

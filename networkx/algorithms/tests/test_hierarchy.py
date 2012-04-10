@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
-
+import sys
 # Functions to test flow_hierarchy measure
 
 def test_flow_hierarchy_exception():
@@ -39,19 +39,20 @@ def test_grc_exception1():
 
 def test_grc_directed_star():
     G = nx.DiGraph()
-    G.add_edge(1,2)
-    G.add_edge(1,3)
-    assert_equal(nx.global_reaching_centrality(G), 1.0)
+    G.add_edge(1,2, {"weight": 0.5})
+    G.add_edge(1,3, {"weight": 0.5})
+    assert_equal(nx.global_reaching_centrality(G, weight="weight", normalized=False), 0.5)
+    assert_equal(nx.global_reaching_centrality(G, weight="weight", normalized=True), 1.0)
 
 def test_grc_undirected_unweighted_star():
     G = nx.star_graph(2)
-    assert_equal(nx.global_reaching_centrality(G), 0.25)
+    assert_equal(nx.global_reaching_centrality(G, normalized=False), 0.25)
 
 def test_grc_undirected_weighted_star():
     G = nx.Graph()
     G.add_edge(1,2,{"weight":1})
     G.add_edge(1,3,{"weight":2})
-    assert_equal(nx.global_reaching_centrality(G), 0.25)
+    assert_equal(nx.global_reaching_centrality(G, normalized=False), 0.25)
 
 def test_grc_cycle_directed_unweighted():
     G = nx.DiGraph()
@@ -73,7 +74,7 @@ def test_grc_cycle_directed_weighted():
 def test_grc_cycle_undirected_weighted():
     G = nx.Graph()
     G.add_edge(1, 2, {"weight": 1})
-    assert_equal(nx.global_reaching_centrality(G, weight="weight"), 0.)
+    assert_equal(nx.global_reaching_centrality(G, weight="weight", normalized=False), 0.)
 
 def test_grc_directed_weighted():
     G = nx.DiGraph()
@@ -93,5 +94,5 @@ def test_grc_directed_weighted():
     max_local = max(local_reach_ctrs)
     handcomputed_grc = sum([max_local - lrc for lrc in local_reach_ctrs]) / denom
 
-    algcomputed_grc = nx.global_reaching_centrality(G, weight="weight")
+    algcomputed_grc = nx.global_reaching_centrality(G, weight="weight", normalized=False)
     assert_almost_equal(handcomputed_grc, algcomputed_grc, places=7)
