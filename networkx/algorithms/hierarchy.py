@@ -109,7 +109,7 @@ def global_reaching_centrality(G, weight=None, normalized=True):
     """
 
 
-    if G.size(weight=weight) < 1:
+    if G.size(weight=weight) <= 0:
         raise nx.NetworkXError("Size of G must be positive for global_reaching_centrality")
 
     if normalized and not(weight is None):
