@@ -29,13 +29,13 @@ def flow_hierarchy(G, weight=None):
        A directed graph
 
     weight : key,optional (default=None)
-        Attribute to use for node weights. If None the weight defaults to 1.
+       Attribute to use for node weights. If None the weight defaults to 1.
 
 
     Returns
     -------
     h : float
-        Flow heirarchy value 
+       Flow heirarchy value 
 
     Notes
     -----
