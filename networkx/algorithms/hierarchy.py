@@ -29,7 +29,8 @@ def flow_hierarchy(G, weight=None):
        A directed graph
 
     weight : key,optional (default=None)
-       Attribute to use for node weights. If None the weight defaults to 1.
+        Attribute to use for node weights. If None the weight defaults to 1.
+
 
     Returns
     -------
@@ -56,6 +57,7 @@ def flow_hierarchy(G, weight=None):
         raise nx.NetworkXError("G must be a digraph in flow_heirarchy")
     scc = nx.strongly_connected_components(G)
     return 1.-sum(G.subgraph(c).size(weight) for c in scc)/float(G.size(weight))
+
 
 def global_reaching_centrality(G, weight=None, normalized=True):
     """Returns the global reaching centrality of a directed network.
@@ -106,6 +108,7 @@ def global_reaching_centrality(G, weight=None, normalized=True):
              }
     """
 
+
     if G.size(weight=weight) < 1:
         raise nx.NetworkXError("Size of G must be positive for global_reaching_centrality")
 
@@ -143,6 +146,7 @@ def global_reaching_centrality(G, weight=None, normalized=True):
                     else:
                         path_weight = float(sum([G.edge[i][j][weight] for i, j in path]))
                     avg_weights.append(path_weight / len(path))
+
             sum_avg_weight = sum(avg_weights) / norm
         local_reaching_centralities.append(sum_avg_weight / denom)
     max_lrc = max(local_reaching_centralities)   
