@@ -1,11 +1,13 @@
 """Unit tests for shp.
 """
 
-import os,tempfile
+import os
+import tempfile
 from nose import SkipTest
 from nose.tools import assert_equal
 
 import networkx as nx
+
 
 class TestShp(object):
     @classmethod
@@ -18,7 +20,8 @@ class TestShp(object):
 
     def deletetmp(self, drv, *paths):
         for p in paths:
-            if os.path.exists(p): drv.DeleteDataSource(p)
+            if os.path.exists(p):
+                drv.DeleteDataSource(p)
 
     def setUp(self):
 
@@ -31,20 +34,20 @@ class TestShp(object):
 
         drv = ogr.GetDriverByName("ESRI Shapefile")
 
-        testdir = os.path.join(tempfile.gettempdir(),'shpdir')
-        shppath = os.path.join(tempfile.gettempdir(),'tmpshp.shp')
+        testdir = os.path.join(tempfile.gettempdir(), 'shpdir')
+        shppath = os.path.join(tempfile.gettempdir(), 'tmpshp.shp')
 
         self.deletetmp(drv, testdir, shppath)
         os.mkdir(testdir)
 
         shp = drv.CreateDataSource(shppath)
         lyr = createlayer(shp)
-        self.names = ['a','b','c']  #edgenames
+        self.names = ['a', 'b', 'c']  # edgenames
         self.paths = (  [(1.0, 1.0), (2.0, 2.0)],
                         [(2.0, 2.0), (3.0, 3.0)],
                         [(0.9, 0.9), (4.0, 2.0)]
                     )
-        for path,name in zip(self.paths, self.names):
+        for path, name in zip(self.paths, self.names):
             feat = ogr.Feature(lyr.GetLayerDefn())
             g = ogr.Geometry(ogr.wkbLineString)
             map(lambda xy: g.AddPoint_2D(*xy), path)
@@ -61,7 +64,7 @@ class TestShp(object):
         G = nx.read_shp(self.shppath)
         assert_equal(sorted(expected.node), sorted(G.node))
         assert_equal(sorted(expected.edges()), sorted(G.edges()))
-        names = [G.get_edge_data(s,e)['Name'] for s,e in G.edges()]
+        names = [G.get_edge_data(s, e)['Name'] for s, e in G.edges()]
         assert_equal(self.names, sorted(names))
 
     def checkgeom(self, lyr, expected):
@@ -85,7 +88,7 @@ class TestShp(object):
             "LINESTRING (2 2,3 3)",
             "LINESTRING (0.9 0.9,4 2)"
         )
-        tpath = os.path.join(tempfile.gettempdir(),'shpdir')
+        tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
         G = nx.read_shp(self.shppath)
         nx.write_shp(G, tpath)
         shpdir = ogr.Open(tpath)
@@ -101,7 +104,7 @@ class TestShp(object):
                 feature = lyr.GetNextFeature()
             assert_equal(sorted(expected), sorted(actualvalues))
 
-        tpath = os.path.join(tempfile.gettempdir(),'shpdir')
+        tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
         G = nx.read_shp(self.shppath)
         nx.write_shp(G, tpath)
         shpdir = ogr.Open(tpath)
@@ -109,7 +112,7 @@ class TestShp(object):
 
     def test_wkt_export(self):
         G = nx.DiGraph()
-        tpath = os.path.join(tempfile.gettempdir(),'shpdir')
+        tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
         points = (
             "POINT (0.9 0.9)",
             "POINT (4 2)"
