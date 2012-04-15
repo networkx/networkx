@@ -111,11 +111,17 @@ def disjoint_union(G,H):
     G,H : graph
        A NetworkX graph
 
+    Returns
+    -------
+    U : A union graph with the same type as G.
+
     Notes
     -----
     A new graph is created, of the same class as G.  It is recommended
     that G and H be either both directed or both undirected.
 
+    The nodes of G are relabeled 0 to len(G)-1, and the nodes of H are
+    relabeld len(G) to len(G)+len(H)-1.
     """
     R1=nx.convert_node_labels_to_integers(G)
     R2=nx.convert_node_labels_to_integers(H,first_label=len(R1))
@@ -150,7 +156,6 @@ def intersection(G, H):
     >>> H=nx.path_graph(5)
     >>> R=G.copy()
     >>> R.remove_nodes_from(n for n in G if n not in H)
-
     """
     # create new graph
     R=nx.create_empty_copy(G)
@@ -298,7 +303,6 @@ def compose(G, H, name=None):
     recommended that G and H be either both directed or both
     undirected.  Attributes from G take precedent over attributes
     from H.
-
     """
     if name is None:
         name="compose( %s, %s )"%(G.name,H.name)
