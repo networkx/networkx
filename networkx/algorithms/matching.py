@@ -2,25 +2,45 @@
 ********
 Matching
 ********
-
-The algorithm is taken from "Efficient Algorithms for Finding Maximum
-Matching in Graphs" by Zvi Galil, ACM Computing Surveys, 1986.
-It is based on the "blossom" method for finding augmenting paths and
-the "primal-dual" method for finding a matching of maximum weight, both
-methods invented by Jack Edmonds.
-
 """
-__author__ = """Joris van Rantwijk"""
 #    Copyright (C) 2004-2008 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-#
+#   Copyright (C) 2011 by
+#   Nicholas Mancuso <nick.mancuso@gmail.com>
+#   All rights reserved.
+#   BSD license.
 from itertools import repeat
+__author__ = """\n""".join(['Joris van Rantwijk',
+                            'Nicholas Mancuso (nick.mancuso@gmail.com)'])
 
-_all__=['max_weight_matching']
+_all__ = ['max_weight_matching', 'maximal_matching']
+
+def maximal_matching(graph):
+    """ Find a maximal matching in the graph.
+
+    Parameters
+    ----------
+    graph : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    matching : set of edges.
+        A maximal mathing of the graph.
+    """
+    matching = set([])
+    edges = set([])
+    for edge in graph.edges_iter():
+        if edge not in edges:
+            u, v = edge
+            matching.add(edge)
+            edges = edges | set(graph.edges(u)) | set(graph.edges(v))
+    return matching
+
 
 def max_weight_matching(G, maxcardinality=False):
     """Compute a maximum-weighted matching of G.
@@ -58,12 +78,15 @@ def max_weight_matching(G, maxcardinality=False):
     could return a slightly suboptimal matching due to numeric
     precision errors.
 
+    This method is based on the "blossom" method for finding augmenting 
+    paths and the "primal-dual" method for finding a matching of maximum 
+    weight, both methods invented by Jack Edmonds [1]_.
+
     References
     ----------
-    .. [1] "Efficient Algorithms for Finding Maximum
-       Matching in Graphs" by Zvi Galil, ACM Computing Surveys, 1986.
+    .. [1] "Efficient Algorithms for Finding Maximum Matching in Graphs",
+       Zvi Galil, ACM Computing Surveys, 1986.
     """
-
     #
     # The algorithm is taken from "Efficient Algorithms for Finding Maximum
     # Matching in Graphs" by Zvi Galil, ACM Computing Surveys, 1986.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
+import math
 from nose.tools import *
 import networkx as nx
-import math
 
 class TestMatching:
 
@@ -207,4 +207,41 @@ class TestMatching:
         assert_equal(nx.max_weight_matching(G),
                      {1: 2, 2: 1, 3: 5, 4: 9, 5: 3, 
                       6: 7, 7: 6, 8: 10, 9: 4, 10: 8})
+
+def test_maximal_matching():
+    graph = nx.Graph()
+    graph.add_edge(0, 1)
+    graph.add_edge(0, 2)
+    graph.add_edge(0, 3)
+    graph.add_edge(0, 4)
+    graph.add_edge(0, 5)
+    graph.add_edge(1, 2)
+    matching = nx.maximal_matching(graph)
+
+    vset = {u for u, v in matching}
+    vset = vset | {v for u, v in matching}
+
+    for edge in graph.edges_iter():
+        u, v = edge
+        ok_(len({v} & vset) > 0 or len({u} & vset) > 0, \
+                "not a proper matching!")
+
+    eq_(1, len(matching), "matching not length 1!")
+    graph = nx.Graph()
+    graph.add_edge(1, 2)
+    graph.add_edge(1, 5)
+    graph.add_edge(2, 3)
+    graph.add_edge(2, 5)
+    graph.add_edge(3, 4)
+    graph.add_edge(3, 6)
+    graph.add_edge(5, 6)
+
+    matching = nx.maximal_matching(graph)
+    vset = {u for u, v in matching}
+    vset = vset | {v for u, v in matching}
+
+    for edge in graph.edges_iter():
+        u, v = edge
+        ok_(len({v} & vset) > 0 or len({u} & vset) > 0, \
+                "not a proper matching!")
 
