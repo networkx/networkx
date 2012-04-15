@@ -176,6 +176,6 @@ class TestFunction(object):
 
         # disconnected graph
         graph = nx.Graph()
-        graph.add_nodes_from(xrange(10))
+        graph.add_nodes_from(range(10))
         nbors = list(nx.non_neighbors(graph, 0))
         assert_equal(len(nbors), 9)
