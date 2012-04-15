@@ -72,6 +72,7 @@ class TestHITS:
             assert_almost_equal(a[n],G.a[n],places=4)
 
 
+    @attr('numpy')
     def test_empty(self):
         G=networkx.Graph()
         assert_equal(networkx.hits(G),({},{}))
