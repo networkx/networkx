@@ -153,7 +153,7 @@ def eigenvector_centrality_numpy(G):
     # eigenvalue indices in reverse sorted order
     ind=eigenvalues.argsort()[::-1]
     # eigenvector of largest eigenvalue at ind[0], normalized
-    largest=np.array(eigenvectors[:,ind[0]]).flatten()
+    largest=np.array(eigenvectors[:,ind[0]]).flatten().real
     norm=np.sign(largest.sum())*np.linalg.norm(largest)
     centrality=dict(zip(G,map(float,largest/norm)))
     return centrality
