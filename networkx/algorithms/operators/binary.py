@@ -1,6 +1,5 @@
 """
-Operations on graphs including union, intersection, difference,
-complement, subgraph.
+Operations on graphs including union, intersection, difference.
 """
 #    Copyright (C) 2004-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -13,8 +12,7 @@ from networkx.utils import is_string_like
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
-__all__ = ['union', 'compose', 'complement',
-           'disjoint_union', 'intersection',
+__all__ = ['union', 'compose', 'disjoint_union', 'intersection',
            'difference', 'symmetric_difference']
 
 def union(G, H, rename=(None, None), name=None):
@@ -326,38 +324,4 @@ def compose(G, H, name=None):
     R.graph.update(H.graph)
     R.graph.update(G.graph)
 
-    return R
-
-
-def complement(G, name=None):
-    """Return the graph complement of G.
-
-    Parameters
-    ----------
-    G : graph
-       A NetworkX graph
-
-    name : string
-       Specify name for new graph
-
-    Returns
-    -------
-    GC : A new graph.
-
-    Notes
-    ------
-    Note that complement() does not create self-loops and also
-    does not produce parallel edges for MultiGraphs.
-
-    Graph, node, and edge data are not propagated to the new graph.
-    """
-    if name is None:
-        name="complement(%s)"%(G.name)
-    R=G.__class__()
-    R.name=name
-    R.add_nodes_from(G)
-    R.add_edges_from( ((n,n2)
-                       for n,nbrs in G.adjacency_iter()
-                       for n2 in G if n2 not in nbrs
-                       if n != n2) )
     return R
