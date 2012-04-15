@@ -2,7 +2,7 @@
 Operations on graphs including union, intersection, difference,
 complement, subgraph.
 """
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -16,7 +16,8 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
 __all__ = ['union', 'compose', 'complement',
            'disjoint_union', 'intersection',
            'difference', 'symmetric_difference']
-def union(G,H,rename=False,name=None):
+
+def union(G, H, rename=(None, None), name=None):
     """ Return the union of graphs G and H.
 
     Graphs G and H must be disjoint, otherwise an exception is raised.
@@ -29,10 +30,10 @@ def union(G,H,rename=False,name=None):
     create_using : NetworkX graph
        Use specified graph for result.  Otherwise
 
-    rename : bool (default=False)
-       Node names of G and H can be changed be specifying the tuple
-       rename=('G-','H-') (for example).  Node u in G is then renamed
-       "G-u" and v in H is renamed "H-v".
+    rename : bool , default=(None, None)
+       Node names of G and H can be changed by specifying the tuple
+       rename=('G-','H-') (for example).  Node "u" in G is then renamed
+       "G-u" and "v" in H is renamed "H-v".
 
     name : string
        Specify the name for the union graph
@@ -50,60 +51,56 @@ def union(G,H,rename=False,name=None):
     to the union graph.  If a graph attribute is present in both
     G and H the value from G is used.
 
-
     See Also
     --------
     disjoint_union
-
     """
+    # Union is the same type as G
+    R = G.__class__()
     if name is None:
-        name="union( %s, %s )"%(G.name,H.name)
-    R=G.__class__()
-    R.name=name
+        name = "union( %s, %s )"%(G.name,H.name)
+    R.name = name
 
     # rename graph to obtain disjoint node labels
-    if rename: # create new string labels
-        def add_prefix0(x):
-            prefix=rename[0]
+    def add_prefix(graph, prefix):
+        if prefix is None:
+            return graph
+        def label(x):
             if is_string_like(x):
                 name=prefix+x
             else:
                 name=prefix+repr(x)
             return name
-        def add_prefix1(x):
-            prefix=rename[1]
-            if is_string_like(x):
-                name=prefix+x
-            else:
-                name=prefix+repr(x)
-            return name
-        G=nx.relabel_nodes(G,add_prefix0)
-        H=nx.relabel_nodes(H,add_prefix1)
-
+        return nx.relabel_nodes(graph, label)
+    G = add_prefix(G,rename[0])
+    H = add_prefix(H,rename[1])
     if set(G) & set(H):
-        raise nx.NetworkXError(\
-            """The node sets of G and H are not disjoint.
-Use appropriate rename=('Gprefix','Hprefix') or use disjoint_union(G,H).""")
-    # node names OK, now build union
-    R.add_nodes_from(G)
+        raise nx.NetworkXError('The node sets of G and H are not disjoint.',
+                               'Use appropriate rename=(Gprefix,Hprefix)'
+                               'or use disjoint_union(G,H).')
     if G.is_multigraph():
-        R.add_edges_from(e for e in G.edges_iter(keys=True,data=True))
+        G_edges = G.edges_iter(keys=True, data=True)
     else:
-        R.add_edges_from(e for e in G.edges_iter(data=True))
-    R.add_nodes_from(H)
+        G_edges = G.edges_iter(data=True)
     if H.is_multigraph():
-        R.add_edges_from(e for e in H.edges_iter(keys=True,data=True))
+        H_edges = H.edges_iter(keys=True, data=True)
     else:
-        R.add_edges_from(e for e in H.edges_iter(data=True))
+        H_edges = H.edges_iter(data=True)
 
+    # add nodes
+    R.add_nodes_from(G)
+    R.add_edges_from(G_edges)
+    # add edges
+    R.add_nodes_from(H)
+    R.add_edges_from(H_edges)
     # add node attributes
     R.node.update(G.node)
     R.node.update(H.node)
     # add graph attributes, G attributes take precedent over H attributes
     R.graph.update(H.graph)
     R.graph.update(G.graph)
-    return R
 
+    return R
 
 def disjoint_union(G,H):
     """ Return the disjoint union of graphs G and H,
