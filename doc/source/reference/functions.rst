@@ -25,6 +25,8 @@ Nodes
    nodes
    number_of_nodes
    nodes_iter
+   all_neighbors
+   non_neighbors
 
 Edges
 -----

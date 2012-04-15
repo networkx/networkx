@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+import random
 from nose.tools import *
 import networkx
+import networkx as nx
 
 class TestFunction(object):
     def setUp(self):
@@ -129,3 +131,51 @@ class TestFunction(object):
         assert_equal(info,expected_node_info)
 
         assert_raises(networkx.NetworkXError,networkx.info,G,n=-1)
+
+    def test_neighbors(self):
+        graph = nx.complete_graph(100)
+        pop = random.sample(graph.nodes(), 1)
+        nbors = list(nx.neighbors(graph, pop[0]))
+        # should be all the other vertices in the graph
+        assert_equal(len(nbors), len(graph) - 1)
+
+        graph = nx.path_graph(100)
+        node = random.sample(graph.nodes(), 1)[0]
+        nbors = list(nx.neighbors(graph, node))
+        # should be all the other vertices in the graph
+        if node != 0 and node != 99:
+            assert_equal(len(nbors), 2)
+        else:
+            assert_equal(len(nbors), 1)
+
+        # create a star graph with 99 outer nodes
+        graph = nx.star_graph(99)
+        nbors = list(nx.neighbors(graph, 0))
+        assert_equal(len(nbors), 99)
+
+    def test_non_neighbors(self):
+        graph = nx.complete_graph(100)
+        pop = random.sample(graph.nodes(), 1)
+        nbors = list(nx.non_neighbors(graph, pop[0]))
+        # should be all the other vertices in the graph
+        assert_equal(len(nbors), 0)
+
+        graph = nx.path_graph(100)
+        node = random.sample(graph.nodes(), 1)[0]
+        nbors = list(nx.non_neighbors(graph, node))
+        # should be all the other vertices in the graph
+        if node != 0 and node != 99:
+            assert_equal(len(nbors), 97)
+        else:
+            assert_equal(len(nbors), 98)
+
+        # create a star graph with 99 outer nodes
+        graph = nx.star_graph(99)
+        nbors = list(nx.non_neighbors(graph, 0))
+        assert_equal(len(nbors), 0)
+
+        # disconnected graph
+        graph = nx.Graph()
+        graph.add_nodes_from(xrange(10))
+        nbors = list(nx.non_neighbors(graph, 0))
+        assert_equal(len(nbors), 9)
