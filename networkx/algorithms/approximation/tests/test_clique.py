@@ -28,7 +28,14 @@ def test_clique_removal():
         cdens = nx.density(graph.subgraph(clique))
         eq_(cdens, 1.0, "clique not found by clique_removal!")
 
-def test_max_clique():
+def test_max_clique_smoke():
     # smoke test
     G = nx.Graph()
     assert_equal(len(apxa.max_clique(G)),0)
+
+def test_max_clique():
+    # create a complete graph
+    graph = nx.complete_graph(30)
+    # this should return the entire graph
+    mc = apxa.max_clique(graph)
+    assert_equals(30, len(mc))
