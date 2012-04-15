@@ -375,9 +375,9 @@ def get_edge_attributes(G,name):
 
 
 def all_neighbors(graph, node):
-    """ Returns the neighbors of a node in the graph.
-        If the graph is directed returns predecessors
-        as well as successors.
+    """ Returns all of the neighbors of a node in the graph.
+
+    If the graph is directed returns predecessors as well as successors.
 
     Parameters
     ----------
@@ -394,14 +394,14 @@ def all_neighbors(graph, node):
     """
     if graph.is_directed():
         values = itertools.chain.from_iterable([graph.predecessors_iter(node),
-                                                  graph.successors_iter(node)])
+                                                graph.successors_iter(node)])
     else:
         values = graph.neighbors_iter(node)
 
     return values
 
 def non_neighbors(graph, node):
-    """ Returns the non-neighbors of the node in the graph.
+    """Returns the non-neighbors of the node in the graph.
 
     Parameters
     ----------

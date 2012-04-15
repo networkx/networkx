@@ -21,7 +21,8 @@ Dominating Set
 .. autosummary::
    :toctree: generated/
 
-   minimum_dominating_set
+   min_weighted_dominating_set
+   min_edge_dominating_set
 
 
 Independent Set
@@ -52,7 +53,7 @@ Ramsey
 
 Vertex Cover
 ------------
-.. automodule:: networkx.algorithms.approximation.ramsey
+.. automodule:: networkx.algorithms.approximation.vertex_cover
 .. autosummary::
    :toctree: generated/
 
