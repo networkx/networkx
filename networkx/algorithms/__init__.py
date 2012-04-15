@@ -17,7 +17,6 @@ from networkx.algorithms.mis import *
 from networkx.algorithms.mst import *
 from networkx.algorithms.link_analysis import *
 from networkx.algorithms.operators import *
-from networkx.algorithms.product import *
 from networkx.algorithms.shortest_paths import *
 from networkx.algorithms.smetric import *
 from networkx.algorithms.traversal import *
@@ -43,6 +42,7 @@ import networkx.algorithms.link_analysis
 import networkx.algorithms.shortest_paths
 import networkx.algorithms.traversal
 import networkx.algorithms.chordal
+import networkx.algorithms.operators
 
 from networkx.algorithms.bipartite import projected_graph,project,is_bipartite
 from networkx.algorithms.isomorphism import is_isomorphic,could_be_isomorphic,\
