@@ -9,6 +9,7 @@ Algorithms
 .. toctree::
    :maxdepth: 2
 
+   algorithms.approximation
    algorithms.assortativity
    algorithms.bipartite
    algorithms.block
