@@ -364,14 +364,16 @@ class GraphMLReader(GraphML):
         else:
             G=nx.MultiGraph()
         # set defaults for graph attributes
+        G.graph['node_default']={}
+        G.graph['edge_default']={}
         for key_id,value in defaults.items():
             key_for=graphml_keys[key_id]['for']
             name=graphml_keys[key_id]['name']
             python_type=graphml_keys[key_id]['type']
             if key_for=='node':
-                G.graph['node_default']={name:python_type(value)}
+                G.graph['node_default'].update({name:python_type(value)})
             if key_for=='edge':
-                G.graph['edge_default']={name:python_type(value)}
+                G.graph['edge_default'].update({name:python_type(value)})
         # hyperedges are not supported
         hyperedge=graph_xml.find("{%s}hyperedge" % self.NS_GRAPHML)        
         if hyperedge is not None:
