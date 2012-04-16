@@ -184,6 +184,9 @@ def k_shell(G,k=None,core_number=None):
 
     Notes
     -----
+    This is similar to k_corona but in that case only neighbors in the
+    k-core are considered.
+
     Not implemented for graphs with parallel edges or self loops.
 
     For directed graphs the node degree is defined to be the 
@@ -194,6 +197,7 @@ def k_shell(G,k=None,core_number=None):
     See Also
     --------
     core_number
+    k_corona
 
     References
     ----------
