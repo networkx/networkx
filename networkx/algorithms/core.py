@@ -1,20 +1,20 @@
 """
 Find the k-cores of a graph.
 
-The k-core is found by recursively pruning nodes with degrees less than k. 
+The k-core is found by recursively pruning nodes with degrees less than k.
 
 See the following reference for details:
 
 An O(m) Algorithm for Cores Decomposition of Networks
 Vladimir Batagelj and Matjaz Zaversnik, 2003.
-http://arxiv.org/abs/cs.DS/0310049 
+http://arxiv.org/abs/cs.DS/0310049
 
 """
 __author__ = "\n".join(['Dan Schult (dschult@colgate.edu)',
                         'Jason Grout (jason-sage@creativetrax.com)',
                         'Aric Hagberg (hagberg@lanl.gov)'])
 
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -26,21 +26,21 @@ import networkx as nx
 
 def core_number(G):
     """Return the core number for each vertex.
-    
+
     A k-core is a maximal subgraph that contains nodes of degree k or more.
 
-    The core number of a node is the largest value k of a k-core containing 
+    The core number of a node is the largest value k of a k-core containing
     that node.
 
     Parameters
     ----------
-    G : NetworkX graph 
+    G : NetworkX graph
        A graph or directed graph
-  
+
     Returns
     -------
-    core_number : dictionary 
-       A dictionary keyed by node to the core number. 
+    core_number : dictionary
+       A dictionary keyed by node to the core number.
 
     Raises
     ------
@@ -51,14 +51,14 @@ def core_number(G):
     -----
     Not implemented for graphs with parallel edges or self loops.
 
-    For directed graphs the node degree is defined to be the 
-    in-degree + out-degree. 
+    For directed graphs the node degree is defined to be the
+    in-degree + out-degree.
 
     References
     ----------
     .. [1] An O(m) Algorithm for Cores Decomposition of Networks
        Vladimir Batagelj and Matjaz Zaversnik, 2003.
-       http://arxiv.org/abs/cs.DS/0310049 
+       http://arxiv.org/abs/cs.DS/0310049
     """
     if G.is_multigraph():
         raise nx.NetworkXError(
@@ -134,8 +134,8 @@ def k_core(G,k=None,core_number=None):
 
     Not implemented for graphs with parallel edges or self loops.
 
-    For directed graphs the node degree is defined to be the 
-    in-degree + out-degree. 
+    For directed graphs the node degree is defined to be the
+    in-degree + out-degree.
 
     Graph, node, and edge attributes are copied to the subgraph.
 
@@ -147,26 +147,26 @@ def k_core(G,k=None,core_number=None):
     ----------
     .. [1] An O(m) Algorithm for Cores Decomposition of Networks
        Vladimir Batagelj and Matjaz Zaversnik,  2003.
-       http://arxiv.org/abs/cs.DS/0310049 
+       http://arxiv.org/abs/cs.DS/0310049
     """
     if core_number is None:
         core_number=nx.core_number(G)
     if k is None:
-        k=max(core_number.values()) # max core 
+        k=max(core_number.values()) # max core
     nodes=(n for n in core_number if core_number[n]>=k)
     return G.subgraph(nodes).copy()
 
 def k_shell(G,k=None,core_number=None):
     """Return the k-shell of G.
 
-    The k-shell is the subgraph of nodes in the k-core containing 
+    The k-shell is the subgraph of nodes in the k-core containing
     nodes of exactly degree k.
 
     Parameters
     ----------
     G : NetworkX graph
       A graph or directed graph.
-    k : int, optional      
+    k : int, optional
       The order of the shell.  If not specified return the main shell.
     core_number : dictionary, optional
       Precomputed core numbers for the graph G.
@@ -189,8 +189,8 @@ def k_shell(G,k=None,core_number=None):
 
     Not implemented for graphs with parallel edges or self loops.
 
-    For directed graphs the node degree is defined to be the 
-    in-degree + out-degree. 
+    For directed graphs the node degree is defined to be the
+    in-degree + out-degree.
 
     Graph, node, and edge attributes are copied to the subgraph.
 
@@ -199,11 +199,11 @@ def k_shell(G,k=None,core_number=None):
     core_number
     k_corona
 
-    References
+
     ----------
-    .. [1] A model of Internet topology using k-shell decomposition 
-       Shai Carmi, Shlomo Havlin, Scott Kirkpatrick, Yuval Shavitt, 
-       and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154 
+    .. [1] A model of Internet topology using k-shell decomposition
+       Shai Carmi, Shlomo Havlin, Scott Kirkpatrick, Yuval Shavitt,
+       and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
        http://www.pnas.org/content/104/27/11150.full
     """
     if core_number is None:
@@ -222,7 +222,7 @@ def k_crust(G,k=None,core_number=None):
     ----------
     G : NetworkX graph
        A graph or directed graph.
-    k : int, optional      
+    k : int, optional
       The order of the shell.  If not specified return the main crust.
     core_number : dictionary, optional
       Precomputed core numbers for the graph G.
@@ -241,11 +241,11 @@ def k_crust(G,k=None,core_number=None):
     -----
     This definition of k-crust is different than the definition in [1]_.
     The k-crust in [1]_ is equivalent to the k+1 crust of this algorithm.
-    
+
     Not implemented for graphs with parallel edges or self loops.
 
-    For directed graphs the node degree is defined to be the 
-    in-degree + out-degree. 
+    For directed graphs the node degree is defined to be the
+    in-degree + out-degree.
 
     Graph, node, and edge attributes are copied to the subgraph.
 
@@ -255,9 +255,9 @@ def k_crust(G,k=None,core_number=None):
 
     References
     ----------
-    .. [1] A model of Internet topology using k-shell decomposition 
-       Shai Carmi, Shlomo Havlin, Scott Kirkpatrick, Yuval Shavitt, 
-       and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154 
+    .. [1] A model of Internet topology using k-shell decomposition
+       Shai Carmi, Shlomo Havlin, Scott Kirkpatrick, Yuval Shavitt,
+       and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
        http://www.pnas.org/content/104/27/11150.full
     """
     if core_number is None:
@@ -276,7 +276,7 @@ def k_corona(G, k, core_number=None):
 
     Parameters
     ----------
-    G : NetworkX graph 
+    G : NetworkX graph
        A graph or directed graph
     k : int
        The order of the corona.
@@ -291,15 +291,15 @@ def k_corona(G, k, core_number=None):
     Raises
     ------
     NetworkXError
-        The k-cornoa is not defined for graphs with self loops or 
+        The k-cornoa is not defined for graphs with self loops or
         parallel edges.
 
     Notes
     -----
     Not implemented for graphs with parallel edges or self loops.
 
-    For directed graphs the node degree is defined to be the 
-    in-degree + out-degree. 
+    For directed graphs the node degree is defined to be the
+    in-degree + out-degree.
 
     Graph, node, and edge attributes are copied to the subgraph.
 
@@ -309,16 +309,16 @@ def k_corona(G, k, core_number=None):
 
     References
     ----------
-    .. [1]  k -core (bootstrap) percolation on complex networks: 
-       Critical phenomena and nonlocal effects, 
+    .. [1]  k -core (bootstrap) percolation on complex networks:
+       Critical phenomena and nonlocal effects,
        A. V. Goltsev, S. N. Dorogovtsev, and J. F. F. Mendes,
-       Phys. Rev. E 73, 056101 (2006) 
+       Phys. Rev. E 73, 056101 (2006)
        http://link.aps.org/doi/10.1103/PhysRevE.73.056101
     """
 
     if core_number is None:
         core_number = nx.core_number(G)
-    nodes = (n for n in core_number 
-             if core_number[n] >= k 
+    nodes = (n for n in core_number
+             if core_number[n] >= k
              and len([v for v in G[n] if core_number[v] >= k]) == k)
     return G.subgraph(nodes).copy()
