@@ -84,7 +84,7 @@ class TestWeightedPath:
         assert_equal(nx.dijkstra_path(self.cycle,0,3),[0, 1, 2, 3])
         assert_equal(nx.dijkstra_path(self.cycle,0,4), [0, 6, 5, 4])
 
-        assert_equal(nx.single_source_dijkstra(self.cycle,0,0),(0, [0]) )
+        assert_equal(nx.single_source_dijkstra(self.cycle,0,0),({0:0}, {0:[0]}) )
 
     def test_bidirectional_dijkstra(self):
         assert_equal(nx.bidirectional_dijkstra(self.XG, 's', 'v'),

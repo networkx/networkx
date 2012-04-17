@@ -300,7 +300,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
     single_source_dijkstra_path_length()
     """
     if source==target: 
-        return (0, [source])
+        return ({source:0}, {source:[source]})
     dist = {}  # dictionary of final distances
     paths = {source:[source]}  # dictionary of paths
     seen = {source:0} 
