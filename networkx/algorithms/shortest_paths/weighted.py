@@ -5,20 +5,20 @@ Shortest path algorithms for weighed graphs.
 __author__ = """\n""".join(['Aric Hagberg <hagberg@lanl.gov>',
                             'Loïc Séguin-C. <loicseguin@gmail.com>',
                             'Dan Schult <dschult@colgate.edu>'])
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['dijkstra_path', 
-           'dijkstra_path_length', 
+__all__ = ['dijkstra_path',
+           'dijkstra_path_length',
            'bidirectional_dijkstra',
-           'single_source_dijkstra', 
-           'single_source_dijkstra_path', 
+           'single_source_dijkstra',
+           'single_source_dijkstra_path',
            'single_source_dijkstra_path_length',
-           'all_pairs_dijkstra_path', 
+           'all_pairs_dijkstra_path',
            'all_pairs_dijkstra_path_length',
            'dijkstra_predecessor_and_distance',
            'bellman_ford','negative_edge_cycle']
@@ -28,21 +28,21 @@ import networkx as nx
 from networkx.utils import generate_unique_node
 
 def dijkstra_path(G, source, target, weight='weight'):
-    """Returns the shortest path from source to target in a weighted graph G.  
+    """Returns the shortest path from source to target in a weighted graph G.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    source : node 
+    source : node
        Starting node
 
-    target : node 
+    target : node
        Ending node
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
-       
+
     Returns
     -------
     path : list
@@ -68,7 +68,7 @@ def dijkstra_path(G, source, target, weight='weight'):
     --------
     bidirectional_dijkstra()
     """
-    (length,path)=single_source_dijkstra(G, source, target=target, 
+    (length,path)=single_source_dijkstra(G, source, target=target,
                                          weight=weight)
     try:
         return path[target]
@@ -77,8 +77,8 @@ def dijkstra_path(G, source, target, weight='weight'):
 
 
 def dijkstra_path_length(G, source, target, weight='weight'):
-    """Returns the shortest path length from source to target 
-    in a weighted graph.  
+    """Returns the shortest path length from source to target
+    in a weighted graph.
 
     Parameters
     ----------
@@ -88,7 +88,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
        starting node for path
 
     target : node label
-       ending node for path 
+       ending node for path
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
@@ -97,7 +97,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     -------
     length : number
         Shortest path length.
-       
+
     Raises
     ------
     NetworkXNoPath
@@ -105,10 +105,10 @@ def dijkstra_path_length(G, source, target, weight='weight'):
 
     Examples
     --------
-    >>> G=nx.path_graph(5) 
+    >>> G=nx.path_graph(5)
     >>> print(nx.dijkstra_path_length(G,0,4))
     4
-    
+
     Notes
     -----
     Edge weight attributes must be numerical.
@@ -126,7 +126,7 @@ def dijkstra_path_length(G, source, target, weight='weight'):
 
 
 def single_source_dijkstra_path(G,source, cutoff=None, weight='weight'):
-    """Compute shortest path between source and all other reachable 
+    """Compute shortest path between source and all other reachable
     nodes for a weighted graph.
 
     Parameters
@@ -134,7 +134,7 @@ def single_source_dijkstra_path(G,source, cutoff=None, weight='weight'):
     G : NetworkX graph
 
     source : node
-       Starting node for path. 
+       Starting node for path.
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
@@ -168,9 +168,9 @@ def single_source_dijkstra_path(G,source, cutoff=None, weight='weight'):
     return path
 
 
-def single_source_dijkstra_path_length(G, source, cutoff= None, 
+def single_source_dijkstra_path_length(G, source, cutoff= None,
                                        weight= 'weight'):
-    """Compute the shortest path length between source and all other 
+    """Compute the shortest path length between source and all other
     reachable nodes for a weighted graph.
 
     Parameters
@@ -211,12 +211,12 @@ def single_source_dijkstra_path_length(G, source, cutoff= None,
 
     """
     dist = {}  # dictionary of final distances
-    seen = {source:0} 
-    fringe=[] # use heapq with (distance,label) tuples 
+    seen = {source:0}
+    fringe=[] # use heapq with (distance,label) tuples
     heapq.heappush(fringe,(0,source))
     while fringe:
         (d,v)=heapq.heappop(fringe)
-        if v in dist: 
+        if v in dist:
             continue # already searched this node.
         dist[v] = d
         #for ignore,w,edgedata in G.edges_iter(v,data=True):
@@ -233,7 +233,7 @@ def single_source_dijkstra_path_length(G, source, cutoff= None,
         for w,edgedata in edata:
             vw_dist = dist[v] + edgedata.get(weight,1)
             if cutoff is not None:
-                if vw_dist>cutoff: 
+                if vw_dist>cutoff:
                     continue
             if w in dist:
                 if vw_dist < dist[w]:
@@ -248,7 +248,7 @@ def single_source_dijkstra_path_length(G, source, cutoff= None,
 def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
     """Compute shortest paths and lengths in a weighted graph G.
 
-    Uses Dijkstra's algorithm for shortest paths. 
+    Uses Dijkstra's algorithm for shortest paths.
 
     Parameters
     ----------
@@ -258,7 +258,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
        Starting node for path
 
     target : node label, optional
-       Ending node for path 
+       Ending node for path
 
     cutoff : integer or float, optional
        Depth to stop the search. Only paths of length <= cutoff are returned.
@@ -287,31 +287,31 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
-    Based on the Python cookbook recipe (119466) at 
+    Based on the Python cookbook recipe (119466) at
     http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/119466
 
     This algorithm is not guaranteed to work if edge weights
     are negative or are floating point numbers
-    (overflows and roundoff errors can cause problems). 
-    
+    (overflows and roundoff errors can cause problems).
+
     See Also
     --------
     single_source_dijkstra_path()
     single_source_dijkstra_path_length()
     """
-    if source==target: 
+    if source==target:
         return ({source:0}, {source:[source]})
     dist = {}  # dictionary of final distances
     paths = {source:[source]}  # dictionary of paths
-    seen = {source:0} 
-    fringe=[] # use heapq with (distance,label) tuples 
+    seen = {source:0}
+    fringe=[] # use heapq with (distance,label) tuples
     heapq.heappush(fringe,(0,source))
     while fringe:
         (d,v)=heapq.heappop(fringe)
-        if v in dist: 
+        if v in dist:
             continue # already searched this node.
         dist[v] = d
-        if v == target: 
+        if v == target:
             break
         #for ignore,w,edgedata in G.edges_iter(v,data=True):
         #is about 30% slower than the following
@@ -327,7 +327,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
         for w,edgedata in edata:
             vw_dist = dist[v] + edgedata.get(weight,1)
             if cutoff is not None:
-                if vw_dist>cutoff: 
+                if vw_dist>cutoff:
                     continue
             if w in dist:
                 if vw_dist < dist[w]:
@@ -341,7 +341,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
 
 
 def dijkstra_predecessor_and_distance(G,source, cutoff=None, weight='weight'):
-    """Compute shortest path length and predecessors on shortest paths 
+    """Compute shortest path length and predecessors on shortest paths
     in weighted graphs.
 
     Parameters
@@ -360,7 +360,7 @@ def dijkstra_predecessor_and_distance(G,source, cutoff=None, weight='weight'):
     Returns
     -------
     pred,distance : dictionaries
-       Returns two dictionaries representing a list of predecessors 
+       Returns two dictionaries representing a list of predecessors
        of a node and the distance to each node.
 
     Notes
@@ -375,8 +375,8 @@ def dijkstra_predecessor_and_distance(G,source, cutoff=None, weight='weight'):
     pop=heapq.heappop
     dist = {}  # dictionary of final distances
     pred = {source:[]}  # dictionary of predecessors
-    seen = {source:0} 
-    fringe=[] # use heapq with (distance,label) tuples 
+    seen = {source:0}
+    fringe=[] # use heapq with (distance,label) tuples
     push(fringe,(0,source))
     while fringe:
         (d,v)=pop(fringe)
@@ -393,7 +393,7 @@ def dijkstra_predecessor_and_distance(G,source, cutoff=None, weight='weight'):
         for w,edgedata in edata:
             vw_dist = dist[v] + edgedata.get(weight,1)
             if cutoff is not None:
-                if vw_dist>cutoff: 
+                if vw_dist>cutoff:
                     continue
             if w in dist:
                 if vw_dist < dist[w]:
@@ -446,7 +446,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
     for n in G:
         paths[n]=single_source_dijkstra_path_length(G,n, cutoff=cutoff,
                                                     weight=weight)
-    return paths        
+    return paths
 
 def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     """ Compute shortest paths between all nodes in a weighted graph.
@@ -487,13 +487,13 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     for n in G:
         paths[n]=single_source_dijkstra_path(G, n, cutoff=cutoff,
                                              weight=weight)
-    return paths        
+    return paths
 
 def bellman_ford(G, source, weight = 'weight'):
-    """Compute shortest path lengths and predecessors on shortest paths 
+    """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
 
-    The algorithm has a running time of O(mn) where n is the number of 
+    The algorithm has a running time of O(mn) where n is the number of
     nodes and m is the number of edges.  It is slower than Dijkstra but
     can handle negative edge weights.
 
@@ -512,7 +512,7 @@ def bellman_ford(G, source, weight = 'weight'):
     Returns
     -------
     pred, dist : dictionaries
-       Returns two dictionaries keyed by node to predecessor in the 
+       Returns two dictionaries keyed by node to predecessor in the
        path and to the distance from the source respectively.
 
     Raises
@@ -537,7 +537,7 @@ def bellman_ford(G, source, weight = 'weight'):
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
     >>> G[1][2]['weight'] = -7
     >>> assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, 0)
-   
+
     Notes
     -----
     Edge weight attributes must be numerical.
@@ -560,7 +560,7 @@ def bellman_ford(G, source, weight = 'weight'):
 
     if numb_nodes == 1:
        return pred, dist
-    
+
     if G.is_multigraph():
         def get_weight(edge_dict):
             return min([eattr.get(weight,1) for eattr in edge_dict.values()])
@@ -596,7 +596,7 @@ def negative_edge_cycle(G, weight = 'weight'):
 
     Returns
     -------
-    negative_cycle : bool 
+    negative_cycle : bool
         True if a negative edge cycle exists, otherwise False.
 
     Examples
@@ -632,7 +632,7 @@ def negative_edge_cycle(G, weight = 'weight'):
 
 
 def bidirectional_dijkstra(G, source, target, weight = 'weight'):
-    """Dijkstra's algorithm for shortest paths using bidirectional search. 
+    """Dijkstra's algorithm for shortest paths using bidirectional search.
 
     Parameters
     ----------
@@ -669,25 +669,25 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
     4
     >>> print(path)
     [0, 1, 2, 3, 4]
-    
+
     Notes
     -----
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
 
-    In practice  bidirectional Dijkstra is much more than twice as fast as 
+    In practice  bidirectional Dijkstra is much more than twice as fast as
     ordinary Dijkstra.
 
     Ordinary Dijkstra expands nodes in a sphere-like manner from the
-    source. The radius of this sphere will eventually be the length 
-    of the shortest path. Bidirectional Dijkstra will expand nodes 
-    from both the source and the target, making two spheres of half 
-    this radius. Volume of the first sphere is pi*r*r while the  
-    others are 2*pi*r/2*r/2, making up half the volume. 
-    
+    source. The radius of this sphere will eventually be the length
+    of the shortest path. Bidirectional Dijkstra will expand nodes
+    from both the source and the target, making two spheres of half
+    this radius. Volume of the first sphere is pi*r*r while the
+    others are 2*pi*r/2*r/2, making up half the volume.
+
     This algorithm is not guaranteed to work if edge weights
     are negative or are floating point numbers
-    (overflows and roundoff errors can cause problems). 
+    (overflows and roundoff errors can cause problems).
 
     See Also
     --------
@@ -697,11 +697,11 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
     if source == target: return (0, [source])
     #Init:   Forward             Backward
     dists =  [{},                {}]# dictionary of final distances
-    paths =  [{source:[source]}, {target:[target]}] # dictionary of paths 
+    paths =  [{source:[source]}, {target:[target]}] # dictionary of paths
     fringe = [[],                []] #heap of (distance, node) tuples for extracting next node to expand
-    seen =   [{source:0},        {target:0} ]#dictionary of distances to nodes seen 
+    seen =   [{source:0},        {target:0} ]#dictionary of distances to nodes seen
     #initialize fringe heap
-    heapq.heappush(fringe[0], (0, source)) 
+    heapq.heappush(fringe[0], (0, source))
     heapq.heappush(fringe[1], (0, target))
     #neighs for extracting correct neighbor information
     if G.is_directed():
@@ -713,18 +713,18 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
     finalpath = []
     dir = 1
     while fringe[0] and fringe[1]:
-        # choose direction 
+        # choose direction
         # dir == 0 is forward direction and dir == 1 is back
         dir = 1-dir
         # extract closest to expand
-        (dist, v )= heapq.heappop(fringe[dir]) 
+        (dist, v )= heapq.heappop(fringe[dir])
         if v in dists[dir]:
-            # Shortest path to v has already been found 
+            # Shortest path to v has already been found
             continue
         # update distance
         dists[dir][v] = dist #equal to seen[dir][v]
         if v in dists[1-dir]:
-            # if we have scanned v in both directions we are done 
+            # if we have scanned v in both directions we are done
             # we have now discovered the shortest path
             return (finaldist,finalpath)
 
@@ -743,19 +743,19 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
                 else:
                     minweight=G[w][v].get(weight,1)
                 vwLength = dists[dir][v] + minweight #G[w][v].get(weight,1)
-            
+
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
                     raise ValueError("Contradictory paths found: negative weights?")
             elif w not in seen[dir] or vwLength < seen[dir][w]:
-                # relaxing        
+                # relaxing
                 seen[dir][w] = vwLength
-                heapq.heappush(fringe[dir], (vwLength,w)) 
+                heapq.heappush(fringe[dir], (vwLength,w))
                 paths[dir][w] = paths[dir][v]+[w]
                 if w in seen[0] and w in seen[1]:
                     #see if this path is better than than the already
                     #discovered shortest path
-                    totaldist = seen[0][w] + seen[1][w] 
+                    totaldist = seen[0][w] + seen[1][w]
                     if finalpath == [] or finaldist > totaldist:
                         finaldist = totaldist
                         revpath = paths[1][w][:]
