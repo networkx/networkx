@@ -3,7 +3,7 @@
 Shortest path algorithms for unweighted graphs.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -11,11 +11,11 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    BSD license.
 
 __all__ = ['bidirectional_shortest_path',
-           'single_source_shortest_path', 
+           'single_source_shortest_path',
            'single_source_shortest_path_length',
-           'all_pairs_shortest_path', 
+           'all_pairs_shortest_path',
            'all_pairs_shortest_path_length',
-           'predecessor'] 
+           'predecessor']
 
 
 import networkx as nx
@@ -58,7 +58,7 @@ def single_source_shortest_path_length(G,source,cutoff=None):
         thislevel=nextlevel  # advance to next level
         nextlevel={}         # and start a new list (fringe)
         for v in thislevel:
-            if v not in seen: 
+            if v not in seen:
                 seen[v]=level # set the level of vertex v
                 nextlevel.update(G[v]) # add neighbors of v
         if (cutoff is not None and cutoff <= level):  break
@@ -98,8 +98,8 @@ def all_pairs_shortest_path_length(G,cutoff=None):
     paths={}
     for n in G:
         paths[n]=single_source_shortest_path_length(G,n,cutoff=cutoff)
-    return paths        
-        
+    return paths
+
 
 
 
@@ -114,7 +114,7 @@ def bidirectional_shortest_path(G,source,target):
        starting node for path
 
     target : node label
-       ending node for path 
+       ending node for path
 
     Returns
     -------
@@ -144,13 +144,13 @@ def bidirectional_shortest_path(G,source,target):
     while w is not None:
         path.append(w)
         w=succ[w]
-    # from source to w        
+    # from source to w
     w=pred[path[0]]
     while w is not None:
         path.insert(0,w)
         w=pred[w]
 
-    return path        
+    return path
 
 def _bidirectional_pred_succ(G, source, target):
     """Bidirectional shortest path helper.
@@ -176,8 +176,8 @@ def _bidirectional_pred_succ(G, source, target):
     succ={target:None}
 
     # initialize fringes, start with forward
-    forward_fringe=[source] 
-    reverse_fringe=[target]  
+    forward_fringe=[source]
+    reverse_fringe=[target]
 
     while forward_fringe and reverse_fringe:
         if len(forward_fringe) <= len(reverse_fringe):
@@ -230,9 +230,9 @@ def single_source_shortest_path(G,source,cutoff=None):
 
     Notes
     -----
-    The shortest path is not necessarily unique. So there can be multiple 
-    paths between the source and each target node, all of which have the 
-    same 'shortest' length. For each target node, this function returns 
+    The shortest path is not necessarily unique. So there can be multiple
+    paths between the source and each target node, all of which have the
+    same 'shortest' length. For each target node, this function returns
     only one of those paths.
 
     See Also
@@ -249,12 +249,12 @@ def single_source_shortest_path(G,source,cutoff=None):
         nextlevel={}
         for v in thislevel:
             for w in G[v]:
-                if w not in paths: 
+                if w not in paths:
                     paths[w]=paths[v]+[w]
                     nextlevel[w]=1
         level=level+1
         if (cutoff is not None and cutoff <= level):  break
-    return paths   
+    return paths
 
 
 def all_pairs_shortest_path(G,cutoff=None):
@@ -287,13 +287,13 @@ def all_pairs_shortest_path(G,cutoff=None):
     paths={}
     for n in G:
         paths[n]=single_source_shortest_path(G,n,cutoff=cutoff)
-    return paths        
+    return paths
 
 
 
 
 def predecessor(G,source,target=None,cutoff=None,return_seen=None):
-    """ Returns dictionary of predecessors for the path from source to all nodes in G.  
+    """ Returns dictionary of predecessors for the path from source to all nodes in G.
 
 
     Parameters
@@ -304,7 +304,7 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
        Starting node for path
 
     target : node label, optional
-       Ending node for path. If provided only predecessors between 
+       Ending node for path. If provided only predecessors between
        source and target are returned
 
     cutoff : integer, optional
@@ -339,7 +339,7 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
                     pred[w]=[v]
                     seen[w]=level
                     nextlevel.append(w)
-                elif (seen[w]==level):# add v to predecessor list if it 
+                elif (seen[w]==level):# add v to predecessor list if it
                     pred[w].append(v) # is at the correct level
         if (cutoff and cutoff <= level):
             break

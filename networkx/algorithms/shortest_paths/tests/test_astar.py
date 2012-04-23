@@ -18,7 +18,7 @@ class TestAStar:
                                 ('y','s',{'weight':7}),
                                 ('y','v',{'weight':6})])
 
-    def test_random_graph(self):        
+    def test_random_graph(self):
 
         def dist(a, b):
             (x1, y1) = a
@@ -41,7 +41,6 @@ class TestAStar:
         path = nx.astar_path(G, points[0], points[-1], dist)
         assert path == nx.dijkstra_path(G, points[0], points[-1])
 
-        
     def test_astar_directed(self):
         assert nx.astar_path(self.XG,'s','v')==['s', 'x', 'u', 'v']
         assert nx.astar_path_length(self.XG,'s','v')==9
@@ -102,7 +101,7 @@ class TestAStar:
 # [0, 1, 2]
 
     def test_astar_w1(self):
-        G=nx.DiGraph() 
+        G=nx.DiGraph()
         G.add_edges_from([('s','u'), ('s','x'), ('u','v'), ('u','x'),
             ('v','y'), ('x','u'), ('x','w'), ('w', 'v'), ('x','y'),
             ('y','s'), ('y','v')])
@@ -113,7 +112,7 @@ class TestAStar:
     def test_astar_nopath(self):
         p = nx.astar_path(self.XG,'s','moon')
 
-    def test_cycle(self):        
+    def test_cycle(self):
         C=nx.cycle_graph(7)
         assert nx.astar_path(C,0,3)==[0, 1, 2, 3]
         assert nx.dijkstra_path(C,0,4)==[0, 6, 5, 4]
@@ -130,6 +129,6 @@ class TestAStar:
         G.add_edge(node_1, node_3)
         G.add_edge(node_2, node_4)
         G.add_edge(node_3, node_4)
-        path=nx.algorithms.shortest_paths.astar.astar_path(G, node_1, node_4) 
+        path=nx.algorithms.shortest_paths.astar.astar_path(G, node_1, node_4)
 
 

@@ -19,10 +19,10 @@ class TestFloyd:
         assert_equal(dist['s']['v'],9)
         assert_equal(path['s']['v'],'u')
         assert_equal(dist,
-                     {'y': {'y': 0, 'x': 12, 's': 7, 'u': 15, 'v': 6}, 
-                      'x': {'y': 2, 'x': 0, 's': 9, 'u': 3, 'v': 4}, 
-                      's': {'y': 7, 'x': 5, 's': 0, 'u': 8, 'v': 9}, 
-                      'u': {'y': 2, 'x': 2, 's': 9, 'u': 0, 'v': 1}, 
+                     {'y': {'y': 0, 'x': 12, 's': 7, 'u': 15, 'v': 6},
+                      'x': {'y': 2, 'x': 0, 's': 9, 'u': 3, 'v': 4},
+                      's': {'y': 7, 'x': 5, 's': 0, 'u': 8, 'v': 9},
+                      'u': {'y': 2, 'x': 2, 's': 9, 'u': 0, 'v': 1},
                       'v': {'y': 1, 'x': 13, 's': 8, 'u': 16, 'v': 0}})
 
 
@@ -32,10 +32,10 @@ class TestFloyd:
         assert_equal(path['s']['v'],'y')
 
         G=nx.DiGraph()  # no weights
-        G.add_edges_from([('s','u'), ('s','x'), 
-                          ('u','v'), ('u','x'), 
-                          ('v','y'), ('x','u'), 
-                          ('x','v'), ('x','y'), 
+        G.add_edges_from([('s','u'), ('s','x'),
+                          ('u','v'), ('u','x'),
+                          ('v','y'), ('x','u'),
+                          ('x','v'), ('x','y'),
                           ('y','s'), ('y','v')])
         path, dist = nx.floyd_warshall_predecessor_and_distance(G)
         assert_equal(dist['s']['v'],2)
