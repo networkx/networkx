@@ -55,6 +55,12 @@ class TestWeightedPath:
 
         assert_equal(nx.single_source_dijkstra_path(self.MXG,'s')['v'],
                      ['s', 'x', 'u', 'v'])
+        (D,P)=nx.single_source_dijkstra(self.cycle,0,[3,2])
+        assert_equal(P[2], [0, 1, 2])
+        assert_equal(3 in P, False)
+        assert_equal(nx.single_source_dijkstra(self.XG,'s','vw')[1]['v'], ['s', 'x', 'u', 'v'])
+        assert_equal(nx.single_source_dijkstra(self.XG,'s','vu')[1]['u'], ['s', 'x', 'u'])
+
 
         GG=self.XG.to_undirected()
         (D,P)= nx.single_source_dijkstra(GG,'s')
