@@ -25,3 +25,19 @@ def test_all_simple_paths_directed():
     G.add_path([3,2,1])
     paths = nx.all_simple_paths(G,1,3)
     assert_equal(list(list(p) for p in paths),[[1,2,3]])
+
+def hamiltonian_path(G,source):
+    source = next(G.nodes_iter())
+    neighbors = set(G[source])-set([source])
+    n = len(G)
+    for target in neighbors:
+        for path in nx.all_simple_paths(G,source,target):
+            if len(path) == n:
+                yield path
+
+def test_hamiltonian_path():
+    from itertools import permutations
+    G=nx.complete_graph(4)
+    paths = [list(p) for p in hamiltonian_path(G,0)]
+    exact = [[0]+list(p) for p in permutations([1,2,3],3) ]
+    assert_equal(sorted(paths),sorted(exact))
