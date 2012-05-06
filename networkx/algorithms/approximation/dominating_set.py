@@ -4,6 +4,7 @@
 Minimum Dominating Set
 **********************
 
+
 A dominating set for a graph G = (V, E) is a subset D of V such that every
 vertex not in D is joined to at least one member of D by some edge. The
 domination number gamma(G) is the number of vertices in a smallest dominating
@@ -23,7 +24,7 @@ __all__ = ["min_weighted_dominating_set",
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 def min_weighted_dominating_set(graph, weight=None):
-    """
+    """Return minimum weight dominating set.
 
     Parameters
     ----------
@@ -80,7 +81,8 @@ def min_weighted_dominating_set(graph, weight=None):
 
 
 def min_edge_dominating_set(graph):
-    """
+    """Return minimum weight dominating edge set.
+
     Parameters
     ----------
     graph : NetworkX graph
