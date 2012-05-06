@@ -12,7 +12,7 @@ __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 __all__ = ["clique_removal","max_clique"]
 
 def max_clique(graph):
-    """Find the Maximum Clique
+    r"""Find the Maximum Clique
 
     Finds the `O(|V|/(log|V|)^2)` apx of maximum clique/independent set
     in the worst case.
@@ -30,15 +30,15 @@ def max_clique(graph):
     Notes
     ------
     A clique in an undirected graph G = (V, E) is a subset of the vertex set
-    C ⊆ V, such that for every two vertices in C, there exists an edge
+    `C \subseteq V`, such that for every two vertices in C, there exists an edge
     connecting the two. This is equivalent to saying that the subgraph
     induced by C is complete (in some cases, the term clique may also refer
     to the subgraph).
 
     A maximum clique is a clique of the largest possible size in a given graph.
-    The clique number ω(G) of a graph G is the number of vertices in a maximum
-    clique in G. The intersection number of G is the smallest number of cliques
-    that together cover all edges of G.
+    The clique number `\omega(G)` of a graph G is the number of
+    vertices in a maximum clique in G. The intersection number of
+    G is the smallest number of cliques that together cover all edges of G.
 
     http://en.wikipedia.org/wiki/Maximum_clique
 
