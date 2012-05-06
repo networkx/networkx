@@ -47,7 +47,7 @@ def min_weighted_vertex_cover(graph, weight=None):
        http://www.cs.technion.ac.il/~reuven/PDF/vc_lr.pdf
     """
     weight_func = lambda nd: nd.get(weight, 1)
-    cost = {n: weight_func(nd) for n, nd in graph.nodes(data=True)}
+    cost = dict((n, weight_func(nd)) for n, nd in graph.nodes(data=True))
 
     # while there are edges uncovered, continue
     for u,v in graph.edges_iter():
@@ -56,4 +56,4 @@ def min_weighted_vertex_cover(graph, weight=None):
         cost[u] -= min_cost
         cost[v] -= min_cost
 
-    return {u for u in cost if cost[u] == 0}
+    return set(u for u in cost if cost[u] == 0)
