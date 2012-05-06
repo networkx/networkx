@@ -37,10 +37,8 @@ def dijkstra_path(G, source, target, weight='weight'):
     source : node
        Starting node
 
-    target : node or container of nodes
-       Ending node or container of ending nodes for path.
-       The search for paths ends when any of the target nodes are reached.
-       For large numbers of targets, choose a fast lookup container like sets.
+    target : node
+       Ending node
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
@@ -72,16 +70,10 @@ def dijkstra_path(G, source, target, weight='weight'):
     """
     (length,path)=single_source_dijkstra(G, source, target=target,
                                          weight=weight)
-    if target in G:
-        try:
-            return path[target]
-        except KeyError:
-            raise nx.NetworkXNoPath("node %s not reachable from %s"%(target,source))
-    # target is a container of targets
-    for t in target:
-        if t in path:
-            return path[t]
-    raise nx.NetworkXNoPath("nodes %s not reachable from %s"%(target,source))
+    try:
+        return path[target]
+    except KeyError:
+        raise nx.NetworkXNoPath("node %s not reachable from %s"%(source,target))
 
 
 def dijkstra_path_length(G, source, target, weight='weight'):
@@ -92,13 +84,11 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     ----------
     G : NetworkX graph
 
-    source : node
+    source : node label
        starting node for path
 
-    target : node or container of nodes
-       Ending node or container of ending nodes for path.
-       The search for paths ends when any of the target nodes are reached.
-       For large numbers of targets, choose a fast lookup container like sets.
+    target : node label
+       ending node for path
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
@@ -129,16 +119,10 @@ def dijkstra_path_length(G, source, target, weight='weight'):
     bidirectional_dijkstra()
     """
     length=single_source_dijkstra_path_length(G, source, weight=weight)
-    if target in G:
-        try:
-            return length[target]
-        except KeyError:
-            raise nx.NetworkXNoPath("node %s not reachable from %s"%(target,source))
-    # target is a container of targets
-    for t in target:
-        if t in length:
-            return length[t]
-    raise nx.NetworkXNoPath("nodes %s not reachable from %s"%(target,source))
+    try:
+        return length[target]
+    except KeyError:
+        raise nx.NetworkXNoPath("node %s not reachable from %s"%(source,target))
 
 
 def single_source_dijkstra_path(G,source, cutoff=None, weight='weight'):
@@ -193,7 +177,7 @@ def single_source_dijkstra_path_length(G, source, cutoff= None,
     ----------
     G : NetworkX graph
 
-    source : node
+    source : node label
        Starting node for path
 
     weight: string, optional (default='weight')
@@ -260,6 +244,7 @@ def single_source_dijkstra_path_length(G, source, cutoff= None,
                 heapq.heappush(fringe,(vw_dist,w))
     return dist
 
+
 def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
     """Compute shortest paths and lengths in a weighted graph G.
 
@@ -269,13 +254,11 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
     ----------
     G : NetworkX graph
 
-    source : node 
-       Starting node for path.
+    source : node label
+       Starting node for path
 
-    target : node or container of nodes, optional
-       Ending node or container of ending nodes for path.
-       The search for paths ends when any of the target nodes are reached.
-       For large numbers of targets, choose a fast lookup container like sets.
+    target : node label, optional
+       Ending node for path
 
     cutoff : integer or float, optional
        Depth to stop the search. Only paths of length <= cutoff are returned.
@@ -316,15 +299,11 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
     single_source_dijkstra_path()
     single_source_dijkstra_path_length()
     """
+    if source==target:
+        return ({source:0}, {source:[source]})
     dist = {}  # dictionary of final distances
     paths = {source:[source]}  # dictionary of paths
     seen = {source:0}
-    if target is None:
-        target=[]
-    elif target in G:
-        target=[target]
-    if source in target:
-        return (seen, paths)
     fringe=[] # use heapq with (distance,label) tuples
     heapq.heappush(fringe,(0,source))
     while fringe:
@@ -332,7 +311,7 @@ def single_source_dijkstra(G,source,target=None,cutoff=None,weight='weight'):
         if v in dist:
             continue # already searched this node.
         dist[v] = d
-        if v in target:
+        if v == target:
             break
         #for ignore,w,edgedata in G.edges_iter(v,data=True):
         #is about 30% slower than the following
@@ -369,7 +348,7 @@ def dijkstra_predecessor_and_distance(G,source, cutoff=None, weight='weight'):
     ----------
     G : NetworkX graph
 
-    source : node
+    source : node label
        Starting node for path
 
     weight: string, optional (default='weight')
@@ -524,7 +503,7 @@ def bellman_ford(G, source, weight = 'weight'):
        The algorithm works for all types of graphs, including directed
        graphs and multigraphs.
 
-    source: node
+    source: node label
        Starting node for path
 
     weight: string, optional (default='weight')
