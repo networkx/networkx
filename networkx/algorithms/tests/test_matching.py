@@ -218,12 +218,12 @@ def test_maximal_matching():
     graph.add_edge(1, 2)
     matching = nx.maximal_matching(graph)
 
-    vset = {u for u, v in matching}
-    vset = vset | {v for u, v in matching}
+    vset = set(u for u, v in matching)
+    vset = vset | set(v for u, v in matching)
 
     for edge in graph.edges_iter():
         u, v = edge
-        ok_(len({v} & vset) > 0 or len({u} & vset) > 0, \
+        ok_(len(set([v]) & vset) > 0 or len(set([u]) & vset) > 0, \
                 "not a proper matching!")
 
     eq_(1, len(matching), "matching not length 1!")
@@ -237,11 +237,11 @@ def test_maximal_matching():
     graph.add_edge(5, 6)
 
     matching = nx.maximal_matching(graph)
-    vset = {u for u, v in matching}
-    vset = vset | {v for u, v in matching}
+    vset = set(u for u, v in matching)
+    vset = vset | set(v for u, v in matching)
 
     for edge in graph.edges_iter():
         u, v = edge
-        ok_(len({v} & vset) > 0 or len({u} & vset) > 0, \
+        ok_(len(set([v]) & vset) > 0 or len(set([u]) & vset) > 0, \
                 "not a proper matching!")
 
