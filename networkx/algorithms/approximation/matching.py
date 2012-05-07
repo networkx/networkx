@@ -18,7 +18,9 @@ __all__ = ["min_maximal_matching"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 def min_maximal_matching(graph):
-    """
+    """Returns a set of edges such that no two edges share a common endpoint
+    and every edge not in the set shares some common endpoint in the set.
+
     Parameters
     ----------
     graph : NetworkX graph
