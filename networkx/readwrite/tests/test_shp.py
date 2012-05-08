@@ -100,15 +100,19 @@ class TestShp(object):
             feature = lyr.GetNextFeature()
             actualvalues = []
             while feature:
-                actualvalues.append(feature.GetGeometryRef().ExportToWkt())
+                actualvalues.append(feature.GetFieldAsString('Name'))
                 feature = lyr.GetNextFeature()
             assert_equal(sorted(expected), sorted(actualvalues))
 
         tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
+
         G = nx.read_shp(self.shppath)
         nx.write_shp(G, tpath)
         shpdir = ogr.Open(tpath)
-        nodes = shpdir.GetLayerByName("nodes")
+        edges = shpdir.GetLayerByName("edges")
+        expected = ['a', 'b', 'c']  # edgenames
+        import pdb; pdb.set_trace()
+        testattributes(edges, expected)
 
     def test_wkt_export(self):
         G = nx.DiGraph()
