@@ -96,13 +96,13 @@ class TestShp(object):
         self.checkgeom(shpdir.GetLayerByName("edges"), expectedlines)
 
     def test_attributeexport(self):
-        def testattributes(lyr, expected):
+        def testattributes(lyr, graph):
             feature = lyr.GetNextFeature()
-            actualvalues = []
             while feature:
-                actualvalues.append(feature.GetFieldAsString('Name'))
+                coords = feature.GetGeometryRef().GetPoints()
+                name = feature.GetFieldAsString('Name')
+                assert_equal(graph.get_edge_data(*coords)['Name'], name)
                 feature = lyr.GetNextFeature()
-            assert_equal(sorted(expected), sorted(actualvalues))
 
         tpath = os.path.join(tempfile.gettempdir(), 'shpdir')
 
@@ -110,9 +110,7 @@ class TestShp(object):
         nx.write_shp(G, tpath)
         shpdir = ogr.Open(tpath)
         edges = shpdir.GetLayerByName("edges")
-        expected = ['a', 'b', 'c']  # edgenames
-        import pdb; pdb.set_trace()
-        testattributes(edges, expected)
+        testattributes(edges, G)
 
     def test_wkt_export(self):
         G = nx.DiGraph()
