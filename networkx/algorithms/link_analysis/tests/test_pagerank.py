@@ -102,6 +102,7 @@ class TestPageRank:
                       personalization=personalize)
 
 
+    @attr('numpy')
     def test_empty(self):
         G=networkx.Graph()
         assert_equal(networkx.pagerank(G),{})

@@ -51,24 +51,25 @@ def all_simple_paths(G, source, target, cutoff=None):
     --------
     shortest_path
     """
+    if G.is_multigraph():
+        def neighbors(G,n):
+            return (v for u,v in G.edges(n))
+    else:
+        def neighbors(G,n):
+            return iter(G[n])
     if cutoff is None:
-        cutoff = len(G)
+        cutoff = len(G)-1
     visited = [source]
-    stack = [(v for u,v in G.edges(source))]
+    stack = [neighbors(G,source)]
     while stack:
         children = stack[-1]
         child = next(children, None)
         if child is None:
             stack.pop()
             visited.pop()
-        elif len(visited) == cutoff:
-            if child == target or target in children:
-                if target not in visited:
-                    yield visited + [target]
-                    stack.pop()
-                    visited.pop()
-        elif child not in visited:
-            visited.append(child)
-            stack.append((v for u,v in G.edges(child)))
+        elif len(visited) <= cutoff:
             if child == target:
-                yield visited
+                yield visited + [target]
+            elif child not in visited:
+                visited.append(child)
+                stack.append(neighbors(G,child))

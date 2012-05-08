@@ -5,6 +5,7 @@ Shortest Paths
    :toctree: generated/
 
    shortest_path
+   all_shortest_paths
    shortest_path_length
    average_shortest_path_length
    has_path

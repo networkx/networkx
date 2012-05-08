@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose.plugins.attrib import attr
 import networkx as nx
 from networkx.algorithms import bipartite
 class TestBipartiteBasic:
@@ -70,6 +71,8 @@ class TestBipartiteBasic:
         assert_equal(u,{1:1.2,3:2})
         assert_equal(d,{0:0.2,2:2,4:1})
 
+
+    @attr('numpy')
     def test_biadjacency_matrix_weight(self):
         G=nx.path_graph(5)
         G.add_edge(0,1,weight=2,other=4)
@@ -80,6 +83,7 @@ class TestBipartiteBasic:
         M = bipartite.biadjacency_matrix(G, X, weight='other')
         assert_equal(M[0,0], 4)
 
+    @attr('numpy')
     def test_biadjacency_matrix(self):
         tops = [2,5,10]
         bots = [5,10,15]
@@ -90,6 +94,7 @@ class TestBipartiteBasic:
             assert_equal(M.shape[0],tops[i])
             assert_equal(M.shape[1],bots[i])
 
+    @attr('numpy')
     def test_biadjacency_matrix_order(self):
         G=nx.path_graph(5)
         G.add_edge(0,1,weight=2)

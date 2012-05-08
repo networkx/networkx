@@ -16,7 +16,8 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'nodes_iter', 'edges_iter', 'is_directed','info',
            'freeze','is_frozen','subgraph','create_empty_copy',
            'set_node_attributes','get_node_attributes',
-           'set_edge_attributes','get_edge_attributes']
+           'set_edge_attributes','get_edge_attributes',
+           'all_neighbors','non_neighbors']
 
 def nodes(G):
     """Return a copy of the graph nodes in a list."""
@@ -371,3 +372,49 @@ def get_edge_attributes(G,name):
     'red'
     """
     return dict( ((u,v),d[name]) for u,v,d in G.edges(data=True) if name in d)
+
+
+def all_neighbors(graph, node):
+    """ Returns all of the neighbors of a node in the graph.
+
+    If the graph is directed returns predecessors as well as successors.
+
+    Parameters
+    ----------
+    graph : NetworkX graph
+        Graph to find neighbors.
+
+    node : node
+        The node whose neighbors will be returned.
+
+    Returns
+    -------
+    neighbors : iterator
+        Iterator of neighbors
+    """
+    if graph.is_directed():
+        values = itertools.chain.from_iterable([graph.predecessors_iter(node),
+                                                graph.successors_iter(node)])
+    else:
+        values = graph.neighbors_iter(node)
+
+    return values
+
+def non_neighbors(graph, node):
+    """Returns the non-neighbors of the node in the graph.
+
+    Parameters
+    ----------
+    graph : NetworkX graph
+        Graph to find neighbors.
+
+    node : node
+        The node whose neighbors will be returned.
+
+    Returns
+    -------
+    non_neighbors : iterator
+        Iterator of nodes in the graph that are not neighbors of the node.
+    """
+    nbors = set(neighbors(graph, node)) | set([node])
+    return (nnode for nnode in graph if nnode not in nbors)

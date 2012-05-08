@@ -6,5 +6,5 @@ Matching
 .. autosummary::
    :toctree: generated/
 
+   maximal_matching
    max_weight_matching
-

@@ -3,7 +3,7 @@
 Floyd-Warshall algorithm for shortest paths.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -23,8 +23,8 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
     Parameters
     ----------
     G : NetworkX graph
-    
-    nodelist : list, optional       
+
+    nodelist : list, optional
        The rows and columns are ordered by the nodes in nodelist.
        If nodelist is None then the ordering is produced by G.nodes().
 
@@ -40,7 +40,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
 
     Notes
     ------
-    Floyd's algorithm is appropriate for finding shortest paths 
+    Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.
     It has running time O(n^3) with running space is O(n^2).
@@ -63,7 +63,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
 
 def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
-    
+
     Parameters
     ----------
     G : NetworkX graph
@@ -74,12 +74,12 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     Returns
     -------
     predecessor,distance : dictionaries
-       Dictionaries, keyed by source and target, of predecessors and distances 
+       Dictionaries, keyed by source and target, of predecessors and distances
        in the shortest path.
 
     Notes
     ------
-    Floyd's algorithm is appropriate for finding shortest paths 
+    Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.
     It has running time O(n^3) with running space is O(n^2).
@@ -119,7 +119,7 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
 
 def floyd_warshall(G, weight='weight'):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
-    
+
     Parameters
     ----------
     G : NetworkX graph
@@ -136,7 +136,7 @@ def floyd_warshall(G, weight='weight'):
 
     Notes
     ------
-    Floyd's algorithm is appropriate for finding shortest paths 
+    Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.
     It has running time O(n^3) with running space is O(n^2).
