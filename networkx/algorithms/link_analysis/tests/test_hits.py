@@ -74,6 +74,10 @@ class TestHITS:
 
     @attr('numpy')
     def test_empty(self):
+        try:
+            import numpy
+        except ImportError:
+            raise SkipTest('numpy not available.')
         G=networkx.Graph()
         assert_equal(networkx.hits(G),({},{}))
         assert_equal(networkx.hits_numpy(G),({},{}))

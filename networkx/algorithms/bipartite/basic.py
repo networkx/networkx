@@ -324,3 +324,12 @@ def degrees(B, nodes, weight=None):
     bottom=set(nodes)
     top=set(B)-bottom
     return (B.degree(top,weight),B.degree(bottom,weight))
+
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
