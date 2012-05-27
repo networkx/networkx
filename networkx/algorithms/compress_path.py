@@ -87,9 +87,8 @@ class PathThroughFreeDAGCreator:
     self.complex_start_nodes = defaultdict(list)
     self.complex_end_nodes = []
     self.branching_nodes = defaultdict(list)
-    self.solo_nodes = []
-    self.solo_chains = []
-    #self.old_adj = {}
+    #UNNECESSARY: self.solo_nodes = []
+    #UNNECESSARY: self.solo_chains = []
 
   def create(self, G):
     for n in G:
@@ -118,7 +117,8 @@ class PathThroughFreeDAGCreator:
             if not is_pass_through_node(G, s):
               self.branching_nodes[n].append(s)
         elif is_solo_node(G, n):
-          self.solo_nodes.append(n)
+          #UNNECESSARY: self.solo_nodes.append(n)
+          pass
         else:
           raise RuntimeError("The node type is not found")
 
@@ -163,7 +163,8 @@ class PathThroughFreeDAGCreator:
           self.in_chains[n] = 1
           self.chains[-1].append(n)
           if self.is_chain_start_simple:
-            self.solo_chains.append(len(self.chains)-1)
+            #UNNECESSARY: self.solo_chains.append(len(self.chains)-1)
+            pass
         else:
           raise RuntimeError("The node type is not found 2")
 
@@ -223,9 +224,6 @@ def compress_path_digraph(G):
   (9, {'attr': 9})
   ('c;d;e', {})
   ('x;y;z', {})
-  ('P;Q;R;S', {})
-  ('A', {'attr': 'A'})
-  ('W;X;Y;Z', {})
   >>> 
   >>> for e in PTF_G.edges(data=True):
   ...   print e
@@ -270,7 +268,8 @@ def compress_path_digraph(G):
       else:
         c_concat = ';'.join([str(x) for x in c])
 
-      PTF_G.add_edge(k, c_concat, **G[k][c[0]])
+      #PTF_G.add_edge(k, c_concat, **G[k][c[0]])
+      PTF_G.add_edge(k, c_concat, G[k][c[0]])
   
   for k, v in ptf_dag_creator.stored_chains_from_end.iteritems():
     PTF_G.add_node(k, G.node[k])
@@ -282,33 +281,36 @@ def compress_path_digraph(G):
       else:
         c_concat = ';'.join([str(x) for x in c])
 
-      PTF_G.add_edge(c_concat, k, **G[c[-1]][k])
+      #PTF_G.add_edge(c_concat, k, **G[c[-1]][k])
+      PTF_G.add_edge(c_concat, k, G[c[-1]][k])
   
   for k, v in ptf_dag_creator.complex_start_nodes.iteritems():
     PTF_G.add_node(k, G.node[k])
     for i in v:
-      PTF_G.add_edge(k, i, **G[k][i])
+      #PTF_G.add_edge(k, i, **G[k][i])
+      PTF_G.add_edge(k, i, G[k][i])
   
   for k, v in ptf_dag_creator.branching_nodes.iteritems():
     PTF_G.add_node(k, G.node[k])
     for i in v:
-      PTF_G.add_edge(k, i, **G[k][i])
+      #PTF_G.add_edge(k, i, **G[k][i])
+      PTF_G.add_edge(k, i, G[k][i])
   
   for v in ptf_dag_creator.complex_end_nodes:
     PTF_G.add_node(v, G.node[v])
   
-  for v in ptf_dag_creator.solo_nodes:
-    PTF_G.add_node(v, G.node[v])
-
-  for v in ptf_dag_creator.solo_chains:
-    c = ptf_dag_creator.chains[v]
-    if len(c) == 1:
-      c_concat = c[0]
-      nodes_to_add_attributes[c_concat]=1
-    else:
-      c_concat = ';'.join([str(x) for x in c])
-
-    PTF_G.add_node(c_concat)
+#UNNECESSARY:  for v in ptf_dag_creator.solo_nodes:
+#UNNECESSARY:    PTF_G.add_node(v, G.node[v])
+#UNNECESSARY:
+#UNNECESSARY:  for v in ptf_dag_creator.solo_chains:
+#UNNECESSARY:    c = ptf_dag_creator.chains[v]
+#UNNECESSARY:    if len(c) == 1:
+#UNNECESSARY:      c_concat = c[0]
+#UNNECESSARY:      nodes_to_add_attributes[c_concat]=1
+#UNNECESSARY:    else:
+#UNNECESSARY:      c_concat = ';'.join([str(x) for x in c])
+#UNNECESSARY:
+#UNNECESSARY:    PTF_G.add_node(c_concat)
 
   for n in nodes_to_add_attributes.keys():
     PTF_G.add_node(n, G.node[n])
