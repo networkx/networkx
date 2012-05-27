@@ -7,171 +7,124 @@ __author__ = "Peng Yu (pengyu.ut@gmail.com)"
 
 __all__ = ['compress_path_digraph']
 
-def is_solo_node(G, n):
-  """
-  >>> G = nx.DiGraph()
-  >>> G.add_node(1)
-  >>> is_solo_node(G, 1)
-  True
-  """
+def is_upstream_deadend(G, n):
+  return G.in_degree(n) == 0
 
-  return G.in_degree(n) == 0 and G.out_degree(n) == 0
+def is_upstream_nonbranching(G, n):
+  return G.in_degree(n) == 1
 
-def is_simple_start_node(G, n):
-  """
-  >>> G = nx.DiGraph()
-  >>> G.add_edge(1,2)
-  >>> is_simple_start_node(G, 1)
-  True
-  """
+def is_upstream_branching(G, n):
+  return G.in_degree(n) > 1
 
-  return G.in_degree(n) == 0 and G.out_degree(n) == 1
+def is_dnstream_deadend(G, n):
+  return G.out_degree(n) == 0
 
-def is_complex_start_node(G, n):
-  """
-  >>> G = nx.DiGraph()
-  >>> G.add_edge(1,2)
-  >>> G.add_edge(1,3)
-  >>> is_complex_start_node(G, 1)
-  True
-  """
+def is_dnstream_nonbranching(G, n):
+  return G.out_degree(n) == 1
 
-  return G.in_degree(n) == 0 and G.out_degree(n) > 1
+def is_dnstream_branching(G, n):
+  return G.out_degree(n) > 1
 
-def is_simple_end_node(G, n):
-  """
-  >>> G = nx.DiGraph()
-  >>> G.add_edge(1,2)
-  >>> is_simple_end_node(G, 2)
-  True
-  """
-
-  return G.out_degree(n) == 0 and G.in_degree(n) == 1
-
-def is_complex_end_node(G, n):
-  """
-  >>> G = nx.DiGraph()
-  >>> G.add_edge(1,3)
-  >>> G.add_edge(2,3)
-  >>> is_complex_end_node(G, 3)
-  True
-  """
-
-  return G.out_degree(n) == 0 and G.in_degree(n) > 1
-
-def is_pass_through_node(G, n):
-  """
-  >>> G = nx.path_graph(3, create_using=nx.DiGraph())
-  >>> is_pass_through_node(G, 1)
-  True
-  """
-
-  return G.in_degree(n) == 1 and G.out_degree(n) == 1
-
-def is_branching_node(G, n):
-  """
-  >>> G = nx.path_graph(3, create_using=nx.DiGraph())
-  >>> G.add_edge(1,3)
-  >>> is_branching_node(G, 1)
-  True
-  """
-  return ((G.in_degree(n) >= 1 and G.out_degree(n) > 1)
-          or (G.in_degree(n) > 1 and G.out_degree(n) >= 1))
+def is_both_branching(G, n):
+  return is_upstream_branching(G, n) and is_dnstream_branching(G, n)
 
 class PathThroughFreeDAGCreator:
   def __init__(self):
-    self.chains = []
     self.in_chains = {}
-    self.stored_chains_from_start = defaultdict(list)
-    self.stored_chains_from_end = defaultdict(list)
-    self.complex_start_nodes = defaultdict(list)
-    self.complex_end_nodes = []
-    self.branching_nodes = defaultdict(list)
-    #UNNECESSARY: self.solo_nodes = []
-    #UNNECESSARY: self.solo_chains = []
+    #self.exclusive_upstream_node_to_chain_set = defaultdict(list)
+    #self.exclusive_dnstream_node_to_chain_set = defaultdict(list)
+    self.inclusive_node_to_chain_set = {}
+    self.solo_chains = []
+    self.dnstream_edges =  defaultdict(list)
 
   def create(self, G):
     for n in G:
       if not n in self.in_chains:
+        #print '====', n 
+        self.trace_chain(G, n)
+        #print '  inclusive_node_to_chain_set:', self.inclusive_node_to_chain_set
+        #print '  in_chains:', self.in_chains.keys()
+        #print '  solo_chains:', self.solo_chains
+        #print '  dnstream_edges:', self.dnstream_edges
+
+  def trace_chain(self, G, n):
+
+    if is_both_branching(G, n):
+      for i in G.successors(n):
+        self.dnstream_edges[n].append(i)
+        self.inclusive_node_to_chain_set[n] = [n]
         self.in_chains[n] = 1
-        if is_pass_through_node(G, n):
-          self.init_chain(n)
-          self.trace_parent(G, n)
-          self.trace_child(G, n)
-        elif is_simple_start_node(G, n):
-          self.init_chain(n, True)
-          self.trace_child(G, n)
-        elif is_simple_end_node(G, n):
-          self.init_chain(n)
-          self.trace_parent(G, n)
-        elif is_complex_start_node(G, n):
-          self.complex_start_nodes[n]
-          for s in G.successors(n):
-            if not is_pass_through_node(G, s):
-              self.complex_start_nodes[n].append(s)
-        elif is_complex_end_node(G, n):
-          self.complex_end_nodes.append(n)
-        elif is_branching_node(G, n):
-          self.branching_nodes[n]
-          for s in G.successors(n):
-            if not is_pass_through_node(G, s):
-              self.branching_nodes[n].append(s)
-        elif is_solo_node(G, n):
-          #UNNECESSARY: self.solo_nodes.append(n)
-          pass
+      return
+
+    chain = [n]
+    self.in_chains[n] = 1
+
+    upstream_is_deadend = False
+    dnstream_is_deadend = False
+
+    if is_upstream_deadend(G, n):
+      upstream_is_deadend = True
+    elif is_upstream_nonbranching(G, n):
+      v = G.predecessors(n)[0]
+      while True:
+        if is_dnstream_branching(G, v):
+          self.inclusive_node_to_chain_set[chain[0]] = chain
+          break
         else:
-          raise RuntimeError("The node type is not found")
+          if is_upstream_deadend(G, v):
+            upstream_is_deadend = True
+            chain.insert(0, v)
+            self.in_chains[v] = 1
+            break
+          elif is_upstream_nonbranching(G, v):
+            chain.insert(0, v)
+            self.in_chains[v] = 1
+            v = G.predecessors(v)[0]
+          else: # is_upstream_branching(G, v):
+            chain.insert(0, v)
+            self.in_chains[v] = 1
+            self.inclusive_node_to_chain_set[v] = chain
+            break
+    else: #is_upstream_branching(G, n)
+      self.inclusive_node_to_chain_set[n] = chain
 
-  def init_chain(self, n, is_simple_start=False):
-    self.chains.append([n])
-    self.is_chain_start_simple=is_simple_start
 
-  def trace_parent(self, G, n):
-    """
-    n must be a path-through node, which will not be checked. 
-    """
-    while True:
-      n=G.predecessors(n)[0]
-      if is_pass_through_node(G, n):
-        self.in_chains[n] = 1
-        self.chains[-1].insert(0, n)
-      else:
-        if is_complex_start_node(G, n) or is_branching_node(G, n):
-          self.stored_chains_from_start[n].append(len(self.chains)-1)
-        elif is_simple_start_node(G, n):
-          self.in_chains[n] = 1
-          self.chains[-1].insert(0, n)
-          self.is_chain_start_simple = True
+    if is_dnstream_deadend(G, n):
+      dnstream_is_deadend = True
+    elif is_dnstream_nonbranching(G, n):
+      v = G.successors(n)[0]
+      while True:
+        if is_upstream_branching(G, v):
+          self.dnstream_edges[chain[-1]].append(v)
+          if not chain[-1] in self.inclusive_node_to_chain_set:
+            self.inclusive_node_to_chain_set[chain[-1]] = chain
+          break
         else:
-          raise RuntimeError("The node type is not found 1")
+          if is_dnstream_deadend(G, v):
+            dnstream_is_deadend = True
+            chain.append(v)
+            self.in_chains[v] = 1
+            break
+          elif is_dnstream_nonbranching(G, v):
+            chain.append(v)
+            self.in_chains[v] = 1
+            v = G.successors(v)[0]
+          else: # is_dnstream_branching(G, v):
+            chain.append(v)
+            self.in_chains[v] = 1
+            self.inclusive_node_to_chain_set[v] = chain
 
-        return
+            for i in G.successors(v):
+              self.dnstream_edges[v].append(i)
+            break
+    else: #is_dnstream_branching(G, n)
+      self.inclusive_node_to_chain_set[n] = chain
+      for v in G.successors(n):
+        self.dnstream_edges[n].append(v)
 
-  def trace_child(self, G, n):
-    """
-    n must be a path-through node, which will not be checked. 
-    """
-    while True:
-      n=G.successors(n)[0]
-      if is_pass_through_node(G, n):
-        self.in_chains[n] = 1
-        self.chains[-1].append(n)
-      else:
-        if is_complex_end_node(G, n) or is_branching_node(G, n):
-          self.stored_chains_from_end[n].append(len(self.chains)-1)
-        elif is_simple_end_node(G, n):
-          self.in_chains[n] = 1
-          self.chains[-1].append(n)
-          if self.is_chain_start_simple:
-            #UNNECESSARY: self.solo_chains.append(len(self.chains)-1)
-            pass
-        else:
-          raise RuntimeError("The node type is not found 2")
 
-        return
-
-#print G.nodes(data=True)
-#print G.edges(data=True)
+    if upstream_is_deadend and dnstream_is_deadend:
+      self.solo_chains.append(chain)
 
 def compress_path_digraph(G):
   """
@@ -219,11 +172,14 @@ def compress_path_digraph(G):
   (2, {'attr': 2})
   ('b', {'attr': 'b'})
   ('g', {'attr': 'g'})
-  ('f', {'attr': 'f'})
+  ('c;d;e', {})
   (8, {'attr': 8})
   (9, {'attr': 9})
-  ('c;d;e', {})
+  ('f', {'attr': 'f'})
   ('x;y;z', {})
+  ('P;Q;R;S', {})
+  ('A', {'attr': 'A'})
+  ('W;X;Y;Z', {})
   >>> 
   >>> for e in PTF_G.edges(data=True):
   ...   print e
@@ -233,11 +189,11 @@ def compress_path_digraph(G):
   (2, 'b', {'attr': '2->b'})
   ('b', 'x;y;z', {'attr': 'b->x'})
   ('b', 'c;d;e', {'attr': 'b->c'})
+  ('c;d;e', 'f', {'attr': 'e->f'})
+  (8, 9, {'attr': '8->9'})
   ('f', 8, {'attr': 'f->8'})
   ('f', 9, {'attr': 'f->9'})
   ('f', 'g', {'attr': 'f->g'})
-  (8, 9, {'attr': '8->9'})
-  ('c;d;e', 'f', {'attr': 'e->f'})
   ('x;y;z', 'f', {'attr': 'z->f'})
   """
 
@@ -245,72 +201,43 @@ def compress_path_digraph(G):
   
   ptf_dag_creator.create(G)
 
-  #print 'stored_chains_from_start:', ptf_dag_creator.stored_chains_from_start
-  #print 'stored_chains_from_end:', ptf_dag_creator.stored_chains_from_end
-  #print 'chains:', ptf_dag_creator.chains
-  #print 'complex_start_nodes:', ptf_dag_creator.complex_start_nodes
-  #print 'branching_nodes:', ptf_dag_creator.branching_nodes
-  #print 'complex_end_nodes:', ptf_dag_creator.complex_end_nodes
-  #print 'solo_nodes:', ptf_dag_creator.solo_nodes
-  #print 'self.solo_chains:', ptf_dag_creator.solo_chains
-  
+  #print 'inclusive_node_to_chain_set:', ptf_dag_creator.inclusive_node_to_chain_set
+  #print 'in_chains:', ptf_dag_creator.in_chains.keys()
+  #print 'solo_chains:', ptf_dag_creator.solo_chains
+  #print 'dnstream_edges:', ptf_dag_creator.dnstream_edges
+
   PTF_G = nx.DiGraph()
 
   nodes_to_add_attributes={}
   
-  for k, v in ptf_dag_creator.stored_chains_from_start.iteritems():
-    PTF_G.add_node(k, G.node[k])
+  for k, v in ptf_dag_creator.dnstream_edges.iteritems():
+    node_chain = ptf_dag_creator.inclusive_node_to_chain_set[k]
+    if len(node_chain) == 1:
+      node_concat = node_chain[0]
+      nodes_to_add_attributes[node_concat]=1
+    else:
+      node_concat = ';'.join([str(x) for x in node_chain])
+
+    PTF_G.add_node(node_concat)
+
     for i in v:
-      c = ptf_dag_creator.chains[i]
+      c = ptf_dag_creator.inclusive_node_to_chain_set[i]
       if len(c) == 1:
         c_concat = c[0]
         nodes_to_add_attributes[c_concat] = 1
       else:
         c_concat = ';'.join([str(x) for x in c])
 
-      #PTF_G.add_edge(k, c_concat, **G[k][c[0]])
-      PTF_G.add_edge(k, c_concat, G[k][c[0]])
+      PTF_G.add_edge(node_concat, c_concat, G[k][c[0]])
   
-  for k, v in ptf_dag_creator.stored_chains_from_end.iteritems():
-    PTF_G.add_node(k, G.node[k])
-    for i in v:
-      c = ptf_dag_creator.chains[i]
-      if len(c) == 1:
-        c_concat = c[0]
-        nodes_to_add_attributes[c_concat]=1
-      else:
-        c_concat = ';'.join([str(x) for x in c])
-
-      #PTF_G.add_edge(c_concat, k, **G[c[-1]][k])
-      PTF_G.add_edge(c_concat, k, G[c[-1]][k])
+  for c in ptf_dag_creator.solo_chains:
+    if len(c) == 1:
+      c_concat = c[0]
+      nodes_to_add_attributes[c_concat]=1
+    else:
+      c_concat = ';'.join([str(x) for x in c])
   
-  for k, v in ptf_dag_creator.complex_start_nodes.iteritems():
-    PTF_G.add_node(k, G.node[k])
-    for i in v:
-      #PTF_G.add_edge(k, i, **G[k][i])
-      PTF_G.add_edge(k, i, G[k][i])
-  
-  for k, v in ptf_dag_creator.branching_nodes.iteritems():
-    PTF_G.add_node(k, G.node[k])
-    for i in v:
-      #PTF_G.add_edge(k, i, **G[k][i])
-      PTF_G.add_edge(k, i, G[k][i])
-  
-  for v in ptf_dag_creator.complex_end_nodes:
-    PTF_G.add_node(v, G.node[v])
-  
-#UNNECESSARY:  for v in ptf_dag_creator.solo_nodes:
-#UNNECESSARY:    PTF_G.add_node(v, G.node[v])
-#UNNECESSARY:
-#UNNECESSARY:  for v in ptf_dag_creator.solo_chains:
-#UNNECESSARY:    c = ptf_dag_creator.chains[v]
-#UNNECESSARY:    if len(c) == 1:
-#UNNECESSARY:      c_concat = c[0]
-#UNNECESSARY:      nodes_to_add_attributes[c_concat]=1
-#UNNECESSARY:    else:
-#UNNECESSARY:      c_concat = ';'.join([str(x) for x in c])
-#UNNECESSARY:
-#UNNECESSARY:    PTF_G.add_node(c_concat)
+    PTF_G.add_node(c_concat)
 
   for n in nodes_to_add_attributes.keys():
     PTF_G.add_node(n, G.node[n])
