@@ -20,6 +20,7 @@ Algorithms
    algorithms.clustering
    algorithms.community
    algorithms.component
+   algorithms.compress_path
    algorithms.core
    algorithms.cycles
    algorithms.dag

@@ -3,6 +3,7 @@
 *~
 .DS_Store
 /build/
+/doc/build/
 /networkx/version.py
 /examples/*/*.png
 /doc/source/networkx-documentation.zip

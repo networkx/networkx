@@ -128,6 +128,50 @@ class PathThroughFreeDAGCreator:
 
 def compress_path_digraph(G):
   """
+  This algorithm determines the nonbranching edges in a DAG and consolidate each set of the adjacent nonbranching and nonterminal nodes to a single node.
+  
+  For the following DAG, C and D are adjacent nonbranching nodes.::
+  
+         1
+         |
+         V 
+      A->B->C->D->E->F
+                  ^
+                  |
+                  2
+  
+  Therefore, we can consolidate C and D into a single node C,D, and we get the following DAG. We call it pass-through-free (PTF) DAG.::
+  
+         1
+         |
+         V 
+      A->B->C,D->E->F
+                  ^
+                  |
+                  2
+  
+  For a given DAG (called G), constructed a path through free DAG.
+  
+  Pick an _unvisited_ node in the DAG
+
+  1. If it is a out-non-branching node,
+    * trace all its child, grandchild, etc., until one of the following two conditions satisfies:
+      * an in-branching node is reached
+        * push all the nodes visited to the back of `chain` (excluding the last node)
+      * an out-branching node is reached.
+        * push all the nodes visited to the back of chain (including the last node)
+  2. If it is a in-non-branching node,
+    * trace all its parent, grandparent, etc., until one of the following two conditions satisfies:
+      * an out-branching node is reached
+        * push all the nodes visited to the front of `chain` (excluding the last node)
+      * an in-branching node is reached
+        * push all the nodes visited to the front of `chain` (including the last node)
+  3. Collapse all the nodes in chain.
+
+  Do the above procedure until all the nodes have been visited.
+  
+  Assumption: node names are not consist of ';'. Therefore, the new chain name is the concatenation of the original node names, separated by ';'.
+
   >>> n = 7
   >>> G = nx.path_graph(n, create_using=nx.DiGraph())
   >>> mapping = {}
