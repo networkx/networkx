@@ -66,6 +66,7 @@ Biconnected components
    biconnected_component_edges
    biconnected_component_subgraphs
    articulation_points
+   bridges
 
 
 

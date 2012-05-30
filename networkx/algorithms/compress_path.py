@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+"""Algorithm for compressing redundant edges in a directed graph."""
+
 import networkx as nx
 from collections import defaultdict
 
@@ -128,9 +130,9 @@ class PathThroughFreeDAGCreator:
 
 def compress_path_digraph(G):
   """
-  This algorithm determines the nonbranching edges in a DAG and consolidate each set of the adjacent nonbranching and nonterminal nodes to a single node.
+  This algorithm determines the nonbranching edges in a directed graph and consolidate each set of the adjacent nonbranching and nonterminal nodes to a single node.
   
-  For the following DAG, C and D are adjacent nonbranching nodes.::
+  For example, C and D are adjacent nonbranching nodes in the following digraph::
   
          1
          |
@@ -140,32 +142,42 @@ def compress_path_digraph(G):
                   |
                   2
   
-  Therefore, we can consolidate C and D into a single node C,D, and we get the following DAG. We call it pass-through-free (PTF) DAG.::
+  Therefore, we can consolidate C and D into a single node C,D, and we get the following path-compressed digraph::
   
          1
          |
          V 
-      A->B->C,D->E->F
-                  ^
-                  |
-                  2
+      A->B->C;D->E->F
+                 ^
+                 |
+                 2
   
-  For a given DAG (called G), constructed a path through free DAG.
+  For a given digraph (called G), constructed a path-compressed digraph.
   
-  Pick an _unvisited_ node in the DAG
+  Pick an *unvisited* node in the DAG
 
   1. If it is a out-non-branching node,
     * trace all its child, grandchild, etc., until one of the following two conditions satisfies:
+
       * an in-branching node is reached
+
         * push all the nodes visited to the back of `chain` (excluding the last node)
+
       * an out-branching node is reached.
+
         * push all the nodes visited to the back of chain (including the last node)
+
   2. If it is a in-non-branching node,
     * trace all its parent, grandparent, etc., until one of the following two conditions satisfies:
+
       * an out-branching node is reached
+
         * push all the nodes visited to the front of `chain` (excluding the last node)
+
       * an in-branching node is reached
+
         * push all the nodes visited to the front of `chain` (including the last node)
+
   3. Collapse all the nodes in chain.
 
   Do the above procedure until all the nodes have been visited.

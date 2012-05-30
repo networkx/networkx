@@ -1,0 +1,34 @@
+[double/]()
+
+~~~
+a-b
+~~~
+
+[child_visited/]()
+
+~~~
+a---b
+ \ /
+  c
+~~~
+
+#multiple components
+[two_components/]()
+
+~~~
+a-b-c
+e-f-g
+~~~
+
+[two_cycle]()
+
+~~~
+a---b
+ \ /
+  c
+  |
+  d
+ / \
+e---f
+~~~
+
