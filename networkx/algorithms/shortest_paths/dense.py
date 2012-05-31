@@ -57,8 +57,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
     A[A==0]=np.inf # set zero entries to inf
     A[I==1]=0 # except diagonal which should be zero
     for i in range(n):
-        r = A[i,:]
-        A = np.minimum(A, r + r.T)
+        A = np.minimum(A, A[i,:] + A[:,i])
     return A
 
 def floyd_warshall_predecessor_and_distance(G, weight='weight'):

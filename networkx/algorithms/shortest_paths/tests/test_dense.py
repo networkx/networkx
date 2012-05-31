@@ -113,10 +113,6 @@ class TestFloyd:
         assert_equal(dist[0,2],4)
 
     def test_weight_parameter_numpy(self):
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('numpy not available.')
         XG4 = nx.Graph()
         XG4.add_edges_from([ (0, 1, {'heavy': 2}), (1, 2, {'heavy': 2}),
                              (2, 3, {'heavy': 1}), (3, 4, {'heavy': 1}),
@@ -125,3 +121,15 @@ class TestFloyd:
         dist = nx.floyd_warshall_numpy(XG4, weight='heavy')
         assert_equal(dist[0, 2], 4)
 
+    def test_directed_cycle_numpy(self):
+        try:
+            import numpy
+            from numpy.testing import assert_equal,assert_almost_equal
+        except ImportError:
+            raise SkipTest('numpy not available.')
+
+        G = nx.DiGraph()
+        G.add_cycle([0,1,2,3])
+        pred,dist = nx.floyd_warshall_predecessor_and_distance(G)
+        D = nx.utils.dict_to_numpy_array(dist)
+        assert_equal(nx.floyd_warshall_numpy(G),D)
