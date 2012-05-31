@@ -9,6 +9,35 @@ __all__ = ['split_pass_through_node_digraph']
 
 def split_pass_through_node_digraph(G):
   """
+  The operation splits pass-through nodes (i.e. nodes with both incoming edges and outgoing edges), into pairs of nodes connected by a directed edges indicating the flow direction.
+  For each new edge, the tail node has all the incoming old edges and the head node has all the outgoing old edges.
+  
+  For example, since B has both incoming and outgoing edge in the following digraph, B is split.::
+  
+      A->B->C
+  
+  The result is::
+  
+      A->B:i->B:o->C
+  
+  For a digraph like the following, since B has both incoming and outgoing edge, split it at B::
+  
+      D--+
+         |
+         v
+      A->B->C
+         |
+         +->E
+  
+  we have::
+  
+      D--+
+         |
+         v
+      A->Bi->Bo->C
+             |
+             +-->E
+
   >>> G=nx.DiGraph()
   >>> G.add_edge(1,2)
   >>> G.add_edge(2,3)
