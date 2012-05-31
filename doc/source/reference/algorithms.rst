@@ -40,6 +40,7 @@ Algorithms
    algorithms.rich_club
    algorithms.shortest_paths
    algorithms.simple_paths
+   algorithms.split_node
    algorithms.swap
    algorithms.traversal
    algorithms.vitality

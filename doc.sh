@@ -10,9 +10,9 @@ then
   esac
 fi
 
-echo "$@"
+#echo "$@"
 
-exit
+#exit
 
 abspath_script=`readlink -f -e "$0"`
 lib=`dirname "$abspath_script"`
