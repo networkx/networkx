@@ -30,6 +30,7 @@ from networkx.algorithms.swap import *
 from networkx.algorithms.graphical import *
 from networkx.algorithms.simple_paths import *
 from networkx.algorithms.compress_path import *
+from networkx.algorithms.split_node_digraph import *
 
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite

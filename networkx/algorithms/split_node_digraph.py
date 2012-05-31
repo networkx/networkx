@@ -9,8 +9,9 @@ __all__ = ['split_pass_through_node_digraph']
 
 def split_pass_through_node_digraph(G):
   """
-  The operation splits pass-through nodes (i.e. nodes with both incoming edges and outgoing edges), into pairs of nodes connected by a directed edges indicating the flow direction.
-  For each new edge, the tail node has all the incoming old edges and the head node has all the outgoing old edges.
+  Splits pass-through nodes (i.e., nodes with both incoming edges and outgoing edges) into pairs of nodes.
+
+  Each new pair of nodes are connected by a directed edges indicating the flow direction, whereas the tail node has all the incoming old edges and the head node has all the outgoing old edges.
   
   For example, since B has both incoming and outgoing edge in the following digraph, B is split.::
   
