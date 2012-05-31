@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Algorithm for compressing redundant edges in a directed graph."""
 
 import networkx as nx
