@@ -1,21 +1,17 @@
 # -*- coding: utf-8 -*-
+"""Floyd-Warshall algorithm for shortest paths.
 """
-Floyd-Warshall algorithm for shortest paths.
-"""
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+import networkx as nx
+__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
 __all__ = ['floyd_warshall',
            'floyd_warshall_predecessor_and_distance',
            'floyd_warshall_numpy']
-
-import networkx as nx
-
 
 def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
@@ -40,22 +36,22 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
 
     Notes
     ------
-    Floyd's algorithm is appropriate for finding shortest paths
-    in dense graphs or graphs with negative weights when Dijkstra's algorithm
-    fails.  This algorithm can still fail if there are negative cycles.
-    It has running time O(n^3) with running space is O(n^2).
+    Floyd's algorithm is appropriate for finding shortest paths in
+    dense graphs or graphs with negative weights when Dijkstra's
+    algorithm fails.  This algorithm can still fail if there are
+    negative cycles.  It has running time O(n^3) with running space of O(n^2).
     """
     try:
         import numpy as np
     except ImportError:
         raise ImportError(\
           "to_numpy_matrix() requires numpy: http://scipy.org/ ")
-    A=nx.to_numpy_matrix(G, nodelist=nodelist, multigraph_weight=min,
-                         weight=weight)
+    A = nx.to_numpy_matrix(G, nodelist=nodelist, multigraph_weight=min,
+                           weight=weight)
     n,m = A.shape
-    I=np.identity(n)
-    A[A==0]=np.inf # set zero entries to inf
-    A[I==1]=0 # except diagonal which should be zero
+    I = np.identity(n)
+    A[A==0] = np.inf # set zero entries to inf
+    A[I==1] = 0 # except diagonal which should be zero
     for i in range(n):
         A = np.minimum(A, A[i,:] + A[:,i])
     return A
@@ -81,7 +77,7 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.
-    It has running time O(n^3) with running space is O(n^2).
+    It has running time O(n^3) with running space of O(n^2).
 
     See Also
     --------
@@ -94,11 +90,11 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     # dictionary-of-dictionaries representation for dist and pred
     # use some defaultdict magick here
     # for dist the default is the floating point inf value
-    dist=defaultdict(lambda : defaultdict(lambda: float('inf')))
-    pred=defaultdict(dict)
+    dist = defaultdict(lambda : defaultdict(lambda: float('inf')))
+    pred = defaultdict(dict)
     # initialize path distance dictionary to be the adjacency matrix
     # also set the distance to self to 0 (zero diagonal)
-    undirected= not G.is_directed()
+    undirected = not G.is_directed()
     for u,v,d in G.edges(data=True):
         e_weight = d.get(weight, 1.0)
         dist[u][v] = min(e_weight, dist[u][v])
@@ -138,7 +134,7 @@ def floyd_warshall(G, weight='weight'):
     Floyd's algorithm is appropriate for finding shortest paths
     in dense graphs or graphs with negative weights when Dijkstra's algorithm
     fails.  This algorithm can still fail if there are negative cycles.
-    It has running time O(n^3) with running space is O(n^2).
+    It has running time O(n^3) with running space of O(n^2).
 
     See Also
     --------
@@ -147,7 +143,7 @@ def floyd_warshall(G, weight='weight'):
     all_pairs_shortest_path
     all_pairs_shortest_path_length
     """
-    # could make this it's own function to reduce memory costs
+    # could make this its own function to reduce memory costs
     return floyd_warshall_predecessor_and_distance(G, weight=weight)[1]
 
 # fixture for nose tests
