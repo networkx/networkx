@@ -11,15 +11,17 @@ __all__ = ['all_simple_paths']
 def all_simple_paths(G, source, target, cutoff=None):
     """Generate all simple paths in the graph G from source to target.
 
+    A simple path is a path with no repeated nodes.
+
     Parameters
     ----------
     G : NetworkX graph
 
     source : node
-       Starting node for path.
+       Starting node for path
 
     target : node
-       Ending node for path.
+       Ending node for path
 
     cutoff : integer, optional
         Depth to stop the search. Only paths of length <= cutoff are returned.
@@ -33,10 +35,15 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> for path in nx.all_simple_paths(G,source=0,target=4):
+    >>> G = nx.path_graph(5)
+    >>> for path in nx.all_simple_paths(G, source=0, target=4):
     ...    print(path)
     [0, 1, 2, 3, 4]
+    >>> G = nx.Graph()
+    >>> G.add_path([1,2,3])
+    >>> G.add_path([1,20,30])
+    >>> print(list(paths))
+    [[1, 2, 3], [1, 20, 3]]
 
     Notes
     -----
@@ -54,14 +61,18 @@ def all_simple_paths(G, source, target, cutoff=None):
     --------
     shortest_path
     """
+    if source not in G:
+        raise nx.NetworkXError('source node %s not in graph'%source)
+    if target not in G:
+        raise nx.NetworkXError('target node %s not in graph'%source)
+    if cutoff is None:
+        cutoff = len(G)-1
     if G.is_multigraph():
         return _all_simple_paths_multigraph(G, source, target, cutoff=cutoff)
     else:
         return _all_simple_paths_graph(G, source, target, cutoff=cutoff)
 
 def _all_simple_paths_graph(G, source, target, cutoff=None):
-    if cutoff is None:
-        cutoff = len(G)-1
     visited = [source]
     stack = [iter(G[source])]
     while stack:
@@ -84,8 +95,6 @@ def _all_simple_paths_graph(G, source, target, cutoff=None):
 
 
 def _all_simple_paths_multigraph(G, source, target, cutoff=None):
-    if cutoff is None:
-        cutoff = len(G)-1
     visited = [source]
     stack = [(v for u,v in G.edges(source))]
     while stack:
