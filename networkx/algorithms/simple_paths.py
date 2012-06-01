@@ -27,7 +27,9 @@ def all_simple_paths(G, source, target, cutoff=None):
     Returns
     -------
     path_generator: generator
-       A generator that produces lists of simple paths.
+       A generator that produces lists of simple paths.  If there are no paths
+       between the source and target within the given cutoff the generator
+       produces no output.
 
     Examples
     --------
@@ -60,8 +62,6 @@ def all_simple_paths(G, source, target, cutoff=None):
 def _all_simple_paths_graph(G, source, target, cutoff=None):
     if cutoff is None:
         cutoff = len(G)-1
-    if cutoff < 1:
-        return
     visited = [source]
     stack = [iter(G[source])]
     while stack:
@@ -86,8 +86,6 @@ def _all_simple_paths_graph(G, source, target, cutoff=None):
 def _all_simple_paths_multigraph(G, source, target, cutoff=None):
     if cutoff is None:
         cutoff = len(G)-1
-    if cutoff < 1:
-        return
     visited = [source]
     stack = [(v for u,v in G.edges(source))]
     while stack:
