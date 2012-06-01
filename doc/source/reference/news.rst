@@ -4,6 +4,30 @@
 Release Log
 ===========
 
+Networkx-1.7
+------------
+Release date:  xx June 2012
+
+Highlights
+~~~~~~~~~~
+
+- New functions for k-clique community finding, flow heirarchy,
+  union, disjoint union, compose, and intersection operators that work on 
+  lists of graphs, and creating the biadjacency matrix of a biparite graph.
+
+- New approximation algorithms for dominating set, edge dominating set,
+  independent set, max clique, and min-weighted vertex cover.
+
+ - Many bug fixes and other improvements.
+
+For full details of the tickets closed for this release (added features and bug fixes) see:
+https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.7
+
+API Changes
+~~~~~~~~~~~
+See :doc:`api_1.7`
+
+
 Networkx-1.6
 ------------
 
