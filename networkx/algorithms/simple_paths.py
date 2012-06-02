@@ -73,6 +73,8 @@ def all_simple_paths(G, source, target, cutoff=None):
         return _all_simple_paths_graph(G, source, target, cutoff=cutoff)
 
 def _all_simple_paths_graph(G, source, target, cutoff=None):
+    if cutoff < 1:
+        return
     visited = [source]
     stack = [iter(G[source])]
     while stack:
@@ -95,6 +97,8 @@ def _all_simple_paths_graph(G, source, target, cutoff=None):
 
 
 def _all_simple_paths_multigraph(G, source, target, cutoff=None):
+    if cutoff < 1:
+        return
     visited = [source]
     stack = [(v for u,v in G.edges(source))]
     while stack:

@@ -54,7 +54,7 @@ def test_hamiltonian_path():
     assert_equal(sorted(paths),sorted(exact))
 
 def test_cutoff_zero():
-    G = nx.path_graph(4)
+    G = nx.complete_graph(4)
     paths = nx.all_simple_paths(G,0,3,cutoff=0)
     assert_equal(list(list(p) for p in paths),[])
     paths = nx.all_simple_paths(nx.MultiGraph(G),0,3,cutoff=0)
