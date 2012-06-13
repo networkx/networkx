@@ -25,7 +25,7 @@ def test_union_all_attributes():
         assert_equal( ghj.node[n], eval(graph).node[int(node)] )
 
     assert_equal(ghj.graph['attr'],'attr')
-    assert_equal(ghj.graph['name'],'g') # g graph attributes take precendent
+    assert_equal(ghj.graph['name'],'j') # j graph attributes take precendent
 
 def test_intersection_all():
     G=nx.Graph()

@@ -22,7 +22,7 @@ def test_union_attributes():
         assert_equal( gh.node[n], eval(graph).node[int(node)] )
 
     assert_equal(gh.graph['attr'],'attr')
-    assert_equal(gh.graph['name'],'g') # g graph attributes take precendent
+    assert_equal(gh.graph['name'],'h') # h graph attributes take precendent
 
 def test_intersection():
     G=nx.Graph()

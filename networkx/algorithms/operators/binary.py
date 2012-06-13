@@ -47,7 +47,7 @@ def union(G, H, rename=(None, None), name=None):
 
     Graph, edge, and node attributes are propagated from G and H
     to the union graph.  If a graph attribute is present in both
-    G and H the value from G is used.
+    G and H the value from H is used.
 
     See Also
     --------
@@ -94,15 +94,17 @@ def union(G, H, rename=(None, None), name=None):
     # add node attributes
     R.node.update(G.node)
     R.node.update(H.node)
-    # add graph attributes, G attributes take precedent over H attributes
-    R.graph.update(H.graph)
+    # add graph attributes, H attributes take precedent over G attributes
     R.graph.update(G.graph)
+    R.graph.update(H.graph)
+
 
     return R
 
 def disjoint_union(G,H):
-    """ Return the disjoint union of graphs G and H,
-    forcing distinct integer node labels.
+    """ Return the disjoint union of graphs G and H.
+
+    This algorithm forces distinct integer node labels.
 
     Parameters
     ----------
@@ -119,12 +121,18 @@ def disjoint_union(G,H):
     that G and H be either both directed or both undirected.
 
     The nodes of G are relabeled 0 to len(G)-1, and the nodes of H are
-    relabeld len(G) to len(G)+len(H)-1.
+    relabeled len(G) to len(G)+len(H)-1.
+
+    Graph, edge, and node attributes are propagated from G and H
+    to the union graph.  If a graph attribute is present in both
+    G and H the value from H is used.
     """
     R1=nx.convert_node_labels_to_integers(G)
     R2=nx.convert_node_labels_to_integers(H,first_label=len(R1))
     R=union(R1,R2)
     R.name="disjoint_union( %s, %s )"%(G.name,H.name)
+    R.graph.update(G.graph)
+    R.graph.update(H.graph)
     return R
 
 
@@ -183,8 +191,7 @@ def intersection(G, H):
     return R
 
 def difference(G, H):
-    """Return a new graph that contains the edges that exist in G
-    but not in H.
+    """Return a new graph that contains the edges that exist in G but not in H.
 
     The node sets of H and G must be the same.
 
@@ -195,20 +202,19 @@ def difference(G, H):
 
     Returns
     -------
-    GH : A new graph with the same type as G.
+    D : A new graph with the same type as G.
 
     Notes
     -----
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.  If you want a new graph of the difference of G and H with
     with the attributes (including edge data) from G use remove_nodes_from()
-    as follows
+    as follows:
 
     >>> G=nx.path_graph(3)
     >>> H=nx.path_graph(5)
     >>> R=G.copy()
     >>> R.remove_nodes_from(n for n in G if n in H)
-
     """
     # create new graph
     R=nx.create_empty_copy(G)
@@ -238,7 +244,7 @@ def symmetric_difference(G, H):
 
     Returns
     -------
-    GH : A new graph with the same type as G.
+    D : A new graph with the same type as G.
 
     Notes
     -----
@@ -290,17 +296,14 @@ def compose(G, H, name=None):
     name : string
        Specify name for new graph
 
-
     Returns
     -------
-    GH: A new graph  with the same type as G
+    C: A new graph  with the same type as G
 
     Notes
     -----
-    A new graph is returned, of the same class as G.  It is
-    recommended that G and H be either both directed or both
-    undirected.  Attributes from G take precedent over attributes
-    from H.
+    It is recommended that G and H be either both directed or both undirected.
+    Attributes from H take precedent over attributes from G.
     """
     if name is None:
         name="compose( %s, %s )"%(G.name,H.name)
@@ -317,11 +320,10 @@ def compose(G, H, name=None):
     else:
         R.add_edges_from(G.edges_iter(data=True))
 
-    # add node attributes, G attributes take precedent over H attributes
-    R.node.update(H.node)
+    # add node attributes, H attributes take precedent over G attributes
     R.node.update(G.node)
-    # add graph attributes, G attributes take precedent over H attributes
-    R.graph.update(H.graph)
+    R.node.update(H.node)
+    # add graph attributes, H attributes take precedent over G attributes
     R.graph.update(G.graph)
-
+    R.graph.update(H.graph)
     return R

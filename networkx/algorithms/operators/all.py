@@ -1,5 +1,4 @@
-"""
-Operations on many graphs.
+"""Operations on many graphs.
 """
 #    Copyright (C) 2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -21,14 +20,14 @@ __all__ = ['union_all', 'compose_all', 'disjoint_union_all',
            'intersection_all']
 
 def union_all(graphs, rename=(None,) , name=None):
-    """Return the union of all graphs
+    """Return the union of all graphs.
 
     The graphs must be disjoint, otherwise an exception is raised.
 
     Parameters
     ----------
     graphs : list of graphs
-       Multiple NetworkX graphs
+       List of NetworkX graphs
 
     rename : bool , default=(None, None)
        Node names of G and H can be changed by specifying the tuple
@@ -36,24 +35,25 @@ def union_all(graphs, rename=(None,) , name=None):
        "G-u" and "v" in H is renamed "H-v".
 
     name : string
-       Specify the name for the union graph
+       Specify the name for the union graph@not_implemnted_for('direct
 
     Returns
     -------
-    U : A union of graph with the same type as the first graph.
+    U : a graph with the same type as the first graph in list
 
     Notes
     -----
     To force a disjoint union with node relabeling, use
     disjoint_union_all(G,H) or convert_node_labels_to integers().
 
-    Graph, edge, and node attributes are propagated supplied graphs
-    to the union graph.  If a graph attribute is present in multiple
-    graphs, then the first graph with that attribute takes priority.
+    Graph, edge, and node attributes are propagated to the union graph.
+    If a graph attribute is present in multiple graphs, then the value
+    from the last graph in the list with that attribute is used.
 
     See Also
     --------
     union
+    disjoint_union_all
     """
     graphs_names = zip_longest(graphs,rename)
     U, gname = next(graphs_names)
@@ -63,22 +63,27 @@ def union_all(graphs, rename=(None,) , name=None):
     return U
 
 def disjoint_union_all(graphs):
-    """ Return the disjoint union of graphs, forcing distinct integer
-    node labels.
+    """Return the disjoint union of all graphs.
+
+    This operation forces distinct integer node labels starting with 0
+    for the first graph in the list and numbering consecutively.
 
     Parameters
     ----------
     graphs : list
-       Multiple NetworkX graph
+       List of NetworkX graphs
 
     Returns
     -------
-    U : A union of graph with the same type as the first graph.
+    U : A graph with the same type as the first graph in list
 
     Notes
     -----
-    A new graph is created, of the same class as the first graph.
     It is recommended that the graphs be either all directed or all undirected.
+
+    Graph, edge, and node attributes are propagated to the union graph.
+    If a graph attribute is present in multiple graphs, then the value
+    from the last graph in the list with that attribute is used.
     """
     U = graphs.pop(0)
     for H in graphs:
@@ -86,30 +91,31 @@ def disjoint_union_all(graphs):
     return U
 
 def compose_all(graphs, name=None):
-    """Return a new graph, the composition of supplied graphs
+    """Return the composition of all graphs.
 
     Composition is the simple union of the node sets and edge sets.
     The node sets of the supplied graphs need not be disjoint.
 
     Parameters
     ----------
-    graphs : list of graphs
-       Multiple NetworkX graphs
+    graphs : list
+       List of NetworkX graphs
 
     name : string
        Specify name for new graph
 
     Returns
     -------
-    R : A new graph with the same type as the first graph
+    C : A graph with the same type as the first graph in list
 
     Notes
     -----
-    A new graph is returned, of the same class as the first graph in the list.
     It is recommended that the supplied graphs be either all directed or all
-    undirected.  If a graph attribute is present in multiple graphs,
-    then the first graph in the graphs_list with that attribute takes
-    priority for that attribute
+    undirected.
+
+    Graph, edge, and node attributes are propagated to the union graph.
+    If a graph attribute is present in multiple graphs, then the value
+    from the last graph in the list with that attribute is used.
     """
     C = graphs.pop(0)
     for H in graphs:
@@ -125,11 +131,11 @@ def intersection_all(graphs):
     Parameters
     ----------
     graphs_list : list
-       Multiple NetworkX graphs.  Graphs must have the same node sets.
+       List of NetworkX graphs
 
     Returns
     -------
-    R : A new graph with the same type as the first graph
+    R : A new graph with the same type as the first graph in list
 
     Notes
     -----
