@@ -41,7 +41,8 @@ def all_simple_paths(G, source, target, cutoff=None):
     [0, 1, 2, 3, 4]
     >>> G = nx.Graph()
     >>> G.add_path([1,2,3])
-    >>> G.add_path([1,20,30])
+    >>> G.add_path([1,20,3])
+    >>> paths = nx.all_simple_paths(G, source=1, target=3)
     >>> print(list(paths))
     [[1, 2, 3], [1, 20, 3]]
 
