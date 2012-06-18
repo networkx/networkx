@@ -1,12 +1,11 @@
 """
     Unit tests for PyGraphviz intefaace.
 """
-
 import os
 import tempfile
 
 from nose import SkipTest
-from nose.tools import assert_true
+from nose.tools import assert_true,assert_equal
 
 import networkx as nx
 
@@ -57,6 +56,12 @@ class TestAGraph(object):
         fh.close()
         os.unlink(fname)
         self.assert_equal(H,Hin)
+
+    def test_from_agraph_name(self):
+        G=nx.Graph(name='test')
+        A=nx.to_agraph(G)
+        H=nx.from_agraph(A)
+        assert_equal(G.name,'test')
 
 
     def testUndirected(self):
