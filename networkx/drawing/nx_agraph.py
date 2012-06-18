@@ -14,29 +14,23 @@ Examples
 See Also
 --------
 Pygraphviz: http://networkx.lanl.gov/pygraphviz
-
-
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2008 by
+#    Copyright (C) 2004-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
+import os
+import sys
+import tempfile
+import networkx as nx
+__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['from_agraph', 'to_agraph',
            'write_dot', 'read_dot',
            'graphviz_layout',
            'pygraphviz_layout',
            'view_pygraphviz']
-
-import os
-import sys
-import tempfile
-
-import networkx as nx
-
 
 def from_agraph(A,create_using=None):
     """Return a NetworkX Graph or DiGraph from a PyGraphviz graph.
@@ -135,7 +129,9 @@ def to_agraph(N):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError("to_agraph() requires pygraphviz: http://nx.lanl.gov/pygraphviz (not available for Python3")
+        raise ImportError('requires pygraphviz ',
+                          'http://networkx.lanl.gov/pygraphviz ',
+                          '(not available for Python3)')
     directed=N.is_directed()
     strict=N.number_of_selfloops()==0 and not N.is_multigraph()
     A=pygraphviz.AGraph(name=N.name,strict=strict,directed=directed)
@@ -171,14 +167,14 @@ def write_dot(G,path):
     G : graph
        A networkx graph
     path : filename
-       Filename or file handle to write.
-
+       Filename or file handle to write
     """
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError("write_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz (not available for Python3")
-
+        raise ImportError('requires pygraphviz ',
+                          'http://networkx.lanl.gov/pygraphviz ',
+                          '(not available for Python3)')
     A=to_agraph(G)
     A.write(path)
     A.clear()
@@ -195,7 +191,9 @@ def read_dot(path):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError("read_dot() requires pygraphviz: http://networkx.lanl.gov/pygraphviz (not available for Python3)")
+        raise ImportError('read_dot() requires pygraphviz ',
+                          'http://networkx.lanl.gov/pygraphviz ',
+                          '(not available for Python3)')
     A=pygraphviz.AGraph(file=path)
     return from_agraph(A)
 
@@ -257,8 +255,9 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
     try:
         import pygraphviz
     except ImportError:
-        raise ImportError("pygraphviz_layout() requires pygraphviz: http://networkx.lanl.gov/pygraphviz (not available for Python3")
-    A=to_agraph(G)
+        raise ImportError('requires pygraphviz ',
+                          'http://networkx.lanl.gov/pygraphviz ',
+                          '(not available for Python3)')
     if root is not None:
         args+="-Groot=%s"%root
     A.layout(prog=prog,args=args)
