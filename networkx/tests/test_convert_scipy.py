@@ -159,3 +159,13 @@ class TestConvertNumpy(object):
                             for n in range(3) )
         P4 = path_graph(4)
         nx.to_scipy_sparse_matrix(P4, format='any_other')
+
+    @raises(nx.NetworkXError)
+    def test_null_fail(self):
+        nx.to_scipy_sparse_matrix(nx.Graph())
+
+    def test_empty(self):
+        G = nx.Graph()
+        G.add_node(1)
+        M = nx.to_scipy_sparse_matrix(G)
+        np_assert_equal(M.todense(), np.matrix([[0]]))
