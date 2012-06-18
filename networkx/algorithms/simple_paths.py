@@ -35,16 +35,18 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> for path in nx.all_simple_paths(G, source=0, target=4):
-    ...    print(path)
-    [0, 1, 2, 3, 4]
-    >>> G = nx.Graph()
-    >>> G.add_path([1,2,3])
-    >>> G.add_path([1,20,3])
-    >>> paths = nx.all_simple_paths(G, source=1, target=3)
+    >>> G = nx.complete_graph(4)
+    >>> for path in nx.all_simple_paths(G, source=0, target=3):
+    ...     print(path)
+    ...
+    [0, 1, 2, 3]
+    [0, 1, 3]
+    [0, 2, 1, 3]
+    [0, 2, 3]
+    [0, 3]
+    >>> paths = nx.all_simple_paths(G, source=0, target=3, cutoff=2)
     >>> print(list(paths))
-    [[1, 2, 3], [1, 20, 3]]
+    [[0, 1, 3], [0, 2, 3], [0, 3]]
 
     Notes
     -----
@@ -60,7 +62,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     See Also
     --------
-    shortest_path
+    all_shortest_paths, shortest_path
     """
     if source not in G:
         raise nx.NetworkXError('source node %s not in graph'%source)
