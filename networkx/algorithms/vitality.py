@@ -1,23 +1,20 @@
 """
 Vitality measures.
-
 """
-#    Copyright (C) 2010 by 
+#    Copyright (C) 2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import networkx as nx
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Renato Fabbri'])
-
 __all__ = ['closeness_vitality']
-
-import networkx as nx
 
 def weiner_index(G, weight=None):
     # compute sum of distances between all node pairs
-    # (with optional weights) 
+    # (with optional weights)
     weiner=0.0
     if weight is None:
         for n in G:
@@ -34,21 +31,17 @@ def weiner_index(G, weight=None):
 def closeness_vitality(G, v=None, weight=None):
     """Compute closeness vitality for nodes.
 
-    Closeness vitality at a node is the change in the sum of distances 
-    between all node pairs when excluding a that node.
+    Closeness vitality at a node is the change in the sum of distances
+    between all node pairs when excluding that node.
 
     Parameters
     ----------
     G : graph
-      A networkx graph 
 
-    v : node, optional
-      Return only the value for node v.
-
-    weight : None or string, optional  
-      If None, edge weights are ignored.
+    weight : None or string, optional
+      If None edge weights are ignored.
       Otherwise holds the name of the edge attribute used as weight.
-      
+
     Returns
     -------
     nodes : dictionary
@@ -64,25 +57,29 @@ def closeness_vitality(G, v=None, weight=None):
     --------
     closeness_centrality()
 
-    Notes
-    -----
+    References
+    ----------
+    .. [1] Brandes, Ulrik.
+       Network Analysis: Methodological Foundations. Springer, 2005.
     """
-    wig=weiner_index(G,weight)
-    closeness_vitality={}
+    multigraph = G.is_multigraph()
+    wig = weiner_index(G,weight)
+    closeness_vitality = {}
     for n in G:
         # remove edges connected to node n and keep list of edges with data
         # could remove node n but it doesn't count anyway
-        edges=G.edges(n,data=True)
-        if G.is_directed():
-            edges+=G.in_edges(n,data=True)
-        G.remove_edges_from(edges) 
-        closeness_vitality[n]=wig-weiner_index(G,weight)
+        if multigraph:
+            edges = G.edges(n,data=True,keys=True)
+            if G.is_directed():
+                edges += G.in_edges(n,data=True,keys=True)
+            for u,v,k,d in edges:
+                G.remove_edge(u,v,key=k)
+        else:
+            edges = G.edges(n,data=True)
+            if G.is_directed():
+                edges += G.in_edges(n,data=True)
+            G.remove_edges_from(edges)
+        closeness_vitality[n] = wig - weiner_index(G,weight)
         # add edges and data back to graph
         G.add_edges_from(edges)
-    if v is not None:
-        return closeness_vitality[v]
-    else:
-        return closeness_vitality
-
-
-        
+    return closeness_vitality
