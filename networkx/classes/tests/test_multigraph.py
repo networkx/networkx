@@ -211,10 +211,25 @@ class TestMultiGraph(BaseMultiGraphTester,TestGraph):
         
 
     def test_remove_edges_from(self):
-        G=self.K3
+        G=self.K3.copy()
         G.remove_edges_from([(0,1)])
         assert_equal(G.adj,{0:{2:{0:{}}},1:{2:{0:{}}},2:{0:{0:{}},1:{0:{}}}})
         G.remove_edges_from([(0,0)]) # silent fail
+        self.K3.add_edge(0,1)
+        G=self.K3.copy()
+        G.remove_edges_from(G.edges(data=True,keys=True))
+        assert_equal(G.adj,{0:{},1:{},2:{}})
+        G=self.K3.copy()
+        G.remove_edges_from(G.edges(data=False,keys=True))
+        assert_equal(G.adj,{0:{},1:{},2:{}})
+        G=self.K3.copy()
+        G.remove_edges_from(G.edges(data=False,keys=False))
+        assert_equal(G.adj,{0:{},1:{},2:{}})
+        G=self.K3.copy()
+        G.remove_edges_from([(0,1,0),(0,2,0,{}),(1,2)])
+        assert_equal(G.adj,{0:{1:{1:{}}},1:{0:{1:{}}},2:{}})
+
+
 
     def test_remove_multiedge(self):
         G=self.K3

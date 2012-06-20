@@ -420,6 +420,7 @@ class MultiGraph(Graph):
 
                 - 2-tuples (u,v) All edges between u and v are removed.
                 - 3-tuples (u,v,key) The edge identified by key is removed.
+                - 4-tuples (u,v,key,data) where data is ignored.
 
         See Also
         --------
@@ -449,7 +450,7 @@ class MultiGraph(Graph):
         """
         for e in ebunch:
             try:
-                self.remove_edge(*e)
+                self.remove_edge(*e[:3])
             except NetworkXError:
                 pass
 
