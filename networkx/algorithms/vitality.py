@@ -28,19 +28,19 @@ def weiner_index(G, weight=None):
     return weiner
 
 
-def closeness_vitality(G, v=None, weight=None):
+def closeness_vitality(G, weight=None):
     """Compute closeness vitality for nodes.
 
-    Closeness vitality at a node is the change in the sum of distances
+    Closeness vitality of a node is the change in the sum of distances
     between all node pairs when excluding that node.
 
     Parameters
     ----------
     G : graph
 
-    weight : None or string, optional
-      If None edge weights are ignored.
-      Otherwise holds the name of the edge attribute used as weight.
+    weight : None or string (optional)
+       The name of the edge attribute used as weight. If None the edge
+       weights are ignored.
 
     Returns
     -------
@@ -59,8 +59,9 @@ def closeness_vitality(G, v=None, weight=None):
 
     References
     ----------
-    .. [1] Brandes, Ulrik.
-       Network Analysis: Methodological Foundations. Springer, 2005.
+    .. [1] Ulrik Brandes, Sec. 3.6.2 in
+       Network Analysis: Methodological Foundations, Springer, 2005.
+       http://books.google.com/books?id=TTNhSm7HYrIC
     """
     multigraph = G.is_multigraph()
     wig = weiner_index(G,weight)
@@ -72,13 +73,11 @@ def closeness_vitality(G, v=None, weight=None):
             edges = G.edges(n,data=True,keys=True)
             if G.is_directed():
                 edges += G.in_edges(n,data=True,keys=True)
-            for u,v,k,d in edges:
-                G.remove_edge(u,v,key=k)
         else:
             edges = G.edges(n,data=True)
             if G.is_directed():
                 edges += G.in_edges(n,data=True)
-            G.remove_edges_from(edges)
+        G.remove_edges_from(edges)
         closeness_vitality[n] = wig - weiner_index(G,weight)
         # add edges and data back to graph
         G.add_edges_from(edges)
