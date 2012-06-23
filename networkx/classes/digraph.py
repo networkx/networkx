@@ -115,8 +115,9 @@ class DiGraph(Graph):
     >>> G.node[1]
     {'time': '5pm'}
     >>> G.node[1]['room'] = 714
+    >>> del G.node[1]['room'] # remove attribute
     >>> G.nodes(data=True)
-    [(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
+    [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Warning: adding a node to G.node does not add it to the graph.
 
