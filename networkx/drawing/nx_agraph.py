@@ -260,6 +260,7 @@ def pygraphviz_layout(G,prog='neato',root=None, args=''):
                           '(not available for Python3)')
     if root is not None:
         args+="-Groot=%s"%root
+    A=to_agraph(G)
     A.layout(prog=prog,args=args)
     node_pos={}
     for n in G:
