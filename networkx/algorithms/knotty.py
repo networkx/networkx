@@ -113,8 +113,6 @@ def _find_knotty_centre(G, compact):
 	nodes_left = range(0,N)
 	nodes_left = list(filter_list(nodes_left, nodes))	
 	improving = 1
-	#import ipdb
-	#ipdb.set_trace()
 	
 	while improving and nodes_left:
 		best_kc = 0
