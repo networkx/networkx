@@ -110,30 +110,28 @@ def _find_knotty_centre(G, compact):
 		improving = len(nodes) > L
 
 	# Hill climbing phase
-	nodes_left = range(1,N)
+	nodes_left = range(0,N)
 	nodes_left = list(filter_list(nodes_left, nodes))	
 	improving = 1
-		
-	while improving and nodes_left: #makes sure nodes_left is not empty
+	#import ipdb
+	#ipdb.set_trace()
+	
+	while improving and nodes_left:
 		best_kc = 0
-		
-		for i in range(0, len(nodes_left)):
-			node = nodes_left[i]
+		for node in nodes_left:
 			nodes2 = np.hstack((nodes, node))
-			
 			kc2 = _compute_knotty_centrality(G, CIJ, nodes2, compact, BC)
 			if kc2 > best_kc:
 				best_kc = kc2
 				best_node = node
-
+				
 		if best_kc > kc:
 			kc = best_kc
 			nodes = np.hstack((nodes, best_node))
-			nodes_left = nodes_left[nodes_left != best_node]
+			nodes_left.remove(best_node)
 		else:
 			improving = 0
-						
-	return nodes.astype(int), kc
+	return nodes, kc
 
 def _best_perm(given, choices, G, CIJ, compact, BC):
 	# Carries out exhaustive search to find a permutation of nodes in
@@ -141,7 +139,7 @@ def _best_perm(given, choices, G, CIJ, compact, BC):
 	# value of knotty-centrality
 
 	if choices:
-		choices2 = choices[1:len(choices)]
+		choices2 = [choices[i] for i in range(0, len(choices))]
 		new = choices[0]
 		nodes1, kc1 = _best_perm(np.hstack((given, new)), choices2, G, CIJ, compact, BC)
 		nodes2, kc2 = _best_perm(given, choices2, G, CIJ, compact, BC)
@@ -162,12 +160,12 @@ def _compute_knotty_centrality(G, CIJ, nodes, compact, BC):
 	
 	if len(nodes) < 3:
 		kc = 0
-		g = 0
 	else:
 		CIJ = CIJ!=0 # binarise matrix
 		CIJ = CIJ.astype(int) #set to 1/0 instead of True/False
 		N = len(CIJ) # nodes in overall graph
 		M = len(nodes) # nodes in subgraph
+
 		BC_list = [BC[i] for i in nodes]
 		BCtot = sum(BC_list)			
 		
