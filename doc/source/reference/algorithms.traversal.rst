@@ -21,6 +21,8 @@ Depth First Search
    dfs_preorder_nodes
    dfs_postorder_nodes
    dfs_labeled_edges
+   dfs_wgb_undirected
+   dfs_wgb_directed
 
 Breadth First Search
 --------------------
