@@ -169,3 +169,11 @@ class TestConvertNumpy(object):
         G.add_node(1)
         M = nx.to_scipy_sparse_matrix(G)
         np_assert_equal(M.todense(), np.matrix([[0]]))
+
+    def test_ordering(self):
+        G = nx.DiGraph()
+        G.add_edge(1,2)
+        G.add_edge(2,3)
+        G.add_edge(3,1)
+        M = nx.to_scipy_sparse_matrix(G,nodelist=[3,2,1])
+        np_assert_equal(M.todense(), np.matrix([[0,0,1],[1,0,0],[0,1,0]]))
