@@ -6,7 +6,7 @@ Release Log
 
 Networkx-1.7
 ------------
-Release date:  xx June 2012
+Release date:  4 July 2012
 
 Highlights
 ~~~~~~~~~~
