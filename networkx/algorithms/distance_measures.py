@@ -30,30 +30,31 @@ def eccentricity(G, v=None, sp=None):
        Return value of specified node       
 
     sp : dict of dicts, optional       
-       All pairs shortest path lenghts as a dictionary of dictionaries
+       All pairs shortest path lengths as a dictionary of dictionaries
 
     Returns
     -------
     ecc : dictionary
        A dictionary of eccentricity values keyed by node.
     """
-    nodes=[]
-    if v is None:                # none, use entire graph 
-        nodes=G.nodes() 
-    elif isinstance(v, list):  # check for a list
-        nodes=v
-    else:                      # assume it is a single value
-        nodes=[v]
+#    nodes=
+#    nodes=[]
+#    if v is None:                # none, use entire graph 
+#        nodes=G.nodes()
+#    elif v in G:               # is v a single node
+#        nodes=[v]
+#    else:                      # assume v is a container of nodes
+#        nodes=v
     order=G.order()
 
     e={}
-    for v in nodes:
+    for n in G.nbunch_iter(v):
         if sp is None:
-            length=networkx.single_source_shortest_path_length(G,v)
+            length=networkx.single_source_shortest_path_length(G,n)
             L = len(length)
         else:
             try:
-                length=sp[v]
+                length=sp[n]
                 L = len(length)
             except TypeError:
                 raise networkx.NetworkXError('Format of "sp" is invalid.')
@@ -61,10 +62,10 @@ def eccentricity(G, v=None, sp=None):
             msg = "Graph not connected: infinite path length"
             raise networkx.NetworkXError(msg)
             
-        e[v]=max(length.values())
+        e[n]=max(length.values())
 
-    if len(e)==1: 
-        return list(e.values())[0] # return single value
+    if v in G:
+        return e[v]  # return single value
     else:
         return e
 
@@ -143,7 +144,7 @@ def radius(G, e=None):
     return min(e.values())
 
 def center(G, e=None):
-    """Return the periphery of the graph G. 
+    """Return the center of the graph G. 
 
     The center is the set of nodes with eccentricity equal to radius. 
 
