@@ -1,25 +1,25 @@
 """
 Current-flow betweenness centrality measures.
 """
-#    Copyright (C) 2010-2011 by 
+#    Copyright (C) 2010-2012 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import random
+import networkx as nx
+from networkx.algorithms.centrality.flow_matrix import *
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['current_flow_betweenness_centrality',
            'approximate_current_flow_betweenness_centrality',
            'edge_current_flow_betweenness_centrality']
 
-import random
-import networkx as nx
-from networkx.algorithms.centrality.flow_matrix import *
 
 def approximate_current_flow_betweenness_centrality(G, normalized=True, 
                                                     weight='weight',
-                                                    dtype=float, solver='lu',
+                                                    dtype=float, solver='full',
                                                     epsilon=0.5, kmax=10000):
     r"""Compute the approximate current-flow betweenness centrality for nodes.
 
@@ -51,7 +51,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
 
     epsilon: float
         Absolute error tolerance.
-       
+
     kmax: int
        Maximum number of sample node pairs to use for approximation.
 
@@ -59,7 +59,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
     -------
     nodes : dictionary
        Dictionary of nodes with betweenness centrality as the value.
-        
+
     See Also
     --------
     current_flow_betweenness_centrality
@@ -138,7 +138,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
 
 
 def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
-                                        dtype=float, solver='lu'):
+                                        dtype=float, solver='full'):
     r"""Compute current-flow betweenness centrality for nodes.
 
     Current-flow betweenness centrality uses an electrical current
@@ -174,7 +174,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
     -------
     nodes : dictionary
        Dictionary of nodes with betweenness centrality as the value.
-        
+
     See Also
     --------
     approximate_current_flow_betweenness_centrality
@@ -246,7 +246,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
 
 def edge_current_flow_betweenness_centrality(G, normalized=True, 
                                              weight='weight',
-                                             dtype=float, solver='lu'):
+                                             dtype=float, solver='full'):
     """Compute current-flow betweenness centrality for edges.
 
     Current-flow betweenness centrality uses an electrical current
@@ -282,7 +282,7 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
     -------
     nodes : dictionary
        Dictionary of edge tuples with betweenness centrality as the value.
-        
+
     See Also
     --------
     betweenness_centrality
@@ -359,5 +359,3 @@ def setup_module(module):
         import scipy
     except:
         raise SkipTest("NumPy not available")
-
-
