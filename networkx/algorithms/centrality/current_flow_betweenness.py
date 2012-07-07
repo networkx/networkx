@@ -33,7 +33,7 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
       A NetworkX graph 
 
     normalized : bool, optional (default=True)
-      If True the betweenness values are normalized by b=b/(n-1)(n-2) where
+      If True the betweenness values are normalized by 2/[(n-1)(n-2)] where
       n is the number of nodes in G.
 
     weight : string or None, optional (default='weight')
@@ -154,7 +154,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
       A NetworkX graph 
 
     normalized : bool, optional (default=True)
-      If True the betweenness values are normalized by b=b/(n-1)(n-2) where
+      If True the betweenness values are normalized by 2/[(n-1)(n-2)] where
       n is the number of nodes in G.
 
     weight : string or None, optional (default='weight')
@@ -262,7 +262,7 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
       A NetworkX graph 
 
     normalized : bool, optional (default=True)
-      If True the betweenness values are normalized by b=b/(n-1)(n-2) where
+      If True the betweenness values are normalized by 2/[(n-1)(n-2)] where
       n is the number of nodes in G.
 
     weight : string or None, optional (default='weight')
