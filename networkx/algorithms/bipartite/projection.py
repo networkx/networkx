@@ -59,8 +59,8 @@ def projected_graph(B, nodes, multigraph=False):
     >>> B = nx.Graph()
     >>> B.add_edges_from([('a', 1), ('b', 1), ('a', 2), ('b', 2)])
     >>> G = bipartite.projected_graph(B, ['a', 'b'], multigraph=True)
-    >>> print(G.edges(keys=True))
-    [('a', 'b', 1), ('a', 'b', 2)]
+    >>> print([sorted((u,v)) for u,v in G.edges()])
+    [['a', 'b'], ['a', 'b']]
 
     Notes
     ------

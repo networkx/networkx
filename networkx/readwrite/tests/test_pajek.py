@@ -2,11 +2,11 @@
 """
 Pajek tests
 """
-
 from nose.tools import assert_equal
 from networkx import *
 import os,tempfile
 from io import open
+from networkx.testing import *
 
 class TestPajek(object):
     def setUp(self):
@@ -32,20 +32,20 @@ class TestPajek(object):
         data="""*Vertices 2\n1 "1"\n2 "2"\n*Edges\n1 2\n2 1"""
         G=parse_pajek(data)
         assert_equal(sorted(G.nodes()), ['1', '2'])
-        assert_equal(sorted(G.edges()), [('1', '2'), ('1', '2')])
+        assert_edges_equal(G.edges(), [('1', '2'), ('1', '2')])
 
     def test_parse_pajek(self):
         G=parse_pajek(self.data)
         assert_equal(sorted(G.nodes()), ['A1', 'Bb', 'C', 'D2'])
-        assert_equal(sorted(G.edges()),
-                     [('A1', 'A1'), ('A1', 'Bb'), ('A1', 'C'), ('Bb', 'A1'),
-                      ('C', 'C'), ('C', 'D2'), ('D2', 'Bb')])
+        assert_edges_equal(G.edges(), [('A1', 'A1'), ('A1', 'Bb'), 
+                                       ('A1', 'C'), ('Bb', 'A1'),
+                                       ('C', 'C'), ('C', 'D2'), ('D2', 'Bb')])
 
     def test_read_pajek(self):
         G=parse_pajek(self.data)
         Gin=read_pajek(self.fname)
         assert_equal(sorted(G.nodes()), sorted(Gin.nodes()))
-        assert_equal(sorted(G.edges()), sorted(Gin.edges()))
+        assert_edges_equal(G.edges(), Gin.edges())
         assert_equal(self.G.graph,Gin.graph)
         for n in G.node:
             assert_equal(G.node[n],Gin.node[n])

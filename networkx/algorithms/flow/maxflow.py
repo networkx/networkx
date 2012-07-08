@@ -258,15 +258,15 @@ def ford_fulkerson_flow(G, s, t, capacity='capacity'):
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
     >>> F = nx.ford_fulkerson_flow(G, 'x', 'y')
-    >>> for u, v in G.edges_iter():
+    >>> for u, v in sorted(G.edges_iter()):
     ...     print('(%s, %s) %.2f' % (u, v, F[u][v]))
     ... 
     (a, c) 2.00
-    (c, y) 2.00
     (b, c) 0.00
     (b, d) 1.00
-    (e, y) 1.00
+    (c, y) 2.00
     (d, e) 1.00
+    (e, y) 1.00
     (x, a) 2.00
     (x, b) 1.00
     """

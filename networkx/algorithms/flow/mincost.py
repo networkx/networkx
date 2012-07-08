@@ -317,8 +317,8 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
     >>> flowCost, flowDict = nx.network_simplex(G)
     >>> flowCost == nx.shortest_path_length(G, 's', 'v', weight = 'weight')
     True
-    >>> [(u, v) for u in flowDict for v in flowDict[u] if flowDict[u][v] > 0]
-    [('x', 'u'), ('s', 'x'), ('u', 'v')]
+    >>> sorted([(u, v) for u in flowDict for v in flowDict[u] if flowDict[u][v] > 0])
+    [('s', 'x'), ('u', 'v'), ('x', 'u')]
     >>> nx.shortest_path(G, 's', 'v', weight = 'weight')
     ['s', 'x', 'u', 'v']
 
@@ -651,8 +651,6 @@ def min_cost_flow(G, demand = 'demand', capacity = 'capacity',
     >>> G.add_edge('b', 'd', weight = 1, capacity = 9)
     >>> G.add_edge('c', 'd', weight = 2, capacity = 5)
     >>> flowDict = nx.min_cost_flow(G)
-    >>> flowDict
-    {'a': {'c': 1, 'b': 4}, 'c': {'d': 1}, 'b': {'d': 4}, 'd': {}}
     """
     return network_simplex(G, demand = demand, capacity = capacity,
                            weight = weight)[1]

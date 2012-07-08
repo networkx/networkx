@@ -4,6 +4,7 @@ from nose.tools import *
 import networkx
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
+from networkx.testing import *
 
 class HistoricalTests(object):
 
@@ -239,22 +240,20 @@ class HistoricalTests(object):
         else:
             elist=[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
         # nbunch can be a list
-        assert_equals(sorted(G.edges(['A','B'])),elist)
+        assert_edges_equal(G.edges(['A','B']),elist)
         # nbunch can be a set
-        assert_equals(sorted(G.edges(set(['A','B']))),elist)
+        assert_edges_equal(G.edges(set(['A','B'])),elist)
         # nbunch can be a graph
         G1=self.G()
         G1.add_nodes_from('AB')
-        assert_equals(sorted(G.edges(G1)),elist)
+        assert_edges_equal(G.edges(G1),elist)
         # nbunch can be a dict with nodes as keys
         ndict={'A': "thing1", 'B': "thing2"}
-        assert_equals(sorted(G.edges(ndict)),elist)
+        assert_edges_equal(G.edges(ndict),elist)
         # nbunch can be a single node
-        assert_equals(sorted(G.edges('A')),
-                      [('A', 'B'), ('A', 'C')])
+        assert_edges_equal(G.edges('A'), [('A', 'B'), ('A', 'C')])
 
-        assert_equals(sorted(G.nodes_iter()),
-                      ['A', 'B', 'C', 'D'])
+        assert_edges_equal(G.nodes_iter(), ['A', 'B', 'C', 'D'])
 
     def test_edges_iter_nbunch(self):
         G=self.G()
@@ -270,24 +269,22 @@ class HistoricalTests(object):
         else:
             elist=[('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
         # nbunch can be a list
-        assert_equals(sorted(G.edges_iter(['A','B'])),elist)
+        assert_edges_equal(G.edges_iter(['A','B']),elist)
         # nbunch can be a set
-        assert_equals(sorted(G.edges_iter(set(['A','B']))),elist)
+        assert_edges_equal(G.edges_iter(set(['A','B'])),elist)
         # nbunch can be a graph
         G1=self.G()
         G1.add_nodes_from(['A','B'])
-        assert_equals(sorted(G.edges_iter(G1)),elist)
+        assert_edges_equal(G.edges_iter(G1),elist)
         # nbunch can be a dict with nodes as keys
         ndict={'A': "thing1", 'B': "thing2"}
-        assert_equals(sorted(G.edges_iter(ndict)),elist)
+        assert_edges_equal(G.edges_iter(ndict),elist)
         # nbunch can be a single node
-        assert_equals(sorted(G.edges_iter('A')),
-                      [('A', 'B'), ('A', 'C')])
+        assert_edges_equal(G.edges_iter('A'), [('A', 'B'), ('A', 'C')])
 
         # nbunch can be nothing (whole graph)
-        assert_equals(sorted(G.edges_iter()),
-                      [('A', 'B'), ('A', 'C'), ('B', 'D'), 
-                       ('C', 'B'), ('C', 'D')])
+        assert_edges_equal(G.edges_iter(), [('A', 'B'), ('A', 'C'), ('B', 'D'), 
+                           ('C', 'B'), ('C', 'D')])
 
 
     def test_degree(self):
@@ -299,7 +296,7 @@ class HistoricalTests(object):
         # degree of single node in iterable container must return dict
         assert_equal(list(G.degree(['A']).values()),[2])
         assert_equal(G.degree(['A']),{'A': 2})
-        assert_equal(list(G.degree(['A','B']).values()),[2, 3])
+        assert_equal(sorted(G.degree(['A','B']).values()),[2, 3])
         assert_equal(G.degree(['A','B']),{'A': 2, 'B': 3})
         assert_equal(sorted(G.degree().values()),[2, 2, 3, 3])
         assert_equal(sorted([v for k,v in G.degree_iter()]),
@@ -351,8 +348,8 @@ class HistoricalTests(object):
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
                           ('C', 'B'), ('C', 'D')])
         SG=G.subgraph(['A','B','D']) 
-        assert_equal(sorted(SG.nodes()),['A', 'B', 'D'])
-        assert_equal(sorted(SG.edges()),[('A', 'B'), ('B', 'D')])
+        assert_nodes_equal(SG.nodes(),['A', 'B', 'D'])
+        assert_edges_equal(SG.edges(),[('A', 'B'), ('B', 'D')])
 
     def test_to_directed(self):
         G=self.G()
@@ -412,7 +409,7 @@ class HistoricalTests(object):
         G.add_nodes_from('GJK')
         assert_equal(sorted(G.nodes_iter()),
                      ['A', 'B', 'C', 'D', 'G', 'J', 'K'])
-        assert_equal(sorted(G.edges_iter()),
+        assert_edges_equal(G.edges_iter(),
         [('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')])
 
         assert_equal(sorted([v for k,v in G.degree_iter()]),

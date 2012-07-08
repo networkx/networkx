@@ -54,9 +54,12 @@ class TestAStar:
 
     def test_astar_undirected(self):
         GG=self.XG.to_undirected()
+        # make sure we get lower weight
+        # to_undirected might choose either edge with weight 2 or weight 3
+        GG['u']['x']['weight']=2
         GG['y']['v']['weight'] = 2
-        assert nx.astar_path(GG,'s','v')==['s', 'x', 'u', 'v']
-        assert nx.astar_path_length(GG,'s','v')==8
+        assert_equal(nx.astar_path(GG,'s','v'),['s', 'x', 'u', 'v'])
+        assert_equal(nx.astar_path_length(GG,'s','v'),8)
 
     def test_astar_directed2(self):
         XG2=nx.DiGraph()

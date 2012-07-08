@@ -25,6 +25,8 @@ def assert_edges_equal(elist1, elist2):
     e1 = sorted(elist1,key=lambda x: sorted(x[0:2]))
     e2 = sorted(elist2,key=lambda x: sorted(x[0:2]))
     assert_equal(len(e1),len(e2))
+    if len(e1) == 0:
+        return True
     if len(e1[0]) == 2:
         for a,b in zip(e1,e2):
             assert_equal(set(a[0:2]),set(b[0:2]))

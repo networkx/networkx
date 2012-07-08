@@ -1,7 +1,7 @@
 from nose.tools import *
 import networkx as nx
 from networkx import *
-
+from networkx.testing import *
 
 def test_union_attributes():
     g = nx.Graph()
@@ -186,13 +186,13 @@ def test_union_and_compose():
     G1.add_edge('A','C')
     G1.add_edge('A','D')
     G2=nx.DiGraph()
-    G2.add_edge(1,2)
-    G2.add_edge(1,3)
-    G2.add_edge(1,4)
+    G2.add_edge('1','2')
+    G2.add_edge('1','3')
+    G2.add_edge('1','4')
 
     G=union(G1,G2)
     H=compose(G1,G2)
-    assert_true(G.edges()==H.edges())
+    assert_edges_equal(G.edges(),H.edges())
     assert_false(G.has_edge('A',1))
     assert_raises(nx.NetworkXError, nx.union, K3, P3)
     H1=union(H,G1,rename=('H','G1'))
@@ -208,7 +208,7 @@ def test_union_and_compose():
     assert_false(H1.has_edge('NB','NA'))
 
     G=compose(G,G)
-    assert_equal(G.edges(),H.edges())
+    assert_edges_equal(G.edges(),H.edges())
 
     G2=union(G2,G2,rename=('','copy'))
     assert_equal(sorted(G2.nodes()),

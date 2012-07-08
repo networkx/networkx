@@ -1,7 +1,6 @@
 """
     Unit tests for edgelists.
 """
-
 from nose.tools import assert_equal, assert_raises, assert_not_equal
 import networkx as nx
 import io
@@ -182,12 +181,12 @@ class TestEdgelist:
 
 
     def test_edgelist_integers(self):
-        G=nx.convert_node_labels_to_integers(self.G)
+        G=nx.convert_node_labels_to_integers(self.G,discard_old_labels=False)
         (fd,fname)=tempfile.mkstemp()
         nx.write_edgelist(G,fname)  
         H=nx.read_edgelist(fname,nodetype=int)
-        H2=nx.read_edgelist(fname,nodetype=int)
-        G.remove_node(5) # isolated nodes are not written in edgelist
+        # isolated nodes are not written in edgelist
+        G.remove_nodes_from(nx.isolates(G))
         assert_equal(sorted(H.nodes()),sorted(G.nodes()))
         assert_equal(sorted(H.edges()),sorted(G.edges()))
         os.close(fd)

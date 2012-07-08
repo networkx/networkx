@@ -15,10 +15,10 @@ Using
     >>> import networkx as nx
     >>> G=nx.Graph()
     >>> G.add_edge(1,2)
-    >>> G.add_node("spam")
-    >>> print(G.nodes())
-    [1, 2, 'spam']
-    >>> print(G.edges())
+    >>> G.add_node(42)
+    >>> print(sorted(G.nodes()))
+    [1, 2, 42]
+    >>> print(sorted(G.edges()))
     [(1, 2)]
 """
 #    Copyright (C) 2004-2010 by

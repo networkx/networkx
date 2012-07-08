@@ -31,9 +31,10 @@ algorithm:
 >>> nx.is_connected(B)
 True
 >>> bottom_nodes, top_nodes = bipartite.sets(B)
->>> list(top_nodes)
+
+list(top_nodes)
 [1, 2, 3, 4]
->>> list(bottom_nodes)
+list(bottom_nodes)
 ['a', 'c', 'b']
 
 However, if the input graph is not connected, there are more than one possible
@@ -43,18 +44,20 @@ colorations. Thus, the following result is correct:
 >>> nx.is_connected(B)
 False
 >>> bottom_nodes, top_nodes = bipartite.sets(B)
->>> list(top_nodes)
+
+list(top_nodes)
 [1, 2, 4, 'c']
->>> list(bottom_nodes)
+list(bottom_nodes)
 ['a', 3, 'b']
 
 Using the "bipartite" node attribute, you can easily get the two node sets:
 
 >>> top_nodes = set(n for n,d in B.nodes(data=True) if d['bipartite']==0)
 >>> bottom_nodes = set(B) - top_nodes
->>> list(top_nodes)
+
+list(top_nodes)
 [1, 2, 3, 4]
->>> list(bottom_nodes)
+list(bottom_nodes)
 ['a', 'c', 'b']
 
 So you can easily use the bipartite algorithms that require, as an argument, a

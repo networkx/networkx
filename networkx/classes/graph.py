@@ -148,9 +148,6 @@ class Graph(object):
     [1, 2]
     >>> len(G)  # number of nodes in graph
     5
-    >>> G[1] # adjacency dict keyed by neighbor to edge attributes
-    ...            # Note: you should not change this dict manually!
-    {2: {'color': 'blue', 'weight': 4}}
 
     The fastest way to traverse all edges of a graph is via
     adjacency_iter(), but the edges() method is often more convenient.
