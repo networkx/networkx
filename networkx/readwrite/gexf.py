@@ -379,8 +379,10 @@ class GEXFWriter(GEXF):
                     e=Element("attvalue")
                     e.attrib['for']=attr_id
                     e.attrib['value']=make_str(val)
-                    e.attrib['start']=make_str(start)
-                    e.attrib['end']=make_str(end)
+                    if start is not None:
+                        e.attrib['start']=make_str(start)
+                    if end is not None:
+                        e.attrib['end']=make_str(end)
                     attvalues.append(e)
             else:
                 # static data
@@ -500,7 +502,11 @@ class GEXFWriter(GEXF):
         if spells:
             spells_element=Element('spells')
             for start,end in spells:
-                e=Element('spell',start=str(start),end=str(end))
+                e=Element('spell')
+                if start is not None:
+                    e.attrib['start']=make_str(start)
+                if end is not None:
+                    e.attrib['end']=make_str(end)
                 spells_element.append(e)
             node_element.append(spells_element)
         return node_data
