@@ -13,6 +13,7 @@ Ford-Fulkerson
    min_cut
    ford_fulkerson
    ford_fulkerson_flow
+   ford_fulkerson_flow_and_residual
 
 Network Simplex
 ---------------
