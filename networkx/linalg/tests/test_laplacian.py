@@ -23,7 +23,7 @@ class TestLaplacian(object):
                 for (u,v) in self.G.edges_iter() )
         self.WG.add_node(4)
         self.MG=nx.MultiGraph(self.G)
-
+        
 
     def test_laplacian(self):
         "Graph Laplacian"
@@ -63,3 +63,13 @@ class TestLaplacian(object):
         assert_almost_equal(nx.normalized_laplacian(self.WG),GL,decimal=3)
         assert_almost_equal(nx.normalized_laplacian(self.WG,weight='other'),GL,decimal=3)
 
+    def test_directed_laplacian(self):
+        "Directed Laplacian"
+        # TODO: Add more comprehensive tests
+        G = nx.DiGraph()
+        G.add_cycle([1,2,3,4])
+        GL = numpy.array([[ 0.5,  -0.25,  0.,   -0.25],
+                          [-0.25,  0.5,  -0.25,  0.  ],
+                          [ 0.,   -0.25,  0.5,  -0.25],
+                          [-0.25,  0.,   -0.25,  0.5 ]])
+        assert_almost_equal(nx.directed_laplacian(G), GL, decimal=3)
