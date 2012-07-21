@@ -66,8 +66,8 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity'):
     >>> G.add_edge('d','e', capacity = 2.0)
     >>> G.add_edge('c','y', capacity = 2.0)
     >>> G.add_edge('e','y', capacity = 3.0)
-    >>> nx.minimum_edge_cut(G, 'x', 'y')
-    set([('c', 'y'), ('x', 'b')])
+    >>> list(nx.minimum_edge_cut(G, 'x', 'y'))
+    [('c', 'y'), ('x', 'b')]
     >>> nx.min_cut(G, 'x', 'y')
     3.0
     """
@@ -341,7 +341,7 @@ def minimum_edge_cut(G, s=None, t=None):
         # Initial cutset is all edges of a node with minimum degree
         deg = G.degree()
         min_deg = min(deg.values())
-        node = (n for n,d in deg.items() if d==min_deg).next()
+        node = next(n for n,d in deg.items() if d==min_deg)
         min_cut = G.edges(node)
         nodes = G.nodes()
         n = len(nodes)
@@ -362,7 +362,7 @@ def minimum_edge_cut(G, s=None, t=None):
         # Initial cutset is all edges of a node with minimum degree
         deg = G.degree()
         min_deg = min(deg.values())
-        node = (n for n,d in deg.items() if d==min_deg).next()
+        node = next(n for n,d in deg.items() if d==min_deg)
         min_cut = G.edges(node)
         # A dominating set is \lambda-covering
         # We need a dominating set with at least two nodes
