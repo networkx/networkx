@@ -28,6 +28,7 @@ class TestLaplacian(object):
         for node in self.Gsl.nodes():
             self.Gsl.add_edge(node, node)
 
+
     def test_laplacian(self):
         "Graph Laplacian"
         NL=numpy.array([[ 3, -1, -1, -1, 0],
@@ -48,17 +49,17 @@ class TestLaplacian(object):
     def test_generalized_laplacian(self):
         "Generalized Graph Laplacian"
         GL=numpy.array([[ 1.00, -0.408, -0.408, -0.577,  0.00],
-                        [-0.408,  1.00, -0.50,  0.00 , 0.00], 
-                        [-0.408, -0.50,  1.00,  0.00,  0.00], 
+                        [-0.408,  1.00, -0.50,  0.00 , 0.00],
+                        [-0.408, -0.50,  1.00,  0.00,  0.00],
                         [-0.577,  0.00,  0.00,  1.00,  0.00],
-                        [ 0.00,  0.00,  0.00,  0.00,  0.00]]) 
+                        [ 0.00,  0.00,  0.00,  0.00,  0.00]])
         assert_almost_equal(nx.generalized_laplacian(self.G),GL,decimal=3)
-                       
+
     def test_normalized_laplacian(self):
         "Generalized Graph Laplacian"
         GL=numpy.array([[ 1.00, -0.408, -0.408, -0.577,  0.00],
-                        [-0.408,  1.00, -0.50,  0.00 , 0.00], 
-                        [-0.408, -0.50,  1.00,  0.00,  0.00], 
+                        [-0.408,  1.00, -0.50,  0.00 , 0.00],
+                        [-0.408, -0.50,  1.00,  0.00,  0.00],
                         [-0.577,  0.00,  0.00,  1.00,  0.00],
                         [ 0.00,  0.00,  0.00,  0.00,  0.00]])
         Lsl = numpy.array([[ 0.75  , -0.2887, -0.2887, -0.3536,  0.],
@@ -72,3 +73,14 @@ class TestLaplacian(object):
         assert_almost_equal(nx.normalized_laplacian(self.WG),GL,decimal=3)
         assert_almost_equal(nx.normalized_laplacian(self.WG,weight='other'),GL,decimal=3)
         assert_almost_equal(nx.normalized_laplacian(self.Gsl), Lsl, decimal=3)
+
+    def test_directed_laplacian(self):
+        "Directed Laplacian"
+        # TODO: Add more comprehensive tests
+        G = nx.DiGraph()
+        G.add_cycle([1,2,3,4])
+        GL = numpy.array([[ 0.5,  -0.25,  0.,   -0.25],
+                          [-0.25,  0.5,  -0.25,  0.  ],
+                          [ 0.,   -0.25,  0.5,  -0.25],
+                          [-0.25,  0.,   -0.25,  0.5 ]])
+        assert_almost_equal(nx.directed_laplacian(G), GL, decimal=3)
