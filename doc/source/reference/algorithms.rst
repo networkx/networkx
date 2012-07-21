@@ -20,6 +20,7 @@ Algorithms
    algorithms.clustering
    algorithms.community
    algorithms.component
+   algorithms.connectivity
    algorithms.core
    algorithms.cycles
    algorithms.dag
