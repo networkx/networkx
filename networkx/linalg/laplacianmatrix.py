@@ -140,29 +140,20 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
           "normalized_laplacian() requires numpy: http://scipy.org/ ")
     if G.is_multigraph():
         L = laplacian(G, nodelist=nodelist, weight=weight)
-        osd = np.zeros(n)
-        for i in range(n):
-            if d[i]>0: 
-                osd[i] = np.sqrt(1.0/d[i])
-        T=I*osd
-        L=np.dot(T,np.dot(L,T))
-        return L
-
-    if G.number_of_selfloops() == 0:
+        D = np.diag(L)
+    elif G.number_of_selfloops() == 0:
         L = laplacian(G, nodelist=nodelist, weight=weight)
         D = np.diag(L)
     else:
         A = np.array(nx.adj_matrix(G))
         D = np.sum(A, 1)
         L = np.diag(D) - A
-
-    with np.errstate(divide='ignore'): # Handle div by 0. It happens if there
-                                       # are unconnected nodes
+        
+    # Handle div by 0. It happens if there are unconnected nodes
+    with np.errstate(divide='ignore'): 
         Disqrt = np.diag(1 / np.sqrt(D))
     Disqrt[np.isinf(Disqrt)] = 0
-    
     Ln = np.dot(Disqrt, np.dot(L,Disqrt))
-
     return Ln
 
 # Function aliases

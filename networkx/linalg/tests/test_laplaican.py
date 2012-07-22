@@ -23,7 +23,10 @@ class TestLaplacian(object):
                 for (u,v) in self.G.edges_iter() )
         self.WG.add_node(4)
         self.MG=nx.MultiGraph(self.G)
-
+        # Graph with selfloops
+        self.Gsl = self.G.copy()
+        for node in self.Gsl.nodes():
+            self.Gsl.add_edge(node, node)
 
     def test_laplacian(self):
         "Graph Laplacian"
@@ -57,9 +60,15 @@ class TestLaplacian(object):
                         [-0.408,  1.00, -0.50,  0.00 , 0.00], 
                         [-0.408, -0.50,  1.00,  0.00,  0.00], 
                         [-0.577,  0.00,  0.00,  1.00,  0.00],
-                        [ 0.00,  0.00,  0.00,  0.00,  0.00]]) 
+                        [ 0.00,  0.00,  0.00,  0.00,  0.00]])
+        Lsl = numpy.array([[ 0.75  , -0.2887, -0.2887, -0.3536,  0.],
+                           [-0.2887,  0.6667, -0.3333,  0.    ,  0.],
+                           [-0.2887, -0.3333,  0.6667,  0.    ,  0.],
+                           [-0.3536,  0.    ,  0.    ,  0.5   ,  0.],
+                           [ 0.    ,  0.    ,  0.    ,  0.    ,  0.]])
+
         assert_almost_equal(nx.normalized_laplacian(self.G),GL,decimal=3)
         assert_almost_equal(nx.normalized_laplacian(self.MG),GL,decimal=3)
         assert_almost_equal(nx.normalized_laplacian(self.WG),GL,decimal=3)
         assert_almost_equal(nx.normalized_laplacian(self.WG,weight='other'),GL,decimal=3)
-
+        assert_almost_equal(nx.normalized_laplacian(self.Gsl), Lsl, decimal=3)
