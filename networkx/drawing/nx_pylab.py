@@ -646,6 +646,9 @@ def draw_networkx_labels(G, pos,
        If not specified a spring layout positioning will be computed.
        See networkx.layout for functions that compute node positions.
 
+    labels : dictionary, optional (deafult=None)
+       Node labels in a dictionary keyed by node of text labels
+
     font_size : int
        Font size for text labels (default=12)
 
