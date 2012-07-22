@@ -215,7 +215,7 @@ def _create_flow_dict(G, H, capacity='capacity'):
                     flow[u][v] = abs(inf_capacity_flows[(u, v)] -
                                      inf_capacity_flows[(v, u)])
             else:
-                flow[u][v] = abs(G[u][v][capacity] - H[v][u][capacity])
+                flow[u][v] = G[u][v][capacity]
             flow[v][u] = flow[u][v]
 
     return flow
