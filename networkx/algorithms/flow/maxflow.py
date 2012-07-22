@@ -12,22 +12,23 @@ import networkx as nx
 
 __all__ = ['ford_fulkerson',
            'ford_fulkerson_flow',
-           'ford_fulkerson_flow_and_residual',
+           'ford_fulkerson_flow_and_auxiliary',
            'max_flow',
            'min_cut']
 
-def ford_fulkerson_flow_and_residual(G, s, t, capacity='capacity'):
+def ford_fulkerson_flow_and_auxiliary(G, s, t, capacity='capacity'):
     """Find a maximum single-commodity flow using the Ford-Fulkerson
     algorithm.
     
     This function returns both the value of the maximum flow and the 
-    residual network resulting after finding the maximum flow. The 
-    residual network has edges with capacity equal to the capacity 
+    auxiliary network resulting after finding the maximum flow, which
+    is also named residual network in the literature. The 
+    auxiliary network has edges with capacity equal to the capacity 
     of the edge in the original network minus the flow that went 
     throught that edge. Notice that it can happen that a flow 
-    from v to u is allowed in the residual network, though disallowed 
+    from v to u is allowed in the auxiliary network, though disallowed 
     in the original network. A dictionary with infinite capacity edges 
-    can be found as an attribute of the residual network.
+    can be found as an attribute of the auxiliary network.
 
     Parameters
     ----------
@@ -53,10 +54,10 @@ def ford_fulkerson_flow_and_residual(G, s, t, capacity='capacity'):
     flow_value : integer, float
         Value of the maximum flow, i.e., net outflow from the source.
 
-    residual : DiGraph
-        Residual network after finding the maximum flow. A dictionary
-        with infinite capacity edges can be found as an attribute of
-        this network: residual.graph['inf_capacity_flows']
+    auxiliary : DiGraph
+        Residual/auxiliary network after finding the maximum flow. 
+        A dictionary with infinite capacity edges can be found as 
+        an attribute of this network: auxiliary.graph['inf_capacity_flows']
 
     Raises
     ------
@@ -87,12 +88,12 @@ def ford_fulkerson_flow_and_residual(G, s, t, capacity='capacity'):
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow, residual = nx.ford_fulkerson_flow_and_residual(G, 'x', 'y')
+    >>> flow, auxiliary = nx.ford_fulkerson_flow_and_auxiliary(G, 'x', 'y')
     >>> flow
     3.0
     >>> # A dictionary with infinite capacity flows can be found as an
-    >>> # attribute of the residual network
-    >>> inf_capacity_flows = residual.graph['inf_capacity_flows']
+    >>> # attribute of the auxiliary network
+    >>> inf_capacity_flows = auxiliary.graph['inf_capacity_flows']
 
     """
     if G.is_multigraph():
@@ -284,9 +285,9 @@ def ford_fulkerson(G, s, t, capacity='capacity'):
     >>> flow
     3.0
     """
-    flow_value, residual = ford_fulkerson_flow_and_residual(G, 
+    flow_value, auxiliary = ford_fulkerson_flow_and_auxiliary(G, 
                                 s, t, capacity=capacity)
-    flow_dict = _create_flow_dict(G, residual, capacity=capacity)
+    flow_dict = _create_flow_dict(G, auxiliary, capacity=capacity)
     return flow_value, flow_dict
 
 def ford_fulkerson_flow(G, s, t, capacity='capacity'):
@@ -354,9 +355,9 @@ def ford_fulkerson_flow(G, s, t, capacity='capacity'):
     (x, a) 2.00
     (x, b) 1.00
     """
-    flow_value, residual = ford_fulkerson_flow_and_residual(G,
+    flow_value, auxiliary = ford_fulkerson_flow_and_auxiliary(G,
                                 s, t, capacity=capacity)
-    return _create_flow_dict(G, residual, capacity=capacity)
+    return _create_flow_dict(G, auxiliary, capacity=capacity)
 
 def max_flow(G, s, t, capacity='capacity'):
     """Find the value of a maximum single-commodity flow.
@@ -413,7 +414,7 @@ def max_flow(G, s, t, capacity='capacity'):
     >>> flow
     3.0
     """
-    return ford_fulkerson_flow_and_residual(G, s, t, capacity=capacity)[0]
+    return ford_fulkerson_flow_and_auxiliary(G, s, t, capacity=capacity)[0]
 
 
 def min_cut(G, s, t, capacity='capacity'):
@@ -469,7 +470,7 @@ def min_cut(G, s, t, capacity='capacity'):
     """
 
     try:
-        return ford_fulkerson_flow_and_residual(G, s, t, capacity=capacity)[0]
+        return ford_fulkerson_flow_and_auxiliary(G, s, t, capacity=capacity)[0]
     except nx.NetworkXUnbounded:
         raise nx.NetworkXUnbounded(
                 "Infinite capacity path, no minimum cut.")
