@@ -244,6 +244,8 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
         else:
             P = (I + DI * M) / 2.0
     elif walk_type == "pagerank":
+        if not (0 < alpha < 1):
+            raise nx.NetworkXError('alpha must be between 0 and 1')
         # add constant to dangling nodes' row
         dangling = np.where(M.sum(axis=1) == 0)
         for d in dangling[0]:
