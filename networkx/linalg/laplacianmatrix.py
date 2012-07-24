@@ -250,10 +250,10 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     n, m = M.shape
     if walk_type in ["random", "lazy"]:
         DI = np.diagflat(1.0 / np.sum(M, axis=1))
-        I = np.identity(n)
         if walk_type == "random":
             P =  DI * M
         else:
+            I = np.identity(n)
             P = (I + DI * M) / 2.0
     elif walk_type == "pagerank":
         if not (0 < alpha < 1):
@@ -273,7 +273,7 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     # eigenvector of largest eigenvalue at ind[-1]
     v = np.array(evecs[:,index]).flatten().real
     p =  v / v.sum()
-
+    print 'p\n', p
     sp = np.sqrt(p)
     Q = np.diag(sp) * P * np.diag(1.0/sp)
     I = np.identity(len(G))
