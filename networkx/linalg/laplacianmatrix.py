@@ -248,7 +248,7 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
 
     M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
     n, m = M.shape
-    if walk_type == "random" or "lazy":
+    if walk_type in ["random", "lazy"]:
         DI = np.diagflat(1.0 / np.sum(M, axis=1))
         I = np.identity(n)
         if walk_type == "random":
@@ -260,9 +260,9 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
         dangling = np.where(M.sum(axis=1) == 0)
         for d in dangling[0]:
             M[d] = 1.0 / n
-        # normalize        
+        # normalize
         M = M / M.sum(axis=1)
-        P = alpha * M + (1-alpha)
+        P = alpha * M + (1 - alpha) / n
     else:
         raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
 
