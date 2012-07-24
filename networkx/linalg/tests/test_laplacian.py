@@ -65,11 +65,16 @@ class TestLaplacian(object):
 
     def test_directed_laplacian(self):
         "Directed Laplacian"
-        # TODO: Add more comprehensive tests
+        # Graph used as an example in Sec. 4.1 of Langville and Meyer,
+        # "Google's PageRank and Beyond". The graph contains dangling nodes, so
+        # the pagerank random walk is selected by directed_laplacian
         G = nx.DiGraph()
-        G.add_cycle([1,2,3,4])
-        GL = numpy.array([[ 0.5,  -0.25,  0.,   -0.25],
-                          [-0.25,  0.5,  -0.25,  0.  ],
-                          [ 0.,   -0.25,  0.5,  -0.25],
-                          [-0.25,  0.,   -0.25,  0.5 ]])
-        assert_almost_equal(nx.directed_laplacian(G), GL, decimal=3)
+        G.add_edges_from(((1,2), (1,3), (3,1), (3,2), (3,5), (4,5), (4,6), 
+                          (5,4), (5,6), (6,4)))
+        GL = numpy.array([[ 0.9833, -0.2941, -0.3882, -0.0291, -0.0231, -0.0261],
+                          [-0.2941,  0.8333, -0.2339, -0.0536, -0.0589, -0.0554],
+                          [-0.3882, -0.2339,  0.9833, -0.0278, -0.0896, -0.0251],
+                          [-0.0291, -0.0536, -0.0278,  0.9833, -0.4878, -0.6675],
+                          [-0.0231, -0.0589, -0.0896, -0.4878,  0.9833, -0.2078],
+                          [-0.0261, -0.0554, -0.0251, -0.6675, -0.2078,  0.9833]])
+        assert_almost_equal(nx.directed_laplacian(G, alpha=0.9), GL, decimal=3)

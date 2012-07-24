@@ -272,7 +272,7 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     index = evals.argsort()[-1] # index of largest eval,evec
     # eigenvector of largest eigenvalue at ind[-1]
     v = np.array(evecs[:,index]).flatten().real
-    p = np.sign(v[0]) * v / np.linalg.norm(v)
+    p =  v / v.sum()
 
     sp = np.sqrt(p)
     Q = np.diag(sp) * P * np.diag(1.0/sp)
