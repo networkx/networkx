@@ -52,3 +52,22 @@ def test_hamiltonian_path():
     paths = [list(p) for p in hamiltonian_path(G,0)]
     exact = [[0]+list(p) for p in permutations([1,2,3],3) ]
     assert_equal(sorted(paths),sorted(exact))
+
+def test_cutoff_zero():
+    G = nx.complete_graph(4)
+    paths = nx.all_simple_paths(G,0,3,cutoff=0)
+    assert_equal(list(list(p) for p in paths),[])
+    paths = nx.all_simple_paths(nx.MultiGraph(G),0,3,cutoff=0)
+    assert_equal(list(list(p) for p in paths),[])
+
+@raises(nx.NetworkXError)
+def test_source_missing():
+    G = nx.Graph()
+    G.add_path([1,2,3])
+    paths = list(nx.all_simple_paths(nx.MultiGraph(G),0,3))
+
+@raises(nx.NetworkXError)
+def test_target_missing():
+    G = nx.Graph()
+    G.add_path([1,2,3])
+    paths = list(nx.all_simple_paths(nx.MultiGraph(G),1,4))

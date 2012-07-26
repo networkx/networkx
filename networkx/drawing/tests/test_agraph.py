@@ -1,12 +1,10 @@
+"""Unit tests for PyGraphviz intefaace.
 """
-    Unit tests for PyGraphviz intefaace.
-"""
-
 import os
 import tempfile
 
 from nose import SkipTest
-from nose.tools import assert_true
+from nose.tools import assert_true,assert_equal
 
 import networkx as nx
 
@@ -39,13 +37,12 @@ class TestAGraph(object):
         H=nx.from_agraph(A)
         self.assert_equal(G, H)
 
-
         fname=tempfile.mktemp()
         nx.drawing.nx_agraph.write_dot(H,fname)
         Hin=nx.drawing.nx_agraph.read_dot(fname)
         os.unlink(fname)
         self.assert_equal(H,Hin)
-       
+
 
         (fd,fname)=tempfile.mkstemp()
         fh=open(fname,'w')
@@ -57,6 +54,12 @@ class TestAGraph(object):
         fh.close()
         os.unlink(fname)
         self.assert_equal(H,Hin)
+
+    def test_from_agraph_name(self):
+        G=nx.Graph(name='test')
+        A=nx.to_agraph(G)
+        H=nx.from_agraph(A)
+        assert_equal(G.name,'test')
 
 
     def testUndirected(self):
@@ -70,6 +73,3 @@ class TestAGraph(object):
 
     def testMultiDirected(self):
         self.agraph_checks(nx.MultiDiGraph())
-
-
-        

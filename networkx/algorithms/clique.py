@@ -99,7 +99,7 @@ def find_cliques(G):
             nnbrs[n] = nbrs
     # Initial setup
     cand=set(nnbrs)
-    smallcand = cand - pivotnbrs
+    smallcand = set(cand - pivotnbrs)
     done=set()
     stack=[]
     clique_so_far=[]
@@ -251,7 +251,7 @@ def _extend(nnbrs,cand,done,so_far,cliques):
             pivotnbrs=cn
             maxconn=conn
     # Use pivot to reduce number of nodes to examine
-    smallercand = cand - pivotnbrs
+    smallercand = set(cand - pivotnbrs)
     for n in smallercand:
         cand.remove(n)
         so_far.append(n)

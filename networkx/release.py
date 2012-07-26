@@ -201,7 +201,7 @@ def get_info(dynamic=True):
 ## Version information
 name = 'networkx'
 major = 1
-minor = 7
+minor = 8
 
 
 ## Declare current release as a development release.

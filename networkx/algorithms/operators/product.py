@@ -157,8 +157,8 @@ def tensor_product(G,H):
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
     >>> P = nx.tensor_product(G,H)
-    >>> P.nodes(data=True)
-    [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
+    >>> P.nodes()
+    [(0, 'a')]
 
     Edge attributes and edge keys (for multigraphs) are also copied to the
     new product graph
@@ -207,9 +207,9 @@ def cartesian_product(G,H):
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
-    >>> P = nx.tensor_product(G,H)
-    >>> P.nodes(data=True)
-    [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
+    >>> P = nx.cartesian_product(G,H)
+    >>> P.nodes()
+    [(0, 'a')]
 
     Edge attributes and edge keys (for multigraphs) are also copied to the
     new product graph
@@ -259,9 +259,9 @@ def lexicographic_product(G,H):
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
-    >>> P = nx.tensor_product(G,H)
-    >>> P.nodes(data=True)
-    [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
+    >>> P = nx.lexicographic_product(G,H)
+    >>> P.nodes()
+    [(0, 'a')]
 
     Edge attributes and edge keys (for multigraphs) are also copied to the
     new product graph
@@ -272,7 +272,7 @@ def lexicographic_product(G,H):
     GH.add_edges_from(_edges_cross_nodes_and_nodes(G,H))
     # For each x in G, only if there is an edge in H
     GH.add_edges_from(_nodes_cross_edges(G,H))
-    GH.name = "Lexographic product("+G.name+","+H.name+")"
+    GH.name = "Lexicographic product("+G.name+","+H.name+")"
     return GH
 
 def strong_product(G,H):
@@ -312,9 +312,9 @@ def strong_product(G,H):
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
-    >>> P = nx.tensor_product(G,H)
-    >>> P.nodes(data=True)
-    [((0, 'a'), {'a1': (True, None), 'a2': (None, 'Spam')})]
+    >>> P = nx.strong_product(G,H)
+    >>> P.nodes()
+    [(0, 'a')]
 
     Edge attributes and edge keys (for multigraphs) are also copied to the
     new product graph

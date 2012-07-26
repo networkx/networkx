@@ -1,5 +1,5 @@
 *********************************
-Version 1.6 notes and API changes
+Version 1.7 notes and API changes
 *********************************
 
 This page reflects API changes from networkx-1.6 to networkx-1.7.

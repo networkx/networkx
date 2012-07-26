@@ -97,6 +97,14 @@ class TestEigenvectorCentralityDirected(object):
 
 class TestEigenvectorCentralityExceptions(object):
     numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
+    @classmethod
+    def setupClass(cls):
+        global np
+        try:
+            import numpy as np
+        except ImportError:
+            raise SkipTest('NumPy not available.')
+    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @raises(networkx.NetworkXException)
     def test_multigraph(self):
         e = networkx.eigenvector_centrality(networkx.MultiGraph())

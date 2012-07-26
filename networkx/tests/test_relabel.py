@@ -5,6 +5,7 @@ from networkx import *
 from networkx.convert import *
 from networkx.algorithms.operators import *
 from networkx.generators.classic import barbell_graph,cycle_graph
+from networkx.testing import *
 
 class TestRelabel():
     def test_convert_node_labels_to_integers(self):
@@ -123,8 +124,8 @@ class TestRelabel():
         mapping={'a':'aardvark','b':'bear'}
         G=relabel_nodes(G,mapping,copy=False)
         assert_equal(sorted(G.nodes()), ['aardvark', 'bear'])
-        assert_equal(sorted(G.edges()), 
-                     [('aardvark', 'bear'), ('aardvark', 'bear')])
+        assert_edges_equal(sorted(G.edges()), 
+                           [('aardvark', 'bear'), ('aardvark', 'bear')])
 
     def test_relabel_nodes_multidigraph(self):
         G=MultiDiGraph([('a','b'),('a','b')])

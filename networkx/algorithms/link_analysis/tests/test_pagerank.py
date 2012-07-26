@@ -104,6 +104,10 @@ class TestPageRank:
 
     @attr('numpy')
     def test_empty(self):
+        try:
+            import numpy
+        except ImportError:
+            raise SkipTest('numpy not available.')
         G=networkx.Graph()
         assert_equal(networkx.pagerank(G),{})
         assert_equal(networkx.pagerank_numpy(G),{})

@@ -4,7 +4,6 @@ from nose import SkipTest
 import networkx as nx
 
 class TestFloyd:
-    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     def setUp(self):
         pass
 
@@ -27,9 +26,13 @@ class TestFloyd:
 
 
         GG=XG.to_undirected()
+        # make sure we get lower weight
+        # to_undirected might choose either edge with weight 2 or weight 3
+        GG['u']['x']['weight']=2
         path, dist = nx.floyd_warshall_predecessor_and_distance(GG)
         assert_equal(dist['s']['v'],8)
-        assert_equal(path['s']['v'],'y')
+        # skip this test, could be alternate path s-u-v
+#        assert_equal(path['s']['v'],'y')
 
         G=nx.DiGraph()  # no weights
         G.add_edges_from([('s','u'), ('s','x'),
@@ -39,7 +42,8 @@ class TestFloyd:
                           ('y','s'), ('y','v')])
         path, dist = nx.floyd_warshall_predecessor_and_distance(G)
         assert_equal(dist['s']['v'],2)
-        assert_equal(path['s']['v'],'x')
+        # skip this test, could be alternate path s-u-v
+ #       assert_equal(path['s']['v'],'x')
 
         # alternate interface
         dist = nx.floyd_warshall(G)
@@ -78,50 +82,3 @@ class TestFloyd:
                                                             weight='heavy')
         assert_equal(dist[0][2], 4)
         assert_equal(path[0][2], 1)
-
-    def test_cycle_numpy(self):
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('numpy not available.')
-        dist = nx.floyd_warshall_numpy(nx.cycle_graph(7))
-        assert_equal(dist[0,3],3)
-        assert_equal(dist[0,4],3)
-
-    def test_weighted_numpy(self):
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('numpy not available.')
-        XG3=nx.Graph()
-        XG3.add_weighted_edges_from([ [0,1,2],[1,2,12],[2,3,1],
-                                      [3,4,5],[4,5,1],[5,0,10] ])
-        dist = nx.floyd_warshall_numpy(XG3)
-        assert_equal(dist[0,3],15)
-
-    def test_weighted_numpy(self):
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('numpy not available.')
-
-        XG4=nx.Graph()
-        XG4.add_weighted_edges_from([ [0,1,2],[1,2,2],[2,3,1],
-                                      [3,4,1],[4,5,1],[5,6,1],
-                                      [6,7,1],[7,0,1] ])
-        dist = nx.floyd_warshall_numpy(XG4)
-        assert_equal(dist[0,2],4)
-
-    def test_weight_parameter_numpy(self):
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('numpy not available.')
-        XG4 = nx.Graph()
-        XG4.add_edges_from([ (0, 1, {'heavy': 2}), (1, 2, {'heavy': 2}),
-                             (2, 3, {'heavy': 1}), (3, 4, {'heavy': 1}),
-                             (4, 5, {'heavy': 1}), (5, 6, {'heavy': 1}),
-                             (6, 7, {'heavy': 1}), (7, 0, {'heavy': 1}) ])
-        dist = nx.floyd_warshall_numpy(XG4, weight='heavy')
-        assert_equal(dist[0, 2], 4)
-

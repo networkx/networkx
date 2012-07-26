@@ -18,10 +18,10 @@ NetworkX documentation
    :maxdepth: 2
 
    overview
-   tutorial/index
-   reference/index
    download
    install
+   tutorial/index
+   reference/index
    test
    reference/history
    bibliography

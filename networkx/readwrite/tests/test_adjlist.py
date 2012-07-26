@@ -2,11 +2,11 @@
 """
     Unit tests for adjlist.
 """
-
 from nose.tools import assert_equal, assert_raises, assert_not_equal
 import os
 import tempfile
 import networkx as nx
+from networkx.testing import *
 
 class TestAdjlist():
     
@@ -226,7 +226,7 @@ class TestMultilineAdjlist():
         H2=nx.read_multiline_adjlist(fname,create_using=nx.DiGraph())
         assert_not_equal(H,H2) # they should be different graphs
         assert_equal(sorted(H.nodes()),sorted(G.nodes()))
-        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        assert_edges_equal(H.edges(),G.edges())
         os.close(fd)
         os.unlink(fname)
 

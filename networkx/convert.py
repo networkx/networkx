@@ -745,7 +745,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     When `nodelist` does not contain every node in `G`, the matrix is built
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
 
-    Uses lil_matrix format. To convert to other formats specify the
+    Uses coo_matrix format. To convert to other formats specify the
     format= keyword.
 
     Examples
@@ -775,13 +775,20 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     if nodelist is None:
         nodelist = G
     nlen = len(nodelist)
-    index = dict(zip(set(nodelist),range(nlen)))
-    if len(nodelist) != len(index):
+    if nlen == 0:
+        raise nx.NetworkXError("Graph has no nodes or edges")
+
+    if len(nodelist) != len(set(nodelist)):
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
         raise nx.NetworkXError(msg)
-    row,col,data=zip(*((index[u],index[v],d.get(weight,1)) 
-                       for u,v,d in G.edges(nodelist, data=True)
-                       if u in index and v in index))
+
+    index = dict(zip(nodelist,range(nlen)))
+    if G.number_of_edges() == 0:
+        row,col,data=[],[],[]
+    else:
+        row,col,data=zip(*((index[u],index[v],d.get(weight,1))
+                           for u,v,d in G.edges_iter(nodelist, data=True)
+                           if u in index and v in index))
     if G.is_directed():
         M = sparse.coo_matrix((data,(row,col)),shape=(nlen,nlen), dtype=dtype)
     else:

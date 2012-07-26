@@ -62,7 +62,8 @@ Thanks especially to the following contributors:
  - Paul McGuire improved the performance of the GML data parser.
  - Jesus Cerquides contributed the chordal graph algorithms.
  - Ben Edwards contributed tree generating functions, the rich club 
-   coefficient algorithm, and the graph product functions.
+   coefficient algorithm, the graph product functions, and a whole lot
+   of other useful nuts and bolts.
  - Jon Olav Vik contributed cycle finding algorithms.
  - Hugh Brown improved the words.py example from the n^2 algorithm.
  - Ben Reilly contributed the shapefile reader and writer.
@@ -71,9 +72,15 @@ Thanks especially to the following contributors:
    node redundancy, square clustering, other bipartite 
    and articulation point algorithms.
  - Dheeraj M R contributed the distance-regular testing algorithm
- - Franck Kalala contributed the subgraph_centrality and communicability  
+ - Franck Kalala contributed the subgraph_centrality and communicability 
    algorithms
  - Simon Knight improved the GraphML functions to handle yEd/yfiles data,
    and to handle types correctly.
  - Conrad Lee contributed the k-clique community finding algorithm.
- - Sérgio Nery Simões wrote the function for finding all simple paths.
+ - Sérgio Nery Simões wrote the function for finding all simple paths,
+   and all shortest paths.
+ - Robert King contributed union, disjoint union, compose, and intersection
+   operators that work on lists of graphs.
+ - Nick Mancuso wrote the approximation algorithms for dominating set,
+   edge dominating set, independent set, max clique, and min-weighted
+   vertex cover.

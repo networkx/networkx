@@ -2,6 +2,7 @@
 from nose.tools import *
 import networkx as nx
 from networkx.algorithms import bipartite
+from networkx.testing import *
 
 class TestBipartiteProject:
 
@@ -94,11 +95,11 @@ class TestBipartiteProject:
         G.add_edge('a',2)
         G.add_edge('b',2)
         P=bipartite.projected_graph(G,'ab')
-        assert_equal(sorted(P.edges()),[('a','b')])
+        assert_edges_equal(P.edges(),[('a','b')])
         P=bipartite.weighted_projected_graph(G,'ab')
-        assert_equal(sorted(P.edges()),[('a','b')])
+        assert_edges_equal(P.edges(),[('a','b')])
         P=bipartite.projected_graph(G,'ab',multigraph=True)
-        assert_equal(sorted(P.edges()),[('a','b'),('a','b')])
+        assert_edges_equal(P.edges(),[('a','b'),('a','b')])
         
     def test_project_collaboration(self):
         G=nx.Graph()

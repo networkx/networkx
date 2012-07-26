@@ -57,6 +57,9 @@ class TestWeightedPath:
                      ['s', 'x', 'u', 'v'])
 
         GG=self.XG.to_undirected()
+        # make sure we get lower weight
+        # to_undirected might choose either edge with weight 2 or weight 3
+        GG['u']['x']['weight']=2
         (D,P)= nx.single_source_dijkstra(GG,'s')
         assert_equal(P['v'] , ['s', 'x', 'u', 'v'])
         assert_equal(D['v'],8)     # uses lower weight of 2 on u<->x edge
@@ -89,8 +92,11 @@ class TestWeightedPath:
     def test_bidirectional_dijkstra(self):
         assert_equal(nx.bidirectional_dijkstra(self.XG, 's', 'v'),
                      (9, ['s', 'x', 'u', 'v']))
-        assert_equal(nx.bidirectional_dijkstra(self.G,'s','v'),
-                     (2, ['s', 'x', 'v']))
+        (dist,path) = nx.bidirectional_dijkstra(self.G,'s','v')
+        assert_equal(dist,2)
+        # skip this test, correct path could also be ['s','u','v']
+#        assert_equal(nx.bidirectional_dijkstra(self.G,'s','v'),
+#                     (2, ['s', 'x', 'v']))
         assert_equal(nx.bidirectional_dijkstra(self.cycle,0,3),
                      (3, [0, 1, 2, 3]))
         assert_equal(nx.bidirectional_dijkstra(self.cycle,0,4),

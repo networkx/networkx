@@ -226,9 +226,6 @@ def parse_multiline_adjlist(lines, comments = '#', delimiter = None,
     >>> G = nx.parse_multiline_adjlist(iter(lines), nodetype = int)
     >>> G.nodes()
     [1, 2, 3, 5]
-    >>> G.edges(data = True)
-    [(1, 2, {'name': 'Frodo', 'weight': 3}), (1, 3, {}), (2, 5, {'name': 'Saruman', 'weight': 6})]
-    
     """
     from ast import literal_eval
     if create_using is None:

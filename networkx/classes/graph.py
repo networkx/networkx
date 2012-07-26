@@ -123,8 +123,9 @@ class Graph(object):
     >>> G.node[1]
     {'time': '5pm'}
     >>> G.node[1]['room'] = 714
+    >>> del G.node[1]['room'] # remove attribute
     >>> G.nodes(data=True)
-    [(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
+    [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Warning: adding a node to G.node does not add it to the graph.
 
@@ -147,9 +148,6 @@ class Graph(object):
     [1, 2]
     >>> len(G)  # number of nodes in graph
     5
-    >>> G[1] # adjacency dict keyed by neighbor to edge attributes
-    ...            # Note: you should not change this dict manually!
-    {2: {'color': 'blue', 'weight': 4}}
 
     The fastest way to traverse all edges of a graph is via
     adjacency_iter(), but the edges() method is often more convenient.

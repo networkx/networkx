@@ -322,13 +322,13 @@ def generate_gml(G):
         nid=G.node[n].get('id',next(count))
         node_id[n]=nid
         yield 2*indent+"id %s"%nid
-        label=G.node[n].pop('label',n)
+        label=G.node[n].get('label',n)
         if is_string_like(label):
             label='"%s"'%label
         yield 2*indent+'label %s'%label
         if n in G:
           for k,v in G.node[n].items():
-              if k=='id': continue
+              if k=='id' or k == 'label': continue
               yield 2*indent+string_item(k,v,indent)
         yield indent+"]"
     # write edges
