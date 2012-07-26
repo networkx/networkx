@@ -99,7 +99,10 @@ class TestShp(object):
         def testattributes(lyr, graph):
             feature = lyr.GetNextFeature()
             while feature:
-                coords = feature.GetGeometryRef().GetPoints()
+                coords = []
+                ref = feature.GetGeometryRef()
+                for i in xrange(ref.GetPointCount()):
+                    coords.append(ref.GetPoint_2D(i))
                 name = feature.GetFieldAsString('Name')
                 assert_equal(graph.get_edge_data(*coords)['Name'], name)
                 feature = lyr.GetNextFeature()
