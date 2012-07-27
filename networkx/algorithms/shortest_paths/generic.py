@@ -40,6 +40,7 @@ def has_path(G, source, target):
         return False
     return True
 
+
 def shortest_path(G, source=None, target=None, weight=None):
     """Compute shortest paths in the graph.
 
@@ -48,27 +49,35 @@ def shortest_path(G, source=None, target=None, weight=None):
     G : NetworkX graph
 
     source : node, optional
-       Starting node for path.
-       If not specified compute shortest paths for all connected node pairs.
+        Starting node for path.
+        If not specified, compute shortest paths using all nodes as source nodes.
 
     target : node, optional
-       Ending node for path.
-       If not specified compute shortest paths for every node reachable
-       from the source.
+        Ending node for path.
+        If not specified, compute shortest paths using all nodes as target nodes.
 
     weight : None or string, optional (default = None)
-       If None, every edge has weight/distance/cost 1.
-       If a string, use this edge attribute as the edge weight.
-       Any edge attribute not present defaults to 1.
+        If None, every edge has weight/distance/cost 1.
+        If a string, use this edge attribute as the edge weight.
+        Any edge attribute not present defaults to 1.
 
     Returns
     -------
     path: list or dictionary
-        If the source and target are both specified return a single list
-        of nodes in a shortest path.
-        If only the source is specified return a dictionary keyed by
-        targets with a list of nodes in a shortest path.
-        If neither the source or target is specified return a dictionary
+        All returned paths include both the source and target in the path.
+
+        If the source and target are both specified, return a single list
+        of nodes in a shortest path from the source to the target.
+
+        If only the source is specified, return a dictionary keyed by
+        targets with a list of nodes in a shortest path from the source
+        to one of the targets.
+
+        If only the target is specified, return a dictionary keyed by
+        sources with a list of nodes in a shortest path from one of the
+        sources to the target.
+
+        If neither the source nor target are specified return a dictionary
         of dictionaries with path[source][target]=[list of nodes in path].
 
     Examples
@@ -79,6 +88,9 @@ def shortest_path(G, source=None, target=None, weight=None):
     >>> p=nx.shortest_path(G,source=0) # target not specified
     >>> p[4]
     [0, 1, 2, 3, 4]
+    >>> p=nx.shortest_path(G,target=4) # source not specified
+    >>> p[0]
+    [0, 1, 2, 3, 4]
     >>> p=nx.shortest_path(G) # source,target not specified
     >>> p[0][4]
     [0, 1, 2, 3, 4]
@@ -88,9 +100,9 @@ def shortest_path(G, source=None, target=None, weight=None):
     There may be more than one shortest path between a source and target.
     This returns only one of them.
 
-    For digraphs this returns a shortest directed path.
-    To find paths in the reverse direction first use G.reverse(copy=False)
-    to flip the edge orientation.
+    For digraphs this returns a shortest directed path. To find paths in the
+    reverse direction first use G.reverse(copy=False) to flip the edge
+    orientation.
 
     See Also
     --------
@@ -101,21 +113,37 @@ def shortest_path(G, source=None, target=None, weight=None):
     """
     if source is None:
         if target is None:
+            ## Find paths between all pairs.
             if weight is None:
                 paths=nx.all_pairs_shortest_path(G)
             else:
                 paths=nx.all_pairs_dijkstra_path(G,weight=weight)
         else:
-            raise nx.NetworkXError(\
-                "Target given but no source specified.")
-    else: # source specified
+            ## Find paths leading to the target.
+            directed = G.is_directed()
+            if directed:
+               nx.reverse(G, copy=False)
+
+            if weight is None:
+                paths=nx.single_source_shortest_path(G,target)
+            else:
+                paths=nx.single_source_dijkstra_path(G,target,weight=weight)
+
+            # Now flip the paths so they go from a source to the target.
+            for target in paths:
+                paths[target] = list(reversed(paths[target]))
+
+            if directed:
+                nx.reverse(G, copy=False)
+    else:
         if target is None:
+            # Find paths to all nodes accessible from the source.
             if weight is None:
                 paths=nx.single_source_shortest_path(G,source)
             else:
                 paths=nx.single_source_dijkstra_path(G,source,weight=weight)
         else:
-            # shortest source-target path
+            # Find shortest source-target path.
             if weight is None:
                 paths=nx.bidirectional_shortest_path(G,source,target)
             else:
@@ -127,38 +155,42 @@ def shortest_path(G, source=None, target=None, weight=None):
 def shortest_path_length(G, source=None, target=None, weight=None):
     """Compute shortest path lengths in the graph.
 
-    This function can compute the single source shortest path
-    lengths by specifying only the source or all pairs shortest
-    path lengths by specifying neither the source or target.
-
     Parameters
     ----------
     G : NetworkX graph
 
     source : node, optional
-       Starting node for path.
-       If not specified compute shortest path lengths for all
-       connected node pairs.
+        Starting node for path.
+        If not specified, compute shortest path lengths using all nodes as
+        source nodes.
 
     target : node, optional
-       Ending node for path.
-       If not specified compute shortest path lengths for every
-       node reachable from the source.
+        Ending node for path.
+        If not specified, compute shortest path lengths using all nodes as
+        target nodes.
 
     weight : None or string, optional (default = None)
-       If None, every edge has weight/distance/cost 1.
-       If a string, use this edge attribute as the edge weight.
-       Any edge attribute not present defaults to 1.
+        If None, every edge has weight/distance/cost 1.
+        If a string, use this edge attribute as the edge weight.
+        Any edge attribute not present defaults to 1.
 
     Returns
     -------
-    length : number, or container of numbers
-        If the source and target are both specified return a
-        single number for the shortest path.
-        If only the source is specified return a dictionary keyed by
-        targets with a the shortest path as keys.
-        If neither the source or target is specified return a dictionary
-        of dictionaries with length[source][target]=value.
+    length: int or dictionary
+        If the source and target are both specified, return the length of
+        the shortest path from the source to the target.
+
+        If only the source is specified, return a dictionary keyed by
+        targets whose values are the lengths of the shortest path from the
+        source to one of the targets.
+
+        If only the target is specified, return a dictionary keyed by
+        sources whose values are the lengths of the shortest path from one
+        of the sources to the target.
+
+        If neither the source nor target are specified return a dictionary
+        of dictionaries with path[source][target]=L, where L is the length
+        of the shortest path from source to target.
 
     Raises
     ------
@@ -173,15 +205,21 @@ def shortest_path_length(G, source=None, target=None, weight=None):
     >>> p=nx.shortest_path_length(G,source=0) # target not specified
     >>> p[4]
     4
+    >>> p=nx.shortest_path_length(G,target=4) # source not specified
+    >>> p[0]
+    4
     >>> p=nx.shortest_path_length(G) # source,target not specified
     >>> p[0][4]
     4
 
     Notes
     -----
-    For digraphs this returns the shortest directed path.
-    To find path lengths in the reverse direction use G.reverse(copy=False)
-    first to flip the edge orientation.
+    The length of the path is always 1 less than the number of nodes involved
+    in the path since the length measures the number of edges followed.
+
+    For digraphs this returns the shortest directed path length. To find path
+    lengths in the reverse direction use G.reverse(copy=False) first to flip
+    the edge orientation.
 
     See Also
     --------
@@ -198,7 +236,18 @@ def shortest_path_length(G, source=None, target=None, weight=None):
             else:
                 paths=nx.all_pairs_dijkstra_path_length(G, weight=weight)
         else:
-            raise nx.NetworkXError("Target given but no source specified.")
+            directed = G.is_directed()
+            if directed:
+               nx.reverse(G, copy=False)
+
+            if weight is None:
+                paths=nx.single_source_shortest_path_length(G,target)
+            else:
+                paths=nx.single_source_dijkstra_path_length(G,target,
+                                                            weight=weight)
+
+            if directed:
+                nx.reverse(G, copy=False)
     else: # source specified
         if target is None:
             if weight is None:
