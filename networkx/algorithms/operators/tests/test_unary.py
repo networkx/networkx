@@ -39,3 +39,9 @@ def test_complement_2():
                  [('B', 'A'), ('B', 'C'),
                   ('B', 'D'), ('C', 'A'), ('C', 'B'),
                   ('C', 'D'), ('D', 'A'), ('D', 'B'), ('D', 'C')])
+
+def test_reverse1():
+    # Other tests for reverse are done by the DiGraph and MultiDigraph.
+    G1=nx.Graph()
+    assert_raises(nx.NetworkXError, nx.reverse, G1)
+
