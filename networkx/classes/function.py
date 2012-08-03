@@ -8,6 +8,7 @@
 #    BSD license.
 #
 import networkx as nx
+import itertools
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
