@@ -11,11 +11,11 @@ import networkx as nx
 class TestPylab(object):
     @classmethod
     def setupClass(cls):
-        global pylab
+        global plt
         try:
             import matplotlib as mpl
             mpl.use('PS',warn=False)
-            import pylab
+            import matplotlib.pyplot as plt
         except ImportError:
             raise SkipTest('matplotlib not available.')
         except RuntimeError:
@@ -26,16 +26,15 @@ class TestPylab(object):
 
 
     def test_draw(self):
-#         hold(False)
         N=self.G
         nx.draw_spring(N)
-        pylab.savefig("test.ps")
+        plt.savefig("test.ps")
         nx.draw_random(N)
-        pylab.savefig("test.ps")
+        plt.savefig("test.ps")
         nx.draw_circular(N)
-        pylab.savefig("test.ps")
+        plt.savefig("test.ps")
         nx.draw_spectral(N)
-        pylab.savefig("test.ps")
+        plt.savefig("test.ps")
         nx.draw_spring(N.to_directed())
-        pylab.savefig("test.ps")
+        plt.savefig("test.ps")
         os.unlink('test.ps')

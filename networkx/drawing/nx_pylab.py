@@ -3,7 +3,7 @@
 Matplotlib
 **********
 
-Draw networks with matplotlib (pylab).
+Draw networks with matplotlib.
 
 See Also
 --------
@@ -37,7 +37,7 @@ __all__ = ['draw',
            'draw_graphviz']
 
 def draw(G, pos=None, ax=None, hold=None, **kwds):
-    """Draw the graph G with Matplotlib (pylab).
+    """Draw the graph G with Matplotlib.
 
     Draw the graph as a simple representation with no node
     labels or edge labels and using the full Matplotlib figure area
@@ -87,17 +87,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
 
     since you might overwrite the pylab.draw function.
 
-    Good alternatives are:
-
-    With pylab:
-
-    >>> import pylab as P #
-    >>> import networkx as nx
-    >>> G=nx.dodecahedral_graph()
-    >>> nx.draw(G)  # networkx draw()
-    >>> P.draw()    # pylab draw()
-
-    With pyplot
+    With pyplot use
 
     >>> import matplotlib.pyplot as plt
     >>> import networkx as nx
@@ -109,14 +99,14 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     http://networkx.lanl.gov/gallery.html
     """
     try:
-        import matplotlib.pylab as pylab
+        import matplotlib.pyplot as plt
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
         print("Matplotlib unable to open display")
         raise
 
-    cf=pylab.gcf()
+    cf=plt.gcf()
     cf.set_facecolor('w')
     if ax is None:
         if cf._axstack() is None:
@@ -125,18 +115,18 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
             ax=cf.gca()
 
  # allow callers to override the hold state by passing hold=True|False
-    b = pylab.ishold()
+    b = plt.ishold()
     h = kwds.pop('hold', None)
     if h is not None:
-        pylab.hold(h)
+        plt.hold(h)
     try:
         draw_networkx(G,pos=pos,ax=ax,**kwds)
         ax.set_axis_off()
-        pylab.draw_if_interactive()
+        plt.draw_if_interactive()
     except:
-        pylab.hold(b)
+        plt.hold(b)
         raise
-    pylab.hold(b)
+    plt.hold(b)
     return
 
 
@@ -238,8 +228,8 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     >>> nx.draw(G)
     >>> nx.draw(G,pos=nx.spring_layout(G)) # use spring layout
 
-    >>> import pylab
-    >>> limits=pylab.axis('off') # turn of axis
+    >>> import matplotlib.pyplot as plt
+    >>> limits=plt.axis('off') # turn of axis
 
     Also see the NetworkX drawing examples at
     http://networkx.lanl.gov/gallery.html
@@ -253,7 +243,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     draw_networkx_edge_labels()
     """
     try:
-        import matplotlib.pylab as pylab
+        import matplotlib.pyplot as plt
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
     except RuntimeError:
@@ -267,7 +257,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     edge_collection=draw_networkx_edges(G, pos, **kwds)
     if with_labels:
         draw_networkx_labels(G, pos, **kwds)
-    pylab.draw_if_interactive()
+    plt.draw_if_interactive()
 
 def draw_networkx_nodes(G, pos,
                         nodelist=None,
@@ -349,7 +339,7 @@ def draw_networkx_nodes(G, pos,
     draw_networkx_edge_labels()
     """
     try:
-        import matplotlib.pylab as pylab
+        import matplotlib.pyplot as plt
         import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -359,7 +349,7 @@ def draw_networkx_nodes(G, pos,
 
 
     if ax is None:
-        ax=pylab.gca()
+        ax=plt.gca()
 
     if nodelist is None:
         nodelist=G.nodes()
@@ -387,8 +377,6 @@ def draw_networkx_nodes(G, pos,
                                linewidths=linewidths,
                                label=label)
 
-#    pylab.axes(ax)
-    pylab.sci(node_collection)
     node_collection.set_zorder(2)
     return node_collection
 
@@ -478,7 +466,7 @@ def draw_networkx_edges(G, pos,
     """
     try:
         import matplotlib
-        import matplotlib.pylab as pylab
+        import matplotlib.pyplot as plt
         import matplotlib.cbook as cb
         from matplotlib.colors import colorConverter,Colormap
         from matplotlib.collections import LineCollection
@@ -490,7 +478,7 @@ def draw_networkx_edges(G, pos,
         raise
 
     if ax is None:
-        ax=pylab.gca()
+        ax=plt.gca()
 
     if edgelist is None:
         edgelist=G.edges()
@@ -562,7 +550,6 @@ def draw_networkx_edges(G, pos,
             edge_collection.set_clim(edge_vmin, edge_vmax)
         else:
             edge_collection.autoscale()
-        pylab.sci(edge_collection)
 
     arrow_collection=None
 
@@ -686,7 +673,7 @@ def draw_networkx_labels(G, pos,
     draw_networkx_edge_labels()
     """
     try:
-        import matplotlib.pylab as pylab
+        import matplotlib.pyplot as plt
         import matplotlib.cbook as cb
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -695,7 +682,7 @@ def draw_networkx_labels(G, pos,
         raise
 
     if ax is None:
-        ax=pylab.gca()
+        ax=plt.gca()
 
     if labels is None:
         labels=dict( (n,n) for n in G.nodes())
@@ -797,7 +784,7 @@ def draw_networkx_edge_labels(G, pos,
     draw_networkx_labels()
     """
     try:
-        import matplotlib.pylab as pylab
+        import matplotlib.pyplot as plt
         import matplotlib.cbook as cb
         import numpy
     except ImportError:
@@ -807,7 +794,7 @@ def draw_networkx_edge_labels(G, pos,
         raise
 
     if ax is None:
-        ax=pylab.gca()
+        ax=plt.gca()
     if edge_labels is None:
         labels=dict( ((u,v), d) for u,v,d in G.edges(data=True) )
     else:
@@ -901,6 +888,6 @@ def setup_module(module):
     try:
         import matplotlib as mpl
         mpl.use('PS',warn=False)
-        import pylab
+        import matplotlib.pyplot as plt
     except:
         raise SkipTest("matplotlib not available")
