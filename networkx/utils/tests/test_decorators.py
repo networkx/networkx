@@ -157,5 +157,4 @@ class TestOpenFileDecorator(object):
         self.writer_kwarg(path=None)
 
     def tearDown(self):
-        os.remove(self.name)
-
+        self.fobj.close()
