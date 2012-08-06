@@ -251,6 +251,31 @@ class TestNetworkSimplex:
         assert_equal(nx.min_cost_flow(G), soln)
         assert_equal(nx.cost_of_flow(G, H), 2857140)
 
+    def test_infinite_capacity_neg_digon(self):
+        """An infinite capacity negative cost digon results in an unbounded
+        instance."""
+        nodes = [(1, {}),
+                 (2, {'demand': -4}),
+                 (3, {'demand': 4}),
+                 ]
+        edges = [(1, 2, {'weight': -600}),
+                 (2, 1, {'weight': 0}),
+                 (2, 3, {'capacity': 5, 'weight': 714285}),
+                 (3, 2, {'capacity': 2, 'weight': 0}),
+                 ]
+        G = nx.DiGraph(edges)
+        G.add_nodes_from(nodes)
+        assert_raises(nx.NetworkXUnbounded, nx.network_simplex, G)
+        
+    def test_finite_capacity_neg_digon(self):
+        """The digon should receive the maximum amount of flow it can handle.
+        Taken from ticket #749 by @chuongdo."""
+        G = nx.DiGraph()
+        G.add_edge('a', 'b', capacity=1, weight=-1)
+        G.add_edge('b', 'a', capacity=1, weight=-1)
+        min_cost = -2
+        assert_equal(nx.min_cost_flow_cost(G), min_cost)
+
     def test_multidigraph(self):
         """Raise an exception for multidigraph."""
         G = nx.MultiDiGraph()

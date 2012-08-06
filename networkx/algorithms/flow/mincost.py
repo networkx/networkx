@@ -137,7 +137,8 @@ def _find_entering_edge(H, c, capacity = 'capacity'):
     return newEdge
 
 
-def _find_leaving_edge(H, T, cycle, newEdge, capacity = 'capacity'):
+def _find_leaving_edge(H, T, cycle, newEdge, capacity = 'capacity',
+                       reverse=False):
     """Find an edge that will leave the basis and the value by which we
     can increase or decrease the flow on that edge.
 
@@ -151,14 +152,26 @@ def _find_leaving_edge(H, T, cycle, newEdge, capacity = 'capacity'):
     eps = False
     leavingEdge = ()
 
-    # If cycle is a digon, newEdge is always a reverse edge (otherwise,
-    # there would be no leaving edge).
+    # If cycle is a digon.
     if len(cycle) == 3:
         u, v = newEdge
-        if H[u][v].get('flow', 0) > H[v][u].get('flow', 0):
-            return (v, u), H[v][u].get('flow', 0)
+        if capacity not in H[u][v] and capacity not in H[v][u]:
+            raise nx.NetworkXUnbounded(
+                    "Negative cost cycle of infinite capacity found. "
+                    + "Min cost flow unbounded below.")
+            
+        if reverse:
+            if H[u][v].get('flow', 0) > H[v][u].get('flow', 0):
+                return (v, u), H[v][u].get('flow', 0)
+            else:
+                return (u, v), H[u][v].get('flow', 0)
         else:
-            return (u, v), H[u][v].get('flow', 0)
+            uv_residual = H[u][v].get(capacity, 0) - H[u][v].get('flow', 0)
+            vu_residual = H[v][u].get(capacity, 0) - H[v][u].get('flow', 0)
+            if (uv_residual > vu_residual):
+                return (v, u), vu_residual
+            else:
+                return (u, v), uv_residual
 
     # Find the forward edge with the minimum value for capacity - 'flow'
     # and the reverse edge with the minimum value for 'flow'.
@@ -409,24 +422,29 @@ def network_simplex(G, demand = 'demand', capacity = 'capacity',
         path2 = path2[path2.index(join):]
         cycle = []
         if H[newEdge[0]][newEdge[1]].get('flow', 0) == 0:
+            reverse = False
             path2.reverse()
             cycle = path1 + path2
         else: # newEdge is at capacity
+            reverse = True
             path1.reverse()
             cycle = path2 + path1
 
         # Find the leaving edge. Will stop here if cycle is an infinite
         # capacity negative cost cycle.
         leavingEdge, eps = _find_leaving_edge(H, T, cycle, newEdge,
-                                              capacity = capacity)
+                                              capacity=capacity,
+                                              reverse=reverse)
 
         # Actual augmentation happens here. If eps = 0, don't bother.
         if eps:
             flowCost -= cycleCost * eps
             if len(cycle) == 3:
+                if reverse:
+                    eps = -eps
                 u, v = newEdge
-                H[u][v]['flow'] -= eps
-                H[v][u]['flow'] -= eps
+                H[u][v]['flow'] = H[u][v].get('flow', 0) + eps
+                H[v][u]['flow'] = H[v][u].get('flow', 0) + eps
             else:
                 for index, u in enumerate(cycle[:-1]):
                     v = cycle[index + 1]
