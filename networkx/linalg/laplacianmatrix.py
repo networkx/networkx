@@ -1,7 +1,7 @@
 """
 Laplacian matrix of graphs.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -27,9 +27,9 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
-    nodelist : list, optional       
+    nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
 
@@ -64,7 +64,7 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
         D=I*np.sum(A,axis=1)
         L=D-A
         return L
-    # Graph or DiGraph, this is faster than above 
+    # Graph or DiGraph, this is faster than above
     if nodelist is None:
         nodelist=G.nodes()
     n=len(nodelist)
@@ -88,9 +88,9 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     r"""Return the normalized Laplacian matrix of G.
 
     The normalized graph Laplacian is the matrix
-    
+
     .. math::
-        
+
         NL = D^{-1/2} L D^{-1/2}
 
     where `L` is the graph Laplacian and `D` is the diagonal matrix of
@@ -99,9 +99,9 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
-    nodelist : list, optional       
+    nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
 
@@ -125,7 +125,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 
     References
     ----------
-    .. [1] Fan Chung-Graham, Spectral Graph Theory, 
+    .. [1] Fan Chung-Graham, Spectral Graph Theory,
        CBMS Regional Conference Series in Mathematics, Number 92, 1997.
     """
     # FIXME: this isn't the most efficient way to do this...
@@ -146,7 +146,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
         T=I*osd
         L=np.dot(T,np.dot(L,T))
         return L
-    # Graph or DiGraph, this is faster than above 
+    # Graph or DiGraph, this is faster than above
     if nodelist is None:
         nodelist = G.nodes()
     n=len(nodelist)
@@ -177,9 +177,9 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     r"""Return the directed Laplacian matrix of G.
 
     The graph directed Laplacian is the matrix
-    
+
     .. math::
-        
+
         L = I - (\Phi^{1/2} P \Phi^{-1/2} + \Phi^{-1/2} P^T \Phi^{1/2} ) / 2
 
     where `I` is the identity matrix, `P` is the transition matrix of the
@@ -193,9 +193,9 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     Parameters
     ----------
     G : DiGraph
-       A NetworkX graph 
+       A NetworkX graph
 
-    nodelist : list, optional       
+    nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
 
@@ -206,7 +206,7 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     walk_type : string or None, optional (default=None)
        If `None`, P is selected depending on the properties of the
        graph. Otherwise is one of 'random', 'lazy', or 'pagerank'
-       
+
     alpha : real
        (1 - alpha) is the teleportation probability used with pagerank
 
@@ -218,7 +218,7 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     Notes
     -----
     Only implemented for DiGraphs
-    
+
     See Also
     --------
     laplacian
@@ -236,7 +236,7 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
 
     if not nx.is_directed(G):
         raise nx.NetworkXError('G must be a DiGraph')
-    
+
     if walk_type is None:
         if nx.is_strongly_connected(G):
             if nx.is_aperiodic(G):
@@ -273,7 +273,6 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     # eigenvector of largest eigenvalue at ind[-1]
     v = np.array(evecs[:,index]).flatten().real
     p =  v / v.sum()
-    print 'p\n', p
     sp = np.sqrt(p)
     Q = np.diag(sp) * P * np.diag(1.0/sp)
     I = np.identity(len(G))
