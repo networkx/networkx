@@ -140,6 +140,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
         raise ImportError(
           "normalized_laplacian() requires numpy: http://scipy.org/ ")
     if G.is_multigraph():
+
         L = laplacian(G, nodelist=nodelist, weight=weight)
         D = np.diag(L)
     elif G.number_of_selfloops() == 0:
@@ -261,7 +262,6 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     # eigenvector of largest eigenvalue at ind[-1]
     v = np.array(evecs[:,index]).flatten().real
     p =  v / v.sum()
-    print 'p\n', p
     sp = np.sqrt(p)
     Q = np.diag(sp) * P * np.diag(1.0/sp)
     I = np.identity(len(G))
