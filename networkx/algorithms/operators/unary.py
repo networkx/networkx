@@ -62,26 +62,8 @@ def reverse(G, copy=True):
         The reversed G.
 
     """
-    from copy import deepcopy
-
     if not G.is_directed():
         raise nx.NetworkXError("Cannot reverse an undirected graph.")
-
-    if copy:
-        H = G.__class__(name="Reverse of ({0})".format(G.name))
-        H.add_nodes_from(G)
-        if G.is_multigraph():
-            rev_edges = [ (v,u,k,deepcopy(d))
-                          for u,v,k,d in G.edges(keys=True, data=True) ]
-        else:
-            rev_edges = [ (v,u,deepcopy(d)) for u,v,d in G.edges(data=True) ]
-        H.add_edges_from(rev_edges)
-        H.graph = deepcopy(G.graph)
-        H.node = deepcopy(G.node)
     else:
-        G.pred, G.succ = G.succ, G.pred
-        G.adj = G.succ
-        H = G
-
-    return H
+        return G.reverse(copy=copy)
 
