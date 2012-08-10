@@ -8,6 +8,7 @@ Operators
    :toctree: generated/
 
    complement
+   reverse
 
 .. automodule:: networkx.algorithms.operators.binary
 .. autosummary::
