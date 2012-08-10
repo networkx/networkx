@@ -35,8 +35,13 @@ nx_repository = 'git://github.com/networkx/networkx.git'
 nx_http_repository = 'http://github.com/networkx/networkx.git'
 gh_project="networkx/networkx"
 
-# TODO Add pypy support
-supported_pythons = ['python2.6', 'python2.7', 'python3.2']
+# PyPy support. FIXME In Debian/Ubuntu the option "--system-site-packages"
+# does not add the actual dist-packages path for pypy (under /usr/local).
+# So it is necessary to add the path explcitly in run_tests() in order
+# to import nose
+pypy_path = '/usr/local/lib/pypy2.7/dist-packages'
+
+supported_pythons = ['python2.6', 'python2.7', 'python3.2', 'pypy']
 
 # Report missing libraries during tests and number of skipped 
 # and passed tests.
@@ -259,9 +264,18 @@ def run_tests(venv):
     
     # Environment variables:
     orig_path = os.environ["PATH"]
+    orig_pythonpath = os.environ["PYTHONPATH"]
     os.environ["PATH"] = os.path.join(basedir, venv, 'bin') + \
                             ':' + os.environ["PATH"]
-    os.environ.pop("PYTHONPATH", None)
+    # PyPy support
+    # FIXME In Debian/Ubuntu the option "--system-site-packages" does
+    # not add the actual dist-packages path for pypy (under /usr/local).
+    # So it is necessary to add the path explcitly here to be able to
+    # import nose and run the tests
+    if version == 'pypy' and os.path.exists(pypy_path):
+        os.environ["PYTHONPATH"] = pypy_path
+    else:
+        os.environ.pop("PYTHONPATH", None)
 
     # check that the right NetworkX is imported
     nx_file = check_output([py, '-c',
@@ -284,8 +298,9 @@ def run_tests(venv):
     except CalledProcessError as e:
         return False, e.output.decode('utf-8')
     finally:
-        # Restore $PATH
+        # Restore $PATH and $PYTHONPATH
         os.environ["PATH"] = orig_path
+        os.environ["PYTHONPATH"] = orig_pythonpath
 
 
 def test_pr(num, post_results=True):
