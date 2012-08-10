@@ -38,16 +38,30 @@ gh_project="networkx/networkx"
 # TODO Add pypy support
 supported_pythons = ['python2.6', 'python2.7', 'python3.2']
 
-# TODO Report missing libraries during tests and number of skipped 
+# Report missing libraries during tests and number of skipped 
 # and passed tests.
-#missing_libs_re = re.compile(r"Tools and libraries NOT available at test time:\n"
-#                             r"\s*(.*?)\n")
-#def get_missing_libraries(log):
-#    m = missing_libs_re.search(log)
-#    if m:
-#        return m.group(1)
+missing_libs_re = re.compile('SKIP: (\w+) not available')
 def get_missing_libraries(log):
-    pass
+    libs = set()
+    for line in log.split('\n'):
+        m = missing_libs_re.search(line)
+        if m:
+            libs.add(m.group(1).lower())
+    if libs:
+        return ", ".join(libs)
+
+skipped_re = re.compile('SKIP=(\d+)')
+def get_skipped(log):
+    m = skipped_re.search(log)
+    if m:
+        return m.group(1)
+
+number_tests_re = re.compile('Ran (\d+) tests in')
+def get_number_tests(log):
+    m = number_tests_re.search(log)
+    if m:
+        return m.group(1)
+
 
 class TestRun(object):
     def __init__(self, pr_num):
@@ -129,7 +143,8 @@ class TestRun(object):
         def format_result(result):
             s = "* %s: " % result.py
             if result.passed:
-                s += "OK"
+                s += "OK (SKIP=%s) Ran %s tests" % \
+                                        (result.skipped, result.num_tests)
             else:
                 s += "Failed, log at %s" % result.log_url
             if result.missing_libraries:
@@ -168,7 +183,8 @@ class TestRun(object):
         print("Platform:", sys.platform)
         for result in self.results:
             if result.passed:
-                print(result.py, ":", "OK")
+                print(result.py, ":", "OK (SKIP=%s) Ran %s tests" % \
+                                        (result.skipped, result.num_tests))
             else:
                 print(result.py, ":", "Failed")
                 print("    Test log:", result.get('log_url') or result.log_file)
@@ -211,16 +227,21 @@ class TestRun(object):
             elapsed = int(time.time() - tic)
             print("Ran tests with %s in %is" % (py, elapsed))
             missing_libraries = get_missing_libraries(log)
+            skipped = get_skipped(log)
+            num_tests = get_number_tests(log)
             
             self.results.append(Obj(py=py,
-                                   passed=passed,
-                                   log=log,
-                                   missing_libraries=missing_libraries
+                                    passed=passed,
+                                    log=log,
+                                    missing_libraries=missing_libraries,
+                                    skipped=skipped,
+                                    num_tests=num_tests
                                   )
                                )
 
 
 def run_tests(venv):
+    version = venv.split('-')[1]
     py = os.path.join(basedir, venv, 'bin', 'python')
     os.chdir(repodir)
     # cleanup build-dir
@@ -255,9 +276,10 @@ def run_tests(venv):
     # Run tests: this is different than in ipython's test_pr, they use 
     # a script for running their tests. It gets installed at 
     # os.path.join(basedir, venv, 'bin', 'iptest')
-    print("\nRunning tests with %s ..." % venv.split('-')[1])
+    print("\nRunning tests with %s ..." % version)
     try:
-        cmd = [py, '-c', 'import networkx as nx; nx.test(doctest=True)']
+        cmd = [py, '-c', 
+                'import networkx as nx; nx.test(verbosity=2,doctest=True)']
         return True, check_output(cmd, stderr=STDOUT).decode('utf-8')
     except CalledProcessError as e:
         return False, e.output.decode('utf-8')
