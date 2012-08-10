@@ -211,10 +211,10 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     edge_vmin,edge_vmax : floats, optional (default=None)
        Minimum and maximum for edge colormap scaling
 
-    style : string, optional (deafult='solid')
+    style : string, optional (default='solid')
        Edge line style (solid|dashed|dotted,dashdot)
 
-    labels : dictionary, optional (deafult=None)
+    labels : dictionary, optional (default=None)
        Node labels in a dictionary keyed by node of text labels
 
     font_size : int, optional (default=12)
@@ -645,6 +645,9 @@ def draw_networkx_labels(G, pos,
        A dictionary with nodes as keys and positions as values.
        If not specified a spring layout positioning will be computed.
        See networkx.layout for functions that compute node positions.
+
+    labels : dictionary, optional (default=None)
+       Node labels in a dictionary keyed by node of text labels
 
     font_size : int
        Font size for text labels (default=12)
