@@ -345,4 +345,16 @@ if __name__ == '__main__':
     parser.add_argument('number', type=int, help="The pull request number")
     
     args = parser.parse_args()
+
+    # Test for requests version.
+    import requests
+    major, minor, rev = map(int, requests.__version__.split('.'))
+    if minor < 10:
+        print("test_pr.py:")
+        print("The requests python library must be version 0.10.0",
+                "or above, you have version",
+                "{0}.{1}.{2} installed".format(major, minor, rev))
+        print()
+        sys.exit(1)
+
     test_pr(args.number, post_results=args.publish)
