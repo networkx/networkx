@@ -262,16 +262,12 @@ def run_tests(venv):
     #print ("Installed NetworkX in %.1fs" % (toc-tic))
     os.chdir(basedir)
     
-    # Environment variables:
-    orig_path = os.environ["PATH"]
-    orig_pythonpath = os.environ["PYTHONPATH"]
-    os.environ["PATH"] = os.path.join(basedir, venv, 'bin') + \
-                            ':' + os.environ["PATH"]
     # PyPy support
     # FIXME In Debian/Ubuntu the option "--system-site-packages" does
     # not add the actual dist-packages path for pypy (under /usr/local).
     # So it is necessary to add the path explcitly here to be able to
     # import nose and run the tests
+    orig_pythonpath = os.environ.get("PYTHONPATH", None)
     if version == 'pypy' and os.path.exists(pypy_path):
         os.environ["PYTHONPATH"] = pypy_path
     else:
@@ -283,9 +279,11 @@ def run_tests(venv):
         cmd_file = [py, '-c', 'import networkx as nx; print(nx.__file__)']
         nx_file = check_output(cmd_file, stderr=STDOUT)
     except CalledProcessError as e:
-        # Restore $PATH and $PYTHONPATH
-        os.environ["PATH"] = orig_path
-        os.environ["PYTHONPATH"] = orig_pythonpath
+        # Restore $PYTHONPATH
+        if orig_pythonpath:
+            os.environ["PYTHONPATH"] = orig_pythonpath
+        else:
+            os.environ.pop("PYTHONPATH", None)
         return False, e.output.decode('utf-8')
 
     nx_file = nx_file.strip().decode('utf-8')
@@ -306,9 +304,11 @@ def run_tests(venv):
     except CalledProcessError as e:
         return False, e.output.decode('utf-8')
     finally:
-        # Restore $PATH and $PYTHONPATH
-        os.environ["PATH"] = orig_path
-        os.environ["PYTHONPATH"] = orig_pythonpath
+        # Restore $PYTHONPATH
+        if orig_pythonpath:
+            os.environ["PYTHONPATH"] = orig_pythonpath
+        else: # in case we added for Ubuntu pypy support
+            os.environ.pop("PYTHONPATH", None)
 
 
 def test_pr(num, post_results=True):
