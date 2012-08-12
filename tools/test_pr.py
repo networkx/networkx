@@ -257,7 +257,7 @@ def run_tests(venv):
     logfile = os.path.join(basedir, venv, 'install.log')
     print ("Install log at %s" % logfile)
     with open(logfile, 'wb') as f:
-        check_call([py, 'setup.py', 'install'], stdout=f)
+        check_call([py, 'setup.py', 'install'], stderr=STDOUT, stdout=f)
     #toc = time.time()
     #print ("Installed NetworkX in %.1fs" % (toc-tic))
     os.chdir(basedir)
