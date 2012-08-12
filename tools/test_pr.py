@@ -35,13 +35,8 @@ nx_repository = 'git://github.com/networkx/networkx.git'
 nx_http_repository = 'http://github.com/networkx/networkx.git'
 gh_project="networkx/networkx"
 
-# PyPy support. FIXME In Debian/Ubuntu the option "--system-site-packages"
-# does not add the actual dist-packages path for pypy (under /usr/local).
-# So it is necessary to add the path explcitly in run_tests() in order
-# to import nose
-pypy_path = '/usr/local/lib/pypy2.7/dist-packages'
-
-supported_pythons = ['python2.6', 'python2.7', 'python3.2', 'pypy']
+# TODO Add PyPy support
+supported_pythons = ['python2.6', 'python2.7', 'python3.2']
 
 # Report missing libraries during tests and number of skipped 
 # and passed tests.
@@ -261,17 +256,9 @@ def run_tests(venv):
     #toc = time.time()
     #print ("Installed NetworkX in %.1fs" % (toc-tic))
     os.chdir(basedir)
-    
-    # PyPy support
-    # FIXME In Debian/Ubuntu the option "--system-site-packages" does
-    # not add the actual dist-packages path for pypy (under /usr/local).
-    # So it is necessary to add the path explcitly here to be able to
-    # import nose and run the tests
-    orig_pythonpath = os.environ.get("PYTHONPATH", None)
-    if version == 'pypy' and os.path.exists(pypy_path):
-        os.environ["PYTHONPATH"] = pypy_path
-    else:
-        os.environ.pop("PYTHONPATH", None)
+
+    # Remove PYTHONPATH if present
+    os.environ.pop("PYTHONPATH", None)
 
     # check that the right NetworkX is imported. Also catch exception if
     # the pull request breaks "import networkx as nx"
@@ -279,11 +266,6 @@ def run_tests(venv):
         cmd_file = [py, '-c', 'import networkx as nx; print(nx.__file__)']
         nx_file = check_output(cmd_file, stderr=STDOUT)
     except CalledProcessError as e:
-        # Restore $PYTHONPATH
-        if orig_pythonpath:
-            os.environ["PYTHONPATH"] = orig_pythonpath
-        else:
-            os.environ.pop("PYTHONPATH", None)
         return False, e.output.decode('utf-8')
 
     nx_file = nx_file.strip().decode('utf-8')
@@ -297,18 +279,11 @@ def run_tests(venv):
     # a script for running their tests. It gets installed at 
     # os.path.join(basedir, venv, 'bin', 'iptest')
     print("\nRunning tests with %s ..." % version)
+    cmd = [py, '-c', 'import networkx as nx; nx.test(verbosity=2,doctest=True)']
     try:
-        cmd = [py, '-c', 
-                'import networkx as nx; nx.test(verbosity=2,doctest=True)']
         return True, check_output(cmd, stderr=STDOUT).decode('utf-8')
     except CalledProcessError as e:
         return False, e.output.decode('utf-8')
-    finally:
-        # Restore $PYTHONPATH
-        if orig_pythonpath:
-            os.environ["PYTHONPATH"] = orig_pythonpath
-        else: # in case we added for Ubuntu pypy support
-            os.environ.pop("PYTHONPATH", None)
 
 
 def test_pr(num, post_results=True):
