@@ -277,9 +277,17 @@ def run_tests(venv):
     else:
         os.environ.pop("PYTHONPATH", None)
 
-    # check that the right NetworkX is imported
-    nx_file = check_output([py, '-c',
-                                'import networkx as nx; print (nx.__file__)'])
+    # check that the right NetworkX is imported. Also catch exception if
+    # the pull request breaks "import networkx as nx"
+    try:
+        cmd_file = [py, '-c', 'import networkx as nx; print(nx.__file__)']
+        nx_file = check_output(cmd_file, stderr=STDOUT)
+    except CalledProcessError as e:
+        # Restore $PATH and $PYTHONPATH
+        os.environ["PATH"] = orig_path
+        os.environ["PYTHONPATH"] = orig_pythonpath
+        return False, e.output.decode('utf-8')
+
     nx_file = nx_file.strip().decode('utf-8')
     if not nx_file.startswith(os.path.join(basedir, venv)):
         msg = u"NetworkX does not appear to be in the venv: %s" % nx_file
