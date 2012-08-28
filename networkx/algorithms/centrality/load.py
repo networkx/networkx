@@ -63,20 +63,25 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
     if v is not None:   # only one node
         betweenness=0.0
         for source in G:
-            ubetween=_node_betweenness(G,source,cutoff,normalized,weight)
-            betweenness+=ubetween[v]
+            ubetween = _node_betweenness(G, source, cutoff, False, weight)
+            betweenness += ubetween[v] if v in ubetween else 0
+        if normalized:
+            order = G.order()
+            if order <= 2:
+                return betweenness # no normalization b=0 for all nodes
+            betweenness *= 1.0 / ((order-1) * (order-2))
         return betweenness
     else:
-        betweenness={}.fromkeys(G,0.0)
+        betweenness = {}.fromkeys(G,0.0)
         for source in betweenness:
-            ubetween=_node_betweenness(G,source,cutoff,False,weight)
+            ubetween = _node_betweenness(G, source, cutoff, False, weight)
             for vk in ubetween:
-                betweenness[vk]+=ubetween[vk]
+                betweenness[vk] += ubetween[vk]
         if normalized:
-            order=len(betweenness)
-            if order <=2:
+            order = G.order()
+            if order <= 2:
                 return betweenness # no normalization b=0 for all nodes
-            scale=1.0/((order-1)*(order-2))
+            scale = 1.0 / ((order-1) * (order-2))
             for v in betweenness:
                 betweenness[v] *= scale
         return betweenness  # all nodes
