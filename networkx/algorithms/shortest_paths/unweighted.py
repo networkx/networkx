@@ -103,7 +103,7 @@ def all_pairs_shortest_path_length(G,cutoff=None):
 
 
 
-def bidirectional_shortest_path(G,source,target):
+def bidirectional_shortest_path(G, source, target, ignore_nodes=None, ignore_edges=None):
     """Return a list of nodes in a shortest path between source and target.
 
     Parameters
@@ -115,6 +115,12 @@ def bidirectional_shortest_path(G,source,target):
 
     target : node label
        ending node for path
+
+    ignore_nodes : list of nodes
+       nodes to ignore, optional
+
+    ignore_edges : list of edges
+       edges to ignore, optional
 
     Returns
     -------
@@ -135,7 +141,7 @@ def bidirectional_shortest_path(G,source,target):
     This algorithm is used by shortest_path(G,source,target).
     """
     # call helper to do the real work
-    results=_bidirectional_pred_succ(G,source,target)
+    results=_bidirectional_pred_succ(G,source,target,ignore_nodes,ignore_edges)
     pred,succ,w=results
 
     # build path from pred+w+succ
@@ -152,7 +158,7 @@ def bidirectional_shortest_path(G,source,target):
 
     return path
 
-def _bidirectional_pred_succ(G, source, target):
+def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=None):
     """Bidirectional shortest path helper.
 
        Returns (pred,succ,w) where
@@ -171,6 +177,50 @@ def _bidirectional_pred_succ(G, source, target):
         Gpred=G.neighbors_iter
         Gsucc=G.neighbors_iter
 
+    # support optional nodes filter
+    if ignore_nodes:
+        def filter_iter(nodes_iter):
+            def iterate(v):
+                for w in nodes_iter(v):
+                    if w not in ignore_nodes:
+                        yield w
+            return iterate
+
+        Gpred=filter_iter(Gpred)
+        Gsucc=filter_iter(Gsucc)
+
+    # support optional edges filter
+    if ignore_edges:
+        if G.is_directed():
+            def filter_pred_iter(pred_iter):
+                def iterate(v):
+                    for w in pred_iter(v):
+                        if (w, v) not in ignore_edges:
+                            yield w
+                return iterate
+
+            def filter_succ_iter(succ_iter):
+                def iterate(v):
+                    for w in succ_iter(v):
+                        if (v, w) not in ignore_edges:
+                            yield w
+                return iterate
+
+            Gpred=filter_pred_iter(Gpred)
+            Gsucc=filter_succ_iter(Gsucc)
+
+        else:
+            def filter_iter(nodes_iter):
+                def iterate(v):
+                    for w in nodes_iter(v):
+                        if (v, w) not in ignore_edges \
+                                and (w, v) not in ignore_edges:
+                            yield w
+                return iterate
+
+            Gpred=filter_iter(Gpred)
+            Gsucc=filter_iter(Gsucc)
+
     # predecesssor and successors in search
     pred={source:None}
     succ={target:None}
@@ -188,7 +238,9 @@ def _bidirectional_pred_succ(G, source, target):
                     if w not in pred:
                         forward_fringe.append(w)
                         pred[w]=v
-                    if w in succ:  return pred,succ,w # found path
+                    if w in succ:
+                        # found path
+                        return pred,succ,w
         else:
             this_level=reverse_fringe
             reverse_fringe=[]
@@ -197,7 +249,9 @@ def _bidirectional_pred_succ(G, source, target):
                     if w not in succ:
                         succ[w]=v
                         reverse_fringe.append(w)
-                    if w in pred:  return pred,succ,w # found path
+                    if w in pred:
+                        # found path
+                        return pred,succ,w
 
     raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
 

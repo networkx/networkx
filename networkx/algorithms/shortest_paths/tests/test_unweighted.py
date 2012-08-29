@@ -21,6 +21,36 @@ class TestUnweightedPath:
         assert_equal(nx.bidirectional_shortest_path(self.directed_cycle,0,3),
                      [0, 1, 2, 3])
 
+    def test_bidirectional_shortest_path_restricted(self):
+        assert_equal(nx.bidirectional_shortest_path(self.cycle, 0, 3),
+                     [0, 1, 2, 3])
+        assert_equal(nx.bidirectional_shortest_path(self.cycle, 0, 3,
+                                                    ignore_nodes = [1]),
+                     [0, 6, 5, 4, 3])
+        assert_equal(nx.bidirectional_shortest_path(self.grid, 1, 12),
+                     [1, 2, 3, 4, 8, 12])
+        assert_equal(nx.bidirectional_shortest_path(self.grid, 1, 12, 
+                                                    ignore_nodes = [2]),
+                     [1, 5, 6, 10, 11, 12])
+        assert_equal(nx.bidirectional_shortest_path(self.grid, 1, 12, 
+                                                    ignore_nodes = [2, 6]),
+                     [1, 5, 9, 10, 11, 12])
+        assert_equal(nx.bidirectional_shortest_path(self.grid, 1, 12, 
+                                                    ignore_nodes = [2, 6],
+                                                    ignore_edges = [(10, 11)]),
+                     [1, 5, 9, 10, 14, 15, 16, 12])
+        assert_equal(nx.bidirectional_shortest_path(self.directed_cycle, 0, 3),
+                     [0, 1, 2, 3])
+        assert_raises(nx.NetworkXNoPath,
+                      nx.bidirectional_shortest_path, self.directed_cycle, 0, 3, 
+                      ignore_nodes = [1])
+        assert_equal(nx.bidirectional_shortest_path(self.directed_cycle, 0, 3, 
+                                                    ignore_edges = [(2, 1)]),
+                     [0, 1, 2, 3])
+        assert_raises(nx.NetworkXNoPath,
+                      nx.bidirectional_shortest_path, self.directed_cycle, 0, 3, 
+                      ignore_edges = [(1, 2)])
+
     def test_shortest_path_length(self):
         assert_equal(nx.shortest_path_length(self.cycle,0,3),3)
         assert_equal(nx.shortest_path_length(self.grid,1,12),5)

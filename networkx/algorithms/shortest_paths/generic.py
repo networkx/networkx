@@ -40,7 +40,8 @@ def has_path(G, source, target):
         return False
     return True
 
-def shortest_path(G, source=None, target=None, weight=None):
+def shortest_path(G, source=None, target=None, weight=None,
+                  ignore_nodes=None, ignore_edges=None):
     """Compute shortest paths in the graph.
 
     Parameters
@@ -60,6 +61,12 @@ def shortest_path(G, source=None, target=None, weight=None):
        If None, every edge has weight/distance/cost 1.
        If a string, use this edge attribute as the edge weight.
        Any edge attribute not present defaults to 1.
+
+    ignore_nodes : None or list of node labels, optional (default = None)
+       If specified, paths cannot contain nodes from this list.
+
+    ignore_edges : None or list of edges, optional (default = None)
+       If specified, paths cannot contain edges from this list.
 
     Returns
     -------
@@ -117,7 +124,7 @@ def shortest_path(G, source=None, target=None, weight=None):
         else:
             # shortest source-target path
             if weight is None:
-                paths=nx.bidirectional_shortest_path(G,source,target)
+                paths=nx.bidirectional_shortest_path(G,source,target,ignore_nodes,ignore_edges)
             else:
                 paths=nx.dijkstra_path(G,source,target,weight)
 
