@@ -6,7 +6,8 @@
 import networkx as nx
 __author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
-__all__ = ['all_simple_paths']
+__all__ = ['all_simple_paths',
+           'shortest_simple_paths']
 
 def all_simple_paths(G, source, target, cutoff=None):
     """Generate all simple paths in the graph G from source to target.
@@ -62,7 +63,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     See Also
     --------
-    all_shortest_paths, shortest_path
+    shortest_simple_paths, all_shortest_paths, shortest_path
     """
     if source not in G:
         raise nx.NetworkXError('source node %s not in graph'%source)
@@ -122,3 +123,115 @@ def _all_simple_paths_multigraph(G, source, target, cutoff=None):
                 yield visited + [target]
             stack.pop()
             visited.pop()
+
+def shortest_simple_paths(G, source, target):
+    """Generate all simple paths in the graph G from source to target,
+    starting from shortest ones.
+
+    A simple path is a path with no repeated nodes.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node
+       Starting node for path
+
+    target : node
+       Ending node for path
+
+    Returns
+    -------
+    path_generator: generator
+       A generator that produces lists of simple paths, in order from
+       shortest to longest.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(4)
+    >>> for path in nx.shortest_simple_paths(G, source=0, target=3):
+    ...     print(path)
+    ...
+    [0, 3]
+    [0, 1, 3]
+    [0, 2, 3]
+    [0, 1, 2, 3]
+    [0, 2, 1, 3]
+
+    Notes
+    -----
+    This procedure is based on algorithm by Jin Y. Yen [1]_.  Finding
+    the first K paths requires O(KN^3) operations.
+
+    References
+    ----------
+    .. [1] Jin Y. Yen, "Finding the K Shortest Loopless Paths in a
+       Network", Management Science, Vol. 17, No. 11, Theory Series
+       (Jul., 1971), pp. 712-716.
+
+    See Also
+    --------
+    all_shortest_paths, shortest_path
+    """
+
+    listA = list()
+    listB = PathBuffer()
+    prev_path = None
+    while True:
+        if not prev_path:
+            path = nx.shortest_path(G, source, target)
+            listB.push(path)
+        else:
+            ignore_nodes = set()
+            ignore_edges = set()
+            for i in xrange(1, len(prev_path)):
+                root = prev_path[:i]
+                for path in listA:
+                    if path[:i] == root:
+                        ignore_edges.add((path[i - 1], path[i]))
+                ignore_nodes.add(root[-1])
+                try:
+                    spur = nx.shortest_path(G, root[-1], target,
+                                            ignore_nodes = ignore_nodes,
+                                            ignore_edges = ignore_edges)
+                    assert root[-1] == spur[0]
+                    assert not set(root[:-1]).intersection(set(spur))
+                    path = root[:-1] + spur
+                    listB.push(path)
+                except nx.NetworkXNoPath:
+                    pass
+
+        if listB:
+            path = listB.pop()
+            assert path not in listA
+            yield path
+            listA.append(path)
+            prev_path = path
+        else:
+            break
+
+class PathBuffer:
+    import heapq
+    import itertools
+
+    def __init__(self):
+        self.paths = set()
+        self.sortedpaths = list()
+        self.counter = self.itertools.count()
+
+    def __len__(self):
+        return len(self.sortedpaths)
+
+    def push(self, path):
+        hashable_path = tuple(path)
+        if hashable_path not in self.paths:
+            self.heapq.heappush(self.sortedpaths,
+                                (len(path), next(self.counter), path))
+            self.paths.add(hashable_path)
+
+    def pop(self):
+        (len, num, path) = self.heapq.heappop(self.sortedpaths)
+        hashable_path = tuple(path)
+        self.paths.remove(hashable_path)
+        return path
+
