@@ -23,10 +23,9 @@ class TestGenericPath:
         assert_equal(nx.shortest_path(self.directed_cycle,0,3,weight='weight'),
                      [0, 1, 2, 3])
 
-    @raises(nx.NetworkXError)
     def test_shortest_path_target(self):
         sp = nx.shortest_path(nx.path_graph(3), target=1)
-
+        assert_equal(sp, {0: [0, 1], 1: [1], 2: [2, 1]})
 
     def test_shortest_path_length(self):
         assert_equal(nx.shortest_path_length(self.cycle,0,3),3)
@@ -37,10 +36,11 @@ class TestGenericPath:
         assert_equal(nx.shortest_path_length(self.grid,1,12,weight='weight'),5)
         assert_equal(nx.shortest_path_length(self.directed_cycle,0,4,weight='weight'),4)
 
-
-    @raises(nx.NetworkXError)
     def test_shortest_path_length_target(self):
         sp = nx.shortest_path_length(nx.path_graph(3), target=1)
+        assert_equal(sp[0], 1)
+        assert_equal(sp[1], 0)
+        assert_equal(sp[2], 1)
 
     def test_single_source_shortest_path(self):
         p=nx.shortest_path(self.cycle,0)

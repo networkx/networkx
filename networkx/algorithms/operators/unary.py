@@ -10,7 +10,7 @@ from networkx.utils import is_string_like
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
-__all__ = ['complement']
+__all__ = ['complement', 'reverse']
 
 def complement(G, name=None):
     """Return the graph complement of G.
@@ -44,3 +44,26 @@ def complement(G, name=None):
                        for n2 in G if n2 not in nbrs
                        if n != n2) )
     return R
+
+def reverse(G, copy=True):
+    """Return the reverse directed graph of G.
+
+    Parameters
+    ----------
+    G : directed graph
+        A NetworkX directed graph
+    copy : bool
+        If True, then a new graph is returned. If False, then the graph is
+        reversed in place.
+
+    Returns
+    -------
+    H : directed graph
+        The reversed G.
+
+    """
+    if not G.is_directed():
+        raise nx.NetworkXError("Cannot reverse an undirected graph.")
+    else:
+        return G.reverse(copy=copy)
+
