@@ -80,24 +80,24 @@ def topological_sort(G,nbunch=None):
                 "Topological sort not defined on undirected graphs.")
 
     # nonrecursive version
-    seen={}
-    order_explored=[] # provide order and 
-    explored={}       # fast search without more general priorityDictionary
+    seen = set()
+    order = [] 
+    explored = set() 
                      
     if nbunch is None:
         nbunch = G.nodes_iter() 
     for v in nbunch:     # process all vertices in G
         if v in explored: 
             continue
-        fringe=[v]   # nodes yet to look at
+        fringe = [v]   # nodes yet to look at
         while fringe:
-            w=fringe[-1]  # depth first search
+            w = fringe[-1]  # depth first search
             if w in explored: # already looked down this branch
                 fringe.pop()
                 continue
-            seen[w]=1     # mark as seen
+            seen.add(w)     # mark as seen
             # Check successors for cycles and for new nodes
-            new_nodes=[]
+            new_nodes = []
             for n in G[w]:
                 if n not in explored:
                     if n in seen: #CYCLE !!
@@ -106,10 +106,10 @@ def topological_sort(G,nbunch=None):
             if new_nodes:   # Add new_nodes to fringe
                 fringe.extend(new_nodes)
             else:           # No new nodes so w is fully explored
-                explored[w]=1
-                order_explored.insert(0,w) # reverse order explored
+                explored.add(w)
+                order.append(w)
                 fringe.pop()    # done considering this node
-    return order_explored
+    return list(reversed(order))
 
 def topological_sort_recursive(G,nbunch=None):
     """Return a list of nodes in topological sort order.
@@ -147,31 +147,34 @@ def topological_sort_recursive(G,nbunch=None):
     """
     if not G.is_directed():
         raise nx.NetworkXError(
-                "Topological sort not defined on undirected graphs.")
+            "Topological sort not defined on undirected graphs.")
 
-    # function for recursive dfs
-    def _dfs(G,seen,explored,v):
-        seen.add(v)
+    def _dfs(v):
+        ancestors.add(v)
+
         for w in G[v]:
-            if w not in seen: 
-                if not _dfs(G,seen,explored,w):
-                    return False
-            elif w in seen and w not in explored:
-                # cycle Found--- no topological sort
+            if w in ancestors:
                 raise nx.NetworkXUnfeasible("Graph contains a cycle.")
-        explored.insert(0,v) # inverse order of when explored 
-        return True
 
-    seen=set()
-    explored=[]
+            if w not in explored:
+                _dfs(w)
+
+        ancestors.remove(v)
+        explored.add(v)
+        order.append(v)
+
+    ancestors = set()
+    explored = set()
+    order = []
 
     if nbunch is None:
-        nbunch = G.nodes_iter() 
-    for v in nbunch:  # process all nodes
+        nbunch = G.nodes_iter()
+
+    for v in nbunch:
         if v not in explored:
-            if not _dfs(G,seen,explored,v): 
-                raise nx.NetworkXUnfeasible("Graph contains a cycle.")
-    return explored
+            _dfs(v)
+            
+    return list(reversed(order))
 
 def is_aperiodic(G):
     """Return True if G is aperiodic.
