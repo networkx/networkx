@@ -56,3 +56,12 @@ Partitions via centrality measures
    :toctree: generated/
 
    girvan_newman
+
+Partitions via modularity
+-------------------------
+.. automodule:: networkx.algorithms.community.partition
+.. autosummary::
+   :toctree: generated/
+
+   greedy_max_modularity_partition
+   spectral_modularity_partition
