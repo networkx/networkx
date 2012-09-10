@@ -232,7 +232,7 @@ def community_performance(G,C):
     """
 
     if not nx.is_partition(G,C):
-        raise NetworkXError("C is not a partition of G")
+        raise nx.NetworkXError("C is not a partition of G")
     P = 0.0
     aff = {}
     n = G.order()
@@ -289,7 +289,7 @@ def community_coverage(G,C):
        http://arxiv.org/abs/0906.0612
     """
     if not nx.is_partition(G,C):
-        raise NetworkXError("C is not a partition of G")
+        raise nx.NetworkXError("C is not a partition of G")
 
     aff = {}
     for i in G.nodes_iter():
@@ -303,3 +303,4 @@ def community_coverage(G,C):
             else:
                 P += 1
     return P/G.number_of_edges()
+

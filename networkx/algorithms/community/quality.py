@@ -1,4 +1,3 @@
-import random
 import networkx as nx
 #    Copyright(C) 2011 by
 #    Ben Edwards <bedwards@cs.unm.edu>
@@ -57,7 +56,7 @@ def modularity(G, communities, weight='weight'):
        Oxford University Press 2011.
     """
     if not nx.unique_community(G, communities):
-        raise NetworkXError("communities is not a unique partition of G")
+        raise nx.NetworkXError("communities is not a unique partition of G")
 
     multigraph = G.is_multigraph()
     m = float(G.size(weight=weight))
