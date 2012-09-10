@@ -24,6 +24,7 @@ Algorithms
    algorithms.connectivity
    algorithms.core
    algorithms.cycles
+   algorithms.cuts
    algorithms.dag
    algorithms.distance_measures
    algorithms.distance_regular
