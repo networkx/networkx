@@ -1,10 +1,6 @@
-import bisect
-import random
 import networkx as nx
 
-from functools import partial
-from operator import itemgetter
-from networkx.utils.decorators import requires
+from .spectrum import laplacian_eigenvector
 
 
 #    Copyright(C) 2011 by
@@ -57,7 +53,7 @@ def spectral_bisection(G, weight='weight'):
        Oxford University Press 2011.
     """
     if not nx.is_connected(G):
-        raise NetworkXError('graph is not connected')
+        raise nx.NetworkXError('graph is not connected')
 
     v2 = laplacian_eigenvector(G, weight=weight)
     cut_value = 0
@@ -66,7 +62,7 @@ def spectral_bisection(G, weight='weight'):
     
 
 def directed_laplacian(G, nodelist=None, weight='weight', walk='simple'):
-    L=sparse_directed_laplacian(G, nodelist=nodelist, weight=weight, walk=walk)
+    L = nx.sparse_directed_laplacian(G, nodelist=nodelist, weight=weight, walk=walk)
     return L.todense()
 
 def simple_directed_laplacian(G, nodelist=None, weight='weight'):
@@ -80,7 +76,7 @@ def simple_directed_laplacian(G, nodelist=None, weight='weight'):
     D_inv = spdiags(1.0/data,0,n,n)
     P = D_inv*A
     Pi = spdiags(eigsh(P,1,which='LM')[1].T,0,n,n)
-    return identity(n) - (Pi*P + P.T*Pi)/2.0
+    return nx.identity(n) - (Pi*P + P.T*Pi)/2.0
 
 
 def lazy_directed_laplacian(G, nodelist=None, weight='weight'):
