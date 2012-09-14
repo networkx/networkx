@@ -17,3 +17,5 @@ doc/source/examples/*
 
 # Generated when 'python setup_egg.py'
 networkx.egg-info/
+Networkx.sublime-project
+Networkx.sublime-workspace

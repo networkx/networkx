@@ -22,7 +22,9 @@ def katz_centrality(G,alpha, beta=None, max_iter=1000,tol=1.0e-6,nstart=None):
     """Compute the Katz centrality for the graph G.
 
     Uses the power method to find the eigenvector for the 
-    largest eigenvalue of the adjacency matrix of G.
+    largest eigenvalue of the adjacency matrix of G. The constant 
+    beta should be stricly inferior to the largest eigenvalue of the 
+    adjacency matrix for the algorithm to converge.  
 
     Parameters
     ----------
@@ -30,8 +32,10 @@ def katz_centrality(G,alpha, beta=None, max_iter=1000,tol=1.0e-6,nstart=None):
       A networkx graph 
 
     alpha : float
+      Attenuation factor
 
-    beta : vector, optional 
+    beta : vector, optional
+      n by 1 NumPy vector, weight attributed to the immediate neighborhood.
 
     max_iter : interger, optional
       Maximum number of iterations in power method.
@@ -50,6 +54,7 @@ def katz_centrality(G,alpha, beta=None, max_iter=1000,tol=1.0e-6,nstart=None):
     Examples
     --------
     >>> G=nx.path_graph(4)
+    >>> A = nx.adj_matrix(G,nodelist=G.nodes())
     >>> eigenvalues,eigenvectors=np.linalg.eig(A)
     >>> largest_eigenvalue = np.array(eigenvalues).max().real
     >>> alpha = 1./(largest_eigenvalue+0.2)
@@ -58,15 +63,34 @@ def katz_centrality(G,alpha, beta=None, max_iter=1000,tol=1.0e-6,nstart=None):
     ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
 
     Notes
-    ------
+    -----
     The Katz calculation is done by the power iteration method
     and has no guarantee of convergence.  The iteration will stop
     after max_iter iterations or an error tolerance of
     number_of_nodes(G)*tol has been reached.
 
-    For directed graphs this is "right" eigevector centrality.  For
-    "left" eigenvector centrality, first reverse the graph with
-    G.reverse().
+    Notes
+    ------
+    Katz centrality overcome some limitations of the eigenvalue centrality and 
+    it is defined as follows :  
+    .. math::
+        x_i = \alpha \sum_{i} A_{ij} x_j + \beta
+
+    Katz centrality computes the relative influence of a node within a network
+    by measuring the number of the immediate neighbors (first degree nodes) and
+    also all other nodes in the network that connect to the node under
+    consideration through these immediate neighbors, extra weight could be
+    provided to immediate neighbor through the parameter :math:`\beta`.
+    Connections made with distant neighbors are, however, penalized by an
+    attenuation factor :math:`\alpha. :math:`\alpha` should be less than the
+    largest eigenvalue of the adjacency matrix in order for the Katz centrality
+    to be computed correctly. More information are provided in [New10]_ .
+
+    References
+    ++++++++++
+    .. [New10] M. Newman, Networks: An Introduction. Oxford University Press, 
+    USA, 2010, p. 720.
+
 
     See Also
     --------
@@ -129,9 +153,10 @@ def katz_centrality_numpy(G, alpha, beta=None):
       A networkx graph
 
     alpha : float
+      Attenuation factor
 
     beta : NumPy Array, optional
-        n by 1 NumPy vector Beta constant parameter of the Katz centrality method  
+        n by 1 NumPy vector, weight attributed to the immediate neighborhood. 
 
     Returns
     -------
@@ -141,6 +166,7 @@ def katz_centrality_numpy(G, alpha, beta=None):
     Examples
     --------
     >>> G=nx.path_graph(4)
+    >>> A = nx.adj_matrix(G,nodelist=G.nodes())
     >>> eigenvalues,eigenvectors=np.linalg.eig(A)
     >>> largest_eigenvalue = np.array(eigenvalues).max().real
     >>> alpha = 1./(largest_eigenvalue+0.2)
@@ -150,18 +176,25 @@ def katz_centrality_numpy(G, alpha, beta=None):
 
     Notes
     ------
-    Katz centrality
+    Katz centrality overcome some limitations of the eigenvalue centrality and 
+    it is defined as follows :  
     .. math::
         x_i = \alpha \sum_{i} A_{ij} x_j + \beta
-    
 
-    For directed graphs this is "right" eigevector centrality.  For
-    "left" eigenvector centrality, first reverse the graph with
-    G.reverse().
+    Katz centrality computes the relative influence of a node within a network
+    by measuring the number of the immediate neighbors (first degree nodes) and
+    also all other nodes in the network that connect to the node under
+    consideration through these immediate neighbors, extra weight could be
+    provided to immediate neighbor through the parameter :math:`\beta`.
+    Connections made with distant neighbors are, however, penalized by an
+    attenuation factor :math:`\alpha. :math:`\alpha` should be less than the
+    largest eigenvalue of the adjacency matrix in order for the Katz centrality
+    to be computed correctly. More information are provided in [New10]_ .
 
     References
     ++++++++++
-    .. [New10] M. Newman, Networks: An Introduction. Oxford University Press, USA, 2010, p. 720.
+    .. [New10] M. Newman, Networks: An Introduction. Oxford University Press, 
+    USA, 2010, p. 720.
     
 
     See Also
@@ -203,43 +236,3 @@ def setup_module(module):
         import numpy.linalg
     except:
         raise SkipTest("numpy not available")
-
-if __name__ == '__main__':
-    import numpy as np 
-
-    # Generate a random Graph (random matrix)
-    n = 200
-    p = 0.01
-    G = nx.fast_gnp_random_graph(n,p)
-    A = nx.adj_matrix(G,nodelist=G.nodes())
-    
-    eigenvalues,eigenvectors=np.linalg.eig(A)
-    #  largest eigenvalue
-    largest = np.array(eigenvalues).max().real
-    
-    alpha = 1./(largest+0.2)
-    centrality_numpy = katz_centrality_numpy(G, alpha)
-    centrality  = katz_centrality(G,alpha)
-    #print sum([abs(centrality[n] - centrality_numpy[n]) for n in centrality])
-
-    #Test 
-    G=nx.path_graph(3)
-    alpha = 0.1
-    centrality_numpy = katz_centrality_numpy(G, alpha)
-    print centrality_numpy
-
-    #Test
-    alpha = 0.1 
-    G=nx.DiGraph()
-    edges=[(1,2),(1,3),(2,4),(3,2),(3,5),(4,2),(4,5),(4,6),(5,6),(5,7),(5,8),(6,8),(7,1),(7,5),(7,8),(8,6),(8,7)]
-    G.add_edges_from(edges,weight=2.0)
-    centrality_numpy = katz_centrality_numpy(G, alpha)
-    print centrality_numpy
-
-    #Test
-    G=nx.path_graph(4)
-    eigenvalues,eigenvectors=np.linalg.eig(A)
-    largest_eigenvalue = np.array(eigenvalues).max().real
-    alpha = 1./(largest_eigenvalue+0.2)
-    centrality=nx.eigenvector_centrality(G)
-    print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
