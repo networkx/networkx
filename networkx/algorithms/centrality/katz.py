@@ -21,10 +21,11 @@ __all__ = ['katz_centrality',
 def katz_centrality(G,alpha, beta=None, max_iter=1000,tol=1.0e-6,nstart=None):
     """Compute the Katz centrality for the graph G.
 
-    Uses the power method to find the eigenvector for the 
-    largest eigenvalue of the adjacency matrix of G. The constant 
-    beta should be stricly inferior to the largest eigenvalue of the 
-    adjacency matrix for the algorithm to converge.  
+    The Katz centrality is derived from the eigenvector centrality it uses the
+    power method to find the eigenvector corresponding to the largest eigenvalue
+    obtain from eigen decomposition of adjacency matrix of G. The constant alpha
+    should be strictly inferior to the inverse of largest eigenvalue of the
+    adjacency matrix for the algorithm to converge.
 
     Parameters
     ----------
@@ -58,7 +59,7 @@ def katz_centrality(G,alpha, beta=None, max_iter=1000,tol=1.0e-6,nstart=None):
     >>> eigenvalues,eigenvectors=np.linalg.eig(A)
     >>> largest_eigenvalue = np.array(eigenvalues).max().real
     >>> alpha = 1./(largest_eigenvalue+0.2)
-    >>> centrality=nx.eigenvector_centrality(G)
+    >>> centrality=nx.katz_centrality(G)
     >>> print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
     ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
 
@@ -76,15 +77,22 @@ def katz_centrality(G,alpha, beta=None, max_iter=1000,tol=1.0e-6,nstart=None):
     .. math::
         x_i = \alpha \sum_{i} A_{ij} x_j + \beta
 
+    with 
+
+    .. math::
+        \alpha < \frac{1}{\lambda_max}
+
     Katz centrality computes the relative influence of a node within a network
     by measuring the number of the immediate neighbors (first degree nodes) and
     also all other nodes in the network that connect to the node under
     consideration through these immediate neighbors, extra weight could be
     provided to immediate neighbor through the parameter :math:`\beta`.
     Connections made with distant neighbors are, however, penalized by an
-    attenuation factor :math:`\alpha. :math:`\alpha` should be less than the
-    largest eigenvalue of the adjacency matrix in order for the Katz centrality
-    to be computed correctly. More information are provided in [New10]_ .
+    attenuation factor :math:`\alpha. :math:`\alpha` should be stricly less than
+    the inverse largest eigenvalue of the adjacency matrix in order for the Katz
+    centrality to be computed correctly. More information are provided in
+    [New10]_ .
+
 
     References
     ++++++++++
@@ -147,6 +155,9 @@ power iteration failed to converge in %d iterations."%(i+1))""")
 def katz_centrality_numpy(G, alpha, beta=None):
     """Compute the Katz centrality for the graph G.
 
+    The constant alpha should be strictly inferior to the inverse of largest
+    eigenvalue of the adjacency matrix for the algorithm to converge.
+
     Parameters
     ----------
     G : graph
@@ -181,15 +192,21 @@ def katz_centrality_numpy(G, alpha, beta=None):
     .. math::
         x_i = \alpha \sum_{i} A_{ij} x_j + \beta
 
+    with 
+
+    .. math::
+        \alpha < \frac{1}{\lambda_max}
+
     Katz centrality computes the relative influence of a node within a network
     by measuring the number of the immediate neighbors (first degree nodes) and
     also all other nodes in the network that connect to the node under
     consideration through these immediate neighbors, extra weight could be
     provided to immediate neighbor through the parameter :math:`\beta`.
     Connections made with distant neighbors are, however, penalized by an
-    attenuation factor :math:`\alpha. :math:`\alpha` should be less than the
-    largest eigenvalue of the adjacency matrix in order for the Katz centrality
-    to be computed correctly. More information are provided in [New10]_ .
+    attenuation factor :math:`\alpha. :math:`\alpha` should be stricly less than
+    the inverse largest eigenvalue of the adjacency matrix in order for the Katz
+    centrality to be computed correctly. More information are provided in
+    [New10]_ .
 
     References
     ++++++++++
