@@ -8,6 +8,8 @@ Laplacian matrix of graphs.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from networkx.utils import require, not_implemented_for
+
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)'])
@@ -162,6 +164,9 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 # Code based on
 # https://bitbucket.org/bedwards/networkx-community/src/370bd69fc02f/networkx/algorithms/community/
 
+@require('numpy')
+@not_implemented_for('undirected')
+@not_implemented_for('multigraph')
 def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=0.95):
     r"""Return the directed Laplacian matrix of G.
 
@@ -204,6 +209,13 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     L : NumPy array
       Normalized Laplacian of G.
 
+    Raises
+    ------
+    NetworkXError
+        If NumPy cannot be imported
+    NetworkXNotImplemnted
+        If G is not a DiGraph
+
     Notes
     -----
     Only implemented for DiGraphs
@@ -217,14 +229,7 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     .. [1] Fan Chung (2005). Laplacians and the Cheeger inequality for directed
     graphs. Annals of Combinatorics, 9(1), 2005
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-            "normalized_laplacian() requires numpy: http://scipy.org/ ")
-
-    if not nx.is_directed(G):
-        raise nx.NetworkXError('G must be a DiGraph')
+    import numpy as np
 
     if walk_type is None:
         if nx.is_strongly_connected(G):
