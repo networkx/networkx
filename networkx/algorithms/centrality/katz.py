@@ -88,7 +88,7 @@ def katz_centrality(G,alpha, beta=None, max_iter=1000,tol=1.0e-6,nstart=None):
     consideration through these immediate neighbors, extra weight could be
     provided to immediate neighbor through the parameter :math:`\beta`.
     Connections made with distant neighbors are, however, penalized by an
-    attenuation factor :math:`\alpha. :math:`\alpha` should be stricly less than
+    attenuation factor :math:`\alpha. :math:`\alpha` should be strictly less than
     the inverse largest eigenvalue of the adjacency matrix in order for the Katz
     centrality to be computed correctly. More information are provided in
     [New10]_ .
@@ -203,7 +203,7 @@ def katz_centrality_numpy(G, alpha, beta=None):
     consideration through these immediate neighbors, extra weight could be
     provided to immediate neighbor through the parameter :math:`\beta`.
     Connections made with distant neighbors are, however, penalized by an
-    attenuation factor :math:`\alpha. :math:`\alpha` should be stricly less than
+    attenuation factor :math:`\alpha. :math:`\alpha` should be strictly less than
     the inverse largest eigenvalue of the adjacency matrix in order for the Katz
     centrality to be computed correctly. More information are provided in
     [New10]_ .
