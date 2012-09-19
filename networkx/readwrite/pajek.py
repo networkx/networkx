@@ -37,10 +37,12 @@ def generate_pajek(G):
     for format information.
     """
     if G.name=='': 
-        name='NetworkX'
+       name='NetworkX'
     else:
-        name=G.name
-    yield '*network %s'%name
+       name=G.name
+    # Apparently many Pajek format readers can't process this line
+    # So we'll leave it out for now.
+    # yield '*network %s'%name
 
     # write nodes with attributes
     yield '*vertices %s'%(G.order())
