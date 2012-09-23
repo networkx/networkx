@@ -4,10 +4,14 @@
 #    Aric Hagberg <hagberg@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import itertools
 import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg (hagberg@lanl.gov)'])
-__all__ = ['clustering','average_clustering']
+__all__ = [ 'clustering',
+            'average_clustering',
+            'latapy_clustering',
+            'robins_alexander_clustering']
 
 # functions for computing clustering of pairs
 def cc_dot(nu,nv):
@@ -23,7 +27,7 @@ modes={'dot':cc_dot,
        'min':cc_min,
        'max':cc_max}
 
-def clustering(G, nodes=None, mode='dot'):
+def latapy_clustering(G, nodes=None, mode='dot'):
     r"""Compute a bipartite clustering coefficient for nodes.
 
     The bipartie clustering coefficient is a measure of local density
@@ -89,6 +93,8 @@ def clustering(G, nodes=None, mode='dot'):
 
     See Also
     --------
+    robins_alexander_clustering
+    square_clustering
     average_clustering
     
     References
@@ -119,6 +125,8 @@ def clustering(G, nodes=None, mode='dot'):
         ccs[v] = cc
     return ccs
 
+clustering = latapy_clustering
+
 def average_clustering(G, nodes=None, mode='dot'):
     r"""Compute the average bipartite clustering coefficient.
 
@@ -141,7 +149,7 @@ def average_clustering(G, nodes=None, mode='dot'):
     Parameters
     ----------
     G : graph
-        A bipartite graph
+        a bipartite graph
 
     nodes : list or iterable, optional
         A container of nodes to use in computing the average.  
@@ -188,5 +196,70 @@ def average_clustering(G, nodes=None, mode='dot'):
     """
     if nodes is None:
         nodes=G
-    ccs=clustering(G, nodes=nodes, mode=mode)
+    ccs=latapy_clustering(G, nodes=nodes, mode=mode)
     return float(sum(ccs[v] for v in nodes))/len(nodes)
+
+def robins_alexander_clustering(G):
+    r"""Compute the bipartite clustering of G.
+
+    Robins and Alexander [1]_ defined bipartite clustering coefficient as
+    four times the number of four cycles (C_4) divided by the number of
+    three paths (L_3) in a bipartite graph:
+
+    .. math::
+
+       CC_4 = \frac{4 * C_4}{L_3}
+       
+    Parameters
+    ----------
+    G : graph
+        a bipartite graph
+
+    Returns
+    -------
+    clustering : float
+       The Robins and Alexander bipartite clustering for the input graph.
+
+    Examples
+    --------
+    >>> from networkx.algorithms import bipartite
+    >>> G = nx.davis_southern_women_graph()
+    >>> print(round(bipartite.robins_alexander_clustering(G), 3))
+    0.468
+
+    See Also
+    --------
+    latapy_clustering
+    square_clustering
+   
+    References
+    ----------
+    .. [1] Robins, G. and M. Alexander (2004). Small worlds among interlocking 
+           directors: Network structure and distance in bipartite graphs. 
+           Computational & Mathematical Organization Theory 10(1), 69–94.
+
+    """
+    if G.order() < 4 or G.size() < 3:
+        return 0
+    L_3 = _threepaths(G)
+    if L_3 == 0:
+        return 0
+    C_4 = _four_cycles(G)
+    return (4. * C_4) / L_3
+
+def _four_cycles(G):
+    cycles = 0
+    for v in G:
+        for u, w in itertools.combinations(G[v], 2):
+            cycles += len((set(G[u]) & set(G[w])) - set([v]))
+    return cycles / 4
+
+def _threepaths(G):
+    paths = 0
+    for v in G:
+        for u in G[v]:
+            for w in set(G[u]) - set([v]):
+                paths += len(set(G[w]) - set([v, u]))
+    # Divide by two because we count each three path twice
+    # one for each possible starting point
+    return paths / 2
