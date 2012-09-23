@@ -407,8 +407,8 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
         Nodes to project onto (the "bottom" nodes).
 
     weight_function: function
-        This function must accept as a parameters two sets,
-        the neighborhoods of two nodes, and return an integer or a float.
+        This function must accept as parameters the same input graph 
+        that this function, and two nodes; and return an integer or a float.
         The default function computes the number of shared neighbors.
 
     Returns
@@ -419,23 +419,42 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     Examples
     --------
     >>> from networkx.algorithms import bipartite
-    >>> def jaccard(unbrs, vnbrs):
+    >>> # Define some custom weight functions
+    >>> def jaccard(G, u, v):
+    ...     unbrs = set(G[u])
+    ...     vnbrs = set(G[v])
     ...     return float(len(unbrs & vnbrs)) / len(unbrs | vnbrs)
     ... 
-    >>> def shared(unbrs, vnbrs):
-    ...     return len(unbrs & vnbrs)
+    >>> def my_weight(G, u, v, weight='weight'):
+    ...     w = 0
+    ...     for nbr in set(G[u]) & set(G[v]):
+    ...         w += G.edge[u][nbr].get(weight, 1) + G.edge[v][nbr].get(weight, 1)
+    ...     return w
     ... 
-    >>> B = nx.path_graph(5)
-    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4], weight_function=jaccard)
-    >>> print(G.nodes())
-    [0, 2, 4]
+    >>> # A complete bipartite graph with 4 nodes and 4 edges
+    >>> B = nx.complete_bipartite_graph(2,2)
+    >>> # Add some arbitrary weight to the edges
+    >>> for i,(u,v) in enumerate(B.edges()):
+    ...     B.edge[u][v]['weight'] = i + 1
+    ... 
+    >>> for edge in B.edges(data=True):
+    ...     print(edge)
+    ... 
+    (0, 2, {'weight': 1})
+    (0, 3, {'weight': 2})
+    (1, 2, {'weight': 3})
+    (1, 3, {'weight': 4})
+    >>> # Without specifying a function, the weight is equal to # shared partners
+    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1])
     >>> print(G.edges(data=True))
-    [(0, 2, {'weight': 0.5}), (2, 4, {'weight': 0.5})]
-    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4], weight_function=shared)
-    >>> print(G.nodes())
-    [0, 2, 4]
+    [(0, 1, {'weight': 2})]
+    >>> # To specify a custom weight function use the weight_function parameter
+    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=jaccard)
     >>> print(G.edges(data=True))
-    [(0, 2, {'weight': 1}), (2, 4, {'weight': 1})]
+    [(0, 1, {'weight': 1.0})]
+    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=my_weight)
+    >>> print(G.edges(data=True))
+    [(0, 1, {'weight': 10})]
     
     Notes
     ------
@@ -455,22 +474,22 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     """
     if B.is_multigraph():
         raise nx.NetworkXError("not defined for multigraphs")
-    if weight_function is None:
-        weight_function = lambda unbrs,vnbrs:len(unbrs & vnbrs)
     if B.is_directed():
         pred=B.pred
         G=nx.DiGraph()
     else:
         pred=B.adj
         G=nx.Graph()
+    if weight_function is None:
+        def weight_function(G, u, v):
+            # Notice that we use set(pred[v]) for handling the directed case.
+            return len(set(G[u]) & set(pred[v]))
     G.graph.update(B.graph)
     G.add_nodes_from((n,B.node[n]) for n in nodes)
     for u in nodes:
-        unbrs = set(B[u])
-        nbrs2 = set((n for nbr in unbrs for n in B[nbr])) - set([u])
+        nbrs2 = set((n for nbr in set(B[u]) for n in B[nbr])) - set([u])
         for v in nbrs2:
-            vnbrs = set(pred[v])
-            weight = weight_function(unbrs, vnbrs)
+            weight = weight_function(B, u, v)
             G.add_edge(u,v,weight=weight)
     return G
 
