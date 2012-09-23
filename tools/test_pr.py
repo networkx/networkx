@@ -164,11 +164,9 @@ class TestRun(object):
         header += "([%s '%s' branch](%s))**" % (owner, branch, branch_url)
         if mergeable:
             mrg = "%s This pull request can be merged cleanly " % ok
-            mrg += "(commit %s into NetworkX master %s)" % (branch_sha, master_sha)
         else:
             mrg = "%s This pull request **cannot** be merged cleanly " % fail
-            mrg += "(commit %s into NetworkX master %s)" % (branch_sha, master_sha)
-            mrg += ". Please rebase from upstream/master"
+        mrg += "(commit %s into NetworkX master %s)" % (branch_sha, master_sha)
         lines = [header,
                  mrg,
                  "Platform: " + sys.platform,
@@ -197,12 +195,11 @@ class TestRun(object):
         print("**NetworkX: Test results for pull request %s " % pr_num,
               "(%s '%s' branch at %s)**" % (owner, branch, branch_url))
         if mergeable:
-            print("This pull request can be merged cleanly",
-                  "(commit %s into NetworkX master %s)" % (branch_sha, master_sha))
+            mrg = "OK: This pull request can be merged cleanly "
         else:
-            print("This pull request **cannot** be merged cleanly",
-                  "(commit %s into NetworkX master %s)." % (branch_sha, master_sha),
-                  "Please rebase from upstream/master")
+            mrg = "FAIL: This pull request **cannot** be merged cleanly "
+        mrg += "(commit %s into NetworkX master %s)" % (branch_sha, master_sha)
+        print(mrg)
         print("Platform:", sys.platform)
         for result in self.results:
             if result.passed:
