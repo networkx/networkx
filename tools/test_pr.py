@@ -151,25 +151,26 @@ class TestRun(object):
                 s += " (libraries not available: " + result.missing_libraries + ")"
             return s
         pr_num = self.pr_num
-        repo = self.pr['head']['repo']['clone_url']
         branch = self.pr['head']['ref']
+        branch_url = self.pr['head']['repo']['html_url'] + '/tree/' + branch
         owner = self.pr['head']['repo']['owner']['login']
         mergeable = self.pr['mergeable']
         master_sha = self.master_sha
         branch_sha = self.pr['head']['sha'][:7]
         ok = ':eight_spoked_asterisk:'
         fail = ':red_circle:'
- 
+
+        header = "**NetworkX: Test results for pull request #%s " % pr_num
+        header += "([%s '%s' branch](%s))**" % (owner, branch, branch_url)
         if mergeable:
-            com = "%s This pull request can be merged clearly " % ok
-            com += "(commit %s into NetworkX master %s)" % (branch_sha, master_sha)
+            mrg = "%s This pull request can be merged cleanly " % ok
+            mrg += "(commit %s into NetworkX master %s)" % (branch_sha, master_sha)
         else:
-            com = "%s This pull request **cannot** be merged clearly " % fail
-            com += "(commit %s into NetworkX master %s)" % (branch_sha, master_sha)
-            com += ". Please rebase from upstream/master"
-        lines = ["**NetworkX: Test results for pull request #%s**" % pr_num,
-                 "Branch %s from @%s at %s" % (branch, owner, repo),
-                 com,
+            mrg = "%s This pull request **cannot** be merged cleanly " % fail
+            mrg += "(commit %s into NetworkX master %s)" % (branch_sha, master_sha)
+            mrg += ". Please rebase from upstream/master"
+        lines = [header,
+                 mrg,
                  "Platform: " + sys.platform,
                  ""] + \
                 [format_result(r) for r in self.results]
@@ -185,21 +186,21 @@ class TestRun(object):
     
     def print_results(self):
         pr_num = self.pr_num
-        repo = self.pr['head']['repo']['clone_url']
         branch = self.pr['head']['ref']
+        branch_url = self.pr['head']['repo']['html_url'] + '/tree/' + branch
         owner = self.pr['head']['repo']['owner']['login']
         mergeable = self.pr['mergeable']
         master_sha = self.master_sha
         branch_sha = self.pr['head']['sha'][:7]
         
         print("\n")
-        print("**NetworkX: Test results for pull request %s**" % pr_num)
-        print("Branch %s from %s at %s" % (branch, owner, repo))
+        print("**NetworkX: Test results for pull request %s " % pr_num,
+              "(%s '%s' branch at %s)**" % (owner, branch, branch_url))
         if mergeable:
-            print("This pull request can be merged clearly",
+            print("This pull request can be merged cleanly",
                   "(commit %s into NetworkX master %s)" % (branch_sha, master_sha))
         else:
-            print("This pull request **cannot** be merged clearly",
+            print("This pull request **cannot** be merged cleanly",
                   "(commit %s into NetworkX master %s)." % (branch_sha, master_sha),
                   "Please rebase from upstream/master")
         print("Platform:", sys.platform)
