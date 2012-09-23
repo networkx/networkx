@@ -143,20 +143,33 @@ class TestRun(object):
         def format_result(result):
             s = "* %s: " % result.py
             if result.passed:
-                s += "OK (SKIP=%s) Ran %s tests" % \
-                                        (result.skipped, result.num_tests)
+                s += "%s OK (SKIP=%s) Ran %s tests" % \
+                                        (ok, result.skipped, result.num_tests)
             else:
-                s += "Failed, log at %s" % result.log_url
+                s += "%s Failed, log at %s" % (fail, result.log_url)
             if result.missing_libraries:
                 s += " (libraries not available: " + result.missing_libraries + ")"
             return s
-        
-        if self.pr['mergeable']:
-            com = self.pr['head']['sha'][:7] + \
-                            " merged into master (%s)" % self.master_sha
+        pr_num = self.pr_num
+        repo = self.pr['head']['repo']['clone_url']
+        branch = self.pr['head']['ref']
+        owner = self.pr['head']['repo']['owner']['login']
+        mergeable = self.pr['mergeable']
+        master_sha = self.master_sha
+        branch_sha = self.pr['head']['sha'][:7]
+        ok = ':eight_spoked_asterisk:'
+        fail = ':red_circle:'
+ 
+        if mergeable:
+            com = "%s This pull request can be merged clearly " % ok
+            com += "(commit %s into NetworkX master %s)" % (branch_sha, master_sha)
         else:
-            com = self.pr['head']['sha'][:7] + " (can't merge cleanly)"
-        lines = ["**Test results for commit %s**" % com,
+            com = "%s This pull request **cannot** be merged clearly " % fail
+            com += "(commit %s into NetworkX master %s)" % (branch_sha, master_sha)
+            com += ". Please rebase from upstream/master"
+        lines = ["**NetworkX: Test results for pull request #%s**" % pr_num,
+                 "Branch %s from @%s at %s" % (branch, owner, repo),
+                 com,
                  "Platform: " + sys.platform,
                  ""] + \
                 [format_result(r) for r in self.results]
@@ -171,15 +184,24 @@ class TestRun(object):
         gh_api.post_issue_comment(gh_project, self.pr_num, body)
     
     def print_results(self):
-        pr = self.pr
+        pr_num = self.pr_num
+        repo = self.pr['head']['repo']['clone_url']
+        branch = self.pr['head']['ref']
+        owner = self.pr['head']['repo']['owner']['login']
+        mergeable = self.pr['mergeable']
+        master_sha = self.master_sha
+        branch_sha = self.pr['head']['sha'][:7]
         
         print("\n")
-        msg = "**Test results for commit %s" % pr['head']['sha'][:7]
-        if pr['mergeable']:
-            msg += " merged into master (%s)**" % self.master_sha
+        print("**NetworkX: Test results for pull request %s**" % pr_num)
+        print("Branch %s from %s at %s" % (branch, owner, repo))
+        if mergeable:
+            print("This pull request can be merged clearly",
+                  "(commit %s into NetworkX master %s)" % (branch_sha, master_sha))
         else:
-            msg += " (can't merge cleanly)**"
-        print(msg)
+            print("This pull request **cannot** be merged clearly",
+                  "(commit %s into NetworkX master %s)." % (branch_sha, master_sha),
+                  "Please rebase from upstream/master")
         print("Platform:", sys.platform)
         for result in self.results:
             if result.passed:
