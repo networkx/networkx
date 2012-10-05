@@ -115,7 +115,7 @@ def generate_gexf(G, encoding='utf-8',prettyprint=True,version='1.1draft'):
         yield line
 
 @open_file(0,mode='rb')
-def read_gexf(path,node_type=str,relabel=False,version='1.1draft'):
+def read_gexf(path,node_type=None,relabel=False,version='1.1draft'):
     """Read graph in GEXF format from path.
 
     "GEXF (Graph Exchange XML Format) is a language for describing
@@ -127,8 +127,8 @@ def read_gexf(path,node_type=str,relabel=False,version='1.1draft'):
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
 
-    node_type: Python type (default: str)
-       Convert node ids to this type
+    node_type: Python type (default: None)
+       Convert node ids to this type if not None.
 
     relabel : bool (default: False)
        If True relabel the nodes to use the GEXF node "label" attribute
