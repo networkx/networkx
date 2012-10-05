@@ -653,7 +653,7 @@ class GEXFReader(GEXF):
         # find the node id and cast it to the appropriate type
         node_id = node_xml.get("id")
         if self.node_type is not None:
-            node_id=self.node_type(node_id)
+            node_id=self.node_type(node_id.encode('utf-8'))
 
         # every node should have a label
         node_label = node_xml.get("label")
@@ -769,8 +769,8 @@ class GEXFReader(GEXF):
         source = edge_element.get("source")
         target = edge_element.get("target")
         if self.node_type is not None:
-            source=self.node_type(source)
-            target=self.node_type(target)
+            source=self.node_type(source.encode('utf-8'))
+            target=self.node_type(target.encode('utf-8'))
 
         data = self.decode_attr_elements(edge_attr, edge_element)
         data = self.add_start_end(data,edge_element)
