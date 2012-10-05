@@ -696,7 +696,7 @@ class GEXFReader(GEXF):
                 viz['color']={'r':int(color.get('r')),
                               'g':int(color.get('g')),
                               'b':int(color.get('b')),
-                              'a':float(color.get('a', 100)),
+                              'a':float(color.get('a', 1)),
                               }
 
         size=node_xml.find("{%s}size"%self.NS_VIZ)
