@@ -17,13 +17,13 @@ import networkx as nx
 __all__ = ["min_maximal_matching"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
-def min_maximal_matching(graph):
-    """Returns a set of edges such that no two edges share a common endpoint
-    and every edge not in the set shares some common endpoint in the set.
+def min_maximal_matching(G):
+    """Returns the minimum maximal matching of G. That is, out of all maximal
+    matchings of the graph G, the smallest is returned.
 
     Parameters
     ----------
-    graph : NetworkX graph
+    G : NetworkX graph
       Undirected graph
 
     Returns
@@ -33,8 +33,14 @@ def min_maximal_matching(graph):
       and every edge not in the set shares some common endpoint in the set.
       Cardinality will be 2*OPT in the worst case.
 
+    Notes
+    -----
+    The algorithm computes an approximate solution fo the minimum maximal
+    cardinality matching problem. The solution is no more than 2 * OPT in size.
+    Runtime is O(|E|).
+
     References
     ----------
     .. [1] Vazirani, Vijay Approximation Algorithms (2001)
     """
-    return nx.maximal_matching(graph)
+    return nx.maximal_matching(G)
