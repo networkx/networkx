@@ -35,12 +35,12 @@ __all__ = ["maximum_independent_set"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 
-def maximum_independent_set(graph):
+def maximum_independent_set(G):
     """Return an approximate maximum independent set.
 
     Parameters
     ----------
-    graph : NetworkX graph
+    G : NetworkX graph
         Undirected graph
 
     Returns
@@ -59,5 +59,5 @@ def maximum_independent_set(graph):
        Approximating maximum independent sets by excluding subgraphs.
        BIT Numerical Mathematics, 32(2), 180–196. Springer.
     """
-    iset, _ = clique_removal(graph)
+    iset, _ = clique_removal(G)
     return iset
