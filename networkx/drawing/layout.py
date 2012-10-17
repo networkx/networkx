@@ -5,7 +5,7 @@ Layout
 
 Node positioning algorithms for graph drawing.
 """
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -230,7 +230,7 @@ def fruchterman_reingold_layout(G,dim=2,
         # Sparse matrix
         if len(G) < 500:  # sparse solver for large graphs
             raise ValueError
-        A=nx.to_scipy_sparse_matrix(G,weight=weight)
+        A=nx.to_scipy_sparse_matrix(G,weight=weight,dtype='f')
         pos=_sparse_fruchterman_reingold(A,dim,pos_arr,fixed,iterations)
     except:
         A=nx.to_numpy_matrix(G,weight=weight)
