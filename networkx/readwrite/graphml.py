@@ -475,8 +475,14 @@ class GraphMLReader(GraphML):
                                 (self.NS_Y, node_type, self.NS_Y))
                 if node_label is not None:
                     data['label'] = node_label.text
-                edge_label = data_element.find("{%s}PolyLineEdge/{%s}EdgeLabel"%
-                                               (self.NS_Y, (self.NS_Y)))
+
+                # check all the diffrent types of edges avaivable in yEd.
+                for e in ['PolyLineEdge', 'SplineEdge', 'QuadCurveEdge', 'BezierEdge', 'ArcEdge']:
+                	edge_label = data_element.find("{%s}%s/{%s}EdgeLabel"%
+                                               (self.NS_Y, e, (self.NS_Y)))
+                	if edge_label is not None:
+                		break
+                
                 if edge_label is not None:
                     data['label'] = edge_label.text
         return data
