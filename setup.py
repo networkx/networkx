@@ -56,6 +56,11 @@ packages=["networkx",
           "networkx.testing",
           "networkx.utils"]
 
+if sys.version >= '3':
+    packages.append('networkx.external.decorator.decorator3')
+else:
+    packages.append('networkx.external.decorator.decorator2')
+
 docdirbase  = 'share/doc/networkx-%s' % version
 # add basic documentation 
 data = [(docdirbase, glob("*.txt"))]
