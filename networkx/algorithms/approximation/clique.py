@@ -11,7 +11,7 @@ from networkx.algorithms.approximation import ramsey
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 __all__ = ["clique_removal","max_clique"]
 
-def max_clique(graph):
+def max_clique(G):
     r"""Find the Maximum Clique
 
     Finds the `O(|V|/(log|V|)^2)` apx of maximum clique/independent set
@@ -19,7 +19,7 @@ def max_clique(graph):
 
     Parameters
     ----------
-    graph : NetworkX graph
+    G : NetworkX graph
         Undirected graph
 
     Returns
@@ -49,16 +49,16 @@ def max_clique(graph):
         BIT Numerical Mathematics, 32(2), 180–196. Springer.
         doi:10.1007/BF01994876
     """
-    if graph is None:
+    if G is None:
         raise ValueError("Expected NetworkX graph!")
 
     # finding the maximum clique in a graph is equivalent to finding
     # the independent set in the complementary graph
-    cgraph = nx.complement(graph)
+    cgraph = nx.complement(G)
     iset, _ = clique_removal(cgraph)
     return iset
 
-def clique_removal(graph):
+def clique_removal(G):
     """ Repeatedly remove cliques from the graph.
 
     Results in a `O(|V|/(\log |V|)^2)` approximation of maximum clique
@@ -67,7 +67,7 @@ def clique_removal(graph):
 
     Parameters
     ----------
-    graph : NetworkX graph
+    G : NetworkX graph
         Undirected graph
 
     Returns
@@ -81,7 +81,7 @@ def clique_removal(graph):
         Approximating maximum independent sets by excluding subgraphs.
         BIT Numerical Mathematics, 32(2), 180–196. Springer.
     """
-    graph = graph.copy()
+    graph = G.copy()
     c_i, i_i = ramsey.ramsey_R2(graph)
     cliques = [c_i]
     isets = [i_i]

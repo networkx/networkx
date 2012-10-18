@@ -3,7 +3,7 @@
 Matching
 ********
 """
-#    Copyright (C) 2004-2008 by 
+#    Copyright (C) 2004-2008 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -19,26 +19,39 @@ __author__ = """\n""".join(['Joris van Rantwijk',
 
 _all__ = ['max_weight_matching', 'maximal_matching']
 
-def maximal_matching(graph):
-    """ Find a maximal matching in the graph.
+
+def maximal_matching(G):
+    """ Find a maximal cardinality matching in the graph.
+
+    A matching is a subset of edges in which no node occurs more than once.
+    The cardinality of a matching is the number of matched edges.
 
     Parameters
     ----------
-    graph : NetworkX graph
+    G : NetworkX graph
         Undirected graph
 
     Returns
     -------
-    matching : set of edges.
-        A maximal mathing of the graph.
+    matching : set
+        A maximal matching of the graph.
+
+    Notes
+    -----
+    The algorithm greedily selects a maximal matching M of the graph G
+    (i.e. no superset of M exists). It runs in O(|E|) time.
     """
     matching = set([])
     edges = set([])
-    for edge in graph.edges_iter():
+    for edge in G.edges_iter():
+        # If the edge isn't covered, add it to the matching
+        # then remove neighborhood of u and v from consideration.
         if edge not in edges:
             u, v = edge
             matching.add(edge)
-            edges = edges | set(graph.edges(u)) | set(graph.edges(v))
+            edges |= set(G.edges(u))
+            edges |= set(G.edges(v))
+
     return matching
 
 
@@ -53,7 +66,7 @@ def max_weight_matching(G, maxcardinality=False):
     ----------
     G : NetworkX graph
       Undirected graph
-      
+
     maxcardinality: bool, optional
        If maxcardinality is True, compute the maximum-cardinality matching
        with maximum weight among all maximum-cardinality matchings.
@@ -64,7 +77,7 @@ def max_weight_matching(G, maxcardinality=False):
        The matching is returned as a dictionary, mate, such that
        mate[v] == w if node v is matched to node w.  Unmatched nodes do not
        occur as a key in mate.
-       
+
 
     Notes
     ------
@@ -78,8 +91,8 @@ def max_weight_matching(G, maxcardinality=False):
     could return a slightly suboptimal matching due to numeric
     precision errors.
 
-    This method is based on the "blossom" method for finding augmenting 
-    paths and the "primal-dual" method for finding a matching of maximum 
+    This method is based on the "blossom" method for finding augmenting
+    paths and the "primal-dual" method for finding a matching of maximum
     weight, both methods invented by Jack Edmonds [1]_.
 
     References
@@ -134,7 +147,7 @@ def max_weight_matching(G, maxcardinality=False):
     # Get a list of vertices.
     gnodes = G.nodes()
     if not gnodes:
-        return { } # don't bother with empty graphs
+        return { }  # don't bother with empty graphs
 
     # Find the maximum edge weight.
     maxweight = 0
@@ -612,7 +625,7 @@ def max_weight_matching(G, maxcardinality=False):
 
         # Make queue empty.
         queue[:] = [ ]
- 
+
         # Label single blossoms/vertices with S and put them in the queue.
         for v in gnodes:
             if (v not in mate) and label.get(inblossom[v]) is None:
@@ -768,7 +781,7 @@ def max_weight_matching(G, maxcardinality=False):
                         blossomdual[b] -= delta
 
             # Take action at the point where minimum delta occurred.
-            if deltatype == 1: 
+            if deltatype == 1:
                 # No further improvement possible; optimum reached.
                 break
             elif deltatype == 2:
@@ -810,4 +823,3 @@ def max_weight_matching(G, maxcardinality=False):
         verifyOptimum()
 
     return mate
-
