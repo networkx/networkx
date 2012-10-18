@@ -19,14 +19,14 @@ __all__ = ["min_weighted_vertex_cover"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 @not_implemented_for('directed')
-def min_weighted_vertex_cover(graph, weight=None):
+def min_weighted_vertex_cover(G, weight=None):
     """2-OPT Local Ratio for Minimum Weighted Vertex Cover
 
     Find an approximate minimum weighted vertex cover of a graph.
 
     Parameters
     ----------
-    graph : NetworkX graph
+    G : NetworkX graph
       Undirected graph
 
     weight : None or string, optional (default = None)
@@ -39,6 +39,12 @@ def min_weighted_vertex_cover(graph, weight=None):
     min_weighted_cover : set
       Returns a set of vertices whose weight sum is no more than 2 * OPT.
 
+    Notes
+    -----
+    Local-Ratio algorithm for computing an approximate vertex cover.
+    Algorithm greedily reduces the costs over edges and iteratively
+    builds a cover. Worst-case runtime is O(|E|).
+
     References
     ----------
     .. [1] Bar-Yehuda, R., & Even, S. (1985). A local-ratio theorem for
@@ -47,10 +53,10 @@ def min_weighted_vertex_cover(graph, weight=None):
        http://www.cs.technion.ac.il/~reuven/PDF/vc_lr.pdf
     """
     weight_func = lambda nd: nd.get(weight, 1)
-    cost = dict((n, weight_func(nd)) for n, nd in graph.nodes(data=True))
+    cost = dict((n, weight_func(nd)) for n, nd in G.nodes(data=True))
 
     # while there are edges uncovered, continue
-    for u,v in graph.edges_iter():
+    for u,v in G.edges_iter():
         # select some uncovered edge
         min_cost = min([cost[u], cost[v]])
         cost[u] -= min_cost

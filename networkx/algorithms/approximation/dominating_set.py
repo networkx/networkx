@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-**********************
-Minimum Dominating Set
-**********************
+**************************************
+Minimum Vertex and Edge Dominating Set
+**************************************
 
 
 A dominating set for a graph G = (V, E) is a subset D of V such that every
@@ -12,7 +12,10 @@ set for G. Given a graph G = (V, E) find a minimum weight dominating set V'.
 
 http://en.wikipedia.org/wiki/Dominating_set
 
-This is reducible to the minimum set dom_set problem.
+An edge dominating set for a graph G = (V, E) is a subset D of E such that
+every edge not in D is adjacent to at least one edge in D.
+
+http://en.wikipedia.org/wiki/Edge_dominating_set
 """
 #   Copyright (C) 2011-2012 by
 #   Nicholas Mancuso <nick.mancuso@gmail.com>
@@ -23,12 +26,13 @@ __all__ = ["min_weighted_dominating_set",
            "min_edge_dominating_set"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
-def min_weighted_dominating_set(graph, weight=None):
-    """Return minimum weight dominating set.
+
+def min_weighted_dominating_set(G, weight=None):
+    """Return minimum weight vertex dominating set.
 
     Parameters
     ----------
-    graph : NetworkX graph
+    G : NetworkX graph
       Undirected graph
 
     weight : None or string, optional (default = None)
@@ -39,22 +43,28 @@ def min_weighted_dominating_set(graph, weight=None):
     Returns
     -------
     min_weight_dominating_set : set
-      Returns a set of vertices whose weight sum is no more than 1 + log w(V)
+      Returns a set of vertices whose weight sum is no more than log w(V) * OPT
+
+    Notes
+    -----
+    This algorithm computes an approximate minimum weighted dominating set
+    for the graph G. The upper-bound on the size of the solution is log w(V) * OPT.
+    Runtime of the algorithm is O(|E|).
 
     References
     ----------
     .. [1] Vazirani, Vijay Approximation Algorithms (2001)
     """
-    if not graph:
+    if not G:
         raise ValueError("Expected non-empty NetworkX graph!")
 
     # min cover = min dominating set
     dom_set = set([])
     cost_func = dict((node, nd.get(weight, 1)) \
-                     for node, nd in graph.nodes_iter(data=True))
+                     for node, nd in G.nodes_iter(data=True))
 
-    vertices = set(graph)
-    sets = dict((node, set([node]) | set(graph[node])) for node in graph)
+    vertices = set(G)
+    sets = dict((node, set([node]) | set(G[node])) for node in G)
 
     def _cost(subset):
         """ Our cost effectiveness function for sets given its weight
@@ -80,19 +90,25 @@ def min_weighted_dominating_set(graph, weight=None):
     return dom_set
 
 
-def min_edge_dominating_set(graph):
-    """Return minimum weight dominating edge set.
+def min_edge_dominating_set(G):
+    """Return minimum cardinality edge dominating set.
 
     Parameters
     ----------
-    graph : NetworkX graph
+    G : NetworkX graph
       Undirected graph
 
     Returns
     -------
     min_edge_dominating_set : set
       Returns a set of dominating edges whose size is no more than 2 * OPT.
+
+    Notes
+    -----
+    The algorithm computes an approximate solution to the edge dominating set
+    problem. The result is no more than 2 * OPT in terms of size of the set.
+    Runtime of the algorithm is O(|E|).
     """
-    if not graph:
+    if not G:
         raise ValueError("Expected non-empty NetworkX graph!")
-    return nx.maximal_matching(graph)
+    return nx.maximal_matching(G)
