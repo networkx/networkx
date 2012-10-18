@@ -30,11 +30,12 @@ def bfs_edges(G,source):
         except StopIteration:
             stack.pop(0)
 
-
 def bfs_tree(G, source):
     """Return directed tree of breadth-first-search from source."""
-    return nx.DiGraph(bfs_edges(G,source))
-
+    T = nx.DiGraph()
+    T.add_node(source)
+    T.add_edges_from(bfs_edges(G,source))
+    return T
 
 def bfs_predecessors(G, source):
     """Return dictionary of predecessors in breadth-first-search from source."""
@@ -47,6 +48,3 @@ def bfs_successors(G, source):
     for s,t in bfs_edges(G,source):
         d[s].append(t)
     return dict(d)
-
-
-
