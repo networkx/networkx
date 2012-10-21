@@ -17,6 +17,7 @@ from copy import deepcopy
 import networkx as nx
 from networkx.exception import NetworkXError
 import networkx.convert as convert
+from itertools import combinations
 
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
@@ -1680,7 +1681,7 @@ class Graph(object):
 
         See Also
         --------
-        add_path, add_cycle
+        add_path, add_cycle, add_clique
 
         Examples
         --------
@@ -1707,7 +1708,7 @@ class Graph(object):
 
         See Also
         --------
-        add_star, add_cycle
+        add_star, add_cycle, add_clique
 
         Examples
         --------
@@ -1733,7 +1734,7 @@ class Graph(object):
 
         See Also
         --------
-        add_path, add_star
+        add_path, add_star, add_clique
 
         Examples
         --------
@@ -1746,7 +1747,31 @@ class Graph(object):
         edges=zip(nlist,nlist[1:]+[nlist[0]])
         self.add_edges_from(edges, **attr)
 
-
+    def add_clique(self, nodes, **attr):
+        """Add a clique
+        
+        Parameters
+        ----------
+        nodes: iterable container
+            A container of nodes.  A clique will be constructed from
+            the nodes and added to the graph.
+        attr : keyword arguments, optional (default= no attributes)
+            Attributes to add to every edge in cycle.
+        
+        See Also
+        --------
+        add_path, add_star, add_cycle
+        
+        Examples
+        --------
+        >>> G=nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_clique([0,1,2,3])
+        >>> G.add_clique([0,1,2,3], weight = 2)
+        """
+        nlist = list(nodes)
+        edges = list(combinations(nlist,2))
+        self.add_edges_from(edges, **attr)
+        
     def nbunch_iter(self, nbunch=None):
         """Return an iterator of nodes contained in nbunch that are
         also in the graph.
