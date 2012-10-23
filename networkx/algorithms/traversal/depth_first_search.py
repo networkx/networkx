@@ -119,3 +119,35 @@ def dfs_labeled_edges(G,source=None):
                     yield stack[-1][0],parent,{'dir':'reverse'}
         yield start,start,{'dir':'reverse'}
 
+def dfs_preorder_nodes(G, source, visited, condition):
+    """Produce nodes in a depth-first-search pre-ordering starting at
+    source and skipping the already visited nodes and do so only while
+    condition holds.  
+
+    Return a pair, first element is the list of nodes reachable under the
+    given condition, second element is the list of edges along which the
+    condition did not hold and where the visit was interrupted.
+    """
+    # Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
+    # by D. Eppstein, July 2004.
+    ##
+    # networkx.algorithms.traversal.depth_first_search.dfs_labeled_edges,
+    # adapted, adding the visited and condition parameters.
+
+    visited = set(visited)
+    satisfied = []
+    border = []
+    stack = [(source, iter([source]))]
+    while stack:
+        parent, children = stack.pop()
+        for child in children:
+            if child in visited:
+                continue
+            if condition(parent, child):
+                visited.add(child)
+                satisfied.append(child)
+                stack.append((child, iter(sorted(G[child]))))
+            else:
+                border.append((parent, child))
+    return satisfied, [(p, c) for p, c in border
+                       if c not in set(satisfied)]
