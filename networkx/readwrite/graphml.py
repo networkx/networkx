@@ -496,11 +496,15 @@ class GraphMLReader(GraphML):
             attr_id = k.get("id")
             attr_type=k.get('attr.type')
             attr_name=k.get("attr.name")
+            yfiles_type=k.get("yfiles.type")
+            if yfiles_type is not None:
+                attr_name = yfiles_type
+                attr_type = 'yfiles'
             if attr_type is None:
-                attr_name=k.get('yfiles.type')
-                attr_type='yfiles'
+                attr_type = "string"
+                warnings.warn("No key type for id %s. Using string"%attr_id)
             if attr_name is None:
-                raise nx.NetworkXError("Unknown key type in file.")
+                raise nx.NetworkXError("Unknown key for id %s in file."%attr_id)
             graphml_keys[attr_id] = {
                 "name":attr_name,
                 "type":self.python_type[attr_type],
@@ -526,3 +530,9 @@ def teardown_module(module):
         os.unlink('test.graphml')
     except:
         pass
+
+if __name__ == '__main__':
+    import networkx as nx
+    G=nx.read_graphml("Graph1.graphml")
+    print G.edges()
+    print G.nodes()
