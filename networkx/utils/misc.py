@@ -110,6 +110,9 @@ def dict_to_numpy_array(d,mapping=None):
     except ImportError:
         raise ImportError(
           "dict_to_numpy_array requires numpy : http://scipy.org/ ")
+    # ensure d is a dictionary of dictionaries, not a dictionary of numbers 
+    if len(d.values()) > 0 and not isinstance(d.values()[0], dict):
+        return dict_to_numpy_vector(d,mapping)
     if mapping is None:
         s=set(d.keys())
         for k,v in d.items():
@@ -124,3 +127,21 @@ def dict_to_numpy_array(d,mapping=None):
             a[i,j] = value 
     return a
 
+
+def dict_to_numpy_vector(d,mapping=None):
+    """Convert a dictionary of numbers to a 1d numpy array 
+    with optional mapping."""
+    try:
+        import numpy 
+    except ImportError:
+        raise ImportError(
+          "dict_to_numpy_array requires numpy : http://scipy.org/ ")
+    if mapping is None:
+        s=set(d.keys())
+        mapping=dict(zip(s,range(len(s))))
+    n=len(mapping)
+    a = numpy.zeros(n)
+    for k1, value in d.items():
+        i=mapping[k1]
+        a[i] = value 
+    return a
