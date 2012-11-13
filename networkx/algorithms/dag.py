@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from fractions import gcd
 import networkx as nx
+from .traversal.breadth_first_search import bfs_tree
 """Algorithms for directed acyclic graphs (DAGs)."""
 #    Copyright (C) 2006-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -15,6 +16,42 @@ __all__ = ['topological_sort',
            'topological_sort_recursive',
            'is_directed_acyclic_graph',
            'is_aperiodic']
+
+def descendants(G, source):
+    """Return all nodes reachable from `source` in G.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+    source : node in G
+
+    Returns
+    -------
+    descendants : set()
+       The descendants of source in G
+    """
+    if not is_directed_acyclic_graph(G):
+        raise ValueError("ancestors() is only defined for DAGs")
+    if not G.has_node(source):
+        raise nx.NetworkXError(
+                            "The node %s is not in the graph." % source)
+    return set(bfs_tree(G, source).nodes()) - set([source])
+
+def ancestors(G, source):
+    """Return all nodes having a path to `source` in G.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+    source : node in G
+
+    Returns
+    -------
+    ancestors : set()
+       The ancestors of source in G
+    """
+    H = G.reverse()
+    return descendants(H, source)
 
 def is_directed_acyclic_graph(G):
     """Return True if the graph G is a directed acyclic graph (DAG) or 
