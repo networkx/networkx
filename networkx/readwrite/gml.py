@@ -344,7 +344,7 @@ def generate_gml(G):
     yield "]"
 
 @open_file(1,mode='wb')
-def write_gml(G, path):
+def write_gml(G, path, encoding="utf_8"):
     """
     Write the graph G in GML format to the file or file handle path.
 
@@ -360,8 +360,6 @@ def write_gml(G, path):
 
     Notes
     -----
-    GML specifications indicate that the file should only use
-    7bit ASCII text encoding.iso8859-1 (latin-1). 
 
     This implementation does not support all Python data types as GML
     data.  Nodes, node attributes, edge attributes, and graph
@@ -389,7 +387,7 @@ def write_gml(G, path):
     """
     for line in generate_gml(G):
         line+='\n'
-        path.write(line.encode('latin-1'))
+        path.write(line.encode(encoding))
 
 
 # fixture for nose tests
