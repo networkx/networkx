@@ -17,7 +17,7 @@ __all__ = ['topological_sort',
            'is_directed_acyclic_graph',
            'is_aperiodic']
 
-def descendants(G, source):
+def descendants(G, source, check_dag=True):
     """Return all nodes reachable from `source` in G.
 
     Parameters
@@ -30,7 +30,7 @@ def descendants(G, source):
     descendants : set()
        The descendants of source in G
     """
-    if not is_directed_acyclic_graph(G):
+    if check_dag and not is_directed_acyclic_graph(G):
         raise ValueError("ancestors() is only defined for DAGs")
     if not G.has_node(source):
         raise nx.NetworkXError(
