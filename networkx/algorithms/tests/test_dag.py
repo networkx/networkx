@@ -84,7 +84,7 @@ class TestDAG:
         assert_equal(ancestors(G, 1), set())
         assert_raises(nx.NetworkXError, ancestors, G, 8)
         G.add_edge(6, 1)
-        assert_raises(ValueError, ancestors, G, 1)
+        assert_raises(ValueError, ancestors, G, 1, check_dag=True)
 
     def test_descendants(self):
         G=nx.DiGraph()
@@ -96,7 +96,7 @@ class TestDAG:
         assert_equal(descendants(G, 3), set())
         assert_raises(nx.NetworkXError, descendants, G, 8)
         G.add_edge(6, 1)
-        assert_raises(ValueError, descendants, G, 1)
+        assert_raises(ValueError, descendants, G, 1, check_dag=True)
 
 
 def test_is_aperiodic_cycle():

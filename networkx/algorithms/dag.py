@@ -12,18 +12,27 @@ from .traversal.breadth_first_search import bfs_tree
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult (dschult@colgate.edu)',
                             'Ben Edwards (bedwards@cs.unm.edu)'])
-__all__ = ['topological_sort', 
+__all__ = ['descendants',
+           'ancestors',
+           'topological_sort', 
            'topological_sort_recursive',
            'is_directed_acyclic_graph',
            'is_aperiodic']
 
-def descendants(G, source, check_dag=True):
+def descendants(G, source, check_dag=False, reverse=False):
     """Return all nodes reachable from `source` in G.
 
     Parameters
     ----------
     G : NetworkX DiGraph
     source : node in G
+    check_dag : bool, optional
+        Check whether G is a DAG before running the algorithm. If G is not a
+        DAG, the results may not be meaningful. (default: False, as the check
+        is expensive.)
+    reverse : bool, optional
+        Whether to invert the direction of the edges of the graph during the
+        search, resulting in a search for ancestors instead. (default: False.)
 
     Returns
     -------
@@ -33,11 +42,10 @@ def descendants(G, source, check_dag=True):
     if check_dag and not is_directed_acyclic_graph(G):
         raise ValueError("ancestors() is only defined for DAGs")
     if not G.has_node(source):
-        raise nx.NetworkXError(
-                            "The node %s is not in the graph." % source)
-    return set(bfs_tree(G, source).nodes()) - set([source])
+        raise nx.NetworkXError("The node %s is not in the graph." % source)
+    return set(bfs_tree(G, source, reverse=reverse).nodes()) - set([source])
 
-def ancestors(G, source):
+def ancestors(G, source, check_dag=False):
     """Return all nodes having a path to `source` in G.
 
     Parameters
@@ -50,8 +58,7 @@ def ancestors(G, source):
     ancestors : set()
        The ancestors of source in G
     """
-    H = G.reverse()
-    return descendants(H, source)
+    return descendants(G, source, check_dag=check_dag, reverse=True)
 
 def is_directed_acyclic_graph(G):
     """Return True if the graph G is a directed acyclic graph (DAG) or 

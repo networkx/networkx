@@ -13,12 +13,16 @@ __all__ = ['bfs_edges', 'bfs_tree',
 import networkx as nx
 from collections import defaultdict, deque
 
-def bfs_edges(G, source):
+def bfs_edges(G, source, reverse=False):
     """Produce edges in a breadth-first-search starting at source."""
     # Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     # by D. Eppstein, July 2004.
+    if reverse and isinstance(G, nx.DiGraph):
+        neighbors = G.predecessors_iter
+    else:
+        neighbors = G.neighbors_iter
     visited=set([source])
-    queue = deque([(source, G.neighbors_iter(source))])
+    queue = deque([(source, neighbors(source))])
     while queue:
         parent, children = queue[0]
         try:
@@ -26,14 +30,14 @@ def bfs_edges(G, source):
             if child not in visited:
                 yield parent, child
                 visited.add(child)
-                queue.append((child, G.neighbors_iter(child)))
+                queue.append((child, neighbors(child)))
         except StopIteration:
             queue.popleft()
 
 
-def bfs_tree(G, source):
+def bfs_tree(G, source, reverse=False):
     """Return directed tree of breadth-first-search from source."""
-    return nx.DiGraph(bfs_edges(G,source))
+    return nx.DiGraph(bfs_edges(G, source, reverse=reverse))
 
 
 def bfs_predecessors(G, source):
