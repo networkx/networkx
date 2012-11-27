@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from fractions import gcd
 import networkx as nx
-from .traversal.breadth_first_search import bfs_tree
 """Algorithms for directed acyclic graphs (DAGs)."""
 #    Copyright (C) 2006-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -19,33 +18,25 @@ __all__ = ['descendants',
            'is_directed_acyclic_graph',
            'is_aperiodic']
 
-def descendants(G, source, check_dag=False, reverse=False):
+def descendants(G, source):
     """Return all nodes reachable from `source` in G.
 
     Parameters
     ----------
     G : NetworkX DiGraph
     source : node in G
-    check_dag : bool, optional
-        Check whether G is a DAG before running the algorithm. If G is not a
-        DAG, the results may not be meaningful. (default: False, as the check
-        is expensive.)
-    reverse : bool, optional
-        Whether to invert the direction of the edges of the graph during the
-        search, resulting in a search for ancestors instead. (default: False.)
 
     Returns
     -------
-    descendants : set()
+    des : set()
        The descendants of source in G
     """
-    if check_dag and not is_directed_acyclic_graph(G):
-        raise ValueError("ancestors() is only defined for DAGs")
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
-    return set(bfs_tree(G, source, reverse=reverse).nodes()) - set([source])
+    des = set(nx.shortest_path_length(G, source=source).keys()) - set([source])
+    return des
 
-def ancestors(G, source, check_dag=False):
+def ancestors(G, source):
     """Return all nodes having a path to `source` in G.
 
     Parameters
@@ -58,7 +49,10 @@ def ancestors(G, source, check_dag=False):
     ancestors : set()
        The ancestors of source in G
     """
-    return descendants(G, source, check_dag=check_dag, reverse=True)
+    if not G.has_node(source):
+        raise nx.NetworkXError("The node %s is not in the graph." % source)
+    anc = set(nx.shortest_path_length(G, target=source).keys()) - set([source])
+    return anc
 
 def is_directed_acyclic_graph(G):
     """Return True if the graph G is a directed acyclic graph (DAG) or 
