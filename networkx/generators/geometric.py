@@ -205,7 +205,7 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
     with probability
 
     .. math::
-            p = \alpha*exp(d/(\beta*L)).
+            p = \alpha*exp(-d/(\beta*L)).
 
     This function implements both Waxman models.            
 
