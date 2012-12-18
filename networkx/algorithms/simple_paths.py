@@ -67,7 +67,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     if source not in G:
         raise nx.NetworkXError('source node %s not in graph'%source)
     if target not in G:
-        raise nx.NetworkXError('target node %s not in graph'%source)
+        raise nx.NetworkXError('target node %s not in graph'%target)
     if cutoff is None:
         cutoff = len(G)-1
     if G.is_multigraph():
