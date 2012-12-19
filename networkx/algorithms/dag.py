@@ -11,10 +11,48 @@ import networkx as nx
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult (dschult@colgate.edu)',
                             'Ben Edwards (bedwards@cs.unm.edu)'])
-__all__ = ['topological_sort', 
+__all__ = ['descendants',
+           'ancestors',
+           'topological_sort', 
            'topological_sort_recursive',
            'is_directed_acyclic_graph',
            'is_aperiodic']
+
+def descendants(G, source):
+    """Return all nodes reachable from `source` in G.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+    source : node in G
+
+    Returns
+    -------
+    des : set()
+       The descendants of source in G
+    """
+    if not G.has_node(source):
+        raise nx.NetworkXError("The node %s is not in the graph." % source)
+    des = set(nx.shortest_path_length(G, source=source).keys()) - set([source])
+    return des
+
+def ancestors(G, source):
+    """Return all nodes having a path to `source` in G.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+    source : node in G
+
+    Returns
+    -------
+    ancestors : set()
+       The ancestors of source in G
+    """
+    if not G.has_node(source):
+        raise nx.NetworkXError("The node %s is not in the graph." % source)
+    anc = set(nx.shortest_path_length(G, target=source).keys()) - set([source])
+    return anc
 
 def is_directed_acyclic_graph(G):
     """Return True if the graph G is a directed acyclic graph (DAG) or 
