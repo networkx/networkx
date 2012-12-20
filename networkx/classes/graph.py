@@ -17,7 +17,7 @@ from copy import deepcopy
 import networkx as nx
 from networkx.exception import NetworkXError
 import networkx.convert as convert
-
+print "in custom edge"
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
                             'Dan Schult(dschult@colgate.edu)'])
@@ -645,7 +645,7 @@ class Graph(object):
         except TypeError:
             return False
 
-    def add_edge(self, u, v, attr_dict=None, **attr):
+    def add_edge(self, u, v, append=False, attr_dict=None, **attr):
         """Add an edge between u and v.
 
         The nodes u and v will be automatically added if they are
@@ -662,6 +662,10 @@ class Graph(object):
         attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
             update existing data associated with the edge.
+        append: if True, specifies that any dictionary values will
+            be appended to the existing values, if they exist.
+            Values in both dictionaries will become lists if they
+            aren't already.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
@@ -692,6 +696,9 @@ class Graph(object):
 
         >>> G.add_edge(1, 2, weight=3)
         >>> G.add_edge(1, 3, weight=7, capacity=15, length=342.7)
+        
+        Append data to the edge data:
+        >>> G.add_edge(1, 3, append=True, capacity=19)  # Edge now has {'capacity': [15, 19]}
         """
         # set up attribute dictionary
         if attr_dict is None:
@@ -702,6 +709,8 @@ class Graph(object):
             except AttributeError:
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
+        # get append_data if set:
+#           append_data = attr_dict.pop('append_data',False)
         # add nodes
         if u not in self.node:
             self.adj[u] = {}
@@ -711,12 +720,22 @@ class Graph(object):
             self.node[v] = {}
         # add the edge
         datadict=self.adj[u].get(v,{})
-        datadict.update(attr_dict)
+        if append:
+            for (key,val) in attr_dict.iteritems():
+                dataval = datadict.get(key,[])
+                if not isinstance(dataval, list):
+                    dataval = [dataval]
+                if not isinstance(val, list):
+                    val = [val]
+                val_list = dataval + val
+                datadict[key] = val_list
+        else:
+            datadict.update(attr_dict)
         self.adj[u][v] = datadict
         self.adj[v][u] = datadict
 
 
-    def add_edges_from(self, ebunch, attr_dict=None, **attr):
+    def add_edges_from(self, ebunch, append=False, attr_dict=None, **attr):
         """Add all the edges in ebunch.
 
         Parameters
@@ -726,6 +745,11 @@ class Graph(object):
             graph. The edges must be given as as 2-tuples (u,v) or
             3-tuples (u,v,d) where d is a dictionary containing edge
             data.
+        append: if True, specifies that any dictionary values will
+            be appended to the existing values, if they exist.
+            Values in both dictionaries will become lists if they
+            aren't already.
+
         attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
             update existing data associated with each edge.
@@ -755,6 +779,9 @@ class Graph(object):
 
         >>> G.add_edges_from([(1,2),(2,3)], weight=3)
         >>> G.add_edges_from([(3,4),(1,4)], label='WN2898')
+        
+        >>> G.add_edges_from([(1,2),(2,3)], append=True, root=1) # edge data for (1,2) and (2,3) is now {'root': [1]}
+        >>> G.add_edges_from([(2,3),(4,5)], append=True, root=2) # edge data for (2,3) is now {'root': [1,2]}; edge data for (4,5) is {'root': [2]}
         """
         # set up attribute dict
         if attr_dict is None:
@@ -783,8 +810,22 @@ class Graph(object):
                 self.adj[v] = {}
                 self.node[v] = {}
             datadict=self.adj[u].get(v,{})
-            datadict.update(attr_dict)
-            datadict.update(dd)
+            if append:
+                for (key,val) in attr_dict.iteritems():
+                    dataval = datadict.get(key,[])
+                    ddval = dd.get(key,[])
+                    if not isinstance(dataval, list):
+                        dataval = [dataval]
+                    if not isinstance(ddval,list):
+                        ddval = [ddval]
+                    if not isinstance(val, list):
+                        val = [val]
+                     
+                    val_list = dataval + ddval + val
+                    datadict[key] = val_list
+            else:
+                datadict.update(attr_dict)
+                datadict.update(dd)
             self.adj[u][v] = datadict
             self.adj[v][u] = datadict
 
