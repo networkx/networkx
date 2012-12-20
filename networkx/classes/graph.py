@@ -662,10 +662,12 @@ class Graph(object):
         attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
             update existing data associated with the edge.
-        append: if True, specifies that any dictionary values will
+        append : if not False, specifies that any dictionary values will
             be appended to the existing values, if they exist.
             Values in both dictionaries will become lists if they
             aren't already.
+            If append == 'unique', ensure the uniqueness of all values
+            for a given key.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
@@ -728,6 +730,8 @@ class Graph(object):
                 if not isinstance(val, list):
                     val = [val]
                 val_list = dataval + val
+                if append == 'unique':
+                    val_list = list(set(val_list))
                 datadict[key] = val_list
         else:
             datadict.update(attr_dict)
@@ -745,11 +749,12 @@ class Graph(object):
             graph. The edges must be given as as 2-tuples (u,v) or
             3-tuples (u,v,d) where d is a dictionary containing edge
             data.
-        append: if True, specifies that any dictionary values will
+        append : if not False, specifies that any dictionary values will
             be appended to the existing values, if they exist.
             Values in both dictionaries will become lists if they
             aren't already.
-
+            If append == 'unique', ensure the uniqueness of all values
+            for a given key.
         attr_dict : dictionary, optional (default= no attributes)
             Dictionary of edge attributes.  Key/value pairs will
             update existing data associated with each edge.
@@ -822,6 +827,8 @@ class Graph(object):
                         val = [val]
                      
                     val_list = dataval + ddval + val
+                    if append == 'unique':
+                        val_list = list(set(val_list))
                     datadict[key] = val_list
             else:
                 datadict.update(attr_dict)
