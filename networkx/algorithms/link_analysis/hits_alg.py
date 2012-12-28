@@ -16,7 +16,7 @@ import networkx as nx
 from networkx.exception import NetworkXError
 
 
-def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
+def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
     """Return HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node. 
@@ -36,6 +36,9 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
 
     nstart : dictionary, optional
       Starting value of each node for power method iteration.
+
+    normalized : bool (default=True)
+       Normalize results by the sum of all of the values.
 
     Returns
     -------
@@ -98,10 +101,10 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
             for nbr in G[n]:
                 h[n]+=a[nbr]*G[n][nbr].get('weight',1)
         # normalize vector 
-        s=1.0/sum(h.values())
+        s=1.0/max(h.values())
         for n in h: h[n]*=s
         # normalize vector 
-        s=1.0/sum(a.values())
+        s=1.0/max(a.values())
         for n in a: a[n]*=s
         # check convergence, l1 norm            
         err=sum([abs(h[n]-hlast[n]) for n in h])
@@ -111,6 +114,13 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
             raise NetworkXError(\
             "HITS: power iteration failed to converge in %d iterations."%(i+1))
         i+=1
+    if normalized:
+        s = 1.0/sum(a.values())
+        for n in a: 
+            a[n] *= s
+        s = 1.0/sum(h.values())
+        for n in h: 
+            h[n] *= s
     return h,a
 
 
@@ -125,7 +135,7 @@ def hub_matrix(G,nodelist=None):
     return M*M.T
 
 
-def hits_numpy(G):
+def hits_numpy(G,normalized=True):
     """Return HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node. 
@@ -136,6 +146,9 @@ def hits_numpy(G):
     -----------
     G : graph
       A NetworkX graph 
+
+    normalized : bool (default=True)
+       Normalize results by the sum of all of the values.
 
     Returns
     -------
@@ -182,12 +195,18 @@ def hits_numpy(G):
     e,ev=np.linalg.eig(A)
     m=e.argsort()[-1] # index of maximum eigenvalue
     a=np.array(ev[:,m]).flatten()
-    hubs=dict(zip(G.nodes(),map(float,h/h.sum())))
-    authorities=dict(zip(G.nodes(),map(float,a/a.sum())))
+    if normalized:
+        h = h/h.sum()
+        a = a/a.sum()
+    else:
+        h = h/h.max()
+        a = a/a.max()
+    hubs=dict(zip(G.nodes(),map(float,h)))
+    authorities=dict(zip(G.nodes(),map(float,a)))
     return hubs,authorities
 
 
-def hits_scipy(G,max_iter=100,tol=1.0e-6):
+def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
     """Return HITS hubs and authorities values for nodes.
 
     The HITS algorithm computes two numbers for a node. 
@@ -207,6 +226,9 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
 
     nstart : dictionary, optional
       Starting value of each node for power method iteration.
+
+    normalized : bool (default=True)
+       Normalize results by the sum of all of the values.
 
     Returns
     -------
@@ -260,7 +282,7 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
     while True:
         xlast=x
         x=A*x
-        x=x/x.sum()
+        x=x/x.max()
         # check convergence, l1 norm            
         err=scipy.absolute(x-xlast).sum()
         if err < tol:
@@ -273,8 +295,11 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
     a=np.asarray(x).flatten()
     # h=M*a
     h=np.asarray(M*a).flatten()
-    hubs=dict(zip(G.nodes(),map(float,h/h.sum())))
-    authorities=dict(zip(G.nodes(),map(float,a/a.sum())))
+    if normalized:
+        h = h/h.sum()
+        a = a/a.sum()
+    hubs=dict(zip(G.nodes(),map(float,h)))
+    authorities=dict(zip(G.nodes(),map(float,a)))
     return hubs,authorities
 
 
