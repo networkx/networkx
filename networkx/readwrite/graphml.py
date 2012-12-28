@@ -530,9 +530,3 @@ def teardown_module(module):
         os.unlink('test.graphml')
     except:
         pass
-
-if __name__ == '__main__':
-    import networkx as nx
-    G=nx.read_graphml("Graph1.graphml")
-    print G.edges()
-    print G.nodes()
