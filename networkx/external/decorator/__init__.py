@@ -1,11 +1,8 @@
 """
     Hack for including decorator-3.3.1 in NetworkX.
 """
-
 import sys
-
 if sys.version >= '3':
-    from ._decorator3 import *
-    _decorator = _decorator3
+    from .decorator3._decorator3 import *
 else:
-    from ._decorator import *
+    from .decorator2._decorator2 import *
