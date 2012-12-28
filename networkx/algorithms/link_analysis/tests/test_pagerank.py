@@ -111,5 +111,12 @@ class TestPageRank:
         G=networkx.Graph()
         assert_equal(networkx.pagerank(G),{})
         assert_equal(networkx.pagerank_numpy(G),{})
-        assert_equal(networkx.pagerank_scipy(G),{})
         assert_equal(networkx.google_matrix(G).shape,(0,0))
+
+    def test_empty_scipy(self):
+        try:
+            import scipy
+        except ImportError:
+            raise SkipTest('scipy not available.')
+        G=networkx.Graph()
+        assert_equal(networkx.pagerank_scipy(G),{})
