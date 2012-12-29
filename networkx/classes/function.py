@@ -83,13 +83,15 @@ def density(G):
 
     Notes
     -----
-    The density is 0 for an graph without edges and 1.0 for a complete graph.
-
+    The density is 0 for a graph without edges and 1 for a complete graph.
     The density of multigraphs can be higher than 1.
+
+    Self loops are counted in the total number of edges so graphs with self
+    loops can have density higher than 1.
     """
     n=number_of_nodes(G)
     m=number_of_edges(G)
-    if m==0: # includes cases n==0 and n==1
+    if m==0 or n <= 1:
         d=0.0
     else:
         if G.is_directed():
