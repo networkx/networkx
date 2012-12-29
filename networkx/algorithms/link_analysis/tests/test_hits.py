@@ -81,6 +81,13 @@ class TestHITS:
         G=networkx.Graph()
         assert_equal(networkx.hits(G),({},{}))
         assert_equal(networkx.hits_numpy(G),({},{}))
-        assert_equal(networkx.hits_scipy(G),({},{}))
         assert_equal(networkx.authority_matrix(G).shape,(0,0))
         assert_equal(networkx.hub_matrix(G).shape,(0,0))
+
+    def test_empty_scipy(self):
+        try:
+            import scipy
+        except ImportError:
+            raise SkipTest('scipy not available.')
+        G=networkx.Graph()
+        assert_equal(networkx.hits_scipy(G),({},{}))
