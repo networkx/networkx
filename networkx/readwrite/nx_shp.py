@@ -68,9 +68,9 @@ def read_shp(path):
             g = f.geometry()
             attributes = dict(zip(fields, flddata))
             attributes["ShpName"] = lyr.GetName()
-            if g.GetGeometryType() == 1: #point
+            if g.GetGeometryType() == 1:  # point
                 net.add_node((g.GetPoint_2D(0)), attributes)
-            if g.GetGeometryType() == 2: #linestring
+            if g.GetGeometryType() == 2:  # linestring
                 attributes["Wkb"] = g.ExportToWkb()
                 attributes["Wkt"] = g.ExportToWkt()
                 attributes["Json"] = g.ExportToJson()
@@ -79,12 +79,13 @@ def read_shp(path):
 
     if isinstance(path, str):
         shp = ogr.Open(path)
-        lyrcount = shp.GetLayerCount() #multiple layers indicate a directory
+        lyrcount = shp.GetLayerCount()  # multiple layers indicate a directory
         for lyrindex in xrange(lyrcount):
             lyr = shp.GetLayerByIndex(lyrindex)
             flds = [x.GetName() for x in lyr.schema]
             addlyr(lyr, flds)
     return net
+
 
 def write_shp(G, outdir):
     """Writes a networkx.DiGraph to two shapefiles, edges and nodes.
@@ -120,11 +121,11 @@ def write_shp(G, outdir):
     ogr.UseExceptions()
 
     def netgeometry(key, data):
-        if data.has_key('Wkb'):
+        if 'Wkb' in data:
             geom = ogr.CreateGeometryFromWkb(data['Wkb'])
-        elif data.has_key('Wkt'):
+        elif 'Wkt' in data:
             geom = ogr.CreateGeometryFromWkt(data['Wkt'])
-        elif type(key[0]).__name__ == 'tuple': # edge keys are packed tuples
+        elif type(key[0]).__name__ == 'tuple':  # edge keys are packed tuples
             geom = ogr.Geometry(ogr.wkbLineString)
             _from, _to = key[0], key[1]
             try:
@@ -146,38 +147,43 @@ def write_shp(G, outdir):
                 geom.SetPoint(0, *fkey)
 
         return geom
+
     # Create_feature with new optional attributes arg (should be dict type)
     def create_feature(geometry, lyr, attributes=None):
         feature = ogr.Feature(lyr.GetLayerDefn())
         feature.SetGeometry(g)
         if attributes != None:
             # Loop through attributes, assigning data to each field
-            for field, data in attributes.iteritems(): 
-               feature.SetField(field,data)
+            for field, data in attributes.iteritems():
+                feature.SetField(field, data)
         lyr.CreateFeature(feature)
         feature.Destroy()
 
     drv = ogr.GetDriverByName("ESRI Shapefile")
     shpdir = drv.CreateDataSource(outdir)
     # delete pre-existing output first otherwise ogr chokes
-    try: shpdir.DeleteLayer("nodes")
-    except: pass
+    try:
+        shpdir.DeleteLayer("nodes")
+    except:
+        pass
     nodes = shpdir.CreateLayer("nodes", None, ogr.wkbPoint)
     for n in G:
         data = G.node[n] or {}
         g = netgeometry(n, data)
         create_feature(g, nodes)
-    try: shpdir.DeleteLayer("edges")
-    except: pass
+    try:
+        shpdir.DeleteLayer("edges")
+    except:
+        pass
     edges = shpdir.CreateLayer("edges", None, ogr.wkbLineString)
-    
+
     # New edge attribute write support merged into edge loop
     fields = {}      # storage for field names and their data types
     attributes = {}  # storage for attribute data (indexed by field names)
 
     # Conversion dict between python and ogr types
-    OGRTypes = {int:ogr.OFTInteger, str:ogr.OFTString, float:ogr.OFTReal}
-    
+    OGRTypes = {int: ogr.OFTInteger, str: ogr.OFTString, float: ogr.OFTReal}
+
     # Edge loop
     for e in G.edges(data=True):
         data = G.get_edge_data(*e)
@@ -185,28 +191,29 @@ def write_shp(G, outdir):
         # Loop through attribute data in edges
         for key, data in e[2].iteritems():
             # Reject spatial data not required for attribute table
-            if (key != 'Json' and key != 'Wkt' and key != 'Wkb' 
+            if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
                 and key != 'ShpName'):
                   # For all edges check/add field and data type to fields dict
-                  if key not in fields:
+                    if key not in fields:
                   # Field not in previous edges so add to dict
-                     if type(data) in OGRTypes:
-                         fields[key] = OGRTypes[type(data)]
-                     else:
-                         # Data type not supported, default to string (char 80)
-                         fields[key] = ogr.OFTString
-                     # Create the new field
-                     newfield = ogr.FieldDefn(key, fields[key])
-                     edges.CreateField(newfield)
-                     # Store the data from new field to dict for CreateLayer()
-                     attributes[key] = data
-                  else:
+                        if type(data) in OGRTypes:
+                            fields[key] = OGRTypes[type(data)]
+                        else:
+                            # Data type not supported, default to string (char 80)
+                            fields[key] = ogr.OFTString
+                        # Create the new field
+                        newfield = ogr.FieldDefn(key, fields[key])
+                        edges.CreateField(newfield)
+                        # Store the data from new field to dict for CreateLayer()
+                        attributes[key] = data
+                    else:
                      # Field already exists, add data to dict for CreateLayer()
-                     attributes[key] = data
+                        attributes[key] = data
         # Create the feature with, passing new attribute data
         create_feature(g, edges, attributes)
 
     nodes, edges = None, None
+
 
 # fixture for nose tests
 def setup_module(module):
