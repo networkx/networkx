@@ -86,7 +86,7 @@ def cycle_basis(G,root=None):
                     pred[nbr]=z
                     stack.append(nbr)
                     used[nbr]=set([z])
-                elif nbr is z:        # self loops
+                elif nbr == z:        # self loops
                     cycles.append([z]) 
                 elif nbr not in zused:# found a cycle
                     pn=used[nbr]
