@@ -2,9 +2,8 @@
 ========================
 Cycle finding algorithms
 ========================
-
 """
-#    Copyright (C) 2010 by 
+#    Copyright (C) 2010-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -12,11 +11,10 @@ Cycle finding algorithms
 #    BSD license.
 import networkx as nx
 from networkx.utils import *
-from collections import defaultdict 
+from collections import defaultdict
 
 __all__ = ['cycle_basis','simple_cycles']
-
-__author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>', 
+__author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
                         'Aric Hagberg <hagberg@lanl.gov>'])
 
 @not_implemented_for('directed')
@@ -24,17 +22,17 @@ __author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
 def cycle_basis(G,root=None):
     """ Returns a list of cycles which form a basis for cycles of G.
 
-    A basis for cycles of a network is a minimal collection of 
-    cycles such that any cycle in the network can be written 
-    as a sum of cycles in the basis.  Here summation of cycles 
-    is defined as "exclusive or" of the edges. Cycle bases are 
-    useful, e.g. when deriving equations for electric circuits 
+    A basis for cycles of a network is a minimal collection of
+    cycles such that any cycle in the network can be written
+    as a sum of cycles in the basis.  Here summation of cycles
+    is defined as "exclusive or" of the edges. Cycle bases are
+    useful, e.g. when deriving equations for electric circuits
     using Kirchhoff's Laws.
 
     Parameters
     ----------
     G : NetworkX Graph
-    root : node, optional 
+    root : node, optional
        Specify starting node for basis.
 
     Returns
@@ -52,42 +50,35 @@ def cycle_basis(G,root=None):
 
     Notes
     -----
-    This is adapted from algorithm CACM 491 [1]_. 
+    This is adapted from algorithm CACM 491 [1]_.
 
     References
     ----------
-    .. [1] Paton, K. An algorithm for finding a fundamental set of 
+    .. [1] Paton, K. An algorithm for finding a fundamental set of
        cycles of a graph. Comm. ACM 12, 9 (Sept 1969), 514-518.
 
     See Also
     --------
     simple_cycles
     """
-    # if G.is_directed():
-    #     e='cycle_basis() not implemented for directed graphs'
-    #     raise Exception(e)
-    # if G.is_multigraph():
-    #     e='cycle_basis() not implemented for multigraphs'
-    #     raise Exception(e)
-
     gnodes=set(G.nodes())
     cycles=[]
     while gnodes:  # loop over connected components
         if root is None:
             root=gnodes.pop()
         stack=[root]
-        pred={root:root} 
+        pred={root:root}
         used={root:set()}
         while stack:  # walk the spanning tree finding cycles
             z=stack.pop()  # use last-in so cycles easier to find
             zused=used[z]
             for nbr in G[z]:
-                if nbr not in used:   # new node 
+                if nbr not in used:   # new node
                     pred[nbr]=z
                     stack.append(nbr)
                     used[nbr]=set([z])
-                elif nbr is z:        # self loops
-                    cycles.append([z]) 
+                elif nbr == z:        # self loops
+                    cycles.append([z])
                 elif nbr not in zused:# found a cycle
                     pn=used[nbr]
                     cycle=[nbr,z]
@@ -106,10 +97,10 @@ def cycle_basis(G,root=None):
 @not_implemented_for('undirected')
 def simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
-    
-    An simple cycle, or elementary circuit, is a closed path where no 
-    node appears twice, except that the first and last node are the same. 
-    Two elementary circuits are distinct if they are not cyclic permutations 
+
+    An simple cycle, or elementary circuit, is a closed path where no
+    node appears twice, except that the first and last node are the same.
+    Two elementary circuits are distinct if they are not cyclic permutations
     of each other.
 
     Parameters
@@ -119,18 +110,18 @@ def simple_cycles(G):
 
     Returns
     -------
-    A list of circuits, where each circuit is a list of nodes, with the first 
+    A list of circuits, where each circuit is a list of nodes, with the first
     and last node being the same.
-    
+
     Example:
     >>> G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
     >>> nx.simple_cycles(G)
     [[0, 0], [0, 1, 2, 0], [0, 2, 0], [1, 2, 1], [2, 2]]
-    
+
     See Also
     --------
     cycle_basis (for undirected graphs)
-    
+
     Notes
     -----
     The implementation follows pp. 79-80 in [1]_.
@@ -141,7 +132,7 @@ def simple_cycles(G):
     References
     ----------
     .. [1] Finding all the elementary circuits of a directed graph.
-       D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975. 
+       D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
        http://dx.doi.org/10.1137/0204007
 
     See Also
@@ -155,7 +146,7 @@ def simple_cycles(G):
             blocked[thisnode] = False
             while B[thisnode]:
                 _unblock(B[thisnode].pop())
-    
+
     def circuit(thisnode, startnode, component):
         closed = False # set to True if elementary path is closed
         path.append(thisnode)
@@ -175,10 +166,7 @@ def simple_cycles(G):
                     B[nextnode].append(thisnode)
         path.pop() # remove thisnode from path
         return closed
-    
-#    if not G.is_directed():
-#        raise nx.NetworkXError(\
-#            "simple_cycles() not implemented for undirected graphs.")
+
     path = [] # stack of nodes in current path
     blocked = defaultdict(bool) # vertex: blocked from search?
     B = defaultdict(list) # graph portions that yield no elementary circuit
@@ -188,20 +176,19 @@ def simple_cycles(G):
     ordering=dict(zip(G,range(len(G))))
     for s in ordering:
         # Build the subgraph induced by s and following nodes in the ordering
-        subgraph = G.subgraph(node for node in G 
+        subgraph = G.subgraph(node for node in G
                               if ordering[node] >= ordering[s])
-        # Find the strongly connected component in the subgraph 
+        # Find the strongly connected component in the subgraph
         # that contains the least node according to the ordering
         strongcomp = nx.strongly_connected_components(subgraph)
-        mincomp=min(strongcomp, 
+        mincomp=min(strongcomp,
                     key=lambda nodes: min(ordering[n] for n in nodes))
         component = G.subgraph(mincomp)
         if component:
             # smallest node in the component according to the ordering
-            startnode = min(component,key=ordering.__getitem__) 
+            startnode = min(component,key=ordering.__getitem__)
             for node in component:
                 blocked[node] = False
                 B[node][:] = []
             dummy=circuit(startnode, startnode, component)
-
     return result
