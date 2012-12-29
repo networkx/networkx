@@ -69,12 +69,21 @@ class TestFunction(object):
 
     def test_degree_histogram(self):
         assert_equal(networkx.degree_histogram(self.G), [1,1,1,1,1])
+
     def test_density(self):
         assert_equal(networkx.density(self.G), 0.5)
         assert_equal(networkx.density(self.DG), 0.3)
         G=networkx.Graph()
         G.add_node(1)
         assert_equal(networkx.density(G), 0.0)
+
+    def test_density_selfloop(self):
+        G = nx.Graph()
+        G.add_edge(1,1)
+        assert_equal(networkx.density(G), 0.0)
+        G.add_edge(1,2)
+        assert_equal(networkx.density(G), 2.0)
+
     def test_freeze(self):
         G=networkx.freeze(self.G)
         assert_equal(G.frozen,True)
