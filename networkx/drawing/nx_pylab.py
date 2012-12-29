@@ -106,7 +106,10 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
         print("Matplotlib unable to open display")
         raise
 
-    cf=plt.gcf()
+    if ax is None:
+        cf = plt.gcf()
+    else:
+        cf = ax.get_figure()
     cf.set_facecolor('w')
     if ax is None:
         if cf._axstack() is None:
