@@ -8,11 +8,10 @@ NetworkX documentation
     :Release: |version|
     :Date: |today|
 
-    :download:`Tutorial (PDF)  <networkx_tutorial.pdf>`
-
-    :download:`Reference (PDF)  <networkx_reference.pdf>`
-
-    :download:`Tutorial+Reference (HTML zip)  <networkx-documentation.zip>`
+    Downloads:
+    Tutorial :download:`[PDF]  <networkx_tutorial.pdf>`
+    Reference :download:`[PDF]  <networkx_reference.pdf>`
+    Tutorial+Reference :download:`[HTML zip]  <networkx-documentation.zip>`
 
 .. toctree::
    :maxdepth: 2
@@ -25,20 +24,13 @@ NetworkX documentation
    test
    reference/history
    bibliography
-
-
-.. only:: html
-
-   - `Examples <examples/index.html>`_
+   examples/index
 
 .. only:: html
 
    - `Gallery <gallery.html>`_
 
 
-
-
-   
 Indices and tables
 ==================
 
@@ -46,4 +38,3 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 * :ref:`glossary`
-
