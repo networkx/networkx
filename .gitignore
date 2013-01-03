@@ -9,6 +9,8 @@ doc/source/networkx-documentation.zip
 doc/source/networkx_reference.pdf
 doc/source/networkx_tutorial.pdf
 doc/source/templates/gallery.html
+doc/gh-pages
+doc/build
 
 # Generated while building documentation.
 doc/source/static/examples/*
