@@ -48,11 +48,11 @@ source_suffix = '.rst'
 source_encoding = 'utf-8'
 
 # The master toctree document.
-master_doc = 'contents'
+master_doc = 'index'
 
 # General substitutions.
 project = 'NetworkX'
-copyright = '2010, NetworkX Developers'
+copyright = '2013, NetworkX Developers'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -70,7 +70,7 @@ release = networkx.__version__.replace('_','')
 #today_fmt = '%B %d, %Y'
 
 # List of documents that shouldn't be included in the build.
-# unused_docs = ['examples/index']
+# unused_docs = ['reference/pdf_reference']
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
@@ -120,14 +120,16 @@ html_last_updated_fmt = '%b %d, %Y'
 #html_use_smartypants = True
 
 # Content template for the index page.
-html_index = 'index.html'
+#html_index = 'index.html'
+html_index = 'contents.html'
 
 # Custom sidebar templates, maps page names to templates.
-html_sidebars = {'index': 'indexsidebar.html'}
+#html_sidebars = {'index': 'indexsidebar.html'}
 
 # Additional templates that should be rendered to pages, maps page names to
 # templates.
-html_additional_pages = {'index': 'index.html','gallery':'gallery.html'}
+#html_additional_pages = {'index': 'index.html','gallery':'gallery.html'}
+html_additional_pages = {'gallery':'gallery.html'}
 
 # If true, the reST sources are included in the HTML build as _sources/<name>.
 html_copy_source = False
