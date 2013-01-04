@@ -121,3 +121,8 @@ doctest: generate
 
 gh-pages: clean html
 	python gh-pages.py
+
+gitwash-update:
+	python gitwash_dumper.py source/developer networkx \
+       --project-url=http://networkx.github.com \
+       --project-ml-url=http://groups.google.com/group/networkx-devel/
