@@ -21,7 +21,7 @@ _all__ = ['max_weight_matching', 'maximal_matching']
 
 
 def maximal_matching(G):
-    """ Find a maximal cardinality matching in the graph.
+    r"""Find a maximal cardinality matching in the graph.
 
     A matching is a subset of edges in which no node occurs more than once.
     The cardinality of a matching is the number of matched edges.
@@ -39,7 +39,7 @@ def maximal_matching(G):
     Notes
     -----
     The algorithm greedily selects a maximal matching M of the graph G
-    (i.e. no superset of M exists). It runs in O(|E|) time.
+    (i.e. no superset of M exists). It runs in `O(|E|)` time.
     """
     matching = set([])
     edges = set([])

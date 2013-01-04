@@ -28,7 +28,7 @@ __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 
 def min_weighted_dominating_set(G, weight=None):
-    """Return minimum weight vertex dominating set.
+    r"""Return minimum weight vertex dominating set.
 
     Parameters
     ----------
@@ -48,8 +48,8 @@ def min_weighted_dominating_set(G, weight=None):
     Notes
     -----
     This algorithm computes an approximate minimum weighted dominating set
-    for the graph G. The upper-bound on the size of the solution is log w(V) * OPT.
-    Runtime of the algorithm is O(|E|).
+    for the graph G. The upper-bound on the size of the solution is
+    log w(V) * OPT.  Runtime of the algorithm is `O(|E|)`.
 
     References
     ----------
@@ -91,7 +91,7 @@ def min_weighted_dominating_set(G, weight=None):
 
 
 def min_edge_dominating_set(G):
-    """Return minimum cardinality edge dominating set.
+    r"""Return minimum cardinality edge dominating set.
 
     Parameters
     ----------
@@ -107,7 +107,7 @@ def min_edge_dominating_set(G):
     -----
     The algorithm computes an approximate solution to the edge dominating set
     problem. The result is no more than 2 * OPT in terms of size of the set.
-    Runtime of the algorithm is O(|E|).
+    Runtime of the algorithm is `O(|E|)`.
     """
     if not G:
         raise ValueError("Expected non-empty NetworkX graph!")
