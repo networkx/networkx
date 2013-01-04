@@ -26,3 +26,8 @@ Reference
    citing	
    credits
    glossary
+
+.. toctree::
+   :hidden:
+
+   pdf_reference
