@@ -22,6 +22,7 @@ NetworkX documentation
    tutorial/index
    reference/index
    test
+   developer/index
    reference/history
    bibliography
    examples/index
