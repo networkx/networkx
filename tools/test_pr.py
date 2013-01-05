@@ -36,7 +36,7 @@ nx_http_repository = 'http://github.com/networkx/networkx.git'
 gh_project="networkx/networkx"
 
 # TODO Add PyPy support
-supported_pythons = ['python2.6', 'python2.7', 'python3.2']
+supported_pythons = ['python2.6', 'python2.7', 'python3.2','python3.3']
 
 # Report missing libraries during tests and number of skipped 
 # and passed tests.
