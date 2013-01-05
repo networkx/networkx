@@ -82,7 +82,6 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
         L[ui,ui]= totalwt
     return L
 
-
 def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     r"""Return the normalized Laplacian matrix of G.
 
@@ -118,6 +117,9 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     For MultiGraph/MultiDiGraph, the edges weights are summed.
     See to_numpy_matrix for other options.
 
+    If the Graph contains selfloops, D is defined as diag(sum(A,1)), where A is
+    the adjencency matrix [2]_.
+
     See Also
     --------
     laplacian
@@ -126,6 +128,9 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     ----------
     .. [1] Fan Chung-Graham, Spectral Graph Theory, 
        CBMS Regional Conference Series in Mathematics, Number 92, 1997.
+    .. [2] Steve Butler, Interlacing For Weighted Graphs Using The Normalized
+       Laplacian, Electronic Journal of Linear Algebra, Volume 16, pp. 90-98,
+       March 2007.
     """
     # FIXME: this isn't the most efficient way to do this...
     try:
@@ -134,43 +139,28 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
         raise ImportError(
           "normalized_laplacian() requires numpy: http://scipy.org/ ")
     if G.is_multigraph():
-        A=np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight))
-        d=np.sum(A,axis=1)
-        n=A.shape[0]
-        I=np.identity(n)
-        L=I*d-A
-        osd=np.zeros(n)
-        for i in range(n):
-            if d[i]>0: osd[i]=np.sqrt(1.0/d[i])
-        T=I*osd
-        L=np.dot(T,np.dot(L,T))
-        return L
-    # Graph or DiGraph, this is faster than above 
-    if nodelist is None:
-        nodelist = G.nodes()
-    n=len(nodelist)
-    L = np.zeros((n,n))
-    deg = np.zeros((n,n))
-    index=dict( (n,i) for i,n in enumerate(nodelist) )
-    for ui,u in enumerate(nodelist):
-        totalwt=0.0
-        for v,data in G[u].items():
-            try:
-                vi=index[v]
-            except KeyError:
-                continue
-            wt=data.get(weight,1)
-            L[ui,vi]= -wt
-            totalwt+=wt
-        L[ui,ui]= totalwt
-        if totalwt>0.0:
-            deg[ui,ui]= np.sqrt(1.0/totalwt)
-    L=np.dot(deg,np.dot(L,deg))
-    return L
-combinatorial_laplacian=laplacian_matrix
-generalized_laplacian=normalized_laplacian_matrix
-normalized_laplacian=normalized_laplacian_matrix
-laplacian=laplacian_matrix
+        L = laplacian(G, nodelist=nodelist, weight=weight)
+        D = np.diag(L)
+    elif G.number_of_selfloops() == 0:
+        L = laplacian(G, nodelist=nodelist, weight=weight)
+        D = np.diag(L)
+    else:
+        A = np.array(nx.adj_matrix(G))
+        D = np.sum(A, 1)
+        L = np.diag(D) - A
+        
+    # Handle div by 0. It happens if there are unconnected nodes
+    with np.errstate(divide='ignore'): 
+        Disqrt = np.diag(1 / np.sqrt(D))
+    Disqrt[np.isinf(Disqrt)] = 0
+    Ln = np.dot(Disqrt, np.dot(L,Disqrt))
+    return Ln
+
+# Function aliases
+combinatorial_laplacian = laplacian_matrix
+generalized_laplacian = normalized_laplacian_matrix
+normalized_laplacian = normalized_laplacian_matrix
+laplacian = laplacian_matrix
 
 
 # fixture for nose tests
