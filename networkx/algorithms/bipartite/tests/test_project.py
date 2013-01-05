@@ -320,9 +320,9 @@ class TestBipartiteWeightedProjection:
         for u,v in P.edges():
             assert_equal(P[u][v]['weight'],Panswer[u][v]['weight'])
 
-    def test_generic_weighted_projected_graph(self):
-        def shared(unbrs, vnbrs): 
-            return len(unbrs & vnbrs) 
+    def test_generic_weighted_projected_graph_simple(self):
+        def shared(G, u, v):
+            return len(set(G[u]) & set(G[v]))
         B = nx.path_graph(5) 
         G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4], weight_function=shared) 
         assert_equal(sorted(G.nodes()), [0, 2, 4]) 
@@ -339,3 +339,25 @@ class TestBipartiteWeightedProjection:
         assert_equal(sorted(G.nodes()), [0, 2, 4]) 
         assert_equal(G.edges(data=True), 
                      [(0, 2, {'weight': 1}), (2, 4, {'weight': 1})] )
+
+    def test_generic_weighted_projected_graph_custom(self):
+        def jaccard(G, u, v):
+            unbrs = set(G[u])
+            vnbrs = set(G[v])
+            return float(len(unbrs & vnbrs)) / len(unbrs | vnbrs)
+        def my_weight(G, u, v, weight='weight'):
+            w = 0
+            for nbr in set(G[u]) & set(G[v]):
+                w += G.edge[u][nbr].get(weight, 1) + G.edge[v][nbr].get(weight, 1)
+            return w
+        B = nx.complete_bipartite_graph(2,2)
+        for i,(u,v) in enumerate(B.edges()):
+            B.edge[u][v]['weight'] = i + 1
+        G = bipartite.generic_weighted_projected_graph(B, [0, 1],                   
+                                                        weight_function=jaccard)
+        assert_equal(G.edges(data=True), [(0, 1, {'weight': 1.0})])
+        G = bipartite.generic_weighted_projected_graph(B, [0, 1],                   
+                                                        weight_function=my_weight)
+        assert_equal(G.edges(data=True), [(0, 1, {'weight': 10})])
+        G = bipartite.generic_weighted_projected_graph(B, [0, 1])
+        assert_equal(G.edges(data=True), [(0, 1, {'weight': 2})])
