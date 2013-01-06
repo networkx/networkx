@@ -1,7 +1,7 @@
 """
 Laplacian matrix of graphs.
 """
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -10,15 +10,15 @@ Laplacian matrix of graphs.
 import networkx as nx
 from networkx.utils import require, not_implemented_for
 
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
+__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)'])
+                        'Dan Schult (dschult@colgate.edu)',
+                        'Alejandro Weinstein <alejandro.weinstein@gmail.com>'])
 
-__all__ = ['laplacian', 'generalized_laplacian','normalized_laplacian',
-           'laplacian_matrix', 'generalized_laplacian','normalized_laplacian',
-           'directed_laplacian',
+__all__ = ['laplacian_matrix',
+           'normalized_laplacian_matrix',
+           'directed_laplacian_matrix',
            ]
-
 
 def laplacian_matrix(G, nodelist=None, weight='weight'):
     """Return the Laplacian matrix of G.
@@ -52,13 +52,13 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     See Also
     --------
     to_numpy_matrix
-    normalized_laplacian
+    normalized_laplacian_matrix
     """
     try:
         import numpy as np
     except ImportError:
         raise ImportError(
-          "laplacian() requires numpy: http://scipy.org/ ")
+          "laplacian_matrix() requires numpy: http://scipy.org/ ")
     # this isn't the most efficient way to do this...
     if G.is_multigraph():
         A=np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight))
@@ -125,7 +125,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 
     See Also
     --------
-    laplacian
+    laplacian_matrix
 
     References
     ----------
@@ -140,13 +140,13 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
         import numpy as np
     except ImportError:
         raise ImportError(
-          "normalized_laplacian() requires numpy: http://scipy.org/ ")
+          "normalized_laplacian_matrix() requires numpy: http://scipy.org/ ")
     if G.is_multigraph():
 
-        L = laplacian(G, nodelist=nodelist, weight=weight)
+        L = laplacian_matrix(G, nodelist=nodelist, weight=weight)
         D = np.diag(L)
     elif G.number_of_selfloops() == 0:
-        L = laplacian(G, nodelist=nodelist, weight=weight)
+        L = laplacian_matrix(G, nodelist=nodelist, weight=weight)
         D = np.diag(L)
     else:
         A = np.array(nx.adj_matrix(G))
@@ -167,7 +167,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 @require('numpy')
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
-def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=0.95):
+def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None, alpha=0.95):
     r"""Return the directed Laplacian matrix of G.
 
     The graph directed Laplacian is the matrix
@@ -177,12 +177,12 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
         L = I - (\Phi^{1/2} P \Phi^{-1/2} + \Phi^{-1/2} P^T \Phi^{1/2} ) / 2
 
     where `I` is the identity matrix, `P` is the transition matrix of the
-    graph, and `Phi` a matrix with the Perron vector of `P` in the diagonal and
+    graph, and `\Phi` a matrix with the Perron vector of `P` in the diagonal and
     zeros elsewhere.
 
-    Depending on the value of `walk_type`, `P` can be the transition matrix
+    Depending on the value of walk_type, `P` can be the transition matrix
     induced by a random walk, a lazy random walk, or a random walk with
-    teleportation (pagerank).
+    teleportation (PageRank).
 
     Parameters
     ----------
@@ -198,7 +198,7 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
        If None, then each edge has weight 1.
 
     walk_type : string or None, optional (default=None)
-       If `None`, P is selected depending on the properties of the
+       If None, `P` is selected depending on the properties of the
        graph. Otherwise is one of 'random', 'lazy', or 'pagerank'
 
     alpha : real
@@ -213,6 +213,7 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     ------
     NetworkXError
         If NumPy cannot be imported
+
     NetworkXNotImplemnted
         If G is not a DiGraph
 
@@ -222,14 +223,19 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
 
     See Also
     --------
-    laplacian
+    laplacian_matrix
 
     References
     ----------
-    .. [1] Fan Chung (2005). Laplacians and the Cheeger inequality for directed
-    graphs. Annals of Combinatorics, 9(1), 2005
+    .. [1] Fan Chung (2005).
+       Laplacians and the Cheeger inequality for directed graphs.
+       Annals of Combinatorics, 9(1), 2005
     """
-    import numpy as np
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+          "directed_laplacian_matrix() requires numpy: http://scipy.org/ ")
 
     if walk_type is None:
         if nx.is_strongly_connected(G):
@@ -272,11 +278,6 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     I = np.identity(len(G))
 
     return I  - (Q + Q.T) /2.0
-
-combinatorial_laplacian=laplacian_matrix
-generalized_laplacian=normalized_laplacian_matrix
-normalized_laplacian=normalized_laplacian_matrix
-laplacian=laplacian_matrix
 
 # fixture for nose tests
 def setup_module(module):
