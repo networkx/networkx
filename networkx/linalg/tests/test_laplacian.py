@@ -23,6 +23,7 @@ class TestLaplacian(object):
                 for (u,v) in self.G.edges_iter() )
         self.WG.add_node(4)
         self.MG=nx.MultiGraph(self.G)
+
         # Graph with selfloops
         self.Gsl = self.G.copy()
         for node in self.Gsl.nodes():
@@ -48,17 +49,17 @@ class TestLaplacian(object):
     def test_generalized_laplacian(self):
         "Generalized Graph Laplacian"
         GL=numpy.array([[ 1.00, -0.408, -0.408, -0.577,  0.00],
-                        [-0.408,  1.00, -0.50,  0.00 , 0.00], 
-                        [-0.408, -0.50,  1.00,  0.00,  0.00], 
+                        [-0.408,  1.00, -0.50,  0.00 , 0.00],
+                        [-0.408, -0.50,  1.00,  0.00,  0.00],
                         [-0.577,  0.00,  0.00,  1.00,  0.00],
-                        [ 0.00,  0.00,  0.00,  0.00,  0.00]]) 
+                        [ 0.00,  0.00,  0.00,  0.00,  0.00]])
         assert_almost_equal(nx.generalized_laplacian(self.G),GL,decimal=3)
-                       
+
     def test_normalized_laplacian(self):
         "Generalized Graph Laplacian"
         GL=numpy.array([[ 1.00, -0.408, -0.408, -0.577,  0.00],
-                        [-0.408,  1.00, -0.50,  0.00 , 0.00], 
-                        [-0.408, -0.50,  1.00,  0.00,  0.00], 
+                        [-0.408,  1.00, -0.50,  0.00 , 0.00],
+                        [-0.408, -0.50,  1.00,  0.00,  0.00],
                         [-0.577,  0.00,  0.00,  1.00,  0.00],
                         [ 0.00,  0.00,  0.00,  0.00,  0.00]])
         Lsl = numpy.array([[ 0.75  , -0.2887, -0.2887, -0.3536,  0.],
@@ -72,3 +73,37 @@ class TestLaplacian(object):
         assert_almost_equal(nx.normalized_laplacian(self.WG),GL,decimal=3)
         assert_almost_equal(nx.normalized_laplacian(self.WG,weight='other'),GL,decimal=3)
         assert_almost_equal(nx.normalized_laplacian(self.Gsl), Lsl, decimal=3)
+
+    def test_directed_laplacian(self):
+        "Directed Laplacian"
+        # Graph used as an example in Sec. 4.1 of Langville and Meyer,
+        # "Google's PageRank and Beyond". The graph contains dangling nodes, so
+        # the pagerank random walk is selected by directed_laplacian
+        G = nx.DiGraph()
+        G.add_edges_from(((1,2), (1,3), (3,1), (3,2), (3,5), (4,5), (4,6),
+                          (5,4), (5,6), (6,4)))
+        GL = numpy.array([[ 0.9833, -0.2941, -0.3882, -0.0291, -0.0231, -0.0261],
+                          [-0.2941,  0.8333, -0.2339, -0.0536, -0.0589, -0.0554],
+                          [-0.3882, -0.2339,  0.9833, -0.0278, -0.0896, -0.0251],
+                          [-0.0291, -0.0536, -0.0278,  0.9833, -0.4878, -0.6675],
+                          [-0.0231, -0.0589, -0.0896, -0.4878,  0.9833, -0.2078],
+                          [-0.0261, -0.0554, -0.0251, -0.6675, -0.2078,  0.9833]])
+        assert_almost_equal(nx.directed_laplacian(G, alpha=0.9), GL, decimal=3)
+
+        # Make the graph strongly connected, so we can use a random and lazy walk
+        G.add_edges_from((((2,5), (6,1))))
+        GL = numpy.array([[ 1.    , -0.3062, -0.4714,  0.    ,  0.    , -0.3227],
+                          [-0.3062,  1.    , -0.1443,  0.    , -0.3162,  0.    ],
+                          [-0.4714, -0.1443,  1.    ,  0.    , -0.0913,  0.    ],
+                          [ 0.    ,  0.    ,  0.    ,  1.    , -0.5   , -0.5   ],
+                          [ 0.    , -0.3162, -0.0913, -0.5   ,  1.    , -0.25  ],
+                          [-0.3227,  0.    ,  0.    , -0.5   , -0.25  ,  1.    ]])
+        assert_almost_equal(nx.directed_laplacian(G, walk_type='random'), GL, decimal=3)
+
+        GL = numpy.array([[ 0.5   , -0.1531, -0.2357,  0.    ,  0.    , -0.1614],
+                          [-0.1531,  0.5   , -0.0722,  0.    , -0.1581,  0.    ],
+                          [-0.2357, -0.0722,  0.5   ,  0.    , -0.0456,  0.    ],
+                          [ 0.    ,  0.    ,  0.    ,  0.5   , -0.25  , -0.25  ],
+                          [ 0.    , -0.1581, -0.0456, -0.25  ,  0.5   , -0.125 ],
+                          [-0.1614,  0.    ,  0.    , -0.25  , -0.125 ,  0.5   ]])
+        assert_almost_equal(nx.directed_laplacian(G, walk_type='lazy'), GL, decimal=3)
