@@ -143,10 +143,10 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
           "normalized_laplacian() requires numpy: http://scipy.org/ ")
     if G.is_multigraph():
 
-        L = laplacian(G, nodelist=nodelist, weight=weight)
+        L = laplacian_matrix(G, nodelist=nodelist, weight=weight)
         D = np.diag(L)
     elif G.number_of_selfloops() == 0:
-        L = laplacian(G, nodelist=nodelist, weight=weight)
+        L = laplacian_matrix(G, nodelist=nodelist, weight=weight)
         D = np.diag(L)
     else:
         A = np.array(nx.adj_matrix(G))
