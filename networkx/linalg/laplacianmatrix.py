@@ -1,7 +1,7 @@
 """
 Laplacian matrix of graphs.
 """
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -10,15 +10,15 @@ Laplacian matrix of graphs.
 import networkx as nx
 from networkx.utils import require, not_implemented_for
 
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
+__author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)'])
+                        'Dan Schult (dschult@colgate.edu)',
+                        'Alejandro Weinstein <alejandro.weinstein@gmail.com>'])
 
-__all__ = ['laplacian', 'generalized_laplacian','normalized_laplacian',
-           'laplacian_matrix', 'generalized_laplacian','normalized_laplacian',
-           'directed_laplacian',
+__all__ = ['laplacian_matrix',
+           'normalized_laplacian_matrix',
+           'directed_laplacian_matrix',
            ]
-
 
 def laplacian_matrix(G, nodelist=None, weight='weight'):
     """Return the Laplacian matrix of G.
@@ -167,7 +167,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 @require('numpy')
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
-def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=0.95):
+def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None, alpha=0.95):
     r"""Return the directed Laplacian matrix of G.
 
     The graph directed Laplacian is the matrix
@@ -272,11 +272,6 @@ def directed_laplacian(G, nodelist=None, weight='weight', walk_type=None, alpha=
     I = np.identity(len(G))
 
     return I  - (Q + Q.T) /2.0
-
-combinatorial_laplacian=laplacian_matrix
-generalized_laplacian=normalized_laplacian_matrix
-normalized_laplacian=normalized_laplacian_matrix
-laplacian=laplacian_matrix
 
 # fixture for nose tests
 def setup_module(module):
