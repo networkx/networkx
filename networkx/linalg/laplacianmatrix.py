@@ -177,12 +177,12 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None,
         L = I - (\Phi^{1/2} P \Phi^{-1/2} + \Phi^{-1/2} P^T \Phi^{1/2} ) / 2
 
     where `I` is the identity matrix, `P` is the transition matrix of the
-    graph, and `Phi` a matrix with the Perron vector of `P` in the diagonal and
+    graph, and `\Phi` a matrix with the Perron vector of `P` in the diagonal and
     zeros elsewhere.
 
-    Depending on the value of `walk_type`, `P` can be the transition matrix
+    Depending on the value of walk_type, `P` can be the transition matrix
     induced by a random walk, a lazy random walk, or a random walk with
-    teleportation (pagerank).
+    teleportation (PageRank).
 
     Parameters
     ----------
@@ -198,7 +198,7 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None,
        If None, then each edge has weight 1.
 
     walk_type : string or None, optional (default=None)
-       If `None`, P is selected depending on the properties of the
+       If None, `P` is selected depending on the properties of the
        graph. Otherwise is one of 'random', 'lazy', or 'pagerank'
 
     alpha : real
@@ -213,6 +213,7 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None,
     ------
     NetworkXError
         If NumPy cannot be imported
+
     NetworkXNotImplemnted
         If G is not a DiGraph
 
@@ -226,8 +227,9 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None,
 
     References
     ----------
-    .. [1] Fan Chung (2005). Laplacians and the Cheeger inequality for directed
-    graphs. Annals of Combinatorics, 9(1), 2005
+    .. [1] Fan Chung (2005).
+       Laplacians and the Cheeger inequality for directed graphs.
+       Annals of Combinatorics, 9(1), 2005
     """
     try:
         import numpy as np
