@@ -165,7 +165,7 @@ class TestGeneratorThreshold():
         (tgeval,tgevec)=nxt.eigenvectors(cs)
         dot=N.dot
         assert_equal([ abs(dot(lv,lv)-1.0)<1e-9 for lv in tgevec ], [True]*8)
-        lapl=nx.laplacian(G)
+        lapl=nx.laplacian_matrix(G)
         tgev=[ dot(lv,dot(lapl,lv)) for lv in tgevec ]
         assert_true(sum([abs(c-d) for c,d in zip(tgev,tgeval)]) < 1e-9)
         tgev.sort()
