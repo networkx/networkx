@@ -52,13 +52,13 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     See Also
     --------
     to_numpy_matrix
-    normalized_laplacian
+    normalized_laplacian_matrix
     """
     try:
         import numpy as np
     except ImportError:
         raise ImportError(
-          "laplacian() requires numpy: http://scipy.org/ ")
+          "laplacian_matrix() requires numpy: http://scipy.org/ ")
     # this isn't the most efficient way to do this...
     if G.is_multigraph():
         A=np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight))
@@ -125,7 +125,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 
     See Also
     --------
-    laplacian
+    laplacian_matrix
 
     References
     ----------
@@ -140,7 +140,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
         import numpy as np
     except ImportError:
         raise ImportError(
-          "normalized_laplacian() requires numpy: http://scipy.org/ ")
+          "normalized_laplacian_matrix() requires numpy: http://scipy.org/ ")
     if G.is_multigraph():
 
         L = laplacian_matrix(G, nodelist=nodelist, weight=weight)
@@ -222,7 +222,7 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None,
 
     See Also
     --------
-    laplacian
+    laplacian_matrix
 
     References
     ----------
