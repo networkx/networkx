@@ -229,7 +229,11 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None,
     .. [1] Fan Chung (2005). Laplacians and the Cheeger inequality for directed
     graphs. Annals of Combinatorics, 9(1), 2005
     """
-    import numpy as np
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(
+          "directed_laplacian_matrix() requires numpy: http://scipy.org/ ")
 
     if walk_type is None:
         if nx.is_strongly_connected(G):
