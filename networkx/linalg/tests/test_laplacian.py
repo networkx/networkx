@@ -23,6 +23,7 @@ class TestLaplacian(object):
                 for (u,v) in self.G.edges_iter() )
         self.WG.add_node(4)
         self.MG=nx.MultiGraph(self.G)
+
         # Graph with selfloops
         self.Gsl = self.G.copy()
         for node in self.Gsl.nodes():
@@ -80,7 +81,7 @@ class TestLaplacian(object):
         # "Google's PageRank and Beyond". The graph contains dangling nodes, so
         # the pagerank random walk is selected by directed_laplacian
         G = nx.DiGraph()
-        G.add_edges_from(((1,2), (1,3), (3,1), (3,2), (3,5), (4,5), (4,6), 
+        G.add_edges_from(((1,2), (1,3), (3,1), (3,2), (3,5), (4,5), (4,6),
                           (5,4), (5,6), (6,4)))
         GL = numpy.array([[ 0.9833, -0.2941, -0.3882, -0.0291, -0.0231, -0.0261],
                           [-0.2941,  0.8333, -0.2339, -0.0536, -0.0589, -0.0554],
