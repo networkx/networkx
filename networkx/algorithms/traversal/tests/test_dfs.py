@@ -55,4 +55,14 @@ class TestDFS:
         edges=list(nx.dfs_labeled_edges(self.D))
         forward=[(u,v) for (u,v,d) in edges if d['dir']=='forward']
         assert_equal(forward,[(0, 0), (0, 1), (2, 2), (2, 3)])
-    
+
+    def test_dfs_tree_isolates(self):
+        G = nx.Graph()
+        G.add_node(1)
+        G.add_node(2)
+        T=nx.dfs_tree(G,source=1)
+        assert_equal(sorted(T.nodes()),[1])
+        assert_equal(sorted(T.edges()),[])
+        T=nx.dfs_tree(G,source=None)
+        assert_equal(sorted(T.nodes()),[1, 2])
+        assert_equal(sorted(T.edges()),[])

@@ -1,33 +1,29 @@
+"""Hubs and authorities analysis of graph structure.
 """
-Hubs and authorities analysis of graph structure.
-"""
-#!/usr/bin/env python
-#    Copyright (C) 2008-2010 by 
+#    Copyright (C) 2008-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-#    NetworkX:http://networkx.lanl.gov/ 
+#    NetworkX:http://networkx.lanl.gov/
+import networkx as nx
+from networkx.exception import NetworkXError
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['hits','hits_numpy','hits_scipy','authority_matrix','hub_matrix']
 
-import networkx as nx
-from networkx.exception import NetworkXError
-
-
-def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
+def hits(G,max_iter=100,tol=1.0e-8,nstart=None,normalized=True):
     """Return HITS hubs and authorities values for nodes.
 
-    The HITS algorithm computes two numbers for a node. 
+    The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
     Hubs estimates the node value based on outgoing links.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph 
-       
+      A NetworkX graph
+
     max_iter : interger, optional
       Maximum number of iterations in power method.
 
@@ -36,6 +32,9 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
 
     nstart : dictionary, optional
       Starting value of each node for power method iteration.
+
+    normalized : bool (default=True)
+       Normalize results by the sum of all of the values.
 
     Returns
     -------
@@ -61,13 +60,13 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
 
     References
     ----------
-    .. [1] A. Langville and C. Meyer, 
-       "A survey of eigenvector methods of web information retrieval."  
+    .. [1] A. Langville and C. Meyer,
+       "A survey of eigenvector methods of web information retrieval."
        http://citeseer.ist.psu.edu/713792.html
-    .. [2] Jon Kleinberg, 
+    .. [2] Jon Kleinberg,
        Authoritative sources in a hyperlinked environment
-       Journal of the ACM 46 (5): 604-32, 1999. 
-       doi:10.1145/324133.324140. 
+       Journal of the ACM 46 (5): 604-32, 1999.
+       doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
     if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
@@ -79,7 +78,7 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
         h=dict.fromkeys(G,1.0/G.number_of_nodes())
     else:
         h=nstart
-        # normalize starting vector 
+        # normalize starting vector
         s=1.0/sum(h.values())
         for k in h:
             h[k]*=s
@@ -89,7 +88,7 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
         h=dict.fromkeys(hlast.keys(),0)
         a=dict.fromkeys(hlast.keys(),0)
         # this "matrix multiply" looks odd because it is
-        # doing a left multiply a^T=hlast^T*G 
+        # doing a left multiply a^T=hlast^T*G
         for n in h:
             for nbr in G[n]:
                 a[nbr]+=hlast[n]*G[n][nbr].get('weight',1)
@@ -97,13 +96,13 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
         for n in h:
             for nbr in G[n]:
                 h[n]+=a[nbr]*G[n][nbr].get('weight',1)
-        # normalize vector 
-        s=1.0/sum(h.values())
+        # normalize vector
+        s=1.0/max(h.values())
         for n in h: h[n]*=s
-        # normalize vector 
-        s=1.0/sum(a.values())
+        # normalize vector
+        s=1.0/max(a.values())
         for n in a: a[n]*=s
-        # check convergence, l1 norm            
+        # check convergence, l1 norm
         err=sum([abs(h[n]-hlast[n]) for n in h])
         if err < tol:
             break
@@ -111,8 +110,14 @@ def hits(G,max_iter=100,tol=1.0e-8,nstart=None):
             raise NetworkXError(\
             "HITS: power iteration failed to converge in %d iterations."%(i+1))
         i+=1
+    if normalized:
+        s = 1.0/sum(a.values())
+        for n in a:
+            a[n] *= s
+        s = 1.0/sum(h.values())
+        for n in h:
+            h[n] *= s
     return h,a
-
 
 def authority_matrix(G,nodelist=None):
     """Return the HITS authority matrix."""
@@ -124,18 +129,20 @@ def hub_matrix(G,nodelist=None):
     M=nx.to_numpy_matrix(G,nodelist=nodelist)
     return M*M.T
 
-
-def hits_numpy(G):
+def hits_numpy(G,normalized=True):
     """Return HITS hubs and authorities values for nodes.
 
-    The HITS algorithm computes two numbers for a node. 
+    The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
     Hubs estimates the node value based on outgoing links.
 
     Parameters
     -----------
     G : graph
-      A NetworkX graph 
+      A NetworkX graph
+
+    normalized : bool (default=True)
+       Normalize results by the sum of all of the values.
 
     Returns
     -------
@@ -158,13 +165,13 @@ def hits_numpy(G):
 
     References
     ----------
-    .. [1] A. Langville and C. Meyer, 
-       "A survey of eigenvector methods of web information retrieval."  
+    .. [1] A. Langville and C. Meyer,
+       "A survey of eigenvector methods of web information retrieval."
        http://citeseer.ist.psu.edu/713792.html
-    .. [2] Jon Kleinberg, 
+    .. [2] Jon Kleinberg,
        Authoritative sources in a hyperlinked environment
-       Journal of the ACM 46 (5): 604-32, 1999. 
-       doi:10.1145/324133.324140. 
+       Journal of the ACM 46 (5): 604-32, 1999.
+       doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
     try:
@@ -182,23 +189,28 @@ def hits_numpy(G):
     e,ev=np.linalg.eig(A)
     m=e.argsort()[-1] # index of maximum eigenvalue
     a=np.array(ev[:,m]).flatten()
-    hubs=dict(zip(G.nodes(),map(float,h/h.sum())))
-    authorities=dict(zip(G.nodes(),map(float,a/a.sum())))
+    if normalized:
+        h = h/h.sum()
+        a = a/a.sum()
+    else:
+        h = h/h.max()
+        a = a/a.max()
+    hubs=dict(zip(G.nodes(),map(float,h)))
+    authorities=dict(zip(G.nodes(),map(float,a)))
     return hubs,authorities
 
-
-def hits_scipy(G,max_iter=100,tol=1.0e-6):
+def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
     """Return HITS hubs and authorities values for nodes.
 
-    The HITS algorithm computes two numbers for a node. 
+    The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
     Hubs estimates the node value based on outgoing links.
 
     Parameters
     -----------
     G : graph
-      A NetworkX graph 
-       
+      A NetworkX graph
+
     max_iter : interger, optional
       Maximum number of iterations in power method.
 
@@ -207,6 +219,9 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
 
     nstart : dictionary, optional
       Starting value of each node for power method iteration.
+
+    normalized : bool (default=True)
+       Normalize results by the sum of all of the values.
 
     Returns
     -------
@@ -234,13 +249,13 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
 
     References
     ----------
-    .. [1] A. Langville and C. Meyer, 
-       "A survey of eigenvector methods of web information retrieval."  
+    .. [1] A. Langville and C. Meyer,
+       "A survey of eigenvector methods of web information retrieval."
        http://citeseer.ist.psu.edu/713792.html
-    .. [2] Jon Kleinberg, 
+    .. [2] Jon Kleinberg,
        Authoritative sources in a hyperlinked environment
-       Journal of the ACM 46 (5): 604-632, 1999. 
-       doi:10.1145/324133.324140. 
+       Journal of the ACM 46 (5): 604-632, 1999.
+       doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
     try:
@@ -260,8 +275,8 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
     while True:
         xlast=x
         x=A*x
-        x=x/x.sum()
-        # check convergence, l1 norm            
+        x=x/x.max()
+        # check convergence, l1 norm
         err=scipy.absolute(x-xlast).sum()
         if err < tol:
             break
@@ -273,10 +288,12 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6):
     a=np.asarray(x).flatten()
     # h=M*a
     h=np.asarray(M*a).flatten()
-    hubs=dict(zip(G.nodes(),map(float,h/h.sum())))
-    authorities=dict(zip(G.nodes(),map(float,a/a.sum())))
+    if normalized:
+        h = h/h.sum()
+        a = a/a.sum()
+    hubs=dict(zip(G.nodes(),map(float,h)))
+    authorities=dict(zip(G.nodes(),map(float,a)))
     return hubs,authorities
-
 
 # fixture for nose tests
 def setup_module(module):

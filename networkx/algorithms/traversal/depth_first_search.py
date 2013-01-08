@@ -1,6 +1,6 @@
 """
 ==================
-Depth-first search 
+Depth-first search
 ==================
 
 Basic algorithms for depth-first searching.
@@ -45,11 +45,15 @@ def dfs_edges(G,source=None):
             except StopIteration:
                 stack.pop()
 
-
-def dfs_tree(G, source=None):
+def dfs_tree(G, source):
     """Return directed tree of depth-first-search from source."""
-    return nx.DiGraph(dfs_edges(G,source=source))
-
+    T = nx.DiGraph()
+    if source is None:
+        T.add_nodes_from(G)
+    else:
+        T.add_node(source)
+    T.add_edges_from(dfs_edges(G,source))
+    return T
 
 def dfs_predecessors(G, source=None):
     """Return dictionary of predecessors in depth-first-search from source."""
@@ -65,7 +69,7 @@ def dfs_successors(G, source=None):
 
 
 def dfs_postorder_nodes(G,source=None):
-    """Produce nodes in a depth-first-search post-ordering starting 
+    """Produce nodes in a depth-first-search post-ordering starting
     from source.
     """
     post=(v for u,v,d in nx.dfs_labeled_edges(G,source=source)
@@ -77,7 +81,7 @@ def dfs_postorder_nodes(G,source=None):
 
 def dfs_preorder_nodes(G,source=None):
     """Produce nodes in a depth-first-search pre-ordering starting at source."""
-    pre=(v for u,v,d in nx.dfs_labeled_edges(G,source=source) 
+    pre=(v for u,v,d in nx.dfs_labeled_edges(G,source=source)
          if d['dir']=='forward')
     # chain source to beginning of pre-ordering
 #    return chain([source],pre)
@@ -118,4 +122,3 @@ def dfs_labeled_edges(G,source=None):
                 if stack:
                     yield stack[-1][0],parent,{'dir':'reverse'}
         yield start,start,{'dir':'reverse'}
-

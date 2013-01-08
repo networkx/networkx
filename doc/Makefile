@@ -118,3 +118,11 @@ doctest: generate
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) build/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in build/doctest/output.txt."
+
+gh-pages: clean html
+	python gh-pages.py
+
+gitwash-update:
+	python gitwash_dumper.py source/developer networkx \
+       --project-url=http://networkx.github.com \
+       --project-ml-url=http://groups.google.com/group/networkx-devel/

@@ -27,3 +27,10 @@ class TestBFS:
         edges=nx.bfs_edges(self.G,source=0)
         assert_equal(list(edges),[(0, 1), (1, 2), (1, 3), (2, 4)])
 
+    def test_bfs_tree_isolates(self):
+        G = nx.Graph()
+        G.add_node(1)
+        G.add_node(2)
+        T=nx.bfs_tree(G,source=1)
+        assert_equal(sorted(T.nodes()),[1])
+        assert_equal(sorted(T.edges()),[])

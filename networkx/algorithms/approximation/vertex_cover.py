@@ -20,7 +20,7 @@ __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 @not_implemented_for('directed')
 def min_weighted_vertex_cover(G, weight=None):
-    """2-OPT Local Ratio for Minimum Weighted Vertex Cover
+    r"""2-OPT Local Ratio for Minimum Weighted Vertex Cover
 
     Find an approximate minimum weighted vertex cover of a graph.
 
@@ -43,7 +43,7 @@ def min_weighted_vertex_cover(G, weight=None):
     -----
     Local-Ratio algorithm for computing an approximate vertex cover.
     Algorithm greedily reduces the costs over edges and iteratively
-    builds a cover. Worst-case runtime is O(|E|).
+    builds a cover. Worst-case runtime is `O(|E|)`.
 
     References
     ----------

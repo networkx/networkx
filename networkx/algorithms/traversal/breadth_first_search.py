@@ -1,6 +1,6 @@
 """
 ====================
-Breadth-first search 
+Breadth-first search
 ====================
 
 Basic algorithms for breadth-first searching.
@@ -34,16 +34,16 @@ def bfs_edges(G, source, reverse=False):
         except StopIteration:
             queue.popleft()
 
-
 def bfs_tree(G, source, reverse=False):
     """Return directed tree of breadth-first-search from source."""
-    return nx.DiGraph(bfs_edges(G, source, reverse=reverse))
-
+    T = nx.DiGraph()
+    T.add_node(source)
+    T.add_edges_from(bfs_edges(G,source,reverse=reverse))
+    return T
 
 def bfs_predecessors(G, source):
     """Return dictionary of predecessors in breadth-first-search from source."""
     return dict((t,s) for s,t in bfs_edges(G,source))
-
 
 def bfs_successors(G, source):
     """Return dictionary of successors in breadth-first-search from source."""
@@ -51,6 +51,3 @@ def bfs_successors(G, source):
     for s,t in bfs_edges(G,source):
         d[s].append(t)
     return dict(d)
-
-
-

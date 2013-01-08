@@ -103,10 +103,18 @@ def default_opener(filename):
 
 
 def dict_to_numpy_array(d,mapping=None):
-    """Convert a dictionary of dictionaries to a 2d numpy array 
+    """Convert a dictionary of dictionaries to a numpy array
     with optional mapping."""
     try:
-        import numpy 
+        return dict_to_numpy_array2(d, mapping)
+    except AttributeError:
+        return dict_to_numpy_array1(d,mapping)
+
+def dict_to_numpy_array2(d,mapping=None):
+    """Convert a dictionary of dictionaries to a 2d numpy array
+    with optional mapping."""
+    try:
+        import numpy
     except ImportError:
         raise ImportError(
           "dict_to_numpy_array requires numpy : http://scipy.org/ ")
@@ -121,6 +129,23 @@ def dict_to_numpy_array(d,mapping=None):
         for k2, value in row.items():
             i=mapping[k1]
             j=mapping[k2]
-            a[i,j] = value 
+            a[i,j] = value
     return a
 
+def dict_to_numpy_array1(d,mapping=None):
+    """Convert a dictionary of numbers to a 1d numpy array
+    with optional mapping."""
+    try:
+        import numpy
+    except ImportError:
+        raise ImportError(
+          "dict_to_numpy_array requires numpy : http://scipy.org/ ")
+    if mapping is None:
+        s = set(d.keys())
+        mapping = dict(zip(s,range(len(s))))
+    n = len(mapping)
+    a = numpy.zeros(n)
+    for k1, value in d.items():
+        i = mapping[k1]
+        a[i] = value
+    return a
