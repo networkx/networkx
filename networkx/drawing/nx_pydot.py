@@ -365,7 +365,7 @@ def safer_pydot_write(self, path, prog=None, format='raw'):
 
 
 def draw_pydot(G, filename=None, format=None, prefix=None, suffix=None,
-                  layout='dot', args=None, show=True):
+                  layout='dot', args=None, show=None):
     """Draws the graph G using pydot and graphviz.
 
     Parameters
@@ -414,9 +414,10 @@ def draw_pydot(G, filename=None, format=None, prefix=None, suffix=None,
         This should be a list of strings.  For example, ['-s10', '-maxiter=10'].
 
     show : bool
-        If *True*, then the image is displayed using the default viewer
+        If `True`, then the image is displayed using the default viewer
         after drawing it. If show equals 'ipynb', then the image is displayed
-        inline for an IPython notebook.
+        inline for an IPython notebook.  If `None`, then the value of the
+        global variable DEFAULT_SHOW is used.  By default, it is set to `True`.
 
     """
     # Determine the output format
