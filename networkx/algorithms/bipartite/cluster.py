@@ -31,7 +31,7 @@ def latapy_clustering(G, nodes=None, mode='dot'):
     r"""Compute a bipartite clustering coefficient for nodes.
 
     The bipartie clustering coefficient is a measure of local density
-    of connections defined as [1]_
+    of connections defined as [1]_:
     
     .. math::
 
@@ -41,20 +41,21 @@ def latapy_clustering(G, nodes=None, mode='dot'):
     and `c_{uv}` is the pairwise clustering coefficient between nodes 
     `u` and `v`.
 
-    The mode selects the function for `c_{uv}`
-    'dot': 
+    The mode selects the function for `c_{uv}` which can be:
+
+    `dot`: 
 
     .. math::
 
        c_{uv}=\frac{|N(u)\cap N(v)|}{|N(u) \cup N(v)|}
 
-    'min': 
+    `min`: 
 
     .. math::
 
        c_{uv}=\frac{|N(u)\cap N(v)|}{min(|N(u)|,|N(v)|)}
 
-    'max': 
+    `max`: 
 
     .. math::
 
@@ -83,11 +84,11 @@ def latapy_clustering(G, nodes=None, mode='dot'):
     Examples
     --------
     >>> from networkx.algorithms import bipartite
-    >>> G=nx.path_graph(4) # path is bipartite
-    >>> c=bipartite.clustering(G) 
+    >>> G = nx.path_graph(4) # path graphs are bipartite
+    >>> c = bipartite.clustering(G) 
     >>> c[0]
     0.5
-    >>> c=bipartite.clustering(G,mode='min') 
+    >>> c = bipartite.clustering(G,mode='min') 
     >>> c[0]
     1.0
 
@@ -169,7 +170,7 @@ def average_clustering(G, nodes=None, mode='dot'):
     Examples
     --------
     >>> from networkx.algorithms import bipartite
-    >>> G=nx.star_graph(3) # path is bipartite
+    >>> G=nx.star_graph(3) # star graphs are bipartite
     >>> bipartite.average_clustering(G) 
     0.75
     >>> X,Y=bipartite.sets(G)
@@ -203,8 +204,8 @@ def robins_alexander_clustering(G):
     r"""Compute the bipartite clustering of G.
 
     Robins and Alexander [1]_ defined bipartite clustering coefficient as
-    four times the number of four cycles (C_4) divided by the number of
-    three paths (L_3) in a bipartite graph:
+    four times the number of four cycles `C_4` divided by the number of
+    three paths `L_3` in a bipartite graph:
 
     .. math::
 
