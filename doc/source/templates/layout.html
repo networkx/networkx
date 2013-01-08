@@ -15,11 +15,11 @@ NetworkX
 </div>
 {{ super() }}
 {% if version.split('.')[-1].startswith('dev') %}
-<br/><p>This documentation is for version <b>{{ version }}</b>, which is
-  not released yet.</p>
+<p>This documentation is for the development version <b>{{ version }}</b></p>
 {% endif %}
 {% endblock %}
 
 {# put the sidebar before the body #}
-{% block sidebar1 %}{{ sidebar() }}{% endblock %}
+{% block sidebar1 %}
+{{ sidebar() }}{% endblock %}
 {% block sidebar2 %}{% endblock %}
