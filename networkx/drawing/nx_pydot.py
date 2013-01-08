@@ -25,7 +25,7 @@ import os
 import sys
 import tempfile
 import time
-q
+
 from networkx.utils import (
     open_file, get_fobj, make_str, require, default_opener
 )
@@ -65,6 +65,7 @@ def read_dot(path):
     -----
     Use G=nx.Graph(nx.read_dot(path)) to return a Graph instead of a MultiGraph.
     """
+    import pydot
     data=path.read()
     P=pydot.graph_from_dot_data(data)
     return from_pydot(P)
@@ -219,19 +220,22 @@ def to_pydot(G, raise_exceptions=True):
 
     # Set default node attributes, if possible.
     node_defaults = filter_attrs(G.graph.get('node', {}), 'node')
-    try:
-        P.set_node_defaults(**node_defaults)
-    except:
-        if raise_exceptions:
-            raise
+    if node_defaults:
+        try:
+            P.set_node_defaults(**node_defaults)
+        except:
+            if raise_exceptions:
+                raise
 
     # Set default edge attributes, if possible.
     edge_defaults = filter_attrs(G.graph.get('edge', {}), 'edge')
-    try:
-        P.set_edge_defaults(**edge_defaults)
-    except:
-        if raise_exceptions:
-            raise
+    if edge_defaults:
+        # This adds a node called "edge" to the graph.
+        try:
+            P.set_edge_defaults(**edge_defaults)
+        except:
+            if raise_exceptions:
+                raise
 
     # Add the nodes.
     for n,nodedata in G.nodes_iter(data=True):
