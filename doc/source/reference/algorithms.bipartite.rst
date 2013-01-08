@@ -49,6 +49,8 @@ Clustering
 
    clustering
    average_clustering
+   latapy_clustering
+   robins_alexander_clustering
 
 
 Redundancy
