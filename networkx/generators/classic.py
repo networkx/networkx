@@ -370,6 +370,7 @@ def grid_graph(dim,periodic=False):
     else:
         func=path_graph
 
+    dim=list(dim)
     current_dim=dim.pop()
     G=func(current_dim)
     while len(dim)>0:
