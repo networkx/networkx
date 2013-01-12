@@ -212,9 +212,6 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
 
     # The same using longer function name
     >>> pos=nx.fruchterman_reingold_layout(G)
-
-    Notes
-    -----
     """
     try:
         import numpy as np
@@ -279,7 +276,6 @@ def _fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
     # optimal distance between nodes
     if k is None:
         k=np.sqrt(1.0/nnodes)
-    print k
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
     t=0.1
