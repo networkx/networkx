@@ -254,14 +254,18 @@ class TestGeneratorClassic():
         degree_histogram=[0,0,4,2*(n+m)-8,(n-2)*(m-2)]
         """
         for n, m in [(3, 5), (5, 3), (4, 5), (5, 4)]:
-            g=grid_graph([n,m])
+            dim=[n,m]
+            g=grid_graph(dim)
             assert_equal(number_of_nodes(g), n*m)
             assert_equal(degree_histogram(g), [0,0,4,2*(n+m)-8,(n-2)*(m-2)])
+            assert_equal(dim,[n,m])
         
         for n, m in [(1, 5), (5, 1)]:
-            g=grid_graph([n,m])
+            dim=[n,m]
+            g=grid_graph(dim)
             assert_equal(number_of_nodes(g), n*m)
             assert_true(is_isomorphic(g,path_graph(5)))
+            assert_equal(dim,[n,m])
 
 #        mg=grid_graph([n,m], create_using=MultiGraph())
 #        assert_equal(mg.edges(), g.edges())
