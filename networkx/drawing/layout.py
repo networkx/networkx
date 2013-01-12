@@ -159,12 +159,12 @@ def shell_layout(G,nlist=None,dim=2,scale=1):
     return npos
 
 
-def fruchterman_reingold_layout(G,dim=2,
+def fruchterman_reingold_layout(G,dim=2,k=None,
                                 pos=None,
                                 fixed=None,
                                 iterations=50,
                                 weight='weight',
-                                scale=1):
+                                scale=1.0):
     """Position nodes using Fruchterman-Reingold force-directed algorithm. 
 
     Parameters
@@ -173,6 +173,12 @@ def fruchterman_reingold_layout(G,dim=2,
 
     dim : int
        Dimension of layout
+
+    k : float (default=None)
+       Optimal distance between nodes.  If None the distance is set to
+       1/sqrt(n) where n is the number of nodes.  Increase this value
+       to move nodes farther apart.
+
 
     pos : dict or None  optional (default=None)
        Initial positions for nodes as a dictionary with node as keys
@@ -189,8 +195,10 @@ def fruchterman_reingold_layout(G,dim=2,
         The edge attribute that holds the numerical value used for
         the edge weight.  If None, then all edge weights are 1.
 
-    scale : float
-        Scale factor for positions
+    scale : float (default=1.0)
+        Scale factor for positions. The nodes are positioned 
+        in a box of size [0,scale] x [0,scale].  
+
 
     Returns
     -------
@@ -204,6 +212,9 @@ def fruchterman_reingold_layout(G,dim=2,
 
     # The same using longer function name
     >>> pos=nx.fruchterman_reingold_layout(G)
+
+    Notes
+    -----
     """
     try:
         import numpy as np
@@ -231,17 +242,18 @@ def fruchterman_reingold_layout(G,dim=2,
         if len(G) < 500:  # sparse solver for large graphs
             raise ValueError
         A=nx.to_scipy_sparse_matrix(G,weight=weight,dtype='f')
-        pos=_sparse_fruchterman_reingold(A,dim,pos_arr,fixed,iterations)
+        pos=_sparse_fruchterman_reingold(A,dim,k,pos_arr,fixed,iterations)
     except:
         A=nx.to_numpy_matrix(G,weight=weight)
-        pos=_fruchterman_reingold(A,dim,pos_arr,fixed,iterations)
+        pos=_fruchterman_reingold(A,dim,k,pos_arr,fixed,iterations)
     if fixed is None:
         pos=_rescale_layout(pos,scale=scale)
     return dict(zip(G,pos))
 
 spring_layout=fruchterman_reingold_layout
 
-def _fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
+def _fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None, 
+                          iterations=50):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     try:
@@ -265,7 +277,9 @@ def _fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
         pos=pos.astype(A.dtype)
 
     # optimal distance between nodes
-    k=np.sqrt(1.0/nnodes)
+    if k is None:
+        k=np.sqrt(1.0/nnodes)
+    print k
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
     t=0.1
@@ -298,11 +312,12 @@ def _fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
         pos+=delta_pos
         # cool temperature
         t-=dt
-
+        pos=_rescale_layout(pos)
     return pos
 
 
-def _sparse_fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
+def _sparse_fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None, 
+                                 iterations=50):
     # Position nodes in adjacency matrix A using Fruchterman-Reingold  
     # Entry point for NetworkX graph is fruchterman_reingold_layout()
     # Sparse version
@@ -337,7 +352,8 @@ def _sparse_fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
         fixed=[]
 
     # optimal distance between nodes
-    k=np.sqrt(1.0/nnodes)
+    if k is None:
+        k=np.sqrt(1.0/nnodes)
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
     t=0.1
@@ -369,7 +385,7 @@ def _sparse_fruchterman_reingold(A, dim=2, pos=None, fixed=None, iterations=50):
         pos+=(displacement*t/length).T
         # cool temperature
         t-=dt
-
+        pos=_rescale_layout(pos)
     return pos
 
 
