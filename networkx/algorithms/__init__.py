@@ -6,6 +6,7 @@ from networkx.algorithms.cluster import *
 from networkx.algorithms.clique import *
 from networkx.algorithms.community import *
 from networkx.algorithms.components import *
+from networkx.algorithms.connectivity import *
 from networkx.algorithms.core import *
 from networkx.algorithms.cycles import *
 from networkx.algorithms.dag import *
@@ -36,6 +37,7 @@ import networkx.algorithms.centrality
 import networkx.algorithms.cluster
 import networkx.algorithms.clique
 import networkx.algorithms.components
+import networkx.algorithms.connectivity
 import networkx.algorithms.flow
 import networkx.algorithms.isomorphism
 import networkx.algorithms.link_analysis
