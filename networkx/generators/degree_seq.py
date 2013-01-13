@@ -19,12 +19,14 @@ __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Pieter Swart <swart@lanl.gov>',
                         'Dan Schult <dschult@colgate.edu>'
                         'Joel Miller <joel.c.miller.research@gmail.com>',
-                        'Nathan Lemons <nlemons@gmail.com>'])
+                        'Nathan Lemons <nlemons@gmail.com>'
+                        'Brian Cloteaux <brian.cloteaux@nist.gov>'])
 
 __all__ = ['configuration_model',
            'directed_configuration_model',
            'expected_degree_graph',
            'havel_hakimi_graph',
+           'directed_havel_hakimi_graph',
            'degree_sequence_tree',
            'random_degree_sequence_graph']
 
@@ -381,7 +383,7 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
         Each integer corresponds to the degree of a node (need not be sorted).
     create_using : graph, optional (default Graph)
         Return graph of this type. The instance will be cleared.
-        Multigraphs and directed graphs are not allowed.
+        Directed graphs are not allowed.
 
     Raises
     ------
@@ -398,49 +400,189 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
     degree-associativity.  Nodes are labeled 1,.., len(deg_sequence),
     corresponding to their position in deg_sequence.
 
-    See Theorem 1.4 in [1]_.
-    This algorithm is also used in the function is_valid_degree_sequence.
+    The basic algorithm is from Hakimi [1]_ and was generalized by
+    Kleitman and Wang [2]_.
 
     References
     ----------
-    .. [1] G. Chartrand and L. Lesniak, "Graphs and Digraphs",
-           Chapman and Hall/CRC, 1996.
+    .. [1] Hakimi S.
+       On Realizability of a Set of Integers as Degrees of the Vertices
+       of a Linear Graph. I
+       Journal of SIAM, 10(3), pp. 496-506 (1962)
+    .. [2] Kleitman D.J. and Wang D.L.
+       Algorithms for Constructing Graphs and Digraphs with Given Valences
+       and Factors
+       Discrete Mathematics, 6(1), pp. 79-88 (1973) 
     """
     if not nx.is_valid_degree_sequence(deg_sequence):
         raise nx.NetworkXError('Invalid degree sequence')
     if create_using is not None:
         if create_using.is_directed():
-            raise nx.NetworkXError("Directed Graph not supported")
-        if create_using.is_multigraph():
-            raise nx.NetworkXError("Havel-Hakimi requires simple graph")
+            raise nx.NetworkXError("Directed graphs are not supported")
 
-    N=len(deg_sequence)
-    G=nx.empty_graph(N,create_using)
-
-    if N==0 or max(deg_sequence)==0: # done if no edges
+    p = len(deg_sequence)
+    G=nx.empty_graph(p,create_using)
+    num_degs = []
+    for i in range(p):
+        num_degs.append([])
+    dmax, dsum, n = 0, 0, 0
+    for d in deg_sequence:
+        # Process only the non-zero integers
+        if d>0:
+            num_degs[d].append(n)
+            dmax, dsum, n = max(dmax,d), dsum+d, n+1
+    # Return graph if no edges
+    if n==0:
         return G
 
-    # form list of [stubs,name] for each node.
-    stublist=[ [deg_sequence[n],n] for n in G]
-    #  Now connect the stubs
-    while stublist:
-        stublist.sort()
-        if stublist[0][0]<0: # took too many off some vertex
-            return False     # should not happen if deg_seq is valid
+    modstubs = [(0,0)]*(dmax+1)
+    # Successively reduce degree sequence by removing the maximum degree
+    while n > 0:
+        # Retrieve the maximum degree in the sequence
+        while len(num_degs[dmax]) == 0:
+            dmax -= 1;
+        # If there are not enough stubs to connect to, then the sequence is
+        # not graphical
+        if dmax > n-1:
+            raise nx.NetworkXError('Non-graphical integer sequence')
 
-        (freestubs,source) = stublist.pop() # the node with the most stubs
-        if freestubs==0: break          # the rest must also be 0 --Done!
-        if freestubs > len(stublist):  # Trouble--can't make that many edges
-            return False               # should not happen if deg_seq is valid
-
-        # attach edges to biggest nodes
-        for stubtarget in stublist[-freestubs:]:
-            G.add_edge(source, stubtarget[1])
-            stubtarget[0] -= 1  # updating stublist on the fly
+        # Remove largest stub in list
+        source = num_degs[dmax].pop()
+        n -= 1
+        # Reduce the next dmax largest stubs
+        mslen = 0
+        k = dmax
+        for i in range(dmax):
+            while len(num_degs[k]) == 0:
+                k -= 1
+            target = num_degs[k].pop()
+            G.add_edge(source, target)
+            n -= 1
+            if k > 1:
+                modstubs[mslen] = (k-1,target)
+                mslen += 1
+        # Add back to the list any nonzero stubs that were removed
+        for i  in range(mslen):
+            (stubval, stubtarget) = modstubs[i]
+            num_degs[stubval].append(stubtarget)
+            n += 1
 
     G.name="havel_hakimi_graph %d nodes %d edges"%(G.order(),G.size())
     return G
 
+def directed_havel_hakimi_graph(in_deg_sequence,
+                                out_deg_sequence,
+                                create_using=None):
+    """Return a directed graph with the given degree sequences.
+
+    Parameters
+    ----------
+    in_deg_sequence :  list of integers 
+       Each list entry corresponds to the in-degree of a node.
+    out_deg_sequence : list of integers 
+       Each list entry corresponds to the out-degree of a node.
+    create_using : graph, optional (default DiGraph)
+       Return graph of this type. The instance will be cleared.
+
+    Returns
+    -------
+    G : DiGraph
+        A graph with the specified degree sequences.
+        Nodes are labeled starting at 0 with an index
+        corresponding to the position in deg_sequence
+
+    Raises
+    ------
+    NetworkXError
+        If the degree sequences are not digraphical.
+
+    See Also
+    --------
+    configuration_model
+    
+    Notes
+    -----
+    Algorithm as described by Kleitman and Wang [1]_.
+
+    References
+    ----------
+    .. [1] D.J. Kleitman and D.L. Wang
+       Algorithms for Constructing Graphs and Digraphs with Given Valences
+       and Factors
+       Discrete Mathematics, 6(1), pp. 79-88 (1973) 
+    """
+    assert(nx.utils.is_list_of_ints(in_deg_sequence))
+    assert(nx.utils.is_list_of_ints(out_deg_sequence))
+
+    if create_using is None:
+        create_using = nx.DiGraph()
+
+    # Process the sequences and form two heaps to store degree pairs with
+    # either zero or nonzero out degrees
+    sumin, sumout, nin, nout = 0, 0, len(in_deg_sequence), len(out_deg_sequence)
+    maxn = max(nin, nout) 
+    G = nx.empty_graph(maxn,create_using)
+    if maxn==0:
+        return G
+    maxin = 0
+    stubheap, zeroheap = [ ], [ ]
+    for n in range(maxn):
+        in_deg, out_deg = 0, 0
+        if n<nout:
+            out_deg = out_deg_sequence[n]
+        if n<nin:
+            in_deg = in_deg_sequence[n]
+        if in_deg<0 or out_deg<0:
+            raise nx.NetworkXError(
+                'Invalid degree sequences. Sequence values must be positive.')
+        sumin, sumout, maxin = sumin+in_deg, sumout+out_deg, max(maxin, in_deg)
+        if in_deg > 0:
+            stubheap.append((-1*out_deg, -1*in_deg,n)) 
+        elif out_deg > 0:
+            zeroheap.append((-1*out_deg,n)) 
+    if sumin != sumout:
+        raise nx.NetworkXError(
+            'Invalid degree sequences. Sequences must have equal sums.')
+    heapq.heapify(stubheap)
+    heapq.heapify(zeroheap)
+
+    modstubs = [(0,0,0)]*(maxin+1)
+    # Successively reduce degree sequence by removing the maximum 
+    while stubheap:
+        # Remove first value in the sequence with a non-zero in degree
+        (freeout, freein, target) =  heapq.heappop(stubheap)
+        freein *= -1   
+        if freein > len(stubheap)+len(zeroheap):
+            raise nx.NetworkXError('Non-digraphical integer sequence')
+
+        # Attach arcs from the nodes with the most stubs
+        mslen = 0
+        for i in range(freein):
+            if zeroheap and (not stubheap or stubheap[0][0] > zeroheap[0][0]):
+                (stubout, stubsource) = heapq.heappop(zeroheap)
+                stubin = 0
+            else:
+                (stubout, stubin, stubsource) = heapq.heappop(stubheap)
+            if stubout == 0:
+                raise nx.NetworkXError('Non-digraphical integer sequence')
+            G.add_edge(stubsource, target)
+            # Check if source is now totally connected
+            if stubout+1<0 or stubin<0:
+                modstubs[mslen] = (stubout+1, stubin, stubsource)
+                mslen += 1
+
+        # Add the nodes back to the heaps that still have available stubs
+        for i in range(mslen):
+            stub = modstubs[i]
+            if stub[1] < 0:
+                heapq.heappush(stubheap, stub)
+            else:
+                heapq.heappush(zeroheap, (stub[0], stub[2]))
+        if freeout<0:
+            heapq.heappush(zeroheap, (freeout, target))
+
+    G.name="directed_havel_hakimi_graph %d nodes %d edges"%(G.order(),G.size())
+    return G
 
 def degree_sequence_tree(deg_sequence,create_using=None):
     """Make a tree for the given degree sequence.
