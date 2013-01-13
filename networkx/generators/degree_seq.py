@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Generate graphs with a given degree sequence or expected degree sequence.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2013 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -405,14 +405,12 @@ def havel_hakimi_graph(deg_sequence,create_using=None):
 
     References
     ----------
-    .. [1] Hakimi S.
-       On Realizability of a Set of Integers as Degrees of the Vertices
-       of a Linear Graph. I
+    .. [1] Hakimi S., On Realizability of a Set of Integers as 
+       Degrees of the Vertices of a Linear Graph. I,
        Journal of SIAM, 10(3), pp. 496-506 (1962)
     .. [2] Kleitman D.J. and Wang D.L.
        Algorithms for Constructing Graphs and Digraphs with Given Valences
-       and Factors
-       Discrete Mathematics, 6(1), pp. 79-88 (1973) 
+       and Factors  Discrete Mathematics, 6(1), pp. 79-88 (1973) 
     """
     if not nx.is_valid_degree_sequence(deg_sequence):
         raise nx.NetworkXError('Invalid degree sequence')
@@ -508,8 +506,7 @@ def directed_havel_hakimi_graph(in_deg_sequence,
     ----------
     .. [1] D.J. Kleitman and D.L. Wang
        Algorithms for Constructing Graphs and Digraphs with Given Valences
-       and Factors
-       Discrete Mathematics, 6(1), pp. 79-88 (1973) 
+       and Factors Discrete Mathematics, 6(1), pp. 79-88 (1973) 
     """
     assert(nx.utils.is_list_of_ints(in_deg_sequence))
     assert(nx.utils.is_list_of_ints(out_deg_sequence))
