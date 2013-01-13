@@ -146,7 +146,6 @@ class TestEigenvectorCentralityDirected(object):
         G = self.G
         alpha = self.G.alpha
         p = networkx.katz_centrality_numpy(G, alpha)
-        print p.values()
         for (a, b) in zip(list(p.values()), self.G.evc):
             assert_almost_equal(a, b)
 
