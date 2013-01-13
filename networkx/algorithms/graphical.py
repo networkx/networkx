@@ -73,6 +73,7 @@ is_valid_degree_sequence = is_graphical
 
 def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     """Returns True if deg_sequence can be realized by a simple graph.
+
     The validation proceeds using the Havel-Hakimi theorem.
     Worst-case run time is: O(s) where s is the sum of the sequence.
 
@@ -151,9 +152,8 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
 
 def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     """Returns True if deg_sequence can be realized by a simple graph.
-    The validation is done using the Erdos-Gallai theorem.
 
-    Worst-case run time is: O(n) where n is the length of the sequence.
+    The validation is done using the Erdős-Gallai theorem.
 
     Parameters
     ----------
@@ -167,7 +167,10 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
 
     Notes
     -----
-    This implementation uses an equivalent form of the Erdos-Gallai criterion.
+
+    This implementation uses an equivalent form of the Erdős-Gallai criterion.
+    Worst-case run time is: O(n) where n is the length of the sequence.
+
     Specifically, a sequence d is graphical if and only if the
     sum of the sequence is even and for all strong indices k in the sequence,
     \sum_{i=1}^{k} d_i \leq k(k-1) + \sum{j=k+1}{n} min(d_i,k)
@@ -184,7 +187,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     References
     ----------
     [EG1960]_, [choudum1986]_
-    ..[1] A. Tripathi and S. Vijay. "A note on a theorem of Erdos & Gallai",
+    ..[1] A. Tripathi and S. Vijay. "A note on a theorem of Erdős & Gallai",
         Discrete Mathematics, 265, pp. 417-420 (2003).
     ..[2] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
     of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
@@ -230,7 +233,6 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
 
 def is_multi_graphical(deg_sequence):
     """Returns True if some multigraph can realize the sequence.
-    Worst-case run time is: O(n) where n is the length of the sequence.
 
     Parameters
     ----------
@@ -247,6 +249,10 @@ def is_multi_graphical(deg_sequence):
     ..[1] S. L. Hakimi. "On the realizability of a set of integers as
     degrees of the vertices of a linear graph", J. SIAM, 10, pp. 496-506
     (1962).
+
+    Notes
+    -----
+    Worst-case run time is: O(n) where n is the length of the sequence.
     """
     if not nx.utils.is_list_of_ints(deg_sequence):
         return False
@@ -261,9 +267,9 @@ def is_multi_graphical(deg_sequence):
 
 def is_pseudo_graphical(deg_sequence):
     """Returns True if some pseudograph can realize the sequence.
+
     Every nonnegative integer sequence with even sum is pseudographical
     (see [1]_).
-    Worst-case run time is: O(n) where n is the length of the sequence.
 
     Parameters
     ----------
@@ -278,19 +284,20 @@ def is_pseudo_graphical(deg_sequence):
     References
     ----------
     ..[1] F. Boesch and F. Harary. "Line removal algorithms for graphs
-    and their degree lists", IEEE Trans. Circuits and Systems, CAS-23(12),
-    pp. 778-782 (1976).
+       and their degree lists", IEEE Trans. Circuits and Systems, CAS-23(12),
+       pp. 778-782 (1976).
+
+    Notes
+    -----
+    Worst-case run time is: O(n) where n is the length of the sequence.
     """
     if not nx.utils.is_list_of_ints(deg_sequence):
         return False
     return sum(deg_sequence)%2==0 and min(deg_sequence)>=0
 
-def is_directed_graphical(in_deg_sequence,
-                          out_deg_sequence):
-    """Returns True if some directed graph can realize the in and out
-    degree sequences.
-    Worst case time is O(s * log n) where s and n are the sum and length
-    of the sequences respectively.
+def is_directed_graphical(in_deg_sequence, out_deg_sequence):
+    """Returns True if some directed graph can realize the in- and out-degree 
+    sequences.
 
     Parameters
     ----------
@@ -307,6 +314,8 @@ def is_directed_graphical(in_deg_sequence,
     Notes
     -----
     Algorithm as described by Kleitman and Wang [1]_.
+    Worst case runtime is O(s * log n) where s and n are the sum and length
+    of the sequences respectively.
 
     References
     ----------
