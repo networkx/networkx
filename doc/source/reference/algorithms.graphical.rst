@@ -6,7 +6,10 @@ Graphical degree sequence
 .. autosummary::
    :toctree: generated/
 
-   is_valid_degree_sequence
+   is_graphical
+   is_digraphical
+   is_multigraphical
+   is_pseudographical
    is_valid_degree_sequence_havel_hakimi
    is_valid_degree_sequence_erdos_gallai
 
