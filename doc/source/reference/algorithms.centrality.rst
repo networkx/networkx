@@ -52,7 +52,8 @@ Eigenvector
 
    eigenvector_centrality
    eigenvector_centrality_numpy
-
+   katz_centrality
+   katz_centrality_numpy
 
 Communicability
 ---------------
