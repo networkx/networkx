@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Generate graphs with a given degree sequence or expected degree sequence.
+"""Test sequences for graphiness.
 """
-#    Copyright (C) 2004-2012 by
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -25,7 +25,7 @@ __all__ = ['is_valid_degree_sequence',
 
 def is_valid_degree_sequence(sequence, method='eg'):
     """Returns True if sequence is a valid degree sequence.
-    
+
     A degree sequence is valid if some graph can realize it.
 
     Parameters
@@ -72,7 +72,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     """Returns True if deg_sequence can be realized by a simple graph.
     The validation proceeds using the Havel-Hakimi theorem.
     Worst-case run time is: O(s) where s is the sum of the sequence.
-    
+
     Parameters
     ----------
     deg_sequence : list
@@ -83,7 +83,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     -------
     valid : bool
         True if deg_sequence is graphical and False if not.
-    
+
     Notes
     -----
     The ZZ condition says that for the sequence d if
@@ -94,9 +94,9 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     ----------
     [havel1955]_, [hakimi1962]_, [CL1996]_
     ..[1] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
-    of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992). 
+    of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
     """
-    # Preprocessing the sequence along with some simple tests 
+    # Preprocessing the sequence along with some simple tests
     if not nx.utils.is_list_of_ints(deg_sequence):
         return False
     p = len(deg_sequence)
@@ -110,7 +110,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
         elif d>0:
             dmax, dmin, dsum, n = max(dmax,d), min(dmin,d), dsum+d, n+1
             num_degs[d] += 1
-    # Reject sequence if it has odd sum or is oversaturated 
+    # Reject sequence if it has odd sum or is oversaturated
     if dsum%2 or dsum>n*(n-1):
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
@@ -129,33 +129,33 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
             return False
 
         # Remove largest stub in list
-        num_degs[dmax], n = num_degs[dmax]-1, n-1 
+        num_degs[dmax], n = num_degs[dmax]-1, n-1
         # Reduce the next dmax largest stubs
         mslen = 0
         k = dmax
         for i in range(dmax):
             while num_degs[k] == 0:
                 k -= 1
-            num_degs[k], n = num_degs[k]-1, n-1 
+            num_degs[k], n = num_degs[k]-1, n-1
             if k > 1:
                 modstubs[mslen] = k-1
                 mslen += 1
         # Add back to the list any non-zero stubs that were removed
         for i  in range(mslen):
             stub = modstubs[i]
-            num_degs[stub], n = num_degs[stub]+1, n+1 
+            num_degs[stub], n = num_degs[stub]+1, n+1
     return True
 
 def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     """Returns True if deg_sequence can be realized by a simple graph.
-    The validation is done using the Erdos-Gallai theorem. 
-    
+    The validation is done using the Erdos-Gallai theorem.
+
     Worst-case run time is: O(n) where n is the length of the sequence.
-    
+
     Parameters
     ----------
     deg_sequence : list
-        A list of integers 
+        A list of integers
 
     Returns
     -------
@@ -184,7 +184,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     ..[1] A. Tripathi and S. Vijay. "A note on a theorem of Erdos & Gallai",
         Discrete Mathematics, 265, pp. 417-420 (2003).
     ..[2] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
-    of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992). 
+    of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
     """
     # Sort and perform some simple tests on the sequence
     if not nx.utils.is_list_of_ints(deg_sequence):
@@ -200,13 +200,13 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
         elif d>0:
             dmax, dmin, dsum, n = max(dmax,d), min(dmin,d), dsum+d, n+1
             num_degs[d] += 1
-    # Reject sequence if it has odd sum or is oversaturated 
+    # Reject sequence if it has odd sum or is oversaturated
     if dsum%2 or dsum>n*(n-1):
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
     elif n==0 or 4*dmin*n >= (dmax+dmin+1) * (dmax+dmin+1):
         return True
-    
+
     # Perform the EG checks using the reformulation of Zverovich and Zverovich
     k, sum_deg, sum_nj, sum_jnj = 0, 0, 0, 0
     for dk in range(dmax, dmin-1, -1):
@@ -214,7 +214,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
             return True
         if num_degs[dk] > 0:
             run_size = num_degs[dk] # Process a run of identical-valued degrees
-            if dk < k+run_size:     # Check if end of run is past Durfee index 
+            if dk < k+run_size:     # Check if end of run is past Durfee index
                 run_size = dk-k     # Adjust back to Durfee index
             sum_deg += run_size * dk
             for v in range(run_size):
@@ -228,11 +228,11 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
 def is_multi_graphical(deg_sequence):
     """Returns True if some multigraph can realize the sequence.
     Worst-case run time is: O(n) where n is the length of the sequence.
-    
+
     Parameters
     ----------
     deg_sequence : list
-        A list of integers 
+        A list of integers
 
     Returns
     -------
@@ -261,11 +261,11 @@ def is_pseudo_graphical(deg_sequence):
     Every nonnegative integer sequence with even sum is pseudographical
     (see [1]_).
     Worst-case run time is: O(n) where n is the length of the sequence.
-    
+
     Parameters
     ----------
     deg_sequence : list
-        A list of integers 
+        A list of integers
 
     Returns
     -------
@@ -291,9 +291,9 @@ def is_directed_graphical(in_deg_sequence,
 
     Parameters
     ----------
-    in_deg_sequence :  list of integers 
+    in_deg_sequence :  list of integers
        Each list entry corresponds to the in-degree of a node.
-    out_deg_sequence : list of integers 
+    out_deg_sequence : list of integers
        Each list entry corresponds to the out-degree of a node.
 
     Returns
@@ -310,7 +310,7 @@ def is_directed_graphical(in_deg_sequence,
     .. [1] D.J. Kleitman and D.L. Wang
        Algorithms for Constructing Graphs and Digraphs with Given Valences
        and Factors
-       Discrete Mathematics, 6(1), pp. 79-88 (1973) 
+       Discrete Mathematics, 6(1), pp. 79-88 (1973)
     """
     if not nx.utils.is_list_of_ints(in_deg_sequence):
         return False
@@ -319,7 +319,7 @@ def is_directed_graphical(in_deg_sequence,
     # Process the sequences and form two heaps to store degree pairs with
     # either zero or non-zero out degrees
     sumin, sumout, nin, nout = 0, 0, len(in_deg_sequence), len(out_deg_sequence)
-    maxn = max(nin, nout) 
+    maxn = max(nin, nout)
     maxin = 0
     if maxn==0:
         return True
@@ -334,9 +334,9 @@ def is_directed_graphical(in_deg_sequence,
             return False
         sumin, sumout, maxin = sumin+in_deg, sumout+out_deg, max(maxin, in_deg)
         if in_deg > 0:
-            stubheap.append((-1*out_deg, -1*in_deg)) 
+            stubheap.append((-1*out_deg, -1*in_deg))
         elif out_deg > 0:
-            zeroheap.append(-1*out_deg) 
+            zeroheap.append(-1*out_deg)
     if sumin != sumout:
         return False
     heapq.heapify(stubheap)
@@ -347,7 +347,7 @@ def is_directed_graphical(in_deg_sequence,
     while stubheap:
         # Take the first value in the sequence with non-zero in degree
         (freeout, freein) =  heapq.heappop( stubheap )
-        freein *= -1   
+        freein *= -1
         if freein > len(stubheap)+len(zeroheap):
             return False
 
