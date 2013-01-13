@@ -16,14 +16,16 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Ben Edwards'
                         'Brian Cloteaux <brian.cloteaux@nist.gov>'])
 
-__all__ = ['is_valid_degree_sequence',
+__all__ = ['is_graphical',
            'is_valid_degree_sequence_erdos_gallai',
            'is_valid_degree_sequence_havel_hakimi',
            'is_multi_graphical',
            'is_pseudo_graphical',
-           'is_directed_graphical']
+           'is_directed_graphical',
+           'is_valid_degree_sequence', # deprecated
+           ]
 
-def is_valid_degree_sequence(sequence, method='eg'):
+def is_graphical(sequence, method='eg'):
     """Returns True if sequence is a valid degree sequence.
 
     A degree sequence is valid if some graph can realize it.
@@ -59,14 +61,15 @@ def is_valid_degree_sequence(sequence, method='eg'):
         [havel1955]_, [hakimi1962]_, [CL1996]_
     """
     if method == 'eg':
-        valid = is_valid_degree_sequence_erdos_gallai(sequence)
+        valid = is_valid_degree_sequence_erdos_gallai(list(sequence))
     elif method == 'hh':
-        valid = is_valid_degree_sequence_havel_hakimi(sequence)
+        valid = is_valid_degree_sequence_havel_hakimi(list(sequence))
     else:
         msg = "`method` must be 'eg' or 'hh'"
         raise nx.NetworkXException(msg)
     return valid
 
+is_valid_degree_sequence = is_graphical
 
 def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     """Returns True if deg_sequence can be realized by a simple graph.
