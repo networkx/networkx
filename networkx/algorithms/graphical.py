@@ -36,6 +36,7 @@ def is_graphical(sequence, method='eg'):
     sequence : list or iterable container
         A sequence of integer node degrees
 
+
     method : "eg" | "hh"
         The method used to validate the degree sequence.
         "eg" corresponds to the Erdős-Gallai algorithm, and
@@ -93,7 +94,7 @@ def _basic_graphical_tests(deg_sequence):
     return dmax,dmin,dsum,n,num_degs
 
 def is_valid_degree_sequence_havel_hakimi(deg_sequence):
-    """Returns True if deg_sequence can be realized by a simple graph.
+    r"""Returns True if deg_sequence can be realized by a simple graph.
 
     The validation proceeds using the Havel-Hakimi theorem.
     Worst-case run time is: O(s) where s is the sum of the sequence.
@@ -112,14 +113,19 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     Notes
     -----
     The ZZ condition says that for the sequence d if
-    |d| >= (dmax + dmin + 1)^2 / 4*dmin
-    then d is graphical.  This was shown in Theorem 6 of [1]_.
+    
+    .. math::
+        |d| >= \frac{(\max(d) + \min(d) + 1)^2}{4*\min(d)}
+
+    then d is graphical.  This was shown in Theorem 6 in [1]_.
 
     References
     ----------
+    .. [1] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
+       of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
+
     [havel1955]_, [hakimi1962]_, [CL1996]_
-    ..[1] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
-    of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
+
     """
     try:
         dmax,dmin,dsum,n,num_degs = _basic_graphical_tests(deg_sequence)
@@ -160,7 +166,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
 
 
 def is_valid_degree_sequence_erdos_gallai(deg_sequence):
-    """Returns True if deg_sequence can be realized by a simple graph.
+    r"""Returns True if deg_sequence can be realized by a simple graph.
 
     The validation is done using the Erdős-Gallai theorem [EG1960]_.
 
@@ -182,24 +188,33 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
 
     Specifically, a sequence d is graphical if and only if the
     sum of the sequence is even and for all strong indices k in the sequence,
-    \sum_{i=1}^{k} d_i \leq k(k-1) + \sum{j=k+1}{n} min(d_i,k)
-                  = k(n-1) - ( k \sum_{j=0}^{k-1} n_j - \sum_{j=0}^{k-1} j n_j )
-    A strong index k is any index where d_k \geq k and the value n_j is the
+
+     .. math::
+
+       \sum_{i=1}^{k} d_i \leq k(k-1) + \sum_{j=k+1}^{n} \min(d_i,k)
+             = k(n-1) - ( k \sum_{j=0}^{k-1} n_j - \sum_{j=0}^{k-1} j n_j )
+
+    A strong index k is any index where `d_k \geq k` and the value `n_j` is the
     number of occurrences of j in d.  The maximal strong index is called the
     Durfee index.
+
     This particular rearrangement comes from the proof of Theorem 3 in [2]_.
 
     The ZZ condition says that for the sequence d if
-    |d| >= (dmax + dmin + 1)^2 / 4*dmin
+    
+    .. math::
+        |d| >= \frac{(\max(d) + \min(d) + 1)^2}{4*\min(d)}
+
     then d is graphical.  This was shown in Theorem 6 in [2]_.
 
     References
     ----------
-    [EG1960]_, [choudum1986]_
-    ..[1] A. Tripathi and S. Vijay. "A note on a theorem of Erdős & Gallai",
+    .. [1] A. Tripathi and S. Vijay. "A note on a theorem of Erdős & Gallai",
        Discrete Mathematics, 265, pp. 417-420 (2003).
-    ..[2] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
+    .. [2] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
        of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
+
+    [EG1960]_, [choudum1986]_
     """
     try:
         dmax,dmin,dsum,n,num_degs = _basic_graphical_tests(deg_sequence)
@@ -227,7 +242,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
                 return False
     return True
 
-def is_multigraphical(deg_sequence):
+def is_multigraphical(sequence):
     """Returns True if some multigraph can realize the sequence.
 
     Parameters
@@ -240,16 +255,17 @@ def is_multigraphical(deg_sequence):
     valid : bool
         True if deg_sequence is a multigraphic degree sequence and False if not.
 
-    References
-    ----------
-    ..[1] S. L. Hakimi. "On the realizability of a set of integers as
-    degrees of the vertices of a linear graph", J. SIAM, 10, pp. 496-506
-    (1962).
-
     Notes
     -----
-    Worst-case run time is: O(n) where n is the length of the sequence.
+    The worst-case run time is O(n) where n is the length of the sequence.
+
+    References
+    ----------
+    .. [1] S. L. Hakimi. "On the realizability of a set of integers as
+       degrees of the vertices of a linear graph", J. SIAM, 10, pp. 496-506
+       (1962).
     """
+    deg_sequence = list(sequence)
     if not nx.utils.is_list_of_ints(deg_sequence):
         return False
     dsum, dmax = 0, 0
@@ -261,56 +277,58 @@ def is_multigraphical(deg_sequence):
         return False
     return True
 
-def is_pseudographical(deg_sequence):
+def is_pseudographical(sequence):
     """Returns True if some pseudograph can realize the sequence.
 
-    Every nonnegative integer sequence with even sum is pseudographical
+    Every nonnegative integer sequence with an even sum is pseudographical
     (see [1]_).
 
     Parameters
     ----------
-    deg_sequence : list
-        A list of integers
+    sequence : list or iterable container
+        A sequence of integer node degrees
 
     Returns
     -------
     valid : bool
-      True if deg_sequence is a pseudographic degree sequence and False if not.
-
-    References
-    ----------
-    ..[1] F. Boesch and F. Harary. "Line removal algorithms for graphs
-       and their degree lists", IEEE Trans. Circuits and Systems, CAS-23(12),
-       pp. 778-782 (1976).
+      True if the sequence is a pseudographic degree sequence and False if not.
 
     Notes
     -----
-    Worst-case run time is: O(n) where n is the length of the sequence.
-    """
-    if not nx.utils.is_list_of_ints(deg_sequence):
-        return False
-    return sum(deg_sequence)%2==0 and min(deg_sequence)>=0
+    The worst-case run time is O(n) where n is the length of the sequence.
 
-def is_digraphical(in_deg_sequence, out_deg_sequence):
+    References
+    ----------
+    .. [1] F. Boesch and F. Harary. "Line removal algorithms for graphs
+       and their degree lists", IEEE Trans. Circuits and Systems, CAS-23(12),
+       pp. 778-782 (1976).
+    """
+    s = list(sequence)
+    if not nx.utils.is_list_of_ints(s):
+        return False
+    return sum(s)%2 == 0 and min(s) >= 0
+
+def is_digraphical(in_sequence, out_sequence):
     r"""Returns True if some directed graph can realize the in- and out-degree 
     sequences.
 
     Parameters
     ----------
-    in_deg_sequence :  list of integers
-       Each list entry corresponds to the in-degree of a node.
-    out_deg_sequence : list of integers
-       Each list entry corresponds to the out-degree of a node.
+    in_sequence : list or iterable container
+        A sequence of integer node in-degrees
+
+    out_sequence : list or iterable container
+        A sequence of integer node out-degrees
 
     Returns
     -------
     valid : bool
-      True if deg_sequence is a digraphic degree sequence and False if not.
+      True if in and out-sequences are digraphic False if not.
 
     Notes
     -----
-    Algorithm as described by Kleitman and Wang [1]_.
-    Worst case runtime is O(s * log n) where s and n are the sum and length
+    This algorithm is from Kleitman and Wang [1]_.
+    The worst case runtime is O(s * log n) where s and n are the sum and length
     of the sequences respectively.
 
     References
@@ -319,6 +337,8 @@ def is_digraphical(in_deg_sequence, out_deg_sequence):
        Algorithms for Constructing Graphs and Digraphs with Given Valences
        and Factors, Discrete Mathematics, 6(1), pp. 79-88 (1973)
     """
+    in_deg_sequence = list(in_sequence)
+    out_deg_sequence = list(out_sequence)
     if not nx.utils.is_list_of_ints(in_deg_sequence):
         return False
     if not nx.utils.is_list_of_ints(out_deg_sequence):
