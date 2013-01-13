@@ -7,6 +7,7 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from collections import defaultdict
 import heapq
 import networkx as nx
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
@@ -71,6 +72,26 @@ def is_graphical(sequence, method='eg'):
 
 is_valid_degree_sequence = is_graphical
 
+def _basic_graphical_tests(deg_sequence):
+    # Sort and perform some simple tests on the sequence
+    if not nx.utils.is_list_of_ints(deg_sequence):
+        raise nx.NetworkXUnfeasible
+    p = len(deg_sequence)
+    num_degs = [0]*p
+    dmax, dmin, dsum, n = 0, p, 0, 0
+    for d in deg_sequence:
+        # Reject if degree is negative or larger than the sequence length
+        if d<0 or d>=p:
+            raise nx.NetworkXUnfeasible
+        # Process only the non-zero integers
+        elif d>0:
+            dmax, dmin, dsum, n = max(dmax,d), min(dmin,d), dsum+d, n+1
+            num_degs[d] += 1
+    # Reject sequence if it has odd sum or is oversaturated
+    if dsum%2 or dsum>n*(n-1):
+        raise nx.NetworkXUnfeasible
+    return dmax,dmin,dsum,n,num_degs
+
 def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     """Returns True if deg_sequence can be realized by a simple graph.
 
@@ -100,22 +121,9 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     ..[1] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
     of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
     """
-    # Preprocessing the sequence along with some simple tests
-    if not nx.utils.is_list_of_ints(deg_sequence):
-        return False
-    p = len(deg_sequence)
-    num_degs = [0]*p
-    dmax, dmin, dsum, n = 0, p, 0, 0
-    for d in deg_sequence:
-        # Reject if degree is negative or larger than the sequence length
-        if d<0 or d>=p:
-            return False
-        # Process only the non-zero integers
-        elif d>0:
-            dmax, dmin, dsum, n = max(dmax,d), min(dmin,d), dsum+d, n+1
-            num_degs[d] += 1
-    # Reject sequence if it has odd sum or is oversaturated
-    if dsum%2 or dsum>n*(n-1):
+    try:
+        dmax,dmin,dsum,n,num_degs = _basic_graphical_tests(deg_sequence)
+    except nx.NetworkXUnfeasible: 
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
     if n==0 or 4*dmin*n >= (dmax+dmin+1) * (dmax+dmin+1):
@@ -150,10 +158,11 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
             num_degs[stub], n = num_degs[stub]+1, n+1
     return True
 
+
 def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     """Returns True if deg_sequence can be realized by a simple graph.
 
-    The validation is done using the Erdős-Gallai theorem.
+    The validation is done using the Erdős-Gallai theorem [EG1960]_.
 
     Parameters
     ----------
@@ -188,29 +197,16 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     ----------
     [EG1960]_, [choudum1986]_
     ..[1] A. Tripathi and S. Vijay. "A note on a theorem of Erdős & Gallai",
-        Discrete Mathematics, 265, pp. 417-420 (2003).
+       Discrete Mathematics, 265, pp. 417-420 (2003).
     ..[2] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
-    of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
+       of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
     """
-    # Sort and perform some simple tests on the sequence
-    if not nx.utils.is_list_of_ints(deg_sequence):
-        return False
-    p = len(deg_sequence)
-    num_degs = [0]*p
-    dmax, dmin, dsum, n = 0, p, 0, 0
-    for d in deg_sequence:
-        # Reject if degree is negative or larger than the sequence length
-        if d<0 or d>=p:
-            return False
-        # Process only the non-zero integers
-        elif d>0:
-            dmax, dmin, dsum, n = max(dmax,d), min(dmin,d), dsum+d, n+1
-            num_degs[d] += 1
-    # Reject sequence if it has odd sum or is oversaturated
-    if dsum%2 or dsum>n*(n-1):
+    try:
+        dmax,dmin,dsum,n,num_degs = _basic_graphical_tests(deg_sequence)
+    except nx.NetworkXUnfeasible: 
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
-    elif n==0 or 4*dmin*n >= (dmax+dmin+1) * (dmax+dmin+1):
+    if n==0 or 4*dmin*n >= (dmax+dmin+1) * (dmax+dmin+1):
         return True
 
     # Perform the EG checks using the reformulation of Zverovich and Zverovich
