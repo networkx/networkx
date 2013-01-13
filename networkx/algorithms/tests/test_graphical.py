@@ -67,48 +67,48 @@ def test_directed_degree_sequence():
         G = nx.erdos_renyi_graph(n,p*(i+1),None,True)
         din = list(G.in_degree().values())
         dout = list(G.out_degree().values())
-        assert_true(nx.is_directed_graphical(din, dout))
+        assert_true(nx.is_digraphical(din, dout))
 
 def test_small_directed_sequences():
     dout=[5,3,3,3,3,2,2,2,1,1,1]
     din=[3,3,3,3,3,2,2,2,2,2,1]
-    assert_true(nx.is_directed_graphical(din, dout))
+    assert_true(nx.is_digraphical(din, dout))
     # Test nongraphical directed sequence
     dout = [1000,3,3,3,3,2,2,2,1,1,1]
     din=[103,102,102,102,102,102,102,102,102,102]
-    assert_false(nx.is_directed_graphical(din, dout))
+    assert_false(nx.is_digraphical(din, dout))
     # Test digraphical small sequence
     dout=[1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     din=[2, 2, 2, 2, 2, 2, 2, 2, 1, 1]
-    assert_true(nx.is_directed_graphical(din, dout))
+    assert_true(nx.is_digraphical(din, dout))
     # Test nonmatching sum
     din=[2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1]
-    assert_false(nx.is_directed_graphical(din, dout))
+    assert_false(nx.is_digraphical(din, dout))
     # Test for negative integer in sequence
     din=[2, 2, 2, -2, 2, 2, 2, 2, 1, 1, 4]
-    assert_false(nx.is_directed_graphical(din, dout))
+    assert_false(nx.is_digraphical(din, dout))
 
 def test_multi_sequence():
     # Test nongraphical multi sequence
     seq=[1000,3,3,3,3,2,2,2,1,1]
-    assert_false(nx.is_multi_graphical(seq))
+    assert_false(nx.is_multigraphical(seq))
     # Test small graphical multi sequence
     seq=[6,5,4,4,2,1,1,1]
-    assert_true(nx.is_multi_graphical(seq))
+    assert_true(nx.is_multigraphical(seq))
     # Test for negative integer in sequence
     seq=[6,5,4,-4,2,1,1,1]
-    assert_false(nx.is_multi_graphical(seq))
+    assert_false(nx.is_multigraphical(seq))
     # Test for sequence with odd sum
     seq=[1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
-    assert_false(nx.is_multi_graphical(seq))
+    assert_false(nx.is_multigraphical(seq))
         
 def test_pseudo_sequence():
     # Test small valid pseudo sequence
     seq=[1000,3,3,3,3,2,2,2,1,1]
-    assert_true(nx.is_pseudo_graphical(seq))
+    assert_true(nx.is_pseudographical(seq))
     # Test for sequence with odd sum
     seq=[1000,3,3,3,3,2,2,2,1,1,1]
-    assert_false(nx.is_pseudo_graphical(seq))
+    assert_false(nx.is_pseudographical(seq))
     # Test for negative integer in sequence
     seq=[1000,3,3,3,3,2,2,-2,1,1]
-    assert_false(nx.is_pseudo_graphical(seq))
+    assert_false(nx.is_pseudographical(seq))

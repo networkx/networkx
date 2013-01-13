@@ -18,11 +18,11 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Brian Cloteaux <brian.cloteaux@nist.gov>'])
 
 __all__ = ['is_graphical',
+           'is_multigraphical',
+           'is_pseudographical',
+           'is_digraphical',
            'is_valid_degree_sequence_erdos_gallai',
            'is_valid_degree_sequence_havel_hakimi',
-           'is_multi_graphical',
-           'is_pseudo_graphical',
-           'is_directed_graphical',
            'is_valid_degree_sequence', # deprecated
            ]
 
@@ -227,7 +227,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
                 return False
     return True
 
-def is_multi_graphical(deg_sequence):
+def is_multigraphical(deg_sequence):
     """Returns True if some multigraph can realize the sequence.
 
     Parameters
@@ -261,7 +261,7 @@ def is_multi_graphical(deg_sequence):
         return False
     return True
 
-def is_pseudo_graphical(deg_sequence):
+def is_pseudographical(deg_sequence):
     """Returns True if some pseudograph can realize the sequence.
 
     Every nonnegative integer sequence with even sum is pseudographical
@@ -291,8 +291,8 @@ def is_pseudo_graphical(deg_sequence):
         return False
     return sum(deg_sequence)%2==0 and min(deg_sequence)>=0
 
-def is_directed_graphical(in_deg_sequence, out_deg_sequence):
-    """Returns True if some directed graph can realize the in- and out-degree 
+def is_digraphical(in_deg_sequence, out_deg_sequence):
+    r"""Returns True if some directed graph can realize the in- and out-degree 
     sequences.
 
     Parameters
@@ -317,8 +317,7 @@ def is_directed_graphical(in_deg_sequence, out_deg_sequence):
     ----------
     .. [1] D.J. Kleitman and D.L. Wang
        Algorithms for Constructing Graphs and Digraphs with Given Valences
-       and Factors
-       Discrete Mathematics, 6(1), pp. 79-88 (1973)
+       and Factors, Discrete Mathematics, 6(1), pp. 79-88 (1973)
     """
     if not nx.utils.is_list_of_ints(in_deg_sequence):
         return False
