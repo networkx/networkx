@@ -1,7 +1,7 @@
 """
 Katz centrality.
 """
-#    Copyright (C) 2004-2013 by 
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -11,7 +11,7 @@ import networkx as nx
 from networkx.utils import *
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
-                        'Sasha Gutfraind (ag362@cornell.edu)', 
+                        'Sasha Gutfraind (ag362@cornell.edu)',
                         'Vincent Gauthier (vgauthier@luxbulb.org)'])
 
 __all__ = ['katz_centrality',
@@ -31,7 +31,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     Parameters
     ----------
     G : graph
-      A networkx graph 
+      A networkx graph
 
     alpha : float
       Attenuation factor
@@ -47,7 +47,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
       Error tolerance used to check convergence in power method iteration.
 
     nstart : dictionary, optional
-      Starting value of Katz iteration for each node. 
+      Starting value of Katz iteration for each node.
 
     Returns
     -------
@@ -70,12 +70,12 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
 
     Notes
     ------
-    Katz centrality overcome some limitations of the eigenvalue centrality and 
-    it is defined as follows :  
+    Katz centrality overcome some limitations of the eigenvalue centrality and
+    it is defined as follows :
     .. math::
         x_i = \alpha \sum_{i} A_{ij} x_j + \beta
 
-    with 
+    with
 
     .. math::
         \alpha < \frac{1}{\lambda_max}
@@ -95,7 +95,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
 
     References
     ----------
-    .. [New10] M. Newman, Networks: An Introduction. Oxford University Press, 
+    .. [New10] M. Newman, Networks: An Introduction. Oxford University Press,
     USA, 2010, p. 720.
 
     See Also
@@ -114,14 +114,14 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     nnodes=G.number_of_nodes()
 
     if nstart is None:
-        # choose starting vector with entries of 0 
+        # choose starting vector with entries of 0
         x=dict([(n,0) for n in G])
     else:
         x=nstart
 
     beta = dict.fromkeys(G,beta)
 
-    # make up to max_iter iterations        
+    # make up to max_iter iterations
     for i in range(max_iter):
         xlast=x
         x=dict.fromkeys(xlast, 0)
@@ -131,7 +131,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
                 x[n] += xlast[nbr] * G[n][nbr].get('weight',1)
             x[n] = alpha*x[n] + beta[n]
 
-        # check convergence            
+        # check convergence
         err=sum([abs(x[n]-xlast[n]) for n in x])
         if err < nnodes*tol:
             if normalized:
@@ -143,11 +143,11 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
                     s=1.0
             else:
                 s = 1
-            for n in x: 
+            for n in x:
                 x[n]*=s
             return x
 
-    raise nx.NetworkXError("""eigenvector_centrality(): 
+    raise nx.NetworkXError("""eigenvector_centrality():
 power iteration failed to converge in %d iterations."%(i+1))""")
 
 
@@ -184,12 +184,12 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
 
     Notes
     ------
-    Katz centrality overcome some limitations of the eigenvalue centrality and 
-    it is defined as follows :  
+    Katz centrality overcome some limitations of the eigenvalue centrality and
+    it is defined as follows :
     .. math::
         x_i = \alpha \sum_{i} A_{ij} x_j + \beta
 
-    with 
+    with
 
     .. math::
         \alpha < \frac{1}{\lambda_max}
@@ -207,7 +207,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
 
     References
     ----------
-    .. [New10] M. Newman, Networks: An Introduction. Oxford University Press, 
+    .. [New10] M. Newman, Networks: An Introduction. Oxford University Press,
     USA, 2010, p. 720.
 
     See Also
@@ -229,7 +229,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
     A=nx.adj_matrix(G,nodelist=G.nodes())
     n = np.array(A).shape[0]
     beta = np.ones((n,1))*beta
-    centrality = np.linalg.solve( np.eye(n,n) - (alpha * A) , beta) 
+    centrality = np.linalg.solve( np.eye(n,n) - (alpha * A) , beta)
     if normalized:
         norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
     else:
