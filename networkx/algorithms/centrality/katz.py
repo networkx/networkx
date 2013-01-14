@@ -151,6 +151,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
 power iteration failed to converge in %d iterations."%(i+1))""")
 
 
+@not_implemented_for('multigraph')
 def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
     """Compute the Katz centrality for the graph G.
 
@@ -222,17 +223,13 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
     except ImportError:
         raise ImportError('Requires NumPy: http://scipy.org/')
 
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
-        raise nx.NetworkXException('Not defined for multigraphs.')
-
     if len(G)==0:
         return {}
 
     A=nx.adj_matrix(G,nodelist=G.nodes())
     n = np.array(A).shape[0]
-
     beta = np.ones((n,1))*beta
-    centrality = np.linalg.pinv( np.eye(n,n) - (alpha * A) ) * beta
+    centrality = np.linalg.solve( np.eye(n,n) - (alpha * A) , beta) 
     if normalized:
         norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
     else:
