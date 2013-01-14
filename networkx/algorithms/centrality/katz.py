@@ -7,8 +7,8 @@ Katz centrality.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
 import networkx as nx
+from networkx.utils import *
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Sasha Gutfraind (ag362@cornell.edu)', 
@@ -17,6 +17,7 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
 __all__ = ['katz_centrality',
            'katz_centrality_numpy']
 
+@not_implemented_for('multigraph')
 def katz_centrality(G, alpha=0.1, beta=1.0,
                     max_iter=1000, tol=1.0e-6, nstart=None, normalized=True):
     """Compute the Katz centrality for the graph G.
@@ -106,11 +107,9 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     hits
     """
     from math import sqrt
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
-        raise nx.NetworkXException("Not defined for multigraphs.")
 
     if len(G)==0:
-        raise nx.NetworkXException("Empty graph.")
+        return {}
 
     nnodes=G.number_of_nodes()
 
@@ -220,7 +219,6 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
     """
     try:
         import numpy as np
-        from numpy.matlib import ones 
     except ImportError:
         raise ImportError('Requires NumPy: http://scipy.org/')
 
@@ -228,13 +226,13 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
         raise nx.NetworkXException('Not defined for multigraphs.')
 
     if len(G)==0:
-        raise nx.NetworkXException('Empty graph.')
+        return {}
 
     A=nx.adj_matrix(G,nodelist=G.nodes())
     n = np.array(A).shape[0]
 
-    beta = ones((n,1))*beta
-    centrality = np.linalg.pinv( np.matlib.eye(n,n) - (alpha * A) ) * beta
+    beta = np.ones((n,1))*beta
+    centrality = np.linalg.pinv( np.eye(n,n) - (alpha * A) ) * beta
     if normalized:
         norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
     else:

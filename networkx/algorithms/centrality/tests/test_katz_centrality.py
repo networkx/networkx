@@ -55,8 +55,17 @@ class TestKatzCentrality(object):
         G = networkx.path_graph(3)
         b = networkx.katz_centrality(G, alpha, max_iter=0)
 
+    @raises(networkx.NetworkXException)
+    def test_multigraph(self):
+        e = networkx.katz_centrality(networkx.MultiGraph(), 0.1)
 
-class TestEigenvectorCentralityDirected(object):
+    def test_empty(self):
+        e = networkx.katz_centrality(networkx.Graph(), 0.1)
+        assert_equal(e,{})
+
+
+
+class TestKatzCentralityDirected(object):
 
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
@@ -157,7 +166,7 @@ class TestEigenvectorCentralityDirected(object):
             assert_almost_equal(a, b)
 
 
-class TestEigenvectorCentralityExceptions(object):
+class TestKatzCentralityExceptions(object):
 
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
@@ -170,18 +179,12 @@ class TestEigenvectorCentralityExceptions(object):
             raise SkipTest('NumPy not available.')
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
-    @raises(networkx.NetworkXException)
-    def test_multigraph(self):
-        e = networkx.katz_centrality(networkx.MultiGraph(), 0.1)
 
     @raises(networkx.NetworkXException)
     def test_multigraph_numpy(self):
         e = networkx.katz_centrality_numpy(networkx.MultiGraph(), 0.1)
 
-    @raises(networkx.NetworkXException)
-    def test_empty(self):
-        e = networkx.katz_centrality(networkx.Graph(), 0.1)
 
-    @raises(networkx.NetworkXException)
     def test_empty_numpy(self):
         e = networkx.katz_centrality_numpy(networkx.Graph(), 0.1)
+        assert_equal(e,{})
