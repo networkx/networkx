@@ -55,14 +55,58 @@ class TestKatzCentrality(object):
         G = networkx.path_graph(3)
         b = networkx.katz_centrality(G, alpha, max_iter=0)
 
+    def test_beta_as_scalar(self):
+        alpha = 0.1
+        beta = 0.1
+        b_answer = {0: 0.5598852584152165, 1: 0.6107839182711449,
+                    2: 0.5598852584152162}
+        G = networkx.path_graph(3)
+        b = networkx.katz_centrality(G, alpha, beta)
+        for n in sorted(G):
+            assert_almost_equal(b[n], b_answer[n], places=4)
+
+    def test_beta_as_dict(self):
+        alpha = 0.1
+        beta = {0: 1.0, 1: 1.0, 2: 1.0}
+        b_answer = {0: 0.5598852584152165, 1: 0.6107839182711449,
+                    2: 0.5598852584152162}
+        G = networkx.path_graph(3)
+        b = networkx.katz_centrality(G, alpha, beta)
+        for n in sorted(G):
+            assert_almost_equal(b[n], b_answer[n], places=4)
+
+    def test_beta_as_vector(self):
+        alpha = 0.1
+        beta = [1.0, 1.0, 1.0]
+        b_answer = {0: 0.5598852608963282, 1: 0.6107839137224398,
+                    2: 0.5598852608963282}
+        G = networkx.path_graph(3)
+        b = networkx.katz_centrality(G, alpha, beta)
+        print b
+        for n in sorted(G):
+            assert_almost_equal(b[n], b_answer[n], places=4)
+
+    def test_multiple_alpha(self):
+        alpha_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+        for alpha in alpha_list:
+            b_answer = {0.1: {0: 0.5598852584152165, 1: 0.6107839182711449, 2: 0.5598852584152162},
+                        0.2: {0: 0.5454545454545454, 1: 0.6363636363636365, 2: 0.5454545454545454},
+                        0.3: {0: 0.5333964609104419, 1: 0.6564879518897746, 2: 0.5333964609104419},
+                        0.4: {0: 0.5232045649263551, 1: 0.6726915834767423, 2: 0.5232045649263551},
+                        0.5: {0: 0.5144957746691622, 1: 0.6859943117075809, 2: 0.5144957746691622},
+                        0.6: {0: 0.5069794004195823, 1: 0.6970966755769258, 2: 0.5069794004195823}}
+            G = networkx.path_graph(3)
+            b = networkx.katz_centrality(G, alpha)
+            for n in sorted(G):
+                assert_almost_equal(b[n], b_answer[alpha][n], places=4)
+
     @raises(networkx.NetworkXException)
     def test_multigraph(self):
         e = networkx.katz_centrality(networkx.MultiGraph(), 0.1)
 
     def test_empty(self):
         e = networkx.katz_centrality(networkx.Graph(), 0.1)
-        assert_equal(e,{})
-
+        assert_equal(e, {})
 
 
 class TestKatzCentralityDirected(object):
@@ -161,7 +205,7 @@ class TestKatzCentralityDirected(object):
     def test_eigenvector_centrality_unweighted(self):
         G = self.H
         alpha = self.H.alpha
-        p = networkx.katz_centrality_numpy(G,alpha)
+        p = networkx.katz_centrality_numpy(G, alpha)
         for (a, b) in zip(list(p.values()), self.G.evc):
             assert_almost_equal(a, b)
 
@@ -179,12 +223,10 @@ class TestKatzCentralityExceptions(object):
             raise SkipTest('NumPy not available.')
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
 
-
     @raises(networkx.NetworkXException)
     def test_multigraph_numpy(self):
         e = networkx.katz_centrality_numpy(networkx.MultiGraph(), 0.1)
 
-
     def test_empty_numpy(self):
         e = networkx.katz_centrality_numpy(networkx.Graph(), 0.1)
-        assert_equal(e,{})
+        assert_equal(e, {})
