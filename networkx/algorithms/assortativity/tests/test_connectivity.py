@@ -108,3 +108,14 @@ class TestNeighborConnectivity(object):
         assert_equal(c,{0:0,3:1})
 
 
+    def test_in_out_weight(self):
+        from itertools import permutations
+        G=nx.DiGraph()
+        G.add_edge(1,2,weight=1)
+        G.add_edge(1,3,weight=1)
+        G.add_edge(3,1,weight=1)
+        for s,t in permutations(['in','out','in+out'],2):
+            c = nx.average_degree_connectivity(G, source=s, target=t)
+            cw = nx.average_degree_connectivity(G,source=s, target=t, 
+                                                weight='weight')
+            assert_equal(c,cw)
