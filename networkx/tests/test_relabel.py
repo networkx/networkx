@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from nose.tools import *
 from networkx import *
 from networkx.convert import *
@@ -100,7 +99,7 @@ class TestRelabel():
         mapping={'A':'aardvark','B':'bear','C':'cat','D':'dog'}
         H=relabel_nodes(G,mapping)
         assert_equal(sorted(H.nodes()), ['aardvark', 'bear', 'cat', 'dog'])
-        
+
     def test_relabel_nodes_function(self):
         G=empty_graph()
         G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
@@ -127,7 +126,7 @@ class TestRelabel():
         mapping={'a':'aardvark','b':'bear'}
         G=relabel_nodes(G,mapping,copy=False)
         assert_equal(sorted(G.nodes()), ['aardvark', 'bear'])
-        assert_edges_equal(sorted(G.edges()), 
+        assert_edges_equal(sorted(G.edges()),
                            [('aardvark', 'bear'), ('aardvark', 'bear')])
 
     def test_relabel_nodes_multidigraph(self):
@@ -135,15 +134,15 @@ class TestRelabel():
         mapping={'a':'aardvark','b':'bear'}
         G=relabel_nodes(G,mapping,copy=False)
         assert_equal(sorted(G.nodes()), ['aardvark', 'bear'])
-        assert_equal(sorted(G.edges()), 
+        assert_equal(sorted(G.edges()),
                      [('aardvark', 'bear'), ('aardvark', 'bear')])
 
     @raises(KeyError)
     def test_relabel_nodes_missing(self):
-        G=Graph([('A','B'),('A','C'),('B','C'),('C','D')])        
+        G=Graph([('A','B'),('A','C'),('B','C'),('C','D')])
         mapping={0:'aardvark'}
         G=relabel_nodes(G,mapping,copy=False)
-        
+
 
     def test_relabel_toposort(self):
         K5=nx.complete_graph(4)
