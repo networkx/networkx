@@ -57,7 +57,7 @@ class TestRelabel():
         assert_equal(degree(H,3), 1)
 
         H=convert_node_labels_to_integers(G,ordering="increasing degree",
-                                          discard_old_labels=False)
+                                          label_attribute='label')
         degH=H.degree().values()
         degG=G.degree().values()
         assert_equal(sorted(degH), sorted(degG))
@@ -65,12 +65,14 @@ class TestRelabel():
         assert_equal(degree(H,1), 2)
         assert_equal(degree(H,2), 2)
         assert_equal(degree(H,3), 3)
-        mapping=H.node_labels
-        assert_equal(mapping['C'], 3)
-        assert_equal(mapping['D'], 0)
-        assert_true(mapping['A']==1 or mapping['A']==2)
-        assert_true(mapping['B']==1 or mapping['B']==2)
 
+        # check mapping
+        assert_equal(H.node[3]['label'],'C')
+        assert_equal(H.node[0]['label'],'D')
+        assert_true(H.node[1]['label']=='A' or H.node[2]['label']=='A')
+        assert_true(H.node[1]['label']=='B' or H.node[2]['label']=='B')
+
+    def test_convert_to_integers2(self):
         G=empty_graph()
         G.add_edges_from([('C','D'),('A','B'),('A','C'),('B','C')])
         G.name="paw"
@@ -80,16 +82,17 @@ class TestRelabel():
         assert_equal(sorted(degH), sorted(degG))
 
         H=convert_node_labels_to_integers(G,ordering="sorted",
-                                          discard_old_labels=False)
-        mapping=H.node_labels
-        assert_equal(mapping['A'], 0)
-        assert_equal(mapping['B'], 1)
-        assert_equal(mapping['C'], 2)
-        assert_equal(mapping['D'], 3)
+                                          label_attribute='label')
+        assert_equal(H.node[0]['label'],'A')
+        assert_equal(H.node[1]['label'],'B')
+        assert_equal(H.node[2]['label'],'C')
+        assert_equal(H.node[3]['label'],'D')
 
-        assert_raises(networkx.exception.NetworkXError,
-                      convert_node_labels_to_integers, G, 
-                      ordering="increasing age")
+    @raises(nx.NetworkXError)
+    def test_convert_to_integers_raise(self):
+        G = nx.Graph()
+        H=convert_node_labels_to_integers(G,ordering="increasing age")
+
 
     def test_relabel_nodes_copy(self):
         G=empty_graph()

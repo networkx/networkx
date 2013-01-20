@@ -148,8 +148,8 @@ def _relabel_copy(G, mapping):
     
 
 def convert_node_labels_to_integers(G, first_label=0, ordering="default",
-                                    discard_old_labels=True):
-    """Return a copy of G node labels replaced with integers.
+                                    label_attribute=None):
+    """Return a copy of the graph G with node labels replaced with integers.
 
     Parameters
     ----------
@@ -166,9 +166,9 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
         "increasing degree" : nodes are sorted by increasing degree
         "decreasing degree" : nodes are sorted by decreasing degree
 
-    discard_old_labels : bool, optional (default=True)
-       If True discard old labels. If False, create a node attribute 
-       'old_label' to hold the old labels.
+    label_attribute : string, optional (default=None)
+        Name of node attribute to store old label.  If None no attribute
+        is created.
     """
 #    This function strips information attached to the nodes and/or
 #    edges of a graph, and returns a graph with appropriate integer
@@ -183,11 +183,7 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
 #    When implementing graph
 #    algorithms it is often convenient to strip off the original node
 #    and edge information and appropriately relabel the n nodes with
-#    the integer values 1,..,n. This is the purpose of this function,
-#    and it provides the option (see discard_old_labels variable) to either
-#    preserve the original labels in separate dicts (these are not
-#    returned but made an attribute of the new graph.
-
+#    the integer values 1,..,n. This is the purpose of this function.
     N=G.number_of_nodes()+first_label
     if ordering=="default":
         mapping=dict(zip(G.nodes(),range(first_label,N)))
@@ -208,7 +204,7 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
         raise nx.NetworkXError('Unknown node ordering: %s'%ordering)
     H=relabel_nodes(G,mapping)
     H.name="("+G.name+")_with_int_labels"
-    if not discard_old_labels:
-        H.node_labels=mapping
+    if label_attribute is not None:
+        nx.set_node_attributes(H, label_attribute,
+                               dict((v,k) for k,v in mapping.items()))
     return H
-

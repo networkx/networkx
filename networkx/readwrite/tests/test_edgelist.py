@@ -181,7 +181,7 @@ class TestEdgelist:
 
 
     def test_edgelist_integers(self):
-        G=nx.convert_node_labels_to_integers(self.G,discard_old_labels=False)
+        G=nx.convert_node_labels_to_integers(self.G)
         (fd,fname)=tempfile.mkstemp()
         nx.write_edgelist(G,fname)  
         H=nx.read_edgelist(fname,nodetype=int)
