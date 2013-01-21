@@ -1,13 +1,13 @@
-#    Copyright (C) 2006-2011 by
+#    Copyright (C) 2006-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
+__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                            'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
+                           'Dan Schult (dschult@colgate.edu)'])
 __all__ = ['convert_node_labels_to_integers', 'relabel_nodes']
 
 def relabel_nodes(G, mapping, copy=True):
@@ -23,7 +23,7 @@ def relabel_nodes(G, mapping, copy=True):
        A partial mapping is allowed.
 
     copy : bool (optional, default=True)
-       If True return a copy or if False relabel the nodes in place.
+       If True return a copy, or if False relabel the nodes in place.
 
     Examples
     --------
@@ -149,7 +149,7 @@ def _relabel_copy(G, mapping):
 
 def convert_node_labels_to_integers(G, first_label=0, ordering="default",
                                     label_attribute=None):
-    """Return a copy of the graph G with node labels replaced with integers.
+    """Return a copy of the graph G with the nodes relabeled with integers.
 
     Parameters
     ----------
@@ -161,49 +161,44 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
        The n new integer labels are numbered first_label, ..., n-1+first_label.
 
     ordering : string
-        "default" : inherit node ordering from G.nodes()
-        "sorted"  : inherit node ordering from sorted(G.nodes())
-        "increasing degree" : nodes are sorted by increasing degree
-        "decreasing degree" : nodes are sorted by decreasing degree
+       "default" : inherit node ordering from G.nodes()
+       "sorted"  : inherit node ordering from sorted(G.nodes())
+       "increasing degree" : nodes are sorted by increasing degree
+       "decreasing degree" : nodes are sorted by decreasing degree
 
     label_attribute : string, optional (default=None)
-        Name of node attribute to store old label.  If None no attribute
-        is created.
-    """
-#    This function strips information attached to the nodes and/or
-#    edges of a graph, and returns a graph with appropriate integer
-#    labels. One can view this as a re-labeling of the nodes. Be
-#    warned that the term "labeled graph" has a loaded meaning
-#    in graph theory. The fundamental issue is whether the names
-#    (labels) of the nodes (and edges) matter in deciding when two
-#    graphs are the same. For example, in problems of graph enumeration
-#    there is a distinct difference in techniques required when
-#    counting labeled vs. unlabeled graphs.
+       Name of node attribute to store old label.  If None no attribute
+       is created.
 
-#    When implementing graph
-#    algorithms it is often convenient to strip off the original node
-#    and edge information and appropriately relabel the n nodes with
-#    the integer values 1,..,n. This is the purpose of this function.
-    N=G.number_of_nodes()+first_label
-    if ordering=="default":
-        mapping=dict(zip(G.nodes(),range(first_label,N)))
-    elif ordering=="sorted":
-        nlist=G.nodes()
+    Notes
+    -----
+    Node and edge attribute data are copied to the new (relabeled) graph.
+
+    See Also
+    --------
+    relabel_nodes
+    """
+    N = G.number_of_nodes()+first_label
+    if ordering == "default":
+        mapping = dict(zip(G.nodes(),range(first_label,N)))
+    elif ordering == "sorted":
+        nlist = G.nodes()
         nlist.sort()
         mapping=dict(zip(nlist,range(first_label,N)))
-    elif ordering=="increasing degree":
+    elif ordering == "increasing degree":
         dv_pairs=[(d,n) for (n,d) in G.degree_iter()]
         dv_pairs.sort() # in-place sort from lowest to highest degree
-        mapping=dict(zip([n for d,n in dv_pairs],range(first_label,N)))
-    elif ordering=="decreasing degree":
-        dv_pairs=[(d,n) for (n,d) in G.degree_iter()]
+        mapping = dict(zip([n for d,n in dv_pairs],range(first_label,N)))
+    elif ordering == "decreasing degree":
+        dv_pairs = [(d,n) for (n,d) in G.degree_iter()]
         dv_pairs.sort() # in-place sort from lowest to highest degree
         dv_pairs.reverse()
-        mapping=dict(zip([n for d,n in dv_pairs],range(first_label,N)))
+        mapping = dict(zip([n for d,n in dv_pairs],range(first_label,N)))
     else:
         raise nx.NetworkXError('Unknown node ordering: %s'%ordering)
-    H=relabel_nodes(G,mapping)
+    H = relabel_nodes(G,mapping)
     H.name="("+G.name+")_with_int_labels"
+    # create node attribute with the old label
     if label_attribute is not None:
         nx.set_node_attributes(H, label_attribute,
                                dict((v,k) for k,v in mapping.items()))
