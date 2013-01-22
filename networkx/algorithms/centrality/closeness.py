@@ -50,6 +50,9 @@ def closeness_centrality(G, v=None, distance=None, normalized=True):
     the node.  If the graph is not completely connected, this
     algorithm computes the closeness centrality for each connected
     part separately.
+
+    Higher values of closeness indicate higher centrality.
+
     """
     if distance is not None:
         if distance is True: distance='weight'
