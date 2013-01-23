@@ -17,9 +17,21 @@ __all__ = ['closeness_centrality']
 
 
 def closeness_centrality(G, v=None, distance=None, normalized=True):
-    """Compute closeness centrality for nodes.
+    r"""Compute closeness centrality for nodes.
 
-    Closeness centrality at a node is 1/average distance to all other nodes.
+    Closeness centrality [1]_ of a node `u` is a measure based on the 
+    inverse of the sum of geodesic distances from `u` to all other nodes.
+    The raw sum of distances is dependent on graph order, thus 
+    closeness measure is normalized by the sum of minimum possible 
+    distances: `n - 1`.
+
+    .. math::
+
+        C(u) = \left [\frac{\sum_{v=1}^{n} d(v, u)}{n - 1} \right]^{-1} 
+             = \frac{n - 1}{\sum_{v=1}^{n} d(v, u)}
+
+    Where `d(v, u)` is the shortest path distance between `v` and `u`.
+    Notice that higher values of closeness indicate higher centrality.
 
     Parameters
     ----------
@@ -45,13 +57,17 @@ def closeness_centrality(G, v=None, distance=None, normalized=True):
 
     Notes
     -----
-    The closeness centrality is normalized to to n-1 / size(G)-1 where
-    n is the number of nodes in the connected part of graph containing
-    the node.  If the graph is not completely connected, this
+    The closeness centrality is normalized to `\frac{n-1}{order(G)-1}`
+    where `n` is the number of nodes in the connected part of graph 
+    containing the node.  If the graph is not completely connected, this
     algorithm computes the closeness centrality for each connected
     part separately.
 
-    Higher values of closeness indicate higher centrality.
+    References
+    ----------
+    .. [1] Freeman, L.C., 1979. Centrality in networks: I. Conceptual clarification. 
+           Social Networks 1, 215--239.
+           http://www.soc.ucsb.edu/faculty/friedkin/Syllabi/Soc146/Freeman78.PDF
 
     """
     if distance is not None:
