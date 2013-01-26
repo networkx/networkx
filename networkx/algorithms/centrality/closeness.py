@@ -21,14 +21,13 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
 
     Closeness centrality [1]_ of a node `u` is the reciprical of the
     sum of the shortest path distances from `u` to all `n-1` other nodes.
-    Since the sum of distances is dependent on number of nodes in the
+    Since the sum of distances depends on number of nodes in the
     graph, closeness is normalized by the sum of minimum possible
     distances `n-1`.
 
     .. math::
 
-        C(u) = \left [\frac{\sum_{v=1}^{n} d(v, u)}{n - 1} \right]^{-1}
-             = \frac{n - 1}{\sum_{v=1}^{n} d(v, u)},
+        C(u) = \frac{n - 1}{\sum_{v=1}^{n} d(v, u)},
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`,
     and `n` is the number of nodes in the graph.
@@ -66,12 +65,15 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
     this algorithm computes the closeness centrality for each
     connected part separately.
 
+    If the 'distance' keyword is set to an edge attribute key then the
+    shortest-path length will be computed using Dijkstra's algorithm with
+    that edge attribute as the edge weight.
+
     References
     ----------
     .. [1] Freeman, L.C., 1979. Centrality in networks: I.
        Conceptual clarification.  Social Networks 1, 215--239.
        http://www.soc.ucsb.edu/faculty/friedkin/Syllabi/Soc146/Freeman78.PDF
-
     """
     if distance is not None:
         # use Dijkstra's algorithm with specified attribute as edge weight 
