@@ -23,8 +23,8 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     r"""Compute the Katz centrality for the nodes of the graph G.
 
     This algorithm it uses the power method to find the eigenvector
-    corresponding to the largest eigenvalue of the adjacency matrix of G. 
-    The constant alpha should be strictly less than the inverse of largest 
+    corresponding to the largest eigenvalue of the adjacency matrix of G.
+    The constant alpha should be strictly less than the inverse of largest
     eigenvalue of the adjacency matrix for the algorithm to converge.
 
     Parameters
@@ -39,16 +39,16 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
       Weight attributed to the immediate neighborhood. If not a scalar the
       dictionary must have an value for every node.
 
-    max_iter : interger, optional
+    max_iter : interger, optional (default=1000)
       Maximum number of iterations in power method.
 
-    tol : float, optional
+    tol : float, optional (default=1.0e-6)
       Error tolerance used to check convergence in power method iteration.
 
     nstart : dictionary, optional
       Starting value of Katz iteration for each node.
 
-    normalized : bool
+    normalized : bool, optional (default=True)
       If True normalize the resulting values.
 
     Returns
@@ -124,7 +124,13 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     else:
         x=nstart
 
-    beta = dict.fromkeys(G,beta)
+    # Cast beta from list to dict
+    if type(beta) is list:
+        beta = dict((nodeid,beta[nodeid]) for nodeid in G.nodes())
+
+    # Cast beta from scalar to dict
+    if type(beta) is not dict:
+        beta = dict.fromkeys(G,beta)
 
     # make up to max_iter iterations
     for i in range(max_iter):
@@ -186,7 +192,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
     --------
     >>> G=nx.path_graph(4)
     >>> centrality=nx.katz_centrality_numpy(G)
-    
+
     print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
     ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
 
