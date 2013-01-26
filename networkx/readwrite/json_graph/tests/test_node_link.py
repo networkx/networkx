@@ -34,8 +34,11 @@ class TestNodeLink:
         H = node_link_graph(node_link_data(G))
         assert_true(H.is_directed())
 
-    def test_multidigraph(self):
-        G = nx.MultiDiGraph()
+
+    def test_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(1,2,key='first')
+        G.add_edge(1,2,key='second',color='blue')
         H = node_link_graph(node_link_data(G))
-        assert_true(H.is_directed())
-        assert_true(H.is_multigraph())
+        nx.is_isomorphic(G,H)
+        assert_equal(H[1][2]['second']['color'],'blue')
