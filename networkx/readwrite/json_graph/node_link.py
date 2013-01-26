@@ -1,4 +1,4 @@
-#    Copyright (C) 2011-2013 by 
+#    Copyright (C) 2011-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -10,14 +10,14 @@ import networkx as nx
 __author__ = """Aric Hagberg <hagberg@lanl.gov>"""
 __all__ = ['node_link_data', 'node_link_graph']
 
-def node_link_data(G): 
+def node_link_data(G):
     """Return data in node-link format that is suitable for JSON serialization
     and use in Javascript documents.
 
     Parameters
     ----------
     G : NetworkX graph
-    
+
     Returns
     -------
     data : dict
@@ -33,10 +33,10 @@ def node_link_data(G):
 
     >>> import json
     >>> s = json.dumps(data)
-    
+
     Notes
     -----
-    Graph, node, and link attributes are stored in this format but keys 
+    Graph, node, and link attributes are stored in this format but keys
     for attributes must be strings if you want to serialize with JSON.
 
     See Also
@@ -61,17 +61,17 @@ def node_link_data(G):
 
 
 def node_link_graph(data, directed=False, multigraph=True):
-    """Return graph from node-link data format. 
+    """Return graph from node-link data format.
 
     Parameters
     ----------
     data : dict
         node-link formatted graph data
-    
-    directed : bool        
+
+    directed : bool
         If True, and direction not specified in data, return a directed graph.
 
-    multigraph : bool        
+    multigraph : bool
         If True, and multigraph not specified in data, return a multigraph.
 
     Returns
@@ -110,8 +110,7 @@ def node_link_graph(data, directed=False, multigraph=True):
         link_data = d.copy()
         source = link_data.pop('source')
         target = link_data.pop('target')
-        edgedata = dict((str(k),v) for k,v in d.items() 
+        edgedata = dict((str(k),v) for k,v in d.items()
                         if k!='source' and k!='target')
         graph.add_edge(mapping[source],mapping[target],**edgedata)
     return graph
-
