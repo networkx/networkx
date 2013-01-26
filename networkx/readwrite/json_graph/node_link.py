@@ -1,4 +1,4 @@
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011-2013 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -7,7 +7,7 @@
 from itertools import count,repeat
 import json
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov))"""
+__author__ = """Aric Hagberg <hagberg@lanl.gov>"""
 __all__ = ['node_link_data', 'node_link_graph']
 
 def node_link_data(G): 
@@ -43,15 +43,22 @@ def node_link_data(G):
     --------
     node_link_graph, adjacency_data, tree_data
     """
+    multigraph = G.is_multigraph()
     mapping = dict(zip(G,count()))
     data = {}
     data['directed'] = G.is_directed()
-    data['multigraph'] = G.is_multigraph()
+    data['multigraph'] = multigraph
     data['graph'] = list(G.graph.items())
     data['nodes'] = [ dict(id=n, **G.node[n]) for n in G ]
-    data['links'] = [ dict(source=mapping[u], target=mapping[v], **d)
-                      for u,v,d in G.edges(data=True) ]
+    if multigraph:
+        data['links'] = [ dict(source=mapping[u], target=mapping[v], key=k, **d)
+                          for u,v,k,d in G.edges(keys=True, data=True) ]
+    else:
+        data['links'] = [ dict(source=mapping[u], target=mapping[v], **d)
+                          for u,v,d in G.edges(data=True) ]
+
     return data
+
 
 def node_link_graph(data, directed=False, multigraph=True):
     """Return graph from node-link data format. 
@@ -100,8 +107,9 @@ def node_link_graph(data, directed=False, multigraph=True):
         nodedata = dict((str(k),v) for k,v in d.items() if k!='id')
         graph.add_node(node, **nodedata)
     for d in data['links']:
-        source = d.pop('source')
-        target = d.pop('target')
+        link_data = d.copy()
+        source = link_data.pop('source')
+        target = link_data.pop('target')
         edgedata = dict((str(k),v) for k,v in d.items() 
                         if k!='source' and k!='target')
         graph.add_edge(mapping[source],mapping[target],**edgedata)
