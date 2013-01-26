@@ -64,7 +64,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
       Weight attributed to the immediate neighborhood. If not a scalar the
       dictionary must have an value for every node.
 
-    max_iter : interger, optional (default=1000)
+    max_iter : integer, optional (default=1000)
       Maximum number of iterations in power method.
 
     tol : float, optional (default=1.0e-6)
@@ -83,11 +83,16 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
 
     Examples
     --------
+    >>> import math
     >>> G = nx.path_graph(4)
-    >>> centrality = nx.katz_centrality(G)
-
-    print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
-    ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
+    >>> phi = (1+math.sqrt(5))/2.0 # largest eigenvalue of adj matrix
+    >>> centrality = nx.katz_centrality(G,1/phi-0.01)
+    >>> for n,c in sorted(centrality.items()):
+    ...    print(n,"%0.2f"%c)
+    0 0.37
+    1 0.60
+    2 0.60
+    3 0.37
 
     Notes
     -----
@@ -219,11 +224,16 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> centrality=nx.katz_centrality_numpy(G)
-
-    print(['%s %0.2f'%(node,centrality[node]) for node in centrality])
-    ['0 0.37', '1 0.60', '2 0.60', '3 0.37']
+    >>> import math
+    >>> G = nx.path_graph(4)
+    >>> phi = (1+math.sqrt(5))/2.0 # largest eigenvalue of adj matrix
+    >>> centrality = nx.katz_centrality_numpy(G,1/phi)
+    >>> for n,c in sorted(centrality.items()):
+    ...    print(n,"%0.2f"%c)
+    0 0.37
+    1 0.60
+    2 0.60
+    3 0.37
 
     Notes
     ------
