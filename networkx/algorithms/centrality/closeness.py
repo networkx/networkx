@@ -1,6 +1,5 @@
 """
 Closeness centrality measures.
-
 """
 #    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -19,9 +18,9 @@ __all__ = ['closeness_centrality']
 def closeness_centrality(G, u=None, distance=None, normalized=True):
     r"""Compute closeness centrality for nodes.
 
-    Closeness centrality [1]_ of a node `u` is the reciprical of the
+    Closeness centrality [1]_ of a node `u` is the reciprocal of the
     sum of the shortest path distances from `u` to all `n-1` other nodes.
-    Since the sum of distances depends on number of nodes in the
+    Since the sum of distances depends on the number of nodes in the
     graph, closeness is normalized by the sum of minimum possible
     distances `n-1`.
 
@@ -87,7 +86,6 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
     else:
         nodes = [u]
     closeness_centrality = {}
-
     for n in nodes:
         sp = path_length(G,n)
         totsp = sum(sp.values())
