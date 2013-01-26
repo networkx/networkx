@@ -44,17 +44,23 @@ def adjacency_data(G):
     --------
     adjacency_graph, node_link_data, tree_data
     """
+    multigraph = G.is_multigraph()
     data = {}
     data['directed'] = G.is_directed()
-    data['multigraph'] = G.is_multigraph()
+    data['multigraph'] = multigraph
     data['graph'] = list(G.graph.items())
     data['nodes'] = []
     data['adjacency'] = []
     for n,nbrdict in G.adjacency_iter():
         data['nodes'].append(dict(id=n, **G.node[n]))
         adj = []
-        for nbr,d in nbrdict.items():
-            adj.append(dict(id=nbr, **d))
+        if multigraph:
+            for nbr,key in nbrdict.items():
+                for k,d in key.items():
+                    adj.append(dict(id=nbr, key=k, **d))
+        else:
+            for nbr,d in nbrdict.items():
+                adj.append(dict(id=nbr, **d))
         data['adjacency'].append(adj)
     return data
 
@@ -105,7 +111,11 @@ def adjacency_graph(data, directed=False, multigraph=True):
     for i,d in enumerate(data['adjacency']):
         source = mapping[i]
         for tdata in d:
-            target=tdata.pop('id')
-            graph.add_edge(source,target,attr_dict=tdata)
+            target = tdata.pop('id')
+            key = tdata.pop('key', None)
+            if not multigraph or key is None:
+                graph.add_edge(source,target,attr_dict=tdata)
+            else:
+                graph.add_edge(source,target,key=key, attr_dict=tdata)
     return graph
 
