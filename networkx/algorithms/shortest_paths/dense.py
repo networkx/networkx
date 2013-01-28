@@ -91,6 +91,8 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     # use some defaultdict magick here
     # for dist the default is the floating point inf value
     dist = defaultdict(lambda : defaultdict(lambda: float('inf')))
+    for u in G:
+        dist[u][u] = 0
     pred = defaultdict(dict)
     # initialize path distance dictionary to be the adjacency matrix
     # also set the distance to self to 0 (zero diagonal)
@@ -99,7 +101,6 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
         e_weight = d.get(weight, 1.0)
         dist[u][v] = min(e_weight, dist[u][v])
         pred[u][v] = u
-        dist[u][u] = 0
         if undirected:
             dist[v][u] = min(e_weight, dist[v][u])
             pred[v][u] = v
