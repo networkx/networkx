@@ -39,5 +39,5 @@ def stochastic_graph(G, copy=True, weight='weight'):
 
     degree=W.out_degree(weight=weight)
     for (u,v,d) in W.edges(data=True):
-        d[weight]=d.get(weight,1.0)/degree[u]
+        d[weight]=float(d.get(weight,1.0))/degree[u]
     return W
