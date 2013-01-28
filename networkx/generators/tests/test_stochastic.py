@@ -1,4 +1,4 @@
-from nose.tools import assert_true, assert_equal,assert_raises
+from nose.tools import assert_true, assert_equal, raises
 import networkx as nx
 
 def test_stochastic():
@@ -24,10 +24,10 @@ def test_stochastic_ints():
                  [(0, 1, {'weight': 0.5}), 
                   (0, 2, {'weight': 0.5})])
 
+@raises(nx.NetworkXError)
+def test_stochastic_graph_input():
+    S = nx.stochastic_graph(nx.Graph())
 
-
-def test_stochastic_error():
-    G=nx.Graph()
-    assert_raises(Exception,nx.stochastic_graph,G)
-    G=nx.MultiGraph()
-    assert_raises(Exception,nx.stochastic_graph,G)
+@raises(nx.NetworkXError)
+def test_stochastic_multigraph_input():
+    S = nx.stochastic_graph(nx.MultiGraph())
