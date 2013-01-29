@@ -56,30 +56,30 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     normalized_laplacian_matrix
     """
     import numpy as np
-    # this isn't the most efficient way to do this...
+    if nodelist is None:
+        nodelist = G.nodes()
     if G.is_multigraph():
+        # this isn't the fastest way to do this...
         A = np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight))
         I = np.identity(A.shape[0])
         D = I*np.sum(A,axis=1)
         L = D - A
-        return L
-    # Graph or DiGraph, this is faster than above
-    if nodelist is None:
-        nodelist = G.nodes()
-    n = len(nodelist)
-    index = dict( (n,i) for i,n in enumerate(nodelist) )
-    L = np.zeros((n,n))
-    for ui,u in enumerate(nodelist):
-        totalwt = 0.0
-        for v,d in G[u].items():
-            try:
-                vi = index[v]
-            except KeyError:
-                continue
-            wt = d.get(weight,1)
-            L[ui,vi] = -wt
-            totalwt += wt
-        L[ui,ui] = totalwt
+    else:
+        # Graph or DiGraph, this is faster than above
+        n = len(nodelist)
+        index = dict( (n,i) for i,n in enumerate(nodelist) )
+        L = np.zeros((n,n))
+        for ui,u in enumerate(nodelist):
+            totalwt = 0.0
+            for v,d in G[u].items():
+                try:
+                    vi = index[v]
+                except KeyError:
+                    continue
+                wt = d.get(weight,1)
+                L[ui,vi] = -wt
+                totalwt += wt
+            L[ui,ui] = totalwt
     return np.asmatrix(L)
 
 @require('numpy')
