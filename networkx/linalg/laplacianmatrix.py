@@ -43,8 +43,8 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
 
     Returns
     -------
-    L : NumPy array
-      Laplacian of G.
+    L : NumPy matrix
+      The Laplacian matrix of G.
 
     Notes
     -----
@@ -81,7 +81,7 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
             L[ui,vi]= -wt
             totalwt+=wt
         L[ui,ui]= totalwt
-    return L
+    return np.asmatrix(L)
 
 @require('numpy')
 @not_implemented_for('directed')
@@ -112,8 +112,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 
     Returns
     -------
-    L : NumPy array
-      Normalized Laplacian of G.
+    L : NumPy matrix
+      The normalized Laplacian matrix of G.
 
     Notes
     -----
