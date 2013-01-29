@@ -20,6 +20,8 @@ __all__ = ['laplacian_matrix',
            'directed_laplacian_matrix',
            ]
 
+@require('numpy')
+@not_implemented_for('directed')
 def laplacian_matrix(G, nodelist=None, weight='weight'):
     """Return the Laplacian matrix of G.
 
@@ -54,11 +56,7 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     to_numpy_matrix
     normalized_laplacian_matrix
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-          "laplacian_matrix() requires numpy: http://scipy.org/ ")
+    import numpy as np
     # this isn't the most efficient way to do this...
     if G.is_multigraph():
         A=np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight))
@@ -85,6 +83,8 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
         L[ui,ui]= totalwt
     return L
 
+@require('numpy')
+@not_implemented_for('directed')
 def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     r"""Return the normalized Laplacian matrix of G.
 
@@ -135,14 +135,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
        Laplacian, Electronic Journal of Linear Algebra, Volume 16, pp. 90-98,
        March 2007.
     """
-    # FIXME: this isn't the most efficient way to do this...
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-          "normalized_laplacian_matrix() requires numpy: http://scipy.org/ ")
+    import numpy as np
     if G.is_multigraph():
-
         L = laplacian_matrix(G, nodelist=nodelist, weight=weight)
         D = np.diag(L)
     elif G.number_of_selfloops() == 0:
@@ -231,12 +225,7 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None,
        Laplacians and the Cheeger inequality for directed graphs.
        Annals of Combinatorics, 9(1), 2005
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-          "directed_laplacian_matrix() requires numpy: http://scipy.org/ ")
-
+    import numpy as np
     if walk_type is None:
         if nx.is_strongly_connected(G):
             if nx.is_aperiodic(G):
