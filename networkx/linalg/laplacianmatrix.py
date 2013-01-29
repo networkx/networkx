@@ -17,8 +17,7 @@ __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
 
 __all__ = ['laplacian_matrix',
            'normalized_laplacian_matrix',
-           'directed_laplacian_matrix',
-           ]
+           'directed_laplacian_matrix']
 
 @require('numpy')
 @not_implemented_for('directed')
@@ -59,28 +58,28 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     import numpy as np
     # this isn't the most efficient way to do this...
     if G.is_multigraph():
-        A=np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight))
-        I=np.identity(A.shape[0])
-        D=I*np.sum(A,axis=1)
-        L=D-A
+        A = np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight))
+        I = np.identity(A.shape[0])
+        D = I*np.sum(A,axis=1)
+        L = D - A
         return L
     # Graph or DiGraph, this is faster than above
     if nodelist is None:
-        nodelist=G.nodes()
-    n=len(nodelist)
-    index=dict( (n,i) for i,n in enumerate(nodelist) )
+        nodelist = G.nodes()
+    n = len(nodelist)
+    index = dict( (n,i) for i,n in enumerate(nodelist) )
     L = np.zeros((n,n))
     for ui,u in enumerate(nodelist):
-        totalwt=0.0
+        totalwt = 0.0
         for v,d in G[u].items():
             try:
-                vi=index[v]
+                vi = index[v]
             except KeyError:
                 continue
-            wt=d.get(weight,1)
-            L[ui,vi]= -wt
-            totalwt+=wt
-        L[ui,ui]= totalwt
+            wt = d.get(weight,1)
+            L[ui,vi] = -wt
+            totalwt += wt
+        L[ui,ui] = totalwt
     return np.asmatrix(L)
 
 @require('numpy')
@@ -161,7 +160,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 @require('numpy')
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
-def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None, alpha=0.95):
+def directed_laplacian_matrix(G, nodelist=None, weight='weight',
+                              walk_type=None, alpha=0.95):
     r"""Return the directed Laplacian matrix of G.
 
     The graph directed Laplacian is the matrix
