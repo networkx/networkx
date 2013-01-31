@@ -55,7 +55,6 @@ class TestStronglyConnected:
             assert_equal(ncc(G),len(C))
 
     def test_is_strongly_connected(self):            
-        ncc=nx.number_strongly_connected_components
         for G,C in self.gc:
             if len(C)==1:
                 assert_true(nx.is_strongly_connected(G))
@@ -127,3 +126,12 @@ class TestStronglyConnected:
         else:
             edge = (1,0)
         assert_equal(cG.edges(),[edge])
+    
+    def test_connected_raise(self):
+        G=nx.Graph()
+        assert_raises(NetworkXError,nx.strongly_connected_components,G)
+        assert_raises(NetworkXError,nx.kosaraju_strongly_connected_components,G)
+        assert_raises(NetworkXError,nx.strongly_connected_component_recursive,G)
+        assert_raises(NetworkXError,nx.strongly_connected_compoent_subgraphs,G)
+        assert_raises(NetworkXError,nx.is_strongly_connected,G)
+        assert_raises(NetworkXError,nx.condensation,G)
