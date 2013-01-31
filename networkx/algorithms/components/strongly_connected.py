@@ -36,9 +36,13 @@ def strongly_connected_components(G):
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
+    Raises
+    ------
+    NetworkXError: If G is undirected.
+
     See Also
     --------
-    connected_components
+    connected_components, weakly_connected_components
 
     Notes
     -----
@@ -54,6 +58,9 @@ def strongly_connected_components(G):
        E. Nuutila and E. Soisalon-Soinen
        Information Processing Letters 49(1): 9-14, (1994)..
     """
+    if not G.is_directed():
+        raise nx.NetworkXError("""Not allowed for undirected graph G. 
+              Use connected_components() """)
     preorder={}
     lowlink={}
     scc_found={}
@@ -112,6 +119,10 @@ def kosaraju_strongly_connected_components(G,source=None):
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
+    Raises
+    ------
+    NetworkXError: If G is undirected
+
     See Also
     --------
     connected_components
@@ -120,6 +131,9 @@ def kosaraju_strongly_connected_components(G,source=None):
     -----
     Uses Kosaraju's algorithm.
     """
+    if not G.is_directed():
+        raise nx.NetworkXError("""Not allowed for undirected graph G. 
+              Use connected_components() """)
     components=[]
     G=G.reverse(copy=False)
     post=list(nx.dfs_postorder_nodes(G,source=source))
@@ -152,6 +166,10 @@ def strongly_connected_components_recursive(G):
     comp : list of lists
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
+
+    Raises
+    ------
+    NetworkXError : If G is undirected
 
     See Also
     --------
@@ -188,6 +206,11 @@ def strongly_connected_components_recursive(G):
                 tmpc.append(w)
             stack.remove(v)
             scc.append(tmpc) # add to scc list
+    
+    if not G.is_directed():
+        raise nx.NetworkXError("""Not allowed for undirected graph G. 
+              Use connected_components() """)
+    
     scc=[]
     visited={}
     component={}
@@ -310,11 +333,18 @@ def condensation(G, scc=None):
        to the index of the component in the list of strongly connected
        components.
 
+    Raises
+    ------
+    NetworkXError: If G is not directed
+
     Notes
     -----
     After contracting all strongly connected components to a single node,
     the resulting graph is a directed acyclic graph.
     """
+    if not G.is_directed():
+        raise nx.NetworkXError("""Not allowed for undirected graph G.
+              See is_connected() for connectivity test.""")
     if scc is None:
         scc = nx.strongly_connected_components(G)
     mapping = {}
