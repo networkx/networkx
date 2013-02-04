@@ -39,16 +39,16 @@ __author__ = """\n""".join(['Salim Fadhley',
                             ])
 
 __all__ = ['write_graphml', 'read_graphml', 'generate_graphml',
-           'GraphMLWriter', 'GraphMLReader']
+           'parse_graphml', 'GraphMLWriter', 'GraphMLReader']
 
 import networkx as nx
 from networkx.utils import open_file, make_str
 import warnings
 try:
-    from xml.etree.cElementTree import Element, ElementTree, tostring
+    from xml.etree.cElementTree import Element, ElementTree, tostring, fromstring
 except ImportError:
     try:
-        from xml.etree.ElementTree import Element, ElementTree, tostring
+        from xml.etree.ElementTree import Element, ElementTree, tostring, fromstring
     except ImportError:
         pass
 
@@ -150,7 +150,49 @@ def read_graphml(path,node_type=str):
     """
     reader = GraphMLReader(node_type=node_type)
     # need to check for multiple graphs
-    glist=list(reader(path))
+    glist=list(reader(path=path))
+    return glist[0]
+
+
+def parse_graphml(graphml_string,node_type=str):
+    """Read graph in GraphML format from path.
+
+    Parameters
+    ----------
+    graphml_string : string
+       String containing graphml information
+       (e.g., contents of a graphml file).
+
+    node_type: Python type (default: str)
+       Convert node ids to this type
+
+    Returns
+    -------
+    graph: NetworkX graph
+        If no parallel edges are found a Graph or DiGraph is returned.
+        Otherwise a MultiGraph or MultiDiGraph is returned.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> linefeed=chr(10) # linefeed=\n
+    >>> s=linefeed.join(nx.generate_graphml(G))
+    >>> H=nx.parse_graphml(s)
+
+    Notes
+    -----
+    This implementation does not support mixed graphs (directed and unidirected
+    edges together), hypergraphs, nested graphs, or ports.
+
+    For multigraphs the GraphML edge "id" will be used as the edge
+    key.  If not specified then they "key" attribute will be used.  If
+    there is no "key" attribute a default NetworkX multigraph edge key
+    will be provided.
+
+    """
+    reader = GraphMLReader(node_type=node_type)
+    # need to check for multiple graphs
+    glist=list(reader(string=graphml_string))
     return glist[0]
 
 
@@ -350,8 +392,13 @@ class GraphMLReader(GraphML):
         self.node_type=node_type
         self.multigraph=False # assume multigraph and test for parallel edges
 
-    def __call__(self, stream):
-        self.xml = ElementTree(file=stream)
+    def __call__(self, path=None, string=None):
+        if path is not None:
+          self.xml = ElementTree(file=path)
+        elif string is not None:
+          self.xml = fromstring(string)
+        else:
+          raise ValueError("Must specify either 'path' or 'string' as kwarg.")
         (keys,defaults) = self.find_graphml_keys(self.xml)
         for g in self.xml.findall("{%s}graph" % self.NS_GRAPHML):
             yield self.make_graph(g, keys, defaults)
