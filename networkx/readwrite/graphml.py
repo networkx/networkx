@@ -155,7 +155,7 @@ def read_graphml(path,node_type=str):
 
 
 def parse_graphml(graphml_string,node_type=str):
-    """Read graph in GraphML format from path.
+    """Read graph in GraphML format from string.
 
     Parameters
     ----------
