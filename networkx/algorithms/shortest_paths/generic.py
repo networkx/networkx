@@ -380,7 +380,7 @@ def all_shortest_paths(G, source, target, weight=None):
     while top >= 0:
         node,i = stack[top]
         if node == source:
-          yield [p for p,n in reversed(stack[:top+1])]
+            yield [p for p,n in reversed(stack[:top+1])]
         if len(pred[node]) > i:
             top += 1
             if top == len(stack):
