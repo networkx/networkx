@@ -8,14 +8,22 @@ GEXF (Graph Exchange XML Format) is a language for describing complex
 network structures, their associated data and dynamics.
 
 This implementation does not support mixed graphs (directed and
-unidirected edges together).
+undirected edges together).
 
 Format
 ------
 GEXF is an XML format.  See http://gexf.net/format/schema.html for the
 specification and http://gexf.net/format/basic.html for examples.
 """
+#    Copyright (C) 2013 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
 # Based on GraphML NetworkX GraphML reader
+__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
+__all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
 import itertools
 import networkx as nx
 from networkx.utils import open_file, make_str
@@ -26,9 +34,6 @@ except ImportError:
         from xml.etree.ElementTree import Element, ElementTree, tostring
     except ImportError:
         pass
-__author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)'])
-__all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
-
 
 @open_file(1,mode='wb')
 def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
@@ -42,8 +47,8 @@ def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
     G : graph
        A NetworkX graph
     path : file or string
-       File or filename to write.
-       Filenames ending in .gz or .bz2 will be compressed.
+       File or file name to write.
+       File names ending in .gz or .bz2 will be compressed.
     encoding : string (optional)
        Encoding for text data.
     prettyprint : bool (optional)
@@ -56,7 +61,7 @@ def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
 
     Notes
     -----
-    This implementation does not support mixed graphs (directed and unidirected
+    This implementation does not support mixed graphs (directed and undirected
     edges together).
 
     The node id attribute is set to be the string of the node label.
@@ -97,7 +102,7 @@ def generate_gexf(G, encoding='utf-8',prettyprint=True,version='1.1draft'):
 
     Notes
     -----
-    This implementation does not support mixed graphs (directed and unidirected
+    This implementation does not support mixed graphs (directed and undirected
     edges together).
 
     The node id attribute is set to be the string of the node label.
@@ -124,8 +129,8 @@ def read_gexf(path,node_type=None,relabel=False,version='1.1draft'):
     Parameters
     ----------
     path : file or string
-       File or filename to write.
-       Filenames ending in .gz or .bz2 will be compressed.
+       File or file name to write.
+       File names ending in .gz or .bz2 will be compressed.
 
     node_type: Python type (default: None)
        Convert node ids to this type if not None.
@@ -142,7 +147,7 @@ def read_gexf(path,node_type=None,relabel=False,version='1.1draft'):
 
     Notes
     -----
-    This implementation does not support mixed graphs (directed and unidirected
+    This implementation does not support mixed graphs (directed and undirected
     edges together).
 
     References
@@ -347,8 +352,10 @@ class GEXFWriter(GEXF):
                 kw['type']=make_str(edge_type)
             except KeyError:
                 pass
+            source_id = make_str(G.node[u].get('id', u))
+            target_id = make_str(G.node[v].get('id', v))
             edge_element = Element("edge",
-                                   source=make_str(u),target=make_str(v),
+                                   source=source_id,target=target_id,
                                    **kw)
             default=G.graph.get('edge_default',{})
             edge_data=self.add_viz(edge_element,edge_data)
@@ -895,6 +902,7 @@ def relabel_gexf_graph(G):
     for n in G:
         m=mapping[n]
         H.node[m]['id']=n
+        H.node[m].pop('label')
         if 'pid' in H.node[m]:
             H.node[m]['pid']=mapping[G.node[n]['pid']]
         if 'parents' in H.node[m]:
