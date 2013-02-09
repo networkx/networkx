@@ -897,6 +897,7 @@ def relabel_gexf_graph(G):
     for n in G:
         m=mapping[n]
         H.node[m]['id']=n
+        H.node[m].pop('label')
         if 'pid' in H.node[m]:
             H.node[m]['pid']=mapping[G.node[n]['pid']]
         if 'parents' in H.node[m]:
