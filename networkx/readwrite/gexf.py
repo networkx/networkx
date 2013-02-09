@@ -347,8 +347,10 @@ class GEXFWriter(GEXF):
                 kw['type']=make_str(edge_type)
             except KeyError:
                 pass
+            source_id = make_str(G.node[u].get('id', u))
+            target_id = make_str(G.node[v].get('id', v))
             edge_element = Element("edge",
-                                   source=make_str(u),target=make_str(v),
+                                   source=source_id,target=target_id,
                                    **kw)
             default=G.graph.get('edge_default',{})
             edge_data=self.add_viz(edge_element,edge_data)
