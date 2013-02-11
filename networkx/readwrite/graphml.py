@@ -217,7 +217,8 @@ class GraphML(object):
            (str,"yfiles"),(str,"string"), (unicode,"string"),
            (int,"int"), (long,"long"),
            (float,"float"), (float,"double"),
-           (bool, "boolean")]
+           (bool, "boolean"),
+	       (list, "vector_boolean"), (list, "vector_int"), (list, "vector_long"), (list, "vector_float"), (list, "vector_double"), (list, "vector_string")]
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
@@ -499,11 +500,16 @@ class GraphMLReader(GraphML):
             try:
                 data_name=graphml_keys[key]['name']
                 data_type=graphml_keys[key]['type']
+                data_python_type = graphml_keys[key]['python_type']
             except KeyError:
                 raise nx.NetworkXError("Bad GraphML data: no key %s"%key)
             text=data_element.text
-            # assume anything with subelements is a yfiles extension
-            if text is not None and len(list(data_element))==0:
+
+	    if text is not None and data_type == list: # handle graph-tool vector_ types
+                if data_python_type == float: # graph-tool encodes floats in binary representation 
+                    data_python_type = float.fromhex
+                data[data_name] = map(data_python_type, text.split(', '))
+            elif text is not None and len(list(data_element))==0:             # assume anything with subelements is a yfiles extension
                 if data_type==bool:
                     data[data_name] = self.convert_bool[text]
                 else:
@@ -552,9 +558,11 @@ class GraphMLReader(GraphML):
                 warnings.warn("No key type for id %s. Using string"%attr_id)
             if attr_name is None:
                 raise nx.NetworkXError("Unknown key for id %s in file."%attr_id)
+            python_value_type = attr_type.split('_')[1] if attr_type.startswith('vector_') else None
             graphml_keys[attr_id] = {
                 "name":attr_name,
                 "type":self.python_type[attr_type],
+			"python_type": self.python_type.get(python_value_type, None),
                 "for":k.get("for")}
             # check for "default" subelement of key element
             default=k.find("{%s}default" % self.NS_GRAPHML)
