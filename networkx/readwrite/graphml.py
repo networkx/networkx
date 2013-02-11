@@ -507,8 +507,11 @@ class GraphMLReader(GraphML):
 
 	    if text is not None and data_type == list: # handle graph-tool vector_ types
                 if data_python_type == float: # graph-tool encodes floats in binary representation 
-                    data_python_type = float.fromhex
-                data[data_name] = map(data_python_type, text.split(', '))
+                    data[data_name] = map(float.fromhex, text.split(', '))
+                elif data_python_type == bool:
+                    data[data_name] = map(bool, map(int, text.split(', ')))
+                else:
+                    data[data_name] = map(data_python_type, text.split(', '))
             elif text is not None and len(list(data_element))==0:             # assume anything with subelements is a yfiles extension
                 if data_type==bool:
                     data[data_name] = self.convert_bool[text]
