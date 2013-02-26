@@ -43,13 +43,16 @@ __author__ = """Pedro Silva (psilva+git@pedrosilva.pt)"""
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['read_rdf', 'from_rdfgraph', 'to_rdfgraph', 'write_rdf']
+__all__ = ['read_rdf', 'from_rdfgraph']
 
 import networkx as nx
 from networkx.exception import NetworkXError
 
 
 def _get_rdflib_plugins(kind):
+    """Return list of strings corresponding to parsers or serializers
+    accepted by rdflib.
+    """
     try:
         import rdflib
     except ImportError:
@@ -74,7 +77,7 @@ def from_rdfgraph(G, create_using=None):
     --------
     >>> K5=nx.complete_graph(5)
     >>> A=nx.to_rdfgraph(K5)
-    >>> G=nx.from_rdfgraphf(A)
+    >>> G=nx.from_rdfgraph(A)
 
     Notes
     -----
