@@ -43,14 +43,19 @@ __author__ = """Pedro Silva (psilva+git@pedrosilva.pt)"""
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['read_rdf', 'parse_rdf', 'generate_rdf', 'write_rdf']
+__all__ = ['read_rdf', 'from_rdfgraph', 'to_rdfgraph', 'write_rdf']
 
 import networkx as nx
 from networkx.exception import NetworkXError
 
-# map(lambda x: x.name,
-#     filter(lambda x: x.kind is rdflib.serializer.Serializer,
-#            rdflib.plugin.plugins()))
+
+def _get_rdflib_plugins(kind):
+    try:
+        import rdflib
+    except ImportError:
+        raise ImportError('_get_rdflib_plugins() requires rdflib ',
+                          'https://github.com/RDFLib/rdflib ')
+    return [p.name for p in rdflib.plugin.plugins() if p.kind is kind]
 
 
 def from_rdfgraph(G, create_using=None):
@@ -134,3 +139,29 @@ def from_rdfgraph(G, create_using=None):
             N.add_edge(_subject, _object, label=p)
 
     return N
+
+
+def read_rdf(path, format='xml', create_using=None):
+    """Return a NetworkX MultiDiGraph or (bipartite) Graph from an rdf
+    file on path.
+
+    Parameters
+    ----------
+    path : file or string
+       File name or file handle or url to read.
+
+    format : string
+       RDFlib parser to use ({})
+
+    See from_rdfgraph() for details.
+    """
+    try:
+        import rdflib
+    except ImportError:
+        raise ImportError('read_rdf() requires rdflib ',
+                          'https://github.com/RDFLib/rdflib ')
+    read_rdf.__doc__.format(_get_rdflib_plugins(rdflib.parser.Parser))
+
+    G = rdflib.Graph()
+    G.load(path, format=format)
+    return from_rdfgraph(G, create_using)
