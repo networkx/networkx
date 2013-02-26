@@ -139,8 +139,8 @@ def pagerank(G,alpha=0.85,personalization=None,
         if err < tol:
             break
         if i>max_iter:
-            raise NetworkXError('pagerank: power iteration failed to converge'
-                                'in %d iterations.'%(i+1))
+            raise NetworkXError('pagerank: power iteration failed to converge '
+                                'in %d iterations.'%(i-1))
         i+=1
     return x
 
