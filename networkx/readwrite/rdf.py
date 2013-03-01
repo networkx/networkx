@@ -61,6 +61,87 @@ def _get_rdflib_plugins(kind):
     return [p.name for p in rdflib.plugin.plugins() if p.kind is kind]
 
 
+def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#'):
+    """Return a NetworkX graph from an rdflib RGML graph.
+
+    Parameters
+    ----------
+    G : rdflib Graph
+      A graph created with rdflib
+
+    namespace : string
+      Alternative RGML namespace
+
+    Notes
+    -----
+    This implementation does not support mixed graphs (directed and
+    unidirected edges together), hyperedges, or nested graphs.
+
+    The namespace as typically published in RGML documents is
+    http://purl.org/puninj/2001/05/rgml-schema#, which points to
+    http://www.cs.rpi.edu/~puninj/RGML/, but the RGML schema currently
+    resides at
+    http://www.cs.rpi.edu/research/groups/pb/punin/public_html/RGML/.
+
+    """
+    try:
+        import rdflib
+    except ImportError:
+        raise ImportError('_get_rdflib_plugins() requires rdflib ',
+                          'https://github.com/RDFLib/rdflib ')
+
+    if namespace not in [str(x[1]) for x in G.namespaces()]:
+        raise NetworkXError('from_rgml() requires an RGML-namespaced graph ',
+                            namespace)
+
+    rdf = rdflib.RDF
+    rgml = rdflib.Namespace(namespace)
+    G.bind('rgml', str(rgml))
+
+    try:
+        graph_lit = G.value(predicate=rdf.type, object=rgml.Graph, any=False)
+    except rdflib.exceptions.UniquenessError:
+        raise NetworkXError('from_rgml() does not support nested graphs ')
+
+    try:
+        directed = G.value(subject=graph_lit, predicate=rgml.directed)
+    except rdflib.exceptions.UniquenessError:
+        raise NetworkXError('from_rgml() does not support mixed graphs ')
+
+    qres = G.query("""SELECT DISTINCT ?node
+    WHERE {
+    ?edge rgml:nodes ?seq .
+    ?seq  ?predicate ?node .
+    ?node rdf:type   rgml:Node .
+    ?edge rdf:type   rgml:Edge .
+    ?seq  rdf:type   rdf:Seq .
+    }
+    """,
+                   initNs=dict(rgml=rgml, rdf=rdf))
+
+    if len(set(qres)):
+        raise NetworkXError('from_rgml() does not support hypergraphs')
+
+    create_using = nx.Graph()
+    if directed:
+        create_using = nx.DiGraph()
+
+    # assign defaults
+    N = nx.empty_graph(0, create_using)
+    N.name = G.identifier
+
+    edges = G.subjects(predicate=rdf.type, object=rgml.Edge)
+    sources = [x[1] for x in G.subject_objects(rgml.source)]
+    targets = [x[1] for x in G.subject_objects(rgml.target)]
+
+    for e, u, v in zip(edges, sources, targets):
+        N.add_node(u)
+        N.add_node(v)
+        N.add_edge(u, v, label=e)
+
+    return N
+
+
 def from_rdfgraph(G, create_using=None):
     """Return a NetworkX MultiDiGraph or (bipartite) Graph from an
     rdflib Graph.
@@ -134,7 +215,10 @@ def from_rdfgraph(G, create_using=None):
             N.add_node(_object, label=o, bipartite=1)
             N.add_node(_predicate, label=p, bipartite=1)
             N.add_edges_from(zip([_statement]*3,
-                                 [_subject, _object, _predicate]))
+                                 [_subject, _object, _predicate],
+                                 [{'term': t} for t in ['subject',
+                                                        'object',
+                                                        'predicate']]))
         # directed labeled multigraph branch
         else:
             N.add_node(_subject, label=s)
