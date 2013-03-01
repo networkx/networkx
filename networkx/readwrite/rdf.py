@@ -168,3 +168,97 @@ def read_rdf(path, format='xml', create_using=None):
     G = rdflib.Graph()
     G.load(path, format=format)
     return from_rdfgraph(G, create_using)
+
+
+def to_rdfgraph(N):
+    """Return an rdflib graph from a NetworkX graph N.
+
+    Parameters
+    ----------
+    N : NetworkX graph
+      A graph created with NetworkX
+
+    Examples
+    --------
+    >>> K5 = nx.complete_graph(5)
+    >>> G = nx.to_rdfgraph(K5)
+
+    Notes
+    -----
+
+    If all nodes and edges in N have a 'label' key in their attribute
+    dict with rdflib.term.Identifier values, an rdflib graph will be
+    constructed with those terms instead of the node IDs.
+
+    If the nodes in N have a 'bipartite' key in their attribute dict
+    with values 0 and 1, and the edges in N have a 'term' key pointing
+    to values in ['subject', 'object', 'predicate'], an rdflib graph
+    will be constructed from triples corresponding to each node in
+    partition 0, each built from the respective subject, predicate, and
+    object nodes in partition 1.
+
+    """
+    try:
+        import rdflib
+    except ImportError:
+        raise ImportError('to_rdfgraph() requires rdflib ',
+                          'https://github.com/RDFLib/rdflib ')
+
+    G = rdflib.Graph(identifier=N.name)
+
+    nodes = N.nodes_iter(data=True)
+    edges = N.edges_iter(data=True)
+
+    nodes_bipartite = iter([x[-1].get('bipartite') for x in nodes])
+    edges_terms = iter([x[-1].get('term') for x in edges])
+
+    nodes_labels = iter([x[-1].get('label') for x in nodes])
+    edges_labels = iter([x[-1].get('label') for x in edges])
+
+    if all([x for x in nodes_bipartite if x]) \
+       and all([x in [0, 1] for x in nodes_bipartite]) \
+       and all([x in ['subject', 'object', 'predicate'] for x in edges_terms]):
+
+        return _build_from_bipartite(N, G)
+
+    elif all(nodes_labels) and all(edges_labels) \
+        and all([isinstance(x,
+                            rdflib.term.Identifier) for x in nodes_labels]) \
+        and all([isinstance(x,
+                            rdflib.term.Identifier) for x in edges_labels]):
+
+        return _build_from_multigraph(N, G)
+
+    else:
+        return _build_from_default(N, G)
+
+
+def _build_from_bipartite(N, G):
+    """Reconstruct previously imported RDF graph G from bipartite
+    representation N.
+    """
+    nodes = N.nodes_iter(data=True)
+    for statement in [x[0] for x in nodes if not x[-1].get('bipartite')]:
+        terms = dict([(N.edge[statement][x]['term'],
+                       N.node[x]['label']) for x in N.edge[statement]])
+        G.add((terms['subject'], terms['predicate'], terms['object']))
+    return G
+
+
+def _build_from_multigraph(N, G):
+    """Reconstruct previously imported RDF graph G from directed labeled
+    multigraph representation N.
+    """
+    edges = N.edges_iter(data=True)
+    for s, o, p in edges:
+        _subject = N.node[s]['label']
+        _object = N.node[o]['label']
+        _predicate = p['label']
+        G.add((_subject, _predicate, _object))
+    return G
+
+
+def _build_from_default(N, G):
+    """Build rdf graph G from generic graph N.
+    """
+    raise NotImplementedError('Default to_rdfgraph() for generic NX graphs')
