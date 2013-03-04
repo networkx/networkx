@@ -43,7 +43,7 @@ __author__ = """Pedro Silva (psilva+git@pedrosilva.pt)"""
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['read_rdf', 'from_rdfgraph']
+__all__ = ['read_rdf', 'from_rdfgraph', 'write_rdf', 'from_rgml']
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -61,7 +61,8 @@ def _get_rdflib_plugins(kind):
     return [p.name for p in rdflib.plugin.plugins() if p.kind is kind]
 
 
-def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#'):
+def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
+              relabel=True):
     """Return a NetworkX graph from an rdflib RGML graph.
 
     Parameters
@@ -69,8 +70,12 @@ def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#'):
     G : rdflib Graph
       A graph created with rdflib
 
-    namespace : string
+    namespace : string, optional
       Alternative RGML namespace
+
+    relabel : bool, optional
+      If True use the RGML node label attribute for node names
+      otherwise use the node id.
 
     Notes
     -----
@@ -108,38 +113,82 @@ def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#'):
     except rdflib.exceptions.UniquenessError:
         raise NetworkXError('from_rgml() does not support mixed graphs ')
 
-    qres = G.query("""SELECT DISTINCT ?node
+    hyperedges = G.query("""SELECT DISTINCT ?edge
     WHERE {
     ?edge rgml:nodes ?seq .
     ?seq  ?predicate ?node .
     ?node rdf:type   rgml:Node .
     ?edge rdf:type   rgml:Edge .
     ?seq  rdf:type   rdf:Seq .
-    }
-    """,
-                   initNs=dict(rgml=rgml, rdf=rdf))
+    }""", initNs=dict(rgml=rgml, rdf=rdf))
 
-    if len(set(qres)):
+    if len(set(hyperedges)):
         raise NetworkXError('from_rgml() does not support hypergraphs')
 
+    def _make_elements(G, kind):
+        import collections
+        elements = collections.defaultdict(dict)
+
+        for (e, k, v) in G.query("""SELECT DISTINCT ?element ?key ?value
+        WHERE {
+        ?element rdf:type ?kind.
+        ?element ?key ?value.
+        }""",
+                                 initNs={'rdf': rdf, 'rgml': rgml},
+                                 initBindings={'kind': kind}):
+            if k == rdf.type:
+                continue
+            elif k == rgml.label:
+                k = 'label'
+                v = str(v)
+            elif k == rgml.weight:
+                k = 'weight'
+                v = float(v)
+            elements[e][k] = v
+
+        return elements
+
+    # assign defaults
     create_using = nx.Graph()
     if directed:
         create_using = nx.DiGraph()
-
-    # assign defaults
     N = nx.empty_graph(0, create_using)
     N.name = G.identifier
 
-    edges = G.subjects(predicate=rdf.type, object=rgml.Edge)
-    sources = [x[1] for x in G.subject_objects(rgml.source)]
-    targets = [x[1] for x in G.subject_objects(rgml.target)]
+    # add nodes with attributes
+    for node, attrs in _make_elements(G, rgml.Node).iteritems():
+        N.add_node(node.concrete().split('/')[-1], attrs)
 
-    for e, u, v in zip(edges, sources, targets):
-        N.add_node(u)
-        N.add_node(v)
-        N.add_edge(u, v, label=e)
+    # add edges with attributes source and target come as predicates
+    # from the sparql query above, so we need to pop them out of the
+    # dict before creating the edge proper.
+    for edge, attrs in _make_elements(G, rgml.Edge).iteritems():
+        source = attrs[rgml.source]
+        target = attrs[rgml.target]
+        del attrs[rgml.source]
+        del attrs[rgml.target]
+        if 'label' not in attrs:
+            attrs['label'] = edge
+        N.add_edge(source.concrete().split('/')[-1],
+                   target.concrete().split('/')[-1],
+                   attrs)
+
+    if relabel:
+        N = _relabel(N)
 
     return N
+
+
+def _relabel(G):
+    # relabel, but check for duplicate labels first
+    mapping = [(n, d['label']) for n, d in G.node.items()]
+    x, y = zip(*mapping)
+    if len(set(y)) != len(G):
+        raise NetworkXError('Failed to relabel nodes: '
+                            'duplicate node labels found. '
+                            'Use relabel=False.')
+
+    return nx.relabel_nodes(G, dict(mapping))
 
 
 def from_rdfgraph(G, create_using=None):
@@ -281,6 +330,7 @@ def to_rdfgraph(N):
     partition 0, each built from the respective subject, predicate, and
     object nodes in partition 1.
 
+    If the above fail, then we generate an RGML graph.
     """
     try:
         import rdflib
@@ -303,7 +353,7 @@ def to_rdfgraph(N):
        and all([x in [0, 1] for x in nodes_bipartite]) \
        and all([x in ['subject', 'object', 'predicate'] for x in edges_terms]):
 
-        return _build_from_bipartite(N, G)
+        return _from_bipartite(N, G)
 
     elif all(nodes_labels) and all(edges_labels) \
         and all([isinstance(x,
@@ -311,13 +361,13 @@ def to_rdfgraph(N):
         and all([isinstance(x,
                             rdflib.term.Identifier) for x in edges_labels]):
 
-        return _build_from_multigraph(N, G)
+        return _from_multigraph(N, G)
 
     else:
-        return _build_from_default(N, G)
+        return _from_rgml(N, G)
 
 
-def _build_from_bipartite(N, G):
+def _from_bipartite(N, G):
     """Reconstruct previously imported RDF graph G from bipartite
     representation N.
     """
@@ -329,7 +379,7 @@ def _build_from_bipartite(N, G):
     return G
 
 
-def _build_from_multigraph(N, G):
+def _from_multigraph(N, G):
     """Reconstruct previously imported RDF graph G from directed labeled
     multigraph representation N.
     """
@@ -342,7 +392,43 @@ def _build_from_multigraph(N, G):
     return G
 
 
-def _build_from_default(N, G):
+def _from_rgml(N, G):
     """Build rdf graph G from generic graph N.
     """
     raise NotImplementedError('Default to_rdfgraph() for generic NX graphs')
+
+
+def write_rdf(N, path, format='xml'):
+    """Write N in RDF/format to path
+
+    Parameters
+    ----------
+    N : graph
+       A networkx graph
+    path : file or string
+       File or filename to write.
+    format :
+       RDFlib serializer to use ({})
+
+    Examples
+    --------
+    >>> N=nx.path_graph(4)
+    >>> nx.write_rdf(N, "test.rdf")
+
+    Notes
+    -----
+    This implementation does not support mixed graphs (directed and
+    unidirected edges together), hyperedges, or nested graphs.
+
+    See to_rdfgraph() for details.
+    """
+    try:
+        import rdflib
+    except ImportError:
+        raise ImportError('read_rdf() requires rdflib ',
+                          'https://github.com/RDFLib/rdflib ')
+    write_rdf.__doc__.format(_get_rdflib_plugins(rdflib.serializer.Serializer))
+
+    G = to_rdfgraph(N)
+    G.serialize(format=format)
+    return G
