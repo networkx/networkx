@@ -43,7 +43,8 @@ __author__ = """Pedro Silva (psilva+git@pedrosilva.pt)"""
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['read_rdf', 'from_rdfgraph', 'write_rdf', 'from_rgml']
+__all__ = ['read_rdf', 'from_rdfgraph', 'write_rdf', 'to_rdfgraph',
+           'read_rgml', 'from_rgml']
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -61,6 +62,51 @@ def _get_rdflib_plugins(kind):
     return [p.name for p in rdflib.plugin.plugins() if p.kind is kind]
 
 
+def _make_elements(G, kind, **kwargs):
+    """Given graph rdflib graph `G`, rdflib class `kind`, and namespace
+    keywords `**kwargs`, return dict of dicts with keys objects of class
+    `kind`, and values dicts of attributes obtained from triples where
+    the key objects appear as subjects, and consisting of the respective
+    predicates as keys and objects as values.
+
+    """
+    import collections
+    elements = collections.defaultdict(dict)
+
+    for (e, k, v) in G.query("""SELECT DISTINCT ?element ?key ?value
+    WHERE {
+    ?element rdf:type ?kind.
+    ?element ?key ?value.
+    }""",
+                             initNs=kwargs,
+                             initBindings={'kind': kind}):
+        if k == kwargs['rdf'].type:
+            continue
+        elif k == kwargs['rgml'].label:
+            k = 'label'
+            v = str(v)
+        elif k == kwargs['rgml'].weight:
+            k = 'weight'
+            v = float(v)
+        elements[e][k] = v
+
+    return elements
+
+
+def _relabel(G):
+    """Relabel nodes in G with 'label' attributes if no duplicate node
+    labels exist.
+    """
+    mapping = [(n, d['label']) for n, d in G.node.items()]
+    x, y = zip(*mapping)
+    if len(set(y)) != len(G):
+        raise NetworkXError('Failed to relabel nodes: '
+                            'duplicate node labels found. '
+                            'Use relabel=False.')
+
+    return nx.relabel_nodes(G, dict(mapping))
+
+
 def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
               relabel=True):
     """Return a NetworkX graph from an rdflib RGML graph.
@@ -74,8 +120,8 @@ def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
       Alternative RGML namespace
 
     relabel : bool, optional
-      If True use the RGML node label attribute for node names
-      otherwise use the node id.
+      If True use the RGML node label attribute for node names,
+      otherwise use the rdflib object itself.
 
     Notes
     -----
@@ -122,31 +168,8 @@ def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
     ?seq  rdf:type   rdf:Seq .
     }""", initNs=dict(rgml=rgml, rdf=rdf))
 
-    if len(set(hyperedges)):
+    if len(hyperedges):
         raise NetworkXError('from_rgml() does not support hypergraphs')
-
-    def _make_elements(G, kind):
-        import collections
-        elements = collections.defaultdict(dict)
-
-        for (e, k, v) in G.query("""SELECT DISTINCT ?element ?key ?value
-        WHERE {
-        ?element rdf:type ?kind.
-        ?element ?key ?value.
-        }""",
-                                 initNs={'rdf': rdf, 'rgml': rgml},
-                                 initBindings={'kind': kind}):
-            if k == rdf.type:
-                continue
-            elif k == rgml.label:
-                k = 'label'
-                v = str(v)
-            elif k == rgml.weight:
-                k = 'weight'
-                v = float(v)
-            elements[e][k] = v
-
-        return elements
 
     # assign defaults
     create_using = nx.Graph()
@@ -156,22 +179,22 @@ def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
     N.name = G.identifier
 
     # add nodes with attributes
-    for node, attrs in _make_elements(G, rgml.Node).iteritems():
-        N.add_node(node.concrete().split('/')[-1], attrs)
+    for node, attrs in _make_elements(G, rgml.Node, rdf=rdf,
+                                      rgml=rgml).iteritems():
+        N.add_node(node, attrs)
 
     # add edges with attributes source and target come as predicates
-    # from the sparql query above, so we need to pop them out of the
+    # from the _make_elements call, so we need to pop them out of the
     # dict before creating the edge proper.
-    for edge, attrs in _make_elements(G, rgml.Edge).iteritems():
+    for edge, attrs in _make_elements(G, rgml.Edge, rdf=rdf,
+                                      rgml=rgml).iteritems():
         source = attrs[rgml.source]
         target = attrs[rgml.target]
         del attrs[rgml.source]
         del attrs[rgml.target]
         if 'label' not in attrs:
             attrs['label'] = edge
-        N.add_edge(source.concrete().split('/')[-1],
-                   target.concrete().split('/')[-1],
-                   attrs)
+        N.add_edge(source, target, attrs)
 
     if relabel:
         N = _relabel(N)
@@ -179,16 +202,34 @@ def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
     return N
 
 
-def _relabel(G):
-    # relabel, but check for duplicate labels first
-    mapping = [(n, d['label']) for n, d in G.node.items()]
-    x, y = zip(*mapping)
-    if len(set(y)) != len(G):
-        raise NetworkXError('Failed to relabel nodes: '
-                            'duplicate node labels found. '
-                            'Use relabel=False.')
+def read_rgml(path, format='xml', relabel=True):
+    """Return a NetworkX graph from an RGML rdf file on path.
 
-    return nx.relabel_nodes(G, dict(mapping))
+    Parameters
+    ----------
+    path : file or string
+       File name or file handle or url to read.
+
+    format : string, optional
+       RDFlib parser to use ({})
+
+    relabel : bool, optional
+      If True use the RGML node label attribute for node names,
+      otherwise use the rdflib object itself.
+
+    See from_rgml() for details.
+
+    """
+    try:
+        import rdflib
+    except ImportError:
+        raise ImportError('read_rdf() requires rdflib ',
+                          'https://github.com/RDFLib/rdflib ')
+    read_rdf.__doc__.format(_get_rdflib_plugins(rdflib.parser.Parser))
+
+    G = rdflib.Graph()
+    G.load(path, format=format)
+    return from_rdfrgml(G, relabel)
 
 
 def from_rdfgraph(G, create_using=None):
