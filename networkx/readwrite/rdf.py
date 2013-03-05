@@ -44,7 +44,7 @@ __author__ = """Pedro Silva (psilva+git@pedrosilva.pt)"""
 #    BSD license.
 
 __all__ = ['read_rdf', 'from_rdfgraph', 'write_rdf', 'to_rdfgraph',
-           'read_rgml', 'from_rgml']
+           'read_rgml', 'from_rgmlgraph']
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -63,7 +63,7 @@ def _get_rdflib_plugins(kind):
 
 
 def _make_elements(G, kind, **kwargs):
-    """Given graph rdflib graph `G`, rdflib class `kind`, and namespace
+    """Given rdflib graph `G`, rdflib class `kind`, and namespace
     keywords `**kwargs`, return dict of dicts with keys objects of class
     `kind`, and values dicts of attributes obtained from triples where
     the key objects appear as subjects, and consisting of the respective
@@ -107,8 +107,8 @@ def _relabel(G):
     return nx.relabel_nodes(G, dict(mapping))
 
 
-def from_rgml(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
-              relabel=True):
+def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
+                   relabel=True):
     """Return a NetworkX graph from an rdflib RGML graph.
 
     Parameters
@@ -229,7 +229,7 @@ def read_rgml(path, format='xml', relabel=True):
 
     G = rdflib.Graph()
     G.load(path, format=format)
-    return from_rdfrgml(G, relabel)
+    return from_rgmlgraph(G, relabel)
 
 
 def from_rdfgraph(G, create_using=None):
