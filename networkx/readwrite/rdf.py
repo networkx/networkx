@@ -50,15 +50,20 @@ import networkx as nx
 from networkx.exception import NetworkXError
 
 
-def _get_rdflib_plugins(kind):
-    """Return list of strings corresponding to parsers or serializers
-    accepted by rdflib.
-    """
+def _rdflib():
     try:
         import rdflib
     except ImportError:
         raise ImportError('_get_rdflib_plugins() requires rdflib ',
                           'https://github.com/RDFLib/rdflib ')
+    return rdflib
+
+
+def _get_rdflib_plugins(kind):
+    """Return list of strings corresponding to parsers or serializers
+    accepted by rdflib.
+    """
+    rdflib = _rdflib()
     return [p.name for p in rdflib.plugin.plugins() if p.kind is kind]
 
 
@@ -70,8 +75,7 @@ def _make_elements(G, kind, **kwargs):
     predicates as keys and objects as values.
 
     """
-    import collections
-    elements = collections.defaultdict(dict)
+    elements = {}
 
     for (e, k, v) in G.query("""SELECT DISTINCT ?element ?key ?value
     WHERE {
@@ -88,7 +92,8 @@ def _make_elements(G, kind, **kwargs):
         elif k == kwargs['rgml'].weight:
             k = 'weight'
             v = float(v)
-        elements[e][k] = v
+
+        elements[e] = {k: v}
 
     return elements
 
@@ -105,6 +110,44 @@ def _relabel(G):
                             'Use relabel=False.')
 
     return nx.relabel_nodes(G, dict(mapping))
+
+
+def _from_bipartite(N, G):
+    """Reconstruct previously imported RDF graph G from bipartite
+    representation N.
+    """
+    rdflib = _rdflib()
+    G = rdflib.Graph(identifier=N.name)
+    nodes = N.nodes_iter(data=True)
+    for statement in [x[0] for x in nodes if not x[-1].get('bipartite')]:
+        terms = dict([(N.edge[statement][x]['term'],
+                       N.node[x]['label']) for x in N.edge[statement]])
+        G.add((terms['subject'], terms['predicate'], terms['object']))
+    return G
+
+
+def _from_multigraph(N, G):
+    """Reconstruct previously imported RDF graph G from directed labeled
+    multigraph representation N.
+    """
+    rdflib = _rdflib()
+    G = rdflib.Graph(identifier=N.name)
+    edges = N.edges_iter(data=True)
+    for s, o, p in edges:
+        _subject = N.node[s]['label']
+        _object = N.node[o]['label']
+        _predicate = p['label']
+        G.add((_subject, _predicate, _object))
+    return G
+
+
+def _from_rgml(N):  # TODO
+    """Build rdf graph G from generic graph N.
+    """
+    rdflib = _rdflib()
+    G = rdflib.Graph(identifier=N.name)
+    raise NotImplementedError('Default to_rdfgraph() for generic NX graphs')
+    return G
 
 
 def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
@@ -135,12 +178,7 @@ def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
     http://www.cs.rpi.edu/research/groups/pb/punin/public_html/RGML/.
 
     """
-    try:
-        import rdflib
-    except ImportError:
-        raise ImportError('_get_rdflib_plugins() requires rdflib ',
-                          'https://github.com/RDFLib/rdflib ')
-
+    rdflib = _rdflib()
     if namespace not in [str(x[1]) for x in G.namespaces()]:
         raise NetworkXError('from_rgml() requires an RGML-namespaced graph ',
                             namespace)
@@ -220,16 +258,48 @@ def read_rgml(path, format='xml', relabel=True):
     See from_rgml() for details.
 
     """
-    try:
-        import rdflib
-    except ImportError:
-        raise ImportError('read_rdf() requires rdflib ',
-                          'https://github.com/RDFLib/rdflib ')
+    rdflib = _rdflib()
     read_rdf.__doc__.format(_get_rdflib_plugins(rdflib.parser.Parser))
 
     G = rdflib.Graph()
     G.load(path, format=format)
     return from_rgmlgraph(G, relabel)
+
+
+def to_rgmlgraph(N):  # TODO
+    pass
+
+
+def write_rgml(N, path, format='xml'):
+    """Write N in RGML RDF/format to path
+
+    Parameters
+    ----------
+    N : graph
+       A networkx graph
+    path : file or string
+       File or filename to write.
+    format :
+       RDFlib serializer to use ({})
+
+    Examples
+    --------
+    >>> N=nx.path_graph(4)
+    >>> nx.write_rgml(N, "test.rdf")
+
+    Notes
+    -----
+    This implementation does not support mixed graphs (directed and
+    unidirected edges together), hyperedges, or nested graphs.
+
+    See to_rgmlgraph() for details.
+    """
+    rdflib = _rdflib()
+    write_rdf.__doc__.format(_get_rdflib_plugins(rdflib.serializer.Serializer))
+
+    G = to_rgmlgraph(N)
+    G.serialize(format=format)
+    return G
 
 
 def from_rdfgraph(G, create_using=None):
@@ -332,11 +402,7 @@ def read_rdf(path, format='xml', create_using=None):
 
     See from_rdfgraph() for details.
     """
-    try:
-        import rdflib
-    except ImportError:
-        raise ImportError('read_rdf() requires rdflib ',
-                          'https://github.com/RDFLib/rdflib ')
+    rdflib = _rdflib()
     read_rdf.__doc__.format(_get_rdflib_plugins(rdflib.parser.Parser))
 
     G = rdflib.Graph()
@@ -373,14 +439,7 @@ def to_rdfgraph(N):
 
     If the above fail, then we generate an RGML graph.
     """
-    try:
-        import rdflib
-    except ImportError:
-        raise ImportError('to_rdfgraph() requires rdflib ',
-                          'https://github.com/RDFLib/rdflib ')
-
-    G = rdflib.Graph(identifier=N.name)
-
+    rdflib = _rdflib()
     nodes = N.nodes_iter(data=True)
     edges = N.edges_iter(data=True)
 
@@ -394,7 +453,7 @@ def to_rdfgraph(N):
        and all([x in [0, 1] for x in nodes_bipartite]) \
        and all([x in ['subject', 'object', 'predicate'] for x in edges_terms]):
 
-        return _from_bipartite(N, G)
+        return _from_bipartite(N)
 
     elif all(nodes_labels) and all(edges_labels) \
         and all([isinstance(x,
@@ -402,41 +461,10 @@ def to_rdfgraph(N):
         and all([isinstance(x,
                             rdflib.term.Identifier) for x in edges_labels]):
 
-        return _from_multigraph(N, G)
+        return _from_multigraph(N)
 
     else:
-        return _from_rgml(N, G)
-
-
-def _from_bipartite(N, G):
-    """Reconstruct previously imported RDF graph G from bipartite
-    representation N.
-    """
-    nodes = N.nodes_iter(data=True)
-    for statement in [x[0] for x in nodes if not x[-1].get('bipartite')]:
-        terms = dict([(N.edge[statement][x]['term'],
-                       N.node[x]['label']) for x in N.edge[statement]])
-        G.add((terms['subject'], terms['predicate'], terms['object']))
-    return G
-
-
-def _from_multigraph(N, G):
-    """Reconstruct previously imported RDF graph G from directed labeled
-    multigraph representation N.
-    """
-    edges = N.edges_iter(data=True)
-    for s, o, p in edges:
-        _subject = N.node[s]['label']
-        _object = N.node[o]['label']
-        _predicate = p['label']
-        G.add((_subject, _predicate, _object))
-    return G
-
-
-def _from_rgml(N, G):
-    """Build rdf graph G from generic graph N.
-    """
-    raise NotImplementedError('Default to_rdfgraph() for generic NX graphs')
+        return _from_rgml(N)
 
 
 def write_rdf(N, path, format='xml'):
@@ -463,11 +491,7 @@ def write_rdf(N, path, format='xml'):
 
     See to_rdfgraph() for details.
     """
-    try:
-        import rdflib
-    except ImportError:
-        raise ImportError('read_rdf() requires rdflib ',
-                          'https://github.com/RDFLib/rdflib ')
+    rdflib = _rdflib()
     write_rdf.__doc__.format(_get_rdflib_plugins(rdflib.serializer.Serializer))
 
     G = to_rdfgraph(N)
