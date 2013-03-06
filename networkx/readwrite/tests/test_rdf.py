@@ -4,19 +4,13 @@ Unit tests for rdf.
 """
 import io
 import networkx
+import networkx.readwrite.rdf as rdf
 from networkx.exception import NetworkXError
 from nose import SkipTest
 from nose.tools import assert_equals, assert_raises, assert_true
 
 
 class TestRdf():
-    @classmethod
-    def setupClass(cls):
-        try:
-            import rdflib
-        except ImportError:
-            raise SkipTest('rdflib not available.')
-
     def setUp(self):
         self.simple_data = """<http://www.w3.org/2001/08/rdf-test/> <http://purl.org/dc/elements/1.1/creator>   "Dave Beckett" .
 <http://www.w3.org/2001/08/rdf-test/> <http://purl.org/dc/elements/1.1/creator>   "Jan Grant" .
@@ -24,6 +18,57 @@ class TestRdf():
 _:a                                   <http://purl.org/dc/elements/1.1/title>     "World Wide Web Consortium" .
 _:a                                   <http://purl.org/dc/elements/1.1/source>    <http://www.w3.org/> .
 """
+
+        self.rgml_data = """<?xml version="1.0" encoding="utf-8"?>
+
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns="http://purl.org/puninj/2001/05/rgml-schema#"
+  xmlns:rgml="http://purl.org/puninj/2001/05/rgml-schema#">
+
+<Graph rdf:ID="g1" rgml:directed="true">
+   <nodes>
+      <rdf:Bag>
+         <rdf:li rdf:resource="#n1"/>
+         <rdf:li rdf:resource="#n2"/>
+      </rdf:Bag>
+   </nodes>
+
+   <edges>
+      <rdf:Bag>
+         <rdf:li rdf:resource="#e1"/>
+      </rdf:Bag>
+   </edges>
+</Graph>
+
+<Node rdf:ID="n1" rgml:weight="0.1" rgml:label="http://www.w3.org/Home/Lassila"/>
+<Node rdf:ID="n2" rgml:weight="0.5" rgml:label="Ora Lassila"/>
+
+<Edge rdf:ID="e1" rgml:weight="1" rgml:label="Creator">
+    <source rdf:resource="#n1"/>
+    <target rdf:resource="#n2"/>
+</Edge>
+
+</rdf:RDF>
+"""
+
+    def test_from_rgmlgraph(self):
+        fh = io.BytesIO(self.rgml_data.encode('UTF-8'))
+        fh.seek(0)
+
+        rdflib = rdf._rdflib()
+        G = rdflib.Graph()
+        G.load(fh)
+
+        assert_raises(NetworkXError,
+                      networkx.from_rgmlgraph,
+                      G,
+                      namespace='this is not RGML')
+
+        N = networkx.from_rgmlgraph(G)
+        assert_true(N.is_directed(), 'Returns directed representation')
+        assert_equals(len(N), 2, 'Number of nodes')
+        assert_equals(len(N.edges()), 1, 'Number of edges')
 
     def test_from_rdfgraph(self):
         fh = io.BytesIO(self.simple_data.encode('UTF-8'))

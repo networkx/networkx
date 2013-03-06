@@ -76,13 +76,13 @@ def _make_elements(G, kind, **kwargs):
 
     """
     elements = {}
-
     for (e, k, v) in G.query("""SELECT DISTINCT ?element ?key ?value
-    WHERE {
+     WHERE {
     ?element rdf:type ?kind.
     ?element ?key ?value.
     }""",
-                             initNs=kwargs,
+                             initNs={'rgml': kwargs['rgml'],
+                                     'rdf': kwargs['rdf']},
                              initBindings={'kind': kind}):
         if k == kwargs['rdf'].type:
             continue
@@ -93,7 +93,10 @@ def _make_elements(G, kind, **kwargs):
             k = 'weight'
             v = float(v)
 
-        elements[e] = {k: v}
+        if e in elements:
+            elements[e][k] = v
+        else:
+            elements[e] = {k: v}
 
     return elements
 
@@ -102,7 +105,8 @@ def _relabel(G):
     """Relabel nodes in G with 'label' attributes if no duplicate node
     labels exist.
     """
-    mapping = [(n, d['label']) for n, d in G.node.items()]
+    mapping = [(n, d['label'] if 'label' in d else n)
+               for n, d in G.node.items()]
     x, y = zip(*mapping)
     if len(set(y)) != len(G):
         raise NetworkXError('Failed to relabel nodes: '
