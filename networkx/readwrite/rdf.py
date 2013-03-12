@@ -136,8 +136,13 @@ def _from_multigraph(N):
     """
     rdflib = _rdflib()
     G = rdflib.Graph(identifier=N.name)
-    edges = N.edges_iter(data=True)
-    for s, o, p in edges:
+
+    # I think we don't need to consider disconnected nodes, since that
+    # is impossible to represent in straight RDF. That is, RDF has a
+    # concept of disconnected triples, but not terms, which are
+    # properly analogous to nodes in networkx
+
+    for s, o, p in N.edges_iter(data=True):
         _subject = N.node[s]['label']
         _object = N.node[o]['label']
         _predicate = p['label']
