@@ -21,7 +21,8 @@ __all__ = ['biconnected_components',
            'biconnected_component_subgraphs',
            'is_biconnected',
            'articulation_points',
-           'bridges'
+           'bridges',
+           'weakly_biconnected_component_subdigraphs'
            ]
 
 def is_biconnected(G):
@@ -479,4 +480,69 @@ def bridges(G):
       #print x
       for e in dfs.bridges(x, x):
         yield e
+
+import re
+
+def weakly_biconnected_component_subdigraphs(G):
+  """
+  >>> G = nx.DiGraph()
+  >>> G.add_edge('a', 'c')
+  >>> G.add_edge('b', 'c')
+  >>> G.add_edge('c', 'd')
+  >>> G.add_edge('c', 'e')
+  >>> G.add_edge('x', 'y')
+  >>> G.add_node('z')
+  >>> for n in G.nodes_iter():
+  ...   G.node[n]['attr'] = n
+  >>> for e in G.edges_iter():
+  ...  G[e[0]][e[1]]['attr'] = '->'.join([str(i) for i in e])
+  >>> for g in weakly_biconnected_component_subdigraphs(G):
+  ...   print '------------------'
+  ...   print g.nodes(data=True)
+  ...   print g.edges(data=True)
+  ------------------
+  [('a', {'attr': 'a'}), ('c', {'attr': 'c'}), ('b', {'attr': 'b'})]
+  [('a', 'c', {'attr': 'a->c'}), ('b', 'c', {'attr': 'b->c'})]
+  ------------------
+  [('c', {'attr': 'c'}), ('e', {'attr': 'e'}), ('d', {'attr': 'd'})]
+  [('c', 'e', {'attr': 'c->e'}), ('c', 'd', {'attr': 'c->d'})]
+  ------------------
+  [('y', {'attr': 'y'}), ('x', {'attr': 'x'})]
+  [('x', 'y', {'attr': 'x->y'})]
+  ------------------
+  [('z', {'attr': 'z'})]
+  []
+  """
+
+  if not G.is_directed():
+    raise nx.NetworkXError('Input graph must be a digraph')
+
+  if not all(isinstance(n, basestring) for n in G):
+    raise nx.NetworkXError('Node names must all be strings.')
+
+  split_G=nx.DiGraph(G)
+  nx.algorithms.split_pass_through_node_digraph(split_G)
+
+  #print '=================='
+  #print split_G.nodes()
+  #print split_G.edges()
+
+  for e in nx.bridges(nx.Graph(split_G)):
+    m0 = re.match('^(.*):(o|i)$', e[0])
+    m1 = re.match('^(.*):(o|i)$', e[1])
+
+    if m0 is not None and m1 is not None:
+      if m0.group(1) == m1.group(1) and m0.group(2) != m1.group(2):
+        split_G.remove_edge(':'.join((m0.group(1), 'i')), ':'.join((m0.group(1), 'o')))
+
+  for wcc in nx.weakly_connected_component_subgraphs(split_G):
+    def extract_original_node(n):
+      m = re.match('^(.*):(o|i)$', n)
+      if m is not None:
+        return m.group(1)
+      else:
+        return n
+
+    subgraph_nodes = set([extract_original_node(n) for n in wcc])
+    yield G.subgraph(subgraph_nodes)
 
