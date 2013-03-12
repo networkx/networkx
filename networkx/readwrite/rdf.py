@@ -307,7 +307,7 @@ def write_rgml(N, path, format='xml'):
     write_rdf.__doc__.format(_get_rdflib_plugins(rdflib.serializer.Serializer))
 
     G = to_rgmlgraph(N)
-    G.serialize(format=format)
+    G.serialize(path, format=format)
     return G
 
 
