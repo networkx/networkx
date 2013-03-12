@@ -150,15 +150,78 @@ def _from_multigraph(N):
     return G
 
 
-def _from_rgml(N):  # TODO
-    """Build rdf graph G from generic graph N.
+def to_rgmlgraph(N):
+    """Return an rdflib RGML graph from a NetworkX graph.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+      A graph created with networkx
+
     """
     rdflib = _rdflib()
     G = rdflib.Graph(identifier=N.name)
-    raise NotImplementedError('Default to_rdfgraph() for generic NX graphs')
+    namespace = 'http://purl.org/puninj/2001/05/rgml-schema#'
+    rgml = rdflib.Namespace(namespace)
+    G.bind('rgml', str(rgml))
+    G.bind('', '#')
+
+    name = repr(N)
+
+    graph_node = rdflib.term.Literal(name)
+    edges_node = rdflib.term.BNode()
+    nodes_node = rdflib.term.BNode()
+
+    # add graph and its properties
+    G.add((graph_node, rdflib.RDF.type, rgml.Graph))
+    G.add((graph_node, rgml.edges, edges_node))
+    G.add((graph_node, rgml.nodes, nodes_node))
+    G.add((graph_node, rgml.directed, rdflib.term.Literal(N.is_directed())))
+    label = getattr(N, 'label', False)
+    if label:
+        G.add((graph_node, rgml.label, rdflib.term.Literal(label)))
+
+    # add nodes and their properties
+    G.add((nodes_node, rdflib.RDF.type, rdflib.RDF.Bag))
+    for n, attrs in N.nodes_iter(data=True):
+        node = n
+        if not isinstance(node, rdflib.term.Identifier):
+            node = rdflib.term.URIRef('#{}'.format(n))
+        G.add((nodes_node, rdflib.RDF.li, node))
+        G.add((node, rdflib.RDF.type, rgml.Node))
+        for k, v in _parse_attrs(attrs, rgml, rdflib):
+            G.add((node, k, v))
+
+    # add edges and their properties
+    G.add((edges_node, rdflib.RDF.type, rdflib.RDF.Bag))
+    for u, v, attrs in N.edges_iter(data=True):
+        edge = (u, v)
+        if not isinstance(edge, rdflib.term.Identifier):
+            edge = rdflib.term.URIRef('#{}'.format(hash((u, v))))
+        G.add((edges_node, rdflib.RDF.li, edge))
+        G.add((edge, rdflib.RDF.type, rgml.Edge))
+        G.add((edge, rgml.source, rdflib.term.URIRef('#{}'.format(u))))
+        G.add((edge, rgml.target, rdflib.term.URIRef('#{}'.format(v))))
+        for k, v in _parse_attrs(attrs, rgml, rdflib):
+            G.add((edge, k, v))
+
     return G
 
 
+def _parse_attrs(attrs, rgml, rdflib):
+    for k, v in attrs.iteritems():
+        if k == 'weight':
+            k = rgml.weight
+            v = rdflib.term.Literal(float(v))
+        elif k == 'label':
+            k = rgml.label
+            v = rdflib.term.Literal(str(v))
+        else:
+            k = rdflib.term.URIRef('#{}'.format(k))
+            v = rdflib.term.Literal(v)
+        yield k, v
+
+        
 def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
                    relabel=True):
     """Return a NetworkX graph from an rdflib RGML graph.
@@ -273,10 +336,6 @@ def read_rgml(path, format='xml', relabel=True):
     G = rdflib.Graph()
     G.load(path, format=format)
     return from_rgmlgraph(G, relabel)
-
-
-def to_rgmlgraph(N):  # TODO
-    pass
 
 
 def write_rgml(N, path, format='xml'):
