@@ -189,7 +189,7 @@ def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
     """
     rdflib = _rdflib()
     if namespace not in [str(x[1]) for x in G.namespaces()]:
-        raise NetworkXError('from_rgml() requires an RGML-namespaced graph ',
+        raise NetworkXError('from_rgmlgraph() requires an RGML-namespaced graph ',
                             namespace)
 
     rdf = rdflib.RDF
@@ -199,12 +199,12 @@ def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
     try:
         graph_lit = G.value(predicate=rdf.type, object=rgml.Graph, any=False)
     except rdflib.exceptions.UniquenessError:
-        raise NetworkXError('from_rgml() does not support nested graphs ')
+        raise NetworkXError('from_rgmlgraph() does not support nested graphs ')
 
     try:
         directed = G.value(subject=graph_lit, predicate=rgml.directed)
     except rdflib.exceptions.UniquenessError:
-        raise NetworkXError('from_rgml() does not support mixed graphs ')
+        raise NetworkXError('from_rgmlgraph() does not support mixed graphs ')
 
     hyperedges = G.query("""SELECT DISTINCT ?edge
     WHERE {
@@ -264,7 +264,7 @@ def read_rgml(path, format='xml', relabel=True):
       If True use the RGML node label attribute for node names,
       otherwise use the rdflib object itself.
 
-    See from_rgml() for details.
+    See from_rgmlgraph() for details.
 
     """
     rdflib = _rdflib()
@@ -473,7 +473,7 @@ def to_rdfgraph(N):
         return _from_multigraph(N)
 
     else:
-        return _from_rgml(N)
+        return to_rgmlgraph(N)
 
 
 def write_rdf(N, path, format='xml'):
