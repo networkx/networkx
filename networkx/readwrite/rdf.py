@@ -116,7 +116,7 @@ def _relabel(G):
     return nx.relabel_nodes(G, dict(mapping))
 
 
-def _from_bipartite(N, G):
+def _from_bipartite(N):
     """Reconstruct previously imported RDF graph G from bipartite
     representation N.
     """
@@ -130,7 +130,7 @@ def _from_bipartite(N, G):
     return G
 
 
-def _from_multigraph(N, G):
+def _from_multigraph(N):
     """Reconstruct previously imported RDF graph G from directed labeled
     multigraph representation N.
     """
