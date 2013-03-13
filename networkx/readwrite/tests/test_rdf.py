@@ -194,31 +194,56 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
         fh = io.BytesIO(self.simple_data.encode('UTF-8'))
         fh.seek(0)
 
-        rdflib = rdf._rdflib()
-        assert_raises(rdflib.plugin.PluginException,
+        assert_raises(NetworkXError,
                       networkx.read_rdf,
                       fh,
-                      format='does not exist')
+                      fmt='does not exist')
 
         assert_true(type(networkx.read_rdf(fh,
                                            create_using=None,
-                                           format='nt')) is networkx.Graph,
+                                           fmt='nt')) is networkx.Graph,
                     'Returns NetworkX graph')
 
 
     def test_write_rdf(self):
         fh=io.BytesIO()
-        networkx.write_rdf(networkx.barabasi_albert_graph(100,1,0), fh, format='n3')
+        networkx.write_rdf(networkx.barabasi_albert_graph(100,1,0), fh, fmt='n3')
         fh.seek(0)
-        assert_true(isinstance(networkx.read_rdf(fh, format='n3'),
+        assert_true(isinstance(networkx.read_rdf(fh, fmt='n3'),
                                networkx.Graph),
                     'Roundtrip NX <-> RDF in N3 format')
 
+        assert_raises(NetworkXError,
+                      networkx.write_rdf,
+                      networkx.barabasi_albert_graph(100, 1, 0),
+                      fh,
+                      fmt='does not exist')
+
+    def test_read_rgml(self):
+        fh = io.BytesIO(self.rgml_data.encode('UTF-8'))
+        fh.seek(0)
+
+        assert_raises(NetworkXError,
+                      networkx.read_rgml,
+                      fh,
+                      fmt='does not exist')
+
+        N = networkx.read_rdf(fh, create_using=None)
+        assert_true(type(N) is networkx.Graph, 'Returns NetworkX graph')
+        
     def test_write_rgml(self):
         fh=io.BytesIO()
-        networkx.write_rgml(networkx.barabasi_albert_graph(100,1,0), fh, format='n3')
+        networkx.write_rgml(networkx.barabasi_albert_graph(100,1,0), fh, fmt='n3')
         fh.seek(0)
-        assert_true(isinstance(networkx.read_rgml(fh, format='n3'),
+
+        assert_raises(NetworkXError,
+                      networkx.write_rgml,
+                      networkx.barabasi_albert_graph(100, 1, 0),
+                      fh,
+                      fmt='does not exist')
+        fh.seek(0)
+
+        assert_true(isinstance(networkx.read_rgml(fh, fmt='n3'),
                                networkx.Graph),
                     'Roundtrip NX <-> RDF in N3 format')
 

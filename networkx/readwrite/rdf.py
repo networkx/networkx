@@ -51,6 +51,9 @@ from networkx.exception import NetworkXError
 
 
 def _rdflib():
+    """Try to import and return rdflib. Wrap ImportError with
+    NetworkX-style message.
+    """
     try:
         import rdflib
     except ImportError:
@@ -107,7 +110,7 @@ def _relabel(G):
     """
     mapping = [(n, d['label'] if 'label' in d else n)
                for n, d in G.node.items()]
-    x, y = zip(*mapping)
+    y = [x[1] for x in mapping]
     if len(set(y)) != len(G):
         raise NetworkXError('Failed to relabel nodes: '
                             'duplicate node labels found. '
@@ -151,6 +154,8 @@ def _from_multigraph(N):
 
 
 def _parse_attrs(attrs, rgml, rdflib):
+    """Identify and return RGML-specific properties and their values.
+    """
     for k, v in attrs.iteritems():
         if k == 'weight':
             k = rgml.weight
@@ -197,12 +202,12 @@ def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
         raise NetworkXError('from_rgmlgraph() requires an RGML-namespaced \
         graph ', namespace)
 
-    rdf = rdflib.RDF
     rgml = rdflib.Namespace(namespace)
     G.bind('rgml', str(rgml))
 
     try:
-        graph_node = G.value(predicate=rdf.type, object=rgml.Graph, any=False)
+        graph_node = G.value(predicate=rdflib.RDF.type, object=rgml.Graph,
+                             any=False)
     except rdflib.exceptions.UniquenessError:
         raise NetworkXError('from_rgmlgraph() does not support nested graphs ')
 
@@ -212,16 +217,14 @@ def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
     except rdflib.exceptions.UniquenessError:
         raise NetworkXError('from_rgmlgraph() does not support mixed graphs ')
 
-    hyperedges = G.query("""SELECT DISTINCT ?edge
+    if len(G.query("""SELECT DISTINCT ?edge
     WHERE {
     ?edge rgml:nodes ?seq .
     ?seq  ?predicate ?node .
     ?node rdf:type   rgml:Node .
     ?edge rdf:type   rgml:Edge .
     ?seq  rdf:type   rdf:Seq .
-    }""", initNs=dict(rgml=rgml, rdf=rdf))
-
-    if len(hyperedges):
+    }""", initNs=dict(rgml=rgml, rdf=rdflib.RDF))):
         raise NetworkXError('from_rgml() does not support hypergraphs ')
 
     # assign defaults
@@ -232,14 +235,14 @@ def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
     N.name = G.identifier
 
     # add nodes with attributes
-    for node, attrs in _make_elements(G, rgml.Node, rdf=rdf,
+    for node, attrs in _make_elements(G, rgml.Node, rdf=rdflib.RDF,
                                       rgml=rgml).iteritems():
         N.add_node(node, attrs)
 
     # add edges with attributes source and target come as predicates
     # from the _make_elements call, so we need to pop them out of the
     # dict before creating the edge proper.
-    for edge, attrs in _make_elements(G, rgml.Edge, rdf=rdf,
+    for edge, attrs in _make_elements(G, rgml.Edge, rdf=rdflib.RDF,
                                       rgml=rgml).iteritems():
         source = attrs[rgml.source]
         target = attrs[rgml.target]
@@ -266,8 +269,7 @@ def to_rgmlgraph(N):
     """
     rdflib = _rdflib()
     G = rdflib.Graph(identifier=N.name)
-    namespace = 'http://purl.org/puninj/2001/05/rgml-schema#'
-    rgml = rdflib.Namespace(namespace)
+    rgml = rdflib.Namespace('http://purl.org/puninj/2001/05/rgml-schema#')
     G.bind('rgml', str(rgml))
     G.bind('', '#')
 
@@ -289,13 +291,12 @@ def to_rgmlgraph(N):
     # add nodes and their properties
     G.add((nodes_node, rdflib.RDF.type, rdflib.RDF.Bag))
     for n, attrs in N.nodes_iter(data=True):
-        node = n
-        if not isinstance(node, rdflib.term.Identifier):
-            node = rdflib.term.URIRef('#{}'.format(n))
-        G.add((nodes_node, rdflib.RDF.li, node))
-        G.add((node, rdflib.RDF.type, rgml.Node))
+        if not isinstance(n, rdflib.term.Identifier):
+            n = rdflib.term.URIRef('#{}'.format(n))
+        G.add((nodes_node, rdflib.RDF.li, n))
+        G.add((n, rdflib.RDF.type, rgml.Node))
         for k, v in _parse_attrs(attrs, rgml, rdflib):
-            G.add((node, k, v))
+            G.add((n, k, v))
 
     # add edges and their properties
     G.add((edges_node, rdflib.RDF.type, rdflib.RDF.Bag))
@@ -313,7 +314,7 @@ def to_rgmlgraph(N):
     return G
 
 
-def read_rgml(path, format='xml', relabel=True):
+def read_rgml(path, fmt='xml', relabel=True):
     """Return a NetworkX graph from an RGML rdf file on path.
 
     Parameters
@@ -321,7 +322,7 @@ def read_rgml(path, format='xml', relabel=True):
     path : file or string
        File name or file handle or url to read.
 
-    format : string, optional
+    fmt : string, optional
        RDFlib parser to use ({})
 
     relabel : bool, optional
@@ -332,14 +333,16 @@ def read_rgml(path, format='xml', relabel=True):
 
     """
     rdflib = _rdflib()
-    read_rdf.__doc__.format(_get_rdflib_plugins(rdflib.parser.Parser))
+    plugins = _get_rdflib_plugins(rdflib.parser.Parser)
+    if fmt not in plugins:
+        raise NetworkXError('Format not available', fmt, plugins)
 
     G = rdflib.Graph()
-    G.load(path, format=format)
+    G.load(path, format=fmt)
     return from_rgmlgraph(G, relabel=relabel)
 
 
-def write_rgml(N, path, format='xml'):
+def write_rgml(N, path, fmt='xml'):
     """Write N in RGML RDF/format to path
 
     Parameters
@@ -348,7 +351,7 @@ def write_rgml(N, path, format='xml'):
        A networkx graph
     path : file or string
        File or filename to write.
-    format :
+    fmt :
        RDFlib serializer to use ({})
 
     Examples
@@ -364,10 +367,11 @@ def write_rgml(N, path, format='xml'):
     See to_rgmlgraph() for details.
     """
     rdflib = _rdflib()
-    write_rdf.__doc__.format(_get_rdflib_plugins(rdflib.serializer.Serializer))
-
+    plugins = _get_rdflib_plugins(rdflib.serializer.Serializer)
+    if fmt not in plugins:
+        raise NetworkXError('Format not available', fmt, plugins)
     G = to_rgmlgraph(N)
-    G.serialize(path, format=format)
+    G.serialize(path, format=fmt)
     return G
 
 
@@ -486,36 +490,52 @@ def to_rdfgraph(N):
 
     If the above fail, then we generate an RGML graph.
     """
-    rdflib = _rdflib()
     nodes = N.nodes(data=True)
     edges = N.edges(data=True)
 
-    nodes_bipartite = [x[-1].get('bipartite') for x in nodes]
-    edges_terms = [x[-1].get('term') for x in edges]
-
-    nodes_labels = [x[-1].get('label') for x in nodes]
-    edges_labels = [x[-1].get('label') for x in edges]
-
-    if all([x for x in nodes_bipartite if x]) \
-       and all([x in [0, 1] for x in nodes_bipartite]) \
-       and all([x in ['subject', 'object', 'predicate'] for x in edges_terms]):
-
+    if _is_bipartite(nodes, edges):
         return _from_bipartite(N)
-
-    elif nodes_labels and edges_labels \
-         and all(nodes_labels) and all(edges_labels) \
-         and all([isinstance(x,
-                             rdflib.term.Identifier) for x in nodes_labels]) \
-         and all([isinstance(x,
-                             rdflib.term.Identifier) for x in edges_labels]):
-
+    elif _is_multigraph(nodes, edges):
         return _from_multigraph(N)
-
     else:
         return to_rgmlgraph(N)
 
 
-def read_rdf(path, format='xml', create_using=None):
+def _is_bipartite(nodes, edges):
+    """Return true if graph composed of nodes and edges has been imported
+    as a bipartite RDF graph, false otherwise.
+    """
+    nodes_bipartite = [x[-1].get('bipartite') for x in nodes]
+    edges_terms = [x[-1].get('term') for x in edges]
+
+    all_bipartite = all([x for x in nodes_bipartite if x])
+    all_partitioned = all([x in [0, 1] for x in nodes_bipartite])
+    all_terms = all([x in ['subject',
+                           'object',
+                           'predicate'] for x in edges_terms])
+
+    return all_bipartite and all_partitioned and all_terms
+
+
+def _is_multigraph(nodes, edges):
+    """Return true if graph composed of nodes and edges has been imported
+    as a multiple directed labeled RDF graph, false otherwise.
+    """
+    rdflib = _rdflib()
+    nodes_labels = [x[-1].get('label') for x in nodes]
+    edges_labels = [x[-1].get('label') for x in edges]
+
+    have_labels = nodes_labels and edges_labels
+    true_labels = all(nodes_labels) and all(edges_labels)
+    nodes_terms = all([isinstance(x, rdflib.term.Identifier)
+                       for x in nodes_labels])
+    edges_terms = all([isinstance(x, rdflib.term.Identifier)
+                       for x in edges_labels])
+
+    return have_labels and true_labels and nodes_terms and edges_terms
+
+
+def read_rdf(path, fmt='xml', create_using=None):
     """Return a NetworkX MultiDiGraph or (bipartite) Graph from an rdf
     file on path.
 
@@ -524,20 +544,23 @@ def read_rdf(path, format='xml', create_using=None):
     path : file or string
        File name or file handle or url to read.
 
-    format : string
-       RDFlib parser to use ({})
+    fmt : string
+       RDFlib parser to use (trix, xml, nquads, n3, text/html,
+                             application/rdf+xml, application/xhtml+xml,
+                             rdfa, nt, turtle)
 
     See from_rdfgraph() for details.
     """
     rdflib = _rdflib()
-    read_rdf.__doc__.format(_get_rdflib_plugins(rdflib.parser.Parser))
-
+    plugins = _get_rdflib_plugins(rdflib.parser.Parser)
+    if fmt not in plugins:
+        raise NetworkXError('Format not available', fmt, plugins)
     G = rdflib.Graph()
-    G.load(path, format=format)
+    G.load(path, format=fmt)
     return from_rdfgraph(G, create_using)
 
 
-def write_rdf(N, path, format='xml'):
+def write_rdf(N, path, fmt='xml'):
     """Write N in RDF/format to path
 
     Parameters
@@ -546,8 +569,9 @@ def write_rdf(N, path, format='xml'):
        A networkx graph
     path : file or string
        File or filename to write.
-    format :
-       RDFlib serializer to use ({})
+    fmt :
+       RDFlib serializer to use (pretty-xml, nt, nquads, turtle,
+                                 xml, trix, trig, n3)
 
     Examples
     --------
@@ -562,8 +586,9 @@ def write_rdf(N, path, format='xml'):
     See to_rdfgraph() for details.
     """
     rdflib = _rdflib()
-    write_rdf.__doc__.format(_get_rdflib_plugins(rdflib.serializer.Serializer))
-
+    plugins = _get_rdflib_plugins(rdflib.serializer.Serializer)
+    if fmt not in plugins:
+        raise NetworkXError('Format not available', fmt, plugins)
     G = to_rdfgraph(N)
-    G.serialize(format=format)
+    G.serialize(path, format=fmt)
     return G
