@@ -44,7 +44,7 @@ __author__ = """Pedro Silva (psilva+git@pedrosilva.pt)"""
 #    BSD license.
 
 __all__ = ['read_rdf', 'from_rdfgraph', 'write_rdf', 'to_rdfgraph',
-           'read_rgml', 'from_rgmlgraph', 'write_rgml']
+           'read_rgml', 'from_rgmlgraph', 'write_rgml', 'to_rgmlgraph']
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -150,6 +150,111 @@ def _from_multigraph(N):
     return G
 
 
+def _parse_attrs(attrs, rgml, rdflib):
+    for k, v in attrs.iteritems():
+        if k == 'weight':
+            k = rgml.weight
+            v = rdflib.term.Literal(float(v))
+        elif k == 'label':
+            k = rgml.label
+            v = rdflib.term.Literal(str(v))
+        else:
+            k = rdflib.term.URIRef('#{}'.format(k))
+            v = rdflib.term.Literal(v)
+        yield k, v
+
+
+def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
+                   relabel=True):
+    """Return a NetworkX graph from an rdflib RGML graph.
+
+    Parameters
+    ----------
+    G : rdflib Graph
+      A graph created with rdflib
+
+    namespace : string, optional
+      Alternative RGML namespace
+
+    relabel : bool, optional
+      If True use the RGML node label attribute for node names,
+      otherwise use the rdflib object itself.
+
+    Notes
+    -----
+    This implementation does not support mixed graphs (directed and
+    unidirected edges together), hyperedges, or nested graphs.
+
+    The namespace as typically published in RGML documents is
+    http://purl.org/puninj/2001/05/rgml-schema#, which points to
+    http://www.cs.rpi.edu/~puninj/RGML/, but the RGML schema currently
+    resides at
+    http://www.cs.rpi.edu/research/groups/pb/punin/public_html/RGML/.
+
+    """
+    rdflib = _rdflib()
+    if namespace not in [str(x[1]) for x in G.namespaces()]:
+        raise NetworkXError('from_rgmlgraph() requires an RGML-namespaced \
+        graph ', namespace)
+
+    rdf = rdflib.RDF
+    rgml = rdflib.Namespace(namespace)
+    G.bind('rgml', str(rgml))
+
+    try:
+        graph_node = G.value(predicate=rdf.type, object=rgml.Graph, any=False)
+    except rdflib.exceptions.UniquenessError:
+        raise NetworkXError('from_rgmlgraph() does not support nested graphs ')
+
+    try:
+        directed = G.value(subject=graph_node, predicate=rgml.directed,
+                           any=False)
+    except rdflib.exceptions.UniquenessError:
+        raise NetworkXError('from_rgmlgraph() does not support mixed graphs ')
+
+    hyperedges = G.query("""SELECT DISTINCT ?edge
+    WHERE {
+    ?edge rgml:nodes ?seq .
+    ?seq  ?predicate ?node .
+    ?node rdf:type   rgml:Node .
+    ?edge rdf:type   rgml:Edge .
+    ?seq  rdf:type   rdf:Seq .
+    }""", initNs=dict(rgml=rgml, rdf=rdf))
+
+    if len(hyperedges):
+        raise NetworkXError('from_rgml() does not support hypergraphs ')
+
+    # assign defaults
+    create_using = nx.Graph()
+    if directed:
+        create_using = nx.DiGraph()
+    N = nx.empty_graph(0, create_using)
+    N.name = G.identifier
+
+    # add nodes with attributes
+    for node, attrs in _make_elements(G, rgml.Node, rdf=rdf,
+                                      rgml=rgml).iteritems():
+        N.add_node(node, attrs)
+
+    # add edges with attributes source and target come as predicates
+    # from the _make_elements call, so we need to pop them out of the
+    # dict before creating the edge proper.
+    for edge, attrs in _make_elements(G, rgml.Edge, rdf=rdf,
+                                      rgml=rgml).iteritems():
+        source = attrs[rgml.source]
+        target = attrs[rgml.target]
+        del attrs[rgml.source]
+        del attrs[rgml.target]
+        if 'label' not in attrs:
+            attrs['label'] = edge
+        N.add_edge(source, target, attrs)
+
+    if relabel:
+        N = _relabel(N)
+
+    return N
+
+
 def to_rgmlgraph(N):
     """Return an rdflib RGML graph from a NetworkX graph.
 
@@ -206,110 +311,6 @@ def to_rgmlgraph(N):
             G.add((edge, k, v))
 
     return G
-
-
-def _parse_attrs(attrs, rgml, rdflib):
-    for k, v in attrs.iteritems():
-        if k == 'weight':
-            k = rgml.weight
-            v = rdflib.term.Literal(float(v))
-        elif k == 'label':
-            k = rgml.label
-            v = rdflib.term.Literal(str(v))
-        else:
-            k = rdflib.term.URIRef('#{}'.format(k))
-            v = rdflib.term.Literal(v)
-        yield k, v
-
-        
-def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
-                   relabel=True):
-    """Return a NetworkX graph from an rdflib RGML graph.
-
-    Parameters
-    ----------
-    G : rdflib Graph
-      A graph created with rdflib
-
-    namespace : string, optional
-      Alternative RGML namespace
-
-    relabel : bool, optional
-      If True use the RGML node label attribute for node names,
-      otherwise use the rdflib object itself.
-
-    Notes
-    -----
-    This implementation does not support mixed graphs (directed and
-    unidirected edges together), hyperedges, or nested graphs.
-
-    The namespace as typically published in RGML documents is
-    http://purl.org/puninj/2001/05/rgml-schema#, which points to
-    http://www.cs.rpi.edu/~puninj/RGML/, but the RGML schema currently
-    resides at
-    http://www.cs.rpi.edu/research/groups/pb/punin/public_html/RGML/.
-
-    """
-    rdflib = _rdflib()
-    if namespace not in [str(x[1]) for x in G.namespaces()]:
-        raise NetworkXError('from_rgmlgraph() requires an RGML-namespaced graph ',
-                            namespace)
-
-    rdf = rdflib.RDF
-    rgml = rdflib.Namespace(namespace)
-    G.bind('rgml', str(rgml))
-
-    try:
-        graph_node = G.value(predicate=rdf.type, object=rgml.Graph, any=False)
-    except rdflib.exceptions.UniquenessError:
-        raise NetworkXError('from_rgmlgraph() does not support nested graphs ')
-
-    try:
-        directed = G.value(subject=graph_node, predicate=rgml.directed, any=False)
-    except rdflib.exceptions.UniquenessError:
-        raise NetworkXError('from_rgmlgraph() does not support mixed graphs ')
-
-    hyperedges = G.query("""SELECT DISTINCT ?edge
-    WHERE {
-    ?edge rgml:nodes ?seq .
-    ?seq  ?predicate ?node .
-    ?node rdf:type   rgml:Node .
-    ?edge rdf:type   rgml:Edge .
-    ?seq  rdf:type   rdf:Seq .
-    }""", initNs=dict(rgml=rgml, rdf=rdf))
-
-    if len(hyperedges):
-        raise NetworkXError('from_rgml() does not support hypergraphs ')
-
-    # assign defaults
-    create_using = nx.Graph()
-    if directed:
-        create_using = nx.DiGraph()
-    N = nx.empty_graph(0, create_using)
-    N.name = G.identifier
-
-    # add nodes with attributes
-    for node, attrs in _make_elements(G, rgml.Node, rdf=rdf,
-                                      rgml=rgml).iteritems():
-        N.add_node(node, attrs)
-
-    # add edges with attributes source and target come as predicates
-    # from the _make_elements call, so we need to pop them out of the
-    # dict before creating the edge proper.
-    for edge, attrs in _make_elements(G, rgml.Edge, rdf=rdf,
-                                      rgml=rgml).iteritems():
-        source = attrs[rgml.source]
-        target = attrs[rgml.target]
-        del attrs[rgml.source]
-        del attrs[rgml.target]
-        if 'label' not in attrs:
-            attrs['label'] = edge
-        N.add_edge(source, target, attrs)
-
-    if relabel:
-        N = _relabel(N)
-
-    return N
 
 
 def read_rgml(path, format='xml', relabel=True):
@@ -456,28 +457,6 @@ def from_rdfgraph(G, create_using=None):
     return N
 
 
-def read_rdf(path, format='xml', create_using=None):
-    """Return a NetworkX MultiDiGraph or (bipartite) Graph from an rdf
-    file on path.
-
-    Parameters
-    ----------
-    path : file or string
-       File name or file handle or url to read.
-
-    format : string
-       RDFlib parser to use ({})
-
-    See from_rdfgraph() for details.
-    """
-    rdflib = _rdflib()
-    read_rdf.__doc__.format(_get_rdflib_plugins(rdflib.parser.Parser))
-
-    G = rdflib.Graph()
-    G.load(path, format=format)
-    return from_rdfgraph(G, create_using)
-
-
 def to_rdfgraph(N):
     """Return an rdflib graph from a NetworkX graph N.
 
@@ -534,6 +513,28 @@ def to_rdfgraph(N):
 
     else:
         return to_rgmlgraph(N)
+
+
+def read_rdf(path, format='xml', create_using=None):
+    """Return a NetworkX MultiDiGraph or (bipartite) Graph from an rdf
+    file on path.
+
+    Parameters
+    ----------
+    path : file or string
+       File name or file handle or url to read.
+
+    format : string
+       RDFlib parser to use ({})
+
+    See from_rdfgraph() for details.
+    """
+    rdflib = _rdflib()
+    read_rdf.__doc__.format(_get_rdflib_plugins(rdflib.parser.Parser))
+
+    G = rdflib.Graph()
+    G.load(path, format=format)
+    return from_rdfgraph(G, create_using)
 
 
 def write_rdf(N, path, format='xml'):
