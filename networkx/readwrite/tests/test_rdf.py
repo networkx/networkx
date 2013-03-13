@@ -111,6 +111,30 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
         assert_equals(len(nodes), 6, 'Number of unique nodes')
         [assert_true(n[0] in range(10), 'Correct node id') for n in nodes]
 
+    def test_to_rdfgraph(self):
+        fh = io.BytesIO(self.simple_data.encode('UTF-8'))
+        fh.seek(0)
+
+        rdflib = rdf._rdflib()
+        G = rdflib.Graph()
+        G.load(fh, format='nt')
+
+        # bipartite representation
+        N = networkx.from_rdfgraph(G, create_using=None)
+        G1 = networkx.to_rdfgraph(N)
+        assert_true(G.isomorphic(G1), 'Isomorphic round-trip bipartite conversion.')
+        
+        # directed labeled multigraph representation
+        N = networkx.from_rdfgraph(G, create_using=networkx.MultiDiGraph())
+        G1 = networkx.to_rdfgraph(N)
+        assert_true(G.isomorphic(G1), 'Isomorphic round-trip multigraph conversion.')
+
+        # generic graph representation
+        N = networkx.barabasi_albert_graph(100, 1, 0)
+        G1 = networkx.to_rdfgraph(N)
+        assert_true('rgml' in [str(x[0]) for x in G1.namespaces()],
+                    'NetworkX generated graph in RGML namespace')
+        
     def test_read_rdf(self):
         try:
             import rdflib
@@ -129,3 +153,4 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
                                            create_using=None,
                                            format='nt')) is networkx.Graph,
                     'Returns NetworkX graph')
+

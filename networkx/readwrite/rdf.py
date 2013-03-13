@@ -508,14 +508,14 @@ def to_rdfgraph(N):
     If the above fail, then we generate an RGML graph.
     """
     rdflib = _rdflib()
-    nodes = N.nodes_iter(data=True)
-    edges = N.edges_iter(data=True)
+    nodes = N.nodes(data=True)
+    edges = N.edges(data=True)
 
-    nodes_bipartite = iter([x[-1].get('bipartite') for x in nodes])
-    edges_terms = iter([x[-1].get('term') for x in edges])
+    nodes_bipartite = [x[-1].get('bipartite') for x in nodes]
+    edges_terms = [x[-1].get('term') for x in edges]
 
-    nodes_labels = iter([x[-1].get('label') for x in nodes])
-    edges_labels = iter([x[-1].get('label') for x in edges])
+    nodes_labels = [x[-1].get('label') for x in nodes]
+    edges_labels = [x[-1].get('label') for x in edges]
 
     if all([x for x in nodes_bipartite if x]) \
        and all([x in [0, 1] for x in nodes_bipartite]) \
@@ -523,12 +523,15 @@ def to_rdfgraph(N):
 
         return _from_bipartite(N)
 
-    elif all(nodes_labels) and all(edges_labels) \
-        and all([isinstance(x,
-                            rdflib.term.Identifier) for x in nodes_labels]) \
-        and all([isinstance(x,
-                            rdflib.term.Identifier) for x in edges_labels]):
+    elif nodes_labels and edges_labels \
+         and all(nodes_labels) and all(edges_labels) \
+         and all([isinstance(x,
+                             rdflib.term.Identifier) for x in nodes_labels]) \
+         and all([isinstance(x,
+                             rdflib.term.Identifier) for x in edges_labels]):
 
+        print nodes_labels
+        print edges_labels
         return _from_multigraph(N)
 
     else:
