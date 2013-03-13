@@ -44,7 +44,7 @@ __author__ = """Pedro Silva (psilva+git@pedrosilva.pt)"""
 #    BSD license.
 
 __all__ = ['read_rdf', 'from_rdfgraph', 'write_rdf', 'to_rdfgraph',
-           'read_rgml', 'from_rgmlgraph']
+           'read_rgml', 'from_rgmlgraph', 'write_rgml']
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -260,12 +260,12 @@ def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
     G.bind('rgml', str(rgml))
 
     try:
-        graph_lit = G.value(predicate=rdf.type, object=rgml.Graph, any=False)
+        graph_node = G.value(predicate=rdf.type, object=rgml.Graph, any=False)
     except rdflib.exceptions.UniquenessError:
         raise NetworkXError('from_rgmlgraph() does not support nested graphs ')
 
     try:
-        directed = G.value(subject=graph_lit, predicate=rgml.directed)
+        directed = G.value(subject=graph_node, predicate=rgml.directed, any=False)
     except rdflib.exceptions.UniquenessError:
         raise NetworkXError('from_rgmlgraph() does not support mixed graphs ')
 
@@ -279,7 +279,7 @@ def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
     }""", initNs=dict(rgml=rgml, rdf=rdf))
 
     if len(hyperedges):
-        raise NetworkXError('from_rgml() does not support hypergraphs')
+        raise NetworkXError('from_rgml() does not support hypergraphs ')
 
     # assign defaults
     create_using = nx.Graph()
@@ -335,7 +335,7 @@ def read_rgml(path, format='xml', relabel=True):
 
     G = rdflib.Graph()
     G.load(path, format=format)
-    return from_rgmlgraph(G, relabel)
+    return from_rgmlgraph(G, relabel=relabel)
 
 
 def write_rgml(N, path, format='xml'):
@@ -530,8 +530,6 @@ def to_rdfgraph(N):
          and all([isinstance(x,
                              rdflib.term.Identifier) for x in edges_labels]):
 
-        print nodes_labels
-        print edges_labels
         return _from_multigraph(N)
 
     else:
