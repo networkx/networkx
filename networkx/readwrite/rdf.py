@@ -169,6 +169,40 @@ def _parse_attrs(attrs, rgml, rdflib):
         yield k, v
 
 
+def _is_bipartite(nodes, edges):
+    """Return true if graph composed of nodes and edges has been imported
+    as a bipartite RDF graph, false otherwise.
+    """
+    nodes_bipartite = [x[-1].get('bipartite') for x in nodes]
+    edges_terms = [x[-1].get('term') for x in edges]
+
+    all_bipartite = all([x for x in nodes_bipartite if x])
+    all_partitioned = all([x in [0, 1] for x in nodes_bipartite])
+    all_terms = all([x in ['subject',
+                           'object',
+                           'predicate'] for x in edges_terms])
+
+    return all_bipartite and all_partitioned and all_terms
+
+
+def _is_multigraph(nodes, edges):
+    """Return true if graph composed of nodes and edges has been imported
+    as a multiple directed labeled RDF graph, false otherwise.
+    """
+    rdflib = _rdflib()
+    nodes_labels = [x[-1].get('label') for x in nodes]
+    edges_labels = [x[-1].get('label') for x in edges]
+
+    have_labels = nodes_labels and edges_labels
+    true_labels = all(nodes_labels) and all(edges_labels)
+    nodes_terms = all([isinstance(x, rdflib.term.Identifier)
+                       for x in nodes_labels])
+    edges_terms = all([isinstance(x, rdflib.term.Identifier)
+                       for x in edges_labels])
+
+    return have_labels and true_labels and nodes_terms and edges_terms
+
+
 def from_rgmlgraph(G, namespace='http://purl.org/puninj/2001/05/rgml-schema#',
                    relabel=True):
     """Return a NetworkX graph from an rdflib RGML graph.
@@ -499,40 +533,6 @@ def to_rdfgraph(N):
         return _from_multigraph(N)
     else:
         return to_rgmlgraph(N)
-
-
-def _is_bipartite(nodes, edges):
-    """Return true if graph composed of nodes and edges has been imported
-    as a bipartite RDF graph, false otherwise.
-    """
-    nodes_bipartite = [x[-1].get('bipartite') for x in nodes]
-    edges_terms = [x[-1].get('term') for x in edges]
-
-    all_bipartite = all([x for x in nodes_bipartite if x])
-    all_partitioned = all([x in [0, 1] for x in nodes_bipartite])
-    all_terms = all([x in ['subject',
-                           'object',
-                           'predicate'] for x in edges_terms])
-
-    return all_bipartite and all_partitioned and all_terms
-
-
-def _is_multigraph(nodes, edges):
-    """Return true if graph composed of nodes and edges has been imported
-    as a multiple directed labeled RDF graph, false otherwise.
-    """
-    rdflib = _rdflib()
-    nodes_labels = [x[-1].get('label') for x in nodes]
-    edges_labels = [x[-1].get('label') for x in edges]
-
-    have_labels = nodes_labels and edges_labels
-    true_labels = all(nodes_labels) and all(edges_labels)
-    nodes_terms = all([isinstance(x, rdflib.term.Identifier)
-                       for x in nodes_labels])
-    edges_terms = all([isinstance(x, rdflib.term.Identifier)
-                       for x in edges_labels])
-
-    return have_labels and true_labels and nodes_terms and edges_terms
 
 
 def read_rdf(path, fmt='xml', create_using=None):
