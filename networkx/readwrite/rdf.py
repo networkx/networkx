@@ -363,6 +363,10 @@ def read_rgml(path, fmt='xml', relabel=True):
       If True use the RGML node label attribute for node names,
       otherwise use the rdflib object itself.
 
+    Examples
+    --------
+    >>> N = nx.read_rgml("test.rdf")
+
     See from_rgmlgraph() for details.
 
     """
@@ -390,7 +394,7 @@ def write_rgml(N, path, fmt='xml'):
 
     Examples
     --------
-    >>> N=nx.path_graph(4)
+    >>> N = nx.path_graph(4)
     >>> nx.write_rgml(N, "test.rdf")
 
     Notes
@@ -406,7 +410,6 @@ def write_rgml(N, path, fmt='xml'):
         raise NetworkXError('Format not available', fmt, plugins)
     G = to_rgmlgraph(N)
     G.serialize(path, format=fmt)
-    return G
 
 
 def from_rdfgraph(G, create_using=None):
@@ -423,9 +426,9 @@ def from_rdfgraph(G, create_using=None):
 
     Examples
     --------
-    >>> K5=nx.complete_graph(5)
-    >>> A=nx.to_rdfgraph(K5)
-    >>> G=nx.from_rdfgraph(A)
+    >>> K5 = nx.complete_graph(5)
+    >>> A = nx.to_rdfgraph(K5)
+    >>> G = nx.from_rdfgraph(A)
 
     Notes
     -----
@@ -549,6 +552,10 @@ def read_rdf(path, fmt='xml', create_using=None):
                              application/rdf+xml, application/xhtml+xml,
                              rdfa, nt, turtle)
 
+    Examples
+    --------
+    >>> N = nx.read_rdf("test.rdf")
+
     See from_rdfgraph() for details.
     """
     rdflib = _rdflib()
@@ -591,4 +598,4 @@ def write_rdf(N, path, fmt='xml'):
         raise NetworkXError('Format not available', fmt, plugins)
     G = to_rdfgraph(N)
     G.serialize(path, format=fmt)
-    return G
+
