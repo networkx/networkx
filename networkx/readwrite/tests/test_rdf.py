@@ -14,16 +14,26 @@ class TestRdf():
     @classmethod
     def setupClass(cls):
         try:
-            rdflib = rdf._rdflib()
+            rdf._rdflib()
         except ImportError:
             raise SkipTest('rdflib is not available')
 
     def setUp(self):
-        self.simple_data = """<http://www.w3.org/2001/08/rdf-test/> <http://purl.org/dc/elements/1.1/creator>   "Dave Beckett" .
-<http://www.w3.org/2001/08/rdf-test/> <http://purl.org/dc/elements/1.1/creator>   "Jan Grant" .
-<http://www.w3.org/2001/08/rdf-test/> <http://purl.org/dc/elements/1.1/publisher> _:a .
-_:a                                   <http://purl.org/dc/elements/1.1/title>     "World Wide Web Consortium" .
-_:a                                   <http://purl.org/dc/elements/1.1/source>    <http://www.w3.org/> .
+        self.simple_data = """<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://purl.org/dc/elements/1.1/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:nodeID="N41ffcd22c7a546c9b9ccd0503d122275">
+    <ns1:source rdf:resource="http://www.w3.org/"/>
+    <ns1:title>World Wide Web Consortium</ns1:title>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/08/rdf-test/">
+    <ns1:publisher rdf:nodeID="N41ffcd22c7a546c9b9ccd0503d122275"/>
+    <ns1:creator>Jan Grant</ns1:creator>
+    <ns1:creator>Dave Beckett</ns1:creator>
+  </rdf:Description>
+</rdf:RDF>
 """
 
         self.rgml_data = """<?xml version="1.0" encoding="utf-8"?>
@@ -48,7 +58,8 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
    </edges>
 </Graph>
 
-<Node rdf:ID="n1" rgml:weight="0.1" rgml:label="http://www.w3.org/Home/Lassila"/>
+<Node rdf:ID="n1" rgml:weight="0.1"
+      rgml:label="http://www.w3.org/Home/Lassila"/>
 <Node rdf:ID="n2" rgml:weight="0.5" rgml:label="Ora Lassila"/>
 
 <Edge rdf:ID="e1" rgml:weight="1">
@@ -89,7 +100,8 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
         G.add((graph_node, rgml.directed, rdflib.term.Literal(True)))
         with assert_raises(NetworkXError) as e:
             networkx.from_rgmlgraph(G)
-        assert_equals(e.exception.message, 'from_rgmlgraph() does not support mixed graphs ', 'Mixed graph')
+        assert_equals(e.exception.message, 'mixed graphs are not supported',
+                      'Mixed graph')
         G.remove((graph_node, rgml.directed, rdflib.term.Literal(False)))
         G.remove((graph_node, rgml.directed, rdflib.term.Literal(True)))
 
@@ -98,7 +110,8 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
         G.add((graph_node, rdflib.RDF.type, rgml.Graph))
         with assert_raises(NetworkXError) as e:
             networkx.from_rgmlgraph(G)
-        assert_equals(e.exception.message, 'from_rgmlgraph() does not support nested graphs ', 'Nested/multiple graphs')
+        assert_equals(e.exception.message, 'nested graphs are not supported',
+                      'Nested/multiple graphs')
         G.remove((graph_node, rdflib.RDF.type, rgml.Graph))
 
         # hypergraph
@@ -118,15 +131,16 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
         G.add((seq_node, rdflib.RDF.type, rdflib.RDF.Seq))
         with assert_raises(NetworkXError) as e:
             networkx.from_rgmlgraph(G)
-        assert_equals(e.exception.message, 'from_rgml() does not support hypergraphs ', 'Hypergraphs')
-        
+        assert_equals(e.exception.message, 'hypergraphs are not supported',
+                      'Hypergraphs')
+
     def test_from_rdfgraph(self):
         fh = io.BytesIO(self.simple_data.encode('UTF-8'))
         fh.seek(0)
 
         rdflib = rdf._rdflib()
         G = rdflib.Graph()
-        G.load(fh, format='nt')
+        G.load(fh)
 
         assert_raises(NetworkXError,
                       networkx.from_rdfgraph,
@@ -163,17 +177,19 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
 
         rdflib = rdf._rdflib()
         G = rdflib.Graph()
-        G.load(fh, format='nt')
+        G.load(fh)
 
         # bipartite representation
         N = networkx.from_rdfgraph(G, create_using=None)
         G1 = networkx.to_rdfgraph(N)
-        assert_true(G.isomorphic(G1), 'Isomorphic round-trip bipartite conversion.')
-        
+        assert_true(G.isomorphic(G1),
+                    'Isomorphic round-trip bipartite conversion.')
+
         # directed labeled multigraph representation
         N = networkx.from_rdfgraph(G, create_using=networkx.MultiDiGraph())
         G1 = networkx.to_rdfgraph(N)
-        assert_true(G.isomorphic(G1), 'Isomorphic round-trip multigraph conversion.')
+        assert_true(G.isomorphic(G1),
+                    'Isomorphic round-trip multigraph conversion.')
 
         # generic graph representation
         N = networkx.barabasi_albert_graph(100, 1, 0)
@@ -189,7 +205,7 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
         G1 = networkx.to_rdfgraph(N)
         assert_true('rgml' in [str(x[0]) for x in G1.namespaces()],
                     'NetworkX generated graph in RGML namespace')
-        
+
     def test_read_rdf(self):
         fh = io.BytesIO(self.simple_data.encode('UTF-8'))
         fh.seek(0)
@@ -199,15 +215,15 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
                       fh,
                       fmt='does not exist')
 
-        assert_true(type(networkx.read_rdf(fh,
-                                           create_using=None,
-                                           fmt='nt')) is networkx.Graph,
+        assert_true(type(networkx.read_rdf(fh, create_using=None))
+                    is networkx.Graph,
                     'Returns NetworkX graph')
 
-
     def test_write_rdf(self):
-        fh=io.BytesIO()
-        networkx.write_rdf(networkx.barabasi_albert_graph(100,1,0), fh, fmt='n3')
+        fh = io.BytesIO()
+        networkx.write_rdf(networkx.barabasi_albert_graph(100, 1, 0),
+                           fh,
+                           fmt='n3')
         fh.seek(0)
         assert_true(isinstance(networkx.read_rdf(fh, fmt='n3'),
                                networkx.Graph),
@@ -230,10 +246,12 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
 
         N = networkx.read_rdf(fh, create_using=None)
         assert_true(type(N) is networkx.Graph, 'Returns NetworkX graph')
-        
+
     def test_write_rgml(self):
-        fh=io.BytesIO()
-        networkx.write_rgml(networkx.barabasi_albert_graph(100,1,0), fh, fmt='n3')
+        fh = io.BytesIO()
+        N = networkx.barabasi_albert_graph(100, 1, 0)
+        N.add_node(rdf._rdflib().term.Literal('some term'))
+        networkx.write_rgml(N, fh, fmt='n3')
         fh.seek(0)
 
         assert_raises(NetworkXError,
@@ -249,7 +267,7 @@ _:a                                   <http://purl.org/dc/elements/1.1/source>  
 
     def test__relabel(self):
         N = networkx.Graph()
-        N.add_nodes_from([(0, {'label':'a'}), (1, {'label':'a'})])
+        N.add_nodes_from([(0, {'label': 'a'}), (1, {'label': 'a'})])
         assert_raises(NetworkXError,
                       rdf._relabel,
                       N)
