@@ -1,10 +1,13 @@
 import networkx as nx
 import numpy as np
-from scipy import stats
+
+__author__ = ['Federico Vaggi (federico.vaggi@fmach.it)']
+
+__all__ = ['small_world']
 
 def small_world(G, n_iter = 1000, use_transitivity = False):
-    r"""Calculates the small world coefficient for the network G.  The small world
-    coefficient is defined as:
+    r"""Calculates the small world coefficient for the network G.  The small
+    world coefficient is defined as:
 
     .. math::
 
@@ -15,6 +18,9 @@ def small_world(G, n_iter = 1000, use_transitivity = False):
     same amount of nodes and edges, and `\lambda_g` is the ratio between the
     average shortest path length of network `g` and the average of the
     average shortest path length of n_iter random networks.
+    
+    If G is directed, the random networks generated (as well as the 
+    clustering coefficient/transitivity) will also be directed.
 
     Parameters
     ----------
@@ -30,7 +36,17 @@ def small_world(G, n_iter = 1000, use_transitivity = False):
       if True, will use transitivity to calculate small worldness, if False
       will use average clustering coefficient instead.  Read [1]_ for an
       in-depth discussion of the difference between the two measures.
-    ... 
+      
+    Returns
+    -------
+    small_worldness : float
+       The small world ratio for the network.
+       
+    rand_sw : list
+        A list containing n_iter elements, with each element representing the
+        small world value for each random network.  Can be used to calculate
+        more advanced statistics for small worldness.
+        
     Notes
     -----
     This implementation is based on algorithm 11 in [1]_. The authors propose
@@ -54,40 +70,46 @@ def small_world(G, n_iter = 1000, use_transitivity = False):
 
     n = len(G)
     m = len(G.edges())
+    directed = nx.is_directed(G)
+    
+    if use_transitivity:
+        clustering_fcn = nx.transitivity
+    else:
+        clustering_fcn = nx.linalg.linalg_average_clustering
+        
+    if directed:
+        distance_fcn = nx.average_distance_weakly_connected
+        connected_fcn = nx.is_weakly_connected
+        components_fcn = nx.weakly_connected_component_subgraphs
+    else:
+        distance_fcn = nx.average_shortest_path_length
+        connected_fcn = nx.is_connected
+        components_fcn = nx.connected_component_subgraphs
+    # When we generate random subgraphs, sometimes they will have unconnected
+    # components.  In that case, we work with the largest connected component.
 
     rand_cc = []
     rand_shortest_path = []
     for I in range(n_iter):
-        random_G = nx.gnm_random_graph(n, m)
-        if not nx.is_connected(random_G):
-            random_G = nx.connected_component_subgraphs(random_G)[0]
+        random_G = nx.gnm_random_graph(n, m, directed = directed)
+        if not connected_fcn(random_G):
+            random_G = components_fcn(random_G)[0]
             # The generated random graph might not have all the connected
             # nodes - in which case use the largest component.
-        if not use_transitivity:   
-            _cc = nx.average_clustering(random_G)
-        else:
-            _cc = nx.transitivity(random_G)
-            
-        _sp = nx.average_shortest_path_length(random_G)
-        rand_cc.append(_cc)
-        rand_shortest_path.append(_sp)
+                
+        rand_cc.append(clustering_fcn(random_G))
+        rand_shortest_path.append(distance_fcn(random_G))
         
     mean_shortest_path = float(np.mean(rand_shortest_path))
+    G_shortest_path = distance_fcn(G)
+    path_len_ratio = float(G_shortest_path) /mean_shortest_path
     mean_cc = float(np.mean(rand_cc))
+    G_cc = clustering_fcn(G)
+    cc_ratio = float(G_cc) / mean_cc
+    small_worldness = cc_ratio / path_len_ratio
     
     rand_sw = []
-    for _cc, _sp in zip(rand_cc, rand_shortest_path):
-        rand_sw.append((_cc/mean_cc) / (_sp/mean_shortest_path))
-
-    G_cc = nx.average_clustering(G)
-    G_shortest_path = nx.average_shortest_path_length(G)
+    for cc, sp in zip(rand_cc, rand_shortest_path):
+        rand_sw.append((cc/mean_cc) / (sp/mean_shortest_path))
     
-    path_len_ratio = float(G_shortest_path) /mean_shortest_path
-    cc_ratio = float(G_cc) / mean_cc
-
-    small_worldness = cc_ratio / path_len_ratio
-
-    sw_prob = stats.norm.pdf(small_worldness, loc=np.mean(rand_sw), 
-        scale=np.std(rand_sw))
-    
-    return (small_worldness, sw_prob, rand_sw, rand_shortest_path, rand_cc)
+    return (small_worldness, rand_sw)
