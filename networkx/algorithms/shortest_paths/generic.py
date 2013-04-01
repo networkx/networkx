@@ -327,6 +327,25 @@ def average_shortest_path_length(G, weight=None):
     n=len(G)
     return avg/(n*(n-1))
 
+def average_shortest_path_length_weakly_connected(G, weight = None,
+                                                  implicit_self_loops = False):
+    all_pairs = nx.all_pairs_dijkstra_path_length(G, weight = weight)
+    network_avg = []
+    for node_1 in all_pairs.iterkeys():
+        node_1_avg = []
+        for node_2 in all_pairs[node_1].iterkeys():
+            if node_1 == node_2:
+                if ((not implicit_self_loops) and
+                (not G.has_edge(node_1,node_2))):
+                # If implicit_self_loops is false, we do not count the path
+                # from A node to itself, unless there is an explicit edge.
+                    continue
+            node_1_avg.append(all_pairs[node_1][node_2])
+        network_avg.extend(node_1_avg)
+    avg_path_len = sum(network_avg) / float(len(network_avg))
+    return avg_path_len
+
+
 
 def all_shortest_paths(G, source, target, weight=None):
     """Compute all shortest paths in the graph.
