@@ -16,10 +16,12 @@ order by first flipping the edge orientation using R=G.reverse(copy=False).
 #    BSD license.
 import networkx as nx
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                            'Sérgio Nery Simões <sergionery@gmail.com>'])
+                            'Sérgio Nery Simões <sergionery@gmail.com>',
+                            'Federico Vaggi <vaggi.federico@gmail.com>'])
+                            
 __all__ = ['shortest_path', 'all_shortest_paths',
            'shortest_path_length', 'average_shortest_path_length',
-           'has_path']
+           'has_path', 'average_shortest_path_length_weakly_connected']
 
 def has_path(G, source, target):
     """Return True if G has a path from source to target, False otherwise.
@@ -329,23 +331,58 @@ def average_shortest_path_length(G, weight=None):
 
 def average_shortest_path_length_weakly_connected(G, weight = None,
                                                   implicit_self_loops = False):
+    r"""Return the average shortest path length for a directed graph.
+    
+    Unlike taverage_shortest_path_length, which normalizes the
+    sum of the total path lengths by the maximum possible number of paths
+    `n(n-1)`, this function normalizes only by the number of actual paths that
+    a particular node has to other nodes in the graph.  For a weakly connected
+    graph, this number can be significantly smaller.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weight : None or string, optional (default = None)
+       If None, every edge has weight/distance/cost 1.
+       If a string, use this edge attribute as the edge weight.
+       Any edge attribute not present defaults to 1.
+       
+    implicit_self_loops : True or False, optional (default = False)
+        If False, it does not assume that there is a path from a node to itself
+        unless there is an explicit self loop in the graph.
+
+    Raises
+    ------
+    NetworkXError:
+       if the graph is not at least weakly connected.
+
+    For strongly connected graphs, this function and
+    average_shortest_path_length will give the same answer if
+    implicit_self_loops is True.
+    """
+    if G.is_directed():
+        if not nx.is_weakly_connected(G):
+            raise nx.NetworkXError("Graph is not connected.")
+    else:
+        if not nx.is_connected(G):
+            raise nx.NetworkXError("Graph is not connected.")    
+    
     all_pairs = nx.all_pairs_dijkstra_path_length(G, weight = weight)
-    network_avg = []
+    avg = []
     for node_1 in all_pairs.iterkeys():
         node_1_avg = []
         for node_2 in all_pairs[node_1].iterkeys():
             if node_1 == node_2:
                 if ((not implicit_self_loops) and
                 (not G.has_edge(node_1,node_2))):
-                # If implicit_self_loops is false, we do not count the path
-                # from A node to itself, unless there is an explicit edge.
                     continue
+                # If implicit_self_loops is false, we do not count the path
+                # from a node to itself, unless there is an explicit edge.
             node_1_avg.append(all_pairs[node_1][node_2])
-        network_avg.extend(node_1_avg)
-    avg_path_len = sum(network_avg) / float(len(network_avg))
+        avg.extend(node_1_avg)
+    avg_path_len = sum(avg) / float(len(avg))
     return avg_path_len
-
-
 
 def all_shortest_paths(G, source, target, weight=None):
     """Compute all shortest paths in the graph.
