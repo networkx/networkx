@@ -9,6 +9,10 @@ class TestGenericPath:
         self.grid=cnlti(nx.grid_2d_graph(4,4),first_label=1,ordering="sorted")
         self.cycle=nx.cycle_graph(7)
         self.directed_cycle=nx.cycle_graph(7,create_using=nx.DiGraph())
+        self.directed_cascade = nx.DiGraph()
+        self.directed_cascade.add_edge(1, 2)
+        self.directed_cascade.add_edge(2, 3)
+        self.directed_cascade.add_edge(3, 4)
 
 
     def test_shortest_path(self):
@@ -55,7 +59,14 @@ class TestGenericPath:
         p=nx.shortest_path(self.grid,1,weight='weight')
         assert_equal(p[12],[1, 2, 3, 4, 8, 12])
 
-
+    def test_average_shortest_path_length_weakly_connected(self):
+        G = self.directed_cascade
+        assert_almost_equal(nx.average_shortest_path_length_weakly_connected(G),
+                            1.66666666)
+        G = G.to_undirected()
+        assert_equal(nx.average_shortest_path_length(G),
+                     nx.average_shortest_path_length_weakly_connected(G))
+        
     def test_single_source_shortest_path_length(self):
         l=nx.shortest_path_length(self.cycle,0)
         assert_equal(l,{0:0,1:1,2:2,3:3,4:3,5:2,6:1})
