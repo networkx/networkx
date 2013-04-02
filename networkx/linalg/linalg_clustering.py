@@ -38,7 +38,6 @@ def linalg_clustering(G, weight = 'weight'):
     The edge weights `\hat{w}_{uv}` are normalized by the maximum weight in the
     network `\hat{w}_{uv} = w_{uv}/\max(w)`.
     
-    
     The value of `c_u` is assigned to 0 if `deg(u) < 2`.
     
     Parameters
@@ -52,7 +51,19 @@ def linalg_clustering(G, weight = 'weight'):
     Returns
     -------
     out : dictionary
-       Clustering coefficient for all nodes    """
+       Clustering coefficient for all nodes
+       
+    See Also
+    --------
+    clustering
+    average_clustering
+       
+    References
+    -----
+    .. [1] Clustering in Complex Directed Networks.  Giorgio Fagiolo.
+    Physical Review E, 2007.
+    http://web1.sssup.it/pubblicazioni/ugov_files/303163_PRE_2007.pd
+    f"""
     
     W = np.abs(nx.adjacency_matrix(G, weight = weight))
     W = W / np.max(W)
