@@ -467,11 +467,7 @@ def draw_pydot(G, filename=None, format=None, prefix=None, suffix=None,
         fobj.close()
 
     if show is None:
-        # Configurable global default behavior
-        # Eventually, place in some rcParams.
-        #    nx.rcParams['pydot.show'] = True
-        #    nx.rcParams['pydot.show'] = 'ipynb'
-        show = DEFAULT_SHOW
+        show = nx.nxParams['pydot_show']
 
     if show:
         if show == 'ipynb':
