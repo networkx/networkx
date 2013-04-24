@@ -27,7 +27,7 @@ import tempfile
 import time
 
 from networkx.utils import (
-    open_file, get_fobj, make_str, require, default_opener
+    open_file, get_fobj, make_str, default_opener
 )
 import networkx as nx
 
@@ -37,8 +37,8 @@ __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
 
 DEFAULT_SHOW = True
 
-@open_file(1,mode='w')
-def write_dot(G,path):
+@open_file(1, mode='w')
+def write_dot(G, path):
     """Write NetworkX graph G to Graphviz dot format on path.
 
     Path can be a string or a file handle.
@@ -47,7 +47,7 @@ def write_dot(G,path):
     path.write(P.to_string())
     return
 
-@open_file(0,mode='r')
+@open_file(0, mode='r')
 def read_dot(path):
     """Return a NetworkX MultiGraph or MultiDiGraph from a dot file on path.
 
@@ -70,7 +70,6 @@ def read_dot(path):
     P=pydot.graph_from_dot_data(data)
     return from_pydot(P)
 
-@require('pydot')
 def from_pydot(P):
     """Return a NetworkX graph from a Pydot graph.
 
@@ -138,7 +137,6 @@ def from_pydot(P):
         N.graph['edge']={}
     return N
 
-@require('pydot')
 def filter_attrs(attrs, attr_type):
     """
     Helper function to keep only pydot supported attributes.
@@ -172,7 +170,6 @@ def filter_attrs(attrs, attr_type):
     d = dict( [(k,v) for (k,v) in attrs.iteritems() if k in accepted] )
     return d
 
-@require('pydot')
 def to_pydot(G, raise_exceptions=True):
     """Return a pydot graph from a NetworkX graph G.
 
@@ -197,7 +194,7 @@ def to_pydot(G, raise_exceptions=True):
     --------
     >>> G = nx.complete_graph(5)
     >>> G.add_edge(2, 10, color='red')
-    >>> P = nx.to_pydot(K5)
+    >>> P = nx.to_pydot(G)
 
     """
     import pydot
@@ -213,7 +210,7 @@ def to_pydot(G, raise_exceptions=True):
     name = G.graph.get('name')
     graph_defaults = filter_attrs(G.graph, 'graph')
     if name is None:
-        P = pydot.Dot(graph_type=graph_type,strict=strict,**graph_defaults)
+        P = pydot.Dot(graph_type=graph_type, strict=strict, **graph_defaults)
     else:
         P = pydot.Dot(name, graph_type=graph_type, strict=strict,
                       **graph_defaults)
@@ -259,7 +256,7 @@ def to_pydot(G, raise_exceptions=True):
 
     return P
 
-def graphviz_layout(G,prog='neato',root=None, **kwds):
+def graphviz_layout(G, prog='neato', root=None, **kwds):
     """Create node positions using Pydot and Graphviz.
 
     Returns a dictionary of positions keyed by node.
@@ -278,7 +275,7 @@ def graphviz_layout(G,prog='neato',root=None, **kwds):
     return pydot_layout(G=G,prog=prog,root=root,**kwds)
 
 
-def pydot_layout(G,prog='neato',root=None, **kwds):
+def pydot_layout(G, prog='neato', root=None, **kwds):
     """Create node positions using Pydot and Graphviz.
 
     Returns a dictionary of positions keyed by node.
