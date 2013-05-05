@@ -86,3 +86,65 @@ def tree_all_pairs_lowest_common_ancestors(G, root=None, pairs=None):
       parent = G.predecessors(node)[0]
       uf.union(parent, node)
       ancestors[uf[parent]] = parent
+
+def lowest_common_ancestor_naive(G, root, node1, node2):
+  """Compute the lowest common ancestor for two nodes in a graph.
+
+  Parameters
+  ----------
+  G : NetworkX directed graph
+
+  root : node
+    The node to use as a root for the purposes of defining "lowest". We find
+    the node with the longest shortest path to the root that is a common
+    ancestor of node1 and node2.
+
+  node1, node2 : node
+    The two nodes to find an ancestor of.
+
+  Returns
+  -------
+  The lowest common ancestor of node1 and node2 with respect to root or None
+  if one does not exist. If an ancestor is not reachable from root, it is not
+  considered a potential lca. Ties are broken arbitrarily. Note that this
+  does NOT imply that n will be returned as lca(n, n), only that the value
+  returned is at no lesser a depth than n
+
+  Notes
+  -----
+  Only defined on directed acyclic graphs. This implementation is designed to
+  be efficient for only extremely small numbers of queries (think 1). You should
+  use lowest_common_ancestor unless you are sure this is what you want.
+
+  Operates by generating all shortest paths ending at the nodes and taking their
+  intersection, then returning the member with the longest shortest path from
+  root.
+
+  See Also
+  --------
+  lowest_common_ancestor
+  all_pairs_lowest_common_ancestor
+  tree_all_pairs_lowest_common_ancestor
+  """
+
+  feasible = all_lowest_common_ancestors_naive(G, root, node1, node2)
+  if not feasible:
+    return None
+  else:
+    return feasible.pop()
+
+def all_lowest_common_ancestors_naive(G, root, node1, node2):
+  """As lowest_common_ancestor_naive except returns the (potentially empty)
+  set of all lowest common ancestors instead of just one."""
+
+  # Find all common ancestors.
+  ancestors1 = nx.dag.ancestors(G, node1)
+  ancestors1.add(node1)
+  ancestors2 = nx.dag.ancestors(G, node2)
+  ancestors2.add(node2)
+
+  depths = nx.shortest_path_length(G, source=root)
+
+  feasible = ancestors1.intersection(ancestors2)
+  maximal_depth = max((depths[n] for n in feasible))
+  return set((n for n in feasible if depths[n] == maximal_depth))
