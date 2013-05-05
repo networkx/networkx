@@ -44,12 +44,11 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   --------
   """
 
+  if not G.is_directed():
+    raise nx.NetworkXNotImplemented("Lowest common ancestor not defined on "
+                                    "undirected graphs.")
   if not G:
      raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
-
-  if not G.is_directed():
-    raise nx.NetworkXError("Lowest common ancestor not defined on undirected "
-                           "graphs.")
 
   # Index pairs of interest for efficient lookup from either side.
   if pairs is not None:
@@ -328,7 +327,6 @@ class LowestCommonAncestorPrecomputation(object):
     best = None
 
     indices = [0, 0]
-    vertices = [node1, node2]
     ancestors = [self.ancestors[node1], self.ancestors[node2]]
 
     def get_next_in_merged_lists(indices):
@@ -373,10 +371,10 @@ class LowestCommonAncestorPrecomputation(object):
 
     return best
 
-    def all_pairs_lowest_common_ancestor(self, pairs=None):
-      """Returns the lowest common ancestor of all pairs of nodes in the graph
-      (or in the provided list)."""
-      for (n1, n2) in (pairs if pairs is not None else self.tree_lca):
-        res = self.lowest_common_ancestor(n1, n2)
-        if res is not None:
-          yield res
+  def all_pairs_lowest_common_ancestor(self, pairs=None):
+    """Returns the lowest common ancestor of all pairs of nodes in the graph
+    (or in the provided list)."""
+    for (n1, n2) in (pairs if pairs is not None else self.tree_lca):
+      res = self.lowest_common_ancestor(n1, n2)
+      if res is not None:
+        yield res
