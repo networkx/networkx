@@ -34,7 +34,8 @@ def tree_all_pairs_lowest_common_ancestors(G, root=None, pairs=None):
   Notes
   -----
   Only defined on non-null trees represented with directed edges from parents to
-  children. Uses Tarjan's off-line least-common-ancestors algorithm.
+  children. Uses Tarjan's off-line least-common-ancestors algorithm. Runs in
+  time O((V + E) * P) time, if we consider the inverse Ackerman function constant.
 
   Tarjan, R. E. (1979), "Applications of path compression on balanced trees",
   Journal of the ACM 26 (4): 690-715, doi:10.1145/322154.322161.
@@ -101,20 +102,20 @@ def lowest_common_ancestor_naive(G, root, node1, node2):
   G : NetworkX directed graph
 
   root : node
-    The node to use as a root for the purposes of defining "lowest". We find
-    the node with the longest shortest path to the root that is a common
-    ancestor of node1 and node2.
+    The node to use as a root for the purposes of defining "lowest". We define
+    the lca of two nodes as the common ancestor which is farthest from the
+    root. Only nodes reachable from root are considered potential ancestors.
 
   node1, node2 : node
     The two nodes to find an ancestor of.
 
   Returns
   -------
-  The lowest common ancestor of node1 and node2 with respect to root or None
-  if one does not exist. If an ancestor is not reachable from root, it is not
-  considered a potential lca. Ties are broken arbitrarily. Note that this
-  does NOT imply that n will be returned as lca(n, n), only that the value
-  returned is at no lesser a depth than n.
+  The lowest common ancestor of node1 and node2 with respect to root. If an
+  ancestor is not reachable from root, it is not considered a potential lca.
+  Ties are broken arbitrarily. Note that this does NOT imply that n will be
+  returned as lca(n, n), only that the value returned is at no lesser a depth
+  than n.
 
   Will raise NetworkXUnfeasible if there is no lca reachable from root.
 
@@ -131,7 +132,7 @@ def lowest_common_ancestor_naive(G, root, node1, node2):
 
   See Also
   --------
-  lowest_common_ancestor
+  LCAPrecomputation
   all_pairs_lowest_common_ancestor
   tree_all_pairs_lowest_common_ancestor
   """
@@ -152,12 +153,83 @@ def lowest_common_ancestor_naive(G, root, node1, node2):
                                 "reachable from the provided root.")
 
 def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
-  """Returns an iterator over ((n1, n2), lca) where (n1, n2) are all pairs of
-  nodes and lca is a lowest common ancestor of the pair."""
+  """Compute the lowest common ancestor for all pairs of nodes given or all pairs.
+
+  Parameters
+  ----------
+  G : NetworkX directed graph
+
+  root : node, optional
+    The node to use as a root for the purposes of defining "lowest". We define
+    the lca of two nodes as the common ancestor which is farthest from the
+    root. Only nodes reachable from root are considered potential ancestors.
+    If unspecified, expect G has a single source and use that.
+
+  pairs : iterable of pairs of nodes, optional
+    The pairs of nodes of interest. If None, will find the LCA of all pairs of
+    nodes.
+
+  Returns
+  -------
+  An iterator over ((node1, node2), lca) where (node1, node2) are either all
+  pairs or the pairs specified and lca is a lowest common ancestor of the pair.
+  Note that we do not duplicate, eg you will not get both (b, a) and (a, b),
+  if pairs is unspecifed.
+
+  Notes
+  -----
+  Only defined on non-null directed acyclic graphs. This implementation is
+  efficient if all pairs are necessary, taking cubic time. If you only need
+  some pairs, see LCAPrecomputation.
+
+  Uses the O(n^3) ancestor-list algorithm from:
+  M. A. Bender, M. Farach-Colton, G. Pemmasani, S. Skiena, P. Sumazin.
+  "Lowest common ancestors in trees and directed acyclic graphs."
+  Journal of Algorithms, 57(2): 75-94, 2005.
+
+  See Also
+  --------
+  LCAPrecomputation
+  lowest_common_ancestor_naive
+  tree_all_pairs_lowest_common_ancestor
+  """
   return LCAPrecomputation(G, root).all_pairs_lowest_common_ancestor(pairs)
 
 class LCAPrecomputation(object):
+  """Precomputes LCA data and returns a queryable object."""
+
   def __init__(self, G, root=None):
+    """
+    Parameters
+    ----------
+    G : NetworkX directed graph
+  
+    root : node, optional
+      The node to use as a root for the purposes of defining "lowest". We define
+      the lca of two nodes as the common ancestor which is farthest from the
+      root. Only nodes reachable from root are considered potential ancestors.
+      If unspecified, expect G has a single source and use that.
+  
+    Returns
+    -------
+    An LCAPrecomputation that can answer each lowest common ancestor query in
+    linear time. Can generate all pairs LCA in quadratic time.
+  
+    Notes
+    -----
+    Only defined on non-null directed acyclic graphs.
+
+    Uses the O(n^3) ancestor-list algorithm from:
+    M. A. Bender, M. Farach-Colton, G. Pemmasani, S. Skiena, P. Sumazin.
+    "Lowest common ancestors in trees and directed acyclic graphs."
+    Journal of Algorithms, 57(2): 75-94, 2005.
+  
+    See Also
+    --------
+    LCAPrecomputation
+    all_pairs_lowest_common_ancestor
+    tree_all_pairs_lowest_common_ancestor
+    """
     if not nx.is_directed_acyclic_graph(G):
       raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
     elif not G:
@@ -178,8 +250,8 @@ class LCAPrecomputation(object):
     # queries necessary.
     euler_tour = list(nx.depth_first_search.dfs_edges(G, root))
     spanning_tree = nx.DiGraph(euler_tour)
-    dag = nx.DiGraph((edge for edge in G.edges()
-                      if edge not in spanning_tree.edges()))
+    dag = nx.DiGraph((edge for edge in G.edges_iter()
+                      if not spanning_tree.has_edge(*edge)))
   
     # Ensure that both the dag and the spanning tree contains all nodes in G,
     # even nodes that are disconnected in the dag.
@@ -188,6 +260,7 @@ class LCAPrecomputation(object):
   
     counter = itertools.count().next
     depths = {}
+
     for edge in nx.breadth_first_search.bfs_edges(spanning_tree, euler_tour[0][0]):
       for node in edge:
         if node not in depths:
