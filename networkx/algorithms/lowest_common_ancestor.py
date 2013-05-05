@@ -8,10 +8,10 @@ __authors__ = "\n".join(["Alex Roper <aroper@umich.edu>"])
 #   All rights reserved.
 #   BSD license.
 
-__all__ = ["LCAPrecomputation", "all_pairs_lowest_common_ancestor",
-           "lowest_common_ancestor_naive", "tree_all_pairs_lowest_common_ancestors"]
+__all__ = ["LowestCommonAncestorPrecomputation", "all_pairs_lowest_common_ancestor",
+           "lowest_common_ancestor_naive", "tree_all_pairs_lowest_common_ancestor"]
 
-def tree_all_pairs_lowest_common_ancestors(G, root=None, pairs=None):
+def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   """Compute the lowest common ancestor for a set of pairs in the graph.
 
   Parameters
@@ -24,7 +24,7 @@ def tree_all_pairs_lowest_common_ancestors(G, root=None, pairs=None):
 
   pairs : container of pairs of nodes, optional
     The pairs of interest. Defaults to all pairs under the root that have a
-    lowest common ancestor.
+    lowest common ancestor. If you pass in (u, v), it may be returned as (v, u).
 
   Returns
   -------
@@ -53,11 +53,11 @@ def tree_all_pairs_lowest_common_ancestors(G, root=None, pairs=None):
 
   # Index pairs of interest for efficient lookup from either side.
   if pairs is not None:
-    pair_dict = collections.defaultdict(list)
+    pair_dict = collections.defaultdict(set)
+    pairs = set(pairs)
     for u, v in pairs:
-      pair_dict[u].append(v)
-      pair_dict[v].append(u)
-    pairs = pair_dict
+      pair_dict[u].add(v)
+      pair_dict[v].add(u)
 
   # If root is not specified, find the exactly one node with in degree 0 and
   # use it. Raise an error if none are found, or more than one is. Also check
@@ -86,9 +86,13 @@ def tree_all_pairs_lowest_common_ancestors(G, root=None, pairs=None):
   colors = collections.defaultdict(bool)
   for node in nx.depth_first_search.dfs_postorder_nodes(G, root):
     colors[node] = True
-    for v in (pairs[node] if pairs else G.nodes_iter()):
+    for v in (pair_dict[node] if pairs else G.nodes_iter()):
       if colors[v]:
-        yield (node, v), ancestors[uf[v]]
+        assert pairs is None or (node, v) in pairs or (v, node) in pairs
+        if pairs is None or (node, v) in pairs:
+          yield (node, v), ancestors[uf[v]]
+        else:
+          yield (v, node), ancestors[uf[v]]
     if node != root:
       parent = G.predecessors(node)[0]
       uf.union(parent, node)
@@ -123,7 +127,7 @@ def lowest_common_ancestor_naive(G, root, node1, node2):
   -----
   Only defined on non-null directed acyclic graphs. This implementation is
   designed to be efficient for only extremely small numbers of queries
-  (think 1). You should really use LCAPrecomputation or
+  (think 1). You should really use LowestCommonAncestorPrecomputation or
   all_pairs_lowest_common_ancestor unless you are sure this is what you want.
 
   Operates by generating all shortest paths ending at the nodes and taking their
@@ -132,7 +136,7 @@ def lowest_common_ancestor_naive(G, root, node1, node2):
 
   See Also
   --------
-  LCAPrecomputation
+  LowestCommonAncestorPrecomputation
   all_pairs_lowest_common_ancestor
   tree_all_pairs_lowest_common_ancestor
   """
@@ -180,7 +184,7 @@ def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   -----
   Only defined on non-null directed acyclic graphs. This implementation is
   efficient if all pairs are necessary, taking cubic time. If you only need
-  some pairs, see LCAPrecomputation.
+  some pairs, see LowestCommonAncestorPrecomputation.
 
   Uses the O(n^3) ancestor-list algorithm from:
   M. A. Bender, M. Farach-Colton, G. Pemmasani, S. Skiena, P. Sumazin.
@@ -189,13 +193,15 @@ def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
 
   See Also
   --------
-  LCAPrecomputation
+  LowestCommonAncestorPrecomputation
   lowest_common_ancestor_naive
   tree_all_pairs_lowest_common_ancestor
   """
-  return LCAPrecomputation(G, root).all_pairs_lowest_common_ancestor(pairs)
 
-class LCAPrecomputation(object):
+  lcap = LowestCommonAncestorPrecomputation(G, root)
+  return lcap.all_pairs_lowest_common_ancestor(pairs)
+
+class LowestCommonAncestorPrecomputation(object):
   """Precomputes LCA data and returns a queryable object."""
 
   def __init__(self, G, root=None):
@@ -212,8 +218,8 @@ class LCAPrecomputation(object):
   
     Returns
     -------
-    An LCAPrecomputation that can answer each lowest common ancestor query in
-    linear time. Can generate all pairs LCA in quadratic time.
+    A LowestCommonAncestorPrecomputation that can answer each lowest common
+    ancestor query in linear time. Can generate all pairs LCA in quadratic time.
   
     Notes
     -----
@@ -223,10 +229,16 @@ class LCAPrecomputation(object):
     M. A. Bender, M. Farach-Colton, G. Pemmasani, S. Skiena, P. Sumazin.
     "Lowest common ancestors in trees and directed acyclic graphs."
     Journal of Algorithms, 57(2): 75-94, 2005.
+
+    The precomputation of the object takes O(N ** 2 * log(N)), queries take
+    linear time.
+    
+    Use obj[node1, node2] to throw an exception if node1 and node2 have no lca;
+    use obj.lowest_common_ancestor(node1, node2) to return None.
   
     See Also
     --------
-    LCAPrecomputation
+    LowestCommonAncestorPrecomputation
     all_pairs_lowest_common_ancestor
     tree_all_pairs_lowest_common_ancestor
     """
@@ -285,7 +297,7 @@ class LCAPrecomputation(object):
     # Generate the spanning tree lca for all pairs. This doesn't make sense to
     # do incrementally since we are using a linear time offline algorithm for
     # tree lca.
-    tree_lca = dict(tree_all_pairs_lowest_common_ancestors(spanning_tree, root))
+    tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree, root))
   
     self.ancestors = ancestors
     self.euler_tour_pos = euler_tour_pos
@@ -301,6 +313,9 @@ class LCAPrecomputation(object):
       return ans
 
   def lowest_common_ancestor(self, node1, node2):
+    """Returns the lowest common ancestor of the two notes relative to the root
+    used in the object's initialization or None if there is no LCA.
+    Linear time."""
     if not self.ancestors[node1] or not self.ancestors[node2]:
       return None
 
@@ -358,9 +373,10 @@ class LCAPrecomputation(object):
 
     return best
 
-    def all_pairs_lowest_common_ancestor(self):
+    def all_pairs_lowest_common_ancestor(self, pairs=None):
+      """Returns the lowest common ancestor of all pairs of nodes in the graph
+      (or in the provided list)."""
       for (n1, n2) in (pairs if pairs is not None else self.tree_lca):
         res = self.lowest_common_ancestor(n1, n2)
         if res is not None:
           yield res
-
