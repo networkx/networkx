@@ -55,6 +55,9 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     pair_dict = collections.defaultdict(set)
     pairs = set(pairs)
     for u, v in pairs:
+      for n in (u, v):
+        if not G.has_node(n):
+          raise nx.NetworkXError("The node %s is not in the digraph." % str(n))
       pair_dict[u].add(v)
       pair_dict[v].add(u)
 
