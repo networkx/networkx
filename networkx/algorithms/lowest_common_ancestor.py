@@ -11,6 +11,7 @@ __authors__ = "\n".join(["Alex Roper <aroper@umich.edu>"])
 __all__ = ["LowestCommonAncestorPrecomputation", "all_pairs_lowest_common_ancestor",
            "lowest_common_ancestor_naive", "tree_all_pairs_lowest_common_ancestor"]
 
+@nx.utils.not_implemented_for("undirected", "multigraph", "graph")
 def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   """Compute the lowest common ancestor for a set of pairs in the graph.
 
@@ -76,8 +77,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
         raise nx.NetworkXError("Tree LCA only defined on trees; use DAG routine "
                                "for DAGs.")
   if root is None:
-    raise nx.NetworkXError("Tree LCA only defined on trees; use DAG routine "
-                           "for DAGs.")
+    raise nx.NetworkXError("Graph contains a cycle.")
 
   # Iterative implementation of Tarjan's offline lca algorithm as described in
   # CLRS on page 521.
@@ -100,17 +100,40 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
       uf.union(parent, node)
       ancestors[uf[parent]] = parent
 
-def lowest_common_ancestor_naive(G, root, node1, node2):
+def get_single_root_dag(G, root):
+  """Converts G into a dag with a single root by adding a node with edges to
+  all sources. Returns the new DAG (or the original if acceptable) and the root.
+  If root is not None, use that for the root.
+  """
+  if root is not None:
+    return G, root
+
+  sources = [n for n in G.nodes_iter() if G.in_degree(n) == 0]
+  if len(sources) == 1:
+    return G, sources[0]
+  else:
+    G = G.copy()
+    root = nx.utils.generate_unique_node()
+    for source in sources:
+      G.add_edge(root, source)
+    return G, root
+
+@nx.utils.not_implemented_for("undirected", "multigraph", "graph")
+def lowest_common_ancestor_naive(G, node1, node2, root=None):
   """Compute the lowest common ancestor for two nodes in a graph.
 
   Parameters
   ----------
   G : NetworkX directed graph
 
-  root : node
+  root : node, optional
     The node to use as a root for the purposes of defining "lowest". We define
     the lca of two nodes as the common ancestor which is farthest from the
     root. Only nodes reachable from root are considered potential ancestors.
+
+    If omitted, the root will be the single source in G. If there are multiple
+    sources, G will be copied and the copy will add edges from a unique
+    "superroot" to each source.
 
   node1, node2 : node
     The two nodes to find an ancestor of.
@@ -143,6 +166,9 @@ def lowest_common_ancestor_naive(G, root, node1, node2):
   tree_all_pairs_lowest_common_ancestor
   """
 
+  # Deal with default root
+  G, root = get_single_root_dag(G, root)
+
   # Find all common ancestors.
   ancestors1 = nx.dag.ancestors(G, node1)
   ancestors1.add(node1)
@@ -158,6 +184,7 @@ def lowest_common_ancestor_naive(G, root, node1, node2):
     raise nx.NetworkXUnfeasible("Pair has no common ancestors that are "
                                 "reachable from the provided root.")
 
+@nx.utils.not_implemented_for("undirected", "multigraph", "graph")
 def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   """Compute the lowest common ancestor for all pairs of nodes given or all pairs.
 
@@ -169,7 +196,9 @@ def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     The node to use as a root for the purposes of defining "lowest". We define
     the lca of two nodes as the common ancestor which is farthest from the
     root. Only nodes reachable from root are considered potential ancestors.
-    If unspecified, expect G has a single source and use that.
+    If unspecified, and G has a single source, will use that. If G has
+    multiple sources, then it will be copied, and a unique single root added
+    to the copy.
 
   pairs : iterable of pairs of nodes, optional
     The pairs of nodes of interest. If None, will find the LCA of all pairs of
@@ -216,7 +245,9 @@ class LowestCommonAncestorPrecomputation(object):
       The node to use as a root for the purposes of defining "lowest". We define
       the lca of two nodes as the common ancestor which is farthest from the
       root. Only nodes reachable from root are considered potential ancestors.
-      If unspecified, expect G has a single source and use that.
+      If unspecified, and G has a single source, will use that. If G has
+      multiple sources, then it will be copied, and a unique single root added
+      to the copy.
   
     Returns
     -------
@@ -248,15 +279,9 @@ class LowestCommonAncestorPrecomputation(object):
       raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
     elif not G:
       raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
-    if root is None:
-      for n in G:
-        if G.in_degree(n) == 0:
-          if root is not None:
-            raise nx.NetworkXError("DAG must have exactly one source unless you "
-                                   "provide a root.")
-          root = n
 
-    assert root is not None # DAG implies at least one source if not empty.
+    # Handle default root.
+    G, root = get_single_root_dag(G, root)
 
     # Start by computing a spanning tree, the DAG of all edges not in it,
     # and an Euler tour of the graph. We will then use the tree lca algorithm
@@ -380,4 +405,4 @@ class LowestCommonAncestorPrecomputation(object):
     for (n1, n2) in (pairs if pairs is not None else self.tree_lca):
       res = self.lowest_common_ancestor(n1, n2)
       if res is not None:
-        yield res
+        yield (n1, n2), res
