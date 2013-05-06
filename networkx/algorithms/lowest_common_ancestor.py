@@ -143,8 +143,8 @@ def lowest_common_ancestor_naive(G, node1, node2, root=None):
   The lowest common ancestor of node1 and node2 with respect to root. If an
   ancestor is not reachable from root, it is not considered a potential lca.
   Ties are broken arbitrarily. Note that this does NOT imply that n will be
-  returned as lca(n, n), only that the value returned is at no lesser a depth
-  than n.
+  returned as lca(n, n), only that the value returned is at no lesser a distance
+  from root than n.
 
   Will raise NetworkXUnfeasible if there is no lca reachable from root.
 
@@ -175,11 +175,11 @@ def lowest_common_ancestor_naive(G, node1, node2, root=None):
   ancestors2 = nx.dag.ancestors(G, node2)
   ancestors2.add(node2)
 
-  depths = nx.shortest_path_length(G, source=root)
+  root_distance = nx.shortest_path_length(G, source=root)
 
   feasible = ancestors1.intersection(ancestors2)
   if feasible:
-    return max(feasible, key=depths.get)
+    return max(feasible, key=root_distance.get)
   else:
     raise nx.NetworkXUnfeasible("Pair has no common ancestors that are "
                                 "reachable from the provided root.")
@@ -298,12 +298,12 @@ class LowestCommonAncestorPrecomputation(object):
       dag.add_node(n)
   
     counter = itertools.count().next
-    depths = {}
+    root_distance = {}
 
     for edge in nx.breadth_first_search.bfs_edges(spanning_tree, euler_tour[0][0]):
       for node in edge:
-        if node not in depths:
-          depths[node] = counter()
+        if node not in root_distance:
+          root_distance[node] = counter()
   
     # Index the position of all nodes in the Euler tour so we can efficiently
     # sort lists and merge in tour order.
@@ -329,7 +329,7 @@ class LowestCommonAncestorPrecomputation(object):
     self.ancestors = ancestors
     self.euler_tour_pos = euler_tour_pos
     self.tree_lca = tree_lca
-    self.depths = depths
+    self.root_distance = root_distance 
 
   def __getitem__(self, nodes):
     ans = self.lowest_common_ancestor(*nodes)
@@ -351,7 +351,7 @@ class LowestCommonAncestorPrecomputation(object):
     if node1 == node2:
       return node1
 
-    best_depth = None
+    best_root_distance = None
     best = None
 
     indices = [0, 0]
@@ -393,8 +393,8 @@ class LowestCommonAncestorPrecomputation(object):
             ans = self.tree_lca[tree_node1, tree_node2]
           else:
             ans = self.tree_lca[tree_node2, tree_node1]
-          if best is None or self.depths[ans] > best_depth:
-            best_depth = self.depths[ans]
+          if best is None or self.root_distance[ans] > best_root_distance:
+            best_root_distance = self.root_distance[ans]
             best = ans
 
     return best
