@@ -2,6 +2,8 @@ import networkx as nx
 import itertools
 import collections
 
+from itertools import count, tee, chain, product
+
 __authors__ = "\n".join(["Alex Roper <aroper@umich.edu>"])
 #   Copyright (C) 2013 by
 #   Alex Roper <aroper@umich.edu>
@@ -36,7 +38,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   -----
   Only defined on non-null trees represented with directed edges from parents to
   children. Uses Tarjan's off-line least-common-ancestors algorithm. Runs in
-  time O((V + E) * P) time, if we consider the inverse Ackerman function constant.
+  time O((V + E) + P) time, if we consider the inverse Ackerman function constant.
 
   Tarjan, R. E. (1979), "Applications of path compression on balanced trees",
   Journal of the ACM 26 (4): 690-715, doi:10.1145/322154.322161.
@@ -229,13 +231,13 @@ def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   tree_all_pairs_lowest_common_ancestor
   """
 
-  lcap = LowestCommonAncestorPrecomputation(G, root)
+  lcap = LowestCommonAncestorPrecomputation(G, root, pairs)
   return lcap.all_pairs_lowest_common_ancestor(pairs)
 
 class LowestCommonAncestorPrecomputation(object):
   """Precomputes LCA data and returns a queryable object."""
 
-  def __init__(self, G, root=None):
+  def __init__(self, G, root=None, pairs=None):
     """
     Parameters
     ----------
@@ -248,6 +250,10 @@ class LowestCommonAncestorPrecomputation(object):
       If unspecified, and G has a single source, will use that. If G has
       multiple sources, then it will be copied, and a unique single root added
       to the copy.
+
+    pairs : iterable of pairs of nodes, optional
+      Only perform precomputation necessary to answer queries about these
+      pairs.
   
     Returns
     -------
@@ -297,7 +303,7 @@ class LowestCommonAncestorPrecomputation(object):
     for n in G.nodes_iter():
       dag.add_node(n)
   
-    counter = itertools.count().next
+    counter = count().next
     root_distance = {}
 
     for edge in nx.breadth_first_search.bfs_edges(spanning_tree, euler_tour[0][0]):
@@ -311,20 +317,34 @@ class LowestCommonAncestorPrecomputation(object):
     for edge in euler_tour:
       for node in edge:
         euler_tour_pos.setdefault(node, counter())
-  
+
+    # Generate the set of all nodes of interest in the pairs, handling both
+    # iterables without copying them and generators by materializing them.
+    pairset = set()
+    if pairs is not None:
+      pairset, pairs = tee(pairs)
+      pairset = set(chain.from_iterable(pairset))
+
     # Generate the transitive closure over the dag (not G) of all nodes, and
     # sort each node's closure set by order of first appearance in the Euler
     # tour.
     ancestors = {}
     for v in dag.nodes_iter():
-      my_ancestors = nx.dag.ancestors(dag, v)
-      my_ancestors.add(v)
-      ancestors[v] = sorted(my_ancestors, key=euler_tour_pos.get)
-  
+      if pairs is None or v in pairset:
+        my_ancestors = nx.dag.ancestors(dag, v)
+        my_ancestors.add(v)
+        ancestors[v] = sorted(my_ancestors, key=euler_tour_pos.get)
+
     # Generate the spanning tree lca for all pairs. This doesn't make sense to
     # do incrementally since we are using a linear time offline algorithm for
     # tree lca.
-    tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree, root))
+    if pairs is None:
+      tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree, root))
+    else:
+      # Generate all tree queries we will need to ask.
+      tree_pairs = chain.from_iterable(product(ancestors[a], ancestors[b])
+                                       for (a, b) in pairs)
+      tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree, root, tree_pairs))
   
     self.ancestors = ancestors
     self.euler_tour_pos = euler_tour_pos
