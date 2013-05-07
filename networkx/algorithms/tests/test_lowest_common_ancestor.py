@@ -168,16 +168,17 @@ class TestDAGLCA:
                  (8, 8): 8}
     self.gold.update((((0, n), 0) for n in self.DG.nodes_iter()))
 
-  def assert_lca_dicts_same(self, d1, d2, G_root=None):
+  def assert_lca_dicts_same(self, d1, d2, G=None):
     """Checks if d1 and d2 contain the same set of pairs and that they have
     a node at the same distance from root for each. G_root is None
     (to use self.DG) or (G, root) to use."""
-    if G_root is None:
+    if G is None:
       G = self.DG
       root_distance = self.root_distance
     else:
-      G, root = G_root
-      root_distance = nx.shortest_path_length(G, source=root)
+      roots = [n for n in G if G.in_degree(n) == 0]
+      assert(len(roots) == 1)
+      root_distance = nx.shortest_path_length(G, source=roots[0])
 
     for (a, b) in set(((min(pair), max(pair))
                        for pair in d1.keys() + d2.keys())):
@@ -204,10 +205,21 @@ class TestDAGLCA:
                                self.gold)
 
   def test_all_pairs_lowest_common_ancestor4(self):
-    """Root specified, single source."""
+    """Graph with two roots."""
+    G = self.DG.copy()
+    G.add_edge(9, 10)
+    G.add_edge(9, 4)
+    gold = self.gold.copy()
+    gold[9, 9] = 9
+    gold[9, 10] = 9
+    gold[9, 4] = 9
+    gold[9, 3] = 9
+    gold[10, 4] = 9
+    gold[10, 3] = 9
+    gold[10, 10] = 10
+    
+    testing = dict(nx.all_pairs_lowest_common_ancestor(G))
 
-
-
-
-
-
+    G.add_edge(-1, 9)
+    G.add_edge(-1, 0)
+    self.assert_lca_dicts_same(testing, gold, G)

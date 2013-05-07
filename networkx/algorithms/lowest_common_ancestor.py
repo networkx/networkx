@@ -109,17 +109,17 @@ def get_single_root_dag(G, root):
   If root is not None, use that for the root.
   """
   if root is not None:
-    return G, root
+    return G, root, None
 
   sources = [n for n in G.nodes_iter() if G.in_degree(n) == 0]
   if len(sources) == 1:
-    return G, sources[0]
+    return G, sources[0], None
   else:
     G = G.copy()
     root = nx.utils.generate_unique_node()
     for source in sources:
       G.add_edge(root, source)
-    return G, root
+    return G, root, root
 
 @nx.utils.not_implemented_for("undirected", "multigraph", "graph")
 def lowest_common_ancestor_naive(G, node1, node2, root=None):
@@ -309,7 +309,7 @@ class LowestCommonAncestorPrecomputation(object):
       pairs = set(pairs)
 
     # Handle default root.
-    G, root = get_single_root_dag(G, root=None)
+    G, root, self.superroot = get_single_root_dag(G, root=None)
 
     # Start by computing a spanning tree, the DAG of all edges not in it,
     # and an Euler tour of the graph. We will then use the tree lca algorithm
@@ -328,7 +328,7 @@ class LowestCommonAncestorPrecomputation(object):
     counter = count().next
     root_distance = {}
 
-    for edge in nx.breadth_first_search.bfs_edges(spanning_tree, euler_tour[0][0]):
+    for edge in nx.breadth_first_search.bfs_edges(spanning_tree, root):
       for node in edge:
         if node not in root_distance:
           root_distance[node] = counter()
@@ -444,5 +444,5 @@ class LowestCommonAncestorPrecomputation(object):
     (or in the provided list)."""
     for (n1, n2) in (pairs if pairs is not None else self.tree_lca):
       res = self.lowest_common_ancestor(n1, n2)
-      if res is not None:
+      if res is not None and res != self.superroot:
         yield (n1, n2), res
