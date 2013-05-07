@@ -93,9 +93,11 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     for v in (pair_dict[node] if pairs else G.nodes_iter()):
       if colors[v]:
         assert pairs is None or (node, v) in pairs or (v, node) in pairs
-        if pairs is None or (node, v) in pairs:
+        # If the user requested both directions of a pair, give it.
+        # Otherwise, just give one.
+        if pairs and (node, v) in pairs:
           yield (node, v), ancestors[uf[v]]
-        else:
+        if pairs is None or (v, node) in pairs:
           yield (v, node), ancestors[uf[v]]
     if node != root:
       parent = G.predecessors(node)[0]

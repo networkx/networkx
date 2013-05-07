@@ -49,8 +49,8 @@ class TestTreeLCA:
   def test_tree_all_pairs_lowest_common_ancestor2(self):
     """Specifying only some pairs gives only those pairs."""
     some_pairs = dict(nx.tree_all_pairs_lowest_common_ancestor(self.DG, 0, [(0, 1), (0, 1), (1, 0)]))
-    assert_true((0, 1) in some_pairs or (1, 0) in some_pairs)
-    assert_equal(len(some_pairs), 1)
+    assert_true((0, 1) in some_pairs and (1, 0) in some_pairs)
+    assert_equal(len(some_pairs), 2)
 
   def test_tree_all_pairs_lowest_common_ancestor3(self):
     """Specifying no pairs same as specifying all."""
@@ -110,6 +110,12 @@ class TestTreeLCA:
     G = nx.DiGraph([(0, 2), (1, 2)])
     assert_raises(nx.NetworkXError, list,
                   nx.tree_all_pairs_lowest_common_ancestor(G))
+
+  def test_tree_all_pairs_lowest_common_ancestor9(self):
+    """Test that pairs works correctly as a generator."""
+    some_pairs = dict(nx.tree_all_pairs_lowest_common_ancestor(self.DG, 0, iter([(0, 1), (0, 1), (1, 0)])))
+    assert_true((0, 1) in some_pairs and (1, 0) in some_pairs)
+    assert_equal(len(some_pairs), 2)
 
 class TestDAGLCA:
 
