@@ -247,13 +247,13 @@ def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   if (not isinstance(pairs, (set, dict, list, tuple, frozenset, basestring)) and
       pairs is not None):
     pairs = set(pairs)
-  lcap = LowestCommonAncestorPrecomputation(G, root, pairs)
+  lcap = LowestCommonAncestorPrecomputation(G, pairs)
   return lcap.all_pairs_lowest_common_ancestor(pairs)
 
 class LowestCommonAncestorPrecomputation(object):
   """Precomputes LCA data and returns a queryable object."""
 
-  def __init__(self, G, root=None, pairs=None):
+  def __init__(self, G, pairs=None):
     """
     Parameters
     ----------
@@ -309,7 +309,7 @@ class LowestCommonAncestorPrecomputation(object):
       pairs = set(pairs)
 
     # Handle default root.
-    G, root = get_single_root_dag(G, root)
+    G, root = get_single_root_dag(G, root=None)
 
     # Start by computing a spanning tree, the DAG of all edges not in it,
     # and an Euler tour of the graph. We will then use the tree lca algorithm
