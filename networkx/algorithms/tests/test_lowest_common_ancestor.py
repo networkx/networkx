@@ -117,6 +117,11 @@ class TestTreeLCA:
     assert_true((0, 1) in some_pairs and (1, 0) in some_pairs)
     assert_equal(len(some_pairs), 2)
 
+  def test_tree_all_pairs_lowest_common_ancestor9(self):
+    """Test that pairs not in the graph raises error."""
+    lca = nx.tree_all_pairs_lowest_common_ancestor(self.DG, 0, [(-1, -1)])
+    assert_raises(nx.NetworkXError, list, lca)
+
 class TestDAGLCA:
 
   def setUp(self):
@@ -223,3 +228,7 @@ class TestDAGLCA:
     G.add_edge(-1, 9)
     G.add_edge(-1, 0)
     self.assert_lca_dicts_same(testing, gold, G)
+
+  def test_all_pairs_lowest_common_ancestor5(self):
+    """Test that pairs not in the graph raises error."""
+    assert_raises(nx.NetworkXError, nx.all_pairs_lowest_common_ancestor, self.DG, 0, [(-1, -1)])

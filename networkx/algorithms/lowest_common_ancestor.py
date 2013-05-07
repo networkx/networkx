@@ -56,7 +56,9 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   # Index pairs of interest for efficient lookup from either side.
   if pairs is not None:
     pair_dict = collections.defaultdict(set)
-    pairs = set(pairs)
+    # See note on all_pairs_lowest_common_ancestor.
+    if not isinstance(pairs, (set, frozenset, dict)):
+      pairs = set(pairs)
     for u, v in pairs:
       for n in (u, v):
         if not G.has_node(n):
@@ -244,7 +246,7 @@ def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   # 
   # Why is there not a simple, builtin way to upgrade an iterator to an iterable
   # interface if and only if necessary?
-  if (not isinstance(pairs, (set, dict, list, tuple, frozenset, basestring)) and
+  if (not isinstance(pairs, (set, dict, frozenset)) and
       pairs is not None):
     pairs = set(pairs)
   lcap = LowestCommonAncestorPrecomputation(G, pairs)
@@ -304,7 +306,7 @@ class LowestCommonAncestorPrecomputation(object):
       raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
 
     # See note in all_pairs_lowest_common_ancestor.
-    if (not isinstance(pairs, (set, dict, list, tuple, frozenset, basestring)) and
+    if (not isinstance(pairs, (set, dict, frozenset)) and
         pairs is not None):
       pairs = set(pairs)
 
@@ -345,6 +347,10 @@ class LowestCommonAncestorPrecomputation(object):
     if pairs is not None:
       pairset = set(chain.from_iterable(pairs))
 
+    for n in pairset:
+      if not G.has_node(n):
+        raise nx.NetworkXError("The node %s is not in the digraph." % str(n))
+
     # Generate the transitive closure over the dag (not G) of all nodes, and
     # sort each node's closure set by order of first appearance in the Euler
     # tour.
@@ -364,6 +370,7 @@ class LowestCommonAncestorPrecomputation(object):
       # Generate all tree queries we will need to ask.
       tree_pairs = chain.from_iterable(product(ancestors[a], ancestors[b])
                                        for (a, b) in pairs)
+
       tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree, root, tree_pairs))
   
     self.ancestors = ancestors
