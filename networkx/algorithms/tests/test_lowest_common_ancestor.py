@@ -188,3 +188,15 @@ class TestDAGLCA:
     """Produces the correct results."""
     self.assert_lca_dicts_same(dict(nx.all_pairs_lowest_common_ancestor(self.DG)),
                                self.gold)
+
+  def test_all_pairs_lowest_common_ancestor2(self):
+    """Produces the correct results when all pairs given."""
+    all_pairs = list(itertools.product(self.DG.nodes(), self.DG.nodes()))
+    self.assert_lca_dicts_same(dict(nx.all_pairs_lowest_common_ancestor(self.DG, pairs=all_pairs)),
+                               self.gold)
+
+  def test_all_pairs_lowest_common_ancestor3(self):
+    """Produces the correct results when all pairs given as a generator."""
+    all_pairs = itertools.product(self.DG.nodes(), self.DG.nodes())
+    self.assert_lca_dicts_same(dict(nx.all_pairs_lowest_common_ancestor(self.DG, pairs=all_pairs)),
+                               self.gold)

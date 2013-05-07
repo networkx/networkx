@@ -2,7 +2,7 @@ import networkx as nx
 import itertools
 import collections
 
-from itertools import count, tee, chain, product
+from itertools import count, chain, product
 
 __authors__ = "\n".join(["Alex Roper <aroper@umich.edu>"])
 #   Copyright (C) 2013 by
@@ -25,7 +25,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     The root of the subtree to operate on. If None, will assume the entire graph
     has exactly one source and use that.
 
-  pairs : container of pairs of nodes, optional
+  pairs : iterable or iterator of pairs of nodes, optional
     The pairs of interest. Defaults to all pairs under the root that have a
     lowest common ancestor. If you pass in (u, v), it may be returned as (v, u).
 
@@ -92,7 +92,6 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     colors[node] = True
     for v in (pair_dict[node] if pairs else G.nodes_iter()):
       if colors[v]:
-        assert pairs is None or (node, v) in pairs or (v, node) in pairs
         # If the user requested both directions of a pair, give it.
         # Otherwise, just give one.
         if pairs and (node, v) in pairs:
@@ -204,9 +203,9 @@ def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     multiple sources, then it will be copied, and a unique single root added
     to the copy.
 
-  pairs : iterable of pairs of nodes, optional
+  pairs : iterable or iterator of pairs of nodes, optional
     The pairs of nodes of interest. If None, will find the LCA of all pairs of
-    nodes.
+    nodes. Iterators will be materialized and thus decrease efficiency.
 
   Returns
   -------
@@ -233,6 +232,21 @@ def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   tree_all_pairs_lowest_common_ancestor
   """
 
+  # The copy isn't ideal, neither is the switch-on-type, but without it users
+  # passing an iterable will encounter confusing errors, and itertools.tee does
+  # not appear to handle builtin types efficiently (IE, it materializes another
+  # buffer rather than just creating listoperators at the same offset). The
+  # Python documentation notes use of tee is unadvised when one is consumed
+  # before the other.
+  #
+  # This will always produce correct results and avoid unnecessary
+  # copies in many common cases.
+  # 
+  # Why is there not a simple, builtin way to upgrade an iterator to an iterable
+  # interface if and only if necessary?
+  if (not isinstance(pairs, (set, dict, list, tuple, frozenset, basestring)) and
+      pairs is not None):
+    pairs = set(pairs)
   lcap = LowestCommonAncestorPrecomputation(G, root, pairs)
   return lcap.all_pairs_lowest_common_ancestor(pairs)
 
@@ -253,9 +267,9 @@ class LowestCommonAncestorPrecomputation(object):
       multiple sources, then it will be copied, and a unique single root added
       to the copy.
 
-    pairs : iterable of pairs of nodes, optional
+    pairs : iterable or iterator of pairs of nodes, optional
       Only perform precomputation necessary to answer queries about these
-      pairs.
+      pairs. Iterators will be materialized and thus decrease efficiency.
   
     Returns
     -------
@@ -283,10 +297,16 @@ class LowestCommonAncestorPrecomputation(object):
     all_pairs_lowest_common_ancestor
     tree_all_pairs_lowest_common_ancestor
     """
+
     if not nx.is_directed_acyclic_graph(G):
       raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
     elif not G:
       raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+
+    # See note in all_pairs_lowest_common_ancestor.
+    if (not isinstance(pairs, (set, dict, list, tuple, frozenset, basestring)) and
+        pairs is not None):
+      pairs = set(pairs)
 
     # Handle default root.
     G, root = get_single_root_dag(G, root)
@@ -320,12 +340,10 @@ class LowestCommonAncestorPrecomputation(object):
       for node in edge:
         euler_tour_pos.setdefault(node, counter())
 
-    # Generate the set of all nodes of interest in the pairs, handling both
-    # iterables without copying them and generators by materializing them.
+    # Generate the set of all nodes of interest in the pairs.
     pairset = set()
     if pairs is not None:
-      pairset, pairs = tee(pairs)
-      pairset = set(chain.from_iterable(pairset))
+      pairset = set(chain.from_iterable(pairs))
 
     # Generate the transitive closure over the dag (not G) of all nodes, and
     # sort each node's closure set by order of first appearance in the Euler
