@@ -62,6 +62,8 @@ class TestTreeLCA:
 
   def test_tree_all_pairs_lowest_common_ancestor4(self):
     """Gives the right answer."""
+    ans = dict(nx.tree_all_pairs_lowest_common_ancestor(self.DG))
+    self.assert_has_same_pairs(self.gold, ans)
 
   def test_tree_all_pairs_lowest_common_ancestor5(self):
     """Handles invalid input correctly."""
@@ -150,7 +152,7 @@ class TestDAGLCA:
                  (2, 6): 6,
                  (2, 7): 7,
                  (2, 8): 7,
-                 (3, 3): 3,
+                 (3, 3): 8,
                  (3, 4): 4,
                  (3, 5): 5,
                  (3, 6): 6,
@@ -187,14 +189,13 @@ class TestDAGLCA:
 
     for (a, b) in set(((min(pair), max(pair))
                        for pair in d1.keys() + d2.keys())):
+      print a, b
       assert_equal(root_distance[get_pair(d1, a, b)],
                    root_distance[get_pair(d2, a, b)])
 
   def test_all_pairs_lowest_common_ancestor1(self):
     """Produces the correct results."""
     self.assert_lca_dicts_same(dict(nx.all_pairs_lowest_common_ancestor(self.DG)),
-                               self.gold)
-    self.assert_lca_dicts_same(dict(nx.all_pairs_lowest_common_ancestor(self.DG, 0)),
                                self.gold)
 
   def test_all_pairs_lowest_common_ancestor2(self):
@@ -231,4 +232,5 @@ class TestDAGLCA:
 
   def test_all_pairs_lowest_common_ancestor5(self):
     """Test that pairs not in the graph raises error."""
-    assert_raises(nx.NetworkXError, nx.all_pairs_lowest_common_ancestor, self.DG, 0, [(-1, -1)])
+    gen = nx.all_pairs_lowest_common_ancestor(self.DG, [(-1, -1)])
+    assert_raises(nx.NetworkXError, list, gen)

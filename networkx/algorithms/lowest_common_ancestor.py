@@ -10,7 +10,7 @@ __authors__ = "\n".join(["Alex Roper <aroper@umich.edu>"])
 #   All rights reserved.
 #   BSD license.
 
-__all__ = ["LowestCommonAncestorPrecomputation", "all_pairs_lowest_common_ancestor",
+__all__ = ["all_pairs_lowest_common_ancestor",
            "lowest_common_ancestor_naive", "tree_all_pairs_lowest_common_ancestor"]
 
 @nx.utils.not_implemented_for("undirected", "multigraph", "graph")
@@ -190,20 +190,12 @@ def lowest_common_ancestor_naive(G, node1, node2, root=None):
                                 "reachable from the provided root.")
 
 @nx.utils.not_implemented_for("undirected", "multigraph", "graph")
-def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
+def all_pairs_lowest_common_ancestor(G, pairs=None):
   """Compute the lowest common ancestor for all pairs of nodes given or all pairs.
 
   Parameters
   ----------
   G : NetworkX directed graph
-
-  root : node, optional
-    The node to use as a root for the purposes of defining "lowest". We define
-    the lca of two nodes as the common ancestor which is farthest from the
-    root. Only nodes reachable from root are considered potential ancestors.
-    If unspecified, and G has a single source, will use that. If G has
-    multiple sources, then it will be copied, and a unique single root added
-    to the copy.
 
   pairs : iterable or iterator of pairs of nodes, optional
     The pairs of nodes of interest. If None, will find the LCA of all pairs of
@@ -234,6 +226,11 @@ def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   tree_all_pairs_lowest_common_ancestor
   """
 
+  if not nx.is_directed_acyclic_graph(G):
+    raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
+  elif not G:
+    raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+
   # The copy isn't ideal, neither is the switch-on-type, but without it users
   # passing an iterable will encounter confusing errors, and itertools.tee does
   # not appear to handle builtin types efficiently (IE, it materializes another
@@ -245,211 +242,126 @@ def all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   # copies in many common cases.
   # 
   # Why is there not a simple, builtin way to upgrade an iterator to an iterable
-  # interface if and only if necessary?
+  # interface if and only if necessary? This is a perfectly reasonable
+  # application of duck typing and will only become more crucial in Python 3.
   if (not isinstance(pairs, (set, dict, frozenset)) and
       pairs is not None):
     pairs = set(pairs)
-  lcap = LowestCommonAncestorPrecomputation(G, pairs)
-  return lcap.all_pairs_lowest_common_ancestor(pairs)
 
-class LowestCommonAncestorPrecomputation(object):
-  """Precomputes LCA data and returns a queryable object."""
+  # Handle default root.
+  G, root, superroot = get_single_root_dag(G, root=None)
 
-  def __init__(self, G, pairs=None):
-    """
-    Parameters
-    ----------
-    G : NetworkX directed graph
-  
-    root : node, optional
-      The node to use as a root for the purposes of defining "lowest". We define
-      the lca of two nodes as the common ancestor which is farthest from the
-      root. Only nodes reachable from root are considered potential ancestors.
-      If unspecified, and G has a single source, will use that. If G has
-      multiple sources, then it will be copied, and a unique single root added
-      to the copy.
+  # Start by computing a spanning tree, the DAG of all edges not in it,
+  # and an Euler tour of the graph. We will then use the tree lca algorithm
+  # on the spanning tree, and use the DAG to figure out the set of tree
+  # queries necessary.
+  euler_tour = list(nx.depth_first_search.dfs_edges(G, root))
+  spanning_tree = nx.DiGraph(euler_tour)
+  dag = nx.DiGraph((edge for edge in G.edges_iter()
+                    if not spanning_tree.has_edge(*edge)))
 
-    pairs : iterable or iterator of pairs of nodes, optional
-      Only perform precomputation necessary to answer queries about these
-      pairs. Iterators will be materialized and thus decrease efficiency.
-  
-    Returns
-    -------
-    A LowestCommonAncestorPrecomputation that can answer each lowest common
-    ancestor query in linear time. Can generate all pairs LCA in quadratic time.
-  
-    Notes
-    -----
-    Only defined on non-null directed acyclic graphs.
+  # Ensure that both the dag and the spanning tree contains all nodes in G,
+  # even nodes that are disconnected in the dag.
+  for n in G.nodes_iter():
+    dag.add_node(n)
 
-    Uses the O(n^3) ancestor-list algorithm from:
-    M. A. Bender, M. Farach-Colton, G. Pemmasani, S. Skiena, P. Sumazin.
-    "Lowest common ancestors in trees and directed acyclic graphs."
-    Journal of Algorithms, 57(2): 75-94, 2005.
+  counter = count().next
+  root_distance = {}
 
-    The precomputation of the object takes O(N ** 2 * log(N)), queries take
-    linear time.
-    
-    Use obj[node1, node2] to throw an exception if node1 and node2 have no lca;
-    use obj.lowest_common_ancestor(node1, node2) to return None.
-  
-    See Also
-    --------
-    LowestCommonAncestorPrecomputation
-    all_pairs_lowest_common_ancestor
-    tree_all_pairs_lowest_common_ancestor
-    """
+  for edge in nx.breadth_first_search.bfs_edges(spanning_tree, root):
+    for node in edge:
+      if node not in root_distance:
+        root_distance[node] = counter()
 
-    if not nx.is_directed_acyclic_graph(G):
-      raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
-    elif not G:
-      raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+  # Index the position of all nodes in the Euler tour so we can efficiently
+  # sort lists and merge in tour order.
+  euler_tour_pos = {}
+  for edge in euler_tour:
+    for node in edge:
+      euler_tour_pos.setdefault(node, counter())
 
-    # See note in all_pairs_lowest_common_ancestor.
-    if (not isinstance(pairs, (set, dict, frozenset)) and
-        pairs is not None):
-      pairs = set(pairs)
+  # Generate the set of all nodes of interest in the pairs.
+  pairset = set()
+  if pairs is not None:
+    pairset = set(chain.from_iterable(pairs))
 
-    # Handle default root.
-    G, root, self.superroot = get_single_root_dag(G, root=None)
+  for n in pairset:
+    if not G.has_node(n):
+      raise nx.NetworkXError("The node %s is not in the digraph." % str(n))
 
-    # Start by computing a spanning tree, the DAG of all edges not in it,
-    # and an Euler tour of the graph. We will then use the tree lca algorithm
-    # on the spanning tree, and use the DAG to figure out the set of tree
-    # queries necessary.
-    euler_tour = list(nx.depth_first_search.dfs_edges(G, root))
-    spanning_tree = nx.DiGraph(euler_tour)
-    dag = nx.DiGraph((edge for edge in G.edges_iter()
-                      if not spanning_tree.has_edge(*edge)))
-  
-    # Ensure that both the dag and the spanning tree contains all nodes in G,
-    # even nodes that are disconnected in the dag.
-    for n in G.nodes_iter():
-      dag.add_node(n)
-  
-    counter = count().next
-    root_distance = {}
+  # Generate the transitive closure over the dag (not G) of all nodes, and
+  # sort each node's closure set by order of first appearance in the Euler
+  # tour.
+  ancestors = {}
+  for v in dag.nodes_iter():
+    if pairs is None or v in pairset:
+      my_ancestors = nx.dag.ancestors(dag, v)
+      my_ancestors.add(v)
+      ancestors[v] = sorted(my_ancestors, key=euler_tour_pos.get)
 
-    for edge in nx.breadth_first_search.bfs_edges(spanning_tree, root):
-      for node in edge:
-        if node not in root_distance:
-          root_distance[node] = counter()
-  
-    # Index the position of all nodes in the Euler tour so we can efficiently
-    # sort lists and merge in tour order.
-    euler_tour_pos = {}
-    for edge in euler_tour:
-      for node in edge:
-        euler_tour_pos.setdefault(node, counter())
+  # Generate the spanning tree lca for all pairs. This doesn't make sense to
+  # do incrementally since we are using a linear time offline algorithm for
+  # tree lca.
+  if pairs is None:
+    tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree, root))
+  else:
+    # Generate all tree queries we will need to ask.
+    tree_pairs = chain.from_iterable(product(ancestors[a], ancestors[b])
+                                     for (a, b) in pairs)
 
-    # Generate the set of all nodes of interest in the pairs.
-    pairset = set()
-    if pairs is not None:
-      pairset = set(chain.from_iterable(pairs))
+    tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree, root, tree_pairs))
 
-    for n in pairset:
-      if not G.has_node(n):
-        raise nx.NetworkXError("The node %s is not in the digraph." % str(n))
-
-    # Generate the transitive closure over the dag (not G) of all nodes, and
-    # sort each node's closure set by order of first appearance in the Euler
-    # tour.
-    ancestors = {}
-    for v in dag.nodes_iter():
-      if pairs is None or v in pairset:
-        my_ancestors = nx.dag.ancestors(dag, v)
-        my_ancestors.add(v)
-        ancestors[v] = sorted(my_ancestors, key=euler_tour_pos.get)
-
-    # Generate the spanning tree lca for all pairs. This doesn't make sense to
-    # do incrementally since we are using a linear time offline algorithm for
-    # tree lca.
-    if pairs is None:
-      tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree, root))
-    else:
-      # Generate all tree queries we will need to ask.
-      tree_pairs = chain.from_iterable(product(ancestors[a], ancestors[b])
-                                       for (a, b) in pairs)
-
-      tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree, root, tree_pairs))
-  
-    self.ancestors = ancestors
-    self.euler_tour_pos = euler_tour_pos
-    self.tree_lca = tree_lca
-    self.root_distance = root_distance 
-
-  def __getitem__(self, nodes):
-    ans = self.lowest_common_ancestor(*nodes)
-    if ans is None:
-      raise nx.NetworkXUnfeasible("Pair has no common ancestors that are "
-                                  "reachable from the provided root.")
-    else:
-      return ans
-
-  def lowest_common_ancestor(self, node1, node2):
-    """Returns the lowest common ancestor of the two notes relative to the root
-    used in the object's initialization or None if there is no LCA.
-    Linear time."""
-    if not self.ancestors[node1] or not self.ancestors[node2]:
-      return None
-
-    # Not necessary for correctness but fits in with a more "intuitive" notion
-    # of LCA to default to the current node in such cases.
-    if node1 == node2:
-      return node1
-
+  # All precomputations complete. Now we just need to give the user the pairs
+  # they asked for, or all pairs if they want them all.
+  for (node1, node2) in pairs if pairs is not None else tree_lca.iterkeys():
     best_root_distance = None
     best = None
-
+  
     indices = [0, 0]
-    ancestors = [self.ancestors[node1], self.ancestors[node2]]
+    ancestors_by_index = [ancestors[node1], ancestors[node2]]
 
     def get_next_in_merged_lists(indices):
       """Returns the index of the list containing the next item in the merged
          order (0 or 1) or None if exhausted."""
       i1, i2 = indices
-      if (i1 >= len(self.ancestors[node1]) and
-          i2 >= len(self.ancestors[node2])):
+      if (i1 >= len(ancestors[node1]) and
+          i2 >= len(ancestors[node2])):
         return None
-      elif i1 >= len(self.ancestors[node1]):
+      elif i1 >= len(ancestors[node1]):
         return 1
-      elif i2 >= len(self.ancestors[node2]):
+      elif i2 >= len(ancestors[node2]):
         return 0
-      elif (self.euler_tour_pos[self.ancestors[node1][i1]] <
-            self.euler_tour_pos[self.ancestors[node2][i2]]):
+      elif (euler_tour_pos[ancestors[node1][i1]] <
+            euler_tour_pos[ancestors[node2][i2]]):
         return 0
       else:
         return 1
-
+  
     # Find the LCA by iterating through the in-order merge of the two nodes
-    # of interest ancestor sets. In principle, we need to consider all pairs in
+    # of interests' ancestor sets. In principle, we need to consider all pairs in
     # the Cartesian product of the ancestor sets, but by the restricted min
     # range query reduction we are guaranteed that one of the pairs of interest
     # is adjacent in the merged list iff one came from each list.
     i = get_next_in_merged_lists(indices)
-    cur = ancestors[i][indices[i]], i
+    cur = ancestors_by_index[i][indices[i]], i
     while i is not None:
       prev = cur
       indices[i] += 1
       i = get_next_in_merged_lists(indices)
       if i is not None:
-        cur = ancestors[i][indices[i]], i
+        cur = ancestors_by_index[i][indices[i]], i
+
+        # Two adjacent entries must not be from the same list in order for their
+        # tree LCA to be considered.
         if cur[1] != prev[1]:
           tree_node1, tree_node2 = prev[0], cur[0]
-          if (tree_node1, tree_node2) in self.tree_lca:
-            ans = self.tree_lca[tree_node1, tree_node2]
+          if (tree_node1, tree_node2) in tree_lca:
+            ans = tree_lca[tree_node1, tree_node2]
           else:
-            ans = self.tree_lca[tree_node2, tree_node1]
-          if best is None or self.root_distance[ans] > best_root_distance:
-            best_root_distance = self.root_distance[ans]
+            ans = tree_lca[tree_node2, tree_node1]
+          if best is None or root_distance[ans] > best_root_distance:
+            best_root_distance = root_distance[ans]
             best = ans
 
-    return best
-
-  def all_pairs_lowest_common_ancestor(self, pairs=None):
-    """Returns the lowest common ancestor of all pairs of nodes in the graph
-    (or in the provided list)."""
-    for (n1, n2) in (pairs if pairs is not None else self.tree_lca):
-      res = self.lowest_common_ancestor(n1, n2)
-      if res is not None and res != self.superroot:
-        yield (n1, n2), res
+    if superroot is None or best != superroot:
+      yield (node1, node2), best
