@@ -12,8 +12,7 @@ from itertools import count, chain, product
 #   BSD license.
 __authors__ = "\n".join(["Alex Roper <aroper@umich.edu>"])
 
-__all__ = ["all_pairs_lowest_common_ancestor",
-           "tree_all_pairs_lowest_common_ancestor"]
+__all__ = ["all_pairs_lowest_common_ancestor"]
 
 @nx.utils.not_implemented_for("undirected", "multigraph", "graph")
 def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
