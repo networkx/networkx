@@ -230,74 +230,85 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
             my_ancestors.add(v)
             ancestors[v] = sorted(my_ancestors, key=euler_tour_pos.get)
 
+    def _compute_dag_lca_from_tree_values(tree_lca, dry_run):
+        """Iterate through the in-order merge for each pair of interest. We do
+        this to answer the user's query, but it is also used to avoid generating
+        unnecessary tree entries when the user only needs some pairs."""
+        for (node1, node2) in pairs if pairs is not None else tree_lca.iterkeys():
+            best_root_distance = None
+            best = None
+        
+            indices = [0, 0]
+            ancestors_by_index = [ancestors[node1], ancestors[node2]]
+    
+            def get_next_in_merged_lists(indices):
+                """Returns the index of the list containing the next item in the
+                merged order (0 or 1) or None if exhausted."""
+                index1, index2 = indices
+                if (index1 >= len(ancestors[node1]) and
+                        index2 >= len(ancestors[node2])):
+                    return None
+                elif index1 >= len(ancestors[node1]):
+                    return 1
+                elif index2 >= len(ancestors[node2]):
+                    return 0
+                elif (euler_tour_pos[ancestors[node1][index1]] <
+                            euler_tour_pos[ancestors[node2][index2]]):
+                    return 0
+                else:
+                    return 1
+        
+            # Find the LCA by iterating through the in-order merge of the two
+            # nodes of interests' ancestor sets. In principle, we need to
+            # consider all pairs in the Cartesian product of the ancestor sets,
+            # but by the restricted min range query reduction we are guaranteed
+            # that one of the pairs of interest is adjacent in the merged list
+            # iff one came from each list.
+            i = get_next_in_merged_lists(indices)
+            cur = ancestors_by_index[i][indices[i]], i
+            while i is not None:
+                prev = cur
+                indices[i] += 1
+                i = get_next_in_merged_lists(indices)
+                if i is not None:
+                    cur = ancestors_by_index[i][indices[i]], i
+    
+                    # Two adjacent entries must not be from the same list in order
+                    # for their tree LCA to be considered.
+                    if cur[1] != prev[1]:
+                        tree_node1, tree_node2 = prev[0], cur[0]
+                        if (tree_node1, tree_node2) in tree_lca:
+                            ans = tree_lca[tree_node1, tree_node2]
+                        else:
+                            ans = tree_lca[tree_node2, tree_node1]
+                        if best is None or root_distance[ans] > best_root_distance:
+                            best_root_distance = root_distance[ans]
+                            best = ans
+    
+            # If the LCA is the super_root, there is no LCA in the user's graph.
+            if not dry_run and (super_root is None or best != super_root):
+                yield (node1, node2), best
+
     # Generate the spanning tree lca for all pairs. This doesn't make sense to
     # do incrementally since we are using a linear time offline algorithm for
     # tree lca.
     if pairs is None:
+        # We want all pairs so we'll need the entire tree.
         tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree,
                                                               root))
     else:
-        # Generate all tree queries we will need to ask.
-        tree_pairs = chain.from_iterable(product(ancestors[a], ancestors[b])
-                                                 for (a, b) in pairs)
+        # We only need the merged adjacent pairs by seeing which queries the
+        # algorithm needs then generating them in a single pass.
+        tree_lca = collections.defaultdict(int)
+        for i in _compute_dag_lca_from_tree_values(tree_lca, True):
+            pass
 
-        tree_lca = dict(tree_all_pairs_lowest_common_ancestor(spanning_tree,
-                                                              root,
-                                                              tree_pairs))
+        # Replace the bogus default tree values with the real ones.
+        for (pair, lca) in tree_all_pairs_lowest_common_ancestor(spanning_tree,
+                                                                 root,
+                                                                 tree_lca):
+            tree_lca[pair] = lca
 
     # All precomputations complete. Now we just need to give the user the pairs
     # they asked for, or all pairs if they want them all.
-    for (node1, node2) in pairs if pairs is not None else tree_lca.iterkeys():
-        best_root_distance = None
-        best = None
-    
-        indices = [0, 0]
-        ancestors_by_index = [ancestors[node1], ancestors[node2]]
-
-        def get_next_in_merged_lists(indices):
-            """Returns the index of the list containing the next item in the
-            merged order (0 or 1) or None if exhausted."""
-            index1, index2 = indices
-            if (index1 >= len(ancestors[node1]) and
-                    index2 >= len(ancestors[node2])):
-                return None
-            elif index1 >= len(ancestors[node1]):
-                return 1
-            elif index2 >= len(ancestors[node2]):
-                return 0
-            elif (euler_tour_pos[ancestors[node1][index1]] <
-                        euler_tour_pos[ancestors[node2][index2]]):
-                return 0
-            else:
-                return 1
-    
-        # Find the LCA by iterating through the in-order merge of the two nodes
-        # of interests' ancestor sets. In principle, we need to consider all
-        # pairs in the Cartesian product of the ancestor sets, but by the
-        # restricted min range query reduction we are guaranteed that one of
-        # the pairs of interest is adjacent in the merged list iff one came
-        # from each list.
-        i = get_next_in_merged_lists(indices)
-        cur = ancestors_by_index[i][indices[i]], i
-        while i is not None:
-            prev = cur
-            indices[i] += 1
-            i = get_next_in_merged_lists(indices)
-            if i is not None:
-                cur = ancestors_by_index[i][indices[i]], i
-
-                # Two adjacent entries must not be from the same list in order
-                # for their tree LCA to be considered.
-                if cur[1] != prev[1]:
-                    tree_node1, tree_node2 = prev[0], cur[0]
-                    if (tree_node1, tree_node2) in tree_lca:
-                        ans = tree_lca[tree_node1, tree_node2]
-                    else:
-                        ans = tree_lca[tree_node2, tree_node1]
-                    if best is None or root_distance[ans] > best_root_distance:
-                        best_root_distance = root_distance[ans]
-                        best = ans
-
-        # If the LCA is the super_root, there is no LCA in the user's graph.
-        if super_root is None or best != super_root:
-            yield (node1, node2), best
+    return _compute_dag_lca_from_tree_values(tree_lca, False)

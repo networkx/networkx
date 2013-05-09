@@ -46,6 +46,7 @@ import networkx.algorithms.shortest_paths
 import networkx.algorithms.traversal
 import networkx.algorithms.chordal
 import networkx.algorithms.operators
+import networkx.algorithms.lowest_common_ancestor
 
 from networkx.algorithms.bipartite import projected_graph,project,is_bipartite
 from networkx.algorithms.isomorphism import is_isomorphic,could_be_isomorphic,\
