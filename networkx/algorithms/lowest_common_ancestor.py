@@ -281,7 +281,8 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
                             ans = tree_lca[tree_node1, tree_node2]
                         else:
                             ans = tree_lca[tree_node2, tree_node1]
-                        if best is None or root_distance[ans] > best_root_distance:
+                        if not dry_run and (root_distance[ans] > best_root_distance
+                                            or best is None):
                             best_root_distance = root_distance[ans]
                             best = ans
     
