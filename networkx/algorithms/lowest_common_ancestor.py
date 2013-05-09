@@ -10,16 +10,15 @@ __authors__ = "\n".join(["Alex Roper <aroper@umich.edu>"])
 #   All rights reserved.
 #   BSD license.
 
-__all__ = ["all_pairs_lowest_common_ancestor",
-           "lowest_common_ancestor_naive", "tree_all_pairs_lowest_common_ancestor"]
+__all__ = ["all_pairs_lowest_common_ancestor", "tree_all_pairs_lowest_common_ancestor"]
 
 @nx.utils.not_implemented_for("undirected", "multigraph", "graph")
 def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
-  """Compute the lowest common ancestor for a set of pairs in the graph.
+  """Compute the lowest common ancestor for a set of pairs in a tree.
 
   Parameters
   ----------
-  G : NetworkX directed graph
+  G : NetworkX directed graph (must be a tree)
 
   root : node, optional
     The root of the subtree to operate on. If None, will assume the entire graph
@@ -27,7 +26,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
 
   pairs : iterable or iterator of pairs of nodes, optional
     The pairs of interest. Defaults to all pairs under the root that have a
-    lowest common ancestor. If you pass in (u, v), it may be returned as (v, u).
+    lowest common ancestor.
 
   Returns
   -------
@@ -38,13 +37,16 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
   -----
   Only defined on non-null trees represented with directed edges from parents to
   children. Uses Tarjan's off-line least-common-ancestors algorithm. Runs in
-  time O((V + E) + P) time, if we consider the inverse Ackerman function constant.
+  time O(4 * (V + E + P)) time, where 4 is the largest value of the inverse
+  Ackermann function likely to ever come up in actual use, and P is the number
+  of pairs requested (or V^2 if all are needed).
 
   Tarjan, R. E. (1979), "Applications of path compression on balanced trees",
   Journal of the ACM 26 (4): 690-715, doi:10.1145/322154.322161.
 
   See Also
   --------
+  all_pairs_lowest_common_ancestor
   """
 
   if not G.is_directed():
@@ -61,6 +63,8 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
       pairs = set(pairs)
     for u, v in pairs:
       for n in (u, v):
+        if n is None:
+          raise NetworkXError("This implementation will not work with None as a node.")
         if not G.has_node(n):
           raise nx.NetworkXError("The node %s is not in the digraph." % str(n))
       pair_dict[u].add(v)
@@ -105,7 +109,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
       uf.union(parent, node)
       ancestors[uf[parent]] = parent
 
-def get_single_root_dag(G, root):
+def _get_single_root_dag(G, root):
   """Converts G into a dag with a single root by adding a node with edges to
   all sources. Returns the new DAG (or the original if acceptable) and the root.
   If root is not None, use that for the root.
@@ -124,72 +128,6 @@ def get_single_root_dag(G, root):
     return G, root, root
 
 @nx.utils.not_implemented_for("undirected", "multigraph", "graph")
-def lowest_common_ancestor_naive(G, node1, node2, root=None):
-  """Compute the lowest common ancestor for two nodes in a graph.
-
-  Parameters
-  ----------
-  G : NetworkX directed graph
-
-  root : node, optional
-    The node to use as a root for the purposes of defining "lowest". We define
-    the lca of two nodes as the common ancestor which is farthest from the
-    root. Only nodes reachable from root are considered potential ancestors.
-
-    If omitted, the root will be the single source in G. If there are multiple
-    sources, G will be copied and the copy will add edges from a unique
-    "superroot" to each source.
-
-  node1, node2 : node
-    The two nodes to find an ancestor of.
-
-  Returns
-  -------
-  The lowest common ancestor of node1 and node2 with respect to root. If an
-  ancestor is not reachable from root, it is not considered a potential lca.
-  Ties are broken arbitrarily. Note that this does NOT imply that n will be
-  returned as lca(n, n), only that the value returned is at no lesser a distance
-  from root than n.
-
-  Will raise NetworkXUnfeasible if there is no lca reachable from root.
-
-  Notes
-  -----
-  Only defined on non-null directed acyclic graphs. This implementation is
-  designed to be efficient for only extremely small numbers of queries
-  (think 1). You should really use LowestCommonAncestorPrecomputation or
-  all_pairs_lowest_common_ancestor unless you are sure this is what you want.
-
-  Operates by generating all shortest paths ending at the nodes and taking their
-  intersection, then returning the member with the longest shortest path from
-  root.
-
-  See Also
-  --------
-  LowestCommonAncestorPrecomputation
-  all_pairs_lowest_common_ancestor
-  tree_all_pairs_lowest_common_ancestor
-  """
-
-  # Deal with default root
-  G, root = get_single_root_dag(G, root)
-
-  # Find all common ancestors.
-  ancestors1 = nx.dag.ancestors(G, node1)
-  ancestors1.add(node1)
-  ancestors2 = nx.dag.ancestors(G, node2)
-  ancestors2.add(node2)
-
-  root_distance = nx.shortest_path_length(G, source=root)
-
-  feasible = ancestors1.intersection(ancestors2)
-  if feasible:
-    return max(feasible, key=root_distance.get)
-  else:
-    raise nx.NetworkXUnfeasible("Pair has no common ancestors that are "
-                                "reachable from the provided root.")
-
-@nx.utils.not_implemented_for("undirected", "multigraph", "graph")
 def all_pairs_lowest_common_ancestor(G, pairs=None):
   """Compute the lowest common ancestor for all pairs of nodes given or all pairs.
 
@@ -199,7 +137,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
 
   pairs : iterable or iterator of pairs of nodes, optional
     The pairs of nodes of interest. If None, will find the LCA of all pairs of
-    nodes. Iterators will be materialized and thus decrease efficiency.
+    nodes. Iterators will be fully materialized, so prefer an iterable.
 
   Returns
   -------
@@ -210,9 +148,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
 
   Notes
   -----
-  Only defined on non-null directed acyclic graphs. This implementation is
-  efficient if all pairs are necessary, taking cubic time. If you only need
-  some pairs, see LowestCommonAncestorPrecomputation.
+  Only defined on non-null directed acyclic graphs.
 
   Uses the O(n^3) ancestor-list algorithm from:
   M. A. Bender, M. Farach-Colton, G. Pemmasani, S. Skiena, P. Sumazin.
@@ -221,8 +157,6 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
 
   See Also
   --------
-  LowestCommonAncestorPrecomputation
-  lowest_common_ancestor_naive
   tree_all_pairs_lowest_common_ancestor
   """
 
@@ -247,9 +181,9 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
   if (not isinstance(pairs, (set, dict, frozenset)) and
       pairs is not None):
     pairs = set(pairs)
-
+ 
   # Handle default root.
-  G, root, superroot = get_single_root_dag(G, root=None)
+  G, root, superroot = _get_single_root_dag(G, root=None)
 
   # Start by computing a spanning tree, the DAG of all edges not in it,
   # and an Euler tour of the graph. We will then use the tree lca algorithm
@@ -263,6 +197,8 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
   # Ensure that both the dag and the spanning tree contains all nodes in G,
   # even nodes that are disconnected in the dag.
   for n in G.nodes_iter():
+    if n is None:
+      raise NetworkXError("This implementation will not work with None as a node.")
     dag.add_node(n)
 
   counter = count().next
@@ -363,5 +299,6 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
             best_root_distance = root_distance[ans]
             best = ans
 
+    # If the LCA is the superroot, there is no LCA in the user's graph.
     if superroot is None or best != superroot:
       yield (node1, node2), best

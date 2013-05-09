@@ -234,3 +234,10 @@ class TestDAGLCA:
     """Test that pairs not in the graph raises error."""
     gen = nx.all_pairs_lowest_common_ancestor(self.DG, [(-1, -1)])
     assert_raises(nx.NetworkXError, list, gen)
+
+  def test_all_pairs_lowest_common_ancestor6(self):
+    """Test that pairs with no LCA specified emits nothing."""
+    G = self.DG.copy()
+    G.add_node(-1)
+    gen = nx.all_pairs_lowest_common_ancestor(G, [(-1, -1), (-1, 0)])
+    assert_equal(dict(gen), {(-1, -1): -1})
