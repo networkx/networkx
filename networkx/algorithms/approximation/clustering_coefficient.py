@@ -18,7 +18,7 @@ __all__ = ["approx_clustering_coefficient"]
 __author__ = """Fred Morstatter (fred.morstatter@asu.edu)"""
 
 @not_implemented_for('directed')
-def approx_clustering_coefficient(G, numTrials=1000):
+def approx_clustering_coefficient(G, num_trials=1000):
     r"""Approximation of the clustering coefficient
 
     Find an approximate clustering coefficient for the graph.
@@ -27,7 +27,7 @@ def approx_clustering_coefficient(G, numTrials=1000):
     ----------
     G : NetworkX graph
 
-    numTrials : Number of trials to perform (default 1000).
+    num_trials : Number of trials to perform (default 1000). Must be a positive integer.
 
     Returns
     -------
@@ -39,23 +39,26 @@ def approx_clustering_coefficient(G, numTrials=1000):
        http://www.emis.ams.org/journals/JGAA/accepted/2005/SchankWagner2005.9.2.pdf
     """
     
+    if num_trials <= 0:
+        raise ValueError("Expected positive integer for num_trials.")
+
     #number of successful trials
-    c = 0
+    triangles_found = 0
     nodes = G.nodes()
 
-    for trial in xrange(numTrials):
+    for trial in xrange(num_trials):
         #randomly select a node
         node = random.choice(nodes)
-        nodeConnections = G[node].keys()
-        #if there are fewer than 2 connections, this experiment will surely fail.
-        if len(nodeConnections) < 2:
+        nbrs = G[node]
+        #if there are fewer than 2 connections, this experiment will surely fail, and it's fine to continue as this does say something about the graph.
+        if len(nbrs) < 2:
             continue
         else:
             #make a legitimate attempt at the experiment. Choose two of the nodes connections and see if they are connected
-            (a, b) = random.sample(nodeConnections, 2)
-            c += 1 if b in set(G[a].keys()) else 0
+            (a, b) = random.sample(nbrs, 2)
+            triangles_found += 1 if b in G[a] else 0
 
     #the clustering coefficient is then the number of triangles found / the number of trials
-    return float(c) / numTrials
+    return triangles_found / float(num_trials)
 
 
