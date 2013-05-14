@@ -25,11 +25,8 @@ def micmac(G, k=4):
 
     Returns
     -------
-    indinfluences : dictionary
-       Dictionary of MICMAC indirect influences.
-       
-    inddependeces : dictionary
-       Dictionary of MICMAC indirect dependences.
+    indirect : dictionary
+       Dictionary of MICMAC indirect dependencies and influences
 
     Examples
     --------
@@ -38,7 +35,7 @@ def micmac(G, k=4):
 
     Notes
     -----
-    This function uses the scipy library to make the computations
+    This function uses SciPy and NumPy libraries to make the computations. A NetworkX DiGraph is prefered because on a regular Graph indirect dependences are equal to indirect dependeces.
 
     See Also
     --------

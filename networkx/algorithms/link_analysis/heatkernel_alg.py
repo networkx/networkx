@@ -14,21 +14,20 @@ def heatkernel(G, k=1):
      dependences of the nodes in the graph.
 
     Heat Kernel computes the indirect influences and dependencias
-    via the exponential formula described in the reference.
+    via the exponential formula described in references.
 
     Parameters
     -----------
     G : graph
-      A NetworkX graph
+      A NetworkX [Di]Graph
 
     k : integer, optional
       Paramenter of the Heat Kernel method, default 1
 
     Returns
     -------
-    ind: dictionary
-        Dictionary of Heat Kernel indirect influences and
-        dependences
+    indirect: dictionary
+        Dictionary of Heat Kernel indirect dependencies and influences
 
     Examples
     --------
@@ -37,7 +36,7 @@ def heatkernel(G, k=1):
 
     Notes
     -----
-    This function uses the numpy library to make the computations
+    This function uses the SciPy library to make the computations. A NetworkX DiGraph is prefered because on a regular Graph indirect dependences are equal to indirect dependeces.
 
     See Also
     --------
@@ -99,8 +98,8 @@ def heatkernel(G, k=1):
     #create the dictionary with the result
     fdict = {i: number for number, i in zip(f, range(j))}
     ddict = {i: number for number, i in zip(d, range(j))}
-    x = {'influences': fdict, 'dependences': ddict}
-    return x
+    indirect = {'influences': fdict, 'dependences': ddict}
+    return indirect
 
 # fixture for nose tests
 def setup_module(module):
@@ -109,11 +108,3 @@ def setup_module(module):
         import scipy
     except:
         raise SkipTest("SciPy not available")
-    try:
-        import scipy.linalg
-    except:
-        raise SkipTest("SciPy.linalg not available")
-    try:
-        import scipy.linalg.matfuncs
-    except:
-        raise SkipTest("SciPy.linalg.matfuncs not available")
