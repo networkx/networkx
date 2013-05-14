@@ -13,7 +13,7 @@ def heatkernel(G, k=1):
     """Return the Heat Kernel indirect influences and indirect
      dependences of the nodes in the graph.
 
-    Heat Kernel computes the indirect influences and dependencias
+    Heat Kernel computes the indirect influences and dependences
     via the exponential formula described in references.
 
     Parameters
@@ -27,7 +27,7 @@ def heatkernel(G, k=1):
     Returns
     -------
     indirect: dictionary
-        Dictionary of Heat Kernel indirect dependencies and influences
+        Dictionary of Heat Kernel indirect dependences and influences
 
     Examples
     --------
@@ -77,7 +77,7 @@ def heatkernel(G, k=1):
     else:
         D = G
     
-    # Get the order of the Graph
+    # Get the order of the graph
     j = D.order()
     # Get the adjacency matrix of the graph
     A = nx.adjacency_matrix(D)
@@ -96,8 +96,8 @@ def heatkernel(G, k=1):
     d = d/sp.sum(d)
     
     #create the dictionary with the result
-    fdict = {i: number for number, i in zip(f, range(j))}
-    ddict = {i: number for number, i in zip(d, range(j))}
+    fdict = {i: number for number, i in zip(f, nx.nodes_iter(D))}
+    ddict = {i: number for number, i in zip(d, nx.nodes_iter(D))}
     indirect = {'influences': fdict, 'dependences': ddict}
     return indirect
 

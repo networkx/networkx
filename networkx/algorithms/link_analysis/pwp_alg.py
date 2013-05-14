@@ -13,7 +13,7 @@ def pwp(G, k=1):
     """Return the PWP indirect influences and indirect dependences
     of the nodes in the graph.
 
-    PWP computes the indirect influences and dependencias via the
+    PWP computes the indirect influences and dependences via the
     exponential formula described in references.
 
     Parameters
@@ -74,7 +74,7 @@ def pwp(G, k=1):
     else:
         D = G
     
-    # Get the order of the Graph
+    # Get order of Graph
     j = D.order()
     # Get the adjacency matrix of the graph
     A = nx.adjacency_matrix(D)
@@ -93,8 +93,8 @@ def pwp(G, k=1):
     d = d/sp.sum(d)
   
     # Create dictionary with the result
-    fdict = {i: number for number, i in zip(f, range(j))}
-    ddict = {i: number for number, i in zip(d, range(j))}
+    fdict = {i: number for number, i in zip(f, nx.nodes_iter(D))}
+    ddict = {i: number for number, i in zip(d, nx.nodes_iter(D))}
     indirect = {'influences': fdict, 'dependences': ddict}
     return indirect
 

@@ -26,7 +26,7 @@ def micmac(G, k=4):
     Returns
     -------
     indirect : dictionary
-       Dictionary of MICMAC indirect dependencies and influences
+       Dictionary of MICMAC indirect dependences and influences
 
     Examples
     --------
@@ -88,8 +88,8 @@ def micmac(G, k=4):
     d = d/sp.sum(d)
     
     #create the dictionary with the result
-    fdict = {i: number for number, i in zip(f.tolist()[0], range(j))}
-    ddict = {i: number for number, i in zip(d.transpose().tolist()[0], range(j))}
+    fdict = {i: number for number, i in zip(f.tolist()[0], nx.nodes_iter(D))}
+    ddict = {i: number for number, i in zip(d.transpose().tolist()[0], nx.nodes_iter(D))}
     x = {'influences': fdict, 'dependences': ddict}
     return x
 
