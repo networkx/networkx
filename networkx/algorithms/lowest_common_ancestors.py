@@ -60,7 +60,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     if pairs is not None:
         pair_dict = collections.defaultdict(set)
         # See note on all_pairs_lowest_common_ancestor.
-        if not isinstance(pairs, (set, frozenset, dict)):
+        if not isinstance(pairs, (collections.Mapping, collections.Set)):
             pairs = set(pairs)
         for u, v in pairs:
             for n in (u, v):
@@ -195,8 +195,8 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     # This will always produce correct results and avoid unnecessary
     # copies in many common cases.
     #
-    if (not isinstance(pairs, (set, dict, frozenset)) and
-            pairs is not None):
+    if (not isinstance(pairs, (collections.Mapping, collections.Set)) and
+        pairs is not None):
         pairs = set(pairs)
 
     # Convert G into a dag with a single root by adding a node with edges to
