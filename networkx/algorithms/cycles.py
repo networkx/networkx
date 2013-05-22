@@ -147,6 +147,17 @@ def simple_cycles(G):
             while B[thisnode]:
                 _unblock(B[thisnode].pop())
 
+    def _unblock_iter(node):
+        # ---> In theory, this should be faster, but it's not in practice.
+        # Leaving it here for later analysis.
+        to_be_unblocked = {node}
+        while to_be_unblocked:
+            random_node = to_be_unblocked.pop()
+            if not blocked[random_node]: continue
+            blocked[random_node] = False
+            to_be_unblocked.update(B[random_node])
+            B[random_node].clear()
+
     def circuit(thisnode, startnode, component):
         closed = False # set to True if elementary path is closed
         path.append(thisnode)
@@ -163,32 +174,46 @@ def simple_cycles(G):
         else:
             for nextnode in component[thisnode]:
                 if thisnode not in B[nextnode]: # TODO: use set for speedup?
-                    B[nextnode].append(thisnode)
+                    B[nextnode].add(thisnode)
         path.pop() # remove thisnode from path
         return closed
 
+    def _remove_node_and_update_sccs(subg, n):
+        # The only scc affected by the removal of a node is the one that
+        # contains such node. Furthermore, the removal can only increase or
+        # maintain the number of sccs.
+        subg.remove_node(n)
+        # Find scc that contains the removed node
+        nodecomp = filter(lambda sc: n in sc, sccs)[0]
+        # Remove original scc
+        sccs.remove(nodecomp)
+        # Insert newly generated sccs
+        h = subg.subgraph(nodecomp)
+        sccs.update(map(tuple, nx.strongly_connected_components(h)))
+
     path = [] # stack of nodes in current path
     blocked = defaultdict(bool) # vertex: blocked from search?
-    B = defaultdict(list) # graph portions that yield no elementary circuit
+    B = defaultdict(set) # graph portions that yield no elementary circuit
     result = [] # list to accumulate the circuits found
+    sccs = set()
+    
     # Johnson's algorithm requires some ordering of the nodes.
     # They might not be sortable so we assign an arbitrary ordering.
-    ordering=dict(zip(G,range(len(G))))
-    for s in ordering:
-        # Build the subgraph induced by s and following nodes in the ordering
-        subgraph = G.subgraph(node for node in G
-                              if ordering[node] >= ordering[s])
-        # Find the strongly connected component in the subgraph
-        # that contains the least node according to the ordering
-        strongcomp = nx.strongly_connected_components(subgraph)
-        mincomp=min(strongcomp,
-                    key=lambda nodes: min(ordering[n] for n in nodes))
+    # ---> No need: just use the list returned by the library
+    ordering = G.nodes()
+    subgraph = G.copy()
+    components = map(tuple, nx.strongly_connected_components(subgraph))
+    sccs.update(components)
+    for pos, s in enumerate(ordering):
+        if pos != 0:
+            # ---> Next subgraph is obtained by simply removing the previous
+            #      node from the current subgraph.
+            _remove_node_and_update_sccs(subgraph, ordering[pos - 1])
+        mincomp = [c for c in sccs if s in c][0]
         component = G.subgraph(mincomp)
-        if component:
-            # smallest node in the component according to the ordering
-            startnode = min(component,key=ordering.__getitem__)
-            for node in component:
-                blocked[node] = False
-                B[node][:] = []
-            dummy=circuit(startnode, startnode, component)
+        if len(component) == 1: continue
+        for node in component:
+            blocked[node] = False
+            B[node].clear()
+        circuit(s, s, component)
     return result
