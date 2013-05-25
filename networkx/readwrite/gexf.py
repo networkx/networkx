@@ -469,7 +469,7 @@ class GEXFWriter(GEXF):
                     e=Element("{%s}shape"%self.NS_VIZ,
                               value='image',uri=str(shape))
                 else:
-                    e=Element("{%s}shape"%self.NS_VIZ,value=str(shape.get))
+                    e=Element("{%s}shape"%self.NS_VIZ,value=str(shape))
                 element.append(e)
 
             position=viz.get('position')
