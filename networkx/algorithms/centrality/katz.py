@@ -88,7 +88,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     >>> phi = (1+math.sqrt(5))/2.0 # largest eigenvalue of adj matrix
     >>> centrality = nx.katz_centrality(G,1/phi-0.01)
     >>> for n,c in sorted(centrality.items()):
-    ...    print(n,"%0.2f"%c)
+    ...    print("%d %0.2f"%(n,c))
     0 0.37
     1 0.60
     2 0.60
@@ -229,7 +229,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
     >>> phi = (1+math.sqrt(5))/2.0 # largest eigenvalue of adj matrix
     >>> centrality = nx.katz_centrality_numpy(G,1/phi)
     >>> for n,c in sorted(centrality.items()):
-    ...    print(n,"%0.2f"%c)
+    ...    print("%d %0.2f"%(n,c))
     0 0.37
     1 0.60
     2 0.60
