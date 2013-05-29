@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
+from networkx import NetworkXError 
 
 class TestStronglyConnected:
 
@@ -131,7 +132,7 @@ class TestStronglyConnected:
         G=nx.Graph()
         assert_raises(NetworkXError,nx.strongly_connected_components,G)
         assert_raises(NetworkXError,nx.kosaraju_strongly_connected_components,G)
-        assert_raises(NetworkXError,nx.strongly_connected_component_recursive,G)
-        assert_raises(NetworkXError,nx.strongly_connected_compoent_subgraphs,G)
+        assert_raises(NetworkXError,nx.strongly_connected_components_recursive,G)
+        assert_raises(NetworkXError,nx.strongly_connected_component_subgraphs,G)
         assert_raises(NetworkXError,nx.is_strongly_connected,G)
         assert_raises(NetworkXError,nx.condensation,G)
