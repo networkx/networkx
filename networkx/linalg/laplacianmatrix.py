@@ -17,9 +17,10 @@ __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
 
 __all__ = ['laplacian_matrix',
            'normalized_laplacian_matrix',
-           'directed_laplacian_matrix',
-           ]
+           'directed_laplacian_matrix']
 
+@require('numpy')
+@not_implemented_for('directed')
 def laplacian_matrix(G, nodelist=None, weight='weight'):
     """Return the Laplacian matrix of G.
 
@@ -41,8 +42,8 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
 
     Returns
     -------
-    L : NumPy array
-      Laplacian of G.
+    L : NumPy matrix
+      The Laplacian matrix of G.
 
     Notes
     -----
@@ -54,37 +55,35 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
     to_numpy_matrix
     normalized_laplacian_matrix
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-          "laplacian_matrix() requires numpy: http://scipy.org/ ")
-    # this isn't the most efficient way to do this...
-    if G.is_multigraph():
-        A=np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight))
-        I=np.identity(A.shape[0])
-        D=I*np.sum(A,axis=1)
-        L=D-A
-        return L
-    # Graph or DiGraph, this is faster than above
+    import numpy as np
     if nodelist is None:
-        nodelist=G.nodes()
-    n=len(nodelist)
-    index=dict( (n,i) for i,n in enumerate(nodelist) )
-    L = np.zeros((n,n))
-    for ui,u in enumerate(nodelist):
-        totalwt=0.0
-        for v,d in G[u].items():
-            try:
-                vi=index[v]
-            except KeyError:
-                continue
-            wt=d.get(weight,1)
-            L[ui,vi]= -wt
-            totalwt+=wt
-        L[ui,ui]= totalwt
-    return L
+        nodelist = G.nodes()
+    if G.is_multigraph():
+        # this isn't the fastest way to do this...
+        A = np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight))
+        I = np.identity(A.shape[0])
+        D = I*np.sum(A,axis=1)
+        L = D - A
+    else:
+        # Graph or DiGraph, this is faster than above
+        n = len(nodelist)
+        index = dict( (n,i) for i,n in enumerate(nodelist) )
+        L = np.zeros((n,n))
+        for ui,u in enumerate(nodelist):
+            totalwt = 0.0
+            for v,d in G[u].items():
+                try:
+                    vi = index[v]
+                except KeyError:
+                    continue
+                wt = d.get(weight,1)
+                L[ui,vi] = -wt
+                totalwt += wt
+            L[ui,ui] = totalwt
+    return np.asmatrix(L)
 
+@require('numpy')
+@not_implemented_for('directed')
 def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     r"""Return the normalized Laplacian matrix of G.
 
@@ -112,8 +111,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 
     Returns
     -------
-    L : NumPy array
-      Normalized Laplacian of G.
+    L : NumPy matrix
+      The normalized Laplacian matrix of G.
 
     Notes
     -----
@@ -135,14 +134,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
        Laplacian, Electronic Journal of Linear Algebra, Volume 16, pp. 90-98,
        March 2007.
     """
-    # FIXME: this isn't the most efficient way to do this...
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-          "normalized_laplacian_matrix() requires numpy: http://scipy.org/ ")
+    import numpy as np
     if G.is_multigraph():
-
         L = laplacian_matrix(G, nodelist=nodelist, weight=weight)
         D = np.diag(L)
     elif G.number_of_selfloops() == 0:
@@ -167,7 +160,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 @require('numpy')
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
-def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None, alpha=0.95):
+def directed_laplacian_matrix(G, nodelist=None, weight='weight',
+                              walk_type=None, alpha=0.95):
     r"""Return the directed Laplacian matrix of G.
 
     The graph directed Laplacian is the matrix
@@ -231,12 +225,7 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight', walk_type=None,
        Laplacians and the Cheeger inequality for directed graphs.
        Annals of Combinatorics, 9(1), 2005
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-          "directed_laplacian_matrix() requires numpy: http://scipy.org/ ")
-
+    import numpy as np
     if walk_type is None:
         if nx.is_strongly_connected(G):
             if nx.is_aperiodic(G):
