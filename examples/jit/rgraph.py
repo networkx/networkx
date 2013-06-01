@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-An example showing how to use the JavaScript Infoviz Toolkit (JIT)
+An example showing how to use the JavaScript InfoVis Toolkit (JIT)
 JSON export
 
 See the JIT documentation and examples at http://thejit.org
