@@ -228,34 +228,34 @@ def _single_source_shortest_path_basic(G,s):
 
 
 def _single_source_dijkstra_path_basic(G,s,weight='weight'):
-    # modified from Eppstein
+    # modified from Geo Piskas
     S=[]
     P={}
     for v in G:
         P[v]=[]
     sigma=dict.fromkeys(G,0.0)    # sigma[v]=0 for v in G
-    D={}
     sigma[s]=1.0
+    dist=dict.fromkeys(G,float("inf"))    # dist[v]=inf for v in G
+    dist[s]=0.0
     push=heapq.heappush
     pop=heapq.heappop
-    seen = {s:0}
     Q=[]   # use Q as heap with (distance,node id) tuples
-    push(Q,(0,s,s))
+    push(Q,(0.0,s))
     while Q:
-        (dist,pred,v)=pop(Q)
-        if v in D:
-            continue # already searched this node.
-        sigma[v] += sigma[pred] # count paths
+        (v_dist,v)=pop(Q)
         S.append(v)
-        D[v] = dist
         for w,edgedata in G[v].items():
-            vw_dist = dist + edgedata.get(weight,1)
-            if w not in D and (w not in seen or vw_dist < seen[w]):
-                seen[w] = vw_dist
-                push(Q,(vw_dist,v,w))
+            vw_dist = v_dist + edgedata.get(weight,1)
+            if vw_dist<dist[w]:
+                try:
+                    del Q[Q.index((dist[w],w))]
+                except ValueError:
+                    pass # (dist[w],w) just does not exist.
+                dist[w] = vw_dist
+                push(Q,(vw_dist,w))
                 sigma[w]=0.0
-                P[w]=[v]
-            elif vw_dist==seen[w]:  # handle equal paths
+                P[w]=[]
+            if vw_dist==dist[w]:  # handle equal paths
                 sigma[w] += sigma[v]
                 P[w].append(v)
     return S,P,sigma
