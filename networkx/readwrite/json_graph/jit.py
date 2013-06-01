@@ -67,7 +67,8 @@ def jit_data(G, indent=None):
     for node in G.nodes():
 
         json_node = {
-            "id": node
+            "id": node,
+            "title": node
         }
 
         # node data
