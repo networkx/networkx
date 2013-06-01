@@ -1,6 +1,6 @@
 """
 
-Read and write NetworkX graphs as JavaScript Infoviz Toolkit (JIT) format JSON.
+Read and write NetworkX graphs as JavaScript InfoVis Toolkit (JIT) format JSON.
 
 See the JIT documentation and examples at http://thejit.org
 
