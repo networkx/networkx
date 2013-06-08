@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
+import sys
 
 class TestWeightedPath:
 
@@ -188,10 +189,18 @@ class TestWeightedPath:
         G.add_edge(1, 2, weight = -7)
         for i in range(5):
             assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, i)
+            
+        # negative weight cycle that user asks for
+        G = nx.cycle_graph(5, create_using = nx.DiGraph())
+        G.add_edge(1, 2, weight = -7)
+        assert_equal(nx.bellman_ford(G, 0, return_negative_cycle=True), 
+            ({0: 4, 1: 0, 2: 1, 3: 2, 4: 3}, {0: -3, 1: 1, 2: -6, 3: -5, 4: -4}))
+            
         G = nx.cycle_graph(5)  # undirected Graph
         G.add_edge(1, 2, weight = -3)
         for i in range(5):
             assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, i)
+        
         # no negative cycle but negative weight
         G = nx.cycle_graph(5, create_using = nx.DiGraph())
         G.add_edge(1, 2, weight = -3)

@@ -489,7 +489,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
                                              weight=weight)
     return paths
 
-def bellman_ford(G, source, weight = 'weight'):
+def bellman_ford(G, source, weight = 'weight', return_negative_cycle = False):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
 
@@ -508,6 +508,10 @@ def bellman_ford(G, source, weight = 'weight'):
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
+    
+    return_negative_cycle: boolean, optional (default=False)
+       If a negative cycle is detected, return the path instead of
+       thowing an Exception.
 
     Returns
     -------
@@ -581,6 +585,8 @@ def bellman_ford(G, source, weight = 'weight'):
         if no_changes:
             break
     else:
+        if return_negative_cycle:
+            return pred, dist
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
     return pred, dist
 
