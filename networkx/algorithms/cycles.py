@@ -103,22 +103,35 @@ def simple_cycles(G,list_of_nodes=[],list_of_edges=[]):
     node appears twice, except that the first and last node are the same.
     Two elementary circuits are distinct if they are not cyclic permutations
     of each other.
-
+    
     Parameters
     ----------
     G : NetworkX DiGraph
        A directed graph
+    list_of_nodes : (optional) a list of nodes
+    list_of_edges : (optional) a list of edges
+    
 
     Returns
     -------
     A list of circuits, where each circuit is a list of nodes, with the first
-    and last node being the same.
+    and last node being the same. The list of circuit can be filtered by nodes
+    (the circuits containing the nodes defined in list_of_nodes will be skipped) 
+    or by edges (the circuits containing the edges defined in list_of_edges will
+    not be included in the result). The filtering options can be used 
+    independently or together.
 
     Example:
     >>> G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
     >>> nx.simple_cycles(G)
     [[0, 0], [0, 1, 2, 0], [0, 2, 0], [1, 2, 1], [2, 2]]
-
+    >>> nx.simple_cycles(G,[0])
+    [[1, 2, 1], [2, 2]]
+    >>> nx.simple_cycles(G,[0],[[1,2]])
+    [[2, 2]]
+    >>> nx.simple_cycles(G,[],[[1,2]])
+    [[0, 0], [0, 2, 0], [2, 2]]
+    
     See Also
     --------
     cycle_basis (for undirected graphs)
