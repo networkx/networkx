@@ -12,6 +12,7 @@ Cycle finding algorithms
 import networkx as nx
 from networkx.utils import *
 from collections import defaultdict
+from itertools import islice
 
 __all__ = ['cycle_basis','simple_cycles']
 __author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
@@ -95,29 +96,42 @@ def cycle_basis(G,root=None):
 
 
 @not_implemented_for('undirected')
-def simple_cycles(G):
+def simple_cycles(G,list_of_nodes=[],list_of_edges=[]):
     """Find simple cycles (elementary circuits) of a directed graph.
 
     An simple cycle, or elementary circuit, is a closed path where no
     node appears twice, except that the first and last node are the same.
     Two elementary circuits are distinct if they are not cyclic permutations
     of each other.
-
+    
     Parameters
     ----------
     G : NetworkX DiGraph
        A directed graph
+    list_of_nodes : (optional) a list of nodes
+    list_of_edges : (optional) a list of edges
+    
 
     Returns
     -------
     A list of circuits, where each circuit is a list of nodes, with the first
-    and last node being the same.
-
+    and last node being the same. The list of circuits can be negatively 
+    filtered by nodes (only circuits NOT containing the nodes defined in 
+    list_of_nodes are included in the results) or positively filtered by edges 
+    (only circuits containing the edges defined in list_of_edges are included
+    in the result). The filtering options can be used independently or together.
+    
     Example:
     >>> G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
     >>> nx.simple_cycles(G)
     [[0, 0], [0, 1, 2, 0], [0, 2, 0], [1, 2, 1], [2, 2]]
-
+    >>> nx.simple_cycles(G,[0])
+    [[1, 2, 1], [2, 2]]
+    >>> nx.simple_cycles(G,[0],[[1,2]])
+    [[1, 2, 1]]
+    >>> nx.simple_cycles(G,[],[[1,2]])
+    [[0, 1, 2, 0], [1, 2, 1]]
+    
     See Also
     --------
     cycle_basis (for undirected graphs)
@@ -158,6 +172,17 @@ def simple_cycles(G):
             elif not blocked[nextnode]:
                 if circuit(nextnode, startnode, component):
                     closed = True
+            # Pop out the cycles NOT containing an edge from list_of_edges           
+            if result != [] and list_of_edges != []:
+                for edge in list_of_edges:
+                    if not contains_sequence(result[len(result)-1],edge):
+                        result.pop(len(result)-1)
+                        break
+                    # if it is not a directed graph, pop out cycles containing
+                    # the edge inverse.
+                    if not G.is_directed() and not contains_sequence(result[len(result)-1],edge.reverse()):
+                        result.pop(len(result)-1)
+                        break
         if closed:
             _unblock(thisnode)
         else:
@@ -167,14 +192,38 @@ def simple_cycles(G):
         path.pop() # remove thisnode from path
         return closed
 
+    # check whether edges are well defined in list_of_edges
+    for edge in list_of_edges:
+        if len(edge) !=2:
+            raise nx.NetworkXError(\
+            'Input Error in the list_of_edges: the defined edge {0} does not exactly contain 2 nodes.'.format(edge))
+
     path = [] # stack of nodes in current path
     blocked = defaultdict(bool) # vertex: blocked from search?
     B = defaultdict(list) # graph portions that yield no elementary circuit
     result = [] # list to accumulate the circuits found
     # Johnson's algorithm requires some ordering of the nodes.
     # They might not be sortable so we assign an arbitrary ordering.
-    ordering=dict(zip(G,range(len(G))))
+    
+    # The ordering is not "random" if list_of_nodes is not empty. In this case
+    # the first positions are given to the nodes to skip.
+    if list_of_nodes == []:
+        ordering=dict(zip(G,range(len(G))))
+    elif type(list_of_nodes) is list:
+        ordering=dict(zip(list_of_nodes,range(len(list_of_nodes))))
+        node_counter=len(list_of_nodes)
+        for node in range(len(G)):
+            if node not in list_of_nodes:
+                ordering[node]=node_counter
+                node_counter+=1
+    else:
+        raise nx.NetworkXError(\
+            "The first optional argument list_of_nodes is not a list")
+            
     for s in ordering:
+        # If the node is in list_of_nodes, bypass the search.
+        if s in list_of_nodes:
+            continue
         # Build the subgraph induced by s and following nodes in the ordering
         subgraph = G.subgraph(node for node in G
                               if ordering[node] >= ordering[s])
@@ -192,3 +241,23 @@ def simple_cycles(G):
                 B[node][:] = []
             dummy=circuit(startnode, startnode, component)
     return result
+
+# Functions defined to check whether an edge is contained in a cycle
+# code from http://stackoverflow.com/questions/11131185/is-there-a-python-builtin-for-determining-if-an-iterable-contained-a-certain-seq
+
+## Here, the window is 2 because the arc is defined by 2 nodes
+def window(seq, n=2):
+    """
+    Returns a sliding window (of width n) over data from the iterable
+    s -> (s0,s1,...s[n-1]), (s1,s2,...,sn), ...                   
+    """
+    it = iter(seq)
+    result = list(islice(it, n))
+    if len(result) == n:
+        yield result    
+    for elem in it:
+        result = result[1:] + [elem]
+        yield result
+
+def contains_sequence(all_values, seq):
+    return any(seq == current_seq for current_seq in window(all_values, len(seq)))
