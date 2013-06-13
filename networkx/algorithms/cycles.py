@@ -115,12 +115,12 @@ def simple_cycles(G,list_of_nodes=[],list_of_edges=[]):
     Returns
     -------
     A list of circuits, where each circuit is a list of nodes, with the first
-    and last node being the same. The list of circuit can be filtered by nodes
-    (the circuits containing the nodes defined in list_of_nodes will be skipped) 
-    or by edges (the circuits containing the edges defined in list_of_edges will
-    not be included in the result). The filtering options can be used 
-    independently or together.
-
+    and last node being the same. The list of circuit can be negatively 
+    filtered by nodes (only circuits NOT containing the nodes defined in 
+    list_of_nodes are included in the results) or positively filtered by edges 
+    (only circuits containing the edges defined in list_of_edges are included
+    in the result). The filtering options can be used independently or together.
+    
     Example:
     >>> G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
     >>> nx.simple_cycles(G)
@@ -128,9 +128,9 @@ def simple_cycles(G,list_of_nodes=[],list_of_edges=[]):
     >>> nx.simple_cycles(G,[0])
     [[1, 2, 1], [2, 2]]
     >>> nx.simple_cycles(G,[0],[[1,2]])
-    [[2, 2]]
+    [[1, 2, 1]]
     >>> nx.simple_cycles(G,[],[[1,2]])
-    [[0, 0], [0, 2, 0], [2, 2]]
+    [[0, 1, 2, 0], [1, 2, 1]]
     
     See Also
     --------
@@ -172,15 +172,15 @@ def simple_cycles(G,list_of_nodes=[],list_of_edges=[]):
             elif not blocked[nextnode]:
                 if circuit(nextnode, startnode, component):
                     closed = True
-        # Filter out the cycles containing an edge from list_of_edges           
-        if result != [] and list_of_edges != []:
-            for edge in list_of_edges:
-                if not contains_sequence(result[len(result)-1],edge):
-                    result.pop(len(result)-1)
-                # if it is not a directed graph, also remove cycles containing
-                # the edge inverse.
-                if not G.is_directed() and not contains_sequence(result[len(result)-1],edge.reverse()):
-                    result.pop(len(result)-1)
+            # Filter out the cycles containing an edge from list_of_edges           
+            if result != [] and list_of_edges != []:
+                for edge in list_of_edges:
+                    if not contains_sequence(result[len(result)-1],edge):
+                        result.pop(len(result)-1)
+                    # if it is not a directed graph, also remove cycles containing
+                    # the edge inverse.
+                    if not G.is_directed() and not contains_sequence(result[len(result)-1],edge.reverse()):
+                        result.pop(len(result)-1)
         if closed:
             _unblock(thisnode)
         else:
