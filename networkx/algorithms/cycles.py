@@ -176,7 +176,11 @@ def simple_cycles(G,list_of_nodes=[],list_of_edges=[]):
         if result != [] and list_of_edges != []:
             for edge in list_of_edges:
                 if contains_sequence(result[len(result)-1],edge):
-                    result.pop(len(result)-1) 
+                    result.pop(len(result)-1)
+                # if it is not a directed graph, also remove cycles containing
+                # the edge inverse.
+                if not G.is_directed() and contains_sequence(result[len(result)-1],edge.reverse()):
+                    result.pop(len(result)-1)
         if closed:
             _unblock(thisnode)
         else:
