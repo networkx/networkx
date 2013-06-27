@@ -33,3 +33,23 @@ def generalized_hd(G, H, no_edge_cost=0.5):
             except: print '%s does not have a weight!' % str(e)
 
     return count
+
+def diversity(obj_set, distance=generalized_hd):
+    '''
+    This function calculates the Weitzman diversity measure (Weitzman 1992) of a set of objects with a distance function defined over any
+    two objects in the set.
+    '''
+    S=set()
+    divers=0
+    g=obj_set.pop() #Step1: randomly pick an object from the object set
+    S.add(g)
+    while obj_set:
+        set_distance=min([distance(g, h) for g in S for h in obj_set])
+        min_elem=[elem for elem in obj_set if min([distance(elem, g) for g in S])==set_distance].pop()
+
+        S.add(min_elem) #Step2: add closest member of the object set to the set, S
+        obj_set.remove(min_elem) #and remove it from the object set
+        divers+=set_distance #Step3: increment the diversity by the distance between the set S, and the new member.
+
+    #Normalize the diversity by the number of objects:
+    return float(divers)/len(S)
