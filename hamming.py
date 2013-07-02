@@ -12,6 +12,7 @@ def hamming_distance(G, H):
             count+=1
     return count
 
+
 def generalized_hd(G, H, no_edge_cost=0.5):
     '''
     This function computes a generalized Hamming Distance, of a (possibly weighted and directed) graph, where not having a relation
@@ -33,6 +34,35 @@ def generalized_hd(G, H, no_edge_cost=0.5):
             except: print '%s does not have a weight!' % str(e)
 
     return count
+
+def two_dim_ghd(G, H, no_edge_params=(0, 2)):
+    '''
+    This function computes a two-dimensional Generalized Hamming Distance,
+    where each link has information on two dimensions (here interpreted as a
+    mean and a variance).
+    '''
+    from numpy import sqrt
+    count=0
+    for e in G.edges_iter():
+        if H.has_edge(*e):
+            try: count+= sqrt((nx.get_edge_attributes(G, 'mu')[e]-nx.get_edge_attributes(H, 'mu')[e])**2 + (nx.get_edge_attributes(G, 'sigma')[e]-nx.get_edge_attributes(H, 'sigma')[e])**2)
+
+
+            except: print '%s does not have a mu or a sigma!' % str(e)
+        else:
+            try: count+= sqrt((nx.get_edge_attributes(G, 'mu')[e]-no_edge_params[0])**2 + (nx.get_edge_attributes(G, 'sigma')[e]-no_edge_params[1])**2)
+            except: print '%s does not have a mu or a sigma!' % str(e)
+
+    #And now for the edges that are in H but not in G:
+    for e in H.edges_iter():
+        if not G.has_edge(*e):
+            try: count+= sqrt((nx.get_edge_attributes(H, 'mu')[e]-no_edge_params[0])**2 + (nx.get_edge_attributes(H, 'sigma')[e]-no_edge_params[1])**2)
+
+            except: print '%s does not have a mu or a sigma!' % str(e)
+
+    return count
+
+
 
 def diversity(obj_set, distance=generalized_hd):
     '''
