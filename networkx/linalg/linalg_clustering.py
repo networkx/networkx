@@ -3,7 +3,8 @@ import networkx as nx
 
 __author__ = ['Federico Vaggi (federico.vaggi@fmach.it)']
 
-__all__ = ['linalg_clustering', 'small_world']
+__all__ = ['linalg_clustering', 'small_world', 
+    'linalg_average_clustering']
 
 def linalg_clustering(G, weight = 'weight'):
     r""""    For unweighted graphs the clustering of each node `u`
@@ -87,6 +88,16 @@ def linalg_clustering(G, weight = 'weight'):
     # Return as a dict to follow networkx API standards.
     return C
 
+def linalg_average_clustering(G, weight = 'weight', count_zeros=True):
+    r"""see average_clustering() for definition and details.
+    
+    """
+
+    c=linalg_clustering(G,weight=weight).values()
+    if not count_zeros:
+        c = [v for v in c if v > 0]
+    return sum(c)/float(len(c))
+
 def small_world(G, n_iter = 1000, use_transitivity = False):
     r"""Calculates the small world coefficient for the network G.  The small
     world coefficient is defined as:
@@ -157,7 +168,7 @@ def small_world(G, n_iter = 1000, use_transitivity = False):
     if use_transitivity:
         clustering_fcn = nx.transitivity
     else:
-        clustering_fcn = nx.linalg.linalg_average_clustering
+        clustering_fcn = linalg_average_clustering
         
     if directed:
         distance_fcn = nx.average_distance_weakly_connected
