@@ -225,37 +225,33 @@ def _single_source_shortest_path_basic(G,s):
                 P[w].append(v) # predecessors 
     return S,P,sigma
 
-
-
 def _single_source_dijkstra_path_basic(G,s,weight='weight'):
-    # modified from Geo Piskas
+    # modified by Geo Piskas - geopiskas@gmail.com
     S=[]
     P={}
+    sigma={}
     for v in G:
         P[v]=[]
-    sigma=dict.fromkeys(G,0.0)    # sigma[v]=0 for v in G
-    sigma[s]=1.0
-    dist=dict.fromkeys(G,float("inf"))    # dist[v]=inf for v in G
-    dist[s]=0.0
+        sigma[v] = 0 # sigma[v]=0 for v in G
+    sigma[s]=1
+    dist = {s:0}
     push=heapq.heappush
     pop=heapq.heappop
     Q=[]   # use Q as heap with (distance,node id) tuples
-    push(Q,(0.0,s))
+    push(Q,(0,s))
     while Q:
         (v_dist,v)=pop(Q)
+        if v in S:
+            continue # already searched this node.
         S.append(v)
         for w,edgedata in G[v].items():
             vw_dist = v_dist + edgedata.get(weight,1)
-            if vw_dist<dist[w]:
-                try:
-                    del Q[Q.index((dist[w],w))]
-                except ValueError:
-                    pass # (dist[w],w) just does not exist.
+            if w not in S and ( w not in dist or vw_dist<dist[w]):
                 dist[w] = vw_dist
                 push(Q,(vw_dist,w))
-                sigma[w]=0.0
-                P[w]=[]
-            if vw_dist==dist[w]:  # handle equal paths
+                sigma[w] = sigma[v]
+                P[w]=[v]
+            elif vw_dist==dist[w]:  # handle equal paths
                 sigma[w] += sigma[v]
                 P[w].append(v)
     return S,P,sigma
