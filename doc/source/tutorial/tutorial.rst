@@ -498,7 +498,7 @@ display the graph inline:
 To make all graphs displayed inline, a global default value can be modified
 (e.g., in the startup file for the profile):
 
->>> nx.drawing.nx_pydot.DEFAULT_SHOW = 'ipynb'
+>>> nx.nxParams['pydot_show'] = 'ipynb'
 
 For other details on drawing graphs: :doc:`/reference/drawing`
 
