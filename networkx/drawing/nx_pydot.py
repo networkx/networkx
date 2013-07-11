@@ -411,10 +411,10 @@ def draw_pydot(G, filename=None, format=None, prefix=None, suffix=None,
         This should be a list of strings.  For example, ['-s10', '-maxiter=10'].
 
     show : bool
-        If `True`, then the image is displayed using the default viewer
+        If `True`, then the image is displayed using the OS's default viewer
         after drawing it. If show equals 'ipynb', then the image is displayed
-        inline for an IPython notebook.  If `None`, then the value of the
-        global variable DEFAULT_SHOW is used.  By default, it is set to `True`.
+        inline for an IPython notebook.  If `None`, then the value of
+        nxParams['pydot_show'] is used.  By default, it is set to `True`.
 
     """
     # Determine the output format
