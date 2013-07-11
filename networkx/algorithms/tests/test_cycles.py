@@ -51,7 +51,7 @@ class TestCycles:
         c=sorted(nx.simple_cycles(G))
         ca=[[0, 0], [0, 1, 2, 0], [0, 2, 0], [1, 2, 1], [2, 2]]
         for (a,b) in zip(c,ca):
-            assert_true(self.is_cyclic_permutation(a,b))
+            assert_true(self.is_cyclic_permutation(a[:-1],b[:-1]))
 
     @raises(nx.NetworkXNotImplemented)
     def test_simple_cycles_graph(self):
@@ -68,7 +68,8 @@ class TestCycles:
         G = nx.DiGraph()
         G.add_path([1,2,3,1])
         c=sorted(nx.simple_cycles(G))
-        assert_equal(c,[[1,2,3,1]])
+        assert_equal(len(c),1)
+        assert_true(self.is_cyclic_permutation(c[0][:-1],[1,2,3]))
         G.add_path([10,20,30,10])
         c=sorted(nx.simple_cycles(G))
         ca=[[1,2,3,1],[10,20,30,10]]
@@ -117,7 +118,5 @@ class TestCycles:
             cc=sorted(nx.simple_cycles(G))
             rcc=sorted(nx.recursive_simple_cycles(G))
             assert_equal(len(cc),len(rcc))
-            print cc
-            print rcc
             for c in cc:
                 assert_true(any(self.is_cyclic_permutation(c[:-1],rc[:-1]) for rc in rcc))

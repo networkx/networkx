@@ -171,9 +171,9 @@ def simple_cycles(G):
     subG=G.copy()   # save the actual graph so we can mutate it here
     sccs = nx.strongly_connected_components(subG)
     while sccs:
-        scc=sccs.pop(0)
+        scc=sccs.pop()
         # order of scc determines ordering of nodes
-        startnode = scc.pop(0)
+        startnode = scc.pop()
         # Processing node runs "circuit" routine from recursive version
         path=[startnode]
         blocked = set() # vertex: blocked from search?
