@@ -1,8 +1,36 @@
+# -*- coding: utf-8 -*-
+"""
+Hamming Distance between two graphs and related comparisons.
+"""
+__author__ = "\n".join(['Johannes Castner (jac2130@columbia.edu)',
+                        'Aric Hagberg (hagberg@lanl.gov)',
+                        'Dan Schult (dschult@colgate.edu)'])
+#    Copyright (C) 2004-2013 by 
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+
+__all__ = ['hamming_distance', 'generalized_hamming_distance', '2d_generalized_hamming_distance',
+        'diversity']
+
 def hamming_distance(G, H):
-    '''
-    This function computes the Hamming Distance between two (possibly directed) graphs;
-    this improved version was suggested by Aric Hagberg.
-    '''
+    """Return the Hamming distance between two (possibly directed) graphs.
+
+    The Hamming distance is the number of edges contained in one 
+    but not the other graph.
+
+    Parameters
+    ----------
+    G, H : NetworkX graph/digraph
+       The graphs to be compared
+
+    Returns
+    -------
+    count : integer
+      The hamming distance.
+    """
     count = 0
     for e in G.edges_iter():
         if not H.has_edge(*e):
