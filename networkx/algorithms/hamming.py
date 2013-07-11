@@ -5,7 +5,7 @@ Hamming Distance between two graphs and related comparisons.
 __author__ = "\n".join(['Johannes Castner (jac2130@columbia.edu)',
                         'Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult (dschult@colgate.edu)'])
-#    Copyright (C) 2004-2013 by 
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -18,7 +18,7 @@ __all__ = ['hamming_distance', 'generalized_hamming_distance', '2d_generalized_h
 def hamming_distance(G, H):
     """Return the Hamming distance between two (possibly directed) graphs.
 
-    The Hamming distance is the number of edges contained in one 
+    The Hamming distance is the number of edges contained in one
     but not the other graph.
 
     Parameters
@@ -41,11 +41,25 @@ def hamming_distance(G, H):
     return count
 
 
-def generalized_hd(G, H, no_edge_cost=0.5):
-    '''
-    This function computes a generalized Hamming Distance, of a (possibly weighted and directed) graph, where not having a relation
-    has a potentially different cost than having a zero relation
-    '''
+def generalized_hamming_distance(G, H, no_edge_cost=0.5):
+    """Return the Generalized Hamming distance between two (possibly directed and weighted) graphs.
+
+    The Generalized Hamming distance is the difference in weights between each of the edges contained in two graphs, with a special cost for edges that exist in one of the graphs, but not the other.
+
+    Parameters
+    ----------
+    G, H : NetworkX graph/digraph (with weighted edges, where the relevant edge attribute is "weight")
+       The graphs to be compared
+
+    no_edge_cost : float
+    the extra cost that is attributed to comparing an edge that exists in one graph with a missing edge in the other graph.
+
+    Returns
+    -------
+    count : float
+      The generalized hamming distance.
+    """
+
     count=0
     for e in G.edges_iter():
         if H.has_edge(*e):
@@ -63,12 +77,25 @@ def generalized_hd(G, H, no_edge_cost=0.5):
 
     return count
 
-def two_dim_ghd(G, H, no_edge_params=(0, 2)):
-    '''
-    This function computes a two-dimensional Generalized Hamming Distance,
-    where each link has information on two dimensions (here interpreted as a
-    mean and a variance).
-    '''
+def 2d_generalized_hamming_distance(G, H, no_edge_params=(0, 2)):
+    """Return the Two-Dimensional Generalized Hamming distance between two (possibly directed) graphs, where each link has information on two dimensions (interpreted, for example, as mean and variance).
+
+    The Two-Dimensional Generalized Hamming distance is the summation of Euclidean distances between two dimensional weights for each of the edges contained in two graphs, with assumed parameters for edges that do not exist in a graph, in order to compare these non-existing edges with existing ones in the other graph.
+
+    Parameters
+    ----------
+    G, H : NetworkX graph/digraph (with weighted edges, where the relevant edge attribute is "weight")
+       The graphs to be compared
+
+    no_edge_params : tuple of two floats or integers
+    the assumed two dimensional parameter that is used to compare a non-existing edge for one graph with an existing one in the other graph.
+
+    Returns
+    -------
+    count : float
+      The generalized hamming distance.
+    """
+
     from numpy import sqrt
     count=0
     for e in G.edges_iter():
@@ -92,7 +119,26 @@ def two_dim_ghd(G, H, no_edge_params=(0, 2)):
 
 
 
-def diversity(obj_set, distance=generalized_hd):
+def diversity(obj_set, distance=2d_generalized_hamming_distance):
+    """Return the Weitzman diversity measure (Weitzman 1992) of a set of objects with a distance function defined over any
+    two objects in the set.
+
+    The Diversity of a collection of graphs is calculated and returned, according to the algorithm suggested by Martin Weitzman in 1992.
+
+    Parameters
+    ----------
+    obj_set : A set containing NetworkX graphs/digraphs or any other objects with a distance metric.
+       The set of objects for which the diversity is to be calculated
+
+    distance : a function
+    a distance function for any two objects.
+
+    Returns
+    -------
+    count : float
+      The diversity of a collection of objects.
+    """
+
     '''
     This function calculates the Weitzman diversity measure (Weitzman 1992) of a set of objects with a distance function defined over any
     two objects in the set.
