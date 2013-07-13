@@ -68,6 +68,8 @@ def is_directed_acyclic_graph(G):
     is_dag : bool
        True if G is a DAG, false otherwise
     """
+    if not G.is_directed():
+      return False
     try:
         topological_sort(G)
         return True
