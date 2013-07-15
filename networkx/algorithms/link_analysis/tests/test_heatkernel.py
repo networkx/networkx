@@ -29,5 +29,3 @@ class TestHeatKernel:
         for n in G:
             assert_almost_equal(inf[n],G.heatkernel_inf[n],places=4)
             assert_almost_equal(dep[n],G.heatkernel_dep[n],places=4)
-
-        assert_raises(networkx.NetworkXError,networkx.heatkernel,G,max_iter=0)

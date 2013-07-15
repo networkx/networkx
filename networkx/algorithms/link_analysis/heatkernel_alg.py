@@ -5,7 +5,6 @@
 #    BSD license.
 #    NetworkX:http://networkx.lanl.gov/
 import networkx as nx
-from networkx.exception import NetworkXError
 __author__ = """Jorge Catumba (jorgerev90@gmail.com)"""
 __all__ = ['heatkernel']
 
@@ -36,7 +35,9 @@ def heatkernel(G, k=1):
 
     Notes
     -----
-    This function uses the SciPy library to make the computations. A NetworkX DiGraph is prefered because on a regular Graph indirect dependences are equal to indirect dependeces.
+    This function uses the SciPy library to make the computations.
+    A NetworkX DiGraph is preferred because on an undirected Graph
+    indirect dependences are equal to indirect dependences.
 
     See Also
     --------
@@ -45,10 +46,13 @@ def heatkernel(G, k=1):
     References
     ----------
     .. [1] F. Chung, 
-    The heat kernel as the pagerank of a graph, Proc. Natl. Acad.
-    Sci. 104 (50) 19735-19740.
+       The heat kernel as the pagerank of a graph, 
+       Proc. Natl. Acad. Sci. 2007 104 (50) 19735-19740.
+       doi:10.1073/pnas.0708838104
     .. [2] R. Diaz,
-       Indirect Influences, Advanced Studies in Contemporary Mathematics 23 (2013) 29 -41.
+       Indirect Influences, 
+       Advanced Studies in Contemporary Mathematics 23 (2013) 29-41.
+       http://arxiv.org/abs/0906.1610
     """
     
     try:
@@ -62,12 +66,6 @@ def heatkernel(G, k=1):
     except ImportError:
         raise ImportError(\
             "heatkernel() requires scipy.linalg: http://scipy.org")
-            
-    try:
-        import scipy.linalg.matfuncs as matf
-    except ImportError:
-        raise ImportError(\
-            "heatkernel() requires scipy.linalg.matfuncs: http://scipy.org")
             
     if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
         raise Exception("heatkernel() not defined for graphs with multiedges.")
@@ -85,7 +83,7 @@ def heatkernel(G, k=1):
     A = sp.transpose(A)
     
     # Get the indirect influences matrix according to Heat Kernel
-    I = matf.expm(k * (A - sp.eye(j, j)))
+    I = lin.expm(k * (A - sp.eye(j, j)))
     
     # Get the indirect influences vector
     f = sp.sum(I, axis=0)
@@ -96,8 +94,8 @@ def heatkernel(G, k=1):
     d = d/sp.sum(d)
     
     #create the dictionary with the result
-    fdict = {i: number for number, i in zip(f, nx.nodes_iter(D))}
-    ddict = {i: number for number, i in zip(d, nx.nodes_iter(D))}
+    fdict = dict( zip(D, f) )
+    ddict = dict( zip(D, d) )
     indirect = {'influences': fdict, 'dependences': ddict}
     return indirect
 

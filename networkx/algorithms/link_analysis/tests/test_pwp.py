@@ -30,5 +30,3 @@ class TestPWP:
         for n in G:
             assert_almost_equal(inf[n],G.pwp_inf[n],places=4)
             assert_almost_equal(dep[n],G.pwp_dep[n],places=4)
-
-        assert_raises(networkx.NetworkXError,networkx.pwp,G,max_iter=0)

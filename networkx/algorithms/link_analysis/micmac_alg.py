@@ -5,7 +5,6 @@
 #    BSD license.
 #    NetworkX:http://networkx.lanl.gov/
 import networkx as nx
-from networkx.exception import NetworkXError
 __author__ = """Jorge Catumba (jorgerev90@gmail.com)"""
 __all__ = ['micmac']
 
@@ -35,7 +34,9 @@ def micmac(G, k=4):
 
     Notes
     -----
-    This function uses SciPy and NumPy libraries to make the computations. A NetworkX DiGraph is prefered because on a regular Graph indirect dependences are equal to indirect dependeces.
+    This function uses SciPy and NumPy libraries to make the computations.
+    A NetworkX DiGraph is prefered because on an undirected Graph
+    indirect dependences are equal to indirect dependeces.
 
     See Also
     --------
@@ -44,13 +45,15 @@ def micmac(G, k=4):
     References
     ----------
     .. [1] R. Diaz,
-       Indirect Influences, Advanced Studies in Contemporary Mathematics 23 (2013) 29-41. 
+       Indirect Influences, 
+       Advanced Studies in Contemporary Mathematics 23 (2013) 29-41. 
+       http://arxiv.org/abs/0906.1610
     .. [2] M. Godet,
        De l'Anticipation a l'Action, Dunod, Paris 1992.
     """
     
     try:
-        import scipy as sp
+        import numpy as np
     except ImportError:
         raise ImportError(\
             "micmac() requires SciPy: http://scipy.org/")
@@ -74,22 +77,22 @@ def micmac(G, k=4):
     # Get the adjacency matrix of the graph
     A = nx.adjacency_matrix(D)
     # transpose the adjacency matrix
-    A = sp.transpose(A)
+    A = np.transpose(A)
     
     # get the k-th power of A
     I = lin.matrix_power(A, k)
     
     # get the indirect influences vector
-    f = sp.sum(I, axis=0)
-    f = f/sp.sum(f)
+    f = np.sum(I, axis=0)
+    f = f/np.sum(f)
     
     # get the indirect dependences vector
-    d = sp.sum(I, axis=1)
-    d = d/sp.sum(d)
+    d = np.sum(I, axis=1)
+    d = d/np.sum(d)
     
     #create the dictionary with the result
-    fdict = {i: number for number, i in zip(f.tolist()[0], nx.nodes_iter(D))}
-    ddict = {i: number for number, i in zip(d.transpose().tolist()[0], nx.nodes_iter(D))}
+    fdict = dict( zip(D, f.tolist()[0]) )
+    ddict = dict( zip(D, d.transpose().tolist()[0]) )
     x = {'influences': fdict, 'dependences': ddict}
     return x
 
@@ -97,9 +100,9 @@ def micmac(G, k=4):
 def setup_module(module):
     from nose import SkipTest
     try:
-        import scipy
+        import numpy
     except:
-        raise SkipTest("SciPy not available")
+        raise SkipTest("numPy not available")
     try:
         import numpy.linalg
     except:

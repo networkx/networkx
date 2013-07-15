@@ -25,5 +25,3 @@ class TestMICMAC:
         for n in G:
             assert_almost_equal(inf[n],G.micmac_inf[n],places=4)
             assert_almost_equal(dep[n],G.micmac_dep[n],places=4)
-
-        assert_raises(networkx.NetworkXError,networkx.micmac,G,max_iter=0)
