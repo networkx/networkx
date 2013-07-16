@@ -322,22 +322,22 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     """
     if seed is not None:
         random.seed(seed)
-    if k>=n // 2: 
-        raise nx.NetworkXError("k>=n/2, choose smaller k or larger n")
+    if k>=n:
+        raise nx.NetworkXError("k>=n, choose smaller k or larger n")
     G=empty_graph(n)
     G.name="newman_watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
     nlist = G.nodes()
     fromv = nlist
     # connect the k/2 neighbors
-    for n in range(1, k // 2+1):
-        tov = fromv[n:] + fromv[0:n] # the first n are now last
+    for j in range(1, k // 2+1):
+        tov = fromv[j:] + fromv[0:j] # the first n are now last
         for i in range(len(fromv)):
             G.add_edge(fromv[i], tov[i])
     # for each edge u-v, with probability p, randomly select existing
     # node w and add new edge u-w 
     e = G.edges() 
     for (u, v) in e:
-        if random.random() < p:
+        if random.random() < p and G.degree(u) < n-1:
             w = random.choice(nlist)
             # no self-loops and reject if edge u-w exists
             # is that the correct NWS model?
@@ -386,8 +386,8 @@ def watts_strogatz_graph(n, k, p, seed=None):
        Collective dynamics of small-world networks,
        Nature, 393, pp. 440--442, 1998.
     """
-    if k>=n/2: 
-        raise nx.NetworkXError("k>=n/2, choose smaller k or larger n")
+    if k>=n:
+        raise nx.NetworkXError("k>=n, choose smaller k or larger n")
     if seed is not None:
         random.seed(seed)
 
@@ -405,7 +405,7 @@ def watts_strogatz_graph(n, k, p, seed=None):
         targets = nodes[j:] + nodes[0:j] # first j nodes are now last in list
         # inner loop in node order
         for u,v in zip(nodes,targets): 
-            if random.random() < p:
+            if random.random() < p and G.degree(u) < n-1:
                 w = random.choice(nodes)
                 # Enforce no self-loops or multiple edges
                 while w == u or G.has_edge(u, w): 
