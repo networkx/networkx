@@ -175,9 +175,8 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
 def clustering(G, nodes=None, weight=None):
     r"""Compute the clustering coefficient for nodes.
 
-    For unweighted graphs the clustering of each node `u`
-    is the fraction of possible triangles that exist,
-    For each node find the fraction of possible triangles that exist,
+    For unweighted graphs, the clustering of a node `u`
+    is the fraction of possible triangles through that node that exist,
 
     .. math::
 
@@ -186,7 +185,7 @@ def clustering(G, nodes=None, weight=None):
     where `T(u)` is the number of triangles through node `u` and
     `deg(u)` is the degree of `u`.
 
-    For weighted graphs the clustering is defined
+    For weighted graphs, the clustering is defined
     as the geometric average of the subgraph edge weights [1]_,
 
     .. math::
