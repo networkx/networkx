@@ -122,7 +122,7 @@ def simple_cycles(G):
     --------
     >>> G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
     >>> list(nx.simple_cycles(G))
-    [[0, 0], [0, 1, 2, 0], [0, 2, 0], [1, 2, 1], [2, 2]]
+    [[2], [2, 1], [2, 0], [2, 0, 1], [0]]
 
     Notes
     -----
@@ -136,8 +136,8 @@ def simple_cycles(G):
     >>> copyG = G.copy()
     >>> copyG.remove_nodes_from([1])
     >>> copyG.remove_edges_from([(0,1)])
-    >>> list(nx.simple_cycles(G)
-    [[0, 0], [0, 2, 0], [2, 2]]
+    >>> list(nx.simple_cycles(copyG))
+    [[2], [2, 0], [0]]
 
     References
     ----------
@@ -188,7 +188,7 @@ def simple_cycles(G):
 #                    print thisnode,nbrs,":",nextnode,blocked,B,path,stack,startnode
 #                    f=raw_input("pause")
                 if nextnode == startnode:
-                    yield path + [startnode]
+                    yield path[:]
                     closed.update(path)
 #                        print "Found a cycle",path,closed
                 elif nextnode not in blocked:
@@ -238,8 +238,8 @@ def recursive_simple_cycles(G):
 
     Example:
     >>> G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
-    >>> nx.simple_cycles(G)
-    [[0, 0], [0, 1, 2, 0], [0, 2, 0], [1, 2, 1], [2, 2]]
+    >>> nx.recursive_simple_cycles(G)
+    [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
 
     See Also
     --------
@@ -276,7 +276,7 @@ def recursive_simple_cycles(G):
         blocked[thisnode] = True
         for nextnode in component[thisnode]: # direct successors of thisnode
             if nextnode == startnode:
-                result.append(path + [startnode])
+                result.append(path[:])
                 closed = True
             elif not blocked[nextnode]:
                 if circuit(nextnode, startnode, component):
