@@ -12,7 +12,8 @@ __authors__ = "\n".join(["Alex Roper <aroper@umich.edu>"])
 
 __all__ = ["all_pairs_lowest_common_ancestor", "lowest_common_ancestor"]
 
-@nx.utils.not_implemented_for("undirected", "multigraph", "graph")
+@nx.utils.not_implemented_for("undirected")
+@nx.utils.not_implemented_for("multigraph")
 def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     """Compute the lowest common ancestor for a set of pairs in a tree.
 
@@ -109,7 +110,8 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
             uf.union(parent, node)
             ancestors[uf[parent]] = parent
 
-@nx.utils.not_implemented_for("undirected", "multigraph", "graph")
+@nx.utils.not_implemented_for("undirected")
+@nx.utils.not_implemented_for("multigraph")
 def lowest_common_ancestor(G, node1, node2, default=None):
     """Compute the lowest common ancestor of the given pair of nodes.
 
@@ -142,7 +144,8 @@ def lowest_common_ancestor(G, node1, node2, default=None):
     else:
         return default
 
-@nx.utils.not_implemented_for("undirected", "multigraph", "graph")
+@nx.utils.not_implemented_for("undirected")
+@nx.utils.not_implemented_for("multigraph")
 def all_pairs_lowest_common_ancestor(G, pairs=None):
     """Compute the lowest common ancestor for all pairs of nodes given or
     all pairs.
