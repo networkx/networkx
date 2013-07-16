@@ -30,7 +30,7 @@ def micmac(G, k=4):
     Examples
     --------
     >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> pr=nx.micmac(G,k=3)
+    >>> influences,dependencies = nx.micmac(G,k=3)
 
     Notes
     -----
@@ -91,10 +91,9 @@ def micmac(G, k=4):
     d = d/np.sum(d)
     
     #create the dictionary with the result
-    fdict = dict( zip(D, f.tolist()[0]) )
-    ddict = dict( zip(D, d.transpose().tolist()[0]) )
-    x = {'influences': fdict, 'dependences': ddict}
-    return x
+    influences = dict( zip(D, f.tolist()[0]) )
+    dependencies = dict( zip(D, d.transpose().tolist()[0]) )
+    return influences,dependencies
 
 # fixture for nose tests
 def setup_module(module):

@@ -31,7 +31,7 @@ def pwp(G, k=1):
     Examples
     --------
     >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> pr=nx.pwp(G)
+    >>> influences,dependencies = nx.pwp(G)
 
     Notes
     -----
@@ -90,10 +90,9 @@ def pwp(G, k=1):
     d = d/sp.sum(d)
   
     # Create dictionary with the result
-    fdict = dict( zip(D, f) )
-    ddict = dict( zip(D, d) )
-    indirect = {'influences': fdict, 'dependences': ddict}
-    return indirect
+    influences = dict( zip(D, f) )
+    dependencies = dict( zip(D, d) )
+    return influences,dependencies
 
 # fixture for nose tests
 def setup_module(module):
