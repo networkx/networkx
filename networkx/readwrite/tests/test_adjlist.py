@@ -272,3 +272,12 @@ class TestMultilineAdjlist():
         assert_equal(sorted(H.edges()),sorted(G.edges()))
         os.close(fd)
         os.unlink(fname)
+
+    def test_multiline_adjlist_delimiter(self):
+        fh=io.BytesIO()
+        G = nx.path_graph(3)
+        nx.write_multiline_adjlist(G, fh, delimiter=':')
+        fh.seek(0)
+        H = nx.read_multiline_adjlist(fh, nodetype=int, delimiter=':')
+        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
+        assert_equal(sorted(H.edges()),sorted(G.edges()))
