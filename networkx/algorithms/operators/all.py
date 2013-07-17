@@ -85,7 +85,8 @@ def disjoint_union_all(graphs):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
-    U = graphs.pop(0)
+    graphs = iter(graphs)
+    U = next(graphs)
     for H in graphs:
         U = nx.disjoint_union(U, H)
     return U
@@ -117,7 +118,8 @@ def compose_all(graphs, name=None):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
-    C = graphs.pop(0)
+    graphs = iter(graphs)
+    C = next(graphs)
     for H in graphs:
         C = nx.compose(C, H, name=name)
     return C
@@ -142,7 +144,8 @@ def intersection_all(graphs):
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.
     """
-    R = graphs.pop(0)
+    graphs = iter(graphs)
+    R = next(graphs)
     for H in graphs:
         R = nx.intersection(R, H)
     return R

@@ -28,6 +28,8 @@ def test_union_all_attributes():
     assert_equal(ghj.graph['attr'],'attr')
     assert_equal(ghj.graph['name'],'j') # j graph attributes take precendent
 
+
+
 def test_intersection_all():
     G=nx.Graph()
     H=nx.Graph()
@@ -152,3 +154,14 @@ def test_union_all_multigraph():
     assert_equal( set(GH) , set(G)|set(H))
     assert_equal( set(GH.edges(keys=True)) ,
         set(G.edges(keys=True))|set(H.edges(keys=True)))
+
+
+def test_input_output():
+    l = [nx.Graph([(1,2)]),nx.Graph([(3,4)])]
+    U = nx.disjoint_union_all(l)
+    assert_equal(len(l),2)
+    C = nx.compose_all(l)
+    assert_equal(len(l),2)
+    l = [nx.Graph([(1,2)]),nx.Graph([(1,2)])]
+    R = nx.intersection_all(l)
+    assert_equal(len(l),2)
