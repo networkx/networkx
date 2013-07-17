@@ -2,11 +2,13 @@
 """
     Unit tests for adjlist.
 """
+import io
 from nose.tools import assert_equal, assert_raises, assert_not_equal
 import os
 import tempfile
 import networkx as nx
 from networkx.testing import *
+
 
 class TestAdjlist():
     
@@ -28,7 +30,6 @@ class TestAdjlist():
 2
 3
 """
-        import io
         bytesIO = io.BytesIO(s)
         G = nx.read_multiline_adjlist(bytesIO)
         adj = {'1': {'3': {}, '2': {}}, '3': {'1': {}}, '2': {'1': {}}}
@@ -163,6 +164,19 @@ class TestAdjlist():
         os.close(fd)
         os.unlink(fname)
 
+
+    def test_adjlist_delimiter(self):
+        fh=io.BytesIO()
+        G = nx.path_graph(3)
+        nx.write_adjlist(G, fh, delimiter=':')
+        fh.seek(0)
+        H = nx.read_adjlist(fh, nodetype=int, delimiter=':')
+        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
+        assert_equal(sorted(H.edges()),sorted(G.edges()))
+
+
+
+        
 
 
 class TestMultilineAdjlist():

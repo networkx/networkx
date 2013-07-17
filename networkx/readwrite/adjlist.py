@@ -88,7 +88,7 @@ def generate_adjlist(G, delimiter = ' '):
                 line += make_str(t) + delimiter
         if not directed:
             seen.add(s)
-        yield line
+        yield line[:-len(delimiter)]
 
 @open_file(1,mode='wb')
 def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
