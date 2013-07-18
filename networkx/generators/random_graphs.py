@@ -3,7 +3,7 @@
 Generators for random graphs.
 
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -53,10 +53,10 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
     p : float
         Probability for edge creation.
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
     directed : bool, optional (default=False)
-        If True return a directed graph 
-      
+        If True return a directed graph
+
     Notes
     -----
     The G_{n,p} graph algorithm chooses each of the [n(n-1)]/2
@@ -64,7 +64,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
 
     This algorithm is O(n+m) where m is the expected number of
     edges m=p*n*(n-1)/2.
-    
+
     It should be faster than gnp_random_graph when p is small and
     the expected number of edges is small (sparse graph).
 
@@ -74,7 +74,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
 
     References
     ----------
-    .. [1] Vladimir Batagelj and Ulrik Brandes, 
+    .. [1] Vladimir Batagelj and Ulrik Brandes,
        "Efficient generation of large random networks",
        Phys. Rev. E, 71, 036113, 2005.
     """
@@ -89,7 +89,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
 
     v = 1  # Nodes in graph are from 0,n-1 (this is the second node index).
     w = -1
-    lp = math.log(1.0 - p)  
+    lp = math.log(1.0 - p)
 
     if directed:
         G=nx.DiGraph(G)
@@ -122,7 +122,7 @@ def gnp_random_graph(n, p, seed=None, directed=False):
 
     Chooses each of the possible edges with probability p.
 
-    This is also called binomial_graph and erdos_renyi_graph. 
+    This is also called binomial_graph and erdos_renyi_graph.
 
     Parameters
     ----------
@@ -131,11 +131,11 @@ def gnp_random_graph(n, p, seed=None, directed=False):
     p : float
         Probability for edge creation.
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
     directed : bool, optional (default=False)
-        If True return a directed graph 
-    
-    See Also  
+        If True return a directed graph
+
+    See Also
     --------
     fast_gnp_random_graph
 
@@ -169,7 +169,7 @@ def gnp_random_graph(n, p, seed=None, directed=False):
         edges=itertools.combinations(range(n),2)
 
     for e in edges:
-        if random.random() < p:        
+        if random.random() < p:
             G.add_edge(*e)
     return G
 
@@ -192,8 +192,8 @@ def dense_gnm_random_graph(n, m, seed=None):
     m : int
         The number of edges.
     seed : int, optional
-        Seed for random number generator (default=None). 
-      
+        Seed for random number generator (default=None).
+
     See Also
     --------
     gnm_random_graph()
@@ -215,10 +215,10 @@ def dense_gnm_random_graph(n, m, seed=None):
     else:
         G=empty_graph(n)
     G.name="dense_gnm_random_graph(%s,%s)"%(n,m)
-  
+
     if n==1 or m>=mmax:
         return G
-  
+
     if seed is not None:
         random.seed(seed)
 
@@ -250,9 +250,9 @@ def gnm_random_graph(n, m, seed=None, directed=False):
     m : int
         The number of edges.
     seed : int, optional
-        Seed for random number generator (default=None). 
+        Seed for random number generator (default=None).
     directed : bool, optional (default=False)
-        If True return a directed graph 
+        If True return a directed graph
     """
     if directed:
         G=nx.DiGraph()
@@ -295,18 +295,18 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
         The number of nodes
     k : int
         Each node is connected to k nearest neighbors in ring topology
-    p : float 
+    p : float
         The probability of adding a new edge for each edge
-    seed : int, optional        
+    seed : int, optional
        seed for random number generator (default=None)
 
     Notes
     -----
     First create a ring over n nodes.  Then each node in the ring is
-    connected with its k nearest neighbors (k-1 neighbors if k is odd).  
-    Then shortcuts are created by adding new edges as follows: 
-    for each edge u-v in the underlying "n-ring with k nearest neighbors" 
-    with probability p add a new edge u-w with randomly-chosen existing 
+    connected with its k nearest neighbors (k-1 neighbors if k is odd).
+    Then shortcuts are created by adding new edges as follows:
+    for each edge u-v in the underlying "n-ring with k nearest neighbors"
+    with probability p add a new edge u-w with randomly-chosen existing
     node w.  In contrast with watts_strogatz_graph(), no edges are removed.
 
     See Also
@@ -322,29 +322,32 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     """
     if seed is not None:
         random.seed(seed)
-    if k>=n // 2: 
-        raise nx.NetworkXError("k>=n/2, choose smaller k or larger n")
+    if k>=n:
+        raise nx.NetworkXError("k>=n, choose smaller k or larger n")
     G=empty_graph(n)
     G.name="newman_watts_strogatz_graph(%s,%s,%s)"%(n,k,p)
     nlist = G.nodes()
     fromv = nlist
     # connect the k/2 neighbors
-    for n in range(1, k // 2+1):
-        tov = fromv[n:] + fromv[0:n] # the first n are now last
+    for j in range(1, k // 2+1):
+        tov = fromv[j:] + fromv[0:j] # the first j are now last
         for i in range(len(fromv)):
             G.add_edge(fromv[i], tov[i])
     # for each edge u-v, with probability p, randomly select existing
-    # node w and add new edge u-w 
-    e = G.edges() 
+    # node w and add new edge u-w
+    e = G.edges()
     for (u, v) in e:
         if random.random() < p:
             w = random.choice(nlist)
             # no self-loops and reject if edge u-w exists
             # is that the correct NWS model?
-            while w == u or G.has_edge(u, w): 
+            while w == u or G.has_edge(u, w):
                 w = random.choice(nlist)
-            G.add_edge(u,w)
-    return G            
+                if G.degree(u) >= n-1:
+                    break # skip this rewiring
+            else:
+                G.add_edge(u,w)
+    return G
 
 
 def watts_strogatz_graph(n, k, p, seed=None):
@@ -357,9 +360,9 @@ def watts_strogatz_graph(n, k, p, seed=None):
         The number of nodes
     k : int
         Each node is connected to k nearest neighbors in ring topology
-    p : float 
-        The probability of rewiring each edge 
-    seed : int, optional        
+    p : float
+        The probability of rewiring each edge
+    seed : int, optional
         Seed for random number generator (default=None)
 
     See Also
@@ -370,11 +373,11 @@ def watts_strogatz_graph(n, k, p, seed=None):
     Notes
     -----
     First create a ring over n nodes.  Then each node in the ring is
-    connected with its k nearest neighbors (k-1 neighbors if k is odd).  
-    Then shortcuts are created by replacing some edges as follows: 
-    for each edge u-v in the underlying "n-ring with k nearest neighbors" 
-    with probability p replace it with a new edge u-w with uniformly 
-    random choice of existing node w.  
+    connected with its k nearest neighbors (k-1 neighbors if k is odd).
+    Then shortcuts are created by replacing some edges as follows:
+    for each edge u-v in the underlying "n-ring with k nearest neighbors"
+    with probability p replace it with a new edge u-w with uniformly
+    random choice of existing node w.
 
     In contrast with newman_watts_strogatz_graph(), the random
     rewiring does not increase the number of edges. The rewired graph
@@ -386,8 +389,8 @@ def watts_strogatz_graph(n, k, p, seed=None):
        Collective dynamics of small-world networks,
        Nature, 393, pp. 440--442, 1998.
     """
-    if k>=n/2: 
-        raise nx.NetworkXError("k>=n/2, choose smaller k or larger n")
+    if k>=n:
+        raise nx.NetworkXError("k>=n, choose smaller k or larger n")
     if seed is not None:
         random.seed(seed)
 
@@ -404,21 +407,24 @@ def watts_strogatz_graph(n, k, p, seed=None):
     for j in range(1, k // 2+1): # outer loop is neighbors
         targets = nodes[j:] + nodes[0:j] # first j nodes are now last in list
         # inner loop in node order
-        for u,v in zip(nodes,targets): 
+        for u,v in zip(nodes,targets):
             if random.random() < p:
                 w = random.choice(nodes)
                 # Enforce no self-loops or multiple edges
-                while w == u or G.has_edge(u, w): 
+                while w == u or G.has_edge(u, w):
                     w = random.choice(nodes)
-                G.remove_edge(u,v)  
-                G.add_edge(u,w)
-    return G            
+                    if G.degree(u) >= n-1:
+                        break # skip this rewiring
+                else:
+                    G.remove_edge(u,v)
+                    G.add_edge(u,w)
+    return G
 
 def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
     """Return a connected Watts-Strogatz small-world graph.
 
-    Attempt to generate a connected realization by repeated 
-    generation of Watts-Strogatz small-world graphs.  
+    Attempt to generate a connected realization by repeated
+    generation of Watts-Strogatz small-world graphs.
     An exception is raised if the maximum number of tries is exceeded.
 
     Parameters
@@ -427,10 +433,10 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
         The number of nodes
     k : int
         Each node is connected to k nearest neighbors in ring topology
-    p : float 
-        The probability of rewiring each edge 
+    p : float
+        The probability of rewiring each edge
     tries : int
-        Number of attempts to generate a connected graph.  
+        Number of attempts to generate a connected graph.
     seed : int, optional
          The seed for random number generator.
 
@@ -452,7 +458,7 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 
 def random_regular_graph(d, n, seed=None):
     """Return a random regular graph of n nodes each with degree d.
-    
+
     The resulting graph G has no self-loops or parallel edges.
 
     Parameters
@@ -495,8 +501,8 @@ def random_regular_graph(d, n, seed=None):
         random.seed(seed)
 
     def _suitable(edges, potential_edges):
-    # Helper subroutine to check if there are suitable edges remaining 
-    # If False, the generation of the graph has failed         
+    # Helper subroutine to check if there are suitable edges remaining
+    # If False, the generation of the graph has failed
         if not potential_edges:
             return True
         for s1 in potential_edges:
@@ -537,15 +543,15 @@ def random_regular_graph(d, n, seed=None):
 
             stubs = [node for node, potential in potential_edges.items()
                      for _ in range(potential)]
-        return edges 
+        return edges
 
-    # Even though a suitable edge set exists, 
-    # the generation of such a set is not guaranteed. 
+    # Even though a suitable edge set exists,
+    # the generation of such a set is not guaranteed.
     # Try repeatedly to find one.
     edges = _try_creation()
     while edges is None:
         edges = _try_creation()
-    
+
     G = nx.Graph()
     G.name = "random_regular_graph(%s, %s)" % (d, n)
     G.add_edges_from(edges)
@@ -563,14 +569,14 @@ def _random_subset(seq,m):
         x=random.choice(seq)
         targets.add(x)
     return targets
-    
+
 def barabasi_albert_graph(n, m, seed=None):
     """Return random graph using Barabási-Albert preferential attachment model.
-        
+
     A graph of n nodes is grown by attaching new nodes each with m
     edges that are preferentially attached to existing nodes with high
     degree.
-    
+
     Parameters
     ----------
     n : int
@@ -578,12 +584,12 @@ def barabasi_albert_graph(n, m, seed=None):
     m : int
         Number of edges to attach from a new node to existing nodes
     seed : int, optional
-        Seed for random number generator (default=None).   
+        Seed for random number generator (default=None).
 
     Returns
     -------
     G : Graph
-        
+
     Notes
     -----
     The initialization is a graph with with m nodes and no edges.
@@ -593,38 +599,38 @@ def barabasi_albert_graph(n, m, seed=None):
     .. [1] A. L. Barabási and R. Albert "Emergence of scaling in
        random networks", Science 286, pp 509-512, 1999.
     """
-        
+
     if m < 1 or  m >=n:
         raise nx.NetworkXError(\
               "Barabási-Albert network must have m>=1 and m<n, m=%d,n=%d"%(m,n))
     if seed is not None:
-        random.seed(seed)    
+        random.seed(seed)
 
-    # Add m initial nodes (m0 in barabasi-speak) 
+    # Add m initial nodes (m0 in barabasi-speak)
     G=empty_graph(m)
     G.name="barabasi_albert_graph(%s,%s)"%(n,m)
     # Target nodes for new edges
     targets=list(range(m))
-    # List of existing nodes, with nodes repeated once for each adjacent edge 
-    repeated_nodes=[]     
+    # List of existing nodes, with nodes repeated once for each adjacent edge
+    repeated_nodes=[]
     # Start adding the other n-m nodes. The first node is m.
-    source=m 
-    while source<n: 
+    source=m
+    while source<n:
         # Add edges to m nodes from the source.
-        G.add_edges_from(zip([source]*m,targets)) 
+        G.add_edges_from(zip([source]*m,targets))
         # Add one node to the list for each new edge just created.
         repeated_nodes.extend(targets)
         # And the new node "source" has m edges to add to the list.
-        repeated_nodes.extend([source]*m) 
-        # Now choose m unique nodes from the existing nodes 
-        # Pick uniformly from repeated_nodes (preferential attachement) 
+        repeated_nodes.extend([source]*m)
+        # Now choose m unique nodes from the existing nodes
+        # Pick uniformly from repeated_nodes (preferential attachement)
         targets = _random_subset(repeated_nodes,m)
         source += 1
     return G
 
 def powerlaw_cluster_graph(n, m, p, seed=None):
     """Holme and Kim algorithm for growing graphs with powerlaw
-    degree distribution and approximate average clustering. 
+    degree distribution and approximate average clustering.
 
     Parameters
     ----------
@@ -635,21 +641,21 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
     p : float,
         Probability of adding a triangle after adding a random edge
     seed : int, optional
-        Seed for random number generator (default=None).   
-      
+        Seed for random number generator (default=None).
+
     Notes
     -----
-    The average clustering has a hard time getting above 
+    The average clustering has a hard time getting above
     a certain cutoff that depends on m.  This cutoff is often quite low.
     Note that the transitivity (fraction of triangles to possible
-    triangles) seems to go down with network size. 
+    triangles) seems to go down with network size.
 
     It is essentially the Barabási-Albert (B-A) growth model with an
     extra step that each random edge is followed by a chance of
     making an edge to one of its neighbors too (and thus a triangle).
-    
+
     This algorithm improves on B-A in the sense that it enables a
-    higher average clustering to be attained if desired. 
+    higher average clustering to be attained if desired.
 
     It seems possible to have a disconnected graph with this algorithm
     since the initial m nodes may not be all linked to a new node
@@ -670,35 +676,35 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
         raise nx.NetworkXError(\
               "NetworkXError p must be in [0,1], p=%f"%(p))
     if seed is not None:
-        random.seed(seed)    
+        random.seed(seed)
 
     G=empty_graph(m) # add m initial nodes (m0 in barabasi-speak)
     G.name="Powerlaw-Cluster Graph"
     repeated_nodes=G.nodes()  # list of existing nodes to sample from
-                           # with nodes repeated once for each adjacent edge 
+                           # with nodes repeated once for each adjacent edge
     source=m               # next node is m
     while source<n:        # Now add the other n-1 nodes
         possible_targets = _random_subset(repeated_nodes,m)
         # do one preferential attachment for new node
         target=possible_targets.pop()
-        G.add_edge(source,target)  
+        G.add_edge(source,target)
         repeated_nodes.append(target) # add one node to list for each new link
         count=1
         while count<m:  # add m-1 more new links
-            if random.random()<p: # clustering step: add triangle 
+            if random.random()<p: # clustering step: add triangle
                 neighborhood=[nbr for nbr in G.neighbors(target) \
                                if not G.has_edge(source,nbr) \
                                and not nbr==source]
                 if neighborhood: # if there is a neighbor without a link
                     nbr=random.choice(neighborhood)
                     G.add_edge(source,nbr) # add triangle
-                    repeated_nodes.append(nbr) 
+                    repeated_nodes.append(nbr)
                     count=count+1
                     continue # go to top of while loop
             # else do preferential attachment step if above fails
             target=possible_targets.pop()
-            G.add_edge(source,target) 
-            repeated_nodes.append(target) 
+            G.add_edge(source,target)
+            repeated_nodes.append(target)
             count=count+1
 
         repeated_nodes.extend([source]*m)  # add source node to list m times
@@ -713,7 +719,7 @@ def random_lobster(n, p1, p2, seed=None):
 
      A caterpillar is a tree that reduces to a path graph when pruning
      all leaf nodes (p2=0).
-     
+
     Parameters
     ----------
     n : int
@@ -723,7 +729,7 @@ def random_lobster(n, p1, p2, seed=None):
     p2 : float
         Probability of adding an edge one level beyond backbone
     seed : int, optional
-        Seed for random number generator (default=None).   
+        Seed for random number generator (default=None).
     """
     # a necessary ingredient in any self-respecting graph library
     if seed is not None:
@@ -747,7 +753,7 @@ def random_shell_graph(constructor, seed=None):
 
     Parameters
     ----------
-    constructor: a list of three-tuples 
+    constructor: a list of three-tuples
         (n,m,d) for each shell starting at the center shell.
     n : int
         The number of nodes in the shell
@@ -757,12 +763,12 @@ def random_shell_graph(constructor, seed=None):
         The ratio of inter-shell (next) edges to intra-shell edges.
         d=0 means no intra shell edges, d=1 for the last shell
     seed : int, optional
-        Seed for random number generator (default=None).   
-      
+        Seed for random number generator (default=None).
+
     Examples
     --------
     >>> constructor=[(10,20,0.8),(20,40,0.8)]
-    >>> G=nx.random_shell_graph(constructor)        
+    >>> G=nx.random_shell_graph(constructor)
 
     """
     G=empty_graph(0)
@@ -771,7 +777,7 @@ def random_shell_graph(constructor, seed=None):
     if seed is not None:
         random.seed(seed)
 
-    glist=[]        
+    glist=[]
     intra_edges=[]
     nnodes=0
     # create gnm graphs for each shell
@@ -782,10 +788,10 @@ def random_shell_graph(constructor, seed=None):
             gnm_random_graph(n,inter_edges),
             first_label=nnodes)
         glist.append(g)
-        nnodes+=n                     
+        nnodes+=n
         G=nx.operators.union(G,g)
 
-    # connect the shells randomly         
+    # connect the shells randomly
     for gi in range(len(glist)-1):
         nlist1=glist[gi].nodes()
         nlist2=glist[gi+1].nodes()
@@ -812,15 +818,15 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
     gamma : float
         Exponent of the power-law
     seed : int, optional
-        Seed for random number generator (default=None).   
+        Seed for random number generator (default=None).
     tries : int
-        Number of attempts to adjust sequence to make a tree 
+        Number of attempts to adjust sequence to make a tree
 
     Notes
     -----
     A trial powerlaw degree sequence is chosen and then elements are
     swapped with new elements from a powerlaw distribution until
-    the sequence makes a tree (#edges=#nodes-1).  
+    the sequence makes a tree (#edges=#nodes-1).
 
     """
     from networkx.generators.degree_seq import degree_sequence_tree
@@ -847,26 +853,26 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     gamma : float
         Exponent of the power-law
     seed : int, optional
-        Seed for random number generator (default=None).   
+        Seed for random number generator (default=None).
     tries : int
-        Number of attempts to adjust sequence to make a tree 
+        Number of attempts to adjust sequence to make a tree
 
     Notes
     -----
     A trial powerlaw degree sequence is chosen and then elements are
     swapped with new elements from a powerlaw distribution until
-    the sequence makes a tree (#edges=#nodes-1).  
+    the sequence makes a tree (#edges=#nodes-1).
 
 
     """
     if seed is not None:
         random.seed(seed)
 
-    # get trial sequence        
+    # get trial sequence
     z=nx.utils.powerlaw_sequence(n,exponent=gamma)
     # round to integer values in the range [0,n]
     zseq=[min(n, max( int(round(s)),0 )) for s in z]
-    
+
     # another sequence to swap values from
     z=nx.utils.powerlaw_sequence(tries,exponent=gamma)
     # round to integer values in the range [0,n]
@@ -877,7 +883,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
             return zseq
         index=random.randint(0,n-1)
         zseq[index]=swap.pop()
-        
+
     raise nx.NetworkXError(\
           "Exceeded max (%d) attempts for a valid tree sequence."%tries)
     return False
