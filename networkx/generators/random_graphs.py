@@ -330,20 +330,24 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     fromv = nlist
     # connect the k/2 neighbors
     for j in range(1, k // 2+1):
-        tov = fromv[j:] + fromv[0:j] # the first n are now last
+        tov = fromv[j:] + fromv[0:j] # the first j are now last
         for i in range(len(fromv)):
             G.add_edge(fromv[i], tov[i])
     # for each edge u-v, with probability p, randomly select existing
     # node w and add new edge u-w
     e = G.edges()
     for (u, v) in e:
-        if random.random() < p and G.degree(u) < n-1:
+        if random.random() < p:
             w = random.choice(nlist)
             # no self-loops and reject if edge u-w exists
             # is that the correct NWS model?
             while w == u or G.has_edge(u, w):
                 w = random.choice(nlist)
-            G.add_edge(u,w)
+                if G.degree(u) >= n-1:
+                    print "Avoided infinite loop"
+                    break # skip this rewiring
+            else:
+                G.add_edge(u,w)
     return G
 
 
@@ -405,13 +409,17 @@ def watts_strogatz_graph(n, k, p, seed=None):
         targets = nodes[j:] + nodes[0:j] # first j nodes are now last in list
         # inner loop in node order
         for u,v in zip(nodes,targets):
-            if random.random() < p and G.degree(u) < n-1:
+            if random.random() < p:
                 w = random.choice(nodes)
                 # Enforce no self-loops or multiple edges
                 while w == u or G.has_edge(u, w):
                     w = random.choice(nodes)
-                G.remove_edge(u,v)
-                G.add_edge(u,w)
+                    if G.degree(u) >= n-1:
+                        print "Avoided infinite loop"
+                        break # skip this rewiring
+                else:
+                    G.remove_edge(u,v)
+                    G.add_edge(u,w)
     return G
 
 def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):

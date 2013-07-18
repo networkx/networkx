@@ -117,3 +117,13 @@ class TestGeneratorsRandom():
         G=gnm_random_graph(10,-1.1)
         assert_equal(len(G),10)
         assert_equal(len(G.edges()),0)
+
+    def test_watts_strogatz_big_k(self):
+        assert_raises(networkx.exception.NetworkXError,
+                watts_strogatz_graph, 10, 10, 0.25)
+        assert_raises(networkx.exception.NetworkXError,
+                newman_watts_strogatz_graph, 10, 10, 0.25)
+        # could create an infinite loop, now doesn't
+        # infinite loop used to occur when a node has degree n-1 and needs to rewire
+        watts_strogatz_graph(10, 9, 0.25, seed=0)
+        newman_watts_strogatz_graph(10, 9, 0.5, seed=0)
