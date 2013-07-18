@@ -344,7 +344,6 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
             while w == u or G.has_edge(u, w):
                 w = random.choice(nlist)
                 if G.degree(u) >= n-1:
-                    print "Avoided infinite loop"
                     break # skip this rewiring
             else:
                 G.add_edge(u,w)
@@ -415,7 +414,6 @@ def watts_strogatz_graph(n, k, p, seed=None):
                 while w == u or G.has_edge(u, w):
                     w = random.choice(nodes)
                     if G.degree(u) >= n-1:
-                        print "Avoided infinite loop"
                         break # skip this rewiring
                 else:
                     G.remove_edge(u,v)
