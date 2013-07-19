@@ -1,6 +1,7 @@
 from networkx.algorithms.assortativity import *
 from networkx.algorithms.block import *
 from networkx.algorithms.boundary import *
+from networkx.algorithms.bridges import *
 from networkx.algorithms.centrality import *
 from networkx.algorithms.cluster import *
 from networkx.algorithms.clique import *
