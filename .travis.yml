@@ -13,4 +13,4 @@ before_install:
 # command to install dependencies
 # install: "pip install"
 # command to run tests
-script: nosetests -v
+script: nosetests -vv
