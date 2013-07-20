@@ -7,7 +7,6 @@ python:
   - "pypy"
 before_install:
   - pip install numpy
-  - pip install scipy
   - pip install pydot
   - pip install yaml
 # command to install dependencies
