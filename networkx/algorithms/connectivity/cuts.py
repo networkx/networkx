@@ -66,7 +66,7 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity'):
     >>> G.add_edge('d','e', capacity = 2.0)
     >>> G.add_edge('c','y', capacity = 2.0)
     >>> G.add_edge('e','y', capacity = 3.0)
-    >>> list(nx.minimum_edge_cut(G, 'x', 'y'))
+    >>> sorted(nx.minimum_edge_cut(G, 'x', 'y'))
     [('c', 'y'), ('x', 'b')]
     >>> nx.min_cut(G, 'x', 'y')
     3.0
