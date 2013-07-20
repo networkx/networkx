@@ -58,7 +58,7 @@ class NetworkXParams(dict):
     def __init__(self, *args, **kwargs):
         # A dictionary relating params to validators.
         self.validate = dict([(key, converter) for key, (default, converter) \
-                              in defaultParams.iteritems()])
+                              in defaultParams.items()])
 
         dict.__init__(self, *args, **kwargs)
 

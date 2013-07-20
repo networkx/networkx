@@ -169,7 +169,7 @@ def filter_attrs(attrs, attr_type):
     else:
         raise Exception("Invalid attr_type.")
 
-    d = dict( [(k,v) for (k,v) in attrs.iteritems() if k in accepted] )
+    d = dict( [(k,v) for (k,v) in attrs.items() if k in accepted] )
     return d
 
 def to_pydot(G, raise_exceptions=True):
