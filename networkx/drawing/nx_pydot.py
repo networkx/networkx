@@ -286,5 +286,6 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import pydot
+        import dot_parser
     except:
         raise SkipTest("pydot not available")

@@ -16,6 +16,7 @@ class TestPydot(object):
         global pydot
         try:
             import pydot
+            import dot_parser
         except ImportError:
             raise SkipTest('pydot not available.')
 
