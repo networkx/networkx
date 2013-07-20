@@ -6,9 +6,9 @@ python:
   - "3.3"
   - "pypy"
 before_install:
-  - pip install numpy
-  - pip install pyparsing
-  - pip install pydot
+#  - pip install numpy
+#  - pip install pyparsing
+#  - pip install pydot
   - pip install pyyaml
 # command to install dependencies
 # install: "pip install"
