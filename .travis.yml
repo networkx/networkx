@@ -7,8 +7,9 @@ python:
   - "pypy"
 before_install:
   - pip install numpy
+  - pip install pyparsing
   - pip install pydot
-  - pip install yaml
+  - pip install pyyaml
 # command to install dependencies
 # install: "pip install"
 # command to run tests
