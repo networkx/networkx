@@ -10,8 +10,9 @@ Either this module or nx_pygraphviz can be used to interface with graphviz.
 See Also
 --------
 Pydot: http://code.google.com/p/pydot/
-Graphviz:          http://www.research.att.com/sw/tools/graphviz/
-DOT Language:  http://www.graphviz.org/doc/info/lang.html
+Graphviz: http://www.research.att.com/sw/tools/graphviz/
+DOT Language: http://www.graphviz.org/doc/info/lang.html
+
 """
 #    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -19,28 +20,32 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from networkx.utils import open_file, make_str
+
+import os
+import sys
+import tempfile
+import time
+
+from networkx.utils import (
+    open_file, get_fobj, make_str, default_opener
+)
 import networkx as nx
+
 __author__ = """Aric Hagberg (aric.hagberg@gmail.com)"""
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
-           'to_pydot', 'from_pydot']
+           'to_pydot', 'from_pydot', 'draw_pydot']
 
-@open_file(1,mode='w')
-def write_dot(G,path):
+@open_file(1, mode='w')
+def write_dot(G, path):
     """Write NetworkX graph G to Graphviz dot format on path.
 
     Path can be a string or a file handle.
     """
-    try:
-        import pydot
-    except ImportError:
-        raise ImportError("write_dot() requires pydot",
-                          "http://code.google.com/p/pydot/")
     P=to_pydot(G)
     path.write(P.to_string())
     return
 
-@open_file(0,mode='r')
+@open_file(0, mode='r')
 def read_dot(path):
     """Return a NetworkX MultiGraph or MultiDiGraph from a dot file on path.
 
@@ -134,85 +139,126 @@ def from_pydot(P):
         N.graph['edge']={}
     return N
 
-def to_pydot(N, strict=True):
-    """Return a pydot graph from a NetworkX graph N.
+def filter_attrs(attrs, attr_type):
+    """
+    Helper function to keep only pydot supported attributes.
+
+    All unsupported attributes are filtered out.
 
     Parameters
     ----------
-    N : NetworkX graph
-      A graph created with NetworkX
+    attrs : dict
+        A dictionary of attributes.
+    attr_type : str
+        The type of attributes. Must be 'edge', 'graph', or 'node'.
+
+    Returns
+    -------
+    d : dict
+        The filtered attributes.
+
+    """
+    import pydot
+
+    if attr_type == 'edge':
+        accepted = pydot.EDGE_ATTRIBUTES
+    elif attr_type == 'graph':
+        accepted = pydot.GRAPH_ATTRIBUTES
+    elif attr_type == 'node':
+        accepted = pydot.NODE_ATTRIBUTES
+    else:
+        raise Exception("Invalid attr_type.")
+
+    d = dict( [(k,v) for (k,v) in attrs.iteritems() if k in accepted] )
+    return d
+
+def to_pydot(G, raise_exceptions=True):
+    """Return a pydot graph from a NetworkX graph G.
+
+    All node names are converted to strings.  However, no preprocessing is
+    performed on the edge/graph/node attribute values since some attributes
+    need to be strings while other need to be floats. If pydot does not handle
+    needed conversions, then your graph should be modified beforehand.
+
+    Generally, the rule is:  If the attribute is a supported Graphviz
+    attribute, then it will be added to the Pydot graph (and thus, assumed to
+    be in the proper format for Graphviz).
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A graph created with NetworkX.
+    raise_exceptions : bool
+        If `True`, raise any exceptions.  Otherwise, the exception is ignored
+        and the procedure continues.
 
     Examples
     --------
-    >>> K5=nx.complete_graph(5)
-    >>> P=nx.to_pydot(K5)
-
-    Notes
-    -----
+    >>> G = nx.complete_graph(5)
+    >>> G.add_edge(2, 10, color='red')
+    >>> P = nx.to_pydot(G)
 
     """
-    try:
-        import pydot
-    except ImportError:
-        raise ImportError('to_pydot() requires pydot: '
-                          'http://code.google.com/p/pydot/')
+    import pydot
 
-    # set Graphviz graph type
-    if N.is_directed():
-        graph_type='digraph'
+    # Set Graphviz graph type.
+    if G.is_directed():
+        graph_type = 'digraph'
     else:
-        graph_type='graph'
-    strict=N.number_of_selfloops()==0 and not N.is_multigraph()
+        graph_type = 'graph'
 
-    name = N.graph.get('name')
-    graph_defaults=N.graph.get('graph',{})
+    strict = G.number_of_selfloops() == 0 and not G.is_multigraph()
+
+    # Create the Pydot graph.
+    name = G.graph.get('name')
+    graph_defaults = filter_attrs(G.graph, 'graph')
     if name is None:
-        P = pydot.Dot(graph_type=graph_type,strict=strict,**graph_defaults)
+        P = pydot.Dot(graph_type=graph_type, strict=strict, **graph_defaults)
     else:
-        P = pydot.Dot('"%s"'%name,graph_type=graph_type,strict=strict,
+        P = pydot.Dot(name, graph_type=graph_type, strict=strict,
                       **graph_defaults)
-    try:
-        P.set_node_defaults(**N.graph['node'])
-    except KeyError:
-        pass
-    try:
-        P.set_edge_defaults(**N.graph['edge'])
-    except KeyError:
-        pass
 
-    for n,nodedata in N.nodes_iter(data=True):
-        str_nodedata=dict((k,make_str(v)) for k,v in nodedata.items())
-        p=pydot.Node(make_str(n),**str_nodedata)
-        P.add_node(p)
+    # Set default node attributes, if possible.
+    node_defaults = filter_attrs(G.graph.get('node', {}), 'node')
+    if node_defaults:
+        try:
+            P.set_node_defaults(**node_defaults)
+        except:
+            if raise_exceptions:
+                raise
 
-    if N.is_multigraph():
-        for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
-            str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
-            edge=pydot.Edge(make_str(u),make_str(v),key=make_str(key),**str_edgedata)
+    # Set default edge attributes, if possible.
+    edge_defaults = filter_attrs(G.graph.get('edge', {}), 'edge')
+    if edge_defaults:
+        # This adds a node called "edge" to the graph.
+        try:
+            P.set_edge_defaults(**edge_defaults)
+        except:
+            if raise_exceptions:
+                raise
+
+    # Add the nodes.
+    for n,nodedata in G.nodes_iter(data=True):
+        attrs = filter_attrs(nodedata, 'node')
+        node = pydot.Node(make_str(n), **attrs)
+        P.add_node(node)
+
+    # Add the edges.
+    if G.is_multigraph():
+        for u,v,key,edgedata in G.edges_iter(data=True,keys=True):
+            attrs = filter_attrs(edgedata, 'edge')
+            uu, vv, kk = make_str(u), make_str(v), make_str(key)
+            edge = pydot.Edge(uu, vv, key=kk, **attrs)
             P.add_edge(edge)
-
     else:
-        for u,v,edgedata in N.edges_iter(data=True):
-            str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
-            edge=pydot.Edge(make_str(u),make_str(v),**str_edgedata)
+        for u,v,edgedata in G.edges_iter(data=True):
+            attrs = filter_attrs(edgedata, 'edge')
+            uu, vv = make_str(u), make_str(v)
+            edge = pydot.Edge(uu, vv, **attrs)
             P.add_edge(edge)
     return P
 
-
-def pydot_from_networkx(N):
-    """Create a Pydot graph from a NetworkX graph."""
-    from warnings import warn
-    warn('pydot_from_networkx is replaced by to_pydot', DeprecationWarning)
-    return to_pydot(N)
-
-def networkx_from_pydot(D, create_using=None):
-    """Create a NetworkX graph from a Pydot graph."""
-    from warnings import warn
-    warn('networkx_from_pydot is replaced by from_pydot',
-         DeprecationWarning)
-    return from_pydot(D)
-
-def graphviz_layout(G,prog='neato',root=None, **kwds):
+def graphviz_layout(G, prog='neato', root=None, **kwds):
     """Create node positions using Pydot and Graphviz.
 
     Returns a dictionary of positions keyed by node.
@@ -230,7 +276,7 @@ def graphviz_layout(G,prog='neato',root=None, **kwds):
     return pydot_layout(G=G,prog=prog,root=root,**kwds)
 
 
-def pydot_layout(G,prog='neato',root=None, **kwds):
+def pydot_layout(G, prog='neato', root=None, **kwds):
     """Create node positions using Pydot and Graphviz.
 
     Returns a dictionary of positions keyed by node.
@@ -240,6 +286,7 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     >>> G=nx.complete_graph(4)
     >>> pos=nx.pydot_layout(G)
     >>> pos=nx.pydot_layout(G,prog='dot')
+
     """
     try:
         import pydot
@@ -276,6 +323,164 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
             xx,yy=pos.split(",")
             node_pos[n]=(float(xx),float(yy))
     return node_pos
+
+
+def safer_pydot_write(self, path, prog=None, format='raw'):
+    """
+    pydot.Dot.write() is not safe to use with temporary files since it
+    requires a string be passed in for the filename.  We provide a modified
+    version here.
+
+    This was needed in Pydot 1.0.28.
+
+    """
+    if prog is None:
+        prog = self.prog
+
+    fobj, close = get_fobj(path, 'w+b')
+    try:
+        if format == 'raw':
+            data = self.to_string()
+            if isinstance(data, basestring):
+                if not isinstance(data, unicode):
+                    try:
+                        data = unicode(data, 'utf-8')
+                    except:
+                        pass
+
+            try:
+                data = data.encode('utf-8')
+            except:
+                pass
+            fobj.write(data)
+        else:
+            fobj.write(self.create(prog, format))
+    finally:
+        if close:
+            fobj.close()
+
+    return True
+
+
+def draw_pydot(G, filename=None, format=None, prefix=None, suffix=None,
+                  layout='dot', args=None, show=None):
+    """Draws the graph G using pydot and graphviz.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph object (e.g., Graph, DiGraph).
+
+    filename : str, None, file object
+        The name of the file to save the image to.  If None, save to a
+        temporary file with the name:
+             nx_PREFIX_RANDOMSTRING_SUFFIX.ext.
+        File formats are inferred from the extension of the filename, when
+        provided.  If the `format` parameter is not `None`, it overwrites any
+        inferred value for the extension.
+
+    format : str
+        An output format. Note that not all may be available on every system
+        depending on how Graphviz was built. If no filename is provided and
+        no format is specified, then a 'png' image is created. Other values
+        for `format` are:
+
+            'canon', 'cmap', 'cmapx', 'cmapx_np', 'dia', 'dot',
+            'fig', 'gd', 'gd2', 'gif', 'hpgl', 'imap', 'imap_np',
+            'ismap', 'jpe', 'jpeg', 'jpg', 'mif', 'mp', 'pcl', 'pdf',
+            'pic', 'plain', 'plain-ext', 'png', 'ps', 'ps2', 'svg',
+            'svgz', 'vml', 'vmlz', 'vrml', 'vtx', 'wbmp', 'xdot', 'xlib'
+
+    prefix : str | None
+        If `filename` is None, we save to a temporary file.  The value of
+        `prefix` will appear after 'nx_' but before random string
+        and file extension. If None, then the graph name will be used.
+
+    suffix : str | None
+        If `filename` is None, we save to a temporary file.  The value of
+        `suffix` will appear at after the prefix and random string but before
+        the file extension. If None, then no suffix is used.
+
+    layout : str
+        The graphviz layout program.  Pydot is responsible for locating the
+        binary. Common values for the layout program are:
+            'neato','dot','twopi','circo','fdp','nop', 'wc','acyclic','gvpr',
+            'gvcolor','ccomps','sccmap','tred'
+
+    args : list
+        Additional arguments to pass to the Graphviz layout program.
+        This should be a list of strings.  For example, ['-s10', '-maxiter=10'].
+
+    show : bool
+        If `True`, then the image is displayed using the OS's default viewer
+        after drawing it. If show equals 'ipynb', then the image is displayed
+        inline for an IPython notebook.  If `None`, then the value of
+        nxParams['pydot_show'] is used.  By default, it is set to `True`.
+
+    """
+    # Determine the output format
+    if format is None:
+        # grab extension from filename
+        if filename is None:
+            # default to png
+            ext = 'png'
+        else:
+            ext = os.path.splitext(filename)[-1].lower()[1:]
+    else:
+        ext = format
+
+    # Determine the "path" to be passed to pydot.Dot.write()
+    if filename is None:
+        if prefix is None:
+            prefix = G.graph.get("name", '')
+
+        if prefix:
+            fn_prefix = "nx_{0}_".format(prefix)
+        else:
+            fn_prefix = "nx_"
+
+        if suffix:
+            fn_suffix = '_{0}.{1}'.format(suffix, ext)
+        else:
+            fn_suffix = '.{0}'.format(ext)
+
+        fobj = tempfile.NamedTemporaryFile(prefix=fn_prefix,
+                                           suffix=fn_suffix,
+                                           delete=False)
+        fname = fobj.name
+        close = True
+    else:
+        fobj, close = get_fobj(filename, 'w+b')
+        fname = fobj.name
+
+    # Include additional command line arguments to the layout program.
+    if args is None:
+        args = []
+        prog = layout
+    else:
+        args = list(args)
+        prog = [layout] + args
+
+    # Draw the image.
+    G2 = to_pydot(G)
+    safer_pydot_write(G2, fobj, prog=prog, format=ext)
+    if close:
+        fobj.close()
+
+    if show is None:
+        show = nx.nxParams['pydot_show']
+
+    if show:
+        if show == 'ipynb':
+            from IPython.core.display import Image
+            return Image(filename=fname, embed=True)
+        else:
+            default_opener(fname)
+            if sys.platform == 'linux2':
+                # necessary when opening many images in a row
+                time.sleep(.5)
+
+    return fname
 
 # fixture for nose tests
 def setup_module(module):
