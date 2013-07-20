@@ -118,9 +118,18 @@ def test_icosahedral_cutset():
     H.remove_nodes_from(node_cut)
     assert_false(nx.is_connected(H))
 
+def test_node_cutset_exception():
+    G=nx.Graph()
+    G.add_edges_from([(1,2),(3,4)])
+    assert_raises(nx.NetworkXError, nx.minimum_node_cut,G)
+
 def test_node_cutset_random_graphs():
     for i in range(5):
         G = nx.fast_gnp_random_graph(50,0.2)
+        if not nx.is_connected(G):
+            ccs = iter(nx.connected_components(G))
+            start = next(ccs)[0]
+            G.add_edges_from( (start,c[0]) for c in ccs )
         cutset = nx.minimum_node_cut(G)
         assert_equal(nx.node_connectivity(G), len(cutset))
         G.remove_nodes_from(cutset)
