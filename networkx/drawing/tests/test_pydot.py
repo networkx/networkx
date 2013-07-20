@@ -1,7 +1,6 @@
 """
     Unit tests for pydot drawing functions.
 """
-
 import os
 import tempfile
 
@@ -16,6 +15,7 @@ class TestPydot(object):
         global pydot
         try:
             import pydot
+            import dot_parser
         except ImportError:
             raise SkipTest('pydot not available.')
 
@@ -39,7 +39,7 @@ class TestPydot(object):
         fname = tempfile.mktemp()
         assert_true( P.write_raw(fname) )
 
-        Pin = pydot.graph_from_dot_file(fname)   
+        Pin = pydot.graph_from_dot_file(fname)
 
         n1 = sorted([p.get_name() for p in P.get_node_list()])
         n2 = sorted([p.get_name() for p in Pin.get_node_list()])
@@ -60,5 +60,3 @@ class TestPydot(object):
 
     def testDirected(self):
         self.pydot_checks(nx.DiGraph())
-
-
