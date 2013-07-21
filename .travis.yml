@@ -8,11 +8,11 @@ python:
 virtualenv:
   system_site_packages: true
 before_install:
-  - sudo apt-get install -qq python-numpy python-scipy
-#  - pip install numpy
+  - sudo apt-get install -qq python-numpy python-scipy python3-numpy python3-sci
+  - pip install pyyaml
 #  - pip install pyparsing
 #  - pip install pydot
-#  - pip install pyyaml
+
 # command to install dependencies
 # install: "pip install"
 # command to run tests
