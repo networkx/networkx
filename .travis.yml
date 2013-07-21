@@ -1,10 +1,12 @@
 language: python
 python:
-  - "2.6"
+#  - "2.6"
   - "2.7"
-  - "3.2"
+#  - "3.2"
   - "3.3"
-  - "pypy"
+#  - "pypy"
+virtualenv:
+  system_site_packages: true
 before_install:
 #  - pip install numpy
 #  - pip install pyparsing
