@@ -11,8 +11,9 @@ before_install:
   - sudo apt-get install -qq python-numpy python-scipy
   - sudo apt-get install -qq python3-numpy python3-scipy
   - sudo apt-get install -qq python-pygraphviz
-  - sudo apt-get python-matplotlib
-  - sudo apt-get python-pydot
+  - sudo apt-get install python-matplotlib
+  - sudo apt-get install python-pydot
+  - sudo apt-get install python-gdal
   - pip install pyyaml
   - pip install pyparsing
 
