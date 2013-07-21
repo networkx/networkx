@@ -1,10 +1,10 @@
 language: python
 python:
-#  - "2.6"
+  - "2.6"
   - "2.7"
   - "3.2"
-#  - "3.3"
-#  - "pypy"
+  - "3.3"
+  - "pypy"
 virtualenv:
   system_site_packages: true
 before_install:
@@ -16,7 +16,6 @@ before_install:
   - sudo apt-get install python-gdal
   - pip install pyyaml
   - pip install pyparsing
-
 # command to install dependencies
 # install: "pip install"
 # command to run tests
