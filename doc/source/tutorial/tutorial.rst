@@ -451,7 +451,7 @@ Note that you may need to issue a Matplotlib
 >>> plt.show() 
 
 command if you are not using matplotlib in interactive mode: (See 
-`Matplotlib FAQ <http://matplotlib.sourceforge.net/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-with-plot>`_
+`Matplotlib FAQ <http://matplotlib.org/faq/installing_faq.html#matplotlib-compiled-fine-but-nothing-shows-up-when-i-use-it>`_
 )
 
 To save drawings to a file, use, for example

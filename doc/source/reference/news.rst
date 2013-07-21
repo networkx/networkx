@@ -276,7 +276,7 @@ add_nodes_from now accepts (node,attrdict) two-tuples
 
 Examples
 ~~~~~~~~
- - `Mayvi2 drawing <http://networkx.lanl.gov/examples/drawing/mayavi2_spring.html>`_
+ - `Mayvi2 drawing <http://networkx.github.io/documentation/latest/examples/3d_drawing/mayavi2_spring.html>`_
  - `Blockmodel <http://networkx.lanl.gov/examples/algorithms/blockmodel.html>`_
  - `Sampson's monastery <http://networkx.lanl.gov/examples/drawing/sampson.html>`_
  - `Ego graph <http://networkx.lanl.gov/examples/drawing/ego_graph.html>`_

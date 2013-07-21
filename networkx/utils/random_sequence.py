@@ -118,7 +118,6 @@ def zipf_rv(alpha, xmin=1, seed=None):
     ----------
     ..[1] Luc Devroye, Non-Uniform Random Variate Generation, 
        Springer-Verlag, New York, 1986.
-       http://cg.scs.carleton.ca/~luc/rnbookindex.html
     """
     if xmin < 1:
         raise ValueError("xmin < 1")
