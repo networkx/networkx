@@ -8,9 +8,9 @@ python:
 virtualenv:
   system_site_packages: true
 before_install:
-  - sudo apt-get install -qq python-numpy python-scipy python3-numpy python3-sci
+  - sudo apt-get install -qq python-numpy python-scipy python3-numpy python3-scipy
   - pip install pyyaml
-#  - pip install pyparsing
+  - pip install pyparsing
 #  - pip install pydot
 
 # command to install dependencies
