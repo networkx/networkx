@@ -21,6 +21,6 @@ before_install:
 # install: "pip install"
 # command to run tests
 script:
-  - nosetests --with-coverage --cover-erase --cover-package=networkx
+  - nosetests -v --with-coverage --cover-erase --cover-package=networkx
 after_success:
   - coveralls
