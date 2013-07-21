@@ -14,9 +14,13 @@ before_install:
   - sudo apt-get install python-matplotlib
   - sudo apt-get install python-pydot
   - sudo apt-get install python-gdal
-  - pip install pyyaml
-  - pip install pyparsing
+  - pip install pyyaml --user-mirrors
+  - pip install pyparsing --use-mirrors
+  - pip install coveralls --use-mirrors
 # command to install dependencies
 # install: "pip install"
 # command to run tests
-script: nosetests -vv
+script:
+  - nosetests --with-coverage --cover-erase --cover-package=networkx
+after_success:
+  - coveralls
