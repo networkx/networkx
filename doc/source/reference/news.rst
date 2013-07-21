@@ -4,6 +4,28 @@
 Release Log
 ===========
 
+
+Networkx-1.8
+------------
+Release date:  xx July 2013
+
+Highlights
+~~~~~~~~~~
+- Faster (linear-time) graphicality tests and Havel-Hakimi graph generators
+- Directed Laplacian matrix generator
+- Katz centrality algorithm
+- Generator for all simple paths
+- Many bug fixes and other improvements.
+
+For full details of the issues closed for this release (added features and bug fixes) see:
+https://github.com/networkx/networkx/issues?milestone=1&state=closed
+
+
+API Changes
+~~~~~~~~~~~
+See :doc:`api_1.8`
+
+
 Networkx-1.7
 ------------
 Release date:  4 July 2012
