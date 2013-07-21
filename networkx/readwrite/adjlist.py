@@ -6,7 +6,7 @@ Adjacency List
 Read and write NetworkX graphs as adjacency lists.
 
 Adjacency list format is useful for graphs without data associated
-with nodes or edges and for nodes that can be meaningfully represented 
+with nodes or edges and for nodes that can be meaningfully represented
 as strings.
 
 Format
@@ -16,8 +16,8 @@ first label in a line is the source node.  Further labels in the line
 are considered target nodes and are added to the graph along with an edge
 between the source node and target node.
 
-The graph with edges a-b, a-c, d-e can be represented as the following 
-adjacency list (anything following the # in a line is a comment):: 
+The graph with edges a-b, a-c, d-e can be represented as the following
+adjacency list (anything following the # in a line is a comment)::
 
      a b c # source target target
      d e
@@ -25,7 +25,7 @@ adjacency list (anything following the # in a line is a comment)::
 __author__ = '\n'.join(['Aric Hagberg <hagberg@lanl.gov>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Loïc Séguin-C. <loicseguin@gmail.com>'])
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -47,9 +47,9 @@ def generate_adjlist(G, delimiter = ' '):
     Parameters
     ----------
     G : NetworkX graph
-    
+
     delimiter : string, optional
-       Separator for node labels 
+       Separator for node labels
 
     Returns
     -------
@@ -60,14 +60,14 @@ def generate_adjlist(G, delimiter = ' '):
     --------
     >>> G = nx.lollipop_graph(4, 3)
     >>> for line in nx.generate_adjlist(G):
-    ...     print(line)    
-    0 1 2 3 
-    1 2 3 
-    2 3 
-    3 4 
-    4 5 
-    5 6 
-    6 
+    ...     print(line)
+    0 1 2 3
+    1 2 3
+    2 3
+    3 4
+    4 5
+    5 6
+    6
 
     See Also
     --------
@@ -88,7 +88,7 @@ def generate_adjlist(G, delimiter = ' '):
                 line += make_str(t) + delimiter
         if not directed:
             seen.add(s)
-        yield line
+        yield line[:-len(delimiter)]
 
 @open_file(1,mode='wb')
 def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
@@ -98,7 +98,7 @@ def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
     Parameters
     ----------
     G : NetworkX graph
-    
+
     path : string or file
        Filename or file handle for data output.
        Filenames ending in .gz or .bz2 will be compressed.
@@ -107,10 +107,10 @@ def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
        Marker for comment lines
 
     delimiter : string, optional
-       Separator for node labels 
+       Separator for node labels
 
     encoding : string, optional
-       Text encoding. 
+       Text encoding.
 
     Examples
     --------
@@ -153,19 +153,19 @@ def parse_adjlist(lines, comments = '#', delimiter = None,
     lines : list or iterator of strings
         Input data in adjlist format
 
-    create_using: NetworkX graph container       
+    create_using: NetworkX graph container
        Use given NetworkX graph for holding nodes or edges.
 
     nodetype : Python type, optional
-       Convert nodes to this type.  
-       
+       Convert nodes to this type.
+
     comments : string, optional
        Marker for comment lines
 
     delimiter : string, optional
-       Separator for node labels.  The default is whitespace. 
+       Separator for node labels.  The default is whitespace.
 
-    create_using: NetworkX graph container       
+    create_using: NetworkX graph container
        Use given NetworkX graph for holding nodes or edges.
 
 
@@ -190,7 +190,7 @@ def parse_adjlist(lines, comments = '#', delimiter = None,
     See Also
     --------
     read_adjlist
-    
+
     """
     if create_using is None:
         G=nx.Graph()
@@ -227,7 +227,7 @@ def parse_adjlist(lines, comments = '#', delimiter = None,
     return G
 
 @open_file(0,mode='rb')
-def read_adjlist(path, comments="#", delimiter=None, create_using=None, 
+def read_adjlist(path, comments="#", delimiter=None, create_using=None,
                  nodetype=None, encoding = 'utf-8'):
     """Read graph in adjacency list format from path.
 
@@ -237,19 +237,19 @@ def read_adjlist(path, comments="#", delimiter=None, create_using=None,
        Filename or file handle to read.
        Filenames ending in .gz or .bz2 will be uncompressed.
 
-    create_using: NetworkX graph container       
+    create_using: NetworkX graph container
        Use given NetworkX graph for holding nodes or edges.
 
     nodetype : Python type, optional
-       Convert nodes to this type.  
-       
+       Convert nodes to this type.
+
     comments : string, optional
        Marker for comment lines
 
     delimiter : string, optional
-       Separator for node labels.  The default is whitespace. 
+       Separator for node labels.  The default is whitespace.
 
-    create_using: NetworkX graph container       
+    create_using: NetworkX graph container
        Use given NetworkX graph for holding nodes or edges.
 
 
@@ -284,10 +284,10 @@ def read_adjlist(path, comments="#", delimiter=None, create_using=None,
     will attempt to convert all nodes to integer type.
 
     Since nodes must be hashable, the function nodetype must return hashable
-    types (e.g. int, float, str, frozenset - or tuples of those, etc.) 
+    types (e.g. int, float, str, frozenset - or tuples of those, etc.)
 
     The optional create_using parameter is a NetworkX graph container.
-    The default is Graph(), an undirected graph.  To read the data as 
+    The default is Graph(), an undirected graph.  To read the data as
     a directed graph use
 
     >>> G=nx.read_adjlist("test.adjlist", create_using=nx.DiGraph())
