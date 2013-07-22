@@ -69,3 +69,14 @@ class TestBridges:
         G.add_edge('f', 'd')
 
         assert_equal(list(bridges(G)), [('c', 'd')])
+
+    def test_parallelEdge(self):
+        '''
+        a----b
+         \__/
+        '''
+        G = nx.MultiGraph()
+        G.add_edge(1, 2)
+        G.add_edge(1, 2)
+        print G.edges(), G[1][2]
+        assert_equal(list(bridges(G)), [])

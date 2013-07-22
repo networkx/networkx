@@ -97,8 +97,15 @@ def bridges(G):
 
     dfs = WhiteGrayBlackDFS(G)
 
-    for x in G:
-        if not x in dfs.visited: 
-            #print x
-            for e in dfs.bridges(x, x):
-                yield e
+    if G.is_multigraph(): # Need to check for parallel edges.
+        for x in G:
+            if not x in dfs.visited:
+                for e in dfs.bridges(x, x):
+                    if len(G[e[0]][e[1]]) == 1:
+                        yield e
+    else:
+        for x in G:
+            if not x in dfs.visited:
+                #print x
+                for e in dfs.bridges(x, x):
+                    yield e
