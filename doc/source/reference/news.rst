@@ -4,6 +4,7 @@
 Release Log
 ===========
 
+<<<<<<< HEAD
 
 Networkx-1.8
 ------------
@@ -14,11 +15,20 @@ Highlights
 - Faster (linear-time) graphicality tests and Havel-Hakimi graph generators
 - Directed Laplacian matrix generator
 - Katz centrality algorithm
-- Generator for all simple paths
-- Many bug fixes and other improvements.
+- Functions to generate all simple paths
+- Improved shapefile reader
+- More flexible weighted projection of bipartite graphs
+- Faster topological sort, decendents and ancestors of DAGs
+- Scaling parameter for force-directed layout
 
-For full details of the issues closed for this release (added features and bug fixes) see:
-https://github.com/networkx/networkx/issues?milestone=1&state=closed
+Bug Fixes
+---------
+- Error with average weighted connectivity for digraphs, correct normalized laplacian with self-loops, load betweenness for single node graphs, isolated nodes missing from dfs/bfs trees, normalize HITS using l1, handle density of graphs with self loops
+
+- Cleaner handling of current figure status with Matplotlib, Pajek files now don't write troublesome header line, default alpha value for GEXF files, read curved edges from yEd GraphML
+
+
+For full details of the issues closed for this release (added features and bug fixes) see: https://github.com/networkx/networkx/issues?milestone=1&page=1&state=closed
 
 
 API Changes
