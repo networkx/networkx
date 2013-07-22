@@ -4,8 +4,6 @@
 Release Log
 ===========
 
-<<<<<<< HEAD
-
 Networkx-1.8
 ------------
 Release date:  xx July 2013
