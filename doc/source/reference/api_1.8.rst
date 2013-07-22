@@ -9,6 +9,8 @@ http://groups.google.com/group/networkx-discuss .
 
 * Laplacian functions now all return matrices.  To get a numpy array from a matrix use L = nx.laplacian_matrix(G).A
 
-* Cycles
+* is_directed_acyclic_graph() now returns false on undirected graphs (instead of raising exception)
+
+* cycles returned from simple_cycles() do not include repeated last node
 
 
