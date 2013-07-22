@@ -69,8 +69,8 @@ Thanks especially to the following contributors:
  - Ben Reilly contributed the shapefile reader and writer.
  - Leo Lopes contributed the maximal independent set algorithm.
  - Jordi Torrents contributed the bipartite clustering, bipartite
-   node redundancy, square clustering, other bipartite 
-   and articulation point algorithms.
+   node redundancy, square clustering, bipartite projection
+   articulation point, and flow-based connectivity algorithms.  
  - Dheeraj M R contributed the distance-regular testing algorithm
  - Franck Kalala contributed the subgraph_centrality and communicability 
    algorithms
@@ -84,3 +84,6 @@ Thanks especially to the following contributors:
  - Nick Mancuso wrote the approximation algorithms for dominating set,
    edge dominating set, independent set, max clique, and min-weighted
    vertex cover.
+ - Alejandro Weinstein contributed the directed Laplacian function
+ - Mathieu Larose speed up the topological sort algorithms
+ - Dustin Smith conrtributed the dict to numpy array functions
