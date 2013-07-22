@@ -4,19 +4,22 @@
 Release Log
 ===========
 
+<<<<<<< HEAD
+
 Networkx-1.8
 ------------
-Release date:  xx Jan 2013
+Release date:  xx July 2013
 
-New Features
-~~~~~~~~~~~~
-
-- Functions to generate all simple paths, 
-
-- Directed Laplacian
-
-- Improved shapefile reader, more flexible weighted projection of bipartite graphs, faster topological sort, decendents and ancestors of DAGs, scaling parameter for force-directed layout
-  
+Highlights
+~~~~~~~~~~
+- Faster (linear-time) graphicality tests and Havel-Hakimi graph generators
+- Directed Laplacian matrix generator
+- Katz centrality algorithm
+- Functions to generate all simple paths
+- Improved shapefile reader
+- More flexible weighted projection of bipartite graphs
+- Faster topological sort, decendents and ancestors of DAGs
+- Scaling parameter for force-directed layout
 
 Bug Fixes
 ---------
@@ -25,14 +28,12 @@ Bug Fixes
 - Cleaner handling of current figure status with Matplotlib, Pajek files now don't write troublesome header line, default alpha value for GEXF files, read curved edges from yEd GraphML
 
 
-
 For full details of the issues closed for this release (added features and bug fixes) see: https://github.com/networkx/networkx/issues?milestone=1&page=1&state=closed
 
 
 API Changes
 ~~~~~~~~~~~
 See :doc:`api_1.8`
-
 
 
 Networkx-1.7
