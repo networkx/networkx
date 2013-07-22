@@ -124,5 +124,5 @@ gh-pages: clean html
 
 gitwash-update:
 	python gitwash_dumper.py source/developer networkx \
-       --project-url=http://networkx.github.com \
-       --project-ml-url=http://groups.google.com/group/networkx-devel/
+       --project-url=http://networkx.github.io \
+       --project-ml-url=http://groups.google.com/group/networkx-discuss/
