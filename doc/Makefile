@@ -120,7 +120,7 @@ doctest: generate
 	      "results in build/doctest/output.txt."
 
 gh-pages: clean html
-	python gh-pages.py
+	python gh-pages.py $(tag)
 
 gitwash-update:
 	python gitwash_dumper.py source/developer networkx \
