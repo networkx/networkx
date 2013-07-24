@@ -11,6 +11,7 @@ from networkx.algorithms.core import *
 from networkx.algorithms.cycles import *
 from networkx.algorithms.dag import *
 from networkx.algorithms.distance_measures import *
+from networkx.algorithms.lowest_common_ancestors import *
 from networkx.algorithms.flow import *
 from networkx.algorithms.hierarchy import *
 from networkx.algorithms.matching import *
@@ -45,6 +46,7 @@ import networkx.algorithms.shortest_paths
 import networkx.algorithms.traversal
 import networkx.algorithms.chordal
 import networkx.algorithms.operators
+import networkx.algorithms.lowest_common_ancestors
 
 from networkx.algorithms.bipartite import projected_graph,project,is_bipartite
 from networkx.algorithms.isomorphism import is_isomorphic,could_be_isomorphic,\
