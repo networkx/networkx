@@ -292,16 +292,19 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     long-range connections that are chosen randomly.  From [1]_:
 
     Begin with a set of nodes that are identified with the set of lattice
-    points in an `n \times n` square, `{(i,j): i\in {1,2,\ldots,n}, j\in {1,2,\ldots,n}}`
+    points in an `n \times n` square,
+    `{(i,j): i\in {1,2,\ldots,n}, j\in {1,2,\ldots,n}}`
     and define the lattice distance between two nodes `(i,j)` and `(k,l)`
-    to be the number of "lattice steps" separating them: `d((i,j),(k,l)) = |k-i|+|l-j|`.
+    to be the number of "lattice steps" separating them:
+    `d((i,j),(k,l)) = |k-i|+|l-j|`.
 
-    For a universal constant `p`, the node `u` has a directed edge to every other
-    node within lattice distance `p` (local contacts) .
+    For a universal constant `p`, the node `u` has a directed edge to every
+    other node within lattice distance `p` (local contacts) .
 
-    For universal constants `q\ge 0` and `r\ge 0` construct directed edges from `u` to `q`
-    other nodes (long-range contacts) using independent random trials;  the i'th
-    directed edge from `u` has endpoint `v` with probability proportional to `d(u,v)^{-r}`.
+    For universal constants `q\ge 0` and `r\ge 0` construct directed edges
+    from `u` to `q` other nodes (long-range contacts) using independent
+    random trials;  the i'th  directed edge from `u` has endpoint `v` with
+    probability proportional to `d(u,v)^{-r}`.
 
     Parameters
     ----------
