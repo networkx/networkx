@@ -339,11 +339,12 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
         probs = [0]
         for p2 in nodes:
             if p1==p2:
-                continue
-            d = sum((abs(b-a) for a,b in zip(p1,p2)))
-            if d <= p:
-                G.add_edge(p1,p2)
-            probs.append(d**-r)
+                probs.append(0)
+            else:
+                d = sum((abs(b-a) for a,b in zip(p1,p2)))
+                if d <= p:
+                    G.add_edge(p1,p2)
+                probs.append(d**-r)
         cdf = list(nx.utils.cumulative_sum(probs))
         for _ in range(q):
             target = nodes[bisect_left(cdf,random.uniform(0, cdf[-1]))]
