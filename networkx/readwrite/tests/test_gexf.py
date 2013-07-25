@@ -310,4 +310,4 @@ class TestGEXF(object):
         nx.write_gexf(G,fh)
         fh.seek(0)
         H=nx.read_gexf(fh,node_type=int)
-        assert_true(H.node[1]['testattr'], True)
+        assert_equal(H.node[1]['testattr'], True)
