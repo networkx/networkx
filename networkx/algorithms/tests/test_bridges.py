@@ -32,7 +32,9 @@ class TestBridges:
         '''
         G = nx.Graph()
         G.add_edge('a', 'b')
-        assert_equal(list(bridges(G)), [('a', 'b')])
+        results = list(bridges(G))
+        assert_true(results == [('a', 'b')] or
+                    results == [('b', 'a')])
 
     def test_twoDisconnectedComponents(self):
         '''
@@ -78,5 +80,4 @@ class TestBridges:
         G = nx.MultiGraph()
         G.add_edge(1, 2)
         G.add_edge(1, 2)
-        print G.edges(), G[1][2]
         assert_equal(list(bridges(G)), [])
