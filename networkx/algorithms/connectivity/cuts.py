@@ -48,13 +48,13 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity'):
     -------
     cutset : set
         Set of edges that, if removed from the graph, will disconnect it
-    
+
     Raises
     ------
     NetworkXUnbounded
         If the graph has a path of infinite capacity, all cuts have
         infinite capacity and the function raises a NetworkXError.
-    
+
     Examples
     --------
     >>> G = nx.DiGraph()
@@ -75,7 +75,7 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity'):
         flow, H = nx.ford_fulkerson_flow_and_auxiliary(G, s, t, capacity=capacity)
         cutset = set()
         # Compute reachable nodes from source in the residual network
-        reachable = set(nx.single_source_shortest_path(H,s)) 
+        reachable = set(nx.single_source_shortest_path(H,s))
         # And unreachable nodes
         others = set(H) - reachable # - set([s])
         # Any edge in the original network linking these two partitions
@@ -84,7 +84,7 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity'):
             cutset.update((u,v) for v in nbrs if v in others)
         return cutset
     except nx.NetworkXUnbounded:
-        # Should we raise any other exception or just let ford_fulkerson 
+        # Should we raise any other exception or just let ford_fulkerson
         # propagate nx.NetworkXUnbounded ?
         raise nx.NetworkXUnbounded("Infinite capacity path, no minimum cut.")
 
@@ -92,9 +92,9 @@ def minimum_st_node_cut(G, s, t, aux_digraph=None, mapping=None):
     r"""Returns a set of nodes of minimum cardinality that disconnect source
     from target in G.
 
-    This function returns the set of nodes of minimum cardinality that, 
-    if removed, would destroy all paths among source and target in G. 
-    
+    This function returns the set of nodes of minimum cardinality that,
+    if removed, would destroy all paths among source and target in G.
+
     Parameters
     ----------
     G : NetworkX graph
@@ -108,26 +108,26 @@ def minimum_st_node_cut(G, s, t, aux_digraph=None, mapping=None):
     Returns
     -------
     cutset : set
-        Set of nodes that, if removed, would destroy all paths between 
+        Set of nodes that, if removed, would destroy all paths between
         source and target in G.
 
     Examples
     --------
-    >>> # Platonic icosahedral graph has node connectivity 5 
+    >>> # Platonic icosahedral graph has node connectivity 5
     >>> G = nx.icosahedral_graph()
     >>> len(nx.minimum_node_cut(G, 0, 6))
     5
 
     Notes
     -----
-    This is a flow based implementation of minimum node cut. The algorithm 
+    This is a flow based implementation of minimum node cut. The algorithm
     is based in solving a number of max-flow problems (ie local st-node
-    connectivity, see local_node_connectivity) to determine the capacity 
-    of the minimum cut on an auxiliary directed network that corresponds 
-    to the minimum node cut of G. It handles both directed and undirected 
+    connectivity, see local_node_connectivity) to determine the capacity
+    of the minimum cut on an auxiliary directed network that corresponds
+    to the minimum node cut of G. It handles both directed and undirected
     graphs.
 
-    This implementation is based on algorithm 11 in [1]_. We use the Ford 
+    This implementation is based on algorithm 11 in [1]_. We use the Ford
     and Fulkerson algorithm to compute max flow (see ford_fulkerson).
 
     See also
@@ -136,11 +136,11 @@ def minimum_st_node_cut(G, s, t, aux_digraph=None, mapping=None):
     edge_connectivity
     minimum_edge_cut
     max_flow
-    ford_fulkerson 
+    ford_fulkerson
 
     References
     ----------
-    .. [1] Abdol-Hossein Esfahanian. Connectivity Algorithms. 
+    .. [1] Abdol-Hossein Esfahanian. Connectivity Algorithms.
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
 
     """
@@ -156,11 +156,11 @@ def minimum_st_node_cut(G, s, t, aux_digraph=None, mapping=None):
 def minimum_node_cut(G, s=None, t=None):
     r"""Returns a set of nodes of minimum cardinality that disconnects G.
 
-    If source and target nodes are provided, this function returns the 
-    set of nodes of minimum cardinality that, if removed, would destroy 
-    all paths among source and target in G. If not, it returns a set 
+    If source and target nodes are provided, this function returns the
+    set of nodes of minimum cardinality that, if removed, would destroy
+    all paths among source and target in G. If not, it returns a set
     of nodes of minimum cardinality that disconnects G.
-    
+
     Parameters
     ----------
     G : NetworkX graph
@@ -174,13 +174,13 @@ def minimum_node_cut(G, s=None, t=None):
     Returns
     -------
     cutset : set
-        Set of nodes that, if removed, would disconnect G. If source 
+        Set of nodes that, if removed, would disconnect G. If source
         and target nodes are provided, the set contians the nodes that
         if removed, would destroy all paths between source and target.
 
     Examples
     --------
-    >>> # Platonic icosahedral graph has node connectivity 5 
+    >>> # Platonic icosahedral graph has node connectivity 5
     >>> G = nx.icosahedral_graph()
     >>> len(nx.minimum_node_cut(G))
     5
@@ -189,18 +189,18 @@ def minimum_node_cut(G, s=None, t=None):
     >>> for u,v in combinations(G, 2):
     ...     if v not in G[u]:
     ...         assert(len(nx.minimum_node_cut(G,u,v)) == 5)
-    ... 
+    ...
 
     Notes
     -----
-    This is a flow based implementation of minimum node cut. The algorithm 
+    This is a flow based implementation of minimum node cut. The algorithm
     is based in solving a number of max-flow problems (ie local st-node
-    connectivity, see local_node_connectivity) to determine the capacity 
-    of the minimum cut on an auxiliary directed network that corresponds 
-    to the minimum node cut of G. It handles both directed and undirected 
+    connectivity, see local_node_connectivity) to determine the capacity
+    of the minimum cut on an auxiliary directed network that corresponds
+    to the minimum node cut of G. It handles both directed and undirected
     graphs.
 
-    This implementation is based on algorithm 11 in [1]_. We use the Ford 
+    This implementation is based on algorithm 11 in [1]_. We use the Ford
     and Fulkerson algorithm to compute max flow (see ford_fulkerson).
 
     See also
@@ -209,11 +209,11 @@ def minimum_node_cut(G, s=None, t=None):
     edge_connectivity
     minimum_edge_cut
     max_flow
-    ford_fulkerson 
+    ford_fulkerson
 
     References
     ----------
-    .. [1] Abdol-Hossein Esfahanian. Connectivity Algorithms. 
+    .. [1] Abdol-Hossein Esfahanian. Connectivity Algorithms.
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
 
     """
@@ -263,11 +263,11 @@ def minimum_node_cut(G, s=None, t=None):
 def minimum_edge_cut(G, s=None, t=None):
     r"""Returns a set of edges of minimum cardinality that disconnects G.
 
-    If source and target nodes are provided, this function returns the 
-    set of edges of minimum cardinality that, if removed, would break 
-    all paths among source and target in G. If not, it returns a set of 
+    If source and target nodes are provided, this function returns the
+    set of edges of minimum cardinality that, if removed, would break
+    all paths among source and target in G. If not, it returns a set of
     edges of minimum cardinality that disconnects G.
-    
+
     Parameters
     ----------
     G : NetworkX graph
@@ -281,7 +281,7 @@ def minimum_edge_cut(G, s=None, t=None):
     Returns
     -------
     cutset : set
-        Set of edges that, if removed, would disconnect G. If source 
+        Set of edges that, if removed, would disconnect G. If source
         and target nodes are provided, the set contians the edges that
         if removed, would destroy all paths between source and target.
 
@@ -295,7 +295,7 @@ def minimum_edge_cut(G, s=None, t=None):
     >>> from itertools import combinations
     >>> for u,v in combinations(G, 2):
     ...     assert(len(nx.minimum_edge_cut(G,u,v)) == 5)
-    ... 
+    ...
 
     Notes
     -----
