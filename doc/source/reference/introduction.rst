@@ -224,7 +224,7 @@ many that we have not developed yet too.  If you implement a
 graph algorithm that might be useful for others please let 
 us know through the 
 `NetworkX Google group <http://groups.google.com/group/networkx-discuss>`_
-or the `Developer Zone <http://networkx.lanl.gov/trac/>`_.
+or the Github `Developer Zone <http://networkx.github.com/networkx/networkx>`_.
 
 As an example here is code to use Dijkstra's algorithm to 
 find the shortest weighted path: 

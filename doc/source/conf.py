@@ -134,7 +134,7 @@ html_additional_pages = {'gallery':'gallery.html'}
 # If true, the reST sources are included in the HTML build as _sources/<name>.
 html_copy_source = False
 
-html_use_opensearch = 'http://networkx.lanl.gov'
+html_use_opensearch = 'http://networkx.github.io'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NetworkX'
@@ -169,9 +169,8 @@ intersphinx_mapping = {'http://docs.python.org/': None,
                       }
                       
 # For trac custom roles
-trac_url = 'https://networkx.lanl.gov/trac/'
 
 default_role = 'math' 
-
+trac_url = 'https://networkx.lanl.gov/trac/'
 #mathjax_path = 'http://mathjax.connectmv.com/MathJax.js'
 
