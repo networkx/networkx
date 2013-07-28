@@ -6,7 +6,7 @@ Release Log
 
 Networkx-1.8
 ------------
-Release date:  xx July 2013
+Release date:  28 July 2013
 
 Highlights
 ~~~~~~~~~~
