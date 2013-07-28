@@ -4,6 +4,7 @@ Flow based connectivity algorithms
 """
 import itertools
 import networkx as nx
+from networkx.utils import require
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -69,7 +70,7 @@ def average_node_connectivity(G):
         return 0
     return num/den
 
-def _aux_digraph_node_connectivity(G):
+def _aux_digraph_node_connectivity(G, nodelist=None):
     r""" Creates a directed graph D from an undirected graph G to compute flow
     based node connectivity.
 
@@ -98,7 +99,9 @@ def _aux_digraph_node_connectivity(G):
 
     mapping = {}
     D = nx.DiGraph()
-    for i,node in enumerate(G):
+    if nodelist is None:
+        nodelist = G
+    for i,node in enumerate(nodelist):
         mapping[node] = i
         D.add_node('%dA' % i,id=node)
         D.add_node('%dB' % i,id=node)
@@ -311,7 +314,8 @@ def node_connectivity(G, s=None, t=None):
                                             aux_digraph=H, mapping=mapping))
     return K
 
-def all_pairs_node_connectivity_matrix(G):
+@require('numpy')
+def all_pairs_node_connectivity_matrix(G, nodelist=None):
     """Return a numpy 2d ndarray with node connectivity between all pairs
     of nodes.
 
@@ -319,6 +323,9 @@ def all_pairs_node_connectivity_matrix(G):
     ----------
     G : NetworkX graph
         Undirected graph
+
+    nodelist: list
+        Ordering of nodes for rows and columns of matrix
 
     Returns
     -------
@@ -335,14 +342,17 @@ def all_pairs_node_connectivity_matrix(G):
     ford_fulkerson 
 
     """
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError(\
-            "all_pairs_node_connectivity_matrix() requires NumPy")
-
+    import numpy as np
+    if nodelist is None:
+        nodelist = G
+    nlen = len(nodelist)
+    if nlen == 0:
+        raise nx.NetworkXError("Graph has no nodes or edges")
+    if len(nodelist) != len(set(nodelist)):
+        msg = "Ambiguous ordering: `nodelist` contained duplicates."
+        raise nx.NetworkXError(msg)
     n = G.order()
-    M = numpy.zeros((n, n), dtype=int)
+    M = np.zeros((n, n), dtype=int)
     # Create auxiliary Digraph
     D, mapping = _aux_digraph_node_connectivity(G)
 
