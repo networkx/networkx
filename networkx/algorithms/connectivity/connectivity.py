@@ -14,7 +14,6 @@ __all__ = [ 'average_node_connectivity',
             'local_edge_connectivity',
             'edge_connectivity',
             'all_pairs_node_connectivity_matrix',
-            'dominating_set',
             ]
 
 def average_node_connectivity(G):
@@ -573,7 +572,7 @@ def edge_connectivity(G, s=None, t=None):
         # A dominating set is \lambda-covering
         # We need a dominating set with at least two nodes
         for node in G:
-            D = dominating_set(G, start_with=node)
+            D = nx.dominating_set(G, start_with=node)
             v = D.pop()
             if D: break
         else: 
@@ -583,35 +582,3 @@ def edge_connectivity(G, s=None, t=None):
         for w in D:
             L = min(L, local_edge_connectivity(G, v, w, aux_digraph=H))
         return L
-
-def dominating_set(G, start_with=None):
-    # Algorithm 7 in [1]
-    all_nodes = set(G)
-    if start_with is None:
-        v = set(G).pop() # pick a node
-    else:
-        if start_with not in G:
-            raise nx.NetworkXError('node %s not in G' % start_with)
-        v = start_with
-    D = set([v])
-    ND = set([nbr for nbr in G[v]])
-    other = all_nodes - ND - D
-    while other:
-        w = other.pop()
-        D.add(w)
-        ND.update([nbr for nbr in G[w] if nbr not in D])
-        other = all_nodes - ND - D
-    return D
-
-def is_dominating_set(G, nbunch):
-    # Proposed by Dan on the mailing list
-    allnodes=set(G)
-    testset=set(n for n in nbunch if n in G)
-    nbrs=set()
-    for n in testset:
-        nbrs.update(G[n])
-    if nbrs - allnodes:  # some nodes left--not dominating
-        return False
-    else:
-        return True
-

@@ -9,7 +9,7 @@ from operator import itemgetter
 import networkx as nx
 from networkx.algorithms.connectivity.connectivity import \
     _aux_digraph_node_connectivity, _aux_digraph_edge_connectivity, \
-    dominating_set, node_connectivity
+    node_connectivity
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -367,7 +367,7 @@ def minimum_edge_cut(G, s=None, t=None):
         # A dominating set is \lambda-covering
         # We need a dominating set with at least two nodes
         for node in G:
-            D = dominating_set(G, start_with=node)
+            D = nx.dominating_set(G, start_with=node)
             v = D.pop()
             if D: break
         else:
