@@ -226,36 +226,34 @@ def _single_source_shortest_path_basic(G,s):
     return S,P,sigma
 
 
-
 def _single_source_dijkstra_path_basic(G,s,weight='weight'):
-    # modified from Eppstein
+    # modified by Geo Piskas - geopiskas@gmail.com
     S=[]
+    D={}
     P={}
     for v in G:
         P[v]=[]
-    sigma=dict.fromkeys(G,0.0)    # sigma[v]=0 for v in G
-    D={}
-    sigma[s]=1.0
+    sigma={s:1}
+    dist={s:0}
     push=heapq.heappush
     pop=heapq.heappop
-    seen = {s:0}
     Q=[]   # use Q as heap with (distance,node id) tuples
     push(Q,(0,s,s))
     while Q:
-        (dist,pred,v)=pop(Q)
+        (v_dist,pred,v)=pop(Q)
         if v in D:
             continue # already searched this node.
-        sigma[v] += sigma[pred] # count paths
+        sigma[v] += sigma[pred]
         S.append(v)
-        D[v] = dist
+        D[v] = 1
         for w,edgedata in G[v].items():
-            vw_dist = dist + edgedata.get(weight,1)
-            if w not in D and (w not in seen or vw_dist < seen[w]):
-                seen[w] = vw_dist
+            vw_dist = v_dist + edgedata.get(weight,1)
+            if w not in D and ( w not in dist or vw_dist < dist[w]):
+                dist[w] = vw_dist
                 push(Q,(vw_dist,v,w))
-                sigma[w]=0.0
+                sigma[w] = 0
                 P[w]=[v]
-            elif vw_dist==seen[w]:  # handle equal paths
+            elif vw_dist==dist[w]:  # handle equal paths
                 sigma[w] += sigma[v]
                 P[w].append(v)
     return S,P,sigma
