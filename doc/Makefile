@@ -48,7 +48,7 @@ dist: html
 	-rm -f build/dist/_downloads/*
 	(cd build/html && zip -9r ../dist/_downloads/networkx-documentation.zip .)
 	cp build/latex/*.pdf build/dist/_downloads
-	(cd build/dist && ln -s _downloads/* .)
+#	(cd build/dist && ln -s _downloads/* .)
 	(cd build/dist && tar czf ../dist.tar.gz .)
 
 
