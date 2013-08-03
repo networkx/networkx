@@ -119,7 +119,7 @@ doctest: generate
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in build/doctest/output.txt."
 
-gh-pages: clean html
+gh-pages: clean dist
 	python gh-pages.py $(tag)
 
 gitwash-update:
