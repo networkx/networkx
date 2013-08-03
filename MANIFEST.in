@@ -18,6 +18,8 @@ include networkx/*/*/tests/*.py
 include networkx/*/*/tests/*.A99
 include networkx/*/*/tests/*.B99
 
+include networkx/external/decorator/*/*.py
+
 global-exclude *~
 global-exclude *.pyc
 global-exclude .svn
