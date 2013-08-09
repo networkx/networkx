@@ -25,7 +25,9 @@ def is_tree(G):
     """
 
     if type(G) == nx.Graph:
-        return nx.number_of_nodes(G) == 0 or (nx.is_connected(G) and  ( nx.number_of_edges(G) == nx.number_of_nodes(G)-1  ) and G.number_of_selfloops()==0)  
+        return nx.number_of_nodes(G) == 0 \
+            or (nx.is_connected(G) \
+            and  (nx.number_of_edges(G) == nx.number_of_nodes(G)-1 ))  
     else:
         return False
 
