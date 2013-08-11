@@ -236,8 +236,7 @@ class GEXF(object):
 class GEXFWriter(GEXF):
     # class for writing GEXF format files
     # use write_gexf() function
-    def __init__(self, graph=None, encoding="utf-8",
-                 mode='static',prettyprint=True,
+    def __init__(self, graph=None, encoding="utf-8", prettyprint=True,
                  version='1.1draft'):
         try:
             import xml.etree.ElementTree
@@ -245,7 +244,6 @@ class GEXFWriter(GEXF):
              raise ImportError('GEXF writer requires '
                                'xml.elementtree.ElementTree')
         self.prettyprint=prettyprint
-        self.mode=mode
         self.encoding = encoding
         self.set_version(version)
         self.xml = Element("gexf",
@@ -277,12 +275,18 @@ class GEXFWriter(GEXF):
         return s
 
     def add_graph(self, G):
+        # set graph attributes
+        if G.graph['mode']=='dynamic':
+            mode='dynamic'
+        else:
+            mode='static'
+
         # Add a graph element to the XML
         if G.is_directed():
             default='directed'
         else:
             default='undirected'
-        graph_element = Element("graph",defaultedgetype=default,mode=self.mode)
+        graph_element = Element("graph",defaultedgetype=default,mode=mode)
         self.graph_element=graph_element
         self.add_nodes(G,graph_element)
         self.add_edges(G,graph_element)
@@ -575,10 +579,6 @@ class GEXFReader(GEXF):
 
 
     def make_graph(self, graph_xml):
-        # mode is "static" or "dynamic"
-        graph_mode = graph_xml.get("mode", "")
-        self.dynamic=(graph_mode=='dynamic')
-
         # start with empty DiGraph or MultiDiGraph
         edgedefault = graph_xml.get("defaultedgetype", None)
         if edgedefault=='directed':
@@ -593,6 +593,11 @@ class GEXFReader(GEXF):
         graph_end=graph_xml.get('end')
         if graph_end is not None:
             G.graph['end']=graph_end
+        graph_mode=graph_xml.get("mode", "")
+        if graph_mode=='dynamic':
+            G.graph['mode']='dynamic'
+        else:
+            G.graph['mode']='static'
 
         # node and edge attributes
         attributes_elements=graph_xml.findall("{%s}attributes"%self.NS_GEXF)
