@@ -7,7 +7,6 @@ __all__ = ['is_tree']
 
 
 def is_tree(G):
-    #need to check the type function 
     """Return true if the input graph is a tree
 
     Parameters
@@ -24,7 +23,7 @@ def is_tree(G):
     For undirected graphs only. 
     """
 
-    if type(G) == nx.Graph:
+    if not G.is_directed():
         return nx.number_of_nodes(G) == 0 \
             or (nx.is_connected(G) \
             and  (nx.number_of_edges(G) == nx.number_of_nodes(G)-1 ))  

@@ -15,11 +15,17 @@ class TestTreeRecognition(object):
         self.T3.add_nodes_from(range(5))
         edges = [(i,i+1) for i in range(4)]
         self.T3.add_edges_from(edges)
+        
+        self.T4 = nx.MultiGraph()
+
+        self.T5 = nx.MultiGraph()
+        self.T5.add_nodes_from(range(5))
+        edges = [(i,i+1) for i in range(4)]
+        self.T5.add_edges_from(edges)
+
 
 
         self.N1 = nx.DiGraph()
-
-        self.N2 = nx.MultiGraph()
 
         self.N3 = nx.MultiDiGraph()
 
@@ -39,10 +45,10 @@ class TestTreeRecognition(object):
         assert_true(nx.is_tree(self.T1))
         assert_true(nx.is_tree(self.T2))
         assert_true(nx.is_tree(self.T3))
-
+        assert_true(nx.is_tree(self.T4))
+        assert_true(nx.is_tree(self.T5))
 
         assert_false(nx.is_tree(self.N1))
-        assert_false(nx.is_tree(self.N2))
         assert_false(nx.is_tree(self.N3))
         assert_false(nx.is_tree(self.N4))
         assert_false(nx.is_tree(self.N5))
