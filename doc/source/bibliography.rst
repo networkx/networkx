@@ -49,7 +49,7 @@ Bibliography
 
 .. [Newman03] M.E.J. Newman, "The Structure and Function of Complex
    Networks", SIAM Review, 45, pp. 167-256, 2003. 
-   :url:`http://epubs.siam.org/sam-bin/dbq/article/42480`
+   :url:`http://epubs.siam.org/doi/abs/10.1137/S003614450342480`
 
 .. [Sedgewick02] R. Sedgewick, "Algorithms in C: Parts 1-4: 
    Fundamentals, Data Structure, Sorting, Searching", Addison Wesley

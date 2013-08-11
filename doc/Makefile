@@ -48,7 +48,7 @@ dist: html
 	-rm -f build/dist/_downloads/*
 	(cd build/html && zip -9r ../dist/_downloads/networkx-documentation.zip .)
 	cp build/latex/*.pdf build/dist/_downloads
-	(cd build/dist && ln -s _downloads/* .)
+#	(cd build/dist && ln -s _downloads/* .)
 	(cd build/dist && tar czf ../dist.tar.gz .)
 
 
@@ -119,10 +119,10 @@ doctest: generate
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in build/doctest/output.txt."
 
-gh-pages: clean html
-	python gh-pages.py
+gh-pages: clean dist
+	python gh-pages.py $(tag)
 
 gitwash-update:
 	python gitwash_dumper.py source/developer networkx \
-       --project-url=http://networkx.github.com \
-       --project-ml-url=http://groups.google.com/group/networkx-devel/
+       --project-url=http://networkx.github.io \
+       --project-ml-url=http://groups.google.com/group/networkx-discuss/

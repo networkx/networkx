@@ -358,6 +358,10 @@ class GEXFWriter(GEXF):
                                    source=source_id,target=target_id,
                                    **kw)
             default=G.graph.get('edge_default',{})
+            if self.version == '1.1':
+                edge_data=self.add_slices(edge_element, edge_data)
+            else:
+                edge_data=self.add_spells(edge_element, edge_data)
             edge_data=self.add_viz(edge_element,edge_data)
             edge_data=self.add_attributes("edge", edge_element,
                                           edge_data, default)
@@ -493,19 +497,19 @@ class GEXFWriter(GEXF):
             node_element.append(parents_element)
         return node_data
 
-    def add_slices(self,node_element,node_data):
-        slices=node_data.pop('slices',False)
+    def add_slices(self,node_or_edge_element,node_or_edge_data):
+        slices=node_or_edge_data.pop('slices',False)
         if slices:
             slices_element=Element('slices')
             for start,end in slices:
                 e=Element('slice',start=str(start),end=str(end))
                 slices_element.append(e)
-            node_element.append(slices_element)
-        return node_data
+            node_or_edge_element.append(slices_element)
+        return node_or_edge_data
 
 
-    def add_spells(self,node_element,node_data):
-        spells=node_data.pop('spells',False)
+    def add_spells(self,node_or_edge_element,node_or_edge_data):
+        spells=node_or_edge_data.pop('spells',False)
         if spells:
             spells_element=Element('spells')
             for start,end in spells:
@@ -515,8 +519,8 @@ class GEXFWriter(GEXF):
                 if end is not None:
                     e.attrib['end']=make_str(end)
                 spells_element.append(e)
-            node_element.append(spells_element)
-        return node_data
+            node_or_edge_element.append(spells_element)
+        return node_or_edge_data
 
 
     def write(self, fh):
@@ -739,8 +743,8 @@ class GEXFReader(GEXF):
                 data['parents'].append(parent)
         return data
 
-    def add_slices(self, data,  node_xml):
-        slices_element=node_xml.find("{%s}slices"%self.NS_GEXF)
+    def add_slices(self, data,  node_or_edge_xml):
+        slices_element=node_or_edge_xml.find("{%s}slices"%self.NS_GEXF)
         if slices_element is not None:
             data['slices']=[]
             for s in slices_element.findall("{%s}slice"%self.NS_GEXF):
@@ -749,8 +753,8 @@ class GEXFReader(GEXF):
                 data['slices'].append((start,end))
         return data
 
-    def add_spells(self, data,  node_xml):
-        spells_element=node_xml.find("{%s}spells"%self.NS_GEXF)
+    def add_spells(self, data,  node_or_edge_xml):
+        spells_element=node_or_edge_xml.find("{%s}spells"%self.NS_GEXF)
         if spells_element is not None:
             data['spells']=[]
             for s in spells_element.findall("{%s}spell"%self.NS_GEXF):
@@ -781,6 +785,11 @@ class GEXFReader(GEXF):
 
         data = self.decode_attr_elements(edge_attr, edge_element)
         data = self.add_start_end(data,edge_element)
+
+        if self.version=='1.1':
+            data = self.add_slices(data, edge_element)  # add slices
+        else:
+            data = self.add_spells(data, edge_element)  # add spells
 
         # GEXF stores edge ids as an attribute
         # NetworkX uses them as keys in multigraphs
