@@ -117,10 +117,27 @@ def from_pydot(P):
 
     # add edges
     for e in P.get_edge_list():
-        u=e.get_source().strip('"')
-        v=e.get_destination().strip('"')
+        u=e.get_source()
+        v=e.get_destination()
         attr=e.get_attributes()
-        N.add_edge(u,v,**attr)
+        s=[]
+        d=[]
+
+        if isinstance(u, basestring):
+            s.append(u.strip('"'))
+        else:
+            for unodes in u['nodes'].iterkeys():
+                s.append(unodes.strip('"'))
+
+        if isinstance(v, basestring):
+            d.append(v.strip('"'))
+        else:
+            for vnodes in v['nodes'].iterkeys():
+                d.append(vnodes.strip('"'))
+
+        for source_node in s:
+            for destination_node in d:
+                N.add_edge(source_node,destination_node,**attr)
 
     # add default attributes for graph, nodes, edges
     N.graph['graph']=P.get_attributes()
