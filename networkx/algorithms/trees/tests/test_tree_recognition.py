@@ -23,6 +23,12 @@ class TestTreeRecognition(object):
         edges = [(i,i+1) for i in range(4)]
         self.T5.add_edges_from(edges)
 
+        self.T6 = nx.Graph()
+        self.T6.add_nodes_from([6,7])
+        self.T6.add_edge(6,7)
+
+        self.F1 = nx.compose(self.T6,self.T3)
+
 
 
         self.N1 = nx.DiGraph()
@@ -40,6 +46,8 @@ class TestTreeRecognition(object):
         self.N6.add_nodes_from(range(3))
         self.N6.add_edges_from([(0,1),(1,2),(2,0)])
 
+        self.NF1 = nx.compose(self.T6,self.N6)
+
 
     def test_is_tree(self):
         assert_true(nx.is_tree(self.T1))
@@ -53,6 +61,23 @@ class TestTreeRecognition(object):
         assert_false(nx.is_tree(self.N4))
         assert_false(nx.is_tree(self.N5))
         assert_false(nx.is_tree(self.N6))
+
+    def test_is_forest(self):
+        assert_true(nx.is_forest(self.T1))
+        assert_true(nx.is_forest(self.T2))
+        assert_true(nx.is_forest(self.T3))
+        assert_true(nx.is_forest(self.T4))
+        assert_true(nx.is_forest(self.T5))
+        assert_true(nx.is_forest(self.F1))
+        assert_true(nx.is_forest(self.N5))
+
+        assert_false(nx.is_forest(self.N1))
+        assert_false(nx.is_forest(self.N3))
+        assert_false(nx.is_forest(self.N4))
+        assert_false(nx.is_forest(self.N6))
+        assert_false(nx.is_forest(self.NF1))
+
+        
 
         
 
