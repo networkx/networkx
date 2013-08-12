@@ -24,11 +24,7 @@ class TestPWP:
 
     def test_pwp(self):
         G=self.G
-        T = networkx.pwp(G,1)
-        inf = T['influences']
-        dep = T['dependences']
+        inf,dep = networkx.pwp(G,1)
         for n in G:
             assert_almost_equal(inf[n],G.pwp_inf[n],places=4)
             assert_almost_equal(dep[n],G.pwp_dep[n],places=4)
-
-        assert_raises(networkx.NetworkXError,networkx.pwp,G,max_iter=0)

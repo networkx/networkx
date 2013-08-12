@@ -19,11 +19,7 @@ class TestMICMAC:
 
     def test_micmac(self):
         G=self.G
-        T = networkx.micmac(G,4)
-        inf = T['influences']
-        dep = T['dependences']
+        inf,dep = networkx.micmac(G,4)
         for n in G:
             assert_almost_equal(inf[n],G.micmac_inf[n],places=4)
             assert_almost_equal(dep[n],G.micmac_dep[n],places=4)
-
-        assert_raises(networkx.NetworkXError,networkx.micmac,G,max_iter=0)
