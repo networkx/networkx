@@ -276,7 +276,7 @@ class GEXFWriter(GEXF):
 
     def add_graph(self, G):
         # set graph attributes
-        if G.graph['mode']=='dynamic':
+        if G.graph.get('mode')=='dynamic':
             mode='dynamic'
         else:
             mode='static'
