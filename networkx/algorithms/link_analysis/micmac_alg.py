@@ -12,7 +12,16 @@ def micmac(G, k=4):
     """Return the MICMAC indirect influences and indirect dependences
     of the nodes in the graph.
 
-    MICMAC computes the paths graph of size k in the graph G.
+    When two nodes on a DiGraph are connected with a directed
+    edge we say that the source exerts a direct influence over the
+    target and the target perceives a direct dependency from the source.
+    The amount of such influences or dependences is given by the
+    weight of the edge between them.
+
+    MICMAC computes the indirect influences and dependences for all nodes
+    in the graph G via powers of the adjacency matrix of G.
+    We call indirect influences and indirect dependences to the output of
+    MICMAC and its related methods: PWP, Heat Kernel and PageRank.
 
     Parameters
     -----------
@@ -20,23 +29,31 @@ def micmac(G, k=4):
       A NetworkX graph
 
     k : integer, optional
-      Paramenter of the MICMAC method, default=4
+      Paramenter of the MICMAC method, default=4. Comes from the formula:
+      adj(G)^k where adj(G) represents the adjacency matrix of G.
 
     Returns
     -------
-    indirect : dictionary
-       Dictionary of MICMAC indirect dependences and influences
+    influences: dictionary
+       Dictionary of MICMAC indirect influences
+    dependeces: dictionary
+       Dictionary of MICMAC indirect dependeces
 
     Examples
     --------
     >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> influences,dependencies = nx.micmac(G,k=3)
+    >>> influences,dependences = nx.micmac(G,k=3)
 
     Notes
     -----
-    This function uses SciPy and NumPy libraries to make the computations.
+    This function uses NumPy libraries to make the computations.
     A NetworkX DiGraph is prefered because on an undirected Graph
-    indirect dependences are equal to indirect dependeces.
+    indirect dependences are equal to indirect influences. Every
+    NetworkX Graph will be converted to a NetworkX DiGraph.
+
+    The name of this method comes from "Matrice d'Impacts Croisés
+    Multiplication Appliqués à un Classement" and was proposed by
+    Michel Godet.
 
     See Also
     --------
@@ -92,8 +109,8 @@ def micmac(G, k=4):
     
     #create the dictionary with the result
     influences = dict( zip(D, f.tolist()[0]) )
-    dependencies = dict( zip(D, d.transpose().tolist()[0]) )
-    return influences,dependencies
+    dependences = dict( zip(D, d.transpose().tolist()[0]) )
+    return influences,dependences
 
 # fixture for nose tests
 def setup_module(module):

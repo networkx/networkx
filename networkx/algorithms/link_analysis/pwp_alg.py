@@ -12,8 +12,16 @@ def pwp(G, k=1):
     """Return the PWP indirect influences and indirect dependences
     of the nodes in the graph.
 
-    PWP computes the indirect influences and dependences via the
-    exponential formula described in references.
+    When two nodes on a DiGraph are connected with a directed
+    edge we say that the source exerts a direct influence over the
+    target and the target perceives a direct dependency from the source.
+    The amount of such influences or dependences is given by the
+    weight of the edge between them.
+
+    PWP computes the indirect influences and dependences for all nodes
+    in a DiGraph  via the exponential formula described in references.
+    We call indirect influences and indirect dependences to the output of
+    PWP and its related methods: Heat Kernel, MICMAC and PageRank.
 
     Parameters
     -----------
@@ -21,23 +29,32 @@ def pwp(G, k=1):
       A NetworkX [Di]Graph
 
     k : integer, optional
-      Paramenter of the PWP method, default 1
+      Paramenter of the PWP method, default 1. Comes from the formula:
+      (e^{k*adj(G)} - I)/(e^k - 1), where adj(G) represents the
+      adjacency matrix of G and I is the identity matrix.
 
     Returns
     -------
-    indirect : dictionary
-       Dictionary of PWP indirect dependences and influences.
+    influences : dictionary
+       Dictionary of PWP indirect influences.
+    dependences : dictionary
+       Dictionary of PWP indirect dependences.
        
     Examples
     --------
     >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> influences,dependencies = nx.pwp(G)
+    >>> influences,dependences = nx.pwp(G)
 
     Notes
     -----
     This function uses the SciPy library to make the computations.
     A NetworkX DiGraph is preferred because on an undirected Graph
-    indirect dependences are equal to indirect dependeces.
+    indirect dependences are equal to indirect influences. Every
+    NetworkX Graph will be converted to a NetworkX DiGraph.
+
+    The name PWP comes from "nearly Poisson Weighted Path" and was
+    proposed by Rafael Díaz. We always refer to this method as PWP
+    never as its justification.
 
     See Also
     --------
@@ -91,8 +108,8 @@ def pwp(G, k=1):
   
     # Create dictionary with the result
     influences = dict( zip(D, f) )
-    dependencies = dict( zip(D, d) )
-    return influences,dependencies
+    dependences = dict( zip(D, d) )
+    return influences,dependences
 
 # fixture for nose tests
 def setup_module(module):

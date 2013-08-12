@@ -12,8 +12,17 @@ def heatkernel(G, k=1):
     """Return the Heat Kernel indirect influences and indirect
      dependences of the nodes in the graph.
 
-    Heat Kernel computes the indirect influences and dependences
-    via the exponential formula described in references.
+    When two nodes on a DiGraph are connected with a directed
+    edge we say that the source exerts a direct influence over the
+    target and the target perceives a direct dependency from the source.
+    The amount of such influences or dependences is given by the
+    weight of the edge between them.
+
+    Heat Kernel computes the indirect influences and dependences for
+    all nodes in a DiGraph via the exponential formula described
+    in references.
+    We call indirect influences and indirect dependences to the output of
+    Heat Kernel and its related methods: PWP, MICMAC and PageRank.
 
     Parameters
     -----------
@@ -21,23 +30,28 @@ def heatkernel(G, k=1):
       A NetworkX [Di]Graph
 
     k : integer, optional
-      Paramenter of the Heat Kernel method, default 1
+      Paramenter of the Heat Kernel method, default 1. Comes from the
+      exponential formula: e^{k(adj(G)-I)}, where adj(G) represents
+      the adjacency matrix of G and I is the identity matrix.
 
     Returns
     -------
-    indirect: dictionary
-        Dictionary of Heat Kernel indirect dependences and influences
+    influences : dictionary
+        Dictionary of Heat Kernel indirect influences
+    dependences : dictionary
+        Dictionary of Heat Kernel indirect dependeces
 
     Examples
     --------
     >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> influences,dependencies = nx.heatkernel(G)
+    >>> influences,dependences = nx.heatkernel(G)
 
     Notes
     -----
     This function uses the SciPy library to make the computations.
     A NetworkX DiGraph is preferred because on an undirected Graph
-    indirect dependences are equal to indirect dependences.
+    indirect dependences are equal to indirect influences. A NetworkX
+    Graph will be converted to a DiGraph.
 
     See Also
     --------
@@ -95,8 +109,8 @@ def heatkernel(G, k=1):
     
     #create the dictionary with the result
     influences = dict( zip(D, f) )
-    dependencies = dict( zip(D, d) )
-    return influences,dependencies
+    dependences = dict( zip(D, d) )
+    return influences,dependences
 
 # fixture for nose tests
 def setup_module(module):
