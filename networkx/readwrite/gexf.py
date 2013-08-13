@@ -403,7 +403,10 @@ class GEXFWriter(GEXF):
                 # static data
                 e=Element("attvalue")
                 e.attrib['for']=attr_id
-                e.attrib['value']=make_str(v)
+                if type(v) == bool:
+                    e.attrib['value']=make_str(v).lower()
+                else:
+                    e.attrib['value']=make_str(v)
                 attvalues.append(e)
         xml_obj.append(attvalues)
         return data
