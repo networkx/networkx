@@ -307,4 +307,11 @@ class TestGEXF(object):
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal( expected, obtained )
 
-
+    def test_bool(self):
+        G=nx.Graph()
+        G.add_node(1, testattr=True)
+        fh = io.BytesIO()
+        nx.write_gexf(G,fh)
+        fh.seek(0)
+        H=nx.read_gexf(fh,node_type=int)
+        assert_equal(H.node[1]['testattr'], True)
