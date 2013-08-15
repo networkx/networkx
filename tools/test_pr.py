@@ -344,7 +344,7 @@ if __name__ == '__main__':
     # Test for requests version.
     import requests
     major, minor, rev = map(int, requests.__version__.split('.'))
-    if minor < 10:
+    if major == 0 and minor < 10:
         print("test_pr.py:")
         print("The requests python library must be version 0.10.0",
                 "or above, you have version",
