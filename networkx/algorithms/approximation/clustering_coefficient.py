@@ -1,64 +1,59 @@
 # -*- coding: utf-8 -*-
-"""
-************
-Clustering Coefficient
-************
-
-Given a graph `G = (V, E)`, approximate the fraction of triangles that exist over the total number of triangles
-
-http://en.wikipedia.org/wiki/Clustering_coefficient
-"""
 #   Copyright (C) 2013 by
 #   Fred Morstatter <fred.morstatter@asu.edu>
+#   Jordi Torrents <jtorrents@milnou.net>
 #   All rights reserved.
 #   BSD license.
 import random
-from networkx.utils import *
-__all__ = ["approx_clustering_coefficient"]
-__author__ = """Fred Morstatter (fred.morstatter@asu.edu)"""
+from networkx.utils import not_implemented_for
+
+__all__ = ['average_clustering']
+__author__ = """\n""".join(['Fred Morstatter <fred.morstatter@asu.edu>',
+                            'Jordi Torrents <jtorrents@milnou.net>'])
 
 @not_implemented_for('directed')
-def approx_clustering_coefficient(G, num_trials=1000):
-    r"""Approximation of the clustering coefficient
+def average_clustering(G, trials=1000):
+    r"""Estimates the average clustering coefficient of G.
 
-    Find an approximate clustering coefficient for the graph.
+    The local clustering of each node in `G` is the fraction of triangles
+    that actually exist over all possible triangles in its neighborhood.
+    The average clustering coefficient of a graph `G` is the mean of
+    local clusterings.
+
+    This function finds an approximate average clustering coefficient
+    for G by repeating `n` times (defined in `trials`) the following
+    experiment: choose a node at random, choose two of its neighbors
+    at random, and check if they are connected. The approximate
+    coefficient is the fraction of triangles found over the number
+    of trials [1]_.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    num_trials : Number of trials to perform (default 1000). Must be a positive integer.
+    trials : integer
+        Number of trials to perform (default 1000).
 
     Returns
     -------
-    Approximated clustering coefficient - float.
+    c : float
+        Approximated average clustering coefficient.
 
     References
     ----------
-    .. [1] Schank, Thomas, and Dorothea Wagner. Approximating clustering-coefficient and transitivity. Universität Karlsruhe, Fakultät für Informatik, 2004.
+    .. [1] Schank, Thomas, and Dorothea Wagner. Approximating clustering
+       coefficient and transitivity. Universität Karlsruhe, Fakultät für
+       Informatik, 2004.
        http://www.emis.ams.org/journals/JGAA/accepted/2005/SchankWagner2005.9.2.pdf
+
     """
-    
-    if num_trials <= 0:
-        raise ValueError("Expected positive integer for num_trials.")
-
-    #number of successful trials
-    triangles_found = 0
+    triangles = 0
     nodes = G.nodes()
-
-    for trial in xrange(num_trials):
-        #randomly select a node
+    for _ in range(trials):
         node = random.choice(nodes)
-        nbrs = G[node]
-        #if there are fewer than 2 connections, this experiment will surely fail, and it's fine to continue as this does say something about the graph.
+        nbrs = G.neighbors(node)
         if len(nbrs) < 2:
             continue
-        else:
-            #make a legitimate attempt at the experiment. Choose two of the nodes connections and see if they are connected
-            (a, b) = random.sample(nbrs, 2)
-            triangles_found += 1 if b in G[a] else 0
-
-    #the clustering coefficient is then the number of triangles found / the number of trials
-    return triangles_found / float(num_trials)
-
-
+        u, v = random.sample(nbrs, 2)
+        triangles += 1 if u in G[v] else 0
+    return triangles / float(trials)
