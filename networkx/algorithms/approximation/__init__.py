@@ -1,3 +1,4 @@
+from networkx.algorithms.approximation.clustering_coefficient import *
 from networkx.algorithms.approximation.clique import *
 from networkx.algorithms.approximation.dominating_set import *
 from networkx.algorithms.approximation.independent_set import *
