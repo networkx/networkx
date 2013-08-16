@@ -119,6 +119,9 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
             ax = cf.gca()
 
  # allow callers to override the hold state by passing hold=True|False
+
+    if 'with_labels' not in kwds:
+        kwds['with_labels'] = False
     b = plt.ishold()
     h = kwds.pop('hold', None)
     if h is not None:
