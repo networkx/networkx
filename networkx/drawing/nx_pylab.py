@@ -64,6 +64,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     **kwds : optional keywords
        See networkx.draw_networkx() for a description of optional keywords.
 
+
     Examples
     --------
     >>> G=nx.dodecahedral_graph()
@@ -325,6 +326,11 @@ def draw_networkx_nodes(G, pos,
     label : [None| string]
        Label for legend
 
+    Returns
+    -------
+    matplotlib.collections.PathCollection
+        `PathCollection` of the nodes.
+
     Examples
     --------
     >>> G=nx.dodecahedral_graph()
@@ -443,6 +449,11 @@ def draw_networkx_edges(G, pos,
 
     label : [None| string]
        Label for legend
+
+    Returns
+    -------
+    matplotlib.collection.LineCollection
+        `LineCollection` of the edges
 
     Notes
     -----
@@ -657,6 +668,10 @@ def draw_networkx_labels(G, pos,
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
 
+    Returns
+    -------
+    dict
+        `dict` of labels keyed on the nodes
 
     Examples
     --------
@@ -769,6 +784,11 @@ def draw_networkx_edge_labels(G, pos,
 
     clip_on : bool
        Turn on clipping at axis boundaries (default=True)
+
+    Returns
+    -------
+    dict
+        `dict` of labels keyed on the edges
 
     Examples
     --------
