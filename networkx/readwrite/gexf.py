@@ -196,11 +196,13 @@ class GEXF(object):
     try: # Python 3.x
         blurb = chr(1245) # just to trigger the exception
         types.extend([
+           (int, "long"),
            (str,"liststring"),
            (str,"anyURI"),
            (str,"string")])
     except ValueError: # Python 2.6+
         types.extend([
+           (long,"long"),
            (str,"liststring"),
            (str,"anyURI"),
            (str,"string"),
