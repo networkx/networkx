@@ -14,7 +14,8 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
 __all__ = ['eigenvector_centrality',
            'eigenvector_centrality_numpy']
 
-def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
+def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None, 
+                           weight='weight'):
     """Compute the eigenvector centrality for the graph G.
 
     Uses the power method to find the eigenvector for the 
@@ -33,6 +34,10 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
 
     nstart : dictionary, optional
       Starting value of eigenvector iteration for each node. 
+
+    weight : None or string, optional
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
 
     Returns
     -------
@@ -86,7 +91,7 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
         # do the multiplication y=Ax
         for n in x:
             for nbr in G[n]:
-                x[n]+=xlast[nbr]*G[n][nbr].get('weight',1)
+                x[n]+=xlast[nbr]*G[n][nbr].get(weight,1)
         # normalize vector
         try:
             s=1.0/sqrt(sum(v**2 for v in x.values()))
@@ -103,13 +108,18 @@ def eigenvector_centrality(G,max_iter=100,tol=1.0e-6,nstart=None):
 power iteration failed to converge in %d iterations."%(i+1))""")
 
 
-def eigenvector_centrality_numpy(G):
+def eigenvector_centrality_numpy(G, weight='weight'):
     """Compute the eigenvector centrality for the graph G.
 
     Parameters
     ----------
     G : graph
       A networkx graph 
+
+    weight : None or string, optional
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
+
 
     Returns
     -------
@@ -148,7 +158,7 @@ def eigenvector_centrality_numpy(G):
     if len(G)==0:
         raise nx.NetworkXException('Empty graph.')
 
-    A=nx.adj_matrix(G,nodelist=G.nodes())
+    A=nx.adj_matrix(G,nodelist=G.nodes(), weight='weight')
     eigenvalues,eigenvectors=np.linalg.eig(A)
     # eigenvalue indices in reverse sorted order
     ind=eigenvalues.argsort()[::-1]

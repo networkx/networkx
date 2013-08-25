@@ -42,6 +42,16 @@ class TestEigenvectorCentrality(object):
             assert_almost_equal(b[n],b_answer[n],places=4)
 
 
+    def test_P3_unweighted(self):
+        """Eigenvector centrality: P3"""
+        G=networkx.path_graph(3)
+        b_answer={0: 0.5, 1: 0.7071, 2: 0.5}
+        b=networkx.eigenvector_centrality_numpy(G, weight=None)
+        for n in sorted(G):
+            assert_almost_equal(b[n],b_answer[n],places=4)
+
+
+
     @raises(networkx.NetworkXError)
     def test_maxiter(self):
         G=networkx.path_graph(3)
