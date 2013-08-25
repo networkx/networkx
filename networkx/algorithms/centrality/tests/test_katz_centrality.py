@@ -194,6 +194,32 @@ class TestKatzCentralityNumpy(object):
         e = networkx.katz_centrality_numpy(G, 0.1,beta='foo')
 
 
+    def test_K5_unweighted(self):
+        """Katz centrality: K5"""
+        G = networkx.complete_graph(5)
+        alpha = 0.1
+        b = networkx.katz_centrality(G, alpha, weight=None)
+        v = math.sqrt(1 / 5.0)
+        b_answer = dict.fromkeys(G, v)
+        for n in sorted(G):
+            assert_almost_equal(b[n], b_answer[n])
+        nstart = dict([(n, 1) for n in G])
+        b = networkx.eigenvector_centrality_numpy(G)
+        for n in sorted(G):
+            assert_almost_equal(b[n], b_answer[n], places=3)
+
+    def test_P3_unweighted(self):
+        """Katz centrality: P3"""
+        alpha = 0.1
+        G = networkx.path_graph(3)
+        b_answer = {0: 0.5598852584152165, 1: 0.6107839182711449,
+                    2: 0.5598852584152162}
+        b = networkx.katz_centrality_numpy(G, alpha, weight=None)
+        for n in sorted(G):
+            assert_almost_equal(b[n], b_answer[n], places=4)
+
+
+
 class TestKatzCentralityDirected(object):
     def setUp(self):
         G = networkx.DiGraph()
