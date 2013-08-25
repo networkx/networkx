@@ -8,8 +8,8 @@ Katz centrality.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from networkx.utils import *
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
+from networkx.utils import not_implemented_for
+__author__ = "\n".join(['Aric Hagberg (aric.hagberg@gmail.com)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Sasha Gutfraind (ag362@cornell.edu)',
                         'Vincent Gauthier (vgauthier@luxbulb.org)'])
@@ -126,16 +126,16 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     """
     from math import sqrt
 
-    if len(G)==0:
+    if len(G) == 0:
         return {}
 
-    nnodes=G.number_of_nodes()
+    nnodes = G.number_of_nodes()
 
     if nstart is None:
         # choose starting vector with entries of 0
-        x=dict([(n,0) for n in G])
+        x = dict([(n,0) for n in G])
     else:
-        x=nstart
+        x = nstart
 
     try:
         b = dict.fromkeys(G,float(beta))
@@ -147,8 +147,8 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
 
     # make up to max_iter iterations
     for i in range(max_iter):
-        xlast=x
-        x=dict.fromkeys(xlast, 0)
+        xlast = x
+        x = dict.fromkeys(xlast, 0)
         # do the multiplication y = Alpha * Ax - Beta
         for n in x:
             for nbr in G[n]:
@@ -156,19 +156,19 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
             x[n] = alpha*x[n] + b[n]
 
         # check convergence
-        err=sum([abs(x[n]-xlast[n]) for n in x])
+        err = sum([abs(x[n]-xlast[n]) for n in x])
         if err < nnodes*tol:
             if normalized:
                 # normalize vector
                 try:
-                    s=1.0/sqrt(sum(v**2 for v in x.values()))
+                    s = 1.0/sqrt(sum(v**2 for v in x.values()))
                 # this should never be zero?
                 except ZeroDivisionError:
-                    s=1.0
+                    s = 1.0
             else:
                 s = 1
             for n in x:
-                x[n]*=s
+                x[n] *= s
             return x
 
     raise nx.NetworkXError('Power iteration failed to converge in ',
@@ -270,14 +270,14 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         import numpy as np
     except ImportError:
         raise ImportError('Requires NumPy: http://scipy.org/')
-    if len(G)==0:
+    if len(G) == 0:
         return {}
     try:
         nodelist = beta.keys()
         if set(nodelist) != set(G):
             raise nx.NetworkXError('beta dictionary '
                                    'must have a value for every node')
-        b = np.array(list(beta.values()),dtype=float)
+        b = np.array(list(beta.values()), dtype=float)
     except AttributeError:
         nodelist = G.nodes()
         try:
@@ -285,14 +285,14 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         except (TypeError,ValueError):
             raise nx.NetworkXError('beta must be a number')
 
-    A=nx.adj_matrix(G, nodelist=nodelist, weight=weight)
+    A = nx.adj_matrix(G, nodelist=nodelist, weight=weight)
     n = np.array(A).shape[0]
     centrality = np.linalg.solve( np.eye(n,n) - (alpha * A) , b)
     if normalized:
         norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
     else:
         norm = 1.0
-    centrality=dict(zip(nodelist, map(float,centrality/norm)))
+    centrality = dict(zip(nodelist, map(float,centrality/norm)))
     return centrality
 
 

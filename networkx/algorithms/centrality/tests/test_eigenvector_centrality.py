@@ -13,7 +13,7 @@ class TestEigenvectorCentrality(object):
             import numpy as np
         except ImportError:
             raise SkipTest('NumPy not available.')
-        
+
     def test_K5(self):
         """Eigenvector centrality: K5"""
         G=networkx.complete_graph(5)
@@ -22,7 +22,7 @@ class TestEigenvectorCentrality(object):
         b_answer=dict.fromkeys(G,v)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
-        nstart = dict([(n,1) for n in G]) 
+        nstart = dict([(n,1) for n in G])
         b=networkx.eigenvector_centrality(G,nstart=nstart)
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
@@ -68,7 +68,7 @@ class TestEigenvectorCentralityDirected(object):
             raise SkipTest('NumPy not available.')
 
     def setUp(self):
-    
+
         G=networkx.DiGraph()
 
         edges=[(1,2),(1,3),(2,4),(3,2),(3,5),(4,2),(4,5),(4,6),\
@@ -77,7 +77,7 @@ class TestEigenvectorCentralityDirected(object):
 
         G.add_edges_from(edges,weight=2.0)
         self.G=G
-        self.G.evc=[0.25368793,  0.19576478,  0.32817092,  0.40430835,  
+        self.G.evc=[0.25368793,  0.19576478,  0.32817092,  0.40430835,
                     0.48199885, 0.15724483,  0.51346196,  0.32475403]
 
         H=networkx.DiGraph()
@@ -88,7 +88,7 @@ class TestEigenvectorCentralityDirected(object):
 
         G.add_edges_from(edges)
         self.H=G
-        self.H.evc=[0.25368793,  0.19576478,  0.32817092,  0.40430835,  
+        self.H.evc=[0.25368793,  0.19576478,  0.32817092,  0.40430835,
                     0.48199885, 0.15724483,  0.51346196,  0.32475403]
 
 
