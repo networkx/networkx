@@ -53,6 +53,8 @@ def union(G, H, rename=(None, None), name=None):
     --------
     disjoint_union
     """
+    if not G.is_multigraph() == H.is_multigraph():
+        raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
     # Union is the same type as G
     R = G.__class__()
     if name is None:
@@ -167,7 +169,8 @@ def intersection(G, H):
     R=nx.create_empty_copy(G)
 
     R.name="Intersection of (%s and %s)"%(G.name, H.name)
-
+    if not G.is_multigraph() == H.is_multigraph():
+        raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
     if set(G)!=set(H):
         raise nx.NetworkXError("Node sets of graphs are not equal")
 
@@ -217,6 +220,8 @@ def difference(G, H):
     >>> R.remove_nodes_from(n for n in G if n in H)
     """
     # create new graph
+    if not G.is_multigraph() == H.is_multigraph():
+        raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
     R=nx.create_empty_copy(G)
     R.name="Difference of (%s and %s)"%(G.name, H.name)
 
@@ -252,6 +257,8 @@ def symmetric_difference(G, H):
     graph.
     """
     # create new graph
+    if not G.is_multigraph() == H.is_multigraph():
+        raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
     R=nx.create_empty_copy(G)
     R.name="Symmetric difference of (%s and %s)"%(G.name, H.name)
 
@@ -305,6 +312,8 @@ def compose(G, H, name=None):
     It is recommended that G and H be either both directed or both undirected.
     Attributes from H take precedent over attributes from G.
     """
+    if not G.is_multigraph() == H.is_multigraph():
+        raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
     if name is None:
         name="compose( %s, %s )"%(G.name,H.name)
     R=G.__class__()
