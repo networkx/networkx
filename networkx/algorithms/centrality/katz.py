@@ -19,7 +19,8 @@ __all__ = ['katz_centrality',
 
 @not_implemented_for('multigraph')
 def katz_centrality(G, alpha=0.1, beta=1.0,
-                    max_iter=1000, tol=1.0e-6, nstart=None, normalized=True):
+                    max_iter=1000, tol=1.0e-6, nstart=None, normalized=True,
+                    weight = 'weight'):
     r"""Compute the Katz centrality for the nodes of the graph G.
 
 
@@ -75,6 +76,10 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
 
     normalized : bool, optional (default=True)
       If True normalize the resulting values.
+
+    weight : None or string, optional
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
 
     Returns
     -------
@@ -147,7 +152,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
         # do the multiplication y = Alpha * Ax - Beta
         for n in x:
             for nbr in G[n]:
-                x[n] += xlast[nbr] * G[n][nbr].get('weight',1)
+                x[n] += xlast[nbr] * G[n][nbr].get(weight,1)
             x[n] = alpha*x[n] + b[n]
 
         # check convergence
@@ -170,7 +175,8 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
                            '%d iterations."%(i+1))')
 
 @not_implemented_for('multigraph')
-def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
+def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
+                          weight = 'weight'):
     r"""Compute the Katz centrality for the graph G.
 
 
@@ -216,6 +222,10 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
 
     normalized : bool
       If True normalize the resulting values.
+
+    weight : None or string, optional
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
 
     Returns
     -------
@@ -275,7 +285,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
         except (TypeError,ValueError):
             raise nx.NetworkXError('beta must be a number')
 
-    A=nx.adj_matrix(G, nodelist=nodelist)
+    A=nx.adj_matrix(G, nodelist=nodelist, weight=weight)
     n = np.array(A).shape[0]
     centrality = np.linalg.solve( np.eye(n,n) - (alpha * A) , b)
     if normalized:
