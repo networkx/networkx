@@ -72,25 +72,25 @@ def relabel_nodes(G, mapping, copy=True):
     # you can pass a function f(old_label)->new_label
     # but we'll just make a dictionary here regardless
     if not hasattr(mapping,"__getitem__"):
-        m = dict((n,mapping(n)) for n in G)
+        m = dict((n, mapping(n)) for n in G)
     else:
-        m=mapping
+        m = mapping
     if copy:
-        return _relabel_copy(G,m)
+        return _relabel_copy(G, m)
     else:
-        return _relabel_inplace(G,m)
+        return _relabel_inplace(G, m)
 
 
 def _relabel_inplace(G, mapping):
-    old_labels=set(mapping.keys())
-    new_labels=set(mapping.values())
+    old_labels = set(mapping.keys())
+    new_labels = set(mapping.values())
     if len(old_labels & new_labels) > 0:
         # labels sets overlap
         # can we topological sort and still do the relabeling?
-        D=nx.DiGraph(list(mapping.items()))
+        D = nx.DiGraph(list(mapping.items()))
         D.remove_edges_from(D.selfloop_edges())
         try:
-            nodes=nx.topological_sort(D)
+            nodes = nx.topological_sort(D)
         except nx.NetworkXUnfeasible:
             raise nx.NetworkXUnfeasible('The node label sets are overlapping '
                                         'and no ordering can resolve the '
@@ -98,50 +98,50 @@ def _relabel_inplace(G, mapping):
         nodes.reverse()  # reverse topological order
     else:
         # non-overlapping label sets
-        nodes=old_labels
+        nodes = old_labels
 
     multigraph = G.is_multigraph()
     directed = G.is_directed()
 
     for old in nodes:
         try:
-            new=mapping[old]
+            new = mapping[old]
         except KeyError:
             continue
         try:
-            G.add_node(new,attr_dict=G.node[old])
+            G.add_node(new, attr_dict=G.node[old])
         except KeyError:
             raise KeyError("Node %s is not in the graph"%old)
         if multigraph:
-            new_edges=[(new,old == target and new or target,key,data)
-                       for (_,target,key,data)
-                       in G.edges(old,data=True,keys=True)]
+            new_edges = [(new, old == target and new or target, key, data)
+                         for (_,target,key,data)
+                         in G.edges(old, data=True, keys=True)]
             if directed:
-                new_edges+=[(old == source and new or source,new,key,data)
-                            for (source,_,key,data)
-                            in G.in_edges(old,data=True,keys=True)]
+                new_edges += [(old == source and new or source, new, key, data)
+                              for (source, _, key,data)
+                              in G.in_edges(old, data=True, keys=True)]
         else:
-            new_edges=[(new,old == target and new or target,data)
-                       for (_,target,data) in G.edges(old,data=True)]
+            new_edges = [(new, old == target and new or target, data)
+                         for (_,target,data) in G.edges(old, data=True)]
             if directed:
-                new_edges+=[(old == source and new or source,new,data)
-                            for (source,_,data) in G.in_edges(old,data=True)]
+                new_edges += [(old == source and new or source,new,data)
+                              for (source,_,data) in G.in_edges(old, data=True)]
         G.remove_node(old)
         G.add_edges_from(new_edges)
     return G
 
 def _relabel_copy(G, mapping):
-    H=G.__class__()
-    H.name="(%s)" % G.name
+    H = G.__class__()
+    H.name = "(%s)" % G.name
     if G.is_multigraph():
-        H.add_edges_from( (mapping.get(n1,n1),mapping.get(n2,n2),k,d.copy())
-                          for (n1,n2,k,d) in G.edges_iter(keys=True,data=True))
+        H.add_edges_from( (mapping.get(n1, n1),mapping.get(n2, n2),k,d.copy())
+                          for (n1,n2,k,d) in G.edges_iter(keys=True, data=True))
     else:
-        H.add_edges_from( (mapping.get(n1,n1),mapping.get(n2,n2),d.copy())
-                          for (n1,n2,d) in G.edges_iter(data=True))
+        H.add_edges_from( (mapping.get(n1, n1),mapping.get(n2, n2),d.copy())
+                          for (n1, n2, d) in G.edges_iter(data=True))
 
-    H.add_nodes_from(mapping.get(n,n) for n in G)
-    H.node.update(dict((mapping.get(n,n),d.copy()) for n,d in G.node.items()))
+    H.add_nodes_from(mapping.get(n, n) for n in G)
+    H.node.update(dict((mapping.get(n, n), d.copy()) for n,d in G.node.items()))
     H.graph.update(G.graph.copy())
 
     return H
@@ -181,24 +181,24 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
     """
     N = G.number_of_nodes()+first_label
     if ordering == "default":
-        mapping = dict(zip(G.nodes(),range(first_label,N)))
+        mapping = dict(zip(G.nodes(), range(first_label, N)))
     elif ordering == "sorted":
         nlist = G.nodes()
         nlist.sort()
-        mapping=dict(zip(nlist,range(first_label,N)))
+        mapping = dict(zip(nlist, range(first_label, N)))
     elif ordering == "increasing degree":
-        dv_pairs=[(d,n) for (n,d) in G.degree_iter()]
+        dv_pairs = [(d,n) for (n,d) in G.degree_iter()]
         dv_pairs.sort() # in-place sort from lowest to highest degree
-        mapping = dict(zip([n for d,n in dv_pairs],range(first_label,N)))
+        mapping = dict(zip([n for d,n in dv_pairs], range(first_label, N)))
     elif ordering == "decreasing degree":
         dv_pairs = [(d,n) for (n,d) in G.degree_iter()]
         dv_pairs.sort() # in-place sort from lowest to highest degree
         dv_pairs.reverse()
-        mapping = dict(zip([n for d,n in dv_pairs],range(first_label,N)))
+        mapping = dict(zip([n for d,n in dv_pairs], range(first_label, N)))
     else:
         raise nx.NetworkXError('Unknown node ordering: %s'%ordering)
-    H = relabel_nodes(G,mapping)
-    H.name="("+G.name+")_with_int_labels"
+    H = relabel_nodes(G, mapping)
+    H.name = "("+G.name+")_with_int_labels"
     # create node attribute with the old label
     if label_attribute is not None:
         nx.set_node_attributes(H, label_attribute,
