@@ -18,24 +18,33 @@ definition of a line graph. In a pair-wise intersection matrix, this is
 analogous to not including the diagonal as part of the line graph definition.
 
 Self-loops and multiple edges in G add nodes to L in a natural way, and do not
-require any changes to the definition.  However, it might be argued that the
-self-loops we excluded before should now be included.  The self-loops are
-still "trivial" in some sense and thus, are usually still excluded.
+require any fundamental changes to the definition.  It might be argued that
+the self-loops we excluded before should now be included.  However, the
+self-loops are still "trivial" in some sense and thus, are usually excluded.
 
 Directed Graphs
 ---------------
 For a directed graph G without multiple edges, each edge can be written as a
 tuple (u,v).  Its line graph L has the edges of G as its nodes. If x=(a,b) and
 y=(c,d) are two nodes in L, then (x,y) is an edge in L if and only if the
-tail of x matches the head of v---e.g., b=c.
+tail of x matches the head of y---e.g., b=c.
 
 Due to the directed nature of the edges, it is no longer the case that
 every edge x=(u,v) should be connected to itself with a self-loop in L. Now,
 the only time self-loops arise is if G itself has a self-loop.  So such
 self-loops are no longer "trivial" but instead, represent essential features
 of the topology of G. For this reason, the historical development of line
-digraphs is such that self-loops are allowed. When the graph G has multiple
-edges, once again no changes are required to the definition.
+digraphs is such that self-loops are included. When the graph G has multiple
+edges, once again only superficial changes are required to the definition.
+
+References
+----------
+Harary, Frank, and Norman, Robert Z., "Some properties of line digraphs",
+    Rend. Circ. Mat. Palermo, II. Ser. 9 (1960), 161-168.
+
+Hemminger, R. L.; Beineke, L. W. (1978), "Line graphs and line digraphs",
+    in Beineke, L. W.; Wilson, R. J., Selected Topics in Graph Theory, Academic
+    Press Inc., pp. 271–305.
 
 """
 #    Copyright (C) 2013 by
