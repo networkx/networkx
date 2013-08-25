@@ -149,7 +149,8 @@ def _relabel_copy(G, mapping):
 
 def convert_node_labels_to_integers(G, first_label=0, ordering="default",
                                     label_attribute=None):
-    """Return a copy of the graph G with the nodes relabeled with integers.
+    """Return a copy of the graph G with the nodes relabeled using
+    consecutive integers.
 
     Parameters
     ----------
@@ -157,8 +158,8 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
        A NetworkX graph
 
     first_label : int, optional (default=0)
-       An integer specifying the offset in numbering nodes.
-       The n new integer labels are numbered first_label, ..., n-1+first_label.
+       An integer specifying the starting offset in numbering nodes.
+       The new integer labels are numbered first_label, ..., n-1+first_label.
 
     ordering : string
        "default" : inherit node ordering from G.nodes()
