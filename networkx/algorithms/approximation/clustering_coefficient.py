@@ -47,13 +47,14 @@ def average_clustering(G, trials=1000):
        http://www.emis.ams.org/journals/JGAA/accepted/2005/SchankWagner2005.9.2.pdf
 
     """
+    n = len(G)
     triangles = 0
     nodes = G.nodes()
-    for _ in range(trials):
-        node = random.choice(nodes)
-        nbrs = G.neighbors(node)
+    for i in [int(random.random() * n) for i in range(trials)]:
+        nbrs = list(G[nodes[i]])
         if len(nbrs) < 2:
             continue
         u, v = random.sample(nbrs, 2)
-        triangles += 1 if u in G[v] else 0
+        if u in G[v]:
+            triangles += 1
     return triangles / float(trials)
