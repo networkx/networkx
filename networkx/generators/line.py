@@ -1,3 +1,4 @@
+# -*- coding: ascii -*-
 """
 Line graph algorithms.
 
@@ -40,11 +41,11 @@ edges, once again only superficial changes are required to the definition.
 References
 ----------
 Harary, Frank, and Norman, Robert Z., "Some properties of line digraphs",
-    Rend. Circ. Mat. Palermo, II. Ser. 9 (1960), 161-168.
+    Rend. Circ. Mat. Palermo, II. Ser. 9 (1960), 161--168.
 
 Hemminger, R. L.; Beineke, L. W. (1978), "Line graphs and line digraphs",
     in Beineke, L. W.; Wilson, R. J., Selected Topics in Graph Theory, Academic
-    Press Inc., pp. 271–305.
+    Press Inc., pp. 271--305.
 
 """
 #    Copyright (C) 2013 by
