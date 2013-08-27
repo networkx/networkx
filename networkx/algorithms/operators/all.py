@@ -1,6 +1,6 @@
 """Operations on many graphs.
 """
-#    Copyright (C) 2012 by
+#    Copyright (C) 2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -11,7 +11,7 @@ try:
 except ImportError: # Python3 has zip_longest
     from itertools import zip_longest
 import networkx as nx
-from networkx.utils import is_string_like
+#from networkx.utils import is_string_like
 
 __author__ = """\n""".join([ 'Robert King <kingrobertking@gmail.com>',
                              'Aric Hagberg <aric.hagberg@gmail.com>'])
@@ -55,10 +55,10 @@ def union_all(graphs, rename=(None,) , name=None):
     union
     disjoint_union_all
     """
-    graphs_names = zip_longest(graphs,rename)
+    graphs_names = zip_longest(graphs, rename)
     U, gname = next(graphs_names)
-    for H,hname in graphs_names:
-        U = nx.union(U, H, (gname,hname),name=name)
+    for H, hname in graphs_names:
+        U = nx.union(U, H, (gname, hname), name=name)
         gname = None
     return U
 
