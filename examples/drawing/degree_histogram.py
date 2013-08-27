@@ -1,24 +1,12 @@
 #!/usr/bin/env python
 """
 Random graph from given degree sequence.
-Draw degree histogram with matplotlib.
-
+Draw degree rank plot and graph with matplotlib.
 """
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-
-try:
-    import matplotlib.pyplot as plt
-    import matplotlib
-except:
-    raise
-
+__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
 import networkx as nx
-
-z=nx.utils.create_degree_sequence(100,nx.utils.powerlaw_sequence,exponent=2.1)
-nx.is_valid_degree_sequence(z)
-
-print "Configuration model"
-G=nx.configuration_model(z)  # configuration model
+import matplotlib.pyplot as plt
+G = nx.gnp_random_graph(100,0.02)
 
 degree_sequence=sorted(nx.degree(G).values(),reverse=True) # degree sequence
 #print "Degree sequence", degree_sequence
