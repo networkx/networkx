@@ -15,7 +15,10 @@ __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)',
                         'Ben Edwards(bedwards@cs.unm.edu)'])
 
+import warnings as _warnings
 def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
+    _warnings.warn("create_degree_sequence() is deprecated",
+                   DeprecationWarning)
     """ Attempt to create a valid degree sequence of length n using
     specified function sfunction(n,**kwds).
 
