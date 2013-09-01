@@ -14,6 +14,14 @@ Clique
    max_clique
    clique_removal
 
+Clustering
+----------
+.. automodule:: networkx.algorithms.approximation.clustering_coefficient
+.. autosummary::
+   :toctree: generated/
+
+   average_clustering
+
 
 Dominating Set
 ---------------
