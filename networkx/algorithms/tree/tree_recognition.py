@@ -1,13 +1,13 @@
 #-*- coding: utf-8 -*-
-
-
 import networkx as nx
+from networkx.utils import not_implemented_for
 __author__ = """\n""".join(['Ferdinando Papale <ferdinando.papale@gmail.com>'])
 __all__ = ['is_tree', 'is_forest']
 
 
+@not_implemented_for('directed')
 def is_tree(G):
-    """Return true if the input graph is a tree
+    """Return True if the input graph is a tree
 
     Parameters
     ----------
@@ -16,20 +16,20 @@ def is_tree(G):
 
     Returns
     -------
-    true if the input graph is a tree
+    True if the input graph is a tree
 
     Notes
     -----
-    For undirected graphs only. 
+    For undirected graphs only.
     """
-    return not G.is_directed() \
-            and (nx.number_of_nodes(G) == 0 \
-            or (nx.is_connected(G) \
-            and  (nx.number_of_edges(G) == nx.number_of_nodes(G)-1 )))  
+    n = len(G)
+    if n == 0:
+        raise nx.NetworkXPointlessConcept
+    return nx.number_of_edges(G) == n - 1
 
-
+@not_implemented_for('directed')
 def is_forest(G):
-    """Return true if the input graph is a forest
+    """Return True if the input graph is a forest
 
     Parameters
     ----------
@@ -38,19 +38,13 @@ def is_forest(G):
 
     Returns
     -------
-    true if the input graph is a forest
+    True if the input graph is a forest
 
     Notes
     -----
-    For undirected graphs only. 
+    For undirected graphs only.
     """
-
-    if not G.is_directed():
-        for graph in nx.connected_component_subgraphs(G):
-            if not nx.is_tree(graph):
-                return False
-        return True
-    else:
-        return False
-    
-
+    for graph in nx.connected_component_subgraphs(G):
+        if not nx.is_tree(graph):
+            return False
+    return True
