@@ -56,7 +56,8 @@ Hemminger, R. L.; Beineke, L. W. (1978), "Line graphs and line digraphs",
 #    BSD license.
 __author__ = "\n".join(["Aric Hagberg (hagberg@lanl.gov)",
                         "Pieter Swart (swart@lanl.gov)",
-                        "Dan Schult (dschult@colgate.edu)"])
+                        "Dan Schult (dschult@colgate.edu)",
+                        "chebee7i (chebee7i@gmail.com)"])
 
 __all__ = ['line_graph']
 
@@ -66,16 +67,23 @@ def line_graph(G, create_using=None):
     """Return the line graph of the graph or digraph G.
 
     The line graph of a graph G has a node for each edge in G and an edge
-    between those nodes if the two edges in G share a common node.
+    between those nodes if the two edges in G share a common node. For directed
+    graphs, nodes are connected only if they form a directed path of length 2.
 
-    For DiGraphs an edge an edge represents a directed path of length 2.
+    The nodes of the line graph are 2-tuples of nodes in the original graph
+    (or 3-tuples for multigraphs, with the key of the edge as the 3rd element).
 
-    The nodes of the line graph are two-tuples of nodes in the original graph.
+    For more discussion, see the docstring in :mod:`networkx.generators.line`.
 
     Parameters
     ----------
     G : graph
-       A NetworkX Graph, DiGraph, MultiGraph, or MultiDigraph.
+        A NetworkX Graph, DiGraph, MultiGraph, or MultiDigraph.
+
+    Returns
+    -------
+    L : graph
+        The line graph of G.
 
     Examples
     --------
@@ -86,16 +94,18 @@ def line_graph(G, create_using=None):
 
     Notes
     -----
-    Graph, node, and edge data are not propagated to the new graph.
+    Graph, node, and edge data are not propagated to the new graph. For
+    undirected graphs, the nodes in G must be sortable---otherwise, the
+    constructed line graph may not be correct.
 
     """
     if G.is_directed():
-        L = lg_directed(G, create_using=create_using)
+        L = _lg_directed(G, create_using=create_using)
     else:
-        L = lg_undirected(G, selfloops=False, create_using=create_using)
+        L = _lg_undirected(G, selfloops=False, create_using=create_using)
     return L
 
-def node_func(G):
+def _node_func(G):
     """Returns a function which returns a sorted node for line graphs.
 
     When constructing a line graph for undirected graphs, we must normalize
@@ -110,7 +120,7 @@ def node_func(G):
             return (u, v) if u <= v else (v, u)
     return sorted_node
 
-def edge_func(G):
+def _edge_func(G):
     """Returns the edges from G, handling keys for multigraphs as necessary.
 
     """
@@ -122,7 +132,7 @@ def edge_func(G):
             return G.edges_iter(nbunch)
     return get_edges
 
-def sorted_edge(u, v):
+def _sorted_edge(u, v):
     """Returns a sorted edge.
 
     During the construction of a line graph for undirected graphs, the data
@@ -135,7 +145,7 @@ def sorted_edge(u, v):
     """
     return (u, v) if u <= v else (v, u)
 
-def lg_directed(G, create_using=None):
+def _lg_directed(G, create_using=None):
     """Return the line graph L of the (multi)digraph G.
 
     Edges in G appear as nodes in L, represented as tuples of the form (u,v)
@@ -156,7 +166,7 @@ def lg_directed(G, create_using=None):
         L = create_using
 
     # Create a graph specific edge function.
-    get_edges = edge_func(G)
+    get_edges = _edge_func(G)
 
     for from_node in get_edges():
         # from_node is: (u,v) or (u,v,key)
@@ -166,12 +176,13 @@ def lg_directed(G, create_using=None):
 
     return L
 
-def lg_undirected(G, selfloops=False, create_using=None):
+def _lg_undirected(G, selfloops=False, create_using=None):
     """Return the line graph L of the (multi)graph G.
 
     Edges in G appear as nodes in L, represented as sorted tuples of the form
     (u,v), or (u,v,key) if G is a multigraph. A node in L corresponding to
-    the edge (u,v) is connected to every node corresponding to an edge (v,w).
+    the edge {u,v} is connected to every node corresponding to an edge that
+    involves u or v.
 
     Parameters
     ----------
@@ -195,8 +206,8 @@ def lg_undirected(G, selfloops=False, create_using=None):
         L = create_using
 
     # Graph specific functions for edges and sorted nodes.
-    get_edges = edge_func(G)
-    sorted_node = node_func(G)
+    get_edges = _edge_func(G)
+    sorted_node = _node_func(G)
 
     # Determine if we include self-loops or not.
     shift = 0 if selfloops else 1
@@ -214,7 +225,7 @@ def lg_undirected(G, selfloops=False, create_using=None):
         # especially important for multigraphs, we store the edges in
         # canonical form in a set.
         for i, a in enumerate(nodes):
-            edges.update([ sorted_edge(a,b) for b in nodes[i+shift:] ])
+            edges.update([ _sorted_edge(a,b) for b in nodes[i+shift:] ])
 
     L.add_edges_from(edges)
     return L
