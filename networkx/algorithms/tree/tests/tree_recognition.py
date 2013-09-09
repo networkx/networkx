@@ -15,8 +15,6 @@ class TestTreeRecognition(object):
         self.T3.add_nodes_from(range(5))
         edges = [(i,i+1) for i in range(4)]
         self.T3.add_edges_from(edges)
-        
-        self.T4 = nx.MultiGraph()
 
         self.T5 = nx.MultiGraph()
         self.T5.add_nodes_from(range(5))
@@ -49,30 +47,49 @@ class TestTreeRecognition(object):
         self.NF1 = nx.compose(self.T6,self.N6)
 
 
+    @raises(nx.NetworkXPointlessConcept)
+    def test_null(self):
+        nx.is_tree(nx.Graph())
+
+    @raises(nx.NetworkXPointlessConcept)
+    def test_null(self):
+        nx.is_tree(nx.MultiGraph())
+
+
+    @raises(nx.NetworkXNotImplemented)
+    def test_digraph(self):
+        assert_false(nx.is_tree(self.N1))
+
+    @raises(nx.NetworkXNotImplemented)
+    def test_multidigraph(self):
+        assert_false(nx.is_tree(self.N3))
+
+    @raises(nx.NetworkXNotImplemented)
+    def test_digraph_forest(self):
+        assert_false(nx.is_forest(self.N1))
+
+    @raises(nx.NetworkXNotImplemented)
+    def test_multidigraph_forest(self):
+        assert_false(nx.is_forest(self.N3))
+
     def test_is_tree(self):
-        assert_true(nx.is_tree(self.T1))
         assert_true(nx.is_tree(self.T2))
         assert_true(nx.is_tree(self.T3))
-        assert_true(nx.is_tree(self.T4))
         assert_true(nx.is_tree(self.T5))
 
-        assert_false(nx.is_tree(self.N1))
-        assert_false(nx.is_tree(self.N3))
+    def test_is_not_tree(self):
         assert_false(nx.is_tree(self.N4))
         assert_false(nx.is_tree(self.N5))
         assert_false(nx.is_tree(self.N6))
 
     def test_is_forest(self):
-        assert_true(nx.is_forest(self.T1))
         assert_true(nx.is_forest(self.T2))
         assert_true(nx.is_forest(self.T3))
-        assert_true(nx.is_forest(self.T4))
         assert_true(nx.is_forest(self.T5))
         assert_true(nx.is_forest(self.F1))
         assert_true(nx.is_forest(self.N5))
 
-        assert_false(nx.is_forest(self.N1))
-        assert_false(nx.is_forest(self.N3))
+    def test_is_not_forest(self):
         assert_false(nx.is_forest(self.N4))
         assert_false(nx.is_forest(self.N6))
         assert_false(nx.is_forest(self.NF1))
