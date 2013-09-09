@@ -1,4 +1,3 @@
-
 """
     Unit tests for pydot drawing functions.
 """
@@ -26,9 +25,6 @@ class TestPydot(object):
         G.add_edge('B','C')
         G.add_edge('A','D')
         G.add_node('E')
-        G.graph['node'] = {'style':'filled'}
-        G.graph['name'] = 'demo'
-        G.graph['edge'] = {'color':'red'}
         return G, nx.to_pydot(G)
 
     def assert_equal(self, G1, G2):

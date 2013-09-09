@@ -51,7 +51,6 @@ Graphviz with pydot
    read_dot
    graphviz_layout
    pydot_layout
-   draw_pydot
 
 
 Graph Layout
