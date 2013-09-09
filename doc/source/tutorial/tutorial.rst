@@ -465,40 +465,5 @@ and PyGraphviz, or pydot, are available on your system, you can also use
 >>> nx.draw_graphviz(G)
 >>> nx.write_dot(G,'file.dot')
 
-Drawing graphs with Pydot/Graphviz
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If `pydot <http://code.google.com/p/pydot/>`_ and 
-`Graphviz <http://www.graphviz.org/>`_ are both installed, then graphs can
-be 1) converted from NetworkX to the pydot format, 2) drawn externally using
-Graphviz, and 3) displayed using the operating system's default graphics 
-viewer. 
-
-The example below constructs a NetworkX graph whose attributes are compatible
-with the Graphviz DOT language and then displays the resulting PNG.  
-Unsupported attributes in NetworkX graphs are silently ignored during the 
-conversion to a pydot graph. Other output formats are also possible. 
-For details, consult the function's docstring and the Graphviz documentation.
-
->>> G = nx.DiGraph()
->>> G.graph['rankdir'] = 'LR'
->>> G.graph['dpi'] = 120
->>> G.add_cycle(range(4))
->>> G.add_node(0, color='red', style='filled', fillcolor='pink')
->>> G.add_node(1, shape='square')
->>> G.add_edge(0, 1, color='red', style='dashed')
->>> G.add_edge(3, 3, label='a')
->>> nx.draw_pydot(G)
-
-If you are working within an IPython Notebook, then this same function can 
-display the graph inline:
-
->>> nx.draw_pydot(G, show='ipynb')
-
-To make all graphs displayed inline, a global default value can be modified
-(e.g., in the startup file for the profile):
-
->>> nx.nxParams['pydot_show'] = 'ipynb'
-
-For other details on drawing graphs: :doc:`/reference/drawing`
+Details on drawing graphs: :doc:`/reference/drawing`
 
