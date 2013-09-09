@@ -50,6 +50,8 @@ __license__  = release.license
 __date__ = release.date
 __version__ = release.version
 
+from networkx.params import nxParams, reset_params
+
 #These are import orderwise
 from networkx.exception import  *
 import networkx.external
