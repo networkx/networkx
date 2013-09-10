@@ -1,1 +1,1 @@
-from networkx.algorithms.trees.tree_recognition import *
+from networkx.algorithms.tree.recognition import *
