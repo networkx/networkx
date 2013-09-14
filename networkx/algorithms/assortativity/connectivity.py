@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011 by
 #    Jordi Torrents <jtorrents@milnou.net>
 #    Aric Hagberg <hagberg@lanl.gov>
 #    All rights reserved.
@@ -11,7 +11,7 @@ __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
 __all__ = ['average_degree_connectivity',
            'k_nearest_neighbors']
 
-def _avg_deg_conn(G, neighbors, source_degree, target_degree, 
+def _avg_deg_conn(G, neighbors, source_degree, target_degree,
                   nodes=None, weight=None):
     # "k nearest neighbors, or neighbor_connectivity
     dsum = defaultdict(float)
@@ -22,17 +22,17 @@ def _avg_deg_conn(G, neighbors, source_degree, target_degree,
             s = float(sum(nbrdeg.values()))
         else: # weight nbr degree by weight of (n,nbr) edge
             if neighbors == G.neighbors:
-                s = float(sum((G[n][nbr].get(weight,1)*d 
+                s = float(sum((G[n][nbr].get(weight,1)*d
                                for nbr,d in nbrdeg.items())))
             elif neighbors == G.successors:
-                s = float(sum((G[n][nbr].get(weight,1)*d 
+                s = float(sum((G[n][nbr].get(weight,1)*d
                                for nbr,d in nbrdeg.items())))
             elif neighbors == G.predecessors:
-                s = float(sum((G[nbr][n].get(weight,1)*d 
+                s = float(sum((G[nbr][n].get(weight,1)*d
                                for nbr,d in nbrdeg.items())))
         dnorm[k] += source_degree(n, weight=weight)
         dsum[k] += s
-        
+
     # normalize
     dc = {}
     for k,avg in dsum.items():
@@ -47,15 +47,15 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     r"""Compute the average degree connectivity of graph.
 
     The average degree connectivity is the average nearest neighbor degree of
-    nodes with degree k. For weighted graphs, an analogous measure can 
-    be computed using the weighted average neighbors degree defined in 
+    nodes with degree k. For weighted graphs, an analogous measure can
+    be computed using the weighted average neighbors degree defined in
     [1]_, for a node `i`, as:
 
     .. math::
 
         k_{nn,i}^{w} = \frac{1}{s_i} \sum_{j \in N(i)} w_{ij} k_j
 
-    where `s_i` is the weighted degree of node `i`, 
+    where `s_i` is the weighted degree of node `i`,
     `w_{ij}` is the weight of the edge that links `i` and `j`,
     and `N(i)` are the neighbors of node `i`.
 
@@ -80,7 +80,7 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     -------
     d: dict
        A dictionary keyed by degree k with the value of average connectivity.
-    
+
     Examples
     --------
     >>> G=nx.path_graph(4)
@@ -96,12 +96,13 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
 
     Notes
     -----
-    This algorithm is sometimes called "k nearest neighbors'.
+    This algorithm is sometimes called "k nearest neighbors' and is also
+    available as `k_nearest_neighbors`.
 
     References
-    ----------    
-    .. [1] A. Barrat, M. Barthélemy, R. Pastor-Satorras, and A. Vespignani, 
-       "The architecture of complex weighted networks". 
+    ----------
+    .. [1] A. Barrat, M. Barthélemy, R. Pastor-Satorras, and A. Vespignani,
+       "The architecture of complex weighted networks".
        PNAS 101 (11): 3747–3752 (2004).
     """
     source_degree = G.degree
