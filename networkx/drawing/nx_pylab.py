@@ -292,8 +292,7 @@ def draw_networkx_nodes(G, pos,
 
     pos : dictionary
        A dictionary with nodes as keys and positions as values.
-       If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       Positions should be sequences of length 2.
 
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
@@ -416,8 +415,7 @@ def draw_networkx_edges(G, pos,
 
     pos : dictionary
        A dictionary with nodes as keys and positions as values.
-       If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       Positions should be sequences of length 2.
 
     edgelist : collection of edge tuples
        Draw only specified edges(default=G.edges())
@@ -642,10 +640,9 @@ def draw_networkx_labels(G, pos,
     G : graph
        A networkx graph
 
-    pos : dictionary, optional
+    pos : dictionary
        A dictionary with nodes as keys and positions as values.
-       If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       Positions should be sequences of length 2.
 
     labels : dictionary, optional (default=None)
        Node labels in a dictionary keyed by node of text labels
@@ -749,10 +746,9 @@ def draw_networkx_edge_labels(G, pos,
     G : graph
        A networkx graph
 
-    pos : dictionary, optional
+    pos : dictionary
        A dictionary with nodes as keys and positions as values.
-       If not specified a spring layout positioning will be computed.
-       See networkx.layout for functions that compute node positions.
+       Positions should be sequences of length 2.
 
     ax : Matplotlib Axes object, optional
        Draw the graph in the specified Matplotlib axes.
