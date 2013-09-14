@@ -5,14 +5,14 @@ Pajek
 Read graphs in Pajek format.
 
 This implementation handles directed and undirected graphs including
-those with self loops and parallel edges.  
+those with self loops and parallel edges.
 
 Format
 ------
 See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
 for format information.
 """
-#    Copyright (C) 2008-2011 by 
+#    Copyright (C) 2008-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -36,7 +36,7 @@ def generate_pajek(G):
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
     for format information.
     """
-    if G.name=='': 
+    if G.name=='':
        name='NetworkX'
     else:
        name=G.name
@@ -48,7 +48,7 @@ def generate_pajek(G):
     yield '*vertices %s'%(G.order())
     nodes = G.nodes()
     # make dictionary mapping nodes to integers
-    nodenumber=dict(zip(nodes,range(1,len(nodes)+1))) 
+    nodenumber=dict(zip(nodes,range(1,len(nodes)+1)))
     for n in nodes:
         na=G.node.get(n,{})
         x=na.get('x',0.0)
@@ -61,7 +61,7 @@ def generate_pajek(G):
             s+=' %s %s'%(make_qstr(k),make_qstr(v))
         yield s
 
-    # write edges with attributes         
+    # write edges with attributes
     if G.is_directed():
         yield '*arcs'
     else:
@@ -84,7 +84,7 @@ def write_pajek(G, path, encoding='UTF-8'):
     G : graph
        A Networkx graph
     path : file or string
-       File or filename to write.  
+       File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
 
     Examples
@@ -101,14 +101,14 @@ def write_pajek(G, path, encoding='UTF-8'):
         line+='\n'
         path.write(line.encode(encoding))
 
-@open_file(0,mode='rb')
-def read_pajek(path,encoding='UTF-8'):
-    """Read graph in Pajek format from path. 
+@open_file(0, mode='rb')
+def read_pajek(path, encoding='UTF-8'):
+    """Read graph in Pajek format from path.
 
     Parameters
     ----------
     path : file or string
-       File or filename to write.  
+       File or filename to write.
        Filenames ending in .gz or .bz2 will be uncompressed.
 
     Returns
@@ -161,9 +161,14 @@ def parse_pajek(lines):
         except: #EOF
             break
         if l.lower().startswith("*network"):
-            label,name=l.split()
-            G.name=name
-        if l.lower().startswith("*vertices"):
+            try:
+                label, name = l.split()
+            except ValueError:
+                # Line was not of the form:  *network NAME
+                pass
+            else:
+                G.graph['name'] = name
+        elif l.lower().startswith("*vertices"):
             nodelabels={}
             l,nnodes=l.split()
             for i in range(int(nnodes)):
@@ -172,7 +177,7 @@ def parse_pajek(lines):
                 G.add_node(label)
                 nodelabels[id]=label
                 G.node[label]={'id':id}
-                try: 
+                try:
                     x,y,shape=splitline[2:5]
                     G.node[label].update({'x':float(x),
                                           'y':float(y),
@@ -181,7 +186,7 @@ def parse_pajek(lines):
                     pass
                 extra_attr=zip(splitline[5::2],splitline[6::2])
                 G.node[label].update(extra_attr)
-        if l.lower().startswith("*edges") or l.lower().startswith("*arcs"):
+        elif l.lower().startswith("*edges") or l.lower().startswith("*arcs"):
             if l.lower().startswith("*edge"):
                # switch from multidigraph to multigraph
                 G=nx.MultiGraph(G)
@@ -195,7 +200,7 @@ def parse_pajek(lines):
                 ui,vi=splitline[0:2]
                 u=nodelabels.get(ui,ui)
                 v=nodelabels.get(vi,vi)
-                # parse the data attached to this edge and put in a dictionary 
+                # parse the data attached to this edge and put in a dictionary
                 edge_data={}
                 try:
                     # there should always be a single value on the edge?
@@ -215,12 +220,12 @@ def parse_pajek(lines):
 
 
 def make_qstr(t):
-    """Return the string representation of t. 
+    """Return the string representation of t.
     Add outer double-quotes if the string has a space.
     """
-    if not is_string_like(t): 
+    if not is_string_like(t):
         t = str(t)
-    if " " in t: 
+    if " " in t:
         t=r'"%s"'%t
     return t
 
