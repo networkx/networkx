@@ -144,7 +144,6 @@ def parse_sparse6(string):
     G.add_nodes_from(range(n))
 
     for b,x in parseData():
-        print b,x,n
         if b == 1:
             v += 1
         # padding with ones can cause overlarge number here
