@@ -144,12 +144,16 @@ def parse_sparse6(string):
     G.add_nodes_from(range(n))
 
     for b,x in parseData():
-        if b: v += 1
-        if x >= n: break # padding with ones can cause overlarge number here
-        elif x > v: v = x
+        print b,x,n
+        if b == 1:
+            v += 1
+        # padding with ones can cause overlarge number here
+        if x >= n or v >= n:
+            break
+        elif x > v:
+            v = x
         else:
             G.add_edge(x,v)
-
     return G
 
 # helper functions
