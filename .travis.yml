@@ -22,7 +22,7 @@ before_install:
 # command to run tests
 script:
   - pip install .
-  - cd `python -c "import networkx;import os;print os.path.split(networkx.__file__)[1]"`
+  - cd `python -c "import networkx;import os;print os.path.split(networkx.__file__)[0]"`
   - nosetests -v --with-coverage --cover-erase --cover-package=networkx
 after_success:
   - coveralls
