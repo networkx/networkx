@@ -11,6 +11,7 @@ doc/source/networkx_tutorial.pdf
 doc/source/templates/gallery.html
 doc/gh-pages
 doc/build
+.coverage
 
 # Generated while building documentation.
 doc/source/static/examples/*
