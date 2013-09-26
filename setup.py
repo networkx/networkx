@@ -45,6 +45,7 @@ packages=["networkx",
           "networkx.algorithms.link_analysis",
           "networkx.algorithms.operators",
           "networkx.algorithms.approximation",
+          "networkx.algorithms.tree",
           "networkx.classes",
           "networkx.external",
           "networkx.external.decorator",
@@ -63,7 +64,7 @@ else:
     packages.append('networkx.external.decorator.decorator2')
 
 docdirbase  = 'share/doc/networkx-%s' % version
-# add basic documentation 
+# add basic documentation
 data = [(docdirbase, glob("*.txt"))]
 # add examples
 for d in ['advanced',
@@ -102,6 +103,7 @@ package_data     = {
     'networkx.algorithms.operators': ['tests/*.py'],
     'networkx.algorithms.shortest_paths': ['tests/*.py'],
     'networkx.algorithms.traversal': ['tests/*.py'],
+    'networkx.algorithms.tree': ['tests/*.py'],
     'networkx.classes': ['tests/*.py'],
     'networkx.generators': ['tests/*.py'],
     'networkx.drawing': ['tests/*.py'],
@@ -126,7 +128,7 @@ if __name__ == "__main__":
         long_description = release.long_description,
         license          = release.license,
         platforms        = release.platforms,
-        url              = release.url,      
+        url              = release.url,
         download_url     = release.download_url,
         classifiers      = release.classifiers,
         packages         = packages,
