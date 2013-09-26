@@ -21,6 +21,16 @@ before_install:
 # install: "pip install"
 # command to run tests
 script:
+  # Install networkx
+  - pip install .
+  # Move to new directory so that networkx is not imported from repository.
+  # We need the full installation path.
+  - cd
+  # Move into the installation path.
+  - cd `python -c "from __future__ import print_function;import networkx;import os;print(os.path.split(networkx.__file__)[0])"`
+  # Export current directory for logs.
+  - printenv PWD
+  # Run nosetests.
   - nosetests -v --with-coverage --cover-erase --cover-package=networkx
 after_success:
   - coveralls
