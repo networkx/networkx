@@ -18,7 +18,6 @@ from networkx.utils import *
 __all__ = ["min_weighted_vertex_cover"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
-@not_implemented_for('directed')
 def min_weighted_vertex_cover(G, weight=None):
     r"""2-OPT Local Ratio for Minimum Weighted Vertex Cover
 
@@ -27,7 +26,7 @@ def min_weighted_vertex_cover(G, weight=None):
     Parameters
     ----------
     G : NetworkX graph
-      Undirected graph
+      Both Directed and Undirected graph
 
     weight : None or string, optional (default = None)
         If None, every edge has weight/distance/cost 1. If a string, use this
