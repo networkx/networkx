@@ -46,10 +46,10 @@ def assert_graphs_equal(graph1, graph2):
         edges1 = graph1.edges(data=True,keys=True)
     else:
         edges1 = graph1.edges(data=True)
-        if graph2.is_multigraph():
-            edges2 = graph2.edges(data=True,keys=True)
-        else:
-            edges2 = graph2.edges(data=True)
+    if graph2.is_multigraph():
+        edges2 = graph2.edges(data=True,keys=True)
+    else:
+        edges2 = graph2.edges(data=True)
     assert_nodes_equal(graph1.nodes(data=True),
                        graph2.nodes(data=True))
     assert_edges_equal(edges1, edges2)
