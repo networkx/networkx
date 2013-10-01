@@ -126,9 +126,15 @@ def degree_histogram(G):
         freq[d] += 1
     return freq
 
+
 def is_directed(G):
     """ Return True if graph is directed."""
     return G.is_directed()
+
+
+def frozen(*args):
+    """Dummy method for raising errors when trying to modify frozen graphs"""
+    raise nx.NetworkXError("Frozen graph can't be modified")
 
 
 def freeze(G):
@@ -167,8 +173,6 @@ def freeze(G):
     --------
     is_frozen
     """
-    def frozen(*args):
-        raise nx.NetworkXError("Frozen graph can't be modified")
     G.add_node=frozen
     G.add_nodes_from=frozen
     G.remove_node=frozen
