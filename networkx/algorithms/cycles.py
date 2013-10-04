@@ -201,7 +201,7 @@ def simple_cycles(G):
                 if thisnode in closed:
                     _unblock(thisnode,blocked,B)
                 else:
-                    for nbr in G[thisnode]:
+                    for nbr in subG[thisnode]:
                         if thisnode not in B[nbr]:
                             B[nbr].add(thisnode)
                 stack.pop()
