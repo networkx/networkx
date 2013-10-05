@@ -26,8 +26,7 @@ script:
   # Move to new directory so that networkx is not imported from repository.
   # We need the full installation path.
   - cd
-  # Move into the installation path.
-  - cd `python -c "from __future__ import print_function;import networkx;import os;print(os.path.split(networkx.__file__)[0])"`
+  - cd `pip show networkx | grep Location | awk '{print $2"/networkx"}'`
   # Export current directory for logs.
   - printenv PWD
   # Run nosetests.
