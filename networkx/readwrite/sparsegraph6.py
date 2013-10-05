@@ -16,8 +16,8 @@ See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
 """
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2010 by 
+__author__ = """Aric Hagberg <aric.hagberg@lanl.gov>"""
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -30,7 +30,7 @@ __all__ = ['read_graph6', 'parse_graph6', 'read_graph6_list',
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file
-	
+
 # graph6
 
 def read_graph6(path):
@@ -39,7 +39,7 @@ def read_graph6(path):
     Returns a single Graph.
     """
     return read_graph6_list(path)[0]
-	
+
 def parse_graph6(str):
     """Read a simple undirected graph in graph6 format from string.
 
@@ -113,20 +113,20 @@ def parse_sparse6(string):
     k = 1
     while 1<<k < n:
         k += 1
-	
+
     def parseData():
         """Return stream of pairs b[i], x[i] for sparse6 format."""
         chunks = iter(data)
         d = None # partial data word
         dLen = 0 # how many unparsed bits are left in d
-    
+
         while 1:
             if dLen < 1:
                 d = next(chunks)
                 dLen = 6
             dLen -= 1
             b = (d>>dLen) & 1 # grab top remaining bit
-			
+
             x = d & ((1<<dLen)-1) # partially built up value of x
             xLen = dLen		# how many bits included so far in x
             while xLen < k:	# now grab full chunks until we have enough
@@ -137,19 +137,22 @@ def parse_sparse6(string):
             x = (x >> (xLen - k)) # shift back the extra bits
             dLen = xLen - k
             yield b,x
-	
+
     v = 0
 
     G=nx.MultiGraph()
     G.add_nodes_from(range(n))
 
     for b,x in parseData():
-        if b: v += 1
-        if x >= n: break # padding with ones can cause overlarge number here
-        elif x > v: v = x
+        if b == 1:
+            v += 1
+        # padding with ones can cause overlarge number here
+        if x >= n or v >= n:
+            break
+        elif x > v:
+            v = x
         else:
             G.add_edge(x,v)
-
     return G
 
 # helper functions
@@ -160,9 +163,9 @@ def graph6data(str):
     if min(v) < 0 or max(v) > 63:
         return None
     return v
-	
+
 def graph6n(data):
-    """Read initial one or four-unit value from graph6 sequence.  
+    """Read initial one or four-unit value from graph6 sequence.
     Return value, rest of seq."""
     if data[0] <= 62:
         return data[0], data[1:]
