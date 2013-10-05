@@ -28,8 +28,8 @@ exclude_lines =
     def teardown_module
 
     # ignore missing import
-    except ImportError
-    raise ImportError
+    #except ImportError
+    #raise ImportError
 
     # runtime errors
     except RuntimeError 
