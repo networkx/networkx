@@ -151,6 +151,7 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     """
     try:
         import numpy as np
+	from scipy.sparse.linalg import eigs
     except ImportError:
         raise ImportError('Requires NumPy: http://scipy.org/')
 
@@ -160,8 +161,9 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     if len(G) == 0:
         raise nx.NetworkXException('Empty graph.')
 
-    A = nx.adj_matrix(G, nodelist=G.nodes(), weight='weight')
-    eigenvalues,eigenvectors = np.linalg.eig(A)
+    A=smat(nx.convert_node_labels_to_integers(G))
+    k = min(6, G.number_of_nodes() - 2)
+    eigenvalues,eigenvectors=eigs(A.tocsc(), k=k)
     # eigenvalue indices in reverse sorted order
     ind = eigenvalues.argsort()[::-1]
     # eigenvector of largest eigenvalue at ind[0], normalized
