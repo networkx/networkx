@@ -2,7 +2,7 @@
 from nose.tools import *
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
-from networkx import NetworkXError
+from networkx import NetworkXError,NetworkXNotImplemented
 
 class TestConnected:
 
@@ -46,7 +46,7 @@ class TestConnected:
         G.add_edge(1,2,eattr='red') # test attributes copied to subgraphs
         G.node[1]['nattr']='blue'
         G.graph['gattr']='green'
-        ccs=nx.connected_component_subgraphs(G)
+        ccs=list(nx.connected_component_subgraphs(G))
         assert_equal(len(ccs),1)
         sg=ccs[0]
         assert_equal(sorted(sg.nodes()),list(range(1,17)))
@@ -65,8 +65,8 @@ class TestConnected:
         assert_false(nx.is_connected(G))
 
     def test_connected_raise(self):
-        assert_raises(NetworkXError,nx.connected_components,self.DG)
-        assert_raises(NetworkXError,nx.number_connected_components,self.DG)
-        assert_raises(NetworkXError,nx.connected_component_subgraphs,self.DG)
-        assert_raises(NetworkXError,nx.node_connected_component,self.DG,1)
-        assert_raises(NetworkXError,nx.is_connected,self.DG)
+        assert_raises(NetworkXNotImplemented,nx.connected_components,self.DG)
+        assert_raises(NetworkXNotImplemented,nx.number_connected_components,self.DG)
+        assert_raises(NetworkXNotImplemented,nx.connected_component_subgraphs,self.DG)
+        assert_raises(NetworkXNotImplemented,nx.node_connected_component,self.DG,1)
+        assert_raises(NetworkXNotImplemented,nx.is_connected,self.DG)
