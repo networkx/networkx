@@ -212,7 +212,7 @@ class GEXF(object):
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
-    convert_bool={'true':True,'false':False}
+    convert_bool={'false': False, 'False': False, 'true': True, 'True': True}
 
 #    try:
 #        register_namespace = ET.register_namespace
