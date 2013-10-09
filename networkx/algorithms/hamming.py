@@ -2,15 +2,6 @@
 """
 Hamming Distance between two graphs and related comparisons.
 """
-__author__ = "\n".join(['Johannes Castner (jac2130@columbia.edu)',
-                        'Aric Hagberg (hagberg@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)'])
-#    Copyright (C) 2004-2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 
 __all__ = ['hamming_distance', 'generalized_hamming_distance', '2d_generalized_hamming_distance',
         'diversity']
@@ -41,7 +32,7 @@ def hamming_distance(G, H):
     return count
 
 
-def generalized_hamming_distance(G, H, no_edge_cost=0.5):
+def generalized_hamming_distance(G, H, no_edge_cost=0.5, default=0):
     """Return the Generalized Hamming distance between two (possibly directed and weighted) graphs.
 
     The Generalized Hamming distance is the difference in weights between each of the edges contained in two graphs, with a special cost for edges that exist in one of the graphs, but not the other.
@@ -62,12 +53,13 @@ def generalized_hamming_distance(G, H, no_edge_cost=0.5):
 
     count=0
     for e in G.edges_iter():
-        if H.has_edge(*e):
-            try: count+= abs(nx.get_edge_attributes(G, 'weight')[e]-nx.get_edge_attributes(H, 'weight')[e])
-            except: print '%s does not have a weight!' % str(e)
-        else:
-            try: count+= (abs(nx.get_edge_attributes(G, 'weight')[e]) + no_edge_cost)
-            except: print '%s does not have a weight!' % str(e)
+        try:
+            if H.has_edge(*e):
+                count+= abs(nx.get_edge_attributes(G, 'weight')[e]-nx.get_edge_attributes(H, 'weight')[e])
+
+            else:
+                count+= (abs(nx.get_edge_attributes(G, 'weight')[e]) + no_edge_cost)
+        except: print '%s does not have a weight!' % str(e)
 
     #And now for the edges that are in H but not in G:
     for e in H.edges_iter():
@@ -77,7 +69,7 @@ def generalized_hamming_distance(G, H, no_edge_cost=0.5):
 
     return count
 
-def 2d_generalized_hamming_distance(G, H, no_edge_params=(0, 2)):
+def two_d_generalized_hamming_distance(G, H, no_edge_params=(0, 2)):
     """Return the Two-Dimensional Generalized Hamming distance between two (possibly directed) graphs, where each link has information on two dimensions (interpreted, for example, as mean and variance).
 
     The Two-Dimensional Generalized Hamming distance is the summation of Euclidean distances between two dimensional weights for each of the edges contained in two graphs, with assumed parameters for edges that do not exist in a graph, in order to compare these non-existing edges with existing ones in the other graph.
@@ -117,9 +109,9 @@ def 2d_generalized_hamming_distance(G, H, no_edge_params=(0, 2)):
 
     return count
 
+# problem with edges not having mu and sigma. Have to attach edges differently!
 
-
-def diversity(obj_set, distance=2d_generalized_hamming_distance):
+def diversity(obj_set, distance=two_d_generalized_hamming_distance):
     """Return the Weitzman diversity measure (Weitzman 1992) of a set of objects with a distance function defined over any
     two objects in the set.
 
@@ -156,4 +148,5 @@ def diversity(obj_set, distance=2d_generalized_hamming_distance):
         divers+=set_distance #Step3: increment the diversity by the distance between the set S, and the new member.
 
     #Normalize the diversity by the number of objects:
+        #make a distance matrix where the distances don't have to be recalculated (memoization)
     return float(divers)/len(S)
