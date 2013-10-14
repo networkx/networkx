@@ -6,7 +6,11 @@ from test_digraph import TestDiGraph
 try:  # python 2.7+
     from collections import OrderedDict
 except ImportError:  # python 2.6
-    from ordereddict import OrderedDict
+    try:
+        from ordereddict import OrderedDict
+    except ImportError:
+        from nose import SkipTest
+        raise SkipTest('ordereddict not available')
 
 class SpecialGraphTester(TestGraph):
     def setUp(self):
