@@ -3,7 +3,10 @@ from nose.tools import *
 import networkx
 from test_graph import TestGraph
 from test_digraph import TestDiGraph
-from collections import OrderedDict
+try:  # python 2.7+
+    from collections import OrderedDict
+except ImportError:  # python 2.6
+    from ordereddict import OrderedDict
 
 class SpecialGraphTester(TestGraph):
     def setUp(self):
@@ -22,13 +25,14 @@ class OrderedGraphTester(TestGraph):
 
 class ThinGraphTester(TestGraph):
     def setUp(self):
+        all_edge_dict = {'weight' : 1}
         def graph_factory(data,**attr):
             g=networkx.SpecialGraph(data,
-                    edge_attr_dict_factory=lambda :None,**attr)
+                    edge_attr_dict_factory=lambda :all_edge_dict,**attr)
             return g
         self.Graph=graph_factory
         # build dict-of-dict-of-dict K3
-        ed1,ed2,ed3 = (None,None,None)
+        ed1,ed2,ed3 = (all_edge_dict,all_edge_dict,all_edge_dict)
         self.k3adj={0: {1: ed1, 2: ed2},
                     1: {0: ed1, 2: ed3},
                     2: {0: ed2, 1: ed3}}
@@ -61,13 +65,14 @@ class OrderedDiGraphTester(TestDiGraph):
 
 class ThinDiGraphTester(TestDiGraph):
     def setUp(self):
+        all_edge_dict = {'weight' : 1}
         def graph_factory(data,**attr):
             g=networkx.SpecialDiGraph(data,
-                    edge_attr_dict_factory=lambda :None,**attr)
+                    edge_attr_dict_factory=lambda :all_edge_dict,**attr)
             return g
         self.Graph=graph_factory
         # build dict-of-dict-of-dict K3
-        ed1,ed2,ed3 = (None,None,None)
+        ed1,ed2,ed3 = (all_edge_dict,all_edge_dict,all_edge_dict)
         self.k3adj={0: {1: ed1, 2: ed2},
                     1: {0: ed1, 2: ed3},
                     2: {0: ed2, 1: ed3}}

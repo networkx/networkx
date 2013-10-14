@@ -17,6 +17,7 @@ before_install:
   - pip install pyyaml --use-mirrors
   - pip install pyparsing --use-mirrors
   - pip install coveralls --use-mirrors
+  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install ordereddict --use-mirrors; fi"
 # command to install dependencies
 # install: "pip install"
 # command to run tests
