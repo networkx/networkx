@@ -277,8 +277,6 @@ def generate_gml(G):
     def listify(d,indent,indentlevel):
         result='[ \n'
         for k,v in d.items():
-            if type(v)==dict:
-                v=listify(v,indent,indentlevel+1)
             result += (indentlevel+1)*indent + \
                 string_item(k,v,indentlevel*indent)+'\n'
         return result+indentlevel*indent+"]"
