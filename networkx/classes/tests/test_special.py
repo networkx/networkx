@@ -3,6 +3,8 @@ from nose.tools import *
 import networkx
 from test_graph import TestGraph
 from test_digraph import TestDiGraph
+from test_multigraph import TestMultiGraph
+from test_multidigraph import TestMultiDiGraph
 try:  # python 2.7+
     from collections import OrderedDict
 except ImportError:  # python 2.6
@@ -11,6 +13,7 @@ except ImportError:  # python 2.6
     except ImportError:
         from nose import SkipTest
         raise SkipTest('ordereddict not available')
+
 
 class SpecialGraphTester(TestGraph):
     def setUp(self):
@@ -88,4 +91,39 @@ class ThinDiGraphTester(TestDiGraph):
         self.K3.node[0]={}
         self.K3.node[1]={}
         self.K3.node[2]={}
+
+
+
+class SpecialMultiGraphTester(TestMultiGraph):
+    def setUp(self):
+        TestMultiGraph.setUp(self)
+        self.Graph=networkx.SpecialMultiGraph
+
+class OrderedMultiGraphTester(TestMultiGraph):
+    def setUp(self):
+        TestMultiGraph.setUp(self)
+        def graph_factory(data,**attr):
+            g=networkx.SpecialMultiGraph(data,node_dict_factory=OrderedDict,
+                    adjlist_dict_factory=OrderedDict,
+                    edge_key_dict_factory=OrderedDict,
+                    edge_attr_dict_factory=OrderedDict,**attr)
+            return g
+        self.Graph=graph_factory
+
+
+class SpecialMultiDiGraphTester(TestMultiDiGraph):
+    def setUp(self):
+        TestMultiDiGraph.setUp(self)
+        self.Graph=networkx.SpecialMultiDiGraph
+
+class OrderedMultiDiGraphTester(TestMultiDiGraph):
+    def setUp(self):
+        TestMultiDiGraph.setUp(self)
+        def graph_factory(data,**attr):
+            g=networkx.SpecialMultiDiGraph(data,node_dict_factory=OrderedDict,
+                    adjlist_dict_factory=OrderedDict,
+                    edge_key_dict_factory=OrderedDict,
+                    edge_attr_dict_factory=OrderedDict,**attr)
+            return g
+        self.Graph=graph_factory
 
