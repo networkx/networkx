@@ -82,7 +82,7 @@ class TestFloyd:
                                                             weight='heavy')
         assert_equal(dist[0][2], 4)
         assert_equal(path[0][2], 1)
-    
+
     def test_zero_distance(self):
         XG=nx.DiGraph()
         XG.add_weighted_edges_from([('s','u',10) ,('s','x',5) ,
@@ -100,7 +100,19 @@ class TestFloyd:
         # to_undirected might choose either edge with weight 2 or weight 3
         GG['u']['x']['weight']=2
         path, dist = nx.floyd_warshall_predecessor_and_distance(GG)
-        
+
         for u in GG:
             dist[u][u] = 0
 
+    def test_zero_weight(self):
+        G = nx.DiGraph()
+        edges = [(1,2,-2), (2,3,-4), (1,5,1), (5,4,0), (4,3,-5), (2,5,-7)]
+        G.add_weighted_edges_from(edges)
+        dist = nx.floyd_warshall(G)
+        assert_equal(dist[1][3], -14)
+
+        G = nx.MultiDiGraph()
+        edges.append( (2,5,-7) )
+        G.add_weighted_edges_from(edges)
+        dist = nx.floyd_warshall(G)
+        assert_equal(dist[1][3], -14)

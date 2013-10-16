@@ -1,8 +1,8 @@
 """
-This module provides functions to convert 
+This module provides functions to convert
 NetworkX graphs to and from other formats.
 
-The preferred way of converting data to a NetworkX graph 
+The preferred way of converting data to a NetworkX graph
 is through the graph constuctor.  The constructor calls
 the to_networkx_graph() function which attempts to guess the
 input type and convert it automatically.
@@ -14,11 +14,11 @@ Create a 10 node random graph from a numpy matrix
 
 >>> import numpy
 >>> a=numpy.reshape(numpy.random.random_integers(0,1,size=100),(10,10))
->>> D=nx.DiGraph(a) 
+>>> D=nx.DiGraph(a)
 
 or equivalently
 
->>> D=nx.to_networkx_graph(a,create_using=nx.DiGraph()) 
+>>> D=nx.to_networkx_graph(a,create_using=nx.DiGraph())
 
 Create a graph with a single edge from a dictionary of dictionaries
 
@@ -34,7 +34,7 @@ nx_pygraphviz, nx_pydot
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
-#    Copyright (C) 2006-2011 by 
+#    Copyright (C) 2006-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -141,13 +141,13 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
     # list or generator of edges
     if (isinstance(data,list)
         or hasattr(data,'next')
-        or hasattr(data, '__next__')): 
+        or hasattr(data, '__next__')):
         try:
             return from_edgelist(data,create_using=create_using)
         except:
             raise nx.NetworkXError("Input is not a valid edge list")
 
-    # numpy matrix or ndarray 
+    # numpy matrix or ndarray
     try:
         import numpy
         if isinstance(data,numpy.matrix) or \
@@ -178,7 +178,7 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
     raise nx.NetworkXError(\
           "Input is not a known data type for conversion.")
 
-    return 
+    return
 
 
 def convert_to_undirected(G):
@@ -413,7 +413,7 @@ def from_edgelist(edgelist,create_using=None):
     return G
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
-                    multigraph_weight=sum, weight='weight'):
+                    multigraph_weight=sum, weight='weight', nonedge=None):
     """Return the graph adjacency matrix as a NumPy matrix.
 
     Parameters
@@ -426,14 +426,14 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
        If `nodelist` is None, then the ordering is produced by G.nodes().
 
     dtype : NumPy data type, optional
-        A valid single NumPy data type used to initialize the array. 
+        A valid single NumPy data type used to initialize the array.
         This must be a simple type such as int or numpy.float64 and
         not a compound data type (see to_numpy_recarray)
         If None, then the NumPy default is used.
 
     order : {'C', 'F'}, optional
         Whether to store multidimensional data in C- or Fortran-contiguous
-        (row- or column-wise) order in memory. If None, then the NumPy default 
+        (row- or column-wise) order in memory. If None, then the NumPy default
         is used.
 
     multigraph_weight : {sum, min, max}, optional
@@ -441,9 +441,14 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         The default is to sum the weights of the multiple edges.
 
     weight : string or None   optional (default='weight')
-        The edge attribute that holds the numerical value used for 
+        The edge attribute that holds the numerical value used for
         the edge weight.  If None then all edge weights are 1.
 
+    nonedge : float
+        The matrix values corresponding to nonedges are typically set to zero.
+        However, this can be undesirably if there are matrix values with the
+        value zero that correspond to actual edges.  The value of `nonedge`
+        is used to specify all nonedge elements, and it defaults to zero.
 
     Returns
     -------
@@ -461,7 +466,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     For multiple edges, the values of the entries are the sums of the edge
     attributes for each edge.
 
-    When `nodelist` does not contain every node in `G`, the matrix is built 
+    When `nodelist` does not contain every node in `G`, the matrix is built
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
 
     Examples
@@ -498,7 +503,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         # Handle MultiGraphs and MultiDiGraphs
         # array of nan' to start with, any leftover nans will be converted to 0
         # nans are used so we can use sum, min, max for multigraphs
-        M = np.zeros((nlen,nlen), dtype=dtype, order=order)+np.nan
+        M = np.zeros((nlen,nlen), dtype=dtype, order=order) + np.nan
         # use numpy nan-aware operations
         operator={sum:np.nansum, min:np.nanmin, max:np.nanmax}
         try:
@@ -510,21 +515,31 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
             if (u in nodeset) and (v in nodeset):
                 i,j = index[u],index[v]
                 e_weight = attrs.get(weight, 1)
-                M[i,j] = op([e_weight,M[i,j]]) 
+                M[i,j] = op([e_weight,M[i,j]])
                 if undirected:
                     M[j,i] = M[i,j]
-        # convert any nans to zeros
-        M = np.asmatrix(np.nan_to_num(M))
     else:
-        # Graph or DiGraph, this is much faster than above 
-        M = np.zeros((nlen,nlen), dtype=dtype, order=order)
+        # Graph or DiGraph, this is much faster than above
+        M = np.zeros((nlen,nlen), dtype=dtype, order=order) + np.nan
         for u,nbrdict in G.adjacency_iter():
             for v,d in nbrdict.items():
                 try:
-                    M[index[u],index[v]]=d.get(weight,1)
+                    M[index[u],index[v]] = d.get(weight,1)
                 except KeyError:
+                    # This occurs when there are fewer desired nodes than
+                    # there are nodes in the graph: len(nodelist) < len(G)
                     pass
-        M = np.asmatrix(M)
+
+    # Convert nans to `nonedge`. Note, not all nans correspond to nonedges
+    # since all the operators ignore nans.  Thus, with this method, it
+    # any weights with the value nan are effectively ignored. With this
+    # implementation, it is not possible for such edge weights to
+    # remain distinguished from nonedges.
+    if nonedge is None:
+        nonedge = 0.0
+    M[np.isnan(M)] = nonedge
+
+    M = np.asmatrix(M)
     return M
 
 
@@ -585,7 +600,7 @@ def from_numpy_matrix(A,create_using=None):
     except ValueError: # Python 2.6+
         kind_to_python_type['U']=unicode
 
-    # This should never fail if you have created a numpy matrix with numpy...  
+    # This should never fail if you have created a numpy matrix with numpy...
     try:
         import numpy as np
     except ImportError:
@@ -618,7 +633,7 @@ def from_numpy_matrix(A,create_using=None):
                 attr[name]=kind_to_python_type[dtype.kind](val)
             G.add_edge(u,v,attr)
     else: # basic data type
-        G.add_edges_from( ((u,v,{'weight':python_type(A[u,v])}) 
+        G.add_edges_from( ((u,v,{'weight':python_type(A[u,v])})
                            for (u,v) in zip(x,y)) )
     return G
 
@@ -638,23 +653,23 @@ def to_numpy_recarray(G,nodelist=None,
        If `nodelist` is None, then the ordering is produced by G.nodes().
 
     dtype : NumPy data-type, optional
-        A valid NumPy named dtype used to initialize the NumPy recarray. 
-        The data type names are assumed to be keys in the graph edge attribute 
+        A valid NumPy named dtype used to initialize the NumPy recarray.
+        The data type names are assumed to be keys in the graph edge attribute
         dictionary.
 
     order : {'C', 'F'}, optional
         Whether to store multidimensional data in C- or Fortran-contiguous
-        (row- or column-wise) order in memory. If None, then the NumPy default 
+        (row- or column-wise) order in memory. If None, then the NumPy default
         is used.
 
     Returns
     -------
     M : NumPy recarray
-       The graph with specified edge data as a Numpy recarray 
+       The graph with specified edge data as a Numpy recarray
 
     Notes
     -----
-    When `nodelist` does not contain every node in `G`, the matrix is built 
+    When `nodelist` does not contain every node in `G`, the matrix is built
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
 
     Examples
@@ -703,7 +718,7 @@ def to_numpy_recarray(G,nodelist=None,
     return M.view(np.recarray)
 
 
-def to_scipy_sparse_matrix(G, nodelist=None, dtype=None, 
+def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
                            weight='weight', format='csr'):
     """Return the graph adjacency matrix as a SciPy sparse matrix.
 
@@ -721,10 +736,10 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         NumPy default is used.
 
     weight : string or None   optional (default='weight')
-        The edge attribute that holds the numerical value used for 
+        The edge attribute that holds the numerical value used for
         the edge weight.  If None then all edge weights are 1.
 
-    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'} 
+    format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'}
         The type of the matrix to be returned (default 'csr').  For
         some algorithms different implementations of sparse matrices
         can perform better.  See [1]_ for details.
