@@ -530,11 +530,11 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     # there are nodes in the graph: len(nodelist) < len(G)
                     pass
 
-    # Convert nans to `nonedge`. Note, not all nans correspond to nonedges
-    # since all the operators ignore nans.  Thus, with this method, it
-    # any weights with the value nan are effectively ignored. With this
-    # implementation, it is not possible for such edge weights to
-    # remain distinguished from nonedges.
+    # Convert nans to `nonedge`. In general, nans can correspond to nonedges
+    # or also edges whose weight value was nan, but since the implementation
+    # uses nansum, nanmin, and nanmax to combine weight values, any weight
+    # with the value nan is ignored.  The end result this algorithm cannot
+    # distinguish edges whose weight value is nan from a nonedge.
     if nonedge is None:
         nonedge = 0.0
     M[np.isnan(M)] = nonedge
