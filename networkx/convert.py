@@ -140,6 +140,7 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
 
     # list or generator of edges
     if (isinstance(data,list)
+        or isinstance(data,tuple)
         or hasattr(data,'next')
         or hasattr(data, '__next__')): 
         try:
