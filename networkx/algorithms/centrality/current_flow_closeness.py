@@ -16,7 +16,7 @@ import networkx as nx
 from networkx.algorithms.centrality.flow_matrix import *
 
 
-def current_flow_closeness_centrality(G, weight='weight',
+def current_flow_closeness_centrality(G, weight='weight', normalized=False,
                                       dtype=float, solver='lu'):
     """Compute current-flow closeness centrality for nodes.
 
@@ -49,7 +49,8 @@ def current_flow_closeness_centrality(G, weight='weight',
 
     Notes
     -----
-    Normalization is currently undefined for this function.
+    Normalization is currently undefined for this function (it is kept
+    in the argument list for legacy code).
 
     The algorithm is from Brandes [1]_.
 
