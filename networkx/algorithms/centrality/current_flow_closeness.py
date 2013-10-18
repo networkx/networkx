@@ -69,6 +69,16 @@ def current_flow_closeness_centrality(G, weight='weight',
        http://dx.doi.org/10.1016/0378-8733(89)90016-6
     """
     from networkx.utils import reverse_cuthill_mckee_ordering
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError('current_flow_closeness_centrality requires NumPy ',
+                          'http://scipy.org/')
+    try:
+        import scipy
+    except ImportError:
+        raise ImportError('current_flow_closeness_centrality requires SciPy ',
+                          'http://scipy.org/')
 
     # normalization is currently undefined for this function.
     normalized = False
