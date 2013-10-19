@@ -1,15 +1,15 @@
 from timeit import Timer
 
-# This is gratefully modeled after the benchmarks found in 
+# This is gratefully modeled after the benchmarks found in
 # the numpy svn repository.  http://svn.scipy.org/svn/numpy/trunk
 
 class Benchmark(object):
     """
     Benchmark a method or simple bit of code using different Graph classes.
-    If the test code is the same for each graph class, then you can set it 
+    If the test code is the same for each graph class, then you can set it
     during instantiation through the argument test_string.
     The argument test_string can also be a tuple of test code and setup code.
-    The code is entered as a string valid for use with the timeit module. 
+    The code is entered as a string valid for use with the timeit module.
 
     Example:
     >>> b=Benchmark(['Graph','XGraph'])
@@ -63,10 +63,10 @@ class Benchmark(object):
                 times.append((t,name))
             except Exception as e:
                 print("%s: Failed to benchmark (%s)." % (name,e))
-                        
 
-        times.sort()                
-        tmin=times[0][0]                
+
+        times.sort()
+        tmin=times[0][0]
         for t,name in times:
             print("%s: %5.2f %s" % (name, t/tmin*100.,t))
         print('-'*72)
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)' 
+        setup=all_setup+'G.add_edge(u,v)'
         if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
@@ -139,7 +139,7 @@ if __name__ == "__main__":
         if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)' 
+        setup=all_setup+'G.add_edge(u,v)'
         if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
@@ -156,7 +156,7 @@ if __name__ == "__main__":
         if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)' 
+        setup=all_setup+'G.add_edge(u,v)'
         if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
@@ -173,7 +173,7 @@ if __name__ == "__main__":
         if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)' 
+        setup=all_setup+'G.add_edge(u,v)'
         if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
@@ -190,7 +190,7 @@ if __name__ == "__main__":
         if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)' 
+        setup=all_setup+'G.add_edge(u,v)'
         if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
@@ -207,7 +207,7 @@ if __name__ == "__main__":
         if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)' 
+        setup=all_setup+'G.add_edge(u,v)'
         if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
@@ -224,7 +224,7 @@ if __name__ == "__main__":
         if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)],hi=2)'
         if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v,hi=1)' 
+        setup=all_setup+'G.add_edge(u,v,hi=1)'
         if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)],hi=2)'
         if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
@@ -241,7 +241,7 @@ if __name__ == "__main__":
         if 'Graph' in classes: b['Graph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)' 
+        setup=all_setup+'G.add_edge(u,v)'
         if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
         setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
         if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
