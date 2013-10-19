@@ -75,8 +75,17 @@ def configuration_model(deg_sequence,create_using=None,seed=None):
     This configuration model construction process can lead to
     duplicate edges and loops.  You can remove the self-loops and
     parallel edges (see below) which will likely result in a graph
-    that doesn't have the exact degree sequence specified.  This
-    "finite-size effect" decreases as the size of the graph increases.
+    that doesn't have the exact degree sequence specified.  
+    
+    The density of self-loops and parallel edges tends to decrease 
+    as the number of nodes increases. However, typically the number 
+    of self-loops will approach a Poisson distribution with a nonzero 
+    mean, and similarly for the number of parallel edges.   Consider a 
+    node with k stubs. The probability of being joined to another stub of 
+    the same node is basically (k-1)/N where k is the degree and N is 
+    the number of nodes. So the probability of a self-loop  scales like c/N 
+    for some constant c.  As N grows, this means we expect c self-loops. 
+    Similarly for parallel edges.
 
     References
     ----------
