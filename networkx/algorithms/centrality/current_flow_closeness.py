@@ -89,7 +89,7 @@ def current_flow_closeness_centrality(G, normalized=True, weight='weight',
     # this could be done without a copy if we really wanted to
     H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
     betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
-    n = G.number_of_nodes()
+    n = H.number_of_nodes()
     L = laplacian_sparse_matrix(H, nodelist=range(n), weight=weight,
                                 dtype=dtype, format='csc')
     C2 = solvername[solver](L, width=1, dtype=dtype)  # initialize solver
