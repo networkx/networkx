@@ -70,6 +70,28 @@ def make_str(t):
     if is_string_like(t): return t
     return str(t)
 
+PY2 = sys.version_info[0] == 2
+if PY2:
+    def make_str(x):
+        if isinstance(x, unicode):
+            return x
+        else:
+            # Note, this will not work unless x is ascii-encoded.
+            # That is good, since we should be working with unicode anyway.
+            # Essentially, unless we are reading a file, we demand that users
+            # convert any encoded strings to unicode before using the library.
+            #
+            # Also, the str() is necessary to convert integers, etc.
+            # unicode(3) works, but unicode(3, 'unicode-escape') wants a buffer.
+            #
+            return unicode(str(x), 'unicode-escape')
+else:
+    def make_str(x):
+        if isinstance(x, str):
+             return x
+        else:
+             return str(x)
+
 def cumulative_sum(numbers):
     """Yield cumulative sum of numbers.
 
