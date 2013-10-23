@@ -65,14 +65,10 @@ def is_list_of_ints( intlist ):
         if not isinstance(i,int): return False
     return True
 
-def make_str(t):
-    """Return the string representation of t."""
-    if is_string_like(t): return t
-    return str(t)
-
 PY2 = sys.version_info[0] == 2
 if PY2:
     def make_str(x):
+        """Return the string representation of t."""
         if isinstance(x, unicode):
             return x
         else:
@@ -87,10 +83,8 @@ if PY2:
             return unicode(str(x), 'unicode-escape')
 else:
     def make_str(x):
-        if isinstance(x, str):
-             return x
-        else:
-             return str(x)
+        """Return the string representation of t."""
+        return str(x)
 
 def cumulative_sum(numbers):
     """Yield cumulative sum of numbers.
