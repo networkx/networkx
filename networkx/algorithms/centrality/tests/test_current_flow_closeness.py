@@ -37,7 +37,7 @@ class TestFlowClosenessCentrality(object):
         G=networkx.Graph()
         G.add_star(['a','b','c','d'])
         b=networkx.current_flow_closeness_centrality(G)
-        b_answer={'a': 1.0/4, 'b': 0.6/4, 'c': 0.6/4, 'd':0.6/4}
+        b_answer={'a': 1.0/3, 'b': 0.6/3, 'c': 0.6/3, 'd':0.6/3}
         for n in sorted(G):
             assert_almost_equal(b[n],b_answer[n])
 
