@@ -7,6 +7,7 @@
 from itertools import count,repeat
 import json
 import networkx as nx
+from networkx.utils import make_str
 __author__ = """Aric Hagberg <hagberg@lanl.gov>"""
 __all__ = ['node_link_data', 'node_link_graph']
 
@@ -104,13 +105,13 @@ def node_link_graph(data, directed=False, multigraph=True):
     for d in data['nodes']:
         node = d.get('id',next(c))
         mapping.append(node)
-        nodedata = dict((str(k),v) for k,v in d.items() if k!='id')
+        nodedata = dict((make_str(k),v) for k,v in d.items() if k!='id')
         graph.add_node(node, **nodedata)
     for d in data['links']:
         link_data = d.copy()
         source = link_data.pop('source')
         target = link_data.pop('target')
-        edgedata = dict((str(k),v) for k,v in d.items()
+        edgedata = dict((make_str(k),v) for k,v in d.items()
                         if k!='source' and k!='target')
         graph.add_edge(mapping[source],mapping[target],**edgedata)
     return graph
