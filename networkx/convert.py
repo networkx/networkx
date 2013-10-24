@@ -442,8 +442,9 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
-        the edge weight.  If an edge does not have that attribute, then the
-        value 1 is used instead.
+        the edge weight. If an edge does not have that attribute, then the
+        value 1 is used instead. If `weight` is a callable, then the edge
+        attribute dictionary is passed to it and the return value will be used.
 
     nonedge : float (default=0.0)
         The matrix values corresponding to nonedges are typically set to zero.
@@ -482,11 +483,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
             [ 1.,  0.,  0.],
             [ 0.,  0.,  4.]])
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(\
-          "to_numpy_matrix() requires numpy: http://scipy.org/ ")
+    import numpy as np
 
     if nodelist is None:
         nodelist = G.nodes()
@@ -499,6 +496,11 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     nlen=len(nodelist)
     undirected = not G.is_directed()
     index=dict(zip(nodelist,range(nlen)))
+
+    if not callable(weight):
+        get_weight = lambda attrs: attrs.get(weight, 1)
+    else:
+        get_weight = weight
 
     # Initially, we start with an array of nans.  Then we populate the matrix
     # using data from the graph.  Afterwards, any leftover nans will be
@@ -542,20 +544,20 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         except:
             raise ValueError('multigraph_weight must be sum, min, or max')
 
-        for u,v,attrs in G.edges_iter(data=True):
+        for u, v, attrs in G.edges_iter(data=True):
             if (u in nodeset) and (v in nodeset):
                 i, j = index[u], index[v]
-                e_weight = attrs.get(weight, 1)
+                e_weight = get_weight(attrs)
                 M[i,j] = op([e_weight, M[i,j]])
                 if undirected:
                     M[j,i] = M[i,j]
     else:
         # Graph or DiGraph, this is much faster than above
         M = np.zeros((nlen,nlen), dtype=dtype, order=order) + np.nan
-        for u,nbrdict in G.adjacency_iter():
-            for v,d in nbrdict.items():
+        for u, nbrdict in G.adjacency_iter():
+            for v, d in nbrdict.items():
                 try:
-                    M[index[u],index[v]] = d.get(weight,1)
+                    M[index[u], index[v]] = get_weight(d)
                 except KeyError:
                     # This occurs when there are fewer desired nodes than
                     # there are nodes in the graph: len(nodelist) < len(G)
