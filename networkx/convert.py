@@ -442,7 +442,8 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
-        the edge weight.  If None then all edge weights are 1.
+        the edge weight.  If an edge does not have that attribute, then the
+        value 1 is used instead.
 
     nonedge : float (default=0.0)
         The matrix values corresponding to nonedges are typically set to zero.
