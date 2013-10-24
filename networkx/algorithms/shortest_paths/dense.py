@@ -49,7 +49,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
 
     # To handle cases when an edge has weight=0, we must make sure that
     # nonedges are not given the value 0 as well.
-    A = nx.to_numpy_matrix(G, nodelist=nodelist, multigraph_weight=min,
+    A = nx.to_numpy_matrix(G, nodelist=nodelist, multigraph_weight='nanmin',
                               weight=weight, nonedge=np.inf)
     n,m = A.shape
     I = np.identity(n)

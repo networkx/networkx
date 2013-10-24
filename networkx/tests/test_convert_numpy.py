@@ -165,8 +165,8 @@ class TestConvertNumpy(object):
         G.add_edge(1,2,weight=70)
         A=nx.to_numpy_matrix(G)
         assert_equal(A[1,0],77)
-        A=nx.to_numpy_matrix(G,multigraph_weight=min)
+        A=nx.to_numpy_matrix(G,multigraph_weight='min')
         assert_equal(A[1,0],7)
-        A=nx.to_numpy_matrix(G,multigraph_weight=max)
+        A=nx.to_numpy_matrix(G,multigraph_weight='max')
         assert_equal(A[1,0],70)
-                         
+
