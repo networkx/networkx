@@ -569,8 +569,12 @@ def from_numpy_matrix(A,create_using=None):
     >>> dt=[('weight',float),('cost',int)]
     >>> A=numpy.matrix([[(1.0,2)]],dtype=dt)
     >>> G=nx.from_numpy_matrix(A)
-    >>> G.edges(data=True)
-    [(0, 0, {'cost': 2, 'weight': 1.0})]
+    >>> G.edges()
+    [(0, 0)]
+    >>> G[0][0]['cost']
+    2
+    >>> G[0][0]['weight']
+    1.0
     """
     kind_to_python_type={'f':float,
                          'i':int,
