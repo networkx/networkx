@@ -33,6 +33,15 @@ def connected_components(G):
     comp : generator of lists
        A list of nodes for each component of G.
 
+    Examples
+    --------
+    Generate a sorted list of connected components, largest first.
+
+    >>> G = nx.path_graph(4)
+    >>> G.add_path([10, 11, 12])
+    >>> sorted(nx.connected_components(G), key = len, reverse=True)
+    [[0, 1, 2, 3], [10, 11, 12]]
+
     See Also
     --------
     strongly_connected_components
