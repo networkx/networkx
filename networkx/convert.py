@@ -413,7 +413,7 @@ def from_edgelist(edgelist,create_using=None):
     return G
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
-                    multigraph_weight=sum, weight='weight', nonedge=None):
+                    multigraph_weight=sum, weight='weight', nonedge=0.0):
     """Return the graph adjacency matrix as a NumPy matrix.
 
     Parameters
@@ -444,11 +444,11 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         The edge attribute that holds the numerical value used for
         the edge weight.  If None then all edge weights are 1.
 
-    nonedge : float
+    nonedge : float (default=0.0)
         The matrix values corresponding to nonedges are typically set to zero.
-        However, this can be undesirably if there are matrix values with the
-        value zero that correspond to actual edges.  The value of `nonedge`
-        is used to specify all nonedge elements, and it defaults to zero.
+        However, this could be undesirable if there are matrix values
+        corresponding to actual edges that also have the value zero. If so,
+        one might prefer nonedges to have some other value, such as nan.
 
     Returns
     -------
@@ -499,11 +499,41 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     undirected = not G.is_directed()
     index=dict(zip(nodelist,range(nlen)))
 
+    # Initially, we start with an array of nans.  Then we populate the matrix
+    # using data from the graph.  Afterwards, any leftover nans will be
+    # converted to the value of `nonedge`.  Note, we use nans initially,
+    # instead of zero, for two reasons:
+    #
+    #   1) It can be important to distinguish a real edge with the value 0
+    #      from a nonedge with the value 0.
+    #
+    #   2) When working with multi(di)graphs, we must combine the values of all
+    #      edges between any two nodes in some manner.  This often takes the
+    #      form of a sum, min, or max.  Using the value 0 for a nonedge would
+    #      have undesirable effects with min and max, but using nanmin and
+    #      nanmax with initially nan values is not problematic at all.
+    #
+    # That said, there are still some drawbacks to this approach. Namely, if
+    # a real edge is nan, then that value is a) not distinguishable from
+    # nonedges and b) is ignored by the default combinator (nansum, nanmin,
+    # nanmax) functions used for multi(di)graphs. If this becomes an issue,
+    # an alternative approach is to use masked arrays.  Initially, every
+    # element is masked and set to some `initial` value. As we populate the
+    # graph, elements are unmasked (automatically) when we combine the initial
+    # value with the values given by real edges.  At the end, we convert all
+    # masked values to `nonedge`. Using masked arrays fully addresses reason 1,
+    # but for reason 2, we would still have the issue with min and max if the
+    # initial values were 0.0.  Note: an initial value of +inf is appropriate
+    # for min, while an initial value of -inf is appropriate for max. When
+    # working with sum, an initial value of zero is appropriate. Ideally then,
+    # we'd want to allow users to specify both a value for nonedges and also
+    # an initial value.  For multi(di)graphs, the choice of the initial value
+    # will, in general, depend on the combinator function---sensible defaults
+    # can be provided.
+
     if G.is_multigraph():
         # Handle MultiGraphs and MultiDiGraphs
-        # array of nan' to start with, any leftover nans will be converted to 0
-        # nans are used so we can use sum, min, max for multigraphs
-        M = np.zeros((nlen,nlen), dtype=dtype, order=order) + np.nan
+        M = np.zeros((nlen, nlen), dtype=dtype, order=order) + np.nan
         # use numpy nan-aware operations
         operator={sum:np.nansum, min:np.nanmin, max:np.nanmax}
         try:
@@ -513,9 +543,9 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
 
         for u,v,attrs in G.edges_iter(data=True):
             if (u in nodeset) and (v in nodeset):
-                i,j = index[u],index[v]
+                i, j = index[u], index[v]
                 e_weight = attrs.get(weight, 1)
-                M[i,j] = op([e_weight,M[i,j]])
+                M[i,j] = op([e_weight, M[i,j]])
                 if undirected:
                     M[j,i] = M[i,j]
     else:
@@ -530,15 +560,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     # there are nodes in the graph: len(nodelist) < len(G)
                     pass
 
-    # Convert nans to `nonedge`. In general, nans can correspond to nonedges
-    # or also edges whose weight value was nan, but since the implementation
-    # uses nansum, nanmin, and nanmax to combine weight values, any weight
-    # with the value nan is ignored.  The end result this algorithm cannot
-    # distinguish edges whose weight value is nan from a nonedge.
-    if nonedge is None:
-        nonedge = 0.0
     M[np.isnan(M)] = nonedge
-
     M = np.asmatrix(M)
     return M
 
