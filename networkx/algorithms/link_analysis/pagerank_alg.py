@@ -23,10 +23,10 @@ def pagerank(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.
 
     alpha : float, optional
-      Damping parameter for PageRank, default=0.85
+      Damping parameter for PageRank, default=0.85.
 
     personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
@@ -51,8 +51,8 @@ def pagerank(G, alpha=0.85, personalization=None,
 
     Examples
     --------
-    >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> pr=nx.pagerank(G,alpha=0.9)
+    >>> G = nx.DiGraph(nx.path_graph(4))
+    >>> pr = nx.pagerank(G, alpha=0.9)
 
     Notes
     -----
@@ -153,10 +153,10 @@ def google_matrix(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.
 
     alpha : float
-      The damping factor
+      The damping factor.
 
     personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
@@ -222,10 +222,10 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     Parameters
     -----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.
 
     alpha : float, optional
-      Damping parameter for PageRank, default=0.85
+      Damping parameter for PageRank, default=0.85.
 
     personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
@@ -237,12 +237,12 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     Returns
     -------
     pagerank : dictionary
-       Dictionary of nodes with PageRank as value
+       Dictionary of nodes with PageRank as value.
 
     Examples
     --------
-    >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> pr=nx.pagerank_numpy(G,alpha=0.9)
+    >>> G = nx.DiGraph(nx.path_graph(4))
+    >>> pr = nx.pagerank_numpy(G, alpha=0.9)
 
     Notes
     -----
@@ -299,10 +299,10 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.
 
     alpha : float, optional
-      Damping parameter for PageRank, default=0.85
+      Damping parameter for PageRank, default=0.85.
 
     personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
@@ -324,8 +324,8 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
 
     Examples
     --------
-    >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> pr=nx.pagerank_scipy(G,alpha=0.9)
+    >>> G = nx.DiGraph(nx.path_graph(4))
+    >>> pr = nx.pagerank_scipy(G, alpha=0.9)
 
     Notes
     -----
