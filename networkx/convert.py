@@ -413,8 +413,7 @@ def from_edgelist(edgelist,create_using=None):
     return G
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
-                    multigraph_weight='nansum', weight='weight', nonedge=0.0,
-                    multigraph_initial=None):
+                    multigraph_weight=sum, weight='weight', nonedge=0.0):
     """Return the graph adjacency matrix as a NumPy matrix.
 
     Parameters
@@ -437,31 +436,20 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         (row- or column-wise) order in memory. If None, then the NumPy default
         is used.
 
-    multigraph_weight : {'sum', 'min', 'max', 'nansum', 'nanmin', 'nanmax'}
+    multigraph_weight : {sum, min, max}, optional
         An operator that determines how weights in multigraphs are handled.
-        The default is to sum the weights of the multiple edges, ignoring
-        nan values.
+        The default is to sum the weights of the multiple edges.
 
     weight : string or None   optional (default='weight')
         The edge attribute that holds the numerical value used for
-        the edge weight. If an edge does not have that attribute, then the
-        value 1 is used instead. If `weight` is a callable, then the edge
-        attribute dictionary is passed to it and the return value will be used.
+        the edge weight.  If an edge does not have that attribute, then the
+        value 1 is used instead.
 
     nonedge : float (default=0.0)
         The matrix values corresponding to nonedges are typically set to zero.
         However, this could be undesirable if there are matrix values
         corresponding to actual edges that also have the value zero. If so,
         one might prefer nonedges to have some other value, such as nan.
-
-    multigraph_initial : float (default=None)
-        The initial value for every element in the matrix when working with
-        multigraphs and multidigraphs.  This value can influence the final
-        value of the matrix elements. For example, one might want to cap weight
-        values to be below the value 10. This is accomplished with a min
-        operator and an initial value of 10.  If `None`, then an appropriate
-        default is chosen if `multigraph_weight` is one of the provided options.
-        Otherwise, it must not be `None`.
 
     Returns
     -------
@@ -494,7 +482,11 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
             [ 1.,  0.,  0.],
             [ 0.,  0.,  4.]])
     """
-    import numpy as np
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError(\
+          "to_numpy_matrix() requires numpy: http://scipy.org/ ")
 
     if nodelist is None:
         nodelist = G.nodes()
@@ -508,60 +500,69 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     undirected = not G.is_directed()
     index=dict(zip(nodelist,range(nlen)))
 
-    if not callable(weight):
-        get_weight = lambda attrs: attrs.get(weight, 1)
-    else:
-        get_weight = weight
-
-    ops = {'sum': sum, 'min': min, 'max': max,
-           'nansum': np.nansum, 'nanmin': np.nanmin, 'nanmax': np.nanmax}
-    defaults = {'sum': 0.0, 'min': np.inf, 'max': -np.inf,
-                'nansum': 0.0, 'nanmin': np.inf, 'nanmax': -np.inf}
-
-    if multigraph_weight in ops:
-        op = ops[multigraph_weight]
-        if multigraph_initial is None:
-            multigraph_initial = defaults[multigraph_weight]
-
-    if multigraph_weight not in ops:
-        if multigraph_initial is None:
-            msg = "Custom `multigraph_weight` requires that "
-            msg += "`multigraph_initial` is not None."
-            raise nx.NetworkXError(msg)
-        if not callable(multigraph_weight):
-            msg = "Custom `multigraph_graph` must be callable."
-            raise nx.NetworkXError(msg)
-        else:
-            op = multigraph_weight
+    # Initially, we start with an array of nans.  Then we populate the matrix
+    # using data from the graph.  Afterwards, any leftover nans will be
+    # converted to the value of `nonedge`.  Note, we use nans initially,
+    # instead of zero, for two reasons:
+    #
+    #   1) It can be important to distinguish a real edge with the value 0
+    #      from a nonedge with the value 0.
+    #
+    #   2) When working with multi(di)graphs, we must combine the values of all
+    #      edges between any two nodes in some manner.  This often takes the
+    #      form of a sum, min, or max.  Using the value 0 for a nonedge would
+    #      have undesirable effects with min and max, but using nanmin and
+    #      nanmax with initially nan values is not problematic at all.
+    #
+    # That said, there are still some drawbacks to this approach. Namely, if
+    # a real edge is nan, then that value is a) not distinguishable from
+    # nonedges and b) is ignored by the default combinator (nansum, nanmin,
+    # nanmax) functions used for multi(di)graphs. If this becomes an issue,
+    # an alternative approach is to use masked arrays.  Initially, every
+    # element is masked and set to some `initial` value. As we populate the
+    # graph, elements are unmasked (automatically) when we combine the initial
+    # value with the values given by real edges.  At the end, we convert all
+    # masked values to `nonedge`. Using masked arrays fully addresses reason 1,
+    # but for reason 2, we would still have the issue with min and max if the
+    # initial values were 0.0.  Note: an initial value of +inf is appropriate
+    # for min, while an initial value of -inf is appropriate for max. When
+    # working with sum, an initial value of zero is appropriate. Ideally then,
+    # we'd want to allow users to specify both a value for nonedges and also
+    # an initial value.  For multi(di)graphs, the choice of the initial value
+    # will, in general, depend on the combinator function---sensible defaults
+    # can be provided.
 
     if G.is_multigraph():
         # Handle MultiGraphs and MultiDiGraphs
-        M = np.ma.zeros((nlen, nlen), dtype=dtype, order=order)
-        M += multigraph_initial
-        M.mask = True
-        for u, v, attrs in G.edges_iter(data=True):
+        M = np.zeros((nlen, nlen), dtype=dtype, order=order) + np.nan
+        # use numpy nan-aware operations
+        operator={sum:np.nansum, min:np.nanmin, max:np.nanmax}
+        try:
+            op=operator[multigraph_weight]
+        except:
+            raise ValueError('multigraph_weight must be sum, min, or max')
+
+        for u,v,attrs in G.edges_iter(data=True):
             if (u in nodeset) and (v in nodeset):
                 i, j = index[u], index[v]
-                e_weight = get_weight(attrs)
-                # Access M._data instead of M so that it doesn't raise a
-                # warning when masked data is converted to a float.
-                M[i,j] = op([e_weight, M._data[i,j]])
+                e_weight = attrs.get(weight, 1)
+                M[i,j] = op([e_weight, M[i,j]])
                 if undirected:
                     M[j,i] = M[i,j]
     else:
         # Graph or DiGraph, this is much faster than above
-        M = np.ma.zeros((nlen,nlen), dtype=dtype, order=order)
-        M.mask = True
-        for u, nbrdict in G.adjacency_iter():
-            for v, d in nbrdict.items():
+        M = np.zeros((nlen,nlen), dtype=dtype, order=order) + np.nan
+        for u,nbrdict in G.adjacency_iter():
+            for v,d in nbrdict.items():
                 try:
-                    M[index[u], index[v]] = get_weight(d)
+                    M[index[u],index[v]] = d.get(weight,1)
                 except KeyError:
                     # This occurs when there are fewer desired nodes than
                     # there are nodes in the graph: len(nodelist) < len(G)
                     pass
 
-    M = np.asmatrix(M.filled(nonedge))
+    M[np.isnan(M)] = nonedge
+    M = np.asmatrix(M)
     return M
 
 
