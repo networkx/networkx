@@ -9,10 +9,11 @@
 import networkx as nx
 from networkx.exception import NetworkXError
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__all__ = ['pagerank','pagerank_numpy','pagerank_scipy','google_matrix']
+__all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 
-def pagerank(G,alpha=0.85,personalization=None,
-             max_iter=100,tol=1.0e-8,nstart=None,weight='weight'):
+
+def pagerank(G, alpha=0.85, personalization=None,
+             max_iter=100, tol=1.0e-8, nstart=None, weight='weight'):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -78,70 +79,70 @@ def pagerank(G,alpha=0.85,personalization=None,
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
+    if isinstance(G, nx.MultiGraph) or isinstance(G, nx.MultiDiGraph):
         raise Exception("pagerank() not defined for graphs with multiedges.")
 
     if len(G) == 0:
         return {}
 
     if not G.is_directed():
-        D=G.to_directed()
+        D = G.to_directed()
     else:
-        D=G
+        D = G
 
     # create a copy in (right) stochastic form
-    W=nx.stochastic_graph(D, weight=weight)
-    scale=1.0/W.number_of_nodes()
+    W = nx.stochastic_graph(D, weight=weight)
+    scale = 1.0 / W.number_of_nodes()
 
     # choose fixed starting vector if not given
     if nstart is None:
-        x=dict.fromkeys(W,scale)
+        x = dict.fromkeys(W, scale)
     else:
-        x=nstart
+        x = nstart
         # normalize starting vector to 1
-        s=1.0/sum(x.values())
-        for k in x: x[k]*=s
+        s = 1.0 / sum(x.values())
+        for k in x:
+            x[k] *= s
 
     # assign uniform personalization/teleportation vector if not given
     if personalization is None:
-        p=dict.fromkeys(W,scale)
+        p = dict.fromkeys(W, scale)
     else:
-        p=personalization
+        p = personalization
         # normalize starting vector to 1
-        s=1.0/sum(p.values())
+        s = 1.0 / sum(p.values())
         for k in p:
-            p[k]*=s
-        if set(p)!=set(G):
+            p[k] *= s
+        if set(p) != set(G):
             raise NetworkXError('Personalization vector '
                                 'must have a value for every node')
 
-
     # "dangling" nodes, no links out from them
-    out_degree=W.out_degree()
-    dangle=[n for n in W if out_degree[n]==0.0]
-    i=0
-    while True: # power iteration: make up to max_iter iterations
-        xlast=x
-        x=dict.fromkeys(xlast.keys(),0)
-        danglesum=alpha*scale*sum(xlast[n] for n in dangle)
+    out_degree = W.out_degree()
+    dangle = [n for n in W if out_degree[n] == 0.0]
+    i = 0
+    while True:  # power iteration: make up to max_iter iterations
+        xlast = x
+        x = dict.fromkeys(xlast.keys(), 0)
+        danglesum = alpha * scale * sum(xlast[n] for n in dangle)
         for n in x:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
             for nbr in W[n]:
-                x[nbr]+=alpha*xlast[n]*W[n][nbr][weight]
-            x[n]+=danglesum+(1.0-alpha)*p[n]
+                x[nbr] += alpha * xlast[n] * W[n][nbr][weight]
+            x[n] += danglesum + (1.0 - alpha) * p[n]
         # normalize vector
-        s=1.0/sum(x.values())
+        s = 1.0 / sum(x.values())
         for n in x:
-            x[n]*=s
+            x[n] *= s
         # check convergence, l1 norm
-        err=sum([abs(x[n]-xlast[n]) for n in x])
+        err = sum([abs(x[n] - xlast[n]) for n in x])
         if err < tol:
             break
-        if i>max_iter:
+        if i > max_iter:
             raise NetworkXError('pagerank: power iteration failed to converge '
-                                'in %d iterations.'%(i-1))
-        i+=1
+                                'in %d iterations.' % (i - 1))
+        i += 1
     return x
 
 
@@ -180,34 +181,34 @@ def google_matrix(G, alpha=0.85, personalization=None,
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(\
+        raise ImportError(
             "google_matrix() requires NumPy: http://scipy.org/")
     # choose ordering in matrix
-    if personalization is None: # use G.nodes() ordering
-        nodelist=G.nodes()
+    if personalization is None:  # use G.nodes() ordering
+        nodelist = G.nodes()
     else:  # use personalization "vector" ordering
-        nodelist=personalization.keys()
-        if set(nodelist)!=set(G):
+        nodelist = personalization.keys()
+        if set(nodelist) != set(G):
             raise NetworkXError('Personalization vector dictionary'
                                 'must have a value for every node')
-    M=nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight)
-    (n,m)=M.shape # should be square
+    M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
+    (n, m) = M.shape  # should be square
     if n == 0:
         return M
     # add constant to dangling nodes' row
-    dangling=np.where(M.sum(axis=1)==0)
+    dangling = np.where(M.sum(axis=1) == 0)
     for d in dangling[0]:
-        M[d]=1.0/n
+        M[d] = 1.0 / n
     # normalize
-    M=M/M.sum(axis=1)
+    M = M / M.sum(axis=1)
     # add "teleportation"/personalization
-    e=np.ones((n))
+    e = np.ones((n))
     if personalization is not None:
-        v=np.array(list(personalization.values()),dtype=float)
+        v = np.array(list(personalization.values()), dtype=float)
     else:
-        v=e
-    v=v/v.sum()
-    P=alpha*M+(1-alpha)*np.outer(e,v)
+        v = e
+    v = v / v.sum()
+    P = alpha * M + (1 - alpha) * np.outer(e, v)
     return P
 
 
@@ -271,19 +272,19 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     if len(G) == 0:
         return {}
     # choose ordering in matrix
-    if personalization is None: # use G.nodes() ordering
-        nodelist=G.nodes()
+    if personalization is None:  # use G.nodes() ordering
+        nodelist = G.nodes()
     else:  # use personalization "vector" ordering
-        nodelist=personalization.keys()
-    M=google_matrix(G, alpha, personalization=personalization,
-                    nodelist=nodelist, weight=weight)
+        nodelist = personalization.keys()
+    M = google_matrix(G, alpha, personalization=personalization,
+                      nodelist=nodelist, weight=weight)
     # use numpy LAPACK solver
-    eigenvalues,eigenvectors=np.linalg.eig(M.T)
-    ind=eigenvalues.argsort()
+    eigenvalues, eigenvectors = np.linalg.eig(M.T)
+    ind = eigenvalues.argsort()
     # eigenvector of largest eigenvalue at ind[-1], normalized
-    largest=np.array(eigenvectors[:,ind[-1]]).flatten().real
-    norm=float(largest.sum())
-    centrality=dict(zip(nodelist,map(float,largest/norm)))
+    largest = np.array(eigenvectors[:, ind[-1]]).flatten().real
+    norm = float(largest.sum())
+    centrality = dict(zip(nodelist, map(float, largest / norm)))
     return centrality
 
 
@@ -351,39 +352,40 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     if len(G) == 0:
         return {}
     # choose ordering in matrix
-    if personalization is None: # use G.nodes() ordering
-        nodelist=G.nodes()
+    if personalization is None:  # use G.nodes() ordering
+        nodelist = G.nodes()
     else:  # use personalization "vector" ordering
-        nodelist=personalization.keys()
-    M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist,weight=weight,dtype='f')
-    (n,m)=M.shape # should be square
-    S=scipy.array(M.sum(axis=1)).flatten()
+        nodelist = personalization.keys()
+    M = nx.to_scipy_sparse_matrix(
+        G, nodelist=nodelist, weight=weight, dtype='f')
+    (n, m) = M.shape  # should be square
+    S = scipy.array(M.sum(axis=1)).flatten()
 #    for i, j, v in zip( *scipy.sparse.find(M) ):
 #        M[i,j] = v / S[i]
-    S[S>0] = 1.0 / S[S>0]
+    S[S > 0] = 1.0 / S[S > 0]
     Q = scipy.sparse.spdiags(S.T, 0, *M.shape, format='csr')
     M = Q * M
-    x=scipy.ones((n))/n  # initial guess
-    dangle=scipy.array(scipy.where(M.sum(axis=1)==0,1.0/n,0)).flatten()
+    x = scipy.ones((n)) / n  # initial guess
+    dangle = scipy.array(scipy.where(M.sum(axis=1) == 0, 1.0 / n, 0)).flatten()
     # add "teleportation"/personalization
     if personalization is not None:
-        v=scipy.array(list(personalization.values()),dtype=float)
-        v=v/v.sum()
+        v = scipy.array(list(personalization.values()), dtype=float)
+        v = v / v.sum()
     else:
-        v=x
-    i=0
+        v = x
+    i = 0
     while i <= max_iter:
         # power iteration: make up to max_iter iterations
-        xlast=x
-        x=alpha*(x*M+scipy.dot(dangle,xlast))+(1-alpha)*v
-        x=x/x.sum()
+        xlast = x
+        x = alpha * (x * M + scipy.dot(dangle, xlast)) + (1 - alpha) * v
+        x = x / x.sum()
         # check convergence, l1 norm
-        err=scipy.absolute(x-xlast).sum()
-        if err < n*tol:
-            return dict(zip(nodelist,map(float,x)))
-        i+=1
+        err = scipy.absolute(x - xlast).sum()
+        if err < n * tol:
+            return dict(zip(nodelist, map(float, x)))
+        i += 1
     raise NetworkXError('pagerank_scipy: power iteration failed to converge'
-                        'in %d iterations.'%(i+1))
+                        'in %d iterations.' % (i + 1))
 
 
 # fixture for nose tests
