@@ -32,6 +32,7 @@ script:
   ### package (except during the report).  So to restrict coverage, we must
   ### inform coverage through the .coveragerc file.
   - cp .coveragerc $NX_INSTALL
+  - cp setup.cfg $NX_INSTALL
 
   # Move to new directory so that networkx is not imported from repository.
   # Export current directory for logs.
@@ -39,7 +40,7 @@ script:
   - printenv PWD
 
   # Run nosetests.
-  - nosetests -v --with-coverage --cover-erase --cover-package=networkx
+  - nosetests --verbosity=2
 
 after_success:
   # We must run coveralls from the git repo.
