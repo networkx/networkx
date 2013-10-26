@@ -60,4 +60,4 @@ after_success:
   # but coveralls does not seem to care.
   - cp .coverage $TRAVIS_BUILD_DIR
   - cd $TRAVIS_BUILD_DIR
-  - coveralls
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coveralls; fi
