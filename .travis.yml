@@ -8,18 +8,29 @@ python:
 virtualenv:
   system_site_packages: true
 before_install:
-  - sudo apt-get install -qq python-numpy python-scipy
-  - sudo apt-get install -qq python3-numpy python3-scipy
-  - sudo apt-get install -qq python-pygraphviz
-  - sudo apt-get install python-matplotlib
-  - sudo apt-get install python-pydot
-  - sudo apt-get install python-gdal
+  # Current TravisCI VM is Ubuntu 12.04 which has Python 2.7 and 3.2.
+  # So apt-get will only apply to those virtualenvs.
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then sudo apt-get install -qq python-numpy python-scipy python-matplotlib python-pydot python-gdal; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then sudo apt-get install -qq python3-numpy python3-scipy; fi
+
+  # Additionally, the TravisCI VM has numpy preinstalled on 2.6, 2.7 and 3.2.
+  # So for 3.3 and pypy, numpy is not preinstalled and must be pip-installed.
+  # Matplotlib, pydot, and gdal are not available for 3.2 via apt-get.
+  # And they are also not available for 2.6, 3.3, and pypy except via pip.
+  # We could install via pip, but...
+  #   skipping numpy (for 3.3 and pypy) since it takes too long.
+  #   skipping scipy (for 2.6, 3.3, and pypy) since it takes too long.
+  #   skipping matplotlib (for 2.6, 3.3, and pypy) since it takes too long.
+  #   skipping pydot (for all) since it is not 3.x compatible.
+  #   skipping gdal (for all) since it has errors while installing from pip.
+
   - pip install pyyaml --use-mirrors
   - pip install pyparsing --use-mirrors
   - pip install coveralls --use-mirrors
-# command to install dependencies
-# install: "pip install"
-# command to run tests
+
+  # In general, 2.6, 3.2, 3.3, and pypy will have lower coverage levels
+  # due to missing dependencies.  The coverage level reported by coveralls
+  # is the average coverage level over all builds.
 
 script:
   # Install networkx
