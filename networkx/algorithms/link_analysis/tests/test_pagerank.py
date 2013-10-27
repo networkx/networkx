@@ -15,6 +15,7 @@ class TestPageRank:
     def setUp(self):
         G = networkx.DiGraph()
         edges = [(1, 2), (1, 3),
+                 # 2 is a dangling node
                  (3, 1), (3, 2), (3, 5),
                  (4, 5), (4, 6),
                  (5, 4), (5, 6),

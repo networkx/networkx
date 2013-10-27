@@ -13,7 +13,8 @@ __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 
 
 def pagerank(G, alpha=0.85, personalization=None,
-             max_iter=100, tol=1.0e-8, nstart=None, weight='weight'):
+             max_iter=100, tol=1.0e-8, nstart=None, weight='weight',
+             dangling_edges=None):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -29,8 +30,8 @@ def pagerank(G, alpha=0.85, personalization=None,
       Damping parameter for PageRank, default=0.85.
 
     personalization: dict, optional
-       The "personalization vector" consisting of a dictionary with a
-       key for every graph node and nonzero personalization value for each node.
+      The "personalization vector" consisting of a dictionary with a
+      key for every graph node and nonzero personalization value for each node.
 
     max_iter : integer, optional
       Maximum number of iterations in power method eigenvalue solver.
@@ -43,6 +44,15 @@ def pagerank(G, alpha=0.85, personalization=None,
 
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
+
+    dangling_edges: dict, optional
+      The outedges to be assigned to any "dangling" nodes, i.e., nodes without
+      any outedges. The dict key is the node the outedge points to and the dict
+      value is the weight of that outedge. By default, dangling nodes will be
+      given outedges to all other nodes in the graph with uniform weight. This
+      must be selected to result in an irreducible transition matrix (see notes
+      under google_matrix). It may be common to have the dangling_edges dict to
+      be the same as the personalization dict.
 
     Returns
     -------
@@ -147,7 +157,7 @@ def pagerank(G, alpha=0.85, personalization=None,
 
 
 def google_matrix(G, alpha=0.85, personalization=None,
-                  nodelist=None, weight='weight'):
+                  nodelist=None, weight='weight', dangling_edges=None):
     """Return the Google matrix of the graph.
 
     Parameters
@@ -159,8 +169,8 @@ def google_matrix(G, alpha=0.85, personalization=None,
       The damping factor.
 
     personalization: dict, optional
-       The "personalization vector" consisting of a dictionary with a
-       key for every graph node and nonzero personalization value for each node.
+      The "personalization vector" consisting of a dictionary with a
+      key for every graph node and nonzero personalization value for each node.
 
     nodelist : list, optional
       The rows and columns are ordered according to the nodes in nodelist.
@@ -169,10 +179,28 @@ def google_matrix(G, alpha=0.85, personalization=None,
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
+    dangling_edges: dict, optional
+      The outedges to be assigned to any "dangling" nodes, i.e., nodes without
+      any outedges. The dict key is the node the outedge points to and the dict
+      value is the weight of that outedge. By default, dangling nodes will be
+      given outedges to all other nodes in the graph with uniform weight. This
+      must be selected to result in an irreducible transition matrix (see notes
+      below). It may be common to have the dangling_edges dict to be the same as
+      the personalization dict.
+
     Returns
     -------
     A : NumPy matrix
        Google matrix of the graph
+
+    Notes
+    -----
+    The matrix returned represents the transition matrix that describes the
+    Markov chain used in PageRank. For PageRank to converge to a unique
+    solution (i.e., a unique stationary distribution in a Markov chain), the
+    transition matrix must be irreducible. In other words, it must be that there
+    exists a path between every pair of nodes in the graph, or else there is the
+    potential of "rank sinks."
 
     See Also
     --------
@@ -181,8 +209,8 @@ def google_matrix(G, alpha=0.85, personalization=None,
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(
-            "google_matrix() requires NumPy: http://scipy.org/")
+        raise ImportError("google_matrix() requires NumPy: http://scipy.org/")
+
     # choose ordering in matrix
     if personalization is None:  # use G.nodes() ordering
         nodelist = G.nodes()
@@ -191,24 +219,37 @@ def google_matrix(G, alpha=0.85, personalization=None,
         if set(nodelist) != set(G):
             raise NetworkXError('Personalization vector dictionary'
                                 'must have a value for every node')
+
     M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
     (n, m) = M.shape  # should be square
     if n == 0:
         return M
-    # add constant to dangling nodes' row
-    dangling = np.where(M.sum(axis=1) == 0)
-    for d in dangling[0]:
-        M[d] = 1.0 / n
-    # normalize
-    M = M / M.sum(axis=1)
+
+    # We need to convert the dangling_edges dictionary into an array with
+    # indices that match `nodelist`.
+    if dangling_edges:
+        dangling_edge_array = np.repeat(0, n)
+        for node, weight in dangling_edges.items():
+            if node not in nodelist:
+                raise NetworkXError(
+                    'The node %s does not exist in the graph' % str(node))
+            dangling_edge_array[nodelist.index(node)] = weight
+    else:
+        dangling_edge_array = np.ones(n)
+
+    # Treat any dangling nodes, if any
+    dangling_nodes = np.where(M.sum(axis=1) == 0)[0]
+    for node in dangling_nodes:
+        M[node] = dangling_edge_array
+
+    M /= M.sum(axis=1)  # Normalize so that entries in each row equal to 1
     # add "teleportation"/personalization
-    e = np.ones((n))
-    if personalization is not None:
+    if personalization:
         v = np.array(list(personalization.values()), dtype=float)
     else:
-        v = e
-    v = v / v.sum()
-    P = alpha * M + (1 - alpha) * np.outer(e, v)
+        v = np.ones(n)
+    v /= v.sum()
+    P = alpha * M + (1 - alpha) * np.outer(np.ones(n), v)
     return P
 
 
