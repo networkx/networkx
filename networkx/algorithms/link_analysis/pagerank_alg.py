@@ -281,6 +281,15 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
+    dangling_edges: dict, optional
+      The outedges to be assigned to any "dangling" nodes, i.e., nodes without
+      any outedges. The dict key is the node the outedge points to and the dict
+      value is the weight of that outedge. By default, dangling nodes will be
+      given outedges to all other nodes in the graph with uniform weight. This
+      must be selected to result in an irreducible transition matrix (see notes
+      under google_matrix). It may be common to have the dangling_edges dict to
+      be the same as the personalization dict.
+
     Returns
     -------
     pagerank : dictionary
@@ -337,7 +346,8 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
 
 
 def pagerank_scipy(G, alpha=0.85, personalization=None,
-                   max_iter=100, tol=1.0e-6, weight='weight'):
+                   max_iter=100, tol=1.0e-6, weight='weight',
+                   dangling_edges=None):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -364,6 +374,15 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
 
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
+
+    dangling_edges: dict, optional
+      The outedges to be assigned to any "dangling" nodes, i.e., nodes without
+      any outedges. The dict key is the node the outedge points to and the dict
+      value is the weight of that outedge. By default, dangling nodes will be
+      given outedges to all other nodes in the graph with uniform weight. This
+      must be selected to result in an irreducible transition matrix (see notes
+      under google_matrix). It may be common to have the dangling_edges dict to
+      be the same as the personalization dict.
 
     Returns
     -------
@@ -397,35 +416,51 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         import scipy.sparse
     except ImportError:
         raise ImportError("pagerank_scipy() requires SciPy: http://scipy.org/")
+
     if len(G) == 0:
         return {}
+
     # choose ordering in matrix
     if personalization is None:  # use G.nodes() ordering
         nodelist = G.nodes()
     else:  # use personalization "vector" ordering
         nodelist = personalization.keys()
+
     M = nx.to_scipy_sparse_matrix(
         G, nodelist=nodelist, weight=weight, dtype='f')
     (n, m) = M.shape  # should be square
     S = scipy.array(M.sum(axis=1)).flatten()
-#    for i, j, v in zip( *scipy.sparse.find(M) ):
-#        M[i,j] = v / S[i]
     S[S > 0] = 1.0 / S[S > 0]
     Q = scipy.sparse.spdiags(S.T, 0, *M.shape, format='csr')
     M = Q * M
-    x = scipy.ones((n)) / n  # initial guess
-    dangle = scipy.array(scipy.where(M.sum(axis=1) == 0, 1.0 / n, 0)).flatten()
+    x = scipy.repeat(1.0 / n, n)  # initial vector
+
+    # Set up the outgoing edge weights for dangling nodes
+    if dangling_edges:
+        dangle_weights = scipy.repeat(0.0, n)
+        s = float(sum(dangling_edges.values()))
+        for node, weight in dangling_edges.items():
+            if node not in nodelist:
+                raise NetworkXError(
+                    'The node %s does not exist in the graph' % str(node))
+            dangle_weights[nodelist.index(node)] = weight / s
+    else:
+        dangle_weights = scipy.repeat(1.0 / n, n)
+    dangles, _ = scipy.where(M.sum(axis=1) == 0)  # the nodes that are dangling
+
     # add "teleportation"/personalization
     if personalization is not None:
         v = scipy.array(list(personalization.values()), dtype=float)
         v = v / v.sum()
     else:
-        v = x
+        v = scipy.repeat(1.0 / n, n)
+
+    # power iteration: make up to max_iter iterations
     i = 0
     while i <= max_iter:
-        # power iteration: make up to max_iter iterations
         xlast = x
-        x = alpha * (x * M + scipy.dot(dangle, xlast)) + (1 - alpha) * v
+        x = alpha * (x * M + sum(x[dangles]) * dangle_weights) + \
+                (1 - alpha) * v
         x = x / x.sum()
         # check convergence, l1 norm
         err = scipy.absolute(x - xlast).sum()
