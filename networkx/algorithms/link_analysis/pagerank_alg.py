@@ -229,19 +229,19 @@ def google_matrix(G, alpha=0.85, personalization=None,
     # We need to convert the dangling_edges dictionary into an array with
     # indices that match `nodelist`.
     if dangling_edges:
-        dangling_edge_array = np.repeat(0, n)
+        dangling_weights = np.repeat(0, n)
         for node, weight in dangling_edges.items():
             if node not in nodelist:
                 raise NetworkXError(
                     'The node %s does not exist in the graph' % str(node))
-            dangling_edge_array[nodelist.index(node)] = weight
+            dangling_weights[nodelist.index(node)] = weight
     else:
-        dangling_edge_array = np.ones(n)
+        dangling_weights = np.ones(n)
 
     # Treat any dangling nodes, if any
     dangling_nodes = np.where(M.sum(axis=1) == 0)[0]
     for node in dangling_nodes:
-        M[node] = dangling_edge_array
+        M[node] = dangling_weights
 
     M /= M.sum(axis=1)  # Normalize so that entries in each row equal to 1
     # add "teleportation"/personalization
@@ -442,7 +442,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
             dangle_weights[nodelist.index(node)] = weight / s
     else:
         dangle_weights = scipy.repeat(1.0 / n, n)
-    dangles, _ = scipy.where(M.sum(axis=1) == 0)  # the nodes that are dangling
+    is_dangling, _ = scipy.where(M.sum(axis=1) == 0)
 
     # add "teleportation"/personalization
     if personalization is not None:
@@ -455,7 +455,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     i = 0
     while i <= max_iter:
         xlast = x
-        x = alpha * (x * M + sum(x[dangles]) * dangle_weights) + \
+        x = alpha * (x * M + sum(x[is_dangling]) * dangle_weights) + \
                 (1 - alpha) * v
         # check convergence, l1 norm
         err = scipy.absolute(x - xlast).sum()
