@@ -51,7 +51,7 @@ script:
   - printenv PWD
 
   # Run nosetests.
-  - nosetests --verbosity=2
+  - nosetests --verbosity=2 --with-coverage --cover-package=networkx
 
 after_success:
   # We must run coveralls from the git repo.
