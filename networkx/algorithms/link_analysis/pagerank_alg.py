@@ -146,10 +146,6 @@ def pagerank(G, alpha=0.85, personalization=None,
             for nbr in W[n]:
                 x[nbr] += alpha * xlast[n] * W[n][nbr][weight]
             x[n] += danglesum * dangling_weights[n] + (1.0 - alpha) * p[n]
-        # normalize vector
-        s = 1.0 / sum(x.values())
-        for n in x:
-            x[n] *= s
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
         if err < tol:
@@ -461,7 +457,6 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         xlast = x
         x = alpha * (x * M + sum(x[dangles]) * dangle_weights) + \
                 (1 - alpha) * v
-        x = x / x.sum()
         # check convergence, l1 norm
         err = scipy.absolute(x - xlast).sum()
         if err < n * tol:
