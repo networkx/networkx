@@ -217,7 +217,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
     else:  # use personalization "vector" ordering
         nodelist = personalization.keys()
         if set(nodelist) != set(G):
-            raise NetworkXError('Personalization vector dictionary'
+            raise NetworkXError('Personalization vector dictionary '
                                 'must have a value for every node')
 
     M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
@@ -425,7 +425,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         if err < n * tol:
             return dict(zip(nodelist, map(float, x)))
         i += 1
-    raise NetworkXError('pagerank_scipy: power iteration failed to converge'
+    raise NetworkXError('pagerank_scipy: power iteration failed to converge '
                         'in %d iterations.' % (i + 1))
 
 
