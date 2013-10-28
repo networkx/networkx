@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+import random
+
+import networkx
 from nose.tools import *
 from nose import SkipTest
 from nose.plugins.attrib import attr
-import random
-import networkx
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
