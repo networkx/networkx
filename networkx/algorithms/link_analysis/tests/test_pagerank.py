@@ -26,6 +26,7 @@ class TestPageRank:
         self.G.pagerank = dict(zip(G,
                                    [0.03721197, 0.05395735, 0.04150565,
                                     0.37508082, 0.20599833, 0.28624589]))
+        self.dangling_node_index = 1
 
     def test_pagerank(self):
         G = self.G
@@ -99,6 +100,29 @@ class TestPageRank:
         personalize.pop(0)
         assert_raises(networkx.NetworkXError, networkx.pagerank, G,
                       personalization=personalize)
+
+    def test_dangling(self):
+        """
+        Tests that the google_matrix doesn't change except for the dangling
+        nodes.
+        """
+        G = self.G
+        dangling = {1: 2, 2: 3,
+                    3: 0, 4: 0, 5: 0, 6: 0}
+        dangling_sum = float(sum(dangling.values()))
+        M1 = networkx.google_matrix(G, personalization=dangling)
+        M2 = networkx.google_matrix(G, personalization=dangling,
+                                    dangling_edges=dangling)
+        for i in xrange(len(G)):
+            for j in xrange(len(G)):
+                if i == self.dangling_node_index and (j + 1) in dangling:
+                    assert_almost_equal(M2[i, j],
+                                        dangling[j + 1] / dangling_sum,
+                                        places=4)
+                else:
+                    assert_almost_equal(M2[i, j], M1[i, j], places=4)
+
+
 
     @attr('numpy')
     def test_empty(self):
