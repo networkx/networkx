@@ -102,45 +102,50 @@ def pagerank(G, alpha=0.85, personalization=None,
 
     # create a copy in (right) stochastic form
     W = nx.stochastic_graph(D, weight=weight)
-    scale = 1.0 / W.number_of_nodes()
+    N = W.number_of_nodes()
 
     # choose fixed starting vector if not given
     if nstart is None:
-        x = dict.fromkeys(W, scale)
+        x = dict.fromkeys(W, 1.0 / N)
     else:
-        x = nstart
-        # normalize starting vector to 1
-        s = 1.0 / sum(x.values())
-        for k in x:
-            x[k] *= s
+        # Normalized nstart vector
+        s = float(sum(nstart.values()))
+        x = {k: v / s for k, v in nstart.items()}
 
     # assign uniform personalization/teleportation vector if not given
     if personalization is None:
-        p = dict.fromkeys(W, scale)
+        p = dict.fromkeys(W, 1.0 / N)
     else:
-        p = personalization
-        # normalize starting vector to 1
-        s = 1.0 / sum(p.values())
-        for k in p:
-            p[k] *= s
+        s = float(sum(personalization.values()))
+        p = {k: v / s for k, v in personalization.items()}
         if set(p) != set(G):
             raise NetworkXError('Personalization vector '
                                 'must have a value for every node')
 
     # "dangling" nodes, no links out from them
-    out_degree = W.out_degree()
-    dangle = [n for n in W if out_degree[n] == 0.0]
+    dangling_nodes = [n for n in W if W.out_degree(n) == 0.0]
+    if dangling_edges:
+        dangling_weights = dict.fromkeys(W, 0)
+        s = float(sum(dangling_edges.values()))
+        for n, w in dangling_edges.items():
+            if n not in W:
+                raise NetworkXError(
+                    'The node %s does not exist in the graph' % str(n))
+            dangling_weights[n] = w / s
+    else:
+        dangling_weights = dict.fromkeys(W, 1.0 / N)
+
     i = 0
     while True:  # power iteration: make up to max_iter iterations
         xlast = x
         x = dict.fromkeys(xlast.keys(), 0)
-        danglesum = alpha * scale * sum(xlast[n] for n in dangle)
+        danglesum = alpha * sum(xlast[n] for n in dangling_nodes)
         for n in x:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
             for nbr in W[n]:
                 x[nbr] += alpha * xlast[n] * W[n][nbr][weight]
-            x[n] += danglesum + (1.0 - alpha) * p[n]
+            x[n] += danglesum * dangling_weights[n] + (1.0 - alpha) * p[n]
         # normalize vector
         s = 1.0 / sum(x.values())
         for n in x:
@@ -253,7 +258,8 @@ def google_matrix(G, alpha=0.85, personalization=None,
     return P
 
 
-def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
+def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
+                   dangling_edges=None):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -318,7 +324,8 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     else:  # use personalization "vector" ordering
         nodelist = personalization.keys()
     M = google_matrix(G, alpha, personalization=personalization,
-                      nodelist=nodelist, weight=weight)
+                      nodelist=nodelist, weight=weight,
+                      dangling_edges=dangling_edges)
     # use numpy LAPACK solver
     eigenvalues, eigenvectors = np.linalg.eig(M.T)
     ind = eigenvalues.argsort()

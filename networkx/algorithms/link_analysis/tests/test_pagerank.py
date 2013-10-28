@@ -27,6 +27,11 @@ class TestPageRank:
                                    [0.03721197, 0.05395735, 0.04150565,
                                     0.37508082, 0.20599833, 0.28624589]))
         self.dangling_node_index = 1
+        self.dangling_edges = {1: 2, 2: 3,
+                               3: 0, 4: 0, 5: 0, 6: 0}
+        self.G.dangling_pagerank = dict(zip(G,
+                                            [0.10844518, 0.18618601, 0.0710892,
+                                             0.2683668, 0.15919783, 0.20671497]))
 
     def test_pagerank(self):
         G = self.G
@@ -101,14 +106,13 @@ class TestPageRank:
         assert_raises(networkx.NetworkXError, networkx.pagerank, G,
                       personalization=personalize)
 
-    def test_dangling(self):
+    def test_dangling_matrix(self):
         """
         Tests that the google_matrix doesn't change except for the dangling
         nodes.
         """
         G = self.G
-        dangling = {1: 2, 2: 3,
-                    3: 0, 4: 0, 5: 0, 6: 0}
+        dangling = self.dangling_edges
         dangling_sum = float(sum(dangling.values()))
         M1 = networkx.google_matrix(G, personalization=dangling)
         M2 = networkx.google_matrix(G, personalization=dangling,
@@ -122,6 +126,14 @@ class TestPageRank:
                 else:
                     assert_almost_equal(M2[i, j], M1[i, j], places=4)
 
+    def test_dangling_pageranks(self):
+        G = self.G
+        dangling = self.dangling_edges
+        pr = networkx.pagerank(G, dangling_edges=dangling)
+        pr_np = networkx.pagerank_numpy(G, dangling_edges=dangling)
+        for n in G:
+            assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
+            assert_almost_equal(pr_np[n], self.G.dangling_pagerank[n], places=4)
 
 
     @attr('numpy')
