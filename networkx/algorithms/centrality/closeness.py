@@ -26,7 +26,7 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
 
     .. math::
 
-        C(u) = \frac{n - 1}{\sum_{v=1}^{n} d(v, u)},
+        C(u) = \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`,
     and `n` is the number of nodes in the graph.
