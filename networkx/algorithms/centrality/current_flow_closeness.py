@@ -1,22 +1,17 @@
+"""Current-flow closeness centrality measures.
 """
-Current-flow closeness centrality measures.
-
-"""
-#    Copyright (C) 2010 by
+#    Copyright (C) 2010-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
-
-__all__ = ['current_flow_closeness_centrality', 'information_centrality']
-
 import networkx as nx
 from networkx.algorithms.centrality.flow_matrix import *
+__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
+__all__ = ['current_flow_closeness_centrality', 'information_centrality']
 
-
-def current_flow_closeness_centrality(G, normalized=True, weight='weight',
+def current_flow_closeness_centrality(G, weight='weight',
                                       dtype=float, solver='lu'):
     """Compute current-flow closeness centrality for nodes.
 
@@ -28,10 +23,6 @@ def current_flow_closeness_centrality(G, normalized=True, weight='weight',
     ----------
     G : graph
       A NetworkX graph
-
-    normalized : bool, optional
-      If True the values are normalized by 1/(n-1) where n is the
-      number of nodes in G.
 
     dtype: data type (float)
       Default data type for internal matrices.
@@ -98,13 +89,8 @@ def current_flow_closeness_centrality(G, normalized=True, weight='weight',
         for w in H:
             betweenness[v] += col[v]-2*col[w]
             betweenness[w] += col[v]
-
-    if normalized:
-        nb = len(betweenness) - 1.0
-    else:
-        nb = 1.0
     for v in H:
-        betweenness[v] = nb / (betweenness[v])
+        betweenness[v] = 1.0 / (betweenness[v])
     return dict((ordering[k], float(v)) for k, v in betweenness.items())
 
 information_centrality = current_flow_closeness_centrality
