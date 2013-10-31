@@ -148,7 +148,7 @@ def _relabel_copy(G, mapping):
 
 
 def convert_node_labels_to_integers(G, first_label=0, ordering="default",
-                                    label_attribute=None):
+                                    label_attribute=None, return_mapping=False):
     """Return a copy of the graph G with the nodes relabeled using
     consecutive integers.
 
@@ -170,6 +170,9 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
     label_attribute : string, optional (default=None)
        Name of node attribute to store old label.  If None no attribute
        is created.
+
+    return_mapping : boolean, optional (default=False)
+       Together with the new graph also the mapping is returned.
 
     Notes
     -----
@@ -203,4 +206,6 @@ def convert_node_labels_to_integers(G, first_label=0, ordering="default",
     if label_attribute is not None:
         nx.set_node_attributes(H, label_attribute,
                                dict((v,k) for k,v in mapping.items()))
+    if return_mapping:
+        return H, mapping
     return H
