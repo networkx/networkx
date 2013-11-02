@@ -111,7 +111,7 @@ def pagerank(G, alpha=0.85, personalization=None,
     else:
         # Normalized nstart vector
         s = float(sum(nstart.values()))
-        x = {k: v / s for k, v in nstart.items()}
+        x = dict((k, v / s) for k, v in nstart.items())
 
     if personalization is None:
         # Assign uniform personalization vector if not given
@@ -123,7 +123,7 @@ def pagerank(G, alpha=0.85, personalization=None,
                                 'must have a value for every node. '
                                 'Missing nodes %s' % missing)
         s = float(sum(personalization.values()))
-        p = {k: v / s for k, v in personalization.items()}
+        p = dict((k, v / s) for k, v in personalization.items())
 
     if dangling is None:
         # Use personalization vector if dangling vector not specified
@@ -135,7 +135,7 @@ def pagerank(G, alpha=0.85, personalization=None,
                                 'must have a value for every node. '
                                 'Missing nodes %s' % missing)
         s = float(sum(dangling.values()))
-        dangling_weights = {k: v / s for k, v in dangling.items()}
+        dangling_weights = dict((k, v/s) for k, v in dangling.items())
     dangling_nodes = [n for n in W if W.out_degree(n) == 0.0]
 
     i = 0
