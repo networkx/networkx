@@ -116,7 +116,7 @@ class TestPageRank:
         dangling_sum = float(sum(dangling.values()))
         M1 = networkx.google_matrix(G, personalization=dangling)
         M2 = networkx.google_matrix(G, personalization=dangling,
-                                    dangling_edges=dangling)
+                                    dangling=dangling)
         for i in xrange(len(G)):
             for j in xrange(len(G)):
                 if i == self.dangling_node_index and (j + 1) in dangling:
@@ -129,9 +129,9 @@ class TestPageRank:
     def test_dangling_pageranks(self):
         G = self.G
         dangling = self.dangling_edges
-        pr = networkx.pagerank(G, dangling_edges=dangling)
-        pr_np = networkx.pagerank_numpy(G, dangling_edges=dangling)
-        pr_sp = networkx.pagerank_scipy(G, dangling_edges=dangling)
+        pr = networkx.pagerank(G, dangling=dangling)
+        pr_np = networkx.pagerank_numpy(G, dangling=dangling)
+        pr_sp = networkx.pagerank_scipy(G, dangling=dangling)
         for n in G:
             assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
             assert_almost_equal(pr_np[n], self.G.dangling_pagerank[n], places=4)
