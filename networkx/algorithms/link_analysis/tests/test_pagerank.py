@@ -131,11 +131,18 @@ class TestPageRank:
         dangling = self.dangling_edges
         pr = networkx.pagerank(G, dangling=dangling)
         pr_np = networkx.pagerank_numpy(G, dangling=dangling)
-        pr_sp = networkx.pagerank_scipy(G, dangling=dangling)
         for n in G:
             assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
             assert_almost_equal(pr_np[n], self.G.dangling_pagerank[n], places=4)
-            assert_almost_equal(pr_sp[n], self.G.dangling_pagerank[n], places=4)
+
+    def test_dangling_scipy_pagerank(self):
+        try:
+            import scipy
+        except ImportError:
+            raise SkipTest('scipy not available.')
+        pr = networkx.pagerank_scipy(self.G, dangling=self.dangling_edges)
+        for n in self.G:
+            assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
 
     @attr('numpy')
