@@ -123,6 +123,7 @@ def pagerank(G, alpha=0.85, personalization=None,
                                 'Missing nodes %s'%missing)
         s = float(sum(personalization.values()))
         p = {k: v / s for k, v in personalization.items()}
+
     if dangling is None:
         # assign uniform dangling weights if not specified
         dangling_weights = dict.fromkeys(W, 1.0 / N)
@@ -210,12 +211,15 @@ def google_matrix(G, alpha=0.85, personalization=None,
     pagerank, pagerank_numpy, pagerank_scipy
     """
     import numpy as np
+
     if nodelist is None:
         nodelist = G.nodes()
+
     M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
     (n, m) = M.shape  # should be square
     if n == 0:
         return M
+
     if dangling is None:
         # Use array of ones
         dangling_weights = np.ones(n)
@@ -226,13 +230,16 @@ def google_matrix(G, alpha=0.85, personalization=None,
                                 'must have a value for every node. '
                                 'Missing nodes %s'%missing)
         # Convert the dangling dictionary into an array in nodelist order
-        dangling_weights = np.array([dangling[n] for n in nodelist],dtype=float)
+        dangling_weights = np.array([dangling[node] for node in nodelist],
+                                    dtype=float)
     dangling_nodes = np.where(M.sum(axis=1) == 0)[0]
+
     # Assign dangling_weights to any dangling nodes (nodes with no out links)
     for node in dangling_nodes:
         M[node] = dangling_weights
-    # Normalize rows to sum to 1
-    M /= M.sum(axis=1)
+
+    M /= M.sum(axis=1)  # Normalize rows to sum to 1
+
     # add normalized "teleportation"/personalization
     if personalization is None:
         v = np.ones(n)
@@ -242,7 +249,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
             raise NetworkXError('Personalization vector dictionary '
                                 'must have a value for every node. '
                                 'Missing nodes %s'%missing)
-        v = np.array([personalization[n] for n in nodelist],dtype=float)
+        v = np.array([personalization[node] for node in nodelist],dtype=float)
     v /= v.sum()
     P = alpha * M + (1 - alpha) * np.outer(np.ones(n), v)
     return P
@@ -408,7 +415,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     # choose ordering in matrix
     nodelist = G.nodes()
     M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  dtype='f')
+                                  dtype=float)
     (n, m) = M.shape  # should be square
     S = scipy.array(M.sum(axis=1)).flatten()
     S[S > 0] = 1.0 / S[S > 0]
@@ -418,7 +425,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
 
     # Set up the outgoing edge weights for dangling nodes
     if dangling is None:
-        dangle = scipy.array(scipy.where(S==0, 1.0/n, 0)).flatten()
+        dangling_weights = scipy.repeat(1.0 / n, n)
     else:
         missing = set(nodelist) - set(dangling)
         if missing:
@@ -426,9 +433,10 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
                                 'must have a value for every node. '
                                 'Missing nodes %s'%missing)
         # Convert the dangling dictionary into an array in nodelist order
-        dangling_weights = scipy.array([dangling[n]
-                                        for n in nodelist], dtype=float)
-        dangle = scipy.array(scipy.where(S==0,dangling_weights,0)).flatten()
+        dangling_weights = scipy.array([dangling[node] for node in nodelist],
+                                       dtype=float)
+        dangling_weights /= dangling_weights.sum()
+    is_dangling = scipy.where(S==0)[0]
 
     # add "teleportation"/personalization
     if personalization is None:
@@ -439,21 +447,23 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
             raise NetworkXError('Personalization vector dictionary '
                                 'must have a value for every node. '
                                 'Missing nodes %s'%missing)
-        v = scipy.array([personalization[n] for n in nodelist],dtype=float)
+        v = scipy.array([personalization[node] for node in nodelist],
+                        dtype=float)
         v = v / v.sum()
 
     # power iteration: make up to max_iter iterations
     i = 0
     while i <= max_iter:
         xlast = x
-        x = alpha * (x * M + scipy.dot(dangle, xlast)) + (1 - alpha) * v
+        # x = alpha * (x * M + scipy.dot(dangle, xlast)) + (1 - alpha) * v
+        x = alpha * (x * M + sum(x[is_dangling]) * dangling_weights) + (1 - alpha) * v
         # check convergence, l1 norm
         err = scipy.absolute(x - xlast).sum()
         if err < n * tol:
             return dict(zip(nodelist, map(float, x)))
         i += 1
     raise NetworkXError('pagerank_scipy: power iteration failed to converge '
-                        'in %d iterations.' % (i + 1))
+                        'in %d iterations.' % i)
 
 
 # fixture for nose tests
