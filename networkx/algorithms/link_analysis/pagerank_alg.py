@@ -32,6 +32,7 @@ def pagerank(G, alpha=0.85, personalization=None,
     personalization: dict, optional
       The "personalization vector" consisting of a dictionary with a
       key for every graph node and nonzero personalization value for each node.
+      By default, a uniform distribution is used.
 
     max_iter : integer, optional
       Maximum number of iterations in power method eigenvalue solver.
@@ -48,11 +49,11 @@ def pagerank(G, alpha=0.85, personalization=None,
     dangling: dict, optional
       The outedges to be assigned to any "dangling" nodes, i.e., nodes without
       any outedges. The dict key is the node the outedge points to and the dict
-      value is the weight of that outedge. By default, dangling nodes will be
-      given outedges to all other nodes in the graph with uniform weight. This
-      must be selected to result in an irreducible transition matrix (see notes
-      under google_matrix). It may be common to have the dangling dict to
-      be the same as the personalization dict.
+      value is the weight of that outedge. By default, dangling nodes are given
+      outedges according to the personalization vector (uniform if not
+      specified). This must be selected to result in an irreducible transition
+      matrix (see notes under google_matrix). It may be common to have the
+      dangling dict to be the same as the personalization dict.
 
     Returns
     -------
@@ -100,11 +101,11 @@ def pagerank(G, alpha=0.85, personalization=None,
     else:
         D = G
 
-    # create a copy in (right) stochastic form
+    # Create a copy in (right) stochastic form
     W = nx.stochastic_graph(D, weight=weight)
     N = W.number_of_nodes()
 
-    # choose fixed starting vector if not given
+    # Choose fixed starting vector if not given
     if nstart is None:
         x = dict.fromkeys(W, 1.0 / N)
     else:
@@ -113,7 +114,7 @@ def pagerank(G, alpha=0.85, personalization=None,
         x = {k: v / s for k, v in nstart.items()}
 
     if personalization is None:
-        # assign uniform personalization/teleportation vector if not given
+        # Assign uniform personalization vector if not given
         p = dict.fromkeys(W, 1.0 / N)
     else:
         missing = set(G) - set(personalization)
@@ -125,8 +126,8 @@ def pagerank(G, alpha=0.85, personalization=None,
         p = {k: v / s for k, v in personalization.items()}
 
     if dangling is None:
-        # assign uniform dangling weights if not specified
-        dangling_weights = dict.fromkeys(W, 1.0 / N)
+        # Use personalization vector if dangling vector not specified
+        dangling_weights = p
     else:
         missing = set(G) - set(dangling)
         if missing:
@@ -135,9 +136,8 @@ def pagerank(G, alpha=0.85, personalization=None,
                                 'Missing nodes %s' % missing)
         s = float(sum(dangling.values()))
         dangling_weights = {k: v / s for k, v in dangling.items()}
-
-    # "dangling" nodes, no links out from them
     dangling_nodes = [n for n in W if W.out_degree(n) == 0.0]
+
     i = 0
     while True:  # power iteration: make up to max_iter iterations
         xlast = x
@@ -175,6 +175,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
     personalization: dict, optional
       The "personalization vector" consisting of a dictionary with a
       key for every graph node and nonzero personalization value for each node.
+      By default, a uniform distribution is used.
 
     nodelist : list, optional
       The rows and columns are ordered according to the nodes in nodelist.
@@ -186,11 +187,11 @@ def google_matrix(G, alpha=0.85, personalization=None,
     dangling: dict, optional
       The outedges to be assigned to any "dangling" nodes, i.e., nodes without
       any outedges. The dict key is the node the outedge points to and the dict
-      value is the weight of that outedge. By default, dangling nodes will be
-      given outedges to all other nodes in the graph with uniform weight. This
-      must be selected to result in an irreducible transition matrix (see notes
-      below). It may be common to have the dangling dict to be the same as
-      the personalization dict.
+      value is the weight of that outedge. By default, dangling nodes are given
+      outedges according to the personalization vector (uniform if not
+      specified) This must be selected to result in an irreducible transition
+      matrix (see notes below). It may be common to have the dangling dict to
+      be the same as the personalization dict.
 
     Returns
     -------
@@ -220,9 +221,21 @@ def google_matrix(G, alpha=0.85, personalization=None,
     if N == 0:
         return M
 
+    # Personalization vector
+    if personalization is None:
+        p = np.repeat(1.0 / N, N)
+    else:
+        missing = set(nodelist) - set(personalization)
+        if missing:
+            raise NetworkXError('Personalization vector dictionary '
+                                'must have a value for every node. '
+                                'Missing nodes %s' % missing)
+        p = np.array([personalization[n] for n in nodelist], dtype=float)
+        p /= p.sum()
+
+    # Dangling nodes
     if dangling is None:
-        # Use array of ones
-        dangling_weights = np.ones(N)
+        dangling_weights = p
     else:
         missing = set(nodelist) - set(dangling)
         if missing:
@@ -232,6 +245,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
         # Convert the dangling dictionary into an array in nodelist order
         dangling_weights = np.array([dangling[n] for n in nodelist],
                                     dtype=float)
+        dangling_weights /= dangling_weights.sum()
     dangling_nodes = np.where(M.sum(axis=1) == 0)[0]
 
     # Assign dangling_weights to any dangling nodes (nodes with no out links)
@@ -240,19 +254,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
 
     M /= M.sum(axis=1)  # Normalize rows to sum to 1
 
-    # add normalized "teleportation"/personalization
-    if personalization is None:
-        v = np.ones(N)
-    else:
-        missing = set(nodelist) - set(personalization)
-        if missing:
-            raise NetworkXError('Personalization vector dictionary '
-                                'must have a value for every node. '
-                                'Missing nodes %s' % missing)
-        v = np.array([personalization[n] for n in nodelist], dtype=float)
-    v /= v.sum()
-    P = alpha * M + (1 - alpha) * np.outer(np.ones(N), v)
-    return P
+    return alpha * M + (1 - alpha) * np.outer(np.ones(N), p)
 
 
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
@@ -274,7 +276,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
        key for every graph node and nonzero personalization value for each
-       node.
+       node. By default, a uniform distribution is used.
 
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
@@ -282,11 +284,11 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     dangling: dict, optional
       The outedges to be assigned to any "dangling" nodes, i.e., nodes without
       any outedges. The dict key is the node the outedge points to and the dict
-      value is the weight of that outedge. By default, dangling nodes will be
-      given outedges to all other nodes in the graph with uniform weight. This
-      must be selected to result in an irreducible transition matrix (see notes
-      under google_matrix). It may be common to have the dangling dict to
-      be the same as the personalization dict.
+      value is the weight of that outedge. By default, dangling nodes are given
+      outedges according to the personalization vector (uniform if not
+      specified) This must be selected to result in an irreducible transition
+      matrix (see notes under google_matrix). It may be common to have the
+      dangling dict to be the same as the personalization dict.
 
     Returns
     -------
@@ -359,7 +361,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
        key for every graph node and nonzero personalization value for each
-       node.
+       node. By default, a uniform distribution is used.
 
     max_iter : integer, optional
       Maximum number of iterations in power method eigenvalue solver.
@@ -373,11 +375,11 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     dangling: dict, optional
       The outedges to be assigned to any "dangling" nodes, i.e., nodes without
       any outedges. The dict key is the node the outedge points to and the dict
-      value is the weight of that outedge. By default, dangling nodes will be
-      given outedges to all other nodes in the graph with uniform weight. This
-      must be selected to result in an irreducible transition matrix (see notes
-      under google_matrix). It may be common to have the dangling dict to
-      be the same as the personalization dict.
+      value is the weight of that outedge. By default, dangling nodes are given
+      outedges according to the personalization vector (uniform if not
+      specified) This must be selected to result in an irreducible transition
+      matrix (see notes under google_matrix). It may be common to have the
+      dangling dict to be the same as the personalization dict.
 
     Returns
     -------
@@ -427,9 +429,22 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     # initial vector
     x = scipy.repeat(1.0 / N, N)
 
-    # Set up the outgoing edge weights for dangling nodes
+    # Personalization vector
+    if personalization is None:
+        p = scipy.repeat(1.0 / N, N)
+    else:
+        missing = set(nodelist) - set(personalization)
+        if missing:
+            raise NetworkXError('Personalization vector dictionary '
+                                'must have a value for every node. '
+                                'Missing nodes %s' % missing)
+        p = scipy.array([personalization[n] for n in nodelist],
+                        dtype=float)
+        p = p / p.sum()
+
+    # Dangling nodes
     if dangling is None:
-        dangling_weights = scipy.repeat(1.0 / N, N)
+        dangling_weights = p
     else:
         missing = set(nodelist) - set(dangling)
         if missing:
@@ -442,26 +457,12 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         dangling_weights /= dangling_weights.sum()
     is_dangling = scipy.where(S == 0)[0]
 
-    # add "teleportation"/personalization
-    if personalization is None:
-        v = scipy.repeat(1.0 / N, N)
-    else:
-        missing = set(nodelist) - set(personalization)
-        if missing:
-            raise NetworkXError('Personalization vector dictionary '
-                                'must have a value for every node. '
-                                'Missing nodes %s' % missing)
-        v = scipy.array([personalization[n] for n in nodelist],
-                        dtype=float)
-        v = v / v.sum()
-
     # power iteration: make up to max_iter iterations
     i = 0
     while i <= max_iter:
         xlast = x
-        # x = alpha * (x * M + scipy.dot(dangle, xlast)) + (1 - alpha) * v
         x = alpha * (x * M + sum(x[is_dangling]) * dangling_weights) + \
-            (1 - alpha) * v
+            (1 - alpha) * p
         # check convergence, l1 norm
         err = scipy.absolute(x - xlast).sum()
         if err < N * tol:
