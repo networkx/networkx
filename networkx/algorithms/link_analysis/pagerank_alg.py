@@ -139,7 +139,7 @@ def pagerank(G, alpha=0.85, personalization=None,
     dangling_nodes = [n for n in W if W.out_degree(n) == 0.0]
 
     # power iteration: make up to max_iter iterations
-    for _ in xrange(max_iter):
+    for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast.keys(), 0)
         danglesum = alpha * sum(xlast[n] for n in dangling_nodes)
@@ -455,7 +455,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     is_dangling = scipy.where(S == 0)[0]
 
     # power iteration: make up to max_iter iterations
-    for _ in xrange(max_iter):
+    for _ in range(max_iter):
         xlast = x
         x = alpha * (x * M + sum(x[is_dangling]) * dangling_weights) + \
             (1 - alpha) * p
