@@ -138,8 +138,8 @@ def pagerank(G, alpha=0.85, personalization=None,
         dangling_weights = dict((k, v/s) for k, v in dangling.items())
     dangling_nodes = [n for n in W if W.out_degree(n) == 0.0]
 
-    i = 0
-    while True:  # power iteration: make up to max_iter iterations
+    # power iteration: make up to max_iter iterations
+    for _ in xrange(max_iter):
         xlast = x
         x = dict.fromkeys(xlast.keys(), 0)
         danglesum = alpha * sum(xlast[n] for n in dangling_nodes)
@@ -152,12 +152,9 @@ def pagerank(G, alpha=0.85, personalization=None,
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
         if err < tol:
-            break
-        if i > max_iter:
-            raise NetworkXError('pagerank: power iteration failed to converge '
-                                'in %d iterations.' % (i - 1))
-        i += 1
-    return x
+            return x
+    raise NetworkXError('pagerank: power iteration failed to converge '
+                        'in %d iterations.' % max_iter)
 
 
 def google_matrix(G, alpha=0.85, personalization=None,
@@ -458,8 +455,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     is_dangling = scipy.where(S == 0)[0]
 
     # power iteration: make up to max_iter iterations
-    i = 0
-    while i <= max_iter:
+    for _ in xrange(max_iter):
         xlast = x
         x = alpha * (x * M + sum(x[is_dangling]) * dangling_weights) + \
             (1 - alpha) * p
@@ -467,9 +463,8 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
         err = scipy.absolute(x - xlast).sum()
         if err < N * tol:
             return dict(zip(nodelist, map(float, x)))
-        i += 1
     raise NetworkXError('pagerank_scipy: power iteration failed to converge '
-                        'in %d iterations.' % i)
+                        'in %d iterations.' % max_iter)
 
 
 # fixture for nose tests
