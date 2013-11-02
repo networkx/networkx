@@ -11,7 +11,15 @@ from nose.plugins.attrib import attr
 # information retrieval."  http://citeseer.ist.psu.edu/713792.html
 
 
-class TestPageRank:
+class TestPageRank(object):
+
+    @classmethod
+    def setupClass(cls):
+        global numpy
+        try:
+            import numpy
+        except ImportError:
+            raise SkipTest('NumPy not available.')
 
     def setUp(self):
         G = networkx.DiGraph()
@@ -33,7 +41,6 @@ class TestPageRank:
                                             [0.10844518, 0.18618601, 0.0710892,
                                              0.2683668, 0.15919783, 0.20671497]))
 
-    @attr('numpy')
     def test_pagerank(self):
         G = self.G
         p = networkx.pagerank(G, alpha=0.9, tol=1.e-08)
@@ -48,12 +55,7 @@ class TestPageRank:
         assert_raises(networkx.NetworkXError, networkx.pagerank, G,
                       max_iter=0)
 
-    @attr('numpy')
     def test_numpy_pagerank(self):
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('numpy not available.')
         G = self.G
         p = networkx.pagerank_numpy(G, alpha=0.9)
         for n in G:
@@ -61,12 +63,7 @@ class TestPageRank:
         personalize = dict((n, random.random()) for n in G)
         p = networkx.pagerank_numpy(G, alpha=0.9, personalization=personalize)
 
-    @attr('numpy')
     def test_google_matrix(self):
-        try:
-            import numpy.linalg
-        except ImportError:
-            raise SkipTest('numpy not available.')
         G = self.G
         M = networkx.google_matrix(G, alpha=0.9)
         e, ev = numpy.linalg.eig(M.T)
@@ -80,23 +77,6 @@ class TestPageRank:
         assert_raises(networkx.NetworkXError, networkx.google_matrix, G,
                       personalization=personalize)
 
-    def test_scipy_pagerank(self):
-        G = self.G
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('scipy not available.')
-        p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08)
-        for n in G:
-            assert_almost_equal(p[n], G.pagerank[n], places=4)
-        personalize = dict((n, random.random()) for n in G)
-        p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08,
-                                    personalization=personalize)
-
-        assert_raises(networkx.NetworkXError, networkx.pagerank_scipy, G,
-                      max_iter=0)
-
-    @attr('numpy')
     def test_personalization(self):
         G = networkx.complete_graph(4)
         personalize = {0: 1, 1: 1, 2: 4, 3: 4}
@@ -108,7 +88,6 @@ class TestPageRank:
         assert_raises(networkx.NetworkXError, networkx.pagerank, G,
                       personalization=personalize)
 
-    @attr('numpy')
     def test_dangling_matrix(self):
         """
         Tests that the google_matrix doesn't change except for the dangling
@@ -129,43 +108,53 @@ class TestPageRank:
                 else:
                     assert_almost_equal(M2[i, j], M1[i, j], places=4)
 
-    @attr('numpy')
     def test_dangling_pagerank(self):
         pr = networkx.pagerank(self.G, dangling=self.dangling_edges)
         for n in self.G:
             assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
-    @attr('numpy')
     def test_dangling_numpy_pagerank(self):
         pr = networkx.pagerank_numpy(self.G, dangling=self.dangling_edges)
         for n in self.G:
             assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
-    def test_dangling_scipy_pagerank(self):
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('scipy not available.')
-        pr = networkx.pagerank_scipy(self.G, dangling=self.dangling_edges)
-        for n in self.G:
-            assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
 
-    @attr('numpy')
     def test_empty(self):
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('numpy not available.')
         G = networkx.Graph()
         assert_equal(networkx.pagerank(G), {})
         assert_equal(networkx.pagerank_numpy(G), {})
         assert_equal(networkx.google_matrix(G).shape, (0, 0))
 
-    def test_empty_scipy(self):
+
+
+class TestPageRankScipy(TestPageRank):
+
+    @classmethod
+    def setupClass(cls):
+        global scipy
         try:
             import scipy
         except ImportError:
-            raise SkipTest('scipy not available.')
+            raise SkipTest('SciPy not available.')
+
+    def test_scipy_pagerank(self):
+        G = self.G
+        p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08)
+        for n in G:
+            assert_almost_equal(p[n], G.pagerank[n], places=4)
+        personalize = dict((n, random.random()) for n in G)
+        p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.e-08,
+                                    personalization=personalize)
+
+        assert_raises(networkx.NetworkXError, networkx.pagerank_scipy, G,
+                      max_iter=0)
+
+    def test_dangling_scipy_pagerank(self):
+        pr = networkx.pagerank_scipy(self.G, dangling=self.dangling_edges)
+        for n in self.G:
+            assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
+
+    def test_empty_scipy(self):
         G = networkx.Graph()
         assert_equal(networkx.pagerank_scipy(G), {})
