@@ -129,7 +129,7 @@ class TestPageRank:
 
     def test_dangling_pagerank(self):
         pr = networkx.pagerank(self.G, dangling=self.dangling_edges)
-        for n in G:
+        for n in self.G:
             assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
     @attr('numpy')
