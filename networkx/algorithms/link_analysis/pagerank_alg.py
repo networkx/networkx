@@ -406,10 +406,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    try:
-        import scipy.sparse
-    except ImportError:
-        raise ImportError("pagerank_scipy() requires SciPy: http://scipy.org/")
+    import scipy.sparse
 
     N = len(G)
     if N == 0:
