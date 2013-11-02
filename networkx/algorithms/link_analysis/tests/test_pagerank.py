@@ -117,8 +117,8 @@ class TestPageRank:
         M1 = networkx.google_matrix(G, personalization=dangling)
         M2 = networkx.google_matrix(G, personalization=dangling,
                                     dangling=dangling)
-        for i in xrange(len(G)):
-            for j in xrange(len(G)):
+        for i in range(len(G)):
+            for j in range(len(G)):
                 if i == self.dangling_node_index and (j + 1) in dangling:
                     assert_almost_equal(M2[i, j],
                                         dangling[j + 1] / dangling_sum,
