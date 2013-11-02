@@ -33,6 +33,7 @@ class TestPageRank:
                                             [0.10844518, 0.18618601, 0.0710892,
                                              0.2683668, 0.15919783, 0.20671497]))
 
+    @attr('numpy')
     def test_pagerank(self):
         G = self.G
         p = networkx.pagerank(G, alpha=0.9, tol=1.e-08)
@@ -95,6 +96,7 @@ class TestPageRank:
         assert_raises(networkx.NetworkXError, networkx.pagerank_scipy, G,
                       max_iter=0)
 
+    @attr('numpy')
     def test_personalization(self):
         G = networkx.complete_graph(4)
         personalize = {0: 1, 1: 1, 2: 4, 3: 4}
@@ -127,6 +129,7 @@ class TestPageRank:
                 else:
                     assert_almost_equal(M2[i, j], M1[i, j], places=4)
 
+    @attr('numpy')
     def test_dangling_pagerank(self):
         pr = networkx.pagerank(self.G, dangling=self.dangling_edges)
         for n in self.G:
