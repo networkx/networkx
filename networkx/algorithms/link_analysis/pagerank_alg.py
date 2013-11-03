@@ -8,10 +8,12 @@
 #    NetworkX:http://networkx.lanl.gov/
 import networkx as nx
 from networkx.exception import NetworkXError
+from networkx.utils import not_implemented_for
 __author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
 __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 
 
+@not_implemented_for('multigraph')
 def pagerank(G, alpha=0.85, personalization=None,
              max_iter=100, tol=1.0e-8, nstart=None, weight='weight',
              dangling=None):
@@ -90,9 +92,6 @@ def pagerank(G, alpha=0.85, personalization=None,
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    if isinstance(G, nx.MultiGraph) or isinstance(G, nx.MultiDiGraph):
-        raise Exception("pagerank() not defined for graphs with multiedges.")
-
     if len(G) == 0:
         return {}
 
@@ -157,6 +156,7 @@ def pagerank(G, alpha=0.85, personalization=None,
                         'in %d iterations.' % max_iter)
 
 
+@not_implemented_for('multigraph')
 def google_matrix(G, alpha=0.85, personalization=None,
                   nodelist=None, weight='weight', dangling=None):
     """Return the Google matrix of the graph.
@@ -254,6 +254,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
     return alpha * M + (1 - alpha) * np.outer(np.ones(N), p)
 
 
+@not_implemented_for('multigraph')
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
                    dangling=None):
     """Return the PageRank of the nodes in the graph.
@@ -338,6 +339,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     return dict(zip(nodelist, map(float, largest / norm)))
 
 
+@not_implemented_for('multigraph')
 def pagerank_scipy(G, alpha=0.85, personalization=None,
                    max_iter=100, tol=1.0e-6, weight='weight',
                    dangling=None):
