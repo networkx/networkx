@@ -1,5 +1,5 @@
 """PageRank analysis of graph structure. """
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -8,7 +8,7 @@
 #    NetworkX:http://networkx.lanl.gov/
 import networkx as nx
 from networkx.exception import NetworkXError
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
 __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 
 
