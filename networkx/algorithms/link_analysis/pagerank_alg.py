@@ -322,21 +322,15 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     import numpy as np
     if len(G) == 0:
         return {}
-    # choose ordering in matrix
-    if personalization is None:  # use G.nodes() ordering
-        nodelist = G.nodes()
-    else:  # use personalization "vector" ordering
-        nodelist = personalization.keys()
     M = google_matrix(G, alpha, personalization=personalization,
-                      nodelist=nodelist, weight=weight,
-                      dangling=dangling)
+                      weight=weight, dangling=dangling)
     # use numpy LAPACK solver
     eigenvalues, eigenvectors = np.linalg.eig(M.T)
     ind = eigenvalues.argsort()
     # eigenvector of largest eigenvalue at ind[-1], normalized
     largest = np.array(eigenvectors[:, ind[-1]]).flatten().real
     norm = float(largest.sum())
-    return dict(zip(nodelist, map(float, largest / norm)))
+    return dict(zip(G, map(float, largest / norm)))
 
 
 @not_implemented_for('multigraph')
