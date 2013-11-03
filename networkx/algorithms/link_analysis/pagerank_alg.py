@@ -9,7 +9,8 @@
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
-__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
+__author__ = """\n""".join(["Aric Hagberg <aric.hagberg@gmail.com>",
+                            "Brandon Liu <brandon.k.liu@gmail.com"])
 __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 
 
