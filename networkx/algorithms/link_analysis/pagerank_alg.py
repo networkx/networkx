@@ -137,7 +137,7 @@ def pagerank(G, alpha=0.85, personalization=None,
                                 'Missing nodes %s' % missing)
         s = float(sum(dangling.values()))
         dangling_weights = dict((k, v/s) for k, v in dangling.items())
-    dangling_nodes = [n for n in W if W.out_degree(n) == 0.0]
+    dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
