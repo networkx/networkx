@@ -27,7 +27,7 @@ def pagerank(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX Graph.  Undirected graphs will be converted to a directed
+      A NetworkX graph.  Undirected graphs will be converted to a directed
       graph with two directed edges for each undirected edge.
 
     alpha : float, optional
@@ -165,7 +165,8 @@ def google_matrix(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph.
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float
       The damping factor.
@@ -259,7 +260,6 @@ def google_matrix(G, alpha=0.85, personalization=None,
     return alpha * M + (1 - alpha) * np.outer(np.ones(N), p)
 
 
-@not_implemented_for('multigraph')
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
                    dangling=None):
     """Return the PageRank of the nodes in the graph.
@@ -271,7 +271,8 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     Parameters
     -----------
     G : graph
-      A NetworkX graph.
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float, optional
       Damping parameter for PageRank, default=0.85.
@@ -352,7 +353,8 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph.
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float, optional
       Damping parameter for PageRank, default=0.85.
