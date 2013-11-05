@@ -30,11 +30,16 @@ def stochastic_graph(G, copy=True, weight='weight'):
       Edge data key used for weight.  If no attribute is found for an edge
       the edge weight is set to 1.  Weights must be positive numbers.
     """
+    import warnings
     if copy:
         W = nx.DiGraph(G)
     else:
         W = G # reference original graph, no copy
     degree = W.out_degree(weight=weight)
     for (u,v,d) in W.edges(data=True):
-        d[weight] = float(d.get(weight,1.0))/degree[u]
+        if degree[u] == 0:
+            warnings.warn('zero out-degree for node %s'%u)
+            d[weight] = 0.0
+        else:
+            d[weight] = float(d.get(weight,1.0))/degree[u]
     return W
