@@ -27,7 +27,8 @@ def pagerank(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph.
+      A NetworkX Graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float, optional
       Damping parameter for PageRank, default=0.85.
@@ -77,7 +78,7 @@ def pagerank(G, alpha=0.85, personalization=None,
 
     The PageRank algorithm was designed for directed graphs but this
     algorithm does not check if the input graph is directed and will
-    execute on undirected graphs by converting each oriented edge in the
+    execute on undirected graphs by converting each edge in the
     directed graph to two edges.
 
     See Also

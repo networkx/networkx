@@ -24,10 +24,10 @@ def test_stochastic_ints():
                  [(0, 1, {'weight': 0.5}), 
                   (0, 2, {'weight': 0.5})])
 
-@raises(nx.NetworkXError)
+@raises(nx.NetworkXNotImplemented)
 def test_stochastic_graph_input():
     S = nx.stochastic_graph(nx.Graph())
 
-@raises(nx.NetworkXError)
+@raises(nx.NetworkXNotImplemented)
 def test_stochastic_multigraph_input():
     S = nx.stochastic_graph(nx.MultiGraph())
