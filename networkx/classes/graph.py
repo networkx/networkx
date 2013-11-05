@@ -1600,7 +1600,7 @@ class Graph(object):
         Returns
         -------
         nedges : int
-            The number of edges of sum of edge weights in the graph.
+            The number of edges or sum of edge weights in the graph.
 
         See Also
         --------
