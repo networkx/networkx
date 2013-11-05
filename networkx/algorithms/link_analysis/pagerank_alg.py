@@ -158,7 +158,6 @@ def pagerank(G, alpha=0.85, personalization=None,
                         'in %d iterations.' % max_iter)
 
 
-@not_implemented_for('multigraph')
 def google_matrix(G, alpha=0.85, personalization=None,
                   nodelist=None, weight='weight', dangling=None):
     """Return the Google matrix of the graph.
@@ -205,6 +204,10 @@ def google_matrix(G, alpha=0.85, personalization=None,
     transition matrix must be irreducible. In other words, it must be that
     there exists a path between every pair of nodes in the graph, or else there
     is the potential of "rank sinks."
+
+    This implementation works with Multi(Di)Graphs. For multigraphs the
+    weight between two nodes is set to be the sum of all edge weights
+    between those nodes.
 
     See Also
     --------
@@ -306,7 +309,9 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     eigenvalue solvers.  This will be the fastest and most accurate
     for small graphs.
 
-    This implementation works with Multi(Di)Graphs.
+    This implementation works with Multi(Di)Graphs. For multigraphs the
+    weight between two nodes is set to be the sum of all edge weights
+    between those nodes.
 
     See Also
     --------
@@ -335,7 +340,6 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     return dict(zip(G, map(float, largest / norm)))
 
 
-@not_implemented_for('multigraph')
 def pagerank_scipy(G, alpha=0.85, personalization=None,
                    max_iter=100, tol=1.0e-6, weight='weight',
                    dangling=None):
@@ -390,6 +394,10 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     -----
     The eigenvector calculation uses power iteration with a SciPy
     sparse matrix representation.
+
+    This implementation works with Multi(Di)Graphs. For multigraphs the
+    weight between two nodes is set to be the sum of all edge weights
+    between those nodes.
 
     See Also
     --------
