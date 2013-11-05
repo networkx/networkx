@@ -16,7 +16,7 @@ __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 
 @not_implemented_for('multigraph')
 def pagerank(G, alpha=0.85, personalization=None,
-             max_iter=100, tol=1.0e-8, nstart=None, weight='weight',
+             max_iter=100, tol=1.0e-6, nstart=None, weight='weight',
              dangling=None):
     """Return the PageRank of the nodes in the graph.
 
@@ -152,7 +152,7 @@ def pagerank(G, alpha=0.85, personalization=None,
             x[n] += danglesum * dangling_weights[n] + (1.0 - alpha) * p[n]
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
-        if err < tol:
+        if err < N*tol:
             return x
     raise NetworkXError('pagerank: power iteration failed to converge '
                         'in %d iterations.' % max_iter)
