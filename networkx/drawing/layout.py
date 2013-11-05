@@ -437,7 +437,7 @@ def spectral_layout(G, dim=2, weight='weight', scale=1):
         # Sparse matrix
         if len(G)< 500:  # dense solver is faster for small graphs
             raise ValueError
-        A=nx.to_scipy_sparse_matrix(G, weight=weight,dtype='f')
+        A=nx.to_scipy_sparse_matrix(G, weight=weight,dtype='d')
         # Symmetrize directed graphs
         if G.is_directed():
             A=A+np.transpose(A)
