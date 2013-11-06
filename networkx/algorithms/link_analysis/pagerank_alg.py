@@ -16,7 +16,7 @@ __all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 
 @not_implemented_for('multigraph')
 def pagerank(G, alpha=0.85, personalization=None,
-             max_iter=100, tol=1.0e-8, nstart=None, weight='weight',
+             max_iter=100, tol=1.0e-6, nstart=None, weight='weight',
              dangling=None):
     """Return the PageRank of the nodes in the graph.
 
@@ -27,7 +27,8 @@ def pagerank(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph.
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float, optional
       Damping parameter for PageRank, default=0.85.
@@ -77,7 +78,7 @@ def pagerank(G, alpha=0.85, personalization=None,
 
     The PageRank algorithm was designed for directed graphs but this
     algorithm does not check if the input graph is directed and will
-    execute on undirected graphs by converting each oriented edge in the
+    execute on undirected graphs by converting each edge in the
     directed graph to two edges.
 
     See Also
@@ -136,7 +137,7 @@ def pagerank(G, alpha=0.85, personalization=None,
                                 'Missing nodes %s' % missing)
         s = float(sum(dangling.values()))
         dangling_weights = dict((k, v/s) for k, v in dangling.items())
-    dangling_nodes = [n for n in W if W.out_degree(n) == 0.0]
+    dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
     # power iteration: make up to max_iter iterations
     for _ in range(max_iter):
@@ -151,13 +152,12 @@ def pagerank(G, alpha=0.85, personalization=None,
             x[n] += danglesum * dangling_weights[n] + (1.0 - alpha) * p[n]
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
-        if err < tol:
+        if err < N*tol:
             return x
     raise NetworkXError('pagerank: power iteration failed to converge '
                         'in %d iterations.' % max_iter)
 
 
-@not_implemented_for('multigraph')
 def google_matrix(G, alpha=0.85, personalization=None,
                   nodelist=None, weight='weight', dangling=None):
     """Return the Google matrix of the graph.
@@ -165,7 +165,8 @@ def google_matrix(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph.
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float
       The damping factor.
@@ -204,6 +205,10 @@ def google_matrix(G, alpha=0.85, personalization=None,
     transition matrix must be irreducible. In other words, it must be that
     there exists a path between every pair of nodes in the graph, or else there
     is the potential of "rank sinks."
+
+    This implementation works with Multi(Di)Graphs. For multigraphs the
+    weight between two nodes is set to be the sum of all edge weights
+    between those nodes.
 
     See Also
     --------
@@ -255,7 +260,6 @@ def google_matrix(G, alpha=0.85, personalization=None,
     return alpha * M + (1 - alpha) * np.outer(np.ones(N), p)
 
 
-@not_implemented_for('multigraph')
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
                    dangling=None):
     """Return the PageRank of the nodes in the graph.
@@ -267,7 +271,8 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     Parameters
     -----------
     G : graph
-      A NetworkX graph.
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float, optional
       Damping parameter for PageRank, default=0.85.
@@ -305,7 +310,9 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     eigenvalue solvers.  This will be the fastest and most accurate
     for small graphs.
 
-    This implementation works with Multi(Di)Graphs.
+    This implementation works with Multi(Di)Graphs. For multigraphs the
+    weight between two nodes is set to be the sum of all edge weights
+    between those nodes.
 
     See Also
     --------
@@ -334,7 +341,6 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     return dict(zip(G, map(float, largest / norm)))
 
 
-@not_implemented_for('multigraph')
 def pagerank_scipy(G, alpha=0.85, personalization=None,
                    max_iter=100, tol=1.0e-6, weight='weight',
                    dangling=None):
@@ -347,7 +353,8 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph.
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float, optional
       Damping parameter for PageRank, default=0.85.
@@ -390,6 +397,10 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     The eigenvector calculation uses power iteration with a SciPy
     sparse matrix representation.
 
+    This implementation works with Multi(Di)Graphs. For multigraphs the
+    weight between two nodes is set to be the sum of all edge weights
+    between those nodes.
+
     See Also
     --------
     pagerank, pagerank_numpy, google_matrix
@@ -413,7 +424,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   dtype=float)
     S = scipy.array(M.sum(axis=1)).flatten()
-    S[S > 0] = 1.0 / S[S > 0]
+    S[S != 0] = 1.0 / S[S != 0]
     Q = scipy.sparse.spdiags(S.T, 0, *M.shape, format='csr')
     M = Q * M
 
