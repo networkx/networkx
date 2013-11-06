@@ -53,7 +53,7 @@ class TestLayout(object):
         except ImportError:
             raise SkipTest('scipy not available.')
 
-        A=nx.to_scipy_sparse_matrix(self.Gs,dtype='f')
+        A=nx.to_scipy_sparse_matrix(self.Gs,dtype='d')
         pos=nx.drawing.layout._sparse_fruchterman_reingold(A)
         pos=nx.drawing.layout._sparse_spectral(A)
 
