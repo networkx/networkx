@@ -424,7 +424,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   dtype=float)
     S = scipy.array(M.sum(axis=1)).flatten()
-    S[S > 0] = 1.0 / S[S > 0]
+    S[S != 0] = 1.0 / S[S != 0]
     Q = scipy.sparse.spdiags(S.T, 0, *M.shape, format='csr')
     M = Q * M
 
