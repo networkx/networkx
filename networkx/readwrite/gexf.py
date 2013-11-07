@@ -358,6 +358,16 @@ class GEXFWriter(GEXF):
                 kw['type']=make_str(edge_type)
             except KeyError:
                 pass
+            try:
+                start=edge_data.pop('start')
+                kw['start']=make_str(start)
+            except KeyError:
+                pass
+            try:
+                end=edge_data.pop('end')
+                kw['end']=make_str(end)
+            except KeyError:
+                pass
             source_id = make_str(G.node[u].get('id', u))
             target_id = make_str(G.node[v].get('id', v))
             edge_element = Element("edge",
@@ -380,18 +390,30 @@ class GEXFWriter(GEXF):
         attvalues=Element('attvalues')
         if len(data)==0:
             return data
-        if 'start' in data or 'end' in data:
-            mode='dynamic'
-        else:
-            mode='static'
+        mode='static'
         for k,v in data.items():
             # rename generic multigraph key to avoid any name conflict
             if k == 'key':
                 k='networkx_key'
-            attr_id = self.get_attr_id(make_str(k), self.xml_type[type(v)],
-                                       node_or_edge, default, mode)
+            val_type=type(v)
             if type(v)==list:
                 # dynamic data
+                for val,start,end in v:
+                    val_type = type(val)
+                    if start is not None or end is not None:
+                        mode='dynamic'
+                        if self.graph_element.get('mode') == 'static':
+                            self.graph_element.set('mode', 'dynamic')
+                            if type(start) == str or type(end) == str:
+                                timeformat = 'date'
+                            elif type(start) == float or type(end) == float:
+                                timeformat = 'double'
+                            elif type(start) == int or type(end) == int:
+                                timeformat = 'integer'
+                            self.graph_element.set('timeformat', timeformat)
+                        break
+                attr_id = self.get_attr_id(make_str(k), self.xml_type[val_type],
+                                           node_or_edge, default, mode)
                 for val,start,end in v:
                     e=Element("attvalue")
                     e.attrib['for']=attr_id
@@ -403,6 +425,9 @@ class GEXFWriter(GEXF):
                     attvalues.append(e)
             else:
                 # static data
+                mode='static'
+                attr_id = self.get_attr_id(make_str(k), self.xml_type[val_type],
+                                           node_or_edge, default, mode)
                 e=Element("attvalue")
                 e.attrib['for']=attr_id
                 if type(v) == bool:
@@ -607,6 +632,11 @@ class GEXFReader(GEXF):
             G.graph['mode']='dynamic'
         else:
             G.graph['mode']='static'
+            
+        # timeformat
+        self.timeformat=graph_xml.get('timeformat')
+        if self.timeformat == 'date':
+            self.timeformat = 'string'
 
         # node and edge attributes
         attributes_elements=graph_xml.findall("{%s}attributes"%self.NS_GEXF)
@@ -695,12 +725,13 @@ class GEXFReader(GEXF):
 
     def add_start_end(self, data, xml):
         # start and end times
+        ttype = self.timeformat
         node_start = xml.get("start")
         if node_start is not None:
-            data['start']=node_start
+            data['start']=self.python_type[ttype](node_start)
         node_end = xml.get("end")
         if node_end is not None:
-            data['end']=node_end
+            data['end']=self.python_type[ttype](node_end)
         return data
 
 
@@ -767,9 +798,10 @@ class GEXFReader(GEXF):
         spells_element=node_or_edge_xml.find("{%s}spells"%self.NS_GEXF)
         if spells_element is not None:
             data['spells']=[]
+            ttype = self.timeformat
             for s in spells_element.findall("{%s}spell"%self.NS_GEXF):
-                start=s.get('start')
-                end=s.get('end')
+                start=self.python_type[ttype](s.get('start'))
+                end=self.python_type[ttype](s.get('end'))
                 data['spells'].append((start,end))
         return data
 
@@ -852,8 +884,9 @@ class GEXFReader(GEXF):
                 if gexf_keys[key]['mode']=='dynamic':
                     # for dynamic graphs use list of three-tuples
                     # [(value1,start1,end1), (value2,start2,end2), etc]
-                    start=a.get('start')
-                    end=a.get('end')
+                    ttype = self.timeformat
+                    start=self.python_type[ttype](a.get('start'))
+                    end=self.python_type[ttype](a.get('end'))
                     if title in attr:
                         attr[title].append((value,start,end))
                     else:
