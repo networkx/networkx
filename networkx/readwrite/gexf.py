@@ -361,11 +361,13 @@ class GEXFWriter(GEXF):
             try:
                 start=edge_data.pop('start')
                 kw['start']=make_str(start)
+                self.alter_graph_mode_timeformat(start)
             except KeyError:
                 pass
             try:
                 end=edge_data.pop('end')
                 kw['end']=make_str(end)
+                self.alter_graph_mode_timeformat(end)
             except KeyError:
                 pass
             source_id = make_str(G.node[u].get('id', u))
@@ -402,15 +404,8 @@ class GEXFWriter(GEXF):
                     val_type = type(val)
                     if start is not None or end is not None:
                         mode='dynamic'
-                        if self.graph_element.get('mode') == 'static':
-                            self.graph_element.set('mode', 'dynamic')
-                            if type(start) == str or type(end) == str:
-                                timeformat = 'date'
-                            elif type(start) == float or type(end) == float:
-                                timeformat = 'double'
-                            elif type(start) == int or type(end) == int:
-                                timeformat = 'integer'
-                            self.graph_element.set('timeformat', timeformat)
+                        self.alter_graph_mode_timeformat(start)
+                        self.alter_graph_mode_timeformat(end)
                         break
                 attr_id = self.get_attr_id(make_str(k), self.xml_type[val_type],
                                            node_or_edge, default, mode)
@@ -550,11 +545,27 @@ class GEXFWriter(GEXF):
                 e=Element('spell')
                 if start is not None:
                     e.attrib['start']=make_str(start)
+                    self.alter_graph_mode_timeformat(start)
                 if end is not None:
                     e.attrib['end']=make_str(end)
+                    self.alter_graph_mode_timeformat(end)
                 spells_element.append(e)
             node_or_edge_element.append(spells_element)
         return node_or_edge_data
+
+
+    def alter_graph_mode_timeformat(self, start_or_end):
+        # if 'start' or 'end' appears, alter Graph mode to dynamic and set timeformat
+        if self.graph_element.get('mode') == 'static':
+            if start_or_end is not None:
+                if type(start_or_end) == str:
+                    timeformat = 'date'
+                elif type(start_or_end) == float:
+                    timeformat = 'double'
+                elif type(start_or_end) == int:
+                    timeformat = 'long'
+                self.graph_element.set('timeformat', timeformat)
+                self.graph_element.set('mode', 'dynamic')
 
 
     def write(self, fh):
