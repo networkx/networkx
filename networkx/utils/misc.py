@@ -141,19 +141,12 @@ def dict_to_numpy_array2(d,mapping=None):
         mapping=dict(zip(s,range(len(s))))
     n=len(mapping)
     a = numpy.zeros((n, n))
-    print(mapping)
     for k1, i in mapping.items():
-#    for k1, row in d.items():
         for k2, j in mapping.items():
             try:
                 a[i,j]=d[k1][k2]
             except KeyError:
                 pass
-#        for k2, value in row.items():
-#            a[i,j] = d[k1][k2]
-#            i=mapping[k1]
-#            j=mapping[k2]
-#            a[i,j] = value
     return a
 
 def dict_to_numpy_array1(d,mapping=None):
