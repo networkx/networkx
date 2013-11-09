@@ -78,7 +78,7 @@ class TestNumpyArray(object):
     def test_dict_to_numpy_array1(self):
         d = {'a':1,'b':2}
         a = dict_to_numpy_array1(d)
-        assert_equal(a, numpy.array([1,2]))
+        assert_equal(a, numpy.array(list(d.values())))
         a = dict_to_numpy_array1(d, mapping = {'b':0,'a':1})
         assert_equal(a, numpy.array([2,1]))
 
@@ -86,7 +86,12 @@ class TestNumpyArray(object):
         d = {'a': {'a':1,'b':2},
              'b': {'a':10,'b':20}}
         a = dict_to_numpy_array(d)
-        assert_equal(a, numpy.array([[1,2],[10,20]]))
+        if list(d.keys())[0] == 'a':
+            assert_equal(a, numpy.array([[1,2],[10,20]]))
+        elif list(d.keys())[0] == 'b':
+            assert_equal(a, numpy.array([[20,10],[2,1]]))
+        else:
+            raise
         a = dict_to_numpy_array2(d, mapping = {'b':0,'a':1})
         assert_equal(a, numpy.array([[20,10],[2,1]]))
 
@@ -95,7 +100,12 @@ class TestNumpyArray(object):
         d = {'a': {'a':1,'b':2},
              'b': {'a':10,'b':20}}
         a = dict_to_numpy_array(d)
-        assert_equal(a, numpy.array([[1,2],[10,20]]))
+        if list(d.keys())[0] == 'a':
+            assert_equal(a, numpy.array([[1,2],[10,20]]))
+        elif list(d.keys())[0] == 'b':
+            assert_equal(a, numpy.array([[20,10],[2,1]]))
+        else:
+            raise
         d = {'a':1,'b':2}
-        a = dict_to_numpy_array1(d)
-        assert_equal(a, numpy.array([1,2]))
+        a = dict_to_numpy_array(d)
+        assert_equal(a, numpy.array(list(d.values())))
