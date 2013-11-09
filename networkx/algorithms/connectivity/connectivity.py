@@ -4,7 +4,6 @@ Flow based connectivity algorithms
 """
 import itertools
 import networkx as nx
-from networkx.utils import require
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -310,7 +309,6 @@ def node_connectivity(G, s=None, t=None):
                                             aux_digraph=H, mapping=mapping))
     return K
 
-@require('numpy')
 def all_pairs_node_connectivity_matrix(G, nodelist=None):
     """Return a numpy 2d ndarray with node connectivity between all pairs
     of nodes.

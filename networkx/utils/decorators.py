@@ -64,54 +64,6 @@ def not_implemented_for(*graph_types):
     return _not_implemented_for
 
 
-def require(*packages):
-    """Decorator to check whether specific packages can be imported.
-
-    If a package cannot be imported, then NetworkXError is raised.
-    If all packages can be imported, then the original function is called.
-
-    Parameters
-    ----------
-    packages : container of strings
-        Container of module names that will be imported.
-
-    Returns
-    -------
-    _require : function
-        The decorated function.
-
-    Raises
-    ------
-    NetworkXError
-    If any of the packages cannot be imported
-
-    Examples
-    --------
-    Decorate functions like this::
-
-       @require('scipy')
-       def sp_function():
-           import scipy
-           pass
-
-       @require('numpy','scipy')
-       def sp_np_function():
-           import numpy
-           import scipy
-           pass
-    """
-    @decorator
-    def _require(f,*args,**kwargs):
-        for package in reversed(packages):
-            try:
-                __import__(package)
-            except:
-                msg = "{0} requires {1}"
-                raise nx.NetworkXError( msg.format(f.__name__, package) )
-        return f(*args,**kwargs)
-    return _require
-
-
 def _open_gz(path, mode):
     import gzip
     return gzip.open(path,mode=mode)
