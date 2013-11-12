@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
-from networkx import NetworkXNotImplemented 
+from networkx import NetworkXNotImplemented
 
 
 class TestAttractingComponents(object):
@@ -30,7 +30,7 @@ class TestAttractingComponents(object):
         assert_true((1,2) in ac)
         assert_true((3,4) in ac)
         assert_equal(len(ac), 2)
-        
+
     def test_number_attacting_components(self):
         assert_equal(len(list(nx.attracting_components(self.G1))), 3)
         assert_equal(len(list(nx.attracting_components(self.G2))), 1)
@@ -62,7 +62,7 @@ class TestAttractingComponents(object):
         SG2.add_edge(1,2,eattr='blue')
         assert_equal(SG2[1][2]['eattr'],'blue')
         assert_equal(self.G2[1][2]['eattr'],'red')
-        
+
     def test_connected_raise(self):
         G=nx.Graph()
         assert_raises(NetworkXNotImplemented,nx.attracting_components,G)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
-from networkx import NetworkXNotImplemented 
+from networkx import NetworkXNotImplemented
 
 class TestStronglyConnected:
 
@@ -27,7 +27,7 @@ class TestStronglyConnected:
         G = nx.DiGraph({ 0:[1],1:[2,3],2:[4,5],3:[4,5],4:[6],5:[],6:[]})
         C = [[0],[1],[2],[3],[4],[5],[6]]
         self.gc.append((G,C))
-    
+
         G = nx.DiGraph({0:[1],1:[2,3,4],2:[0,3],3:[4],4:[3]})
         C = [[0,1,2],[3,4]]
         self.gc.append((G,C))
@@ -55,7 +55,7 @@ class TestStronglyConnected:
         for G,C in self.gc:
             assert_equal(ncc(G),len(C))
 
-    def test_is_strongly_connected(self):            
+    def test_is_strongly_connected(self):
         for G,C in self.gc:
             if len(C)==1:
                 assert_true(nx.is_strongly_connected(G))
@@ -127,7 +127,7 @@ class TestStronglyConnected:
         else:
             edge = (1,0)
         assert_equal(cG.edges(),[edge])
-    
+
     def test_connected_raise(self):
         G=nx.Graph()
         assert_raises(NetworkXNotImplemented,nx.strongly_connected_components,G)

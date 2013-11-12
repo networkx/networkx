@@ -2,7 +2,7 @@
 """
 Attracting components.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2013 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -45,10 +45,7 @@ def attracting_components(G):
     number_attracting_components
     is_attracting_component 
     attracting_component_subgraphs
-
     """
-    # I think using generator here won't save any work. Just for being
-    # compatible with other components function interface stake.
     scc = list(nx.strongly_connected_components(G))
     cG = nx.condensation(G, scc)
     for n in cG:
@@ -124,14 +121,14 @@ def attracting_component_subgraphs(G, copy=True):
         A list of node-induced subgraphs of the attracting components of `G`.
 
     copy : bool
-    If copy is True, graph, node, and edge attributes are copied to the subgraphs.
+        If copy is True, graph, node, and edge attributes are copied to the 
+        subgraphs.
 
     See Also
     --------
     attracting_components
     number_attracting_components
     is_attracting_component
-
     """
     for ac in attracting_components(G):
         if copy:

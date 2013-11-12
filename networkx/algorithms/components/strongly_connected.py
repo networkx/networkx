@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
+"""Strongly connected components.
 """
-Strongly connected components.
-"""
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -34,7 +33,7 @@ def strongly_connected_components(G):
 
     Returns
     -------
-    comp : generator of lists 
+    comp : generator of lists
        A list of nodes for each strongly connected component of G.
 
     Raises
@@ -111,7 +110,7 @@ def kosaraju_strongly_connected_components(G,source=None):
 
     Returns
     -------
-    comp : generator of lists 
+    comp : generator of lists
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
@@ -153,7 +152,7 @@ def strongly_connected_components_recursive(G):
 
     Returns
     -------
-    comp : generator of lists 
+    comp : generator of lists
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
@@ -198,7 +197,7 @@ def strongly_connected_components_recursive(G):
                 tmpc.append(w)
             stack.remove(v)
             yield tmpc
-    
+
     visited={}
     component={}
     root={}
@@ -220,10 +219,11 @@ def strongly_connected_component_subgraphs(G, copy=True):
 
     Returns
     -------
-    comp : generator of lists 
+    comp : generator of lists
       A list of graphs, one for each strongly connected component of G.
     copy : boolean
-      if copy is True, Graph, node, and edge attributes are copied to the subgraphs.
+      if copy is True, Graph, node, and edge attributes are copied to
+      the subgraphs.
 
     See Also
     --------
@@ -301,8 +301,8 @@ def condensation(G, scc=None):
     G : NetworkX DiGraph
        A directed graph.
 
-    scc:  list (optional, default=None)
-       A list of strongly connected components.  If provided, the elements in
+    scc:  list or generator (optional, default=None)
+        Strongly connected components. If provided, the elements in
        `scc` must partition the nodes in `G`. If not provided, it will be
        calculated as scc=nx.strongly_connected_components(G).
 
@@ -323,13 +323,14 @@ def condensation(G, scc=None):
     the resulting graph is a directed acyclic graph.
     """
     if scc is None:
-        scc = list(nx.strongly_connected_components(G))
+        scc = nx.strongly_connected_components(G)
     mapping = {}
     C = nx.DiGraph()
     for i,component in enumerate(scc):
         for n in component:
             mapping[n] = i
-    C.add_nodes_from(range(len(scc)))
+    number_of_components = i+1
+    C.add_nodes_from(range(number_of_components))
     for u,v in G.edges():
         if mapping[u] != mapping[v]:
             C.add_edge(mapping[u],mapping[v])

@@ -27,7 +27,7 @@ class TestWeaklyConnected:
         G = nx.DiGraph({ 0:[1],1:[2,3],2:[4,5],3:[4,5],4:[6],5:[],6:[]})
         C = [[0],[1],[2],[3],[4],[5],[6]]
         self.gc.append((G,C))
-    
+
         G = nx.DiGraph({0:[1],1:[2,3,4],2:[0,3],3:[4],4:[3]})
         C = [[0,1,2],[3,4]]
         self.gc.append((G,C))
