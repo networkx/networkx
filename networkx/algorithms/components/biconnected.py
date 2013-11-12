@@ -2,7 +2,7 @@
 """
 Biconnected components and articulation points.
 """
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -77,8 +77,8 @@ def is_biconnected(G):
 
     References
     ----------
-    .. [1] Hopcroft, J.; Tarjan, R. (1973). 
-       "Efficient algorithms for graph manipulation". 
+    .. [1] Hopcroft, J.; Tarjan, R. (1973).
+       "Efficient algorithms for graph manipulation".
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
     bcc = list(biconnected_components(G))
@@ -94,7 +94,7 @@ def biconnected_component_edges(G):
     Biconnected components are maximal subgraphs such that the removal of a
     node (and all edges incident on that node) will not disconnect the
     subgraph. Note that nodes may be part of more than one biconnected
-    component. Those nodes are articulation points, or cut vertices. However, 
+    component. Those nodes are articulation points, or cut vertices. However,
     each edge belongs to one, and only one, biconnected component.
 
     Notice that by convention a dyad is considered a biconnected component.
@@ -144,11 +144,11 @@ def biconnected_component_edges(G):
     by the DFS we can obtain the biconnected components because all
     edges of a bicomponent will be traversed consecutively between
     articulation points.
- 
+
     References
     ----------
-    .. [1] Hopcroft, J.; Tarjan, R. (1973). 
-       "Efficient algorithms for graph manipulation". 
+    .. [1] Hopcroft, J.; Tarjan, R. (1973).
+       "Efficient algorithms for graph manipulation".
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
     for comp in _biconnected_dfs(G,components=True):
@@ -162,8 +162,8 @@ def biconnected_components(G):
     Biconnected components are maximal subgraphs such that the removal of a
     node (and all edges incident on that node) will not disconnect the
     subgraph. Note that nodes may be part of more than one biconnected
-    component. Those nodes are articulation points, or cut vertices. The 
-    removal of articulation points will increase the number of connected 
+    component. Those nodes are articulation points, or cut vertices. The
+    removal of articulation points will increase the number of connected
     components of the graph.
 
     Notice that by convention a dyad is considered a biconnected component.
@@ -216,8 +216,8 @@ def biconnected_components(G):
 
     References
     ----------
-    .. [1] Hopcroft, J.; Tarjan, R. (1973). 
-       "Efficient algorithms for graph manipulation". 
+    .. [1] Hopcroft, J.; Tarjan, R. (1973).
+       "Efficient algorithms for graph manipulation".
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
     for comp in _biconnected_dfs(G,components=True):
@@ -231,8 +231,8 @@ def biconnected_component_subgraphs(G, copy=True):
     Biconnected components are maximal subgraphs such that the removal of a
     node (and all edges incident on that node) will not disconnect the
     subgraph. Note that nodes may be part of more than one biconnected
-    component. Those nodes are articulation points, or cut vertices. The 
-    removal of articulation points will increase the number of connected 
+    component. Those nodes are articulation points, or cut vertices. The
+    removal of articulation points will increase the number of connected
     components of the graph.
 
     Notice that by convention a dyad is considered a biconnected component.
@@ -283,8 +283,8 @@ def biconnected_component_subgraphs(G, copy=True):
 
     References
     ----------
-    .. [1] Hopcroft, J.; Tarjan, R. (1973). 
-       "Efficient algorithms for graph manipulation". 
+    .. [1] Hopcroft, J.; Tarjan, R. (1973).
+       "Efficient algorithms for graph manipulation".
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
     for comp_nodes in biconnected_components(G):
@@ -298,7 +298,7 @@ def articulation_points(G):
     """Return a generator of articulation points, or cut vertices, of a graph.
 
     An articulation point or cut vertex is any node whose removal (along with
-    all its incident edges) increases the number of connected components of 
+    all its incident edges) increases the number of connected components of
     a graph. An undirected connected graph without articulation points is
     biconnected. Articulation points belong to more than one biconnected
     component of a graph.
@@ -355,15 +355,15 @@ def articulation_points(G):
 
     References
     ----------
-    .. [1] Hopcroft, J.; Tarjan, R. (1973). 
-       "Efficient algorithms for graph manipulation". 
+    .. [1] Hopcroft, J.; Tarjan, R. (1973).
+       "Efficient algorithms for graph manipulation".
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
     return _biconnected_dfs(G,components=False)
 
 @not_implemented_for('directed')
 def _biconnected_dfs(G, components=True):
-    # depth-first search algorithm to generate articulation points 
+    # depth-first search algorithm to generate articulation points
     # and biconnected components
     visited = set()
     for start in G:

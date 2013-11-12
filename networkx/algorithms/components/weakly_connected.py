@@ -1,24 +1,22 @@
 # -*- coding: utf-8 -*-
+"""Weakly connected components.
 """
-Weakly connected components.
-"""
-__authors__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)'
-                         'Christopher Ellison'])
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['number_weakly_connected_components', 
-           'weakly_connected_components',
-           'weakly_connected_component_subgraphs',
-           'is_weakly_connected' 
-           ]
-
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
+__authors__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)'
+                         'Christopher Ellison'])
+__all__ = ['number_weakly_connected_components',
+           'weakly_connected_components',
+           'weakly_connected_component_subgraphs',
+           'is_weakly_connected'
+           ]
 
 @not_implemented_for('undirected')
 def weakly_connected_components(G):
@@ -34,7 +32,7 @@ def weakly_connected_components(G):
 @not_implemented_for('undirected')
 def number_weakly_connected_components(G):
     """Return the number of connected components in G.
-    For directed graphs only. 
+    For directed graphs only.
     """
     return len(list(weakly_connected_components(G)))
 
@@ -77,7 +75,7 @@ def is_weakly_connected(G):
 
     Notes
     -----
-    For directed graphs only. 
+    For directed graphs only.
     """
     if len(G)==0:
         raise nx.NetworkXPointlessConcept(
@@ -89,7 +87,7 @@ def _single_source_shortest_unipath_length(G,source,cutoff=None):
     """Compute the shortest path lengths from source to all reachable nodes.
 
     The direction of the edge between nodes is ignored.
-    
+
     For directed graphs only.
 
     Parameters

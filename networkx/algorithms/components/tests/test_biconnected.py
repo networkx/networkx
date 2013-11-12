@@ -26,7 +26,7 @@ def test_barbell():
                 set([7, 8]),
                 set([21, 22]),
                 set([20, 21]),
-                set([7, 20])]  
+                set([7, 20])]
     bcc=list(biconnected.biconnected_components(G))
     bcc.sort(key=len, reverse=True)
     assert_equal(bcc,answer)
@@ -90,7 +90,7 @@ def test_biconnected_component_subgraphs_cycle():
 
 def test_biconnected_components1():
     # graph example from
-    # http://www.ibluemojo.com/school/articul_algorithm.html 
+    # http://www.ibluemojo.com/school/articul_algorithm.html
     edges=[(0,1),
            (0,5),
            (0,6),
@@ -114,7 +114,7 @@ def test_biconnected_components1():
            (10,15),
            (11,12),
            (11,13),
-           (12,13)]   
+           (12,13)]
     G=nx.Graph(edges)
     pts = set(biconnected.articulation_points(G))
     assert_equal(pts,set([4,6,7,8,9]))

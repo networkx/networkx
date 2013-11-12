@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
+"""Strongly connected components.
 """
-Strongly connected components.
-"""
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -34,7 +33,7 @@ def strongly_connected_components(G):
 
     Returns
     -------
-    comp : generator of lists 
+    comp : generator of lists
        A list of nodes for each strongly connected component of G.
 
     Raises
@@ -111,7 +110,7 @@ def kosaraju_strongly_connected_components(G,source=None):
 
     Returns
     -------
-    comp : generator of lists 
+    comp : generator of lists
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
@@ -153,7 +152,7 @@ def strongly_connected_components_recursive(G):
 
     Returns
     -------
-    comp : generator of lists 
+    comp : generator of lists
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
@@ -198,7 +197,7 @@ def strongly_connected_components_recursive(G):
                 tmpc.append(w)
             stack.remove(v)
             yield tmpc
-    
+
     visited={}
     component={}
     root={}
@@ -220,10 +219,11 @@ def strongly_connected_component_subgraphs(G, copy=True):
 
     Returns
     -------
-    comp : generator of lists 
+    comp : generator of lists
       A list of graphs, one for each strongly connected component of G.
     copy : boolean
-      if copy is True, Graph, node, and edge attributes are copied to the subgraphs.
+      if copy is True, Graph, node, and edge attributes are copied to
+      the subgraphs.
 
     See Also
     --------
