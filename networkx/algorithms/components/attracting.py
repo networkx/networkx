@@ -2,13 +2,14 @@
 """
 Attracting components.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2013 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from networkx.utils.decorators import not_implemented_for
 __authors__ = "\n".join(['Christopher Ellison'])
 __all__ = ['number_attracting_components', 
            'attracting_components',
@@ -16,8 +17,9 @@ __all__ = ['number_attracting_components',
            'attracting_component_subgraphs',
            ]
 
+@not_implemented_for('undirected')
 def attracting_components(G):
-    """Returns a list of attracting components in `G`.
+    """Generates a list of attracting components in `G`.
 
     An attracting component in a directed graph `G` is a strongly connected
     component with the property that a random walker on the graph will never
@@ -34,7 +36,7 @@ def attracting_components(G):
 
     Returns
     -------
-    attractors : list
+    attractors : generator of list
         The list of attracting components, sorted from largest attracting
         component to smallest attracting component.
 
@@ -43,15 +45,14 @@ def attracting_components(G):
     number_attracting_components
     is_attracting_component 
     attracting_component_subgraphs
-
     """
-    scc = nx.strongly_connected_components(G)
+    scc = list(nx.strongly_connected_components(G))
     cG = nx.condensation(G, scc)
-    attractors = [scc[n] for n in cG if cG.out_degree(n) == 0]
-    attractors.sort(key=len,reverse=True)
-    return attractors
+    for n in cG:
+        if cG.out_degree(n) == 0:
+            yield scc[n]
 
-
+@not_implemented_for('undirected')
 def number_attracting_components(G):
     """Returns the number of attracting components in `G`.
 
@@ -72,10 +73,11 @@ def number_attracting_components(G):
     attracting_component_subgraphs
 
     """
-    n = len(attracting_components(G))
+    n = len(list(attracting_components(G)))
     return n
 
 
+@not_implemented_for('undirected')
 def is_attracting_component(G):
     """Returns True if `G` consists of a single attracting component.
 
@@ -96,7 +98,7 @@ def is_attracting_component(G):
     attracting_component_subgraphs
 
     """
-    ac = attracting_components(G)
+    ac = list(attracting_components(G))
     if len(ac[0]) == len(G):
         attracting = True
     else:
@@ -104,8 +106,9 @@ def is_attracting_component(G):
     return attracting
 
 
-def attracting_component_subgraphs(G):
-    """Returns a list of attracting component subgraphs from `G`.
+@not_implemented_for('undirected')
+def attracting_component_subgraphs(G, copy=True):
+    """Generates a list of attracting component subgraphs from `G`.
 
     Parameters
     ----------
@@ -116,18 +119,19 @@ def attracting_component_subgraphs(G):
     -------
     subgraphs : list
         A list of node-induced subgraphs of the attracting components of `G`.
-    
-    Notes
-    -----
-    Graph, node, and edge attributes are copied to the subgraphs.
+
+    copy : bool
+        If copy is True, graph, node, and edge attributes are copied to the 
+        subgraphs.
 
     See Also
     --------
     attracting_components
     number_attracting_components
     is_attracting_component
-
     """
-    subgraphs = [G.subgraph(ac).copy() for ac in attracting_components(G)]
-    return subgraphs
-
+    for ac in attracting_components(G):
+        if copy:
+            yield G.subgraph(ac).copy()
+        else:
+            yield G.subgraph(ac)

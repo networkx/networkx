@@ -2,6 +2,7 @@
 from nose.tools import *
 import networkx as nx
 from networkx.algorithms.components import biconnected
+from networkx import NetworkXNotImplemented
 
 def assert_components_equal(x,y):
     sx = set((frozenset([frozenset(e) for e in c]) for c in x))
@@ -25,7 +26,7 @@ def test_barbell():
                 set([7, 8]),
                 set([21, 22]),
                 set([20, 21]),
-                set([7, 20])]  
+                set([7, 20])]
     bcc=list(biconnected.biconnected_components(G))
     bcc.sort(key=len, reverse=True)
     assert_equal(bcc,answer)
@@ -89,7 +90,7 @@ def test_biconnected_component_subgraphs_cycle():
 
 def test_biconnected_components1():
     # graph example from
-    # http://www.ibluemojo.com/school/articul_algorithm.html 
+    # http://www.ibluemojo.com/school/articul_algorithm.html
     edges=[(0,1),
            (0,5),
            (0,6),
@@ -113,7 +114,7 @@ def test_biconnected_components1():
            (10,15),
            (11,12),
            (11,13),
-           (12,13)]   
+           (12,13)]
     G=nx.Graph(edges)
     pts = set(biconnected.articulation_points(G))
     assert_equal(pts,set([4,6,7,8,9]))
@@ -189,3 +190,11 @@ def test_biconnected_eppstein():
     bcc = list(biconnected.biconnected_components(G2))
     bcc.sort(key=len, reverse=True)
     assert_equal(bcc, answer_G2)
+
+def test_connected_raise():
+    DG = nx.DiGraph()
+    assert_raises(NetworkXNotImplemented,nx.biconnected_components,DG)
+    assert_raises(NetworkXNotImplemented,nx.biconnected_component_subgraphs,DG)
+    assert_raises(NetworkXNotImplemented,nx.biconnected_component_edges,DG)
+    assert_raises(NetworkXNotImplemented,nx.articulation_points,DG)
+    assert_raises(NetworkXNotImplemented,nx.is_biconnected,DG)
