@@ -21,7 +21,7 @@ See Also
 --------
 nx_pygraphviz, nx_pydot
 """
-#    Copyright (C) 2006-2011 by
+#    Copyright (C) 2006-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -30,6 +30,7 @@ nx_pygraphviz, nx_pydot
 import warnings
 import networkx as nx
 from networkx.convert import _prep_create_using
+from networkx.utils import not_implemented_for
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
@@ -107,15 +108,9 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
             [ 1.,  0.,  0.],
             [ 0.,  0.,  4.]])
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(\
-          "to_numpy_matrix() requires numpy: http://scipy.org/ ")
-
+    import numpy as np
     if nodelist is None:
         nodelist = G.nodes()
-
     nodeset = set(nodelist)
     if len(nodelist) != len(nodeset):
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
@@ -238,6 +233,8 @@ def from_numpy_matrix(A,create_using=None):
     >>> G[0][0]['weight']
     1.0
     """
+    # This should never fail if you have created a numpy matrix with numpy...
+    import numpy as np
     kind_to_python_type={'f':float,
                          'i':int,
                          'u':int,
@@ -245,20 +242,11 @@ def from_numpy_matrix(A,create_using=None):
                          'c':complex,
                          'S':str,
                          'V':'void'}
-
     try: # Python 3.x
         blurb = chr(1245) # just to trigger the exception
         kind_to_python_type['U']=str
     except ValueError: # Python 2.6+
         kind_to_python_type['U']=unicode
-
-    # This should never fail if you have created a numpy matrix with numpy...
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(\
-          "from_numpy_matrix() requires numpy: http://scipy.org/ ")
-
     G=_prep_create_using(create_using)
     n,m=A.shape
     if n!=m:
@@ -290,6 +278,7 @@ def from_numpy_matrix(A,create_using=None):
     return G
 
 
+@not_implemented_for('multigraph')
 def to_numpy_recarray(G,nodelist=None,
                       dtype=[('weight',float)],
                       order=None):
@@ -336,23 +325,13 @@ def to_numpy_recarray(G,nodelist=None,
     [[0 5]
      [5 0]]
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(\
-          "to_numpy_matrix() requires numpy: http://scipy.org/ ")
-
-    if G.is_multigraph():
-        raise nx.NetworkXError("Not implemented for multigraphs.")
-
+    import numpy as np
     if nodelist is None:
         nodelist = G.nodes()
-
     nodeset = set(nodelist)
     if len(nodelist) != len(nodeset):
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
         raise nx.NetworkXError(msg)
-
     nlen=len(nodelist)
     undirected = not G.is_directed()
     index=dict(zip(nodelist,range(nlen)))
@@ -433,12 +412,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     .. [1] Scipy Dev. References, "Sparse Matrices",
        http://docs.scipy.org/doc/scipy/reference/sparse.html
     """
-    try:
-        from scipy import sparse
-    except ImportError:
-        raise ImportError(\
-          "to_scipy_sparse_matrix() requires scipy: http://scipy.org/ ")
-
+    from scipy import sparse
     if nodelist is None:
         nodelist = G
     nlen = len(nodelist)
