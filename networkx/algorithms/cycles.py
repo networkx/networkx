@@ -169,7 +169,7 @@ def simple_cycles(G):
     # We assign the arbitrary ordering given by the strongly connected comps
     # There is no need to track the ordering as each node removed as processed.
     subG=G.copy()   # save the actual graph so we can mutate it here
-    sccs = nx.strongly_connected_components(subG)
+    sccs = list(nx.strongly_connected_components(subG))
     while sccs:
         scc=sccs.pop()
         # order of scc determines ordering of nodes
@@ -210,7 +210,7 @@ def simple_cycles(G):
         # done processing this node
         subG.remove_node(startnode)
         H=subG.subgraph(scc)  # make smaller to avoid work in SCC routine
-        sccs.extend(nx.strongly_connected_components(H))
+        sccs.extend(list(nx.strongly_connected_components(H)))
 
 
 @not_implemented_for('undirected')
