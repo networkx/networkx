@@ -8,7 +8,7 @@ Laplacian matrix of graphs.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from networkx.utils import require, not_implemented_for
+from networkx.utils import not_implemented_for
 
 __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Pieter Swart (swart@lanl.gov)',
@@ -19,7 +19,6 @@ __all__ = ['laplacian_matrix',
            'normalized_laplacian_matrix',
            'directed_laplacian_matrix']
 
-@require('numpy')
 @not_implemented_for('directed')
 def laplacian_matrix(G, nodelist=None, weight='weight'):
     """Return the Laplacian matrix of G.
@@ -82,7 +81,6 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
             L[ui,ui] = totalwt
     return np.asmatrix(L)
 
-@require('numpy')
 @not_implemented_for('directed')
 def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     r"""Return the normalized Laplacian matrix of G.
@@ -157,7 +155,6 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 # Code based on
 # https://bitbucket.org/bedwards/networkx-community/src/370bd69fc02f/networkx/algorithms/community/
 
-@require('numpy')
 @not_implemented_for('undirected')
 @not_implemented_for('multigraph')
 def directed_laplacian_matrix(G, nodelist=None, weight='weight',

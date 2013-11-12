@@ -4,7 +4,7 @@ import os
 from nose.tools import *
 
 import networkx as nx
-from networkx.utils.decorators import open_file,require,not_implemented_for
+from networkx.utils.decorators import open_file,not_implemented_for
 
 def test_not_implemented_decorator():
     @not_implemented_for('directed')
@@ -27,18 +27,6 @@ def test_not_implemented_decorator_raise():
     test1(nx.Graph())
 
 
-def test_require_decorator1():
-    @require('os','sys')
-    def test1():
-        import os
-        import sys
-    test1()
-
-def test_require_decorator2():
-    @require('blahhh')
-    def test2():
-        import blahhh
-    assert_raises(nx.NetworkXError, test2)
 
 class TestOpenFileDecorator(object):
     def setUp(self):
