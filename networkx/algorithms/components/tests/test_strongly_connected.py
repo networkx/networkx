@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
-from networkx import NetworkXError 
+from networkx import NetworkXNotImplemented 
 
 class TestStronglyConnected:
 
@@ -71,7 +71,7 @@ class TestStronglyConnected:
         G.add_edge(1,2,eattr='red')
         G.node[1]['nattr']='blue'
         G.graph['gattr']='green'
-        sgs=scc(G)[1]
+        sgs=sorted(list(scc(G)), key=len, reverse=False)[1]
         assert_equal(sgs[1][2]['eattr'],'red')
         assert_equal(sgs.node[1]['nattr'],'blue')
         assert_equal(sgs.graph['gattr'],'green')
@@ -84,7 +84,7 @@ class TestStronglyConnected:
         G.add_edges_from([(1,2),(2,3),(2,11),(2,12),(3,4),(4,3),(4,5),
                           (5,6),(6,5),(6,7),(7,8),(7,9),(7,10),(8,9),
                           (9,7),(10,6),(11,2),(11,4),(11,6),(12,6),(12,11)])
-        scc = nx.strongly_connected_components(G)
+        scc = list(nx.strongly_connected_components(G))
         cG = nx.condensation(G, scc)
         # DAG
         assert_true(nx.is_directed_acyclic_graph(cG))
@@ -107,7 +107,7 @@ class TestStronglyConnected:
         G = nx.DiGraph()
         G.add_edge(1,2)
         G.add_edge(2,1)
-        scc = nx.strongly_connected_components(G)        
+        scc = list(nx.strongly_connected_components(G))
         cG = nx.condensation(G, scc)
         assert_equal(cG.nodes(),[0])
         assert_equal(cG.edges(),[])
@@ -119,7 +119,7 @@ class TestStronglyConnected:
         G.add_edge(2,3)
         G.add_edge(3,4)
         G.add_edge(4,3)
-        scc = nx.strongly_connected_components(G)        
+        scc = list(nx.strongly_connected_components(G))
         cG = nx.condensation(G, scc)
         assert_equal(cG.nodes(),[0,1])
         if 1 in scc[0]:
@@ -130,9 +130,9 @@ class TestStronglyConnected:
     
     def test_connected_raise(self):
         G=nx.Graph()
-        assert_raises(NetworkXError,nx.strongly_connected_components,G)
-        assert_raises(NetworkXError,nx.kosaraju_strongly_connected_components,G)
-        assert_raises(NetworkXError,nx.strongly_connected_components_recursive,G)
-        assert_raises(NetworkXError,nx.strongly_connected_component_subgraphs,G)
-        assert_raises(NetworkXError,nx.is_strongly_connected,G)
-        assert_raises(NetworkXError,nx.condensation,G)
+        assert_raises(NetworkXNotImplemented,nx.strongly_connected_components,G)
+        assert_raises(NetworkXNotImplemented,nx.kosaraju_strongly_connected_components,G)
+        assert_raises(NetworkXNotImplemented,nx.strongly_connected_components_recursive,G)
+        assert_raises(NetworkXNotImplemented,nx.strongly_connected_component_subgraphs,G)
+        assert_raises(NetworkXNotImplemented,nx.is_strongly_connected,G)
+        assert_raises(NetworkXNotImplemented,nx.condensation,G)

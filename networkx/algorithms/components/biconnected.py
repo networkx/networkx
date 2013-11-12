@@ -10,6 +10,7 @@ Biconnected components and articulation points.
 #    BSD license.
 from itertools import chain
 import networkx as nx
+from networkx.utils.decorators import not_implemented_for
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Aric Hagberg <aric.hagberg@gmail.com>'])
@@ -20,6 +21,7 @@ __all__ = ['biconnected_components',
            'articulation_points',
            ]
 
+@not_implemented_for('directed')
 def is_biconnected(G):
     """Return True if the graph is biconnected, False otherwise.
 
@@ -41,7 +43,7 @@ def is_biconnected(G):
 
     Raises
     ------
-    NetworkXError :
+    NetworkXNotImplemented :
         If the input graph is not undirected.
 
     Examples
@@ -84,6 +86,7 @@ def is_biconnected(G):
         return False
     return len(bcc[0]) == len(G)
 
+@not_implemented_for('directed')
 def biconnected_component_edges(G):
     """Return a generator of lists of edges, one list for each biconnected
     component of the input graph.
@@ -103,12 +106,12 @@ def biconnected_component_edges(G):
 
     Returns
     -------
-    edges : generator
+    edges : generator of lists
         Generator of lists of edges, one list for each bicomponent.
 
     Raises
     ------
-    NetworkXError :
+    NetworkXNotImplemented :
         If the input graph is not undirected.
 
     Examples
@@ -148,8 +151,10 @@ def biconnected_component_edges(G):
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    return sorted(_biconnected_dfs(G,components=True), key=len, reverse=True)
+    for comp in _biconnected_dfs(G,components=True):
+        yield comp
 
+@not_implemented_for('directed')
 def biconnected_components(G):
     """Return a generator of sets of nodes, one set for each biconnected
     component of the graph
@@ -175,7 +180,7 @@ def biconnected_components(G):
 
     Raises
     ------
-    NetworkXError :
+    NetworkXNotImplemented :
         If the input graph is not undirected.
 
     Examples
@@ -215,11 +220,11 @@ def biconnected_components(G):
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    bicomponents = (set(chain.from_iterable(comp))
-                        for comp in _biconnected_dfs(G,components=True))
-    return sorted(bicomponents, key=len, reverse=True)
+    for comp in _biconnected_dfs(G,components=True):
+        yield set(chain.from_iterable(comp))
 
-def biconnected_component_subgraphs(G):
+@not_implemented_for('directed')
+def biconnected_component_subgraphs(G, copy=True):
     """Return a generator of graphs, one graph for each biconnected component
     of the input graph.
 
@@ -244,7 +249,7 @@ def biconnected_component_subgraphs(G):
 
     Raises
     ------
-    NetworkXError :
+    NetworkXNotImplemented :
         If the input graph is not undirected.
 
     Examples
@@ -252,7 +257,7 @@ def biconnected_component_subgraphs(G):
     >>> G = nx.barbell_graph(4,2)
     >>> print(nx.is_biconnected(G))
     False
-    >>> subgraphs = nx.biconnected_component_subgraphs(G)
+    >>> subgraphs = list(nx.biconnected_component_subgraphs(G))
 
     See Also
     --------
@@ -282,18 +287,13 @@ def biconnected_component_subgraphs(G):
        "Efficient algorithms for graph manipulation". 
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
     """
-    def edge_subgraph(G,edges):
-        # create new graph and copy subgraph into it
-        H = G.__class__()
-        for u,v in edges:
-            H.add_edge(u,v,attr_dict=G[u][v])
-        for n in H:
-            H.node[n]=G.node[n].copy()
-        H.graph=G.graph.copy()
-        return H
-    return (edge_subgraph(G,edges) for edges in 
-            sorted(_biconnected_dfs(G,components=True), key=len, reverse=True))
+    for comp_nodes in biconnected_components(G):
+        if copy:
+            yield G.subgraph(comp_nodes).copy()
+        else:
+            yield G.subgraph(comp_nodes)
 
+@not_implemented_for('directed')
 def articulation_points(G):
     """Return a generator of articulation points, or cut vertices, of a graph.
 
@@ -317,7 +317,7 @@ def articulation_points(G):
 
     Raises
     ------
-    NetworkXError :
+    NetworkXNotImplemented :
         If the input graph is not undirected.
 
     Examples
@@ -361,13 +361,10 @@ def articulation_points(G):
     """
     return _biconnected_dfs(G,components=False)
 
+@not_implemented_for('directed')
 def _biconnected_dfs(G, components=True):
     # depth-first search algorithm to generate articulation points 
     # and biconnected components
-    if G.is_directed():
-        raise nx.NetworkXError('Not allowed for directed graph G. '
-                               'Use UG=G.to_undirected() to create an '
-                               'undirected graph.')
     visited = set()
     for start in G:
         if start in visited:

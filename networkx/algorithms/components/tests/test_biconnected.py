@@ -2,6 +2,7 @@
 from nose.tools import *
 import networkx as nx
 from networkx.algorithms.components import biconnected
+from networkx import NetworkXNotImplemented
 
 def assert_components_equal(x,y):
     sx = set((frozenset([frozenset(e) for e in c]) for c in x))
@@ -189,3 +190,11 @@ def test_biconnected_eppstein():
     bcc = list(biconnected.biconnected_components(G2))
     bcc.sort(key=len, reverse=True)
     assert_equal(bcc, answer_G2)
+
+def test_connected_raise():
+    DG = nx.DiGraph()
+    assert_raises(NetworkXNotImplemented,nx.biconnected_components,DG)
+    assert_raises(NetworkXNotImplemented,nx.biconnected_component_subgraphs,DG)
+    assert_raises(NetworkXNotImplemented,nx.biconnected_component_edges,DG)
+    assert_raises(NetworkXNotImplemented,nx.articulation_points,DG)
+    assert_raises(NetworkXNotImplemented,nx.is_biconnected,DG)

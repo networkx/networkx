@@ -18,41 +18,46 @@ __all__ = ['number_weakly_connected_components',
            ]
 
 import networkx as nx
+from networkx.utils.decorators import not_implemented_for
 
+@not_implemented_for('undirected')
 def weakly_connected_components(G):
-    """Return weakly connected components of G.
+    """Generate weakly connected components of G.
     """
-    if not G.is_directed():
-        raise nx.NetworkXError("""Not allowed for undirected graph G. 
-              Use connected_components() """)
     seen={}
-    components=[]
     for v in G:
         if v not in seen:
             c=_single_source_shortest_unipath_length(G,v)
-            components.append(list(c.keys()))
+            yield list(c.keys())
             seen.update(c)
-    components.sort(key=len,reverse=True)
-    return components
 
-
+@not_implemented_for('undirected')
 def number_weakly_connected_components(G):
     """Return the number of connected components in G.
     For directed graphs only. 
     """
-    return len(weakly_connected_components(G))
+    return len(list(weakly_connected_components(G)))
 
-def weakly_connected_component_subgraphs(G):
-    """Return weakly connected components as subgraphs.
+@not_implemented_for('undirected')
+def weakly_connected_component_subgraphs(G, copy=True):
+    """Generate weakly connected components as subgraphs.
 
-    Graph, node, and edge attributes are copied to the subgraphs.
+    Parameters
+    ----------
+    G : NetworkX Graph
+       A directed graph.
+
+    copy : bool
+        If copy is True, graph, node, and edge attributes are copied to the
+        subgraphs.
     """
-    wcc=weakly_connected_components(G)
-    graph_list=[]
-    for c in wcc:
-        graph_list.append(G.subgraph(c).copy())
-    return graph_list
+    for comp in weakly_connected_components(G):
+        if copy:
+            yield G.subgraph(comp).copy()
+        else:
+            yield G.subgraph(comp)
 
+@not_implemented_for('undirected')
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 
@@ -74,15 +79,11 @@ def is_weakly_connected(G):
     -----
     For directed graphs only. 
     """
-    if not G.is_directed():
-        raise nx.NetworkXError("""Not allowed for undirected graph G.
-              See is_connected() for connectivity test.""")
-
     if len(G)==0:
         raise nx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
-    return len(weakly_connected_components(G)[0])==len(G)
+    return len(list(weakly_connected_components(G))[0])==len(G)
 
 def _single_source_shortest_unipath_length(G,source,cutoff=None):
     """Compute the shortest path lengths from source to all reachable nodes.

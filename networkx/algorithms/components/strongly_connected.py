@@ -9,6 +9,7 @@ Strongly connected components.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from networkx.utils.decorators import not_implemented_for
 __authors__ = "\n".join(['Eben Kenah',
                          'Aric Hagberg (hagberg@lanl.gov)'
                          'Christopher Ellison',
@@ -22,8 +23,9 @@ __all__ = ['number_strongly_connected_components',
            'kosaraju_strongly_connected_components',
            'condensation']
 
+@not_implemented_for('undirected')
 def strongly_connected_components(G):
-    """Return nodes in strongly connected components of graph.
+    """Generate nodes in strongly connected components of graph.
 
     Parameters
     ----------
@@ -32,13 +34,12 @@ def strongly_connected_components(G):
 
     Returns
     -------
-    comp : list of lists
-       A list of nodes for each component of G.
-       The list is ordered from largest connected component to smallest.
+    comp : generator of lists 
+       A list of nodes for each strongly connected component of G.
 
     Raises
     ------
-    NetworkXError: If G is undirected.
+    NetworkXNotImplemented: If G is undirected.
 
     See Also
     --------
@@ -58,14 +59,10 @@ def strongly_connected_components(G):
        E. Nuutila and E. Soisalon-Soinen
        Information Processing Letters 49(1): 9-14, (1994)..
     """
-    if not G.is_directed():
-        raise nx.NetworkXError("""Not allowed for undirected graph G. 
-              Use connected_components() """)
     preorder={}
     lowlink={}
     scc_found={}
     scc_queue = []
-    scc_list=[]
     i=0     # Preorder counter
     for source in G:
         if source not in scc_found:
@@ -98,15 +95,14 @@ def strongly_connected_components(G):
                             k=scc_queue.pop()
                             scc_found[k]=True
                             scc.append(k)
-                        scc_list.append(scc)
+                        yield scc
                     else:
                         scc_queue.append(v)
-    scc_list.sort(key=len,reverse=True)
-    return scc_list
 
 
+@not_implemented_for('undirected')
 def kosaraju_strongly_connected_components(G,source=None):
-    """Return nodes in strongly connected components of graph.
+    """Generate nodes in strongly connected components of graph.
 
     Parameters
     ----------
@@ -115,13 +111,13 @@ def kosaraju_strongly_connected_components(G,source=None):
 
     Returns
     -------
-    comp : list of lists
+    comp : generator of lists 
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
     Raises
     ------
-    NetworkXError: If G is undirected
+    NetworkXNotImplemented: If G is undirected
 
     See Also
     --------
@@ -131,10 +127,6 @@ def kosaraju_strongly_connected_components(G,source=None):
     -----
     Uses Kosaraju's algorithm.
     """
-    if not G.is_directed():
-        raise nx.NetworkXError("""Not allowed for undirected graph G. 
-              Use connected_components() """)
-    components=[]
     G=G.reverse(copy=False)
     post=list(nx.dfs_postorder_nodes(G,source=source))
     G=G.reverse(copy=False)
@@ -146,13 +138,11 @@ def kosaraju_strongly_connected_components(G,source=None):
         c=nx.dfs_preorder_nodes(G,r)
         new=[v for v in c if v not in seen]
         seen.update([(u,True) for u in new])
-        components.append(new)
-    components.sort(key=len,reverse=True)
-    return components
+        yield new
 
-
+@not_implemented_for('undirected')
 def strongly_connected_components_recursive(G):
-    """Return nodes in strongly connected components of graph.
+    """Generate nodes in strongly connected components of graph.
 
     Recursive version of algorithm.
 
@@ -163,13 +153,13 @@ def strongly_connected_components_recursive(G):
 
     Returns
     -------
-    comp : list of lists
+    comp : generator of lists 
        A list of nodes for each component of G.
        The list is ordered from largest connected component to smallest.
 
     Raises
     ------
-    NetworkXError : If G is undirected
+    NetworkXNotImplemented : If G is undirected
 
     See Also
     --------
@@ -194,7 +184,9 @@ def strongly_connected_components_recursive(G):
         cnt+=1
         stack.append(v)
         for w in G[v]:
-            if w not in visited: visit(w,cnt)
+            if w not in visited:
+                for c in visit(w,cnt):
+                    yield c
             if w not in component:
                 root[v]=min(root[v],root[w])
         if root[v]==visited[v]:
@@ -205,13 +197,8 @@ def strongly_connected_components_recursive(G):
                 component[w]=root[v]
                 tmpc.append(w)
             stack.remove(v)
-            scc.append(tmpc) # add to scc list
+            yield tmpc
     
-    if not G.is_directed():
-        raise nx.NetworkXError("""Not allowed for undirected graph G. 
-              Use connected_components() """)
-    
-    scc=[]
     visited={}
     component={}
     root={}
@@ -219,14 +206,12 @@ def strongly_connected_components_recursive(G):
     stack=[]
     for source in G:
         if source not in visited:
-            visit(source,cnt)
+            for c in visit(source,cnt):
+                yield c
 
-    scc.sort(key=len,reverse=True)
-    return scc
-
-
-def strongly_connected_component_subgraphs(G):
-    """Return strongly connected components as subgraphs.
+@not_implemented_for('undirected')
+def strongly_connected_component_subgraphs(G, copy=True):
+    """Generate strongly connected components as subgraphs.
 
     Parameters
     ----------
@@ -235,26 +220,23 @@ def strongly_connected_component_subgraphs(G):
 
     Returns
     -------
-    glist : list
+    comp : generator of lists 
       A list of graphs, one for each strongly connected component of G.
+    copy : boolean
+      if copy is True, Graph, node, and edge attributes are copied to the subgraphs.
 
     See Also
     --------
     connected_component_subgraphs
-
-    Notes
-    -----
-    The list is ordered from largest strongly connected component to smallest.
-
-    Graph, node, and edge attributes are copied to the subgraphs.
     """
-    cc=strongly_connected_components(G)
-    graph_list=[]
-    for c in cc:
-        graph_list.append(G.subgraph(c).copy())
-    return graph_list
+    for comp in strongly_connected_components(G):
+        if copy:
+            yield G.subgraph(comp).copy()
+        else:
+            yield G.subgraph(comp)
 
 
+@not_implemented_for('undirected')
 def number_strongly_connected_components(G):
     """Return number of strongly connected components in graph.
 
@@ -276,9 +258,10 @@ def number_strongly_connected_components(G):
     -----
     For directed graphs only.
     """
-    return len(strongly_connected_components(G))
+    return len(list(strongly_connected_components(G)))
 
 
+@not_implemented_for('undirected')
 def is_strongly_connected(G):
     """Test directed graph for strong connectivity.
 
@@ -300,16 +283,13 @@ def is_strongly_connected(G):
     -----
     For directed graphs only.
     """
-    if not G.is_directed():
-        raise nx.NetworkXError("""Not allowed for undirected graph G.
-              See is_connected() for connectivity test.""")
-
     if len(G)==0:
         raise nx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
-    return len(strongly_connected_components(G)[0])==len(G)
+    return len(list(strongly_connected_components(G))[0])==len(G)
 
+@not_implemented_for('undirected')
 def condensation(G, scc=None):
     """Returns the condensation of G.
 
@@ -335,18 +315,15 @@ def condensation(G, scc=None):
 
     Raises
     ------
-    NetworkXError: If G is not directed
+    NetworkXNotImplemented: If G is not directed
 
     Notes
     -----
     After contracting all strongly connected components to a single node,
     the resulting graph is a directed acyclic graph.
     """
-    if not G.is_directed():
-        raise nx.NetworkXError("""Not allowed for undirected graph G.
-              See is_connected() for connectivity test.""")
     if scc is None:
-        scc = nx.strongly_connected_components(G)
+        scc = list(nx.strongly_connected_components(G))
     mapping = {}
     C = nx.DiGraph()
     for i,component in enumerate(scc):
