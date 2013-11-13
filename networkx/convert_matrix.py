@@ -427,52 +427,60 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     if G.number_of_edges() == 0:
         row,col,data=[],[],[]
     else:
-        row,col,data=zip(*((index[u],index[v],d.get(weight,1))
-                           for u,v,d in G.edges_iter(nodelist, data=True)
-                           if u in index and v in index))
+        row,col,data = zip(*((index[u],index[v],d.get(weight,1))
+                             for u,v,d in G.edges_iter(nodelist, data=True)
+                             if u in index and v in index))
     if G.is_directed():
-        M = sparse.coo_matrix((data,(row,col)),shape=(nlen,nlen), dtype=dtype)
+        M = sparse.coo_matrix((data,(row,col)),
+                              shape=(nlen,nlen), dtype=dtype)
     else:
         # symmetrize matrix
-        M = sparse.coo_matrix((data+data,(row+col,col+row)),shape=(nlen,nlen),
-                              dtype=dtype)
+        M = sparse.coo_matrix((data+data, (row+col,col+row)),
+                              shape=(nlen,nlen), dtype=dtype)
     try:
         return M.asformat(format)
     except AttributeError:
         raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)
 
-def from_scipy_sparse_matrix(A,create_using=None):
+def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
     """Return a graph from scipy sparse matrix adjacency list.
 
     Parameters
     ----------
-    A : scipy sparse matrix
+    A: scipy sparse matrix
       An adjacency matrix representation of a graph
 
-    create_using : NetworkX graph
+    create_using: NetworkX graph
        Use specified graph for result.  The default is Graph()
+
+    edge_attribute: string
+       Name of edge attrbute to store matrix numeric value. The data will
+       have the same type as the matrix entry (int, float, (real,imag)).
 
     Examples
     --------
     >>> import scipy.sparse
-    >>> A=scipy.sparse.eye(2,2,1)
-    >>> G=nx.from_scipy_sparse_matrix(A)
-
+    >>> A = scipy.sparse.eye(2,2,1)
+    >>> G = nx.from_scipy_sparse_matrix(A)
     """
-    G=_prep_create_using(create_using)
-
-    # convert all formats to lil - not the most efficient way
-    AA=A.tolil()
-    n,m=AA.shape
-
-    if n!=m:
+    G = _prep_create_using(create_using)
+    n,m = A.shape
+    if n != m:
         raise nx.NetworkXError(\
               "Adjacency matrix is not square. nx,ny=%s"%(A.shape,))
     G.add_nodes_from(range(n)) # make sure we get isolated nodes
 
-    for i,row in enumerate(AA.rows):
-        for pos,j in enumerate(row):
-            G.add_edge(i,j,**{'weight':AA.data[i][pos]})
+    if A.format == 'coo':
+        for i,j,d in zip(A.row, A.col, A.data):
+            G.add_edge(i,j,**{edge_attribute:d})
+    elif A.format == 'dia':
+        # make a copy - could be done more efficiently
+        B = A.tocoo()
+        for i,j,d in zip(B.row, B.col, B.data):
+            G.add_edge(i,j,**{edge_attribute:d})
+    else:
+        for i,j in zip(*A.nonzero()):
+            G.add_edge(i,j,**{edge_attribute:A[i,j]})
     return G
 
 # fixture for nose tests
