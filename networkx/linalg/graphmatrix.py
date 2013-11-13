@@ -1,7 +1,7 @@
 """
 Adjacency matrix and incidence matrix of graphs.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -17,32 +17,32 @@ __all__ = ['incidence_matrix',
            ]
 
 
-def incidence_matrix(G, nodelist=None, edgelist=None, 
+def incidence_matrix(G, nodelist=None, edgelist=None,
                      oriented=False, weight=None):
     """Return incidence matrix of G.
 
     The incidence matrix assigns each row to a node and each column to an edge.
-    For a standard incidence matrix a 1 appears wherever a row's node is 
+    For a standard incidence matrix a 1 appears wherever a row's node is
     incident on the column's edge.  For an oriented incidence matrix each
     edge is assigned an orientation (arbitrarily for undirected and aligning to
-    direction for directed).  A -1 appears for the tail of an edge and 1 
+    direction for directed).  A -1 appears for the tail of an edge and 1
     for the head of the edge.  The elements are zero otherwise.
-    
+
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
     nodelist : list, optional   (default= all nodes in G)
        The rows are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
 
-    edgelist : list, optional (default= all edges in G) 
+    edgelist : list, optional (default= all edges in G)
        The columns are ordered according to the edges in edgelist.
        If edgelist is None, then the ordering is produced by G.edges().
 
     oriented: bool, optional (default=False)
-       If True, matrix elements are +1 or -1 for the head or tail node 
+       If True, matrix elements are +1 or -1 for the head or tail node
        respectively of each edge.  If False, +1 occurs at both nodes.
 
     weight : string or None, optional (default=None)
@@ -57,10 +57,10 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
 
     Notes
     -----
-    For MultiGraph/MultiDiGraph, the edges in edgelist should be 
+    For MultiGraph/MultiDiGraph, the edges in edgelist should be
     (u,v,key) 3-tuples.
 
-    "Networks are the best discrete model for so many problems in 
+    "Networks are the best discrete model for so many problems in
     applied mathematics" [1]_.
 
     References
@@ -113,9 +113,9 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
     Parameters
     ----------
     G : graph
-       A NetworkX graph 
+       A NetworkX graph
 
-    nodelist : list, optional       
+    nodelist : list, optional
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
 
@@ -143,7 +143,7 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
     to_numpy_matrix
     to_dict_of_dicts
     """
-    return nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight)
+    return nx.to_scipy_sparse_matrix(G,nodelist=nodelist,weight=weight)
 
 adj_matrix=adjacency_matrix
 

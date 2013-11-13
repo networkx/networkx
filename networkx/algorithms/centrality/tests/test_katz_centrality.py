@@ -308,7 +308,7 @@ class TestKatzEigenvectorVKatz(object):
 
     def test_eigenvector_v_katz_random(self):
         G = networkx.gnp_random_graph(10,0.5)
-        l = float(max(eigvals(networkx.adjacency_matrix(G))))
+        l = float(max(eigvals(networkx.adjacency_matrix(G).todense())))
         e = networkx.eigenvector_centrality_numpy(G)
         k = networkx.katz_centrality_numpy(G, 1.0/l)
         for n in G:

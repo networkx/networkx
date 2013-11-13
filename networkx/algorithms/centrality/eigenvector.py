@@ -143,24 +143,19 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     "left" eigenvector centrality, first reverse the graph with
     G.reverse().
 
+    For multigraphs the edge weights are summed.
+
     See Also
     --------
     eigenvector_centrality
     pagerank
     hits
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError('Requires NumPy: http://scipy.org/')
-
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
-        raise nx.NetworkXException('Not defined for multigraphs.')
-
+    import numpy as np
     if len(G) == 0:
         raise nx.NetworkXException('Empty graph.')
 
-    A = nx.adj_matrix(G, nodelist=G.nodes(), weight='weight')
+    A = nx.adj_matrix(G, nodelist=G.nodes(), weight='weight').todense()
     eigenvalues,eigenvectors = np.linalg.eig(A)
     # eigenvalue indices in reverse sorted order
     ind = eigenvalues.argsort()[::-1]

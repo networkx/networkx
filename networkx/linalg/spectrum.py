@@ -71,7 +71,7 @@ def adjacency_spectrum(G, weight='weight'):
     adjacency_matrix
     """
     from scipy.linalg import eigvals
-    return eigvals(nx.adjacency_matrix(G,weight=weight))
+    return eigvals(nx.adjacency_matrix(G,weight=weight).todense())
 
 # fixture for nose tests
 def setup_module(module):

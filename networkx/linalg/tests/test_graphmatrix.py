@@ -78,12 +78,11 @@ class TestGraphMatrix(object):
 
     def test_adjacency_matrix(self):
         "Conversion to adjacency matrix"
-        assert_equal(nx.adj_matrix(self.G),self.A)
-        assert_equal(nx.adj_matrix(self.MG),self.A)
-        assert_equal(nx.adj_matrix(self.MG2),self.MG2A)
-        assert_equal(nx.adj_matrix(self.G,nodelist=[0,1]),self.A[:2,:2])
-        assert_equal(nx.adj_matrix(self.WG),self.WA)
-        assert_equal(nx.adj_matrix(self.WG,weight=None),self.A)
-        assert_equal(nx.adj_matrix(self.MG2,weight=None),self.MG2A)
-        assert_equal(nx.adj_matrix(self.WG,weight='other'),0.6*self.WA)
-
+        assert_equal(nx.adj_matrix(self.G).todense(),self.A)
+        assert_equal(nx.adj_matrix(self.MG).todense(),self.A)
+        assert_equal(nx.adj_matrix(self.MG2).todense(),self.MG2A)
+        assert_equal(nx.adj_matrix(self.G,nodelist=[0,1]).todense(),self.A[:2,:2])
+        assert_equal(nx.adj_matrix(self.WG).todense(),self.WA)
+        assert_equal(nx.adj_matrix(self.WG,weight=None).todense(),self.A)
+        assert_equal(nx.adj_matrix(self.MG2,weight=None).todense(),self.MG2A)
+        assert_equal(nx.adj_matrix(self.WG,weight='other').todense(),0.6*self.WA)
