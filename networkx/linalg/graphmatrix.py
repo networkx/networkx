@@ -52,7 +52,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
 
     Returns
     -------
-    A : NumPy matrix
+    A : SciPy sparse matrix
       The incidence matrix of G.
 
     Notes
@@ -68,11 +68,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
     .. [1] Gil Strang, Network applications: A = incidence matrix,
        http://academicearth.org/lectures/network-applications-incidence-matrix
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(
-          "incidence_matrix() requires numpy: http://scipy.org/ ")
+    import scipy.sparse
     if nodelist is None:
         nodelist = G.nodes()
     if edgelist is None:
@@ -80,7 +76,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
             edgelist = G.edges(keys=True)
         else:
             edgelist = G.edges()
-    A = np.zeros((len(nodelist),len(edgelist)))
+    A = scipy.sparse.lil_matrix((len(nodelist),len(edgelist)))
     node_index = dict( (node,i) for i,node in enumerate(nodelist) )
     for ei,e in enumerate(edgelist):
         (u,v) = e[:2]
@@ -105,7 +101,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
         else:
             A[ui,ei] = wt
             A[vi,ei] = wt
-    return np.asmatrix(A)
+    return A.asformat('csc')
 
 def adjacency_matrix(G, nodelist=None, weight='weight'):
     """Return adjacency matrix of G.
@@ -125,7 +121,7 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
 
     Returns
     -------
-    A : numpy matrix
+    A : SciPy sparse matrix
       Adjacency matrix representation of G.
 
     Notes

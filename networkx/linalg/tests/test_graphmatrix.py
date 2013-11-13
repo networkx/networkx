@@ -53,27 +53,27 @@ class TestGraphMatrix(object):
 
     def test_incidence_matrix(self):
         "Conversion to incidence matrix"
-        assert_equal(nx.incidence_matrix(self.G,oriented=True),self.OI)
-        assert_equal(nx.incidence_matrix(self.G),numpy.abs(self.OI))
-        assert_equal(nx.incidence_matrix(self.MG,oriented=True),self.OI)
-        assert_equal(nx.incidence_matrix(self.MG),numpy.abs(self.OI))
-        assert_equal(nx.incidence_matrix(self.MG2,oriented=True),self.MGOI)
-        assert_equal(nx.incidence_matrix(self.MG2),numpy.abs(self.MGOI))
-        assert_equal(nx.incidence_matrix(self.WG,oriented=True),self.OI)
-        assert_equal(nx.incidence_matrix(self.WG),numpy.abs(self.OI))
+        assert_equal(nx.incidence_matrix(self.G,oriented=True).todense(),self.OI)
+        assert_equal(nx.incidence_matrix(self.G).todense(),numpy.abs(self.OI))
+        assert_equal(nx.incidence_matrix(self.MG,oriented=True).todense(),self.OI)
+        assert_equal(nx.incidence_matrix(self.MG).todense(),numpy.abs(self.OI))
+        assert_equal(nx.incidence_matrix(self.MG2,oriented=True).todense(),self.MGOI)
+        assert_equal(nx.incidence_matrix(self.MG2).todense(),numpy.abs(self.MGOI))
+        assert_equal(nx.incidence_matrix(self.WG,oriented=True).todense(),self.OI)
+        assert_equal(nx.incidence_matrix(self.WG).todense(),numpy.abs(self.OI))
         assert_equal(nx.incidence_matrix(self.WG,oriented=True,
-                                         weight='weight'),0.5*self.OI)
-        assert_equal(nx.incidence_matrix(self.WG,weight='weight'),
+                                         weight='weight').todense(),0.5*self.OI)
+        assert_equal(nx.incidence_matrix(self.WG,weight='weight').todense(),
                      numpy.abs(0.5*self.OI))
-        assert_equal(nx.incidence_matrix(self.WG,oriented=True,weight='other'),
+        assert_equal(nx.incidence_matrix(self.WG,oriented=True,weight='other').todense(),
                      0.3*self.OI)
         WMG=nx.MultiGraph(self.WG)
         WMG.add_edge(0,1,attr_dict={'weight':0.5,'other':0.3})
-        assert_equal(nx.incidence_matrix(WMG,weight='weight'),
+        assert_equal(nx.incidence_matrix(WMG,weight='weight').todense(),
                      numpy.abs(0.5*self.MGOI))
-        assert_equal(nx.incidence_matrix(WMG,weight='weight',oriented=True),
+        assert_equal(nx.incidence_matrix(WMG,weight='weight',oriented=True).todense(),
                      0.5*self.MGOI)
-        assert_equal(nx.incidence_matrix(WMG,weight='other',oriented=True),
+        assert_equal(nx.incidence_matrix(WMG,weight='other',oriented=True).todense(),
                      0.3*self.MGOI)
 
     def test_adjacency_matrix(self):
