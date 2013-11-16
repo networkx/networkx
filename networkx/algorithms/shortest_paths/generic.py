@@ -15,13 +15,15 @@ order by first flipping the edge orientation using R=G.reverse(copy=False).
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from restrictions import hide_nodes_edges
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Sérgio Nery Simões <sergionery@gmail.com>'])
 __all__ = ['shortest_path', 'all_shortest_paths',
            'shortest_path_length', 'average_shortest_path_length',
            'has_path']
 
-def has_path(G, source, target):
+
+def has_path(G, source, target, ignore_nodes=[], ignore_edges=[]):
     """Return True if G has a path from source to target, False otherwise.
 
     Parameters
@@ -33,15 +35,25 @@ def has_path(G, source, target):
 
     target : node
        Ending node for path
+
+    ignore_nodes : list of networkx nodes
+
+    ignore_edges : list of edges
+        (source, target)
+        if G is directed, the edges are treated as directed
+        otherwise edges are treated as bi-directional
     """
     try:
-        sp = nx.shortest_path(G,source, target)
+        sp = nx.shortest_path(G, source, target,
+                              ignore_nodes=ignore_nodes,
+                              ignore_edges=ignore_edges)
     except nx.NetworkXNoPath:
         return False
     return True
 
 
-def shortest_path(G, source=None, target=None, weight=None):
+def shortest_path(G, source=None, target=None, weight=None,
+                  ignore_nodes=[], ignore_edges=[]):
     """Compute shortest paths in the graph.
 
     Parameters
@@ -60,6 +72,13 @@ def shortest_path(G, source=None, target=None, weight=None):
         If None, every edge has weight/distance/cost 1.
         If a string, use this edge attribute as the edge weight.
         Any edge attribute not present defaults to 1.
+
+    ignore_nodes : list of networkx nodes
+
+    ignore_edges : list of edges
+        (source, target)
+        if G is directed, the edges are treated as directed
+        otherwise edges are treated as bi-directional
 
     Returns
     -------
@@ -83,15 +102,15 @@ def shortest_path(G, source=None, target=None, weight=None):
     Examples
     --------
     >>> G=nx.path_graph(5)
-    >>> print(nx.shortest_path(G,source=0,target=4))
+    >>> print(nx.shortest_path(G, source=0, target=4))
     [0, 1, 2, 3, 4]
-    >>> p=nx.shortest_path(G,source=0) # target not specified
+    >>> p=nx.shortest_path(G, source=0) # target not specified
     >>> p[4]
     [0, 1, 2, 3, 4]
-    >>> p=nx.shortest_path(G,target=4) # source not specified
+    >>> p=nx.shortest_path(G, target=4) # source not specified
     >>> p[0]
     [0, 1, 2, 3, 4]
-    >>> p=nx.shortest_path(G) # source,target not specified
+    >>> p=nx.shortest_path(G) # source, target not specified
     >>> p[0][4]
     [0, 1, 2, 3, 4]
 
@@ -111,23 +130,27 @@ def shortest_path(G, source=None, target=None, weight=None):
     single_source_shortest_path()
     single_source_dijkstra_path()
     """
+    if ignore_nodes or ignore_edges:
+        with hide_nodes_edges(G, ignore_nodes, ignore_edges):
+            return shortest_path(G, source=source, target=target, weight=weight)
+        
     if source is None:
         if target is None:
             ## Find paths between all pairs.
             if weight is None:
-                paths=nx.all_pairs_shortest_path(G)
+                paths = nx.all_pairs_shortest_path(G)
             else:
-                paths=nx.all_pairs_dijkstra_path(G,weight=weight)
+                paths = nx.all_pairs_dijkstra_path(G, weight=weight)
         else:
             ## Find paths from all nodes co-accessible to the target.
             directed = G.is_directed()
             if directed:
-               G.reverse(copy=False)
+                G.reverse(copy=False)
 
             if weight is None:
-                paths=nx.single_source_shortest_path(G,target)
+                paths = nx.single_source_shortest_path(G, target)
             else:
-                paths=nx.single_source_dijkstra_path(G,target,weight=weight)
+                paths = nx.single_source_dijkstra_path(G, target, weight=weight)
 
             # Now flip the paths so they go from a source to the target.
             for target in paths:
@@ -139,20 +162,21 @@ def shortest_path(G, source=None, target=None, weight=None):
         if target is None:
             ## Find paths to all nodes accessible from the source.
             if weight is None:
-                paths=nx.single_source_shortest_path(G,source)
+                paths = nx.single_source_shortest_path(G, source)
             else:
-                paths=nx.single_source_dijkstra_path(G,source,weight=weight)
+                paths = nx.single_source_dijkstra_path(G, source, weight=weight)
         else:
             ## Find shortest source-target path.
             if weight is None:
-                paths=nx.bidirectional_shortest_path(G,source,target)
+                paths = nx.bidirectional_shortest_path(G, source, target)
             else:
-                paths=nx.dijkstra_path(G,source,target,weight)
+                paths = nx.dijkstra_path(G, source, target, weight)
 
     return paths
 
 
-def shortest_path_length(G, source=None, target=None, weight=None):
+def shortest_path_length(G, source=None, target=None, weight=None,
+                         ignore_nodes=[], ignore_edges=[]):
     """Compute shortest path lengths in the graph.
 
     Parameters
@@ -173,6 +197,13 @@ def shortest_path_length(G, source=None, target=None, weight=None):
         If None, every edge has weight/distance/cost 1.
         If a string, use this edge attribute as the edge weight.
         Any edge attribute not present defaults to 1.
+
+    ignore_nodes : list of networkx nodes
+
+    ignore_edges : list of edges
+        (source, target)
+        if G is directed, the edges are treated as directed
+        otherwise edges are treated as bi-directional
 
     Returns
     -------
@@ -199,16 +230,16 @@ def shortest_path_length(G, source=None, target=None, weight=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> print(nx.shortest_path_length(G,source=0,target=4))
+    >>> G = nx.path_graph(5)
+    >>> print(nx.shortest_path_length(G, source=0, target=4))
     4
-    >>> p=nx.shortest_path_length(G,source=0) # target not specified
+    >>> p = nx.shortest_path_length(G, source=0) # target not specified
     >>> p[4]
     4
-    >>> p=nx.shortest_path_length(G,target=4) # source not specified
+    >>> p = nx.shortest_path_length(G, target=4) # source not specified
     >>> p[0]
     4
-    >>> p=nx.shortest_path_length(G) # source,target not specified
+    >>> p = nx.shortest_path_length(G) # source, target not specified
     >>> p[0][4]
     4
 
@@ -229,23 +260,27 @@ def shortest_path_length(G, source=None, target=None, weight=None):
     single_source_dijkstra_path_length()
 
     """
+    if ignore_nodes or ignore_edges:
+        with hide_nodes_edges(G, ignore_nodes, ignore_edges):
+            return shortest_path_length(G, source=source, target=target, weight=weight)
+
     if source is None:
         if target is None:
             ## Find paths between all pairs.
             if weight is None:
-                paths=nx.all_pairs_shortest_path_length(G)
+                paths = nx.all_pairs_shortest_path_length(G)
             else:
-                paths=nx.all_pairs_dijkstra_path_length(G, weight=weight)
+                paths = nx.all_pairs_dijkstra_path_length(G, weight=weight)
         else:
             ## Find paths from all nodes co-accessible to the target.
             directed = G.is_directed()
             if directed:
-               G.reverse(copy=False)
+                G.reverse(copy=False)
 
             if weight is None:
-                paths=nx.single_source_shortest_path_length(G,target)
+                paths = nx.single_source_shortest_path_length(G, target)
             else:
-                paths=nx.single_source_dijkstra_path_length(G,target,
+                paths = nx.single_source_dijkstra_path_length(G, target,
                                                             weight=weight)
 
             if directed:
@@ -254,27 +289,28 @@ def shortest_path_length(G, source=None, target=None, weight=None):
         if target is None:
             ## Find paths to all nodes accessible from the source.
             if weight is None:
-                paths=nx.single_source_shortest_path_length(G,source)
+                paths = nx.single_source_shortest_path_length(G, source)
             else:
-                paths=nx.single_source_dijkstra_path_length(G,source,weight=weight)
+                paths = nx.single_source_dijkstra_path_length(G, source, weight=weight)
         else:
             ## Find shortest source-target path.
             if weight is None:
-                p=nx.bidirectional_shortest_path(G,source,target)
-                paths=len(p)-1
+                p = nx.bidirectional_shortest_path(G, source, target)
+                paths = len(p)-1
             else:
-                paths=nx.dijkstra_path_length(G,source,target,weight)
+                paths = nx.dijkstra_path_length(G, source, target, weight)
     return paths
 
 
-def average_shortest_path_length(G, weight=None):
+def average_shortest_path_length(G, weight=None,
+                                 ignore_nodes=[], ignore_edges=[]):
     r"""Return the average shortest path length.
 
     The average shortest path length is
 
     .. math::
 
-       a =\sum_{s,t \in V} \frac{d(s, t)}{n(n-1)}
+       a =\sum_{s, t \in V} \frac{d(s, t)}{n(n-1)}
 
     where `V` is the set of nodes in `G`,
     `d(s, t)` is the shortest path from `s` to `t`,
@@ -289,6 +325,13 @@ def average_shortest_path_length(G, weight=None):
        If a string, use this edge attribute as the edge weight.
        Any edge attribute not present defaults to 1.
 
+    ignore_nodes : list of networkx nodes
+
+    ignore_edges : list of edges
+        (source, target)
+        if G is directed, the edges are treated as directed
+        otherwise edges are treated as bi-directional
+
     Raises
     ------
     NetworkXError:
@@ -302,13 +345,17 @@ def average_shortest_path_length(G, weight=None):
 
     For disconnected graphs you can compute the average shortest path
     length for each component:
-    >>> G=nx.Graph([(1,2),(3,4)])
+    >>> G=nx.Graph([(1, 2), (3, 4)])
     >>> for g in nx.connected_component_subgraphs(G):
     ...     print(nx.average_shortest_path_length(g))
     1.0
     1.0
 
     """
+    if ignore_nodes or ignore_edges:
+        with hide_nodes_edges(G, ignore_nodes, ignore_edges):
+            return average_shortest_path_length(G, weight=weight)
+
     if G.is_directed():
         if not nx.is_weakly_connected(G):
             raise nx.NetworkXError("Graph is not connected.")
@@ -328,7 +375,8 @@ def average_shortest_path_length(G, weight=None):
     return avg/(n*(n-1))
 
 
-def all_shortest_paths(G, source, target, weight=None):
+def all_shortest_paths(G, source, target, weight=None,
+                       ignore_nodes=[], ignore_edges=[]):
     """Compute all shortest paths in the graph.
 
     Parameters
@@ -346,6 +394,13 @@ def all_shortest_paths(G, source, target, weight=None):
        If a string, use this edge attribute as the edge weight.
        Any edge attribute not present defaults to 1.
 
+    ignore_nodes : list of networkx nodes
+
+    ignore_edges : list of edges
+        (source, target)
+        if G is directed, the edges are treated as directed
+        otherwise edges are treated as bi-directional
+
     Returns
     -------
     paths: generator of lists
@@ -354,9 +409,9 @@ def all_shortest_paths(G, source, target, weight=None):
     Examples
     --------
     >>> G=nx.Graph()
-    >>> G.add_path([0,1,2])
-    >>> G.add_path([0,10,2])
-    >>> print([p for p in nx.all_shortest_paths(G,source=0,target=2)])
+    >>> G.add_path([0, 1, 2])
+    >>> G.add_path([0, 10, 2])
+    >>> print([p for p in nx.all_shortest_paths(G, source=0, target=2)])
     [[0, 1, 2], [0, 10, 2]]
 
     Notes
@@ -369,24 +424,29 @@ def all_shortest_paths(G, source, target, weight=None):
     single_source_shortest_path()
     all_pairs_shortest_path()
     """
+    if ignore_nodes or ignore_edges:
+        with hide_nodes_edges(G, ignore_nodes, ignore_edges):
+            for __ in all_shortest_paths(G, source=source, target=target, weight=weight):
+                yield __
+
     if weight is not None:
-        pred,dist = nx.dijkstra_predecessor_and_distance(G,source,weight=weight)
+        pred, dist = nx.dijkstra_predecessor_and_distance(G, source, weight=weight)
     else:
-        pred = nx.predecessor(G,source)
+        pred = nx.predecessor(G, source)
     if target not in pred:
         raise nx.NetworkXNoPath()
-    stack = [[target,0]]
+    stack = [[target, 0]]
     top = 0
     while top >= 0:
-        node,i = stack[top]
+        node, i = stack[top]
         if node == source:
-            yield [p for p,n in reversed(stack[:top+1])]
+            yield [p for p, n in reversed(stack[:top+1])]
         if len(pred[node]) > i:
             top += 1
             if top == len(stack):
-                stack.append([pred[node][i],0])
+                stack.append([pred[node][i], 0])
             else:
-                stack[top] = [pred[node][i],0]
+                stack[top] = [pred[node][i], 0]
         else:
             stack[top-1][1] += 1
             top -= 1
