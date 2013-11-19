@@ -110,25 +110,6 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
 power iteration failed to converge in %d iterations."%(i+1))""")
 
 
-def smat (G, weight):
-	'''
-	Return the graph's adjacency matrix in the sparse format.
-	'''
-	try:
-		from scipy.sparse import lil_matrix
-	except ImportError:
-		raise ImportError('Requires SciPy: http://scipy.org/')
-
-	num_nodes = G.number_of_nodes()
-	A_lil = lil_matrix((num_nodes, num_nodes))
-
-	for node in G.nodes(data=True):
-		for nbr_nodeid in G.neighbors(node[0]):
-			A_lil[node[0], nbr_nodeid] = 1 if weight is None else G[node[0]][nbr_nodeid]['weight']
-
-	return A_lil.tocsc()
-
-
 def eigenvector_centrality_numpy(G, weight='weight', sparse=False):
     """Compute the eigenvector centrality for the graph G.
 
@@ -181,11 +162,11 @@ def eigenvector_centrality_numpy(G, weight='weight', sparse=False):
         raise nx.NetworkXException('Empty graph.')
 
     if sparse:
-	A = smat(nx.convert_node_labels_to_integers(G), weight)
+	A = nx.to_scipy_matrix(G, dtype=float, weight=weight)
  	k = min(6, G.number_of_nodes() - 2)
 	eigenvalues,eigenvectors = eigs(A.tocsc(), k=k)
     else:
-	A = nx.adj_matrix(G, nodelist=G.nodes(), weight='weight')
+	A = nx.adj_matrix(G, nodelist=G.nodes(), weight=weight)
 	eigenvalues, eigenvectors = np.linalg.eig(A)
 
     # eigenvalue indices in reverse sorted order
