@@ -55,7 +55,3 @@ Decorators
    :toctree: generated/
 
    open_file
-   require
-
-
-
