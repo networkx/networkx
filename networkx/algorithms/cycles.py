@@ -168,7 +168,9 @@ def simple_cycles(G):
     # Johnson's algorithm requires some ordering of the nodes.
     # We assign the arbitrary ordering given by the strongly connected comps
     # There is no need to track the ordering as each node removed as processed.
-    subG=G.copy()   # save the actual graph so we can mutate it here
+    subG = type(G)(G.edges_iter()) # save the actual graph so we can mutate it here
+                              # We only take the edges because we do not want to
+                              # copy edge and node attributes here.
     sccs = list(nx.strongly_connected_components(subG))
     while sccs:
         scc=sccs.pop()
