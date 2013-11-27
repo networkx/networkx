@@ -8,13 +8,15 @@ class TestLaplacian(object):
     @classmethod
     def setupClass(cls):
         global numpy
+        global scipy
         global assert_equal
         global assert_almost_equal
         try:
             import numpy
+            import scipy
             from numpy.testing import assert_equal,assert_almost_equal
         except ImportError:
-             raise SkipTest('NumPy not available.')
+             raise SkipTest('SciPy not available.')
 
     def setUp(self):
         deg=[3,2,2,1,0]
