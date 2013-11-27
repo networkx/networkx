@@ -153,7 +153,7 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     if len(G) == 0:
         raise nx.NetworkXException('Empty graph.')
 
-    A = nx.adj_matrix(G, nodelist=G.nodes(), weight='weight').todense()
+    A = nx.adj_matrix(G, nodelist=G.nodes(), weight='weight').todense().T
     eigenvalues,eigenvectors = np.linalg.eig(A)
     # eigenvalue indices in reverse sorted order
     ind = eigenvalues.argsort()[::-1]

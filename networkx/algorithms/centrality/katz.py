@@ -295,7 +295,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         except (TypeError,ValueError):
             raise nx.NetworkXError('beta must be a number')
 
-    A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).T
+    A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = np.array(A).shape[0]
     centrality = np.linalg.solve( np.eye(n,n) - (alpha * A) , b)
     if normalized:
