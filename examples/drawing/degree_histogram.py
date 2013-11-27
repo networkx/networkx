@@ -19,7 +19,7 @@ plt.xlabel("rank")
 
 # draw graph in inset 
 plt.axes([0.45,0.45,0.45,0.45])
-Gcc=nx.connected_component_subgraphs(G)[0]
+Gcc=sorted(nx.connected_component_subgraphs(G), key = len, reverse=True)[0]
 pos=nx.spring_layout(Gcc)
 plt.axis('off')
 nx.draw_networkx_nodes(Gcc,pos,node_size=20)
