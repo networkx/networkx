@@ -58,9 +58,9 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     after max_iter iterations or an error tolerance of
     number_of_nodes(G)*tol has been reached.
 
-    For directed graphs this is "right" eigevector centrality.  For
-    "left" eigenvector centrality, first reverse the graph with
-    G.reverse().
+    For directed graphs this is "left" eigevector centrality which corresponds
+    to the in-edges in the graph.  For out-edges eigenvector centrality
+    first reverse the graph with G.reverse().
 
     See Also
     --------
@@ -89,10 +89,10 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     for i in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast, 0)
-        # do the multiplication y=Ax
+        # do the multiplication y^T = x^T A
         for n in x:
             for nbr in G[n]:
-                x[n] += xlast[nbr]*G[n][nbr].get(weight, 1)
+                x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
         # normalize vector
         try:
             s = 1.0/sqrt(sum(v**2 for v in x.values()))
@@ -139,11 +139,9 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     ------
     This algorithm uses the NumPy eigenvalue solver.
 
-    For directed graphs this is "right" eigevector centrality.  For
-    "left" eigenvector centrality, first reverse the graph with
-    G.reverse().
-
-    For multigraphs the edge weights are summed.
+    For directed graphs this is "left" eigevector centrality which corresponds
+    to the in-edges in the graph.  For out-edges eigenvector centrality
+    first reverse the graph with G.reverse().
 
     See Also
     --------

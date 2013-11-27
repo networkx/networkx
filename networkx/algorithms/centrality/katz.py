@@ -111,6 +111,11 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     When `\alpha = 1/\lambda_{max}` and `\beta=1` Katz centrality is the same as
     eigenvector centrality.
 
+    For directed graphs this finds "left" eigenvectors which corresponds
+    to the in-edges in the graph.  For out-edges Katz centrality
+    first reverse the graph with G.reverse().
+
+
     References
     ----------
     .. [1] M. Newman, Networks: An Introduction. Oxford University Press,
@@ -149,10 +154,11 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     for i in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast, 0)
-        # do the multiplication y = Alpha * Ax - Beta
+        # do the multiplication y^T = Alpha * x^T A - Beta
         for n in x:
             for nbr in G[n]:
-                x[n] += xlast[nbr] * G[n][nbr].get(weight,1)
+                x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
+        for n in x:
             x[n] = alpha*x[n] + b[n]
 
         # check convergence
@@ -253,6 +259,10 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     `\alpha = 1/\lambda_{max}` and `\beta=1` Katz centrality is the same as
     eigenvector centrality.
 
+    For directed graphs this finds "left" eigenvectors which corresponds
+    to the in-edges in the graph.  For out-edges Katz centrality
+    first reverse the graph with G.reverse().
+
     References
     ----------
     .. [1] M. Newman, Networks: An Introduction. Oxford University Press,
@@ -285,7 +295,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         except (TypeError,ValueError):
             raise nx.NetworkXError('beta must be a number')
 
-    A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).todense()
+    A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).T
     n = np.array(A).shape[0]
     centrality = np.linalg.solve( np.eye(n,n) - (alpha * A) , b)
     if normalized:

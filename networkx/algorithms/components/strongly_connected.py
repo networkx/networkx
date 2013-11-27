@@ -302,7 +302,7 @@ def condensation(G, scc=None):
        A directed graph.
 
     scc:  list or generator (optional, default=None)
-        Strongly connected components. If provided, the elements in
+       Strongly connected components. If provided, the elements in
        `scc` must partition the nodes in `G`. If not provided, it will be
        calculated as scc=nx.strongly_connected_components(G).
 

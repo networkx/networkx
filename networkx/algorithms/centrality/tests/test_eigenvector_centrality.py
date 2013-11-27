@@ -76,7 +76,7 @@ class TestEigenvectorCentralityDirected(object):
                (7,8),(8,6),(8,7)]
 
         G.add_edges_from(edges,weight=2.0)
-        self.G=G
+        self.G=G.reverse()
         self.G.evc=[0.25368793,  0.19576478,  0.32817092,  0.40430835,
                     0.48199885, 0.15724483,  0.51346196,  0.32475403]
 
@@ -87,23 +87,36 @@ class TestEigenvectorCentralityDirected(object):
                (7,8),(8,6),(8,7)]
 
         G.add_edges_from(edges)
-        self.H=G
+        self.H=G.reverse()
         self.H.evc=[0.25368793,  0.19576478,  0.32817092,  0.40430835,
                     0.48199885, 0.15724483,  0.51346196,  0.32475403]
 
 
     def test_eigenvector_centrality_weighted(self):
         G=self.G
+        p=networkx.eigenvector_centrality(G)
+        for (a,b) in zip(list(p.values()),self.G.evc):
+            assert_almost_equal(a,b,places=4)
+
+    def test_eigenvector_centrality_weighted_numpy(self):
+        G=self.G
         p=networkx.eigenvector_centrality_numpy(G)
         for (a,b) in zip(list(p.values()),self.G.evc):
             assert_almost_equal(a,b)
 
+
     def test_eigenvector_centrality_unweighted(self):
+        G=self.H
+        p=networkx.eigenvector_centrality(G)
+        for (a,b) in zip(list(p.values()),self.G.evc):
+            assert_almost_equal(a,b,places=4)
+
+
+    def test_eigenvector_centrality_unweighted_numpy(self):
         G=self.H
         p=networkx.eigenvector_centrality_numpy(G)
         for (a,b) in zip(list(p.values()),self.G.evc):
             assert_almost_equal(a,b)
-
 
 class TestEigenvectorCentralityExceptions(object):
     numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test

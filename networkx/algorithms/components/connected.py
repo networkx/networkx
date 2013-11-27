@@ -68,7 +68,7 @@ def connected_component_subgraphs(G, copy=True):
 
     Returns
     -------
-    glist : generator
+    comp : generator
       A generator of graphs, one for each connected component of G.
 
     copy: bool (default=True)

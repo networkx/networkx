@@ -226,7 +226,7 @@ class TestKatzCentralityDirected(object):
         edges = [(1, 2),(1, 3),(2, 4),(3, 2),(3, 5),(4, 2),(4, 5),(4, 6),(5, 6),
                  (5, 7),(5, 8),(6, 8),(7, 1),(7, 5),(7, 8),(8, 6),(8, 7)]
         G.add_edges_from(edges, weight=2.0)
-        self.G = G
+        self.G = G.reverse()
         self.G.alpha = 0.1
         self.G.evc = [
             0.3289589783189635,
@@ -240,7 +240,7 @@ class TestKatzCentralityDirected(object):
             ]
 
         H = networkx.DiGraph(edges)
-        self.H = G
+        self.H = G.reverse()
         self.H.alpha = 0.1
         self.H.evc = [
             0.3289589783189635,
@@ -253,14 +253,14 @@ class TestKatzCentralityDirected(object):
             0.34229059218038554,
             ]
 
-    def test_eigenvector_centrality_weighted(self):
+    def test_katz_centrality_weighted(self):
         G = self.G
         alpha = self.G.alpha
         p = networkx.katz_centrality(G, alpha)
         for (a, b) in zip(list(p.values()), self.G.evc):
             assert_almost_equal(a, b)
 
-    def test_eigenvector_centrality_unweighted(self):
+    def test_katz_centrality_unweighted(self):
         G = self.H
         alpha = self.H.alpha
         p = networkx.katz_centrality(G, alpha)
@@ -279,14 +279,14 @@ class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
         except ImportError:
             raise SkipTest('NumPy not available.')
 
-    def test_eigenvector_centrality_weighted(self):
+    def test_katz_centrality_weighted(self):
         G = self.G
         alpha = self.G.alpha
         p = networkx.katz_centrality_numpy(G, alpha)
         for (a, b) in zip(list(p.values()), self.G.evc):
             assert_almost_equal(a, b)
 
-    def test_eigenvector_centrality_unweighted(self):
+    def test_katz_centrality_unweighted(self):
         G = self.H
         alpha = self.H.alpha
         p = networkx.katz_centrality_numpy(G, alpha)

@@ -5,7 +5,7 @@ Release Log
 ===========
 
 Networkx-1.8.1
-------------
+--------------
 Release date:  4 August 2013
 
 Bugfix release for missing files in source packaging
