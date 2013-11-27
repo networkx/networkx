@@ -203,6 +203,8 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
        Annals of Combinatorics, 9(1), 2005
     """
     import numpy as np
+    import scipy.sparse
+    from scipy.sparse import linalg
     if walk_type is None:
         if nx.is_strongly_connected(G):
             if nx.is_aperiodic(G):
@@ -212,19 +214,29 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
         else:
             walk_type = "pagerank"
 
-    M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
+    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
+                                  dtype=float)
     n, m = M.shape
     if walk_type in ["random", "lazy"]:
-        DI = np.diagflat(1.0 / np.sum(M, axis=1))
+        # DI = np.diagflat(1.0 / np.sum(M, axis=1))
+        # if walk_type == "random":
+        #     P =  DI * M
+        # else:
+        #     I = np.identity(n)
+        #     P = (I + DI * M) / 2.0
+        DI = scipy.sparse.diags(1.0/np.array(M.sum(axis=1).flat), 0)
         if walk_type == "random":
             P =  DI * M
         else:
-            I = np.identity(n)
+            I = scipy.sparse.identity(n)
             P = (I + DI * M) / 2.0
+        P = P.todense()
+
     elif walk_type == "pagerank":
         if not (0 < alpha < 1):
             raise nx.NetworkXError('alpha must be between 0 and 1')
         # add constant to dangling nodes' row
+        M = M.todense()
         dangling = np.where(M.sum(axis=1) == 0)
         for d in dangling[0]:
             M[d] = 1.0 / n
@@ -234,10 +246,8 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     else:
         raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
 
-    evals, evecs = np.linalg.eig(P.T)
-    index = evals.argsort()[-1] # index of largest eval,evec
-    # eigenvector of largest eigenvalue at ind[-1]
-    v = np.array(evecs[:,index]).flatten().real
+    evals, evecs = linalg.eigs(P.T, k=1)
+    v = evecs.flatten().real
     p =  v / v.sum()
     sp = np.sqrt(p)
     Q = np.diag(sp) * P * np.diag(1.0/sp)
