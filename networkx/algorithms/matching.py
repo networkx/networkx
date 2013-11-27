@@ -43,15 +43,13 @@ def maximal_matching(G):
     """
     matching = set([])
     edges = set([])
-    for edge in G.edges_iter():
+    for u,v in G.edges_iter():
         # If the edge isn't covered, add it to the matching
         # then remove neighborhood of u and v from consideration.
-        if edge not in edges:
-            u, v = edge
-            matching.add(edge)
+        if (u,v) not in edges and (v,u) not in edges:
+            matching.add((u,v))
             edges |= set(G.edges(u))
             edges |= set(G.edges(v))
-
     return matching
 
 
