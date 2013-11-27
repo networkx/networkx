@@ -202,7 +202,7 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
        Laplacians and the Cheeger inequality for directed graphs.
        Annals of Combinatorics, 9(1), 2005
     """
-    import numpy as np
+    import scipy as sp
     import scipy.sparse
     from scipy.sparse import linalg
     if walk_type is None:
@@ -218,26 +218,20 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
                                   dtype=float)
     n, m = M.shape
     if walk_type in ["random", "lazy"]:
-        # DI = np.diagflat(1.0 / np.sum(M, axis=1))
-        # if walk_type == "random":
-        #     P =  DI * M
-        # else:
-        #     I = np.identity(n)
-        #     P = (I + DI * M) / 2.0
-        DI = scipy.sparse.diags(1.0/np.array(M.sum(axis=1).flat), 0)
+        DI = scipy.sparse.diags(1.0/sp.array(M.sum(axis=1).flat), 0)
         if walk_type == "random":
             P =  DI * M
         else:
             I = scipy.sparse.identity(n)
             P = (I + DI * M) / 2.0
-        P = P.todense()
 
     elif walk_type == "pagerank":
         if not (0 < alpha < 1):
             raise nx.NetworkXError('alpha must be between 0 and 1')
-        # add constant to dangling nodes' row
+        # this is using a dense representation
         M = M.todense()
-        dangling = np.where(M.sum(axis=1) == 0)
+        # add constant to dangling nodes' row
+        dangling = sp.where(M.sum(axis=1) == 0)
         for d in dangling[0]:
             M[d] = 1.0 / n
         # normalize
@@ -249,9 +243,9 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     evals, evecs = linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
     p =  v / v.sum()
-    sp = np.sqrt(p)
-    Q = np.diag(sp) * P * np.diag(1.0/sp)
-    I = np.identity(len(G))
+    sqrtp = sp.sqrt(p)
+    Q = scipy.sparse.diags(sqrtp, 0) * P * scipy.sparse.diags(1.0/sqrtp, 0)
+    I = sp.identity(len(G))
 
     return I  - (Q + Q.T) /2.0
 
