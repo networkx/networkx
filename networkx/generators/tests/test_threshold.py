@@ -157,8 +157,9 @@ class TestGeneratorThreshold():
         try:
             import numpy as N
             eigenval=N.linalg.eigvals
+            import scipoy
         except ImportError:
-            raise SkipTest('NumPy not available.')
+            raise SkipTest('SciPy not available.')
 
         cs='ddiiddid'
         G=nxt.threshold_graph(cs)

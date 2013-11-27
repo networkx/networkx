@@ -169,6 +169,6 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-        import numpy.linalg
+        import scipy
     except:
-        raise SkipTest("numpy not available")
+        raise SkipTest("SciPy not available")
