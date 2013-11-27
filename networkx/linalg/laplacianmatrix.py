@@ -203,8 +203,7 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
        Annals of Combinatorics, 9(1), 2005
     """
     import scipy as sp
-    import scipy.sparse
-    from scipy.sparse import linalg
+    from scipy.sparse import identity, spdiags, linalg
     if walk_type is None:
         if nx.is_strongly_connected(G):
             if nx.is_aperiodic(G):
@@ -218,11 +217,11 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
                                   dtype=float)
     n, m = M.shape
     if walk_type in ["random", "lazy"]:
-        DI = scipy.sparse.diags(1.0/sp.array(M.sum(axis=1).flat), 0)
+        DI = spdiags(1.0/sp.array(M.sum(axis=1).flat), [0], n, n)
         if walk_type == "random":
             P =  DI * M
         else:
-            I = scipy.sparse.identity(n)
+            I = identity(n)
             P = (I + DI * M) / 2.0
 
     elif walk_type == "pagerank":
@@ -244,7 +243,7 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     v = evecs.flatten().real
     p =  v / v.sum()
     sqrtp = sp.sqrt(p)
-    Q = scipy.sparse.diags(sqrtp, 0) * P * scipy.sparse.diags(1.0/sqrtp, 0)
+    Q = spdiags(sqrtp, [0], n, n) * P * spdiags(1.0/sqrtp, [0], n, n)
     I = sp.identity(len(G))
 
     return I  - (Q + Q.T) /2.0
