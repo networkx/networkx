@@ -121,7 +121,7 @@ def eulerian_circuit(G, source=None):
                 last_vertex = current_vertex
                 vertex_stack.pop()
             else:
-                random_edge = g.in_edges_iter(current_vertex).next()
+                random_edge = next(g.in_edges_iter(current_vertex))
                 vertex_stack.append(random_edge[0])
                 g.remove_edge(*random_edge)
     else:
@@ -135,7 +135,7 @@ def eulerian_circuit(G, source=None):
                 last_vertex = current_vertex
                 vertex_stack.pop()
             else:
-                random_edge = g.edges_iter(current_vertex).next()
+                random_edge = next(g.edges_iter(current_vertex))
                 vertex_stack.append(random_edge[1])
                 g.remove_edge(*random_edge)
 
