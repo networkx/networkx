@@ -116,20 +116,32 @@ def eulerian_circuit(G, source=None):
     else:
         v = source
 
-    while g.size() > 0:
-        n = v   
-        # sort nbrs here to provide stable ordering of alternate cycles
-        nbrs = sorted([v for u,v in g.edges(n)])
-        for v in nbrs:
-            g.remove_edge(n,v)
-            bridge = not nx.is_connected(g.to_undirected())
-            if bridge:
-                g.add_edge(n,v)  # add this edge back and try another
+    if g.is_directed():
+        vertex_stack = [v]
+        last_vertex = None
+        while vertex_stack:
+            current_vertex = vertex_stack[-1]
+            if g.in_degree(current_vertex) == 0:
+                if last_vertex is not None:
+                    yield (last_vertex, current_vertex)
+                last_vertex = current_vertex
+                vertex_stack.pop()
             else:
-                break  # this edge is good, break the for loop 
-        if bridge:
-            g.remove_edge(n,v)            
-            g.remove_node(n)
-        yield (n,v)
-
+                random_edge = g.in_edges_iter(current_vertex).next()
+                vertex_stack.append(random_edge[0])
+                g.remove_edge(*random_edge)
+    else:
+        vertex_stack = [v]
+        last_vertex = None
+        while vertex_stack:
+            current_vertex = vertex_stack[-1]
+            if g.degree(current_vertex) == 0:
+                if last_vertex is not None:
+                    yield (last_vertex, current_vertex)
+                last_vertex = current_vertex
+                vertex_stack.pop()
+            else:
+                random_edge = g.edges_iter(current_vertex).next()
+                vertex_stack.append(random_edge[1])
+                g.remove_edge(*random_edge)
 
