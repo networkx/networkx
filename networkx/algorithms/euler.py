@@ -66,8 +66,8 @@ def eulerian_circuit(G, source=None):
 
     Parameters
     ----------
-    G : graph
-       A NetworkX Graph
+    G : NetworkX graph
+        Both Directed and Undirected graph
     source : node, optional
        Starting node for circuit.
 
@@ -87,23 +87,17 @@ def eulerian_circuit(G, source=None):
 
     Notes
     -----
-    Uses Fleury's algorithm [1]_,[2]_  
-
-    References
-    ----------
-    .. [1] Fleury, "Deux problemes de geometrie de situation", 
-       Journal de mathematiques elementaires (1883), 257-261.
-    .. [2] http://en.wikipedia.org/wiki/Eulerian_path
+    Linear time algorithm.
 
     Examples
     --------
     >>> G=nx.complete_graph(3)
     >>> list(nx.eulerian_circuit(G))
-    [(0, 1), (1, 2), (2, 0)]
+    [(0, 2), (2, 1), (1, 0)]
     >>> list(nx.eulerian_circuit(G,source=1)) 
-    [(1, 0), (0, 2), (2, 1)]
+    [(1, 2), (2, 0), (0, 1)]
     >>> [u for u,v in nx.eulerian_circuit(G)]  # nodes in circuit
-    [0, 1, 2]
+    [0, 2, 1]
     """
     if not is_eulerian(G):
         raise nx.NetworkXError("G is not Eulerian.")
