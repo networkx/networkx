@@ -30,7 +30,8 @@ __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
 def get_all_cliques(G):
     """Returns all cliques in an undirected graph.
 
-    This method returns cliques of size (cardinality) k = 1, 2, 3, ..., maxDegree - 1.
+    This method returns cliques of size (cardinality) 
+    k = 1, 2, 3, ..., maxDegree - 1.
     Where maxDegree is the maximal degree of any node in the graph.
 
     Keyword arguments
@@ -45,23 +46,29 @@ def get_all_cliques(G):
     -----
     To obtain a list of all cliques, use list(get_all_cliques(G)).
 
-    Based on the algorithm published by Zhang et al. (2005) [1]_ and adapted to output all cliques discovered.
+    Based on the algorithm published by Zhang et al. (2005) [1]_ 
+    and adapted to output all cliques discovered.
     
     This algorithm is not suitable for directed graphs.
 
     This algorithm ignores self-loops and parallel edges as
     clique is not conventionally defined with such edges.
 
-    There are often many cliques in graphs. This algorithm however, hopefully, does not run out of memory
-    since it only keeps candidate sublists in memory and continuously removes exhausted sublists.
+    There are often many cliques in graphs. 
+    This algorithm however, hopefully, does not run out of memory
+    since it only keeps candidate sublists in memory and 
+    continuously removes exhausted sublists.
 
     References
     ----------
-    .. [1] Yun Zhang, Abu-Khzam, F.N., Baldwin, N.E., Chesler, E.J., Langston, M.A., Samatova, N.F., 
-       Genome-Scale Computational Approaches to Memory-Intensive Applications in Systems Biology 
-       Supercomputing, 2005. Proceedings of the ACM/IEEE SC 2005 Conference , vol., no., pp. 12, 12-18 Nov. 2005
-       doi: 10.1109/SC.2005.29
-       http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1559964&isnumber=33129
+    .. [1] Yun Zhang, Abu-Khzam, F.N., Baldwin, N.E., Chesler, E.J., 
+           Langston, M.A., Samatova, N.F., 
+           Genome-Scale Computational Approaches to Memory-Intensive 
+           Applications in Systems Biology 
+           Supercomputing, 2005. Proceedings of the ACM/IEEE SC 2005 
+           Conference , vol., no., pp. 12, 12-18 Nov. 2005
+           doi: 10.1109/SC.2005.29
+           http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1559964&isnumber=33129
     """
 
     def greater_neighbors(G, a_node):
