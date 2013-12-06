@@ -26,19 +26,6 @@ __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'number_of_cliques', 'cliques_containing_node',
            'project_down', 'project_up']
 
-def greater_neighbors(G, a_node):
-    """Helper method used in get_all_cliques"""
-    nodes_sorted = sorted(G.nodes())
-    a_node_index = nodes_sorted.index(a_node)
-
-    neighbors_of_a_node = []
-
-    for another_node_index, another_node in enumerate(nodes_sorted):
-        if another_node_index > a_node_index and another_node in G.neighbors(a_node):
-            neighbors_of_a_node.append(another_node)
-    
-    return tuple(neighbors_of_a_node)
-
 @not_implemented_for('directed')
 def get_all_cliques(G):
     """Returns all cliques in an undirected graph.
@@ -76,6 +63,19 @@ def get_all_cliques(G):
        doi: 10.1109/SC.2005.29
        http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1559964&isnumber=33129
     """
+
+    def greater_neighbors(G, a_node):
+        """Helper method used in get_all_cliques"""
+        nodes_sorted = sorted(G.nodes())
+        a_node_index = nodes_sorted.index(a_node)
+        
+        neighbors_of_a_node = []
+
+        for another_node_index, another_node in enumerate(nodes_sorted):
+            if another_node_index > a_node_index and another_node in G.neighbors(a_node):
+                neighbors_of_a_node.append(another_node)
+    
+        return tuple(neighbors_of_a_node)
 
     # sorted list of nodes in graph
     nodes_sorted = sorted(G.nodes())
