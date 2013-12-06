@@ -92,7 +92,7 @@ def get_all_cliques(G):
     for a_node_index, a_node in enumerate(nodes_sorted):
         clique_sublist = {}
         # sublist base, sb
-        clique_sublist['sb'] = [tuple(a_node)]
+        clique_sublist['sb'] = [a_node]
         # common neighbors, cn
         clique_sublist['cn'] = greater_neighbors(G, a_node)
         clique_sublists.append(clique_sublist)
@@ -107,7 +107,7 @@ def get_all_cliques(G):
         for node_added in a_sublist['cn']:
             neighbors_of_node_added = greater_neighbors(G, node_added)
 
-            current_sublist_base = [] + a_sublist['sb'] + [tuple(node_added)]
+            current_sublist_base = [] + a_sublist['sb'] + [node_added]
             current_sublist_cn = tuple(sorted(set(neighbors_of_node_added).intersection(a_sublist['cn'])))
 
             #print 'clique: '+str(current_sublist_base)
@@ -115,7 +115,7 @@ def get_all_cliques(G):
 
             for node in current_sublist_cn:
                 new_sublist_base = [] + current_sublist_base 
-                new_sublist_base.append(tuple(node))
+                new_sublist_base.append(node)
                 #print 'current_sublist_based =',str(current_sublist_base)
                 #print 'new_sublist_base =',str(new_sublist_base)
                 new_sublist_cn = tuple(sorted(set(current_sublist_cn).intersection(greater_neighbors(G, node))))
