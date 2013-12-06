@@ -32,6 +32,7 @@ def get_all_cliques(G):
 
     This method returns cliques of size (cardinality) 
     k = 1, 2, 3, ..., maxDegree - 1.
+
     Where maxDegree is the maximal degree of any node in the graph.
 
     Keyword arguments
