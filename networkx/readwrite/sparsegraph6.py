@@ -25,6 +25,7 @@ __author__ = """Aric Hagberg <aric.hagberg@lanl.gov>"""
 #    BSD license.
 
 __all__ = ['read_graph6', 'parse_graph6', 'read_graph6_list',
+	   'generate_graph6', 'write_graph6', 'write_graph6_list',
            'read_sparse6', 'parse_sparse6', 'read_sparse6_list']
 
 import networkx as nx
@@ -79,6 +80,62 @@ def read_graph6_list(path):
         if not len(line): continue
         glist.append(parse_graph6(line))
     return glist
+
+
+def generate_graph6(G, header=True):
+    """Generate graph6 format description of a simple undirected graph.
+    
+    The format does not support edge or vetrtex labels and multiedges,
+    the vertices are converted to numbers 0..(n-1) by sorting them.
+    Optional graph6 format prefix is controlled by `header`.
+    Returns a single line string.
+    """
+
+    if G.is_directed():
+	raise NetworkXError('graph6 format does not support directed graphs')
+    ns = sorted(G.nodes())
+
+    def bits():
+        for (i,j) in [(i,j) for j in range(1,n) for i in range(j)]:
+            yield G.has_edge(ns[i],ns[j])
+
+    n = G.order()
+    data = n_to_data(n)
+    d = 0
+    flush = False
+    for i, b in zip(range(n * n), bits()):
+	d |= b << (5 - (i % 6))
+	flush = True
+	if i % 6 == 5:
+	    data.append(d)
+	    d = 0
+	    flush = False
+    if flush:
+	data.append(d)
+
+    if header:
+        return '>>graph6<<' + data_to_graph6(data)
+    else:
+	return data_to_graph6(data)
+
+@open_file(1, mode='wt')
+def write_graph6_list(Gs, path, header=True):
+    """Write simple undirected graphs to given path in graph6 format, one per line.
+
+    Writes graph6 header with every graph by default.
+    See `generate_graph6` for details.
+    """
+    for G in Gs:
+	path.write(generate_graph6(G, header=header))
+	path.write('\n')
+
+def write_graph6(G, path, header=True):
+    """Write a simple undirected graph to given path in graph6 format.
+
+    Writes a graph6 header by default.
+    See `generate_graph6` for details.
+    """
+    return write_graph6_list([G], path, header=header)
 
 # sparse6
 

@@ -55,6 +55,58 @@ class TestGraph6(object):
         os.close(fd)
         os.unlink(fname)
 
+    def test_generate_graph6(self):
+	assert_equal(nx.generate_graph6(nx.empty_graph(0)), '>>graph6<<?')
+	assert_equal(nx.generate_graph6(nx.empty_graph(1)), '>>graph6<<@')
+
+	G1 = nx.complete_graph(4)
+	assert_equal(nx.generate_graph6(G1, header=True), '>>graph6<<C~')
+	assert_equal(nx.generate_graph6(G1, header=False), 'C~')
+
+	G2 = nx.complete_bipartite_graph(6,9)
+	assert_equal(nx.generate_graph6(G2, header=False), 'N??F~z{~Fw^_~?~?^_?') # verified by Sage
+
+	G3 = nx.complete_graph(67)
+	assert_equal(nx.generate_graph6(G3, header=False), '~?@B' + '~' * 368 + 'w')
+
+    def test_write_graph6(self):
+	try:
+	    (fd, fname) = tempfile.mkstemp()
+	    os.close(fd)
+	    G = nx.complete_bipartite_graph(6,9)
+	    nx.write_graph6(G, fname)
+
+	    fh = open(fname,'rt')
+	    data = fh.read()
+	    fh.close()
+	    assert_equal(data, '>>graph6<<N??F~z{~Fw^_~?~?^_?\n')
+
+	finally:
+	    os.unlink(fname)
+
+    def test_write_many_graph6(self):
+	try:
+	    (fd, fname) = tempfile.mkstemp()
+	    os.close(fd)
+	    Gs = [nx.complete_bipartite_graph(i, i + 1) for i in [0, 1, 3, 5]]
+	    nx.write_graph6_list(Gs, fname, header=False)
+
+	    fh = open(fname,'rt')
+	    data = fh.read()
+	    fh.close()
+	    assert_equal(data, '@\nBo\nFFzf?\nJ?B~vrw}Fo?\n')
+
+	finally:
+	    os.unlink(fname)
+
+    def test_generate_and_parse_graph6(self):
+	for i in range(13) + [31, 47, 62, 63, 64, 72]:
+	    g = nx.random_graphs.gnm_random_graph(i, i * i // 4, seed=i)
+	    gstr = nx.generate_graph6(g, header=False)
+	    assert_equal(len(gstr), ((i-1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
+	    g2 = nx.parse_graph6(gstr)
+	    assert_equal(g2.order(), g.order())
+	    assert_equal(sorted(g2.edges()), sorted(g.edges()))
 
 class TestSparseGraph6(object):
 
