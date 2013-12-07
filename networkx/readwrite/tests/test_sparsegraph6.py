@@ -1,7 +1,23 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
+import networkx.readwrite.sparsegraph6 as sg6
 import os,tempfile
+
+class TestGraph6Utils(object):
+
+    def test_n_data_n_conversion(self):
+	for i in [0, 1, 42, 62, 63, 64, 258047, 258048, 7744773, 68719476735]:
+	    assert_equal(sg6.data_to_n(sg6.n_to_data(i))[0], i)
+	    assert_equal(sg6.data_to_n(sg6.n_to_data(i))[1], [])
+	    assert_equal(sg6.data_to_n(sg6.n_to_data(i) + [42, 43])[1], [42, 43])
+
+    def test_data_sparse6_data_conversion(self):
+	for data in [[], [0], [63], [63, 63], [0]*42,
+		     [0, 1, 62, 42, 3, 11, 0, 11]]:
+	    assert_equal(sg6.graph6_to_data(sg6.data_to_graph6(data)), data)
+	    assert_equal(len(sg6.data_to_graph6(data)), len(data))
+
 
 class TestGraph6(object):
 

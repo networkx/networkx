@@ -54,8 +54,8 @@ def parse_graph6(str):
 
     if str.startswith('>>graph6<<'):
         str = str[10:]
-    data = graph6data(str)
-    n, data = graph6n(data)
+    data = graph6_to_data(str)
+    n, data = data_to_n(data)
     nd = (n*(n-1)//2 + 5) // 6
     if len(data) != nd:
         raise NetworkXError(\
@@ -109,7 +109,7 @@ def parse_sparse6(string):
         string = str[10:]
     if not string.startswith(':'):
         raise NetworkXError('Expected colon in sparse6')
-    n, data = graph6n(graph6data(string[1:]))
+    n, data = data_to_n(graph6_to_data(string[1:]))
     k = 1
     while 1<<k < n:
         k += 1
@@ -157,16 +157,41 @@ def parse_sparse6(string):
 
 # helper functions
 
-def graph6data(str):
+def graph6_to_data(string):
     """Convert graph6 character sequence to 6-bit integers."""
-    v = [ord(c)-63 for c in str]
-    if min(v) < 0 or max(v) > 63:
+    v = [ord(c)-63 for c in string]
+    if len(v) > 0 and (min(v) < 0 or max(v) > 63):
         return None
     return v
 
-def graph6n(data):
-    """Read initial one or four-unit value from graph6 sequence.
-    Return value, rest of seq."""
+def data_to_graph6(data):
+    """Convert 6-bit integer sequence to graph6 character sequence."""
+    if len(data) > 0 and (min(data) < 0 or max(data) > 63):
+        raise NetworkXError("graph6 data units must be within 0..63")
+    return ''.join([chr(d+63) for d in data])
+
+def data_to_n(data):
+    """Read initial one-, four- or eight-unit value from graph6 integer sequence.
+
+    Return (value, rest of seq.)"""
     if data[0] <= 62:
         return data[0], data[1:]
-    return (data[1]<<12) + (data[2]<<6) + data[3], data[4:]
+    if data[1] <= 62:
+	return (data[1]<<12) + (data[2]<<6) + data[3], data[4:]
+    return ((data[2]<<30) + (data[3]<<24) + (data[4]<<18) +
+            (data[5]<<12) + (data[6]<<6) + data[7], data[8:])
+
+def n_to_data(n):
+    """Convert an integer to one-, four- or eight-unit graph6 sequence."""
+    if n < 0:
+        raise NetworkXError("Numbers in graph6 format must be non-negative.")
+    if n <= 62:
+	return [n]
+    if n <= 258047:
+	return [63, (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
+    if n <= 68719476735:
+	return [63, 63,
+	    (n>>30) & 0x3f, (n>>24) & 0x3f, (n>>18) & 0x3f,
+	    (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
+    raise NetworkXError("Numbers above 68719476735 are not supported by graph6")
+
