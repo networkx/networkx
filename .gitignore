@@ -12,6 +12,7 @@ doc/source/templates/gallery.html
 doc/gh-pages
 doc/build
 .coverage
+*.class
 
 # Generated while building documentation.
 doc/source/static/examples/*
