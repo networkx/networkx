@@ -2,7 +2,13 @@
 A package for generating various graphs in networkx. 
 
 """
-from networkx.generators.atlas import *
+import sys
+
+if not sys.platform.startswith('java'):
+    # only import atlas if the interpreter is not Jython. This is
+    # because in Java the maximum allowed size for a method is 64k,
+    # and graph_atlas_g is larger than that.
+    from networkx.generators.atlas import *
 from networkx.generators.bipartite import *
 from networkx.generators.classic import *
 from networkx.generators.degree_seq import *
