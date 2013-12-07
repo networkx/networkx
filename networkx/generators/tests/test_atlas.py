@@ -1,10 +1,17 @@
 from nose.tools import *
-import networkx as nx
-
+from nose import SkipTest
 
 class TestAtlas(object):
+    @classmethod
+    def setupClass(cls):
+        global atlas
+        import platform
+        if platform.python_implementation()=='Jython':
+            raise SkipTest('graph atlas not available under Jython.')
+        import networkx.generators.atlas as atlas
+
     def setUp(self):
-        self.GAG=nx.graph_atlas_g()
+        self.GAG=atlas.graph_atlas_g()
 
     def test_sizes(self):
         G=self.GAG[0]
