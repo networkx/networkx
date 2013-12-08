@@ -26,9 +26,9 @@ __author__ = """Aric Hagberg <aric.hagberg@lanl.gov>"""
 #    BSD license.
 
 __all__ = ['read_graph6', 'parse_graph6', 'read_graph6_list',
-	   'generate_graph6', 'write_graph6', 'write_graph6_list',
+           'generate_graph6', 'write_graph6', 'write_graph6_list',
            'read_sparse6', 'parse_sparse6', 'read_sparse6_list',
-	   'generate_sparse6', 'write_sparse6', 'write_sparse6_list']
+           'generate_sparse6', 'write_sparse6', 'write_sparse6_list']
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -86,7 +86,7 @@ def read_graph6_list(path):
 
 def generate_graph6(G, header=True):
     """Generate graph6 format description of a simple undirected graph.
-    
+
     The format does not support edge or vetrtex labels and multiedges,
     the vertices are converted to numbers 0..(n-1) by sorting them.
     Optional graph6 format prefix is controlled by `header`.
@@ -94,7 +94,7 @@ def generate_graph6(G, header=True):
     """
 
     if G.is_directed():
-	raise NetworkXError('graph6 format does not support directed graphs')
+        raise NetworkXError('graph6 format does not support directed graphs')
     ns = sorted(G.nodes())
 
     def bits():
@@ -106,19 +106,19 @@ def generate_graph6(G, header=True):
     d = 0
     flush = False
     for i, b in zip(range(n * n), bits()):
-	d |= b << (5 - (i % 6))
-	flush = True
-	if i % 6 == 5:
-	    data.append(d)
-	    d = 0
-	    flush = False
+        d |= b << (5 - (i % 6))
+        flush = True
+        if i % 6 == 5:
+            data.append(d)
+            d = 0
+            flush = False
     if flush:
-	data.append(d)
+        data.append(d)
 
     if header:
         return '>>graph6<<' + data_to_graph6(data)
     else:
-	return data_to_graph6(data)
+        return data_to_graph6(data)
 
 @open_file(1, mode='wt')
 def write_graph6_list(Gs, path, header=True):
@@ -128,8 +128,8 @@ def write_graph6_list(Gs, path, header=True):
     See `generate_graph6` for details.
     """
     for G in Gs:
-	path.write(generate_graph6(G, header=header))
-	path.write('\n')
+        path.write(generate_graph6(G, header=header))
+        path.write('\n')
 
 def write_graph6(G, path, header=True):
     """Write a simple undirected graph to given path in graph6 format.
@@ -143,7 +143,7 @@ def write_graph6(G, path, header=True):
 
 def generate_sparse6(G, header=True):
     """Generate sparse6 format description of a simple undirected (multi)graph.
-    
+
     The format does not support edge or vetrtex labels, but supports loops and multiedges.
     The vertices are converted to numbers 0..(n-1) by sorting them.
     Optional sparse6 format prefix is controlled by `header`.
@@ -151,7 +151,7 @@ def generate_sparse6(G, header=True):
     """
 
     if G.is_directed():
-	raise NetworkXError('sparse6 format does not support directed graphs')
+        raise NetworkXError('sparse6 format does not support directed graphs')
 
     n = G.order()
     k = 1
@@ -159,8 +159,8 @@ def generate_sparse6(G, header=True):
         k += 1
 
     def enc(x):
-	"""Big endian k-bit encoding of x"""
-	return [1 if (x & 1 << (k-1-i)) else 0 for i in range(k)]
+        """Big endian k-bit encoding of x"""
+        return [1 if (x & 1 << (k-1-i)) else 0 for i in range(k)]
 
     ns = sorted(G.nodes()) # number -> node
     ndict = dict(((ns[i], i) for i in range(len(ns)))) # node -> number
@@ -171,26 +171,26 @@ def generate_sparse6(G, header=True):
     bits = []
     curv = 0
     for (v, u) in edges:
-	if v == curv: # current vertex edge
-	    bits.append(0)
-	    bits.extend(enc(u))
-	elif v == curv + 1: # next vertex edge
-	    curv += 1
-	    bits.append(1)
-	    bits.extend(enc(u))
-	else: # skip to vertex v and then add edge to u
-	    curv = v
-	    bits.append(1)
-	    bits.extend(enc(v))
-	    bits.append(0)
-	    bits.extend(enc(u))
+        if v == curv: # current vertex edge
+            bits.append(0)
+            bits.extend(enc(u))
+        elif v == curv + 1: # next vertex edge
+            curv += 1
+            bits.append(1)
+            bits.extend(enc(u))
+        else: # skip to vertex v and then add edge to u
+            curv = v
+            bits.append(1)
+            bits.extend(enc(v))
+            bits.append(0)
+            bits.extend(enc(u))
     if k < 6 and n == (1 << k) and ((-len(bits)) % 6) >= k and curv < (n - 1):
-	# Padding special case: small k, n=2^k, more than k bits of padding needed,
-	# current vertex is not (n-1) -- appending 1111... would add a loop on (n-1)
-	bits.append(0)
-	bits.extend([1] * ((-len(bits)) % 6))
+        # Padding special case: small k, n=2^k, more than k bits of padding needed,
+        # current vertex is not (n-1) -- appending 1111... would add a loop on (n-1)
+        bits.append(0)
+        bits.extend([1] * ((-len(bits)) % 6))
     else:
-	bits.extend([1] * ((-len(bits)) % 6))
+        bits.extend([1] * ((-len(bits)) % 6))
 
     data = [(bits[i+0]<<5) + (bits[i+1]<<4) + (bits[i+2]<<3) + (bits[i+3]<<2) +
             (bits[i+4]<<1) + (bits[i+5]<<0) for i in range(0, len(bits), 6)]
@@ -200,7 +200,7 @@ def generate_sparse6(G, header=True):
     if header:
         return '>>sparse6<<' + res
     else:
-	return res
+        return res
 
 @open_file(1, mode='wt')
 def write_sparse6_list(Gs, path, header=True):
@@ -210,8 +210,8 @@ def write_sparse6_list(Gs, path, header=True):
     See `generate_sparse6` for details.
     """
     for G in Gs:
-	path.write(generate_sparse6(G, header=header))
-	path.write('\n')
+        path.write(generate_sparse6(G, header=header))
+        path.write('\n')
 
 def write_sparse6(G, path, header=True):
     """Write an undirected (multi)graph to given path in sparse6 format.
@@ -316,7 +316,7 @@ def data_to_n(data):
     if data[0] <= 62:
         return data[0], data[1:]
     if data[1] <= 62:
-	return (data[1]<<12) + (data[2]<<6) + data[3], data[4:]
+        return (data[1]<<12) + (data[2]<<6) + data[3], data[4:]
     return ((data[2]<<30) + (data[3]<<24) + (data[4]<<18) +
             (data[5]<<12) + (data[6]<<6) + data[7], data[8:])
 
@@ -325,12 +325,11 @@ def n_to_data(n):
     if n < 0:
         raise NetworkXError("Numbers in graph6 format must be non-negative.")
     if n <= 62:
-	return [n]
+        return [n]
     if n <= 258047:
-	return [63, (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
+        return [63, (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
     if n <= 68719476735:
-	return [63, 63,
-	    (n>>30) & 0x3f, (n>>24) & 0x3f, (n>>18) & 0x3f,
-	    (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
+        return [63, 63,
+            (n>>30) & 0x3f, (n>>24) & 0x3f, (n>>18) & 0x3f,
+            (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
     raise NetworkXError("Numbers above 68719476735 are not supported by graph6")
-
