@@ -16,7 +16,6 @@ See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
 """
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
 # The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
-__author__ = """Aric Hagberg <aric.hagberg@lanl.gov>"""
 #    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -24,17 +23,16 @@ __author__ = """Aric Hagberg <aric.hagberg@lanl.gov>"""
 #    Tomas Gavenciak <gavento@ucw.cz>
 #    All rights reserved.
 #    BSD license.
-
+__author__ = """\n""".join(['Tomas Gavenciak <gavento@ucw.cz>',
+                            'Aric Hagberg <aric.hagberg@lanl.gov'
+                            ])
 __all__ = ['read_graph6', 'parse_graph6', 'read_graph6_list',
            'generate_graph6', 'write_graph6', 'write_graph6_list',
            'read_sparse6', 'parse_sparse6', 'read_sparse6_list',
            'generate_sparse6', 'write_sparse6', 'write_sparse6_list']
-
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file
-
-# graph6
 
 def read_graph6(path):
     """Read simple undirected graphs in graph6 format from path.
@@ -122,7 +120,8 @@ def generate_graph6(G, header=True):
 
 @open_file(1, mode='wt')
 def write_graph6_list(Gs, path, header=True):
-    """Write simple undirected graphs to given path in graph6 format, one per line.
+    """Write simple undirected graphs to given path in graph6 format,
+    one per line.
 
     Writes graph6 header with every graph by default.
     See `generate_graph6` for details.
@@ -144,12 +143,12 @@ def write_graph6(G, path, header=True):
 def generate_sparse6(G, header=True):
     """Generate sparse6 format description of a simple undirected (multi)graph.
 
-    The format does not support edge or vetrtex labels, but supports loops and multiedges.
+    The format does not support edge or vetrtex labels,
+    but supports loops and multiedges.
     The vertices are converted to numbers 0..(n-1) by sorting them.
     Optional sparse6 format prefix is controlled by `header`.
     Returns a single line string.
     """
-
     if G.is_directed():
         raise NetworkXError('sparse6 format does not support directed graphs')
 
@@ -185,8 +184,10 @@ def generate_sparse6(G, header=True):
             bits.append(0)
             bits.extend(enc(u))
     if k < 6 and n == (1 << k) and ((-len(bits)) % 6) >= k and curv < (n - 1):
-        # Padding special case: small k, n=2^k, more than k bits of padding needed,
-        # current vertex is not (n-1) -- appending 1111... would add a loop on (n-1)
+        # Padding special case: small k, n=2^k,
+        # more than k bits of padding needed,
+        # current vertex is not (n-1) --
+        # appending 1111... would add a loop on (n-1)
         bits.append(0)
         bits.extend([1] * ((-len(bits)) % 6))
     else:
@@ -204,8 +205,8 @@ def generate_sparse6(G, header=True):
 
 @open_file(1, mode='wt')
 def write_sparse6_list(Gs, path, header=True):
-    """Write undirected (multi)graphs to given path in sparse6 format, one per line.
-
+    """Write undirected (multi)graphs to given path in sparse6 format, 
+    one per line.
     Writes sparse6 header with every graph by default.
     See `generate_sparse6` for details.
     """
@@ -310,7 +311,8 @@ def data_to_graph6(data):
     return ''.join([chr(d+63) for d in data])
 
 def data_to_n(data):
-    """Read initial one-, four- or eight-unit value from graph6 integer sequence.
+    """Read initial one-, four- or eight-unit value from graph6 
+    integer sequence.
 
     Return (value, rest of seq.)"""
     if data[0] <= 62:
