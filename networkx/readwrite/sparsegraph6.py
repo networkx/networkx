@@ -21,6 +21,7 @@ __author__ = """Aric Hagberg <aric.hagberg@lanl.gov>"""
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
+#    Tomas Gavenciak <gavento@ucw.cz>
 #    All rights reserved.
 #    BSD license.
 
