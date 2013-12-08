@@ -26,7 +26,8 @@ __author__ = """Aric Hagberg <aric.hagberg@lanl.gov>"""
 
 __all__ = ['read_graph6', 'parse_graph6', 'read_graph6_list',
 	   'generate_graph6', 'write_graph6', 'write_graph6_list',
-           'read_sparse6', 'parse_sparse6', 'read_sparse6_list']
+           'read_sparse6', 'parse_sparse6', 'read_sparse6_list',
+	   'generate_sparse6', 'write_sparse6', 'write_sparse6_list']
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -138,6 +139,86 @@ def write_graph6(G, path, header=True):
     return write_graph6_list([G], path, header=header)
 
 # sparse6
+
+def generate_sparse6(G, header=True):
+    """Generate sparse6 format description of a simple undirected (multi)graph.
+    
+    The format does not support edge or vetrtex labels, but supports loops and multiedges.
+    The vertices are converted to numbers 0..(n-1) by sorting them.
+    Optional sparse6 format prefix is controlled by `header`.
+    Returns a single line string.
+    """
+
+    if G.is_directed():
+	raise NetworkXError('sparse6 format does not support directed graphs')
+
+    n = G.order()
+    k = 1
+    while 1<<k < n:
+        k += 1
+
+    def enc(x):
+	"""Big endian k-bit encoding of x"""
+	return [1 if (x & 1 << (k-1-i)) else 0 for i in range(k)]
+
+    ns = sorted(G.nodes()) # number -> node
+    ndict = dict(((ns[i], i) for i in range(len(ns)))) # node -> number
+    edges = [(ndict[u], ndict[v]) for (u, v) in G.edges()]
+    edges = [(max(u,v), min(u,v)) for (u, v) in edges]
+    edges.sort()
+
+    bits = []
+    curv = 0
+    for (v, u) in edges:
+	if v == curv: # current vertex edge
+	    bits.append(0)
+	    bits.extend(enc(u))
+	elif v == curv + 1: # next vertex edge
+	    curv += 1
+	    bits.append(1)
+	    bits.extend(enc(u))
+	else: # skip to vertex v and then add edge to u
+	    curv = v
+	    bits.append(1)
+	    bits.extend(enc(v))
+	    bits.append(0)
+	    bits.extend(enc(u))
+    if k < 6 and n == (1 << k) and ((-len(bits)) % 6) >= k and curv < (n - 1):
+	# Padding special case: small k, n=2^k, more than k bits of padding needed,
+	# current vertex is not (n-1) -- appending 1111... would add a loop on (n-1)
+	bits.append(0)
+	bits.extend([1] * ((-len(bits)) % 6))
+    else:
+	bits.extend([1] * ((-len(bits)) % 6))
+
+    data = [(bits[i+0]<<5) + (bits[i+1]<<4) + (bits[i+2]<<3) + (bits[i+3]<<2) +
+            (bits[i+4]<<1) + (bits[i+5]<<0) for i in range(0, len(bits), 6)]
+
+    res = (':' + data_to_graph6(n_to_data(n)) +
+                data_to_graph6(data))
+    if header:
+        return '>>sparse6<<' + res
+    else:
+	return res
+
+@open_file(1, mode='wt')
+def write_sparse6_list(Gs, path, header=True):
+    """Write undirected (multi)graphs to given path in sparse6 format, one per line.
+
+    Writes sparse6 header with every graph by default.
+    See `generate_sparse6` for details.
+    """
+    for G in Gs:
+	path.write(generate_sparse6(G, header=header))
+	path.write('\n')
+
+def write_sparse6(G, path, header=True):
+    """Write an undirected (multi)graph to given path in sparse6 format.
+
+    Writes a sparse6 header by default.
+    See `generate_sparse6` for details.
+    """
+    return write_sparse6_list([G], path, header=header)
 
 def read_sparse6(path):
     """Read simple undirected graphs in sparse6 format from path.
