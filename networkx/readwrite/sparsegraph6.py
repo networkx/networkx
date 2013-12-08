@@ -205,7 +205,7 @@ def generate_sparse6(G, header=True):
 
 @open_file(1, mode='wt')
 def write_sparse6_list(Gs, path, header=True):
-    """Write undirected (multi)graphs to given path in sparse6 format, 
+    """Write undirected (multi)graphs to given path in sparse6 format,
     one per line.
     Writes sparse6 header with every graph by default.
     See `generate_sparse6` for details.
@@ -311,7 +311,7 @@ def data_to_graph6(data):
     return ''.join([chr(d+63) for d in data])
 
 def data_to_n(data):
-    """Read initial one-, four- or eight-unit value from graph6 
+    """Read initial one-, four- or eight-unit value from graph6
     integer sequence.
 
     Return (value, rest of seq.)"""
