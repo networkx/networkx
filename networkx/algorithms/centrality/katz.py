@@ -160,6 +160,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
                 x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
         for n in x:
             x[n] = alpha*x[n] + b[n]
+
         # check convergence
         err = sum([abs(x[n]-xlast[n]) for n in x])
         if err < nnodes*tol:
@@ -294,7 +295,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         except (TypeError,ValueError):
             raise nx.NetworkXError('beta must be a number')
 
-    A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).T
+    A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = np.array(A).shape[0]
     centrality = np.linalg.solve( np.eye(n,n) - (alpha * A) , b)
     if normalized:
@@ -310,6 +311,6 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-        import numpy.linalg
+        import scipy
     except:
-        raise SkipTest("numpy not available")
+        raise SkipTest("SciPy not available")

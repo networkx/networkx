@@ -11,8 +11,9 @@ class TestEigenvectorCentrality(object):
         global np
         try:
             import numpy as np
+            import scipy
         except ImportError:
-            raise SkipTest('NumPy not available.')
+            raise SkipTest('SciPy not available.')
 
     def test_K5(self):
         """Eigenvector centrality: K5"""
@@ -64,8 +65,9 @@ class TestEigenvectorCentralityDirected(object):
         global np
         try:
             import numpy as np
+            import scipy
         except ImportError:
-            raise SkipTest('NumPy not available.')
+            raise SkipTest('SciPy not available.')
 
     def setUp(self):
 
@@ -125,8 +127,9 @@ class TestEigenvectorCentralityExceptions(object):
         global np
         try:
             import numpy as np
+            import scipy
         except ImportError:
-            raise SkipTest('NumPy not available.')
+            raise SkipTest('SciPy not available.')
     numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @raises(networkx.NetworkXException)
     def test_multigraph(self):

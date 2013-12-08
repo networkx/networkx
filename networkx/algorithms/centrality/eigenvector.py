@@ -149,19 +149,12 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     pagerank
     hits
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError('Requires NumPy: http://scipy.org/')
-
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
-        raise nx.NetworkXException('Not defined for multigraphs.')
-
+    import numpy as np
     if len(G) == 0:
         raise nx.NetworkXException('Empty graph.')
 
-    A = nx.adj_matrix(G, nodelist=G.nodes(), weight='weight')
-    eigenvalues,eigenvectors = np.linalg.eig(A.T)
+    A = nx.adj_matrix(G, nodelist=G.nodes(), weight='weight').todense().T
+    eigenvalues,eigenvectors = np.linalg.eig(A)
     # eigenvalue indices in reverse sorted order
     ind = eigenvalues.argsort()[::-1]
     # eigenvector of largest eigenvalue at ind[0], normalized
@@ -176,6 +169,6 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-        import numpy.linalg
+        import scipy
     except:
-        raise SkipTest("numpy not available")
+        raise SkipTest("SciPy not available")

@@ -1,5 +1,4 @@
-"""
-Laplacian matrix of graphs.
+"""Laplacian matrix of graphs.
 """
 #    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -9,12 +8,10 @@ Laplacian matrix of graphs.
 #    BSD license.
 import networkx as nx
 from networkx.utils import not_implemented_for
-
 __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Pieter Swart (swart@lanl.gov)',
                         'Dan Schult (dschult@colgate.edu)',
                         'Alejandro Weinstein <alejandro.weinstein@gmail.com>'])
-
 __all__ = ['laplacian_matrix',
            'normalized_laplacian_matrix',
            'directed_laplacian_matrix']
@@ -41,45 +38,27 @@ def laplacian_matrix(G, nodelist=None, weight='weight'):
 
     Returns
     -------
-    L : NumPy matrix
+    L : SciPy sparse matrix
       The Laplacian matrix of G.
 
     Notes
     -----
     For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_matrix for other options.
 
     See Also
     --------
     to_numpy_matrix
     normalized_laplacian_matrix
     """
-    import numpy as np
+    import scipy.sparse
     if nodelist is None:
         nodelist = G.nodes()
-    if G.is_multigraph():
-        # this isn't the fastest way to do this...
-        A = np.asarray(nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight))
-        I = np.identity(A.shape[0])
-        D = I*np.sum(A,axis=1)
-        L = D - A
-    else:
-        # Graph or DiGraph, this is faster than above
-        n = len(nodelist)
-        index = dict( (n,i) for i,n in enumerate(nodelist) )
-        L = np.zeros((n,n))
-        for ui,u in enumerate(nodelist):
-            totalwt = 0.0
-            for v,d in G[u].items():
-                try:
-                    vi = index[v]
-                except KeyError:
-                    continue
-                wt = d.get(weight,1)
-                L[ui,vi] = -wt
-                totalwt += wt
-            L[ui,ui] = totalwt
-    return np.asmatrix(L)
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
+                                  format='csr')
+    n,m = A.shape
+    diags = A.sum(axis=1)
+    D = scipy.sparse.spdiags(diags.flatten(), [0], m, n, format='csr')
+    return  D - A
 
 @not_implemented_for('directed')
 def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
@@ -132,24 +111,25 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
        Laplacian, Electronic Journal of Linear Algebra, Volume 16, pp. 90-98,
        March 2007.
     """
-    import numpy as np
-    if G.is_multigraph():
-        L = laplacian_matrix(G, nodelist=nodelist, weight=weight)
-        D = np.diag(L)
-    elif G.number_of_selfloops() == 0:
-        L = laplacian_matrix(G, nodelist=nodelist, weight=weight)
-        D = np.diag(L)
-    else:
-        A = np.array(nx.adj_matrix(G))
-        D = np.sum(A, 1)
-        L = np.diag(D) - A
-
-    # Handle div by 0. It happens if there are unconnected nodes
-    with np.errstate(divide='ignore'):
-        Disqrt = np.diag(1 / np.sqrt(D))
-    Disqrt[np.isinf(Disqrt)] = 0
-    Ln = np.dot(Disqrt, np.dot(L,Disqrt))
-    return Ln
+    import scipy
+    import scipy.sparse
+    if nodelist is None:
+        nodelist = G.nodes()
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
+                                  format='csr')
+    # the convention for normalized Laplacian is to not count self loops
+    # twice in the diagonal.  So we remove one here.
+    for n,_ in G.selfloop_edges():
+        A[n,n] -= 1
+    n,m = A.shape
+    diags = A.sum(axis=1).flatten()
+    D = scipy.sparse.spdiags(diags, [0], m, n, format='csr')
+    L = D - A
+    with scipy.errstate(divide='ignore'):
+       diags_sqrt = 1.0/scipy.sqrt(diags)
+    diags_sqrt[scipy.isinf(diags_sqrt)] = 0
+    DH = scipy.sparse.spdiags(diags_sqrt, [0], m, n, format='csr')
+    return DH.dot(L.dot(DH))
 
 ###############################################################################
 # Code based on
@@ -222,7 +202,8 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
        Laplacians and the Cheeger inequality for directed graphs.
        Annals of Combinatorics, 9(1), 2005
     """
-    import numpy as np
+    import scipy as sp
+    from scipy.sparse import identity, spdiags, linalg
     if walk_type is None:
         if nx.is_strongly_connected(G):
             if nx.is_aperiodic(G):
@@ -232,20 +213,24 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
         else:
             walk_type = "pagerank"
 
-    M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
+    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
+                                  dtype=float)
     n, m = M.shape
     if walk_type in ["random", "lazy"]:
-        DI = np.diagflat(1.0 / np.sum(M, axis=1))
+        DI = spdiags(1.0/sp.array(M.sum(axis=1).flat), [0], n, n)
         if walk_type == "random":
             P =  DI * M
         else:
-            I = np.identity(n)
+            I = identity(n)
             P = (I + DI * M) / 2.0
+
     elif walk_type == "pagerank":
         if not (0 < alpha < 1):
             raise nx.NetworkXError('alpha must be between 0 and 1')
+        # this is using a dense representation
+        M = M.todense()
         # add constant to dangling nodes' row
-        dangling = np.where(M.sum(axis=1) == 0)
+        dangling = sp.where(M.sum(axis=1) == 0)
         for d in dangling[0]:
             M[d] = 1.0 / n
         # normalize
@@ -254,14 +239,12 @@ def directed_laplacian_matrix(G, nodelist=None, weight='weight',
     else:
         raise nx.NetworkXError("walk_type must be random, lazy, or pagerank")
 
-    evals, evecs = np.linalg.eig(P.T)
-    index = evals.argsort()[-1] # index of largest eval,evec
-    # eigenvector of largest eigenvalue at ind[-1]
-    v = np.array(evecs[:,index]).flatten().real
+    evals, evecs = linalg.eigs(P.T, k=1)
+    v = evecs.flatten().real
     p =  v / v.sum()
-    sp = np.sqrt(p)
-    Q = np.diag(sp) * P * np.diag(1.0/sp)
-    I = np.identity(len(G))
+    sqrtp = sp.sqrt(p)
+    Q = spdiags(sqrtp, [0], n, n) * P * spdiags(1.0/sqrtp, [0], n, n)
+    I = sp.identity(len(G))
 
     return I  - (Q + Q.T) /2.0
 
