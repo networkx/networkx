@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose import SkipTest
 import networkx as nx
 
 def test_valid_degree_sequence1():
@@ -28,12 +29,23 @@ def test_negative_input():
     assert_false(nx.is_valid_degree_sequence([-1],'eg'))
     assert_false(nx.is_valid_degree_sequence([72.5],'eg'))
 
+class TestAtlas(object):
+    @classmethod
+    def setupClass(cls):
+        global atlas
+        import platform
+        if platform.python_implementation()=='Jython':
+            raise SkipTest('graph atlas not available under Jython.')
+        import networkx.generators.atlas as atlas
 
-def test_atlas():
-    for graph in nx.graph_atlas_g():
-        deg = list(graph.degree().values())
-        assert_true( nx.is_valid_degree_sequence(deg, method='eg') )
-        assert_true( nx.is_valid_degree_sequence(deg, method='hh') )        
+    def setUp(self):
+        self.GAG=atlas.graph_atlas_g()
+        
+    def test_atlas(self):
+        for graph in self.GAG:
+            deg = list(graph.degree().values())
+            assert_true( nx.is_valid_degree_sequence(deg, method='eg') )
+            assert_true( nx.is_valid_degree_sequence(deg, method='hh') )        
         
 def test_small_graph_true():
         z=[5,3,3,3,3,2,2,2,1,1,1]
