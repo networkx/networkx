@@ -10,7 +10,8 @@ class TestGraph6Utils(object):
         for i in [0, 1, 42, 62, 63, 64, 258047, 258048, 7744773, 68719476735]:
             assert_equal(sg6.data_to_n(sg6.n_to_data(i))[0], i)
             assert_equal(sg6.data_to_n(sg6.n_to_data(i))[1], [])
-            assert_equal(sg6.data_to_n(sg6.n_to_data(i) + [42, 43])[1], [42, 43])
+            assert_equal(sg6.data_to_n(sg6.n_to_data(i) + [42, 43])[1],
+                         [42, 43])
 
     def test_data_sparse6_data_conversion(self):
         for data in [[], [0], [63], [63, 63], [0]*42,
@@ -64,10 +65,12 @@ class TestGraph6(object):
         assert_equal(nx.generate_graph6(G1, header=False), 'C~')
 
         G2 = nx.complete_bipartite_graph(6,9)
-        assert_equal(nx.generate_graph6(G2, header=False), 'N??F~z{~Fw^_~?~?^_?') # verified by Sage
+        assert_equal(nx.generate_graph6(G2, header=False),
+                     'N??F~z{~Fw^_~?~?^_?') # verified by Sage
 
         G3 = nx.complete_graph(67)
-        assert_equal(nx.generate_graph6(G3, header=False), '~?@B' + '~' * 368 + 'w')
+        assert_equal(nx.generate_graph6(G3, header=False),
+                     '~?@B' + '~' * 368 + 'w')
 
     def test_write_graph6(self):
         try:
@@ -103,7 +106,8 @@ class TestGraph6(object):
         for i in list(range(13)) + [31, 47, 62, 63, 64, 72]:
             g = nx.random_graphs.gnm_random_graph(i, i * i // 4, seed=i)
             gstr = nx.generate_graph6(g, header=False)
-            assert_equal(len(gstr), ((i-1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
+            assert_equal(len(gstr),
+                         ((i-1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
             g2 = nx.parse_graph6(gstr)
             assert_equal(g2.order(), g.order())
             assert_equal(sorted(g2.edges()), sorted(g.edges()))
@@ -158,19 +162,27 @@ class TestSparseGraph6(object):
         assert_equal(nx.generate_sparse6(nx.empty_graph(0)), '>>sparse6<<:?')
         assert_equal(nx.generate_sparse6(nx.empty_graph(1)), '>>sparse6<<:@')
         assert_equal(nx.generate_sparse6(nx.empty_graph(5)), '>>sparse6<<:D')
-        assert_equal(nx.generate_sparse6(nx.empty_graph(68)), '>>sparse6<<:~?@C')
-        assert_equal(nx.generate_sparse6(nx.empty_graph(258049)), '>>sparse6<<:~~???~?@')
+        assert_equal(nx.generate_sparse6(nx.empty_graph(68)),
+                     '>>sparse6<<:~?@C')
+        assert_equal(nx.generate_sparse6(nx.empty_graph(258049)),
+                     '>>sparse6<<:~~???~?@')
 
         G1 = nx.complete_graph(4)
-        assert_equal(nx.generate_sparse6(G1, header=True), '>>sparse6<<:CcKI')
+        assert_equal(nx.generate_sparse6(G1, header=True),
+                     '>>sparse6<<:CcKI')
         assert_equal(nx.generate_sparse6(G1, header=False), ':CcKI')
 
         # Padding testing
-        assert_equal(nx.generate_sparse6(nx.path_graph(4), header=False), ':Cdv')
-        assert_equal(nx.generate_sparse6(nx.path_graph(5), header=False), ':DaYn')
-        assert_equal(nx.generate_sparse6(nx.path_graph(6), header=False), ':EaYnN')
-        assert_equal(nx.generate_sparse6(nx.path_graph(7), header=False), ':FaYnL')
-        assert_equal(nx.generate_sparse6(nx.path_graph(8), header=False), ':GaYnLz')
+        assert_equal(nx.generate_sparse6(nx.path_graph(4), header=False),
+                     ':Cdv')
+        assert_equal(nx.generate_sparse6(nx.path_graph(5), header=False),
+                     ':DaYn')
+        assert_equal(nx.generate_sparse6(nx.path_graph(6), header=False),
+                     ':EaYnN')
+        assert_equal(nx.generate_sparse6(nx.path_graph(7), header=False),
+                     ':FaYnL')
+        assert_equal(nx.generate_sparse6(nx.path_graph(8), header=False),
+                     ':GaYnLz')
 
     def test_write_sparse6(self):
         try:
@@ -182,7 +194,9 @@ class TestSparseGraph6(object):
             fh = open(fname,'rt')
             data = fh.read()
             fh.close()
-            assert_equal(data, '>>sparse6<<:Nk?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ\n')
+            assert_equal(data,
+                         '>>sparse6<<:Nk?G`cJ?G`cJ?G`cJ?G`'+
+                         'cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ\n')
             # Compared with sage
 
         finally:
@@ -192,13 +206,16 @@ class TestSparseGraph6(object):
         try:
             (fd, fname) = tempfile.mkstemp()
             os.close(fd)
-            Gs = [nx.complete_bipartite_graph(i, i + 1) for i in [0, 1, 2, 3, 5]]
+            Gs = [nx.complete_bipartite_graph(i, i + 1)
+                  for i in [0, 1, 2, 3, 5]]
             nx.write_sparse6_list(Gs, fname, header=False)
 
             fh = open(fname,'rt')
             data = fh.read()
             fh.close()
-            assert_equal(data, ':@\n:Bc\n:Dg@_WF\n:Fk@I@I@I@J\n:Ji?G`c_COqOAGXG@CKc?aEQ?PBH\n')
+            assert_equal(data,
+                         ':@\n:Bc\n:Dg@_WF\n:Fk@I@I@I@J\n:Ji?G`'+
+                         'c_COqOAGXG@CKc?aEQ?PBH\n')
             # Compared with sage
 
         finally:
