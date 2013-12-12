@@ -87,7 +87,14 @@ def eulerian_circuit(G, source=None):
 
     Notes
     -----
-    Linear time algorithm.
+    Linear time algorithm, adapted from [1]_.
+    General information about Euler tours [2]_.
+
+    References
+    ----------
+    .. [1] J. Edmonds, E. L. Johnson. Matching, Euler tours and the Chinese postman.
+       Mathematical programming, Volume 5, Issue 1 (1973), 111-114.
+    .. [2] http://en.wikipedia.org/wiki/Eulerian_path
 
     Examples
     --------
