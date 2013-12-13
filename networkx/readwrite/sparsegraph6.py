@@ -72,7 +72,7 @@ def parse_graph6(str):
 def read_graph6_list(path):
     """Read simple undirected graphs in graph6 format from path.
 
-    Returns a list of Graphs, one for each line in file.
+    Returns a list of Graphs, one for each non-empty line of the file.
     """
     glist=[]
     for line in path:
@@ -85,10 +85,10 @@ def read_graph6_list(path):
 def generate_graph6(G, header=True):
     """Generate graph6 format description of a simple undirected graph.
 
-    The format does not support edge or vetrtex labels and multiedges,
-    the vertices are converted to numbers 0..(n-1) by sorting them.
-    Optional graph6 format prefix is controlled by `header`.
-    Returns a single line string.
+    The format does not support edge or vetrtex labels and multiedges.
+    The vertices of the graphs are ``sorted`` and then treated as numbers 0..(n-1).
+    Optional graph6 format prefix is controlled by ``header``.
+    Returns an ascii string.
     """
 
     if G.is_directed():
@@ -124,7 +124,7 @@ def write_graph6_list(Gs, path, header=True):
     one per line.
 
     Writes graph6 header with every graph by default.
-    See `generate_graph6` for details.
+    See ``generate_graph6`` for details.
     """
     for G in Gs:
         path.write(generate_graph6(G, header=header))
@@ -134,7 +134,7 @@ def write_graph6(G, path, header=True):
     """Write a simple undirected graph to given path in graph6 format.
 
     Writes a graph6 header by default.
-    See `generate_graph6` for details.
+    See ``generate_graph6`` for details.
     """
     return write_graph6_list([G], path, header=header)
 
@@ -145,9 +145,9 @@ def generate_sparse6(G, header=True):
 
     The format does not support edge or vetrtex labels,
     but supports loops and multiedges.
-    The vertices are converted to numbers 0..(n-1) by sorting them.
-    Optional sparse6 format prefix is controlled by `header`.
-    Returns a single line string.
+    The vertices of the graphs are ``sorted`` and then treated as numbers 0..(n-1).
+    Optional sparse6 format prefix is controlled by ``header``.
+    Returns an ascii string.
     """
     if G.is_directed():
         raise NetworkXError('sparse6 format does not support directed graphs')
@@ -207,8 +207,9 @@ def generate_sparse6(G, header=True):
 def write_sparse6_list(Gs, path, header=True):
     """Write undirected (multi)graphs to given path in sparse6 format,
     one per line.
+
     Writes sparse6 header with every graph by default.
-    See `generate_sparse6` for details.
+    See ``generate_sparse6`` for details.
     """
     for G in Gs:
         path.write(generate_sparse6(G, header=header))
@@ -218,7 +219,7 @@ def write_sparse6(G, path, header=True):
     """Write an undirected (multi)graph to given path in sparse6 format.
 
     Writes a sparse6 header by default.
-    See `generate_sparse6` for details.
+    See ``generate_sparse6`` for details.
     """
     return write_sparse6_list([G], path, header=header)
 
@@ -232,7 +233,7 @@ def read_sparse6(path):
 def read_sparse6_list(path):
     """Read undirected graphs in sparse6 format from path.
 
-    Returns a list of MultiGraphs, one for each line in file."""
+    Returns a list of MultiGraphs, one for each non-empty line of the file."""
     glist=[]
     for line in path:
         line = line.strip()
