@@ -112,6 +112,11 @@ class TestGraph6(object):
             assert_equal(g2.order(), g.order())
             assert_equal(sorted(g2.edges()), sorted(g.edges()))
 
+    @raises(nx.NetworkXError)
+    def directed_error(self):
+        nx.generate_graph6(nx.DiGraph())
+
+
 class TestSparseGraph6(object):
 
     def test_parse_sparse6(self):
@@ -229,3 +234,7 @@ class TestSparseGraph6(object):
             g2 = nx.parse_sparse6(gstr)
             assert_equal(g2.order(), g.order())
             assert_equal(sorted(g2.edges()), sorted(g.edges()))
+
+    @raises(nx.NetworkXError)
+    def directed_error(self):
+        nx.generate_sparse6(nx.DiGraph())

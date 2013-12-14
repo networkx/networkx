@@ -32,7 +32,7 @@ __all__ = ['read_graph6', 'parse_graph6', 'read_graph6_list',
            'generate_sparse6', 'write_sparse6', 'write_sparse6_list']
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.utils import open_file
+from networkx.utils import open_file, not_implemented_for
 
 def read_graph6(path):
     """Read simple undirected graphs in graph6 format from path.
@@ -82,7 +82,8 @@ def read_graph6_list(path):
     return glist
 
 
-def generate_graph6(G, header=True):
+@not_implemented_for('directed')
+def generate_graph6(G, nodes = None, header=True):
     """Generate graph6 format description of a simple undirected graph.
 
     The format does not support edge or vetrtex labels and multiedges.
@@ -90,10 +91,10 @@ def generate_graph6(G, header=True):
     Optional graph6 format prefix is controlled by ``header``.
     Returns an ascii string.
     """
-
-    if G.is_directed():
-        raise NetworkXError('graph6 format does not support directed graphs')
-    ns = sorted(G.nodes())
+    if nodes is not None:
+        ns = list(nodes)
+    else:
+        ns = list(G)
 
     def bits():
         for (i,j) in [(i,j) for j in range(1,n) for i in range(j)]:
@@ -113,20 +114,20 @@ def generate_graph6(G, header=True):
     if flush:
         data.append(d)
 
+    string_data =  data_to_graph6(data)
     if header:
-        return '>>graph6<<' + data_to_graph6(data)
-    else:
-        return data_to_graph6(data)
+        string_data  =  '>>graph6<<' + string_data
+    return string_data
 
 @open_file(1, mode='wt')
-def write_graph6_list(Gs, path, header=True):
+def write_graph6_list(graphs, path, header=True):
     """Write simple undirected graphs to given path in graph6 format,
     one per line.
 
     Writes graph6 header with every graph by default.
     See ``generate_graph6`` for details.
     """
-    for G in Gs:
+    for G in graphs:
         path.write(generate_graph6(G, header=header))
         path.write('\n')
 
@@ -140,18 +141,15 @@ def write_graph6(G, path, header=True):
 
 # sparse6
 
+@not_implemented_for('directed')
 def generate_sparse6(G, header=True):
     """Generate sparse6 format description of a simple undirected (multi)graph.
 
     The format does not support edge or vetrtex labels,
     but supports loops and multiedges.
-    The vertices of the graphs are ``sorted`` and then treated as numbers 0..(n-1).
     Optional sparse6 format prefix is controlled by ``header``.
     Returns an ascii string.
     """
-    if G.is_directed():
-        raise NetworkXError('sparse6 format does not support directed graphs')
-
     n = G.order()
     k = 1
     while 1<<k < n:
