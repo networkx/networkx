@@ -40,7 +40,7 @@ class TestSparseGraph6(object):
         fh=open(fname,'w')
         b=fh.write(data)
         fh.close()
-        glist=nx.read_sparse6_list(fname)
+        glist=nx.read_sparse6(fname)
         assert_equal(len(glist),2)
         for G in glist:
             assert_equal(sorted(G.nodes()),
@@ -88,26 +88,7 @@ class TestSparseGraph6(object):
             fh.close()
             assert_equal(data,
                          '>>sparse6<<:Nk?G`cJ?G`cJ?G`cJ?G`'+
-                         'cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ\n')
-            # Compared with sage
-
-        finally:
-            os.unlink(fname)
-
-    def test_write_many_sparse6(self):
-        try:
-            (fd, fname) = tempfile.mkstemp()
-            os.close(fd)
-            Gs = [nx.complete_bipartite_graph(i, i + 1)
-                  for i in [0, 1, 2, 3, 5]]
-            nx.write_sparse6_list(Gs, fname, header=False)
-
-            fh = open(fname,'rt')
-            data = fh.read()
-            fh.close()
-            assert_equal(data,
-                         ':@\n:Bc\n:Dg@_WF\n:Fk@I@I@I@J\n:Ji?G`'+
-                         'c_COqOAGXG@CKc?aEQ?PBH\n')
+                         'cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ')
             # Compared with sage
 
         finally:

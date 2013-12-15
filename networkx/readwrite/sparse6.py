@@ -26,8 +26,8 @@ See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
 __author__ = """\n""".join(['Tomas Gavenciak <gavento@ucw.cz>',
                             'Aric Hagberg <aric.hagberg@lanl.gov'
                             ])
-__all__ = ['read_sparse6', 'parse_sparse6', 'read_sparse6_list',
-           'generate_sparse6', 'write_sparse6', 'write_sparse6_list']
+__all__ = ['read_sparse6', 'parse_sparse6',
+           'generate_sparse6', 'write_sparse6']
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, not_implemented_for
@@ -95,33 +95,17 @@ def generate_sparse6(G, header=True):
         return res
 
 @open_file(1, mode='wt')
-def write_sparse6_list(Gs, path, header=True):
+def write_sparse6(G, path, header=True):
     """Write undirected (multi)graphs to given path in sparse6 format,
     one per line.
 
     Writes sparse6 header with every graph by default.
     See ``generate_sparse6`` for details.
     """
-    for G in Gs:
-        path.write(generate_sparse6(G, header=header))
-        path.write('\n')
-
-def write_sparse6(G, path, header=True):
-    """Write an undirected (multi)graph to given path in sparse6 format.
-
-    Writes a sparse6 header by default.
-    See ``generate_sparse6`` for details.
-    """
-    return write_sparse6_list([G], path, header=header)
-
-def read_sparse6(path):
-    """Read simple undirected graphs in sparse6 format from path.
-
-    Returns a single MultiGraph."""
-    return read_sparse6_list(path)[0]
+    path.write(generate_sparse6(G, header=header))
 
 @open_file(0,mode='rt')
-def read_sparse6_list(path):
+def read_sparse6(path):
     """Read undirected graphs in sparse6 format from path.
 
     Returns a list of MultiGraphs, one for each non-empty line of the file."""
@@ -130,7 +114,10 @@ def read_sparse6_list(path):
         line = line.strip()
         if not len(line): continue
         glist.append(parse_sparse6(line))
-    return glist
+    if len(glist) == 1:
+        return glist[0]
+    else:
+        return glist
 
 def parse_sparse6(string):
     """Read undirected graph in sparse6 format from string.
