@@ -222,11 +222,6 @@ def write_graph6(G, path, nodes = None, header=True):
     header: bool
        If True add '>>graph6<<' string to head of data
 
-    Returns
-    -------
-    s : string
-       String in graph6 format
-
     Raises
     ------
     NetworkXError
@@ -253,7 +248,7 @@ def write_graph6(G, path, nodes = None, header=True):
     Graph6 specification:
     http://cs.anu.edu.au/~bdm/data/formats.txt for details.
     """
-    path.write(generate_graph6(G, header=header))
+    path.write(generate_graph6(G, nodes=nodes, header=header))
 
 # helper functions
 
