@@ -44,13 +44,26 @@ class TestEuler:
 
         edges=list(eulerian_circuit(G,source=0))
         nodes=[u for u,v in edges]
-        assert_equal(nodes,[0,1,2,3])
-        assert_equal(edges,[(0,1),(1,2),(2,3),(3,0)])
+        assert_equal(nodes,[0,3,2,1])
+        assert_equal(edges,[(0,3),(3,2),(2,1),(1,0)])
 
         edges=list(eulerian_circuit(G,source=1))
         nodes=[u for u,v in edges]
-        assert_equal(nodes,[1,0,3,2])
-        assert_equal(edges,[(1,0),(0,3),(3,2),(2,1)])
+        assert_equal(nodes,[1,2,3,0])
+        assert_equal(edges,[(1,2),(2,3),(3,0),(0,1)])
+
+        G=nx.complete_graph(3)
+        
+        edges=list(eulerian_circuit(G,source=0))
+        nodes=[u for u,v in edges]
+        assert_equal(nodes,[0,2,1])
+        assert_equal(edges,[(0,2),(2,1),(1,0)])
+        
+        edges=list(eulerian_circuit(G,source=1))
+        nodes=[u for u,v in edges]
+        assert_equal(nodes,[1,2,0])
+        assert_equal(edges,[(1,2),(2,0),(0,1)])
+        
 
 
     def test_eulerian_circuit_digraph(self):
@@ -75,8 +88,8 @@ class TestEuler:
         G.add_edge(1,2)
         edges=list(eulerian_circuit(G,source=0))
         nodes=[u for u,v in edges]
-        assert_equal(nodes,[0,1,2,1,2,3])
-        assert_equal(edges,[(0,1),(1,2),(2,1),(1,2),(2,3),(3,0)])
+        assert_equal(nodes,[0,3,2,1,2,1])
+        assert_equal(edges,[(0,3),(3,2),(2,1),(1,2),(2,1),(1,0)])
 
 
     @raises(nx.NetworkXError)
