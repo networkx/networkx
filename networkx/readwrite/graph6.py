@@ -162,7 +162,7 @@ def generate_graph6(G, nodes = None, header=True):
 
     See Also
     --------
-    generate_graph6, parse_graph6, write_graph6
+    read_graph6, parse_graph6, write_graph6
 
     Notes
     -----
@@ -233,7 +233,7 @@ def write_graph6(G, path, nodes = None, header=True):
 
     See Also
     --------
-    generate_graph6, parse_graph6, write_graph6
+    generate_graph6, parse_graph6, read_graph6
 
     Notes
     -----
