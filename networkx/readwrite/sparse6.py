@@ -62,7 +62,7 @@ def parse_sparse6(string):
     Sparse6 specification: http://cs.anu.edu.au/~bdm/data/formats.txt
     """
     if string.startswith('>>sparse6<<'):
-        string = str[10:]
+        string = string[11:]
     if not string.startswith(':'):
         raise NetworkXError('Expected leading colon in sparse6')
     n, data = data_to_n(graph6_to_data(string[1:]))
@@ -137,11 +137,10 @@ def read_sparse6(path):
 
     Examples
     --------
-    >>> import io
-    >>> file = io.StringIO(':A_')
-    >>> G = nx.read_sparse6(file)
+    >>> nx.write_sparse6(nx.Graph([(0,1),(0,1),(0,1)]), 'test.s6')
+    >>> G = nx.read_sparse6('test.s6')
     >>> sorted(G.edges())
-    [(0, 1), (0, 1), (0, 1)]
+    [(0, 1)]
 
     See Also
     --------
@@ -284,9 +283,7 @@ def write_sparse6(G, path, nodes=None, header=True):
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 1), (0, 1)])
-    >>> import io
-    >>> file = io.StringIO()
-    >>> nx.write_sparse6(G, file)
+    >>> nx.write_sparse6(G, 'test.s6')
 
     See Also
     --------

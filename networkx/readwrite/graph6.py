@@ -104,9 +104,8 @@ def read_graph6(path):
 
     Examples
     --------
-    >>> import io
-    >>> file = io.StringIO('A_')
-    >>> G = nx.read_graph6(file)
+    >>> nx.write_graph6(nx.Graph([(0,1)]), 'test.g6')
+    >>> G = nx.read_graph6('test.g6')
     >>> sorted(G.edges())
     [(0, 1)]
 
@@ -230,9 +229,7 @@ def write_graph6(G, path, nodes = None, header=True):
     Examples
     --------
     >>> G = nx.Graph([(0, 1)])
-    >>> import io
-    >>> file = io.StringIO()
-    >>> nx.write_graph6(G, file)
+    >>> nx.write_graph6(G, 'test.g6')
 
     See Also
     --------

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-import io
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from nose.tools import *
 import networkx as nx
 import networkx.readwrite.sparse6 as sg6
@@ -31,7 +34,7 @@ class TestSparseGraph6(object):
     def test_read_sparse6(self):
         data=""":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"""
         G=nx.parse_sparse6(data)
-        fh = io.StringIO(data)
+        fh = StringIO(data)
         Gin=nx.read_sparse6(fh)
         assert_equal(sorted(G.nodes()),sorted(Gin.nodes()))
         assert_equal(sorted(G.edges()),sorted(Gin.edges()))
@@ -40,7 +43,7 @@ class TestSparseGraph6(object):
         # Read many graphs into list
         data=':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n'+\
             ':Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM'
-        fh = io.StringIO(data)
+        fh = StringIO(data)
         glist=nx.read_sparse6(fh)
         assert_equal(len(glist),2)
         for G in glist:
@@ -76,7 +79,7 @@ class TestSparseGraph6(object):
                      ':GaYnLz')
 
     def test_write_sparse6(self):
-        fh = io.StringIO()
+        fh = StringIO()
         nx.write_sparse6(nx.complete_bipartite_graph(6,9), fh)
         fh.seek(0)
         assert_equal(fh.read(),

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-import io
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from nose.tools import *
 import networkx as nx
 import networkx.readwrite.graph6 as g6
@@ -32,7 +35,7 @@ class TestGraph6(object):
     def test_read_graph6(self):
         data="""DF{"""
         G=nx.parse_graph6(data)
-        fh = io.StringIO(data)
+        fh = StringIO(data)
         Gin=nx.read_graph6(fh)
         assert_equal(sorted(G.nodes()),sorted(Gin.nodes()))
         assert_equal(sorted(G.edges()),sorted(Gin.edges()))
@@ -40,7 +43,7 @@ class TestGraph6(object):
     def test_read_many_graph6(self):
         # Read many graphs into list
         data="""DF{\nD`{\nDqK\nD~{\n"""
-        fh = io.StringIO(data)
+        fh = StringIO(data)
         glist=nx.read_graph6(fh)
         assert_equal(len(glist),4)
         for G in glist:
@@ -63,7 +66,7 @@ class TestGraph6(object):
                      '~?@B' + '~' * 368 + 'w')
 
     def test_write_graph6(self):
-        fh = io.StringIO()
+        fh = StringIO()
         nx.write_graph6(nx.complete_bipartite_graph(6,9), fh)
         fh.seek(0)
         assert_equal(fh.read(), '>>graph6<<N??F~z{~Fw^_~?~?^_?')
