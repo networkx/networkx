@@ -1,8 +1,6 @@
-"""
-**************
-Sparse6
-**************
-Read graphs in sparse6 format.
+"""Sparse6
+
+Read and write graphs in sparse6 format.
 
 Format
 ------
@@ -10,7 +8,6 @@ Format
 "graph6 and sparse6 are formats for storing undirected graphs in a
 compact manner, using only printable ASCII characters. Files in these
 formats have text type and contain one line per graph."
-http://cs.anu.edu.au/~bdm/data/formats.html
 
 See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
 """
@@ -23,25 +20,86 @@ See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
 #    Tomas Gavenciak <gavento@ucw.cz>
 #    All rights reserved.
 #    BSD license.
-__author__ = """\n""".join(['Tomas Gavenciak <gavento@ucw.cz>',
-                            'Aric Hagberg <aric.hagberg@lanl.gov'
-                            ])
-__all__ = ['read_sparse6', 'parse_sparse6',
-           'generate_sparse6', 'write_sparse6']
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, not_implemented_for
 from networkx.readwrite.graph6 import data_to_graph6, graph6_to_data,\
     data_to_n, n_to_data
+__author__ = """\n""".join(['Tomas Gavenciak <gavento@ucw.cz>',
+                            'Aric Hagberg <aric.hagberg@lanl.gov'])
+__all__ = ['read_sparse6', 'parse_sparse6',
+           'generate_sparse6', 'write_sparse6']
+
+def parse_sparse6(string):
+    """Read undirected graph in sparse6 format from string.
+    """
+    if string.startswith('>>sparse6<<'):
+        string = str[10:]
+    if not string.startswith(':'):
+        raise NetworkXError('Expected colon in sparse6')
+    n, data = data_to_n(graph6_to_data(string[1:]))
+    k = 1
+    while 1<<k < n:
+        k += 1
+
+    def parseData():
+        """Return stream of pairs b[i], x[i] for sparse6 format."""
+        chunks = iter(data)
+        d = None # partial data word
+        dLen = 0 # how many unparsed bits are left in d
+
+        while 1:
+            if dLen < 1:
+                d = next(chunks)
+                dLen = 6
+            dLen -= 1
+            b = (d>>dLen) & 1 # grab top remaining bit
+
+            x = d & ((1<<dLen)-1) # partially built up value of x
+            xLen = dLen		# how many bits included so far in x
+            while xLen < k:	# now grab full chunks until we have enough
+                d = next(chunks)
+                dLen = 6
+                x = (x<<6) + d
+                xLen += 6
+            x = (x >> (xLen - k)) # shift back the extra bits
+            dLen = xLen - k
+            yield b,x
+
+    v = 0
+
+    G = nx.MultiGraph()
+    G.add_nodes_from(range(n))
+
+    for b,x in parseData():
+        if b == 1:
+            v += 1
+        # padding with ones can cause overlarge number here
+        if x >= n or v >= n:
+            break
+        elif x > v:
+            v = x
+        else:
+            G.add_edge(x,v)
+    return G
+
+@open_file(0,mode='rt')
+def read_sparse6(path):
+    """Read undirected graphs in sparse6 format from path.
+    """
+    glist = []
+    for line in path:
+        line = line.strip()
+        if not len(line): continue
+        glist.append(parse_sparse6(line))
+    if len(glist) == 1:
+        return glist[0]
+    else:
+        return glist
 
 @not_implemented_for('directed')
 def generate_sparse6(G, header=True):
-    """Generate sparse6 format description of a simple undirected (multi)graph.
-
-    The format does not support edge or vetrtex labels,
-    but supports loops and multiedges.
-    Optional sparse6 format prefix is controlled by ``header``.
-    Returns an ascii string.
+    """Generate sparse6 format string from an undirected graph.
     """
     n = G.order()
     k = 1
@@ -96,80 +154,6 @@ def generate_sparse6(G, header=True):
 
 @open_file(1, mode='wt')
 def write_sparse6(G, path, header=True):
-    """Write undirected (multi)graphs to given path in sparse6 format,
-    one per line.
-
-    Writes sparse6 header with every graph by default.
-    See ``generate_sparse6`` for details.
+    """Write graph G to given path in sparse6 format.
     """
     path.write(generate_sparse6(G, header=header))
-
-@open_file(0,mode='rt')
-def read_sparse6(path):
-    """Read undirected graphs in sparse6 format from path.
-
-    Returns a list of MultiGraphs, one for each non-empty line of the file."""
-    glist=[]
-    for line in path:
-        line = line.strip()
-        if not len(line): continue
-        glist.append(parse_sparse6(line))
-    if len(glist) == 1:
-        return glist[0]
-    else:
-        return glist
-
-def parse_sparse6(string):
-    """Read undirected graph in sparse6 format from string.
-
-    Returns a MultiGraph.
-    """
-    if string.startswith('>>sparse6<<'):
-        string = str[10:]
-    if not string.startswith(':'):
-        raise NetworkXError('Expected colon in sparse6')
-    n, data = data_to_n(graph6_to_data(string[1:]))
-    k = 1
-    while 1<<k < n:
-        k += 1
-
-    def parseData():
-        """Return stream of pairs b[i], x[i] for sparse6 format."""
-        chunks = iter(data)
-        d = None # partial data word
-        dLen = 0 # how many unparsed bits are left in d
-
-        while 1:
-            if dLen < 1:
-                d = next(chunks)
-                dLen = 6
-            dLen -= 1
-            b = (d>>dLen) & 1 # grab top remaining bit
-
-            x = d & ((1<<dLen)-1) # partially built up value of x
-            xLen = dLen		# how many bits included so far in x
-            while xLen < k:	# now grab full chunks until we have enough
-                d = next(chunks)
-                dLen = 6
-                x = (x<<6) + d
-                xLen += 6
-            x = (x >> (xLen - k)) # shift back the extra bits
-            dLen = xLen - k
-            yield b,x
-
-    v = 0
-
-    G=nx.MultiGraph()
-    G.add_nodes_from(range(n))
-
-    for b,x in parseData():
-        if b == 1:
-            v += 1
-        # padding with ones can cause overlarge number here
-        if x >= n or v >= n:
-            break
-        elif x > v:
-            v = x
-        else:
-            G.add_edge(x,v)
-    return G
