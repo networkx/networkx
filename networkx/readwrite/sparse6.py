@@ -36,7 +36,7 @@ def parse_sparse6(string):
     if string.startswith('>>sparse6<<'):
         string = str[10:]
     if not string.startswith(':'):
-        raise NetworkXError('Expected colon in sparse6')
+        raise NetworkXError('Expected leading colon in sparse6')
     n, data = data_to_n(graph6_to_data(string[1:]))
     k = 1
     while 1<<k < n:
@@ -71,6 +71,7 @@ def parse_sparse6(string):
     G = nx.MultiGraph()
     G.add_nodes_from(range(n))
 
+    multigraph = False
     for b,x in parseData():
         if b == 1:
             v += 1
@@ -80,7 +81,11 @@ def parse_sparse6(string):
         elif x > v:
             v = x
         else:
+            if G.has_edge(x,v):
+                multigraph = True
             G.add_edge(x,v)
+    if not multigraph:
+        G = nx.Graph(G)
     return G
 
 @open_file(0,mode='rt')
@@ -90,7 +95,8 @@ def read_sparse6(path):
     glist = []
     for line in path:
         line = line.strip()
-        if not len(line): continue
+        if not len(line):
+            continue
         glist.append(parse_sparse6(line))
     if len(glist) == 1:
         return glist[0]

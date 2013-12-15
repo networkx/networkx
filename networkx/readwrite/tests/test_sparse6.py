@@ -20,6 +20,13 @@ class TestSparseGraph6(object):
                       (7, 10), (8, 12), (9, 15), (10, 14), (11, 13),
                       (12, 16), (13, 17), (14, 17), (15, 16)])
 
+    def test_parse_multigraph_graph(self):
+        graph_data = ':An'
+        G = nx.parse_sparse6(graph_data)
+        assert_true(type(G), nx.Graph)
+        multigraph_data = ':Ab'
+        M = nx.parse_sparse6(multigraph_data)
+        assert_true(type(M), nx.MultiGraph)
 
     def test_read_sparse6(self):
         data=""":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"""
