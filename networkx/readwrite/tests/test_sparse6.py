@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import io
 from nose.tools import *
 import networkx as nx
 import networkx.readwrite.sparse6 as sg6
@@ -23,31 +24,22 @@ class TestSparseGraph6(object):
     def test_read_sparse6(self):
         data=""":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"""
         G=nx.parse_sparse6(data)
-        (fd,fname)=tempfile.mkstemp()
-        fh=open(fname,'w')
-        b=fh.write(data)
-        fh.close()
-        Gin=nx.read_sparse6(fname)
+        fh = io.StringIO(data)
+        Gin=nx.read_sparse6(fh)
         assert_equal(sorted(G.nodes()),sorted(Gin.nodes()))
         assert_equal(sorted(G.edges()),sorted(Gin.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_read_many_graph6(self):
         # Read many graphs into list
-        data=""":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n:Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM"""
-        (fd,fname)=tempfile.mkstemp()
-        fh=open(fname,'w')
-        b=fh.write(data)
-        fh.close()
-        glist=nx.read_sparse6(fname)
+        data=':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n'+\
+            ':Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM'
+        fh = io.StringIO(data)
+        glist=nx.read_sparse6(fh)
         assert_equal(len(glist),2)
         for G in glist:
             assert_equal(sorted(G.nodes()),
                          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
                           10, 11, 12, 13, 14, 15, 16, 17])
-        os.close(fd)
-        os.unlink(fname)
 
     def test_generate_sparse6(self):
         # Checked against sage encoder
@@ -77,22 +69,14 @@ class TestSparseGraph6(object):
                      ':GaYnLz')
 
     def test_write_sparse6(self):
-        try:
-            (fd, fname) = tempfile.mkstemp()
-            os.close(fd)
-            G = nx.complete_bipartite_graph(6,9)
-            nx.write_sparse6(G, fname)
+        fh = io.StringIO()
+        nx.write_sparse6(nx.complete_bipartite_graph(6,9), fh)
+        fh.seek(0)
+        assert_equal(fh.read(),
+                     '>>sparse6<<:Nk?G`cJ?G`cJ?G`cJ?G`'+
+                     'cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ')
+        # Compared with sage
 
-            fh = open(fname,'rt')
-            data = fh.read()
-            fh.close()
-            assert_equal(data,
-                         '>>sparse6<<:Nk?G`cJ?G`cJ?G`cJ?G`'+
-                         'cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ')
-            # Compared with sage
-
-        finally:
-            os.unlink(fname)
 
     def test_generate_and_parse_sparse6(self):
         for i in list(range(13)) + [31, 47, 62, 63, 64, 72]:
