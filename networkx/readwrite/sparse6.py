@@ -188,9 +188,9 @@ def generate_sparse6(G, nodes=None, header=True):
 
     Examples
     --------
-    >>> G = nx.Graph([(0, 1), (0, 1), (0, 1)])
+    >>> G = nx.MultiGraph([(0, 1), (0, 1), (0, 1)])
     >>> nx.generate_sparse6(G)
-    '>>sparse6<<:An'
+    '>>sparse6<<:A_'
 
     See Also
     --------
