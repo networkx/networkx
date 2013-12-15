@@ -26,18 +26,11 @@ See http://cs.anu.edu.au/~bdm/data/formats.txt for details.
 __author__ = """\n""".join(['Tomas Gavenciak <gavento@ucw.cz>',
                             'Aric Hagberg <aric.hagberg@lanl.gov'
                             ])
-__all__ = ['read_graph6', 'parse_graph6', 'read_graph6_list',
-           'generate_graph6', 'write_graph6', 'write_graph6_list']
+__all__ = ['read_graph6', 'parse_graph6',
+           'generate_graph6', 'write_graph6']
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file, not_implemented_for
-
-def read_graph6(path):
-    """Read simple undirected graphs in graph6 format from path.
-
-    Returns a single Graph.
-    """
-    return read_graph6_list(path)[0]
 
 def parse_graph6(str):
     """Read a simple undirected graph in graph6 format from string.
@@ -67,25 +60,27 @@ def parse_graph6(str):
     return G
 
 @open_file(0,mode='rt')
-def read_graph6_list(path):
+def read_graph6(path):
     """Read simple undirected graphs in graph6 format from path.
 
     Returns a list of Graphs, one for each non-empty line of the file.
     """
-    glist=[]
+    glist = []
     for line in path:
         line = line.strip()
-        if not len(line): continue
+        if not len(line):
+            continue
         glist.append(parse_graph6(line))
-    return glist
-
+    if len(glist) == 1:
+        return glist[0]
+    else:
+        return glist
 
 @not_implemented_for('directed')
 def generate_graph6(G, nodes = None, header=True):
     """Generate graph6 format description of a simple undirected graph.
 
     The format does not support edge or vetrtex labels and multiedges.
-    The vertices of the graphs are ``sorted`` and then treated as numbers 0..(n-1).
     Optional graph6 format prefix is controlled by ``header``.
     Returns an ascii string.
     """
@@ -117,25 +112,16 @@ def generate_graph6(G, nodes = None, header=True):
         string_data  =  '>>graph6<<' + string_data
     return string_data
 
+
 @open_file(1, mode='wt')
-def write_graph6_list(graphs, path, header=True):
+def write_graph6(G, path, header=True):
     """Write simple undirected graphs to given path in graph6 format,
     one per line.
 
     Writes graph6 header with every graph by default.
     See ``generate_graph6`` for details.
     """
-    for G in graphs:
-        path.write(generate_graph6(G, header=header))
-        path.write('\n')
-
-def write_graph6(G, path, header=True):
-    """Write a simple undirected graph to given path in graph6 format.
-
-    Writes a graph6 header by default.
-    See ``generate_graph6`` for details.
-    """
-    return write_graph6_list([G], path, header=header)
+    path.write(generate_graph6(G, header=header))
 
 # helper functions
 

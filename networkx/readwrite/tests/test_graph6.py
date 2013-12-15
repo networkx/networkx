@@ -49,7 +49,7 @@ class TestGraph6(object):
         fh=open(fname,'w')
         b=fh.write(data)
         fh.close()
-        glist=nx.read_graph6_list(fname)
+        glist=nx.read_graph6(fname)
         assert_equal(len(glist),4)
         for G in glist:
             assert_equal(sorted(G.nodes()),[0, 1, 2, 3, 4])
@@ -82,25 +82,25 @@ class TestGraph6(object):
             fh = open(fname,'rt')
             data = fh.read()
             fh.close()
-            assert_equal(data, '>>graph6<<N??F~z{~Fw^_~?~?^_?\n')
+            assert_equal(data, '>>graph6<<N??F~z{~Fw^_~?~?^_?')
 
         finally:
             os.unlink(fname)
 
-    def test_write_many_graph6(self):
-        try:
-            (fd, fname) = tempfile.mkstemp()
-            os.close(fd)
-            Gs = [nx.complete_bipartite_graph(i, i + 1) for i in [0, 1, 3, 5]]
-            nx.write_graph6_list(Gs, fname, header=False)
+    # def test_write_many_graph6(self):
+    #     try:
+    #         (fd, fname) = tempfile.mkstemp()
+    #         os.close(fd)
+    #         Gs = [nx.complete_bipartite_graph(i, i + 1) for i in [0, 1, 3, 5]]
+    #         nx.write_graph6_list(Gs, fname, header=False)
 
-            fh = open(fname,'rt')
-            data = fh.read()
-            fh.close()
-            assert_equal(data, '@\nBo\nFFzf?\nJ?B~vrw}Fo?\n')
+    #         fh = open(fname,'rt')
+    #         data = fh.read()
+    #         fh.close()
+    #         assert_equal(data, '@\nBo\nFFzf?\nJ?B~vrw}Fo?\n')
 
-        finally:
-            os.unlink(fname)
+    #     finally:
+    #         os.unlink(fname)
 
     def test_generate_and_parse_graph6(self):
         for i in list(range(13)) + [31, 47, 62, 63, 64, 72]:
