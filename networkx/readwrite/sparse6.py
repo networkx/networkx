@@ -31,7 +31,35 @@ __all__ = ['read_sparse6', 'parse_sparse6',
            'generate_sparse6', 'write_sparse6']
 
 def parse_sparse6(string):
-    """Read undirected graph in sparse6 format from string.
+    """Read an undirected graph in sparse6 format from string.
+
+    Parameters
+    ----------
+    string : string
+       Data in sparse6 format
+
+    Returns
+    -------
+    G : Graph
+
+    Raises
+    ------
+    NetworkXError
+        If the string is unable to be parsed in sparse6 format
+
+    Examples
+    --------
+    >>> G = nx.parse_sparse6(':A_')
+    >>> sorted(G.edges())
+    [(0, 1), (0, 1), (0, 1)]
+
+    See Also
+    --------
+    generate_sparse6, read_sparse6, write_sparse6
+
+    References
+    ----------
+    Sparse6 specification: http://cs.anu.edu.au/~bdm/data/formats.txt
     """
     if string.startswith('>>sparse6<<'):
         string = str[10:]
@@ -90,7 +118,38 @@ def parse_sparse6(string):
 
 @open_file(0,mode='rt')
 def read_sparse6(path):
-    """Read undirected graphs in sparse6 format from path.
+    """Read an undirected graph in sparse6 format from path.
+
+    Parameters
+    ----------
+    path : file or string
+       File or filename to write.
+
+    Returns
+    -------
+    G : Graph/Multigraph or list of Graphs/MultiGraphs
+       If the file contains multple lines then a list of graphs is returned
+
+    Raises
+    ------
+    NetworkXError
+        If the string is unable to be parsed in sparse6 format
+
+    Examples
+    --------
+    >>> import io
+    >>> file = io.StringIO(':A_')
+    >>> G = nx.read_sparse6(file)
+    >>> sorted(G.edges())
+    [(0, 1), (0, 1), (0, 1)]
+
+    See Also
+    --------
+    generate_sparse6, read_sparse6, parse_sparse6
+
+    References
+    ----------
+    Sparse6 specification: http://cs.anu.edu.au/~bdm/data/formats.txt
     """
     glist = []
     for line in path:
@@ -104,8 +163,47 @@ def read_sparse6(path):
         return glist
 
 @not_implemented_for('directed')
-def generate_sparse6(G, header=True):
+def generate_sparse6(G, nodes=None, header=True):
     """Generate sparse6 format string from an undirected graph.
+
+    Parameters
+    ----------
+    G : Graph (undirected)
+
+    nodes: list or iterable
+       Nodes are labeled 0...n-1 in the order provided.  If None the ordering
+       given by G.nodes() is used.
+
+    header: bool
+       If True add '>>sparse6<<' string to head of data
+
+    Returns
+    -------
+    s : string
+       String in sparse6 format
+
+    Raises
+    ------
+    NetworkXError
+        If the graph is directed
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 1), (0, 1)])
+    >>> nx.generate_sparse6(G)
+    '>>sparse6<<:An'
+
+    See Also
+    --------
+    read_sparse6, parse_sparse6, write_sparse6
+
+    Notes
+    -----
+    The format does not support edge or node labels.
+    References
+    ----------
+    Sparse6 specification:
+    http://cs.anu.edu.au/~bdm/data/formats.txt for details.
     """
     n = G.order()
     k = 1
@@ -116,7 +214,10 @@ def generate_sparse6(G, header=True):
         """Big endian k-bit encoding of x"""
         return [1 if (x & 1 << (k-1-i)) else 0 for i in range(k)]
 
-    ns = sorted(G.nodes()) # number -> node
+    if nodes is None:
+        ns = list(G.nodes()) # number -> node
+    else:
+        ns = list(nodes)
     ndict = dict(((ns[i], i) for i in range(len(ns)))) # node -> number
     edges = [(ndict[u], ndict[v]) for (u, v) in G.edges()]
     edges = [(max(u,v), min(u,v)) for (u, v) in edges]
@@ -159,7 +260,45 @@ def generate_sparse6(G, header=True):
         return res
 
 @open_file(1, mode='wt')
-def write_sparse6(G, path, header=True):
+def write_sparse6(G, path, nodes=None, header=True):
     """Write graph G to given path in sparse6 format.
+    Parameters
+    ----------
+    G : Graph (undirected)
+
+    path : file or string
+       File or filename to write
+
+    nodes: list or iterable
+       Nodes are labeled 0...n-1 in the order provided.  If None the ordering
+       given by G.nodes() is used.
+
+    header: bool
+       If True add '>>sparse6<<' string to head of data
+
+    Raises
+    ------
+    NetworkXError
+        If the graph is directed
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 1), (0, 1)])
+    >>> import io
+    >>> file = io.StringIO()
+    >>> nx.write_sparse6(G, file)
+
+    See Also
+    --------
+    read_sparse6, parse_sparse6, generate_sparse6
+
+    Notes
+    -----
+    The format does not support edge or node labels.
+
+    References
+    ----------
+    Sparse6 specification:
+    http://cs.anu.edu.au/~bdm/data/formats.txt for details.
     """
-    path.write(generate_sparse6(G, header=header))
+    path.write(generate_sparse6(G, nodes=nodes, header=header))
