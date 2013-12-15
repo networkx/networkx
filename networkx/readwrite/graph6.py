@@ -95,7 +95,7 @@ def read_graph6(path):
     Returns
     -------
     G : Graph or list of Graphs
-       If the file contains multple lines then a list of graphs is returned
+       If the file contains multiple lines then a list of graphs is returned
 
     Raises
     ------
@@ -246,6 +246,7 @@ def write_graph6(G, path, nodes = None, header=True):
     http://cs.anu.edu.au/~bdm/data/formats.txt for details.
     """
     path.write(generate_graph6(G, nodes=nodes, header=header))
+    path.write('\n')
 
 # helper functions
 

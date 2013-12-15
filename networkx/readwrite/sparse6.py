@@ -299,3 +299,4 @@ def write_sparse6(G, path, nodes=None, header=True):
     http://cs.anu.edu.au/~bdm/data/formats.txt for details.
     """
     path.write(generate_sparse6(G, nodes=nodes, header=header))
+    path.write('\n')

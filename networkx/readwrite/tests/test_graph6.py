@@ -69,7 +69,7 @@ class TestGraph6(object):
         fh = StringIO()
         nx.write_graph6(nx.complete_bipartite_graph(6,9), fh)
         fh.seek(0)
-        assert_equal(fh.read(), '>>graph6<<N??F~z{~Fw^_~?~?^_?')
+        assert_equal(fh.read(), '>>graph6<<N??F~z{~Fw^_~?~?^_?\n')
 
     def test_generate_and_parse_graph6(self):
         for i in list(range(13)) + [31, 47, 62, 63, 64, 72]:

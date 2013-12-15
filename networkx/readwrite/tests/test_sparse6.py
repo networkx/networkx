@@ -84,7 +84,7 @@ class TestSparseGraph6(object):
         fh.seek(0)
         assert_equal(fh.read(),
                      '>>sparse6<<:Nk?G`cJ?G`cJ?G`cJ?G`'+
-                     'cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ')
+                     'cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ\n')
         # Compared with sage
 
 
