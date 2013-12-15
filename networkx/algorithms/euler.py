@@ -6,7 +6,7 @@ import networkx as nx
 
 __author__ = """\n""".join(['Nima Mohammadi (nima.irt[AT]gmail.com)',
                             'Aric Hagberg <hagberg@lanl.gov>'])
-#    Copyright (C) 2010 by 
+#    Copyright (C) 2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -56,7 +56,7 @@ def is_eulerian(G):
         if not nx.is_connected(G):
             return False
     return True
-	  
+
 
 def eulerian_circuit(G, source=None):
     """Return the edges of an Eulerian circuit in G.
@@ -66,8 +66,8 @@ def eulerian_circuit(G, source=None):
 
     Parameters
     ----------
-    G : NetworkX graph
-        Both Directed and Undirected graph
+    G : NetworkX Graph or DiGraph
+        A directed or undirected graph
     source : node, optional
        Starting node for circuit.
 
@@ -92,7 +92,8 @@ def eulerian_circuit(G, source=None):
 
     References
     ----------
-    .. [1] J. Edmonds, E. L. Johnson. Matching, Euler tours and the Chinese postman.
+    .. [1] J. Edmonds, E. L. Johnson.
+       Matching, Euler tours and the Chinese postman.
        Mathematical programming, Volume 5, Issue 1 (1973), 111-114.
     .. [2] http://en.wikipedia.org/wiki/Eulerian_path
 
@@ -101,14 +102,14 @@ def eulerian_circuit(G, source=None):
     >>> G=nx.complete_graph(3)
     >>> list(nx.eulerian_circuit(G))
     [(0, 2), (2, 1), (1, 0)]
-    >>> list(nx.eulerian_circuit(G,source=1)) 
+    >>> list(nx.eulerian_circuit(G,source=1))
     [(1, 2), (2, 0), (0, 1)]
     >>> [u for u,v in nx.eulerian_circuit(G)]  # nodes in circuit
     [0, 2, 1]
     """
+    from operator import itemgetter
     if not is_eulerian(G):
         raise nx.NetworkXError("G is not Eulerian.")
-
     g = G.__class__(G) # copy graph structure (not attributes)
 
     # set starting node
@@ -118,31 +119,24 @@ def eulerian_circuit(G, source=None):
         v = source
 
     if g.is_directed():
-        vertex_stack = [v]
-        last_vertex = None
-        while vertex_stack:
-            current_vertex = vertex_stack[-1]
-            if g.in_degree(current_vertex) == 0:
-                if last_vertex is not None:
-                    yield (last_vertex, current_vertex)
-                last_vertex = current_vertex
-                vertex_stack.pop()
-            else:
-                random_edge = next(g.in_edges_iter(current_vertex))
-                vertex_stack.append(random_edge[0])
-                g.remove_edge(*random_edge)
+        degree = g.in_degree
+        edges = g.in_edges_iter
+        get_vertex = itemgetter(0)
     else:
-        vertex_stack = [v]
-        last_vertex = None
-        while vertex_stack:
-            current_vertex = vertex_stack[-1]
-            if g.degree(current_vertex) == 0:
-                if last_vertex is not None:
-                    yield (last_vertex, current_vertex)
-                last_vertex = current_vertex
-                vertex_stack.pop()
-            else:
-                random_edge = next(g.edges_iter(current_vertex))
-                vertex_stack.append(random_edge[1])
-                g.remove_edge(*random_edge)
+        degree = g.degree
+        edges = g.edges_iter
+        get_vertex = itemgetter(1)
 
+    vertex_stack = [v]
+    last_vertex = None
+    while vertex_stack:
+        current_vertex = vertex_stack[-1]
+        if degree(current_vertex) == 0:
+            if last_vertex is not None:
+                yield (last_vertex, current_vertex)
+            last_vertex = current_vertex
+            vertex_stack.pop()
+        else:
+            random_edge = next(edges(current_vertex))
+            vertex_stack.append(get_vertex(random_edge))
+            g.remove_edge(*random_edge)
