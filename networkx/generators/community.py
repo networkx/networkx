@@ -9,14 +9,15 @@ import networkx as nx
 #    BSD license.
 __author__ = """\n""".join(['Ben Edwards (bedwards@cs.unm.edu)',
                             'Aric Hagberg (hagberg@lanl.gov)'])
-__all__ = ['caveman_graph','connected_caveman_graph',
-           'relaxed_caveman_graph','random_partition_graph',
-           'planted_partition_graph','gaussian_random_partition_graph']
+__all__ = ['caveman_graph', 'connected_caveman_graph',
+           'relaxed_caveman_graph', 'random_partition_graph',
+           'planted_partition_graph', 'gaussian_random_partition_graph']
+
 
 def caveman_graph(l, k):
     """Returns a caveman graph of l cliques of size k.
 
-    The caveman graph is formed by creating n cliques of size k. 
+    The caveman graph is formed by creating n cliques of size k.
 
     Parameters
     ----------
@@ -26,7 +27,7 @@ def caveman_graph(l, k):
       Size of cliques
     directed : boolean optional (default=True)
       If true return directed caveman graph
-      
+
     Returns
     -------
     G : NetworkX Graph
@@ -47,16 +48,17 @@ def caveman_graph(l, k):
     Reference
     ---------
     .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
-       Amer. J. Soc. 105, 493-527, 1999. 
+       Amer. J. Soc. 105, 493-527, 1999.
     """
     # l disjoint cliques of size k
     G = nx.empty_graph(l*k)
-    G.name="caveman_graph(%s,%s)"%(l*k,k)
-    if k > 1: 
+    G.name = "caveman_graph(%s,%s)" % (l*k, k)
+    if k > 1:
         for start in range(0, l*k, k):
             edges = itertools.combinations(range(start, start+k), 2)
             G.add_edges_from(edges)
     return G
+
 
 def connected_caveman_graph(l, k):
     """Returns a connected caveman graph of n cliques of size k.
@@ -72,7 +74,7 @@ def connected_caveman_graph(l, k):
       size of cliques
     directed : boolean optional (default=True)
       if true return directed caveman graph
-      
+
     Returns
     -------
     G : NetworkX Graph
@@ -93,14 +95,15 @@ def connected_caveman_graph(l, k):
     Reference
     ---------
     .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
-       Amer. J. Soc. 105, 493-527, 1999. 
+       Amer. J. Soc. 105, 493-527, 1999.
     """
     G = nx.caveman_graph(l, k)
-    G.name="connected_caveman_graph(%s,%s)"%(l,k)
+    G.name = "connected_caveman_graph(%s,%s)" % (l, k)
     for start in range(0, l*k, k):
         G.remove_edge(start, start+1)
-        G.add_edge(start, (start-1)%(l*k))
+        G.add_edge(start, (start-1) % (l*k))
     return G
+
 
 def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
     """Return a relaxed caveman graph.
@@ -108,7 +111,7 @@ def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
     A relaxed caveman graph starts with l cliques of size k.  Edges
     are then randomly rewired with probability p to link different
     cliques.
-    
+
     Parameters
     ----------
     l : int
@@ -140,21 +143,22 @@ def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
     ----------
     .. [1] Santo Fortunato, Community Detection in Graphs,
        Physics Reports Volume 486, Issues 3-5, February 2010, Pages 75-174.
-       http://arxiv.org/abs/0906.0612 
+       http://arxiv.org/abs/0906.0612
     """
     if not seed is None:
         random.seed(seed)
     G = nx.caveman_graph(l, k)
     nodes = G.nodes()
-    G.name="relaxed_caveman_graph (%s,%s,%s)"%(l,k,p)
-    for (u,v) in G.edges():
-        if random.random() < p: # rewire the edge        
+    G.name = "relaxed_caveman_graph (%s,%s,%s)" % (l, k, p)
+    for (u, v) in G.edges():
+        if random.random() < p:  # rewire the edge
             x = random.choice(nodes)
-            if G.has_edge(u,x):
+            if G.has_edge(u, x):
                 continue
-            G.remove_edge(u,v)
-            G.add_edge(u,x)
+            G.remove_edge(u, v)
+            G.add_edge(u, x)
     return G
+
 
 def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     """Return the random partition graph with a partition of sizes.
@@ -199,7 +203,7 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     Notes
     -----
     This is a generalization of the planted-l-partition described in
-    [1]_.  It allows for the creation of groups of any size. 
+    [1]_.  It allows for the creation of groups of any size.
 
     The partition is store as a graph attribute 'partition'.
 
@@ -207,7 +211,7 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     ----------
     .. [1] Santo Fortunato 'Community Detection in Graphs' Physical Reports
        Volume 486, Issue 3-5 p. 75-174. http://arxiv.org/abs/0906.0612
-       http://arxiv.org/abs/0906.0612 
+       http://arxiv.org/abs/0906.0612
        """
     # Use geometric method for O(n+m) complexity algorithm
     # partition=nx.community_sets(nx.get_node_attributes(G,'affiliation'))
@@ -217,7 +221,6 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
         raise nx.NetworkXError("p_in must be in [0,1]")
     if not 0.0 <= p_out <= 1.0:
         raise nx.NetworkXError("p_out must be in [0,1]")
-
 
     if directed:
         G = nx.DiGraph()
@@ -229,31 +232,31 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     # start with len(sizes) groups of gnp random graphs with parameter p_in
     # graphs are unioned together with node labels starting at
     # 0, sizes[0], sizes[0]+sizes[1], ...
-    next_group = {} # maps node key (int) to first node in next group
+    next_group = {}  # maps node key (int) to first node in next group
     start = 0
     group = 0
     for n in sizes:
-        edges = ((u+start,v+start) 
-                 for u,v in 
+        edges = ((u+start, v+start)
+                 for u, v in
                  nx.fast_gnp_random_graph(n, p_in, directed=directed).edges())
         G.add_edges_from(edges)
-        next_group.update(dict.fromkeys(range(start,start+n),start+n))
-        G.graph['partition'].append(set(range(start,start+n)))
+        next_group.update(dict.fromkeys(range(start, start+n), start+n))
+        G.graph['partition'].append(set(range(start, start+n)))
         group += 1
         start += n
-    # handle edge cases        
+    # handle edge cases
     if p_out == 0:
         return G
     if p_out == 1:
         for n in next_group:
-            targets = range(next_group[n],len(G))
-            G.add_edges_from(zip([n]*len(targets),targets))
+            targets = range(next_group[n], len(G))
+            G.add_edges_from(zip([n]*len(targets), targets))
             if directed:
-                G.add_edges_from(zip(targets,[n]*len(targets)))
+                G.add_edges_from(zip(targets, [n]*len(targets)))
         return G
     # connect each node in group randomly with the nodes not in group
     # use geometric method like fast_gnp_random_graph()
-    lp = math.log(1.0 - p_out)  
+    lp = math.log(1.0 - p_out)
     n = len(G)
     if directed:
         for u in range(n):
@@ -262,19 +265,19 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
                 lr = math.log(1.0 - random.random())
                 v += int(lr/lp)
                 # skip over nodes in the same group as v, including self loops
-                if next_group.get(v,n)==next_group[u]:
+                if next_group.get(v, n) == next_group[u]:
                     v = next_group[u]
                 if v < n:
-                    G.add_edge(u,v)
+                    G.add_edge(u, v)
                     v += 1
     else:
         for u in range(n-1):
-            v = next_group[u] # start with next node not in this group
+            v = next_group[u]  # start with next node not in this group
             while v < n:
                 lr = math.log(1.0 - random.random())
                 v += int(lr/lp)
                 if v < n:
-                    G.add_edge(u,v)
+                    G.add_edge(u, v)
                     v += 1
     return G
 
@@ -322,14 +325,15 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
     References
     ----------
-    .. [1] A. Condon, R.M. Karp, Algorithms for graph partitioning 
-        on the planted partition model, 
+    .. [1] A. Condon, R.M. Karp, Algorithms for graph partitioning
+        on the planted partition model,
         Random Struct. Algor. 18 (2001) 116-140.
 
     .. [2] Santo Fortunato 'Community Detection in Graphs' Physical Reports
        Volume 486, Issue 3-5 p. 75-174. http://arxiv.org/abs/0906.0612
     """
     return random_partition_graph([k]*l, p_in, p_out, seed, directed)
+
 
 def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
                                     seed=None):
@@ -348,7 +352,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
       Mean cluster size
     v : float
       Shape parameter. The variance of cluster size distribution is s/v.
-    p_in : float 
+    p_in : float
       Probabilty of intra cluster connection.
     p_out : float
       Probability of inter cluster connection.
@@ -383,11 +387,11 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
     >>> G = nx.gaussian_random_partition_graph(100,10,10,.25,.1)
     >>> len(G)
     100
-    
+
     References
     ----------
     .. [1] Ulrik Brandes, Marco Gaertler, Dorothea Wagner,
-       Experiments on Graph Clustering Algorithms,           
+       Experiments on Graph Clustering Algorithms,
        In the proceedings of the 11th Europ. Symp. Algorithms, 2003.
     """
     if s > n:
@@ -395,7 +399,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
     assigned = 0
     sizes = []
     while True:
-        size = int(random.normalvariate(s,float(s)/v + 0.5))
+        size = int(random.normalvariate(s, float(s) / v + 0.5))
         if size < 1:  # how to handle 0 or negative sizes?
             continue
         if assigned + size >= n:
@@ -403,5 +407,4 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False,
             break
         assigned += size
         sizes.append(size)
-    return random_partition_graph(sizes,p_in,p_out,directed,seed)
-
+    return random_partition_graph(sizes, p_in, p_out, directed, seed)
