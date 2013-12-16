@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
-from networkx import NetworkXError
+from networkx import NetworkXNotImplemented
 
 class TestWeaklyConnected:
 
@@ -27,7 +27,7 @@ class TestWeaklyConnected:
         G = nx.DiGraph({ 0:[1],1:[2,3],2:[4,5],3:[4,5],4:[6],5:[],6:[]})
         C = [[0],[1],[2],[3],[4],[5],[6]]
         self.gc.append((G,C))
-    
+
         G = nx.DiGraph({0:[1],1:[2,3,4],2:[0,3],3:[4],4:[3]})
         C = [[0,1,2],[3,4]]
         self.gc.append((G,C))
@@ -63,7 +63,7 @@ class TestWeaklyConnected:
         G.add_edge(1,2,eattr='red')
         G.node[1]['nattr']='blue'
         G.graph['gattr']='green'
-        sgs=wcc(G)[0]
+        sgs=list(wcc(G))[0]
         assert_equal(sgs[1][2]['eattr'],'red')
         assert_equal(sgs.node[1]['nattr'],'blue')
         assert_equal(sgs.graph['gattr'],'green')
@@ -81,8 +81,7 @@ class TestWeaklyConnected:
 
     def test_connected_raise(self):
         G=nx.Graph()
-        assert_raises(NetworkXError,nx.weakly_connected_components,G)
-        assert_raises(NetworkXError,nx.number_weakly_connected_components,G)
-        assert_raises(NetworkXError,nx.weakly_connected_component_subgraphs,G)
-        assert_raises(NetworkXError,nx.is_weakly_connected,G)
-
+        assert_raises(NetworkXNotImplemented,nx.weakly_connected_components,G)
+        assert_raises(NetworkXNotImplemented,nx.number_weakly_connected_components,G)
+        assert_raises(NetworkXNotImplemented,nx.weakly_connected_component_subgraphs,G)
+        assert_raises(NetworkXNotImplemented,nx.is_weakly_connected,G)

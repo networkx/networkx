@@ -1,5 +1,5 @@
 """PageRank analysis of graph structure. """
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -8,11 +8,16 @@
 #    NetworkX:http://networkx.lanl.gov/
 import networkx as nx
 from networkx.exception import NetworkXError
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-__all__ = ['pagerank','pagerank_numpy','pagerank_scipy','google_matrix']
+from networkx.utils import not_implemented_for
+__author__ = """\n""".join(["Aric Hagberg <aric.hagberg@gmail.com>",
+                            "Brandon Liu <brandon.k.liu@gmail.com"])
+__all__ = ['pagerank', 'pagerank_numpy', 'pagerank_scipy', 'google_matrix']
 
-def pagerank(G,alpha=0.85,personalization=None,
-             max_iter=100,tol=1.0e-8,nstart=None,weight='weight'):
+
+@not_implemented_for('multigraph')
+def pagerank(G, alpha=0.85, personalization=None,
+             max_iter=100, tol=1.0e-6, nstart=None, weight='weight',
+             dangling=None):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -22,14 +27,16 @@ def pagerank(G,alpha=0.85,personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float, optional
-      Damping parameter for PageRank, default=0.85
+      Damping parameter for PageRank, default=0.85.
 
     personalization: dict, optional
-       The "personalization vector" consisting of a dictionary with a
-       key for every graph node and nonzero personalization value for each node.
+      The "personalization vector" consisting of a dictionary with a
+      key for every graph node and nonzero personalization value for each node.
+      By default, a uniform distribution is used.
 
     max_iter : integer, optional
       Maximum number of iterations in power method eigenvalue solver.
@@ -43,6 +50,15 @@ def pagerank(G,alpha=0.85,personalization=None,
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
+    dangling: dict, optional
+      The outedges to be assigned to any "dangling" nodes, i.e., nodes without
+      any outedges. The dict key is the node the outedge points to and the dict
+      value is the weight of that outedge. By default, dangling nodes are given
+      outedges according to the personalization vector (uniform if not
+      specified). This must be selected to result in an irreducible transition
+      matrix (see notes under google_matrix). It may be common to have the
+      dangling dict to be the same as the personalization dict.
+
     Returns
     -------
     pagerank : dictionary
@@ -50,8 +66,8 @@ def pagerank(G,alpha=0.85,personalization=None,
 
     Examples
     --------
-    >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> pr=nx.pagerank(G,alpha=0.9)
+    >>> G = nx.DiGraph(nx.path_graph(4))
+    >>> pr = nx.pagerank(G, alpha=0.9)
 
     Notes
     -----
@@ -62,7 +78,7 @@ def pagerank(G,alpha=0.85,personalization=None,
 
     The PageRank algorithm was designed for directed graphs but this
     algorithm does not check if the input graph is directed and will
-    execute on undirected graphs by converting each oriented edge in the
+    execute on undirected graphs by converting each edge in the
     directed graph to two edges.
 
     See Also
@@ -78,88 +94,87 @@ def pagerank(G,alpha=0.85,personalization=None,
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
-        raise Exception("pagerank() not defined for graphs with multiedges.")
-
     if len(G) == 0:
         return {}
 
     if not G.is_directed():
-        D=G.to_directed()
+        D = G.to_directed()
     else:
-        D=G
+        D = G
 
-    # create a copy in (right) stochastic form
-    W=nx.stochastic_graph(D, weight=weight)
-    scale=1.0/W.number_of_nodes()
+    # Create a copy in (right) stochastic form
+    W = nx.stochastic_graph(D, weight=weight)
+    N = W.number_of_nodes()
 
-    # choose fixed starting vector if not given
+    # Choose fixed starting vector if not given
     if nstart is None:
-        x=dict.fromkeys(W,scale)
+        x = dict.fromkeys(W, 1.0 / N)
     else:
-        x=nstart
-        # normalize starting vector to 1
-        s=1.0/sum(x.values())
-        for k in x: x[k]*=s
+        # Normalized nstart vector
+        s = float(sum(nstart.values()))
+        x = dict((k, v / s) for k, v in nstart.items())
 
-    # assign uniform personalization/teleportation vector if not given
     if personalization is None:
-        p=dict.fromkeys(W,scale)
+        # Assign uniform personalization vector if not given
+        p = dict.fromkeys(W, 1.0 / N)
     else:
-        p=personalization
-        # normalize starting vector to 1
-        s=1.0/sum(p.values())
-        for k in p:
-            p[k]*=s
-        if set(p)!=set(G):
-            raise NetworkXError('Personalization vector '
-                                'must have a value for every node')
+        missing = set(G) - set(personalization)
+        if missing:
+            raise NetworkXError('Personalization dictionary '
+                                'must have a value for every node. '
+                                'Missing nodes %s' % missing)
+        s = float(sum(personalization.values()))
+        p = dict((k, v / s) for k, v in personalization.items())
 
+    if dangling is None:
+        # Use personalization vector if dangling vector not specified
+        dangling_weights = p
+    else:
+        missing = set(G) - set(dangling)
+        if missing:
+            raise NetworkXError('Dangling node dictionary '
+                                'must have a value for every node. '
+                                'Missing nodes %s' % missing)
+        s = float(sum(dangling.values()))
+        dangling_weights = dict((k, v/s) for k, v in dangling.items())
+    dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
-    # "dangling" nodes, no links out from them
-    out_degree=W.out_degree()
-    dangle=[n for n in W if out_degree[n]==0.0]
-    i=0
-    while True: # power iteration: make up to max_iter iterations
-        xlast=x
-        x=dict.fromkeys(xlast.keys(),0)
-        danglesum=alpha*scale*sum(xlast[n] for n in dangle)
+    # power iteration: make up to max_iter iterations
+    for _ in range(max_iter):
+        xlast = x
+        x = dict.fromkeys(xlast.keys(), 0)
+        danglesum = alpha * sum(xlast[n] for n in dangling_nodes)
         for n in x:
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
             for nbr in W[n]:
-                x[nbr]+=alpha*xlast[n]*W[n][nbr][weight]
-            x[n]+=danglesum+(1.0-alpha)*p[n]
-        # normalize vector
-        s=1.0/sum(x.values())
-        for n in x:
-            x[n]*=s
+                x[nbr] += alpha * xlast[n] * W[n][nbr][weight]
+            x[n] += danglesum * dangling_weights[n] + (1.0 - alpha) * p[n]
         # check convergence, l1 norm
-        err=sum([abs(x[n]-xlast[n]) for n in x])
-        if err < tol:
-            break
-        if i>max_iter:
-            raise NetworkXError('pagerank: power iteration failed to converge'
-                                'in %d iterations.'%(i+1))
-        i+=1
-    return x
+        err = sum([abs(x[n] - xlast[n]) for n in x])
+        if err < N*tol:
+            return x
+    raise NetworkXError('pagerank: power iteration failed to converge '
+                        'in %d iterations.' % max_iter)
 
 
 def google_matrix(G, alpha=0.85, personalization=None,
-                  nodelist=None, weight='weight'):
+                  nodelist=None, weight='weight', dangling=None):
     """Return the Google matrix of the graph.
 
     Parameters
     -----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float
-      The damping factor
+      The damping factor.
 
     personalization: dict, optional
-       The "personalization vector" consisting of a dictionary with a
-       key for every graph node and nonzero personalization value for each node.
+      The "personalization vector" consisting of a dictionary with a
+      key for every graph node and nonzero personalization value for each node.
+      By default, a uniform distribution is used.
 
     nodelist : list, optional
       The rows and columns are ordered according to the nodes in nodelist.
@@ -168,50 +183,85 @@ def google_matrix(G, alpha=0.85, personalization=None,
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
+    dangling: dict, optional
+      The outedges to be assigned to any "dangling" nodes, i.e., nodes without
+      any outedges. The dict key is the node the outedge points to and the dict
+      value is the weight of that outedge. By default, dangling nodes are given
+      outedges according to the personalization vector (uniform if not
+      specified) This must be selected to result in an irreducible transition
+      matrix (see notes below). It may be common to have the dangling dict to
+      be the same as the personalization dict.
+
     Returns
     -------
     A : NumPy matrix
        Google matrix of the graph
 
+    Notes
+    -----
+    The matrix returned represents the transition matrix that describes the
+    Markov chain used in PageRank. For PageRank to converge to a unique
+    solution (i.e., a unique stationary distribution in a Markov chain), the
+    transition matrix must be irreducible. In other words, it must be that
+    there exists a path between every pair of nodes in the graph, or else there
+    is the potential of "rank sinks."
+
+    This implementation works with Multi(Di)Graphs. For multigraphs the
+    weight between two nodes is set to be the sum of all edge weights
+    between those nodes.
+
     See Also
     --------
     pagerank, pagerank_numpy, pagerank_scipy
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError(\
-            "google_matrix() requires NumPy: http://scipy.org/")
-    # choose ordering in matrix
-    if personalization is None: # use G.nodes() ordering
-        nodelist=G.nodes()
-    else:  # use personalization "vector" ordering
-        nodelist=personalization.keys()
-        if set(nodelist)!=set(G):
-            raise NetworkXError('Personalization vector dictionary'
-                                'must have a value for every node')
-    M=nx.to_numpy_matrix(G,nodelist=nodelist,weight=weight)
-    (n,m)=M.shape # should be square
-    if n == 0:
+    import numpy as np
+
+    if nodelist is None:
+        nodelist = G.nodes()
+
+    M = nx.to_numpy_matrix(G, nodelist=nodelist, weight=weight)
+    N = len(G)
+    if N == 0:
         return M
-    # add constant to dangling nodes' row
-    dangling=np.where(M.sum(axis=1)==0)
-    for d in dangling[0]:
-        M[d]=1.0/n
-    # normalize
-    M=M/M.sum(axis=1)
-    # add "teleportation"/personalization
-    e=np.ones((n))
-    if personalization is not None:
-        v=np.array(list(personalization.values()),dtype=float)
+
+    # Personalization vector
+    if personalization is None:
+        p = np.repeat(1.0 / N, N)
     else:
-        v=e
-    v=v/v.sum()
-    P=alpha*M+(1-alpha)*np.outer(e,v)
-    return P
+        missing = set(nodelist) - set(personalization)
+        if missing:
+            raise NetworkXError('Personalization vector dictionary '
+                                'must have a value for every node. '
+                                'Missing nodes %s' % missing)
+        p = np.array([personalization[n] for n in nodelist], dtype=float)
+        p /= p.sum()
+
+    # Dangling nodes
+    if dangling is None:
+        dangling_weights = p
+    else:
+        missing = set(nodelist) - set(dangling)
+        if missing:
+            raise NetworkXError('Dangling node dictionary '
+                                'must have a value for every node. '
+                                'Missing nodes %s' % missing)
+        # Convert the dangling dictionary into an array in nodelist order
+        dangling_weights = np.array([dangling[n] for n in nodelist],
+                                    dtype=float)
+        dangling_weights /= dangling_weights.sum()
+    dangling_nodes = np.where(M.sum(axis=1) == 0)[0]
+
+    # Assign dangling_weights to any dangling nodes (nodes with no out links)
+    for node in dangling_nodes:
+        M[node] = dangling_weights
+
+    M /= M.sum(axis=1)  # Normalize rows to sum to 1
+
+    return alpha * M + (1 - alpha) * np.outer(np.ones(N), p)
 
 
-def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
+def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
+                   dangling=None):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -221,27 +271,38 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     Parameters
     -----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float, optional
-      Damping parameter for PageRank, default=0.85
+      Damping parameter for PageRank, default=0.85.
 
     personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
-       key for every graph node and nonzero personalization value for each node.
+       key for every graph node and nonzero personalization value for each
+       node. By default, a uniform distribution is used.
 
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
+    dangling: dict, optional
+      The outedges to be assigned to any "dangling" nodes, i.e., nodes without
+      any outedges. The dict key is the node the outedge points to and the dict
+      value is the weight of that outedge. By default, dangling nodes are given
+      outedges according to the personalization vector (uniform if not
+      specified) This must be selected to result in an irreducible transition
+      matrix (see notes under google_matrix). It may be common to have the
+      dangling dict to be the same as the personalization dict.
+
     Returns
     -------
     pagerank : dictionary
-       Dictionary of nodes with PageRank as value
+       Dictionary of nodes with PageRank as value.
 
     Examples
     --------
-    >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> pr=nx.pagerank_numpy(G,alpha=0.9)
+    >>> G = nx.DiGraph(nx.path_graph(4))
+    >>> pr = nx.pagerank_numpy(G, alpha=0.9)
 
     Notes
     -----
@@ -249,7 +310,9 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
     eigenvalue solvers.  This will be the fastest and most accurate
     for small graphs.
 
-    This implementation works with Multi(Di)Graphs.
+    This implementation works with Multi(Di)Graphs. For multigraphs the
+    weight between two nodes is set to be the sum of all edge weights
+    between those nodes.
 
     See Also
     --------
@@ -264,31 +327,23 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight'):
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError("pagerank_numpy() requires NumPy: http://scipy.org/")
+    import numpy as np
     if len(G) == 0:
         return {}
-    # choose ordering in matrix
-    if personalization is None: # use G.nodes() ordering
-        nodelist=G.nodes()
-    else:  # use personalization "vector" ordering
-        nodelist=personalization.keys()
-    M=google_matrix(G, alpha, personalization=personalization,
-                    nodelist=nodelist, weight=weight)
+    M = google_matrix(G, alpha, personalization=personalization,
+                      weight=weight, dangling=dangling)
     # use numpy LAPACK solver
-    eigenvalues,eigenvectors=np.linalg.eig(M.T)
-    ind=eigenvalues.argsort()
+    eigenvalues, eigenvectors = np.linalg.eig(M.T)
+    ind = eigenvalues.argsort()
     # eigenvector of largest eigenvalue at ind[-1], normalized
-    largest=np.array(eigenvectors[:,ind[-1]]).flatten().real
-    norm=float(largest.sum())
-    centrality=dict(zip(nodelist,map(float,largest/norm)))
-    return centrality
+    largest = np.array(eigenvectors[:, ind[-1]]).flatten().real
+    norm = float(largest.sum())
+    return dict(zip(G, map(float, largest / norm)))
 
 
 def pagerank_scipy(G, alpha=0.85, personalization=None,
-                   max_iter=100, tol=1.0e-6, weight='weight'):
+                   max_iter=100, tol=1.0e-6, weight='weight',
+                   dangling=None):
     """Return the PageRank of the nodes in the graph.
 
     PageRank computes a ranking of the nodes in the graph G based on
@@ -298,14 +353,16 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     Parameters
     -----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.  Undirected graphs will be converted to a directed
+      graph with two directed edges for each undirected edge.
 
     alpha : float, optional
-      Damping parameter for PageRank, default=0.85
+      Damping parameter for PageRank, default=0.85.
 
     personalization: dict, optional
        The "personalization vector" consisting of a dictionary with a
-       key for every graph node and nonzero personalization value for each node.
+       key for every graph node and nonzero personalization value for each
+       node. By default, a uniform distribution is used.
 
     max_iter : integer, optional
       Maximum number of iterations in power method eigenvalue solver.
@@ -316,6 +373,15 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     weight : key, optional
       Edge data key to use as weight.  If None weights are set to 1.
 
+    dangling: dict, optional
+      The outedges to be assigned to any "dangling" nodes, i.e., nodes without
+      any outedges. The dict key is the node the outedge points to and the dict
+      value is the weight of that outedge. By default, dangling nodes are given
+      outedges according to the personalization vector (uniform if not
+      specified) This must be selected to result in an irreducible transition
+      matrix (see notes under google_matrix). It may be common to have the
+      dangling dict to be the same as the personalization dict.
+
     Returns
     -------
     pagerank : dictionary
@@ -323,13 +389,17 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
 
     Examples
     --------
-    >>> G=nx.DiGraph(nx.path_graph(4))
-    >>> pr=nx.pagerank_scipy(G,alpha=0.9)
+    >>> G = nx.DiGraph(nx.path_graph(4))
+    >>> pr = nx.pagerank_scipy(G, alpha=0.9)
 
     Notes
     -----
     The eigenvector calculation uses power iteration with a SciPy
     sparse matrix representation.
+
+    This implementation works with Multi(Di)Graphs. For multigraphs the
+    weight between two nodes is set to be the sum of all edge weights
+    between those nodes.
 
     See Also
     --------
@@ -344,46 +414,62 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
        The PageRank citation ranking: Bringing order to the Web. 1999
        http://dbpubs.stanford.edu:8090/pub/showDoc.Fulltext?lang=en&doc=1999-66&format=pdf
     """
-    try:
-        import scipy.sparse
-    except ImportError:
-        raise ImportError("pagerank_scipy() requires SciPy: http://scipy.org/")
-    if len(G) == 0:
+    import scipy.sparse
+
+    N = len(G)
+    if N == 0:
         return {}
-    # choose ordering in matrix
-    if personalization is None: # use G.nodes() ordering
-        nodelist=G.nodes()
-    else:  # use personalization "vector" ordering
-        nodelist=personalization.keys()
-    M=nx.to_scipy_sparse_matrix(G,nodelist=nodelist,weight=weight,dtype='f')
-    (n,m)=M.shape # should be square
-    S=scipy.array(M.sum(axis=1)).flatten()
-#    for i, j, v in zip( *scipy.sparse.find(M) ):
-#        M[i,j] = v / S[i]
-    S[S>0] = 1.0 / S[S>0]
+
+    nodelist = G.nodes()
+    M = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
+                                  dtype=float)
+    S = scipy.array(M.sum(axis=1)).flatten()
+    S[S != 0] = 1.0 / S[S != 0]
     Q = scipy.sparse.spdiags(S.T, 0, *M.shape, format='csr')
     M = Q * M
-    x=scipy.ones((n))/n  # initial guess
-    dangle=scipy.array(scipy.where(M.sum(axis=1)==0,1.0/n,0)).flatten()
-    # add "teleportation"/personalization
-    if personalization is not None:
-        v=scipy.array(list(personalization.values()),dtype=float)
-        v=v/v.sum()
+
+    # initial vector
+    x = scipy.repeat(1.0 / N, N)
+
+    # Personalization vector
+    if personalization is None:
+        p = scipy.repeat(1.0 / N, N)
     else:
-        v=x
-    i=0
-    while i <= max_iter:
-        # power iteration: make up to max_iter iterations
-        xlast=x
-        x=alpha*(x*M+scipy.dot(dangle,xlast))+(1-alpha)*v
-        x=x/x.sum()
+        missing = set(nodelist) - set(personalization)
+        if missing:
+            raise NetworkXError('Personalization vector dictionary '
+                                'must have a value for every node. '
+                                'Missing nodes %s' % missing)
+        p = scipy.array([personalization[n] for n in nodelist],
+                        dtype=float)
+        p = p / p.sum()
+
+    # Dangling nodes
+    if dangling is None:
+        dangling_weights = p
+    else:
+        missing = set(nodelist) - set(dangling)
+        if missing:
+            raise NetworkXError('Dangling node dictionary '
+                                'must have a value for every node. '
+                                'Missing nodes %s' % missing)
+        # Convert the dangling dictionary into an array in nodelist order
+        dangling_weights = scipy.array([dangling[n] for n in nodelist],
+                                       dtype=float)
+        dangling_weights /= dangling_weights.sum()
+    is_dangling = scipy.where(S == 0)[0]
+
+    # power iteration: make up to max_iter iterations
+    for _ in range(max_iter):
+        xlast = x
+        x = alpha * (x * M + sum(x[is_dangling]) * dangling_weights) + \
+            (1 - alpha) * p
         # check convergence, l1 norm
-        err=scipy.absolute(x-xlast).sum()
-        if err < n*tol:
-            return dict(zip(nodelist,map(float,x)))
-        i+=1
-    raise NetworkXError('pagerank_scipy: power iteration failed to converge'
-                        'in %d iterations.'%(i+1))
+        err = scipy.absolute(x - xlast).sum()
+        if err < N * tol:
+            return dict(zip(nodelist, map(float, x)))
+    raise NetworkXError('pagerank_scipy: power iteration failed to converge '
+                        'in %d iterations.' % max_iter)
 
 
 # fixture for nose tests

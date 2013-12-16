@@ -5,15 +5,15 @@ Pydot
 
 Import and export NetworkX graphs in Graphviz dot format using pydot.
 
-Either this module or nx_pygraphviz can be used to interface with graphviz.  
+Either this module or nx_pygraphviz can be used to interface with graphviz.
 
 See Also
 --------
 Pydot: http://code.google.com/p/pydot/
-Graphviz:	   http://www.research.att.com/sw/tools/graphviz/
+Graphviz:          http://www.research.att.com/sw/tools/graphviz/
 DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -21,7 +21,7 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    BSD license.
 from networkx.utils import open_file, make_str
 import networkx as nx
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+__author__ = """Aric Hagberg (aric.hagberg@gmail.com)"""
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
 
@@ -44,7 +44,6 @@ def write_dot(G,path):
 def read_dot(path):
     """Return a NetworkX MultiGraph or MultiDiGraph from a dot file on path.
 
-
     Parameters
     ----------
     path : filename or file handle
@@ -52,8 +51,8 @@ def read_dot(path):
     Returns
     -------
     G : NetworkX multigraph
-        A MultiGraph or MultiDiGraph.  
-    
+        A MultiGraph or MultiDiGraph.
+
     Notes
     -----
     Use G=nx.Graph(nx.read_dot(path)) to return a Graph instead of a MultiGraph.
@@ -64,7 +63,7 @@ def read_dot(path):
         raise ImportError("read_dot() requires pydot",
                           "http://code.google.com/p/pydot/")
 
-    data=path.read()        
+    data=path.read()
     P=pydot.graph_from_dot_data(data)
     return from_pydot(P)
 
@@ -79,8 +78,8 @@ def from_pydot(P):
     Returns
     -------
     G : NetworkX multigraph
-        A MultiGraph or MultiDiGraph.  
-    
+        A MultiGraph or MultiDiGraph.
+
     Examples
     --------
     >>> K5=nx.complete_graph(5)
@@ -89,11 +88,11 @@ def from_pydot(P):
     >>> G=nx.Graph(nx.from_pydot(A)) # make a Graph instead of MultiGraph
 
     """
-    if P.get_strict(None): # pydot bug: get_strict() shouldn't take argument 
+    if P.get_strict(None): # pydot bug: get_strict() shouldn't take argument
         multiedges=False
     else:
         multiedges=True
-        
+
     if P.get_type()=='graph': # undirected
         if multiedges:
             create_using=nx.MultiGraph()
@@ -105,7 +104,7 @@ def from_pydot(P):
         else:
             create_using=nx.DiGraph()
 
-    # assign defaults        
+    # assign defaults
     N=nx.empty_graph(0,create_using)
     N.name=P.get_name()
 
@@ -118,10 +117,27 @@ def from_pydot(P):
 
     # add edges
     for e in P.get_edge_list():
-        u=e.get_source().strip('"')
-        v=e.get_destination().strip('"')
+        u=e.get_source()
+        v=e.get_destination()
         attr=e.get_attributes()
-        N.add_edge(u,v,**attr)
+        s=[]
+        d=[]
+
+        if isinstance(u, basestring):
+            s.append(u.strip('"'))
+        else:
+            for unodes in u['nodes'].iterkeys():
+                s.append(unodes.strip('"'))
+
+        if isinstance(v, basestring):
+            d.append(v.strip('"'))
+        else:
+            for vnodes in v['nodes'].iterkeys():
+                d.append(vnodes.strip('"'))
+
+        for source_node in s:
+            for destination_node in d:
+                N.add_edge(source_node,destination_node,**attr)
 
     # add default attributes for graph, nodes, edges
     N.graph['graph']=P.get_attributes()
@@ -133,7 +149,7 @@ def from_pydot(P):
         N.graph['edge']=P.get_edge_defaults()[0]
     except:# IndexError,TypeError:
         N.graph['edge']={}
-    return N        
+    return N
 
 def to_pydot(N, strict=True):
     """Return a pydot graph from a NetworkX graph N.
@@ -142,7 +158,7 @@ def to_pydot(N, strict=True):
     ----------
     N : NetworkX graph
       A graph created with NetworkX
-      
+
     Examples
     --------
     >>> K5=nx.complete_graph(5)
@@ -163,8 +179,8 @@ def to_pydot(N, strict=True):
         graph_type='digraph'
     else:
         graph_type='graph'
-    strict=N.number_of_selfloops()==0 and not N.is_multigraph() 
-    
+    strict=N.number_of_selfloops()==0 and not N.is_multigraph()
+
     name = N.graph.get('name')
     graph_defaults=N.graph.get('graph',{})
     if name is None:
@@ -191,13 +207,12 @@ def to_pydot(N, strict=True):
             str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
             edge=pydot.Edge(make_str(u),make_str(v),key=make_str(key),**str_edgedata)
             P.add_edge(edge)
-        
+
     else:
         for u,v,edgedata in N.edges_iter(data=True):
             str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
             edge=pydot.Edge(make_str(u),make_str(v),**str_edgedata)
             P.add_edge(edge)
-
     return P
 
 
@@ -210,7 +225,7 @@ def pydot_from_networkx(N):
 def networkx_from_pydot(D, create_using=None):
     """Create a NetworkX graph from a Pydot graph."""
     from warnings import warn
-    warn('networkx_from_pydot is replaced by from_pydot', 
+    warn('networkx_from_pydot is replaced by from_pydot',
          DeprecationWarning)
     return from_pydot(D)
 
@@ -228,7 +243,6 @@ def graphviz_layout(G,prog='neato',root=None, **kwds):
     Notes
     -----
     This is a wrapper for pydot_layout.
-
     """
     return pydot_layout(G=G,prog=prog,root=root,**kwds)
 
@@ -243,7 +257,6 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     >>> G=nx.complete_graph(4)
     >>> pos=nx.pydot_layout(G)
     >>> pos=nx.pydot_layout(G,prog='dot')
-    
     """
     try:
         import pydot
@@ -286,5 +299,6 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import pydot
+        import dot_parser
     except:
         raise SkipTest("pydot not available")

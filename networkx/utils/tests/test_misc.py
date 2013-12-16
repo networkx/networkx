@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from nose.tools import *
 from nose import SkipTest
 import networkx as nx
@@ -33,6 +34,34 @@ def test_random_number_distribution():
     z=pareto_sequence(20,exponent=1.5)
     z=discrete_sequence(20,distribution=[0,0,0,0,1,1,1,1,2,2,3])
 
+def test_make_str_with_bytes():
+    import sys
+    PY2 = sys.version_info[0] == 2
+
+    x = "qualité"
+    y = make_str(x)
+    if PY2:
+        assert_true(isinstance(y, unicode))
+        # Since file encoding is utf-8, the é will be two bytes.
+        assert_true(len(y) == 8)
+    else:
+        assert_true(isinstance(y, str))
+        assert_true(len(y) == 7)
+
+def test_make_str_with_unicode():
+    import sys
+    PY2 = sys.version_info[0] == 2
+    if PY2:
+        x = unicode("qualité", encoding='utf-8')
+        y = make_str(x)
+        assert_true(isinstance(y, unicode))
+        assert_true(len(y) == 7)
+    else:
+        x = "qualité"
+        y = make_str(x)
+        assert_true(isinstance(y, str))
+        assert_true(len(y) == 7)
+
 class TestNumpyArray(object):
     numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
@@ -49,7 +78,7 @@ class TestNumpyArray(object):
     def test_dict_to_numpy_array1(self):
         d = {'a':1,'b':2}
         a = dict_to_numpy_array1(d)
-        assert_equal(a, numpy.array([1,2]))
+        assert_equal(a, numpy.array(list(d.values())))
         a = dict_to_numpy_array1(d, mapping = {'b':0,'a':1})
         assert_equal(a, numpy.array([2,1]))
 
@@ -57,7 +86,12 @@ class TestNumpyArray(object):
         d = {'a': {'a':1,'b':2},
              'b': {'a':10,'b':20}}
         a = dict_to_numpy_array(d)
-        assert_equal(a, numpy.array([[1,2],[10,20]]))
+        if list(d.keys())[0] == 'a':
+            assert_equal(a, numpy.array([[1,2],[10,20]]))
+        elif list(d.keys())[0] == 'b':
+            assert_equal(a, numpy.array([[20,10],[2,1]]))
+        else:
+            raise
         a = dict_to_numpy_array2(d, mapping = {'b':0,'a':1})
         assert_equal(a, numpy.array([[20,10],[2,1]]))
 
@@ -66,7 +100,12 @@ class TestNumpyArray(object):
         d = {'a': {'a':1,'b':2},
              'b': {'a':10,'b':20}}
         a = dict_to_numpy_array(d)
-        assert_equal(a, numpy.array([[1,2],[10,20]]))
+        if list(d.keys())[0] == 'a':
+            assert_equal(a, numpy.array([[1,2],[10,20]]))
+        elif list(d.keys())[0] == 'b':
+            assert_equal(a, numpy.array([[20,10],[2,1]]))
+        else:
+            raise
         d = {'a':1,'b':2}
-        a = dict_to_numpy_array1(d)
-        assert_equal(a, numpy.array([1,2]))
+        a = dict_to_numpy_array(d)
+        assert_equal(a, numpy.array(list(d.values())))

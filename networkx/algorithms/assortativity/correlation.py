@@ -115,7 +115,7 @@ def degree_pearson_correlation_coefficient(G, x='out', y='in',
     --------
     >>> G=nx.path_graph(4)
     >>> r=nx.degree_pearson_correlation_coefficient(G) 
-    >>> r 
+    >>> print("%3.1f"%r)
     -0.5
 
     Notes

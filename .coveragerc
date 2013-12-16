@@ -2,7 +2,7 @@
 [run]
 branch = False
 source = networkx
-omit = */tests/*,*release.py
+omit = */tests/*,*release.py, */external/*
 
 
 [report]
@@ -28,8 +28,8 @@ exclude_lines =
     def teardown_module
 
     # ignore missing import
-    except ImportError
-    raise ImportError
+    #except ImportError
+    #raise ImportError
 
     # runtime errors
     except RuntimeError 

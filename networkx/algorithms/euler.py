@@ -6,7 +6,7 @@ import networkx as nx
 
 __author__ = """\n""".join(['Nima Mohammadi (nima.irt[AT]gmail.com)',
                             'Aric Hagberg <hagberg@lanl.gov>'])
-#    Copyright (C) 2010 by 
+#    Copyright (C) 2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -56,7 +56,7 @@ def is_eulerian(G):
         if not nx.is_connected(G):
             return False
     return True
-	  
+
 
 def eulerian_circuit(G, source=None):
     """Return the edges of an Eulerian circuit in G.
@@ -66,8 +66,8 @@ def eulerian_circuit(G, source=None):
 
     Parameters
     ----------
-    G : graph
-       A NetworkX Graph
+    G : NetworkX Graph or DiGraph
+        A directed or undirected graph
     source : node, optional
        Starting node for circuit.
 
@@ -87,27 +87,29 @@ def eulerian_circuit(G, source=None):
 
     Notes
     -----
-    Uses Fleury's algorithm [1]_,[2]_  
+    Linear time algorithm, adapted from [1]_.
+    General information about Euler tours [2]_.
 
     References
     ----------
-    .. [1] Fleury, "Deux problemes de geometrie de situation", 
-       Journal de mathematiques elementaires (1883), 257-261.
+    .. [1] J. Edmonds, E. L. Johnson.
+       Matching, Euler tours and the Chinese postman.
+       Mathematical programming, Volume 5, Issue 1 (1973), 111-114.
     .. [2] http://en.wikipedia.org/wiki/Eulerian_path
 
     Examples
     --------
     >>> G=nx.complete_graph(3)
     >>> list(nx.eulerian_circuit(G))
-    [(0, 1), (1, 2), (2, 0)]
-    >>> list(nx.eulerian_circuit(G,source=1)) 
-    [(1, 0), (0, 2), (2, 1)]
+    [(0, 2), (2, 1), (1, 0)]
+    >>> list(nx.eulerian_circuit(G,source=1))
+    [(1, 2), (2, 0), (0, 1)]
     >>> [u for u,v in nx.eulerian_circuit(G)]  # nodes in circuit
-    [0, 1, 2]
+    [0, 2, 1]
     """
+    from operator import itemgetter
     if not is_eulerian(G):
         raise nx.NetworkXError("G is not Eulerian.")
-
     g = G.__class__(G) # copy graph structure (not attributes)
 
     # set starting node
@@ -116,20 +118,25 @@ def eulerian_circuit(G, source=None):
     else:
         v = source
 
-    while g.size() > 0:
-        n = v   
-        # sort nbrs here to provide stable ordering of alternate cycles
-        nbrs = sorted([v for u,v in g.edges(n)])
-        for v in nbrs:
-            g.remove_edge(n,v)
-            bridge = not nx.is_connected(g.to_undirected())
-            if bridge:
-                g.add_edge(n,v)  # add this edge back and try another
-            else:
-                break  # this edge is good, break the for loop 
-        if bridge:
-            g.remove_edge(n,v)            
-            g.remove_node(n)
-        yield (n,v)
+    if g.is_directed():
+        degree = g.in_degree
+        edges = g.in_edges_iter
+        get_vertex = itemgetter(0)
+    else:
+        degree = g.degree
+        edges = g.edges_iter
+        get_vertex = itemgetter(1)
 
-
+    vertex_stack = [v]
+    last_vertex = None
+    while vertex_stack:
+        current_vertex = vertex_stack[-1]
+        if degree(current_vertex) == 0:
+            if last_vertex is not None:
+                yield (last_vertex, current_vertex)
+            last_vertex = current_vertex
+            vertex_stack.pop()
+        else:
+            random_edge = next(edges(current_vertex))
+            vertex_stack.append(get_vertex(random_edge))
+            g.remove_edge(*random_edge)

@@ -34,7 +34,7 @@ def lanl_graph():
         time[int(head)]=float(rtt)
 
     # get largest component and assign ping times to G0time dictionary        
-    G0=nx.connected_component_subgraphs(G)[0]   
+    G0=sorted(nx.connected_component_subgraphs(G), key = len, reverse=True)[0]
     G0.rtt={}
     for n in G0:
         G0.rtt[n]=time[n]

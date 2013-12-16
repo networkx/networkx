@@ -59,8 +59,8 @@ Free software
 NetworkX is free software; you can redistribute it and/or
 modify it under the terms of the :doc:`BSD License </reference/legal>`.
 We welcome contributions from the community.  Information on
-NetworkX development is found at the NetworkX Developer Zone
-https://networkx.lanl.gov/trac.
+NetworkX development is found at the NetworkX Developer Zone at Github
+https://github.com/networkx/networkx
 
 
 History

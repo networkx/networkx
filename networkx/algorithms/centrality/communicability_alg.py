@@ -19,7 +19,6 @@ __all__ = ['communicability_centrality_exp',
            'estrada_index',
            ]
 
-@require('scipy')
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_centrality_exp(G):
@@ -87,7 +86,6 @@ def communicability_centrality_exp(G):
     sc = dict(zip(nodelist,map(float,expA.diagonal())))
     return sc
 
-@require('numpy')
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_centrality(G):
@@ -162,7 +160,6 @@ def communicability_centrality(G):
     sc = dict(zip(nodelist,map(float,xg)))
     return sc
 
-@require('scipy')
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_betweenness_centrality(G, normalized=True):
@@ -281,7 +278,6 @@ def _rescale(sc,normalized):
     return sc
 
 
-@require('numpy','scipy')
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability(G):
@@ -364,7 +360,6 @@ def communicability(G):
             sc[u][v] = float(s)
     return sc
 
-@require('scipy')
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_exp(G):
@@ -439,7 +434,6 @@ def communicability_exp(G):
             sc[u][v] = float(expA[mapping[u],mapping[v]])
     return sc
 
-@require('numpy')
 def estrada_index(G):
     r"""Return the Estrada index of a the graph G.
 

@@ -2,67 +2,105 @@
 """
 Connected components.
 """
-__authors__ = "\n".join(['Eben Kenah',
-                         'Aric Hagberg (hagberg@lanl.gov)'
-                         'Christopher Ellison'])
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
-__all__ = ['number_connected_components', 
-           'connected_components',
-           'connected_component_subgraphs',
-           'is_connected',
-           'node_connected_component',
-           ]
-
 import networkx as nx
+from networkx.utils.decorators import not_implemented_for
+from networkx.algorithms.shortest_paths \
+    import single_source_shortest_path_length as sp_length
+__authors__ = "\n".join(['Eben Kenah',
+                         'Aric Hagberg <aric.hagberg@gmail.com>'
+                         'Christopher Ellison'])
+__all__ = ['number_connected_components', 'connected_components',
+           'connected_component_subgraphs','is_connected',
+           'node_connected_component']
 
+@not_implemented_for('directed')
 def connected_components(G):
-    """Return nodes in connected components of graph.
+    """Generate connected components.
 
     Parameters
     ----------
-    G : NetworkX Graph
-       An undirected graph.
+    G : NetworkX graph
+       An undirected graph
 
     Returns
     -------
-    comp : list of lists
+    comp : generator of lists
        A list of nodes for each component of G.
 
-    See Also       
+    Examples
+    --------
+    Generate a sorted list of connected components, largest first.
+
+    >>> G = nx.path_graph(4)
+    >>> G.add_path([10, 11, 12])
+    >>> sorted(nx.connected_components(G), key = len, reverse=True)
+    [[0, 1, 2, 3], [10, 11, 12]]
+
+    See Also
     --------
     strongly_connected_components
 
     Notes
     -----
-    The list is ordered from largest connected component to smallest.
-    For undirected graphs only. 
+    For undirected graphs only.
     """
-    if G.is_directed():
-        raise nx.NetworkXError("""Not allowed for directed graph G.
-              Use UG=G.to_undirected() to create an undirected graph.""")
     seen={}
-    components=[]
-    for v in G:      
+    for v in G:
         if v not in seen:
-            c=nx.single_source_shortest_path_length(G,v)
-            components.append(list(c.keys()))
+            c = sp_length(G, v)
+            yield list(c)
             seen.update(c)
-    components.sort(key=len,reverse=True)            
-    return components            
 
-
-def number_connected_components(G):
-    """Return number of connected components in graph.
+@not_implemented_for('directed')
+def connected_component_subgraphs(G, copy=True):
+    """Generate connected components as subgraphs.
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : NetworkX graph
+       An undirected graph.
+
+    Returns
+    -------
+    comp : generator
+      A generator of graphs, one for each connected component of G.
+
+    copy: bool (default=True)
+      If True make a copy of the graph attributes
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> G.add_edge(5,6)
+    >>> graphs = list(nx.connected_component_subgraphs(G))
+
+    See Also
+    --------
+    connected_components
+
+    Notes
+    -----
+    For undirected graphs only.
+    Graph, node, and edge attributes are copied to the subgraphs by default.
+    """
+    for c in connected_components(G):
+        if copy:
+            yield G.subgraph(c).copy()
+        else:
+            yield G.subgraph(c)
+
+def number_connected_components(G):
+    """Return the number of connected components.
+
+    Parameters
+    ----------
+    G : NetworkX graph
        An undirected graph.
 
     Returns
@@ -70,19 +108,19 @@ def number_connected_components(G):
     n : integer
        Number of connected components
 
-    See Also       
+    See Also
     --------
     connected_components
 
     Notes
     -----
-    For undirected graphs only. 
+    For undirected graphs only.
     """
-    return len(connected_components(G))
+    return len(list(connected_components(G)))
 
-
+@not_implemented_for('directed')
 def is_connected(G):
-    """Test graph connectivity.
+    """Return True if the graph is connected, false otherwise.
 
     Parameters
     ----------
@@ -96,7 +134,7 @@ def is_connected(G):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> print(nx.is_connected(G))
     True
 
@@ -106,69 +144,23 @@ def is_connected(G):
 
     Notes
     -----
-    For undirected graphs only. 
+    For undirected graphs only.
     """
-    if G.is_directed():
-        raise nx.NetworkXError(\
-            """Not allowed for directed graph G.
-Use UG=G.to_undirected() to create an undirected graph.""")
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept('Connectivity is undefined ',
+                                          'for the null graph.')
+    return len(sp_length(G, next(G.nodes_iter()))) == len(G)
 
-    if len(G)==0:
-        raise nx.NetworkXPointlessConcept(
-            """Connectivity is undefined for the null graph.""")
-
-    return len(nx.single_source_shortest_path_length(G,
-                                              next(G.nodes_iter())))==len(G)
-
-
-def connected_component_subgraphs(G):
-    """Return connected components as subgraphs.
+@not_implemented_for('directed')
+def node_connected_component(G, n):
+    """Return the nodes in the component of graph containing node n.
 
     Parameters
     ----------
     G : NetworkX Graph
        An undirected graph.
 
-    Returns
-    -------
-    glist : list
-      A list of graphs, one for each connected component of G.
-
-    Examples
-    --------
-    Get largest connected component as subgraph
-
-    >>> G=nx.path_graph(4)
-    >>> G.add_edge(5,6)
-    >>> H=nx.connected_component_subgraphs(G)[0]
-
-    See Also
-    --------
-    connected_components
-
-    Notes
-    -----
-    The list is ordered from largest connected component to smallest.
-    For undirected graphs only. 
-
-    Graph, node, and edge attributes are copied to the subgraphs.
-    """
-    cc=connected_components(G)
-    graph_list=[]
-    for c in cc:
-        graph_list.append(G.subgraph(c).copy())
-    return graph_list
-
-
-def node_connected_component(G,n):
-    """Return nodes in connected components of graph containing node n.
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-       An undirected graph.
-
-    n : node label       
+    n : node label
        A node in G
 
     Returns
@@ -176,17 +168,12 @@ def node_connected_component(G,n):
     comp : lists
        A list of nodes in component of G containing node n.
 
-    See Also       
+    See Also
     --------
     connected_components
 
     Notes
     -----
-    For undirected graphs only. 
+    For undirected graphs only.
     """
-    if G.is_directed():
-        raise nx.NetworkXError("""Not allowed for directed graph G.
-              Use UG=G.to_undirected() to create an undirected graph.""")
-    return list(nx.single_source_shortest_path_length(G,n).keys())
-
-        
+    return list(sp_length(G, n))

@@ -5,14 +5,14 @@ import networkx as nx
 
 class TestCycles:
     def setUp(self):
-        G=networkx.Graph() 
+        G=networkx.Graph()
         G.add_cycle([0,1,2,3])
         G.add_cycle([0,3,4,5])
         G.add_cycle([0,1,6,7,8])
         G.add_edge(8,9)
         self.G=G
         
-    def is_cyclic_permuatation(self,a,b):
+    def is_cyclic_permutation(self,a,b):
         n=len(a)
         if len(b)!=n:
             return False
@@ -31,7 +31,7 @@ class TestCycles:
         sort_cy= sorted( sorted(c) for c in cy )
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5]])
         # test disconnected graphs
-        G.add_cycle(list("ABC")) 
+        G.add_cycle(list("ABC"))
         cy=networkx.cycle_basis(G,9)
         sort_cy= sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5],['A','B','C']])
@@ -48,10 +48,10 @@ class TestCycles:
 
     def test_simple_cycles(self):
         G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
-        c=sorted(nx.simple_cycles(G))
-        ca=[[0, 0], [0, 1, 2, 0], [0, 2, 0], [1, 2, 1], [2, 2]]
-        for (a,b) in zip(c,ca):
-            assert_true(self.is_cyclic_permuatation(a[:-1],b[:-1]))
+        cc=sorted(nx.simple_cycles(G))
+        ca=[[0], [0, 1, 2], [0, 2], [1, 2], [2]]
+        for c in cc:
+            assert_true(any(self.is_cyclic_permutation(c,rc) for rc in ca))
 
     @raises(nx.NetworkXNotImplemented)
     def test_simple_cycles_graph(self):
@@ -59,20 +59,22 @@ class TestCycles:
         c = sorted(nx.simple_cycles(G))
 
     def test_unsortable(self):
+        #  TODO What does this test do?  das 6/2013
         G=nx.DiGraph()
         G.add_cycle(['a',1])
-        c=nx.simple_cycles(G)
+        c=list(nx.simple_cycles(G))
 
     def test_simple_cycles_small(self):
         G = nx.DiGraph()
-        G.add_path([1,2,3,1])
+        G.add_cycle([1,2,3])
         c=sorted(nx.simple_cycles(G))
-        assert_equal(c,[[1,2,3,1]])
-        G.add_path([10,20,30,10])
-        c=sorted(nx.simple_cycles(G))
-        ca=[[1,2,3,1],[10,20,30,10]]
-        for (a,b) in zip(c,ca):
-            assert_true(self.is_cyclic_permuatation(a[:-1],b[:-1]))
+        assert_equal(len(c),1)
+        assert_true(self.is_cyclic_permutation(c[0],[1,2,3]))
+        G.add_cycle([10,20,30])
+        cc=sorted(nx.simple_cycles(G))
+        ca=[[1,2,3],[10,20,30]]
+        for c in cc:
+            assert_true(any(self.is_cyclic_permutation(c,rc) for rc in ca))
 
     def test_simple_cycles_empty(self):
         G = nx.DiGraph()
@@ -83,7 +85,7 @@ class TestCycles:
         ncircuits=[1,5,20,84,409,2365,16064]
         for n,c in zip(range(2,9),ncircuits):
             G=nx.DiGraph(nx.complete_graph(n))
-            assert_equal(len(nx.simple_cycles(G)),c)
+            assert_equal(len(list(nx.simple_cycles(G))),c)
         
     def worst_case_graph(self,k):
         # see figure 1 in Johnson's paper
@@ -107,6 +109,14 @@ class TestCycles:
         # see figure 1 in Johnson's paper
         for k in range(3,10):
             G=self.worst_case_graph(k)
-            l=len(nx.simple_cycles(G))
+            l=len(list(nx.simple_cycles(G)))
             assert_equal(l,3*k)
-        
+    
+    def test_recursive_simple_and_not(self):
+        for k in range(2,10):
+            G=self.worst_case_graph(k)
+            cc=sorted(nx.simple_cycles(G))
+            rcc=sorted(nx.recursive_simple_cycles(G))
+            assert_equal(len(cc),len(rcc))
+            for c in cc:
+                assert_true(any(self.is_cyclic_permutation(c,rc) for rc in rcc))

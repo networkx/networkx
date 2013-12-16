@@ -2,30 +2,22 @@
 Download
 --------
 
-Source and binary releases
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-http://cheeseshop.python.org/pypi/networkx/
+Software
+~~~~~~~~
 
-http://networkx.lanl.gov/download/networkx/
+Source and binary releases: http://cheeseshop.python.org/pypi/networkx/
 
-Mercurial source code repository
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*Anonymous*          
-
-hg clone http://networkx.lanl.gov/hg/networkx
-
-*Authenticated* 
-
-hg clone https://networkx.lanl.gov/hg/networkx
+Github (latest development): https://github.com/networkx/networkx/
 
 
 Documentation
 ~~~~~~~~~~~~~
 *PDF*
 
-http://networkx.lanl.gov/networkx_reference.pdf
-http://networkx.lanl.gov/networkx_tutorial.pdf
+http://networkx.github.io/documentation/latest/_downloads/networkx_tutorial.pdf
+
+http://networkx.github.io/documentation/latest/_downloads/networkx_reference.pdf
 
 *HTML in zip file*
 
-http://networkx.lanl.gov/networkx-documentation.zip
+http://networkx.github.io/documentation/latest/_downloads/networkx-documentation.zip

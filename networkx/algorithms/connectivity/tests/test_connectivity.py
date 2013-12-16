@@ -1,4 +1,4 @@
-from nose.tools import assert_equal, assert_true, assert_false
+from nose.tools import assert_equal, assert_true, assert_false, raises
 import networkx as nx
 
 # helper functions for tests
@@ -16,17 +16,6 @@ def _generate_no_biconnected(max_attempts=50):
             else:
                 attempts += 1
 
-def is_dominating_set(G, nbunch):
-    # Proposed by Dan on the mailing list
-    allnodes=set(G)
-    testset=set(n for n in nbunch if n in G)
-    nbrs=set()
-    for n in testset:
-        nbrs.update(G[n])
-    if nbrs - allnodes:  # some nodes left--not dominating
-        return False
-    else:
-        return True
 
 # Tests for node and edge connectivity
 def test_average_connectivity():
@@ -42,6 +31,11 @@ def test_average_connectivity():
     assert_equal(nx.average_node_connectivity(G2),2.2)
     G3 = nx.Graph()
     assert_equal(nx.average_node_connectivity(G3),0)
+
+def test_average_connectivity_directed():
+    G = nx.DiGraph([(1,3),(1,4),(1,5)])
+    assert_equal(nx.average_node_connectivity(G),0.25)
+
 
 def test_articulation_points():
     Ggen = _generate_no_biconnected()
@@ -128,6 +122,34 @@ def test_icosahedral():
     assert_equal(5, nx.node_connectivity(G))
     assert_equal(5, nx.edge_connectivity(G))
 
+
+@raises(nx.NetworkXError)
+def test_missing_source():
+    G = nx.path_graph(4)
+    nx.node_connectivity(G,10, 1)
+
+@raises(nx.NetworkXError)
+def test_missing_target():
+    G = nx.path_graph(4)
+    nx.node_connectivity(G,1, 10)
+
+@raises(nx.NetworkXError)
+def test_edge_missing_source():
+    G = nx.path_graph(4)
+    nx.edge_connectivity(G,10, 1)
+
+@raises(nx.NetworkXError)
+def test_edge_missing_target():
+    G = nx.path_graph(4)
+    nx.edge_connectivity(G,1, 10)
+
+def test_not_weakly_connected():
+    G = nx.DiGraph()
+    G.add_path([1,2,3])
+    G.add_path([4,5])
+    assert_equal(nx.node_connectivity(G), 0)
+    assert_equal(nx.edge_connectivity(G), 0)
+
 def test_directed_edge_connectivity():
     G = nx.cycle_graph(10,create_using=nx.DiGraph()) # only one direction
     D = nx.cycle_graph(10).to_directed() # 2 reciprocal edges
@@ -137,9 +159,3 @@ def test_directed_edge_connectivity():
     assert_equal(2, nx.edge_connectivity(D))
     assert_equal(2, nx.local_edge_connectivity(D,1,4))
     assert_equal(2, nx.edge_connectivity(D,1,4))
-
-def test_dominating_set():
-    for i in range(5):
-        G = nx.gnp_random_graph(100,0.1)
-        D = nx.dominating_set(G)
-        assert_true(is_dominating_set(G,D))

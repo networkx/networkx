@@ -4,6 +4,43 @@
 Release Log
 ===========
 
+Networkx-1.8.1
+--------------
+Release date:  4 August 2013
+
+Bugfix release for missing files in source packaging
+
+
+Networkx-1.8
+------------
+Release date:  28 July 2013
+
+Highlights
+~~~~~~~~~~
+- Faster (linear-time) graphicality tests and Havel-Hakimi graph generators
+- Directed Laplacian matrix generator
+- Katz centrality algorithm
+- Functions to generate all simple paths
+- Improved shapefile reader
+- More flexible weighted projection of bipartite graphs
+- Faster topological sort, decendents and ancestors of DAGs
+- Scaling parameter for force-directed layout
+
+Bug Fixes
+---------
+- Error with average weighted connectivity for digraphs, correct normalized laplacian with self-loops, load betweenness for single node graphs, isolated nodes missing from dfs/bfs trees, normalize HITS using l1, handle density of graphs with self loops
+
+- Cleaner handling of current figure status with Matplotlib, Pajek files now don't write troublesome header line, default alpha value for GEXF files, read curved edges from yEd GraphML
+
+
+For full details of the issues closed for this release (added features and bug fixes) see: https://github.com/networkx/networkx/issues?milestone=1&page=1&state=closed
+
+
+API Changes
+~~~~~~~~~~~
+See :doc:`api_1.8`
+
+
 Networkx-1.7
 ------------
 Release date:  4 July 2012
@@ -276,7 +313,7 @@ add_nodes_from now accepts (node,attrdict) two-tuples
 
 Examples
 ~~~~~~~~
- - `Mayvi2 drawing <http://networkx.lanl.gov/examples/drawing/mayavi2_spring.html>`_
+ - `Mayvi2 drawing <http://networkx.github.io/documentation/latest/examples/3d_drawing/mayavi2_spring.html>`_
  - `Blockmodel <http://networkx.lanl.gov/examples/algorithms/blockmodel.html>`_
  - `Sampson's monastery <http://networkx.lanl.gov/examples/drawing/sampson.html>`_
  - `Ego graph <http://networkx.lanl.gov/examples/drawing/ego_graph.html>`_

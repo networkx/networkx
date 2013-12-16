@@ -25,9 +25,9 @@ class TestCore:
         # [0,1,2,2,2,2,3] when using the Havel-Hakimi algorithm. 
 
         degseq=[0,1,2,2,2,2,3]
-        self.H=nx.havel_hakimi_graph(degseq)
-
-
+        H = nx.havel_hakimi_graph(degseq)
+        mapping = {6:0, 0:1, 4:3, 5:6, 3:4, 1:2, 2:5 }
+        self.H = nx.relabel_nodes(H, mapping)
 
     def test_trivial(self):
         """Empty graph"""

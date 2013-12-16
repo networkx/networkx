@@ -1,3 +1,4 @@
+#  -*- coding: utf-8 -*-
 import json
 from nose.tools import assert_equal, assert_raises, assert_not_equal,assert_true
 import networkx as nx
@@ -42,3 +43,16 @@ class TestNodeLink:
         H = node_link_graph(node_link_data(G))
         nx.is_isomorphic(G,H)
         assert_equal(H[1][2]['second']['color'],'blue')
+
+    def test_unicode_keys(self):
+        try:
+            q = unicode("qualité",'utf-8')
+        except NameError:
+            q = "qualité"
+        G = nx.Graph()
+        G.add_node(1, {q:q})
+        s = node_link_data(G)
+        output = json.dumps(s, ensure_ascii=False)
+        data = json.loads(output)
+        H = node_link_graph(data)
+        assert_equal(H.node[1][q], q)

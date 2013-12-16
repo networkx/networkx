@@ -10,12 +10,16 @@ http://pypi.python.org/pypi/networkx
 
 or install it with::
 
-   easy_install networkx
+   pip install networkx
 
 and an attempt will be made to find and install an appropriate version
 that matches your operating system and Python version.
 
-More download file options are at http://networkx.lanl.gov/download.html
+You can install the development version (at github.com) with::
+
+  pip install git://github.com/networkx/networkx.git#egg=networkx
+
+More download file options are at http://networkx.github.io/download.html
 
 Installing from source
 ======================
@@ -31,9 +35,9 @@ Source archive file
 -------------------
 
   1. Download the source (tar.gz or zip file) from
-     http://cheeseshop.python.org/pypi/networkx/
+     https://pypi.python.org/pypi/networkx/
      or get the latest development version from
-     http://networkx.lanl.gov/hg/networkx
+     https://github.com/networkx/networkx/
 
   2. Unpack and change directory to the source directory
      (it should have the files README.txt and setup.py).
@@ -43,12 +47,14 @@ Source archive file
   4. (optional) Run "python setup_egg.py nosetests" to execute the tests
 
 
-Mercurial repository
---------------------
+Github
+------
 
   1. Clone the networkx repostitory
 
-       hg clone http://networkx.lanl.gov/hg/networkx
+       git clone https://github.com/networkx/networkx.git
+
+  (see https://github.com/networkx/networkx/ for other options)
 
   2. Change directory to "networkx"
 
@@ -73,7 +79,7 @@ For example
 
 If you didn't install in the standard Python site-packages directory
 you will need to set your PYTHONPATH variable to the alternate location.
-See http://docs.python.org/inst/search-path.html for further details.
+Seehttp://docs.python.org/2/install/index.html#search-path for further details.
 
 
 Requirements
@@ -87,30 +93,10 @@ Most of NetworkX works with Python version 3.1.2 or later.
 http://www.python.org/
 
 The easiest way to get Python and most optional packages is to install
-the Enthought Python distribution
-http://www.enthought.com/products/epd.php
+the Enthought Python distribution "Canopy"
+https://www.enthought.com/products/canopy/
 
-Other options are:
-
-Windows
-~~~~~~~
- - Official Python site version:  http://www.python.org/download/
-
- - ActiveState version: http://www.activestate.com/activepython/
-
-OSX
-~~~
- - Official Python site version  http://www.python.org/download/
-
- - ActiveState http://activestate.com/Products/ActivePython/
-
-
-If you are using Fink or MacPorts, Python is available through both
-of those package systems.
-
-Linux
-~~~~~
-Python is included in all major Linux distributions
+There are several other distributions that contain the key packages you need for scientific computing.  See the following link for a list: http://scipy.org/install.html
 
 
 Optional packages
@@ -177,4 +163,3 @@ Other packages
 These are extra packages you may consider using with NetworkX
 
       - IPython, interactive Python shell, http://ipython.scipy.org/
-      - PyYAML, structured output format, http://pyyaml.org/

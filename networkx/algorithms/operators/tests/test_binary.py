@@ -268,3 +268,41 @@ def test_compose_multigraph():
     assert_equal( set(GH) , set(G)|set(H))
     assert_equal( set(GH.edges(keys=True)) , 
                   set(G.edges(keys=True))|set(H.edges(keys=True)))    
+
+
+@raises(nx.NetworkXError)
+def test_mixed_type_union():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.union(G,H)
+
+@raises(nx.NetworkXError)
+def test_mixed_type_disjoint_union():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.disjoint_union(G,H)
+
+@raises(nx.NetworkXError)
+def test_mixed_type_intersection():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.intersection(G,H)
+
+@raises(nx.NetworkXError)
+def test_mixed_type_difference():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.difference(G,H)
+
+
+@raises(nx.NetworkXError)
+def test_mixed_type_symmetric_difference():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.symmetric_difference(G,H)
+
+@raises(nx.NetworkXError)
+def test_mixed_type_compose():
+    G = nx.Graph()
+    H = nx.MultiGraph()
+    U = nx.compose(G,H)

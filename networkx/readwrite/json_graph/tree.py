@@ -7,6 +7,7 @@
 from itertools import count,repeat
 import json
 import networkx as nx
+from networkx.utils import make_str
 __author__ = """Aric Hagberg (hagberg@lanl.gov))"""
 __all__ = ['tree_data',
            'tree_graph']
@@ -101,7 +102,7 @@ def tree_graph(data):
             grandchildren = data.get('children',[])
             if grandchildren:
                 add_children(child,grandchildren)
-            nodedata = dict((str(k),v) for k,v in data.items() 
+            nodedata = dict((make_str(k),v) for k,v in data.items() 
                             if k!='id' and k!='children')
             graph.add_node(child,attr_dict=nodedata)
     root = data['id']

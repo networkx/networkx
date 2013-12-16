@@ -55,8 +55,8 @@ def cuthill_mckee_ordering(G, start=None):
     .. [2]  Steven S. Skiena. 1997. The Algorithm Design Manual. 
        Springer-Verlag New York, Inc., New York, NY, USA.
     """
-    for g in nx.connected_component_subgraphs(G):
-        for n in connected_cuthill_mckee_ordering(g, start):
+    for c in nx.connected_components(G):
+        for n in connected_cuthill_mckee_ordering(G.subgraph(c), start):
             yield n
 
 def reverse_cuthill_mckee_ordering(G, start=None):

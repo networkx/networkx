@@ -51,3 +51,17 @@ class TestFloydNumpy(object):
         pred,dist = nx.floyd_warshall_predecessor_and_distance(G)
         D = nx.utils.dict_to_numpy_array(dist)
         assert_equal(nx.floyd_warshall_numpy(G),D)
+
+    def test_zero_weight(self):
+        G = nx.DiGraph()
+        edges = [(1,2,-2), (2,3,-4), (1,5,1), (5,4,0), (4,3,-5), (2,5,-7)]
+        G.add_weighted_edges_from(edges)
+        dist = nx.floyd_warshall_numpy(G)
+        assert_equal(int(numpy.min(dist)), -14)
+
+        G = nx.MultiDiGraph()
+        edges.append( (2,5,-7) )
+        G.add_weighted_edges_from(edges)
+        dist = nx.floyd_warshall_numpy(G)
+        assert_equal(int(numpy.min(dist)), -14)
+

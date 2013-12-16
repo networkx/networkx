@@ -20,11 +20,15 @@ __all__ = ['categorical_node_match',
 def copyfunc(f, name=None):
     """Returns a deepcopy of a function."""
     try:
-        return types.FunctionType(f.func_code, f.func_globals, name or f.name,
-                                  f.func_defaults, f.func_closure)
+        # Python <3
+        return types.FunctionType(f.func_code, f.func_globals,
+                                  name or f.__name__, f.func_defaults,
+                                  f.func_closure)
     except AttributeError:
-        return types.FunctionType(f.__code__, f.__globals__, name or f.name,
-                                  f.__defaults__, f.__closure__)
+        # Python >=3
+        return types.FunctionType(f.__code__, f.__globals__,
+                                  name or f.__name__, f.__defaults__,
+                                  f.__closure__)
 
 def allclose(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
     """Returns True if x and y are sufficiently close, elementwise.

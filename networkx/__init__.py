@@ -63,6 +63,10 @@ from networkx.classes import *
 import networkx.convert
 from networkx.convert import *
 
+import networkx.convert_matrix
+from networkx.convert_matrix import *
+
+
 import networkx.relabel
 from networkx.relabel import *
 

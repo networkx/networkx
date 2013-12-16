@@ -65,10 +65,26 @@ def is_list_of_ints( intlist ):
         if not isinstance(i,int): return False
     return True
 
-def make_str(t):
-    """Return the string representation of t."""
-    if is_string_like(t): return t
-    return str(t)
+PY2 = sys.version_info[0] == 2
+if PY2:
+    def make_str(x):
+        """Return the string representation of t."""
+        if isinstance(x, unicode):
+            return x
+        else:
+            # Note, this will not work unless x is ascii-encoded.
+            # That is good, since we should be working with unicode anyway.
+            # Essentially, unless we are reading a file, we demand that users
+            # convert any encoded strings to unicode before using the library.
+            #
+            # Also, the str() is necessary to convert integers, etc.
+            # unicode(3) works, but unicode(3, 'unicode-escape') wants a buffer.
+            #
+            return unicode(str(x), 'unicode-escape')
+else:
+    def make_str(x):
+        """Return the string representation of t."""
+        return str(x)
 
 def cumulative_sum(numbers):
     """Yield cumulative sum of numbers.
@@ -125,11 +141,12 @@ def dict_to_numpy_array2(d,mapping=None):
         mapping=dict(zip(s,range(len(s))))
     n=len(mapping)
     a = numpy.zeros((n, n))
-    for k1, row in d.items():
-        for k2, value in row.items():
-            i=mapping[k1]
-            j=mapping[k2]
-            a[i,j] = value
+    for k1, i in mapping.items():
+        for k2, j in mapping.items():
+            try:
+                a[i,j]=d[k1][k2]
+            except KeyError:
+                pass
     return a
 
 def dict_to_numpy_array1(d,mapping=None):
@@ -145,7 +162,7 @@ def dict_to_numpy_array1(d,mapping=None):
         mapping = dict(zip(s,range(len(s))))
     n = len(mapping)
     a = numpy.zeros(n)
-    for k1, value in d.items():
+    for k1,i in mapping.items():
         i = mapping[k1]
-        a[i] = value
+        a[i] = d[k1]
     return a

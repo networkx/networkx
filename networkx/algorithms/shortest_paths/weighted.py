@@ -164,7 +164,7 @@ def single_source_dijkstra_path(G,source, cutoff=None, weight='weight'):
     single_source_dijkstra()
 
     """
-    (length,path)=single_source_dijkstra(G,source, weight = weight)
+    (length,path)=single_source_dijkstra(G,source, cutoff = cutoff, weight = weight)
     return path
 
 

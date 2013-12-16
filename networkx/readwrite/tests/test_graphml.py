@@ -154,6 +154,12 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
                      sorted(H.edges(data=True)))
         self.simple_directed_fh.seek(0)
 
+        I=nx.parse_graphml(self.simple_directed_data)
+        assert_equal(sorted(G.nodes()),sorted(I.nodes()))
+        assert_equal(sorted(G.edges()),sorted(I.edges()))
+        assert_equal(sorted(G.edges(data=True)),
+                     sorted(I.edges(data=True)))
+
     def test_write_read_simple_directed_graphml(self):
         G=self.simple_directed_graph
         fh=io.BytesIO()
@@ -175,6 +181,12 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
             sorted(sorted(e) for e in H.edges()))
         self.simple_undirected_fh.seek(0)
 
+        I=nx.parse_graphml(self.simple_undirected_data)
+        assert_equal(sorted(G.nodes()),sorted(I.nodes()))
+        assert_equal(
+            sorted(sorted(e) for e in G.edges()),
+            sorted(sorted(e) for e in I.edges()))
+
     def test_read_attribute_graphml(self):
         G=self.attribute_graph
         H=nx.read_graphml(self.attribute_fh)
@@ -184,6 +196,13 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         for a,b in zip(ge,he):
             assert_equal(a,b)
         self.attribute_fh.seek(0)
+
+        I=nx.parse_graphml(self.attribute_data)
+        assert_equal(sorted(G.nodes(True)),sorted(I.nodes(data=True)))
+        ge=sorted(G.edges(data=True))
+        he=sorted(I.edges(data=True))
+        for a,b in zip(ge,he):
+            assert_equal(a,b)
 
     def test_directed_edge_in_undirected(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
@@ -199,6 +218,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 </graphml>"""
         fh = io.BytesIO(s.encode('UTF-8'))
         assert_raises(nx.NetworkXError,nx.read_graphml,fh)
+        assert_raises(nx.NetworkXError,nx.parse_graphml,s)
 
     def test_undirected_edge_in_directed(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
@@ -214,6 +234,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 </graphml>"""
         fh = io.BytesIO(s.encode('UTF-8'))
         assert_raises(nx.NetworkXError,nx.read_graphml,fh)
+        assert_raises(nx.NetworkXError,nx.parse_graphml,s)
 
     def test_key_error(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
@@ -241,6 +262,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 """
         fh = io.BytesIO(s.encode('UTF-8'))
         assert_raises(nx.NetworkXError,nx.read_graphml,fh)
+        assert_raises(nx.NetworkXError,nx.parse_graphml,s)
 
     def test_hyperedge_error(self):
         s="""<?xml version="1.0" encoding="UTF-8"?>
@@ -270,6 +292,7 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
 """
         fh = io.BytesIO(s.encode('UTF-8'))
         assert_raises(nx.NetworkXError,nx.read_graphml,fh)
+        assert_raises(nx.NetworkXError,nx.parse_graphml,s)
 
     # remove test until we get the "name" issue sorted
     # https://networkx.lanl.gov/trac/ticket/544
@@ -358,6 +381,12 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         assert_equal(G.node['n0']['label'],'1')
         assert_equal(G.node['n1']['label'],'2')
 
+        H=nx.parse_graphml(data)
+        assert_equal(H.edges(),[('n0','n1')])
+        assert_equal(H['n0']['n1']['id'],'e0')
+        assert_equal(H.node['n0']['label'],'1')
+        assert_equal(H.node['n1']['label'],'2')
+
     def test_unicode(self):
         G = nx.Graph()
         try: # Python 3.x
@@ -409,3 +438,8 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
         G=nx.read_graphml(fh)
         assert_equal(G.node['n0']['test'],True)
         assert_equal(G.node['n2']['test'],False)
+
+        H=nx.parse_graphml(s)
+        assert_equal(H.node['n0']['test'],True)
+        assert_equal(H.node['n2']['test'],False)
+

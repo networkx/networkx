@@ -17,9 +17,9 @@ class TestCliques:
     def test_find_cliques1(self):
         cl=list(nx.find_cliques(self.G))
         rcl=nx.find_cliques_recursive(self.G)
+        expected = [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]]
         assert_equal(sorted(map(sorted,cl)), sorted(map(sorted,rcl)))
-        assert_equal(cl,
-                     [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]])
+        assert_equal(sorted(map(sorted,cl)), sorted(map(sorted, expected)))
 
     def test_selfloops(self):
         self.G.add_edge(1,1)
@@ -73,10 +73,10 @@ class TestCliques:
         assert_equal(nx.node_clique_number(G,[1,2]),{1: 4, 2: 4})
         assert_equal(nx.node_clique_number(G,1),4)
         assert_equal(nx.node_clique_number(G),
-                     {1: 4, 2: 4, 3: 4, 4: 3, 5: 3, 6: 4, 
+                     {1: 4, 2: 4, 3: 4, 4: 3, 5: 3, 6: 4,
                       7: 3, 8: 2, 9: 2, 10: 2, 11: 2})
         assert_equal(nx.node_clique_number(G,cliques=self.cl),
-                     {1: 4, 2: 4, 3: 4, 4: 3, 5: 3, 6: 4, 
+                     {1: 4, 2: 4, 3: 4, 4: 3, 5: 3, 6: 4,
                       7: 3, 8: 2, 9: 2, 10: 2, 11: 2})
 
     def test_cliques_containing_node(self):

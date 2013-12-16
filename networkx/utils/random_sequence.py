@@ -15,7 +15,10 @@ __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)',
                         'Ben Edwards(bedwards@cs.unm.edu)'])
 
+import warnings as _warnings
 def create_degree_sequence(n, sfunction=None, max_tries=50, **kwds):
+    _warnings.warn("create_degree_sequence() is deprecated",
+                   DeprecationWarning)
     """ Attempt to create a valid degree sequence of length n using
     specified function sfunction(n,**kwds).
 
@@ -118,7 +121,6 @@ def zipf_rv(alpha, xmin=1, seed=None):
     ----------
     ..[1] Luc Devroye, Non-Uniform Random Variate Generation, 
        Springer-Verlag, New York, 1986.
-       http://cg.scs.carleton.ca/~luc/rnbookindex.html
     """
     if xmin < 1:
         raise ValueError("xmin < 1")

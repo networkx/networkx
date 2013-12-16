@@ -245,3 +245,20 @@ def test_maximal_matching():
         ok_(len(set([v]) & vset) > 0 or len(set([u]) & vset) > 0, \
                 "not a proper matching!")
 
+def test_maximal_matching_ordering():
+    # check edge ordering
+    G = nx.Graph()
+    G.add_nodes_from([100,200,300])
+    G.add_edges_from([(100,200),(100,300)])
+    matching = nx.maximal_matching(G)
+    assert_equal(len(matching), 1)
+    G = nx.Graph()
+    G.add_nodes_from([200,100,300])
+    G.add_edges_from([(100,200),(100,300)])
+    matching = nx.maximal_matching(G)
+    assert_equal(len(matching), 1)
+    G = nx.Graph()
+    G.add_nodes_from([300,200,100])
+    G.add_edges_from([(100,200),(100,300)])
+    matching = nx.maximal_matching(G)
+    assert_equal(len(matching), 1)

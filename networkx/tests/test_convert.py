@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-
-"""Convert
-=======
-"""
-
 from nose.tools import *
 from networkx import *
 from networkx.convert import *
@@ -13,8 +8,6 @@ from networkx.generators.classic import barbell_graph,cycle_graph
 class TestConvert():
     def edgelists_equal(self,e1,e2):
         return sorted(sorted(e) for e in e1)==sorted(sorted(e) for e in e2)
-    
-        
 
     def test_simple_graphs(self):
         for dest, source in [(to_dict_of_dicts, from_dict_of_dicts),
@@ -78,7 +71,7 @@ class TestConvert():
         ex=zip(source,dest,source)
         G=Graph()
         G.add_weighted_edges_from(ex)
-        
+
         # Dict of dicts
         dod=to_dict_of_dicts(G)
         GG=from_dict_of_dicts(dod,create_using=Graph())
@@ -163,7 +156,7 @@ class TestConvert():
         #assert_not_equal(sorted(XGM.edges()), sorted(GI.edges()))
         assert_false(sorted(XGM.edges()) == sorted(GI.edges()))
         GE=from_dict_of_dicts(dod,create_using=MultiGraph(),
-                              multigraph_input=False)  
+                              multigraph_input=False)
         assert_equal(sorted(XGM.nodes()), sorted(GE.nodes()))
         assert_not_equal(sorted(XGM.edges()), sorted(GE.edges()))
         GI=MultiGraph(XGM)

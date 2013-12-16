@@ -54,25 +54,28 @@ class TestGEXF(object):
         <attvalues>
           <attvalue for="0" value="http://gephi.org"/>
           <attvalue for="1" value="1"/>
+          <attvalue for="2" value="false"/>
         </attvalues>
       </node>
       <node id="1" label="Webatlas">
         <attvalues>
           <attvalue for="0" value="http://webatlas.fr"/>
           <attvalue for="1" value="2"/>
+          <attvalue for="2" value="False"/>
         </attvalues>
       </node>
       <node id="2" label="RTGI">
         <attvalues>
           <attvalue for="0" value="http://rtgi.fr"/>
           <attvalue for="1" value="1"/>
+          <attvalue for="2" value="true"/>
         </attvalues>
       </node>
       <node id="3" label="BarabasiLab">
         <attvalues>
           <attvalue for="0" value="http://barabasilab.com"/>
           <attvalue for="1" value="1"/>
-          <attvalue for="2" value="false"/>
+          <attvalue for="2" value="True"/>
         </attvalues>
       </node>
     </nodes>
@@ -91,22 +94,25 @@ class TestGEXF(object):
         self.attribute_graph.add_node('0',
                                       label='Gephi',
                                       url='http://gephi.org',
-                                      indegree=1)
+                                      indegree=1,
+                                      frog=False)
         self.attribute_graph.add_node('1',
                                       label='Webatlas',
                                       url='http://webatlas.fr',
-                                      indegree=2)
+                                      indegree=2,
+                                      frog=False)
 
         self.attribute_graph.add_node('2',
                                       label='RTGI',
                                       url='http://rtgi.fr',
-                                      indegree=1)
+                                      indegree=1,
+                                      frog=True)
 
         self.attribute_graph.add_node('3',
                                       label='BarabasiLab',
                                       url='http://barabasilab.com',
                                       indegree=1,
-                                      frog=False)
+                                      frog=True)
         self.attribute_graph.add_edge('0','1',id='0')
         self.attribute_graph.add_edge('0','2',id='1')
         self.attribute_graph.add_edge('1','0',id='2')
@@ -265,6 +271,10 @@ class TestGEXF(object):
         assert_equal(
             sorted(sorted(e) for e in G.edges()),
             sorted(sorted(e) for e in H.edges()))
+        # Reading a gexf graph always sets mode attribute to either
+        # 'static' or 'dynamic'. Remove the mode attribute from the
+        # read graph for the sake of comparing remaining attributes.
+        del H.graph['mode']
         assert_equal(G.graph,H.graph)
 
     def test_serialize_ints_to_strings(self):
@@ -303,4 +313,11 @@ class TestGEXF(object):
         obtained = '\n'.join(nx.generate_gexf(G))
         assert_equal( expected, obtained )
 
-
+    def test_bool(self):
+        G=nx.Graph()
+        G.add_node(1, testattr=True)
+        fh = io.BytesIO()
+        nx.write_gexf(G,fh)
+        fh.seek(0)
+        H=nx.read_gexf(fh,node_type=int)
+        assert_equal(H.node[1]['testattr'], True)

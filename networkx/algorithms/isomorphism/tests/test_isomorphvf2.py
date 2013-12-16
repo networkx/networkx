@@ -7,6 +7,7 @@ import struct
 import random
 
 from nose.tools import assert_true, assert_equal
+from nose import SkipTest
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
@@ -100,19 +101,31 @@ class TestVF2GraphDB(object):
         gm = iso.GraphMatcher(graph, subgraph)
         assert_true(gm.subgraph_is_isomorphic())
 
-def test_graph_atlas():
-    #Atlas = nx.graph_atlas_g()[0:208] # 208, 6 nodes or less
-    Atlas = nx.graph_atlas_g()[0:100]
-    alphabet = list(range(26))
-    for graph in Atlas:
-        nlist = graph.nodes()
-        labels = alphabet[:len(nlist)]
-        for s in range(10):
-            random.shuffle(labels)
-            d = dict(zip(nlist,labels))
-            relabel = nx.relabel_nodes(graph, d)
-            gm = iso.GraphMatcher(graph, relabel)
-            assert_true(gm.is_isomorphic())
+class TestAtlas(object):
+    @classmethod
+    def setupClass(cls):
+        global atlas
+        import platform
+        if platform.python_implementation()=='Jython':
+            raise SkipTest('graph atlas not available under Jython.')
+        import networkx.generators.atlas as atlas
+            
+    def setUp(self):
+        self.GAG=atlas.graph_atlas_g()
+
+    def test_graph_atlas(self):
+        #Atlas = nx.graph_atlas_g()[0:208] # 208, 6 nodes or less
+        Atlas = self.GAG[0:100]
+        alphabet = list(range(26))
+        for graph in Atlas:
+            nlist = graph.nodes()
+            labels = alphabet[:len(nlist)]
+            for s in range(10):
+                random.shuffle(labels)
+                d = dict(zip(nlist,labels))
+                relabel = nx.relabel_nodes(graph, d)
+                gm = iso.GraphMatcher(graph, relabel)
+                assert_true(gm.is_isomorphic())
 
 def test_multiedge():
     # Simple test for multigraphs
