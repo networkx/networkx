@@ -17,4 +17,4 @@ from networkx.generators.social import *
 from networkx.generators.threshold import *
 from networkx.generators.intersection import *
 from networkx.generators.random_clustered import *
-
+from networkx.generators.community import *
