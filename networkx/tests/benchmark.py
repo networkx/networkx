@@ -89,7 +89,6 @@ if __name__ == "__main__":
 #    tests=['edges','laplacian']
     #tests=all_tests[-1:]
     N=100
-    print "ready"
 
     if 'add_nodes' in tests:
         title='Benchmark: Adding nodes'
