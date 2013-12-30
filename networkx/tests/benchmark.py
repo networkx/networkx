@@ -40,8 +40,10 @@ class Benchmark(object):
             graph_class = [graph_class]
 
         for GC in graph_class:
-            setup_string='import networkx as NX\nG=NX.%s.%s()\n'%\
-                          (GC.lower(),GC) + setup_str
+#            setup_string='import networkx as NX\nG=NX.%s.%s()\n'%(GC.lower(),GC) \
+#                    + setup_str
+            setup_string='import networkx as NX\nG=NX.%s()\n'%(GC,) \
+                    + setup_str
             self.class_tests[GC] = Timer(test_str, setup_string)
 
 
@@ -58,7 +60,8 @@ class Benchmark(object):
         for GC,timer in self.class_tests.items():
             name = GC.ljust(column_len)
             try:
-                t=sum(timer.repeat(self.runs,self.reps))/self.runs
+#                t=sum(timer.repeat(self.runs,self.reps))/self.runs
+                t=min(timer.repeat(self.runs,self.reps))
 #                print "%s: %s" % (name, timer.repeat(self.runs,self.reps))
                 times.append((t,name))
             except Exception as e:
@@ -75,14 +78,18 @@ class Benchmark(object):
 if __name__ == "__main__":
     # set up for all routines:
     classes=['Graph','MultiGraph','DiGraph','MultiDiGraph']
+#    classes=['Graph','MultiGraph','DiGraph','MultiDiGraph',
+#            'SpecialGraph','SpecialDiGraph','SpecialMultiGraph','SpecialMultiDiGraph']
+#    classes=['Graph','SpecialGraph']
     all_tests=['add_nodes','add_edges','remove_nodes','remove_edges',\
             'neighbors','edges','degree','dijkstra','shortest path',\
             'subgraph','edgedata_subgraph','laplacian']
     # Choose which tests to run
     tests=all_tests
-    tests=['subgraph','edgedata_subgraph']
+#    tests=['edges','laplacian']
     #tests=all_tests[-1:]
     N=100
+    print "ready"
 
     if 'add_nodes' in tests:
         title='Benchmark: Adding nodes'
@@ -115,134 +122,70 @@ if __name__ == "__main__":
         N=500
         p=0.3
         title='Benchmark: reporting neighbors'
-        b=Benchmark(classes,title,runs=3,reps=1)
-        test_string='for n in G:\n for nbr in G.neighbors(n):\n  pass'
-        all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
-        setup=all_setup+'G.add_edge(u,v)\n'
-        if 'Graph' in classes: b['Graph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
+        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        test_string=('for n in G:\n for nbr in G.neighbors(n):\n  pass',setup)
+        b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
 
     if 'edges' in tests:
         N=500
         p=0.3
         title='Benchmark: reporting edges'
-        b=Benchmark(classes,title,runs=3,reps=1)
-        test_string='for n in G:\n for e in G.edges(n):\n  pass'
-        all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
-        setup=all_setup+'G.add_edge(u,v)\n'
-        if 'Graph' in classes: b['Graph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
+        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        test_string=('for n in G:\n for e in G.edges(n):\n  pass',setup)
+        b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
 
     if 'degree' in tests:
         N=500
         p=0.3
         title='Benchmark: reporting degree'
-        b=Benchmark(classes,title,runs=3,reps=1)
-        test_string='for d in G.degree():\n  pass'
-        all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
-        setup=all_setup+'G.add_edge(u,v)\n'
-        if 'Graph' in classes: b['Graph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
+        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        test_string=('for d in G.degree():\n  pass',setup)
+        b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
 
     if 'dijkstra' in tests:
         N=500
         p=0.3
         title='dijkstra single source shortest path'
-        b=Benchmark(classes,title,runs=3,reps=1)
-        test_string='p=NX.single_source_dijkstra(G,i)'
-        all_setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'Graph' in classes: b['Graph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
+        setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        test_string=('p=NX.single_source_dijkstra(G,i)',setup)
+        b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
 
     if 'shortest path' in tests:
         N=500
         p=0.3
         title='single source shortest path'
-        b=Benchmark(classes,title,runs=3,reps=1)
-        test_string='p=NX.single_source_shortest_path(G,i)'
-        all_setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'Graph' in classes: b['Graph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
+        setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        test_string=('p=NX.single_source_shortest_path(G,i)',setup)
+        b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
 
     if 'subgraph' in tests:
         N=500
         p=0.3
         title='subgraph method'
-        b=Benchmark(classes,title,runs=3,reps=1)
-        test_string='G.subgraph(nlist)'
-        all_setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'Graph' in classes: b['Graph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
+        setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        test_string=('G.subgraph(nlist)',setup)
+        b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
 
     if 'edgedata_subgraph' in tests:
         N=500
         p=0.3
         title='subgraph method with edge data present'
-        b=Benchmark(classes,title,runs=3,reps=1)
-        test_string='G.subgraph(nlist)'
-        all_setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
-        setup=all_setup+'G.add_edge(u,v,hi=3)'
-        if 'Graph' in classes: b['Graph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)],hi=2)'
-        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v,hi=1)'
-        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)],hi=2)'
-        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
+        setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v,dict(hi=2)),(v,u,dict(hi=2))])'%(N,p)
+        test_string=('G.subgraph(nlist)',setup)
+        b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
 
     if 'laplacian' in tests:
         N=500
         p=0.3
         title='creation of laplacian matrix'
-        b=Benchmark(classes,title,runs=3,reps=1)
-        test_string='NX.laplacian(G)'
-        all_setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n '%(N,p)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'Graph' in classes: b['Graph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'DiGraph' in classes: b['DiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edge(u,v)'
-        if 'MultiGraph' in classes: b['MultiGraph']=(test_string,setup)
-        setup=all_setup+'G.add_edges_from([(u,v),(v,u)])'
-        if 'MultiDiGraph' in classes: b['MultiDiGraph']=(test_string,setup)
+        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        test_string=('NX.laplacian_matrix(G)',setup)
+        b=Benchmark(classes,title,test_string,runs=3,reps=1)
         b.run()
