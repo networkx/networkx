@@ -30,14 +30,10 @@ def dispersion_centrality(G, u, v=None, exclude_nodes=None, normalized=True):
     for v in G_u:
         if v == u:
             continue
-        mutual = list(nx.all_simple_paths(G_u, u, v, cutoff=2))# much faster way to do this?
-        ST = set()
-        embededness = len(mutual)
-        for m in mutual:
-            if (m[1] == u) or (m[1] == v):
-                continue
-            else:
-                ST.add(m[1])
+        u_nbrs = G[u]
+        ST = set(n for n in G[v] if n in u_nbrs)
+        
+        embededness = len(ST)
 
         possib = combinations(ST, 2)
         total = 0
@@ -45,9 +41,8 @@ def dispersion_centrality(G, u, v=None, exclude_nodes=None, normalized=True):
         for p in possib:
             s = p[0]
             t = p[1]
-            #iterate through the neigbors of s
-            neighbors_s = list(G_u.neighbors_iter(s))
-            neighbors_t = list(G_u.neighbors_iter(t))
+            neighbors_s = G_u[s]
+            neighbors_t = G_u[t]
             Q = []
             for n in neighbors_s:
                 #if one of the neigbors is t, no dispersion tick
@@ -71,7 +66,7 @@ def dispersion_centrality(G, u, v=None, exclude_nodes=None, normalized=True):
                     if (i == t):
                         score = False
                         break
-                    #make sure that s does not share a neibor with t
+                    #make sure that s does not share a neighbor with t
                     #s--i--t
                     elif i in neighbors_t:
                         score = False
@@ -84,7 +79,10 @@ def dispersion_centrality(G, u, v=None, exclude_nodes=None, normalized=True):
                 total += 1
 
         if normalized == True:
-            norm_disp = (total/embededness)
+            if embededness != 0:
+                norm_disp = (total/embededness)
+            elif embededness == 0:
+                norm_disp = total
             dispersion[v] = {'norm_disp' : norm_disp}
         else:
             dispersion[v] = {'abs_disp': total}
