@@ -26,58 +26,21 @@ def dispersion_centrality(G, u, v=None, exclude_nodes=None, normalized=True):
 
     G_u = G
     dispersion = dict.fromkeys(G_u, 0)
+    u_nbrs = set(G[u])
 
-    for v in G_u:
-        if v == u:
-            continue
-        u_nbrs = G[u]
+    for v in u_nbrs:
         ST = set(n for n in G[v] if n in u_nbrs)
-        
-        embededness = len(ST)
-
+        set_uv=set([u,v])
         possib = combinations(ST, 2)
         total = 0
-        #each possible path between s and t
         for p in possib:
             s = p[0]
             t = p[1]
-            neighbors_s = G_u[s]
-            neighbors_t = G_u[t]
-            Q = []
-            for n in neighbors_s:
-                #if one of the neigbors is t, no dispersion tick
-                if (n == t):
-                    score = False
-                    break
-                #if one of the neighbors is not the ego node, or the node we are
-                #scoring dispersion for, add them to the que    
-                elif (n != u) and (n != v):
-                    Q.append(n)
-                #if one of the neigbors is ego or test node, continue because dispersion
-                #allows them to connect to other nodes in the network
-                elif (n == u) or (n == v):
-                    score = True
-            #traverse the nodes in the Q       
-            if score:
-                while Q:
-                    i = Q.pop(0)
-                    #make sure that s is not directly connected to t
-                    #s--t
-                    if (i == t):
-                        score = False
-                        break
-                    #make sure that s does not share a neighbor with t
-                    #s--i--t
-                    elif i in neighbors_t:
-                        score = False
-                        break
-                    #continue looping
-
-            #if score is true for the 's' 't' on the possible path called 'p'
-            #add a 1 for dispersion
-            if score:
+            nbrs_s = u_nbrs.intersection(G[s]) - set_uv
+            if nbrs_s.isdisjoint(G[t]):
                 total += 1
-
+        embededness = len(ST)
+    
         if normalized == True:
             if embededness != 0:
                 norm_disp = (total/embededness)
