@@ -1,7 +1,7 @@
 """
 Eigenvector centrality.
 """
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2014 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -119,8 +119,8 @@ def eigenvector_centrality_numpy(G, weight='weight'):
       A networkx graph
 
     weight : None or string, optional
+      The name of the edge attribute used as weight.
       If None, all edge weights are considered equal.
-      Otherwise holds the name of the edge attribute used as weight.
 
 
     Returns
@@ -137,7 +137,8 @@ def eigenvector_centrality_numpy(G, weight='weight'):
 
     Notes
     ------
-    This algorithm uses the NumPy eigenvalue solver.
+    This algorithm uses the SciPy sparse eigenvalue solver (ARPACK) to
+    find the largest eigenvalue/eigenvector pair.
 
     For directed graphs this is "left" eigevector centrality which corresponds
     to the in-edges in the graph.  For out-edges eigenvector centrality
@@ -149,17 +150,15 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     pagerank
     hits
     """
-    import numpy as np
+    import scipy as sp
+    from scipy.sparse import linalg
     if len(G) == 0:
         raise nx.NetworkXException('Empty graph.')
-
-    A = nx.adj_matrix(G, nodelist=G.nodes(), weight='weight').todense().T
-    eigenvalues,eigenvectors = np.linalg.eig(A)
-    # eigenvalue indices in reverse sorted order
-    ind = eigenvalues.argsort()[::-1]
-    # eigenvector of largest eigenvalue at ind[0], normalized
-    largest = np.array(eigenvectors[:,ind[0]]).flatten().real
-    norm = np.sign(largest.sum())*np.linalg.norm(largest)
+    M = nx.to_scipy_sparse_matrix(G, nodelist=G.nodes(), weight=weight,
+                                  dtype=float)
+    eigenvalue, eigenvector = linalg.eigs(M.T, k=1, which='LR') 
+    largest = eigenvector.flatten().real
+    norm = sp.sign(largest.sum())*sp.linalg.norm(largest)
     centrality = dict(zip(G,map(float,largest/norm)))
     return centrality
 
@@ -168,7 +167,6 @@ def eigenvector_centrality_numpy(G, weight='weight'):
 def setup_module(module):
     from nose import SkipTest
     try:
-        import numpy
         import scipy
     except:
         raise SkipTest("SciPy not available")
