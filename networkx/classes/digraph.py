@@ -162,7 +162,7 @@ class DiGraph(Graph):
 
     For details on these and other miscellaneous methods, see below.
     """
-    def __init__(self, data=None, **attr):
+    def __init__(self, data=None, dict_type=dict, **attr):
         """Initialize a graph with edges, name, graph attributes.
 
         Parameters
@@ -196,13 +196,13 @@ class DiGraph(Graph):
         {'day': 'Friday'}
 
         """
-        self.graph = {} # dictionary for graph attributes
-        self.node = {} # dictionary for node attributes
+        self.graph = dict_type() # dictionary for graph attributes
+        self.node = dict_type() # dictionary for node attributes
         # We store two adjacency lists:
         # the  predecessors of node n are stored in the dict self.pred
         # the successors of node n are stored in the dict self.succ=self.adj
-        self.adj = {}  # empty adjacency dictionary
-        self.pred = {}  # predecessor
+        self.adj = dict_type()  # empty adjacency dictionary
+        self.pred = dict_type()  # predecessor
         self.succ = self.adj  # successor
 
         # attempt to load graph with data
@@ -211,7 +211,7 @@ class DiGraph(Graph):
         # load graph attributes (must be after convert)
         self.graph.update(attr)
         self.edge=self.adj
-
+        self.dict_type = dict_type
 
     def add_node(self, n, attr_dict=None, **attr):
         """Add a single node n and update node attributes.
@@ -265,8 +265,8 @@ class DiGraph(Graph):
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
         if n not in self.succ:
-            self.succ[n] = {}
-            self.pred[n] = {}
+            self.succ[n] = self.dict_type()
+            self.pred[n] = self.dict_type()
             self.node[n] = attr_dict
         else: # update attr even if node already exists
             self.node[n].update(attr_dict)
@@ -323,8 +323,8 @@ class DiGraph(Graph):
             except TypeError:
                 nn,ndict = n
                 if nn not in self.succ:
-                    self.succ[nn] = {}
-                    self.pred[nn] = {}
+                    self.succ[nn] = self.dict_type()
+                    self.pred[nn] = self.dict_type()
                     newdict = attr.copy()
                     newdict.update(ndict)
                     self.node[nn] = newdict
@@ -334,8 +334,8 @@ class DiGraph(Graph):
                     olddict.update(ndict)
                 continue
             if newnode:
-                self.succ[n] = {}
-                self.pred[n] = {}
+                self.succ[n] = self.dict_type()
+                self.pred[n] = self.dict_type()
                 self.node[n] = attr.copy()
             else:
                 self.node[n].update(attr)
@@ -483,15 +483,15 @@ class DiGraph(Graph):
                     "The attr_dict argument must be a dictionary.")
         # add nodes
         if u not in self.succ:
-            self.succ[u]={}
-            self.pred[u]={}
-            self.node[u] = {}
+            self.succ[u] = self.dict_type()
+            self.pred[u] = self.dict_type()
+            self.node[u] = self.dict_type()
         if v not in self.succ:
-            self.succ[v]={}
-            self.pred[v]={}
-            self.node[v] = {}
+            self.succ[v] = self.dict_type()
+            self.pred[v] = self.dict_type()
+            self.node[v] = self.dict_type()
         # add the edge
-        datadict=self.adj[u].get(v,{})
+        datadict=self.adj[u].get(v, self.dict_type())
         datadict.update(attr_dict)
         self.succ[u][v]=datadict
         self.pred[v][u]=datadict
@@ -558,14 +558,14 @@ class DiGraph(Graph):
                 raise NetworkXError(\
                     "Edge tuple %s must be a 2-tuple or 3-tuple."%(e,))
             if u not in self.succ:
-                self.succ[u] = {}
-                self.pred[u] = {}
-                self.node[u] = {}
+                self.succ[u] = self.dict_type()
+                self.pred[u] = self.dict_type()
+                self.node[u] = self.dict_type()
             if v not in self.succ:
-                self.succ[v] = {}
-                self.pred[v] = {}
-                self.node[v] = {}
-            datadict=self.adj[u].get(v,{})
+                self.succ[v] = self.dict_type()
+                self.pred[v] = self.dict_type()
+                self.node[v] = self.dict_type()
+            datadict=self.adj[u].get(v, self.dict_type())
             datadict.update(attr_dict)
             datadict.update(dd)
             self.succ[u][v] = datadict
@@ -1158,7 +1158,8 @@ class DiGraph(Graph):
             the original graph (this changes the original graph).
         """
         if copy:
-            H = self.__class__(name="Reverse of (%s)"%self.name)
+            H = self.__class__(name="Reverse of (%s)"%self.name,
+                               dict_type=self.dict_type)
             H.add_nodes_from(self)
             H.add_edges_from( (v,u,deepcopy(d)) for u,v,d 
                               in self.edges(data=True) )
@@ -1212,7 +1213,7 @@ class DiGraph(Graph):
         """
         bunch = self.nbunch_iter(nbunch)
         # create new graph and copy subgraph into it
-        H = self.__class__()
+        H = self.__class__(dict_type=self.dict_type)
         # copy node and attribute dictionaries
         for n in bunch:
             H.node[n]=self.node[n]
@@ -1222,8 +1223,8 @@ class DiGraph(Graph):
         self_succ=self.succ
         # add nodes
         for n in H:
-            H_succ[n]={}
-            H_pred[n]={}
+            H_succ[n]=self.dict_type()
+            H_pred[n]=self.dict_type()
         # add edges
         for u in H_succ:
             Hnbrs=H_succ[u]
