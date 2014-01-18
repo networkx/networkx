@@ -325,7 +325,7 @@ def generate_gml(G):
         # Uses customized __str__, if implemented.
         label = str(G.node[n].get('label',n))
         # Need to escape & and " with HTML entities
-        label = escape(label)
+        label = escape(label, quote=True)
         yield 2 * indent + 'label "{0}"'.format(label)
         if n in G:
           for k,v in G.node[n].items():
