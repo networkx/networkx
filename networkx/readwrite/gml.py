@@ -32,6 +32,8 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 
+from cgi import escape
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import is_string_like, open_file
@@ -320,10 +322,11 @@ def generate_gml(G):
         nid=G.node[n].get('id',next(count))
         node_id[n]=nid
         yield 2*indent+"id %s"%nid
-        label=G.node[n].get('label',n)
-        if is_string_like(label):
-            label='"%s"'%label
-        yield 2*indent+'label {0}'.format(label)
+        # Uses customized __str__, if implemented.
+        label = str(G.node[n].get('label',n))
+        # Need to escape & and " with HTML entities
+        label = escape(label)
+        yield 2 * indent + 'label "{0}"'.format(label)
         if n in G:
           for k,v in G.node[n].items():
               if k=='id' or k == 'label': continue
