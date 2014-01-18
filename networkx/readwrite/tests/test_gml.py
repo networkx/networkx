@@ -26,23 +26,23 @@ graph [
  node [
    id 1
    label "Node 1"
-   pos [ x 1 y 1 ] 
+   pos [ x 1 y 1 ]
  ]
  node [
     id 2
-    pos [ x 1 y 2 ] 
-    label "Node 2" 
+    pos [ x 1 y 2 ]
+    label "Node 2"
     ]
   node [
     id 3
     label "Node 3"
-    pos [ x 1 y 3 ] 
+    pos [ x 1 y 3 ]
   ]
   edge [
     source 1
     target 2
     label "Edge from node 1 to node 2"
-    color [line "blue" thickness 3] 
+    color [line "blue" thickness 3]
 
   ]
   edge [
@@ -62,17 +62,17 @@ graph [
         assert_equals(sorted(G.nodes()),\
                           ['Node 1', 'Node 2', 'Node 3'])
         assert_equals( [e for e in sorted(G.edges())],\
-                           [('Node 1', 'Node 2'), 
-                            ('Node 2', 'Node 3'), 
+                           [('Node 1', 'Node 2'),
+                            ('Node 2', 'Node 3'),
                             ('Node 3', 'Node 1')])
 
         assert_equals( [e for e in sorted(G.edges(data=True))],\
-                           [('Node 1', 'Node 2', 
+                           [('Node 1', 'Node 2',
                              {'color': {'line': 'blue', 'thickness': 3},
-                              'label': 'Edge from node 1 to node 2'}), 
-                            ('Node 2', 'Node 3', 
-                             {'label': 'Edge from node 2 to node 3'}), 
-                            ('Node 3', 'Node 1', 
+                              'label': 'Edge from node 1 to node 2'}),
+                            ('Node 2', 'Node 3',
+                             {'label': 'Edge from node 2 to node 3'}),
+                            ('Node 3', 'Node 1',
                              {'label': 'Edge from node 3 to node 1'})])
 
 
@@ -119,12 +119,12 @@ graph
         answer ="""graph [
   node [
     id 0
-    label 1
+    label "1"
     on 1
   ]
   node [
     id 1
-    label 2
+    label "2"
   ]
   edge [
     source 0
@@ -133,3 +133,26 @@ graph
   ]
 ]"""
         assert_equal(data,answer)
+
+
+    def test_tuplelabels(self):
+      # https://github.com/networkx/networkx/pull/1048
+      # Writing tuple labels to GML failed.
+      G = networkx.Graph()
+      G.add_edge((0,1), (1,0))
+      data = '\n'.join(list(networkx.generate_gml(G)))
+      answer = """graph [
+  node [
+    id 0
+    label "(0, 1)"
+  ]
+  node [
+    id 1
+    label "(1, 0)"
+  ]
+  edge [
+    source 0
+    target 1
+  ]
+]"""
+      assert_equal(data, answer)
