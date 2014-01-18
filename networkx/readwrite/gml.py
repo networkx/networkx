@@ -23,7 +23,7 @@ Example graphs in GML format:
 http://www-personal.umich.edu/~mejn/netdata/
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2008-2010 by 
+#    Copyright (C) 2008-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -47,11 +47,11 @@ def read_gml(path,encoding='UTF-8',relabel=False):
        The filename or filehandle to read from.
 
     encoding : string, optional
-       Text encoding. 
+       Text encoding.
 
-    relabel : bool, optional       
+    relabel : bool, optional
        If True use the GML node label attribute for node names otherwise use
-       the node id.  
+       the node id.
 
     Returns
     -------
@@ -65,7 +65,7 @@ def read_gml(path,encoding='UTF-8',relabel=False):
     See Also
     --------
     write_gml, parse_gml
-    
+
     Notes
     -----
     Requires pyparsing: http://pyparsing.wikispaces.com/
@@ -93,7 +93,7 @@ def parse_gml(lines, relabel=True):
     lines : string or iterable
        Data in GML format.
 
-    relabel : bool, optional       
+    relabel : bool, optional
        If True use the GML node label attribute for node names otherwise use
        the node id.
 
@@ -109,10 +109,10 @@ def parse_gml(lines, relabel=True):
     See Also
     --------
     write_gml, read_gml
-    
+
     Notes
     -----
-    This stores nested GML attributes as dictionaries in the 
+    This stores nested GML attributes as dictionaries in the
     NetworkX graph, node, and edge attribute structures.
 
     Requires pyparsing: http://pyparsing.wikispaces.com/
@@ -128,7 +128,7 @@ def parse_gml(lines, relabel=True):
         try:
             from matplotlib.pyparsing import ParseException
         except:
-            raise ImportError('Import Error: not able to import pyparsing:', 
+            raise ImportError('Import Error: not able to import pyparsing:',
                               'http://pyparsing.wikispaces.com/')
     try:
         data = "".join(lines)
@@ -175,7 +175,7 @@ def parse_gml(lines, relabel=True):
             G.graph[k]=v
 
     # switch to Graph or DiGraph if no parallel edges were found.
-    if not multigraph: 
+    if not multigraph:
         if G.is_directed():
             G=nx.DiGraph(G)
         else:
@@ -201,7 +201,7 @@ def pyparse_gml():
     See Also
     --------
     write_gml, read_gml, parse_gml
-    """  
+    """
     try:
         from pyparsing import \
              Literal, CaselessLiteral, Word, Forward,\
@@ -228,7 +228,7 @@ def pyparse_gml():
         lambda s,l,t:[ float(t[0]) ])
     dblQuotedString.setParseAction( removeQuotes )
     key = Word(alphas,alphanums+'_')
-    value_atom = (real | integer | Word(alphanums) | dblQuotedString) 
+    value_atom = (real | integer | Word(alphanums) | dblQuotedString)
     value = Forward()   # to be defined later with << operator
     keyvalue = Group(key+value)
     value << (value_atom | Group( lbrack + ZeroOrMore(keyvalue) + rbrack ))
@@ -242,7 +242,7 @@ def pyparse_gml():
     graph = Dict (Optional(creator)+Optional(version)+\
         graphkey + lbrack + ZeroOrMore( (node|edge|keyvalue) ) + rbrack )
     graph.ignore(comment)
-    
+
     return graph
 
 def generate_gml(G):
@@ -283,7 +283,7 @@ def generate_gml(G):
 
     def string_item(k,v,indent):
         # try to make a string of the data
-        if type(v)==dict: 
+        if type(v)==dict:
             v=listify(v,indent,2)
         elif is_string_like(v):
             v='"%s"'%v
@@ -308,7 +308,7 @@ def generate_gml(G):
     yield "graph ["
     if G.is_directed():
         yield indent+"directed 1"
-    # write graph attributes 
+    # write graph attributes
     for k,v in G.graph.items():
         if k == 'directed':
             continue
@@ -323,7 +323,7 @@ def generate_gml(G):
         label=G.node[n].get('label',n)
         if is_string_like(label):
             label='"%s"'%label
-        yield 2*indent+'label %s'%label
+        yield 2*indent+'label {0}'.format(label)
         if n in G:
           for k,v in G.node[n].items():
               if k=='id' or k == 'label': continue
@@ -359,7 +359,7 @@ def write_gml(G, path):
     Notes
     -----
     GML specifications indicate that the file should only use
-    7bit ASCII text encoding.iso8859-1 (latin-1). 
+    7bit ASCII text encoding.iso8859-1 (latin-1).
 
     This implementation does not support all Python data types as GML
     data.  Nodes, node attributes, edge attributes, and graph
@@ -375,7 +375,7 @@ def write_gml(G, path):
          somedata "[1, 2, 3]"
        ]
 
-    
+
     Examples
     ---------
     >>> G=nx.path_graph(4)
