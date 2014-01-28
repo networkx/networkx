@@ -74,7 +74,7 @@ def la_clustering(G, weight='weight'):
     d_double = np.diag(np.dot(A, A))
 
     C = np.power(W, (1/3.0)) + np.power(W.T, (1/3.0))
-    C = np.diagonal(np.dot(C, C).dot(C))
+    C = np.diagonal(np.dot(C, C).dot(C)).copy()
     # Actual number of triangles present
     max_triangles = 2*(d_tot*(d_tot-1)-2*d_double)
     # Maximum number of triangles, the -2*d_double factor
