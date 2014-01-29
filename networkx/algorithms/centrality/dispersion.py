@@ -49,19 +49,26 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     """
 
     def _dispersion(G_u, u, v):
-        """ dispersion for all nodes 'v' in a ego network G_u of node 'u' """
+        """dispersion for all nodes 'v' in a ego network G_u of node 'u'"""
         u_nbrs = set(G_u[u])
         ST = set(n for n in G_u[v] if n in u_nbrs)
         set_uv=set([u,v])
+        #all possible ties of connections that u and b share
         possib = combinations(ST, 2)
         total = 0
         for (s,t) in possib:
+            #neighbors of s that are in G_u, not including u and v
             nbrs_s = u_nbrs.intersection(G_u[s]) - set_uv
-            if nbrs_s.isdisjoint(G_u[t]):
-                total += 1
+            #s and t are not directly connected
+            if not t in nbrs_s:
+                #s and t do not share a connection
+                if nbrs_s.isdisjoint(G_u[t]):
+                    #tick for disp(u, v)
+                    total += 1
+        #neighbors that u and v share
         embededness = len(ST)
 
-        if normalized == True:
+        if normalized:
             if embededness + c != 0:
                 norm_disp = ((total + b)**alpha)/(embededness + c)
             else:
@@ -76,23 +83,23 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     if u is None:
         # v and u are not specified
         if v is None:
-            results = dict.fromkeys(G, {})
+            results = dict((n,{}) for n in G)
             for u in G:
                 for v in G[u]:
                     results[u][v] = _dispersion(G, u, v)
         # u is not specified, but v is
         else:
-            results = dict.fromkeys(G, {})
-            for u in G:
-                results[u] = _dispersion(G, u, v)
+            results = dict.fromkeys(G[v], {})
+            for u in G[v]:
+                results[u] = _dispersion(G, v, u)
     else:
         # u is specified with no target v
         if v is None:
-            results = dict.fromkeys(G, {})
-            for v in G:
+            results = dict.fromkeys(G[u], {})
+            for v in G[u]:
                 results[v] = _dispersion(G, u, v)
         # both u and v are specified
         else:
-            results = {v : _dispersion(G, u, v)}
+            results = _dispersion(G, u, v)
 
     return results
