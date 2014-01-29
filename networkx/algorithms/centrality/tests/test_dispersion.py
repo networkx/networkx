@@ -38,6 +38,6 @@ class TestDispersion(object):
         disp = nx.dispersion(G)
         for d in disp:
             for dd in d:
-                assert d >= 0
+                assert dd >= 0
 
 

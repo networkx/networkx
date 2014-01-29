@@ -23,8 +23,3 @@ doc/source/examples/*
 networkx.egg-info/
 Networkx.sublime-project
 Networkx.sublime-workspace
-
-# Huston specific
-.gitignore
-GraphImporter.py
-
