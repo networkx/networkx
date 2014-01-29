@@ -1,10 +1,8 @@
-from nose import SkipTest
-
 import networkx as nx
-from networkx.generators.degree_seq import havel_hakimi_graph
 
 class TestLinalg_Clustering(object):
-    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
+    numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
+
     @classmethod
     def setupClass(cls):
         global numpy
@@ -15,14 +13,6 @@ class TestLinalg_Clustering(object):
             from numpy.testing import assert_equal,assert_almost_equal
         except ImportError:
              raise SkipTest('NumPy not available.')
-
-        def setUp(self):
-            deg=[3,2,2,1,0]
-            self.G=havel_hakimi_graph(deg)
-            self.P=nx.path_graph(3)
-            self.WG=nx.Graph( (u,v,{'weight':0.5,'other':0.3})
-                    for (u,v) in self.G.edges_iter() )
-            self.WG.add_node(4)
 
     def test_undirected_unweighted_clustering(self):
         "Testing if the routine gives the same answer as the nx.clustering"
