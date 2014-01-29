@@ -34,10 +34,10 @@ class TestDispersion(object):
         assert type(disp_uv) is float
 
     def test_impossible_things(self):
-        G=nx.davis_southern_women_graph()
+        G=nx.karate_club_graph()
         disp = nx.dispersion(G)
-        for d in disp:
-            for dd in d:
-                assert dd >= 0
+        for u in disp:
+            for v in disp[u]:
+                assert disp[u][v] >= 0
 
 
