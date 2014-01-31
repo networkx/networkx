@@ -137,14 +137,15 @@ def small_world(G, n_iter=1000, use_transitivity=False,
         rand_cc.append(clustering_fcn(random_G))
         rand_shortest_path.append(distance_fcn(random_G))
 
-    mean_shortest_path = sum(rand_shortest_path) / float(n_iter)
-    mean_cc = sum(rand_cc) / float(n_iter)
+    mean_shortest_path = sum(rand_shortest_path) / n_iter
+    mean_cc = sum(rand_cc) / n_iter
 
     G_shortest_path = distance_fcn(G)
-    path_len_ratio = float(G_shortest_path) / mean_shortest_path
+    path_len_ratio = G_shortest_path / mean_shortest_path
 
     G_cc = clustering_fcn(G)
-    cc_ratio = float(G_cc) / mean_cc
+    cc_ratio = G_cc / mean_cc
+
     small_worldness = cc_ratio / path_len_ratio
 
     #rand_sw = []
