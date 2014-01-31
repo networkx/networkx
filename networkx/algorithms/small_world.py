@@ -1,3 +1,4 @@
+from __future__ import division
 import networkx as nx
 
 
@@ -44,13 +45,15 @@ def _average_shortest_path_length_weakly_connected(G, weight=None):
                 continue
             node_1_avg.append(all_pairs[node_1][node_2])
         avg.extend(node_1_avg)
-    avg_path_len = sum(avg) / float(len(avg))
+    avg_path_len = sum(avg) / len(avg)
     return avg_path_len
 
 
-def small_world(G, n_iter=1000, use_transitivity=False):
-    r"""Calculates the small world coefficient for the network G.  The small
-    world coefficient is defined as:
+def small_world(G, n_iter=1000, use_transitivity=False,
+                null_graph_generator=nx.gnm_random_graph):
+    r"""Calculates the small world coefficient for the network G.
+
+    The small world coefficient is defined as:
 
     .. math::
 
@@ -72,10 +75,19 @@ def small_world(G, n_iter=1000, use_transitivity=False):
       shortest path length and the average transitivity (or clustering
       coefficient) for a network with the same number of edges and nodes as G.
 
-    use_transitivity : bool, option (default = False)
+    use_transitivity : bool, optional (default = False)
       if True, will use transitivity to calculate small worldness, if False
       will use average clustering coefficient instead.  Read [1]_ for an
       in-depth discussion of the difference between the two measures.
+
+    null_graph_generator : function, optional (default = nx.gnm_random_graph)
+      a function which generates a random graph, using the number of nodes
+      and the number of edges of G as an input. We assume the function signature
+      of the generator function is:
+        null_G = null_graph_generator(n, m, directed) where n is the number of
+     nodes in G, m is the number of edges, and directed is a boolean variable
+     depending on whether or not G was directed.
+
     ...
     Notes
     -----
@@ -112,7 +124,7 @@ def small_world(G, n_iter=1000, use_transitivity=False):
     rand_cc = []
     rand_shortest_path = []
     for I in range(n_iter):
-        random_G = nx.gnm_random_graph(n, m, directed=directed)
+        random_G = null_graph_generator(n, m, directed=directed)
         if directed:
             if not nx.is_weakly_connected(random_G):
                 random_G = nx.weakly_connected_component_subgraphs(random_G)[0]
