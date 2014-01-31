@@ -1,4 +1,3 @@
-import numpy as np
 import networkx as nx
 
 __author__ = ['Federico Vaggi (federico.vaggi@fmach.it)']
@@ -68,6 +67,12 @@ def la_clustering(G, weight='weight'):
     Physical Review E, 2007.
     http://web1.sssup.it/pubblicazioni/ugov_files/303163_PRE_2007.pdf
     """
+    try:
+        import numpy as np
+        import scipy
+    except ImportError:
+        raise ImportError('la_clustering() requires SciPy and Numpy: ',
+                          'http://scipy.org/')
 
     W = np.abs(nx.adjacency_matrix(G, weight=weight))
     W = W.todense()
@@ -90,3 +95,16 @@ def la_clustering(G, weight='weight'):
     C = dict(zip(G.nodes(), C))
     # Return as a dict to follow networkx API standards.
     return C
+
+
+def setup_module(module):
+    """Fixture for nose tests."""
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
+    try:
+        import scipy
+    except:
+        raise SkipTest("SciPy not available")
