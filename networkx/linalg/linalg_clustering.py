@@ -7,7 +7,11 @@ __all__ = ['la_clustering']
 
 
 def la_clustering(G, weight='weight'):
-    r""""    For unweighted graphs the clustering of each node `u`
+    r"""Calculates the clustering coefficient for every node
+    in G using the adjancency matrix.
+
+
+    For unweighted graphs the clustering of each node `u`
     is the fraction of possible triangles that exist,
     For each node find the fraction of possible triangles that exist,
 
@@ -53,6 +57,7 @@ def la_clustering(G, weight='weight'):
     -------
     out : dictionary
        Clustering coefficient for all nodes
+
     See Also
     --------
     clustering
@@ -61,8 +66,8 @@ def la_clustering(G, weight='weight'):
     -----
     .. [1] Clustering in Complex Directed Networks.  Giorgio Fagiolo.
     Physical Review E, 2007.
-    http://web1.sssup.it/pubblicazioni/ugov_files/303163_PRE_2007.pd
-    f"""
+    http://web1.sssup.it/pubblicazioni/ugov_files/303163_PRE_2007.pdf
+    """
 
     W = np.abs(nx.adjacency_matrix(G, weight=weight))
     W = W.todense()
