@@ -76,7 +76,7 @@ def is_directed_acyclic_graph(G):
     except nx.NetworkXUnfeasible:
         return False
 
-def topological_sort(G,nbunch=None):
+def topological_sort(G, nbunch=None, reverse=False):
     """Return a list of nodes in topological sort order.
 
     A topological sort is a nonunique permutation of the nodes
@@ -90,6 +90,9 @@ def topological_sort(G,nbunch=None):
 
     nbunch : container of nodes (optional)
        Explore graph in specified order given in nbunch
+
+    reverse : bool, optional
+        Return postorder instead of preorder if True.
 
     Raises
     ------
@@ -149,9 +152,12 @@ def topological_sort(G,nbunch=None):
                 explored.add(w)
                 order.append(w)
                 fringe.pop()    # done considering this node
-    return list(reversed(order))
+    if reverse:
+        return order
+    else:
+        return list(reversed(order))
 
-def topological_sort_recursive(G,nbunch=None):
+def topological_sort_recursive(G, nbunch=None, reverse=False):
     """Return a list of nodes in topological sort order.
 
     A topological sort is a nonunique permutation of the nodes such
@@ -164,6 +170,9 @@ def topological_sort_recursive(G,nbunch=None):
 
     nbunch : container of nodes (optional)
        Explore graph in specified order given in nbunch
+
+    reverse : bool, optional
+        Return postorder instead of preorder if True.
 
     Raises
     ------
@@ -214,7 +223,10 @@ def topological_sort_recursive(G,nbunch=None):
         if v not in explored:
             _dfs(v)
             
-    return list(reversed(order))
+    if reverse:
+        return order
+    else:
+        return list(reversed(order))
 
 def is_aperiodic(G):
     """Return True if G is aperiodic.
