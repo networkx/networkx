@@ -13,6 +13,10 @@ class TestLinalg_Clustering(object):
             from numpy.testing import assert_equal,assert_almost_equal
         except ImportError:
              raise SkipTest('NumPy not available.')
+        try:
+            import scipy
+        except ImportError:
+            raise SkipTest('SciPy not available.')
 
     def test_undirected_unweighted_clustering(self):
         "Testing if the routine gives the same answer as the nx.clustering"
