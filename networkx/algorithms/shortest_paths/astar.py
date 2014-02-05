@@ -12,13 +12,15 @@
 from heapq import heappush, heappop
 from networkx import NetworkXError
 import networkx as nx
+from restrictions import hide_nodes_edges
 
 __author__ = "\n".join(["Salim Fadhley <salimfadhley@gmail.com>",
                         "Matteo Dell'Amico <matteodellamico@gmail.com>"])
 __all__ = ['astar_path', 'astar_path_length']
 
 
-def astar_path(G, source, target, heuristic=None, weight='weight'):
+def astar_path(G, source, target, heuristic=None, weight='weight',
+               ignore_nodes=[], ignore_edges=[]):
     """Return a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
 
@@ -41,6 +43,13 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight.
+
+    ignore_nodes : list of networkx nodes
+
+    ignore_edges : list of edges
+        (source, target)
+        if G is directed, the edges are treated as directed
+        otherwise edges are treated as bi-directional
 
     Raises
     ------
@@ -66,6 +75,11 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
     shortest_path, dijkstra_path
 
     """
+    if ignore_nodes or ignore_edges:
+        with hide_nodes_edges(G, ignore_nodes, ignore_edges):
+            return astar_path(
+                G, source, target, heuristic=heuristic, weight=weight)
+
     if G.is_multigraph():
         raise NetworkXError("astar_path() not implemented for Multi(Di)Graphs")
 
@@ -105,7 +119,8 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
         explored[curnode] = parent
 
-        for neighbor, w in G[curnode].items():
+        for neighbor in G.neighbors_iter(curnode):
+            w = G[curnode][neighbor]
             if neighbor in explored:
                 continue
             ncost = dist + w.get(weight, 1)
@@ -126,7 +141,8 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
     raise nx.NetworkXNoPath("Node %s not reachable from %s" % (source, target))
 
 
-def astar_path_length(G, source, target, heuristic=None, weight='weight'):
+def astar_path_length(G, source, target, heuristic=None, weight='weight',
+                      ignore_nodes=[], ignore_edges=[]):
     """Return the length of the shortest path between source and target using
     the A* ("A-star") algorithm.
 
@@ -145,6 +161,13 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
        from the a node to the target.  The function takes
        two nodes arguments and must return a number.
 
+    ignore_nodes : list of networkx nodes
+
+    ignore_edges : list of edges
+        (source, target)
+        if G is directed, the edges are treated as directed
+        otherwise edges are treated as bi-directional
+
     Raises
     ------
     NetworkXNoPath
@@ -155,5 +178,7 @@ def astar_path_length(G, source, target, heuristic=None, weight='weight'):
     astar_path
 
     """
-    path = astar_path(G, source, target, heuristic, weight)
+    path = astar_path(
+        G, source, target, heuristic, weight,
+        ignore_nodes=ignore_nodes, ignore_edges=ignore_edges)
     return sum(G[u][v].get(weight, 1) for u, v in zip(path[:-1], path[1:]))

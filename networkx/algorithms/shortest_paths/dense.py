@@ -13,7 +13,9 @@ __all__ = ['floyd_warshall',
            'floyd_warshall_predecessor_and_distance',
            'floyd_warshall_numpy']
 
-def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
+
+def floyd_warshall_numpy(G, nodelist=None, weight='weight',
+                         ignore_nodes=[], ignore_edges=[]):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
     Parameters
@@ -26,6 +28,13 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
 
     weight: string, optional (default= 'weight')
        Edge data key corresponding to the edge weight.
+
+    ignore_nodes : list of networkx nodes
+
+    ignore_edges : list of edges
+        (source, target)
+        if G is directed, the edges are treated as directed
+        otherwise edges are treated as bi-directional
 
     Returns
     -------
@@ -44,21 +53,36 @@ def floyd_warshall_numpy(G, nodelist=None, weight='weight'):
     try:
         import numpy as np
     except ImportError:
-        raise ImportError(\
-          "to_numpy_matrix() requires numpy: http://scipy.org/ ")
+        raise ImportError(
+            "to_numpy_matrix() requires numpy: http://scipy.org/ ")
 
     # To handle cases when an edge has weight=0, we must make sure that
     # nonedges are not given the value 0 as well.
     A = nx.to_numpy_matrix(G, nodelist=nodelist, multigraph_weight=min,
-                              weight=weight, nonedge=np.inf)
-    n,m = A.shape
+                           weight=weight, nonedge=np.inf)
+
+    if not nodelist:
+        nodelist = G.nodes()
+    index = dict(zip(nodelist, range(len(nodelist))))
+    for u in ignore_nodes:
+        A[index[u], :] = 0
+        A[:, index[u]] = 0
+    directed = G.is_directed()
+    for u, v in ignore_edges:
+        A[index[u], index[v]] = 0
+        if directed:
+            A[index[v], index[u]] = 0
+
+    n, m = A.shape
     I = np.identity(n)
-    A[I==1] = 0 # diagonal elements should be zero
+    A[I == 1] = 0  # diagonal elements should be zero
     for i in range(n):
-        A = np.minimum(A, A[i,:] + A[:,i])
+        A = np.minimum(A, A[i, :] + A[:, i])
     return A
 
-def floyd_warshall_predecessor_and_distance(G, weight='weight'):
+
+def floyd_warshall_predecessor_and_distance(
+        G, weight='weight', ignore_nodes=[], ignore_edges=[]):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
     Parameters
@@ -67,6 +91,13 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
 
     weight: string, optional (default= 'weight')
        Edge data key corresponding to the edge weight.
+
+    ignore_nodes : list of networkx nodes
+
+    ignore_edges : list of edges
+        (source, target)
+        if G is directed, the edges are treated as directed
+        otherwise edges are treated as bi-directional
 
     Returns
     -------
@@ -92,30 +123,37 @@ def floyd_warshall_predecessor_and_distance(G, weight='weight'):
     # dictionary-of-dictionaries representation for dist and pred
     # use some defaultdict magick here
     # for dist the default is the floating point inf value
-    dist = defaultdict(lambda : defaultdict(lambda: float('inf')))
+    dist = defaultdict(lambda: defaultdict(lambda: float('inf')))
     for u in G:
         dist[u][u] = 0
     pred = defaultdict(dict)
     # initialize path distance dictionary to be the adjacency matrix
     # also set the distance to self to 0 (zero diagonal)
     undirected = not G.is_directed()
-    for u,v,d in G.edges(data=True):
+
+    for u, v, d in G.edges(data=True):
+        if u in ignore_nodes or v in ignore_nodes or (u, v) in ignore_edges:
+            continue
+        if (v, u) in ignore_edges and undirected:
+            continue
         e_weight = d.get(weight, 1.0)
         dist[u][v] = min(e_weight, dist[u][v])
         pred[u][v] = u
         if undirected:
             dist[v][u] = min(e_weight, dist[v][u])
             pred[v][u] = v
+
     for w in G:
         for u in G:
             for v in G:
                 if dist[u][v] > dist[u][w] + dist[w][v]:
                     dist[u][v] = dist[u][w] + dist[w][v]
                     pred[u][v] = pred[w][v]
-    return dict(pred),dict(dist)
+    return dict(pred), dict(dist)
 
 
-def floyd_warshall(G, weight='weight'):
+def floyd_warshall(G, weight='weight',
+                   ignore_nodes=[], ignore_edges=[]):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
     Parameters
@@ -132,6 +170,13 @@ def floyd_warshall(G, weight='weight'):
        A dictionary,  keyed by source and target, of shortest paths distances
        between nodes.
 
+    ignore_nodes : list of networkx nodes
+
+    ignore_edges : list of edges
+        (source, target)
+        if G is directed, the edges are treated as directed
+        otherwise edges are treated as bi-directional
+
     Notes
     ------
     Floyd's algorithm is appropriate for finding shortest paths
@@ -147,7 +192,10 @@ def floyd_warshall(G, weight='weight'):
     all_pairs_shortest_path_length
     """
     # could make this its own function to reduce memory costs
-    return floyd_warshall_predecessor_and_distance(G, weight=weight)[1]
+    return floyd_warshall_predecessor_and_distance(
+        G, weight=weight,
+        ignore_nodes=ignore_nodes, ignore_edges=ignore_edges)[1]
+
 
 # fixture for nose tests
 def setup_module(module):
