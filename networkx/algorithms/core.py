@@ -269,7 +269,7 @@ def k_crust(G,k=None,core_number=None):
 
 
 def k_corona(G, k, core_number=None):
-    """Return the k-crust of G.
+    """Return the k-corona of G.
 
     The k-corona is the subset of vertices in the k-core which have
     exactly k neighbours in the k-core.
