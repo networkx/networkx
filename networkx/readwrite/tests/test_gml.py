@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# encoding: utf-8
+from __future__ import unicode_literals
+
 import io
 from nose.tools import *
 from nose import SkipTest
@@ -52,8 +55,8 @@ graph [
   ]
   edge [
     source 3
-    target 1 label
-    "Edge from node 3 to node 1"
+    target 1
+    label "Edge from node 3 to node 1"
   ]
 ]
 """
@@ -136,12 +139,12 @@ graph
 
 
     def test_tuplelabels(self):
-      # https://github.com/networkx/networkx/pull/1048
-      # Writing tuple labels to GML failed.
-      G = networkx.Graph()
-      G.add_edge((0,1), (1,0))
-      data = '\n'.join(list(networkx.generate_gml(G)))
-      answer = """graph [
+        # https://github.com/networkx/networkx/pull/1048
+        # Writing tuple labels to GML failed.
+        G = networkx.Graph()
+        G.add_edge((0,1), (1,0))
+        data = '\n'.join(list(networkx.generate_gml(G)))
+        answer = """graph [
   node [
     id 0
     label "(0, 1)"
@@ -155,4 +158,29 @@ graph
     target 1
   ]
 ]"""
-      assert_equal(data, answer)
+        assert_equal(data, answer)
+
+
+    def test_quotes(self):
+        # https://github.com/networkx/networkx/issues/1061
+        # Encoding quotes as HTML entities.
+        import tempfile
+        G = networkx.path_graph(1)
+        # This is a unicode string (due to the __future__ import)
+        # It was decoded from utf-8 since that the encoding of this file.
+        attr = 'This is "quoted" and this is a copyright: ©'  # u'\xa9'
+        G.node[0]['demo'] = attr
+        fobj = tempfile.NamedTemporaryFile()
+        networkx.write_gml(G, fobj)
+        fobj.seek(0)
+        # Should be bytes in 2.x and 3.x
+        data = fobj.read().strip()
+        answer = b"""graph [
+  name "path_graph(1)"
+  node [
+    id 0
+    label "0"
+    demo "This is &quot;quoted&quot; and this is a copyright: &#169;"
+  ]
+]"""
+        assert_equal(data, answer)

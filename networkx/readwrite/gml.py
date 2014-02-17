@@ -1,3 +1,4 @@
+# encoding: utf-8
 """
 Read graphs in GML format.
 
@@ -21,7 +22,10 @@ for format specification.
 
 Example graphs in GML format:
 http://www-personal.umich.edu/~mejn/netdata/
+
 """
+from __future__ import unicode_literals
+
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    Copyright (C) 2008-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -38,18 +42,50 @@ import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import is_string_like, open_file
 
+##
+# Removes HTML or XML character references and entities from a text string.
+#
+# @param text The HTML (or XML) source text (as a unicode object)
+# @return The plain text, as a Unicode string, if necessary.
+#
+# Source: http://effbot.org/zone/re-sub.htm#unescape-html
+#
+import re
+try:
+    import htmlentitydefs
+except ImportError:
+    # Python 3.x
+    import html.entities as htmlentitydefs
 
-@open_file(0,mode='rb')
-def read_gml(path,encoding='UTF-8',relabel=False):
+def unescape(text):
+    def fixup(m):
+        text = m.group(0)
+        if text[:2] == "&#":
+            # character reference
+            try:
+                if text[:3] == "&#x":
+                    return unichr(int(text[3:-1], 16))
+                else:
+                    return unichr(int(text[2:-1]))
+            except ValueError:
+                pass
+        else:
+            # named entity
+            try:
+                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+            except KeyError:
+                pass
+        return text # leave as is
+    return re.sub("&#?\w+;", fixup, text)
+
+@open_file(0, mode='rb')
+def read_gml(path, relabel=False):
     """Read graph in GML format from path.
 
     Parameters
     ----------
     path : filename or filehandle
        The filename or filehandle to read from.
-
-    encoding : string, optional
-       Text encoding.
 
     relabel : bool, optional
        If True use the GML node label attribute for node names otherwise use
@@ -71,6 +107,8 @@ def read_gml(path,encoding='UTF-8',relabel=False):
     Notes
     -----
     Requires pyparsing: http://pyparsing.wikispaces.com/
+    The GML specification says that files should be ASCII encoded, with any
+    extended ASCII characters (iso8859-1) appearing as HTML character entities.
 
     References
     ----------
@@ -83,8 +121,8 @@ def read_gml(path,encoding='UTF-8',relabel=False):
     >>> nx.write_gml(G,'test.gml')
     >>> H=nx.read_gml('test.gml')
     """
-    lines=(line.decode(encoding) for line in path)
-    G=parse_gml(lines,relabel=relabel)
+    lines = (unescape(line.decode('ascii')) for line in path)
+    G = parse_gml(lines, relabel=relabel)
     return G
 
 def parse_gml(lines, relabel=True):
@@ -135,7 +173,7 @@ def parse_gml(lines, relabel=True):
     try:
         data = "".join(lines)
         gml = pyparse_gml()
-        tokens =gml.parseString(data)
+        tokens = gml.parseString(data)
     except ParseException as err:
         print((err.line))
         print((" "*(err.column-1) + "^"))
@@ -144,19 +182,19 @@ def parse_gml(lines, relabel=True):
 
     # function to recursively make dicts of key/value pairs
     def wrap(tok):
-        listtype=type(tok)
+        listtype = type(tok)
         result={}
         for k,v in tok:
-            if type(v)==listtype:
-                result[str(k)]=wrap(v)
+            if type(v) == listtype:
+                result[str(k)] = wrap(v)
             else:
-                result[str(k)]=v
+                result[str(k)] = v
         return result
 
     # Set flag
-    multigraph=False
+    multigraph = False
     # but assume multigraphs to start
-    if tokens.directed==1:
+    if tokens.directed == 1:
         G=nx.MultiDiGraph()
     else:
         G=nx.MultiGraph()
@@ -193,7 +231,6 @@ def parse_gml(lines, relabel=True):
                                 'Use relabel=False.')
         G=nx.relabel_nodes(G,dict(mapping))
     return G
-
 
 def pyparse_gml():
     """A pyparsing tokenizer for GML graph format.
@@ -285,43 +322,44 @@ def generate_gml(G):
 
     def string_item(k,v,indent):
         # try to make a string of the data
-        if type(v)==dict:
-            v=listify(v,indent,2)
+        if type(v) == dict:
+            v = listify(v, indent, 2)
         elif is_string_like(v):
-            v='"%s"'%v
-        elif type(v)==bool:
-            v=int(v)
-        return "%s %s"%(k,v)
+            v = '"{0}"'.format(escape(v, quote=True))
+            #v = '"{0}"'.format(v, quote=True)
+        elif type(v) == bool:
+            v = int(v)
+        return "{0} {1}".format(k,v)
 
     # check for attributes or assign empty dict
     if hasattr(G,'graph_attr'):
-        graph_attr=G.graph_attr
+        graph_attr = G.graph_attr
     else:
-        graph_attr={}
+        graph_attr = {}
     if hasattr(G,'node_attr'):
-        node_attr=G.node_attr
+        node_attr = G.node_attr
     else:
-        node_attr={}
+        node_attr = {}
 
-    indent=2*' '
-    count=iter(range(len(G)))
-    node_id={}
+    indent = 2 * ' '
+    count = iter(range(len(G)))
+    node_id = {}
 
     yield "graph ["
     if G.is_directed():
-        yield indent+"directed 1"
+        yield indent + "directed 1"
     # write graph attributes
     for k,v in G.graph.items():
         if k == 'directed':
             continue
-        yield indent+string_item(k,v,indent)
+        yield indent + string_item(k,v,indent)
     # write nodes
     for n in G:
-        yield indent+"node ["
+        yield indent + "node ["
         # get id or assign number
-        nid=G.node[n].get('id',next(count))
-        node_id[n]=nid
-        yield 2*indent+"id %s"%nid
+        nid = G.node[n].get('id',next(count))
+        node_id[n] = nid
+        yield 2 * indent + "id {0}".format(nid)
         # Uses customized __str__, if implemented.
         label = str(G.node[n].get('label',n))
         # Need to escape & and " with HTML entities
@@ -329,22 +367,22 @@ def generate_gml(G):
         yield 2 * indent + 'label "{0}"'.format(label)
         if n in G:
           for k,v in G.node[n].items():
-              if k=='id' or k == 'label': continue
-              yield 2*indent+string_item(k,v,indent)
-        yield indent+"]"
+              if k == 'id' or k == 'label': continue
+              yield 2 * indent + string_item(k,v,indent)
+        yield indent + "]"
     # write edges
     for u,v,edgedata in G.edges_iter(data=True):
-        yield indent+"edge ["
-        yield 2*indent+"source %s"%node_id[u]
-        yield 2*indent+"target %s"%node_id[v]
-        for k,v in edgedata.items():
-            if k=='source': continue
-            if k=='target': continue
-            yield 2*indent+string_item(k,v,indent)
-        yield indent+"]"
+        yield indent + "edge ["
+        yield 2 * indent + "source {0}".format(node_id[u])
+        yield 2 * indent + "target {0}".format(node_id[v])
+        for k, v in edgedata.items():
+            if k == 'source': continue
+            if k == 'target': continue
+            yield 2 * indent + string_item(k, v, indent)
+        yield indent + "]"
     yield "]"
 
-@open_file(1,mode='wb')
+@open_file(1, mode='wb')
 def write_gml(G, path):
     """
     Write the graph G in GML format to the file or file handle path.
@@ -389,8 +427,8 @@ def write_gml(G, path):
     >>> nx.write_gml(G,"test.gml.gz")
     """
     for line in generate_gml(G):
-        line+='\n'
-        path.write(line.encode('latin-1'))
+        line += '\n'
+        path.write(line.encode('ascii', 'xmlcharrefreplace'))
 
 
 # fixture for nose tests
