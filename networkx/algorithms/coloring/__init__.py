@@ -1,0 +1,1 @@
+from networkx.algorithms.coloring.maxdegree import *
