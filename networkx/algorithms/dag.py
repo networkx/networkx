@@ -71,7 +71,7 @@ def is_directed_acyclic_graph(G):
     if not G.is_directed():
         return False
     try:
-        topological_sort(G)
+        topological_sort(G, reverse=True)
         return True
     except nx.NetworkXUnfeasible:
         return False
@@ -93,6 +93,7 @@ def topological_sort(G, nbunch=None, reverse=False):
 
     reverse : bool, optional
         Return postorder instead of preorder if True.
+        Reverse mode is a bit more efficient.
 
     Raises
     ------
@@ -173,6 +174,7 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
 
     reverse : bool, optional
         Return postorder instead of preorder if True.
+        Reverse mode is a bit more efficient.
 
     Raises
     ------
