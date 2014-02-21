@@ -221,10 +221,13 @@ class GraphML(object):
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
-    convert_bool={'true':True,'false':False,
-                  'True': True, 'False': False}
-
-
+    # http://www.w3.org/TR/xmlschema-2/#boolean
+    convert_bool = {
+        'true': True, 'false': False,
+        'True': True, 'False': False,
+        '0': False, 0: False,
+        '1': False, 1: True
+    }
 
 class GraphMLWriter(GraphML):
     def __init__(self, graph=None, encoding="utf-8",prettyprint=True):
