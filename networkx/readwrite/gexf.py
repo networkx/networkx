@@ -212,7 +212,13 @@ class GEXF(object):
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
-    convert_bool={'false': False, 'False': False, 'true': True, 'True': True}
+    # http://www.w3.org/TR/xmlschema-2/#boolean
+    convert_bool = {
+        'true': True, 'false': False,
+        'True': True, 'False': False,
+        '0': False, 0: False,
+        '1': False, 1: True
+    }
 
 #    try:
 #        register_namespace = ET.register_namespace
@@ -643,7 +649,7 @@ class GEXFReader(GEXF):
             G.graph['mode']='dynamic'
         else:
             G.graph['mode']='static'
-            
+
         # timeformat
         self.timeformat=graph_xml.get('timeformat')
         if self.timeformat == 'date':
