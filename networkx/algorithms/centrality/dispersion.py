@@ -10,11 +10,9 @@ __all__ = ['dispersion']
 def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     r"""  A python implementation of 'dispersion' as defined by Lars Backstrom
     and Jon Kleinberg [1]_.
-    
-    A link between two actors ('u' and 'v') has a high dispersion when their mutual 
+
+    A link between two actors ('u' and 'v') has a high dispersion when their mutual
     ties ('s' and 't') are not well connected with each other.
-    
-    .. math::
 
     Parameters
     ----------
@@ -24,19 +22,19 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
       the source node for the dispersion score (e.g. ego node of the network)
     v : node, optional
       the target node for the dispersion score if specified
-    
+
     Note:  Typical usage would be to run dispersion on ego network (G_u) were u is specified.
     Running disperion on larger networks without 'u' or 'v' specified can be computationally expensive.
 
     normalized : bool
       If True (default) normalize by the embededness of the nodes (u and v).
-    
+
     Returns
     -------
     nodes : dictionary
-       If u or v is specified, returns a dictionary of nodes with dispersion score 
+       If u or v is specified, returns a dictionary of nodes with dispersion score
        for all "target" nodes
-       If neither u or v is specified, returns a dictionary of dictionaries for all nodes 
+       If neither u or v is specified, returns a dictionary of dictionaries for all nodes
        'u' in the graph with a dispersion score for each node 'v'.
 
     References
@@ -45,7 +43,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
         A Network Analysis of Relationship Status on Facebook.
         Lars Backstrom, Jon Kleinberg.
         http://arxiv.org/pdf/1310.6753v1.pdf
-    
+
     """
 
     def _dispersion(G_u, u, v):
