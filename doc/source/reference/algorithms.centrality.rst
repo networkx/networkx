@@ -8,7 +8,7 @@ Degree
 .. autosummary::
    :toctree: generated/
 
-   degree_centrality   
+   degree_centrality
    in_degree_centrality
    out_degree_centrality
 
@@ -24,7 +24,7 @@ Betweenness
 .. autosummary::
    :toctree: generated/
 
-   betweenness_centrality 
+   betweenness_centrality
    edge_betweenness_centrality
 
 Current Flow Closeness
@@ -40,9 +40,9 @@ Current-Flow Betweenness
 .. autosummary::
    :toctree: generated/
 
-   current_flow_betweenness_centrality 
+   current_flow_betweenness_centrality
    edge_current_flow_betweenness_centrality
-   approximate_current_flow_betweenness_centrality 
+   approximate_current_flow_betweenness_centrality
 
 
 Eigenvector
@@ -74,6 +74,13 @@ Load
 
    load_centrality
    edge_load
+
+Dispersion
+----------
+.. autosummary::
+   :toctree: generated/
+
+   dispersion
 
 
 
