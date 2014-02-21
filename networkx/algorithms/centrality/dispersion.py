@@ -8,10 +8,10 @@ __all__ = ['dispersion']
 
 
 def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
-    r""" A python implementation of 'dispersion' as defined by Lars Backstrom
+    r"""  A python implementation of 'dispersion' as defined by Lars Backstrom
     and Jon Kleinberg [1]_.
     
-    Where a link between two actors ('u' and 'v') has a high dispersion when their mutual 
+    A link between two actors ('u' and 'v') has a high dispersion when their mutual 
     ties ('s' and 't') are not well connected with each other.
     
     .. math::
@@ -25,8 +25,8 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     v : node, optional
       the target node for the dispersion score if specified
     
-    Note: when not specifying 'u' or 'v' on larger networks can take some time.
-    Typical usage would be to run dispersion on ego network (G_u) with u specified 
+    Note:  Typical usage would be to run dispersion on ego network (G_u) were u is specified.
+    Running disperion on larger networks without 'u' or 'v' specified can be computationally expensive.
 
     normalized : bool
       If True (default) normalize by the embededness of the nodes (u and v).
