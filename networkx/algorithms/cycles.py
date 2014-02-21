@@ -196,6 +196,7 @@ def simple_cycles(G):
                 elif nextnode not in blocked:
                     path.append(nextnode)
                     stack.append( (nextnode,list(subG[nextnode])) )
+                    closed.discard(nextnode)
                     blocked.add(nextnode)
                     continue
             # done with nextnode... look for more neighbors
