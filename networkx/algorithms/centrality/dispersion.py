@@ -8,34 +8,36 @@ __all__ = ['dispersion']
 
 
 def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
-    r"""  A python implementation of 'dispersion' as defined by Lars Backstrom
-    and Jon Kleinberg [1]_.
+    r"""Calculate dispersion between `u` and `v` in `G`.
 
-    A link between two actors ('u' and 'v') has a high dispersion when their mutual
-    ties ('s' and 't') are not well connected with each other.
+    A link between two actors (`u` and `v`) has a high dispersion when their
+    mutual ties (`s` and `t`) are not well connected with each other.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.
     u : node, optional
-      the source node for the dispersion score (e.g. ego node of the network)
+        The source for the dispersion score (e.g. ego node of the network).
     v : node, optional
-      the target node for the dispersion score if specified
-
-    Note:  Typical usage would be to run dispersion on ego network (G_u) were u is specified.
-    Running disperion on larger networks without 'u' or 'v' specified can be computationally expensive.
-
+        The target of the dispersion score if specified.
     normalized : bool
-      If True (default) normalize by the embededness of the nodes (u and v).
+        If True (default) normalize by the embededness of the nodes (u and v).
 
     Returns
     -------
     nodes : dictionary
-       If u or v is specified, returns a dictionary of nodes with dispersion score
-       for all "target" nodes
-       If neither u or v is specified, returns a dictionary of dictionaries for all nodes
-       'u' in the graph with a dispersion score for each node 'v'.
+       If u (v) is specified, returns a dictionary of nodes with dispersion
+       score for all "target" ("source") nodes. If neither u nor v is
+       specified, returns a dictionary of dictionaries for all nodes 'u' in the
+       graph with a dispersion score for each node 'v'.
+
+    Notes
+    -----
+    This implementation follows Lars Backstrom and Jon Kleinberg [1]_. Typical
+    usage would be to run dispersion on the ego network :math:`G_u` if `u` were
+    specified.  Running :func:`dispersion` with neither `u` nor `v` specified
+    can take some time to complete.
 
     References
     ----------
