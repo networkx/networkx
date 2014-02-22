@@ -16,7 +16,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     Parameters
     ----------
     G : graph
-      A NetworkX graph.
+        A NetworkX graph.
     u : node, optional
         The source for the dispersion score (e.g. ego node of the network).
     v : node, optional
@@ -27,10 +27,10 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     Returns
     -------
     nodes : dictionary
-       If u (v) is specified, returns a dictionary of nodes with dispersion
-       score for all "target" ("source") nodes. If neither u nor v is
-       specified, returns a dictionary of dictionaries for all nodes 'u' in the
-       graph with a dispersion score for each node 'v'.
+        If u (v) is specified, returns a dictionary of nodes with dispersion
+        score for all "target" ("source") nodes. If neither u nor v is
+        specified, returns a dictionary of dictionaries for all nodes 'u' in the
+        graph with a dispersion score for each node 'v'.
 
     Notes
     -----
