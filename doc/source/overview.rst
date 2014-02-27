@@ -26,7 +26,7 @@ Goals
 -----
 NetworkX is intended to provide
 
--  tools for the study the structure and
+-  tools for the study of the structure and
    dynamics of social, biological, and infrastructure networks,
 
 -  a standard programming interface and graph implementation that is suitable
