@@ -30,21 +30,36 @@ class TestCycles:
         cy=networkx.cycle_basis(G,9)
         sort_cy= sorted( sorted(c) for c in cy )
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5]])
+
         # test disconnected graphs
         G.add_cycle(list("ABC"))
         cy=networkx.cycle_basis(G,9)
         sort_cy= sorted(sorted(c) for c in cy[:-1]) + [sorted(cy[-1])]
         assert_equal(sort_cy, [[0,1,2,3],[0,1,6,7,8],[0,3,4,5],['A','B','C']])
 
+        # Testing undirected multigraph
+        cables = [(1,2),(1,2),(1,2),(3,1),(3,2)]
+        G = nx.MultiGraph(cables)
+        Z = networkx.cycle_basis(G,3)
+        assert_equal(Z, [[1,2],[1,2],[1,2,3]])
+
     @raises(nx.NetworkXNotImplemented)
     def test_cycle_basis(self):
         G=nx.DiGraph()
         cy=networkx.cycle_basis(G,0)
 
+    def test_cycle_basis_matrix(self):
+        import scipy as np
+        # Testing directed multigraph
+        cables = [(1,2),(1,2),(1,2),(1,3),(3,2)]
+        G = nx.MultiDiGraph(cables)
+        M = networkx.cycle_basis_matrix(G)
+        assert_equal(Z, np.array([-1,-1,-1],[1,0,0],[0,1,0],[0,0,1],[0,0,1]))
+
     @raises(nx.NetworkXNotImplemented)
-    def test_cycle_basis(self):
-        G=nx.MultiGraph()
-        cy=networkx.cycle_basis(G,0)
+    def test_cycle_basis_matrix(self):
+        G=nx.DiGraph()
+        cy=networkx.cycle_basis_matrix(G,sparse=True)
 
     def test_simple_cycles(self):
         G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])

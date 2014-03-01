@@ -141,7 +141,7 @@ def cycle_basis_matrix(G, sparse=False):
     ncol = len(C.edges())
     
     if sparse:
-        raise nx.NetworkXError('Sarse matrix not implemented yet.')
+        raise nx.NetworkXNotImplemented('Sarse matrix not implemented yet.')
     else:
         M = np.zeros([nrow,ncol],dtype=np.int8)
 
@@ -466,14 +466,17 @@ def chords(G):
     the edges in that tree from G.
     """
   
+    # Cast G to undirected and then T back to the same type as G
     if G.is_directed():
-        raise nx.NetworkXError('Directed graphs not supported.')
+        if G.is_multigraph():
+            T = nx.MultiDiGraph(nx.minimum_spanning_tree(nx.MultiGraph(G)))
+        else:
+            T = nx.DiGraph(nx.minimum_spanning_tree(nx.Graph(G)))
+    else:
+        T = nx.minimum_spanning_tree(G)
+        if G.is_multigraph():
+            T = nx.MultiGraph(T)
 
-    T = nx.minimum_spanning_tree(G)
-    # Cast T to the same type as G
-    if G.is_multigraph():
-        T = nx.MultiGraph(T)
-    
     C = nx.difference(G,T)
 
     return C,T
