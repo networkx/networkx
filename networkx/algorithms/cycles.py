@@ -13,7 +13,7 @@ import networkx as nx
 from networkx.utils import *
 from collections import defaultdict
 
-__all__ = ['cycle_basis','simple_cycles','recursive_simple_cycles']
+__all__ = ['cycle_basis','cycle_basis_matrix','simple_cycles','recursive_simple_cycles','chords']
 __author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Aric Hagberg <hagberg@lanl.gov>',
@@ -65,8 +65,6 @@ def cycle_basis(G,root=None):
     cycles = []
     # Add all cycles due to multiple edges between nodes
     if G.is_multigraph():
-      from chordal.chordal_alg import chords
-       
       C,T   = chords(G)
       for e in C.edges_iter():
           if T.has_edge(*e) or T.has_edge(*e[::-1]):
@@ -105,6 +103,84 @@ def cycle_basis(G,root=None):
         root=None
 
     return cycles
+
+def cycle_basis_matrix(G):
+    """Return a the matrix describing the fundamental cycles in G.
+     If G is not oriented and arbitrary orientation is taken.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    Returns
+    -------
+    M : Integer matrix of the fundametal cycles
+    """
+    import numpy as np
+
+    nrow = len(G.edges())
+    ncol = len(C.edges())
+    M    = np.zeros ([nrow,ncol],dtype=np.int)
+
+    if G.is_multigraph ():
+      Cedges_iter = C.edges_iter (keys=True)
+      Gedges = G.edges (keys=True)
+      Tedges = T.edges (keys=True)
+    else:
+      Cedges_iter = C.edges_iter ()
+      Gedges = G.edges ()
+      Tedges = T.edges ()
+
+    for col, e in enumerate(Cedges_iter):
+      row = Gedges.index (e)
+      M[row,col]  = 1
+
+      try:
+        einT  = T.edges ().index(e[:2])
+        # The edge is in the tree with the same orientation, hence invert it
+        row2        = Gedges.index (Tedges[einT])
+        M[row2,col] = -1
+      except ValueError:
+        try:
+          ieinT = T.edges ().index(e[:2][::-1])
+          # The edge is in the tree with the opposite orientation, hence leave it
+          row2        = Gedges.index (Tedges[ieinT])
+          M[row2,col] = 1
+        except ValueError:
+
+          tmp = T.edges()
+          tmp.append (e[:2])
+          cyc = nx.cycle_basis (nx.Graph(tmp))[0]
+          cyc_e = []
+
+          for idx,node in enumerate (cyc):
+            if  idx < len (cyc)-1:
+              cyc_e.append ((node, cyc[idx+1]))
+            else:
+              cyc_e.append ((node, cyc[0]))
+
+          if e[:2][::-1] in cyc_e:
+            # The chord is in the cycle with the opposite orientation
+            # invert all edges of the cycle
+            cyc_e = [i[::-1] for i in cyc_e]
+
+          elif e[:2] not in cyc_e:
+            raise NameError ('Something went wrong! The edge {} is not in cycle {}'.format(e,cyc))
+
+          cyc_e.remove (e[:2])
+          for ce in cyc_e:
+            try:
+              einT  = T.edges ().index(ce)
+              # The edge is in the tree with the same orientation
+              row2        = Gedges.index (Tedges[einT])
+              M[row2,col] = 1
+            except ValueError:
+              ieinT = T.edges ().index(ce[::-1])
+              # The edge is in the tree with the opposite orientation
+              row2        = Gedges.index (Tedges[ieinT])
+              M[row2,col] = -1
+
+    return M
 
 
 @not_implemented_for('undirected')
@@ -330,3 +406,53 @@ def recursive_simple_cycles(G):
                 B[node][:] = []
             dummy=circuit(startnode, startnode, component)
     return result
+
+def chords(G):
+    """Return a new graph that contains the edges that are the chords of G.
+
+        The chords are all the edges that are not in a spanning three of G.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph.
+
+    Returns
+    -------
+    C : A new graph with the chords of G.
+    T : The spanning tree from which C was calculated.
+
+    Raises
+    ------
+    NetworkXError
+        The algorithm does not support directed graphs. 
+        If the input graph directed, a NetworkXError is raised.
+        To run this algorithm on a directed graph, first convert it
+        to undirected.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> e=[(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6)]
+    >>> G=nx.Graph(e)
+    >>> C,T = nx.chords(G)
+
+    Notes
+    -----
+    The routine is a direct implementation of the definition of chords.
+    It constructs the spanning minimum spanning tree of G and then removes
+    the edges in that tree from G.
+    """
+  
+    if G.is_directed():
+        raise nx.NetworkXError('Directed graphs not supported.')
+
+    T = nx.minimum_spanning_tree(G)
+    # Cast T to the same type as G
+    if G.is_multigraph():
+        T = nx.MultiGraph(T)
+    
+    C = nx.difference(G,T)
+
+    return C,T
+

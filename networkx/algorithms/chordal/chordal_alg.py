@@ -10,18 +10,13 @@ import networkx as nx
 import random
 import sys
 
-__authors__ = "\n".join(['Jesus Cerquides <cerquide@iiia.csic.es>', 'JuanPi Carbajal <ajuanpi+dev@gmail.com>'])
+__authors__ = "\n".join(['Jesus Cerquides <cerquide@iiia.csic.es>'])
 #    Copyright (C) 2010 by 
 #    Jesus Cerquides <cerquide@iiia.csic.es>
 #    All rights reserved.
 #    BSD license.
-#    Copyright (C) 2014 by 
-#    JuanPi Carbajal <ajuanpi+dev@gmail.com>
-#    All rights reserved.
-#    BSD license.
 
-__all__ = ['chords',
-           'is_chordal',
+__all__ = ['is_chordal',
            'find_induced_nodes', 
            'chordal_graph_cliques',
            'chordal_graph_treewidth',
@@ -31,55 +26,6 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
     """Exception raised when a treewidth bound has been provided and it has 
     been exceeded"""
     
-def chords(G):
-    """Return a new graph that contains the edges that are the chords of G.
-
-        The chords are all the edges that are not in a spanning three of G.
-
-    Parameters
-    ----------
-    G : graph
-       A NetworkX graph.
-
-    Returns
-    -------
-    C : A new graph with the chords of G.
-    T : The spanning tree from which C was calculated.
-
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support directed graphs. 
-        If the input graph directed, a NetworkXError is raised.
-        To run this algorithm on a directed graph, first convert it
-        to undirected.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> e=[(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6)]
-    >>> G=nx.Graph(e)
-    >>> C,T = nx.chords(G)
-
-    Notes
-    -----
-    The routine is a direct implementation of the definition of chords.
-    It constructs the spanning minimum spanning tree of G and then removes
-    the edges in that tree from G.
-    """
-  
-    if G.is_directed():
-        raise nx.NetworkXError('Directed graphs not supported.')
-
-    T = nx.minimum_spanning_tree(G)
-    # Cast T to the same type as G
-    if G.is_multigraph():
-        T = nx.MultiGraph(T)
-    
-    C = nx.difference(G,T)
-
-    return C,T
-
 def is_chordal(G):
     """Checks whether G is a chordal graph.
 
