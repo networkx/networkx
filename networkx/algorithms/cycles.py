@@ -104,81 +104,103 @@ def cycle_basis(G,root=None):
 
     return cycles
 
-def cycle_basis_matrix(G):
+def cycle_basis_matrix(G, sparse=False):
     """Return a the matrix describing the fundamental cycles in G.
      If G is not oriented and arbitrary orientation is taken.
 
     Parameters
     ----------
-    G : NetworkX Graph
-
+    G : NetworkX Graph.
+    sparse : Boolean, optional. Not used.
+    
     Returns
     -------
-    M : Integer matrix of the fundametal cycles
-    """
-    import numpy as np
+    M : Matrix (int8) of the fundametal cycles. The matrix
+    is of size n-by-m where n is the numer of edges in the
+    graph and m is the number of fundamental cycles (as given
+    by cycle_basis). A nonzero entry (i,j) implies that the
+    edge i is in cycle j. The sign of the entry indicates in
+    which direction it should be followed to go around the cycle:
+    a negative netry means opposite to the direction of that edge
+    in G.
+    
+    
+    Notes
+    -----
+    This function needs scipy to work.
+    TODO: Return a sparse matrix if required.
 
+    See Also
+    --------
+    cycle_basis
+    """
+    import scipy as np
+
+    C,T  = chords(G)
     nrow = len(G.edges())
     ncol = len(C.edges())
-    M    = np.zeros ([nrow,ncol],dtype=np.int)
-
-    if G.is_multigraph ():
-      Cedges_iter = C.edges_iter (keys=True)
-      Gedges = G.edges (keys=True)
-      Tedges = T.edges (keys=True)
+    
+    if sparse:
+        raise nx.NetworkXError('Sarse matrix not implemented yet.')
     else:
-      Cedges_iter = C.edges_iter ()
-      Gedges = G.edges ()
-      Tedges = T.edges ()
+        M = np.zeros([nrow,ncol],dtype=np.int8)
+
+    if G.is_multigraph():
+        Cedges_iter = C.edges_iter(keys=True)
+        Gedges = G.edges(keys=True)
+        Tedges = T.edges(keys=True)
+    else:
+        Cedges_iter = C.edges_iter()
+        Gedges = G.edges()
+        Tedges = T.edges()
 
     for col, e in enumerate(Cedges_iter):
-      row = Gedges.index (e)
-      M[row,col]  = 1
+        row = Gedges.index(e)
+        M[row,col]  = 1
 
-      try:
-        einT  = T.edges ().index(e[:2])
-        # The edge is in the tree with the same orientation, hence invert it
-        row2        = Gedges.index (Tedges[einT])
-        M[row2,col] = -1
-      except ValueError:
         try:
-          ieinT = T.edges ().index(e[:2][::-1])
-          # The edge is in the tree with the opposite orientation, hence leave it
-          row2        = Gedges.index (Tedges[ieinT])
-          M[row2,col] = 1
+            einT  = T.edges().index(e[:2])
+            # The edge is in the tree with the same orientation, hence invert it
+            row2        = Gedges.index(Tedges[einT])
+            M[row2,col] = -1
         except ValueError:
-
-          tmp = T.edges()
-          tmp.append (e[:2])
-          cyc = nx.cycle_basis (nx.Graph(tmp))[0]
-          cyc_e = []
-
-          for idx,node in enumerate (cyc):
-            if  idx < len (cyc)-1:
-              cyc_e.append ((node, cyc[idx+1]))
-            else:
-              cyc_e.append ((node, cyc[0]))
-
-          if e[:2][::-1] in cyc_e:
-            # The chord is in the cycle with the opposite orientation
-            # invert all edges of the cycle
-            cyc_e = [i[::-1] for i in cyc_e]
-
-          elif e[:2] not in cyc_e:
-            raise NameError ('Something went wrong! The edge {} is not in cycle {}'.format(e,cyc))
-
-          cyc_e.remove (e[:2])
-          for ce in cyc_e:
             try:
-              einT  = T.edges ().index(ce)
-              # The edge is in the tree with the same orientation
-              row2        = Gedges.index (Tedges[einT])
-              M[row2,col] = 1
+                ieinT = T.edges().index(e[:2][::-1])
+                # The edge is in the tree with the opposite orientation, hence leave it
+                row2        = Gedges.index(Tedges[ieinT])
+                M[row2,col] = 1
             except ValueError:
-              ieinT = T.edges ().index(ce[::-1])
-              # The edge is in the tree with the opposite orientation
-              row2        = Gedges.index (Tedges[ieinT])
-              M[row2,col] = -1
+                tmp = T.edges()
+                tmp.append(e[:2])
+                cyc = cycle_basis(nx.Graph(tmp))[0]
+                cyc_e = []
+
+                for idx,node in enumerate(cyc):
+                    if  idx < len(cyc)-1:
+                        cyc_e.append((node, cyc[idx+1]))
+                    else:
+                        cyc_e.append((node, cyc[0]))
+
+                if e[:2][::-1] in cyc_e:
+                    # The chord is in the cycle with the opposite orientation
+                    # invert all edges of the cycle
+                    cyc_e = [i[::-1] for i in cyc_e]
+
+                elif e[:2] not in cyc_e:
+                    raise NameError('Something went wrong! The edge {} is not in cycle {}'.format(e,cyc))
+
+                cyc_e.remove(e[:2])
+                for ce in cyc_e:
+                    try:
+                        einT  = T.edges().index(ce)
+                        # The edge is in the tree with the same orientation
+                        row2        = Gedges.index(Tedges[einT])
+                        M[row2,col] = 1
+                    except ValueError:
+                        ieinT = T.edges().index(ce[::-1])
+                        # The edge is in the tree with the opposite orientation
+                        row2        = Gedges.index(Tedges[ieinT])
+                        M[row2,col] = -1
 
     return M
 
