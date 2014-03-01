@@ -16,16 +16,14 @@ import networkx as nx
 from networkx.utils import *
 from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
 
-__all__ = [
-    'cycle_basis','simple_cycles','recursive_simple_cycles', 'find_cycle'
-]
+__all__ = ['cycle_basis','cycle_basis_matrix','simple_cycles','recursive_simple_cycles','chords']
 
 __author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
                         'Dan Schult <dschult@colgate.edu>',
-                        'Aric Hagberg <hagberg@lanl.gov>'])
+                        'Aric Hagberg <hagberg@lanl.gov>',
+                        'JuanPi Carbajal <ajuanpi+dev@gmail.com>'])
 
 @not_implemented_for('directed')
-@not_implemented_for('multigraph')
 def cycle_basis(G,root=None):
     """ Returns a list of cycles which form a basis for cycles of G.
 
@@ -68,8 +66,17 @@ def cycle_basis(G,root=None):
     --------
     simple_cycles
     """
-    gnodes=set(G.nodes())
-    cycles=[]
+    cycles = []
+    # Add all cycles due to multiple edges between nodes
+    if G.is_multigraph():
+      C,T   = chords(G)
+      for e in C.edges_iter():
+          if T.has_edge(*e) or T.has_edge(*e[::-1]):
+              cycles.append(list(e))
+      # Make G a graph so the original algorithm works
+      G = nx.Graph(G)
+
+    gnodes = set(G.nodes())
     while gnodes:  # loop over connected components
         if root is None:
             root=gnodes.pop()
@@ -98,7 +105,114 @@ def cycle_basis(G,root=None):
                     used[nbr].add(z)
         gnodes-=set(pred)
         root=None
+
     return cycles
+
+def cycle_basis_matrix(G, sparse=False):
+    """Return a the matrix describing the fundamental cycles in G.
+     If G is not oriented and arbitrary orientation is taken.
+
+    Parameters
+    ----------
+    G : NetworkX Graph.
+    sparse : Boolean, optional. Not used.
+    
+    Returns
+    -------
+    M : Matrix (int8) of the fundametal cycles. The matrix
+    is of size n-by-m where n is the numer of edges in the
+    graph and m is the number of fundamental cycles (as given
+    by cycle_basis). A nonzero entry (i,j) implies that the
+    edge i is in cycle j. The sign of the entry indicates in
+    which direction it should be followed to go around the cycle:
+    a negative netry means opposite to the direction of that edge
+    in G.
+    
+    
+    Notes
+    -----
+    This function needs scipy to work.
+    TODO: Return a sparse matrix if required.
+
+    See Also
+    --------
+    cycle_basis
+    """
+    import scipy as np
+
+    C,T  = chords(G)
+    nrow = len(G.edges())
+    ncol = len(C.edges())
+    
+    if G.is_directed():
+        raise nx.NetworkXNotImplemented('not implemented for directed type')
+    
+    if sparse:
+        raise nx.NetworkXNotImplemented('sparse matrix not implemented yet.')
+    else:
+        M = np.zeros([nrow,ncol],dtype=np.int8)
+
+    if G.is_multigraph():
+        Cedges_iter = C.edges_iter(keys=True)
+
+        Gedges = G.edges(keys=True)
+        Tedges = T.edges(keys=True)
+    else:
+        Cedges_iter = C.edges_iter()
+        Gedges = G.edges()
+        Tedges = T.edges()
+
+    for col, e in enumerate(Cedges_iter):
+        row = Gedges.index(e)
+        M[row,col]  = 1
+
+        edge     = e[:2]        # nodes of the edge in given order
+        edge_inv = e[:2][::-1]  # nodes of the edge in reverse order
+        try:
+            einT  = T.edges().index(edge)
+            # The edge is in the tree with the same orientation, hence invert it
+            row2        = Gedges.index(Tedges[einT])
+            M[row2,col] = -1
+        except ValueError:
+            try:
+                ieinT = T.edges().index(edge_inv)
+                # The edge is in the tree with the opposite orientation, hence leave it
+                row2        = Gedges.index(Tedges[ieinT])
+                M[row2,col] = 1
+            except ValueError:
+                tmp = T.edges()
+                tmp.append(edge)
+                cyc = cycle_basis(nx.Graph(tmp))[0]
+                cyc_e = []
+
+                for idx,node in enumerate(cyc):
+                    if  idx < len(cyc)-1:
+                        cyc_e.append((node, cyc[idx+1]))
+                    else:
+                        cyc_e.append((node, cyc[0]))
+
+                if edge_inv in cyc_e:
+                    # The chord is in the cycle with the opposite orientation
+                    # invert all edges of the cycle
+                    cyc_e = [i[::-1] for i in cyc_e]
+
+                elif edge not in cyc_e:
+                    raise NameError('Something went wrong! The edge {} is not in cycle {}'.format(e,cyc))
+
+                cyc_e.remove(edge)
+                for ce in cyc_e:
+                    try:
+                        einT  = T.edges().index(ce)
+                        # The edge is in the tree with the same orientation
+                        row2        = Gedges.index(Tedges[einT])
+                        M[row2,col] = 1
+                    except ValueError:
+                        ieinT = T.edges().index(ce[::-1])
+                        # The edge is in the tree with the opposite orientation
+                        row2        = Gedges.index(Tedges[ieinT])
+                        M[row2,col] = -1
+
+    return M
 
 
 @not_implemented_for('undirected')
@@ -324,6 +438,79 @@ def recursive_simple_cycles(G):
             dummy=circuit(startnode, startnode, component)
     return result
 
+
+def chords(G):
+    """Return a new graph that contains the edges that are the chords of G.
+
+        The chords are all the edges that are not in a spanning three of G.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph.
+
+    Returns
+    -------
+    C : A new graph with the chords of G.
+    T : The spanning tree from which C was calculated.
+
+    Raises
+    ------
+    NetworkXError
+        The algorithm does not support directed graphs. 
+        If the input graph directed, a NetworkXError is raised.
+        To run this algorithm on a directed graph, first convert it
+        to undirected.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> e=[(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6)]
+    >>> G=nx.Graph(e)
+    >>> C,T = nx.chords(G)
+
+    Notes
+    -----
+    The routine is a direct implementation of the definition of chords.
+    It constructs the spanning minimum spanning tree of G and then removes
+    the edges in that tree from G.
+    """
+  
+    # Cast G to undirected and then T back to the same type as G
+    # Multigraphs keys get lost in the call to spanning_tree so we have to add them.
+    
+    if G.is_directed():
+        # Remove directionality
+        if G.is_multigraph():
+            # All keys lost
+            T = nx.minimum_spanning_tree(nx.MultiGraph(G))
+        else:
+            T = nx.DiGraph(nx.minimum_spanning_tree(nx.Graph(G)))
+    else:
+        # All keys lost
+        T = nx.minimum_spanning_tree(G)
+    
+    C = G.copy()
+    # Recover keys and make chords
+    if G.is_multigraph():
+        Tedges=T.edges() 
+        to_add=[]
+        for e in G.edges_iter(keys=True, data=True):
+            if e[:2] in Tedges:
+              to_add.append(e)
+              Tedges.pop(Tedges.index(e[:2]))
+            if not Tedges:
+                break
+        T = nx.MultiGraph(to_add)
+        # Difference to keep attributes ad keys
+        C.remove_edges_from ([n for n in G.edges_iter(keys=True) if n in T.edges_iter(keys=True)])
+    else:
+        C.remove_edges_from ([n for n in G.edges_iter() if n in T.edges_iter()])
+    
+
+    return C,T
+
+
 def find_cycle(G, source=None, orientation='original'):
     """
     Returns the edges of a cycle found via a directed, depth-first traversal.
@@ -466,3 +653,15 @@ def find_cycle(G, source=None, orientation='original'):
 
     return cycle[i:]
 
+
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
+    try:
+        import scipy
+    except:
+        raise SkipTest("SciPy not available")
