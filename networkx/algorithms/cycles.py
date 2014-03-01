@@ -16,10 +16,10 @@ from collections import defaultdict
 __all__ = ['cycle_basis','simple_cycles','recursive_simple_cycles']
 __author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
                         'Dan Schult <dschult@colgate.edu>',
-                        'Aric Hagberg <hagberg@lanl.gov>'])
+                        'Aric Hagberg <hagberg@lanl.gov>',
+                        'JuanPi Carbajal <ajuanpi+dev@gmail.com>'])
 
 @not_implemented_for('directed')
-@not_implemented_for('multigraph')
 def cycle_basis(G,root=None):
     """ Returns a list of cycles which form a basis for cycles of G.
 
@@ -62,8 +62,19 @@ def cycle_basis(G,root=None):
     --------
     simple_cycles
     """
-    gnodes=set(G.nodes())
-    cycles=[]
+    cycles = []
+    # Add all cycles due to multiple edges between nodes
+    if G.is_multigraph():
+      from chordal.chordal_alg import chords
+       
+      C,T   = chords(G)
+      for e in C.edges_iter():
+          if T.has_edge(*e) or T.has_edge(*e[::-1]):
+              cycles.append(list(e))
+      # Make G a graph so the original algorithm works
+      G = nx.Graph(G)
+
+    gnodes = set(G.nodes())
     while gnodes:  # loop over connected components
         if root is None:
             root=gnodes.pop()
@@ -92,6 +103,7 @@ def cycle_basis(G,root=None):
                     used[nbr].add(z)
         gnodes-=set(pred)
         root=None
+
     return cycles
 
 
