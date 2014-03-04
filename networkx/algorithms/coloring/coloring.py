@@ -1,7 +1,19 @@
 # -*- coding: utf-8 -*-
 """Greedy graph coloring using the First Fit algorithm and maximum degree ordering.
 """
-
+"""
+Greedy-Color
+Color-with-Interchange
+RS-Color
+LF-Color
+SL-Color
+RSI-Color
+LFI-Color
+SLI-Color
+CS-Color
+SLF-Color
+GIS-Color
+"""
 from heapq import heappush, heappop
 import networkx as nx
 
