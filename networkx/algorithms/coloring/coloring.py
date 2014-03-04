@@ -10,32 +10,48 @@ __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
 						"Henrik Haugbølle <hhau@itu.dk>"])
 __all__ = ['coloring']
 
+
 def interchange(G):
 	""" Not implemented """
 
 def strategy_maxdegree(G):
 	queue = []
-	result = []
 	for n in G.nodes(): # take each node of the graph ...
 		heappush(queue, (len(G.neighbors(n)) * -1, n)) # ... and push it onto the priority queue using its reneighbour degree as priority (max as high priorty)
 	
 	while len(queue): # iterate the priority queue until empty
 		(priority, node) = heappop(queue)
-		result.append(node)
-		
-	return result
-	
+		yield node
+
 def strategy_mindegree(G):
 		queue = []
-		result = []
 		for n in G.nodes(): # take each node of the graph ...
 			heappush(queue, (len(G.neighbors(n)), n)) # ... and push it onto the priority queue using its neighbour degree as priority (min as high priority)
 		
 		while len(queue): # iterate the priority queue until empty
 			(priority, node) = heappop(queue)
-			result.append(node)
+			yield node
 			
-		return result
+
+def strategy_gis(G, colors):
+	while len(colors) < len(G):
+		available_g = G.copy()
+
+		for node in available_g.nodes():
+			if node in colors:
+				available_g.remove_node(node)
+
+		while available_g.number_of_nodes() > 0:
+			degree = available_g.degree()
+			
+			# Finding the minimum degree, http://stackoverflow.com/a/12343826/800016
+			v = list(degree.values())
+		 	k = list(degree.keys())
+		 	node = k[v.index(min(v))]
+		 	yield node
+
+		 	available_g.remove_nodes_from(available_g.neighbors(node) + [node])
+
 		
 def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
 	queue = [] # our priority queue
@@ -47,6 +63,8 @@ def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
 		nodes = strategy_maxdegree(G)
 	elif strategy == 'mindegree':
 		nodes = strategy_mindegree(G)
+	elif strategy == 'gis':
+		nodes = strategy_gis(G, colors)
 	else:
 		print 'Strategy ' + strategy + ' does not exist.'
 	
@@ -81,6 +99,31 @@ def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
 		return sets
 	else:
 		return colors
+
+
+
+gis_shtc = nx.Graph()
+gis_shtc.add_nodes_from([1,2,3,4])
+gis_shtc.add_edges_from([
+	(1,2),
+	(2,3),
+	(3,4)
+])
+
+gis_htc = nx.Graph()
+gis_htc.add_nodes_from([1,2,3,4,5,6])
+gis_htc.add_edges_from([
+	(1,5),
+	(2,5),
+	(3,6),
+	(4,6),
+	(5,6)
+])
+
+print coloring(gis_shtc, strategy='gis')
+
+
+
 # 
 # def max_degree(G, rtype='dict'):
 # 	queue = [] # our priority queue
