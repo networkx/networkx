@@ -10,17 +10,32 @@ __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
 						"Henrik Haugbølle <hhau@itu.dk>"])
 __all__ = ['coloring']
 
+def interchange(G):
+	""" Not implemented """
+
 def strategy_maxdegree(G):
 	queue = []
 	result = []
 	for n in G.nodes(): # take each node of the graph ...
-		heappush(queue, (len(G.neighbors(n)) * -1, n)) # ... and push it onto the priority queue using its neighbour degree as priority
+		heappush(queue, (len(G.neighbors(n)) * -1, n)) # ... and push it onto the priority queue using its reneighbour degree as priority (max as high priorty)
 	
 	while len(queue): # iterate the priority queue until empty
 		(priority, node) = heappop(queue)
 		result.append(node)
 		
 	return result
+	
+def strategy_mindegree(G):
+		queue = []
+		result = []
+		for n in G.nodes(): # take each node of the graph ...
+			heappush(queue, (len(G.neighbors(n)), n)) # ... and push it onto the priority queue using its neighbour degree as priority (min as high priority)
+		
+		while len(queue): # iterate the priority queue until empty
+			(priority, node) = heappop(queue)
+			result.append(node)
+			
+		return result
 		
 def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
 	queue = [] # our priority queue
@@ -30,6 +45,8 @@ def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
 	# the type returned from strategies should probably be python generators
 	if strategy == 'maxdegree':
 		nodes = strategy_maxdegree(G)
+	elif strategy == 'mindegree':
+		nodes = strategy_mindegree(G)
 	else:
 		print 'Strategy ' + strategy + ' does not exist.'
 	
