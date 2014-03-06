@@ -72,7 +72,7 @@ def test_planted_partition_graph():
     C = G.graph['partition'] 
     assert_equal(len(C),10)
     assert_equal(len(G),40)
-    assert_equal(len(G.edges()),197)
+    assert_equal(len(G.edges()),218)
 
     assert_raises(nx.NetworkXError, nx.planted_partition_graph, 3, 3, 1.1, 0.1)
     assert_raises(nx.NetworkXError, nx.planted_partition_graph, 3, 3,-0.1, 0.1)
