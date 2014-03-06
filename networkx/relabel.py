@@ -90,12 +90,11 @@ def _relabel_inplace(G, mapping):
         D = nx.DiGraph(list(mapping.items()))
         D.remove_edges_from(D.selfloop_edges())
         try:
-            nodes = nx.topological_sort(D)
+            nodes = nx.topological_sort(D, reverse=True)
         except nx.NetworkXUnfeasible:
             raise nx.NetworkXUnfeasible('The node label sets are overlapping '
                                         'and no ordering can resolve the '
                                         'mapping. Use copy=True.')
-        nodes.reverse()  # reverse topological order
     else:
         # non-overlapping label sets
         nodes = old_labels
