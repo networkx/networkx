@@ -141,12 +141,13 @@ def cycle_basis_matrix(G, sparse=False):
     ncol = len(C.edges())
     
     if sparse:
-        raise nx.NetworkXNotImplemented('Sarse matrix not implemented yet.')
+        raise nx.NetworkXNotImplemented('Sparse matrix not implemented yet.')
     else:
         M = np.zeros([nrow,ncol],dtype=np.int8)
 
     if G.is_multigraph():
         Cedges_iter = C.edges_iter(keys=True)
+
         Gedges = G.edges(keys=True)
         Tedges = T.edges(keys=True)
     else:
@@ -158,6 +159,8 @@ def cycle_basis_matrix(G, sparse=False):
         row = Gedges.index(e)
         M[row,col]  = 1
 
+        edge     = e[:2]        # nodes of the edge in given order
+        edge_inv = e[:2][::-1]  # nodes of the edge in reverse order
         try:
             einT  = T.edges().index(e[:2])
             # The edge is in the tree with the same orientation, hence invert it
@@ -467,17 +470,36 @@ def chords(G):
     """
   
     # Cast G to undirected and then T back to the same type as G
+    # Multigraphs keys get lost in the call to spanning_tree so we have to add them.
+    
     if G.is_directed():
+        # Remove directionality
         if G.is_multigraph():
-            T = nx.MultiDiGraph(nx.minimum_spanning_tree(nx.MultiGraph(G)))
+            # All keys lost
+            T = nx.minimum_spanning_tree(nx.MultiGraph(G))
         else:
             T = nx.DiGraph(nx.minimum_spanning_tree(nx.Graph(G)))
     else:
+        # All keys lost
         T = nx.minimum_spanning_tree(G)
-        if G.is_multigraph():
-            T = nx.MultiGraph(T)
-
-    C = nx.difference(G,T)
+    
+    C = G.copy()
+    # Recover keys and make chords
+    if G.is_multigraph():
+        Tedges=T.edges() 
+        to_add=[]
+        for e in G.edges_iter(keys=True, data=True):
+            if e[:2] in Tedges:
+              to_add.append(e)
+              Tedges.pop(Tedges.index(e[:2]))
+            if not Tedges:
+                break
+        T = nx.MultiGraph(to_add)
+        # Difference to keep attributes ad keys
+        C.remove_edges_from ([n for n in G.edges_iter(keys=True) if n in T.edges_iter(keys=True)])
+    else:
+        C.remove_edges_from ([n for n in G.edges_iter() if n in T.edges_iter()])
+    
 
     return C,T
 
