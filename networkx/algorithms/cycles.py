@@ -162,19 +162,19 @@ def cycle_basis_matrix(G, sparse=False):
         edge     = e[:2]        # nodes of the edge in given order
         edge_inv = e[:2][::-1]  # nodes of the edge in reverse order
         try:
-            einT  = T.edges().index(e[:2])
+            einT  = T.edges().index(edge)
             # The edge is in the tree with the same orientation, hence invert it
             row2        = Gedges.index(Tedges[einT])
             M[row2,col] = -1
         except ValueError:
             try:
-                ieinT = T.edges().index(e[:2][::-1])
+                ieinT = T.edges().index(edge_inv)
                 # The edge is in the tree with the opposite orientation, hence leave it
                 row2        = Gedges.index(Tedges[ieinT])
                 M[row2,col] = 1
             except ValueError:
                 tmp = T.edges()
-                tmp.append(e[:2])
+                tmp.append(edge)
                 cyc = cycle_basis(nx.Graph(tmp))[0]
                 cyc_e = []
 
@@ -184,15 +184,15 @@ def cycle_basis_matrix(G, sparse=False):
                     else:
                         cyc_e.append((node, cyc[0]))
 
-                if e[:2][::-1] in cyc_e:
+                if edge_inv in cyc_e:
                     # The chord is in the cycle with the opposite orientation
                     # invert all edges of the cycle
                     cyc_e = [i[::-1] for i in cyc_e]
 
-                elif e[:2] not in cyc_e:
+                elif edge not in cyc_e:
                     raise NameError('Something went wrong! The edge {} is not in cycle {}'.format(e,cyc))
 
-                cyc_e.remove(e[:2])
+                cyc_e.remove(edge)
                 for ce in cyc_e:
                     try:
                         einT  = T.edges().index(ce)
