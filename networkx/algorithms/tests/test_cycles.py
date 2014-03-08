@@ -70,6 +70,7 @@ class TestCycles:
 
         # Testing undirected multigraph with keys and data
         cables = [(1,2,{"val":10}),(1,2,{"val":10}),(1,2,{"val":1}),(1,3,{"val":0}),(3,2,{"val":0})]
+        G = nx.MultiGraph(cables)
         M = networkx.cycle_basis_matrix(G)
         assert_equal(Z, np.array([-1,-1,-1],[1,0,0],[0,1,0],[0,0,1],[0,0,1]))
 
