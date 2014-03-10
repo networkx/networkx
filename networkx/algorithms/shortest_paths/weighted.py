@@ -563,7 +563,7 @@ def bellman_ford(G, source, weight = 'weight'):
 
     if G.is_multigraph():
         def get_weight(edge_dict):
-            return min([eattr.get(weight,1) for eattr in edge_dict.values()])
+            return min(eattr.get(weight,1) for eattr in edge_dict.values())
     else:
         def get_weight(edge_dict):
             return edge_dict.get(weight,1)
