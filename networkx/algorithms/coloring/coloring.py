@@ -3,17 +3,18 @@
 """
 
 """
-Greedy-Color
+                            impl    shc    hc    strategy test
+Greedy-Color                
 Color-with-Interchange
-RS-Color
-LF-Color
-SL-Color
+RS-Color                    x        non   non
+LF-Color                    x        x     x
+SL-Color                    x        x     x
+CS-Color                    x        x     
+SLF-Color
+GIS-Color                   x        x     x
 RSI-Color
 LFI-Color
 SLI-Color
-CS-Color
-SLF-Color
-GIS-Color
 """
 
 from heapq import heappush, heappop
