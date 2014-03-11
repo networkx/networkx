@@ -45,7 +45,6 @@ class TestColoring:
         ])
         
         coloring = nx.coloring(lf_hc, strategy='lf', interchange=False, returntype='sets')
-        # this is wrong
         assert_true(len(coloring) == 4)
         
     

@@ -10,7 +10,7 @@ RS-Color                    x        non   non
 LF-Color                    x        x     x
 SL-Color                    x        x     x
 CS-Color                    x        x     
-SLF-Color
+SLF-Color                   x        x     x
 GIS-Color                   x        x     x
 RSI-Color
 LFI-Color
