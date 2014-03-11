@@ -17,6 +17,7 @@ GIS-Color
 """
 
 from heapq import heappush, heappop
+import itertools
 import networkx as nx
 import sys
 
@@ -32,8 +33,53 @@ def min_degree_node(G):
     k = list(degree.keys())
     return k[v.index(min(v))]
 
-def interchange(G):
-    """ Not implemented """
+def interchangeFunc(G, node, colors, neighbourColors, returntype, sets):
+    combinations = itertools.combinations(neighbourColors, 2) # Find all combination of neighbour colors
+    for combination in combinations: # For all combinations
+        color0 = combination[0] # The first color in the combination
+        color1 = combination[1] # The second color in the combination
+        neighboursColor0 = [] # A list storing all neighbours with color0
+        neighboursColor1 = [] # A list storing all neighbours with color1
+        for neighbour in G.neighbors(node): # iterate through the neighbours of the node
+            if neighbour in colors: # if the neighbour has been assigned a color ...
+                if colors[neighbour] == color0: # if the color is color0
+                    neighboursColor0.append(neighbour) # append it to the list
+                elif colors[neighbour] == color1: # if the color is color1
+                    neighboursColor1.append(neighbour) # append it to the list
+    
+        # In the following section we find all nodes reachable from neighbours with color0
+        # When traversing the graph using BFS we only add nodes of either color0 or color1 
+        visited = set()
+        queue = list(neighboursColor0)
+        while queue:
+            newNode = queue.pop()
+            visited.add(newNode)
+            for neighbour in G.neighbors(newNode):
+                if neighbour in colors and (colors[neighbour] == color0 or colors[neighbour] == color1):
+                    if not neighbour in visited:
+                        queue.append(neighbour)
+    
+        # In this section we test if there was a connection from neighbours with color0 to neighbours with color1
+        differentComponents = True
+        for neighbourColor1 in neighboursColor1:
+            if neighbourColor1 in visited:
+                succes = False
+
+        # If there were no connection we swap the colors of one of the components
+        if(differentComponents):
+            for nodeToColor in visited: # For all nodes in the connected component
+                if colors[nodeToColor] == color0: # If the node has color0
+                    colors[nodeToColor] = color1 # ... we color it with color1
+                    if returntype == 'sets': # If the return type is sets we need to maintain the data structure
+                        sets[color0].remove(nodeToColor)
+                        sets[color1].add(nodeToColor)
+                elif colors[nodeToColor] == color1: # If the node has color1
+                    colors[nodeToColor] = color0 # ... we color it with color0
+                    if returntype == 'sets': # If the return type is sets we need to maintain the data structure
+                        sets[color1].remove(nodeToColor)
+                        sets[color0].add(nodeToColor)
+            return color0 # Return the color that was is no longer adjacent to this node
+    return -1 # The function did not succeseed in finding two colors to swap
 
 """
 Largest first (lf) ordering. Ordering the nodes by largest degree first.
@@ -127,7 +173,7 @@ def strategy_cs(G, traversal='bfs'):
         yield end # Then yield nodes in the order traversed by either BFS or DFS
     
         
-def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
+def coloring(G, strategy='lf', interchange=False, returntype='dict'):
     colors = dict() # dictionary to keep track of the colors of the nodes
     sets = [] # list of sets
 
@@ -148,6 +194,9 @@ def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
         print 'Strategy ' + strategy + ' does not exist.'
         return colors
 
+    if interchange:
+        colorThreshold = 1 # There is no reason for swapping less than to colors
+        
     for node in nodes:
         neighbourColors = set() # set to keep track of colors of neighbours
 
@@ -157,23 +206,32 @@ def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
 
         i = 0 # initialize first potentially available color
         color = -1 # initialize non-existant color (-1)
+        
         while color == -1: # loop over all possible colors, until a vacant has been found
             if i in neighbourColors: # check if the color is already occupied by a neighbour
-                if interchange == True:
-                    print "Interchange is not implemented"
-                    
-                i = i + 1 # ... if that's the case, move to next color and reiterate
-                
+                if interchange and i == colorThreshold:
+                    print "i=", i, ", colorThreshold=", colorThreshold
+                    result = interchangeFunc(G, node, colors, neighbourColors, returntype, sets)
+                    if(not result == -1):
+                        print "returned ", result
+                        color = result
+                    else:
+                        i += 1
+                        color = i
+                        colorThreshold = i
+                else:
+                    i += 1 # ... if that's the case, move to next color and reiterate
             else:
                 color = i # ... if the color is vacant, choose it as the node's color
 
         colors[node] = color # assign the node the newly found color
+        print "Colored node ", node, " color ", color
 
         if returntype == 'sets': # only maintain the list of sets, if the desired return type is 'set'
-            if len(sets) <= i: # ensure that a set has been initialize at the 'color'/index of the list
+            if len(sets) <= color: # ensure that a set has been initialize at the 'color'/index of the list
                 sets.append(set()) # ... if not, do it
             
-            sets[i].add(node) # add the node to the respective set
+            sets[color].add(node) # add the node to the respective set
 
     if returntype == 'sets': # determine desired return type
         return sets
