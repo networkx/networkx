@@ -32,6 +32,13 @@ def min_degree_node(G):
     k = list(degree.keys())
     return k[v.index(min(v))]
 
+def max_degree_node(G):
+    degree = G.degree()
+    v = list(degree.values())
+    k = list(degree.keys())
+    return k[v.index(max(v))]
+
+
 def interchange(G):
     """ Not implemented """
 
@@ -125,6 +132,48 @@ def strategy_cs(G, traversal='bfs'):
 
     for (_, end) in tree:
         yield end # Then yield nodes in the order traversed by either BFS or DFS
+
+"""
+Saturation largest first (SLF) or DSATUR.
+"""
+def strategy_slf(G, colors):
+    len_g = len(G)
+    no_colored = 0
+
+    while no_colored != len_g:
+        if no_colored == 0: # When saturation for all nodes is 0, yield the node with highest degree
+            no_colored += 1
+            yield max_degree_node(G)
+        else:
+            highest_saturation = -1
+            highest_saturation_nodes = []
+            for node in G.nodes():
+                if node not in colors: # If the node is not already colored, calculate its saturation ...
+                    neighbour_colors = set()
+                    for neighbour in G.neighbors(node):
+                        if neighbour in colors: # .. By collection all neighbouring colors
+                            neighbour_colors.add(colors[neighbour])
+
+                    saturation = len(neighbour_colors)
+                    if saturation > highest_saturation:
+                        highest_saturation = saturation
+                        highest_saturation_nodes = [node]
+                    elif saturation == highest_saturation:
+                        highest_saturation_nodes.append(node)
+
+            no_colored += 1
+            if len(highest_saturation_nodes) == 1:
+                yield highest_saturation_nodes[0]
+            else:
+                # Return the node with highest degree
+                degree = dict()
+                for node in highest_saturation_nodes:
+                    degree[node] = G.degree(node)
+
+                v = list(degree.values())
+                k = list(degree.keys())
+
+                yield k[v.index(max(v))]
     
         
 def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
@@ -144,6 +193,8 @@ def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
         nodes = strategy_cs(G)
     elif strategy == 'cs-dfs':
         nodes = strategy_cs(G, traversal='dfs')
+    elif strategy == 'slf':
+        nodes = strategy_slf(G, colors)
     else:
         print 'Strategy ' + strategy + ' does not exist.'
         return colors
