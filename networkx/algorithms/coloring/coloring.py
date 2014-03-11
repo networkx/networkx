@@ -24,28 +24,31 @@ __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
                         "Jan Aagaard Meier <jmei@itu.dk>",
                         "Henrik Haugbølle <hhau@itu.dk>"])
 __all__ = ['coloring']
-
+    
 
 def interchange(G):
     """ Not implemented """
 
-def strategy_maxdegree(G):
-    queue = []
-    for n in G.nodes(): # take each node of the graph ...
-        heappush(queue, (len(G.neighbors(n)) * -1, n)) # ... and push it onto the priority queue using its reneighbour degree as priority (max as high priorty)
+def strategy_lf(G):
+    nodes = G.nodes()
+    nodes.sort(key=lambda node: len(G.neighbors(node)) * -1)
     
-    while len(queue): # iterate the priority queue until empty
-        (priority, node) = heappop(queue)
-        yield node
+    return iter(nodes)
 
-def strategy_mindegree(G):
-        queue = []
-        for n in G.nodes(): # take each node of the graph ...
-            heappush(queue, (len(G.neighbors(n)), n)) # ... and push it onto the priority queue using its neighbour degree as priority (min as high priority)
-        
-        while len(queue): # iterate the priority queue until empty
-            (priority, node) = heappop(queue)
-            yield node
+def strategy_sf(G):
+    nodes = G.nodes()
+    nodes.sort(key=lambda node: len(G.neighbors(node)))
+    
+    return iter(nodes)
+    
+"""
+Random sequential (RS) ordering. Scrambles nodes into random ordering.
+"""
+def strategy_rs(G):
+    nodes = G.nodes()
+    random.shuffle(nodes)
+    
+    return iter(nodes)
             
 
 """
@@ -100,10 +103,10 @@ def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
     sets = [] # list of sets
 
     # the type returned from strategies should probably be python generators
-    if strategy == 'maxdegree':
-        nodes = strategy_maxdegree(G)
-    elif strategy == 'mindegree':
-        nodes = strategy_mindegree(G)
+    if strategy == 'lf':
+        nodes = strategy_lf(G)
+    elif strategy == 'sf':
+        nodes = strategy_sf(G)
     elif strategy == 'gis':
         nodes = strategy_gis(G, colors)
     elif strategy == 'cs' or strategy == 'cs-bfs':

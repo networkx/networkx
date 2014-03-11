@@ -12,6 +12,16 @@ import networkx as nx
 from nose.tools import *
 
 class TestColoring:
+    
+    def test_lf(self):
+        lf = nx.Graph()
+        lf.add_nodes_from([1, 2, 3])
+        lf.add_edges_from([
+            (1, 2),
+            (1, 3),
+            (2, 3)
+        ])
+        
     def test_gis_shtc(self):
         gis_shtc = nx.Graph()
         gis_shtc.add_nodes_from([1, 2, 3, 4])
