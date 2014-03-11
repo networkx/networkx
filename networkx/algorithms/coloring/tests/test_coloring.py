@@ -12,6 +12,46 @@ import networkx as nx
 from nose.tools import *
 
 class TestColoring:
+
+    def test_slf_shc(sefl):
+        slf_shc = nx.Graph()
+        slf_shc.add_nodes_from([1,2,3,4,5,6,7])
+        slf_shc.add_edges_from([
+            (1,2),
+            (1,5),
+            (1,6),
+            (2,3),
+            (2,7),
+            (3,4),
+            (4,5),
+            (4,6),
+            (5,6)
+        ])
+
+        coloring = nx.coloring(slf_shc, strategy='slf', interchange=False, returntype='sets')
+        assert_true(len(coloring) <= 4)
+
+
+    def test_slf_htc(self):
+        slf_htc = nx.Graph()
+        slf_htc.add_nodes_from([1,2,3,4,5,6,7,8])
+        slf_htc.add_edges_from([
+            (1,2),
+            (1,3),
+            (1,4),
+            (1,5),
+            (2,3),
+            (2,4),
+            (2,6),
+            (5,7),
+            (5,8),
+            (6,7),
+            (6,8),
+            (7,8)  
+        ])
+        coloring = nx.coloring(slf_htc, strategy='slf', interchange=False, returntype='sets')
+        assert_true(len(coloring) == 4)
+
     
     def test_lf_shc(self):
         lf_shc = nx.Graph()
@@ -25,7 +65,7 @@ class TestColoring:
         ])
         
         coloring = nx.coloring(lf_shc, strategy='lf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 3)
+        assert_true(len(coloring) <= 3)
         
     def test_lf_hc(self):
         lf_hc = nx.Graph()
@@ -45,7 +85,6 @@ class TestColoring:
         ])
         
         coloring = nx.coloring(lf_hc, strategy='lf', interchange=False, returntype='sets')
-        # this is wrong
         assert_true(len(coloring) == 4)
         
     
@@ -65,7 +104,7 @@ class TestColoring:
         ])
         
         coloring = nx.coloring(sl_shc, strategy='sl', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 4)
+        assert_true(len(coloring) <= 4)
     
     def test_sl_hc(self):
         sl_hc = nx.Graph()

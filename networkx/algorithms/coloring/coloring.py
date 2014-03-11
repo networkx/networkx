@@ -3,17 +3,18 @@
 """
 
 """
-Greedy-Color
+                            impl    shc    hc    strategy test
+Greedy-Color                
 Color-with-Interchange
-RS-Color
-LF-Color
-SL-Color
+RS-Color                    x        non   non
+LF-Color                    x        x     x
+SL-Color                    x        x     x
+CS-Color                    x        x     
+SLF-Color                   x        x     x
+GIS-Color                   x        x     x
 RSI-Color
 LFI-Color
 SLI-Color
-CS-Color
-SLF-Color
-GIS-Color
 """
 
 from heapq import heappush, heappop
@@ -33,20 +34,30 @@ def min_degree_node(G):
     k = list(degree.keys())
     return k[v.index(min(v))]
 
+def max_degree_node(G):
+    degree = G.degree()
+    v = list(degree.values())
+    k = list(degree.keys())
+    return k[v.index(max(v))]
+
 def interchangeFunc(G, node, colors, neighbourColors, returntype, sets):
     combinations = itertools.combinations(neighbourColors, 2) # Find all combination of neighbour colors
     for combination in combinations: # For all combinations
+        print "combination: ", combination
         color0 = combination[0] # The first color in the combination
         color1 = combination[1] # The second color in the combination
         neighboursColor0 = [] # A list storing all neighbours with color0
         neighboursColor1 = [] # A list storing all neighbours with color1
         for neighbour in G.neighbors(node): # iterate through the neighbours of the node
+            print "in for"
             if neighbour in colors: # if the neighbour has been assigned a color ...
                 if colors[neighbour] == color0: # if the color is color0
                     neighboursColor0.append(neighbour) # append it to the list
                 elif colors[neighbour] == color1: # if the color is color1
                     neighboursColor1.append(neighbour) # append it to the list
     
+        print "neighboursColor0 ", neighboursColor0
+        print "neighboursColor1 ", neighboursColor1
         # In the following section we find all nodes reachable from neighbours with color0
         # When traversing the graph using BFS we only add nodes of either color0 or color1 
         visited = set()
@@ -63,10 +74,11 @@ def interchangeFunc(G, node, colors, neighbourColors, returntype, sets):
         differentComponents = True
         for neighbourColor1 in neighboursColor1:
             if neighbourColor1 in visited:
-                succes = False
+                differentComponents = False
 
         # If there were no connection we swap the colors of one of the components
         if(differentComponents):
+            print "sucess"
             for nodeToColor in visited: # For all nodes in the connected component
                 if colors[nodeToColor] == color0: # If the node has color0
                     colors[nodeToColor] = color1 # ... we color it with color1
@@ -171,6 +183,48 @@ def strategy_cs(G, traversal='bfs'):
 
     for (_, end) in tree:
         yield end # Then yield nodes in the order traversed by either BFS or DFS
+
+"""
+Saturation largest first (SLF) or DSATUR.
+"""
+def strategy_slf(G, colors):
+    len_g = len(G)
+    no_colored = 0
+
+    while no_colored != len_g:
+        if no_colored == 0: # When saturation for all nodes is 0, yield the node with highest degree
+            no_colored += 1
+            yield max_degree_node(G)
+        else:
+            highest_saturation = -1
+            highest_saturation_nodes = []
+            for node in G.nodes():
+                if node not in colors: # If the node is not already colored, calculate its saturation ...
+                    neighbour_colors = set()
+                    for neighbour in G.neighbors(node):
+                        if neighbour in colors: # .. By collection all neighbouring colors
+                            neighbour_colors.add(colors[neighbour])
+
+                    saturation = len(neighbour_colors)
+                    if saturation > highest_saturation:
+                        highest_saturation = saturation
+                        highest_saturation_nodes = [node]
+                    elif saturation == highest_saturation:
+                        highest_saturation_nodes.append(node)
+
+            no_colored += 1
+            if len(highest_saturation_nodes) == 1:
+                yield highest_saturation_nodes[0]
+            else:
+                # Return the node with highest degree
+                degree = dict()
+                for node in highest_saturation_nodes:
+                    degree[node] = G.degree(node)
+
+                v = list(degree.values())
+                k = list(degree.keys())
+
+                yield k[v.index(max(v))]
     
         
 def coloring(G, strategy='lf', interchange=False, returntype='dict'):
@@ -190,6 +244,8 @@ def coloring(G, strategy='lf', interchange=False, returntype='dict'):
         nodes = strategy_cs(G)
     elif strategy == 'cs-dfs':
         nodes = strategy_cs(G, traversal='dfs')
+    elif strategy == 'slf':
+        nodes = strategy_slf(G, colors)
     else:
         print 'Strategy ' + strategy + ' does not exist.'
         return colors
