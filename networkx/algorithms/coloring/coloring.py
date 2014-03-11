@@ -25,19 +25,32 @@ __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
                         "Henrik Haugbølle <hhau@itu.dk>"])
 __all__ = ['coloring']
     
+    
+def min_degree_node(G):
+    degree = G.degree()
+    v = list(degree.values())
+    k = list(degree.keys())
+    return k[v.index(min(v))]
 
 def interchange(G):
     """ Not implemented """
 
+"""
+Largest first (lf) ordering. Ordering the nodes by largest degree first.
+"""
+
 def strategy_lf(G):
     nodes = G.nodes()
-    nodes.sort(key=lambda node: len(G.neighbors(node)) * -1)
+    nodes.sort(key=lambda node: G.degree(node) * -1)
     
     return iter(nodes)
+"""
+Smallest first (sf) ordering. Ordering the nodes by smallest degree first.
+"""
 
 def strategy_sf(G):
     nodes = G.nodes()
-    nodes.sort(key=lambda node: len(G.neighbors(node)))
+    nodes.sort(key=lambda node: G.degree(node))
     
     return iter(nodes)
     
@@ -49,8 +62,24 @@ def strategy_rs(G):
     random.shuffle(nodes)
     
     return iter(nodes)
-            
+    
+"""
+Smallest last (sl). Picking the node with smallest degree first, subtracting it from the graph, and starting over with the new smallest degree node. When
+the graph is empty, the reverse ordering of the one built is returned.
+"""
 
+def strategy_sl(G):
+    available_g = G.copy()
+    k = []
+    
+    while len(available_g):
+        node = min_degree_node(available_g)
+        
+        available_g.remove_node(node)
+        k.append(node)
+    
+    return reversed(k)
+    
 """
 Greedy independent set ordering (GIS). Generates a maximum independent set of nodes, and assigns color C to all nodes in this set. This set of nodes is now
 removed from the graph, and the algorithm runs 
@@ -107,6 +136,8 @@ def coloring(G, strategy='maxdegree', interchange=False, returntype='dict'):
         nodes = strategy_lf(G)
     elif strategy == 'sf':
         nodes = strategy_sf(G)
+    elif strategy == 'sl':
+        nodes = strategy_sl(G)
     elif strategy == 'gis':
         nodes = strategy_gis(G, colors)
     elif strategy == 'cs' or strategy == 'cs-bfs':
