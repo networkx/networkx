@@ -52,6 +52,12 @@ except ImportError:
     except ImportError:
         pass
 
+try:
+    import lxml.etree
+except ImportError:
+    lxml = None
+
+
 @open_file(1,mode='wb')
 def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     """Write G in GraphML XML format to path
@@ -81,6 +87,50 @@ def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint)
     writer.add_graph_element(G)
     writer.dump(path)
+
+
+@open_file(1, mode='wb')
+def write_graphml_lxml(G, path, encoding='utf-8', prettyprint=True):
+    """Write G in GraphML XML format to path
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+    path : file or string
+       File or filename to write.
+       Filenames ending in .gz or .bz2 will be compressed.
+    encoding : string (optional)
+       Encoding for text data.
+    prettyprint : bool (optional)
+       If True use line breaks and indenting in output XML.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(4)
+    >>> nx.write_graphml(G, "test.graphml")
+
+    Notes
+    -----
+    This implementation does not support mixed graphs (directed and unidirected
+    edges together) hyperedges, nested graphs, or ports.
+    """
+    global Element
+    old_Element = Element
+    Element = lxml.etree.Element
+    try:
+        writer = GraphMLWriterLxml(
+            path, encoding=encoding, prettyprint=prettyprint)
+        writer.add_graph_element(G)
+        writer.dump()
+    except Exception as error:
+        Element = old_Element
+        raise error
+
+
+if lxml:
+    write_graphml = write_graphml_lxml
+
 
 def generate_graphml(G, encoding='utf-8',prettyprint=True):
     """Generate GraphML lines for G
@@ -379,6 +429,87 @@ class GraphMLWriter(GraphML):
         else:
             if level and (not elem.tail or not elem.tail.strip()):
                 elem.tail = i
+
+
+class IncrementalElement(object):
+    """Wrapper for _IncrementalWriter providing an Element like interface.
+
+    This wrapper does not intend to be a complete implemenation but rather to
+    deal with those calls used in GraphMLWriter.
+    """
+
+    def __init__(self, xml, prettyprint):
+        self._xml = xml
+        self._prettyprint = prettyprint
+
+    def append(self, element):
+        self._xml.write(element, pretty_print=self._prettyprint)
+
+
+class GraphMLWriterLxml(GraphMLWriter):
+    def __init__(self, path, graph=None, encoding='utf-8', prettyprint=True):
+        self._prettyprint = prettyprint
+        self._encoding = encoding
+
+        self._xml_base = lxml.etree.xmlfile(path, encoding=self._encoding)
+        self._xml = self._xml_base.__enter__()
+        self._xml.write_declaration()
+
+        # We need to have a xml variable that support insertion. This call is
+        # used for adding the keys to the document.
+        # We will store those keys in a plain list, and then after the graph
+        # element is closed we will add them to the main graphml element.
+        self.xml = []
+        self._keys = self.xml
+        self._graphml = self._xml.element(
+            'graphml',
+            {
+                'xmlns': self.NS_GRAPHML,
+                'xmlns:xsi': self.NS_XSI,
+                'xsi:schemaLocation': self.SCHEMALOCATION
+            })
+        self._graphml.__enter__()
+        self.keys = {}
+
+        if graph is not None:
+            self.add_graph_element(graph)
+
+    def add_graph_element(self, G):
+        """
+        Serialize graph G in GraphML to the stream.
+        """
+        if G.is_directed():
+            default_edge_type = 'directed'
+        else:
+            default_edge_type = 'undirected'
+
+        graphid = G.graph.pop('id', None)
+        if graphid is None:
+            graph_element = self._xml.element('graph',
+                                              edgedefault=default_edge_type)
+        else:
+            graph_element = self._xml.element('graph',
+                                              edgedefault=default_edge_type,
+                                              id=graphid)
+
+        default = {}
+        data = dict((k, v) for (k, v) in G.graph.items()
+                    if k not in ('node_default', 'edge_default'))
+
+        incremental_writer = IncrementalElement(self._xml, self._prettyprint)
+        with graph_element:
+            self.add_attributes('graph', incremental_writer, data, default)
+            self.add_nodes(G, incremental_writer)
+            self.add_edges(G, incremental_writer)
+
+    def __str__(self):
+        return object.__str__(self)
+
+    def dump(self):
+        for key in self._keys:
+            self._xml.write(key, pretty_print=self._prettyprint)
+        self._graphml.__exit__(None, None, None)
+        self._xml_base.__exit__(None, None, None)
 
 
 class GraphMLReader(GraphML):
