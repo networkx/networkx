@@ -27,6 +27,15 @@ def test_is_list_of_ints():
     assert_true(is_list_of_ints([1,2,3,42]))
     assert_false(is_list_of_ints([1,2,3,"kermit"]))
 
+def test_contains_only():
+    listlist = [[0,1,2],[3,4,5],[6,7,8,9]]
+    dictset = {val:set(item) for val, item in enumerate(listlist)}
+    listset = [set(item) for item in listlist]
+    assert_true(contains_only(listlist, list))
+    assert_true(contains_only(listset, set))
+    assert_true(contains_only(dictset, set))
+    assert_false(contains_only([1,2,3], set))
+
 def test_random_number_distribution():
     # smoke test only
     z=uniform_sequence(20)

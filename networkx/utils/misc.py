@@ -65,6 +65,14 @@ def is_list_of_ints( intlist ):
         if not isinstance(i,int): return False
     return True
 
+def contains_only(container, type):
+    """check that contents of a container are all of the same type"""
+    try:
+        container = container.values()  # dict
+    except AttributeError:
+        pass
+    return all(isinstance(s, type) for s in container)
+
 PY2 = sys.version_info[0] == 2
 if PY2:
     def make_str(x):
