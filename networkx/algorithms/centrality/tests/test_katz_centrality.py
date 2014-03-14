@@ -34,7 +34,12 @@ class TestKatzCentrality(object):
     def test_maxiter(self):
         alpha = 0.1
         G = networkx.path_graph(3)
-        b = networkx.katz_centrality(G, alpha, max_iter=0)
+        max_iter = 0
+        try:
+            b = networkx.katz_centrality(G, alpha, max_iter=max_iter)
+        except networkx.NetworkXError as e:
+            assert str(max_iter) in e.args[0], "max_iter value not in error msg"
+            raise # So that the decorater sees the exception.
 
     def test_beta_as_scalar(self):
         alpha = 0.1
