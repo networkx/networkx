@@ -177,8 +177,8 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
                 x[n] *= s
             return x
 
-    raise nx.NetworkXError('Power iteration failed to converge in ',
-                           '%d iterations."%(i+1))')
+    raise nx.NetworkXError('Power iteration failed to converge in '
+                           '%d iterations.' % max_iter)
 
 @not_implemented_for('multigraph')
 def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
