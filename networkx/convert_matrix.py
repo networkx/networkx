@@ -435,8 +435,20 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
                               shape=(nlen,nlen), dtype=dtype)
     else:
         # symmetrize matrix
-        M = sparse.coo_matrix((data+data, (row+col,col+row)),
-                              shape=(nlen,nlen), dtype=dtype)
+        d = data + data
+        r = row + col
+        c = col + row
+        # selfloop entries get double counted when symmetrizing
+        # so we subtract the data on the diagonal
+        selfloops = G.selfloop_edges(data=True)
+        if selfloops:
+            diag_index,diag_data = zip(*((index[u],-d.get(weight,1))
+                                         for u,v,d in selfloops
+                                         if u in index and v in index))
+            d += diag_data
+            r += diag_index
+            c += diag_index
+        M = sparse.coo_matrix((d, (r, c)), shape=(nlen,nlen), dtype=dtype)
     try:
         return M.asformat(format)
     except AttributeError:
