@@ -41,23 +41,41 @@ def max_degree_node(G):
     return k[v.index(max(v))]
 
 def interchangeFunc(G, node, colors, neighbourColors, returntype, sets):
+    # Build a graph where queries on adjacency nodes for a given color combination is possible
+    graph = [{} for i in range(len(G))]
+    for tmpNode in G.nodes():
+        for neighbour in G.neighbors(tmpNode):
+            if (tmpNode in colors) and (neighbour in colors):
+                color0 = colors[tmpNode]
+                color1 = colors[neighbour]
+                if color0 < color1:
+                    combination = (color0, color1)
+                else:
+                    combination = (color1, color0)
+
+                if not combination in graph[tmpNode]:
+                    graph[tmpNode][combination] = []
+                    graph[neighbour][combination] = []
+                graph[tmpNode][combination].append(neighbour)
+                graph[neighbour][combination].append(tmpNode)
+    
+    # Build a dictionary storing neighbouring nodes for each color
+    neighbourColors = {}
+    for neighbour in G.neighbors(node):
+        if (neighbour in colors):
+            color = colors[neighbour]
+            if not color in neighbourColors:
+                neighbourColors[color] = []
+            neighbourColors[color].append(neighbour) 
+    
+    # Iterate through all color combination and see if there is a connection
     combinations = itertools.combinations(neighbourColors, 2) # Find all combination of neighbour colors
     for combination in combinations: # For all combinations
-        print "combination: ", combination
         color0 = combination[0] # The first color in the combination
         color1 = combination[1] # The second color in the combination
-        neighboursColor0 = [] # A list storing all neighbours with color0
-        neighboursColor1 = [] # A list storing all neighbours with color1
-        for neighbour in G.neighbors(node): # iterate through the neighbours of the node
-            print "in for"
-            if neighbour in colors: # if the neighbour has been assigned a color ...
-                if colors[neighbour] == color0: # if the color is color0
-                    neighboursColor0.append(neighbour) # append it to the list
-                elif colors[neighbour] == color1: # if the color is color1
-                    neighboursColor1.append(neighbour) # append it to the list
-    
-        print "neighboursColor0 ", neighboursColor0
-        print "neighboursColor1 ", neighboursColor1
+        neighboursColor0 = neighbourColors[color0] # A list storing all neighbours with color0
+        neighboursColor1 = neighbourColors[color1] # A list storing all neighbours with color1
+        
         # In the following section we find all nodes reachable from neighbours with color0
         # When traversing the graph using BFS we only add nodes of either color0 or color1 
         visited = set()
@@ -65,11 +83,11 @@ def interchangeFunc(G, node, colors, neighbourColors, returntype, sets):
         while queue:
             newNode = queue.pop()
             visited.add(newNode)
-            for neighbour in G.neighbors(newNode):
-                if neighbour in colors and (colors[neighbour] == color0 or colors[neighbour] == color1):
+            if combination in graph[newNode]: 
+                for neighbour in graph[newNode][combination]:
                     if not neighbour in visited:
                         queue.append(neighbour)
-    
+            
         # In this section we test if there was a connection from neighbours with color0 to neighbours with color1
         differentComponents = True
         for neighbourColor1 in neighboursColor1:
@@ -78,7 +96,6 @@ def interchangeFunc(G, node, colors, neighbourColors, returntype, sets):
 
         # If there were no connection we swap the colors of one of the components
         if(differentComponents):
-            print "sucess"
             for nodeToColor in visited: # For all nodes in the connected component
                 if colors[nodeToColor] == color0: # If the node has color0
                     colors[nodeToColor] = color1 # ... we color it with color1
@@ -91,7 +108,7 @@ def interchangeFunc(G, node, colors, neighbourColors, returntype, sets):
                         sets[color1].remove(nodeToColor)
                         sets[color0].add(nodeToColor)
             return color0 # Return the color that was is no longer adjacent to this node
-    return -1 # The function did not succeseed in finding two colors to swap
+    return -1 # The function did not successeed in finding two colors to swap
 
 """
 Largest first (lf) ordering. Ordering the nodes by largest degree first.
