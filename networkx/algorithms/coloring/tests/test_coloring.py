@@ -32,7 +32,7 @@ class TestColoring:
         assert_true(len(coloring) <= 4)
 
 
-    def test_slf_htc(self):
+    def test_slf_hc(self):
         slf_htc = nx.Graph()
         slf_htc.add_nodes_from([1,2,3,4,5,6,7,8])
         slf_htc.add_edges_from([
@@ -86,8 +86,29 @@ class TestColoring:
         
         coloring = nx.coloring(lf_hc, strategy='lf', interchange=False, returntype='sets')
         assert_true(len(coloring) == 4)
-        
     
+    # Test that largest first with interchange solves the lf_hc with only three colors    
+    def test_lfi_lfhc(self):
+        lf_hc = nx.Graph()
+        lf_hc.add_nodes_from([1, 2, 3, 4, 5, 6, 7])
+        lf_hc.add_edges_from([
+            (1, 7),
+            (1, 6),
+            (1, 3),
+            (1, 4),
+            (7, 2),
+            (2, 6),
+            (2, 3),
+            (2, 5),
+            (5, 3),
+            (5, 4),
+            (4, 3)
+        ])
+        
+        coloring = nx.coloring(lf_hc, strategy='lf', interchange=True, returntype='sets')
+        print coloring
+        assert_true(len(coloring) == 3)
+        
     def test_sl_shc(self):
         sl_shc = nx.Graph()
         sl_shc.add_nodes_from([1, 2, 3, 4, 5, 6])
@@ -130,6 +151,32 @@ class TestColoring:
         
         coloring = nx.coloring(sl_hc, strategy='sl', interchange=False, returntype='sets')
         assert_true(len(coloring) == 5)
+        
+    # Test that smallest last with interchange solves the sl_hc with only four colors    
+    def test_sli_slhc(self):
+        sl_hc = nx.Graph()
+        sl_hc.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8])
+        sl_hc.add_edges_from([
+            (1, 2),
+            (1, 3),
+            (1, 5),
+            (1, 7),
+            (2, 3),
+            (2, 4),
+            (2, 8),
+            (8, 4),
+            (8, 6),
+            (8, 7),
+            (7, 5),
+            (7, 6),
+            (3, 4),
+            (4, 6),
+            (6, 5),
+            (5, 3)
+        ])
+        
+        coloring = nx.coloring(sl_hc, strategy='sl', interchange=True, returntype='sets')
+        assert_true(len(coloring) == 4)
         
     def test_gis_shtc(self):
         gis_shtc = nx.Graph()
