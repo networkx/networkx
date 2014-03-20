@@ -119,14 +119,3 @@ class TestGeneratorsRandom():
         # infinite loop used to occur when a node has degree n-1 and needs to rewire
         watts_strogatz_graph(10, 9, 0.25, seed=0)
         newman_watts_strogatz_graph(10, 9, 0.5, seed=0)
-
-
-if __name__ == '__main__':
-    def test_all():
-        t = TestGeneratorsRandom()
-        t.smoke_test_random_graph()
-        t.test_gnp()
-        t.test_gnm()
-        t.test_watts_strogatz_big_k()
-
-    test_all()
