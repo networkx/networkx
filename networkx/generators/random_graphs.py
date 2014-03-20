@@ -87,7 +87,9 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
     if p <= 0 or p >= 1:
         return nx.gnp_random_graph(n,p,directed=directed)
 
-    v = 1  # Nodes in graph are from 0,n-1 (this is the second node index).
+    # Use v = 0 instead of v = 1 as specified in [1]. This is necessary for
+    # directed graphs and makes no difference for undirected graphs.
+    v = 0
     w = -1
     lp = math.log(1.0 - p)
 
