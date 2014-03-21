@@ -13,13 +13,36 @@ __author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
 import networkx as nx
 from nose.tools import *
 
-def compare_flows(G, s, t, solnFlows, solnValue):
-    flowValue, flowDict = nx.ford_fulkerson(G, s, t)
+
+def validate_flows(G, s, t, flowDict, solnValue, capacity):
+    excess = {u: 0 for u in flowDict}
+    for u in flowDict:
+        for v, flow in flowDict[u].iteritems():
+            ok_(G.has_edge(u, v))
+            if capacity in G[u][v]:
+                assert_less_equal(flow, G[u][v][capacity])
+            assert_greater_equal(flow, 0)
+            excess[u] -= flow
+            excess[v] += flow
+    for u, exc in excess.iteritems():
+        if u == s:
+            assert_equal(exc, -solnValue)
+        elif u == t:
+            assert_equal(exc, solnValue)
+        else:
+            assert_equal(exc, 0)
+
+
+def compare_flows(G, s, t, solnFlows, solnValue, capacity = 'capacity'):
+    flowValue, flowDict = nx.ford_fulkerson(G, s, t, capacity)
     assert_equal(flowValue, solnValue)
     assert_equal(flowDict, solnFlows)
-    assert_equal(nx.min_cut(G, s, t), solnValue)
-    assert_equal(nx.max_flow(G, s, t), solnValue)
-    assert_equal(nx.ford_fulkerson_flow(G, s, t), solnFlows)
+    flowValue, flowDict = nx.preflow_push(G, s, t, capacity)
+    assert_equal(flowValue, solnValue)
+    validate_flows(G, s, t, flowDict, solnValue, capacity)
+    assert_equal(nx.min_cut(G, s, t, capacity), solnValue)
+    assert_equal(nx.max_flow(G, s, t, capacity), solnValue)
+    assert_equal(nx.ford_fulkerson_flow(G, s, t, capacity), solnFlows)
 
 
 class TestMaxflow:
@@ -158,14 +181,8 @@ class TestMaxflow:
         solnValue = 3.0
         s = 'x'
         t = 'y'
-        
-        flowValue, flowDict = nx.ford_fulkerson(G, s, t, capacity = 'spam')
-        assert_equal(flowValue, solnValue)
-        assert_equal(flowDict, solnFlows)
-        assert_equal(nx.min_cut(G, s, t, capacity = 'spam'), solnValue)
-        assert_equal(nx.max_flow(G, s, t, capacity = 'spam'), solnValue)
-        assert_equal(nx.ford_fulkerson_flow(G, s, t, capacity = 'spam'),
-                     solnFlows)
+
+        compare_flows(G, s, t, solnFlows, solnValue, capacity = 'spam')
 
     def test_digraph_infcap_edges(self):
         # DiGraph with infinite capacity edges
@@ -202,7 +219,7 @@ class TestMaxflow:
              't': {}}
 
         compare_flows(G, 's', 't', H, 97)
-        
+
 
     def test_digraph_infcap_path(self):
         # Graph with infinite capacity (s, t)-path
@@ -216,6 +233,8 @@ class TestMaxflow:
 
         assert_raises(nx.NetworkXUnbounded,
                       nx.ford_fulkerson, G, 's', 't')
+        assert_raises(nx.NetworkXUnbounded,
+                      nx.preflow_push, G, 's', 't')
         assert_raises(nx.NetworkXUnbounded,
                       nx.max_flow, G, 's', 't')
         assert_raises(nx.NetworkXUnbounded,

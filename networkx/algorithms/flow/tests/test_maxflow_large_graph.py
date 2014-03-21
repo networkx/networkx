@@ -42,10 +42,12 @@ class TestMaxflowLargeGraph:
         for (u, v) in G.edges():
             G[u][v]['capacity'] = 5
         assert_equal(nx.ford_fulkerson(G, 1, 2)[0], 5 * (N - 1))
+        assert_equal(nx.preflow_push(G, 1, 2)[0], 5 * (N - 1))
 
     def test_pyramid(self):
         N = 10 
 #        N = 100 # this gives a graph with 5051 nodes
         G = gen_pyramid(N)
         assert_almost_equal(nx.ford_fulkerson(G, (0, 0), 't')[0], 1.)
+        assert_almost_equal(nx.preflow_push(G, (0, 0), 't')[0], 1.)
 
