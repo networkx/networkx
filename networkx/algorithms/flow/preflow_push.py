@@ -117,7 +117,7 @@ def _build_residual_network(G, s, t, capacity):
             R.add_edge(v, u, capacity=r, flow=0)
 
     # Detect unboundedness by determining reachability of t from s using only
-    # infinte-capacity edges.
+    # infinite-capacity edges.
     R_inf = nx.DiGraph((u, v) for u, v, attr in R.edges_iter(data=True)
                        if attr['capacity'] == inf)
     if s in R_inf and t in R_inf and nx.has_path(R_inf, s, t):
@@ -347,8 +347,8 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
 
 
 def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1):
-    """Find a maximum single-commodity flow using the highest-label preflow-
-    push algorithm.
+    """Find a maximum single-commodity flow using the highest-label
+    preflow-push algorithm.
 
     This algorithm has a running time of `O(n^2 m^(1/2))` for `n` nodes and
     `m` edges.
