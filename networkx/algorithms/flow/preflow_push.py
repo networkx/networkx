@@ -37,7 +37,7 @@ class _CurrentEdge(object):
             raise
 
     def _rewind(self):
-        self._it = self._edges.iteritems()
+        self._it = iter(self._edges.items())
         self._curr = next(self._it)
 
 
@@ -88,15 +88,16 @@ def _build_residual_network(G, s, t, capacity):
     R.add_nodes_from(G)
 
     # Extract edges with positive capacities. Self loops excluded.
-    edge_list = [e for e in G.edges_iter(data=True)
-                 if e[0] != e[1] and
-                 (capacity not in e[2] or e[2][capacity] > 0)]
+    edge_list = [(u, v, attr) for u, v, attr in G.edges_iter(data=True)
+                 if u != v and (capacity not in attr or attr[capacity] > 0)]
     # Simulate infinity with twice the sum of the finite edge capacities or any
     # positive value if the sum is zero. This allows the infinite-capacity
     # edges to be distinguished for detecting unboundedness. If the maximum
     # flow is finite, these edge still cannot appear in the minimum cut and
     # thus guarantee correctness.
-    inf = 2 * sum(e[2][capacity] for e in edge_list if capacity in e[2]) or 1
+    inf = float('inf')
+    inf = 2 * sum(attr[capacity] for u, v, attr in edge_list
+                  if capacity in attr and attr[capacity] != inf) or 1
     if G.is_directed():
         for u, v, attr in edge_list:
             r = attr[capacity] if capacity in attr else inf
@@ -171,13 +172,13 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
 
     # The maximum flow must be nonzero now. Initialize the preflow by
     # saturating all edges emanating from s.
-    for u, attr in R[s].iteritems():
+    for u, attr in R[s].items():
         flow = attr['capacity']
         if flow > 0:
             push(s, u, flow)
 
     # Partition nodes into levels.
-    levels = [_Level() for i in xrange(2 * n - 1)]
+    levels = [_Level() for i in range(2 * n - 1)]
     for u in R:
         if u != s and u != t:
             level = levels[R.node[u]['height']]
@@ -199,7 +200,7 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
         """Relabel a node to create an admissible edge.
         """
         R.node[u]['height'] = min(R.node[v]['height']
-                                  for v, attr in R[u].iteritems()
+                                  for v, attr in R[u].items()
                                   if attr['flow'] < attr['capacity']) + 1
         grt.add_work(len(R[u]))
 
@@ -244,7 +245,7 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
         target = t if from_sink else s
         T.add_node(target)
         heights = nx.shortest_path_length(T, target=target)
-        max_height = max(heights.itervalues())
+        max_height = max(heights.values())
         if from_sink:
             # Also mark nodes from which t is unreachable for relabeling. This
             # serves the same purpose as the gap heuristic.
@@ -294,8 +295,8 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
             if not grt.is_reached():
                 # u may have been relabeled during discharge and introduced new
                 # active nodes above the old level. Therefore, height should
-                # be set to its new height, bounded by max_height,so that those
-                # new active nodes can be discharged.
+                # be set to its new height, bounded by max_height, so that
+                # those new active nodes can be discharged.
                 height = R.node[u]['height']
                 if height < n:
                     max_height = max(max_height, height)
