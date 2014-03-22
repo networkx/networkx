@@ -216,8 +216,8 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
                            attr['capacity'] - attr['flow'])
                 push(u, v, flow)
                 activate(v)
-            if R.node[u]['excess'] == 0:
-                break
+                if R.node[u]['excess'] == 0:
+                    break
             try:
                 R.node[u]['curr_edge'].move_to_next()
             except StopIteration:
