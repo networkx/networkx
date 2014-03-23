@@ -142,7 +142,11 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
         # t is not reachable from s in the residual network. The maximum flow
         # must be zero.
         if compute_flow:
-            flow_dict = {u: {v: 0 for v in G[u]} for u in G}
+            flow_dict = {}
+            for u in G:
+                flow_dict[u] = {}
+                for v in G[u]:
+                    flow_dict[u][v] = 0
             return (0, flow_dict)
         else:
             return 0
@@ -339,7 +343,11 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
                 grt.clear_work()
 
     # Convert the residual network to a dictionary.
-    flow_dict = {u: {v: 0 for v in G[u]} for u in G}
+    flow_dict = {}
+    for u in G:
+        flow_dict[u] = {}
+        for v in G[u]:
+            flow_dict[u][v] = 0
     for u in G:
         flow_dict[u].update((v, R[u][v]['flow']) for v in R[u]
                             if R[u][v]['flow'] > 0)
