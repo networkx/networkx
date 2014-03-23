@@ -22,8 +22,8 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity):
         for v, flow in flowDict[u].items():
             ok_(G.has_edge(u, v))
             if capacity in G[u][v]:
-                assert_less_equal(flow, G[u][v][capacity])
-            assert_greater_equal(flow, 0)
+                ok_(flow <= G[u][v][capacity])
+            ok_(flow >= 0)
             excess[u] -= flow
             excess[v] += flow
     for u, exc in excess.items():
