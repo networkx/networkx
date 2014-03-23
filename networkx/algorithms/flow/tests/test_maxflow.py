@@ -15,7 +15,9 @@ from nose.tools import *
 
 
 def validate_flows(G, s, t, flowDict, solnValue, capacity):
-    excess = {u: 0 for u in flowDict}
+    excess = {}
+    for u in flowDict:
+        excess[u] = 0
     for u in flowDict:
         for v, flow in flowDict[u].items():
             ok_(G.has_edge(u, v))
