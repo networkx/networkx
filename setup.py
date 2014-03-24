@@ -95,7 +95,7 @@ package_data     = {
     'networkx.algorithms.community': ['tests/*.py'],
     'networkx.algorithms.components': ['tests/*.py'],
     'networkx.algorithms.connectivity': ['tests/*.py'],
-    'networkx.algorithms.flow': ['tests/*.py'],
+    'networkx.algorithms.flow': ['tests/*.py', 'tests/*.bz2'],
     'networkx.algorithms.traversal': ['tests/*.py'],
     'networkx.algorithms.isomorphism': ['tests/*.py','tests/*.*99'],
     'networkx.algorithms.link_analysis': ['tests/*.py'],
