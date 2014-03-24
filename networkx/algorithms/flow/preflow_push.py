@@ -56,7 +56,7 @@ class _GlobalRelabelThreshold(object):
     """
 
     def __init__(self, n, m, freq):
-        self._threshold = freq * (n + m)
+        self._threshold = (n + m) / freq if freq else float('inf')
         self._work = 0
 
     def add_work(self, work):
