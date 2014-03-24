@@ -442,9 +442,9 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1):
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow, F = nx.ford_fulkerson(G, 'x', 'y')
-    >>> flow
-    3.0
+    >>> flow, F = nx.preflow_push(G, 'x', 'y')
+    >>> flow, F
+    (3.0, {'a': {'c': 2.0}, 'c': {'y': 2.0}, 'b': {'c': 0, 'd': 1.0}, 'e': {'y': 1.0}, 'd': {'e': 1.0}, 'y': {}, 'x': {'a': 2.0, 'b': 1.0}})
     """
     R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
     return (R.node[t]['excess'], _build_flow_dict(G, R))
@@ -511,7 +511,7 @@ def preflow_push_value(G, s, t, capacity='capacity', global_relabel_freq=1):
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow, F = nx.ford_fulkerson(G, 'x', 'y')
+    >>> flow = nx.preflow_push_value(G, 'x', 'y')
     >>> flow
     3.0
     """
@@ -581,9 +581,9 @@ def preflow_push_flow(G, s, t, capacity='capacity', global_relabel_freq=1):
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow, F = nx.ford_fulkerson(G, 'x', 'y')
-    >>> flow
-    3.0
+    >>> F = nx.preflow_push_flow(G, 'x', 'y')
+    >>> F
+    {'a': {'c': 2.0}, 'c': {'y': 2.0}, 'b': {'c': 0, 'd': 1.0}, 'e': {'y': 1.0}, 'd': {'e': 1.0}, 'y': {}, 'x': {'a': 2.0, 'b': 1.0}}
     """
     R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
     return _build_flow_dict(G, R)
