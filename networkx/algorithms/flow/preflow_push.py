@@ -127,7 +127,7 @@ def _build_residual_network(G, s, t, capacity):
     return R
 
 
-def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
+def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     """Implementation of the highest-label preflow-push algorithm.
     """
     R = _build_residual_network(G, s, t, capacity)
@@ -141,15 +141,7 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     if s not in heights:
         # t is not reachable from s in the residual network. The maximum flow
         # must be zero.
-        if compute_flow:
-            flow_dict = {}
-            for u in G:
-                flow_dict[u] = {}
-                for v in G[u]:
-                    flow_dict[u][v] = 0
-            return (0, flow_dict)
-        else:
-            return 0
+        return R
 
     n = len(R)
     # max_height represents the height of the highest level below level n with
@@ -341,7 +333,7 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     # A maximum preflow has been found. The excess at t is the maximum flow
     # value.
     if not compute_flow:
-        return R.node[t]['excess']
+        return R
 
     # Phase 2: Convert the maximum preflow to a maximum flow by returning the
     # excess to s.
@@ -368,7 +360,12 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
                 height = global_relabel(False)
                 grt.clear_work()
 
-    # Convert the residual network to a dictionary.
+    return R
+
+
+def _build_flow_dict(G, R):
+    """Build a flow dictionary from a residual network.
+    """
     flow_dict = {}
     for u in G:
         flow_dict[u] = {}
@@ -377,7 +374,7 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     for u in G:
         flow_dict[u].update((v, R[u][v]['flow']) for v in R[u]
                             if R[u][v]['flow'] > 0)
-    return (R.node[t]['excess'], flow_dict)
+    return flow_dict
 
 
 def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1):
@@ -449,7 +446,8 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1):
     >>> flow
     3.0
     """
-    return _preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
+    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
+    return (R.node[t]['excess'], _build_flow_dict(G, R))
 
 
 def preflow_push_value(G, s, t, capacity='capacity', global_relabel_freq=1):
@@ -517,7 +515,8 @@ def preflow_push_value(G, s, t, capacity='capacity', global_relabel_freq=1):
     >>> flow
     3.0
     """
-    return _preflow_push_impl(G, s, t, capacity, global_relabel_freq, False)
+    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, False)
+    return R.node[t]['excess']
 
 
 def preflow_push_flow(G, s, t, capacity='capacity', global_relabel_freq=1):
@@ -586,4 +585,5 @@ def preflow_push_flow(G, s, t, capacity='capacity', global_relabel_freq=1):
     >>> flow
     3.0
     """
-    return _preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)[1]
+    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
+    return _build_flow_dict(G, R)
