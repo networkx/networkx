@@ -21,6 +21,22 @@ class TestDAG:
         assert_equal(nx.topological_sort(DG),[1, 3, 2])
         assert_equal(nx.topological_sort_recursive(DG),[1, 3, 2])
 
+    def test_reverse_topological_sort1(self):
+        DG=nx.DiGraph()
+        DG.add_edges_from([(1,2),(1,3),(2,3)])
+        assert_equal(nx.topological_sort(DG, reverse=True),[3, 2, 1])
+        assert_equal(nx.topological_sort_recursive(DG, reverse=True),[3, 2, 1])
+
+        DG.add_edge(3,2)
+        assert_raises(nx.NetworkXUnfeasible,
+                nx.topological_sort, DG, reverse=True)
+        assert_raises(nx.NetworkXUnfeasible,
+                nx.topological_sort_recursive, DG, reverse=True)
+        
+        DG.remove_edge(2,3)
+        assert_equal(nx.topological_sort(DG, reverse=True),[2, 3, 1])
+        assert_equal(nx.topological_sort_recursive(DG, reverse=True),[2, 3, 1])
+
     def test_is_directed_acyclic_graph(self):
         G = nx.generators.complete_graph(2)
         assert_false(nx.is_directed_acyclic_graph(G))

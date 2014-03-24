@@ -489,7 +489,8 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
                                              weight=weight)
     return paths
 
-def bellman_ford(G, source, weight = 'weight'):
+
+def bellman_ford(G, source, weight='weight'):
     """Compute shortest path lengths and predecessors on shortest paths
     in weighted graphs.
 
@@ -552,7 +553,7 @@ def bellman_ford(G, source, weight = 'weight'):
 
     """
     if source not in G:
-        raise KeyError("Node %s is not found in the graph"%source)
+        raise KeyError("Node %s is not found in the graph" % source)
     numb_nodes = len(G)
 
     dist = {source: 0}
@@ -563,13 +564,13 @@ def bellman_ford(G, source, weight = 'weight'):
 
     if G.is_multigraph():
         def get_weight(edge_dict):
-            return min([eattr.get(weight,1) for eattr in edge_dict.values()])
+            return min(eattr.get(weight,1) for eattr in edge_dict.values())
     else:
         def get_weight(edge_dict):
             return edge_dict.get(weight,1)
 
     for i in range(numb_nodes):
-        no_changes=True
+        no_changes = True
         # Only need edges from nodes in dist b/c all others have dist==inf
         for u, dist_u in list(dist.items()): # get all edges from nodes in dist
             for v, edict in G[u].items():  # double loop handles undirected too
@@ -584,7 +585,8 @@ def bellman_ford(G, source, weight = 'weight'):
         raise nx.NetworkXUnbounded("Negative cost cycle detected.")
     return pred, dist
 
-def negative_edge_cycle(G, weight = 'weight'):
+
+def negative_edge_cycle(G, weight='weight'):
     """Return True if there exists a negative edge cycle anywhere in G.
 
     Parameters
@@ -620,14 +622,14 @@ def negative_edge_cycle(G, weight = 'weight'):
     removes that extra node.
     """
     newnode = generate_unique_node()
-    G.add_edges_from([ (newnode,n) for n in G])
+    G.add_edges_from([(newnode,n) for n in G])
 
     try:
         bellman_ford(G, newnode, weight)
     except nx.NetworkXUnbounded:
-        G.remove_node(newnode)
         return True
-    G.remove_node(newnode)
+    finally:
+        G.remove_node(newnode)
     return False
 
 
