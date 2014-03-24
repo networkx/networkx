@@ -263,11 +263,11 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
         for level in islice(levels, height + 1, max_height + 1):
             for u in level.active:
                 R.node[u]['height'] = n + 1
-                levels[n + 1].active.add(u)
             for u in level.inactive:
                 R.node[u]['height'] = n + 1
-                levels[n + 1].inactive.add(u)
+            levels[n + 1].active.update(level.active)
             level.active.clear()
+            levels[n + 1].inactive.update(level.inactive)
             level.inactive.clear()
 
     def global_relabel(from_sink):
@@ -289,15 +289,16 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
             # Shift the computed heights because the height of s is n.
             for u in heights:
                 heights[u] += n
-        for u in heights:
-            if u != s and u != t and heights[u] != R.node[u]['height']:
-                if u in levels[R.node[u]['height']].active:
-                    levels[R.node[u]['height']].active.remove(u)
-                    levels[heights[u]].active.add(u)
+        for u, new_height in heights.items():
+            old_height = R.node[u]['height']
+            if u != s and u != t and new_height != old_height:
+                if u in levels[old_height].active:
+                    levels[old_height].active.remove(u)
+                    levels[new_height].active.add(u)
                 else:
-                    levels[R.node[u]['height']].inactive.remove(u)
-                    levels[heights[u]].inactive.add(u)
-                R.node[u]['height'] = heights[u]
+                    levels[old_height].inactive.remove(u)
+                    levels[new_height].inactive.add(u)
+                R.node[u]['height'] = new_height
         return max_height
 
     # Phase 1: Find the maximum preflow by pushing as much flow as possible to
