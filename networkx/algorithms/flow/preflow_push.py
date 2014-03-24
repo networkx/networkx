@@ -152,6 +152,8 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
             return 0
 
     n = len(R)
+    # max_height represents the height of the highest level below level n with
+    # at least one active node.
     max_height = max(heights[u] for u in heights if u != s)
     heights[s] = n
 
@@ -203,34 +205,61 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     def relabel(u):
         """Relabel a node to create an admissible edge.
         """
-        R.node[u]['height'] = min(R.node[v]['height']
-                                  for v, attr in R[u].items()
-                                  if attr['flow'] < attr['capacity']) + 1
         grt.add_work(len(R[u]))
+        return min(R.node[v]['height'] for v, attr in R[u].items()
+                   if attr['flow'] < attr['capacity']) + 1
 
-    def discharge(u):
-        """Discharge a node until it becomes inactive.
+    def discharge(u, is_phase1):
+        """Discharge a node until it becomes inactive or, during phase 1 (see
+        below), its height reaches at least n. The node is known to have the
+        largest height among active nodes.
         """
-        levels[R.node[u]['height']].active.remove(u)
+        height = R.node[u]['height']
+        curr_edge = R.node[u]['curr_edge']
+        # next_height represents the next height to examine after discharging
+        # the current node. During phase 1, it is capped to below n.
+        next_height = height
+        levels[height].active.remove(u)
         while True:
-            v, attr = R.node[u]['curr_edge'].get()
-            if (R.node[u]['height'] == R.node[v]['height'] + 1 and
+            v, attr = curr_edge.get()
+            if (height == R.node[v]['height'] + 1 and
                 attr['flow'] < attr['capacity']):
                 flow = min(R.node[u]['excess'],
                            attr['capacity'] - attr['flow'])
                 push(u, v, flow)
                 activate(v)
                 if R.node[u]['excess'] == 0:
+                    # The node has become inactive.
+                    is_inactive = True
                     break
             try:
-                R.node[u]['curr_edge'].move_to_next()
+                curr_edge.move_to_next()
             except StopIteration:
-                relabel(u)
-        levels[R.node[u]['height']].inactive.add(u)
+                # We have run off the end of the adjacency list, and there can
+                # be no more admissible edges. Relabel the node to create one.
+                height = relabel(u)
+                if is_phase1 and height >= n:
+                    # Although the node is still active, with a height at least
+                    # n, it is now known to be on the s side of the minimum
+                    # s-t cut. Stop processing it until phase 2.
+                    is_inactive = False
+                    break
+                # The first relabel operation after global relabeling may not
+                # increase the height of the node since the 'current edge' data
+                # structure is not rewound. Use height instead of (height - 1)
+                # in case other active nodes at the same level are missed.
+                next_height = height
+        if is_inactive:
+            levels[height].inactive.add(u)
+        else:
+            levels[height].active.add(u)
+        R.node[u]['height'] = height
+        return next_height
 
     def gap_heuristic(height):
         """Apply the gap heuristic.
         """
+        # Move all nodes at levels (height + 1) to max_height to level n + 1.
         for level in islice(levels, height + 1, max_height + 1):
             for u in level.active:
                 R.node[u]['height'] = n + 1
@@ -288,28 +317,25 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
             old_height = height
             old_level = level
             u = next(iter(level.active))
-            discharge(u)
-            # Gap heuristic: If the level at old_height is empty (a 'gap'),
-            # a minimum cut has been identified. All nodes with heights above
-            # old_height can have their heights set to n + 1 and not be
-            # further processed before a maximum preflow is found.
-            if not old_level.active and not old_level.inactive:
-                gap_heuristic(old_height)
-                max_height = old_height - 1
-            if not grt.is_reached():
-                # u may have been relabeled during discharge and introduced new
-                # active nodes above the old level. Therefore, height should
-                # be set to its new height, bounded by max_height, so that
-                # those new active nodes can be discharged.
-                height = R.node[u]['height']
-                if height < n:
-                    max_height = max(max_height, height)
-            else:
+            height = discharge(u, True)
+            if grt.is_reached():
                 # Global relabeling heuristic: Recompute the exact heights of
                 # all nodes.
                 height = global_relabel(True)
                 max_height = height
                 grt.clear_work()
+            elif not old_level.active and not old_level.inactive:
+                # Gap heuristic: If the level at old_height is empty (a 'gap'),
+                # a minimum cut has been identified. All nodes with heights
+                # above old_height can have their heights set to n + 1 and not
+                # be further processed before a maximum preflow is found.
+                gap_heuristic(old_height)
+                height = old_height - 1
+                max_height = height
+            else:
+                # Update the height of the highest level with at least one
+                # active node.
+                max_height = max(max_height, height)
 
     # A maximum preflow has been found. The excess at t is the maximum flow
     # value.
@@ -335,10 +361,9 @@ def _preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
                 height -= 1
                 break
             u = next(iter(level.active))
-            discharge(u)
-            if not grt.is_reached():
-                height = R.node[u]['height']
-            else:
+            height = discharge(u, False)
+            if grt.is_reached():
+                # Global relabeling heuristic.
                 height = global_relabel(False)
                 grt.clear_work()
 
