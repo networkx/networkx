@@ -45,9 +45,9 @@ def read_graph(name):
 
 def validate_flows(G, s, t, solnValue, flowValue, flowDict):
     assert_equal(solnValue, flowValue)
-    assert_equal(set(flowDict.keys()), set(G.nodes()))
-    for u in flowDict:
-        assert_equal(set(flowDict[u].keys()), set(G[u].keys()))
+    assert_equal(set(G), set(flowDict))
+    for u in G:
+        assert_equal(set(G[u]), set(flowDict[u]))
     excess = {}
     for u in flowDict:
         excess[u] = 0
@@ -105,3 +105,8 @@ class TestMaxflowLargeGraph:
         validate_flows(G, s, t, 11875108, *nx.ford_fulkerson(G, s, t))
         validate_flows(G, s, t, 11875108, nx.preflow_push_value(G, s, t),
                        nx.preflow_push_flow(G, s, t))
+
+    def test_preflow_push_global_relabel(self):
+        G = read_graph('gw1')
+        assert_equal(nx.preflow_push(G, 1, len(G), global_relabel_freq=50)[0],
+                     1202018)

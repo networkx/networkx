@@ -15,12 +15,14 @@ from nose.tools import *
 
 
 def validate_flows(G, s, t, flowDict, solnValue, capacity):
+    assert_equal(set(G), set(flowDict))
+    for u in G:
+        assert_equal(set(G[u]), set(flowDict[u]))
     excess = {}
     for u in flowDict:
         excess[u] = 0
     for u in flowDict:
         for v, flow in flowDict[u].items():
-            ok_(G.has_edge(u, v))
             if capacity in G[u][v]:
                 ok_(flow <= G[u][v][capacity])
             ok_(flow >= 0)
@@ -283,12 +285,22 @@ class TestMaxflow:
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
         G.remove_node(1)
         assert_equal(nx.max_flow(G,0,3),0)
+        flowSoln = {0: {}, 2: {3: 0}, 3: {2: 0}}
+        compare_flows(G, 0, 3, flowSoln, 0)
 
     def test_source_target_not_in_graph(self):
         G = nx.Graph()
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
         G.remove_node(0)
         assert_raises(nx.NetworkXError,nx.max_flow,G,0,3)
+        assert_raises(nx.NetworkXError,nx.preflow_push,G,0,3)
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
         G.remove_node(3)
         assert_raises(nx.NetworkXError,nx.max_flow,G,0,3)
+        assert_raises(nx.NetworkXError,nx.preflow_push,G,0,3)
+
+    def test_source_target_coincide(self):
+        G = nx.Graph()
+        G.add_node(0)
+        #assert_raises(nx.NetworkXError, nx.max_flow, G, 0, 0)
+        assert_raises(nx.NetworkXError, nx.preflow_push, G, 0, 0)

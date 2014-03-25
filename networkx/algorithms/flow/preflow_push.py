@@ -85,7 +85,7 @@ def _build_residual_network(G, s, t, capacity):
         raise nx.NetworkXError('source and sink are the same node')
 
     R = nx.DiGraph()
-    R.add_nodes_from(G)
+    R.add_nodes_from(G, excess=0)
 
     # Extract edges with positive capacities. Self loops excluded.
     edge_list = [(u, v, attr) for u, v, attr in G.edges_iter(data=True)
@@ -157,7 +157,6 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     # nodes.
     for u in R:
         R.node[u]['height'] = heights[u] if u in heights else n + 1
-        R.node[u]['excess'] = 0
         R.node[u]['curr_edge'] = _CurrentEdge(R[u])
 
     def push(u, v, flow):
