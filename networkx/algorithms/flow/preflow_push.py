@@ -270,6 +270,9 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
         target = t if from_sink else s
         T.add_node(target)
         heights = nx.shortest_path_length(T, target=target)
+        if not from_sink:
+            # s must be reachable from t. Remove t explicitly.
+            del heights[t]
         max_height = max(heights.values())
         if from_sink:
             # Also mark nodes from which t is unreachable for relabeling. This
@@ -281,9 +284,11 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
             # Shift the computed heights because the height of s is n.
             for u in heights:
                 heights[u] += n
+            max_height += n
+        del heights[target]
         for u, new_height in heights.items():
             old_height = R.node[u]['height']
-            if u != s and u != t and new_height != old_height:
+            if new_height != old_height:
                 if u in levels[old_height].active:
                     levels[old_height].active.remove(u)
                     levels[new_height].active.add(u)
@@ -335,15 +340,14 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     if not compute_flow:
         return R
 
-    # Phase 2: Convert the maximum preflow to a maximum flow by returning the
+    # Phase 2: Convert the maximum preflow into a maximum flow by returning the
     # excess to s.
 
     # Relabel all nodes so that they have accurate heights.
-    global_relabel(False)
+    height = global_relabel(False)
     grt.clear_work()
 
     # Continue to discharge the active nodes.
-    height = 2 * n - 2
     while height > n:
         # Discharge active nodes in the current level.
         while True:
