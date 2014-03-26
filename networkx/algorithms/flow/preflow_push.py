@@ -8,6 +8,7 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # All rights reserved.
 # BSD license.
 
+from collections import deque
 from itertools import islice
 import networkx as nx
 
@@ -132,11 +133,23 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     """
     R = _build_residual_network(G, s, t, capacity)
 
+    def reverse_bfs(src):
+        """Perform a reverse breadth-first search from src in the residual
+        network.
+        """
+        heights = {src: 0}
+        q = deque([(src, 0)])
+        while q:
+            u, height = q.popleft()
+            height += 1
+            for v, u, attr in R.in_edges_iter(u, data=True):
+                if attr['flow'] < attr['capacity'] and v not in heights:
+                    heights[v] = height
+                    q.append((v, height))
+        return heights
+
     # Initialize heights (or labels) of nodes.
-    T = nx.DiGraph((u, v) for u, v, attr in R.edges_iter(data=True)
-                   if attr['capacity'] > 0)
-    T.add_node(t)
-    heights = nx.shortest_path_length(T, target=t)
+    heights = reverse_bfs(t)
 
     if s not in heights:
         # t is not reachable from s in the residual network. The maximum flow
@@ -153,7 +166,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
         global_relabel_freq = float('inf')
     grt = _GlobalRelabelThreshold(n, R.size(), global_relabel_freq)
 
-    # Initialize height, excesses and 'current edge' data structures of the
+    # Initialize heights, excesses and 'current edge' data structures of the
     # nodes.
     for u in R:
         R.node[u]['height'] = heights[u] if u in heights else n + 1
@@ -264,11 +277,8 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     def global_relabel(from_sink):
         """Apply the global relabeling heuristic.
         """
-        T = nx.DiGraph((u, v) for u, v, attr in R.edges_iter(data=True)
-                       if attr['flow'] < attr['capacity'])
-        target = t if from_sink else s
-        T.add_node(target)
-        heights = nx.shortest_path_length(T, target=target)
+        src = t if from_sink else s
+        heights = reverse_bfs(src)
         if not from_sink:
             # s must be reachable from t. Remove t explicitly.
             del heights[t]
@@ -284,7 +294,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
             for u in heights:
                 heights[u] += n
             max_height += n
-        del heights[target]
+        del heights[src]
         for u, new_height in heights.items():
             old_height = R.node[u]['height']
             if new_height != old_height:
