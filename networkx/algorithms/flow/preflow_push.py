@@ -131,6 +131,11 @@ def _build_residual_network(G, s, t, capacity):
 def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     """Implementation of the highest-label preflow-push algorithm.
     """
+    if global_relabel_freq is None:
+        global_relabel_freq = 0
+    if global_relabel_freq < 0:
+        raise nx.NetworkXError('global_relabel_freq must be nonnegative.')
+
     R = _build_residual_network(G, s, t, capacity)
 
     def reverse_bfs(src):
@@ -162,8 +167,6 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     max_height = max(heights[u] for u in heights if u != s)
     heights[s] = n
 
-    if global_relabel_freq is None:
-        global_relabel_freq = float('inf')
     grt = _GlobalRelabelThreshold(n, R.size(), global_relabel_freq)
 
     # Initialize heights, excesses and 'current edge' data structures of the

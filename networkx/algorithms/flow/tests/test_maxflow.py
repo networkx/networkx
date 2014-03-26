@@ -304,3 +304,10 @@ class TestMaxflow:
         G.add_node(0)
         #assert_raises(nx.NetworkXError, nx.max_flow, G, 0, 0)
         assert_raises(nx.NetworkXError, nx.preflow_push, G, 0, 0)
+
+    def test_preflow_push_global_relabel_freq(self):
+        G = nx.DiGraph()
+        G.add_edge(1, 2, capacity=1)
+        assert_equal(nx.preflow_push(G, 1, 2, global_relabel_freq=None)[0], 1)
+        assert_raises(nx.NetworkXError, nx.preflow_push_value, G, 1, 2,
+                      global_relabel_freq=-1)
