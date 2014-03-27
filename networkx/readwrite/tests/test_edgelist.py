@@ -2,18 +2,14 @@
     Unit tests for edgelists.
 """
 from nose.tools import assert_equal, assert_raises, assert_not_equal
-import networkx as nx
 import io
 import tempfile
 import os
 
-def assert_equal_edges(elist1,elist2):
-    if len(elist1[0]) == 2:
-        return assert_equal(sorted(sorted(e) for e in elist1), 
-                            sorted(sorted(e) for e in elist2))
-    else:
-        return assert_equal(sorted((sorted((u, v)), d) for u, v, d in elist1),
-                            sorted((sorted((u, v)), d) for u, v, d in elist2))
+import networkx as nx
+from networkx.testing import (assert_edges_equal, assert_nodes_equal, 
+                                assert_graphs_equal)
+
 
 class TestEdgelist:
 
@@ -27,7 +23,6 @@ class TestEdgelist:
         self.XG.add_weighted_edges_from([(1,2,5),(1,2,5),(1,2,1),(3,3,42)])
         self. XDG=nx.MultiDiGraph(self.XG)
 
-
     def test_read_edgelist_1(self):
         s = b"""\
 # comment line
@@ -37,7 +32,7 @@ class TestEdgelist:
 """
         bytesIO = io.BytesIO(s)
         G = nx.read_edgelist(bytesIO,nodetype=int)
-        assert_equal_edges(G.edges(),[(1,2),(2,3)])
+        assert_edges_equal(G.edges(),[(1,2),(2,3)])
 
     def test_read_edgelist_2(self):
         s = b"""\
@@ -48,11 +43,12 @@ class TestEdgelist:
 """
         bytesIO = io.BytesIO(s)
         G = nx.read_edgelist(bytesIO,nodetype=int,data=False)
-        assert_equal_edges(G.edges(),[(1,2),(2,3)])
+        assert_edges_equal(G.edges(),[(1,2),(2,3)])
 
         bytesIO = io.BytesIO(s)
         G = nx.read_weighted_edgelist(bytesIO,nodetype=int)
-        assert_equal_edges(G.edges(data=True),[(1,2,{'weight':2.0}),(2,3,{'weight':3.0})])
+        assert_edges_equal(G.edges(data=True),
+                            [(1,2,{'weight':2.0}),(2,3,{'weight':3.0})])
 
     def test_read_edgelist_3(self):
         s = b"""\
@@ -63,11 +59,12 @@ class TestEdgelist:
 """
         bytesIO = io.BytesIO(s)
         G = nx.read_edgelist(bytesIO,nodetype=int,data=False)
-        assert_equal_edges(G.edges(),[(1,2),(2,3)])
+        assert_edges_equal(G.edges(),[(1,2),(2,3)])
 
         bytesIO = io.BytesIO(s)
         G = nx.read_edgelist(bytesIO,nodetype=int,data=True)
-        assert_equal_edges(G.edges(data=True),[(1,2,{'weight':2.0}),(2,3,{'weight':3.0})])
+        assert_edges_equal(G.edges(data=True),
+                            [(1,2,{'weight':2.0}),(2,3,{'weight':3.0})])
 
     def test_write_edgelist_1(self):
         fh=io.BytesIO()
@@ -115,7 +112,7 @@ class TestEdgelist:
         fd, fname = tempfile.mkstemp()
         nx.write_edgelist(G, fname)
         H = nx.read_edgelist(fname)
-        assert_equal(G.adj, H.adj)
+        assert_graphs_equal(G, H)
         os.close(fd)
         os.unlink(fname)
 
@@ -148,10 +145,9 @@ class TestEdgelist:
         fd, fname = tempfile.mkstemp()
         nx.write_edgelist(G, fname, encoding = 'latin-1')
         H = nx.read_edgelist(fname, encoding = 'latin-1')
-        assert_equal(G.adj, H.adj)
+        assert_graphs_equal(G, H)
         os.close(fd)
         os.unlink(fname)
-
 
     def test_edgelist_graph(self):
         G=self.G
@@ -161,8 +157,8 @@ class TestEdgelist:
         H2=nx.read_edgelist(fname)
         assert_not_equal(H,H2) # they should be different graphs
         G.remove_node('g') # isolated nodes are not written in edgelist
-        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
-        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        assert_nodes_equal(H.nodes(),G.nodes())
+        assert_edges_equal(H.edges(),G.edges())
         os.close(fd)
         os.unlink(fname)
 
@@ -174,11 +170,10 @@ class TestEdgelist:
         H2=nx.read_edgelist(fname,create_using=nx.DiGraph())
         assert_not_equal(H,H2) # they should be different graphs
         G.remove_node('g') # isolated nodes are not written in edgelist
-        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
-        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        assert_nodes_equal(H.nodes(),G.nodes())
+        assert_edges_equal(H.edges(),G.edges())
         os.close(fd)
         os.unlink(fname)
-
 
     def test_edgelist_integers(self):
         G=nx.convert_node_labels_to_integers(self.G)
@@ -187,11 +182,10 @@ class TestEdgelist:
         H=nx.read_edgelist(fname,nodetype=int)
         # isolated nodes are not written in edgelist
         G.remove_nodes_from(nx.isolates(G))
-        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
-        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        assert_nodes_equal(H.nodes(),G.nodes())
+        assert_edges_equal(H.edges(),G.edges())
         os.close(fd)
         os.unlink(fname)
-
 
     def test_edgelist_digraph(self):
         G=self.DG
@@ -201,11 +195,10 @@ class TestEdgelist:
         G.remove_node('g') # isolated nodes are not written in edgelist
         H2=nx.read_edgelist(fname,create_using=nx.DiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
-        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        assert_nodes_equal(H.nodes(),G.nodes())
+        assert_edges_equal(H.edges(),G.edges())
         os.close(fd)
         os.unlink(fname)
-
 
     def test_edgelist_multigraph(self):
         G=self.XG
@@ -214,8 +207,8 @@ class TestEdgelist:
         H=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiGraph())
         H2=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
-        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        assert_nodes_equal(H.nodes(),G.nodes())
+        assert_edges_equal(H.edges(),G.edges())
         os.close(fd)
         os.unlink(fname)
 
@@ -226,9 +219,7 @@ class TestEdgelist:
         H=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiDiGraph())
         H2=nx.read_edgelist(fname,nodetype=int,create_using=nx.MultiDiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_equal(sorted(H.nodes()),sorted(G.nodes()))
-        assert_equal(sorted(H.edges()),sorted(G.edges()))
+        assert_nodes_equal(H.nodes(),G.nodes())
+        assert_edges_equal(H.edges(),G.edges())
         os.close(fd)
         os.unlink(fname)
-
-
