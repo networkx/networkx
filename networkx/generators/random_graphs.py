@@ -79,29 +79,31 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
        Phys. Rev. E, 71, 036113, 2005.
     """
     G = empty_graph(n)
-    G.name="fast_gnp_random_graph(%s,%s)"%(n,p)
+    G.name = "fast_gnp_random_graph(%s,%s)" % (n, p)
 
     if not seed is None:
         random.seed(seed)
 
     if p <= 0 or p >= 1:
-        return nx.gnp_random_graph(n,p,directed=directed)
+        return nx.gnp_random_graph(n, p, directed=directed)
 
-    v = 1  # Nodes in graph are from 0,n-1 (this is the second node index).
+    # Use v = 0 instead of v = 1 as specified in [1]. This is necessary for
+    # directed graphs and makes no difference for undirected graphs.
+    v = 0
     w = -1
     lp = math.log(1.0 - p)
 
     if directed:
-        G=nx.DiGraph(G)
+        G = nx.DiGraph(G)
         while v < n:
             lr = math.log(1.0 - random.random())
             w = w + 1 + int(lr/lp)
-            if v == w: # avoid self loops
+            if v == w:  # avoid self loops
                 w = w + 1
             while  w >= n and v < n:
                 w = w - n
                 v = v + 1
-                if v == w: # avoid self loops
+                if v == w:  # avoid self loops
                     w = w + 1
             if v < n:
                 G.add_edge(v, w)
