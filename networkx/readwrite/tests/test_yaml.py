@@ -7,6 +7,7 @@ from nose import SkipTest
 from nose.tools import assert_equal
 
 import networkx as nx
+from networkx.testing import assert_edges_equal, assert_nodes_equal
 
 class TestYaml(object):
     @classmethod
@@ -24,7 +25,7 @@ class TestYaml(object):
         self.G = nx.Graph(name="test")
         e = [('a','b'),('b','c'),('c','d'),('d','e'),('e','f'),('a','f')]
         self.G.add_edges_from(e)
-        self.G.add_node('g')    
+        self.G.add_node('g')
 
         self.DG = nx.DiGraph(self.G)
 
@@ -36,8 +37,8 @@ class TestYaml(object):
         nx.write_yaml(G, fname)
         Gin = nx.read_yaml(fname);
 
-        assert_equal(sorted(G.nodes()),sorted(Gin.nodes()))
-        assert_equal(G.edges(data=data),Gin.edges(data=data))
+        assert_nodes_equal(G.nodes(), Gin.nodes())
+        assert_edges_equal(G.edges(data=data), Gin.edges(data=data))
 
         os.close(fd)
         os.unlink(fname)
