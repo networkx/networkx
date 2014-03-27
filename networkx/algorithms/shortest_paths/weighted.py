@@ -586,7 +586,7 @@ def bellman_ford(G, source, weight='weight'):
     return pred, dist
 
 
-def negative_edge_cycle(G, weight = 'weight'):
+def negative_edge_cycle(G, weight='weight'):
     """Return True if there exists a negative edge cycle anywhere in G.
 
     Parameters
@@ -622,14 +622,14 @@ def negative_edge_cycle(G, weight = 'weight'):
     removes that extra node.
     """
     newnode = generate_unique_node()
-    G.add_edges_from([ (newnode,n) for n in G])
+    G.add_edges_from([(newnode,n) for n in G])
 
     try:
         bellman_ford(G, newnode, weight)
     except nx.NetworkXUnbounded:
-        G.remove_node(newnode)
         return True
-    G.remove_node(newnode)
+    finally:
+        G.remove_node(newnode)
     return False
 
 
