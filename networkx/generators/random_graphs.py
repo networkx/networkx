@@ -87,12 +87,13 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
     if p <= 0 or p >= 1:
         return nx.gnp_random_graph(n,p,directed=directed)
 
-    v = 1  # Nodes in graph are from 0,n-1 (this is the second node index).
     w = -1
     lp = math.log(1.0 - p)
 
     if directed:
-        G=nx.DiGraph(G)
+        G = nx.DiGraph(G)
+        # Nodes in graph are from 0,n-1 (start with v as the first node index).
+        v = 0
         while v < n:
             lr = math.log(1.0 - random.random())
             w = w + 1 + int(lr/lp)
@@ -106,6 +107,8 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
             if v < n:
                 G.add_edge(v, w)
     else:
+        # Nodes in graph are from 0,n-1 (start with v as the second node index).
+        v = 1
         while v < n:
             lr = math.log(1.0 - random.random())
             w = w + 1 + int(lr/lp)
