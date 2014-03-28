@@ -15,6 +15,15 @@ Ford-Fulkerson
    ford_fulkerson_flow
    ford_fulkerson_flow_and_auxiliary
 
+Preflow-push
+------------
+.. autosummary::
+   :toctree: generated/
+
+   preflow_push
+   preflow_push_value
+   preflow_push_flow
+
 Network Simplex
 ---------------
 .. autosummary::
