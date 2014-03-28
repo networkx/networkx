@@ -397,7 +397,7 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1):
     """Find a maximum single-commodity flow using the highest-label
     preflow-push algorithm.
 
-    This algorithm has a running time of `O(n^2 m^(1/2))` for `n` nodes and
+    This algorithm has a running time of `O(n^2 \sqrt{m})` for `n` nodes and
     `m` edges.
 
 
@@ -414,13 +414,13 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1):
     t : node
         Sink node for the flow.
 
-    capacity: string
+    capacity : string
         Edges of the graph G are expected to have an attribute capacity
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
 
-    global_relabel_freq: integer, float
+    global_relabel_freq : integer, float
         Relative frequency of applying the global relabeling heuristic to speed
         up the algorithm. If it is None, the heuristic is disabled. Default
         value: 1.
@@ -470,7 +470,7 @@ def preflow_push_value(G, s, t, capacity='capacity', global_relabel_freq=1):
     """Find a maximum single-commodity flow using the highest-label preflow-
     push algorithm.
 
-    This algorithm has a running time of `O(n^2 m^(1/2))` for `n` nodes and
+    This algorithm has a running time of `O(n^2 \sqrt{m})` for `n` nodes and
     `m` edges.
 
 
@@ -487,13 +487,13 @@ def preflow_push_value(G, s, t, capacity='capacity', global_relabel_freq=1):
     t : node
         Sink node for the flow.
 
-    capacity: string
+    capacity : string
         Edges of the graph G are expected to have an attribute capacity
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
 
-    global_relabel_freq: integer, float
+    global_relabel_freq : integer, float
         Relative frequency of applying the global relabeling heuristic to speed
         up the algorithm. If it is None, the heuristic is disabled. Default
         value: 1.
@@ -539,7 +539,7 @@ def preflow_push_flow(G, s, t, capacity='capacity', global_relabel_freq=1):
     """Find a maximum single-commodity flow using the highest-label preflow-
     push algorithm.
 
-    This algorithm has a running time of `O(n^2 m^(1/2))` for `n` nodes and
+    This algorithm has a running time of `O(n^2 \sqrt{m})` for `n` nodes and
     `m` edges.
 
 
@@ -556,13 +556,13 @@ def preflow_push_flow(G, s, t, capacity='capacity', global_relabel_freq=1):
     t : node
         Sink node for the flow.
 
-    capacity: string
+    capacity : string
         Edges of the graph G are expected to have an attribute capacity
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
 
-    global_relabel_freq: integer, float
+    global_relabel_freq : integer, float
         Relative frequency of applying the global relabeling heuristic to speed
         up the algorithm. If it is None, the heuristic is disabled. Default
         value: 1.
