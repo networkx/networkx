@@ -21,7 +21,9 @@ __all__ = ['dijkstra_path',
            'all_pairs_dijkstra_path',
            'all_pairs_dijkstra_path_length',
            'dijkstra_predecessor_and_distance',
-           'bellman_ford','negative_edge_cycle']
+           'bellman_ford',
+           'negative_edge_cycle',
+           'goldberg_radzik']
 
 from collections import deque
 import heapq
@@ -598,6 +600,152 @@ def bellman_ford(G, source, weight='weight'):
                     pred[v] = u
 
     return pred, dist
+
+
+def goldberg_radzik(G, source, weight='weight'):
+    """Compute shortest path lengths and predecessors on shortest paths
+    in weighted graphs.
+
+    The algorithm has a running time of O(mn) where n is the number of
+    nodes and m is the number of edges.  It is slower than Dijkstra but
+    can handle negative edge weights.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       The algorithm works for all types of graphs, including directed
+       graphs and multigraphs.
+
+    source: node label
+       Starting node for path
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight
+
+    Returns
+    -------
+    pred, dist : dictionaries
+       Returns two dictionaries keyed by node to predecessor in the
+       path and to the distance from the source respectively.
+
+    Raises
+    ------
+    NetworkXUnbounded
+       If the (di)graph contains a negative cost (di)cycle, the
+       algorithm raises an exception to indicate the presence of the
+       negative cost (di)cycle.  Note: any negative weight edge in an
+       undirected graph is a negative cost cycle.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.path_graph(5, create_using = nx.DiGraph())
+    >>> pred, dist = nx.goldberg_radzik(G, 0)
+    >>> pred
+    {0: None, 1: 0, 2: 1, 3: 2, 4: 3}
+    >>> dist
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+
+    >>> from nose.tools import assert_raises
+    >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
+    >>> G[1][2]['weight'] = -7
+    >>> assert_raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 0)
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    The dictionaries returned only have keys for nodes reachable from
+    the source.
+
+    In the case where the (di)graph is not connected, if a component
+    not containing the source contains a negative cost (di)cycle, it
+    will not be detected.
+
+    """
+    if source not in G:
+        raise KeyError("Node %s is not found in the graph" % source)
+
+    if len(G) == 1:
+        return {source: None}, {source: 0}
+
+    if G.is_multigraph():
+        def get_weight(edge_dict):
+            return min(attr.get(weight, 1) for attr in edge_dict.values())
+    else:
+        def get_weight(edge_dict):
+            return edge_dict.get(weight, 1)
+
+    pred = {source: None}
+
+    inf = float('inf')
+    d = dict((u, inf) for u in G)
+    d[source] = 0
+
+    # Set of nodes relabled in the last round of scan operations. Denoted by B
+    # in Goldberg and Radzik's paper.
+    relabeled = {source}
+
+    while relabeled:
+        # List of nodes to scan in this round. Denoted by A in Goldberg and
+        # Radzik's paper.
+        to_scan = []
+        # In the DFS in the loop below, neg_count records for each node the
+        # number of edges of negative reduced costs on the path from a DFS root
+        # to the node in the DFS forest. The reduced cost of an edge (u, v) is
+        # defined as d[u] + weight[u][v] - d[v].
+        #
+        # neg_count also doubles as the DFS visit marker array.
+        neg_count = {}
+        for u in relabeled:
+            # Skip visited nodes and those without out-edges of negative
+            # reduced costs.
+            if (u in neg_count or
+                not any(d[u] + get_weight(G[u][v]) < d[v] for v in G[u])):
+                continue
+            # Nonrecursive DFS that inserts nodes reachable from u via edges of
+            # nonpositive reduced costs into to_scan in (reverse) topological
+            # order.
+            stack = [(u, iter(G[u].items()))]
+            in_stack = {u}
+            neg_count[u] = 0
+            while stack:
+                u, it = stack[-1]
+                try:
+                    v, e = next(it)
+                except StopIteration:
+                    to_scan.append(u)
+                    stack.pop()
+                    in_stack.remove(u)
+                    continue
+                if d[u] + get_weight(e) <= d[v]:
+                    is_neg = d[u] + get_weight(e) < d[v]
+                    if v not in neg_count:
+                        neg_count[v] = neg_count[u] + int(is_neg)
+                        stack.append((v, iter(G[v].items())))
+                        in_stack.add(v)
+                    elif (v in in_stack and
+                          neg_count[u] + int(is_neg) > neg_count[v]):
+                        # (u, v) is a back edge, and the cycle formed by the
+                        # path v to u and (u, v) contains at least one edge of
+                        # negative reduced cost. The cycle must be of negative
+                        # cost.
+                        raise nx.NetworkXUnbounded(
+                            'Negative cost cycle detected.')
+        relabeled.clear()
+        # Scan nodes in to_scan in topological order and relax incident
+        # out-edges. Add the relabled nodes to labeled.
+        while to_scan:
+            u = to_scan.pop()
+            for v, e in G[u].items():
+                if d[u] + get_weight(e) < d[v]:
+                    d[v] = d[u] + get_weight(e)
+                    pred[v] = u
+                    relabeled.add(v)
+
+    d = dict((u, d[u]) for u in pred)
+    return pred, d
 
 
 def negative_edge_cycle(G, weight='weight'):
