@@ -1,7 +1,6 @@
 from networkx.algorithms.community import louvain
 import networkx as nx
 import numpy as np
-import nodal_roles
 
 def convert_dictionary(dictionary):
 	'''
