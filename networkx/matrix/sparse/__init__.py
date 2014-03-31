@@ -24,3 +24,14 @@ from .algorithms import *
 from .classes import *
 from .generators import *
 
+
+SCIPY_FORMATS = {
+    "bsr": sp.bsr_matrix,
+    "coo": sp.coo_matrix,
+    "csc": sp.csc_matrix,
+    "csr": sp.csr_matrix,
+    "dia": sp.dia_matrix,
+    "dok": sp.dok_matrix,
+    "lil": sp.lil_matrix
+    }
+

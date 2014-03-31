@@ -20,3 +20,5 @@ Sparse Matrix Classes
 """
 
 
+from graph import *
+
