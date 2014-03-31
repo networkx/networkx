@@ -32,9 +32,9 @@ def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
 
     Parameters
     ----------
-    aseq : list or iterator
+    aseq : list
        Degree sequence for node set A.
-    bseq : list or iterator
+    bseq : list
        Degree sequence for node set B.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
@@ -113,9 +113,9 @@ def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
 
     Parameters
     ----------
-    aseq : list or iterator
+    aseq : list
        Degree sequence for node set A.
-    bseq : list or iterator
+    bseq : list
        Degree sequence for node set B.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
@@ -183,9 +183,9 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
 
     Parameters
     ----------
-    aseq : list or iterator
+    aseq : list
        Degree sequence for node set A.
-    bseq : list or iterator
+    bseq : list
        Degree sequence for node set B.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
@@ -256,9 +256,9 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
 
     Parameters
     ----------
-    aseq : list or iterator
+    aseq : list
        Degree sequence for node set A.
-    bseq : list or iterator
+    bseq : list
        Degree sequence for node set B.
     create_using : NetworkX graph instance, optional
        Return graph of this type.
@@ -325,7 +325,7 @@ def bipartite_preferential_attachment_graph(aseq,p,create_using=None,seed=None):
 
     Parameters
     ----------
-    aseq : list or iterator
+    aseq : list
        Degree sequence for node set A.
     p :  float
        Probability that a new bottom node is added.
