@@ -74,7 +74,7 @@ def within_module_degree(graph, partition, weighted = False):
         for value in module_wd_dict.values():
             std_v = (module_avg_wmd - value)**2
             stds.append(std_v)
-        std = float(sum(stds)/ len(stds))
+        std = float(sum(stds) / len(stds))
         for source in module:
             wmd_dict[source] = (module_wd_dict[source] - module_avg_wmd) / std
     return wmd_dict
