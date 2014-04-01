@@ -1,6 +1,5 @@
 from networkx.algorithms.community import louvain
 import networkx as nx
-import numpy as np
 
 def convert_dictionary(dictionary):
 	'''
