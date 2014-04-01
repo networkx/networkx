@@ -1,24 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Greedy graph coloring using the First Fit algorithm and maximum degree ordering.
 """
-
+Greedy graph coloring using various strategies.
 """
-                            impl    shc    hc    strategy test
-Greedy-Color                
-Color-with-Interchange
-RS-Color                    x        non   non
-LF-Color                    x        x     x
-SL-Color                    x        x     x
-CS-Color                    x        x     
-SLF-Color                   x        x     x
-GIS-Color                   x        x     x
-RSI-Color                   x        non   non   
-LFI-Color                   x
-SLI-Color                   x
-CSI-Color                   x        ?     ?
-SLFI-Color                  x        ?     ?
-"""
-
+#    Copyright (C) 2014 by 
+#    Christian Olsson <chro@itu.dk>
+#    Jan Aagaard Meier <jmei@itu.dk>
+#    Henrik Haugbølle <hhau@itu.dk>
+#    All rights reserved.
+#    BSD license.
 from heapq import heappush, heappop
 import itertools
 import networkx as nx
@@ -29,8 +18,7 @@ __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
                         "Jan Aagaard Meier <jmei@itu.dk>",
                         "Henrik Haugbølle <hhau@itu.dk>"])
 __all__ = ['coloring']
-    
-    
+
 def min_degree_node(G):
     degree = G.degree()
     v = list(degree.values())
@@ -258,7 +246,6 @@ def strategy_slf(G, colors):
             for neighbour in G.neighbors(node):
                 saturation[node] += 1
     
-
 def dict_to_sets(colors, k):
     sets = [set() for i in range(k)]
 
@@ -266,8 +253,63 @@ def dict_to_sets(colors, k):
         sets[color].add(node)
 
     return sets
+    
+"""Color a graph using various strategies of greedy graph coloring.
 
+Attempts to color a graph using as few colors as possible, where no 
+neighbours of a node can have same color as the node itself.
 
+Parameters
+----------
+G : NetworkX graph
+
+strategy : string
+   Greedy coloring strategy. It is possible to choose from these strategies:
+   
+   lf: Largest first ordering
+   sf: Smallest first ordering
+   rs: Random sequential ordering
+   sl: Smallest last ordering
+   gis: Greedy independent set ordering
+   cs: Connected sequential ordering (using depth first search)
+   cs-dfs: (same as cs)
+   cs-bfs: Connected sequential ordering (using breath first search)
+   slf: Saturation largest first (also known as DSATUR)
+   
+interchange: boolean
+   If strategy allows it, will use color interchange algorithm if set to true.
+   
+returntype: string
+   Whether to return a dictionary or a list of sets representing colors and nodes.
+   Default is dictionary. (See 'Returns' for more information).
+   
+Returns
+-------
+If returntype is set to 'dict', a dictionary is returned with keys representing 
+nodes and values representing corresponding coloring.
+
+If returntype isset to 'sets', a list of sets is returned. Each set in the 
+list represents a color and contains the nodes that is colored with this.
+
+Examples
+--------
+>>> G = nx.random_regular_graph(2, 4)
+>>> d = nx.coloring(G, strategy='lf')
+>>> d
+{0: 0, 1: 1, 2: 0, 3: 1}
+>>> s = nx.coloring(G, strategy='lf', returntype='sets')
+>>> s
+[set([0, 2]), set([1, 3])]
+>>> len(s)
+2
+
+References
+----------
+.. [1] Adrian Kosowski, and Krzysztof Manuszewski,
+   Classical Coloring of Graphs, Graph Colorings, 2-19, 2004,
+   ISBN 0-8218-3458-4.
+   [2] (todo)
+"""
 
 def coloring(G, strategy='lf', interchange=False, returntype='dict'):
     colors = dict() # dictionary to keep track of the colors of the nodes
