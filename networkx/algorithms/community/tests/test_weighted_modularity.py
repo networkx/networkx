@@ -25,13 +25,14 @@ def get_test_data():
     graph : networkx graph
     communities : list of sets
     """
-    pth, _ = os.path.split(__file__)
-    data_file = os.path.join(pth, 'testdata.txt')
-    mat = np.loadtxt(data_file)
-    mat[mat<0] = 0
+    n = 40
+    mat = np.ones((n,n))
+    communities = []
+    for i in xrange(0,n,10):
+        mat[i:i+10, i:i+10] = i/5 + 1
+        communities.append(set(range(i,i+10)))
+    np.fill_diagonal(mat, np.array( 10*[0] + 90*[1]))
     graph = nx.from_numpy_matrix(mat)
-    # graph has 85 nodes, make generic communities
-    communities = [set(range(42)), set(range(42,86))]
     return graph, communities
 
 class TestWeightedPartition(unittest.TestCase):
@@ -45,7 +46,7 @@ class TestWeightedPartition(unittest.TestCase):
     def test_init(self):
         part = wm.WeightedPartition(self.graph)
         self.assertEqual(type(part.degrees), type({}))
-        npt.assert_array_almost_equal(part.total_edge_weight, 1500.5653444)
+        npt.assert_array_almost_equal(part.total_edge_weight, 1350.0)
         # generated communities
         comm = [set([node]) for node in self.graph.nodes()]
         self.assertEqual(part.communities, comm)
@@ -64,7 +65,7 @@ class TestWeightedPartition(unittest.TestCase):
         part = wm.WeightedPartition(self.graph)
         part = wm.WeightedPartition(self.graph, self.communities)
         cdegree = part.communities_degree()
-        self.assertEqual(round(cdegree[0]), 1462.0)
+        self.assertEqual(round(cdegree[0]), 390.0)
 
 
     def test_set_communities(self):
@@ -91,7 +92,7 @@ class TestWeightedPartition(unittest.TestCase):
     def test_get_node_community(self):
         part = wm.WeightedPartition(self.graph, self.communities)
         self.assertEqual(part.get_node_community(0), 0)
-        self.assertEqual(part.get_node_community(self.graph.nodes()[-1]),1)
+        self.assertEqual(part.get_node_community(self.graph.nodes()[-1]),3)
         with self.assertRaises(ValueError):
             part.get_node_community(-1)
         part = wm.WeightedPartition(self.graph)
@@ -101,11 +102,11 @@ class TestWeightedPartition(unittest.TestCase):
         part = wm.WeightedPartition(self.graph) # one comm per node
         node = 0
         res = part.node_degree(node)
-        npt.assert_almost_equal(res, 37.94151675 )
+        npt.assert_almost_equal(res, 39)
 
     def test_modularity(self):
         part = wm.WeightedPartition(self.graph, self.communities)
-        npt.assert_almost_equal(part.modularity(), 0.0555463)
+        npt.assert_almost_equal(part.modularity(), 0.2818107)
 
 
     def test_degree_by_community(self):
@@ -123,7 +124,8 @@ class TestWeightedPartition(unittest.TestCase):
         part = wm.WeightedPartition(self.graph) # one comm per node
         weights = part.degree_within_community()
         ## this inlcudes self links so
-        self.assertEqual(weights[0], 1.0)
+        self.assertEqual(weights[0], 0.0) #no self-edge
+        self.assertEqual(weights[-1], 1.0) # self edge
 
 
 
@@ -140,7 +142,7 @@ class TestWeightedPartition(unittest.TestCase):
         npt.assert_equal(node2comm_weights[neighbor],expected)
         part = wm.WeightedPartition(self.graph, self.communities)
         node2comm_weights = part.node_degree_by_community(node)
-        npt.assert_equal(len(node2comm_weights), 2)
+        npt.assert_equal(len(node2comm_weights), len(part.communities))
 
 
 class TestLouvainCommunityDetection(unittest.TestCase):
@@ -175,7 +177,7 @@ class TestLouvainCommunityDetection(unittest.TestCase):
         part = wm.WeightedPartition(self.graph, self.communities)
         node = 0
         weights = self.louvain_comm._communities_nodes_alledgesw(part, node)
-        npt.assert_almost_equal(weights[0], 1424.0220362)
+        npt.assert_almost_equal(weights[0], 351.0)
         ## test with possible empty node set
         part = wm.WeightedPartition(self.graph)
         weights = self.louvain._communities_nodes_alledgesw(part, node)
@@ -243,8 +245,9 @@ def test_meta_graph():
     ## two communitties
     part = wm.WeightedPartition(graph, communities)
     metagraph,mapping = wm.meta_graph(part)
-    npt.assert_equal(metagraph.nodes(), [0,1])
-    npt.assert_equal(metagraph.edges(), [(0,0),(0,1), (1,1)])
+    npt.assert_equal(metagraph.nodes(), [0,1,2,3])
+    ## metagraph always has self edges
+    npt.assert_equal(True , all([(x,x) in metagraph.edges() for x in range(4)]))
     # mapping should map new node 0 to communities[0]
     npt.assert_equal(mapping[0], communities[0])
     ## weight should not be lost between graphs

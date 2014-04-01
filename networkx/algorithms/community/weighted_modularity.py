@@ -28,9 +28,12 @@ class WeightedPartition(object):
         part : WeightedPartition object
         """
         # assert graph has edge weights, and no negative weights
-        mat = nx.adjacency_matrix(graph).todense() #from sparse to dense
+        mat = nx.adjacency_matrix(graph).toarray() #from sparse to dense
         if mat.min() < 0:
             raise ValueError('Graph has invalid negative weights')
+        ## adjacency_matrix.todense() doubles the diagonal
+        diagind = np.diag_indices_from(mat)
+        mat[diagind] /= 2.
         self.graph = nx.from_numpy_matrix(mat)
         if communities is None:
             self._communities = self._init_communities_from_nodes()
@@ -204,7 +207,8 @@ class LouvainCommunityDetection(object):
     >>> louvain = LouvainCommunityDetection(graph)
     >>> partitions = louvain.run()
     >>> ## best partition
-    >>> partitions[-1].modularity()
+    >>> bestpart = partitions[-1]
+    >>> bestpart.modularity()
 
     References
     ----------
@@ -274,7 +278,7 @@ class LouvainCommunityDetection(object):
         return dendogram
 
     def _one_level(self, part, min_modularity= .0000001):
-        """run one level of patitioning"""
+        """run one level of partitioning"""
         curr_mod = part.modularity()
         modified = True
         while modified:
