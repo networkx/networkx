@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Tests for the weighted_modularity module"""
 
 #-----------------------------------------------------------------------------
