@@ -500,6 +500,9 @@ def random_regular_graph(d, n, seed=None):
     if not 0 <= d < n:
         raise nx.NetworkXError("the 0 <= d < n inequality must be satisfied")
 
+    if d == 0:
+        return empty_graph(n)
+
     if seed is not None:
         random.seed(seed)
 
