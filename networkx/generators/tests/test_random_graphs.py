@@ -51,6 +51,15 @@ class TestGeneratorsRandom():
 
         G=nx.random_lobster(10,0.1,0.5,seed)
 
+    def test_random_zero_regular_graph(self):
+        """Tests that a 0-regular graph has the correct number of nodes and
+        edges.
+
+        """
+        G = random_regular_graph(0, 10)
+        assert_equal(len(G), 10)
+        assert_equal(len(G.edges()), 0)
+
     def test_gnp(self):
         for generator in [gnp_random_graph, binomial_graph, erdos_renyi_graph,
                           fast_gnp_random_graph]:
