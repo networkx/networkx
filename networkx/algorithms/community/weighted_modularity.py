@@ -90,8 +90,7 @@ class WeightedPartition(object):
         duplicate nodes"""
         if not (isinstance(communities, list) and \
             contains_only(communities, set)):
-            raise TypeError('communities should be list of sets, not '\
-                '{}'.format(communities))
+            raise TypeError('communities should ba a list of sets')
         ## simple count to check for all nodes
         return len(self.graph.nodes()) == \
             len([item for com in communities for item in com])
@@ -420,7 +419,7 @@ def meta_graph(partition):
     metagraph = nx.Graph()
     # new nodes are communities
     newnodes = [val for val,_ in enumerate(partition.communities)]
-    mapping = {val:nodes for val,nodes in enumerate(partition.communities)}
+    mapping = dict((val,nodes) for val,nodes in enumerate(partition.communities))
     metagraph.add_nodes_from(newnodes, weight=0.0)
 
     for node1, node2, data in partition.graph.edges_iter(data=True):

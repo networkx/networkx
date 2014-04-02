@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 """Tests for the weighted_modularity module"""
-
 #-----------------------------------------------------------------------------
 # Imports
 #-----------------------------------------------------------------------------
 import os
 import unittest
+
 
 
 # Third party
@@ -52,14 +52,16 @@ class TestWeightedPartition(unittest.TestCase):
         comm = [set([node]) for node in self.graph.nodes()]
         self.assertEqual(part.communities, comm)
         # test communities cannot be replaced by garbage
-        with self.assertRaises(TypeError):
-            part.communities = 11
+        self.assertRaises(TypeError, setattr, part.communities, 11)
         # doesnt work if nodes are missing from partition
-        with self.assertRaises(ValueError):
-            part.communities = [set([1,2,3])]
+        missing_nodes = [set([1,2,3])]
+        self.assertRaises(TypeError, setattr, part.communities, missing_nodes)
+        #with self.assertRaises(ValueError):
+        #    part.communities = [set([1,2,3])]
         # but we can pass a valid community partition
         part.communities = comm
         self.assertEqual(part.communities, comm)
+
 
     def test_communities_degree(self):
         ## if no community, method will raise error
@@ -72,15 +74,13 @@ class TestWeightedPartition(unittest.TestCase):
     def test_set_communities(self):
         part = wm.WeightedPartition(self.graph, self.communities)
         self.assertEqual(part.communities, self.communities)
-        with self.assertRaises(TypeError):
-            # raise error if not list of sets
-            part.set_communities(part.communities[0])
-        with self.assertRaises(TypeError):
-            part.set_communities('a')
-        with self.assertRaises(ValueError):
-            ## missing nodes
-            comm = self.graph.nodes()[:-3]
-            part.set_communities([set(comm)])
+        # raise error if not list of sets
+        self.assertRaises(TypeError, part.set_communities, set([0,1]))
+        self.assertRaises(TypeError, part.set_communities, 'a')
+        # missing nodes
+        comm = [set(self.graph.nodes()[:-3])] #drop 3 nodes, correct Type
+        self.assertRaises(ValueError, part.set_communities, comm)
+
 
     def test_allnodes_in_communities(self):
         """checks communities contain all nodes
@@ -94,8 +94,9 @@ class TestWeightedPartition(unittest.TestCase):
         part = wm.WeightedPartition(self.graph, self.communities)
         self.assertEqual(part.get_node_community(0), 0)
         self.assertEqual(part.get_node_community(self.graph.nodes()[-1]),3)
-        with self.assertRaises(ValueError):
-            part.get_node_community(-1)
+        self.assertRaises(ValueError, part.get_node_community, -1)
+        #with self.assertRaises(ValueError):
+        #    part.get_node_community(-1)
         part = wm.WeightedPartition(self.graph)
         self.assertEqual(part.get_node_community(0), 0)
 
@@ -207,11 +208,10 @@ class TestLouvainCommunityDetection(unittest.TestCase):
         newpart = self.louvain._move_node(part, node, comm)
         self.assertEqual(set([0,1]) in newpart.communities, True)
         ## what happens if node or comm missing
-        with self.assertRaises(ValueError):
-            newpart = self.louvain._move_node(part, -1, comm)
+        self.assertRaises(ValueError, self.louvain._move_node, part, -1, comm)
         invalid_communities = len(part.communities) + 1
-        with self.assertRaises(IndexError):
-            newpart = self.louvain._move_node(part, node, invalid_communities)
+        self.assertRaises(IndexError, self.louvain._move_node,
+            part, node, invalid_communities)
 
     def test_gen_dendogram(self):
         graph = nx.Graph()
