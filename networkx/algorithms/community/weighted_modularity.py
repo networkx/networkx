@@ -203,11 +203,11 @@ class LouvainCommunityDetection(object):
 
     Examples
     --------
-    >>> louvain = LouvainCommunityDetection(graph)
-    >>> partitions = louvain.run()
-    >>> ## best partition
-    >>> bestpart = partitions[-1]
-    >>> bestpart.modularity()
+    >>> louvain = LouvainCommunityDetection(graph) # doctests: +SKIP
+    >>> partitions = louvain.run() # doctests: +SKIP
+    >>> ## best partition # doctests: +SKIP
+    >>> bestpart = partitions[-1] # doctests: +SKIP
+    >>> bestpart.modularity() # doctests: +SKIP
 
     References
     ----------
