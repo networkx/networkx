@@ -382,9 +382,9 @@ class LouvainCommunityDetection(object):
 
         Examples
         --------
-        >>> prev = [set([0,1,2]), set([3,4]), set([5,6])]
-        >>> next = [set([0,1]), set([2])]
-        >>> result = _combine(prev, next)
+        >>> prev = [set([0,1,2]), set([3,4]), set([5,6])] # doctests: +SKIP
+        >>> next = [set([0,1]), set([2])]  # doctests: +SKIP
+        >>> result = _combine(prev, next)  # doctests: +SKIP
         [set([0, 1, 2, 3, 4]), set([5,6])]
         """
         expected_len = np.max([x for sublist in next for x in sublist])
