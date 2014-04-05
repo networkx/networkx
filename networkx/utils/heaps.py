@@ -151,7 +151,7 @@ class PairingHeap(MinHeap):
         A tree in a pairing heap is stored using the left-child, right-sibling
         representation.
         """
-        __slots__ = ('left', 'next', 'prev')
+        __slots__ = ('left', 'next', 'prev', 'parent')
 
         def __init__(self, key, value):
             super(PairingHeap._Node, self).__init__(key, value)
@@ -159,9 +159,10 @@ class PairingHeap(MinHeap):
             self.left = None
             # The next sibling.
             self.next = None
-            # The previous sibling, or the parent if this node is the leftmost
-            # child of its parent.
+            # The previous sibling.
             self.prev = None
+            # The parent.
+            self.parent = None
 
     def __init__(self):
         """Initialize a pairing heap.
@@ -196,21 +197,28 @@ class PairingHeap(MinHeap):
         if node is not None:
             if value < node.value:
                 node.value = value
-                if node is not root:
+                if node is not root and value < node.parent.value:
                     self._cut(node)
                     self._root = self._link(root, node)
                 return True
             elif value > node.value:
                 node.value = value
                 child = self._merge_children(node)
-                if node is not root:
-                    self._cut(node)
-                    if child is not None:
-                        root = self._link(root, child)
-                    self._root = self._link(root, node)
-                else:
-                    self._root = (self._link(node, child)
-                                  if child is not None else node)
+                # Nonstandard step: Link the merged subtree with the root. See
+                # below for the standard step.
+                if child is not None:
+                    self._root = self._link(self._root, child)
+                # Standard step: Perform a decrease followed by a pop as if the
+                # value were the smallest in the heap. Then insert the new
+                # value into the heap.
+                # if node is not root:
+                #     self._cut(node)
+                #     if child is not None:
+                #         root = self._link(root, child)
+                #     self._root = self._link(root, node)
+                # else:
+                #     self._root = (self._link(node, child)
+                #                   if child is not None else node)
             return False
         else:
             # Insert a new key.
@@ -229,8 +237,9 @@ class PairingHeap(MinHeap):
         other.next = next
         if next is not None:
             next.prev = other
-        other.prev = root
+        other.prev = None
         root.left = other
+        other.parent = root
         return root
 
     def _merge_children(self, root):
@@ -242,8 +251,9 @@ class PairingHeap(MinHeap):
         if node is not None:
             link = self._link
             # Pass 1: Merge pairs of consecutive subtrees from left to right.
-            # At the end of the pass, the next pointers of the resulting subtrees
-            # do not have meaningful values. This will be fixed in pass 2.
+            # At the end of the pass, only the prev pointers of the resulting
+            # subtrees have meaningful values. The other pointers will be fixed
+            # in pass 2.
             prev = None
             while True:
                 next = node.next
@@ -267,6 +277,7 @@ class PairingHeap(MinHeap):
             # Now node can become the new root. Its has no parent nor siblings.
             node.prev = None
             node.next = None
+            node.parent = None
         return node
 
     def _cut(self, node):
@@ -274,14 +285,15 @@ class PairingHeap(MinHeap):
         """
         prev = node.prev
         next = node.next
-        if node is prev.left:
-            prev.left = next
-        else:
+        if prev is not None:
             prev.next = next
+        else:
+            node.parent.left = next
         node.prev = None
         if next is not None:
             next.prev = prev
             node.next = None
+        node.parent = None
 
 
 class BinaryHeap(MinHeap):
