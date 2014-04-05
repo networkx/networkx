@@ -7,7 +7,7 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # All rights reserved.
 # BSD license.
 
-import heapq
+from heapq import heappop, heappush
 import networkx as nx
 
 __all__ = ['MinHeap', 'PairingHeap', 'BinaryHeap']
@@ -281,7 +281,7 @@ class PairingHeap(MinHeap):
         return node
 
     def _cut(self, node):
-        """Cut a from its parent.
+        """Cut a node from its parent.
         """
         prev = node.prev
         next = node.next
@@ -314,8 +314,10 @@ class BinaryHeap(MinHeap):
         if not dict:
             raise nx.NetworkXError('heap is empty')
         heap = self._heap
-        pop = heapq.heappop
-        while heap:
+        pop = heappop
+        # Repeatedly remove stale key-value pairs until a up-to-date one is
+        # met.
+        while True:
             value, key = heap[0]
             if key in dict and value == dict[key]:
                 break
@@ -328,8 +330,10 @@ class BinaryHeap(MinHeap):
         if not dict:
             raise nx.NetworkXError('heap is empty')
         heap = self._heap
-        pop = heapq.heappop
-        while heap:
+        pop = heappop
+        # Repeatedly remove stale key-value pairs until a up-to-date one is
+        # met.
+        while True:
             value, key = heap[0]
             pop(heap)
             if key in dict and value == dict[key]:
@@ -344,14 +348,17 @@ class BinaryHeap(MinHeap):
     @_inherit_doc(MinHeap)
     def insert(self, key, value):
         dict = self._dict
-        push = heapq.heappush
-        old_value = dict.get(key)
-        if old_value is not None:
+        if key in dict:
+            old_value = dict[key]
             if value != old_value:
+                # Since there is no way to efficiently obtain the location of a
+                # key-value pair in the heap, insert a new pair even if ones
+                # with the same key may already be present. Deem the old ones
+                # as stale and skip them when the minimum pair is queried.
                 dict[key] = value
-                push(self._heap, (value, key))
+                heappush(self._heap, (value, key))
             return value < old_value
         else:
             dict[key] = value
-            push(self._heap, (value, key))
+            heappush(self._heap, (value, key))
             return True
