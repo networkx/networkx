@@ -5,13 +5,11 @@ Flow based connectivity algorithms
 import itertools
 import networkx as nx
 
-from networkx.algorithms.flow import max_flow
+from networkx.algorithms.flow import ford_fulkerson_value
 from networkx.algorithms.flow import preflow_push_value
 # Define the default maximum flow function to use in all flow based
-# connectivity algorithms. max_flow uses Ford-Fulkerson algorithm
-# which, acording to our tests, is the fastest available in NetworkX
-# for this kind of problem.
-default_flow_func = max_flow
+# connectivity algorithms. 
+default_flow_func = ford_fulkerson_value
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -44,11 +42,9 @@ def average_node_connectivity(G, flow_func=None):
         in a capacited graph. The function has to accept three parameters:
         a Graph or Digraph, a source node, and a target node. And return 
         the maximum flow value. If flow_func is None the default maximum 
-        flow function (:doc:`networkx.algorithms.flow.max_flow`) is used, 
-        which implements the Ford-Fulkerson algorithm 
-        (:doc:`networkx.algorithms.flow.ford_fulkerson`). An alternative 
-        function you can use is 
-        :doc:`networkx.algorithms.flow.preflow_push_value`.
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson_value`) 
+        is used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
 
     Returns
     -------
@@ -61,9 +57,9 @@ def average_node_connectivity(G, flow_func=None):
     node_connectivity
     local_edge_connectivity
     edge_connectivity
-    :doc:`networkx.algorithms.flow.max_flow`
-    :doc:`networkx.algorithms.flow.ford_fulkerson`
-    :doc:`networkx.algorithms.flow.preflow_push_value`
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
@@ -164,11 +160,9 @@ def local_node_connectivity(G, s, t, flow_func=None, aux_digraph=None,
         in a capacited graph. The function has to accept three parameters:
         a Graph or Digraph, a source node, and a target node. And return 
         the maximum flow value. If flow_func is None the default maximum 
-        flow function (:doc:`networkx.algorithms.flow.max_flow`) is used, 
-        which implements the Ford-Fulkerson algorithm 
-        (:doc:`networkx.algorithms.flow.ford_fulkerson`). An alternative 
-        function you can use is 
-        :doc:`networkx.algorithms.flow.preflow_push_value`.
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson_value`) is 
+        used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
 
     aux_digraph : NetworkX DiGraph (default=None)
         Auxiliary digraph to compute flow based node connectivity. If None
@@ -220,9 +214,9 @@ def local_node_connectivity(G, s, t, flow_func=None, aux_digraph=None,
     all_pairs_node_connectivity_matrix
     local_edge_connectivity
     edge_connectivity
-    :doc:`networkx.algorithms.flow.max_flow`
-    :doc:`networkx.algorithms.flow.ford_fulkerson`
-    :doc:`networkx.algorithms.flow.preflow_push_value`
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
@@ -268,11 +262,9 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
         in a capacited graph. The function has to accept three parameters:
         a Graph or Digraph, a source node, and a target node. And return 
         the maximum flow value. If flow_func is None the default maximum 
-        flow function (:doc:`networkx.algorithms.flow.max_flow`) is used, 
-        which implements the Ford-Fulkerson algorithm 
-        (:doc:`networkx.algorithms.flow.ford_fulkerson`). An alternative 
-        function you can use is 
-        :doc:`networkx.algorithms.flow.preflow_push_value`.
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson_value`)
+        is used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
 
     Returns
     -------
@@ -306,9 +298,9 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     all_pairs_node_connectivity_matrix
     local_edge_connectivity
     edge_connectivity
-    :doc:`networkx.algorithms.flow.max_flow`
-    :doc:`networkx.algorithms.flow.ford_fulkerson`
-    :doc:`networkx.algorithms.flow.preflow_push_value`
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
@@ -372,11 +364,9 @@ def all_pairs_node_connectivity_matrix(G, nodelist=None, flow_func=None):
         in a capacited graph. The function has to accept three parameters:
         a Graph or Digraph, a source node, and a target node. And return 
         the maximum flow value. If flow_func is None the default maximum 
-        flow function (:doc:`networkx.algorithms.flow.max_flow`) is used, 
-        which implements the Ford-Fulkerson algorithm 
-        (:doc:`networkx.algorithms.flow.ford_fulkerson`). An alternative 
-        function you can use is 
-        :doc:`networkx.algorithms.flow.preflow_push_value`.
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson`) is 
+        used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
 
     Returns
     -------
@@ -389,9 +379,9 @@ def all_pairs_node_connectivity_matrix(G, nodelist=None, flow_func=None):
     node_connectivity
     local_edge_connectivity
     edge_connectivity
-    :doc:`networkx.algorithms.flow.max_flow`
-    :doc:`networkx.algorithms.flow.ford_fulkerson`
-    :doc:`networkx.algorithms.flow.preflow_push_value`
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
     """
     import numpy as np
     if nodelist is None:
@@ -475,11 +465,9 @@ def local_edge_connectivity(G, u, v, flow_func=None, aux_digraph=None):
         in a capacited graph. The function has to accept three parameters:
         a Graph or Digraph, a source node, and a target node. And return 
         the maximum flow value. If flow_func is None the default maximum 
-        flow function (:doc:`networkx.algorithms.flow.max_flow`) is used, 
-        which implements the Ford-Fulkerson algorithm 
-        (:doc:`networkx.algorithms.flow.ford_fulkerson`). An alternative 
-        function you can use is 
-        :doc:`networkx.algorithms.flow.preflow_push_value`.
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson`) is 
+        used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
 
     aux_digraph : NetworkX DiGraph (default=None)
         Auxiliary digraph to compute flow based edge connectivity. If None
@@ -519,9 +507,9 @@ def local_edge_connectivity(G, u, v, flow_func=None, aux_digraph=None):
     local_node_connectivity
     node_connectivity
     edge_connectivity
-    :doc:`networkx.algorithms.flow.max_flow`
-    :doc:`networkx.algorithms.flow.ford_fulkerson`
-    :doc:`networkx.algorithms.flow.preflow_push_value`
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
@@ -565,11 +553,9 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
         in a capacited graph. The function has to accept three parameters:
         a Graph or Digraph, a source node, and a target node. And return 
         the maximum flow value. If flow_func is None the default maximum 
-        flow function (:doc:`networkx.algorithms.flow.max_flow`) is used, 
-        which implements the Ford-Fulkerson algorithm 
-        (:doc:`networkx.algorithms.flow.ford_fulkerson`). An alternative 
-        function you can use is 
-        :doc:`networkx.algorithms.flow.preflow_push_value`.
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson`) is 
+        used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
 
     Returns
     -------
@@ -602,9 +588,9 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
     local_node_connectivity
     node_connectivity
     local_edge_connectivity
-    :doc:`networkx.algorithms.flow.max_flow`
-    :doc:`networkx.algorithms.flow.ford_fulkerson`
-    :doc:`networkx.algorithms.flow.preflow_push_value`
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
