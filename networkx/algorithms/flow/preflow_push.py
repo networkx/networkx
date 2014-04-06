@@ -119,11 +119,17 @@ def _build_residual_network(G, s, t, capacity):
 
     # Detect unboundedness by determining reachability of t from s using only
     # infinite-capacity edges.
-    R_inf = nx.DiGraph((u, v) for u, v, attr in R.edges_iter(data=True)
-                       if attr['capacity'] == inf)
-    if s in R_inf and t in R_inf and nx.has_path(R_inf, s, t):
-        raise nx.NetworkXUnbounded(
-                'Infinite capacity path, flow unbounded above.')
+    q = deque([s])
+    seen = set([s])
+    while q:
+        u = q.popleft()
+        for v, attr in R[u].items():
+            if attr['capacity'] == inf and v not in seen:
+                if v == t:
+                    raise nx.NetworkXUnbounded(
+                            'Infinite capacity path, flow unbounded above.')
+                seen.add(v)
+                q.append(v)
 
     return R
 
@@ -153,7 +159,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
                     q.append((v, height))
         return heights
 
-    # Initialize heights (or labels) of nodes.
+    # Initialize heights of the nodes.
     heights = reverse_bfs(t)
 
     if s not in heights:
@@ -169,8 +175,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
 
     grt = _GlobalRelabelThreshold(n, R.size(), global_relabel_freq)
 
-    # Initialize heights, excesses and 'current edge' data structures of the
-    # nodes.
+    # Initialize heights and 'current edge' data structures of the nodes.
     for u in R:
         R.node[u]['height'] = heights[u] if u in heights else n + 1
         R.node[u]['curr_edge'] = _CurrentEdge(R[u])
@@ -384,10 +389,7 @@ def _build_flow_dict(G, R):
     """
     flow_dict = {}
     for u in G:
-        flow_dict[u] = {}
-        for v in G[u]:
-            flow_dict[u][v] = 0
-    for u in G:
+        flow_dict[u] = dict((v, 0) for v in G[u])
         flow_dict[u].update((v, R[u][v]['flow']) for v in R[u]
                             if R[u][v]['flow'] > 0)
     return flow_dict

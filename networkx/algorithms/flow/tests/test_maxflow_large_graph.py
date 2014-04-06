@@ -48,9 +48,7 @@ def validate_flows(G, s, t, solnValue, flowValue, flowDict):
     assert_equal(set(G), set(flowDict))
     for u in G:
         assert_equal(set(G[u]), set(flowDict[u]))
-    excess = {}
-    for u in flowDict:
-        excess[u] = 0
+    excess = dict((u, 0) for u in flowDict)
     for u in flowDict:
         for v, flow in flowDict[u].items():
             ok_(flow <= G[u][v]['capacity'])
@@ -74,13 +72,15 @@ class TestMaxflowLargeGraph:
             G[u][v]['capacity'] = 5
         assert_equal(nx.ford_fulkerson(G, 1, 2)[0], 5 * (N - 1))
         assert_equal(nx.preflow_push(G, 1, 2)[0], 5 * (N - 1))
+        assert_equal(nx.shortest_augmenting_path(G, 1, 2)[0], 5 * (N - 1))
 
     def test_pyramid(self):
-        N = 10 
+        N = 10
 #        N = 100 # this gives a graph with 5051 nodes
         G = gen_pyramid(N)
         assert_almost_equal(nx.ford_fulkerson(G, (0, 0), 't')[0], 1.)
         assert_almost_equal(nx.preflow_push(G, (0, 0), 't')[0], 1.)
+        assert_almost_equal(nx.shortest_augmenting_path(G, (0, 0), 't')[0], 1.)
 
     def test_gl1(self):
         G = read_graph('gl1')
@@ -89,22 +89,27 @@ class TestMaxflowLargeGraph:
         validate_flows(G, s, t, 156545, *nx.ford_fulkerson(G, s, t))
         validate_flows(G, s, t, 156545, nx.preflow_push_value(G, s, t),
                        nx.preflow_push_flow(G, s, t))
+        validate_flows(G, s, t, 156545,
+                       nx.shortest_augmenting_path_value(G, s, t),
+                       nx.shortest_augmenting_path_flow(G, s, t))
 
     def test_gw1(self):
         G = read_graph('gw1')
         s = 1
         t = len(G)
         validate_flows(G, s, t, 1202018, *nx.ford_fulkerson(G, s, t))
-        validate_flows(G, s, t, 1202018, nx.preflow_push_value(G, s, t),
-                       nx.preflow_push_flow(G, s, t))
+        validate_flows(G, s, t, 1202018,
+                       nx.shortest_augmenting_path_value(G, s, t),
+                       nx.shortest_augmenting_path_flow(G, s, t))
 
     def test_wlm3(self):
         G = read_graph('wlm3')
         s = 1
         t = len(G)
         validate_flows(G, s, t, 11875108, *nx.ford_fulkerson(G, s, t))
-        validate_flows(G, s, t, 11875108, nx.preflow_push_value(G, s, t),
-                       nx.preflow_push_flow(G, s, t))
+        validate_flows(G, s, t, 11875108,
+                       nx.shortest_augmenting_path_value(G, s, t),
+                       nx.shortest_augmenting_path_flow(G, s, t))
 
     def test_preflow_push_global_relabel(self):
         G = read_graph('gw1')

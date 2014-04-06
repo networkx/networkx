@@ -14,6 +14,9 @@ Ford-Fulkerson
    ford_fulkerson
    ford_fulkerson_flow
    ford_fulkerson_flow_and_auxiliary
+   shortest_augmenting_path
+   shortest_augmenting_path_value
+   shortest_augmenting_path_flow
 
 Preflow-push
 ------------
