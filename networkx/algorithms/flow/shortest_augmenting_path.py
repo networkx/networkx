@@ -30,7 +30,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
         u, height = q.popleft()
         height += 1
         for v, u, attr in R.in_edges_iter(u, data=True):
-            if attr['flow'] < attr['capacity'] and v not in heights:
+            if v not in heights and attr['flow'] < attr['capacity']:
                 heights[v] = height
                 q.append((v, height))
 
@@ -89,7 +89,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
     path = [s]
     u = s
     d = n if not two_phase else int(min(m ** 0.5, 2 * n ** (2. / 3)))
-    done = False
+    done = R.node[s]['height'] < d
     while not done:
         height = R.node[u]['height']
         curr_edge = R.node[u]['curr_edge']

@@ -154,7 +154,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
             u, height = q.popleft()
             height += 1
             for v, u, attr in R.in_edges_iter(u, data=True):
-                if attr['flow'] < attr['capacity'] and v not in heights:
+                if v not in heights and attr['flow'] < attr['capacity']:
                     heights[v] = height
                     q.append((v, height))
         return heights
