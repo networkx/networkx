@@ -42,7 +42,12 @@ def compare_flows(G, s, t, solnFlows, solnValue, capacity = 'capacity'):
     flowValue, flowDict = nx.preflow_push(G, s, t, capacity)
     assert_equal(flowValue, solnValue)
     validate_flows(G, s, t, flowDict, solnValue, capacity)
-    flowValue, flowDict = nx.shortest_augmenting_path(G, s, t, capacity)
+    flowValue, flowDict = nx.shortest_augmenting_path(G, s, t, capacity,
+                                                      two_phase=False)
+    assert_equal(flowValue, solnValue)
+    validate_flows(G, s, t, flowDict, solnValue, capacity)
+    flowValue, flowDict = nx.shortest_augmenting_path(G, s, t, capacity,
+                                                      two_phase=True)
     assert_equal(flowValue, solnValue)
     validate_flows(G, s, t, flowDict, solnValue, capacity)
     assert_equal(nx.min_cut(G, s, t, capacity), solnValue)

@@ -72,7 +72,10 @@ class TestMaxflowLargeGraph:
             G[u][v]['capacity'] = 5
         assert_equal(nx.ford_fulkerson(G, 1, 2)[0], 5 * (N - 1))
         assert_equal(nx.preflow_push(G, 1, 2)[0], 5 * (N - 1))
-        assert_equal(nx.shortest_augmenting_path(G, 1, 2)[0], 5 * (N - 1))
+        assert_equal(nx.shortest_augmenting_path(G, 1, 2, two_phase=False)[0],
+                     5 * (N - 1))
+        assert_equal(nx.shortest_augmenting_path(G, 1, 2, two_phase=True)[0],
+                     5 * (N - 1))
 
     def test_pyramid(self):
         N = 10
@@ -80,7 +83,10 @@ class TestMaxflowLargeGraph:
         G = gen_pyramid(N)
         assert_almost_equal(nx.ford_fulkerson(G, (0, 0), 't')[0], 1.)
         assert_almost_equal(nx.preflow_push(G, (0, 0), 't')[0], 1.)
-        assert_almost_equal(nx.shortest_augmenting_path(G, (0, 0), 't')[0], 1.)
+        assert_almost_equal(nx.shortest_augmenting_path(
+            G, (0, 0), 't', two_phase=False)[0], 1.)
+        assert_almost_equal(nx.shortest_augmenting_path(
+            G, (0, 0), 't', two_phase=True)[0], 1.)
 
     def test_gl1(self):
         G = read_graph('gl1')
@@ -89,27 +95,45 @@ class TestMaxflowLargeGraph:
         validate_flows(G, s, t, 156545, *nx.ford_fulkerson(G, s, t))
         validate_flows(G, s, t, 156545, nx.preflow_push_value(G, s, t),
                        nx.preflow_push_flow(G, s, t))
+        validate_flows(
+            G, s, t, 156545,
+            nx.shortest_augmenting_path_value(G, s, t, two_phase=False),
+            nx.shortest_augmenting_path_flow(G, s, t, two_phase=False))
         validate_flows(G, s, t, 156545,
-                       nx.shortest_augmenting_path_value(G, s, t),
-                       nx.shortest_augmenting_path_flow(G, s, t))
+            nx.shortest_augmenting_path_value(G, s, t, two_phase=True),
+            nx.shortest_augmenting_path_flow(G, s, t, two_phase=True))
 
     def test_gw1(self):
         G = read_graph('gw1')
         s = 1
         t = len(G)
         validate_flows(G, s, t, 1202018, *nx.ford_fulkerson(G, s, t))
-        validate_flows(G, s, t, 1202018,
-                       nx.shortest_augmenting_path_value(G, s, t),
-                       nx.shortest_augmenting_path_flow(G, s, t))
+        validate_flows(G, s, t, 1202018, nx.preflow_push_value(G, s, t),
+                       nx.preflow_push_flow(G, s, t))
+        validate_flows(
+            G, s, t, 1202018,
+            nx.shortest_augmenting_path_value(G, s, t, two_phase=False),
+            nx.shortest_augmenting_path_flow(G, s, t, two_phase=False))
+        validate_flows(
+            G, s, t, 1202018,
+            nx.shortest_augmenting_path_value(G, s, t, two_phase=True),
+            nx.shortest_augmenting_path_flow(G, s, t, two_phase=True))
 
     def test_wlm3(self):
         G = read_graph('wlm3')
         s = 1
         t = len(G)
         validate_flows(G, s, t, 11875108, *nx.ford_fulkerson(G, s, t))
-        validate_flows(G, s, t, 11875108,
-                       nx.shortest_augmenting_path_value(G, s, t),
-                       nx.shortest_augmenting_path_flow(G, s, t))
+        validate_flows(G, s, t, 11875108, nx.preflow_push_value(G, s, t),
+                       nx.preflow_push_flow(G, s, t))
+        validate_flows(
+            G, s, t, 11875108,
+            nx.shortest_augmenting_path_value(G, s, t, two_phase=False),
+            nx.shortest_augmenting_path_flow(G, s, t, two_phase=False))
+        validate_flows(
+            G, s, t, 11875108,
+            nx.shortest_augmenting_path_value(G, s, t, two_phase=True),
+            nx.shortest_augmenting_path_flow(G, s, t, two_phase=True))
 
     def test_preflow_push_global_relabel(self):
         G = read_graph('gw1')

@@ -18,28 +18,21 @@ __all__ = ['shortest_augmenting_path', 'shortest_augmenting_path_value',
            'shortest_augmenting_path_flow']
 
 
-def shortest_augmenting_path_impl(G, s, t, capacity):
+def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
     """Implementation of the shortest augmenting path algorithm.
     """
     R = _build_residual_network(G, s, t, capacity)
 
-    def reverse_bfs():
-        """Perform a reverse breadth-first search from t in the residual
-        network.
-        """
-        heights = {t: 0}
-        q = deque([(t, 0)])
-        while q:
-            u, height = q.popleft()
-            height += 1
-            for v, u, attr in R.in_edges_iter(u, data=True):
-                if attr['flow'] < attr['capacity'] and v not in heights:
-                    heights[v] = height
-                    q.append((v, height))
-        return heights
-
     # Initialize heights of the nodes.
-    heights = reverse_bfs()
+    heights = {t: 0}
+    q = deque([(t, 0)])
+    while q:
+        u, height = q.popleft()
+        height += 1
+        for v, u, attr in R.in_edges_iter(u, data=True):
+            if attr['flow'] < attr['capacity'] and v not in heights:
+                heights[v] = height
+                q.append((v, height))
 
     if s not in heights:
         # t is not reachable from s in the residual network. The maximum flow
@@ -47,6 +40,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity):
         return R
 
     n = len(G)
+    m = R.size() / 2
 
     # Initialize heights and 'current edge' data structures of the nodes.
     for u in R:
@@ -90,9 +84,13 @@ def shortest_augmenting_path_impl(G, s, t, capacity):
                 height = min(height, R.node[v]['height'])
         return height + 1
 
+    # Phase 1: Look for shortest augmenting paths using depth-first search.
+
     path = [s]
     u = s
-    while True:
+    d = n if not two_phase else int(min(m ** 0.5, 2 * n ** (2. / 3)))
+    done = False
+    while not done:
         height = R.node[u]['height']
         curr_edge = R.node[u]['curr_edge']
         # Depth-first search for the next node on the path to t.
@@ -114,10 +112,15 @@ def shortest_augmenting_path_impl(G, s, t, capacity):
                     # can now be terminated.
                     return R
                 height = relabel(u)
-                if u == s and height >= n:
-                    # t is disconnected from s in the residual network. No more
-                    # augmenting paths exist.
-                    return R
+                if u == s and height >= d:
+                    if not two_phase:
+                        # t is disconnected from s in the residual network. No
+                        # more augmenting paths exist.
+                        return R
+                    else:
+                        # t is at least d steps away from s. End of phase 1.
+                        done = True
+                        break
                 counts[height] += 1
                 R.node[u]['height'] = height
                 if u != s:
@@ -133,8 +136,36 @@ def shortest_augmenting_path_impl(G, s, t, capacity):
             path = [s]
             u = s
 
+    # Phase 2: Look for shortest augmenting paths using breadth-first search.
+    while True:
+        pred = {s: None}
+        q = deque([s])
+        done = False
+        while not done and q:
+            u = q.popleft()
+            for v, attr in R[u].items():
+                if v not in pred and attr['flow'] < attr['capacity']:
+                    pred[v] = u
+                    if v == t:
+                        done = True
+                        break
+                    q.append(v)
+        if not done:
+            # No augmenting path found.
+            return R
+        # Trace a s-t path using the predecessor array.
+        path = [t]
+        u = t
+        while True:
+            u = pred[u]
+            path.append(u)
+            if u == s:
+                break
+        path.reverse()
+        augment(path)
 
-def shortest_augmenting_path(G, s, t, capacity='capacity'):
+
+def shortest_augmenting_path(G, s, t, capacity='capacity', two_phase=False):
     """Find a maximum single-commodity flow using the shortest augmenting path
     algorithm.
 
@@ -160,6 +191,11 @@ def shortest_augmenting_path(G, s, t, capacity='capacity'):
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
+
+    two_phase : bool
+        If True, a two-phase variant is used. The two-phase variant improves
+        the running time on unit-capacity networks from `O(nm)` to
+        `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
 
     Returns
     -------
@@ -198,11 +234,12 @@ def shortest_augmenting_path(G, s, t, capacity='capacity'):
     >>> flow, F['a']['c']
     (3.0, 2.0)
     """
-    R = shortest_augmenting_path_impl(G, s, t, capacity)
+    R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
     return (R.node[t]['excess'], _build_flow_dict(G, R))
 
 
-def shortest_augmenting_path_value(G, s, t, capacity='capacity'):
+def shortest_augmenting_path_value(G, s, t, capacity='capacity',
+                                   two_phase=False):
     """Find a maximum single-commodity flow using the shortest augmenting path
     algorithm.
 
@@ -228,6 +265,11 @@ def shortest_augmenting_path_value(G, s, t, capacity='capacity'):
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
+
+    two_phase : bool
+        If True, a two-phase variant is used. The two-phase variant improves
+        the running time on unit-capacity networks from `O(nm)` to
+        `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
 
     Returns
     -------
@@ -262,11 +304,12 @@ def shortest_augmenting_path_value(G, s, t, capacity='capacity'):
     >>> flow
     3.0
     """
-    R = shortest_augmenting_path_impl(G, s, t, capacity)
+    R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
     return R.node[t]['excess']
 
 
-def shortest_augmenting_path_flow(G, s, t, capacity='capacity'):
+def shortest_augmenting_path_flow(G, s, t, capacity='capacity',
+                                  two_phase=False):
     """Find a maximum single-commodity flow using the shortest augmenting path
     algorithm.
 
@@ -292,6 +335,11 @@ def shortest_augmenting_path_flow(G, s, t, capacity='capacity'):
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
+
+    two_phase : bool
+        If True, a two-phase variant is used. The two-phase variant improves
+        the running time on unit-capacity networks from `O(nm)` to
+        `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
 
     Returns
     -------
@@ -327,5 +375,5 @@ def shortest_augmenting_path_flow(G, s, t, capacity='capacity'):
     >>> F['a']['c']
     2.0
     """
-    R = shortest_augmenting_path_impl(G, s, t, capacity)
+    R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
     return _build_flow_dict(G, R)
