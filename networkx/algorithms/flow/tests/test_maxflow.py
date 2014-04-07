@@ -322,3 +322,16 @@ class TestMaxflow:
         assert_equal(nx.preflow_push(G, 1, 2, global_relabel_freq=None)[0], 1)
         assert_raises(nx.NetworkXError, nx.preflow_push_value, G, 1, 2,
                       global_relabel_freq=-1)
+
+    def test_shortest_augmenting_path_two_phase(self):
+        k = 5
+        p = 1000
+        G = nx.DiGraph()
+        for i in range(k):
+            G.add_edge('s', (i, 0), capacity=1)
+            G.add_path(((i, j) for j in range(p)), capacity=1)
+            G.add_edge((i, p - 1), 't', capacity=1)
+        assert_equal(nx.shortest_augmenting_path_value(
+            G, 's', 't', two_phase=True), k)
+        assert_equal(nx.shortest_augmenting_path_value(
+            G, 's', 't', two_phase=False), k)

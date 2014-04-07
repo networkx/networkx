@@ -89,7 +89,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
     path = [s]
     u = s
     d = n if not two_phase else int(min(m ** 0.5, 2 * n ** (2. / 3)))
-    done = R.node[s]['height'] < d
+    done = R.node[s]['height'] >= d
     while not done:
         height = R.node[u]['height']
         curr_edge = R.node[u]['curr_edge']
