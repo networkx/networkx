@@ -11,127 +11,11 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 from collections import deque
 from itertools import islice
 import networkx as nx
+from networkx.algorithms.flow.utils import *
 
 __all__ = ['preflow_push',
            'preflow_push_value',
            'preflow_push_flow']
-
-
-class _CurrentEdge(object):
-    """Mechanism for iterating over out-edges incident to a node in a circular
-    manner. StopIteration exception is raised when wraparound occurs.
-    """
-
-    def __init__(self, edges):
-        self._edges = edges
-        if self._edges:
-            self._rewind()
-
-    def get(self):
-        return self._curr
-
-    def move_to_next(self):
-        try:
-            self._curr = next(self._it)
-        except StopIteration:
-            self._rewind()
-            raise
-
-    def _rewind(self):
-        self._it = iter(self._edges.items())
-        self._curr = next(self._it)
-
-
-class _Level(object):
-    """Active and inactive nodes in a level.
-    """
-
-    def __init__(self):
-        self.active = set()
-        self.inactive = set()
-
-
-class _GlobalRelabelThreshold(object):
-    """Measurement of work before the global relabeling heuristic should be
-    applied.
-    """
-
-    def __init__(self, n, m, freq):
-        self._threshold = (n + m) / freq if freq else float('inf')
-        self._work = 0
-
-    def add_work(self, work):
-        self._work += work
-
-    def is_reached(self):
-        return self._work >= self._threshold
-
-    def clear_work(self):
-        self._work = 0
-
-
-def _build_residual_network(G, s, t, capacity):
-    """Build the residual network. Initialize the edge capacities so that they
-    correspond to a zero flow.
-    """
-    if G.is_multigraph():
-        raise nx.NetworkXError(
-                'MultiGraph and MultiDiGraph not supported (yet).')
-
-    if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
-    if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
-    if s == t:
-        raise nx.NetworkXError('source and sink are the same node')
-
-    R = nx.DiGraph()
-    R.add_nodes_from(G, excess=0)
-
-    # Extract edges with positive capacities. Self loops excluded.
-    edge_list = [(u, v, attr) for u, v, attr in G.edges_iter(data=True)
-                 if u != v and (capacity not in attr or attr[capacity] > 0)]
-    # Simulate infinity with twice the sum of the finite edge capacities or any
-    # positive value if the sum is zero. This allows the infinite-capacity
-    # edges to be distinguished for detecting unboundedness. If the maximum
-    # flow is finite, these edge still cannot appear in the minimum cut and
-    # thus guarantee correctness.
-    inf = float('inf')
-    inf = 2 * sum(attr[capacity] for u, v, attr in edge_list
-                  if capacity in attr and attr[capacity] != inf) or 1
-    if G.is_directed():
-        for u, v, attr in edge_list:
-            r = attr[capacity] if capacity in attr else inf
-            if not R.has_edge(u, v):
-                # Both (u, v) and (v, u) must be present in the residual
-                # network.
-                R.add_edge(u, v, capacity=r, flow=0)
-                R.add_edge(v, u, capacity=0, flow=0)
-            else:
-                # The edge (u, v) was added when (v, u) was visited.
-                R[u][v]['capacity'] = r
-    else:
-        for u, v, attr in edge_list:
-            # Add a pair of edges with equal residual capacities.
-            r = attr[capacity] if capacity in attr else inf
-            R.add_edge(u, v, capacity=r, flow=0)
-            R.add_edge(v, u, capacity=r, flow=0)
-
-    # Detect unboundedness by determining reachability of t from s using only
-    # infinite-capacity edges.
-    q = deque([s])
-    seen = set([s])
-    while q:
-        u = q.popleft()
-        for v, attr in R[u].items():
-            if attr['capacity'] == inf and v not in seen:
-                if v == t:
-                    raise nx.NetworkXUnbounded(
-                            'Infinite capacity path, flow unbounded above.')
-                seen.add(v)
-                q.append(v)
-
-    return R
 
 
 def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
@@ -142,7 +26,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     if global_relabel_freq < 0:
         raise nx.NetworkXError('global_relabel_freq must be nonnegative.')
 
-    R = _build_residual_network(G, s, t, capacity)
+    R = build_residual_network(G, s, t, capacity)
 
     def reverse_bfs(src):
         """Perform a reverse breadth-first search from src in the residual
@@ -173,12 +57,12 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     max_height = max(heights[u] for u in heights if u != s)
     heights[s] = n
 
-    grt = _GlobalRelabelThreshold(n, R.size(), global_relabel_freq)
+    grt = GlobalRelabelThreshold(n, R.size(), global_relabel_freq)
 
     # Initialize heights and 'current edge' data structures of the nodes.
     for u in R:
         R.node[u]['height'] = heights[u] if u in heights else n + 1
-        R.node[u]['curr_edge'] = _CurrentEdge(R[u])
+        R.node[u]['curr_edge'] = CurrentEdge(R[u])
 
     def push(u, v, flow):
         """Push flow units of flow from u to v.
@@ -196,7 +80,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
             push(s, u, flow)
 
     # Partition nodes into levels.
-    levels = [_Level() for i in range(2 * n - 1)]
+    levels = [Level() for i in range(2 * n - 1)]
     for u in R:
         if u != s and u != t:
             level = levels[R.node[u]['height']]
@@ -384,17 +268,6 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     return R
 
 
-def _build_flow_dict(G, R):
-    """Build a flow dictionary from a residual network.
-    """
-    flow_dict = {}
-    for u in G:
-        flow_dict[u] = dict((v, 0) for v in G[u])
-        flow_dict[u].update((v, R[u][v]['flow']) for v in R[u]
-                            if R[u][v]['flow'] > 0)
-    return flow_dict
-
-
 def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1):
     """Find a maximum single-commodity flow using the highest-label
     preflow-push algorithm.
@@ -465,7 +338,7 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1):
     (3.0, 2.0)
     """
     R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
-    return (R.node[t]['excess'], _build_flow_dict(G, R))
+    return (R.node[t]['excess'], build_flow_dict(G, R))
 
 
 def preflow_push_value(G, s, t, capacity='capacity', global_relabel_freq=1):
@@ -604,4 +477,4 @@ def preflow_push_flow(G, s, t, capacity='capacity', global_relabel_freq=1):
     2.0
     """
     R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
-    return _build_flow_dict(G, R)
+    return build_flow_dict(G, R)

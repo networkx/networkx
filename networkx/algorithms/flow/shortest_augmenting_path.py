@@ -10,9 +10,7 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 
 from collections import deque
 import networkx as nx
-from networkx.algorithms.flow.preflow_push import _CurrentEdge
-from networkx.algorithms.flow.preflow_push import _build_flow_dict
-from networkx.algorithms.flow.preflow_push import _build_residual_network
+from networkx.algorithms.flow.utils import *
 
 __all__ = ['shortest_augmenting_path', 'shortest_augmenting_path_value',
            'shortest_augmenting_path_flow']
@@ -21,7 +19,7 @@ __all__ = ['shortest_augmenting_path', 'shortest_augmenting_path_value',
 def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
     """Implementation of the shortest augmenting path algorithm.
     """
-    R = _build_residual_network(G, s, t, capacity)
+    R = build_residual_network(G, s, t, capacity)
 
     # Initialize heights of the nodes.
     heights = {t: 0}
@@ -45,7 +43,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
     # Initialize heights and 'current edge' data structures of the nodes.
     for u in R:
         R.node[u]['height'] = heights[u] if u in heights else n
-        R.node[u]['curr_edge'] = _CurrentEdge(R[u])
+        R.node[u]['curr_edge'] = CurrentEdge(R[u])
 
     # Initialize counts of nodes in each level.
     counts = [0] * (2 * n - 1)
@@ -235,7 +233,7 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', two_phase=False):
     (3.0, 2.0)
     """
     R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
-    return (R.node[t]['excess'], _build_flow_dict(G, R))
+    return (R.node[t]['excess'], build_flow_dict(G, R))
 
 
 def shortest_augmenting_path_value(G, s, t, capacity='capacity',
@@ -376,4 +374,4 @@ def shortest_augmenting_path_flow(G, s, t, capacity='capacity',
     2.0
     """
     R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
-    return _build_flow_dict(G, R)
+    return build_flow_dict(G, R)
