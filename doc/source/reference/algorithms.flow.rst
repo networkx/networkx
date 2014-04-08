@@ -4,16 +4,23 @@ Flows
 
 .. automodule:: networkx.algorithms.flow
 
-Ford-Fulkerson
---------------
+Maximum Flow
+------------
 .. autosummary::
    :toctree: generated/
 
    max_flow
    min_cut
+
+Ford-Fulkerson
+--------------
+.. autosummary::
+   :toctree: generated/
+
    ford_fulkerson
+   ford_fulkerson_value
    ford_fulkerson_flow
-   ford_fulkerson_flow_and_auxiliary
+   ford_fulkerson_residual
 
 Preflow-push
 ------------
@@ -23,6 +30,7 @@ Preflow-push
    preflow_push
    preflow_push_value
    preflow_push_flow
+   preflow_push_residual
 
 Network Simplex
 ---------------

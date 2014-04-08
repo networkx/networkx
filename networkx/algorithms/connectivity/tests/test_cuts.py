@@ -1,6 +1,10 @@
 from nose.tools import assert_equal, assert_true, assert_false, assert_raises
 import networkx as nx
 
+from networkx.algorithms.flow.preflow_push import preflow_push_residual
+from networkx.algorithms.flow.ford_fulkerson import ford_fulkerson_residual
+residual_funcs = [ford_fulkerson_residual, preflow_push_residual, None]
+
 # Tests for node and edge cutsets
 def _generate_no_biconnected(max_attempts=50):
     attempts = 0
@@ -20,32 +24,37 @@ def test_articulation_points():
     Ggen = _generate_no_biconnected()
     for i in range(5):
         G = next(Ggen)
-        cut = nx.minimum_node_cut(G)
-        assert_true(len(cut) == 1)
-        assert_true(cut.pop() in set(nx.articulation_points(G)))
+        for residual_func in residual_funcs:
+            cut = nx.minimum_node_cut(G, residual_func=residual_func)
+            assert_true(len(cut) == 1)
+            assert_true(cut.pop() in set(nx.articulation_points(G)))
 
 def test_brandes_erlebach_book():
     # Figure 1 chapter 7: Connectivity
     # http://www.informatik.uni-augsburg.de/thi/personen/kammer/Graph_Connectivity.pdf
     G = nx.Graph()
-    G.add_edges_from([(1,2),(1,3),(1,4),(1,5),(2,3),(2,6),(3,4),
-                    (3,6),(4,6),(4,7),(5,7),(6,8),(6,9),(7,8),
-                    (7,10),(8,11),(9,10),(9,11),(10,11)])
-    # edge cutsets
-    assert_equal(3, len(nx.minimum_edge_cut(G,1,11)))
-    edge_cut = nx.minimum_edge_cut(G)
-    assert_equal(2, len(edge_cut)) # Node 5 has only two edges
-    H = G.copy()
-    H.remove_edges_from(edge_cut)
-    assert_false(nx.is_connected(H))
-    # node cuts
-    assert_equal(set([6,7]), nx.minimum_st_node_cut(G,1,11))
-    assert_equal(set([6,7]), nx.minimum_node_cut(G,1,11))
-    node_cut = nx.minimum_node_cut(G)
-    assert_equal(2,len(node_cut))
-    H = G.copy()
-    H.remove_nodes_from(node_cut)
-    assert_false(nx.is_connected(H))
+    G.add_edges_from([(1, 2), (1, 3) ,(1, 4), (1, 5), (2, 3), (2, 6), (3, 4),
+                    (3, 6), (4, 6), (4, 7), (5, 7), (6, 8), (6, 9), (7, 8),
+                    (7, 10), (8, 11), (9, 10), (9, 11), (10, 11)])
+    for residual_func in residual_funcs:
+        # edge cutsets
+        assert_equal(3, len(nx.minimum_edge_cut(G, 1, 11, 
+                                                residual_func=residual_func)))
+        edge_cut = nx.minimum_edge_cut(G, residual_func=residual_func)
+        assert_equal(2, len(edge_cut)) # Node 5 has only two edges
+        H = G.copy()
+        H.remove_edges_from(edge_cut)
+        assert_false(nx.is_connected(H))
+        # node cuts
+        assert_equal(set([6,7]), nx.minimum_st_node_cut(G, 1, 11, 
+                                                    residual_func=residual_func))
+        assert_equal(set([6,7]), nx.minimum_node_cut(G, 1, 11, 
+                                                    residual_func=residual_func))
+        node_cut = nx.minimum_node_cut(G, residual_func=residual_func)
+        assert_equal(2,len(node_cut))
+        H = G.copy()
+        H.remove_nodes_from(node_cut)
+        assert_false(nx.is_connected(H))
 
 def test_white_harary_paper():
     # Figure 1b white and harary (2001)
@@ -60,63 +69,67 @@ def test_white_harary_paper():
     G.remove_node(G.order()-1)
     for i in range(7,10):
         G.add_edge(0,i)
-    # edge cuts
-    edge_cut = nx.minimum_edge_cut(G)
-    assert_equal(3, len(edge_cut))
-    H = G.copy()
-    H.remove_edges_from(edge_cut)
-    assert_false(nx.is_connected(H))
-    # node cuts
-    node_cut = nx.minimum_node_cut(G)
-    assert_equal(set([0]), node_cut)
-    H = G.copy()
-    H.remove_nodes_from(node_cut)
-    assert_false(nx.is_connected(H))
+    for residual_func in residual_funcs:
+        # edge cuts
+        edge_cut = nx.minimum_edge_cut(G, residual_func=residual_func)
+        assert_equal(3, len(edge_cut))
+        H = G.copy()
+        H.remove_edges_from(edge_cut)
+        assert_false(nx.is_connected(H))
+        # node cuts
+        node_cut = nx.minimum_node_cut(G, residual_func=residual_func)
+        assert_equal(set([0]), node_cut)
+        H = G.copy()
+        H.remove_nodes_from(node_cut)
+        assert_false(nx.is_connected(H))
 
 def test_petersen_cutset():
     G = nx.petersen_graph()
-    # edge cuts
-    edge_cut = nx.minimum_edge_cut(G)
-    assert_equal(3, len(edge_cut))
-    H = G.copy()
-    H.remove_edges_from(edge_cut)
-    assert_false(nx.is_connected(H))
-    # node cuts
-    node_cut = nx.minimum_node_cut(G)
-    assert_equal(3,len(node_cut))
-    H = G.copy()
-    H.remove_nodes_from(node_cut)
-    assert_false(nx.is_connected(H))
+    for residual_func in residual_funcs:
+        # edge cuts
+        edge_cut = nx.minimum_edge_cut(G, residual_func=residual_func)
+        assert_equal(3, len(edge_cut))
+        H = G.copy()
+        H.remove_edges_from(edge_cut)
+        assert_false(nx.is_connected(H))
+        # node cuts
+        node_cut = nx.minimum_node_cut(G, residual_func=residual_func)
+        assert_equal(3, len(node_cut))
+        H = G.copy()
+        H.remove_nodes_from(node_cut)
+        assert_false(nx.is_connected(H))
 
 def test_octahedral_cutset():
     G=nx.octahedral_graph()
-    # edge cuts
-    edge_cut = nx.minimum_edge_cut(G)
-    assert_equal(4, len(edge_cut))
-    H = G.copy()
-    H.remove_edges_from(edge_cut)
-    assert_false(nx.is_connected(H))
-    # node cuts
-    node_cut = nx.minimum_node_cut(G)
-    assert_equal(4,len(node_cut))
-    H = G.copy()
-    H.remove_nodes_from(node_cut)
-    assert_false(nx.is_connected(H))
+    for residual_func in residual_funcs:
+        # edge cuts
+        edge_cut = nx.minimum_edge_cut(G, residual_func=residual_func)
+        assert_equal(4, len(edge_cut))
+        H = G.copy()
+        H.remove_edges_from(edge_cut)
+        assert_false(nx.is_connected(H))
+        # node cuts
+        node_cut = nx.minimum_node_cut(G, residual_func=residual_func)
+        assert_equal(4, len(node_cut))
+        H = G.copy()
+        H.remove_nodes_from(node_cut)
+        assert_false(nx.is_connected(H))
 
 def test_icosahedral_cutset():
     G=nx.icosahedral_graph()
-    # edge cuts
-    edge_cut = nx.minimum_edge_cut(G)
-    assert_equal(5, len(edge_cut))
-    H = G.copy()
-    H.remove_edges_from(edge_cut)
-    assert_false(nx.is_connected(H))
-    # node cuts
-    node_cut = nx.minimum_node_cut(G)
-    assert_equal(5,len(node_cut))
-    H = G.copy()
-    H.remove_nodes_from(node_cut)
-    assert_false(nx.is_connected(H))
+    for residual_func in residual_funcs:
+        # edge cuts
+        edge_cut = nx.minimum_edge_cut(G, residual_func=residual_func)
+        assert_equal(5, len(edge_cut))
+        H = G.copy()
+        H.remove_edges_from(edge_cut)
+        assert_false(nx.is_connected(H))
+        # node cuts
+        node_cut = nx.minimum_node_cut(G, residual_func=residual_func)
+        assert_equal(5,len(node_cut))
+        H = G.copy()
+        H.remove_nodes_from(node_cut)
+        assert_false(nx.is_connected(H))
 
 def test_node_cutset_exception():
     G=nx.Graph()

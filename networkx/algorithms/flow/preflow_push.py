@@ -14,7 +14,8 @@ import networkx as nx
 
 __all__ = ['preflow_push',
            'preflow_push_value',
-           'preflow_push_flow']
+           'preflow_push_flow',
+           'preflow_push_residual']
 
 
 class _CurrentEdge(object):
@@ -86,6 +87,7 @@ def _build_residual_network(G, s, t, capacity):
         raise nx.NetworkXError('source and sink are the same node')
 
     R = nx.DiGraph()
+    R.graph['algorithm'] = 'preflow_push'
     R.add_nodes_from(G, excess=0)
 
     # Extract edges with positive capacities. Self loops excluded.
@@ -603,3 +605,68 @@ def preflow_push_flow(G, s, t, capacity='capacity', global_relabel_freq=1):
     """
     R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
     return _build_flow_dict(G, R)
+
+
+def preflow_push_residual(G, s, t, capacity='capacity', global_relabel_freq=1):
+    """Find a maximum single-commodity flow using the highest-label preflow-
+    push algorithm.
+
+    This function returns the residual network resulting after finding 
+    the maximum flow. The residual network has edges with two attributes:
+    capacity for the original capacity, and flow with the value of the
+    flow that went throught that edge. The edges that exhausted their
+    capacity during the maximum flow computation are removed.
+ 
+    This algorithm has a running time of `O(n^2 \sqrt{m})` for `n` nodes and
+    `m` edges.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Edges of the graph are expected to have an attribute called
+        'capacity'. If this attribute is not present, the edge is
+        considered to have infinite capacity.
+
+    s : node
+        Source node for the flow.
+
+    t : node
+        Sink node for the flow.
+
+    capacity : string
+        Edges of the graph G are expected to have an attribute capacity
+        that indicates how much flow the edge can support. If this
+        attribute is not present, the edge is considered to have
+        infinite capacity. Default value: 'capacity'.
+
+    global_relabel_freq : integer, float
+        Relative frequency of applying the global relabeling heuristic to speed
+        up the algorithm. If it is None, the heuristic is disabled. Default
+        value: 1.
+
+    Returns
+    -------
+    Residual : NetworkX Graph
+        The residual network after computing the maximum flow.
+
+    Raises
+    ------
+    NetworkXError
+        The algorithm does not support MultiGraph and MultiDiGraph. If
+        the input graph is an instance of one of these two classes, a
+        NetworkXError is raised.
+
+    NetworkXUnbounded
+        If the graph has a path of infinite capacity, the value of a
+        feasible flow on the graph is unbounded above and the function
+        raises a NetworkXUnbounded.
+
+
+    """ 
+    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
+    # For playing nice with cut algorithms, we need to remove all 
+    # edges that exhausted their capacity in the flow compuation.
+    R.remove_edges_from([(u, v) for u, v, d in R.edges(data=True)
+                            if d['capacity'] - d['flow'] == 0])
+    return R
+

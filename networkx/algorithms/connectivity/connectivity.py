@@ -5,6 +5,12 @@ Flow based connectivity algorithms
 import itertools
 import networkx as nx
 
+from networkx.algorithms.flow import ford_fulkerson_value
+from networkx.algorithms.flow import preflow_push_value
+# Define the default maximum flow function to use in all flow based
+# connectivity algorithms. 
+default_flow_func = ford_fulkerson_value
+
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
 __all__ = [ 'average_node_connectivity',
@@ -15,7 +21,7 @@ __all__ = [ 'average_node_connectivity',
             'all_pairs_node_connectivity_matrix',
             ]
 
-def average_node_connectivity(G):
+def average_node_connectivity(G, flow_func=None):
     r"""Returns the average connectivity of a graph G.
 
     The average connectivity `\bar{\kappa}` of a graph G is the average
@@ -31,6 +37,15 @@ def average_node_connectivity(G):
     G : NetworkX graph
         Undirected graph
 
+    flow_func : Maximum Flow function (default=None)
+        A function for computing the maximum flow among a pair of nodes 
+        in a capacited graph. The function has to accept three parameters:
+        a Graph or Digraph, a source node, and a target node. And return 
+        the maximum flow value. If flow_func is None the default maximum 
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson_value`) 
+        is used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
+
     Returns
     -------
     K : float
@@ -42,8 +57,9 @@ def average_node_connectivity(G):
     node_connectivity
     local_edge_connectivity
     edge_connectivity
-    max_flow
-    ford_fulkerson
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
@@ -61,7 +77,8 @@ def average_node_connectivity(G):
     den = 0.
     for u,v in iter_func(G, 2):
         den += 1
-        num += local_node_connectivity(G, u, v, aux_digraph=H, mapping=mapping)
+        num += local_node_connectivity(G, u, v, flow_func=flow_func, 
+                                        aux_digraph=H, mapping=mapping)
 
     if den == 0: # Null Graph
         return 0
@@ -113,7 +130,8 @@ def _aux_digraph_node_connectivity(G, nodelist=None):
     D.add_edges_from(edges, capacity=1)
     return D, mapping
 
-def local_node_connectivity(G, s, t, aux_digraph=None, mapping=None):
+def local_node_connectivity(G, s, t, flow_func=None, aux_digraph=None,
+                            mapping=None):
     r"""Computes local node connectivity for nodes s and t.
 
     Local node connectivity for two non adjacent nodes s and t is the
@@ -136,6 +154,15 @@ def local_node_connectivity(G, s, t, aux_digraph=None, mapping=None):
 
     t : node
         Target node
+
+    flow_func : Maximum Flow function (default=None)
+        A function for computing the maximum flow among a pair of nodes 
+        in a capacited graph. The function has to accept three parameters:
+        a Graph or Digraph, a source node, and a target node. And return 
+        the maximum flow value. If flow_func is None the default maximum 
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson_value`) is 
+        used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
 
     aux_digraph : NetworkX DiGraph (default=None)
         Auxiliary digraph to compute flow based node connectivity. If None
@@ -160,8 +187,8 @@ def local_node_connectivity(G, s, t, aux_digraph=None, mapping=None):
     Notes
     -----
     This is a flow based implementation of node connectivity. We compute the
-    maximum flow using the Ford and Fulkerson algorithm on an auxiliary digraph
-    build from the original input graph:
+    maximum flow using, by default, the Ford and Fulkerson algorithm on an 
+    auxiliary digraph build from the original input graph:
 
     For an undirected graph G having `n` nodes and `m` edges we derive a
     directed graph D with 2n nodes and 2m+n arcs by replacing each
@@ -187,8 +214,9 @@ def local_node_connectivity(G, s, t, aux_digraph=None, mapping=None):
     all_pairs_node_connectivity_matrix
     local_edge_connectivity
     edge_connectivity
-    max_flow
-    ford_fulkerson
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
@@ -197,13 +225,13 @@ def local_node_connectivity(G, s, t, aux_digraph=None, mapping=None):
         Notes in Computer Science, Volume 3418, Springer-Verlag, 2005.
         http://www.informatik.uni-augsburg.de/thi/personen/kammer/Graph_Connectivity.pdf
     """
+    if flow_func is None:
+        flow_func = default_flow_func
     if aux_digraph is None or mapping is None:
-        H, mapping = _aux_digraph_node_connectivity(G)
-    else:
-        H = aux_digraph
-    return nx.max_flow(H,'%sB' % mapping[s], '%sA' % mapping[t])
+        aux_digraph, mapping = _aux_digraph_node_connectivity(G)
+    return flow_func(aux_digraph, '%sB' % mapping[s], '%sA' % mapping[t])
 
-def node_connectivity(G, s=None, t=None):
+def node_connectivity(G, s=None, t=None, flow_func=None):
     r"""Returns node connectivity for a graph or digraph G.
 
     Node connectivity is equal to the minimum number of nodes that
@@ -214,7 +242,7 @@ def node_connectivity(G, s=None, t=None):
 
     This is a flow based implementation. The algorithm is based in
     solving a number of max-flow problems (ie local st-node connectivity,
-    see local_node_connectivity) to determine the capacity of the
+    see :func:`local_node_connectivity`) to determine the capacity of the
     minimum cut on an auxiliary directed network that corresponds to the
     minimum node cut of G. It handles both directed and undirected graphs.
 
@@ -228,6 +256,15 @@ def node_connectivity(G, s=None, t=None):
 
     t : node
         Target node. Optional (default=None)
+
+    flow_func : Maximum Flow function (default=None)
+        A function for computing the maximum flow among a pair of nodes 
+        in a capacited graph. The function has to accept three parameters:
+        a Graph or Digraph, a source node, and a target node. And return 
+        the maximum flow value. If flow_func is None the default maximum 
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson_value`)
+        is used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
 
     Returns
     -------
@@ -250,10 +287,10 @@ def node_connectivity(G, s=None, t=None):
     algorithm works by solving `O((n-\delta-1+\delta(\delta-1)/2)` max-flow
     problems on an auxiliary digraph. Where `\delta` is the minimum degree
     of G. For details about the auxiliary digraph and the computation of
-    local node connectivity see local_node_connectivity.
+    local node connectivity see :func:`local_node_connectivity`.
 
-    This implementation is based on algorithm 11 in [1]_. We use the Ford
-    and Fulkerson algorithm to compute max flow (see ford_fulkerson).
+    This implementation is based on algorithm 11 in [1]_. The Ford-Fulkerson
+    algorithm is used by default to compute max flow (see ford_fulkerson).
 
     See also
     --------
@@ -261,8 +298,9 @@ def node_connectivity(G, s=None, t=None):
     all_pairs_node_connectivity_matrix
     local_edge_connectivity
     edge_connectivity
-    max_flow
-    ford_fulkerson
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
@@ -300,16 +338,16 @@ def node_connectivity(G, s=None, t=None):
     H, mapping = _aux_digraph_node_connectivity(G)
     # compute local node connectivity with all non-neighbors nodes
     for w in set(G) - set(neighbors(v)) - set([v]):
-        K = min(K, local_node_connectivity(G, v, w,
+        K = min(K, local_node_connectivity(G, v, w, flow_func=flow_func,
                                             aux_digraph=H, mapping=mapping))
     # Same for non adjacent pairs of neighbors of v
     for x,y in iter_func(neighbors(v), 2):
         if y in G[x]: continue
-        K = min(K, local_node_connectivity(G, x, y,
+        K = min(K, local_node_connectivity(G, x, y, flow_func=flow_func,
                                             aux_digraph=H, mapping=mapping))
     return K
 
-def all_pairs_node_connectivity_matrix(G, nodelist=None):
+def all_pairs_node_connectivity_matrix(G, nodelist=None, flow_func=None):
     """Return a numpy 2d ndarray with node connectivity between all pairs
     of nodes.
 
@@ -320,6 +358,15 @@ def all_pairs_node_connectivity_matrix(G, nodelist=None):
 
     nodelist: list
         Ordering of nodes for rows and columns of matrix
+
+    flow_func : Maximum Flow function (default=None)
+        A function for computing the maximum flow among a pair of nodes 
+        in a capacited graph. The function has to accept three parameters:
+        a Graph or Digraph, a source node, and a target node. And return 
+        the maximum flow value. If flow_func is None the default maximum 
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson`) is 
+        used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
 
     Returns
     -------
@@ -332,8 +379,9 @@ def all_pairs_node_connectivity_matrix(G, nodelist=None):
     node_connectivity
     local_edge_connectivity
     edge_connectivity
-    max_flow
-    ford_fulkerson
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
     """
     import numpy as np
     if nodelist is None:
@@ -351,11 +399,13 @@ def all_pairs_node_connectivity_matrix(G, nodelist=None):
 
     if G.is_directed():
         for u, v in itertools.permutations(G, 2):
-            K = local_node_connectivity(G, u, v, aux_digraph=D, mapping=mapping)
+            K = local_node_connectivity(G, u, v, flow_func=flow_func, 
+                                        aux_digraph=D, mapping=mapping)
             M[mapping[u],mapping[v]] = K
     else:
         for u, v in itertools.combinations(G, 2):
-            K = local_node_connectivity(G, u, v, aux_digraph=D, mapping=mapping)
+            K = local_node_connectivity(G, u, v, flow_func=flow_func,
+                                        aux_digraph=D, mapping=mapping)
             M[mapping[u],mapping[v]] = M[mapping[v],mapping[u]] = K
 
     return M
@@ -387,7 +437,7 @@ def _aux_digraph_edge_connectivity(G):
         nx.set_edge_attributes(D, 'capacity', capacity)
         return D
 
-def local_edge_connectivity(G, u, v, aux_digraph=None):
+def local_edge_connectivity(G, u, v, flow_func=None, aux_digraph=None):
     r"""Returns local edge connectivity for nodes s and t in G.
 
     Local edge connectivity for two nodes s and t is the minimum number
@@ -410,6 +460,15 @@ def local_edge_connectivity(G, u, v, aux_digraph=None):
     t : node
         Target node
 
+    flow_func : Maximum Flow function (default=None)
+        A function for computing the maximum flow among a pair of nodes 
+        in a capacited graph. The function has to accept three parameters:
+        a Graph or Digraph, a source node, and a target node. And return 
+        the maximum flow value. If flow_func is None the default maximum 
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson`) is 
+        used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
+
     aux_digraph : NetworkX DiGraph (default=None)
         Auxiliary digraph to compute flow based edge connectivity. If None
         the auxiliary digraph is build.
@@ -430,8 +489,8 @@ def local_edge_connectivity(G, u, v, aux_digraph=None):
     Notes
     -----
     This is a flow based implementation of edge connectivity. We compute the
-    maximum flow using the Ford and Fulkerson algorithm on an auxiliary digraph
-    build from the original graph:
+    maximum flow using, by default, the Ford and Fulkerson algorithm on an 
+    auxiliary digraph build from the original graph:
 
     If the input graph is undirected, we replace each edge (u,v) with
     two reciprocal arcs `(u,v)` and `(v,u)` and then we set the attribute
@@ -448,21 +507,22 @@ def local_edge_connectivity(G, u, v, aux_digraph=None):
     local_node_connectivity
     node_connectivity
     edge_connectivity
-    max_flow
-    ford_fulkerson
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
     .. [1] Abdol-Hossein Esfahanian. Connectivity Algorithms.
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
     """
+    if flow_func is None:
+        flow_func = default_flow_func
     if aux_digraph is None:
-        H = _aux_digraph_edge_connectivity(G)
-    else:
-        H = aux_digraph
-    return nx.max_flow(H, u, v)
+        aux_digraph = _aux_digraph_edge_connectivity(G)
+    return flow_func(aux_digraph, u, v)
 
-def edge_connectivity(G, s=None, t=None):
+def edge_connectivity(G, s=None, t=None, flow_func=None):
     r"""Returns the edge connectivity of the graph or digraph G.
 
     The edge connectivity is equal to the minimum number of edges that
@@ -488,6 +548,15 @@ def edge_connectivity(G, s=None, t=None):
     t : node
         Target node. Optional (default=None)
 
+    flow_func : Maximum Flow function (default=None)
+        A function for computing the maximum flow among a pair of nodes 
+        in a capacited graph. The function has to accept three parameters:
+        a Graph or Digraph, a source node, and a target node. And return 
+        the maximum flow value. If flow_func is None the default maximum 
+        flow function (:func:`networkx.algorithms.flow.ford_fulkerson`) is 
+        used. An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_value`.
+
     Returns
     -------
     K : integer
@@ -506,7 +575,7 @@ def edge_connectivity(G, s=None, t=None):
     This is a flow based implementation of global edge connectivity. For
     undirected graphs the algorithm works by finding a 'small' dominating
     set of nodes of G (see algorithm 7 in [1]_ ) and computing local max flow
-    (see local_edge_connectivity) between an arbitrary node in the dominating
+    (see :func:`local_edge_connectivity`) between an arbitrary node in the dominating
     set and the rest of nodes in it. This is an implementation of
     algorithm 6 in [1]_ .
 
@@ -519,8 +588,9 @@ def edge_connectivity(G, s=None, t=None):
     local_node_connectivity
     node_connectivity
     local_edge_connectivity
-    max_flow
-    ford_fulkerson
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
@@ -533,7 +603,7 @@ def edge_connectivity(G, s=None, t=None):
             raise nx.NetworkXError('node %s not in graph' % s)
         if t not in G:
             raise nx.NetworkXError('node %s not in graph' % t)
-        return local_edge_connectivity(G, s, t)
+        return local_edge_connectivity(G, s, t, flow_func=flow_func)
     # Global edge connectivity
     if G.is_directed():
         # Algorithm 8 in [1]
@@ -547,11 +617,13 @@ def edge_connectivity(G, s=None, t=None):
         n = len(nodes)
         for i in range(n):
             try:
-                L = min(L, local_edge_connectivity(G, nodes[i],
-                                                    nodes[i+1], aux_digraph=H))
+                L = min(L, local_edge_connectivity(G, nodes[i], nodes[i+1],
+                                                    flow_func=flow_func,
+                                                    aux_digraph=H))
             except IndexError: # last node!
-                L = min(L, local_edge_connectivity(G, nodes[i],
-                                                    nodes[0], aux_digraph=H))
+                L = min(L, local_edge_connectivity(G, nodes[i], nodes[0],
+                                                    flow_func=flow_func,
+                                                    aux_digraph=H))
         return L
     else: # undirected
         # Algorithm 6 in [1]
@@ -572,5 +644,7 @@ def edge_connectivity(G, s=None, t=None):
             # thus we return min degree
             return L
         for w in D:
-            L = min(L, local_edge_connectivity(G, v, w, aux_digraph=H))
+            L = min(L, local_edge_connectivity(G, v, w, 
+                                                flow_func=flow_func,
+                                                aux_digraph=H))
         return L

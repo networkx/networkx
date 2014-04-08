@@ -7,9 +7,14 @@ Flow based cut algorithms
 import itertools
 from operator import itemgetter
 import networkx as nx
-from networkx.algorithms.connectivity.connectivity import \
-    _aux_digraph_node_connectivity, _aux_digraph_edge_connectivity, \
-    node_connectivity
+from networkx.algorithms.connectivity.connectivity import (
+    _aux_digraph_node_connectivity, _aux_digraph_edge_connectivity)
+
+from networkx.algorithms.flow.preflow_push import preflow_push_residual
+from networkx.algorithms.flow.ford_fulkerson import ford_fulkerson_residual
+# Define the default maximum flow function to compute the residual network 
+# for use in the cut algorithms
+default_residual_func = ford_fulkerson_residual
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -19,7 +24,7 @@ __all__ = [ 'minimum_st_node_cut',
             'minimum_edge_cut',
             ]
 
-def minimum_st_edge_cut(G, s, t, capacity='capacity'):
+def minimum_st_edge_cut(G, s, t, capacity='capacity', residual_func=None):
     """Returns the edges of the cut-set of a minimum (s, t)-cut.
 
     We use the max-flow min-cut theorem, i.e., the capacity of a minimum
@@ -43,6 +48,16 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity'):
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
+
+    residual_func : Maximum Flow function (default=None)
+        A function for computing the maximum flow among a pair of nodes 
+        in a capacited graph. The function has to accept three parameters:
+        a Graph or Digraph, a source node, and a target node. And return 
+        the residual network after computing the maximum flow. If 
+        residual_func is None the default maximum flow function 
+        (:func:`networkx.algorithms.flow.ford_fulkerson_residual`) is used. 
+        An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_residual`.
 
     Returns
     -------
@@ -70,25 +85,29 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity'):
     [('c', 'y'), ('x', 'b')]
     >>> nx.min_cut(G, 'x', 'y')
     3.0
+
     """
+    if residual_func is None:
+        residual_func = default_residual_func
     try:
-        flow, H = nx.ford_fulkerson_flow_and_auxiliary(G, s, t, capacity=capacity)
+        # We assume that the edges that exhausted their capacity during the
+        # maximum flow computation have been removed.
+        H = residual_func(G, s, t, capacity=capacity)
         cutset = set()
         # Compute reachable nodes from source in the residual network
-        reachable = set(nx.single_source_shortest_path(H,s))
+        reachable = set(nx.single_source_shortest_path(H, s))
         # And unreachable nodes
-        others = set(H) - reachable # - set([s])
+        others = set(H) - reachable
         # Any edge in the original network linking these two partitions
         # is part of the edge cutset
         for u, nbrs in ((n, G[n]) for n in reachable):
             cutset.update((u,v) for v in nbrs if v in others)
         return cutset
     except nx.NetworkXUnbounded:
-        # Should we raise any other exception or just let ford_fulkerson
-        # propagate nx.NetworkXUnbounded ?
         raise nx.NetworkXUnbounded("Infinite capacity path, no minimum cut.")
 
-def minimum_st_node_cut(G, s, t, aux_digraph=None, mapping=None):
+def minimum_st_node_cut(G, s, t, residual_func=None, 
+                        aux_digraph=None, mapping=None):
     r"""Returns a set of nodes of minimum cardinality that disconnect source
     from target in G.
 
@@ -104,6 +123,24 @@ def minimum_st_node_cut(G, s, t, aux_digraph=None, mapping=None):
 
     t : node
         Target node.
+
+    residual_func : Maximum Flow function (default=None)
+        A function for computing the maximum flow among a pair of nodes 
+        in a capacited graph. The function has to accept three parameters:
+        a Graph or Digraph, a source node, and a target node. And return 
+        the residual network after computing the maximum flow. If 
+        residual_func is None the default maximum flow function 
+        (:func:`networkx.algorithms.flow.ford_fulkerson_residual`) is used.
+        An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_residual`.
+
+    aux_digraph : NetworkX DiGraph (default=None)
+        Auxiliary digraph to compute flow based cuts. If None 
+        the auxiliary digraph is build.
+
+    mapping : dict (default=None)
+        Dictionary with a mapping of node names in G and in the 
+        auxiliary digraph.
 
     Returns
     -------
@@ -148,12 +185,13 @@ def minimum_st_node_cut(G, s, t, aux_digraph=None, mapping=None):
         H, mapping = _aux_digraph_node_connectivity(G)
     else:
         H = aux_digraph
-    edge_cut = minimum_st_edge_cut(H, '%sB' % mapping[s], '%sA' % mapping[t])
+    edge_cut = minimum_st_edge_cut(H, '%sB' % mapping[s], '%sA' % mapping[t],
+                                    residual_func=residual_func)
     # Each node in the original graph maps to two nodes of the auxiliary graph
     node_cut = set(H.node[node]['id'] for edge in edge_cut for node in edge)
-    return node_cut - set([s,t])
+    return node_cut - set([s, t])
 
-def minimum_node_cut(G, s=None, t=None):
+def minimum_node_cut(G, s=None, t=None, residual_func=None):
     r"""Returns a set of nodes of minimum cardinality that disconnects G.
 
     If source and target nodes are provided, this function returns the
@@ -170,6 +208,16 @@ def minimum_node_cut(G, s=None, t=None):
 
     t : node
         Target node. Optional (default=None)
+
+    residual_func : Maximum Flow function (default=None)
+        A function for computing the maximum flow among a pair of nodes 
+        in a capacited graph. The function has to accept three parameters:
+        a Graph or Digraph, a source node, and a target node. And return 
+        the residual network after computing the maximum flow. If 
+        residual_func is None the default maximum flow function 
+        (:func:`networkx.algorithms.flow.ford_fulkerson_residual`) is used. 
+        An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_residual`.
 
     Returns
     -------
@@ -260,7 +308,7 @@ def minimum_node_cut(G, s=None, t=None):
             min_cut = this_cut
     return min_cut
 
-def minimum_edge_cut(G, s=None, t=None):
+def minimum_edge_cut(G, s=None, t=None, residual_func=None):
     r"""Returns a set of edges of minimum cardinality that disconnects G.
 
     If source and target nodes are provided, this function returns the
@@ -277,6 +325,16 @@ def minimum_edge_cut(G, s=None, t=None):
 
     t : node
         Target node. Optional (default=None)
+
+    residual_func : Maximum Flow function (default=None)
+        A function for computing the maximum flow among a pair of nodes 
+        in a capacited graph. The function has to accept three parameters:
+        a Graph or Digraph, a source node, and a target node. And return 
+        the residual network after computing the maximum flow. If 
+        residual_func is None the default maximum flow function 
+        (:func:`networkx.algorithms.flow.ford_fulkerson_residual`) is used. 
+        An alternative function you can use is 
+        :func:`networkx.algorithms.flow.preflow_push_residual`.
 
     Returns
     -------
@@ -306,16 +364,18 @@ def minimum_edge_cut(G, s=None, t=None):
     nodes in it. This is an implementation of algorithm 6 in [1]_.
 
     For directed graphs, the algorithm does n calls to the max flow function.
-    This is an implementation of algorithm 8 in [1]_. We use the Ford and
-    Fulkerson algorithm to compute max flow (see ford_fulkerson).
+    This is an implementation of algorithm 8 in [1]_. We use, by default, the 
+    Ford and Fulkerson algorithm to compute max flow (see 
+    :func:`networkx.algorithms.flow.ford_fulkerson`).
 
     See also
     --------
     node_connectivity
     edge_connectivity
     minimum_node_cut
-    max_flow
-    ford_fulkerson
+    :func:`networkx.algorithms.flow.max_flow`
+    :func:`networkx.algorithms.flow.ford_fulkerson`
+    :func:`networkx.algorithms.flow.preflow_push_value`
 
     References
     ----------
@@ -347,11 +407,13 @@ def minimum_edge_cut(G, s=None, t=None):
         n = len(nodes)
         for i in range(n):
             try:
-                this_cut = minimum_st_edge_cut(H, nodes[i], nodes[i+1])
+                this_cut = minimum_st_edge_cut(H, nodes[i], nodes[i+1], 
+                                                residual_func=residual_func)
                 if len(this_cut) <= len(min_cut):
                     min_cut = this_cut
             except IndexError: # Last node!
-                this_cut = minimum_st_edge_cut(H, nodes[i], nodes[0])
+                this_cut = minimum_st_edge_cut(H, nodes[i], nodes[0],
+                                                residual_func=residual_func)
                 if len(this_cut) <= len(min_cut):
                     min_cut = this_cut
         return min_cut
@@ -376,7 +438,7 @@ def minimum_edge_cut(G, s=None, t=None):
             # with minimum degree
             return min_cut
         for w in D:
-            this_cut = minimum_st_edge_cut(H, v, w)
+            this_cut = minimum_st_edge_cut(H, v, w, residual_func=residual_func)
             if len(this_cut) <= len(min_cut):
                 min_cut = this_cut
         return min_cut
