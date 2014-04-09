@@ -5,8 +5,8 @@ Connectivity
 .. automodule:: networkx.algorithms.connectivity
 
 
-Connectivity functions
-----------------------
+Flow-based Connectivity
+-----------------------
 .. automodule:: networkx.algorithms.connectivity.connectivity
 .. autosummary::
    :toctree: generated/
@@ -18,8 +18,8 @@ Connectivity functions
    edge_connectivity
    all_pairs_node_connectivity_matrix
 
-Cut functions
--------------
+Flow-based Minimum Cuts
+-----------------------
 .. automodule:: networkx.algorithms.connectivity.cuts
 .. autosummary::
    :toctree: generated/
@@ -28,4 +28,12 @@ Cut functions
    minimum_node_cut
    minimum_st_edge_cut
    minimum_edge_cut
+
+Stoer-Wagner minimum cut
+------------------------
+.. automodule:: networkx.algorithms.connectivity.stoer_wagner
+.. autosummary::
+   :toctree: generated/
+
+   stoer_wagner
 
