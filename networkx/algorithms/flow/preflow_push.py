@@ -126,7 +126,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
                 activate(v)
                 if R.node[u]['excess'] == 0:
                     # The node has become inactive.
-                    is_inactive = True
+                    levels[height].inactive.add(u)
                     break
             try:
                 curr_edge.move_to_next()
@@ -138,17 +138,13 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
                     # Although the node is still active, with a height at least
                     # n, it is now known to be on the s side of the minimum
                     # s-t cut. Stop processing it until phase 2.
-                    is_inactive = False
+                    levels[height].active.add(u)
                     break
                 # The first relabel operation after global relabeling may not
                 # increase the height of the node since the 'current edge' data
                 # structure is not rewound. Use height instead of (height - 1)
                 # in case other active nodes at the same level are missed.
                 next_height = height
-        if is_inactive:
-            levels[height].inactive.add(u)
-        else:
-            levels[height].active.add(u)
         R.node[u]['height'] = height
         return next_height
 
@@ -342,8 +338,8 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1):
 
 
 def preflow_push_value(G, s, t, capacity='capacity', global_relabel_freq=1):
-    """Find a maximum single-commodity flow using the highest-label preflow-
-    push algorithm.
+    """Find a maximum single-commodity flow using the highest-label
+    preflow-push algorithm.
 
     This algorithm has a running time of `O(n^2 \sqrt{m})` for `n` nodes and
     `m` edges.
@@ -411,8 +407,8 @@ def preflow_push_value(G, s, t, capacity='capacity', global_relabel_freq=1):
 
 
 def preflow_push_flow(G, s, t, capacity='capacity', global_relabel_freq=1):
-    """Find a maximum single-commodity flow using the highest-label preflow-
-    push algorithm.
+    """Find a maximum single-commodity flow using the highest-label
+    preflow-push algorithm.
 
     This algorithm has a running time of `O(n^2 \sqrt{m})` for `n` nodes and
     `m` edges.

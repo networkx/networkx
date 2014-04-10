@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Shortest augmenting path algorithm for maximum flow problems.
+Edmonds-Karp algorithm for maximum flow problems.
 """
 
 __author__ = """ysitu <ysitu@users.noreply.github.com>"""
@@ -11,46 +11,13 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 from collections import deque
 import networkx as nx
 from networkx.algorithms.flow.utils import *
-from networkx.algorithms.flow.edmonds_karp import edmonds_karp_core
 
-__all__ = ['shortest_augmenting_path', 'shortest_augmenting_path_value',
-           'shortest_augmenting_path_flow']
+__all__ = ['edmonds_karp', 'edmonds_karp_value', 'edmonds_karp_flow']
 
 
-def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
-    """Implementation of the shortest augmenting path algorithm.
+def edmonds_karp_core(R, s, t):
+    """Implementation of the Edmonds-Karp algorithm.
     """
-    R = build_residual_network(G, s, t, capacity)
-
-    # Initialize heights of the nodes.
-    heights = {t: 0}
-    q = deque([(t, 0)])
-    while q:
-        u, height = q.popleft()
-        height += 1
-        for v, u, attr in R.in_edges_iter(u, data=True):
-            if v not in heights and attr['flow'] < attr['capacity']:
-                heights[v] = height
-                q.append((v, height))
-
-    if s not in heights:
-        # t is not reachable from s in the residual network. The maximum flow
-        # must be zero.
-        return R
-
-    n = len(G)
-    m = R.size() / 2
-
-    # Initialize heights and 'current edge' data structures of the nodes.
-    for u in R:
-        R.node[u]['height'] = heights[u] if u in heights else n
-        R.node[u]['curr_edge'] = CurrentEdge(R[u])
-
-    # Initialize counts of nodes in each level.
-    counts = [0] * (2 * n - 1)
-    for u in R:
-        counts[R.node[u]['height']] += 1
-
     inf = float('inf')
     def augment(path):
         """Augment flow along a path from s to t.
@@ -74,78 +41,73 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
         R.node[s]['excess'] -= flow
         R.node[t]['excess'] += flow
 
-    def relabel(u):
-        """Relabel a node to create an admissible edge.
-        """
-        height = n - 1
-        for v, attr in R[u].items():
-            if attr['flow'] < attr['capacity']:
-                height = min(height, R.node[v]['height'])
-        return height + 1
-
-    # Phase 1: Look for shortest augmenting paths using depth-first search.
-
-    path = [s]
-    u = s
-    d = n if not two_phase else int(min(m ** 0.5, 2 * n ** (2. / 3)))
-    done = R.node[s]['height'] >= d
-    while not done:
-        height = R.node[u]['height']
-        curr_edge = R.node[u]['curr_edge']
-        # Depth-first search for the next node on the path to t.
-        while True:
-            v, attr = curr_edge.get()
-            if (height == R.node[v]['height'] + 1 and
-                attr['flow'] < attr['capacity']):
-                # Advance to the next node following an admissible edge.
-                path.append(v)
-                u = v
-                break
-            try:
-                curr_edge.move_to_next()
-            except StopIteration:
-                counts[height] -= 1
-                if counts[height] == 0:
-                    # Gap heuristic: If relabeling causes a level to become
-                    # empty, a minimum cut has been identified. The algorithm
-                    # can now be terminated.
-                    return R
-                height = relabel(u)
-                if u == s and height >= d:
-                    if not two_phase:
-                        # t is disconnected from s in the residual network. No
-                        # more augmenting paths exist.
-                        return R
-                    else:
-                        # t is at least d steps away from s. End of phase 1.
-                        done = True
-                        break
-                counts[height] += 1
-                R.node[u]['height'] = height
-                if u != s:
-                    # After relabeling, the last edge on the path is no longer
-                    # admissible. Retreat one step to look for an alternative.
-                    path.pop()
-                    u = path[-1]
+    # Look for shortest augmenting paths using breadth-first search.
+    while True:
+        pred = {s: None}
+        q_s = deque([s])
+        succ = {t: None}
+        q_t = deque([t])
+        found = False
+        # At termination of this loop, v is a node on the shortest s-t path.
+        while q_s or q_t:
+            if q_s:
+                u = q_s.popleft()
+                for v, attr in R[u].items():
+                    if v not in pred and attr['flow'] < attr['capacity']:
+                        pred[v] = u
+                        if v in succ:
+                            found = True
+                            break
+                        q_s.append(v)
+                if found:
                     break
-        if u == t:
-            # t is reached. Augment flow along the path and reset it for a new
-            # depth-first search.
-            augment(path)
-            path = [s]
-            u = s
+            if q_t:
+                u = q_t.popleft()
+                for v, u, attr in R.in_edges_iter(u, data=True):
+                    if v not in succ and attr['flow'] < attr['capacity']:
+                        succ[v] = u
+                        if v in pred:
+                            found = True
+                            break
+                        q_t.append(v)
+                if found:
+                    break
+        if not found:
+            # No augmenting path found.
+            return
+        path = [v]
+        # Trace a path from s to v.
+        u = v
+        while True:
+            u = pred[u]
+            path.append(u)
+            if u == s:
+                break
+        path.reverse()
+        # Trace a path from v to u.
+        u = v
+        while True:
+            u = succ[u]
+            if u is None:
+                break
+            path.append(u)
+        augment(path)
 
-    # Phase 2: Look for shortest augmenting paths using breadth-first search.
+
+def edmonds_karp_impl(G, s, t, capacity):
+    """Implementation of the Edmonds-Karp algorithm.
+    """
+    R = build_residual_network(G, s, t, capacity)
+
     edmonds_karp_core(R, s, t)
 
     return R
 
 
-def shortest_augmenting_path(G, s, t, capacity='capacity', two_phase=False):
-    """Find a maximum single-commodity flow using the shortest augmenting path
-    algorithm.
+def edmonds_karp(G, s, t, capacity='capacity'):
+    """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
 
-    This algorithm has a running time of `O(n^2 m)` for `n` nodes and `m`
+    This algorithm has a running time of `O(n m^2)` for `n` nodes and `m`
     edges.
 
 
@@ -167,11 +129,6 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', two_phase=False):
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
-
-    two_phase : bool
-        If True, a two-phase variant is used. The two-phase variant improves
-        the running time on unit-capacity networks from `O(nm)` to
-        `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
 
     Returns
     -------
@@ -206,20 +163,18 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', two_phase=False):
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow, F = nx.shortest_augmenting_path(G, 'x', 'y')
+    >>> flow, F = nx.edmonds_karp(G, 'x', 'y')
     >>> flow, F['a']['c']
     (3.0, 2.0)
     """
-    R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
+    R = edmonds_karp_impl(G, s, t, capacity)
     return (R.node[t]['excess'], build_flow_dict(G, R))
 
 
-def shortest_augmenting_path_value(G, s, t, capacity='capacity',
-                                   two_phase=False):
-    """Find a maximum single-commodity flow using the shortest augmenting path
-    algorithm.
+def edmonds_karp_value(G, s, t, capacity='capacity'):
+    """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
 
-    This algorithm has a running time of `O(n^2 m)` for `n` nodes and `m`
+    This algorithm has a running time of `O(n m^2)` for `n` nodes and `m`
     edges.
 
 
@@ -241,11 +196,6 @@ def shortest_augmenting_path_value(G, s, t, capacity='capacity',
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
-
-    two_phase : bool
-        If True, a two-phase variant is used. The two-phase variant improves
-        the running time on unit-capacity networks from `O(nm)` to
-        `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
 
     Returns
     -------
@@ -276,20 +226,18 @@ def shortest_augmenting_path_value(G, s, t, capacity='capacity',
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow = nx.shortest_augmenting_path_value(G, 'x', 'y')
+    >>> flow = nx.edmonds_karp_value(G, 'x', 'y')
     >>> flow
     3.0
     """
-    R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
+    R = edmonds_karp_impl(G, s, t, capacity)
     return R.node[t]['excess']
 
 
-def shortest_augmenting_path_flow(G, s, t, capacity='capacity',
-                                  two_phase=False):
-    """Find a maximum single-commodity flow using the shortest augmenting path
-    algorithm.
+def edmonds_karp_flow(G, s, t, capacity='capacity'):
+    """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
 
-    This algorithm has a running time of `O(n^2 m)` for `n` nodes and `m`
+    This algorithm has a running time of `O(n m^2)` for `n` nodes and `m`
     edges.
 
 
@@ -347,9 +295,9 @@ def shortest_augmenting_path_flow(G, s, t, capacity='capacity',
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> F = nx.shortest_augmenting_path_flow(G, 'x', 'y')
+    >>> F = nx.edmonds_karp_flow(G, 'x', 'y')
     >>> F['a']['c']
     2.0
     """
-    R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
+    R = edmonds_karp_impl(G, s, t, capacity)
     return build_flow_dict(G, R)

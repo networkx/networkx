@@ -36,20 +36,35 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity):
 
 
 def compare_flows(G, s, t, solnFlows, solnValue, capacity = 'capacity'):
+    # Ford-Fulkerson
     flowValue, flowDict = nx.ford_fulkerson(G, s, t, capacity)
     assert_equal(flowValue, solnValue)
     assert_equal(flowDict, solnFlows)
-    flowValue, flowDict = nx.preflow_push(G, s, t, capacity)
+    # Edmonds-Karp
+    flowValue = nx.edmonds_karp_value(G, s, t, capacity)
+    flowDict = nx.edmonds_karp_flow(G, s, t, capacity)
     assert_equal(flowValue, solnValue)
     validate_flows(G, s, t, flowDict, solnValue, capacity)
-    flowValue, flowDict = nx.shortest_augmenting_path(G, s, t, capacity,
-                                                      two_phase=False)
+    # Preflow-push
+    flowValue = nx.preflow_push_value(G, s, t, capacity)
+    flowDict = nx.preflow_push_flow(G, s, t, capacity)
     assert_equal(flowValue, solnValue)
     validate_flows(G, s, t, flowDict, solnValue, capacity)
-    flowValue, flowDict = nx.shortest_augmenting_path(G, s, t, capacity,
-                                                      two_phase=True)
+    # Shortest augmenting path
+    flowValue = nx.shortest_augmenting_path_value(G, s, t, capacity,
+                                                  two_phase=False)
+    flowDict = nx.shortest_augmenting_path_flow(G, s, t, capacity,
+                                                two_phase=False)
     assert_equal(flowValue, solnValue)
     validate_flows(G, s, t, flowDict, solnValue, capacity)
+    # Shortest augmenting path (two-phase)
+    flowValue = nx.shortest_augmenting_path_value(G, s, t, capacity,
+                                                  two_phase=True)
+    flowDict = nx.shortest_augmenting_path_flow(G, s, t, capacity,
+                                                two_phase=True)
+    assert_equal(flowValue, solnValue)
+    validate_flows(G, s, t, flowDict, solnValue, capacity)
+    # Others
     assert_equal(nx.min_cut(G, s, t, capacity), solnValue)
     assert_equal(nx.max_flow(G, s, t, capacity), solnValue)
     assert_equal(nx.ford_fulkerson_flow(G, s, t, capacity), solnFlows)
@@ -244,6 +259,8 @@ class TestMaxflow:
         assert_raises(nx.NetworkXUnbounded,
                       nx.ford_fulkerson, G, 's', 't')
         assert_raises(nx.NetworkXUnbounded,
+                      nx.edmonds_karp, G, 's', 't')
+        assert_raises(nx.NetworkXUnbounded,
                       nx.preflow_push, G, 's', 't')
         assert_raises(nx.NetworkXUnbounded,
                       nx.shortest_augmenting_path, G, 's', 't')
@@ -301,11 +318,13 @@ class TestMaxflow:
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
         G.remove_node(0)
         assert_raises(nx.NetworkXError,nx.max_flow,G,0,3)
+        assert_raises(nx.NetworkXError,nx.edmonds_karp,G,0,3)
         assert_raises(nx.NetworkXError,nx.preflow_push,G,0,3)
         assert_raises(nx.NetworkXError,nx.shortest_augmenting_path,G,0,3)
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
         G.remove_node(3)
         assert_raises(nx.NetworkXError,nx.max_flow,G,0,3)
+        assert_raises(nx.NetworkXError,nx.edmonds_karp,G,0,3)
         assert_raises(nx.NetworkXError,nx.preflow_push,G,0,3)
         assert_raises(nx.NetworkXError,nx.shortest_augmenting_path,G,0,3)
 
@@ -313,6 +332,7 @@ class TestMaxflow:
         G = nx.Graph()
         G.add_node(0)
         #assert_raises(nx.NetworkXError, nx.max_flow, G, 0, 0)
+        assert_raises(nx.NetworkXError, nx.edmonds_karp, G, 0, 0)
         assert_raises(nx.NetworkXError, nx.preflow_push, G, 0, 0)
         assert_raises(nx.NetworkXError, nx.shortest_augmenting_path, G, 0, 0)
 
