@@ -140,6 +140,9 @@ def cycle_basis_matrix(G, sparse=False):
     nrow = len(G.edges())
     ncol = len(C.edges())
     
+    if G.is_directed():
+        raise nx.NetworkXNotImplemented('For directed graph pass G.to_undirected() as argument.')
+    
     if sparse:
         raise nx.NetworkXNotImplemented('Sparse matrix not implemented yet.')
     else:
