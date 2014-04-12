@@ -13,7 +13,9 @@ import networkx as nx
 from networkx.algorithms.flow.utils import *
 from networkx.algorithms.flow.edmonds_karp import edmonds_karp_core
 
-__all__ = ['shortest_augmenting_path', 'shortest_augmenting_path_value',
+__all__ = ['shortest_augmenting_path',
+           'shortest_augmenting_path_value',
+           'shortest_augmenting_path_residual',
            'shortest_augmenting_path_flow']
 
 
@@ -206,9 +208,10 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', two_phase=False):
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow, F = nx.shortest_augmenting_path(G, 'x', 'y')
-    >>> flow, F['a']['c']
+    >>> flow_value, flow_dict = nx.shortest_augmenting_path(G, 'x', 'y')
+    >>> flow_value, flow_dict['a']['c']
     (3.0, 2.0)
+
     """
     R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
     return (R.node[t]['excess'], build_flow_dict(G, R))
@@ -267,6 +270,7 @@ def shortest_augmenting_path_value(G, s, t, capacity='capacity',
     Examples
     --------
     >>> import networkx as nx
+    >>> from networkx.algorithms import flow
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
@@ -276,9 +280,10 @@ def shortest_augmenting_path_value(G, s, t, capacity='capacity',
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow = nx.shortest_augmenting_path_value(G, 'x', 'y')
-    >>> flow
+    >>> flow_value = flow.shortest_augmenting_path_value(G, 'x', 'y')
+    >>> flow_value
     3.0
+
     """
     R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
     return R.node[t]['excess']
@@ -338,6 +343,7 @@ def shortest_augmenting_path_flow(G, s, t, capacity='capacity',
     Examples
     --------
     >>> import networkx as nx
+    >>> from networkx.algorithms import flow
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
@@ -347,9 +353,109 @@ def shortest_augmenting_path_flow(G, s, t, capacity='capacity',
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> F = nx.shortest_augmenting_path_flow(G, 'x', 'y')
-    >>> F['a']['c']
+    >>> flow_dict = flow.shortest_augmenting_path_flow(G, 'x', 'y')
+    >>> flow_dict['a']['c']
     2.0
+
     """
     R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
     return build_flow_dict(G, R)
+
+
+def shortest_augmenting_path_residual(G, s, t, capacity='capacity',
+                                      two_phase=False):
+    """Find a maximum single-commodity flow using the shortest augmenting path
+    algorithm.
+
+    This function returns the residual network resulting after computing 
+    the maximum flow. See below for details about the conventions
+    NetworkX uses for defining residual networks.
+
+    This algorithm has a running time of `O(n^2 m)` for `n` nodes and `m`
+    edges.
+
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Edges of the graph are expected to have an attribute called
+        'capacity'. If this attribute is not present, the edge is
+        considered to have infinite capacity.
+
+    s : node
+        Source node for the flow.
+
+    t : node
+        Sink node for the flow.
+
+    capacity : string
+        Edges of the graph G are expected to have an attribute capacity
+        that indicates how much flow the edge can support. If this
+        attribute is not present, the edge is considered to have
+        infinite capacity. Default value: 'capacity'.
+
+    two_phase : bool
+        If True, a two-phase variant is used. The two-phase variant improves
+        the running time on unit-capacity networks from `O(nm)` to
+        `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
+
+    Returns
+    -------
+    R : NetworkX DiGraph
+        Residual network after computing the maximum flow.
+
+    Raises
+    ------
+    NetworkXError
+        The algorithm does not support MultiGraph and MultiDiGraph. If
+        the input graph is an instance of one of these two classes, a
+        NetworkXError is raised.
+
+    NetworkXUnbounded
+        If the graph has a path of infinite capacity, the value of a
+        feasible flow on the graph is unbounded above and the function
+        raises a NetworkXUnbounded.
+
+    Notes
+    -----
+    The residual network :samp:`R` from an input graph :samp:`G` has the
+    same nodes than :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
+    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
+    in :samp:`G`. For each node :samp:`u` in :samp:`R`,
+    :samp:`R.node[u]['excess']` represents the difference between flow into
+    :samp:`u` and flow out of :samp:`u`. Thus the maximum flow value is
+    stored in :samp:`R.node[t]['excess']`, where :samp:`t` is the sink node.
+
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']` 
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists 
+    in :samp:`G` or zero otherwise. If the capacity is infinite, 
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value 
+    that does not affect the solution of the problem. For each edge 
+    :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['flow']` represents 
+    the flow function of :samp:`(u, v)` and satisfies 
+    :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms import flow
+    >>> G = nx.DiGraph()
+    >>> G.add_edge('x','a', capacity=3.0)
+    >>> G.add_edge('x','b', capacity=1.0)
+    >>> G.add_edge('a','c', capacity=3.0)
+    >>> G.add_edge('b','c', capacity=5.0)
+    >>> G.add_edge('b','d', capacity=4.0)
+    >>> G.add_edge('d','e', capacity=2.0)
+    >>> G.add_edge('c','y', capacity=2.0)
+    >>> G.add_edge('e','y', capacity=3.0)
+    >>> R = flow.shortest_augmenting_path_residual(G, 'x', 'y')
+    >>> flow_value = flow.shortest_augmenting_path_value(G, 'x', 'y')
+    >>> flow_value
+    3.0
+    >>> assert(flow_value == R.node['y']['excess'])
+
+    """
+    R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
+    R.graph['algorithm'] = 'shortest_augmenting_path'
+    return R
