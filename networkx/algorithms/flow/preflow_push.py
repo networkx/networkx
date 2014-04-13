@@ -138,9 +138,9 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
                 # We have run off the end of the adjacency list, and there can
                 # be no more admissible edges. Relabel the node to create one.
                 height = relabel(u)
-                if is_phase1 and height >= n:
+                if is_phase1 and height >= n - 1:
                     # Although the node is still active, with a height at least
-                    # n, it is now known to be on the s side of the minimum
+                    # n - 1, it is now known to be on the s side of the minimum
                     # s-t cut. Stop processing it until phase 2.
                     levels[height].active.add(u)
                     break
