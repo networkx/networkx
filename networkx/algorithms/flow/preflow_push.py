@@ -485,9 +485,10 @@ def preflow_push_flow(G, s, t, capacity='capacity', global_relabel_freq=1):
     return build_flow_dict(G, R)
 
 
-def preflow_push_residual(G, s, t, capacity='capacity', global_relabel_freq=1):
-    """Find a maximum single-commodity flow using the highest-label preflow-
-    push algorithm.
+def preflow_push_residual(G, s, t, capacity='capacity', 
+                          global_relabel_freq=1, compute_flow=True):
+    """Find a maximum single-commodity flow using the highest-label 
+    preflow-push algorithm.
 
     This function returns the residual network resulting after computing 
     the maximum flow. See below for details about the conventions
@@ -520,6 +521,9 @@ def preflow_push_residual(G, s, t, capacity='capacity', global_relabel_freq=1):
         Relative frequency of applying the global relabeling heuristic to speed
         up the algorithm. If it is None, the heuristic is disabled. Default
         value: 1.
+
+    compute_flow : bool (default True)
+        If True, compute a maximum flow; otherwise, compute a maximum preflow.
 
     Returns
     -------
@@ -574,8 +578,12 @@ def preflow_push_residual(G, s, t, capacity='capacity', global_relabel_freq=1):
     >>> R = flow.preflow_push_residual(G, 'x', 'y')
     >>> flow_value = flow.preflow_push_value(G, 'x', 'y')
     >>> assert(flow_value == R.node['y']['excess'])
+    >>> # For some problems, you might only want to compute a
+    >>> # maximum preflow.
+    >>> R = flow.preflow_push_residual(G, 'x', 'y', compute_flow=False)
+    >>> assert(flow_value == R.node['y']['excess'])
 
     """
-    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
+    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow)
     R.graph['algorithm'] = 'preflow_push'
     return R
