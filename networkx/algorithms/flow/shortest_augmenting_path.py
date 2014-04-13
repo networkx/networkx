@@ -23,6 +23,9 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
     """Implementation of the shortest augmenting path algorithm.
     """
     R = build_residual_network(G, s, t, capacity)
+    R_node = R.node
+    R_pred = R.pred
+    R_succ = R.succ
 
     # Initialize heights of the nodes.
     heights = {t: 0}
@@ -30,7 +33,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
     while q:
         u, height = q.popleft()
         height += 1
-        for v, u, attr in R.in_edges_iter(u, data=True):
+        for v, attr in R_pred[u].items():
             if v not in heights and attr['flow'] < attr['capacity']:
                 heights[v] = height
                 q.append((v, height))
@@ -45,13 +48,13 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
 
     # Initialize heights and 'current edge' data structures of the nodes.
     for u in R:
-        R.node[u]['height'] = heights[u] if u in heights else n
-        R.node[u]['curr_edge'] = CurrentEdge(R[u])
+        R_node[u]['height'] = heights[u] if u in heights else n
+        R_node[u]['curr_edge'] = CurrentEdge(R_succ[u])
 
     # Initialize counts of nodes in each level.
     counts = [0] * (2 * n - 1)
     for u in R:
-        counts[R.node[u]['height']] += 1
+        counts[R_node[u]['height']] += 1
 
     inf = float('inf')
     def augment(path):
@@ -62,27 +65,27 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
         it = iter(path)
         u = next(it)
         for v in it:
-            attr = R[u][v]
+            attr = R_succ[u][v]
             flow = min(flow, attr['capacity'] - attr['flow'])
             u = v
         # Augment flow along the path.
         it = iter(path)
         u = next(it)
         for v in it:
-            R[u][v]['flow'] += flow
-            R[v][u]['flow'] -= flow
+            R_succ[u][v]['flow'] += flow
+            R_succ[v][u]['flow'] -= flow
             u = v
         # Accumulate the flow values.
-        R.node[s]['excess'] -= flow
-        R.node[t]['excess'] += flow
+        R_node[s]['excess'] -= flow
+        R_node[t]['excess'] += flow
 
     def relabel(u):
         """Relabel a node to create an admissible edge.
         """
         height = n - 1
-        for v, attr in R[u].items():
+        for v, attr in R_succ[u].items():
             if attr['flow'] < attr['capacity']:
-                height = min(height, R.node[v]['height'])
+                height = min(height, R_node[v]['height'])
         return height + 1
 
     # Phase 1: Look for shortest augmenting paths using depth-first search.
@@ -90,14 +93,14 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
     path = [s]
     u = s
     d = n if not two_phase else int(min(m ** 0.5, 2 * n ** (2. / 3)))
-    done = R.node[s]['height'] >= d
+    done = R_node[s]['height'] >= d
     while not done:
-        height = R.node[u]['height']
-        curr_edge = R.node[u]['curr_edge']
+        height = R_node[u]['height']
+        curr_edge = R_node[u]['curr_edge']
         # Depth-first search for the next node on the path to t.
         while True:
             v, attr = curr_edge.get()
-            if (height == R.node[v]['height'] + 1 and
+            if (height == R_node[v]['height'] + 1 and
                 attr['flow'] < attr['capacity']):
                 # Advance to the next node following an admissible edge.
                 path.append(v)
@@ -123,7 +126,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
                         done = True
                         break
                 counts[height] += 1
-                R.node[u]['height'] = height
+                R_node[u]['height'] = height
                 if u != s:
                     # After relabeling, the last edge on the path is no longer
                     # admissible. Retreat one step to look for an alternative.

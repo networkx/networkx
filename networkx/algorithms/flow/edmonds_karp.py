@@ -8,7 +8,6 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # All rights reserved.
 # BSD license.
 
-from collections import deque
 import networkx as nx
 from networkx.algorithms.flow.utils import *
 
@@ -41,55 +40,56 @@ def edmonds_karp_core(R, s, t):
         R.node[s]['excess'] -= flow
         R.node[t]['excess'] += flow
 
+    R_pred = R.pred
+    R_succ = R.succ
+    def bidirectional_bfs():
+        """Bidirectional breadth-first search for an augmenting path.
+        """
+        pred = {s: None}
+        q_s = [s]
+        succ = {t: None}
+        q_t = [t]
+        while True:
+            q = []
+            if len(q_s) <= len(q_t):
+                for u in q_s:
+                    for v, attr in R_succ[u].items():
+                        if v not in pred and attr['flow'] < attr['capacity']:
+                            pred[v] = u
+                            if v in succ:
+                                return v, pred, succ
+                            q.append(v)
+                if not q:
+                    return None, None, None
+                q_s = q
+            else:
+                for u in q_t:
+                    for v, attr in R_pred[u].items():
+                        if v not in succ and attr['flow'] < attr['capacity']:
+                            succ[v] = u
+                            if v in pred:
+                                return v, pred, succ
+                            q.append(v)
+                if not q:
+                    return None, None, None
+                q_t = q
+
     # Look for shortest augmenting paths using breadth-first search.
     while True:
-        pred = {s: None}
-        q_s = deque([s])
-        succ = {t: None}
-        q_t = deque([t])
-        found = False
-        # At termination of this loop, v is a node on the shortest s-t path.
-        while q_s or q_t:
-            if q_s:
-                u = q_s.popleft()
-                for v, attr in R[u].items():
-                    if v not in pred and attr['flow'] < attr['capacity']:
-                        pred[v] = u
-                        if v in succ:
-                            found = True
-                            break
-                        q_s.append(v)
-                if found:
-                    break
-            if q_t:
-                u = q_t.popleft()
-                for v, u, attr in R.in_edges_iter(u, data=True):
-                    if v not in succ and attr['flow'] < attr['capacity']:
-                        succ[v] = u
-                        if v in pred:
-                            found = True
-                            break
-                        q_t.append(v)
-                if found:
-                    break
-        if not found:
-            # No augmenting path found.
-            return
+        v, pred, succ = bidirectional_bfs()
+        if pred is None:
+            break
         path = [v]
         # Trace a path from s to v.
         u = v
-        while True:
+        while u != s:
             u = pred[u]
             path.append(u)
-            if u == s:
-                break
         path.reverse()
-        # Trace a path from v to u.
+        # Trace a path from v to t.
         u = v
-        while True:
+        while u != t:
             u = succ[u]
-            if u is None:
-                break
             path.append(u)
         augment(path)
 
