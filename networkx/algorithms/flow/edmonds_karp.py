@@ -17,6 +17,10 @@ __all__ = ['edmonds_karp', 'edmonds_karp_value', 'edmonds_karp_flow']
 def edmonds_karp_core(R, s, t):
     """Implementation of the Edmonds-Karp algorithm.
     """
+    R_node = R.node
+    R_pred = R.pred
+    R_succ = R.succ
+
     inf = float('inf')
     def augment(path):
         """Augment flow along a path from s to t.
@@ -26,22 +30,20 @@ def edmonds_karp_core(R, s, t):
         it = iter(path)
         u = next(it)
         for v in it:
-            attr = R[u][v]
+            attr = R_succ[u][v]
             flow = min(flow, attr['capacity'] - attr['flow'])
             u = v
         # Augment flow along the path.
         it = iter(path)
         u = next(it)
         for v in it:
-            R[u][v]['flow'] += flow
-            R[v][u]['flow'] -= flow
+            R_succ[u][v]['flow'] += flow
+            R_succ[v][u]['flow'] -= flow
             u = v
         # Accumulate the flow values.
-        R.node[s]['excess'] -= flow
-        R.node[t]['excess'] += flow
+        R_node[s]['excess'] -= flow
+        R_node[t]['excess'] += flow
 
-    R_pred = R.pred
-    R_succ = R.succ
     def bidirectional_bfs():
         """Bidirectional breadth-first search for an augmenting path.
         """
