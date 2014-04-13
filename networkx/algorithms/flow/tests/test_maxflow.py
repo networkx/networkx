@@ -5,17 +5,19 @@
 from nose.tools import *
 
 import networkx as nx
+from networkx.algorithms.flow.edmonds_karp import * 
 from networkx.algorithms.flow.ford_fulkerson import * 
 from networkx.algorithms.flow.preflow_push import * 
 from networkx.algorithms.flow.shortest_augmenting_path import * 
 
-flow_funcs = [ford_fulkerson, preflow_push, shortest_augmenting_path]
-flow_value_funcs = [ford_fulkerson_value, preflow_push_value, 
-                    shortest_augmenting_path_value]
-flow_dict_funcs = [ford_fulkerson_flow, preflow_push_flow, 
+flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
+                shortest_augmenting_path]
+flow_value_funcs = [edmonds_karp_value, ford_fulkerson_value, 
+                    preflow_push_value, shortest_augmenting_path_value]
+flow_dict_funcs = [edmonds_karp_flow, ford_fulkerson_flow, preflow_push_flow,
                     shortest_augmenting_path_flow]
-flow_residual_funcs = [ford_fulkerson_residual, preflow_push_residual, 
-                        shortest_augmenting_path_residual]
+flow_residual_funcs = [edmonds_karp_residual, ford_fulkerson_residual, 
+                        preflow_push_residual, shortest_augmenting_path_residual]
 max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
 all_funcs = sum([flow_funcs, flow_value_funcs, flow_dict_funcs, 
                  flow_residual_funcs, max_min_funcs], [])

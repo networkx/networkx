@@ -11,7 +11,10 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 import networkx as nx
 from networkx.algorithms.flow.utils import *
 
-__all__ = ['edmonds_karp', 'edmonds_karp_value', 'edmonds_karp_flow']
+__all__ = ['edmonds_karp',
+           'edmonds_karp_flow',
+           'edmonds_karp_residual',
+           'edmonds_karp_value']
 
 
 def edmonds_karp_core(R, s, t):
@@ -165,9 +168,10 @@ def edmonds_karp(G, s, t, capacity='capacity'):
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow, F = nx.edmonds_karp(G, 'x', 'y')
-    >>> flow, F['a']['c']
+    >>> flow_value, flow_dict = nx.edmonds_karp(G, 'x', 'y')
+    >>> flow_value, flow_dict['a']['c']
     (3.0, 2.0)
+
     """
     R = edmonds_karp_impl(G, s, t, capacity)
     return (R.node[t]['excess'], build_flow_dict(G, R))
@@ -231,6 +235,7 @@ def edmonds_karp_value(G, s, t, capacity='capacity'):
     >>> flow = nx.edmonds_karp_value(G, 'x', 'y')
     >>> flow
     3.0
+
     """
     R = edmonds_karp_impl(G, s, t, capacity)
     return R.node[t]['excess']
@@ -303,3 +308,95 @@ def edmonds_karp_flow(G, s, t, capacity='capacity'):
     """
     R = edmonds_karp_impl(G, s, t, capacity)
     return build_flow_dict(G, R)
+
+
+def edmonds_karp_residual(G, s, t, capacity='capacity'):
+    """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
+
+    This function returns the residual network resulting after computing 
+    the maximum flow. See below for details about the conventions
+    NetworkX uses for defining residual networks.
+
+    This algorithm has a running time of `O(n m^2)` for `n` nodes and `m`
+    edges.
+
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Edges of the graph are expected to have an attribute called
+        'capacity'. If this attribute is not present, the edge is
+        considered to have infinite capacity.
+
+    s : node
+        Source node for the flow.
+
+    t : node
+        Sink node for the flow.
+
+    capacity : string
+        Edges of the graph G are expected to have an attribute capacity
+        that indicates how much flow the edge can support. If this
+        attribute is not present, the edge is considered to have
+        infinite capacity. Default value: 'capacity'.
+
+    Returns
+    -------
+    R : NetworkX DiGraph
+        Residual network after computing the maximum flow.
+
+    Raises
+    ------
+    NetworkXError
+        The algorithm does not support MultiGraph and MultiDiGraph. If
+        the input graph is an instance of one of these two classes, a
+        NetworkXError is raised.
+
+    NetworkXUnbounded
+        If the graph has a path of infinite capacity, the value of a
+        feasible flow on the graph is unbounded above and the function
+        raises a NetworkXUnbounded.
+
+    Notes
+    -----
+    The residual network :samp:`R` from an input graph :samp:`G` has the
+    same nodes than :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
+    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
+    in :samp:`G`. For each node :samp:`u` in :samp:`R`,
+    :samp:`R.node[u]['excess']` represents the difference between flow into
+    :samp:`u` and flow out of :samp:`u`. Thus the maximum flow value is
+    stored in :samp:`R.node[t]['excess']`, where :samp:`t` is the sink node.
+
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']` 
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists 
+    in :samp:`G` or zero otherwise. If the capacity is infinite, 
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value 
+    that does not affect the solution of the problem. For each edge 
+    :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['flow']` represents 
+    the flow function of :samp:`(u, v)` and satisfies 
+    :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms import flow
+    >>> G = nx.DiGraph()
+    >>> G.add_edge('x','a', capacity=3.0)
+    >>> G.add_edge('x','b', capacity=1.0)
+    >>> G.add_edge('a','c', capacity=3.0)
+    >>> G.add_edge('b','c', capacity=5.0)
+    >>> G.add_edge('b','d', capacity=4.0)
+    >>> G.add_edge('d','e', capacity=2.0)
+    >>> G.add_edge('c','y', capacity=2.0)
+    >>> G.add_edge('e','y', capacity=3.0)
+    >>> R = flow.edmonds_karp_residual(G, 'x', 'y')
+    >>> flow_value = flow.edmonds_karp_value(G, 'x', 'y')
+    >>> flow_value
+    3.0
+    >>> assert(flow_value == R.node['y']['excess'])
+
+    """
+    R = edmonds_karp_impl(G, s, t, capacity)
+    R.graph['algorithm'] = 'edmonds_karp'
+    return R
