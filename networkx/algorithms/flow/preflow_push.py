@@ -522,8 +522,9 @@ def preflow_push_residual(G, s, t, capacity='capacity',
         up the algorithm. If it is None, the heuristic is disabled. Default
         value: 1.
 
-    compute_flow : bool (default True)
-        If True, compute a maximum flow; otherwise, compute a maximum preflow.
+    compute_flow : bool
+        If True, compute a maximum flow; otherwise, compute a maximum preflow. 
+        Default value: True.
 
     Returns
     -------
