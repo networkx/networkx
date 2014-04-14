@@ -22,25 +22,28 @@ max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
 all_funcs = sum([flow_funcs, flow_value_funcs, flow_dict_funcs, 
                  flow_residual_funcs, max_min_funcs], [])
 
-def validate_flows(G, s, t, flowDict, solnValue, capacity):
-    assert_equal(set(G), set(flowDict))
+msg = "Assertion failed in function: {0}"
+
+def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
+    assert_equal(set(G), set(flowDict), msg=msg.format(flow_func.__name__))
     for u in G:
-        assert_equal(set(G[u]), set(flowDict[u]))
+        assert_equal(set(G[u]), set(flowDict[u]), 
+                     msg=msg.format(flow_func.__name__))
     excess = dict((u, 0) for u in flowDict)
     for u in flowDict:
         for v, flow in flowDict[u].items():
             if capacity in G[u][v]:
                 ok_(flow <= G[u][v][capacity])
-            ok_(flow >= 0)
+            ok_(flow >= 0, msg=msg.format(flow_func.__name__))
             excess[u] -= flow
             excess[v] += flow
     for u, exc in excess.items():
         if u == s:
-            assert_equal(exc, -solnValue)
+            assert_equal(exc, -solnValue, msg=msg.format(flow_func.__name__))
         elif u == t:
-            assert_equal(exc, solnValue)
+            assert_equal(exc, solnValue, msg=msg.format(flow_func.__name__))
         else:
-            assert_equal(exc, 0)
+            assert_equal(exc, 0, msg=msg.format(flow_func.__name__))
 
 
 def compare_flows(G, s, t, solnFlows, solnValue, capacity = 'capacity'):
@@ -50,20 +53,23 @@ def compare_flows(G, s, t, solnFlows, solnValue, capacity = 'capacity'):
         # Test both legacy and new implementations.
         legacy = R.graph.get('algorithm') == "ford_fulkerson_legacy"
         if not legacy:
-            assert_equal(R.node[t]['excess'], solnValue)
+            assert_equal(R.node[t]['excess'], solnValue, 
+                         msg=msg.format(flow_residual_func.__name__))
         flow_value, flow_dict = flow_func(G, s, t, capacity)
-        assert_equal(flow_value, solnValue)
+        assert_equal(flow_value, solnValue, msg=msg.format(flow_func.__name__))
         if legacy:
-            assert_equal(flow_dict, solnFlows)
+            assert_equal(flow_dict, solnFlows, msg=msg.format(flow_func.__name__))
         else:
-            validate_flows(G, s, t, flow_dict, solnValue, capacity)
+            validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
         flow_value = flow_value_func(G, s, t, capacity)
-        assert_equal(flow_value, solnValue)
+        assert_equal(flow_value, solnValue, 
+                     msg=msg.format(flow_value_func.__name__))
         flow_dict = flow_dict_func(G, s, t, capacity)
         if legacy:
-            assert_equal(flow_dict, solnFlows)
+            assert_equal(flow_dict, solnFlows, 
+                         msg=msg.format(flow_dict_func.__name__))
         else:
-            validate_flows(G, s, t, flow_dict, solnValue, capacity)
+            validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_dict_func)
 
 
 class TestMaxflow:

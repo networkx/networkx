@@ -22,6 +22,8 @@ flow_value_funcs = [ford_fulkerson_value, preflow_push_value,
 flow_dict_funcs = [ford_fulkerson_flow, preflow_push_flow,
                     shortest_augmenting_path_flow]
 
+msg = "Assertion failed in function: {0}"
+
 def gen_pyramid(N):
         # This graph admits a flow of value 1 for which every arc is at
         # capacity (except the arcs incident to the sink which have
@@ -50,25 +52,27 @@ def read_graph(name):
     return nx.read_gpickle(path)
 
 
-def validate_flows(G, s, t, solnValue, flowValue, flowDict, pred=assert_equal):
-    pred(solnValue, flowValue)
-    assert_equal(set(G), set(flowDict))
+def validate_flows(G, s, t, solnValue, flowValue, flowDict, flow_func):
+    assert_equal(solnValue, flowValue, msg=msg.format(flow_func.__name__))
+    assert_equal(set(G), set(flowDict), msg=msg.format(flow_func.__name__))
     for u in G:
-        assert_equal(set(G[u]), set(flowDict[u]))
+        assert_equal(set(G[u]), set(flowDict[u]), 
+                     msg=msg.format(flow_func.__name__))
     excess = dict((u, 0) for u in flowDict)
     for u in flowDict:
         for v, flow in flowDict[u].items():
-            ok_(flow <= G[u][v].get('capacity', float('inf')))
-            ok_(flow >= 0)
+            ok_(flow <= G[u][v].get('capacity', float('inf')),
+                msg=msg.format(flow_func.__name__))
+            ok_(flow >= 0, msg=msg.format(flow_func.__name__))
             excess[u] -= flow
             excess[v] += flow
     for u, exc in excess.items():
         if u == s:
-            pred(exc, -solnValue)
+            assert_equal(exc, -solnValue, msg=msg.format(flow_func.__name__))
         elif u == t:
-            pred(exc, solnValue)
+            assert_equal(exc, solnValue, msg=msg.format(flow_func.__name__))
         else:
-            pred(exc, 0)
+            assert_equal(exc, 0, msg=msg.format(flow_func.__name__))
 
 
 class TestMaxflowLargeGraph:
@@ -87,7 +91,8 @@ class TestMaxflowLargeGraph:
             G[u][v]['capacity'] = 5
 
         for flow_value_func in flow_value_funcs:
-            assert_equal(flow_value_func(G, 1, 2), 5 * (N - 1))
+            assert_equal(flow_value_func(G, 1, 2), 5 * (N - 1),
+                         msg=msg.format(flow_value_func.__name__))
         # Test separately the two_pase parameter 
         assert_equal(nx.shortest_augmenting_path(G, 1, 2, two_phase=True)[0],
                      5 * (N - 1))
@@ -97,7 +102,8 @@ class TestMaxflowLargeGraph:
 #        N = 100 # this gives a graph with 5051 nodes
         G = gen_pyramid(N)
         for flow_value_func in flow_value_funcs:
-            assert_almost_equal(flow_value_func(G, (0, 0), 't'), 1.)
+            assert_almost_equal(flow_value_func(G, (0, 0), 't'), 1.,
+                                msg=msg.format(flow_value_func.__name__))
         # Test separately the two_pase parameter 
         assert_almost_equal(shortest_augmenting_path_value(
             G, (0, 0), 't', two_phase=True), 1.)
@@ -109,10 +115,11 @@ class TestMaxflowLargeGraph:
         for flow_value_func, flow_dict_func in zip(
                 flow_value_funcs, flow_dict_funcs):
             validate_flows(G, s, t, 156545, flow_value_func(G, s, t),
-                           flow_dict_func(G, s, t))
+                           flow_dict_func(G, s, t), flow_value_func)
         validate_flows(G, s, t, 156545,
             shortest_augmenting_path_value(G, s, t, two_phase=True),
-            shortest_augmenting_path_flow(G, s, t, two_phase=True))
+            shortest_augmenting_path_flow(G, s, t, two_phase=True),
+            shortest_augmenting_path_value)
 
     def test_gw1(self):
         G = read_graph('gw1')
@@ -121,11 +128,12 @@ class TestMaxflowLargeGraph:
         for flow_value_func, flow_dict_func in zip(
                 flow_value_funcs, flow_dict_funcs):
             validate_flows(G, s, t, 1202018, flow_value_func(G, s, t),
-                           flow_dict_func(G, s, t))
+                           flow_dict_func(G, s, t), flow_value_func)
         validate_flows(
             G, s, t, 1202018,
             shortest_augmenting_path_value(G, s, t, two_phase=True),
-            shortest_augmenting_path_flow(G, s, t, two_phase=True))
+            shortest_augmenting_path_flow(G, s, t, two_phase=True),
+            shortest_augmenting_path_value)
 
     def test_wlm3(self):
         G = read_graph('wlm3')
@@ -134,11 +142,12 @@ class TestMaxflowLargeGraph:
         for flow_value_func, flow_dict_func in zip(
                 flow_value_funcs, flow_dict_funcs):
             validate_flows(G, s, t, 11875108, flow_value_func(G, s, t),
-                           flow_dict_func(G, s, t))
+                           flow_dict_func(G, s, t), flow_value_func)
         validate_flows(
             G, s, t, 11875108,
             shortest_augmenting_path_value(G, s, t, two_phase=True),
-            shortest_augmenting_path_flow(G, s, t, two_phase=True))
+            shortest_augmenting_path_flow(G, s, t, two_phase=True),
+            shortest_augmenting_path_value)
 
     def test_preflow_push_global_relabel(self):
         G = read_graph('gw1')
