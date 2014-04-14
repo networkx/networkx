@@ -36,14 +36,13 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None):
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
 
-    flow_func : function (default=None)
+    flow_func : function
         A function for computing the maximum flow among a pair of nodes 
         in a capacitated graph. The function has to accept three parameters:
         a Graph or Digraph, a source node, and a target node. And return 
         the maximum flow value. If flow_func is None the default maximum
-        flow function 
-        (:func:`networkx.algorithms.flow.preflow_push_value`)
-        is used. See below for alternative algorithms.
+        flow function (:func:`networkx.algorithms.flow.preflow_push_value`)
+        is used. See below for alternative algorithms. Default value: None.
 
     Returns
     -------
@@ -124,13 +123,13 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None):
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
 
-    flow_func : function (default=None)
+    flow_func : function
         A function for computing the maximum flow among a pair of nodes 
         in a capacitated graph. The function has to accept three parameters:
         a Graph or Digraph, a source node, and a target node. And return 
         the maximum flow value. If flow_func is None the default maximum 
         flow function (:func:`networkx.algorithms.flow.preflow_push_value`)
-        is used. See below for alternative algorithms.
+        is used. See below for alternative algorithms. Default value: None.
 
     Returns
     -------

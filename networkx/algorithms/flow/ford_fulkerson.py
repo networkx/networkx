@@ -462,7 +462,7 @@ def ford_fulkerson_residual(G, s, t, capacity='capacity'):
     t : node
         Sink node for the flow.
 
-    capacity: string (default 'capacity')
+    capacity: string
         Edges of the graph G are expected to have an attribute capacity
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
