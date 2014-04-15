@@ -708,7 +708,7 @@ def goldberg_radzik(G, source, weight='weight'):
             # nonpositive reduced costs into to_scan in (reverse) topological
             # order.
             stack = [(u, iter(G[u].items()))]
-            in_stack = {u}
+            in_stack = set([u])
             neg_count[u] = 0
             while stack:
                 u, it = stack[-1]
