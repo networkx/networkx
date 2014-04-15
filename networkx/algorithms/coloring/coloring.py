@@ -13,7 +13,7 @@ import itertools
 import networkx as nx
 import sys
 import random
-import coloringWithInterchange
+import coloring_with_interchange
 
 __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
                         "Jan Aagaard Meier <jmei@itu.dk>",
@@ -21,16 +21,32 @@ __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
 __all__ = ['coloring']
 
 def min_degree_node(G):
-    degree = G.degree()
-    v = list(degree.values())
-    k = list(degree.keys())
-    return k[v.index(min(v))]
+    min_node = None
+    min_degree = G.number_of_edges() + 1
+    for node, degree in G.degree_iter():
+        if degree < min_degree:
+            min_node = node
+            min_degree = degree
+
+    return min_node
 
 def max_degree_node(G):
-    degree = G.degree()
-    v = list(degree.values())
-    k = list(degree.keys())
-    return k[v.index(max(v))]
+    max_node = None
+    max_degree = -1
+    for node, degree in G.degree_iter():
+        if degree > max_degree:
+            max_node = node
+            max_degree = degree
+
+    return max_node
+
+def dict_to_sets(colors, k):
+    sets = [set() for i in range(k)]
+
+    for (node, color) in colors.items():
+        sets[color].add(node)
+
+    return sets
 
 """
 Largest first (lf) ordering. Ordering the nodes by largest degree first.
@@ -40,7 +56,7 @@ def strategy_lf(G):
     nodes = G.nodes()
     nodes.sort(key=lambda node: G.degree(node) * -1)
     
-    return iter(nodes)
+    return nodes
 """
 Smallest first (sf) ordering. Ordering the nodes by smallest degree first.
 """
@@ -49,7 +65,7 @@ def strategy_sf(G):
     nodes = G.nodes()
     nodes.sort(key=lambda node: G.degree(node))
     
-    return iter(nodes)
+    return nodes
     
 """
 Random sequential (RS) ordering. Scrambles nodes into random ordering.
@@ -58,7 +74,7 @@ def strategy_rs(G):
     nodes = G.nodes()
     random.shuffle(nodes)
     
-    return iter(nodes)
+    return nodes
     
 """
 Smallest last (sl). Picking the node with smallest degree first, subtracting it from the graph, and starting over with the new smallest degree node. When
@@ -66,16 +82,17 @@ the graph is empty, the reverse ordering of the one built is returned.
 """
 
 def strategy_sl(G):
+    len_g = len(G)
     available_g = G.copy()
-    k = []
+    nodes = [None]*len_g
     
-    while len(available_g):
+    for i in range(len_g):
         node = min_degree_node(available_g)
         
         available_g.remove_node(node)
-        k.append(node)
+        nodes[len_g - i - 1] = node
     
-    return reversed(k)
+    return nodes
     
 """
 Greedy independent set ordering (GIS). Generates a maximum independent set of nodes, and assigns color C to all nodes in this set. This set of nodes is now
@@ -89,19 +106,11 @@ def strategy_gis(G, colors):
     while no_colored < len_g: # While there are uncolored nodes 
         available_g = G.copy()
 
-        # Find all uncolored nodes
-        for node in available_g.nodes():
-            if node in colors:
-                available_g.remove_node(node)
+        # Remove all already colored nodes
+        available_g.remove_nodes_from(colors.keys())
 
-        while available_g.number_of_nodes() > 0: # While there are still vertices available
-            degree = available_g.degree()
-            
-            # Pick the one with minimal degree in available
-            # Finding the minimum degree, http://stackoverflow.com/a/12343826/800016
-            values = list(degree.values())
-            keys = list(degree.keys())
-            node = keys[values.index(min(values))]
+        while available_g.number_of_nodes() > 0: # While there are still nodes available
+            node = min_degree_node(available_g)
             colors[node] = k # assign color to values
 
             no_colored += 1
@@ -129,26 +138,29 @@ def strategy_cs(G, traversal='bfs'):
 """
 Saturation largest first (SLF) or DSATUR.
 """
-def strategy_slf(G, colors):
+def strategy_slf(G):
     len_g = len(G)
     no_colored = 0
     saturation = {}
-    for node in G.nodes():
-        saturation[node] = 0
 
+    colored = set()
+    for node in G.nodes_iter():
+        saturation[node] = 0
+        
     while no_colored != len_g:
         if no_colored == 0: # When saturation for all nodes is 0, yield the node with highest degree
             no_colored += 1
             node = max_degree_node(G)
             yield node
-            for neighbour in G.neighbors(node):
+            colored.add(node)
+            for neighbour in G.neighbors_iter(node):
                 saturation[node] += 1
         else:
             highest_saturation = -1
             highest_saturation_nodes = []
 
-            for (node, satur) in saturation.items():
-                if node not in colors: # If the node is not already colored
+            for node, satur in saturation.items():
+                if node not in colored: # If the node is not already colored
                     if satur > highest_saturation:
                         highest_saturation = satur
                         highest_saturation_nodes = [node]
@@ -159,29 +171,24 @@ def strategy_slf(G, colors):
                 node = highest_saturation_nodes[0]
             else:
                 # Return the node with highest degree
-                degree = dict()
+                max_degree = -1
+                max_node = None
+
                 for node in highest_saturation_nodes:
-                    degree[node] = G.degree(node)
+                    degree = G.degree(node)
+                    if degree > max_degree:
+                        max_node = node
+                        max_degree = degree
 
-                v = list(degree.values())
-                k = list(degree.keys())
-
-                node = k[v.index(max(v))]
+                node = max_node
 
             no_colored += 1
             yield node
-            for neighbour in G.neighbors(node):
+            colored.add(node)
+            for neighbour in G.neighbors_iter(node):
                 saturation[node] += 1
-
-def dict_to_sets(colors, k):
-    sets = [set() for i in range(k)]
-
-    for (node, color) in colors.items():
-        sets[color].add(node)
-
-    return sets
     
-"""Color a graph using various strategies of greedy graph coloring.
+"""Color a graph using various strategies of greedy graph coloring. The strategies are described in [1].
 
 Attempts to color a graph using as few colors as possible, where no 
 neighbours of a node can have same color as the node itself.
@@ -204,7 +211,7 @@ strategy : string
    slf: Saturation largest first (also known as DSATUR)
    
 interchange: boolean
-   If strategy allows it, will use color interchange algorithm if set to true.
+   If strategy allows it, will use the color interchange algorithm described by [2] if set to true.
    
 returntype: string
    Whether to return a dictionary or a list of sets representing colors and nodes.
@@ -235,7 +242,9 @@ References
 .. [1] Adrian Kosowski, and Krzysztof Manuszewski,
    Classical Coloring of Graphs, Graph Colorings, 2-19, 2004,
    ISBN 0-8218-3458-4.
-   [2] (todo)
+   [2] Maciej M. Syslo, Marsingh Deo, Janusz S. Kowalik,
+   Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983
+   ISBN 0-486-45353-7
 """
 def coloring(G, strategy='lf', interchange=False, returntype='dict'):
     colors = dict() # dictionary to keep track of the colors of the nodes
@@ -251,6 +260,8 @@ def coloring(G, strategy='lf', interchange=False, returntype='dict'):
     elif strategy == 'sl':
         nodes = strategy_sl(G)
     elif strategy == 'gis':
+        if interchange == True:
+            raise nx.NetworkXPointlessConcept("""Interchange is not applicable for GIS""")
         k = strategy_gis(G, colors)
         if returntype == 'sets':
             return dict_to_sets(colors, k)
@@ -260,18 +271,17 @@ def coloring(G, strategy='lf', interchange=False, returntype='dict'):
     elif strategy == 'cs-dfs':
         nodes = strategy_cs(G, traversal='dfs')
     elif strategy == 'slf':
-        nodes = strategy_slf(G, colors)
+        nodes = strategy_slf(G)
     else:
-        print 'Strategy ' + strategy + ' does not exist.'
-        return colors
+        raise nx.NetworkXPointlessConcept('Strategy ' + strategy + ' does not exist.')
 
     if interchange:
-        return coloringWithInterchange.coloringWithInterchange(G, nodes, returntype)
+        return coloring_with_interchange.coloring_with_interchange(G, nodes, returntype)
     else:
         for node in nodes:
             neighbourColors = set() # set to keep track of colors of neighbours
 
-            for neighbour in G.neighbors(node): # iterate through the neighbours of the node
+            for neighbour in G.neighbors_iter(node): # iterate through the neighbours of the node
                 if neighbour in colors: # if the neighbour has been assigned a color ...
                     neighbourColors.add(colors[neighbour]) # ... put it into the neighbour color set
 

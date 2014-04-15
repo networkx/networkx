@@ -10,14 +10,14 @@ class Node:
     def __repr__(self):
         return "NodeId: {0}, Degree: {1}, Color: {2}, AdjList: ({3}), adjColor: ({4})".format(self.nodeId, self.degree, self.color, self.adjList, self.adjColor)
 
-    def assignColor(self, adjEntry, color):
+    def assign_color(self, adjEntry, color):
         adjEntry.colPrev = None
         adjEntry.colNext = self.adjColor[color]
         self.adjColor[color] = adjEntry
         if adjEntry.colNext != None:
             adjEntry.colNext.colPrev = adjEntry
 
-    def clearColor(self, adjEntry, color):
+    def clear_color(self, adjEntry, color):
         if adjEntry.colPrev == None:
             self.adjColor[color] = adjEntry.colNext
         else:
@@ -45,15 +45,26 @@ class LLNode:
         return "NodeId: {0}, Next: ({1})".format(self.nodeId, self.next)
 
                             
+"""
+    This procedure is an adaption of the algorithm described by [1], and is an implementation of 
+    coloring with interchange. Please be advised, that the datastructures used are rather complex
+    because they are optimized to minimize the time spent identifying sub-components of the graph,
+    which are possible candidates for color interchange.
 
-def coloringWithInterchange(originalGraph, nodes, returntype):
-# TODO Compare the the .prc to the book
+References
+----------
+... [1] Maciej M. Syslo, Marsingh Deo, Janusz S. Kowalik,
+    Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983
+    ISBN 0-486-45353-7
+"""
+def coloring_with_interchange(original_graph, nodes, returntype):
+    # TODO Compare the the .prc to the book
 
-    n = len(originalGraph)
+    n = len(original_graph)
     graph = {}
-    for nodeId in originalGraph.nodes():
+    for nodeId in original_graph.nodes_iter():
         graph[nodeId] = Node(nodeId, n)
-    for (node1, node2) in originalGraph.edges():
+    for (node1, node2) in original_graph.edges_iter():
         adjEntry1 = AdjEntry(node2)
         adjEntry2 = AdjEntry(node1)
         adjEntry1.mate = adjEntry2
@@ -147,8 +158,8 @@ def coloringWithInterchange(originalGraph, nodes, returntype):
                     while adjNode != None: # Vi skal opdatere alle nabo knuder
                         if graph[adjNode.nodeId].color != colOpp:
                             adjMate = adjNode.mate # Direkte reference til entry
-                            graph[adjNode.nodeId].clearColor(adjMate, colOpp)
-                            graph[adjNode.nodeId].assignColor(adjMate, col)
+                            graph[adjNode.nodeId].clear_color(adjMate, colOpp)
+                            graph[adjNode.nodeId].assign_color(adjMate, col)
                         adjNode = adjNode.next
                     searchNode = searchNode.next
                 k1 = col1
@@ -162,7 +173,7 @@ def coloringWithInterchange(originalGraph, nodes, returntype):
         adjNode = graph[node].adjList
         while adjNode != None:
             adjMate = adjNode.mate
-            graph[adjNode.nodeId].assignColor(adjMate, k1)
+            graph[adjNode.nodeId].assign_color(adjMate, k1)
             adjNode = adjNode.next
     
     if returntype == 'sets': # determine desired return type
