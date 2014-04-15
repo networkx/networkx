@@ -3,8 +3,8 @@
 Minimum cost flow algorithms on directed connected graphs.
 """
 
-__author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
-# Copyright (C) 2010 Loïc Séguin-C. <loicseguin@gmail.com>
+__author__ = """LoÃ¯c SÃ©guin-C. <loicseguin@gmail.com>"""
+# Copyright (C) 2010 LoÃ¯c SÃ©guin-C. <loicseguin@gmail.com>
 # All rights reserved.
 # BSD license.
 
