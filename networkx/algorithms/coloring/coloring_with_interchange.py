@@ -58,8 +58,6 @@ References
     ISBN 0-486-45353-7
 """
 def coloring_with_interchange(original_graph, nodes, returntype):
-    # TODO Compare the the .prc to the book
-
     n = len(original_graph)
     graph = {}
     for nodeId in original_graph.nodes_iter():
