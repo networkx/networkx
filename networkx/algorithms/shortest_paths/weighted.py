@@ -685,7 +685,7 @@ def goldberg_radzik(G, source, weight='weight'):
 
     # Set of nodes relabled in the last round of scan operations. Denoted by B
     # in Goldberg and Radzik's paper.
-    relabeled = {source}
+    relabeled = set([source])
 
     while relabeled:
         # List of nodes to scan in this round. Denoted by A in Goldberg and
