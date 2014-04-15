@@ -13,13 +13,46 @@ __author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
 import networkx as nx
 from nose.tools import *
 
-def compare_flows(G, s, t, solnFlows, solnValue):
-    flowValue, flowDict = nx.ford_fulkerson(G, s, t)
+
+def validate_flows(G, s, t, flowDict, solnValue, capacity):
+    assert_equal(set(G), set(flowDict))
+    for u in G:
+        assert_equal(set(G[u]), set(flowDict[u]))
+    excess = dict((u, 0) for u in flowDict)
+    for u in flowDict:
+        for v, flow in flowDict[u].items():
+            if capacity in G[u][v]:
+                ok_(flow <= G[u][v][capacity])
+            ok_(flow >= 0)
+            excess[u] -= flow
+            excess[v] += flow
+    for u, exc in excess.items():
+        if u == s:
+            assert_equal(exc, -solnValue)
+        elif u == t:
+            assert_equal(exc, solnValue)
+        else:
+            assert_equal(exc, 0)
+
+
+def compare_flows(G, s, t, solnFlows, solnValue, capacity = 'capacity'):
+    flowValue, flowDict = nx.ford_fulkerson(G, s, t, capacity)
     assert_equal(flowValue, solnValue)
     assert_equal(flowDict, solnFlows)
-    assert_equal(nx.min_cut(G, s, t), solnValue)
-    assert_equal(nx.max_flow(G, s, t), solnValue)
-    assert_equal(nx.ford_fulkerson_flow(G, s, t), solnFlows)
+    flowValue, flowDict = nx.preflow_push(G, s, t, capacity)
+    assert_equal(flowValue, solnValue)
+    validate_flows(G, s, t, flowDict, solnValue, capacity)
+    flowValue, flowDict = nx.shortest_augmenting_path(G, s, t, capacity,
+                                                      two_phase=False)
+    assert_equal(flowValue, solnValue)
+    validate_flows(G, s, t, flowDict, solnValue, capacity)
+    flowValue, flowDict = nx.shortest_augmenting_path(G, s, t, capacity,
+                                                      two_phase=True)
+    assert_equal(flowValue, solnValue)
+    validate_flows(G, s, t, flowDict, solnValue, capacity)
+    assert_equal(nx.min_cut(G, s, t, capacity), solnValue)
+    assert_equal(nx.max_flow(G, s, t, capacity), solnValue)
+    assert_equal(nx.ford_fulkerson_flow(G, s, t, capacity), solnFlows)
 
 
 class TestMaxflow:
@@ -158,14 +191,8 @@ class TestMaxflow:
         solnValue = 3.0
         s = 'x'
         t = 'y'
-        
-        flowValue, flowDict = nx.ford_fulkerson(G, s, t, capacity = 'spam')
-        assert_equal(flowValue, solnValue)
-        assert_equal(flowDict, solnFlows)
-        assert_equal(nx.min_cut(G, s, t, capacity = 'spam'), solnValue)
-        assert_equal(nx.max_flow(G, s, t, capacity = 'spam'), solnValue)
-        assert_equal(nx.ford_fulkerson_flow(G, s, t, capacity = 'spam'),
-                     solnFlows)
+
+        compare_flows(G, s, t, solnFlows, solnValue, capacity = 'spam')
 
     def test_digraph_infcap_edges(self):
         # DiGraph with infinite capacity edges
@@ -202,7 +229,7 @@ class TestMaxflow:
              't': {}}
 
         compare_flows(G, 's', 't', H, 97)
-        
+
 
     def test_digraph_infcap_path(self):
         # Graph with infinite capacity (s, t)-path
@@ -216,6 +243,10 @@ class TestMaxflow:
 
         assert_raises(nx.NetworkXUnbounded,
                       nx.ford_fulkerson, G, 's', 't')
+        assert_raises(nx.NetworkXUnbounded,
+                      nx.preflow_push, G, 's', 't')
+        assert_raises(nx.NetworkXUnbounded,
+                      nx.shortest_augmenting_path, G, 's', 't')
         assert_raises(nx.NetworkXUnbounded,
                       nx.max_flow, G, 's', 't')
         assert_raises(nx.NetworkXUnbounded,
@@ -262,12 +293,45 @@ class TestMaxflow:
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
         G.remove_node(1)
         assert_equal(nx.max_flow(G,0,3),0)
+        flowSoln = {0: {}, 2: {3: 0}, 3: {2: 0}}
+        compare_flows(G, 0, 3, flowSoln, 0)
 
     def test_source_target_not_in_graph(self):
         G = nx.Graph()
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
         G.remove_node(0)
         assert_raises(nx.NetworkXError,nx.max_flow,G,0,3)
+        assert_raises(nx.NetworkXError,nx.preflow_push,G,0,3)
+        assert_raises(nx.NetworkXError,nx.shortest_augmenting_path,G,0,3)
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
         G.remove_node(3)
         assert_raises(nx.NetworkXError,nx.max_flow,G,0,3)
+        assert_raises(nx.NetworkXError,nx.preflow_push,G,0,3)
+        assert_raises(nx.NetworkXError,nx.shortest_augmenting_path,G,0,3)
+
+    def test_source_target_coincide(self):
+        G = nx.Graph()
+        G.add_node(0)
+        #assert_raises(nx.NetworkXError, nx.max_flow, G, 0, 0)
+        assert_raises(nx.NetworkXError, nx.preflow_push, G, 0, 0)
+        assert_raises(nx.NetworkXError, nx.shortest_augmenting_path, G, 0, 0)
+
+    def test_preflow_push_global_relabel_freq(self):
+        G = nx.DiGraph()
+        G.add_edge(1, 2, capacity=1)
+        assert_equal(nx.preflow_push(G, 1, 2, global_relabel_freq=None)[0], 1)
+        assert_raises(nx.NetworkXError, nx.preflow_push_value, G, 1, 2,
+                      global_relabel_freq=-1)
+
+    def test_shortest_augmenting_path_two_phase(self):
+        k = 5
+        p = 1000
+        G = nx.DiGraph()
+        for i in range(k):
+            G.add_edge('s', (i, 0), capacity=1)
+            G.add_path(((i, j) for j in range(p)), capacity=1)
+            G.add_edge((i, p - 1), 't', capacity=1)
+        assert_equal(nx.shortest_augmenting_path_value(
+            G, 's', 't', two_phase=True), k)
+        assert_equal(nx.shortest_augmenting_path_value(
+            G, 's', 't', two_phase=False), k)

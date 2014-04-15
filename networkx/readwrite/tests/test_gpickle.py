@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from nose.tools import assert_equal
-import networkx as nx
-from networkx.testing.utils import *
 import os
 import tempfile
 
+import networkx as nx
+from networkx.testing.utils import *
 
 
 class TestGpickle(object):
@@ -42,11 +42,10 @@ class TestGpickle(object):
             (fd,fname)=tempfile.mkstemp()
             nx.write_gpickle(G,fname)
             Gin=nx.read_gpickle(fname)
-            assert_equal(sorted(G.nodes(data=True)),
-                         sorted(Gin.nodes(data=True)))
-            assert_equal(sorted(G.edges(data=True)),
-                         sorted(Gin.edges(data=True)))
-            assert_equal(G.graph,Gin.graph)
+            assert_nodes_equal(G.nodes(data=True),
+                                Gin.nodes(data=True))
+            assert_edges_equal(G.edges(data=True),
+                                Gin.edges(data=True))
             assert_graphs_equal(G, Gin)
             os.close(fd)
             os.unlink(fname)

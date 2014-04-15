@@ -33,6 +33,7 @@ Lists
 
 Numpy
 -----
+.. automodule:: networkx.convert_matrix
 .. autosummary::
    :toctree: generated/
 

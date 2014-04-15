@@ -17,6 +17,7 @@ include networkx/*/*/tests/*.txt
 include networkx/*/*/tests/*.py
 include networkx/*/*/tests/*.A99
 include networkx/*/*/tests/*.B99
+include networkx/*/*/tests/*.bz2
 
 include networkx/external/decorator/*/*.py
 
