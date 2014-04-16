@@ -506,3 +506,14 @@ def chords(G):
 
     return C,T
 
+# fixture for nose tests
+def setup_module(module):
+    from nose import SkipTest
+    try:
+        import numpy
+    except:
+        raise SkipTest("NumPy not available")
+    try:
+        import scipy
+    except:
+        raise SkipTest("SciPy not available")
