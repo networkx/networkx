@@ -17,7 +17,7 @@ from itertools import repeat
 __author__ = """\n""".join(['Joris van Rantwijk',
                             'Nicholas Mancuso (nick.mancuso@gmail.com)'])
 
-_all__ = ['max_weight_matching', 'maximal_matching']
+__all__ = ['max_weight_matching', 'maximal_matching']
 
 
 def maximal_matching(G):
