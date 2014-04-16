@@ -56,12 +56,6 @@ class TestCycles:
 
     def test_cycle_basis_matrix(self):
         import scipy as np
-        # Testing directed multigraph
-        cables = [(1,2),(1,2),(1,2),(1,3),(3,2)]
-        G = nx.MultiDiGraph(cables)
-        M = networkx.cycle_basis_matrix(G)
-        assert_equal(Z, np.array([-1,-1,-1],[1,0,0],[0,1,0],[0,0,1],[0,0,1]))
-
         # Testing undirected multigraph
         cables = [(1,2),(1,2),(1,2),(3,1),(3,2)]
         G = nx.MultiGraph(cables)
@@ -76,8 +70,19 @@ class TestCycles:
 
     @raises(nx.NetworkXNotImplemented)
     def test_cycle_basis_matrix(self):
-        G=nx.DiGraph()
+        import scipy as np
+        # Testing sparse matrix
+        G=nx.Graph()
         cy=networkx.cycle_basis_matrix(G,sparse=True)
+
+    @raises(nx.NetworkXNotImplemented)
+    def test_cycle_basis_matrix(self):
+        import scipy as np
+        # Testing directed multigraph
+        cables = [(1,2),(1,2),(1,2),(1,3),(3,2)]
+        G = nx.MultiDiGraph(cables)
+        M = networkx.cycle_basis_matrix(G)
+        assert_equal(Z, np.array([-1,-1,-1],[1,0,0],[0,1,0],[0,0,1],[0,0,1]))
 
     def test_simple_cycles(self):
         G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
