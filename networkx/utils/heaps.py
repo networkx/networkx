@@ -298,9 +298,11 @@ class PairingHeap(MinHeap):
 
 class BinaryHeap(MinHeap):
     """A binary heap.
-
-    In addition to values, keys in the heap must also be of comparable types.
     """
+    class _Item(MinHeap._Item):
+
+        def __lt__(self, other):
+            return self.value < other.value
 
     def __init__(self):
         """Initialize a binary heap.
@@ -318,7 +320,9 @@ class BinaryHeap(MinHeap):
         # Repeatedly remove stale key-value pairs until a up-to-date one is
         # met.
         while True:
-            value, key = heap[0]
+            item = heap[0]
+            key = item.key
+            value = item.value
             if key in dict and value == dict[key]:
                 break
             pop(heap)
@@ -334,7 +338,9 @@ class BinaryHeap(MinHeap):
         # Repeatedly remove stale key-value pairs until a up-to-date one is
         # met.
         while True:
-            value, key = heap[0]
+            item = heap[0]
+            key = item.key
+            value = item.value
             pop(heap)
             if key in dict and value == dict[key]:
                 break
@@ -356,9 +362,9 @@ class BinaryHeap(MinHeap):
                 # with the same key may already be present. Deem the old ones
                 # as stale and skip them when the minimum pair is queried.
                 dict[key] = value
-                heappush(self._heap, (value, key))
+                heappush(self._heap, self._Item(key, value))
             return value < old_value
         else:
             dict[key] = value
-            heappush(self._heap, (value, key))
+            heappush(self._heap, self._Item(key, value))
             return True
