@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 from nose.tools import *
+from nose import SkipTest
+
 import networkx
 import networkx as nx
 
@@ -150,7 +152,7 @@ class TestCycleBasisMatrix(object):
 
     @classmethod
     def setupClass(cls):
-        global numpy
+        global np
         try:
             import numpy as np
         except ImportError:
