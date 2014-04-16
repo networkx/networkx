@@ -572,6 +572,11 @@ def bellman_ford(G, source, weight='weight'):
         def get_weight(edge_dict):
             return edge_dict.get(weight,1)
 
+    if G.is_directed():
+        G_succ = G.succ
+    else:
+        G_succ = G.adj
+
     inf = float('inf')
     n = len(G)
 
@@ -585,7 +590,7 @@ def bellman_ford(G, source, weight='weight'):
         # Skip relaxations if the predecessor of u is in the queue.
         if pred[u] not in in_q:
             dist_u = dist[u]
-            for v, e in G[u].items():
+            for v, e in G_succ[u].items():
                 dist_v = dist_u + get_weight(e)
                 if dist_v < dist.get(v, inf):
                     if v not in in_q:
@@ -677,17 +682,20 @@ def goldberg_radzik(G, source, weight='weight'):
         def get_weight(edge_dict):
             return edge_dict.get(weight, 1)
 
-    pred = {source: None}
+    if G.is_directed():
+        G_succ = G.succ
+    else:
+        G_succ = G.adj
 
     inf = float('inf')
     d = dict((u, inf) for u in G)
     d[source] = 0
+    pred = {source: None}
 
-    # Set of nodes relabled in the last round of scan operations. Denoted by B
-    # in Goldberg and Radzik's paper.
-    relabeled = set([source])
-
-    while relabeled:
+    def topological_sort(relabeled):
+        """Topologically sort nodes relabeled in the previous round and detect
+        negative cycles.
+        """
         # List of nodes to scan in this round. Denoted by A in Goldberg and
         # Radzik's paper.
         to_scan = []
@@ -699,15 +707,17 @@ def goldberg_radzik(G, source, weight='weight'):
         # neg_count also doubles as the DFS visit marker array.
         neg_count = {}
         for u in relabeled:
-            # Skip visited nodes and those without out-edges of negative
-            # reduced costs.
-            if (u in neg_count or
-                not any(d[u] + get_weight(G[u][v]) < d[v] for v in G[u])):
+            # Skip visited nodes.
+            if u in neg_count:
+                continue
+            d_u = d[u]
+            # Skip nodes without out-edges of negative reduced costs.
+            if all(d_u + get_weight(e) >= d[v] for v, e in G_succ[u].items()):
                 continue
             # Nonrecursive DFS that inserts nodes reachable from u via edges of
             # nonpositive reduced costs into to_scan in (reverse) topological
             # order.
-            stack = [(u, iter(G[u].items()))]
+            stack = [(u, iter(G_succ[u].items()))]
             in_stack = set([u])
             neg_count[u] = 0
             while stack:
@@ -719,11 +729,15 @@ def goldberg_radzik(G, source, weight='weight'):
                     stack.pop()
                     in_stack.remove(u)
                     continue
-                if d[u] + get_weight(e) <= d[v]:
-                    is_neg = d[u] + get_weight(e) < d[v]
+                t = d[u] + get_weight(e)
+                d_v = d[v]
+                if t <= d_v:
+                    is_neg = t < d_v
+                    d[v] = t
+                    pred[v] = u
                     if v not in neg_count:
                         neg_count[v] = neg_count[u] + int(is_neg)
-                        stack.append((v, iter(G[v].items())))
+                        stack.append((v, iter(G_succ[v].items())))
                         in_stack.add(v)
                     elif (v in in_stack and
                           neg_count[u] + int(is_neg) > neg_count[v]):
@@ -733,16 +747,33 @@ def goldberg_radzik(G, source, weight='weight'):
                         # cost.
                         raise nx.NetworkXUnbounded(
                             'Negative cost cycle detected.')
-        relabeled.clear()
+        to_scan.reverse()
+        return to_scan
+
+    def relax(to_scan):
+        """Relax out-edges of relabeled nodes.
+        """
+        relabeled = set()
         # Scan nodes in to_scan in topological order and relax incident
         # out-edges. Add the relabled nodes to labeled.
-        while to_scan:
-            u = to_scan.pop()
-            for v, e in G[u].items():
-                if d[u] + get_weight(e) < d[v]:
-                    d[v] = d[u] + get_weight(e)
+        for u in to_scan:
+            d_u = d[u]
+            for v, e in G_succ[u].items():
+                w_e = get_weight(e)
+                if d_u + w_e < d[v]:
+                    d[v] = d_u + w_e
                     pred[v] = u
                     relabeled.add(v)
+        return relabeled
+
+
+    # Set of nodes relabled in the last round of scan operations. Denoted by B
+    # in Goldberg and Radzik's paper.
+    relabeled = set([source])
+
+    while relabeled:
+        to_scan = topological_sort(relabeled)
+        relabeled = relax(to_scan)
 
     d = dict((u, d[u]) for u in pred)
     return pred, d
