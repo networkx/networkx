@@ -154,9 +154,9 @@ class TestCycleBasisMatrix(object):
     def setupClass(cls):
         global np
         try:
-            import numpy as np
+            import scipy as np
         except ImportError:
-            raise SkipTest('NumPy not available.')
+            raise SkipTest('Scipy not available.')
 
     def test_cycle_basis_matrix(self):
         # Testing undirected multigraph
