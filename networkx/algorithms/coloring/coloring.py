@@ -13,7 +13,7 @@ import itertools
 import networkx as nx
 import sys
 import random
-import coloring_with_interchange
+from . import coloring_with_interchange
 
 __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
                         "Jan Aagaard Meier <jmei@itu.dk>",
