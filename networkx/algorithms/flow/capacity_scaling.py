@@ -185,7 +185,11 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
 
     flowDict: dictionary
         Dictionary of dictionaries keyed by nodes such that
-        flowDict[u][v] is the flow edge (u, v).
+        flowDict[u][v] is the flow edge (u, v) if G is a digraph.
+
+        Dictionary of dictionaries of dictionaries keyed by nodes such that
+        flowDict[u][v][key] is the flow edge (u, v, key) if G is a
+        multidigraph.
 
     Raises
     ------
