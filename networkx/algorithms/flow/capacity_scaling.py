@@ -296,7 +296,8 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
 
     delta = 2 ** int(log(wmax, 2))
     while delta >= 1:
-        # Saturate Δ-residual edges with negative reduced costs.
+        # Saturate Δ-residual edges with negative reduced costs to achieve
+        # Δ-optimality.
         for u in R:
             p_u = R_node[u]['potential']
             for v, es in R_succ[u].items():
@@ -323,7 +324,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
             elif excess <= -delta:
                 T_add(u)
         # Repeatedly augment flow from S to T along shortest paths until
-        # Δ-optimality is achieved.
+        # Δ-feasibility is achieved.
         while S and T:
             s = next(iter(S))
             t = None
