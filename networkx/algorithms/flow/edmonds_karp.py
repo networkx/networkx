@@ -157,6 +157,14 @@ def edmonds_karp(G, s, t, capacity='capacity', value_only=False):
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
+    See also
+    --------
+    :meth:`maximum_flow`
+    :meth:`minimum_cut`
+    :meth:`ford_fulkerson`
+    :meth:`preflow_push`
+    :meth:`shortest_augmenting_path`
+
     Notes
     -----
     The residual network :samp:`R` from an input graph :samp:`G` has the

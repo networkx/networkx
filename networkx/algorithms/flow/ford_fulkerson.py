@@ -286,6 +286,14 @@ def ford_fulkerson(G, s, t, capacity='capacity', legacy=True):
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
+    See also
+    --------
+    :meth:`maximum_flow`
+    :meth:`minimum_cut`
+    :meth:`edmonds_karp`
+    :meth:`preflow_push`
+    :meth:`shortest_augmenting_path`
+
     Notes
     -----
     This is a legacy implementation of maximum flow (before 1.9). By 
@@ -302,12 +310,6 @@ def ford_fulkerson(G, s, t, capacity='capacity', legacy=True):
     network minus the flow that went throught that edge. A dictionary 
     with infinite capacity edges can be found as an attribute of the 
     residual network.
-
-    See also
-    --------
-    :func:`networkx.algorithms.flow.edmonds_karp`
-    :func:`networkx.algorithms.flow.preflow_push`
-    :func:`networkx.algorithms.flow.shortest_augmenting_path`
 
     Examples
     --------
@@ -334,7 +336,6 @@ def ford_fulkerson(G, s, t, capacity='capacity', legacy=True):
     attributes that contain: a dictionary with edges with infinite
     capacity flows, the flow value, and a dictionary of flows:
 
-    
     >>> R = nx.ford_fulkerson(G, 'x', 'y', legacy=False)
     >>> # A dictionary with infinite capacity flows can be found as an
     >>> # attribute of the auxiliary network

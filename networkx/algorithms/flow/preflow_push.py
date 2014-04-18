@@ -324,6 +324,14 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1,
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
+    See also
+    --------
+    :meth:`maximum_flow`
+    :meth:`minimum_cut`
+    :meth:`edmonds_karp`
+    :meth:`ford_fulkerson`
+    :meth:`shortest_augmenting_path`
+
     Notes
     -----
     The residual network :samp:`R` from an input graph :samp:`G` has the
