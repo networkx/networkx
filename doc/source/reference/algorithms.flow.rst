@@ -13,6 +13,15 @@ Maximum Flow
    maximum_flow
    minimum_cut
 
+
+Edmonds Karp
+------------
+.. autosummary::
+   :toctree: generated/
+
+   edmonds_karp
+
+
 Ford-Fulkerson
 --------------
 .. autosummary::
@@ -20,12 +29,8 @@ Ford-Fulkerson
 
    ford_fulkerson
    ford_fulkerson_flow
-   ford_fulkerson_residual
-   ford_fulkerson_value
    ford_fulkerson_flow_and_auxiliary
-   edmonds_karp_path
-   edmonds_karp_path_value
-   edmonds_karp_path_flow
+
 
 Shortest Augmenting Path
 ------------------------
@@ -33,9 +38,6 @@ Shortest Augmenting Path
    :toctree: generated/
 
    shortest_augmenting_path
-   shortest_augmenting_path_flow
-   shortest_augmenting_path_residual
-   shortest_augmenting_path_value
 
 
 Preflow-Push
@@ -44,9 +46,6 @@ Preflow-Push
    :toctree: generated/
 
    preflow_push
-   preflow_push_flow
-   preflow_push_residual
-   preflow_push_value
 
 Network Simplex
 ---------------

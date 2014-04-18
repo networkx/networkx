@@ -11,10 +11,7 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 import networkx as nx
 from networkx.algorithms.flow.utils import *
 
-__all__ = ['edmonds_karp',
-           'edmonds_karp_flow',
-           'edmonds_karp_residual',
-           'edmonds_karp_value']
+__all__ = ['edmonds_karp']
 
 
 def edmonds_karp_core(R, s, t):
@@ -109,208 +106,7 @@ def edmonds_karp_impl(G, s, t, capacity):
     return R
 
 
-def edmonds_karp(G, s, t, capacity='capacity'):
-    """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
-
-    This algorithm has a running time of `O(n m^2)` for `n` nodes and `m`
-    edges.
-
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Edges of the graph are expected to have an attribute called
-        'capacity'. If this attribute is not present, the edge is
-        considered to have infinite capacity.
-
-    s : node
-        Source node for the flow.
-
-    t : node
-        Sink node for the flow.
-
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
-
-    Returns
-    -------
-    flow_value : integer, float
-        Value of the maximum flow, i.e., net outflow from the source.
-
-    flow_dict : dictionary
-        Dictionary of dictionaries keyed by nodes such that
-        flow_dict[u][v] is the flow edge (u, v).
-
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support MultiGraph and MultiDiGraph. If
-        the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
-
-    NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a
-        feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow_value, flow_dict = nx.edmonds_karp(G, 'x', 'y')
-    >>> flow_value, flow_dict['a']['c']
-    (3.0, 2.0)
-
-    """
-    R = edmonds_karp_impl(G, s, t, capacity)
-    return (R.node[t]['excess'], build_flow_dict(G, R))
-
-
-def edmonds_karp_value(G, s, t, capacity='capacity'):
-    """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
-
-    This algorithm has a running time of `O(n m^2)` for `n` nodes and `m`
-    edges.
-
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Edges of the graph are expected to have an attribute called
-        'capacity'. If this attribute is not present, the edge is
-        considered to have infinite capacity.
-
-    s : node
-        Source node for the flow.
-
-    t : node
-        Sink node for the flow.
-
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
-
-    Returns
-    -------
-    flow_value : integer, float
-        Value of the maximum flow, i.e., net outflow from the source.
-
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support MultiGraph and MultiDiGraph. If
-        the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
-
-    NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a
-        feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow = nx.edmonds_karp_value(G, 'x', 'y')
-    >>> flow
-    3.0
-
-    """
-    R = edmonds_karp_impl(G, s, t, capacity)
-    return R.node[t]['excess']
-
-
-def edmonds_karp_flow(G, s, t, capacity='capacity'):
-    """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
-
-    This algorithm has a running time of `O(n m^2)` for `n` nodes and `m`
-    edges.
-
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Edges of the graph are expected to have an attribute called
-        'capacity'. If this attribute is not present, the edge is
-        considered to have infinite capacity.
-
-    s : node
-        Source node for the flow.
-
-    t : node
-        Sink node for the flow.
-
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
-
-    two_phase : bool
-        If True, a two-phase variant is used. The two-phase variant improves
-        the running time on unit-capacity networks from `O(nm)` to
-        `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
-
-    Returns
-    -------
-    flow_dict : dictionary
-        Dictionary of dictionaries keyed by nodes such that
-        flow_dict[u][v] is the flow edge (u, v).
-
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support MultiGraph and MultiDiGraph. If
-        the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
-
-    NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a
-        feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> F = nx.edmonds_karp_flow(G, 'x', 'y')
-    >>> F['a']['c']
-    2.0
-    """
-    R = edmonds_karp_impl(G, s, t, capacity)
-    return build_flow_dict(G, R)
-
-
-def edmonds_karp_residual(G, s, t, capacity='capacity'):
+def edmonds_karp(G, s, t, capacity='capacity', value_only=False):
     """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
 
     This function returns the residual network resulting after computing 
@@ -339,6 +135,10 @@ def edmonds_karp_residual(G, s, t, capacity='capacity'):
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
+
+    value_only : bool
+        If True compute only the value of the maximum flow. This parameter
+        will be ignored by this algorithm because is not aplicable.
 
     Returns
     -------
@@ -380,7 +180,6 @@ def edmonds_karp_residual(G, s, t, capacity='capacity'):
     Examples
     --------
     >>> import networkx as nx
-    >>> from networkx.algorithms import flow
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
@@ -390,8 +189,8 @@ def edmonds_karp_residual(G, s, t, capacity='capacity'):
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = flow.edmonds_karp_residual(G, 'x', 'y')
-    >>> flow_value = flow.edmonds_karp_value(G, 'x', 'y')
+    >>> R = nx.edmonds_karp(G, 'x', 'y')
+    >>> flow_value = nx.maximum_flow(G, 'x', 'y')
     >>> flow_value
     3.0
     >>> assert(flow_value == R.node['y']['excess'])

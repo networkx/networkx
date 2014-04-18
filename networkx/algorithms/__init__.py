@@ -12,6 +12,7 @@ from networkx.algorithms.cycles import *
 from networkx.algorithms.dag import *
 from networkx.algorithms.distance_measures import *
 from networkx.algorithms.dominating import *
+from networkx.algorithms.flow import *
 from networkx.algorithms.hierarchy import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.mis import *
@@ -51,12 +52,4 @@ import networkx.algorithms.tree
 
 from networkx.algorithms.bipartite import projected_graph,project,is_bipartite
 from networkx.algorithms.isomorphism import (is_isomorphic,could_be_isomorphic,
-    fast_could_be_isomorphic,faster_could_be_isomorphic)
-# Imports from the flow package
-from networkx.algorithms.flow import (maximum_flow, minimum_cut, ford_fulkerson,
-    preflow_push, shortest_augmenting_path)
-from networkx.algorithms.flow import (network_simplex, min_cost_flow_cost,
-    min_cost_flow, cost_of_flow, max_flow_min_cost)
-# Backwards compatibility
-from networkx.algorithms.flow import (max_flow, min_cut, ford_fulkerson_flow,
-    ford_fulkerson_flow_and_auxiliary)
+    fast_could_be_isomorphic, faster_could_be_isomorphic)

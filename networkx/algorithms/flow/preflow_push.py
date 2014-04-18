@@ -13,13 +13,10 @@ from itertools import islice
 import networkx as nx
 from networkx.algorithms.flow.utils import *
 
-__all__ = ['preflow_push',
-           'preflow_push_flow',
-           'preflow_push_residual',
-           'preflow_push_value']
+__all__ = ['preflow_push']
 
 
-def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
+def preflow_push_impl(G, s, t, capacity, global_relabel_freq, value_only):
     """Implementation of the highest-label preflow-push algorithm.
     """
     if global_relabel_freq is None:
@@ -238,7 +235,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
 
     # A maximum preflow has been found. The excess at t is the maximum flow
     # value.
-    if not compute_flow:
+    if value_only:
         return R
 
     # Phase 2: Convert the maximum preflow into a maximum flow by returning the
@@ -268,225 +265,8 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow):
     return R
 
 
-def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1):
-    """Find a maximum single-commodity flow using the highest-label
-    preflow-push algorithm.
-
-    This algorithm has a running time of `O(n^2 \sqrt{m})` for `n` nodes and
-    `m` edges.
-
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Edges of the graph are expected to have an attribute called
-        'capacity'. If this attribute is not present, the edge is
-        considered to have infinite capacity.
-
-    s : node
-        Source node for the flow.
-
-    t : node
-        Sink node for the flow.
-
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
-
-    global_relabel_freq : integer, float
-        Relative frequency of applying the global relabeling heuristic to speed
-        up the algorithm. If it is None, the heuristic is disabled. Default
-        value: 1.
-
-    Returns
-    -------
-    flow_value : integer, float
-        Value of the maximum flow, i.e., net outflow from the source.
-
-    flow_dict : dictionary
-        Dictionary of dictionaries keyed by nodes such that
-        flow_dict[u][v] is the flow edge (u, v).
-
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support MultiGraph and MultiDiGraph. If
-        the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
-
-    NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a
-        feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow_value, flow_dict = nx.preflow_push(G, 'x', 'y')
-    >>> flow_value, flow_dict['a']['c']
-    (3.0, 2.0)
-
-    """
-    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
-    return (R.node[t]['excess'], build_flow_dict(G, R))
-
-
-def preflow_push_value(G, s, t, capacity='capacity', global_relabel_freq=1):
-    """Find a maximum single-commodity flow using the highest-label
-    preflow-push algorithm.
-
-    This algorithm has a running time of `O(n^2 \sqrt{m})` for `n` nodes and
-    `m` edges.
-
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Edges of the graph are expected to have an attribute called
-        'capacity'. If this attribute is not present, the edge is
-        considered to have infinite capacity.
-
-    s : node
-        Source node for the flow.
-
-    t : node
-        Sink node for the flow.
-
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
-
-    global_relabel_freq : integer, float
-        Relative frequency of applying the global relabeling heuristic to speed
-        up the algorithm. If it is None, the heuristic is disabled. Default
-        value: 1.
-
-    Returns
-    -------
-    flow_value : integer, float
-        Value of the maximum flow, i.e., net outflow from the source.
-
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support MultiGraph and MultiDiGraph. If
-        the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
-
-    NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a
-        feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> from networkx.algorithms import flow
-    >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow_value = flow.preflow_push_value(G, 'x', 'y')
-    >>> flow_value
-    3.0
-
-    """
-    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, False)
-    return R.node[t]['excess']
-
-
-def preflow_push_flow(G, s, t, capacity='capacity', global_relabel_freq=1):
-    """Find a maximum single-commodity flow using the highest-label
-    preflow-push algorithm.
-
-    This algorithm has a running time of `O(n^2 \sqrt{m})` for `n` nodes and
-    `m` edges.
-
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Edges of the graph are expected to have an attribute called
-        'capacity'. If this attribute is not present, the edge is
-        considered to have infinite capacity.
-
-    s : node
-        Source node for the flow.
-
-    t : node
-        Sink node for the flow.
-
-    capacity : string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
-
-    global_relabel_freq : integer, float
-        Relative frequency of applying the global relabeling heuristic to speed
-        up the algorithm. If it is None, the heuristic is disabled. Default
-        value: 1.
-
-    Returns
-    -------
-    flow_dict : dictionary
-        Dictionary of dictionaries keyed by nodes such that
-        flow_dict[u][v] is the flow edge (u, v).
-
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support MultiGraph and MultiDiGraph. If
-        the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
-
-    NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a
-        feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> from networkx.algorithms import flow
-    >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow_dict = flow.preflow_push_flow(G, 'x', 'y')
-    >>> flow_dict['a']['c']
-    2.0
-
-    """
-    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, True)
-    return build_flow_dict(G, R)
-
-
-def preflow_push_residual(G, s, t, capacity='capacity', 
-                          global_relabel_freq=1, compute_flow=True):
+def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1, 
+                 value_only=False):
     """Find a maximum single-commodity flow using the highest-label 
     preflow-push algorithm.
 
@@ -522,9 +302,10 @@ def preflow_push_residual(G, s, t, capacity='capacity',
         up the algorithm. If it is None, the heuristic is disabled. Default
         value: 1.
 
-    compute_flow : bool
-        If True, compute a maximum flow; otherwise, compute a maximum preflow. 
-        Default value: True.
+    value_only : bool
+        If False, compute a maximum flow; otherwise, compute a maximum preflow
+        which is enough for computing the maximum flow value. Default value: 
+        False.
 
     Returns
     -------
@@ -566,7 +347,6 @@ def preflow_push_residual(G, s, t, capacity='capacity',
     Examples
     --------
     >>> import networkx as nx
-    >>> from networkx.algorithms import flow
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
@@ -576,15 +356,15 @@ def preflow_push_residual(G, s, t, capacity='capacity',
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = flow.preflow_push_residual(G, 'x', 'y')
-    >>> flow_value = flow.preflow_push_value(G, 'x', 'y')
+    >>> R = nx.preflow_push(G, 'x', 'y')
+    >>> flow_value = nx.maximum_flow(G, 'x', 'y')
     >>> assert(flow_value == R.node['y']['excess'])
     >>> # For some problems, you might only want to compute a
     >>> # maximum preflow.
-    >>> R = flow.preflow_push_residual(G, 'x', 'y', compute_flow=False)
+    >>> R = nx.preflow_push(G, 'x', 'y', value_only=True)
     >>> assert(flow_value == R.node['y']['excess'])
 
     """
-    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, compute_flow)
+    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, value_only)
     R.graph['algorithm'] = 'preflow_push'
     return R

@@ -2,25 +2,25 @@
 """Maximum flow algorithms test suite.
 """
 
+from functools import partial
 from nose.tools import *
 
 import networkx as nx
+from networkx.algorithms.flow.utils import * 
 from networkx.algorithms.flow.edmonds_karp import * 
 from networkx.algorithms.flow.ford_fulkerson import * 
 from networkx.algorithms.flow.preflow_push import * 
 from networkx.algorithms.flow.shortest_augmenting_path import * 
 
+ford_fulkerson = partial(ford_fulkerson, legacy=False)
+ford_fulkerson.__name__ = 'ford_fulkerson'
+preflow_push = partial(preflow_push, value_only=False)
+preflow_push.__name__ = 'preflow_push'
+
 flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
                 shortest_augmenting_path]
-flow_value_funcs = [edmonds_karp_value, ford_fulkerson_value, 
-                    preflow_push_value, shortest_augmenting_path_value]
-flow_dict_funcs = [edmonds_karp_flow, ford_fulkerson_flow, preflow_push_flow,
-                    shortest_augmenting_path_flow]
-flow_residual_funcs = [edmonds_karp_residual, ford_fulkerson_residual, 
-                        preflow_push_residual, shortest_augmenting_path_residual]
 max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
-all_funcs = sum([flow_funcs, flow_value_funcs, flow_dict_funcs, 
-                 flow_residual_funcs, max_min_funcs], [])
+all_funcs = sum([flow_funcs, max_min_funcs], [])
 
 msg = "Assertion failed in function: {0}"
 
@@ -46,33 +46,23 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
             assert_equal(exc, 0, msg=msg.format(flow_func.__name__))
 
 
-def compare_flows(G, s, t, solnFlows, solnValue, capacity = 'capacity'):
-    for flow_func, flow_value_func, flow_dict_func, flow_residual_func in zip(
-            flow_funcs, flow_value_funcs, flow_dict_funcs, flow_residual_funcs):
-        R = flow_residual_func(G, s, t, capacity)
+def compare_flows(G, s, t, solnFlows, solnValue, capacity='capacity'):
+    for flow_func in flow_funcs:
+        R = flow_func(G, s, t, capacity)
         # Test both legacy and new implementations.
         legacy = R.graph.get('algorithm') == "ford_fulkerson_legacy"
-        if not legacy:
-            assert_equal(R.node[t]['excess'], solnValue, 
-                         msg=msg.format(flow_residual_func.__name__))
-        flow_value, flow_dict = flow_func(G, s, t, capacity)
+        if legacy:
+            flow_value, flow_dict = R.graph['flow_value'], R.graph['flow_dict']
+        else:
+            flow_value, flow_dict = R.node[t]['excess'], build_flow_dict(G, R)
         assert_equal(flow_value, solnValue, msg=msg.format(flow_func.__name__))
         if legacy:
             assert_equal(flow_dict, solnFlows, msg=msg.format(flow_func.__name__))
         else:
             validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
-        flow_value = flow_value_func(G, s, t, capacity)
-        assert_equal(flow_value, solnValue, 
-                     msg=msg.format(flow_value_func.__name__))
-        flow_dict = flow_dict_func(G, s, t, capacity)
-        if legacy:
-            assert_equal(flow_dict, solnFlows, 
-                         msg=msg.format(flow_dict_func.__name__))
-        else:
-            validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_dict_func)
-
 
 class TestMaxflow:
+
     def test_graph1(self):
         # Trivial undirected graph
         G = nx.Graph()
@@ -122,6 +112,7 @@ class TestMaxflow:
 
         compare_flows(G, 'a', 'd', H, 2000.0)
 
+    def test_digraph2(self):
         # An example in which some edges end up with zero flow.
         G = nx.DiGraph()
         G.add_edge('s', 'b', capacity = 2)
@@ -140,7 +131,7 @@ class TestMaxflow:
 
         compare_flows(G, 's', 't', H, 2)
 
-    def test_digraph2(self):
+    def test_digraph3(self):
         # A directed graph example from Cormen et al.
         G = nx.DiGraph()
         G.add_edge('s','v1', capacity = 16.0)
@@ -163,7 +154,7 @@ class TestMaxflow:
 
         compare_flows(G, 's', 't', H, 23.0)
 
-    def test_digraph3(self):
+    def test_digraph4(self):
         # A more complex directed graph
         # from www.topcoder.com/tc?module=Statc&d1=tutorials&d2=maxFlow
         G = nx.DiGraph()
@@ -324,8 +315,9 @@ class TestMaxflow:
     def test_preflow_push_global_relabel_freq(self):
         G = nx.DiGraph()
         G.add_edge(1, 2, capacity=1)
-        assert_equal(nx.preflow_push(G, 1, 2, global_relabel_freq=None)[0], 1)
-        assert_raises(nx.NetworkXError, preflow_push_value, G, 1, 2,
+        R = nx.preflow_push(G, 1, 2, global_relabel_freq=None)
+        assert_equal(R.node[2]['excess'], 1)
+        assert_raises(nx.NetworkXError, preflow_push, G, 1, 2,
                       global_relabel_freq=-1)
 
     def test_shortest_augmenting_path_two_phase(self):
@@ -336,10 +328,10 @@ class TestMaxflow:
             G.add_edge('s', (i, 0), capacity=1)
             G.add_path(((i, j) for j in range(p)), capacity=1)
             G.add_edge((i, p - 1), 't', capacity=1)
-        assert_equal(shortest_augmenting_path_value(
-            G, 's', 't', two_phase=True), k)
-        assert_equal(shortest_augmenting_path_value(
-            G, 's', 't', two_phase=False), k)
+        R = shortest_augmenting_path(G, 's', 't', two_phase=True)
+        assert_equal(R.node['t']['excess'], k)
+        R = shortest_augmenting_path(G, 's', 't', two_phase=False)
+        assert_equal(R.node['t']['excess'], k)
 
     def test_flow_func_not_callable(self):
         G = nx.Graph()
