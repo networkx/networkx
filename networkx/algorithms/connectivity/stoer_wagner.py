@@ -92,7 +92,7 @@ def stoer_wagner(G, weight='weight', heap=BinaryHeap):
         raise nx.NetworkXError('graph is not connected.')
 
     # Make a copy of the graph for internal use.
-    G = nx.Graph((u, v, {'weight': e.get('weight', 1)})
+    G = nx.Graph((u, v, {'weight': e.get(weight, 1)})
                  for u, v, e in G.edges_iter(data=True) if u != v)
 
     for u, v, e, in G.edges_iter(data=True):
