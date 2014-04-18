@@ -2,7 +2,8 @@ from itertools import chain
 import networkx as nx
 from nose.tools import *
 
-def _check_partition(G, cut_value, partition):
+
+def _check_partition(G, cut_value, partition, weight):
     ok_(isinstance(partition, tuple))
     assert_equal(len(partition), 2)
     ok_(isinstance(partition[0], list))
@@ -10,22 +11,24 @@ def _check_partition(G, cut_value, partition):
     ok_(len(partition[0]) > 0)
     ok_(len(partition[1]) > 0)
     assert_equal(sum(map(len, partition)), len(G))
-    assert_equal(set(chain(*partition)), set(G))
+    assert_equal(set(chain.from_iterable(partition)), set(G))
     partition = tuple(map(set, partition))
     w = 0
     for u, v, e in G.edges_iter(data=True):
         if (u in partition[0]) == (v in partition[1]):
-            w += e.get('weight', 1)
+            w += e.get(weight, 1)
     assert_equal(w, cut_value)
 
 
-def _test_stoer_wagner(G, answer):
-    cut_value, partition = nx.stoer_wagner(G, heap=nx.utils.PairingHeap)
+def _test_stoer_wagner(G, answer, weight='weight'):
+    cut_value, partition = nx.stoer_wagner(G, weight,
+                                           heap=nx.utils.PairingHeap)
     assert_equal(cut_value, answer)
-    _check_partition(G, cut_value, partition)
-    cut_value, partition = nx.stoer_wagner(G, heap=nx.utils.BinaryHeap)
+    _check_partition(G, cut_value, partition, weight)
+    cut_value, partition = nx.stoer_wagner(G, weight,
+                                           heap=nx.utils.BinaryHeap)
     assert_equal(cut_value, answer)
-    _check_partition(G, cut_value, partition)
+    _check_partition(G, cut_value, partition, weight)
 
 
 def test_graph1():
@@ -40,6 +43,7 @@ def test_graph1():
     G.add_edge('e','y', weight=3)
     _test_stoer_wagner(G, 4)
 
+
 def test_graph2():
     G = nx.Graph()
     G.add_edge('x','a')
@@ -51,6 +55,7 @@ def test_graph2():
     G.add_edge('c','y')
     G.add_edge('e','y')
     _test_stoer_wagner(G, 2)
+
 
 def test_graph3():
     # Source:
@@ -70,6 +75,15 @@ def test_graph3():
     G.add_edge(6, 7, weight=1)
     G.add_edge(7, 8, weight=3)
     _test_stoer_wagner(G, 4)
+
+
+def test_weight_name():
+    G = nx.Graph()
+    G.add_edge(1, 2, weight=1, cost=8)
+    G.add_edge(1, 3, cost=2)
+    G.add_edge(2, 3, cost=4)
+    _test_stoer_wagner(G, 6, weight='cost')
+
 
 def test_exceptions():
     G = nx.Graph()
