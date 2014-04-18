@@ -18,7 +18,7 @@ Ford-Fulkerson
    shortest_augmenting_path_value
    shortest_augmenting_path_flow
 
-Preflow-push
+Preflow-Push
 ------------
 .. autosummary::
    :toctree: generated/
@@ -38,3 +38,9 @@ Network Simplex
     cost_of_flow
     max_flow_min_cost
 
+Capacity Scaling Minimum Cost Flow
+----------------------------------
+.. autosummary::
+   :toctree: generated/
+
+    capacity_scaling

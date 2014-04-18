@@ -71,8 +71,7 @@ class GlobalRelabelThreshold(object):
 
 
 def build_residual_network(G, s, t, capacity):
-    """Build the residual network. Initialize the edge capacities so that they
-    correspond to a zero flow.
+    """Build a residual network and initialize a zero flow.
     """
     if G.is_multigraph():
         raise nx.NetworkXError(
@@ -88,20 +87,21 @@ def build_residual_network(G, s, t, capacity):
     R = nx.DiGraph()
     R.add_nodes_from(G, excess=0)
 
+    inf = float('inf')
     # Extract edges with positive capacities. Self loops excluded.
     edge_list = [(u, v, attr) for u, v, attr in G.edges_iter(data=True)
-                 if u != v and (capacity not in attr or attr[capacity] > 0)]
+                 if u != v and attr.get(capacity, inf) > 0]
     # Simulate infinity with twice the sum of the finite edge capacities or any
     # positive value if the sum is zero. This allows the infinite-capacity
-    # edges to be distinguished for detecting unboundedness. If the maximum
-    # flow is finite, these edge still cannot appear in the minimum cut and
-    # thus guarantee correctness.
-    inf = float('inf')
+    # edges to be distinguished for unboundedness detection and directly
+    # participate in residual capacity calculation. If the maximum flow is
+    # finite, these edges cannot appear in the minimum cut and thus guarantee
+    # correctness.
     inf = 2 * sum(attr[capacity] for u, v, attr in edge_list
                   if capacity in attr and attr[capacity] != inf) or 1
     if G.is_directed():
         for u, v, attr in edge_list:
-            r = attr[capacity] if capacity in attr else inf
+            r = min(attr.get(capacity, inf), inf)
             if not R.has_edge(u, v):
                 # Both (u, v) and (v, u) must be present in the residual
                 # network.
@@ -113,9 +113,12 @@ def build_residual_network(G, s, t, capacity):
     else:
         for u, v, attr in edge_list:
             # Add a pair of edges with equal residual capacities.
-            r = attr[capacity] if capacity in attr else inf
+            r = min(attr.get(capacity, inf), inf)
             R.add_edge(u, v, capacity=r, flow=0)
             R.add_edge(v, u, capacity=r, flow=0)
+
+    # Record the value simulating infinity.
+    R.graph['inf'] = inf
 
     # Detect unboundedness by determining reachability of t from s using only
     # infinite-capacity edges.
@@ -140,6 +143,6 @@ def build_flow_dict(G, R):
     flow_dict = {}
     for u in G:
         flow_dict[u] = dict((v, 0) for v in G[u])
-        flow_dict[u].update((v, R[u][v]['flow']) for v in R[u]
-                            if R[u][v]['flow'] > 0)
+        flow_dict[u].update((v, attr['flow']) for v, attr in R[u].items()
+                            if attr['flow'] > 0)
     return flow_dict
