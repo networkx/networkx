@@ -46,7 +46,21 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
             assert_equal(exc, 0, msg=msg.format(flow_func.__name__))
 
 
-def compare_flows(G, s, t, solnFlows, solnValue, capacity='capacity'):
+def validate_cuts(G, s, t, solnValue, cutset, capacity, flow_func):
+    assert_true(all(G.has_edge(u, v) for (u, v) in cutset), 
+                msg=msg.format(flow_func.__name__))
+    assert_equal(solnValue, sum(G[u][v][capacity] for (u, v) in cutset),
+                msg=msg.format(flow_func.__name__))
+    H = G.copy()
+    H.remove_edges_from(cutset)
+    if not G.is_directed():
+        assert_false(nx.is_connected(H), msg=msg.format(flow_func.__name__))
+    else:
+        assert_false(nx.is_strongly_connected(H), 
+                     msg=msg.format(flow_func.__name__))
+
+
+def compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity='capacity'):
     for flow_func in flow_funcs:
         R = flow_func(G, s, t, capacity)
         # Test both legacy and new implementations.
@@ -60,8 +74,17 @@ def compare_flows(G, s, t, solnFlows, solnValue, capacity='capacity'):
             assert_equal(flow_dict, solnFlows, msg=msg.format(flow_func.__name__))
         else:
             validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
+        # Minimum cut
+        if legacy:
+            cutset = nx.minimum_cut(G, s, t,  capacity=capacity, 
+                                    flow_func=nx.ford_fulkerson, value_only=False)
+        else:
+            cutset = nx.minimum_cut(G, s, t, capacity=capacity, 
+                                    flow_func=flow_func, value_only=False)
+        validate_cuts(G, s, t, solnValue, cutset, capacity, flow_func)
 
-class TestMaxflow:
+
+class TestMaxflowMinCutCommon:
 
     def test_graph1(self):
         # Trivial undirected graph
@@ -71,7 +94,7 @@ class TestMaxflow:
         solnFlows = {1: {2: 1.0},
                      2: {1: 1.0}}
 
-        compare_flows(G, 1, 2, solnFlows, 1.0)
+        compare_flows_and_cuts(G, 1, 2, solnFlows, 1.0)
 
     def test_graph2(self):
         # A more complex undirected graph
@@ -94,7 +117,7 @@ class TestMaxflow:
              'e': {'d': 2, 'y': 2},
              'y': {'c': 2, 'e': 2}}
 
-        compare_flows(G, 'x', 'y', H, 4.0)
+        compare_flows_and_cuts(G, 'x', 'y', H, 4.0)
 
     def test_digraph1(self):
         # The classic directed graph example
@@ -110,7 +133,7 @@ class TestMaxflow:
              'c': {'d': 1000.0},
              'd': {}}
 
-        compare_flows(G, 'a', 'd', H, 2000.0)
+        compare_flows_and_cuts(G, 'a', 'd', H, 2000.0)
 
     def test_digraph2(self):
         # An example in which some edges end up with zero flow.
@@ -129,7 +152,7 @@ class TestMaxflow:
              'a': {'t': 2},
              't': {}}
 
-        compare_flows(G, 's', 't', H, 2)
+        compare_flows_and_cuts(G, 's', 't', H, 2)
 
     def test_digraph3(self):
         # A directed graph example from Cormen et al.
@@ -152,7 +175,7 @@ class TestMaxflow:
              'v4': {'v3': 7.0, 't': 4.0},
              't': {}}
 
-        compare_flows(G, 's', 't', H, 23.0)
+        compare_flows_and_cuts(G, 's', 't', H, 23.0)
 
     def test_digraph4(self):
         # A more complex directed graph
@@ -175,7 +198,7 @@ class TestMaxflow:
              'e': {'y': 1.0},
              'y': {}}
 
-        compare_flows(G, 'x', 'y', H, 3.0)
+        compare_flows_and_cuts(G, 'x', 'y', H, 3.0)
 
     def test_optional_capacity(self):
         # Test optional capacity parameter.
@@ -200,7 +223,7 @@ class TestMaxflow:
         s = 'x'
         t = 'y'
 
-        compare_flows(G, s, t, solnFlows, solnValue, capacity = 'spam')
+        compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity = 'spam')
 
     def test_digraph_infcap_edges(self):
         # DiGraph with infinite capacity edges
@@ -218,7 +241,7 @@ class TestMaxflow:
              'c': {'t': 37},
              't': {}}
 
-        compare_flows(G, 's', 't', H, 97)
+        compare_flows_and_cuts(G, 's', 't', H, 97)
 
         # DiGraph with infinite capacity digon
         G = nx.DiGraph()
@@ -236,7 +259,7 @@ class TestMaxflow:
              'b': {'c': 12},
              't': {}}
 
-        compare_flows(G, 's', 't', H, 97)
+        compare_flows_and_cuts(G, 's', 't', H, 97)
 
 
     def test_digraph_infcap_path(self):
@@ -269,7 +292,7 @@ class TestMaxflow:
              'c': {'a': 25, 'b': 12, 't': 37},
              't': {'a': 60, 'c': 37}}
 
-        compare_flows(G, 's', 't', H, 97)
+        compare_flows_and_cuts(G, 's', 't', H, 97)
 
     def test_digraph4(self):
         # From ticket #429 by mfrasca.
@@ -284,7 +307,7 @@ class TestMaxflow:
                     'b': {'a': 0, 't': 3},
                     's': {'a': 2, 'b': 2},
                     't': {}}
-        compare_flows(G, 's', 't', flowSoln, 4)
+        compare_flows_and_cuts(G, 's', 't', flowSoln, 4)
 
 
     def test_disconnected(self):
@@ -293,7 +316,7 @@ class TestMaxflow:
         G.remove_node(1)
         assert_equal(nx.maximum_flow(G,0,3), 0)
         flowSoln = {0: {}, 2: {3: 0}, 3: {2: 0}}
-        compare_flows(G, 0, 3, flowSoln, 0)
+        compare_flows_and_cuts(G, 0, 3, flowSoln, 0)
 
     def test_source_target_not_in_graph(self):
         G = nx.Graph()
@@ -312,31 +335,71 @@ class TestMaxflow:
         for flow_func in all_funcs:
             assert_raises(nx.NetworkXError, flow_func, G, 0, 0)
 
-    def test_preflow_push_global_relabel_freq(self):
-        G = nx.DiGraph()
-        G.add_edge(1, 2, capacity=1)
-        R = nx.preflow_push(G, 1, 2, global_relabel_freq=None)
-        assert_equal(R.node[2]['excess'], 1)
-        assert_raises(nx.NetworkXError, preflow_push, G, 1, 2,
-                      global_relabel_freq=-1)
 
-    def test_shortest_augmenting_path_two_phase(self):
-        k = 5
-        p = 1000
-        G = nx.DiGraph()
-        for i in range(k):
-            G.add_edge('s', (i, 0), capacity=1)
-            G.add_path(((i, j) for j in range(p)), capacity=1)
-            G.add_edge((i, p - 1), 't', capacity=1)
-        R = shortest_augmenting_path(G, 's', 't', two_phase=True)
-        assert_equal(R.node['t']['excess'], k)
-        R = shortest_augmenting_path(G, 's', 't', two_phase=False)
-        assert_equal(R.node['t']['excess'], k)
+class TestMaxFlowMinCutInterface:
 
     def test_flow_func_not_callable(self):
+        elements = ['this_should_be_callable', 10, set([1,2,3])]
         G = nx.Graph()
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
-        assert_raises(nx.NetworkXError, 
-                        nx.maximum_flow, G, 0, 1, flow_func='this_should_be_callable')
-        assert_raises(nx.NetworkXError, 
-                        nx.minimum_cut, G, 0, 1, flow_func='this_should_be_callable')
+        for element in elements:
+            assert_raises(nx.NetworkXError, 
+                            nx.maximum_flow, G, 0, 1, flow_func=element)
+            assert_raises(nx.NetworkXError, 
+                            nx.minimum_cut, G, 0, 1, flow_func=element)
+
+    def test_flow_func_parameter(self):
+        G = nx.DiGraph()
+        G.add_edge('x','a', capacity = 3.0)
+        G.add_edge('x','b', capacity = 1.0)
+        G.add_edge('a','c', capacity = 3.0)
+        G.add_edge('b','c', capacity = 5.0)
+        G.add_edge('b','d', capacity = 4.0)
+        G.add_edge('d','e', capacity = 2.0)
+        G.add_edge('c','y', capacity = 2.0)
+        G.add_edge('e','y', capacity = 3.0)
+
+        fv = 3.0
+        for flow_func in [nx.edmonds_karp, nx.ford_fulkerson,
+                          nx.preflow_push, nx.shortest_augmenting_path]:
+            assert_equal(fv, nx.maximum_flow(G, 'x', 'y', flow_func=flow_func),
+                         msg=msg.format(flow_func.__name__))
+            assert_equal(fv, nx.minimum_cut(G, 'x', 'y', flow_func=flow_func),
+                         msg=msg.format(flow_func.__name__))
+
+    def test_kwargs(self):
+        G = nx.DiGraph()
+        G.add_edge(0, 1, capacity = 1.0)
+        G.add_edge(1, 2, capacity = 1.0)
+        fv = 1.0
+        assert_equal(fv, nx.maximum_flow(G, 0, 2, 
+                            flow_func=nx.shortest_augmenting_path, two_phase=True))
+        assert_equal(fv, nx.minimum_cut(G, 0, 2, 
+                            flow_func=nx.shortest_augmenting_path, two_phase=True))
+        assert_equal(fv, nx.maximum_flow(G, 0, 2,
+                            flow_func=nx.preflow_push, global_relabel_freq=5))
+        assert_equal(fv, nx.minimum_cut(G, 0, 2, 
+                            flow_func=nx.preflow_push, global_relabel_freq=5))
+
+
+# Tests especific to one algorithm
+def test_preflow_push_global_relabel_freq():
+    G = nx.DiGraph()
+    G.add_edge(1, 2, capacity=1)
+    R = nx.preflow_push(G, 1, 2, global_relabel_freq=None)
+    assert_equal(R.node[2]['excess'], 1)
+    assert_raises(nx.NetworkXError, preflow_push, G, 1, 2,
+                  global_relabel_freq=-1)
+
+def test_shortest_augmenting_path_two_phase():
+    k = 5
+    p = 1000
+    G = nx.DiGraph()
+    for i in range(k):
+        G.add_edge('s', (i, 0), capacity=1)
+        G.add_path(((i, j) for j in range(p)), capacity=1)
+        G.add_edge((i, p - 1), 't', capacity=1)
+    R = shortest_augmenting_path(G, 's', 't', two_phase=True)
+    assert_equal(R.node['t']['excess'], k)
+    R = shortest_augmenting_path(G, 's', 't', two_phase=False)
+    assert_equal(R.node['t']['excess'], k)
