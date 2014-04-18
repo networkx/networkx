@@ -24,6 +24,15 @@ all_funcs = sum([flow_funcs, max_min_funcs], [])
 
 msg = "Assertion failed in function: {0}"
 
+
+def compute_cutset(G, partition):
+    reachable, non_reachable = partition
+    cutset = set()
+    for u, nbrs in ((n, G[n]) for n in reachable):
+        cutset.update((u, v) for v in nbrs if v in non_reachable)
+    return cutset
+
+
 def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
     assert_equal(set(G), set(flowDict), msg=msg.format(flow_func.__name__))
     for u in G:
@@ -46,7 +55,12 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
             assert_equal(exc, 0, msg=msg.format(flow_func.__name__))
 
 
-def validate_cuts(G, s, t, solnValue, cutset, capacity, flow_func):
+def validate_cuts(G, s, t, solnValue, partition, capacity, flow_func):
+    assert_true(all(n in G for n in partition[0]), 
+                msg=msg.format(flow_func.__name__))
+    assert_true(all(n in G for n in partition[1]), 
+                msg=msg.format(flow_func.__name__))
+    cutset = compute_cutset(G, partition)
     assert_true(all(G.has_edge(u, v) for (u, v) in cutset), 
                 msg=msg.format(flow_func.__name__))
     assert_equal(solnValue, sum(G[u][v][capacity] for (u, v) in cutset),
@@ -76,12 +90,12 @@ def compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity='capacity'):
             validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
         # Minimum cut
         if legacy:
-            cutset = nx.minimum_cut(G, s, t,  capacity=capacity, 
+            partition = nx.minimum_cut(G, s, t,  capacity=capacity,
                                     flow_func=nx.ford_fulkerson, value_only=False)
         else:
-            cutset = nx.minimum_cut(G, s, t, capacity=capacity, 
+            partition = nx.minimum_cut(G, s, t, capacity=capacity,
                                     flow_func=flow_func, value_only=False)
-        validate_cuts(G, s, t, solnValue, cutset, capacity, flow_func)
+        validate_cuts(G, s, t, solnValue, partition, capacity, flow_func)
 
 
 class TestMaxflowMinCutCommon:

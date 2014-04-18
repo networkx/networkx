@@ -31,7 +31,7 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
     t : node
         Sink node for the flow.
 
-    capacity: string
+    capacity : string
         Edges of the graph G are expected to have an attribute capacity
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
@@ -39,11 +39,12 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes 
-        in a capacitated graph. The function has to accept three parameters:
-        a Graph or Digraph, a source node, and a target node. And return 
-        the maximum flow value. If flow_func is None the default maximum
-        flow function (:func:`networkx.algorithms.flow.preflow_push`)
-        is used. See below for alternative algorithms. Default value: None.
+        in a capacitated graph. The function has to accept at least three 
+        parameters: a Graph or Digraph, a source node, and a target node. 
+        And return a residual network that follows NetworkX conventions
+        (see Notes). If flow_func is None the default maximum 
+        flow function (:meth:`preflow_push`) is used. See below for 
+        alternative algorithms. Default value: None.
 
     value_only : boolean
         If True compute only the value of the maximum flow. If False 
@@ -76,11 +77,37 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
     
     See also
     --------
-    minimum_cut
-    :func:`networkx.algorithms.flow.edmonds_karp`
-    :func:`networkx.algorithms.flow.ford_fulkerson`
-    :func:`networkx.algorithms.flow.preflow_push`
-    :func:`networkx.algorithms.flow.shortest_augmenting_path`
+    :meth:`minimum_cut`
+    :meth:`edmonds_karp`
+    :meth:`ford_fulkerson`
+    :meth:`preflow_push`
+    :meth:`shortest_augmenting_path`
+
+    Notes
+    -----
+    The function used in the flow_func paramter has to return a residual
+    network that follows NetworkX conventions:
+
+    The residual network :samp:`R` from an input graph :samp:`G` has the
+    same nodes than :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
+    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
+    in :samp:`G`. For each node :samp:`u` in :samp:`R`,
+    :samp:`R.node[u]['excess']` represents the difference between flow into
+    :samp:`u` and flow out of :samp:`u`. Thus the maximum flow value is
+    stored in :samp:`R.node[t]['excess']`, where :samp:`t` is the sink node.
+
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']` 
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists 
+    in :samp:`G` or zero otherwise. If the capacity is infinite, 
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value 
+    that does not affect the solution of the problem. For each edge 
+    :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['flow']` represents 
+    the flow function of :samp:`(u, v)` and satisfies 
+    :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    The legacy :meth:`ford_fulkerson` maximum flow implementation doesn't
+    follow this conventions but it is supported as a valid flow_func.
 
     Examples
     --------
@@ -164,7 +191,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     t : node
         Sink node for the flow.
 
-    capacity: string
+    capacity : string
         Edges of the graph G are expected to have an attribute capacity
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
@@ -172,11 +199,12 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes 
-        in a capacitated graph. The function has to accept three parameters:
-        a Graph or Digraph, a source node, and a target node. And return 
-        the maximum flow value. If flow_func is None the default maximum 
-        flow function (:func:`networkx.algorithms.flow.preflow_push`)
-        is used. See below for alternative algorithms. Default value: None.
+        in a capacitated graph. The function has to accept at least three 
+        parameters: a Graph or Digraph, a source node, and a target node. 
+        And return a residual network that follows NetworkX conventions
+        (see Notes). If flow_func is None the default maximum 
+        flow function (:meth:`preflow_push`) is used. See below for 
+        alternative algorithms. Default value: None.
 
     value_only : boolean
         If True compute only the value of the minimum cut. If False compute
@@ -190,8 +218,9 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     cut_value : integer, float
         Value of the minimum cut if value_only is True.
 
-    cutset : set
-        The set of edges that form the minimum cut if value_only is False.
+    partition : pair of node sets
+        A partitioning of the nodes that defines a minimum cut if
+        value_only is False.
     
     Raises
     ------
@@ -202,10 +231,36 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     See also
     --------
     maximum_flow    
-    :func:`networkx.algorithms.flow.edmonds_karp`
-    :func:`networkx.algorithms.flow.ford_fulkerson`
-    :func:`networkx.algorithms.flow.preflow_push`
-    :func:`networkx.algorithms.flow.shortest_augmenting_path`
+    :meth:`edmonds_karp`
+    :meth:`ford_fulkerson`
+    :meth:`preflow_push`
+    :meth:`shortest_augmenting_path`
+
+    Notes
+    -----
+    The function used in the flow_func paramter has to return a residual
+    network that follows NetworkX conventions:
+
+    The residual network :samp:`R` from an input graph :samp:`G` has the
+    same nodes than :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
+    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
+    in :samp:`G`. For each node :samp:`u` in :samp:`R`,
+    :samp:`R.node[u]['excess']` represents the difference between flow into
+    :samp:`u` and flow out of :samp:`u`. Thus the maximum flow value is
+    stored in :samp:`R.node[t]['excess']`, where :samp:`t` is the sink node.
+
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']` 
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists 
+    in :samp:`G` or zero otherwise. If the capacity is infinite, 
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value 
+    that does not affect the solution of the problem. For each edge 
+    :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['flow']` represents 
+    the flow function of :samp:`(u, v)` and satisfies 
+    :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    The legacy :meth:`ford_fulkerson` maximum flow implementation doesn't
+    follow this conventions but it is supported as a valid flow_func.
 
     Examples
     --------
@@ -227,10 +282,19 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     >>> min_cut_value
     3.0
 
-    If you want the actual minimum cut (ie the set of edges), you
+    If you want node partition that defines the minimum cut, you
     have to set the parameter value_only to False:
 
-    >>> cutset = nx.minimum_cut(G, 'x', 'y', value_only=False)
+    >>> partition = nx.minimum_cut(G, 'x', 'y', value_only=False)
+    >>> reachable, non_reachable = partition
+
+    'partition' here is a tuple with the two sets of nodes that define
+    the minimum cut. You can compute the cut set of edges that induce
+    the minimum cut as follows:
+    
+    >>> cutset = set()
+    >>> for u, nbrs in ((n, G[n]) for n in reachable):
+    ...     cutset.update((u, v) for v in nbrs if v in non_reachable)
     >>> print(sorted(cutset))
     [('c', 'y'), ('x', 'b')]
     >>> assert(min_cut_value == sum(G.edge[u][v]['capacity'] for (u, v) in cutset))
@@ -258,20 +322,17 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
                       **kwargs)
         if value_only:
             return R.node[t]['excess']
-        # Remove saturated edges form the residual network for computing
-        # the cutset.
+        # Remove saturated edges from the residual network for computing
+        # the minimum cut.
         R.remove_edges_from((u, v) for u, v, d in R.edges(data=True)
                             if d['capacity'] - d['flow'] == 0)
 
-    # Compute the actual minimum cut.
-    # Reachable nodes from source in the residual network.
+    # Reachable and non reachable nodes from source in the 
+    # residual network form the node partition that defines
+    # the minimum cut.
     reachable = set(nx.single_source_shortest_path(R, s))
-    # Any edge in the original network linking one node from this
-    # set to a node not in this set is part of the minimum cutset.
-    cutset = set()
-    for u, nbrs in ((n, G[n]) for n in reachable):
-        cutset.update((u, v) for v in nbrs if v not in reachable)
-    return cutset
+    non_reachable = set(G) - reachable
+    return (reachable, non_reachable)
 
 
 # backwards compatibility
