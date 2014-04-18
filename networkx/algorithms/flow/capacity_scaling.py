@@ -234,29 +234,6 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
     >>> flowDict # doctest: +SKIP
     {'a': {'c': 1, 'b': 4}, 'c': {'d': 1}, 'b': {'d': 4}, 'd': {}}
 
-    The mincost flow algorithm can also be used to solve shortest path
-    problems. To find the shortest path between two nodes u and v,
-    give all edges an infinite capacity, give node u a demand of -1 and
-    node v a demand a 1. Then run the network simplex. The value of a
-    min cost flow will be the distance between u and v and edges
-    carrying positive flow will indicate the path.
-
-    >>> G=nx.DiGraph()
-    >>> G.add_weighted_edges_from([('s','u',10), ('s','x',5),
-    ...                            ('u','v',1), ('u','x',2),
-    ...                            ('v','y',1), ('x','u',3),
-    ...                            ('x','v',5), ('x','y',2),
-    ...                            ('y','s',7), ('y','v',6)])
-    >>> G.add_node('s', demand = -1)
-    >>> G.add_node('v', demand = 1)
-    >>> flowCost, flowDict = nx.capacity_scaling(G)
-    >>> flowCost == nx.shortest_path_length(G, 's', 'v', weight = 'weight')
-    True
-    >>> sorted([(u, v) for u in flowDict for v in flowDict[u] if flowDict[u][v] > 0])
-    [('s', 'x'), ('u', 'v'), ('x', 'u')]
-    >>> nx.shortest_path(G, 's', 'v', weight = 'weight')
-    ['s', 'x', 'u', 'v']
-
     It is possible to change the name of the attributes used for the
     algorithm.
 
