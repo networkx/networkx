@@ -1,10 +1,8 @@
-from functools import total_ordering
 from nose.tools import *
 import networkx as nx
 from networkx.utils import *
 
 
-@total_ordering
 class X(object):
 
     def __eq__(self, other):
@@ -14,6 +12,15 @@ class X(object):
         raise self is not other
 
     def __lt__(self, other):
+        raise TypeError('cannot compare')
+
+    def __le__(self, other):
+        raise TypeError('cannot compare')
+
+    def __ge__(self, other):
+        raise TypeError('cannot compare')
+
+    def __gt__(self, other):
         raise TypeError('cannot compare')
 
     def __hash__(self):
