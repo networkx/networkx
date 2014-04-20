@@ -1,8 +1,8 @@
 """
 Cuthill-McKee ordering of graph nodes to produce sparse matrices
 """
-#    Copyright (C) 2011 by 
-#    Aric Hagberg <hagberg@lanl.gov>
+#    Copyright (C) 2011-2014 by 
+#    Aric Hagberg <aric.hagberg@gmail.com>
 #    All rights reserved.
 #    BSD license.
 from operator import itemgetter
