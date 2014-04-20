@@ -1,27 +1,26 @@
-"""Functions to convert NetworkX graphs to and from other formats.
+"""Functions to convert NetworkX graphs to and from numpy/scipy matrices.
 
 The preferred way of converting data to a NetworkX graph is through the
 graph constuctor.  The constructor calls the to_networkx_graph() function
 which attempts to guess the input type and convert it automatically.
 
 Examples
-
-
+--------
 Create a 10 node random graph from a numpy matrix
 
 >>> import numpy
->>> a=numpy.reshape(numpy.random.random_integers(0,1,size=100),(10,10))
->>> D=nx.DiGraph(a)
+>>> a = numpy.reshape(numpy.random.random_integers(0,1,size=100),(10,10))
+>>> D = nx.DiGraph(a)
 
 or equivalently
 
->>> D=nx.to_networkx_graph(a,create_using=nx.DiGraph())
+>>> D = nx.to_networkx_graph(a,create_using=nx.DiGraph())
 
 See Also
 --------
 nx_pygraphviz, nx_pydot
 """
-#    Copyright (C) 2006-2013 by
+#    Copyright (C) 2006-2014 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -80,7 +79,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     Returns
     -------
     M : NumPy matrix
-       Graph adjacency matrix.
+       Graph adjacency matrix
 
     See Also
     --------
@@ -88,13 +87,29 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
 
     Notes
     -----
-    The matrix entries are assigned with weight edge attribute. When
-    an edge does not have the weight attribute, the value of the entry is 1.
-    For multiple edges, the values of the entries are the sums of the edge
-    attributes for each edge.
+    The matrix entries are assigned to the weight edge attribute. When
+    an edge does not have a weight attribute, the value of the entry is set to
+    the number 1.  For multiple (parallel) edges, the values of the entries
+    are determined by the 'multigraph_weight' paramter.  The default is to
+    sum the weight attributes for each of the parallel edges.
 
     When `nodelist` does not contain every node in `G`, the matrix is built
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
+
+    The convention used for self-loop edges in graphs is to assign the
+    diagonal matrix entry value to the weight attributr of the edge
+    (or the number 1 if the edge has no weight attribute).  If the
+    alternate convention of doubling the edge weight is desired the
+    resulting Numpy matrix can be modified as follows:
+
+    >>> import numpy as np
+    >>> G = nx.Graph([(1,1)])
+    >>> A = nx.to_numpy_matrix(G)
+    >>> A
+    matrix([[ 1.]])
+    >>> A.A[np.diag_indices_from(A)] *= 2
+    >>> A
+    matrix([[ 2.]])
 
     Examples
     --------
@@ -393,6 +408,21 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
 
     Uses coo_matrix format. To convert to other formats specify the
     format= keyword.
+
+    The convention used for self-loop edges in graphs is to assign the
+    diagonal matrix entry value to the weight attributr of the edge
+    (or the number 1 if the edge has no weight attribute).  If the
+    alternate convention of doubling the edge weight is desired the
+    resulting Scipy sparse matrix can be modified as follows:
+
+    >>> import scipy as sp
+    >>> G = nx.Graph([(1,1)])
+    >>> A = nx.to_scipy_sparse_matrix(G)
+    >>> print(A.todense())
+    [[1]]
+    >>> A.setdiag(A.diagonal()*2)
+    >>> print(A.todense())
+    [[2]]
 
     Examples
     --------
