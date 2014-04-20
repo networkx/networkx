@@ -410,7 +410,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     format= keyword.
 
     The convention used for self-loop edges in graphs is to assign the
-    diagonal matrix entry value to the weight attributr of the edge
+    diagonal matrix entry value to the weight attribute of the edge
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
     resulting Scipy sparse matrix can be modified as follows:
