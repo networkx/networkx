@@ -8,6 +8,7 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # BSD license.
 
 from heapq import heappop, heappush
+from itertools import count
 import networkx as nx
 
 __all__ = ['MinHeap', 'PairingHeap', 'BinaryHeap']
@@ -303,19 +304,12 @@ class PairingHeap(MinHeap):
 class BinaryHeap(MinHeap):
     """A binary heap.
     """
-    class _Item(MinHeap._Item):
-        """An item in a binary heap.
-        """
-        __slots__ = ()
-
-        def __lt__(self, other):
-            return self.value < other.value
-
     def __init__(self):
         """Initialize a binary heap.
         """
         super(BinaryHeap, self).__init__()
         self._heap = []
+        self._count = count()
 
     @_inherit_doc(MinHeap)
     def min(self):
@@ -327,9 +321,7 @@ class BinaryHeap(MinHeap):
         # Repeatedly remove stale key-value pairs until a up-to-date one is
         # met.
         while True:
-            item = heap[0]
-            key = item.key
-            value = item.value
+            value, _, key = heap[0]
             if key in dict and value == dict[key]:
                 break
             pop(heap)
@@ -345,9 +337,7 @@ class BinaryHeap(MinHeap):
         # Repeatedly remove stale key-value pairs until a up-to-date one is
         # met.
         while True:
-            item = heap[0]
-            key = item.key
-            value = item.value
+            value, _, key = heap[0]
             pop(heap)
             if key in dict and value == dict[key]:
                 break
@@ -369,10 +359,10 @@ class BinaryHeap(MinHeap):
                 # with the same key may already be present. Deem the old ones
                 # as stale and skip them when the minimum pair is queried.
                 dict[key] = value
-                heappush(self._heap, self._Item(key, value))
+                heappush(self._heap, (value, next(self._count), key))
                 return value < old_value
             return False
         else:
             dict[key] = value
-            heappush(self._heap, self._Item(key, value))
+            heappush(self._heap, (value, next(self._count), key))
             return True
