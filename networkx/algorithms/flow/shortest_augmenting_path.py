@@ -38,6 +38,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
     if s not in heights:
         # t is not reachable from s in the residual network. The maximum flow
         # must be zero.
+        R.graph['flow_value'] = 0
         return R
 
     n = len(G)
@@ -72,9 +73,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
             R_succ[u][v]['flow'] += flow
             R_succ[v][u]['flow'] -= flow
             u = v
-        # Accumulate the flow values.
-        R_node[s]['excess'] -= flow
-        R_node[t]['excess'] += flow
+        return flow
 
     def relabel(u):
         """Relabel a node to create an admissible edge.
@@ -87,6 +86,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
 
     # Phase 1: Look for shortest augmenting paths using depth-first search.
 
+    flow_value = 0
     path = [s]
     u = s
     d = n if not two_phase else int(min(m ** 0.5, 2 * n ** (2. / 3)))
@@ -111,12 +111,14 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
                     # Gap heuristic: If relabeling causes a level to become
                     # empty, a minimum cut has been identified. The algorithm
                     # can now be terminated.
+                    R.graph['flow_value'] = flow_value
                     return R
                 height = relabel(u)
                 if u == s and height >= d:
                     if not two_phase:
                         # t is disconnected from s in the residual network. No
                         # more augmenting paths exist.
+                        R.graph['flow_value'] = flow_value
                         return R
                     else:
                         # t is at least d steps away from s. End of phase 1.
@@ -133,22 +135,23 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
         if u == t:
             # t is reached. Augment flow along the path and reset it for a new
             # depth-first search.
-            augment(path)
+            flow_value += augment(path)
             path = [s]
             u = s
 
     # Phase 2: Look for shortest augmenting paths using breadth-first search.
-    edmonds_karp_core(R, s, t)
+    flow_value += edmonds_karp_core(R, s, t)
 
+    R.graph['flow_value'] = flow_value
     return R
 
 
-def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False, 
+def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
                              two_phase=False):
     """Find a maximum single-commodity flow using the shortest augmenting path
     algorithm.
 
-    This function returns the residual network resulting after computing 
+    This function returns the residual network resulting after computing
     the maximum flow. See below for details about the conventions
     NetworkX uses for defining residual networks.
 
@@ -212,22 +215,22 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
     Notes
     -----
     The residual network :samp:`R` from an input graph :samp:`G` has the
-    same nodes than :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair
     of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
     self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
-    in :samp:`G`. For each node :samp:`u` in :samp:`R`,
-    :samp:`R.node[u]['excess']` represents the difference between flow into
-    :samp:`u` and flow out of :samp:`u`. Thus the maximum flow value is
-    stored in :samp:`R.node[t]['excess']`, where :samp:`t` is the sink node.
+    in :samp:`G`.
 
-    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']` 
-    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists 
-    in :samp:`G` or zero otherwise. If the capacity is infinite, 
-    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value 
-    that does not affect the solution of the problem. For each edge 
-    :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['flow']` represents 
-    the flow function of :samp:`(u, v)` and satisfies 
-    :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']`
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists
+    in :samp:`G` or zero otherwise. If the capacity is infinite,
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value
+    that does not affect the solution of the problem. This value is stored in
+    :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
+    :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
+    satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    The flow value, defined as the total flow into :samp:`t`, the sink, is
+    stored in :samp:`R.node[t]['flow_value']`.
 
     Examples
     --------
@@ -245,7 +248,7 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
     >>> flow_value = nx.maximum_flow(G, 'x', 'y')
     >>> flow_value
     3.0
-    >>> assert(flow_value == R.node['y']['excess'])
+    >>> assert(flow_value == R.graph['flow_value'])
 
     """
     R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)

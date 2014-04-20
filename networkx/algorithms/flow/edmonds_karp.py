@@ -40,9 +40,7 @@ def edmonds_karp_core(R, s, t):
             R_succ[u][v]['flow'] += flow
             R_succ[v][u]['flow'] -= flow
             u = v
-        # Accumulate the flow values.
-        R_node[s]['excess'] -= flow
-        R_node[t]['excess'] += flow
+        return flow
 
     def bidirectional_bfs():
         """Bidirectional breadth-first search for an augmenting path.
@@ -77,6 +75,7 @@ def edmonds_karp_core(R, s, t):
                 q_t = q
 
     # Look for shortest augmenting paths using breadth-first search.
+    flow_value = 0
     while True:
         v, pred, succ = bidirectional_bfs()
         if pred is None:
@@ -93,7 +92,9 @@ def edmonds_karp_core(R, s, t):
         while u != t:
             u = succ[u]
             path.append(u)
-        augment(path)
+        flow_value += augment(path)
+
+    return flow_value
 
 
 def edmonds_karp_impl(G, s, t, capacity):
@@ -101,7 +102,7 @@ def edmonds_karp_impl(G, s, t, capacity):
     """
     R = build_residual_network(G, s, t, capacity)
 
-    edmonds_karp_core(R, s, t)
+    R.graph['flow_value'] = edmonds_karp_core(R, s, t)
 
     return R
 
@@ -109,7 +110,7 @@ def edmonds_karp_impl(G, s, t, capacity):
 def edmonds_karp(G, s, t, capacity='capacity', value_only=False):
     """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
 
-    This function returns the residual network resulting after computing 
+    This function returns the residual network resulting after computing
     the maximum flow. See below for details about the conventions
     NetworkX uses for defining residual networks.
 
@@ -168,22 +169,22 @@ def edmonds_karp(G, s, t, capacity='capacity', value_only=False):
     Notes
     -----
     The residual network :samp:`R` from an input graph :samp:`G` has the
-    same nodes than :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair
     of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
     self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
-    in :samp:`G`. For each node :samp:`u` in :samp:`R`,
-    :samp:`R.node[u]['excess']` represents the difference between flow into
-    :samp:`u` and flow out of :samp:`u`. Thus the maximum flow value is
-    stored in :samp:`R.node[t]['excess']`, where :samp:`t` is the sink node.
+    in :samp:`G`.
 
-    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']` 
-    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists 
-    in :samp:`G` or zero otherwise. If the capacity is infinite, 
-    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value 
-    that does not affect the solution of the problem. For each edge 
-    :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['flow']` represents 
-    the flow function of :samp:`(u, v)` and satisfies 
-    :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']`
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists
+    in :samp:`G` or zero otherwise. If the capacity is infinite,
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value
+    that does not affect the solution of the problem. This value is stored in
+    :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
+    :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
+    satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    The flow value, defined as the total flow into :samp:`t`, the sink, is
+    stored in :samp:`R.node[t]['flow_value']`.
 
     Examples
     --------
@@ -201,7 +202,7 @@ def edmonds_karp(G, s, t, capacity='capacity', value_only=False):
     >>> flow_value = nx.maximum_flow(G, 'x', 'y')
     >>> flow_value
     3.0
-    >>> assert(flow_value == R.node['y']['excess'])
+    >>> assert(flow_value == R.graph['flow_value'])
 
     """
     R = edmonds_karp_impl(G, s, t, capacity)

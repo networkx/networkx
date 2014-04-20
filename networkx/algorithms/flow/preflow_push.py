@@ -50,6 +50,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, value_only):
     if s not in heights:
         # t is not reachable from s in the residual network. The maximum flow
         # must be zero.
+        R.graph['flow_value'] = 0
         return R
 
     n = len(R)
@@ -236,6 +237,7 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, value_only):
     # A maximum preflow has been found. The excess at t is the maximum flow
     # value.
     if value_only:
+        R.graph['flow_value'] = R_node[t]['excess']
         return R
 
     # Phase 2: Convert the maximum preflow into a maximum flow by returning the
@@ -262,15 +264,16 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, value_only):
                 height = global_relabel(False)
                 grt.clear_work()
 
+    R.graph['flow_value'] = R_node[t]['excess']
     return R
 
 
-def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1, 
+def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1,
                  value_only=False):
-    """Find a maximum single-commodity flow using the highest-label 
+    """Find a maximum single-commodity flow using the highest-label
     preflow-push algorithm.
 
-    This function returns the residual network resulting after computing 
+    This function returns the residual network resulting after computing
     the maximum flow. See below for details about the conventions
     NetworkX uses for defining residual networks.
 
@@ -304,7 +307,7 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1,
 
     value_only : bool
         If False, compute a maximum flow; otherwise, compute a maximum preflow
-        which is enough for computing the maximum flow value. Default value: 
+        which is enough for computing the maximum flow value. Default value:
         False.
 
     Returns
@@ -335,22 +338,24 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1,
     Notes
     -----
     The residual network :samp:`R` from an input graph :samp:`G` has the
-    same nodes than :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair
     of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
     self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
     in :samp:`G`. For each node :samp:`u` in :samp:`R`,
     :samp:`R.node[u]['excess']` represents the difference between flow into
-    :samp:`u` and flow out of :samp:`u`. Thus the maximum flow value is
-    stored in :samp:`R.node[t]['excess']`, where :samp:`t` is the sink node.
+    :samp:`u` and flow out of :samp:`u`.
 
-    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']` 
-    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists 
-    in :samp:`G` or zero otherwise. If the capacity is infinite, 
-    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value 
-    that does not affect the solution of the problem. For each edge 
-    :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['flow']` represents 
-    the flow function of :samp:`(u, v)` and satisfies 
-    :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']`
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists
+    in :samp:`G` or zero otherwise. If the capacity is infinite,
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value
+    that does not affect the solution of the problem. This value is stored in
+    :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
+    :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
+    satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    The flow value, defined as the total flow into :samp:`t`, the sink, is
+    stored in :samp:`R.node[t]['flow_value']`.
 
     Examples
     --------
@@ -366,10 +371,12 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1,
     >>> G.add_edge('e','y', capacity=3.0)
     >>> R = nx.preflow_push(G, 'x', 'y')
     >>> flow_value = nx.maximum_flow(G, 'x', 'y')
+    >>> assert(flow_value == R.graph['flow_value'])
     >>> assert(flow_value == R.node['y']['excess'])
     >>> # For some problems, you might only want to compute a
     >>> # maximum preflow.
     >>> R = nx.preflow_push(G, 'x', 'y', value_only=True)
+    >>> assert(flow_value == R.graph['flow_value'])
     >>> assert(flow_value == R.node['y']['excess'])
 
     """
