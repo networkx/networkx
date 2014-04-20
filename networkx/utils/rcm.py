@@ -162,6 +162,6 @@ def pseudo_peripheral_node(G):
         if l <= lp:
             break
         lp = l
-        farthest = [n for n,dist in spl.items() if dist==l]
-        v, deg = sorted(G.degree(farthest).items(), key=itemgetter(1))[0]
+        farthest = (n for n,dist in spl.items() if dist==l)
+        v, deg = min(G.degree(farthest).items(), key=itemgetter(1))
     return v
