@@ -352,3 +352,27 @@ class TestNetworkSimplex:
         flowCost, H = nx.capacity_scaling(G)
         assert_equal(flowCost, 0)
         assert_equal(H, {1: {2: {0: 0}}, 2: {3: {0: 0}}, 3: {}})
+
+    def test_negative_selfloops(self):
+        """Negative selfloops should cause an exception if uncapacitated and
+        always be saturated otherwise.
+        """
+        G = nx.DiGraph()
+        G.add_edge(1, 1, weight=-1)
+        assert_raises(nx.NetworkXUnbounded, nx.network_simplex, G)
+        assert_raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
+        G[1][1]['capacity'] = 2
+        flowCost, H = nx.network_simplex(G)
+        assert_equal(flowCost, -2)
+        assert_equal(H, {1: {1: 2}})
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, -2)
+        assert_equal(H, {1: {1: 2}})
+
+        G = nx.MultiDiGraph()
+        G.add_edge(1, 1, 'x', weight=-1)
+        assert_raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
+        G[1][1]['x']['capacity'] = 2
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, -2)
+        assert_equal(H, {1: {1: {'x': 2}}})
