@@ -163,6 +163,6 @@ adj_matrix=adjacency_matrix
 def setup_module(module):
     from nose import SkipTest
     try:
-        import numpy
+        import scipy
     except:
-        raise SkipTest("NumPy not available")
+        raise SkipTest("SciPy not available")
