@@ -1,6 +1,6 @@
 import itertools as it
 import networkx as nx
-import networkx.algorithms.link_prediction as lp
+import networkx.algorithms.link_prediction.functions as lpfunc
 
 
 def predict_common_neighbors(G):
@@ -12,7 +12,7 @@ def predict_common_neighbors(G):
     neighbors as values.
 
     """
-    return _predict(G, lp.functions.common_neighbors)
+    return _predict(G, lpfunc.common_neighbors)
 
 
 def predict_resource_allocation_index(G):
@@ -24,7 +24,7 @@ def predict_resource_allocation_index(G):
     values.
 
     """
-    return _predict(G, lp.functions.resource_allocation_index)
+    return _predict(G, lpfunc.resource_allocation_index)
 
 
 def predict_cn_soundarajan_hopcroft(G):
@@ -35,7 +35,7 @@ def predict_cn_soundarajan_hopcroft(G):
     connecting them.
 
     """
-    return _predict(G, lp.functions.cn_soundarajan_hopcroft)
+    return _predict(G, lpfunc.cn_soundarajan_hopcroft)
 
 
 def predict_ra_index_soundarajan_hopcroft(G):
@@ -46,7 +46,7 @@ def predict_ra_index_soundarajan_hopcroft(G):
     connecting them.
 
     """
-    return _predict(G, lp.functions.ra_index_soundarajan_hopcroft)
+    return _predict(G, lpfunc.ra_index_soundarajan_hopcroft)
 
 
 def _predict(G, function):

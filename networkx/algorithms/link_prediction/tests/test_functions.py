@@ -1,7 +1,7 @@
 from nose.tools import *
 import networkx as nx
 from networkx.exception import *
-import networkx.algorithms.link_prediction as lp
+import networkx.algorithms.link_prediction.functions as lpfunc
 
 
 class TestCommonNeighbors():
@@ -10,7 +10,7 @@ class TestCommonNeighbors():
         self.P3 = nx.path_graph(3)
         self.S4 = nx.star_graph(4)
         def test_func(G, node1, node2, expected):
-            result = lp.functions.common_neighbors(G, node1, node2)
+            result = lpfunc.common_neighbors(G, node1, node2)
             assert result == expected
         self.test = test_func
 
@@ -37,7 +37,7 @@ class TestResourceAllocationIndex():
         self.S4 = nx.star_graph(4)
         def test_func(G, node1, node2, expected):
             tol = 1e-7
-            result = lp.functions.resource_allocation_index(G, node1, node2)
+            result = lpfunc.resource_allocation_index(G, node1, node2)
             assert abs(result - expected) < tol
         self.test = test_func
 
@@ -79,7 +79,7 @@ class TestCNSoundarajanHopcroft():
         self.S4.node[4]['community'] = 0
 
         def test_func(G, node1, node2, expected):
-            f = lp.functions.cn_soundarajan_hopcroft
+            f = lpfunc.cn_soundarajan_hopcroft
             result = f(G, node1, node2)
             assert result == expected
         self.test = test_func
@@ -141,7 +141,7 @@ class TestRAIndexSoundarajanHopcroft():
 
         def test_func(G, node1, node2, expected):
             tol = 1e-7
-            f = lp.functions.ra_index_soundarajan_hopcroft
+            f = lpfunc.ra_index_soundarajan_hopcroft
             result = f(G, node1, node2)
             assert abs(result - expected) < tol
         self.test = test_func
@@ -205,7 +205,7 @@ class TestWithinInterCluster():
 
         def test_func(G, node1, node2, expected):
             tol = 1e-7
-            f = lp.functions.within_inter_cluster
+            f = lpfunc.within_inter_cluster
             result = f(G, node1, node2, self.delta)
             assert abs(result - expected) < tol
         self.test = test_func
@@ -256,4 +256,4 @@ class TestWithinInterCluster():
     @raises(NetworkXAlgorithmError)
     def test_custom5(self):
         """Case of delta equals zero"""
-        lp.functions.within_inter_cluster(self.K5, 0, 1, 0)
+        lpfunc.within_inter_cluster(self.K5, 0, 1, 0)

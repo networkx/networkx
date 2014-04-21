@@ -1,6 +1,6 @@
 from nose.tools import *
 import networkx as nx
-import networkx.algorithms.link_prediction as lp
+import networkx.algorithms.link_prediction.predict as pred
 from networkx.exception import *
 
 
@@ -9,7 +9,7 @@ class TestPredictCommonNeighbors():
         self.P4 = nx.path_graph(4)
         self.S4 = nx.star_graph(4)
         def test_func(G, expected):
-            result = lp.predict.predict_common_neighbors(G)
+            result = pred.predict_common_neighbors(G)
             for (u, v) in expected:
                 assert (u, v) in result or (v, u) in result
                 if (u, v) in result:
@@ -36,7 +36,7 @@ class TestPredictResourceAllocationIndex():
         self.S4 = nx.star_graph(4)
         def test_func(G, expected):
             tol = 1e-7
-            result = lp.predict.predict_resource_allocation_index(G)
+            result = pred.predict_resource_allocation_index(G)
             for (u, v) in expected:
                 assert (u, v) in result or (v, u) in result
                 if (u, v) in result:
@@ -73,7 +73,7 @@ class TestPredictCNSoundarajanHopcroft():
         self.S4.node[4]['community'] = 0
 
         def test_func(G, expected):
-            result = lp.predict.predict_cn_soundarajan_hopcroft(G)
+            result = pred.predict_cn_soundarajan_hopcroft(G)
             for (u, v) in expected:
                 assert (u, v) in result or (v, u) in result
                 if (u, v) in result:
@@ -118,7 +118,7 @@ class TestPredictRAIndexSoundarajanHopcroft():
 
         def test_func(G, expected):
             tol = 1e-7
-            result = lp.predict.predict_ra_index_soundarajan_hopcroft(G)
+            result = pred.predict_ra_index_soundarajan_hopcroft(G)
             for (u, v) in expected:
                 assert (u, v) in result or (v, u) in result
                 if (u, v) in result:
