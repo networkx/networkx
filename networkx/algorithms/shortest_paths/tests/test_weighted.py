@@ -178,8 +178,12 @@ class TestWeightedPath:
         G.add_edge(9,10)
         assert_raises(ValueError,nx.bidirectional_dijkstra,G,8,10)
 
-    def test_bellman_ford_and_goldberg_radzik(self):
-        # single node graph
+
+class TestBellmanFordAndGoldbergRadizk:
+
+    setUp = TestWeightedPath.setUp
+
+    def test_single_node_graph(self):
         G = nx.DiGraph()
         G.add_node(0)
         assert_equal(nx.bellman_ford(G, 0), ({0: None}, {0: 0}))
@@ -187,7 +191,7 @@ class TestWeightedPath:
         assert_raises(KeyError, nx.bellman_ford, G, 1)
         assert_raises(KeyError, nx.goldberg_radzik, G, 1)
 
-        # negative weight cycle
+    def test_negative_weight_cycle(self):
         G = nx.cycle_graph(5, create_using = nx.DiGraph())
         G.add_edge(1, 2, weight = -7)
         for i in range(5):
@@ -211,7 +215,7 @@ class TestWeightedPath:
                      ({0: None, 1: 0, 2: 1, 3: 2, 4: 3},
                       {0: 0, 1: 1, 2: -2, 3: -1, 4: 0}))
 
-        # not connected
+    def test_not_connected(self):
         G = nx.complete_graph(6)
         G.add_edge(10, 11)
         G.add_edge(10, 12)
@@ -235,7 +239,7 @@ class TestWeightedPath:
                      ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
                       {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
 
-        # multigraph
+    def test_multigraph(self):
         P, D = nx.bellman_ford(self.MXG,'s')
         assert_equal(P['v'], 'u')
         assert_equal(D['v'], 9)
@@ -249,7 +253,7 @@ class TestWeightedPath:
         assert_equal(P[2], 1)
         assert_equal(D[2], 4)
 
-        # other tests
+    def test_others(self):
         (P,D)= nx.bellman_ford(self.XG,'s')
         assert_equal(P['v'], 'u')
         assert_equal(D['v'], 9)
