@@ -672,6 +672,10 @@ def goldberg_radzik(G, source, weight='weight'):
     if source not in G:
         raise KeyError("Node %s is not found in the graph" % source)
 
+    for u, v, attr in G.selfloop_edges(data=True):
+        if attr.get(weight, 1) < 0:
+            raise nx.NetworkXUnbounded("Negative cost cycle detected.")
+
     if len(G) == 1:
         return {source: None}, {source: 0}
 
