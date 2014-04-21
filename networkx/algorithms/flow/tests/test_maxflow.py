@@ -6,11 +6,11 @@ from functools import partial
 from nose.tools import *
 
 import networkx as nx
-from networkx.algorithms.flow.utils import * 
-from networkx.algorithms.flow.edmonds_karp import * 
-from networkx.algorithms.flow.ford_fulkerson import * 
-from networkx.algorithms.flow.preflow_push import * 
-from networkx.algorithms.flow.shortest_augmenting_path import * 
+from networkx.algorithms.flow.utils import *
+from networkx.algorithms.flow.edmonds_karp import *
+from networkx.algorithms.flow.ford_fulkerson import *
+from networkx.algorithms.flow.preflow_push import *
+from networkx.algorithms.flow.shortest_augmenting_path import *
 
 ford_fulkerson = partial(ford_fulkerson, legacy=False)
 ford_fulkerson.__name__ = 'ford_fulkerson'
@@ -36,7 +36,7 @@ def compute_cutset(G, partition):
 def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
     assert_equal(set(G), set(flowDict), msg=msg.format(flow_func.__name__))
     for u in G:
-        assert_equal(set(G[u]), set(flowDict[u]), 
+        assert_equal(set(G[u]), set(flowDict[u]),
                      msg=msg.format(flow_func.__name__))
     excess = dict((u, 0) for u in flowDict)
     for u in flowDict:
@@ -56,12 +56,12 @@ def validate_flows(G, s, t, flowDict, solnValue, capacity, flow_func):
 
 
 def validate_cuts(G, s, t, solnValue, partition, capacity, flow_func):
-    assert_true(all(n in G for n in partition[0]), 
+    assert_true(all(n in G for n in partition[0]),
                 msg=msg.format(flow_func.__name__))
-    assert_true(all(n in G for n in partition[1]), 
+    assert_true(all(n in G for n in partition[1]),
                 msg=msg.format(flow_func.__name__))
     cutset = compute_cutset(G, partition)
-    assert_true(all(G.has_edge(u, v) for (u, v) in cutset), 
+    assert_true(all(G.has_edge(u, v) for (u, v) in cutset),
                 msg=msg.format(flow_func.__name__))
     assert_equal(solnValue, sum(G[u][v][capacity] for (u, v) in cutset),
                 msg=msg.format(flow_func.__name__))
@@ -70,7 +70,7 @@ def validate_cuts(G, s, t, solnValue, partition, capacity, flow_func):
     if not G.is_directed():
         assert_false(nx.is_connected(H), msg=msg.format(flow_func.__name__))
     else:
-        assert_false(nx.is_strongly_connected(H), 
+        assert_false(nx.is_strongly_connected(H),
                      msg=msg.format(flow_func.__name__))
 
 
@@ -79,10 +79,11 @@ def compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity='capacity'):
         R = flow_func(G, s, t, capacity)
         # Test both legacy and new implementations.
         legacy = R.graph.get('algorithm') == "ford_fulkerson_legacy"
+        flow_value = R.graph['flow_value']
         if legacy:
-            flow_value, flow_dict = R.graph['flow_value'], R.graph['flow_dict']
+            flow_dict = R.graph['flow_dict']
         else:
-            flow_value, flow_dict = R.node[t]['excess'], build_flow_dict(G, R)
+            flow_dict = build_flow_dict(G, R)
         assert_equal(flow_value, solnValue, msg=msg.format(flow_func.__name__))
         if legacy:
             assert_equal(flow_dict, solnFlows, msg=msg.format(flow_func.__name__))
@@ -357,9 +358,9 @@ class TestMaxFlowMinCutInterface:
         G = nx.Graph()
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
         for element in elements:
-            assert_raises(nx.NetworkXError, 
+            assert_raises(nx.NetworkXError,
                             nx.maximum_flow, G, 0, 1, flow_func=element)
-            assert_raises(nx.NetworkXError, 
+            assert_raises(nx.NetworkXError,
                             nx.minimum_cut, G, 0, 1, flow_func=element)
 
     def test_flow_func_parameter(self):
@@ -386,13 +387,13 @@ class TestMaxFlowMinCutInterface:
         G.add_edge(0, 1, capacity = 1.0)
         G.add_edge(1, 2, capacity = 1.0)
         fv = 1.0
-        assert_equal(fv, nx.maximum_flow(G, 0, 2, 
+        assert_equal(fv, nx.maximum_flow(G, 0, 2,
                             flow_func=nx.shortest_augmenting_path, two_phase=True))
-        assert_equal(fv, nx.minimum_cut(G, 0, 2, 
+        assert_equal(fv, nx.minimum_cut(G, 0, 2,
                             flow_func=nx.shortest_augmenting_path, two_phase=True))
         assert_equal(fv, nx.maximum_flow(G, 0, 2,
                             flow_func=nx.preflow_push, global_relabel_freq=5))
-        assert_equal(fv, nx.minimum_cut(G, 0, 2, 
+        assert_equal(fv, nx.minimum_cut(G, 0, 2,
                             flow_func=nx.preflow_push, global_relabel_freq=5))
 
 
@@ -401,7 +402,7 @@ def test_preflow_push_global_relabel_freq():
     G = nx.DiGraph()
     G.add_edge(1, 2, capacity=1)
     R = nx.preflow_push(G, 1, 2, global_relabel_freq=None)
-    assert_equal(R.node[2]['excess'], 1)
+    assert_equal(R.graph['flow_value'], 1)
     assert_raises(nx.NetworkXError, preflow_push, G, 1, 2,
                   global_relabel_freq=-1)
 
@@ -414,6 +415,6 @@ def test_shortest_augmenting_path_two_phase():
         G.add_path(((i, j) for j in range(p)), capacity=1)
         G.add_edge((i, p - 1), 't', capacity=1)
     R = shortest_augmenting_path(G, 's', 't', two_phase=True)
-    assert_equal(R.node['t']['excess'], k)
+    assert_equal(R.graph['flow_value'], k)
     R = shortest_augmenting_path(G, 's', 't', two_phase=False)
-    assert_equal(R.node['t']['excess'], k)
+    assert_equal(R.graph['flow_value'], k)

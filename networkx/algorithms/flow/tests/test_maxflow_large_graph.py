@@ -19,7 +19,7 @@ from networkx.algorithms.flow.ford_fulkerson import *
 from networkx.algorithms.flow.preflow_push import *
 from networkx.algorithms.flow.shortest_augmenting_path import *
 
-flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push, 
+flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
               shortest_augmenting_path]
 
 ford_fulkerson = partial(ford_fulkerson, legacy=False)
@@ -27,7 +27,7 @@ ford_fulkerson.__name__ = 'ford_fulkerson'
 preflow_push = partial(preflow_push, value_only=False)
 preflow_push.__name__ = 'preflow_push'
 
-flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push, 
+flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
                 shortest_augmenting_path]
 
 msg = "Assertion failed in function: {0}"
@@ -62,14 +62,15 @@ def read_graph(name):
 
 def validate_flows(G, s, t, solnValue, R, flow_func):
     legacy = R.graph.get('algorithm') == "ford_fulkerson_legacy"
+    flowValue = R.graph['flow_value']
     if legacy:
-        flowValue, flowDict = R.graph['flow_value'], R.graph['flow_dict']
+        flowDict = R.graph['flow_dict']
     else:
-        flowValue, flowDict = R.node[t]['excess'], build_flow_dict(G, R)
+        flowDict = build_flow_dict(G, R)
     assert_equal(solnValue, flowValue, msg=msg.format(flow_func.__name__))
     assert_equal(set(G), set(flowDict), msg=msg.format(flow_func.__name__))
     for u in G:
-        assert_equal(set(G[u]), set(flowDict[u]), 
+        assert_equal(set(G[u]), set(flowDict[u]),
                      msg=msg.format(flow_func.__name__))
     excess = dict((u, 0) for u in flowDict)
     for u in flowDict:
@@ -105,11 +106,7 @@ class TestMaxflowLargeGraph:
 
         for flow_func in flow_funcs:
             R = flow_func(G, 1, 2)
-            legacy = R.graph.get('algorithm') == "ford_fulkerson_legacy"
-            if legacy:
-                flow_value = R.graph['flow_value']
-            else:
-                flow_value = R.node[2]['excess']
+            flow_value = R.graph['flow_value']
             assert_equal(flow_value, 5 * (N - 1),
                          msg=msg.format(flow_func.__name__))
 
@@ -119,11 +116,7 @@ class TestMaxflowLargeGraph:
         G = gen_pyramid(N)
         for flow_func in flow_funcs:
             R = flow_func(G, (0, 0), 't')
-            legacy = R.graph.get('algorithm') == "ford_fulkerson_legacy"
-            if legacy:
-                flow_value = R.graph['flow_value']
-            else:
-                flow_value = R.node['t']['excess']
+            flow_value = R.graph['flow_value']
             assert_almost_equal(flow_value, 1.,
                                 msg=msg.format(flow_func.__name__))
 
@@ -148,10 +141,10 @@ class TestMaxflowLargeGraph:
         s = 1
         t = len(G)
         for flow_func in flow_funcs:
-            validate_flows(G, s, t, 11875108, flow_func(G, s, t), 
-                            flow_func)
+            validate_flows(G, s, t, 11875108, flow_func(G, s, t),
+                           flow_func)
 
     def test_preflow_push_global_relabel(self):
         G = read_graph('gw1')
         R = nx.preflow_push(G, 1, len(G), global_relabel_freq=50)
-        assert_equal(R.node[len(G)]['excess'], 1202018)
+        assert_equal(R.graph['flow_value'], 1202018)

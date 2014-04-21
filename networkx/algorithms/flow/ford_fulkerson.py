@@ -17,15 +17,15 @@ __all__ = ['ford_fulkerson',
 def ford_fulkerson_impl(G, s, t, capacity):
     """Find a maximum single-commodity flow using the Ford-Fulkerson
     algorithm.
-    
-    This function returns both the value of the maximum flow and the 
+
+    This function returns both the value of the maximum flow and the
     auxiliary network resulting after finding the maximum flow, which
-    is also named residual network in the literature. The 
-    auxiliary network has edges with capacity equal to the capacity 
-    of the edge in the original network minus the flow that went 
-    throught that edge. Notice that it can happen that a flow 
-    from v to u is allowed in the auxiliary network, though disallowed 
-    in the original network. A dictionary with infinite capacity edges 
+    is also named residual network in the literature. The
+    auxiliary network has edges with capacity equal to the capacity
+    of the edge in the original network minus the flow that went
+    throught that edge. Notice that it can happen that a flow
+    from v to u is allowed in the auxiliary network, though disallowed
+    in the original network. A dictionary with infinite capacity edges
     can be found as an attribute of the auxiliary network.
 
     Parameters
@@ -53,8 +53,8 @@ def ford_fulkerson_impl(G, s, t, capacity):
         Value of the maximum flow, i.e., net outflow from the source.
 
     auxiliary : DiGraph
-        Residual/auxiliary network after finding the maximum flow. 
-        A dictionary with infinite capacity edges can be found as 
+        Residual/auxiliary network after finding the maximum flow.
+        A dictionary with infinite capacity edges can be found as
         an attribute of this network: auxiliary.graph['inf_capacity_flows']
 
     Raises
@@ -65,7 +65,7 @@ def ford_fulkerson_impl(G, s, t, capacity):
         NetworkXError is raised.
 
     NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a 
+        If the graph has a path of infinite capacity, the value of a
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
@@ -127,11 +127,11 @@ def ford_fulkerson_impl(G, s, t, capacity):
             path_capacity = min([auxiliary[u][v][capacity]
                                 for u, v in path_edges
                                 if capacity in auxiliary[u][v]])
-        except ValueError: 
+        except ValueError:
             # path of infinite capacity implies no max flow
             raise nx.NetworkXUnbounded(
                     "Infinite capacity path, flow unbounded above.")
-        
+
         flow_value += path_capacity
 
         # Augment the flow along the path.
@@ -149,7 +149,7 @@ def ford_fulkerson_impl(G, s, t, capacity):
                     auxiliary[v][u][capacity] += path_capacity
             else:
                 auxiliary.add_edge(v, u, {capacity: path_capacity})
-    
+
     auxiliary.graph['inf_capacity_flows'] = inf_capacity_flows
     return flow_value, auxiliary
 
@@ -229,9 +229,9 @@ def _create_flow_dict(G, H, capacity='capacity'):
 def ford_fulkerson(G, s, t, capacity='capacity', legacy=True):
     """Find a maximum single-commodity flow using the Ford-Fulkerson
     algorithm.
-    
+
     This is the legacy implementation of maximum flow. See Notes below.
-    
+
     This algorithm uses Edmonds-Karp-Dinitz path selection rule which
     guarantees a running time of `O(nm^2)` for `n` nodes and `m` edges.
 
@@ -257,7 +257,7 @@ def ford_fulkerson(G, s, t, capacity='capacity', legacy=True):
 
     legacy : bool
         If True this function behaves as before 1.9, returning a tuple
-        with (flow_value, flow_dict). Otherwise, it will return the 
+        with (flow_value, flow_dict). Otherwise, it will return the
         residual network to be compatible with the new interface to
         flow algorithms introduced in 1.9. Default value: True.
 
@@ -271,7 +271,7 @@ def ford_fulkerson(G, s, t, capacity='capacity', legacy=True):
         flow_dict[u][v] is the flow edge (u, v).
 
     R : NetworkX DiGraph
-        If legacy is False, this function returns the residual network 
+        If legacy is False, this function returns the residual network
         after finding the maximum flow.
 
     Raises
@@ -282,7 +282,7 @@ def ford_fulkerson(G, s, t, capacity='capacity', legacy=True):
         NetworkXError is raised.
 
     NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a 
+        If the graph has a path of infinite capacity, the value of a
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
@@ -296,19 +296,19 @@ def ford_fulkerson(G, s, t, capacity='capacity', legacy=True):
 
     Notes
     -----
-    This is a legacy implementation of maximum flow (before 1.9). By 
+    This is a legacy implementation of maximum flow (before 1.9). By
     default this function returns a tuple with the flow value and the
     flow dictionary, thus it is backwards compatible. If the parameter
     legacy is False, then this function returns the residual network
     resulting after computing the maximum flow, which is what the
     new maximum flow functions return.
 
-    Note however that the residual network returned by this function 
+    Note however that the residual network returned by this function
     does not follow the conventions for residual networks used by the
-    new algorithms introduced in 1.9. This residual network has edges 
-    with capacity equal to the capacity of the edge in the original 
-    network minus the flow that went throught that edge. A dictionary 
-    with infinite capacity edges can be found as an attribute of the 
+    new algorithms introduced in 1.9. This residual network has edges
+    with capacity equal to the capacity of the edge in the original
+    network minus the flow that went throught that edge. A dictionary
+    with infinite capacity edges can be found as an attribute of the
     residual network.
 
     Examples
@@ -331,7 +331,7 @@ def ford_fulkerson(G, s, t, capacity='capacity', legacy=True):
     >>> flow_value
     3.0
 
-    You can set the legacy parameter to False to get the residual 
+    You can set the legacy parameter to False to get the residual
     network after computing the maximum flow. This network has graph
     attributes that contain: a dictionary with edges with infinite
     capacity flows, the flow value, and a dictionary of flows:
@@ -392,7 +392,7 @@ def ford_fulkerson_flow(G, s, t, capacity='capacity'):
         NetworkXError is raised.
 
     NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a 
+        If the graph has a path of infinite capacity, the value of a
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
@@ -412,7 +412,7 @@ def ford_fulkerson_flow(G, s, t, capacity='capacity'):
     >>> F = flow.ford_fulkerson_flow(G, 'x', 'y')
     >>> for u, v in sorted(G.edges_iter()):
     ...     print('(%s, %s) %.2f' % (u, v, F[u][v]))
-    ... 
+    ...
     (a, c) 2.00
     (b, c) 0.00
     (b, d) 1.00
