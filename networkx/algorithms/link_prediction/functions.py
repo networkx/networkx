@@ -45,14 +45,7 @@ def ra_index_soundarajan_hopcroft(G, node1, node2):
     as the given two nodes. Based on Soundarajan, et al (2012).
 
     """
-    try:
-        cmty1 = G.node[node1]['community']
-    except KeyError:
-        raise NetworkXAlgorithmError('No community information')
-    try:
-        cmty2 = G.node[node2]['community']
-    except KeyError:
-        raise NetworkXAlgorithmError('No community information')
+    cmty1, cmty2 = _get_communities(G, node1, node2)
 
     cn_list = _common_neighbors_list(G, node1, node2)
     def same_cmty(u):
