@@ -557,12 +557,15 @@ def bellman_ford(G, source, weight='weight'):
     """
     if source not in G:
         raise KeyError("Node %s is not found in the graph" % source)
-    numb_nodes = len(G)
+
+    for u, v, attr in G.selfloop_edges(data=True):
+        if attr.get(weight, 1) < 0:
+            raise nx.NetworkXUnbounded("Negative cost cycle detected.")
 
     dist = {source: 0}
     pred = {source: None}
 
-    if numb_nodes == 1:
+    if len(G) == 1:
        return pred, dist
 
     if G.is_multigraph():
@@ -961,4 +964,3 @@ def bidirectional_dijkstra(G, source, target, weight = 'weight'):
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
     raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
-
