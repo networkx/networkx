@@ -17,6 +17,25 @@ def resource_allocation_index(G, node1, node2):
     return sum(map(lambda x: 1 / x, list(G.degree(cn_list).values())))
 
 
+def cn_soundarajan_hopcroft(G, node1, node2):
+    """Count the number of common neighbors of two nodes
+
+    One is added to the count for each common neighbor that belongs
+    to the same community as the two nodes. Based on Soundarajan, et al
+    2012.
+
+    """
+    cmty1, cmty2 = _get_communities(G, node1, node2)
+    cn_list = _common_neighbors_list(G, node1, node2)
+    def score(u):
+        cmty = G.node[u]['community']
+        if cmty == cmty1 and cmty == cmty2:
+            return 1
+        else:
+            return 0
+    return len(cn_list) + sum(map(score, cn_list))
+
+
 def ra_index_soundarajan_hopcroft(G, node1, node2):
     """Compute the RA index of two nodes using community information
 
@@ -51,3 +70,13 @@ def _common_neighbors_list(G, node1, node2):
     nset1 = set(G[node1])
     nset2 = set(G[node2])
     return list(nset1 & nset2)
+
+
+def _get_communities(G, node1, node2):
+    """Get communities of given nodes"""
+    try:
+        cmty1 = G.node[node1]['community']
+        cmty2 = G.node[node2]['community']
+    except KeyError:
+        raise NetworkXAlgorithmError('No community information')
+    return cmty1, cmty2
