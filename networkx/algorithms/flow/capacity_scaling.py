@@ -40,7 +40,7 @@ def _detect_unboundedness(R):
     if nx.negative_edge_cycle(G):
         raise nx.NetworkXUnbounded(
             'Negative cost cycle of infinite capacity found. '
-            'Min cost flow bounded below.')
+            'Min cost flow unbounded below.')
 
 
 @not_implemented_for('undirected')
@@ -92,29 +92,23 @@ def _build_residual_network(G, demand, capacity, weight):
 
     _detect_unboundedness(R)
 
-    # Saturate edges with negative weights.
-    #for u, v, k, e in R.edges_iter(data=True, keys=True):
-    #    if k[1]:
-    #        w = e['weight']
-    #        if w < 0:
-    #            r = e['capacity']
-    #            e['flow'] = r
-    #            R[v][u][(k[0], False)]['flow'] = -r
-    #            R.node[u]['excess'] -= r
-    #            R.node[v]['excess'] += r
-
     return R
 
 
-def _build_flow_dict(G, R):
+def _build_flow_dict(G, R, capacity, weight):
     """Build a flow dictionary from a residual network.
     """
+    inf = float('inf')
     flow_dict = {}
     if G.is_multigraph():
         for u in G:
             flow_dict[u] = {}
             for v, es in G[u].items():
-                flow_dict[u][v] = dict((k, 0) for k in es)
+                flow_dict[u][v] = dict(
+                    # Always saturate negative selfloops.
+                    (k, (0 if (u != v or e.get(capacity, inf) <= 0 or
+                               e.get(weight, 0) >= 0) else e[capacity]))
+                    for k, e in es.items())
             for v, es in R[u].items():
                 if v in flow_dict[u]:
                     flow_dict[u][v].update((k[0], e['flow'])
@@ -122,7 +116,11 @@ def _build_flow_dict(G, R):
                                            if e['flow'] > 0)
     else:
         for u in G:
-            flow_dict[u] = dict((v, 0) for v in G[u])
+            flow_dict[u] = dict(
+                # Always saturate negative selfloops.
+                (v, (0 if (u != v or e.get(capacity, inf) <= 0 or
+                           e.get(weight, 0) >= 0) else e[capacity]))
+                for v, e in G[u].items())
             flow_dict[u].update((v, e['flow']) for v, es in R[u].items()
                                 for e in es.values() if e['flow'] > 0)
     return flow_dict
@@ -262,11 +260,18 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
     R = _build_residual_network(G, demand, capacity, weight)
 
     inf = float('inf')
+    # Account cost of negative selfloops.
+    flow_cost = sum(
+        0 if e.get(capacity, inf) <= 0 or e.get(weight, 0) >= 0
+        else e[capacity] * e[weight]
+        for u, v, e in G.selfloop_edges(data=True))
+
+    # Determine the maxmimum edge capacity.
     wmax = max(chain([-inf],
                      (e['capacity'] for u, v, e in R.edges_iter(data=True))))
     if wmax == -inf:
         # Residual network has no edges.
-        return 0, _build_flow_dict(G, R)
+        return flow_cost, _build_flow_dict(G, R, capacity, weight)
 
     R_node = R.node
     R_succ = R.succ
@@ -337,8 +342,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
                         continue
                     # Update the distance label of v.
                     d_v = d_u + wmin - p_u + R_node[v]['potential']
-                    if d_v < h_get(v, inf):
-                        h_insert(v, d_v)
+                    if h_insert(v, d_v):
                         pred[v] = (u, kmin, emin)
             if t is None:
                 # Path not found.
@@ -363,7 +367,6 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
         delta //= 2
 
     # Calculate the flow cost.
-    flow_cost = 0
     for u in R:
         for v, es in R_succ[u].items():
             for e in es.values():
@@ -371,4 +374,4 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
                 if flow > 0:
                     flow_cost += flow * e['weight']
 
-    return flow_cost, _build_flow_dict(G, R)
+    return flow_cost, _build_flow_dict(G, R, capacity, weight)

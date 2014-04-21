@@ -8,6 +8,7 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # BSD license.
 
 from heapq import heappop, heappush
+from itertools import count
 import networkx as nx
 
 __all__ = ['MinHeap', 'PairingHeap', 'BinaryHeap']
@@ -87,7 +88,7 @@ class MinHeap(object):
         """
         raise NotImplementedError
 
-    def insert(self, key, value):
+    def insert(self, key, value, allow_increase=False):
         """Insert a new key-value pair or modify the value in an existing
         pair.
 
@@ -98,6 +99,10 @@ class MinHeap(object):
 
         value : object comparable with existing values.
             The value.
+
+        allow_increase : bool
+            Whether the value is allowed to increase. If False, attempts to
+            increase an existing value have no effect. Default value: False.
 
         Returns
         -------
@@ -191,7 +196,7 @@ class PairingHeap(MinHeap):
         return node.value if node is not None else default
 
     @_inherit_doc(MinHeap)
-    def insert(self, key, value):
+    def insert(self, key, value, allow_increase=False):
         node = self._dict.get(key)
         root = self._root
         if node is not None:
@@ -201,7 +206,7 @@ class PairingHeap(MinHeap):
                     self._cut(node)
                     self._root = self._link(root, node)
                 return True
-            elif value > node.value:
+            elif allow_increase and value > node.value:
                 node.value = value
                 child = self._merge_children(node)
                 # Nonstandard step: Link the merged subtree with the root. See
@@ -299,16 +304,12 @@ class PairingHeap(MinHeap):
 class BinaryHeap(MinHeap):
     """A binary heap.
     """
-    class _Item(MinHeap._Item):
-
-        def __lt__(self, other):
-            return self.value < other.value
-
     def __init__(self):
         """Initialize a binary heap.
         """
         super(BinaryHeap, self).__init__()
         self._heap = []
+        self._count = count()
 
     @_inherit_doc(MinHeap)
     def min(self):
@@ -320,9 +321,7 @@ class BinaryHeap(MinHeap):
         # Repeatedly remove stale key-value pairs until a up-to-date one is
         # met.
         while True:
-            item = heap[0]
-            key = item.key
-            value = item.value
+            value, _, key = heap[0]
             if key in dict and value == dict[key]:
                 break
             pop(heap)
@@ -338,9 +337,7 @@ class BinaryHeap(MinHeap):
         # Repeatedly remove stale key-value pairs until a up-to-date one is
         # met.
         while True:
-            item = heap[0]
-            key = item.key
-            value = item.value
+            value, _, key = heap[0]
             pop(heap)
             if key in dict and value == dict[key]:
                 break
@@ -352,19 +349,20 @@ class BinaryHeap(MinHeap):
         return self._dict.get(key, default)
 
     @_inherit_doc(MinHeap)
-    def insert(self, key, value):
+    def insert(self, key, value, allow_increase=False):
         dict = self._dict
         if key in dict:
             old_value = dict[key]
-            if value != old_value:
+            if value < old_value or (allow_increase and value > old_value):
                 # Since there is no way to efficiently obtain the location of a
                 # key-value pair in the heap, insert a new pair even if ones
                 # with the same key may already be present. Deem the old ones
                 # as stale and skip them when the minimum pair is queried.
                 dict[key] = value
-                heappush(self._heap, self._Item(key, value))
-            return value < old_value
+                heappush(self._heap, (value, next(self._count), key))
+                return value < old_value
+            return False
         else:
             dict[key] = value
-            heappush(self._heap, self._Item(key, value))
+            heappush(self._heap, (value, next(self._count), key))
             return True
