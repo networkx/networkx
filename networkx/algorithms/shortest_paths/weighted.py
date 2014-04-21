@@ -532,10 +532,10 @@ def bellman_ford(G, source, weight='weight'):
     >>> import networkx as nx
     >>> G = nx.path_graph(5, create_using = nx.DiGraph())
     >>> pred, dist = nx.bellman_ford(G, 0)
-    >>> pred
-    {0: None, 1: 0, 2: 1, 3: 2, 4: 3}
-    >>> dist
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> sorted(pred.items())
+    [(0, None), (1, 0), (2, 1), (3, 2), (4, 3)]
+    >>> sorted(dist.items())
+    [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
     >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
@@ -649,10 +649,10 @@ def goldberg_radzik(G, source, weight='weight'):
     >>> import networkx as nx
     >>> G = nx.path_graph(5, create_using = nx.DiGraph())
     >>> pred, dist = nx.goldberg_radzik(G, 0)
-    >>> pred
-    {0: None, 1: 0, 2: 1, 3: 2, 4: 3}
-    >>> dist
-    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> sorted(pred.items())
+    [(0, None), (1, 0), (2, 1), (3, 2), (4, 3)]
+    >>> sorted(dist.items())
+    [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
     >>> from nose.tools import assert_raises
     >>> G = nx.cycle_graph(5, create_using = nx.DiGraph())
