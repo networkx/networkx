@@ -139,7 +139,7 @@ def edmonds_karp(G, s, t, capacity='capacity', value_only=False):
 
     value_only : bool
         If True compute only the value of the maximum flow. This parameter
-        will be ignored by this algorithm because is not applicable.
+        will be ignored by this algorithm because it is not applicable.
 
     Returns
     -------

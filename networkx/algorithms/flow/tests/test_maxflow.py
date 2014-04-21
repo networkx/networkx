@@ -397,7 +397,7 @@ class TestMaxFlowMinCutInterface:
                             flow_func=nx.preflow_push, global_relabel_freq=5))
 
 
-# Tests especific to one algorithm
+# Tests specific to one algorithm
 def test_preflow_push_global_relabel_freq():
     G = nx.DiGraph()
     G.add_edge(1, 2, capacity=1)
