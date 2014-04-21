@@ -7,7 +7,7 @@ def common_neighbors(G, node1, node2):
 
 
 def resource_allocation_index(G, node1, node2):
-    """Compute the resource allocation (RA) index of two nodes
+    """Compute the resource allocation index (RA) of two nodes
 
     RA index is defined as the sum of reciprocal of the degree of nodes
     over all common neighbors of the two nodes.

@@ -16,6 +16,14 @@ def predict_common_neighbors(G):
 
 
 def predict_resource_allocation_index(G):
+    """Predict links using resource allocation index (RA)
+
+    This function will return the value of RA index of all non-existent
+    edges in the graph. Those values will be returned as a dictionary;
+    non-existent edges as keys and the number of common neighbors as
+    values.
+
+    """
     return _predict(G, lp.functions.resource_allocation_index)
 
 
