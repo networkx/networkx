@@ -27,6 +27,28 @@ def predict_resource_allocation_index(G):
     return _predict(G, lp.functions.resource_allocation_index)
 
 
+def predict_cn_soundarajan_hopcroft(G):
+    """Predict links using CN + community information
+
+    This function will compute the value of CN1 function described in
+    Soundarajan, et al (2012) of all pairs of nodes which have no edge
+    connecting them.
+
+    """
+    return _predict(G, lp.functions.cn_soundarajan_hopcroft)
+
+
+def predict_ra_index_soundarajan_hopcroft(G):
+    """Predict links using RA index + community information
+
+    This function will compute the value of RA1 function described in
+    Soundarajan, et al (2012) of all pairs of nodes which have no edge
+    connecting them.
+
+    """
+    return _predict(G, lp.functions.ra_index_soundarajan_hopcroft)
+
+
 def _predict(G, function):
     """Helper function to predict links given the proximity function"""
     non_existent_edges = []
