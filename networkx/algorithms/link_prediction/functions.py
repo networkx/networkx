@@ -1,4 +1,4 @@
-import networkx as nx
+from networkx.exception import *
 
 
 def common_neighbors(G, node1, node2):
@@ -17,8 +17,37 @@ def resource_allocation_index(G, node1, node2):
     return sum(map(lambda x: 1 / x, list(G.degree(cn_list).values())))
 
 
+def ra_index_soundarajan_hopcroft(G, node1, node2):
+    """Compute the RA index of two nodes using community information
+
+    RA index is defined as the sum of reciprocal of the degree of nodes
+    over all common neighbors of the two nodes. However, this function
+    only considers common neighbors belonging to the same community
+    as the given two nodes. Based on Soundarajan, et al (2012).
+
+    """
+    try:
+        cmty1 = G.node[node1]['community']
+    except KeyError:
+        raise NetworkXAlgorithmError('No community information')
+    try:
+        cmty2 = G.node[node2]['community']
+    except KeyError:
+        raise NetworkXAlgorithmError('No community information')
+
+    cn_list = _common_neighbors_list(G, node1, node2)
+    def same_cmty(u):
+        cmty = G.node[u]['community']
+        return cmty == cmty1 and cmty == cmty2
+    try:
+        filtered_list = filter(same_cmty, cn_list)
+    except KeyError:
+        raise NetworkXAlgorithmError('No community information')
+    return sum(map(lambda x: 1 / x, list(G.degree(filtered_list).values())))
+
+
 def _common_neighbors_list(G, node1, node2):
     """Get the list of common neighbors between two nodes"""
-    nset1 = set(G.neighbors(node1))
-    nset2 = set(G.neighbors(node2))
+    nset1 = set(G[node1])
+    nset2 = set(G[node2])
     return list(nset1 & nset2)
