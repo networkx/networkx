@@ -178,3 +178,82 @@ class TestRAIndexSoundarajanHopcroft():
         """Case of no community information"""
         G = nx.complete_graph(5)
         self.test(G, 0, 1, 3)
+
+
+class TestWithinInterCluster():
+    def setUp(self):
+        self.K5 = nx.complete_graph(5)
+        self.K5.node[0]['community'] = 0
+        self.K5.node[1]['community'] = 0
+        self.K5.node[2]['community'] = 0
+        self.K5.node[3]['community'] = 0
+        self.K5.node[4]['community'] = 1
+
+        self.P3 = nx.path_graph(3)
+        self.P3.node[0]['community'] = 0
+        self.P3.node[1]['community'] = 1
+        self.P3.node[2]['community'] = 0
+
+        self.S4 = nx.star_graph(4)
+        self.S4.node[0]['community'] = 0
+        self.S4.node[1]['community'] = 1
+        self.S4.node[2]['community'] = 1
+        self.S4.node[3]['community'] = 0
+        self.S4.node[4]['community'] = 0
+
+        self.delta = 0.001
+
+        def test_func(G, node1, node2, expected):
+            tol = 1e-7
+            f = lp.functions.within_inter_cluster
+            result = f(G, node1, node2, self.delta)
+            assert abs(result - expected) < tol
+        self.test = test_func
+
+    def test_K5(self):
+        self.test(self.K5, 0, 1, 2 / (1 + self.delta))
+
+    def test_P3(self):
+        self.test(self.P3, 0, 2, 0)
+
+    def test_S4(self):
+        self.test(self.S4, 0, 0, 2 / (2 + self.delta))
+
+    def test_custom1(self):
+        """Case of no common neighbors"""
+        G = nx.Graph()
+        G.add_nodes_from([0, 1])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        self.test(G, 0, 1, 0)
+
+    def test_custom2(self):
+        """Case of different community"""
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        G.node[3]['community'] = 1
+        self.test(G, 0, 3, 0)
+
+    def test_custom3(self):
+        """Case of no inter-cluster neighbor"""
+        G = nx.complete_graph(4)
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        G.node[3]['community'] = 0
+        self.test(G, 0, 3, 2 / self.delta)
+
+    @raises(NetworkXAlgorithmError)
+    def test_custom4(self):
+        """Case of no community information"""
+        G = nx.complete_graph(5)
+        self.test(G, 0, 1, 3)
+
+
+    @raises(NetworkXAlgorithmError)
+    def test_custom5(self):
+        """Case of delta equals zero"""
+        lp.functions.within_inter_cluster(self.K5, 0, 1, 0)

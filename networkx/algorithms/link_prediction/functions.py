@@ -58,6 +58,33 @@ def ra_index_soundarajan_hopcroft(G, node1, node2):
     return sum(map(lambda x: 1 / x, list(G.degree(filtered_list).values())))
 
 
+def within_inter_cluster(G, node1, node2, delta=0.001):
+    """Compute the ratio of within and inter cluster common neighbor
+
+    If a common neighbor belongs to the same community with the two
+    nodes, it is considered as within cluster common neighbor.
+    Otherwise, it is considered as inter cluster common neighbor. The
+    ratio between the two of them is the WIC measure. Based on
+    Valverde-Rebaza, et al (2012).
+
+    """
+    if delta <= 0:
+        raise NetworkXAlgorithmError('Delta must be greater than zero')
+
+    cmty1, cmty2 = _get_communities(G, node1, node2)
+    cn_list = _common_neighbors_list(G, node1, node2)
+    def within(u):
+        cmty = G.node[u]['community']
+        return cmty == cmty1 and cmty == cmty2
+    try:
+        filtered_list = filter(within, cn_list)
+    except KeyError:
+        raise NetworkXAlgorithmError('No community information')
+    num_within = len(list(filtered_list))
+    num_inter = len(list(cn_list)) - num_within
+    return num_within / (num_inter + delta)
+
+
 def _common_neighbors_list(G, node1, node2):
     """Get the list of common neighbors between two nodes"""
     nset1 = set(G[node1])
