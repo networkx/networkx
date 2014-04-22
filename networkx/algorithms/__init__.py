@@ -33,7 +33,6 @@ from networkx.algorithms.graphical import *
 from networkx.algorithms.simple_paths import *
 from networkx.algorithms.tree import *
 
-
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
 import networkx.algorithms.centrality
@@ -48,7 +47,7 @@ import networkx.algorithms.shortest_paths
 import networkx.algorithms.traversal
 import networkx.algorithms.chordal
 import networkx.algorithms.operators
-import networkx.algorithms.tree 
+import networkx.algorithms.tree
 
 from networkx.algorithms.bipartite import projected_graph,project,is_bipartite
 from networkx.algorithms.isomorphism import is_isomorphic,could_be_isomorphic,\
