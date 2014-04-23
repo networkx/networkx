@@ -699,7 +699,7 @@ def goldberg_radzik(G, source, weight='weight'):
     d[source] = 0
     pred = {source: None}
 
-    def topological_sort(relabeled):
+    def topo_sort(relabeled):
         """Topologically sort nodes relabeled in the previous round and detect
         negative cycles.
         """
@@ -779,7 +779,7 @@ def goldberg_radzik(G, source, weight='weight'):
     relabeled = set([source])
 
     while relabeled:
-        to_scan = topological_sort(relabeled)
+        to_scan = topo_sort(relabeled)
         relabeled = relax(to_scan)
 
     d = dict((u, d[u]) for u in pred)
