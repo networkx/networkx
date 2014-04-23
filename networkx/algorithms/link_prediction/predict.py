@@ -51,10 +51,11 @@ def predict_ra_index_soundarajan_hopcroft(G):
 
 def _predict(G, function):
     """Helper function to predict links given the proximity function"""
-    non_existent_edges = []
-    for node in G.nodes():
-        non_neighbors = list(nx.non_neighbors(G, node))
-        repeated_nodes = it.repeat(node, len(non_neighbors))
-        non_existent_edges.extend(zip(repeated_nodes, non_neighbors))
-    res = {e: function(G, *e) for e in non_existent_edges}
-    return res
+    non_existent_edge = set()
+    for u in G.nodes_iter():
+        for v in nx.non_neighbors(G, u):
+            if (u, v) not in non_existent_edge:
+                non_existent_edge.add((u, v))
+                non_existent_edge.add((v, u))
+                p = function(G, u, v)
+                yield (u, v, p)
