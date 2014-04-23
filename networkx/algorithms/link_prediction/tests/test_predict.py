@@ -82,19 +82,6 @@ class TestPredictCNSoundarajanHopcroft():
 
 class TestPredictRAIndexSoundarajanHopcroft():
     def setUp(self):
-        self.P4 = nx.path_graph(4)
-        self.P4.node[0]['community'] = 0
-        self.P4.node[1]['community'] = 0
-        self.P4.node[2]['community'] = 0
-        self.P4.node[3]['community'] = 0
-
-        self.S4 = nx.star_graph(4)
-        self.S4.node[0]['community'] = 1
-        self.S4.node[1]['community'] = 1
-        self.S4.node[2]['community'] = 1
-        self.S4.node[3]['community'] = 0
-        self.S4.node[4]['community'] = 0
-
         def test_func(G, expected):
             result = list(pred.predict_ra_index_soundarajan_hopcroft(G))
             assert len(result) == len(expected)
@@ -103,11 +90,22 @@ class TestPredictRAIndexSoundarajanHopcroft():
         self.test = test_func
 
     def test_P4(self):
+        G = nx.path_graph(4)
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        G.node[3]['community'] = 0
         expected = [(0, 2, 0.5), (0, 3, 0), (1, 3, 0.5)]
-        self.test(self.P4, expected)
+        self.test(G, expected)
 
     def test_S4(self):
+        G = nx.star_graph(4)
+        G.node[0]['community'] = 1
+        G.node[1]['community'] = 1
+        G.node[2]['community'] = 1
+        G.node[3]['community'] = 0
+        G.node[4]['community'] = 0
         expected = [
             (1, 2, 0.25), (1, 3, 0), (1, 4, 0), (2, 3, 0), (2, 4, 0), (3, 4, 0)
         ]
-        self.test(self.S4, expected)
+        self.test(G, expected)
