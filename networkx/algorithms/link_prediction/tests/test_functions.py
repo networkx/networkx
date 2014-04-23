@@ -177,7 +177,7 @@ class TestCNSoundarajanHopcroft():
     def test_custom3(self):
         """Case of no community information"""
         G = nx.complete_graph(5)
-        self.test(G, 0, 1, 3)
+        self.func(G, 0, 1)
 
 
 class TestRAIndexSoundarajanHopcroft():
@@ -263,7 +263,7 @@ class TestRAIndexSoundarajanHopcroft():
     def test_custom3(self):
         """Case of no community information"""
         G = nx.complete_graph(5)
-        self.test(G, 0, 1, 3)
+        self.func(G, 0, 1)
 
 
 class TestWithinInterCluster():
@@ -359,8 +359,7 @@ class TestWithinInterCluster():
     def test_custom4(self):
         """Case of no community information"""
         G = nx.complete_graph(5)
-        self.test(G, 0, 1, 3)
-
+        self.func(G, 0, 1)
 
     @raises(NetworkXAlgorithmError)
     def test_custom5(self):
