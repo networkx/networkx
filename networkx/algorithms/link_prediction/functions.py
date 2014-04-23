@@ -3,8 +3,7 @@ from networkx.exception import *
 
 def common_neighbors(G, node1, node2):
     """Count the number of common neighbors of two nodes"""
-    if G.is_directed() or G.is_multigraph():
-        raise NetworkXNotImplemented()
+    _ensure_undirected(G)
     return len(_common_neighbors_list(G, node1, node2))
 
 
@@ -15,8 +14,7 @@ def resource_allocation_index(G, node1, node2):
     over all common neighbors of the two nodes.
 
     """
-    if G.is_directed() or G.is_multigraph():
-        raise NetworkXNotImplemented()
+    _ensure_undirected(G)
     cn_list = _common_neighbors_list(G, node1, node2)
     return sum(map(lambda x: 1 / x, list(G.degree(cn_list).values())))
 
@@ -29,8 +27,7 @@ def cn_soundarajan_hopcroft(G, node1, node2):
     2012.
 
     """
-    if G.is_directed() or G.is_multigraph():
-        raise NetworkXNotImplemented()
+    _ensure_undirected(G)
     cmty1, cmty2 = _get_communities(G, node1, node2)
     cn_list = _common_neighbors_list(G, node1, node2)
     def score(u):
@@ -51,8 +48,7 @@ def ra_index_soundarajan_hopcroft(G, node1, node2):
     as the given two nodes. Based on Soundarajan, et al (2012).
 
     """
-    if G.is_directed() or G.is_multigraph():
-        raise NetworkXNotImplemented()
+    _ensure_undirected(G)
     cmty1, cmty2 = _get_communities(G, node1, node2)
 
     cn_list = _common_neighbors_list(G, node1, node2)
@@ -79,8 +75,7 @@ def within_inter_cluster(G, node1, node2, delta=0.001):
     if delta <= 0:
         raise NetworkXAlgorithmError('Delta must be greater than zero')
 
-    if G.is_directed() or G.is_multigraph():
-        raise NetworkXNotImplemented()
+    _ensure_undirected(G)
 
     cmty1, cmty2 = _get_communities(G, node1, node2)
     cn_list = _common_neighbors_list(G, node1, node2)
@@ -111,3 +106,9 @@ def _get_communities(G, node1, node2):
     except KeyError:
         raise NetworkXAlgorithmError('No community information')
     return cmty1, cmty2
+
+
+def _ensure_undirected(G):
+    """Ensures that graph G is a simple undirected graph"""
+    if G.is_directed() or G.is_multigraph():
+        raise NetworkXNotImplemented()
