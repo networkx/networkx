@@ -28,10 +28,11 @@ def cn_soundarajan_hopcroft(G, node1, node2):
 
     """
     _ensure_undirected(G)
-    cmty1, cmty2 = _get_communities(G, node1, node2)
+    cmty1 = _get_community(G, node1)
+    cmty2 = _get_community(G, node2)
     cn_list = _common_neighbors_list(G, node1, node2)
     def score(u):
-        cmty = G.node[u]['community']
+        cmty = _get_community(G, u)
         if cmty == cmty1 and cmty == cmty2:
             return 1
         else:
@@ -49,11 +50,12 @@ def ra_index_soundarajan_hopcroft(G, node1, node2):
 
     """
     _ensure_undirected(G)
-    cmty1, cmty2 = _get_communities(G, node1, node2)
+    cmty1 = _get_community(G, node1)
+    cmty2 = _get_community(G, node2)
 
     cn_list = _common_neighbors_list(G, node1, node2)
     def same_cmty(u):
-        cmty = G.node[u]['community']
+        cmty = _get_community(G, u)
         return cmty == cmty1 and cmty == cmty2
     try:
         filtered_list = filter(same_cmty, cn_list)
@@ -77,10 +79,11 @@ def within_inter_cluster(G, node1, node2, delta=0.001):
 
     _ensure_undirected(G)
 
-    cmty1, cmty2 = _get_communities(G, node1, node2)
+    cmty1 = _get_community(G, node1)
+    cmty2 = _get_community(G, node2)
     cn_list = _common_neighbors_list(G, node1, node2)
     def within(u):
-        cmty = G.node[u]['community']
+        cmty = _get_community(G, u)
         return cmty == cmty1 and cmty == cmty2
     try:
         filtered_list = filter(within, cn_list)
@@ -98,14 +101,13 @@ def _common_neighbors_list(G, node1, node2):
     return list(nset1 & nset2)
 
 
-def _get_communities(G, node1, node2):
-    """Get communities of given nodes"""
+def _get_community(G, node):
+    """Get the community of the given node"""
     try:
-        cmty1 = G.node[node1]['community']
-        cmty2 = G.node[node2]['community']
+        cmty = G.node[node]['community']
     except KeyError:
         raise NetworkXAlgorithmError('No community information')
-    return cmty1, cmty2
+    return cmty
 
 
 def _ensure_undirected(G):
