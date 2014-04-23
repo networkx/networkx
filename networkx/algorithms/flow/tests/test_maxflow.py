@@ -418,3 +418,19 @@ def test_shortest_augmenting_path_two_phase():
     assert_equal(R.graph['flow_value'], k)
     R = shortest_augmenting_path(G, 's', 't', two_phase=False)
     assert_equal(R.graph['flow_value'], k)
+
+
+def test_cutoff():
+    k = 5
+    p = 1000
+    G = nx.DiGraph()
+    for i in range(k):
+        G.add_edge('s', (i, 0), capacity=2)
+        G.add_path(((i, j) for j in range(p)), capacity=2)
+        G.add_edge((i, p - 1), 't', capacity=2)
+    R = shortest_augmenting_path(G, 's', 't', two_phase=True, cutoff=k)
+    ok_(k <= R.graph['flow_value'] <= 2 * k)
+    R = shortest_augmenting_path(G, 's', 't', two_phase=False, cutoff=k)
+    ok_(k <= R.graph['flow_value'] <= 2 * k)
+    R = edmonds_karp(G, 's', 't', cutoff=k)
+    ok_(k <= R.graph['flow_value'] <= 2 * k)

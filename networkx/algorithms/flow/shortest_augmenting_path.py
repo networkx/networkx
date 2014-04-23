@@ -16,7 +16,7 @@ from networkx.algorithms.flow.edmonds_karp import edmonds_karp_core
 __all__ = ['shortest_augmenting_path']
 
 
-def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
+def shortest_augmenting_path_impl(G, s, t, capacity, two_phase, cutoff):
     """Implementation of the shortest augmenting path algorithm.
     """
     R = build_residual_network(G, s, t, capacity)
@@ -84,6 +84,9 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
                 height = min(height, R_node[v]['height'])
         return height + 1
 
+    if cutoff is None:
+        cutoff = float('inf')
+
     # Phase 1: Look for shortest augmenting paths using depth-first search.
 
     flow_value = 0
@@ -136,18 +139,21 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase):
             # t is reached. Augment flow along the path and reset it for a new
             # depth-first search.
             flow_value += augment(path)
+            if flow_value >= cutoff:
+                R.graph['flow_value'] = flow_value
+                return R
             path = [s]
             u = s
 
     # Phase 2: Look for shortest augmenting paths using breadth-first search.
-    flow_value += edmonds_karp_core(R, s, t)
+    flow_value += edmonds_karp_core(R, s, t, cutoff - flow_value)
 
     R.graph['flow_value'] = flow_value
     return R
 
 
 def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
-                             two_phase=False):
+                             two_phase=False, cutoff=None):
     """Find a maximum single-commodity flow using the shortest augmenting path
     algorithm.
 
@@ -186,6 +192,10 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
         If True, a two-phase variant is used. The two-phase variant improves
         the running time on unit-capacity networks from `O(nm)` to
         `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
+
+    cutoff : integer, float
+        If specified, the algorithm will stop when the flow value reaches or
+        exceeds the cutoff. Default value: None.
 
     Returns
     -------
@@ -251,6 +261,6 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
     >>> assert(flow_value == R.graph['flow_value'])
 
     """
-    R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase)
+    R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase, cutoff)
     R.graph['algorithm'] = 'shortest_augmenting_path'
     return R

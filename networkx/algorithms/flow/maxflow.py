@@ -104,7 +104,7 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.node[t]['flow_value']`.
+    stored in :samp:`R.graph['flow_value']`.
 
     Specific algorithms may store extra data in :samp:`R`.
 
@@ -261,7 +261,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     Specific algorithms may store extra data in :samp:`R`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.node[t]['flow_value']`.
+    stored in :samp:`R.graph['flow_value']`.
 
     Examples
     --------
