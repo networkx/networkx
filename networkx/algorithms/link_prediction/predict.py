@@ -1,6 +1,7 @@
 import itertools as it
 import networkx as nx
 import networkx.algorithms.link_prediction.functions as lpfunc
+from networkx.exception import *
 
 
 def predict_common_neighbors(G):
@@ -47,6 +48,21 @@ def predict_ra_index_soundarajan_hopcroft(G):
 
     """
     return _predict(G, lpfunc.ra_index_soundarajan_hopcroft)
+
+
+def predict_within_inter_cluster(G, delta=0.001):
+    """Predict links using WIC measure
+
+    This function will compute the ratio of W and IC. W and IC are
+    defined as the number of within-cluster and inter-cluster common
+    neighbors respectively. Reference: Valverde-Rebaza, et al (2012).
+
+    """
+    if delta <= 0:
+        raise NetworkXAlgorithmError()
+
+    func = lambda g, u, v: lpfunc.within_inter_cluster(g, u, v, delta)
+    return _predict(G, func)
 
 
 def _predict(G, function):
