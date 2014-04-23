@@ -6,12 +6,17 @@ from networkx.exception import *
 
 class TestPredictCommonNeighbors():
     def setUp(self):
+        self.func = pred.predict_common_neighbors
         def test_func(G, expected):
-            result = list(pred.predict_common_neighbors(G))
+            result = list(self.func(G))
             assert len(result) == len(expected)
             for (u, v, p) in expected:
                 assert (u, v, p) in result or (v, u, p) in result
         self.test = test_func
+
+    def test_K5(self):
+        G = nx.complete_graph(5)
+        self.test(G, [])
 
     def test_P4(self):
         G = nx.path_graph(4)
@@ -25,15 +30,38 @@ class TestPredictCommonNeighbors():
         ]
         self.test(G, expected)
 
+    @raises(NetworkXNotImplemented)
+    def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G)
+
+    @raises(NetworkXNotImplemented)
+    def test_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G)
+
+    @raises(NetworkXNotImplemented)
+    def test_multidigraph(self):
+        G = nx.MultiDiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G)
+
 
 class TestPredictResourceAllocationIndex():
     def setUp(self):
+        self.func = pred.predict_resource_allocation_index
         def test_func(G, expected):
-            result = list(pred.predict_resource_allocation_index(G))
+            result = list(self.func(G))
             assert len(result) == len(expected)
             for (u, v, p) in expected:
                 assert (u, v, p) in result or (v, u, p) in result
         self.test = test_func
+
+    def test_K5(self):
+        G = nx.complete_graph(5)
+        self.test(G, [])    
 
     def test_P4(self):
         G = nx.path_graph(4)
@@ -48,15 +76,43 @@ class TestPredictResourceAllocationIndex():
         ]
         self.test(G, expected)
 
+    @raises(NetworkXNotImplemented)
+    def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G)
+
+    @raises(NetworkXNotImplemented)
+    def test_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G)
+
+    @raises(NetworkXNotImplemented)
+    def test_multidigraph(self):
+        G = nx.MultiDiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G)
+
 
 class TestPredictCNSoundarajanHopcroft():
     def setUp(self):
+        self.func = pred.predict_cn_soundarajan_hopcroft
         def test_func(G, expected):
-            result = list(pred.predict_cn_soundarajan_hopcroft(G))
+            result = list(self.func(G))
             assert len(result) == len(expected)
             for (u, v, p) in expected:
                 assert (u, v, p) in result or (v, u, p) in result
         self.test = test_func
+
+    def test_K5(self):
+        G = nx.complete_graph(5)
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        G.node[3]['community'] = 0
+        G.node[4]['community'] = 0
+        self.test(G, [])
 
     def test_P4(self):
         G = nx.path_graph(4)
@@ -79,15 +135,52 @@ class TestPredictCNSoundarajanHopcroft():
         ]
         self.test(G, expected)
 
+    @raises(NetworkXNotImplemented)
+    def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        self.func(G)
+
+    @raises(NetworkXNotImplemented)
+    def test_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        self.func(G)
+
+    @raises(NetworkXNotImplemented)
+    def test_multidigraph(self):
+        G = nx.MultiDiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        self.func(G)
+
 
 class TestPredictRAIndexSoundarajanHopcroft():
     def setUp(self):
+        self.func = pred.predict_ra_index_soundarajan_hopcroft
         def test_func(G, expected):
-            result = list(pred.predict_ra_index_soundarajan_hopcroft(G))
+            result = list(self.func(G))
             assert len(result) == len(expected)
             for (u, v, p) in expected:
                 assert (u, v, p) in result or (v, u, p) in result
         self.test = test_func
+
+    def test_K5(self):
+        G = nx.complete_graph(5)
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        G.node[3]['community'] = 0
+        G.node[4]['community'] = 0
+        self.test(G, [])
 
     def test_P4(self):
         G = nx.path_graph(4)
@@ -110,15 +203,52 @@ class TestPredictRAIndexSoundarajanHopcroft():
         ]
         self.test(G, expected)
 
+    @raises(NetworkXNotImplemented)
+    def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        self.func(G)
+
+    @raises(NetworkXNotImplemented)
+    def test_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        self.func(G)
+
+    @raises(NetworkXNotImplemented)
+    def test_multidigraph(self):
+        G = nx.MultiDiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        self.func(G)
+
 
 class TestPredictWithinInterCluster():
     def setUp(self):
+        self.func = pred.predict_within_inter_cluster
         def test_func(G, delta, expected):
-            result = list(pred.predict_within_inter_cluster(G, delta))
+            result = list(self.func(G, delta))
             assert len(result) == len(expected)
             for (u, v, p) in expected:
                 assert (u, v, p) in result or (v, u, p) in result
         self.test = test_func
+
+    def test_K5(self):
+        G = nx.complete_graph(5)
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        G.node[3]['community'] = 0
+        G.node[4]['community'] = 0
+        self.test(G, 0.001, [])
 
     def test_P4(self):
         G = nx.path_graph(4)
@@ -143,6 +273,33 @@ class TestPredictWithinInterCluster():
             (3, 4, 0)
         ]
         self.test(G, delta, expected)
+
+    @raises(NetworkXNotImplemented)
+    def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        self.func(G, 0.001)
+
+    @raises(NetworkXNotImplemented)
+    def test_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        self.func(G, 0.001)
+
+    @raises(NetworkXNotImplemented)
+    def test_multidigraph(self):
+        G = nx.MultiDiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        G.node[0]['community'] = 0
+        G.node[1]['community'] = 0
+        G.node[2]['community'] = 0
+        self.func(G, 0.001)
 
     @raises(NetworkXAlgorithmError)
     def test_custom1(self):

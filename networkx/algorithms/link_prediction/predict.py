@@ -1,4 +1,3 @@
-import itertools as it
 import networkx as nx
 import networkx.algorithms.link_prediction.functions as lpfunc
 from networkx.exception import *
@@ -13,6 +12,7 @@ def predict_common_neighbors(G):
     neighbors as values.
 
     """
+    _ensure_undirected(G)
     return _predict(G, lpfunc.common_neighbors)
 
 
@@ -25,6 +25,7 @@ def predict_resource_allocation_index(G):
     values.
 
     """
+    _ensure_undirected(G)
     return _predict(G, lpfunc.resource_allocation_index)
 
 
@@ -36,6 +37,7 @@ def predict_cn_soundarajan_hopcroft(G):
     connecting them.
 
     """
+    _ensure_undirected(G)
     return _predict(G, lpfunc.cn_soundarajan_hopcroft)
 
 
@@ -47,6 +49,7 @@ def predict_ra_index_soundarajan_hopcroft(G):
     connecting them.
 
     """
+    _ensure_undirected(G)
     return _predict(G, lpfunc.ra_index_soundarajan_hopcroft)
 
 
@@ -58,11 +61,19 @@ def predict_within_inter_cluster(G, delta=0.001):
     neighbors respectively. Reference: Valverde-Rebaza, et al (2012).
 
     """
+    _ensure_undirected(G)
+
     if delta <= 0:
         raise NetworkXAlgorithmError()
 
     func = lambda g, u, v: lpfunc.within_inter_cluster(g, u, v, delta)
     return _predict(G, func)
+
+
+def _ensure_undirected(G):
+    """Ensures that graph G is a simple undirected graph"""
+    if G.is_directed() or G.is_multigraph():
+        raise NetworkXNotImplemented()
 
 
 def _predict(G, function):
