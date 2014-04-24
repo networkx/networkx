@@ -71,7 +71,8 @@ def predict_within_inter_cluster(G, delta=0.001):
     if delta <= 0:
         raise NetworkXAlgorithmError()
 
-    func = lambda g, u, v: lpfunc.within_inter_cluster(g, u, v, delta)
+    def func(G, u, v):
+        return lpfunc.within_inter_cluster(G, u, v, delta)
     return _predict(G, func)
 
 
