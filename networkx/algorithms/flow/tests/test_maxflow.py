@@ -89,12 +89,13 @@ def compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity='capacity'):
             validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
         # Minimum cut
         if legacy:
-            partition = nx.minimum_cut(G, s, t,  capacity=capacity,
-                                       flow_func=nx.ford_fulkerson,
-                                       value_only=False)
+            cut_value, partition = nx.minimum_cut(G, s, t,  capacity=capacity,
+                                                  flow_func=nx.ford_fulkerson,
+                                                  value_only=False)
         else:
-            partition = nx.minimum_cut(G, s, t, capacity=capacity,
-                                       flow_func=flow_func, value_only=False)
+            cut_value, partition = nx.minimum_cut(G, s, t, capacity=capacity,
+                                                  flow_func=flow_func,
+                                                  value_only=False)
         validate_cuts(G, s, t, solnValue, partition, capacity, flow_func)
 
 

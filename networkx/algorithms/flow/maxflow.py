@@ -62,8 +62,7 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
     Returns
     -------
     flow_value : integer, float
-        Value of the maximum flow, i.e., net outflow from the source if
-        value_only is True.
+        Value of the maximum flow, i.e., net outflow from the source.
 
     flow_dict : dict
         A dictionary containing the value of the flow that went through
@@ -147,7 +146,7 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
     If you want to compute all flows, you have to set to False the
     parameter value_only:
 
-    >>> flow_dict = nx.maximum_flow(G, 'x', 'y', value_only=False)
+    >>> value, flow_dict = nx.maximum_flow(G, 'x', 'y', value_only=False)
     >>> print(flow_dict['x']['b'])
     1.0
 
@@ -179,7 +178,7 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
 
     # Build the flow dictionary
     flow_dict = build_flow_dict(G, R)
-    return flow_dict
+    return (R.graph['flow_value'], flow_dict)
 
 
 def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
@@ -229,7 +228,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     Returns
     -------
     cut_value : integer, float
-        Value of the minimum cut if value_only is True.
+        Value of the minimum cut.
 
     partition : pair of node sets
         A partitioning of the nodes that defines a minimum cut if
@@ -304,7 +303,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     If you want node partition that defines the minimum cut, you
     have to set the parameter value_only to False:
 
-    >>> partition = nx.minimum_cut(G, 'x', 'y', value_only=False)
+    >>> cut_value, partition = nx.minimum_cut(G, 'x', 'y', value_only=False)
     >>> reachable, non_reachable = partition
 
     'partition' here is a tuple with the two sets of nodes that define
@@ -356,8 +355,8 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     # residual network form the node partition that defines
     # the minimum cut.
     non_reachable = set(nx.shortest_path_length(R, target=t))
-    reachable = set(G) - non_reachable
-    return (reachable, non_reachable)
+    partition = (set(G) - non_reachable, non_reachable)
+    return (R.graph['flow_value'], partition)
 
 
 # backwards compatibility
