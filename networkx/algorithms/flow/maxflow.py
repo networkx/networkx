@@ -51,10 +51,6 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None, **kwargs):
         from version to version and should not be relied on. Default value:
         None.
 
-    value_only : boolean
-        If True compute only the value of the maximum flow. If False
-        compute the actual flows. Default value: True.
-
     kwargs : Any other keyword parameter is passed to the function that
         computes the maximum flow.
 
@@ -81,7 +77,9 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     See also
     --------
+    :meth:`maximum_flow_value`
     :meth:`minimum_cut`
+    :meth:`minimum_cut_value`
     :meth:`edmonds_karp`
     :meth:`ford_fulkerson`
     :meth:`preflow_push`
@@ -161,13 +159,11 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    # Handle legacy ford_fulkerson
     if flow_func is ford_fulkerson:
         R = flow_func(G, s, t, capacity=capacity)
         flow_dict = R.graph['flow_dict']
     else:
         R = flow_func(G, s, t, capacity=capacity, value_only=False, **kwargs)
-        # Build the flow dictionary
         flow_dict = build_flow_dict(G, R)
 
     return (R.graph['flow_value'], flow_dict)
@@ -228,7 +224,9 @@ def maximum_flow_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     See also
     --------
+    :meth:`maximum_flow`
     :meth:`minimum_cut`
+    :meth:`minimum_cut_value`
     :meth:`edmonds_karp`
     :meth:`ford_fulkerson`
     :meth:`preflow_push`
@@ -306,7 +304,6 @@ def maximum_flow_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    # Handle legacy ford_fulkerson
     if flow_func is ford_fulkerson:
         R = flow_func(G, s, t, capacity=capacity)
     else:
@@ -370,7 +367,9 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     See also
     --------
-    maximum_flow
+    :meth:`maximum_flow`
+    :meth:`maximum_flow_value`
+    :meth:`minimum_cut_value`
     :meth:`edmonds_karp`
     :meth:`ford_fulkerson`
     :meth:`preflow_push`
@@ -461,17 +460,15 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
                       shortest_augmenting_path)):
         raise nx.NetworkXError("cutoff should not be specified.")
 
-    # Handle legacy ford_fulkerson.
     if flow_func is ford_fulkerson:
         R = flow_func(G, s, t, capacity=capacity)
     else:
         R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
-        # Remove saturated edges from the residual network for computing
-        # the minimum cut.
+        # Remove saturated edges from the residual network 
         R.remove_edges_from((u, v) for u, v, d in R.edges(data=True)
                             if d['flow'] == d['capacity'])
 
-    # Reachable and non reachable nodes from source in the
+    # Then, reachable and non reachable nodes from source in the
     # residual network form the node partition that defines
     # the minimum cut.
     non_reachable = set(nx.shortest_path_length(R, target=t))
@@ -531,7 +528,9 @@ def minimum_cut_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     See also
     --------
-    maximum_flow
+    :meth:`maximum_flow`
+    :meth:`maximum_flow_value`
+    :meth:`minimum_cut`
     :meth:`edmonds_karp`
     :meth:`ford_fulkerson`
     :meth:`preflow_push`
@@ -611,15 +610,9 @@ def minimum_cut_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
                       shortest_augmenting_path)):
         raise nx.NetworkXError("cutoff should not be specified.")
 
-    # Handle legacy ford_fulkerson.
     if flow_func is ford_fulkerson:
         R = flow_func(G, s, t, capacity=capacity)
     else:
         R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
 
     return R.graph['flow_value']
-
-
-# backwards compatibility
-max_flow = maximum_flow
-min_cut = minimum_cut
