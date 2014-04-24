@@ -6,6 +6,7 @@ import networkx as nx
 
 # Define the default flow function for computing maximum flow.
 from .preflow_push import preflow_push
+from .utils import build_flow_dict
 default_flow_func = preflow_push
 
 __all__ = ['maximum_flow',
@@ -165,11 +166,7 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
         return R.graph['flow_value']
 
     # Build the flow dictionary
-    flow_dict = {}
-    for u in G:
-        flow_dict[u] = dict((v, 0) for v in G[u])
-        flow_dict[u].update((v, R[u][v]['flow']) for v in R[u]
-                            if R[u][v]['flow'] > 0)
+    flow_dict = build_flow_dict(G, R)
     return flow_dict
 
 
@@ -319,8 +316,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
         if value_only:
             return R.graph['flow_value']
     else:
-        R = flow_func(G, s, t, capacity=capacity, value_only=value_only,
-                      **kwargs)
+        R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
         if value_only:
             return R.graph['flow_value']
         # Remove saturated edges from the residual network for computing
@@ -331,8 +327,8 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     # Reachable and non reachable nodes from source in the
     # residual network form the node partition that defines
     # the minimum cut.
-    reachable = set(nx.single_source_shortest_path(R, s))
-    non_reachable = set(G) - reachable
+    non_reachable = set(nx.shortest_path_length(R, target=t))
+    reachable = set(G) - non_reachable
     return (reachable, non_reachable)
 
 

@@ -14,11 +14,9 @@ from networkx.algorithms.flow.shortest_augmenting_path import *
 
 ford_fulkerson = partial(ford_fulkerson, legacy=False)
 ford_fulkerson.__name__ = 'ford_fulkerson'
-preflow_push = partial(preflow_push, value_only=False)
-preflow_push.__name__ = 'preflow_push'
 
 flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
-                shortest_augmenting_path]
+              shortest_augmenting_path]
 max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
 all_funcs = sum([flow_funcs, max_min_funcs], [])
 
@@ -92,10 +90,11 @@ def compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity='capacity'):
         # Minimum cut
         if legacy:
             partition = nx.minimum_cut(G, s, t,  capacity=capacity,
-                                    flow_func=nx.ford_fulkerson, value_only=False)
+                                       flow_func=nx.ford_fulkerson,
+                                       value_only=False)
         else:
             partition = nx.minimum_cut(G, s, t, capacity=capacity,
-                                    flow_func=flow_func, value_only=False)
+                                       flow_func=flow_func, value_only=False)
         validate_cuts(G, s, t, solnValue, partition, capacity, flow_func)
 
 
@@ -359,9 +358,9 @@ class TestMaxFlowMinCutInterface:
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)],weight='capacity')
         for element in elements:
             assert_raises(nx.NetworkXError,
-                            nx.maximum_flow, G, 0, 1, flow_func=element)
+                          nx.maximum_flow, G, 0, 1, flow_func=element)
             assert_raises(nx.NetworkXError,
-                            nx.minimum_cut, G, 0, 1, flow_func=element)
+                          nx.minimum_cut, G, 0, 1, flow_func=element)
 
     def test_flow_func_parameter(self):
         G = nx.DiGraph()
@@ -388,13 +387,13 @@ class TestMaxFlowMinCutInterface:
         G.add_edge(1, 2, capacity = 1.0)
         fv = 1.0
         assert_equal(fv, nx.maximum_flow(G, 0, 2,
-                            flow_func=nx.shortest_augmenting_path, two_phase=True))
+                     flow_func=nx.shortest_augmenting_path, two_phase=True))
         assert_equal(fv, nx.minimum_cut(G, 0, 2,
-                            flow_func=nx.shortest_augmenting_path, two_phase=True))
+                     flow_func=nx.shortest_augmenting_path, two_phase=True))
         assert_equal(fv, nx.maximum_flow(G, 0, 2,
-                            flow_func=nx.preflow_push, global_relabel_freq=5))
+                     flow_func=nx.preflow_push, global_relabel_freq=5))
         assert_equal(fv, nx.minimum_cut(G, 0, 2,
-                            flow_func=nx.preflow_push, global_relabel_freq=5))
+                     flow_func=nx.preflow_push, global_relabel_freq=5))
 
 
 # Tests specific to one algorithm
