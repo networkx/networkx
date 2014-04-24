@@ -11,7 +11,9 @@ Maximum Flow
    :toctree: generated/
 
    maximum_flow
+   maximum_flow_value
    minimum_cut
+   minimum_cut_value
 
 
 Edmonds-Karp
@@ -28,8 +30,6 @@ Ford-Fulkerson
    :toctree: generated/
 
    ford_fulkerson
-   ford_fulkerson_flow
-   ford_fulkerson_flow_and_auxiliary
 
 
 Shortest Augmenting Path

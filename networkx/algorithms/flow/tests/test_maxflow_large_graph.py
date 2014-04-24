@@ -22,8 +22,6 @@ from networkx.algorithms.flow.shortest_augmenting_path import *
 flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
               shortest_augmenting_path]
 
-ford_fulkerson = partial(ford_fulkerson, legacy=False)
-ford_fulkerson.__name__ = 'ford_fulkerson'
 preflow_push = partial(preflow_push, value_only=False)
 preflow_push.__name__ = 'preflow_push'
 
