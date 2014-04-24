@@ -159,6 +159,9 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
 
     """
     if flow_func is None:
+        if kwargs:
+            raise nx.NetworkXError("You have to explicitly set a flow_func if"
+                                   " you need to pass parameters via kwargs.")
         flow_func = default_flow_func
 
     if not callable(flow_func):
@@ -327,6 +330,9 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
 
     """
     if flow_func is None:
+        if kwargs:
+            raise nx.NetworkXError("You have to explicitly set a flow_func if"
+                                   " you need to pass parameters via kwargs.")
         flow_func = default_flow_func
 
     if not callable(flow_func):
