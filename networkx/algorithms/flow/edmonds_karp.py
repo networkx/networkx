@@ -14,7 +14,7 @@ from networkx.algorithms.flow.utils import *
 __all__ = ['edmonds_karp']
 
 
-def edmonds_karp_core(R, s, t):
+def edmonds_karp_core(R, s, t, cutoff):
     """Implementation of the Edmonds-Karp algorithm.
     """
     R_node = R.node
@@ -97,17 +97,19 @@ def edmonds_karp_core(R, s, t):
     return flow_value
 
 
-def edmonds_karp_impl(G, s, t, capacity):
+def edmonds_karp_impl(G, s, t, capacity, cutoff):
     """Implementation of the Edmonds-Karp algorithm.
     """
     R = build_residual_network(G, s, t, capacity)
 
-    R.graph['flow_value'] = edmonds_karp_core(R, s, t)
+    if cutoff is None:
+        cutoff = float('inf')
+    R.graph['flow_value'] = edmonds_karp_core(R, s, t, cutoff)
 
     return R
 
 
-def edmonds_karp(G, s, t, capacity='capacity', value_only=False):
+def edmonds_karp(G, s, t, capacity='capacity', value_only=False, cutoff=None):
     """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
 
     This function returns the residual network resulting after computing
@@ -140,6 +142,11 @@ def edmonds_karp(G, s, t, capacity='capacity', value_only=False):
     value_only : bool
         If True compute only the value of the maximum flow. This parameter
         will be ignored by this algorithm because it is not applicable.
+
+    cutoff : integer, float
+        If specified, the algorithm will terminate when the flow value reaches
+        or exceeds the cutoff. In this case, it may be unable to immediately
+        determine a minimum cut. Default value: None.
 
     Returns
     -------
@@ -205,6 +212,6 @@ def edmonds_karp(G, s, t, capacity='capacity', value_only=False):
     >>> assert(flow_value == R.graph['flow_value'])
 
     """
-    R = edmonds_karp_impl(G, s, t, capacity)
+    R = edmonds_karp_impl(G, s, t, capacity, cutoff)
     R.graph['algorithm'] = 'edmonds_karp'
     return R
