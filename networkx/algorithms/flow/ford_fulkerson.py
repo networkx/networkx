@@ -175,8 +175,8 @@ def ford_fulkerson(G, s, t, capacity='capacity'):
     Returns
     -------
     R : NetworkX DiGraph
-        If legacy is False, this function returns the residual network
-        after finding the maximum flow.
+        The residual network after computing the maximum flow. This is a 
+        legacy implementation, se Notes and Examples.
 
     Raises
     ------
@@ -240,10 +240,15 @@ def ford_fulkerson(G, s, t, capacity='capacity'):
     >>> flow_value = R.graph['flow_value']
     >>> flow_dict = R.graph['flow_dict']
 
+    You can use the interface to flow algorithms introduced in 1.9 to get
+    the output that the function ford_fulkerson used to produce:
+
+    >>> flow_value, flow_dict = nx.maximum_flow(G, 'x', 'y',
+    ...                                         flow_func=nx.ford_fulkerson)
+
     """
     flow_value, R = ford_fulkerson_impl(G, s, t, capacity=capacity)
     flow_dict = _create_flow_dict(G, R, capacity=capacity)
-    # Add flow_value and flow_dict as Graph attributes for testing.
     R.graph['flow_value'] = flow_value
     R.graph['flow_dict'] = flow_dict
     R.graph['algorithm'] = 'ford_fulkerson_legacy'
