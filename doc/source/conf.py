@@ -27,10 +27,10 @@ sys.path.append(os.path.abspath('../sphinxext'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.addons.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 
+extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.pngmath',
               'sphinx.ext.viewcode',
-#              'sphinx.ext.mathjax',
+              'sphinx.ext.mathjax',
               'numpydoc',
               'sphinx.ext.coverage',
               'sphinx.ext.autosummary','sphinx.ext.todo','sphinx.ext.doctest',
@@ -45,7 +45,7 @@ templates_path = ['templates','../rst_templates']
 # The suffix of source filenames.
 source_suffix = '.rst'
 
-# The encoding of source files.                                      
+# The encoding of source files.
 source_encoding = 'utf-8'
 
 # The master toctree document.
@@ -153,7 +153,7 @@ latex_paper_size = 'letter'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
-latex_documents = [('tutorial/index', 'networkx_tutorial.tex', 
+latex_documents = [('tutorial/index', 'networkx_tutorial.tex',
                     'NetworkX Tutorial',
                     'Aric Hagberg, Dan Schult, Pieter Swart', 'howto', 1),
                    ('reference/pdf_reference', 'networkx_reference.tex',
@@ -168,10 +168,10 @@ latex_documents = [('tutorial/index', 'networkx_tutorial.tex',
 intersphinx_mapping = {'http://docs.python.org/': None,
                        'http://docs.scipy.org/doc/numpy/': None,
                       }
-                      
+
 # For trac custom roles
 
-default_role = 'math' 
+default_role = 'math'
 trac_url = 'https://networkx.lanl.gov/trac/'
-#mathjax_path = 'http://mathjax.connectmv.com/MathJax.js'
+mathjax_path = 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS_HTML'
 
