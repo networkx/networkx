@@ -1,3 +1,5 @@
+from __future__ import division
+
 from networkx.exception import *
 from networkx.utils.decorators import *
 
