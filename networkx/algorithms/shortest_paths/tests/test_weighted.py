@@ -1,45 +1,48 @@
-#!/usr/bin/env python
 from nose.tools import *
 import networkx as nx
 
+
+def _setUp(self):
+    cnlti = nx.convert_node_labels_to_integers
+    self.grid=cnlti(nx.grid_2d_graph(4,4),first_label=1,ordering="sorted")
+    self.cycle=nx.cycle_graph(7)
+    self.directed_cycle=nx.cycle_graph(7,create_using=nx.DiGraph())
+    self.XG=nx.DiGraph()
+    self.XG.add_weighted_edges_from([('s','u',10) ,('s','x',5) ,
+                                     ('u','v',1) ,('u','x',2) ,
+                                     ('v','y',1) ,('x','u',3) ,
+                                     ('x','v',5) ,('x','y',2) ,
+                                     ('y','s',7) ,('y','v',6)])
+    self.MXG=nx.MultiDiGraph(self.XG)
+    self.MXG.add_edge('s','u',weight=15)
+    self.XG2=nx.DiGraph()
+    self.XG2.add_weighted_edges_from([[1,4,1],[4,5,1],
+                                      [5,6,1],[6,3,1],
+                                      [1,3,50],[1,2,100],[2,3,100]])
+
+    self.XG3=nx.Graph()
+    self.XG3.add_weighted_edges_from([ [0,1,2],[1,2,12],
+                                       [2,3,1],[3,4,5],
+                                       [4,5,1],[5,0,10] ])
+
+    self.XG4=nx.Graph()
+    self.XG4.add_weighted_edges_from([ [0,1,2],[1,2,2],
+                                       [2,3,1],[3,4,1],
+                                       [4,5,1],[5,6,1],
+                                       [6,7,1],[7,0,1] ])
+    self.MXG4=nx.MultiGraph(self.XG4)
+    self.MXG4.add_edge(0,1,weight=3)
+    self.G=nx.DiGraph()  # no weights
+    self.G.add_edges_from([('s','u'), ('s','x'),
+                      ('u','v'), ('u','x'),
+                      ('v','y'), ('x','u'),
+                      ('x','v'), ('x','y'),
+                      ('y','s'), ('y','v')])
+
+
 class TestWeightedPath:
 
-    def setUp(self):
-        from networkx import convert_node_labels_to_integers as cnlti
-        self.grid=cnlti(nx.grid_2d_graph(4,4),first_label=1,ordering="sorted")
-        self.cycle=nx.cycle_graph(7)
-        self.directed_cycle=nx.cycle_graph(7,create_using=nx.DiGraph())
-        self.XG=nx.DiGraph()
-        self.XG.add_weighted_edges_from([('s','u',10) ,('s','x',5) ,
-                                         ('u','v',1) ,('u','x',2) ,
-                                         ('v','y',1) ,('x','u',3) ,
-                                         ('x','v',5) ,('x','y',2) ,
-                                         ('y','s',7) ,('y','v',6)])
-        self.MXG=nx.MultiDiGraph(self.XG)
-        self.MXG.add_edge('s','u',weight=15)
-        self.XG2=nx.DiGraph()
-        self.XG2.add_weighted_edges_from([[1,4,1],[4,5,1],
-                                          [5,6,1],[6,3,1],
-                                          [1,3,50],[1,2,100],[2,3,100]])
-
-        self.XG3=nx.Graph()
-        self.XG3.add_weighted_edges_from([ [0,1,2],[1,2,12],
-                                           [2,3,1],[3,4,5],
-                                           [4,5,1],[5,0,10] ])
-
-        self.XG4=nx.Graph()
-        self.XG4.add_weighted_edges_from([ [0,1,2],[1,2,2],
-                                           [2,3,1],[3,4,1],
-                                           [4,5,1],[5,6,1],
-                                           [6,7,1],[7,0,1] ])
-        self.MXG4=nx.MultiGraph(self.XG4)
-        self.MXG4.add_edge(0,1,weight=3)
-        self.G=nx.DiGraph()  # no weights
-        self.G.add_edges_from([('s','u'), ('s','x'),
-                          ('u','v'), ('u','x'),
-                          ('v','y'), ('x','u'),
-                          ('x','v'), ('x','y'),
-                          ('y','s'), ('y','v')])
+    setUp = _setUp
 
     def test_dijkstra(self):
         (D,P)= nx.single_source_dijkstra(self.XG,'s')
@@ -178,34 +181,51 @@ class TestWeightedPath:
         G.add_edge(9,10)
         assert_raises(ValueError,nx.bidirectional_dijkstra,G,8,10)
 
-    def test_bellman_ford(self):
-        # single node graph
+
+class TestBellmanFordAndGoldbergRadizk:
+
+    setUp = _setUp
+
+    def test_single_node_graph(self):
         G = nx.DiGraph()
         G.add_node(0)
         assert_equal(nx.bellman_ford(G, 0), ({0: None}, {0: 0}))
+        assert_equal(nx.goldberg_radzik(G, 0), ({0: None}, {0: 0}))
         assert_raises(KeyError, nx.bellman_ford, G, 1)
+        assert_raises(KeyError, nx.goldberg_radzik, G, 1)
 
-        # negative weight cycle
+    def test_negative_weight_cycle(self):
         G = nx.cycle_graph(5, create_using = nx.DiGraph())
         G.add_edge(1, 2, weight = -7)
         for i in range(5):
             assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, i)
+            assert_raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, i)
         G = nx.cycle_graph(5)  # undirected Graph
         G.add_edge(1, 2, weight = -3)
         for i in range(5):
             assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, i)
+            assert_raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, i)
+        G=nx.DiGraph([(1, 1, {'weight': -1})])
+        assert_raises(nx.NetworkXUnbounded, nx.bellman_ford, G, 1)
+        assert_raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
         # no negative cycle but negative weight
         G = nx.cycle_graph(5, create_using = nx.DiGraph())
         G.add_edge(1, 2, weight = -3)
         assert_equal(nx.bellman_ford(G, 0),
                      ({0: None, 1: 0, 2: 1, 3: 2, 4: 3},
                       {0: 0, 1: 1, 2: -2, 3: -1, 4: 0}))
+        assert_equal(nx.goldberg_radzik(G, 0),
+                     ({0: None, 1: 0, 2: 1, 3: 2, 4: 3},
+                      {0: 0, 1: 1, 2: -2, 3: -1, 4: 0}))
 
-        # not connected
+    def test_not_connected(self):
         G = nx.complete_graph(6)
         G.add_edge(10, 11)
         G.add_edge(10, 12)
         assert_equal(nx.bellman_ford(G, 0),
+                     ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+                      {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
+        assert_equal(nx.goldberg_radzik(G, 0),
                      ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
                       {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
 
@@ -218,24 +238,40 @@ class TestWeightedPath:
         assert_equal(nx.bellman_ford(G, 0, weight = 'load'),
                      ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
                       {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
+        assert_equal(nx.goldberg_radzik(G, 0, weight = 'load'),
+                     ({0: None, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+                      {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}))
 
-        # multigraph
+    def test_multigraph(self):
         P, D = nx.bellman_ford(self.MXG,'s')
+        assert_equal(P['v'], 'u')
+        assert_equal(D['v'], 9)
+        P, D = nx.goldberg_radzik(self.MXG,'s')
         assert_equal(P['v'], 'u')
         assert_equal(D['v'], 9)
         P, D = nx.bellman_ford(self.MXG4, 0)
         assert_equal(P[2], 1)
         assert_equal(D[2], 4)
+        P, D = nx.goldberg_radzik(self.MXG4, 0)
+        assert_equal(P[2], 1)
+        assert_equal(D[2], 4)
 
-        # other tests
+    def test_others(self):
         (P,D)= nx.bellman_ford(self.XG,'s')
+        assert_equal(P['v'], 'u')
+        assert_equal(D['v'], 9)
+        (P,D)= nx.goldberg_radzik(self.XG,'s')
         assert_equal(P['v'], 'u')
         assert_equal(D['v'], 9)
 
         G=nx.path_graph(4)
         assert_equal(nx.bellman_ford(G,0),
                      ({0: None, 1: 0, 2: 1, 3: 2}, {0: 0, 1: 1, 2: 2, 3: 3}))
+        assert_equal(nx.goldberg_radzik(G,0),
+                     ({0: None, 1: 0, 2: 1, 3: 2}, {0: 0, 1: 1, 2: 2, 3: 3}))
         assert_equal(nx.bellman_ford(G, 3),
+                    ({0: 1, 1: 2, 2: 3, 3: None}, {0: 3, 1: 2, 2: 1, 3: 0}))
+        assert_equal(nx.goldberg_radzik(G, 3),
                     ({0: 1, 1: 2, 2: 3, 3: None}, {0: 3, 1: 2, 2: 1, 3: 0}))
 
         G=nx.grid_2d_graph(2,2)
@@ -245,4 +281,9 @@ class TestWeightedPath:
                       ((1, 0), (0, 0)), ((1, 1), (0, 1))])
         assert_equal(sorted(dist.items()),
                      [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
-
+        pred,dist=nx.goldberg_radzik(G,(0,0))
+        assert_equal(sorted(pred.items()),
+                     [((0, 0), None), ((0, 1), (0, 0)),
+                      ((1, 0), (0, 0)), ((1, 1), (0, 1))])
+        assert_equal(sorted(dist.items()),
+                     [((0, 0), 0), ((0, 1), 1), ((1, 0), 1), ((1, 1), 2)])
