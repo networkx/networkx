@@ -19,6 +19,7 @@ if sphinx.__version__ < "1.0.1":
     raise RuntimeError("Sphinx 1.0.1 or newer required")
 
 # If your extensions are in another directory, add it here.
+sys.path.insert(0, os.path.abspath('../..'))
 sys.path.append(os.path.abspath('../sphinxext'))
 
 # General configuration
