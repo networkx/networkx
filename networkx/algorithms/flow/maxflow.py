@@ -43,9 +43,11 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
         in a capacitated graph. The function has to accept at least three
         parameters: a Graph or Digraph, a source node, and a target node.
         And return a residual network that follows NetworkX conventions
-        (see Notes). If flow_func is None the default maximum
+        (see Notes). If flow_func is None, the default maximum
         flow function (:meth:`preflow_push`) is used. See below for
-        alternative algorithms. Default value: None.
+        alternative algorithms. The choice of the default function may change
+        from version to version and should not be relied on. Default value:
+        None.
 
     value_only : boolean
         If True compute only the value of the maximum flow. If False
@@ -105,9 +107,16 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.graph['flow_value']`.
+    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    only edges :samp:`(u, v)` such that
+    :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
+    :samp:`s`-:samp:`t` cut.
 
     Specific algorithms may store extra data in :samp:`R`.
+
+    The function should supports an optional boolean parameter value_only. When
+    True, it can optionally terminate the algorithm as soon as the maximum flow
+    value and the minimum cut can be determined.
 
     The legacy :meth:`ford_fulkerson` maximum flow implementation doesn't
     follow this conventions but it is supported as a valid flow_func.
@@ -196,14 +205,15 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
 
-    flow_func : function
         A function for computing the maximum flow among a pair of nodes
         in a capacitated graph. The function has to accept at least three
         parameters: a Graph or Digraph, a source node, and a target node.
         And return a residual network that follows NetworkX conventions
-        (see Notes). If flow_func is None the default maximum
+        (see Notes). If flow_func is None, the default maximum
         flow function (:meth:`preflow_push`) is used. See below for
-        alternative algorithms. Default value: None.
+        alternative algorithms. The choice of the default function may change
+        from version to version and should not be relied on. Default value:
+        None.
 
     value_only : boolean
         If True compute only the value of the minimum cut. If False compute
@@ -255,10 +265,17 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
+    The flow value, defined as the total flow into :samp:`t`, the sink, is
+    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    only edges :samp:`(u, v)` such that
+    :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
+    :samp:`s`-:samp:`t` cut.
+
     Specific algorithms may store extra data in :samp:`R`.
 
-    The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.graph['flow_value']`.
+    The function should supports an optional boolean parameter value_only. When
+    True, it can optionally terminate the algorithm as soon as the maximum flow
+    value and the minimum cut can be determined.
 
     Examples
     --------

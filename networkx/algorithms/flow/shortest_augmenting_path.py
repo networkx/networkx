@@ -194,8 +194,9 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
         `O(\min(n^{2/3}, m^{1/2}) m)`. Default value: False.
 
     cutoff : integer, float
-        If specified, the algorithm will stop when the flow value reaches or
-        exceeds the cutoff. Default value: None.
+        If specified, the algorithm will terminate when the flow value reaches
+        or exceeds the cutoff. In this case, it may be unable to immediately
+        determine a minimum cut. Default value: None.
 
     Returns
     -------
