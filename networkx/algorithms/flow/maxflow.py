@@ -5,7 +5,10 @@ Maximum flow (and minimum cut) algorithms on capacitated graphs.
 import networkx as nx
 
 # Define the default flow function for computing maximum flow.
+from .edmonds_karp import edmonds_karp
+from .ford_fulkerson import ford_fulkerson
 from .preflow_push import preflow_push
+from .shortest_augmenting_path import shortest_augmenting_path
 from .utils import build_flow_dict
 default_flow_func = preflow_push
 
@@ -160,10 +163,10 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
         flow_func = default_flow_func
 
     if not callable(flow_func):
-        raise nx.NetworkXError("flow_func has to be callable")
+        raise nx.NetworkXError("flow_func has to be callable.")
 
     # Handle legacy ford_fulkerson
-    if flow_func is nx.ford_fulkerson:
+    if flow_func is ford_fulkerson:
         flow_value, flow_dict = flow_func(G, s, t, capacity=capacity)
         if value_only:
             return flow_value
@@ -325,11 +328,16 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
         flow_func = default_flow_func
 
     if not callable(flow_func):
-        raise nx.NetworkXError("flow_func has to be callable")
+        raise nx.NetworkXError("flow_func has to be callable.")
+
+    if (kwargs.get('cutoff') is not None and
+        flow_func in (edmonds_karp, ford_fulkerson, preflow_push,
+                      shortest_augmenting_path)):
+        raise nx.NetworkXError("cutoff should not be specified.")
 
     # Handle legacy ford_fulkerson.
-    if flow_func is nx.ford_fulkerson:
-        R = flow_func(G, s, t, capacity=capacity, legacy=False)
+    if flow_func is ford_fulkerson:
+        R = flow_func(G, s, t, capacity=capacity, legacy=False, **kwargs)
         if value_only:
             return R.graph['flow_value']
     else:

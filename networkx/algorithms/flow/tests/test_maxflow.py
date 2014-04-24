@@ -380,6 +380,8 @@ class TestMaxFlowMinCutInterface:
                          msg=msg.format(flow_func.__name__))
             assert_equal(fv, nx.minimum_cut(G, 'x', 'y', flow_func=flow_func),
                          msg=msg.format(flow_func.__name__))
+            assert_raises(nx.NetworkXError, nx.minimum_cut, G, 'x', 'y',
+                          flow_func=flow_func, cutoff=1.0)
 
     def test_kwargs(self):
         G = nx.DiGraph()
