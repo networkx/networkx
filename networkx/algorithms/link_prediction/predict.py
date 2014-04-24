@@ -1,8 +1,11 @@
 import networkx as nx
-import networkx.algorithms.link_prediction.functions as lpfunc
 from networkx.exception import *
+from networkx.utils.decorators import *
+import networkx.algorithms.link_prediction.functions as lpfunc
 
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def predict_common_neighbors(G):
     """Predict links using common neighbors
 
@@ -12,10 +15,11 @@ def predict_common_neighbors(G):
     neighbors as values.
 
     """
-    _ensure_undirected(G)
     return _predict(G, lpfunc.common_neighbors)
 
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def predict_resource_allocation_index(G):
     """Predict links using resource allocation index (RA)
 
@@ -25,10 +29,11 @@ def predict_resource_allocation_index(G):
     values.
 
     """
-    _ensure_undirected(G)
     return _predict(G, lpfunc.resource_allocation_index)
 
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def predict_cn_soundarajan_hopcroft(G):
     """Predict links using CN + community information
 
@@ -37,10 +42,11 @@ def predict_cn_soundarajan_hopcroft(G):
     connecting them.
 
     """
-    _ensure_undirected(G)
     return _predict(G, lpfunc.cn_soundarajan_hopcroft)
 
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def predict_ra_index_soundarajan_hopcroft(G):
     """Predict links using RA index + community information
 
@@ -49,10 +55,11 @@ def predict_ra_index_soundarajan_hopcroft(G):
     connecting them.
 
     """
-    _ensure_undirected(G)
     return _predict(G, lpfunc.ra_index_soundarajan_hopcroft)
 
 
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def predict_within_inter_cluster(G, delta=0.001):
     """Predict links using WIC measure
 
@@ -61,19 +68,11 @@ def predict_within_inter_cluster(G, delta=0.001):
     neighbors respectively. Reference: Valverde-Rebaza, et al (2012).
 
     """
-    _ensure_undirected(G)
-
     if delta <= 0:
         raise NetworkXAlgorithmError()
 
     func = lambda g, u, v: lpfunc.within_inter_cluster(g, u, v, delta)
     return _predict(G, func)
-
-
-def _ensure_undirected(G):
-    """Ensures that graph G is a simple undirected graph"""
-    if G.is_directed() or G.is_multigraph():
-        raise NetworkXNotImplemented()
 
 
 def _predict(G, function):
