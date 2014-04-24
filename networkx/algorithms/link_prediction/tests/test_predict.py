@@ -303,7 +303,7 @@ class TestPredictWithinInterCluster():
 
     @raises(NetworkXAlgorithmError)
     def test_custom1(self):
-        """Case of delta equals zero"""
+        """Case of delta equals zero."""
         G = nx.star_graph(3)
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
@@ -312,7 +312,7 @@ class TestPredictWithinInterCluster():
 
     @raises(NetworkXAlgorithmError)
     def test_custom2(self):
-        """Case of delta less than zero"""
+        """Case of delta less than zero."""
         G = nx.star_graph(3)
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
