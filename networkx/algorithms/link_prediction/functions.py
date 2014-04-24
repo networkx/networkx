@@ -8,7 +8,7 @@ from networkx.utils.decorators import *
 @not_implemented_for('multigraph')
 def common_neighbors(G, node1, node2):
     """Count the number of common neighbors of two nodes"""
-    return len(_common_neighbors_list(G, node1, node2))
+    return len(_get_common_neighbors(G, node1, node2))
 
 
 @not_implemented_for('directed')
@@ -20,8 +20,8 @@ def resource_allocation_index(G, node1, node2):
     over all common neighbors of the two nodes.
 
     """
-    cn_list = _common_neighbors_list(G, node1, node2)
-    return sum(map(lambda x: 1 / x, list(G.degree(cn_list).values())))
+    cnbors = _get_common_neighbors(G, node1, node2)
+    return sum(map(lambda x: 1 / x, G.degree(cnbors).values()))
 
 
 @not_implemented_for('directed')
@@ -36,14 +36,13 @@ def cn_soundarajan_hopcroft(G, node1, node2):
     """
     cmty1 = _get_community(G, node1)
     cmty2 = _get_community(G, node2)
-    cn_list = _common_neighbors_list(G, node1, node2)
-    def score(u):
-        cmty = _get_community(G, u)
-        if cmty == cmty1 and cmty == cmty2:
-            return 1
-        else:
-            return 0
-    return len(cn_list) + sum(map(score, cn_list))
+    cnbors = _get_common_neighbors(G, node1, node2)
+    if cmty1 == cmty2:
+        def is_same_cmty(w):
+            return _get_community(G, w) == cmty1
+        return len(cnbors) + sum(map(is_same_cmty, cnbors))
+    else:
+        return len(cnbors)
 
 
 @not_implemented_for('directed')
@@ -59,16 +58,14 @@ def ra_index_soundarajan_hopcroft(G, node1, node2):
     """
     cmty1 = _get_community(G, node1)
     cmty2 = _get_community(G, node2)
-
-    cn_list = _common_neighbors_list(G, node1, node2)
-    def same_cmty(u):
-        cmty = _get_community(G, u)
-        return cmty == cmty1 and cmty == cmty2
-    try:
-        filtered_list = filter(same_cmty, cn_list)
-    except KeyError:
-        raise NetworkXAlgorithmError('No community information')
-    return sum(map(lambda x: 1 / x, list(G.degree(filtered_list).values())))
+    cnbors = _get_common_neighbors(G, node1, node2)
+    if cmty1 == cmty2:
+        def is_same_cmty(w):
+            return _get_community(G, w) == cmty1
+        filtered = filter(is_same_cmty, cnbors)
+        return sum(map(lambda x: 1 / x, G.degree(filtered).values()))
+    else:
+        return 0
 
 
 @not_implemented_for('directed')
@@ -88,24 +85,22 @@ def within_inter_cluster(G, node1, node2, delta=0.001):
 
     cmty1 = _get_community(G, node1)
     cmty2 = _get_community(G, node2)
-    cn_list = _common_neighbors_list(G, node1, node2)
-    def within(u):
-        cmty = _get_community(G, u)
-        return cmty == cmty1 and cmty == cmty2
-    try:
-        filtered_list = filter(within, cn_list)
-    except KeyError:
-        raise NetworkXAlgorithmError('No community information')
-    num_within = len(list(filtered_list))
-    num_inter = len(list(cn_list)) - num_within
-    return num_within / (num_inter + delta)
+    cnbors = _get_common_neighbors(G, node1, node2)
+    if cmty1 == cmty2:
+        def is_same_cmty(w):
+            return _get_community(G, w) == cmty1
+        within = set(filter(is_same_cmty, cnbors))
+        inter = cnbors - within
+        return len(within) / (len(inter) + delta)
+    else:
+        return 0
 
 
-def _common_neighbors_list(G, node1, node2):
-    """Get the list of common neighbors between two nodes"""
+def _get_common_neighbors(G, node1, node2):
+    """Get the set of common neighbors between two nodes"""
     nset1 = set(G[node1])
     nset2 = set(G[node2])
-    return list(nset1 & nset2)
+    return nset1 & nset2
 
 
 def _get_community(G, node):
