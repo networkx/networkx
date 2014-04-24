@@ -191,7 +191,7 @@ def edmonds_karp(G, s, t, capacity='capacity', value_only=False, cutoff=None):
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.node[t]['flow_value']`.
+    stored in :samp:`R.graph['flow_value']`.
 
     Examples
     --------
@@ -209,7 +209,8 @@ def edmonds_karp(G, s, t, capacity='capacity', value_only=False, cutoff=None):
     >>> flow_value = nx.maximum_flow(G, 'x', 'y')
     >>> flow_value
     3.0
-    >>> assert(flow_value == R.graph['flow_value'])
+    >>> flow_value == R.graph['flow_value']
+    True
 
     """
     R = edmonds_karp_impl(G, s, t, capacity, cutoff)

@@ -355,7 +355,7 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1,
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.node[t]['flow_value']`.
+    stored in :samp:`R.graph['flow_value']`.
 
     Examples
     --------
@@ -371,13 +371,19 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1,
     >>> G.add_edge('e','y', capacity=3.0)
     >>> R = nx.preflow_push(G, 'x', 'y')
     >>> flow_value = nx.maximum_flow(G, 'x', 'y')
-    >>> assert(flow_value == R.graph['flow_value'])
-    >>> assert(flow_value == R.node['y']['excess'])
+    >>> flow_value == R.graph['flow_value']
+    True
+    >>> # preflow_push also stores the maximum flow value
+    >>> # in the excess attribute of the sink node t
+    >>> flow_value == R.node['y']['excess']
+    True
     >>> # For some problems, you might only want to compute a
     >>> # maximum preflow.
     >>> R = nx.preflow_push(G, 'x', 'y', value_only=True)
-    >>> assert(flow_value == R.graph['flow_value'])
-    >>> assert(flow_value == R.node['y']['excess'])
+    >>> flow_value == R.graph['flow_value']
+    True
+    >>> flow_value == R.node['y']['excess']
+    True
 
     """
     R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, value_only)

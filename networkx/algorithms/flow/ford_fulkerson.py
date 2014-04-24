@@ -341,8 +341,10 @@ def ford_fulkerson(G, s, t, capacity='capacity', legacy=True):
     >>> # attribute of the auxiliary network
     >>> inf_capacity_flows = R.graph['inf_capacity_flows']
     >>> # There are also attributes for the flow value and the flow dict
-    >>> assert(flow_value == R.graph['flow_value'])
-    >>> assert(flow_dict == R.graph['flow_dict'])
+    >>> flow_value == R.graph['flow_value']
+    True
+    >>> flow_dict == R.graph['flow_dict']
+    True
 
     """
     flow_value, R = ford_fulkerson_impl(G, s, t, capacity=capacity)

@@ -14,7 +14,7 @@ Maximum Flow
    minimum_cut
 
 
-Edmonds Karp
+Edmonds-Karp
 ------------
 .. autosummary::
    :toctree: generated/

@@ -154,9 +154,9 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None,
     You can also use alternative algorithms for computing the
     maximum flow by using the flow_func parameter.
 
-    >>> assert(flow_value ==
-    ...         nx.maximum_flow(G, 'x', 'y',
-    ...                         flow_func=nx.shortest_augmenting_path))
+    >>> flow_value == nx.maximum_flow(G, 'x', 'y',
+    ...                         flow_func=nx.shortest_augmenting_path)
+    True
 
     """
     if flow_func is None:
@@ -208,6 +208,7 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
 
+    flow_func : function
         A function for computing the maximum flow among a pair of nodes
         in a capacitated graph. The function has to accept at least three
         parameters: a Graph or Digraph, a source node, and a target node.
@@ -315,13 +316,15 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None,
     ...     cutset.update((u, v) for v in nbrs if v in non_reachable)
     >>> print(sorted(cutset))
     [('c', 'y'), ('x', 'b')]
-    >>> assert(min_cut_value == sum(G.edge[u][v]['capacity'] for (u, v) in cutset))
+    >>> min_cut_value == sum(G.edge[u][v]['capacity'] for (u, v) in cutset)
+    True
 
     You can also use alternative algorithms for computing the
     minimum cut by using the flow_func parameter.
 
-    >>> assert(min_cut_value ==
-    ...         nx.minimum_cut(G, 'x', 'y', flow_func=nx.shortest_augmenting_path))
+    >>> min_cut_value == nx.minimum_cut(G, 'x', 'y',
+    ...                                 flow_func=nx.shortest_augmenting_path)
+    True
 
     """
     if flow_func is None:
