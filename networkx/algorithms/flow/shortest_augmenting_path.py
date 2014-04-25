@@ -241,7 +241,10 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
     satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
 
     The flow value, defined as the total flow into :samp:`t`, the sink, is
-    stored in :samp:`R.graph['flow_value']`.
+    stored in :samp:`R.graph['flow_value']`. If :samp:`cutoff` is not
+    specified, reachability to :samp:`t` using only edges :samp:`(u, v)` such
+    that :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
+    :samp:`s`-:samp:`t` cut.
 
     Examples
     --------
