@@ -16,13 +16,23 @@ from networkx.algorithms.flow.edmonds_karp import edmonds_karp_core
 __all__ = ['shortest_augmenting_path']
 
 
-def shortest_augmenting_path_impl(G, s, t, capacity, two_phase, cutoff):
+def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
+                                  cutoff):
     """Implementation of the shortest augmenting path algorithm.
     """
-    R = build_residual_network(G, s, t, capacity)
+    if residual is None:
+        R = build_residual_network(G, s, t, capacity)
+    else:
+        R = residual
+
     R_node = R.node
     R_pred = R.pred
     R_succ = R.succ
+
+    # Initialize/reset the residual network.
+    for u in R:
+        for e in R_succ[u].values():
+            e['flow'] = 0
 
     # Initialize heights of the nodes.
     heights = {t: 0}
@@ -54,7 +64,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase, cutoff):
     for u in R:
         counts[R_node[u]['height']] += 1
 
-    inf = float('inf')
+    inf = R.graph['inf']
     def augment(path):
         """Augment flow along a path from s to t.
         """
@@ -66,6 +76,9 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase, cutoff):
             attr = R_succ[u][v]
             flow = min(flow, attr['capacity'] - attr['flow'])
             u = v
+        if flow * 2 > inf:
+            raise nx.NetworkXUnbounded(
+                'Infinite capacity path, flow unbounded above.')
         # Augment flow along the path.
         it = iter(path)
         u = next(it)
@@ -152,8 +165,8 @@ def shortest_augmenting_path_impl(G, s, t, capacity, two_phase, cutoff):
     return R
 
 
-def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
-                             two_phase=False, cutoff=None):
+def shortest_augmenting_path(G, s, t, capacity='capacity', residual=None,
+                             value_only=False, two_phase=False, cutoff=None):
     """Find a maximum single-commodity flow using the shortest augmenting path
     algorithm.
 
@@ -183,6 +196,10 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
+
+    residual : NetworkX graph
+        Residual network on which the algorithm is to be executed. If None, a
+        new residual network is created. Default value: None.
 
     value_only : bool
         If True compute only the value of the maximum flow. This parameter
@@ -266,6 +283,7 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', value_only=False,
     True
 
     """
-    R = shortest_augmenting_path_impl(G, s, t, capacity, two_phase, cutoff)
+    R = shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
+                                      cutoff)
     R.graph['algorithm'] = 'shortest_augmenting_path'
     return R
