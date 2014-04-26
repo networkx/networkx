@@ -1,7 +1,22 @@
+from contextlib import contextmanager
 from math import sqrt
 import networkx as nx
 from nose import SkipTest
 from nose.tools import *
+from random import getstate, seed, setstate
+
+@contextmanager
+def save_random_state():
+    state = getstate()
+    yield
+    state = setstate()
+
+
+def preserve_random_state(func):
+    def wrapper(*args, **kwargs):
+        with save_random_state():
+            return func(*args, **kwargs)
+    return wrapper
 
 
 def check_eigenvector(A, l, x):
@@ -26,9 +41,14 @@ class TestAlgebraicConnectivity(object):
         try:
             import numpy
             import numpy.linalg
+            import scipy.sparse
         except ImportError:
-            raise SkipTest('NumPy not available.')
+            raise SkipTest('SciPy not available.')
 
+    def setUp(self):
+        seed(1234567890)
+
+    @preserve_random_state
     def test_directed(self):
         G = nx.DiGraph()
         for method in ('tracemin', 'arnoldi'):
@@ -37,6 +57,7 @@ class TestAlgebraicConnectivity(object):
             assert_raises(nx.NetworkXNotImplemented, nx.fiedler_vector, G,
                           method=method)
 
+    @preserve_random_state
     def test_null_and_singleton(self):
         G = nx.Graph()
         for method in ('tracemin', 'arnoldi'):
@@ -51,6 +72,7 @@ class TestAlgebraicConnectivity(object):
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
                           method=method)
 
+    @preserve_random_state
     def test_disconnected(self):
         G = nx.Graph()
         G.add_nodes_from(range(2))
@@ -66,6 +88,7 @@ class TestAlgebraicConnectivity(object):
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
                           method=method)
 
+    @preserve_random_state
     def test_two_nodes(self):
         G = nx.Graph()
         G.add_edge(0, 1, weight=1)
@@ -86,6 +109,7 @@ class TestAlgebraicConnectivity(object):
             x = nx.fiedler_vector(G, weight='spam', tol=1e-12, method=method)
             check_eigenvector(A, 6, x)
 
+    @preserve_random_state
     def test_path(self):
         G = nx.path_graph(8)
         sigma = 2 - sqrt(2 + sqrt(2))
@@ -96,6 +120,7 @@ class TestAlgebraicConnectivity(object):
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
 
+    @preserve_random_state
     def test_cycle(self):
         G = nx.cycle_graph(8)
         sigma = 2 - sqrt(2)
@@ -106,6 +131,7 @@ class TestAlgebraicConnectivity(object):
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
 
+    @preserve_random_state
     def test_buckminsterfullerene(self):
         G = nx.Graph(
             [(1, 10), (1, 41), (1, 59), (2, 12), (2, 42), (2, 60), (3, 6),
