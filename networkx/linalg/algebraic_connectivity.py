@@ -250,5 +250,6 @@ def setup_module(module):
     try:
         import numpy
         import scipy
+        import scipy.sparse
     except ImportError:
         raise SkipTest('SciPy not available.')
