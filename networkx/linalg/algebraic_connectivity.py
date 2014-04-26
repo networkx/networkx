@@ -167,7 +167,8 @@ def algebraic_connectivity(G, weight='weight', tol=1e-8, method='tracemin'):
         sigma = eigsh(L, 2, which='SM', tol=tol, return_eigenvectors=False)
         return sigma[0]
     else:
-        raise ValueError("method should be either 'tracemin' or 'arnoldi'.")
+        raise nx.NetworkXError(
+            "method should be either 'tracemin' or 'arnoldi'.")
 
 
 @not_implemented_for('directed')
@@ -240,7 +241,8 @@ def fiedler_vector(G, weight='weight', tol=1e-8, method='tracemin'):
         sigma, X = eigsh(L, 2, which='SM', tol=tol)
         return array(X[:, 1])
     else:
-        raise ValueError("method should be either 'tracemin' or 'arnoldi'.")
+        raise nx.NetworkXError(
+            "method should be either 'tracemin' or 'arnoldi'.")
 
 
 # fixture for nose tests

@@ -41,7 +41,6 @@ class TestAlgebraicConnectivity(object):
     def setupClass(cls):
         global numpy
         try:
-            import numpy
             import numpy.linalg
             import scipy.sparse
         except ImportError:
@@ -86,6 +85,13 @@ class TestAlgebraicConnectivity(object):
                           method=method)
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
                           method=method)
+
+    @preserve_random_state
+    def test_unrecognized_method(self):
+        G = nx.path_graph(4)
+        assert_raises(nx.NetworkXError, nx.algebraic_connectivity, G,
+                      method='unknown')
+        assert_raises(nx.NetworkXError, nx.fiedler_vector, G, method='unknown')
 
     @preserve_random_state
     def test_two_nodes(self):
