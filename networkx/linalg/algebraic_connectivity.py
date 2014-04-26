@@ -95,8 +95,7 @@ def _tracemin_fiedler(L, tol):
             asarray(W)[:, j] = pcg(asarray(X)[:, j], tol / 10)
         project(W)
         S = X.transpose() * W  # Schur complement
-        N = solve(S, X.transpose() * X, overwrite_a=True, overwrite_b=True,
-                  check_finite=False)
+        N = solve(S, X.transpose() * X, overwrite_a=True, overwrite_b=True)
         X = W * N
 
     return sigma, asarray(X)
