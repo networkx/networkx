@@ -1,8 +1,8 @@
 """
 Cuthill-McKee ordering of graph nodes to produce sparse matrices
 """
-#    Copyright (C) 2011 by 
-#    Aric Hagberg <hagberg@lanl.gov>
+#    Copyright (C) 2011-2014 by
+#    Aric Hagberg <aric.hagberg@gmail.com>
 #    All rights reserved.
 #    BSD license.
 from operator import itemgetter
@@ -11,8 +11,8 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['cuthill_mckee_ordering',
            'reverse_cuthill_mckee_ordering']
 
-def cuthill_mckee_ordering(G, start=None):
-    """Generate an ordering (permutation) of the graph nodes to make 
+def cuthill_mckee_ordering(G, heuristic=None):
+    """Generate an ordering (permutation) of the graph nodes to make
     a sparse matrix.
 
     Uses the Cuthill-McKee heuristic (based on breadth-first search) [1]_.
@@ -20,11 +20,12 @@ def cuthill_mckee_ordering(G, start=None):
     Parameters
     ----------
     G : graph
-      A NetworkX graph 
+      A NetworkX graph
 
-    start : node, optional
-      Start algorithm and specified node.  The node should be on the 
-      periphery of the graph for best results.  
+    heuristic : function, optional
+      Function to choose starting node for RCM algorithm.  If None
+      a node from a psuedo-peripheral pair is used.  A user-defined function
+      can be supplied that takes a graph object and returns a single node.
 
     Returns
     -------
@@ -38,13 +39,22 @@ def cuthill_mckee_ordering(G, start=None):
     >>> rcm = list(cuthill_mckee_ordering(G))
     >>> A = nx.adjacency_matrix(G, nodelist=rcm) # doctest: +SKIP
 
+    Smallest degree node as heuristic function:
+
+    >>> def smallest_degree(G):
+    ...     node,deg = sorted(G.degree().items(), key = lambda x:x[1])[0]
+    ...     return node
+    >>> rcm = list(cuthill_mckee_ordering(G, heuristic=smallest_degree))
+
+
     See Also
     --------
     reverse_cuthill_mckee_ordering
-    
+
     Notes
     -----
     The optimal solution the the bandwidth reduction is NP-complete [2]_.
+
 
     References
     ----------
@@ -52,28 +62,29 @@ def cuthill_mckee_ordering(G, start=None):
        Reducing the bandwidth of sparse symmetric matrices,
        In Proc. 24th Nat. Conf. ACM, pages 157-172, 1969.
        http://doi.acm.org/10.1145/800195.805928
-    .. [2]  Steven S. Skiena. 1997. The Algorithm Design Manual. 
+    .. [2]  Steven S. Skiena. 1997. The Algorithm Design Manual.
        Springer-Verlag New York, Inc., New York, NY, USA.
     """
     for c in nx.connected_components(G):
-        for n in connected_cuthill_mckee_ordering(G.subgraph(c), start):
+        for n in connected_cuthill_mckee_ordering(G.subgraph(c), heuristic):
             yield n
 
-def reverse_cuthill_mckee_ordering(G, start=None):
-    """Generate an ordering (permutation) of the graph nodes to make 
+def reverse_cuthill_mckee_ordering(G, heuristic=None):
+    """Generate an ordering (permutation) of the graph nodes to make
     a sparse matrix.
 
-    Uses the reverse Cuthill-McKee heuristic (based on breadth-first search) 
+    Uses the reverse Cuthill-McKee heuristic (based on breadth-first search)
     [1]_.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph 
+      A NetworkX graph
 
-    start : node, optional
-      Start algorithm and specified node.  The node should be on the 
-      periphery of the graph for best results.  
+    heuristic : function, optional
+      Function to choose starting node for RCM algorithm.  If None
+      a node from a psuedo-peripheral pair is used.  A user-defined function
+      can be supplied that takes a graph object and returns a single node.
 
     Returns
     -------
@@ -87,10 +98,18 @@ def reverse_cuthill_mckee_ordering(G, start=None):
     >>> rcm = list(reverse_cuthill_mckee_ordering(G))
     >>> A = nx.adjacency_matrix(G, nodelist=rcm) # doctest: +SKIP
 
+    Smallest degree node as heuristic function:
+
+    >>> def smallest_degree(G):
+    ...     node,deg = sorted(G.degree().items(), key = lambda x:x[1])[0]
+    ...     return node
+    >>> rcm = list(reverse_cuthill_mckee_ordering(G, heuristic=smallest_degree))
+
+
     See Also
     --------
     cuthill_mckee_ordering
-    
+
     Notes
     -----
     The optimal solution the the bandwidth reduction is NP-complete [2]_.
@@ -101,15 +120,17 @@ def reverse_cuthill_mckee_ordering(G, start=None):
        Reducing the bandwidth of sparse symmetric matrices,
        In Proc. 24th Nat. Conf. ACM, pages 157-72, 1969.
        http://doi.acm.org/10.1145/800195.805928
-    .. [2]  Steven S. Skiena. 1997. The Algorithm Design Manual. 
+    .. [2]  Steven S. Skiena. 1997. The Algorithm Design Manual.
        Springer-Verlag New York, Inc., New York, NY, USA.
     """
-    return reversed(list(cuthill_mckee_ordering(G, start=start)))
+    return reversed(list(cuthill_mckee_ordering(G, heuristic=heuristic)))
 
-def connected_cuthill_mckee_ordering(G, start=None):
+def connected_cuthill_mckee_ordering(G, heuristic=None):
     # the cuthill mckee algorithm for connected graphs
-    if start is None:
-        (_, start) = find_pseudo_peripheral_node_pair(G)
+    if heuristic is None:
+        start = pseudo_peripheral_node(G)
+    else:
+        start = heuristic(G)
     yield start
     visited = set([start])
     stack = [(start, iter(G[start]))]
@@ -129,22 +150,18 @@ def connected_cuthill_mckee_ordering(G, start=None):
         except StopIteration:
             stack.pop(0)
 
-def find_pseudo_peripheral_node_pair(G, start=None):
-    # helper for cuthill-mckee to find a "pseudo peripheral pair"
-    # to use as good starting node 
-    if start is None:
-        u = next(G.nodes_iter())
-    else:
-        u = start
+def pseudo_peripheral_node(G):
+    # helper for cuthill-mckee to find a node in a "pseudo peripheral pair"
+    # to use as good starting node
+    u = next(G.nodes_iter())
     lp = 0
-    v = u 
+    v = u
     while True:
         spl = nx.shortest_path_length(G, v)
         l = max(spl.values())
-        if l <= lp: 
+        if l <= lp:
             break
         lp = l
-        farthest = [n for n,dist in spl.items() if dist==l]
-        v, deg = sorted(G.degree(farthest).items(), key=itemgetter(1))[0]
-    return u, v
-    
+        farthest = (n for n,dist in spl.items() if dist==l)
+        v, deg = min(G.degree(farthest).items(), key=itemgetter(1))
+    return v
