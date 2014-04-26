@@ -70,19 +70,12 @@ class GlobalRelabelThreshold(object):
         self._work = 0
 
 
-def build_residual_network(G, s, t, capacity):
+def build_residual_network(G, capacity):
     """Build a residual network and initialize a zero flow.
     """
     if G.is_multigraph():
         raise nx.NetworkXError(
             'MultiGraph and MultiDiGraph not supported (yet).')
-
-    if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
-    if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
-    if s == t:
-        raise nx.NetworkXError('source and sink are the same node')
 
     R = nx.DiGraph()
     R.add_nodes_from(G)

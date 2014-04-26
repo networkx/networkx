@@ -103,8 +103,15 @@ def edmonds_karp_core(R, s, t, cutoff):
 def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
     """Implementation of the Edmonds-Karp algorithm.
     """
+    if s not in G:
+        raise nx.NetworkXError('node %s not in graph' % str(s))
+    if t not in G:
+        raise nx.NetworkXError('node %s not in graph' % str(t))
+    if s == t:
+        raise nx.NetworkXError('source and sink are the same node')
+
     if residual is None:
-        R = build_residual_network(G, s, t, capacity)
+        R = build_residual_network(G, capacity)
     else:
         R = residual
 

@@ -20,13 +20,20 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
                       value_only):
     """Implementation of the highest-label preflow-push algorithm.
     """
+    if s not in G:
+        raise nx.NetworkXError('node %s not in graph' % str(s))
+    if t not in G:
+        raise nx.NetworkXError('node %s not in graph' % str(t))
+    if s == t:
+        raise nx.NetworkXError('source and sink are the same node')
+
     if global_relabel_freq is None:
         global_relabel_freq = 0
     if global_relabel_freq < 0:
         raise nx.NetworkXError('global_relabel_freq must be nonnegative.')
 
     if residual is None:
-        R = build_residual_network(G, s, t, capacity)
+        R = build_residual_network(G, capacity)
     else:
         R = residual
 
