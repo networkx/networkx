@@ -462,17 +462,24 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
 
     if flow_func is ford_fulkerson:
         R = flow_func(G, s, t, capacity=capacity)
+        # legacy always removes saturated edges
+        cutset = None 
     else:
         R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
         # Remove saturated edges from the residual network 
-        R.remove_edges_from((u, v) for u, v, d in R.edges(data=True)
-                            if d['flow'] == d['capacity'])
+        cutset = [(u, v, d) for u, v, d in R.edges(data=True) 
+                     if d['flow'] == d['capacity']]
+        R.remove_edges_from(cutset)
 
     # Then, reachable and non reachable nodes from source in the
     # residual network form the node partition that defines
     # the minimum cut.
     non_reachable = set(nx.shortest_path_length(R, target=t))
     partition = (set(G) - non_reachable, non_reachable)
+    # Finaly add again cutset edges to the residual network to make
+    # sure that it is reusable.
+    if cutset is not None:
+        R.add_edges_from(cutset)
     return (R.graph['flow_value'], partition)
 
 
