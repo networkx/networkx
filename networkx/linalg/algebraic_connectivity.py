@@ -26,7 +26,7 @@ def _tracemin_fiedler(L, tol):
     n = L.shape[0]
     q = 2
     # Jacobi preconditioner.
-    M = 1 / L.diagonal()
+    M = 1. / L.diagonal()
 
     Lnorm = max(asarray(abs(L).sum(axis=0))[0, :])
 
