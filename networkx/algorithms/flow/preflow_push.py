@@ -16,7 +16,8 @@ from networkx.algorithms.flow.utils import *
 __all__ = ['preflow_push']
 
 
-def preflow_push_impl(G, s, t, capacity, global_relabel_freq, value_only):
+def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
+                      value_only):
     """Implementation of the highest-label preflow-push algorithm.
     """
     if global_relabel_freq is None:
@@ -24,10 +25,22 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, value_only):
     if global_relabel_freq < 0:
         raise nx.NetworkXError('global_relabel_freq must be nonnegative.')
 
-    R = build_residual_network(G, s, t, capacity)
+    if residual is None:
+        R = build_residual_network(G, s, t, capacity)
+    else:
+        R = residual
+
+    detect_unboundedness(R, s, t)
+
     R_node = R.node
     R_pred = R.pred
     R_succ = R.succ
+
+    # Initialize/reset the residual network.
+    for u in R:
+        R_node[u]['excess'] = 0
+        for e in R_succ[u].values():
+            e['flow'] = 0
 
     def reverse_bfs(src):
         """Perform a reverse breadth-first search from src in the residual
@@ -268,8 +281,8 @@ def preflow_push_impl(G, s, t, capacity, global_relabel_freq, value_only):
     return R
 
 
-def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1,
-                 value_only=False):
+def preflow_push(G, s, t, capacity='capacity', residual=None,
+                 global_relabel_freq=1, value_only=False):
     """Find a maximum single-commodity flow using the highest-label
     preflow-push algorithm.
 
@@ -299,6 +312,10 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1,
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
+
+    residual : NetworkX graph
+        Residual network on which the algorithm is to be executed. If None, a
+        new residual network is created. Default value: None.
 
     global_relabel_freq : integer, float
         Relative frequency of applying the global relabeling heuristic to speed
@@ -389,6 +406,7 @@ def preflow_push(G, s, t, capacity='capacity', global_relabel_freq=1,
     True
 
     """
-    R = preflow_push_impl(G, s, t, capacity, global_relabel_freq, value_only)
+    R = preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
+                          value_only)
     R.graph['algorithm'] = 'preflow_push'
     return R

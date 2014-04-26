@@ -21,7 +21,7 @@ def edmonds_karp_core(R, s, t, cutoff):
     R_pred = R.pred
     R_succ = R.succ
 
-    inf = float('inf')
+    inf = R.graph['inf']
     def augment(path):
         """Augment flow along a path from s to t.
         """
@@ -33,6 +33,9 @@ def edmonds_karp_core(R, s, t, cutoff):
             attr = R_succ[u][v]
             flow = min(flow, attr['capacity'] - attr['flow'])
             u = v
+        if flow * 2 > inf:
+            raise nx.NetworkXUnbounded(
+                'Infinite capacity path, flow unbounded above.')
         # Augment flow along the path.
         it = iter(path)
         u = next(it)
@@ -97,10 +100,18 @@ def edmonds_karp_core(R, s, t, cutoff):
     return flow_value
 
 
-def edmonds_karp_impl(G, s, t, capacity, cutoff):
+def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
     """Implementation of the Edmonds-Karp algorithm.
     """
-    R = build_residual_network(G, s, t, capacity)
+    if residual is None:
+        R = build_residual_network(G, s, t, capacity)
+    else:
+        R = residual
+
+    # Initialize/reset the residual network.
+    for u in R:
+        for e in R[u].values():
+            e['flow'] = 0
 
     if cutoff is None:
         cutoff = float('inf')
@@ -109,7 +120,8 @@ def edmonds_karp_impl(G, s, t, capacity, cutoff):
     return R
 
 
-def edmonds_karp(G, s, t, capacity='capacity', value_only=False, cutoff=None):
+def edmonds_karp(G, s, t, capacity='capacity', residual=None, value_only=False,
+                 cutoff=None):
     """Find a maximum single-commodity flow using the Edmonds-Karp algorithm.
 
     This function returns the residual network resulting after computing
@@ -138,6 +150,10 @@ def edmonds_karp(G, s, t, capacity='capacity', value_only=False, cutoff=None):
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
+
+    residual : NetworkX graph
+        Residual network on which the algorithm is to be executed. If None, a
+        new residual network is created. Default value: None.
 
     value_only : bool
         If True compute only the value of the maximum flow. This parameter
@@ -216,6 +232,6 @@ def edmonds_karp(G, s, t, capacity='capacity', value_only=False, cutoff=None):
     True
 
     """
-    R = edmonds_karp_impl(G, s, t, capacity, cutoff)
+    R = edmonds_karp_impl(G, s, t, capacity, residual, cutoff)
     R.graph['algorithm'] = 'edmonds_karp'
     return R
