@@ -84,7 +84,7 @@ def _tracemin_fiedler(L, tol):
         V = gram_schmidt(X)
         # Compute interation matrix H.
         H = V.transpose() * L * V
-        sigma, Y = eigh(H, overwrite_a=True, check_finite=False)
+        sigma, Y = eigh(H, overwrite_a=True)
         # Test for convergence.
         if not first:
             r = L * X[:, 0] - sigma[0] * X[:, 0]
