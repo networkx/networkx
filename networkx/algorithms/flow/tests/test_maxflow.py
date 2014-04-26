@@ -15,9 +15,12 @@ from networkx.algorithms.flow.shortest_augmenting_path import *
 flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
               shortest_augmenting_path]
 max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
-all_funcs = sum([flow_funcs, max_min_funcs], [])
+flow_value_funcs = [nx.maximum_flow_value, nx.minimum_cut_value]
+interface_funcs = sum([max_min_funcs, flow_value_funcs], [])
+all_funcs = sum([flow_funcs, interface_funcs], [])
 
 msg = "Assertion failed in function: {0}"
+msgi = "Assertion failed in function: {0} in interface {1}"
 
 
 def compute_cutset(G, partition):
@@ -368,42 +371,68 @@ class TestMaxFlowMinCutInterface:
         elements = ['this_should_be_callable', 10, set([1,2,3])]
         G = nx.Graph()
         G.add_weighted_edges_from([(0,1,1),(1,2,1),(2,3,1)], weight='capacity')
-        for element in elements:
-            assert_raises(nx.NetworkXError,
-                          nx.maximum_flow, G, 0, 1, flow_func=element)
-            assert_raises(nx.NetworkXError,
-                          nx.minimum_cut, G, 0, 1, flow_func=element)
+        for flow_func in interface_funcs:
+            for element in elements:
+                assert_raises(nx.NetworkXError,
+                              flow_func, G, 0, 1, flow_func=element)
+                assert_raises(nx.NetworkXError,
+                              flow_func, G, 0, 1, flow_func=element)
 
     def test_flow_func_parameters(self):
         G = self.G
         fv = 3.0
-        for flow_func in [nx.edmonds_karp, nx.ford_fulkerson,
-                          nx.preflow_push, nx.shortest_augmenting_path]:
-            assert_equal(fv, nx.maximum_flow(G, 'x', 'y', flow_func=flow_func)[0],
-                         msg=msg.format(flow_func.__name__))
-            assert_equal(fv, nx.minimum_cut(G, 'x', 'y', flow_func=flow_func)[0],
-                         msg=msg.format(flow_func.__name__))
+        for interface_func in interface_funcs:
+            for flow_func in flow_funcs:
+                result = interface_func(G, 'x', 'y', flow_func=flow_func)
+                if interface_func in max_min_funcs:
+                    result = result[0]
+                assert_equal(fv, result, msg=msgi.format(flow_func.__name__,
+                                                    interface_func.__name__))
+ 
+    def test_minimum_cut_no_cutoff(self):
+        G = self.G
+        for flow_func in flow_funcs:
             assert_raises(nx.NetworkXError, nx.minimum_cut, G, 'x', 'y',
+                          flow_func=flow_func, cutoff=1.0)
+            assert_raises(nx.NetworkXError, nx.minimum_cut_value, G, 'x', 'y',
                           flow_func=flow_func, cutoff=1.0)
 
     def test_kwargs(self):
         G = self.H
         fv = 1.0
-        assert_equal(fv, nx.maximum_flow_value(G, 0, 2,
-                     flow_func=nx.shortest_augmenting_path, two_phase=True))
-        assert_equal(fv, nx.minimum_cut_value(G, 0, 2,
-                     flow_func=nx.shortest_augmenting_path, two_phase=True))
-        assert_equal(fv, nx.maximum_flow_value(G, 0, 2,
-                     flow_func=nx.preflow_push, global_relabel_freq=5))
-        assert_equal(fv, nx.minimum_cut_value(G, 0, 2,
-                     flow_func=nx.preflow_push, global_relabel_freq=5))
+        to_test = (
+            (nx.shortest_augmenting_path, dict(two_phase=True)),
+            (nx.preflow_push, dict(global_relabel_freq=5)),
+        )
+        for interface_func in interface_funcs:
+            for flow_func, kwargs in to_test:
+                result = interface_func(G, 0, 2, flow_func=flow_func, **kwargs)
+                if interface_func in max_min_funcs:
+                    result = result[0]
+                assert_equal(fv, result, msg=msgi.format(flow_func.__name__,
+                                                    interface_func.__name__))
 
     def test_kwargs_default_flow_func(self):
         G = self.H
-        assert_raises(nx.NetworkXError,
-                      nx.maximum_flow, G, 0, 1, global_relabel_freq=2)
-        assert_raises(nx.NetworkXError,
-                      nx.minimum_cut, G, 0, 1, global_relabel_freq=2)
+        for interface_func in interface_funcs:
+            assert_raises(nx.NetworkXError, interface_func, 
+                          G, 0, 1, global_relabel_freq=2)
+
+    def test_reusing_residual(self):
+        G = self.G
+        fv = 3.0
+        s, t = 'x', 'y'
+        R = build_residual_network(G, 'capacity')
+        for interface_func in interface_funcs:
+            for flow_func in flow_funcs:
+                for i in range(3):
+                    result = interface_func(G, 'x', 'y', flow_func=flow_func,
+                                            residual=R)
+                    if interface_func in max_min_funcs:
+                        result = result[0]
+                    assert_equal(fv, result,
+                                 msg=msgi.format(flow_func.__name__,
+                                                 interface_func.__name__))
 
 
 # Tests specific to one algorithm
