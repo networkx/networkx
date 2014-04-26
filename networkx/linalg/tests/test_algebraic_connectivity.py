@@ -9,13 +9,15 @@ from random import getstate, seed, setstate
 def save_random_state():
     state = getstate()
     yield
-    state = setstate()
+    setstate(state)
 
 
 def preserve_random_state(func):
     def wrapper(*args, **kwargs):
         with save_random_state():
+            seed(1234567890)
             return func(*args, **kwargs)
+    wrapper.__name__ = func.__name__
     return wrapper
 
 
@@ -44,9 +46,6 @@ class TestAlgebraicConnectivity(object):
             import scipy.sparse
         except ImportError:
             raise SkipTest('SciPy not available.')
-
-    def setUp(self):
-        seed(1234567890)
 
     @preserve_random_state
     def test_directed(self):

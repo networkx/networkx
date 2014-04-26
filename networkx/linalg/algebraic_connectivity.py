@@ -249,7 +249,6 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
-        import scipy
         import scipy.sparse
     except ImportError:
         raise SkipTest('SciPy not available.')
