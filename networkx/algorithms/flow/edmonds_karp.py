@@ -79,9 +79,9 @@ def edmonds_karp_core(R, s, t, cutoff):
 
     # Look for shortest augmenting paths using breadth-first search.
     flow_value = 0
-    while True:
+    while flow_value < cutoff:
         v, pred, succ = bidirectional_bfs()
-        if pred is None or flow_value >= cutoff:
+        if pred is None:
             break
         path = [v]
         # Trace a path from s to v.
