@@ -155,9 +155,13 @@ class TestAlgebraicConnectivity(object):
              (42, 48), (43, 49), (44, 50), (45, 46), (45, 54), (46, 55),
              (47, 54), (48, 55)])
         sigma = 0.24340174613993243
-        for method in ('tracemin', 'arnoldi'):
-            assert_almost_equal(nx.algebraic_connectivity(
-                G, tol=1e-12, method=method), sigma)
-            A = nx.laplacian_matrix(G)
-            x = nx.fiedler_vector(G, tol=1e-12, method=method)
-            check_eigenvector(A, sigma, x)
+        for method in ('tracemin_pcg', 'tracemin_chol', 'arnoldi'):
+            try:
+                assert_almost_equal(nx.algebraic_connectivity(
+                    G, tol=1e-12, method=method), sigma)
+                A = nx.laplacian_matrix(G)
+                x = nx.fiedler_vector(G, tol=1e-12, method=method)
+                check_eigenvector(A, sigma, x)
+            except nx.NetworkXError as e:
+                if e.args != ('Cholesky solver unavailable.',):
+                    raise

@@ -12,21 +12,79 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 from random import normalvariate
 
-__all__ = ['algebraic_connectivity', 'fiedler_vector']
-
-
-def _tracemin_fiedler(L, tol):
-    """Compute the Fiedler vector of L using the TRACEMIN-Fiedler algorithm.
-    """
+try:
     from numpy import (array, asmatrix, asarray, dot, matrix, ndarray, reshape,
                        zeros)
     from numpy.linalg import norm
     from scipy.linalg import eigh, solve
+    from scipy.sparse import csc_matrix
+    from scipy.sparse.linalg import eigsh
+    __all__ = ['algebraic_connectivity', 'fiedler_vector']
+except ImportError:
+    __all__ = []
 
+
+class _PCGSolver(object):
+    """Jacobi-preconditioned conjugate gradient method.
+    """
+
+    def __init__(self, A, tol):
+        self._A = A
+        self._M = 1. / A.diagonal()
+        self._tol = tol
+
+    def solve(self, b):
+        A = self._A
+        M = self._M
+        tol = self._tol * norm(b, 1)
+        # Initialize.
+        x = zeros(b.shape)
+        r = b.copy()
+        z = M * r
+        rz = dot(r, z)
+        p = z
+        # Iterate.
+        while True:
+            Ap = A * p
+            alpha = rz / dot(p, Ap)
+            x += alpha * p
+            r -= alpha * Ap
+            if norm(r, 1) < tol:
+                return x
+            z = M * r
+            beta = dot(r, z)
+            beta, rz = beta / rz, beta
+            p = z + beta * p
+
+
+class _CholeskySolver(object):
+    """Cholesky factorization.
+    """
+
+    def __init__(self, A):
+        A = csc_matrix(A, dtype=float)
+        chol = self._analyze(A)
+        perm = chol.P()
+        A[perm[-1], perm[-1]] = float('inf')
+        chol.cholesky_inplace(A)
+        self._chol = chol
+
+    def solve(self, b):
+        return self._chol(b)
+
+    try:
+        from scikits.sparse.cholmod import analyze
+        _analyze = analyze
+        avail = True
+    except ImportError:
+        avail = False
+
+
+def _tracemin_fiedler(L, tol, solver=None):
+    """Compute the Fiedler vector of L using the TRACEMIN-Fiedler algorithm.
+    """
     n = L.shape[0]
     q = 2
-    # Jacobi preconditioner.
-    M = 1. / L.diagonal()
 
     Lnorm = max(asarray(abs(L).sum(axis=0))[0, :])
 
@@ -47,27 +105,16 @@ def _tracemin_fiedler(L, tol):
             V[:, j] /= norm(V[:, j])
         return asmatrix(V)
 
-    def pcg(b, tol):
-        """Jacobi-preconditioned conjugate gradient method.
-        """
-        x = zeros(b.shape)
-        r = b.copy()
-        z = M * r
-        rz = dot(r, z)
-        p = z
-
-        tol *= norm(r, 1)
-        while True:
-            Lp = L * p
-            alpha = rz / dot(p, Lp)
-            x += alpha * p
-            r -= alpha * Lp
-            if norm(r, 1) < tol:
-                return x
-            z = M * r
-            beta = dot(r, z)
-            beta, rz = beta / rz, beta
-            p = z + beta * p
+    if solver is None:
+        solver = 'pcg' if not _CholeskySolver.avail else 'chol'
+    if solver == 'pcg':
+        solver = _PCGSolver(L, tol / 10)
+    elif solver == 'chol':
+        if not _CholeskySolver.avail:
+            raise nx.NetworkXError('Chokesky solver unavailable.')
+        solver = _CholeskySolver(L)
+    else:
+        raise nx.NetworkXError('unknown solver.')
 
     # Randomly initialize eigenvectors.
     X = asmatrix(reshape([normalvariate(0, 1) for i in range(n * q)], (n, q),
@@ -92,7 +139,7 @@ def _tracemin_fiedler(L, tol):
         X = V * Y
         # Solve saddle point problem using the Schur complement.
         for j in range(q):
-            asarray(W)[:, j] = pcg(asarray(X)[:, j], tol / 10)
+            asarray(W)[:, j] = solver.solve(asarray(X)[:, j])
         project(W)
         S = X.transpose() * W  # Schur complement
         N = solve(S, X.transpose() * X, overwrite_a=True, overwrite_b=True)
@@ -160,9 +207,13 @@ def algebraic_connectivity(G, weight='weight', tol=1e-8, method='tracemin'):
     if method == 'tracemin':
         sigma, X = _tracemin_fiedler(L, tol)
         return sigma[0]
+    elif method == 'tracemin_pcg':
+        sigma, X = _tracemin_fiedler(L, tol, 'pcg')
+        return sigma[0]
+    elif method == 'tracemin_chol':
+        sigma, X = _tracemin_fiedler(L, tol, 'chol')
+        return sigma[0]
     elif method == 'arnoldi':
-        from scipy.sparse import csc_matrix
-        from scipy.sparse.linalg import eigsh
         L = csc_matrix(L, dtype=float)
         sigma = eigsh(L, 2, which='SM', tol=tol, return_eigenvectors=False)
         return sigma[0]
@@ -222,8 +273,6 @@ def fiedler_vector(G, weight='weight', tol=1e-8, method='tracemin'):
     if not nx.is_connected(G):
         raise nx.NetworkXError('graph is not connected.')
 
-    from numpy import array
-
     L = nx.laplacian_matrix(G, weight=weight)
     if any(L.diagonal() == 0):
         raise nx.NetworkXError('graph is not connected.')
@@ -234,9 +283,13 @@ def fiedler_vector(G, weight='weight', tol=1e-8, method='tracemin'):
     if method == 'tracemin':
         sigma, X = _tracemin_fiedler(L, tol)
         return array(X[:, 0])
+    elif method == 'tracemin_pcg':
+        sigma, X = _tracemin_fiedler(L, tol, 'pcg')
+        return array(X[:, 0])
+    elif method == 'tracemin_chol':
+        sigma, X = _tracemin_fiedler(L, tol, 'chol')
+        return array(X[:, 0])
     elif method == 'arnoldi':
-        from scipy.sparse import csc_matrix
-        from scipy.sparse.linalg import eigsh
         L = csc_matrix(L, dtype=float)
         sigma, X = eigsh(L, 2, which='SM', tol=tol)
         return array(X[:, 1])
