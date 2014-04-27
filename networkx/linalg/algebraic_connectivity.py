@@ -186,7 +186,8 @@ def algebraic_connectivity(G, weight='weight', tol=1e-8, method='tracemin'):
 
     Notes
     -----
-    For MultiGraph, the edge weights are summed. Zero-weighted edges are ignored.
+    For MultiGraph, the edge weights are summed. Zero-weighted edges are
+    ignored. If there are negative-weighted edges, the algorithm not work.
 
     See Also
     --------
@@ -262,7 +263,8 @@ def fiedler_vector(G, weight='weight', tol=1e-8, method='tracemin'):
 
     Notes
     -----
-    For MultiGraph, the edge weights are summed. Zero-weighted edges are ignored.
+    For MultiGraph, the edge weights are summed. Zero-weighted edges are
+    ignored. If there are negative-weighted edges, the algorithm not work.
 
     See Also
     --------
