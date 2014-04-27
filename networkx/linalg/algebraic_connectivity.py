@@ -111,7 +111,7 @@ def _tracemin_fiedler(L, tol, solver=None):
         solver = _PCGSolver(L, tol / 10)
     elif solver == 'chol':
         if not _CholeskySolver.avail:
-            raise nx.NetworkXError('Chokesky solver unavailable.')
+            raise nx.NetworkXError('Cholesky solver unavailable.')
         solver = _CholeskySolver(L)
     else:
         raise nx.NetworkXError('unknown solver.')

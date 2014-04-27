@@ -10,7 +10,7 @@ virtualenv:
 before_install:
   # Current TravisCI VM is Ubuntu 12.04 which has Python 2.7 and 3.2.
   # So apt-get will only apply to those virtualenvs.
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then sudo apt-get install -qq python-numpy python-scipy python-matplotlib python-pydot python-gdal cython libcholmod; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then sudo apt-get install -qq python-numpy python-scipy python-matplotlib python-pydot python-gdal cython libcholmod1.7.1; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then sudo apt-get install -qq python3-numpy python3-scipy; fi
 
   # Additionally, the TravisCI VM has numpy preinstalled on 2.6, 2.7 and 3.2.
