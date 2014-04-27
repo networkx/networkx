@@ -28,7 +28,8 @@ before_install:
   - pip install pyparsing --use-mirrors
   - pip install coveralls --use-mirrors
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install scikits.sparse --use-mirrors; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install Cython scikits.sparse --use-mirrors; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install Cython --use-mirrors; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install scikits.sparse --use-mirrors; fi
 
   # In general, 2.6, 3.2, 3.3, and pypy will have lower coverage levels
   # due to missing dependencies.  The coverage level reported by coveralls
