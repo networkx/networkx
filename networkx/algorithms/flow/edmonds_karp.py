@@ -81,7 +81,7 @@ def edmonds_karp_core(R, s, t, cutoff):
     flow_value = 0
     while True:
         v, pred, succ = bidirectional_bfs()
-        if pred is None:
+        if pred is None or flow_value >= cutoff:
             break
         path = [v]
         # Trace a path from s to v.
