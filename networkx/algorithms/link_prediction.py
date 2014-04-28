@@ -8,7 +8,7 @@ from networkx.utils.decorators import *
 @not_implemented_for('multigraph')
 def common_neighbors(G, u, v):
     """Count the number of common neighbors of two nodes."""
-    return len(_get_common_neighbors(G, u, v))
+    return len(_common_neighbors(G, u, v))
 
 
 @not_implemented_for('directed')
@@ -25,8 +25,7 @@ def resource_allocation_index(G, u, v):
     A survey. In Physica A, (390) 6: 11501170, Year 2011.
     http://arxiv.org/pdf/1010.0725v1.pdf
     """
-    cnbors = _get_common_neighbors(G, u, v)
-    return sum(map(lambda x: 1 / x, G.degree(cnbors).values()))
+    return sum(1 / G.degree(w) for w in _common_neighbors(G, u, v))
 
 
 @not_implemented_for('directed')
@@ -46,13 +45,11 @@ def cn_soundarajan_hopcroft(G, u, v):
     DOI=10.1145/2187980.2188150
     http://doi.acm.org/10.1145/2187980.2188150
     """
-    c1 = _get_community(G, u)
-    c2 = _get_community(G, v)
-    cnbors = _get_common_neighbors(G, u, v)
-    if c1 == c2:
-        def is_same_cmty(w):
-            return _get_community(G, w) == c1
-        return len(cnbors) + sum(map(is_same_cmty, cnbors))
+    Cu = _community(G, u)
+    Cv = _community(G, v)
+    cnbors = _common_neighbors(G, u, v)
+    if Cu == Cv:
+        return len(cnbors) + sum(_community(G, w) == Cu for w in cnbors)
     else:
         return len(cnbors)
 
@@ -76,14 +73,11 @@ def ra_index_soundarajan_hopcroft(G, u, v):
     DOI=10.1145/2187980.2188150
     http://doi.acm.org/10.1145/2187980.2188150
     """
-    c1 = _get_community(G, u)
-    c2 = _get_community(G, v)
-    cnbors = _get_common_neighbors(G, u, v)
-    if c1 == c2:
-        def is_same_cmty(w):
-            return _get_community(G, w) == c1
-        filtered = filter(is_same_cmty, cnbors)
-        return sum(map(lambda x: 1 / x, G.degree(filtered).values()))
+    Cu = _community(G, u)
+    Cv = _community(G, v)
+    cnbors = _common_neighbors(G, u, v)
+    if Cu == Cv:
+        return sum(1 / G.degree(w) for w in cnbors if _community(G, w) == Cu)
     else:
         return 0
 
@@ -113,27 +107,23 @@ def within_inter_cluster(G, u, v, delta=0.001):
     if delta <= 0:
         raise NetworkXAlgorithmError('Delta must be greater than zero')
 
-    c1 = _get_community(G, u)
-    c2 = _get_community(G, v)
-    cnbors = _get_common_neighbors(G, u, v)
-    if c1 == c2:
-        def is_same_cmty(w):
-            return _get_community(G, w) == c1
-        within = set(filter(is_same_cmty, cnbors))
+    Cu = _community(G, u)
+    Cv = _community(G, v)
+    cnbors = _common_neighbors(G, u, v)
+    if Cu == Cv:
+        within = {w for w in cnbors if _community(G, w) == Cu}
         inter = cnbors - within
         return len(within) / (len(inter) + delta)
     else:
         return 0
 
 
-def _get_common_neighbors(G, u, v):
+def _common_neighbors(G, u, v):
     """Get the set of common neighbors between two nodes."""
-    nset1 = set(G[u])
-    nset2 = set(G[v])
-    return nset1 & nset2
+    return G[u].keys() & G[v].keys()
 
 
-def _get_community(G, u):
+def _community(G, u):
     """Get the community of the given node."""
     try:
         return G.node[u]['community']

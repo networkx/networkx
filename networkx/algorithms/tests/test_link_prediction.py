@@ -1,14 +1,15 @@
 from nose.tools import *
+
 import networkx as nx
 from networkx.exception import *
-import networkx.algorithms.link_prediction.functions as lpfunc
+import networkx.algorithms.link_prediction as lp
 
 
 class TestCommonNeighbors():
     def setUp(self):
-        self.func = lpfunc.common_neighbors
-        def test_func(G, node1, node2, expected):
-            result = self.func(G, node1, node2)
+        self.func = lp.common_neighbors
+        def test_func(G, u, v, expected):
+            result = self.func(G, u, v)
             assert result == expected
         self.test = test_func
 
@@ -56,10 +57,10 @@ class TestCommonNeighbors():
 
 class TestResourceAllocationIndex():
     def setUp(self):
-        self.func = lpfunc.resource_allocation_index
-        def test_func(G, node1, node2, expected):
+        self.func = lp.resource_allocation_index
+        def test_func(G, u, v, expected):
             tol = 1e-7
-            result = self.func(G, node1, node2)
+            result = self.func(G, u, v)
             assert abs(result - expected) < tol
         self.test = test_func
 
@@ -107,9 +108,9 @@ class TestResourceAllocationIndex():
 
 class TestCNSoundarajanHopcroft():
     def setUp(self):
-        self.func = lpfunc.cn_soundarajan_hopcroft
-        def test_func(G, node1, node2, expected):
-            result = self.func(G, node1, node2)
+        self.func = lp.cn_soundarajan_hopcroft
+        def test_func(G, u, v, expected):
+            result = self.func(G, u, v)
             assert result == expected
         self.test = test_func
 
@@ -220,10 +221,10 @@ class TestCNSoundarajanHopcroft():
 
 class TestRAIndexSoundarajanHopcroft():
     def setUp(self):
-        self.func = lpfunc.ra_index_soundarajan_hopcroft
-        def test_func(G, node1, node2, expected):
+        self.func = lp.ra_index_soundarajan_hopcroft
+        def test_func(G, u, v, expected):
             tol = 1e-7
-            result = self.func(G, node1, node2)
+            result = self.func(G, u, v)
             assert abs(result - expected) < tol
         self.test = test_func
 
@@ -335,10 +336,10 @@ class TestRAIndexSoundarajanHopcroft():
 class TestWithinInterCluster():
     def setUp(self):
         self.delta = 0.001
-        self.func = lpfunc.within_inter_cluster
-        def test_func(G, node1, node2, expected):
+        self.func = lp.within_inter_cluster
+        def test_func(G, u, v, expected):
             tol = 1e-7
-            result = self.func(G, node1, node2, self.delta)
+            result = self.func(G, u, v, self.delta)
             assert abs(result - expected) < tol
         self.test = test_func
 
