@@ -18,7 +18,7 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'freeze','is_frozen','subgraph','create_empty_copy',
            'set_node_attributes','get_node_attributes',
            'set_edge_attributes','get_edge_attributes',
-           'all_neighbors','non_neighbors']
+           'all_neighbors','non_neighbors', 'non_edges']
 
 def nodes(G):
     """Return a copy of the graph nodes in a list."""
@@ -425,3 +425,25 @@ def non_neighbors(graph, node):
     """
     nbors = set(neighbors(graph, node)) | set([node])
     return (nnode for nnode in graph if nnode not in nbors)
+
+def non_edges(graph):
+    """Returns the non-existent edges in the graph.
+
+    Parameters
+    ----------
+    graph : NetworkX graph.
+        Graph to find non-existent edges.
+
+    Returns
+    -------
+    non_edges : iterator
+        Iterator of edges that are not in the graph.
+    """
+    S = set()
+    for u in graph.nodes_iter():
+        for v in non_neighbors(graph, u):
+            if (u, v) not in S:
+                S.add((u, v))
+                if not graph.is_directed():
+                    S.add((v, u))
+                yield (u, v)
