@@ -62,9 +62,11 @@ class _CholeskySolver(object):
     """
 
     def __init__(self, A):
-        A = csc_matrix(A, dtype=float)
+        A = csc_matrix(A, dtype=float, copy=True)
+        # Compute an unsymmetric reordering.
         chol = self._analyze(A)
         perm = chol.P()
+        # Set the lower-right element after permutation to infinity.
         A[perm[-1], perm[-1]] = float('inf')
         chol.cholesky_inplace(A)
         self._chol = chol
@@ -86,7 +88,7 @@ def _tracemin_fiedler(L, tol, solver=None):
     n = L.shape[0]
     q = 2
 
-    Lnorm = max(asarray(abs(L).sum(axis=0))[0, :])
+    Lnorm = abs(L).sum(axis=0).flatten().max()
 
     def project(X):
         """Make X orthogonal to the nullspace of L.
@@ -187,7 +189,7 @@ def algebraic_connectivity(G, weight='weight', tol=1e-8, method='tracemin'):
     Notes
     -----
     For MultiGraph, the edge weights are summed. Zero-weighted edges are
-    ignored. If there are negative-weighted edges, the algorithm not work.
+    ignored. If there are negative-weighted edges, the algorithm may not work.
 
     See Also
     --------
@@ -264,7 +266,7 @@ def fiedler_vector(G, weight='weight', tol=1e-8, method='tracemin'):
     Notes
     -----
     For MultiGraph, the edge weights are summed. Zero-weighted edges are
-    ignored. If there are negative-weighted edges, the algorithm not work.
+    ignored. If there are negative-weighted edges, the algorithm may not work.
 
     See Also
     --------
