@@ -62,21 +62,22 @@ class _CholeskySolver(object):
     """
 
     def __init__(self, A):
+        # Convert A to CSC to suppress SparseEfficiencyWarning.
         A = csc_matrix(A, dtype=float, copy=True)
-        # Compute an unsymmetric reordering.
-        chol = self._analyze(A)
-        perm = chol.P()
-        # Set the lower-right element after permutation to infinity.
-        A[perm[-1], perm[-1]] = float('inf')
-        chol.cholesky_inplace(A)
-        self._chol = chol
+        # Force A to be nonsingular. Since A is the Laplacian matrix of a
+        # connected graph, its rank deficiency is one, and thus one diagonal
+        # element needs to modified. Changing to infinity forces a zero in the
+        # corresponding element in the solution.
+        i = A.diagonal().argmin()
+        A[i, i] = float('inf')
+        self._chol = self._cholesky(A)
 
     def solve(self, b):
         return self._chol(b)
 
     try:
-        from scikits.sparse.cholmod import analyze
-        _analyze = analyze
+        from scikits.sparse.cholmod import cholesky
+        _cholesky = cholesky
         avail = True
     except ImportError:
         avail = False
