@@ -439,11 +439,14 @@ def non_edges(graph):
     non_edges : iterator
         Iterator of edges that are not in the graph.
     """
-    S = set()
-    for u in graph.nodes_iter():
-        for v in non_neighbors(graph, u):
-            if (u, v) not in S:
-                S.add((u, v))
-                if not graph.is_directed():
-                    S.add((v, u))
+    if graph.is_directed():
+        for u in graph.nodes_iter():
+            for v in non_neighbors(graph, u):
                 yield (u, v)
+    else:
+        S = set()
+        for u in graph.nodes_iter():
+            for v in non_neighbors(graph, u):
+                if (u, v) not in S:
+                    yield (u, v)
+                    S.add((v, u))
