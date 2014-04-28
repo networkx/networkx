@@ -292,17 +292,18 @@ def max_flow_min_cost(G, s, t, capacity = 'capacity', weight = 'weight'):
     >>> mincostFlow = nx.max_flow_min_cost(G, 1, 7)
     >>> nx.cost_of_flow(G, mincostFlow)
     373
-    >>> maxFlow = nx.ford_fulkerson_flow(G, 1, 7)
+    >>> R = nx.ford_fulkerson(G, 1, 7)
+    >>> maxFlow = R.graph['flow_dict']
     >>> nx.cost_of_flow(G, maxFlow)
     428
     >>> mincostFlowValue = (sum((mincostFlow[u][7] for u in G.predecessors(7)))
     ...                     - sum((mincostFlow[7][v] for v in G.successors(7))))
-    >>> mincostFlowValue == nx.max_flow(G, 1, 7)
+    >>> mincostFlowValue == nx.maximum_flow_value(G, 1, 7)
     True
 
 
     """
-    maxFlow = nx.max_flow(G, s, t, capacity = capacity)
+    maxFlow = nx.maximum_flow_value(G, s, t, capacity = capacity)
     H = nx.DiGraph(G)
     H.add_node(s, demand = -maxFlow)
     H.add_node(t, demand = maxFlow)

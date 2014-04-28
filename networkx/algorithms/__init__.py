@@ -51,5 +51,5 @@ import networkx.algorithms.operators
 import networkx.algorithms.tree 
 
 from networkx.algorithms.bipartite import projected_graph,project,is_bipartite
-from networkx.algorithms.isomorphism import is_isomorphic,could_be_isomorphic,\
-    fast_could_be_isomorphic,faster_could_be_isomorphic
+from networkx.algorithms.isomorphism import (is_isomorphic,could_be_isomorphic,
+    fast_could_be_isomorphic, faster_could_be_isomorphic)

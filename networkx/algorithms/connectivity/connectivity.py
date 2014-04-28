@@ -201,7 +201,7 @@ def local_node_connectivity(G, s, t, aux_digraph=None, mapping=None):
         H, mapping = _aux_digraph_node_connectivity(G)
     else:
         H = aux_digraph
-    return nx.max_flow(H,'%sB' % mapping[s], '%sA' % mapping[t])
+    return nx.maximum_flow_value(H,'%sB' % mapping[s], '%sA' % mapping[t])
 
 def node_connectivity(G, s=None, t=None):
     r"""Returns node connectivity for a graph or digraph G.
@@ -460,7 +460,7 @@ def local_edge_connectivity(G, u, v, aux_digraph=None):
         H = _aux_digraph_edge_connectivity(G)
     else:
         H = aux_digraph
-    return nx.max_flow(H, u, v)
+    return nx.maximum_flow_value(H, u, v)
 
 def edge_connectivity(G, s=None, t=None):
     r"""Returns the edge connectivity of the graph or digraph G.
