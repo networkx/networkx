@@ -8,9 +8,11 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 # All rights reserved.
 # BSD license.
 
+from functools import partial
 import networkx as nx
 from networkx.utils import not_implemented_for
 from random import normalvariate
+from re import compile
 
 try:
     from numpy import (array, asmatrix, asarray, dot, matrix, ndarray, reshape,
@@ -22,6 +24,8 @@ try:
     __all__ = ['algebraic_connectivity', 'fiedler_vector']
 except ImportError:
     __all__ = []
+
+_tracemin_method = compile('^tracemin(?:_(.*))?$')
 
 
 class _PCGSolver(object):
@@ -62,6 +66,8 @@ class _CholeskySolver(object):
     """
 
     def __init__(self, A):
+        if not self._cholesky:
+            raise nx.NetworkXError('Cholesky solver unavailable.')
         # Convert A to CSC to suppress SparseEfficiencyWarning.
         A = csc_matrix(A, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
@@ -78,9 +84,36 @@ class _CholeskySolver(object):
     try:
         from scikits.sparse.cholmod import cholesky
         _cholesky = cholesky
-        avail = True
     except ImportError:
-        avail = False
+        _cholesky = None
+
+
+class _LUSolver(object):
+    """LU factorization.
+    """
+
+    def __init__(self, A):
+        if not self._splu:
+            raise nx.NetworkXError('LU solver unavailable.')
+        # Convert A to CSC to suppress SparseEfficiencyWarning.
+        A = csc_matrix(A, dtype=float, copy=True)
+        # Force A to be nonsingular. Since A is the Laplacian matrix of a
+        # connected graph, its rank deficiency is one, and thus one diagonal
+        # element needs to modified. Changing to infinity forces a zero in the
+        # corresponding element in the solution.
+        i = A.diagonal().argmin()
+        A[i, i] = float('inf')
+        self._LU = self._splu(A)
+
+    def solve(self, b):
+        return self._LU.solve(b)
+
+    try:
+        from scipy.sparse.linalg import splu
+        _splu = partial(splu, permc_spec='MMD_AT_PLUS_A', diag_pivot_thresh=0.,
+                        options={'Equil': True, 'SymmetricMode': True})
+    except ImportError:
+        _splu = None
 
 
 def _tracemin_fiedler(L, tol, solver=None):
@@ -108,14 +141,12 @@ def _tracemin_fiedler(L, tol, solver=None):
             V[:, j] /= norm(V[:, j])
         return asmatrix(V)
 
-    if solver is None:
-        solver = 'pcg' if not _CholeskySolver.avail else 'chol'
-    if solver == 'pcg':
+    if solver is None or solver == 'pcg':
         solver = _PCGSolver(L, tol / 10)
     elif solver == 'chol':
-        if not _CholeskySolver.avail:
-            raise nx.NetworkXError('Cholesky solver unavailable.')
         solver = _CholeskySolver(L)
+    elif solver == 'lu':
+        solver = _LUSolver(L)
     else:
         raise nx.NetworkXError('unknown solver.')
 
@@ -208,14 +239,9 @@ def algebraic_connectivity(G, weight='weight', tol=1e-8, method='tracemin'):
     if len(G) == 2:
         return 2. * L[0, 0]
 
-    if method == 'tracemin':
-        sigma, X = _tracemin_fiedler(L, tol)
-        return sigma[0]
-    elif method == 'tracemin_pcg':
-        sigma, X = _tracemin_fiedler(L, tol, 'pcg')
-        return sigma[0]
-    elif method == 'tracemin_chol':
-        sigma, X = _tracemin_fiedler(L, tol, 'chol')
+    match = _tracemin_method.match(method)
+    if match:
+        sigma, X = _tracemin_fiedler(L, tol, match.group(1))
         return sigma[0]
     elif method == 'arnoldi':
         L = csc_matrix(L, dtype=float)
@@ -285,14 +311,9 @@ def fiedler_vector(G, weight='weight', tol=1e-8, method='tracemin'):
     if len(G) == 2:
         return array([1., -1.])
 
-    if method == 'tracemin':
-        sigma, X = _tracemin_fiedler(L, tol)
-        return array(X[:, 0])
-    elif method == 'tracemin_pcg':
-        sigma, X = _tracemin_fiedler(L, tol, 'pcg')
-        return array(X[:, 0])
-    elif method == 'tracemin_chol':
-        sigma, X = _tracemin_fiedler(L, tol, 'chol')
+    match = _tracemin_method.match(method)
+    if match:
+        sigma, X = _tracemin_fiedler(L, tol, match.group(1))
         return array(X[:, 0])
     elif method == 'arnoldi':
         L = csc_matrix(L, dtype=float)
