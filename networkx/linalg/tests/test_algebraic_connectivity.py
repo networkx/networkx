@@ -75,14 +75,12 @@ class TestAlgebraicConnectivity(object):
         G = nx.Graph()
         G.add_nodes_from(range(2))
         for method in ('tracemin', 'arnoldi'):
-            assert_raises(nx.NetworkXError, nx.algebraic_connectivity, G,
-                          method=method)
+            assert_equal(nx.algebraic_connectivity(G), 0)
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
                           method=method)
         G.add_edge(0, 1, weight=0)
         for method in ('tracemin', 'arnoldi'):
-            assert_raises(nx.NetworkXError, nx.algebraic_connectivity, G,
-                          method=method)
+            assert_equal(nx.algebraic_connectivity(G), 0)
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
                           method=method)
 
@@ -97,42 +95,42 @@ class TestAlgebraicConnectivity(object):
     def test_two_nodes(self):
         G = nx.Graph()
         G.add_edge(0, 1, weight=1)
+        A = nx.laplacian_matrix(G)
         for method in ('tracemin', 'arnoldi'):
             assert_almost_equal(nx.algebraic_connectivity(
                 G, tol=1e-12, method=method), 2)
-            A = nx.laplacian_matrix(G)
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, 2, x)
         G = nx.MultiGraph()
         G.add_edge(0, 0, spam=1e8)
         G.add_edge(0, 1, spam=1)
-        G.add_edge(0, 1, spam=2)
+        G.add_edge(0, 1, spam=-2)
+        A = -3 * nx.laplacian_matrix(G, weight='spam')
         for method in ('tracemin', 'arnoldi'):
             assert_almost_equal(nx.algebraic_connectivity(
                 G, weight='spam', tol=1e-12, method=method), 6)
-            A = nx.laplacian_matrix(G, weight='spam')
             x = nx.fiedler_vector(G, weight='spam', tol=1e-12, method=method)
             check_eigenvector(A, 6, x)
 
     @preserve_random_state
     def test_path(self):
         G = nx.path_graph(8)
+        A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2 + sqrt(2))
         for method in ('tracemin', 'arnoldi'):
             assert_almost_equal(nx.algebraic_connectivity(
                 G, tol=1e-12, method=method), sigma)
-            A = nx.laplacian_matrix(G)
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
 
     @preserve_random_state
     def test_cycle(self):
         G = nx.cycle_graph(8)
+        A = nx.laplacian_matrix(G)
         sigma = 2 - sqrt(2)
         for method in ('tracemin', 'arnoldi'):
             assert_almost_equal(nx.algebraic_connectivity(
                 G, tol=1e-12, method=method), sigma)
-            A = nx.laplacian_matrix(G)
             x = nx.fiedler_vector(G, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
 
@@ -154,13 +152,13 @@ class TestAlgebraicConnectivity(object):
              (38, 40), (38, 50), (39, 40), (39, 51), (40, 52), (41, 47),
              (42, 48), (43, 49), (44, 50), (45, 46), (45, 54), (46, 55),
              (47, 54), (48, 55)])
+        A = nx.laplacian_matrix(G)
         sigma = 0.24340174613993243
         for method in ('tracemin_pcg', 'tracemin_chol', 'tracemin_lu',
                        'arnoldi'):
             try:
                 assert_almost_equal(nx.algebraic_connectivity(
                     G, tol=1e-12, method=method), sigma)
-                A = nx.laplacian_matrix(G)
                 x = nx.fiedler_vector(G, tol=1e-12, method=method)
                 check_eigenvector(A, sigma, x)
             except nx.NetworkXError as e:

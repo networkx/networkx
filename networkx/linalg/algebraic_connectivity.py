@@ -116,6 +116,21 @@ class _LUSolver(object):
         _splu = None
 
 
+def _preprocess_graph(G, weight):
+    """Compute edge weights and eliminate zero-weight edges.
+    """
+    if not G.is_multigraph():
+        edges = ((u, v, abs(e.get(weight, 1.)))
+                 for u, v, e in G.edges_iter(data=True) if u != v)
+    else:
+        edges = ((u, v, sum(abs(e.get(weight, 1.)) for e in G[u][v].values()))
+                 for u, v in G.edges_iter() if u != v)
+    H = nx.Graph()
+    H.add_nodes_from(G)
+    H.add_weighted_edges_from((u, v, e) for u, v, e in edges if e != 0)
+    return H
+
+
 def _tracemin_fiedler(L, tol, solver=None):
     """Compute the Fiedler vector of L using the TRACEMIN-Fiedler algorithm.
     """
@@ -207,7 +222,7 @@ def algebraic_connectivity(G, weight='weight', tol=1e-8, method='tracemin'):
 
     Returns
     -------
-    aconn : float
+    algebraic_connectivity : float
         Algebraic connectivity.
 
     Raises
@@ -216,12 +231,12 @@ def algebraic_connectivity(G, weight='weight', tol=1e-8, method='tracemin'):
         If G is directed.
 
     NetworkXError :
-        If G as less than two nodes or is not connected.
+        If G has less than two nodes.
 
     Notes
     -----
-    For MultiGraph, the edge weights are summed. Zero-weighted edges are
-    ignored. If there are negative-weighted edges, the algorithm may not work.
+    Edge weights are interpreted by their absolute values. For MultiGraph's,
+    weights of parallel edges are summed. Zero-weighted edges are ignored.
 
     See Also
     --------
@@ -229,13 +244,11 @@ def algebraic_connectivity(G, weight='weight', tol=1e-8, method='tracemin'):
     """
     if len(G) < 2:
         raise nx.NetworkXError('graph has less than two nodes.')
+    G = _preprocess_graph(G, weight)
     if not nx.is_connected(G):
-        raise nx.NetworkXError('graph is not connected.')
+        return 0.
 
-    L = nx.laplacian_matrix(G, weight=weight)
-    if any(L.diagonal() == 0):
-        raise nx.NetworkXError('graph is not connected.')
-
+    L = nx.laplacian_matrix(G)
     if len(G) == 2:
         return 2. * L[0, 0]
 
@@ -279,8 +292,8 @@ def fiedler_vector(G, weight='weight', tol=1e-8, method='tracemin'):
 
     Returns
     -------
-    aconn : float
-        Algebraic connectivity.
+    fiedler_vector : NumPy array of floats.
+        Fiedler vector.
 
     Raises
     ------
@@ -288,12 +301,12 @@ def fiedler_vector(G, weight='weight', tol=1e-8, method='tracemin'):
         If G is directed.
 
     NetworkXError :
-        If G as less than two nodes or is not connected.
+        If G has less than two nodes or is not connected.
 
     Notes
     -----
-    For MultiGraph, the edge weights are summed. Zero-weighted edges are
-    ignored. If there are negative-weighted edges, the algorithm may not work.
+    Edge weights are interpreted by their absolute values. For MultiGraph's,
+    weights of parallel edges are summed. Zero-weighted edges are ignored.
 
     See Also
     --------
@@ -301,13 +314,11 @@ def fiedler_vector(G, weight='weight', tol=1e-8, method='tracemin'):
     """
     if len(G) < 2:
         raise nx.NetworkXError('graph has less than two nodes.')
+    G = _preprocess_graph(G, weight)
     if not nx.is_connected(G):
         raise nx.NetworkXError('graph is not connected.')
 
-    L = nx.laplacian_matrix(G, weight=weight)
-    if any(L.diagonal() == 0):
-        raise nx.NetworkXError('graph is not connected.')
-
+    L = nx.laplacian_matrix(G)
     if len(G) == 2:
         return array([1., -1.])
 
