@@ -21,7 +21,7 @@ try:
     from scipy.linalg import eigh, solve
     from scipy.sparse import csc_matrix
     from scipy.sparse.linalg import eigsh
-    __all__ = ['algebraic_connectivity', 'fiedler_vector']
+    __all__ = ['algebraic_connectivity', 'fiedler_vector', 'spectral_ordering']
 except ImportError:
     __all__ = []
 
@@ -119,6 +119,13 @@ class _LUSolver(object):
 def _preprocess_graph(G, weight):
     """Compute edge weights and eliminate zero-weight edges.
     """
+    if G.is_directed():
+        H = nx.MultiGraph()
+        H.add_nodes_from(G)
+        H.add_weighted_edges_from(((u, v, abs(e.get(weight, 1.)))
+                                   for u, v, e in G.edges_iter(data=True)
+                                   if u != v), weight=weight)
+        G = H
     if not G.is_multigraph():
         edges = ((u, v, abs(e.get(weight, 1.)))
                  for u, v, e in G.edges_iter(data=True) if u != v)
@@ -199,7 +206,7 @@ def _tracemin_fiedler(L, tol, solver=None):
 
 @not_implemented_for('directed')
 def algebraic_connectivity(G, weight='weight', tol=1e-8, method='tracemin'):
-    """Return the algebraic connectivity of a connected undirected graph.
+    """Return the algebraic connectivity of an undirected graph.
 
     The algebraic connectivity of a connected undirected graph is the second
     smallest eigenvalue of its Laplacian matrix.
@@ -333,6 +340,82 @@ def fiedler_vector(G, weight='weight', tol=1e-8, method='tracemin'):
     else:
         raise nx.NetworkXError(
             "method should be either 'tracemin' or 'arnoldi'.")
+
+
+def spectral_ordering(G, weight='weight', tol=1e-8, method='tracemin'):
+    """Compute the spectral_ordering of a graph.
+
+    The spectral ordering of a graph is an ordering of its nodes where nodes
+    in the same weakly connected components appear contiguous and ordered by
+    their corresponding elements in the Fiedler vector of the component.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A graph.
+
+    weight : string or None
+        The data key used to determine the weight of each edge. If None, then
+        each edge has unit weight. Default value: None.
+
+    tol : float
+        Tolerance of relative residual in eigenvalue computation. Default
+        value: 1e-8.
+
+    method : string
+        Method of eigenvalue computation. It should be either 'tracemin'
+        (TraceMIN) or 'arnoldi' (Arnoldi iteration). Default value: 'tracemin'.
+
+    Returns
+    -------
+    spectral_ordering : NumPy array of floats.
+        Spectral ordering of nodes.
+
+    Raises
+    ------
+    NetworkXError :
+        If G is empty.
+
+    Notes
+    -----
+    Edge weights are interpreted by their absolute values. For MultiGraph's,
+    weights of parallel edges are summed. Zero-weighted edges are ignored.
+
+    See Also
+    --------
+    laplacian_matrix
+    """
+    if len(G) == 0:
+        raise nx.NetworkXError('graph is empty.')
+    G = _preprocess_graph(G, weight)
+
+    match = _tracemin_method.match(method)
+    if match:
+        method = match.group(1)
+        def find_fiedler(L):
+            sigma, X = _tracemin_fiedler(L, tol, method)
+            return array(X[:, 0])
+    elif method == 'arnoldi':
+        def find_fiedler(L):
+            L = csc_matrix(L, dtype=float)
+            sigma, X = eigsh(L, 2, which='SM', tol=tol)
+            return array(X[:, 1])
+    else:
+        raise nx.NetworkXError(
+            "method should be either 'tracemin' or 'arnoldi'.")
+
+    order = []
+    for component in nx.connected_components(G):
+        size = len(component)
+        if size > 2:
+            L = nx.laplacian_matrix(G, component)
+            fiedler = find_fiedler(L)
+            order.extend(
+                u for x, c, u in sorted(zip(fiedler, range(size), component)))
+        else:
+            order.extend(component)
+
+    return order
 
 
 # fixture for nose tests
