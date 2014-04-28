@@ -58,7 +58,7 @@ def resource_allocation_index(G, u, v):
 
     References
     ----------
-    .. [1] T. Zhou, L. L¨u, Y.-C. Zhang.
+    .. [1] T. Zhou, L. Lu, Y.-C. Zhang.
        Predicting missing links via local information.
        Eur. Phys. J. B 71 (2009) 623.
        http://arxiv.org/pdf/0901.0553.pdf
@@ -247,7 +247,7 @@ def within_inter_cluster(G, u, v, delta=0.001):
 
 def _common_neighbors(G, u, v):
     """Get the set of common neighbors between two nodes."""
-    return G[u].keys() & G[v].keys()
+    return set(G[u].keys()) & set(G[v].keys())
 
 
 def _community(G, u):
