@@ -260,17 +260,10 @@ class TestColoring:
         assert_true(len(coloring) == 3 or len(coloring) == 4)
         assert_true(verifyColoring(graph, coloring, 'sets'))
 # SLFI
-    def test_slfi_slfshc(sefl):
-        graph = slf_shc()
-        coloring = nx.coloring(graph, strategy='slf', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 3 or len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+    def test_slfi_slfshc(self):
+        graph = oneNodeGraph()
+        assert_raises(nx.NetworkXPointlessConcept, nx.coloring, graph, strategy='slf', interchange=True, returntype='sets')
 
-    def test_slfi_slfhc(self):
-        graph = slf_hc()
-        coloring = nx.coloring(graph, strategy='slf', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
 # LFI
     def test_lfi_lfshc(self):
         graph = lf_shc()

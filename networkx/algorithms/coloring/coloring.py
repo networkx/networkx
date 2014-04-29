@@ -57,15 +57,6 @@ def strategy_lf(G):
     nodes.sort(key=lambda node: G.degree(node) * -1)
     
     return nodes
-"""
-Smallest first (sf) ordering. Ordering the nodes by smallest degree first.
-"""
-
-def strategy_sf(G):
-    nodes = G.nodes()
-    nodes.sort(key=lambda node: G.degree(node))
-    
-    return nodes
     
 """
 Random sequential (RS) ordering. Scrambles nodes into random ordering.
@@ -103,17 +94,16 @@ def strategy_gis(G, colors):
     no_colored = 0
     k = 0
 
+    uncolored_g = G.copy()
     while no_colored < len_g: # While there are uncolored nodes 
-        available_g = G.copy()
-
-        # Remove all already colored nodes
-        available_g.remove_nodes_from(colors.keys())
+        available_g = uncolored_g.copy()
 
         while available_g.number_of_nodes() > 0: # While there are still nodes available
             node = min_degree_node(available_g)
             colors[node] = k # assign color to values
 
             no_colored += 1
+            uncolored_g.remove_node(node)
             available_g.remove_nodes_from(available_g.neighbors(node) + [node]) # Remove v and its neighbors from available
         k += 1
     return k
@@ -138,33 +128,32 @@ def strategy_cs(G, traversal='bfs'):
 """
 Saturation largest first (SLF) or DSATUR.
 """
-def strategy_slf(G):
+def strategy_slf(G, colors):
     len_g = len(G)
     no_colored = 0
-    saturation = {}
+    distinct_colors = {}
 
-    colored = set()
     for node in G.nodes_iter():
-        saturation[node] = 0
+        distinct_colors[node] = set()
         
     while no_colored != len_g:
         if no_colored == 0: # When saturation for all nodes is 0, yield the node with highest degree
             no_colored += 1
             node = max_degree_node(G)
             yield node
-            colored.add(node)
             for neighbour in G.neighbors_iter(node):
-                saturation[node] += 1
+                distinct_colors[neighbour].add(0) 
         else:
             highest_saturation = -1
             highest_saturation_nodes = []
 
-            for node, satur in saturation.items():
-                if node not in colored: # If the node is not already colored
-                    if satur > highest_saturation:
-                        highest_saturation = satur
+            for node, distinct in distinct_colors.items():
+                if node not in colors: # If the node is not already colored
+                    saturation = len(distinct)
+                    if saturation > highest_saturation:
+                        highest_saturation = saturation
                         highest_saturation_nodes = [node]
-                    elif satur == highest_saturation:
+                    elif saturation == highest_saturation:
                         highest_saturation_nodes.append(node)
 
             if len(highest_saturation_nodes) == 1:
@@ -184,9 +173,9 @@ def strategy_slf(G):
 
             no_colored += 1
             yield node
-            colored.add(node)
+            color = colors[node]
             for neighbour in G.neighbors_iter(node):
-                saturation[node] += 1
+                distinct_colors[neighbour].add(color)
     
 """Color a graph using various strategies of greedy graph coloring. The strategies are described in [1].
 
@@ -201,7 +190,6 @@ strategy : string
    Greedy coloring strategy. It is possible to choose from these strategies:
    
    lf: Largest first ordering
-   sf: Smallest first ordering
    rs: Random sequential ordering
    sl: Smallest last ordering
    gis: Greedy independent set ordering
@@ -256,8 +244,6 @@ def coloring(G, strategy='lf', interchange=False, returntype='dict'):
             nodes = strategy_lf(G)
         elif strategy == 'rs':
             nodes = strategy_rs(G)
-        elif strategy == 'sf':
-            nodes = strategy_sf(G)
         elif strategy == 'sl':
             nodes = strategy_sl(G)
         elif strategy == 'gis':
@@ -272,7 +258,9 @@ def coloring(G, strategy='lf', interchange=False, returntype='dict'):
         elif strategy == 'cs-dfs':
             nodes = strategy_cs(G, traversal='dfs')
         elif strategy == 'slf':
-            nodes = strategy_slf(G)
+            if interchange == True:
+                raise nx.NetworkXPointlessConcept("""Interchange is not applicable for SLF""")
+            nodes = strategy_slf(G, colors)
         else:
             raise nx.NetworkXPointlessConcept('Strategy ' + strategy + ' does not exist.')
 
