@@ -155,18 +155,25 @@ class TestAlgebraicConnectivity(object):
              (38, 40), (38, 50), (39, 40), (39, 51), (40, 52), (41, 47),
              (42, 48), (43, 49), (44, 50), (45, 46), (45, 54), (46, 55),
              (47, 54), (48, 55)])
-        A = nx.laplacian_matrix(G)
-        sigma = 0.24340174613993243
-        for method in methods:
-            try:
-                assert_almost_equal(nx.algebraic_connectivity(
-                    G, tol=1e-12, method=method), sigma)
-                x = nx.fiedler_vector(G, tol=1e-12, method=method)
-                check_eigenvector(A, sigma, x)
-            except nx.NetworkXError as e:
-                if e.args not in (('Cholesky solver unavailable.',),
-                                  ('LU solver unavailable.',)):
-                    raise
+        for normalized in (False, True):
+            if not normalized:
+                A = nx.laplacian_matrix(G)
+                sigma = 0.2434017461399311
+            else:
+                A = nx.normalized_laplacian_matrix(G)
+                sigma = 0.08113391537997749
+            for method in methods:
+                try:
+                    assert_almost_equal(nx.algebraic_connectivity(
+                        G, normalized=normalized, tol=1e-12, method=method),
+                        sigma)
+                    x = nx.fiedler_vector(G, normalized=normalized, tol=1e-12,
+                                          method=method)
+                    check_eigenvector(A, sigma, x)
+                except nx.NetworkXError as e:
+                    if e.args not in (('Cholesky solver unavailable.',),
+                                      ('LU solver unavailable.',)):
+                        raise
 
     _methods = ('tracemin', 'arnoldi')
 
@@ -249,9 +256,16 @@ class TestSpectralOrdering(object):
     def test_cycle(self):
         path = list(range(10))
         G = nx.Graph()
-        G.add_path(path, weight=2)
+        G.add_path(path, weight=5)
         G.add_edge(path[-1], path[0], weight=1)
-        for method in methods:
-            order = nx.spectral_ordering(G, method=method)
-            ok_(order in [[2, 1, 3, 0, 4, 5, 9, 6, 8, 7],
-                          [7, 8, 6, 9, 5, 4, 0, 3, 1, 2]])
+        A = nx.laplacian_matrix(G).todense()
+        for normalized in (False, True):
+            for method in methods:
+                order = nx.spectral_ordering(G, normalized=normalized,
+                                             method=method)
+                if not normalized:
+                    ok_(order in [[1, 2, 0, 3, 4, 5, 6, 9, 7, 8],
+                                  [8, 7, 9, 6, 5, 4, 3, 0, 2, 1]])
+                else:
+                    ok_(order in [[1, 2, 3, 0, 4, 5, 9, 6, 7, 8],
+                                  [8, 7, 6, 9, 5, 4, 0, 3, 2, 1]])
