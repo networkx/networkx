@@ -1,5 +1,12 @@
 """Connectivity and cut algorithms
 """
-from networkx.algorithms.connectivity.connectivity import *
-from networkx.algorithms.connectivity.cuts import *
-from networkx.algorithms.connectivity.stoer_wagner import *
+from . import connectivity, cuts, stoer_wagner
+
+__all__ = sum([connectivity.__all__,
+               cuts.__all__,
+               stoer_wagner.__all__,
+              ], [])
+
+from .connectivity import *
+from .cuts import *
+from .stoer_wagner import *
