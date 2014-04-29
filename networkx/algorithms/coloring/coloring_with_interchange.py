@@ -1,6 +1,9 @@
 import networkx as nx
 
-class Node:
+class Node(object):
+
+    __slots__ = ['nodeId', 'color', 'adjList', 'adjColor']
+
     def __init__(self, nodeId, n):
         self.nodeId = nodeId
         self.color = -1
@@ -25,7 +28,22 @@ class Node:
         if adjEntry.colNext != None:
             adjEntry.colNext.colPrev = adjEntry.colPrev
 
-class AdjEntry:
+    def iter_neighbors(self):
+        adjNode = self.adjList
+        while adjNode != None:
+            yield adjNode
+            adjNode = adjNode.next
+
+    def iter_neighbors_color(self, color):
+        adjColorNode = self.adjColor[color]
+        while adjColorNode != None:
+            yield adjColorNode
+            adjColorNode = adjColorNode.colNext
+
+class AdjEntry(object):
+
+    __slots__ = ['nodeId', 'next', 'mate', 'colNext', 'colPrev']
+    
     def __init__(self, nodeId):
         self.nodeId = nodeId
         self.next = None
@@ -35,15 +53,6 @@ class AdjEntry:
 
     def __repr__(self):
         return "NodeId: {0}, Next: ({1}), Mate: ({2}), colNext: ({3}), colPrev: ({4})".format(self.nodeId, self.next, self.mate.nodeId, None if self.colNext == None else self.colNext.nodeId, None if self.colPrev == None else self.colPrev.nodeId)
-
-class LLNode:
-    def __init__(self, nodeId):
-        self.nodeId = nodeId
-        self.next = None
-
-    def __repr__(self):
-        return "NodeId: {0}, Next: ({1})".format(self.nodeId, self.next)
-
                             
 """
     This procedure is an adaption of the algorithm described by [1], and is an implementation of 
@@ -79,87 +88,62 @@ def coloring_with_interchange(original_graph, nodes, returntype):
         # Find the color with the lowest possible value
         k1 = 0
         colUsed = [0 for i in range(k+2)]
-        adjNode = graph[node].adjList
-        while adjNode != None:
+        for adjNode in graph[node].iter_neighbors():
             col = graph[adjNode.nodeId].color
             if col != -1:
                 colUsed[col] = 1
-            adjNode = adjNode.next
         while colUsed[k1] != 0:
             k1 += 1
         
         # k1 is now the lowest available color
         if k1 > k:
             connected = True
+            visited = set()
             col1 = -1
             col2 = -1
             while connected and col1 < k:
                 col1 += 1
-                col1Head = None
-                col1Tail = None
-                col1Adj = graph[node].adjColor[col1]
-                while col1Adj != None:
-                    newNode = LLNode(col1Adj.nodeId)
-                    if col1Head == None:
-                        col1Tail = newNode
-                    newNode.next = col1Head
-                    col1Head = newNode
-                    col1Adj = col1Adj.colNext
+                col1Adj = []
+                for col1AdjIter in graph[node].iter_neighbors_color(col1):
+                    col1Adj.append(col1AdjIter.nodeId)
                 
                 col2 = col1
                 while connected and col2 < k:
                     col2 += 1
-                    visited = set()
-                    col1Tail.next = None
-                    searchTail = col1Tail
-                    col1Adj = col1Head
-                    while col1Adj != None:
-                        visited.add(col1Adj.nodeId)
-                        col1Adj = col1Adj.next
-                    
-                    searchNode = col1Head
-                    while searchNode != None:
-                        colOpp = col2 if graph[searchNode.nodeId].color == col1 else col1
-                        neighbour = graph[searchNode.nodeId].adjColor[colOpp]
-                        while neighbour != None:
+                    visited = set(col1Adj)
+                    frontier = list(col1Adj)
+                    i = 0
+                    while i < len(frontier):
+                        searchNode = frontier[i]
+                        i += 1
+                        colOpp = col2 if graph[searchNode].color == col1 else col1
+                        for neighbour in graph[searchNode].iter_neighbors_color(colOpp):
                             if not neighbour.nodeId in visited:
                                 visited.add(neighbour.nodeId)
-                                newNode = LLNode(neighbour.nodeId)
-                                searchTail.next = newNode
-                                searchTail = newNode
-                            neighbour = neighbour.colNext
-                        searchNode = searchNode.next
+                                frontier.append(neighbour.nodeId)
                     
-                    # Search if node1 is not adj to any col2 vertex
+                    # Search if node is not adj to any col2 vertex
                     connected = False
-                    col2Adj = graph[node].adjColor[col2]
-                    while col2Adj != None and not connected:
-                        connected = col2Adj.nodeId in visited
-                        col2Adj = col2Adj.colNext
+                    for col2Adj in graph[node].iter_neighbors_color(col2):
+                        connected = connected or col2Adj.nodeId in visited
             
             # If connected is false then we can swap !!!
             if not connected:
-                searchNode = col1Head
                 # Update all the nodes in the component
-                while searchNode != None:
-                    graph[searchNode.nodeId].color = col2 if graph[searchNode.nodeId].color == col1 else col1
-                    col2Adj = graph[searchNode.nodeId].adjColor[col2]
-                    graph[searchNode.nodeId].adjColor[col2] = graph[searchNode.nodeId].adjColor[col1]
-                    graph[searchNode.nodeId].adjColor[col1] = col2Adj
-                    searchNode = searchNode.next
+                for searchNode in visited:
+                    graph[searchNode].color = col2 if graph[searchNode].color == col1 else col1
+                    col2Adj = graph[searchNode].adjColor[col2]
+                    graph[searchNode].adjColor[col2] = graph[searchNode].adjColor[col1]
+                    graph[searchNode].adjColor[col1] = col2Adj
                 # Update all the neighboring nodes
-                searchNode = col1Head
-                while searchNode != None:
-                    col = graph[searchNode.nodeId].color
+                for searchNode in visited:
+                    col = graph[searchNode].color
                     colOpp = col1 if col == col2 else col2
-                    adjNode = graph[searchNode.nodeId].adjList
-                    while adjNode != None: # Vi skal opdatere alle nabo knuder
+                    for adjNode in graph[searchNode].iter_neighbors():
                         if graph[adjNode.nodeId].color != colOpp:
                             adjMate = adjNode.mate # Direkte reference til entry
                             graph[adjNode.nodeId].clear_color(adjMate, colOpp)
                             graph[adjNode.nodeId].assign_color(adjMate, col)
-                        adjNode = adjNode.next
-                    searchNode = searchNode.next
                 k1 = col1
         
         # We can color this node color k1
@@ -168,12 +152,10 @@ def coloring_with_interchange(original_graph, nodes, returntype):
             k = k1
         
         # Update this nodes neighbors
-        adjNode = graph[node].adjList
-        while adjNode != None:
+        for adjNode in graph[node].iter_neighbors():
             adjMate = adjNode.mate
             graph[adjNode.nodeId].assign_color(adjMate, k1)
-            adjNode = adjNode.next
-    
+        
     if returntype == 'sets': # determine desired return type
         sets = [set() for i in range(k+1)]
         for node in graph.values():

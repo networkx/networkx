@@ -250,58 +250,59 @@ def coloring(G, strategy='lf', interchange=False, returntype='dict'):
     colors = dict() # dictionary to keep track of the colors of the nodes
     sets = [] # list of sets
 
-    # the type returned from strategies should probably be python generators
-    if strategy == 'lf':
-        nodes = strategy_lf(G)
-    elif strategy == 'rs':
-        nodes = strategy_rs(G)
-    elif strategy == 'sf':
-        nodes = strategy_sf(G)
-    elif strategy == 'sl':
-        nodes = strategy_sl(G)
-    elif strategy == 'gis':
-        if interchange == True:
-            raise nx.NetworkXPointlessConcept("""Interchange is not applicable for GIS""")
-        k = strategy_gis(G, colors)
-        if returntype == 'sets':
-            return dict_to_sets(colors, k)
-        return colors
-    elif strategy == 'cs' or strategy == 'cs-bfs':
-        nodes = strategy_cs(G)
-    elif strategy == 'cs-dfs':
-        nodes = strategy_cs(G, traversal='dfs')
-    elif strategy == 'slf':
-        nodes = strategy_slf(G)
-    else:
-        raise nx.NetworkXPointlessConcept('Strategy ' + strategy + ' does not exist.')
-
-    if interchange:
-        return coloring_with_interchange.coloring_with_interchange(G, nodes, returntype)
-    else:
-        for node in nodes:
-            neighbourColors = set() # set to keep track of colors of neighbours
-
-            for neighbour in G.neighbors_iter(node): # iterate through the neighbours of the node
-                if neighbour in colors: # if the neighbour has been assigned a color ...
-                    neighbourColors.add(colors[neighbour]) # ... put it into the neighbour color set
-
-            i = 0 # initialize first potentially available color
-            color = -1 # initialize non-existant color (-1)
-            while color == -1: # loop over all possible colors, until a vacant has been found
-                if i in neighbourColors: # check if the color is already occupied by a neighbour
-                    i = i + 1 # ... if that's the case, move to next color and reiterate
-                else:
-                    color = i # ... if the color is vacant, choose it as the node's color
-
-            colors[node] = color # assign the node the newly found color
-
-            if returntype == 'sets': # only maintain the list of sets, if the desired return type is 'set'
-                if len(sets) <= i: # ensure that a set has been initialize at the 'color'/index of the list
-                    sets.append(set()) # ... if not, do it
-                
-                sets[i].add(node) # add the node to the respective set
-
-        if returntype == 'sets': # determine desired return type
-            return sets
-        else:
+    if len(G):
+        # the type returned from strategies should probably be python generators
+        if strategy == 'lf':
+            nodes = strategy_lf(G)
+        elif strategy == 'rs':
+            nodes = strategy_rs(G)
+        elif strategy == 'sf':
+            nodes = strategy_sf(G)
+        elif strategy == 'sl':
+            nodes = strategy_sl(G)
+        elif strategy == 'gis':
+            if interchange == True:
+                raise nx.NetworkXPointlessConcept("""Interchange is not applicable for GIS""")
+            k = strategy_gis(G, colors)
+            if returntype == 'sets':
+                return dict_to_sets(colors, k)
             return colors
+        elif strategy == 'cs' or strategy == 'cs-bfs':
+            nodes = strategy_cs(G)
+        elif strategy == 'cs-dfs':
+            nodes = strategy_cs(G, traversal='dfs')
+        elif strategy == 'slf':
+            nodes = strategy_slf(G)
+        else:
+            raise nx.NetworkXPointlessConcept('Strategy ' + strategy + ' does not exist.')
+
+        if interchange:
+            return coloring_with_interchange.coloring_with_interchange(G, nodes, returntype)
+        else:
+            for node in nodes:
+                neighbourColors = set() # set to keep track of colors of neighbours
+
+                for neighbour in G.neighbors_iter(node): # iterate through the neighbours of the node
+                    if neighbour in colors: # if the neighbour has been assigned a color ...
+                        neighbourColors.add(colors[neighbour]) # ... put it into the neighbour color set
+
+                i = 0 # initialize first potentially available color
+                color = -1 # initialize non-existant color (-1)
+                while color == -1: # loop over all possible colors, until a vacant has been found
+                    if i in neighbourColors: # check if the color is already occupied by a neighbour
+                        i = i + 1 # ... if that's the case, move to next color and reiterate
+                    else:
+                        color = i # ... if the color is vacant, choose it as the node's color
+
+                colors[node] = color # assign the node the newly found color
+
+                if returntype == 'sets': # only maintain the list of sets, if the desired return type is 'set'
+                    if len(sets) <= i: # ensure that a set has been initialize at the 'color'/index of the list
+                        sets.append(set()) # ... if not, do it
+                    
+                    sets[i].add(node) # add the node to the respective set
+
+    if returntype == 'sets': # determine desired return type
+        return sets
+    else:
+        return colors
