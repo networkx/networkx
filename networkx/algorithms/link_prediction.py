@@ -19,7 +19,8 @@ def common_neighbors(G, u, v):
     ----------
     G : graph
         A NetworkX undirected graph.
-    u,v : nodes
+
+    u, v : nodes
         Nodes in the graph.
 
     Returns
@@ -48,7 +49,8 @@ def resource_allocation_index(G, u, v):
     ----------
     G : graph
         A NetworkX undirected graph.
-    u,v : nodes
+
+    u, v : nodes
         Nodes in the graph.
 
     Returns
@@ -84,6 +86,7 @@ def cn_soundarajan_hopcroft(G, u, v):
     ----------
     G : graph
         A NetworkX undirected graph.
+
     u, v : nodes
         Nodes in the graph.
 
@@ -129,7 +132,7 @@ def cn_soundarajan_hopcroft(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def ra_index_soundarajan_hopcroft(G, u, v):
-    """Compute the RA index of two nodes using community information.
+    """Compute the resource allocation index of u and v using community information.
 
     Resource allocation index of two nodes is defined as the sum of
     reciprocals of the degree of all their common neighbors. However,
@@ -140,6 +143,7 @@ def ra_index_soundarajan_hopcroft(G, u, v):
     ----------
     G : graph
         A NetworkX undirected graph.
+
     u, v : nodes
         Nodes in the graph.
 
@@ -186,23 +190,25 @@ def ra_index_soundarajan_hopcroft(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def within_inter_cluster(G, u, v, delta=0.001):
-    """Compute the ratio of within and inter cluster common neighbor.
+    """Compute the ratio of within- and inter-cluster common neighbor.
 
     If a common neighbor w belongs to the same community with u and v,
-    w is considered as within cluster common neighbor of u and v.
-    Otherwise, it is considered as inter cluster common neighbor of u
-    and v. The ratio between the size of the set of within and inter
-    cluster common neighbors is defined as the WIC measure. [1]_
+    w is considered as within-cluster common neighbor of u and v.
+    Otherwise, it is considered as inter-cluster common neighbor of u
+    and v. The ratio between the size of the set of within- and
+    inter-cluster common neighbors is defined as the WIC measure. [1]_
 
     Parameters
     ----------
     G : graph
         A NetworkX undirected graph.
+
     u, v : nodes
         Nodes in the graph.
+
     delta : float, optional
-        Value to prevent division by zero in case there is no inter
-        cluster common neighbor of u and v. See [1]_ for details.
+        Value to prevent division by zero in case there is no inter-cluster
+        common neighbor of u and v. See [1]_ for details.
 
     Returns
     -------
