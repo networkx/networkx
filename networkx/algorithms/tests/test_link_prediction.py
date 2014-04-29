@@ -10,7 +10,7 @@ class TestCommonNeighbors():
         self.func = lp.common_neighbors
         def test_func(G, u, v, expected):
             result = self.func(G, u, v)
-            assert result == expected
+            assert_equal(result, expected)
         self.test = test_func
 
     def test_K5(self):
@@ -61,7 +61,7 @@ class TestResourceAllocationIndex():
         def test_func(G, u, v, expected):
             tol = 1e-7
             result = self.func(G, u, v)
-            assert abs(result - expected) < tol
+            assert_true(abs(result - expected) < tol)
         self.test = test_func
 
     def test_K5(self):
@@ -111,7 +111,7 @@ class TestCNSoundarajanHopcroft():
         self.func = lp.cn_soundarajan_hopcroft
         def test_func(G, u, v, expected):
             result = self.func(G, u, v)
-            assert result == expected
+            assert_equal(result, expected)
         self.test = test_func
 
     def test_K5(self):
@@ -225,7 +225,7 @@ class TestRAIndexSoundarajanHopcroft():
         def test_func(G, u, v, expected):
             tol = 1e-7
             result = self.func(G, u, v)
-            assert abs(result - expected) < tol
+            assert_true(abs(result - expected) < tol)
         self.test = test_func
 
     def test_K5(self):
@@ -340,7 +340,7 @@ class TestWithinInterCluster():
         def test_func(G, u, v, expected):
             tol = 1e-7
             result = self.func(G, u, v, self.delta)
-            assert abs(result - expected) < tol
+            assert_true(abs(result - expected) < tol)
         self.test = test_func
 
     def test_K5(self):
