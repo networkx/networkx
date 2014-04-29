@@ -3,6 +3,12 @@ from __future__ import division
 from networkx.exception import *
 from networkx.utils.decorators import *
 
+__all__ = ['common_neighbors',
+           'resource_allocation_index',
+           'cn_soundarajan_hopcroft',
+           'ra_index_soundarajan_hopcroft',
+           'within_inter_cluster']
+
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
