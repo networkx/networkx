@@ -3,25 +3,33 @@ from math import sqrt
 import networkx as nx
 from nose import SkipTest
 from nose.tools import *
-from numpy.random import get_state, seed, set_state, shuffle
 
 methods = ('tracemin_pcg', 'tracemin_chol', 'tracemin_lu', 'lanczos')
 
 
-@contextmanager
-def save_random_state():
-    state = get_state()
-    yield
-    set_state(state)
+try:
+    from numpy.random import get_state, seed, set_state, shuffle
 
+    @contextmanager
+    def save_random_state():
+        state = get_state()
+        yield
+        set_state(state)
 
-def preserve_random_state(func):
-    def wrapper(*args, **kwargs):
-        with save_random_state():
-            seed(1234567890)
-            return func(*args, **kwargs)
-    wrapper.__name__ = func.__name__
-    return wrapper
+    def preserve_random_state(func):
+        def wrapper(*args, **kwargs):
+            with save_random_state():
+                seed(1234567890)
+                return func(*args, **kwargs)
+        wrapper.__name__ = func.__name__
+        return wrapper
+except ImportError:
+    @contextmanager
+    def save_random_state():
+        yield
+
+    def preserve_random_state(func):
+        return func
 
 
 def check_eigenvector(A, l, x):
