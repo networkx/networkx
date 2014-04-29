@@ -250,7 +250,7 @@ def within_inter_cluster(G, u, v, delta=0.001):
     Cv = _community(G, v)
     cnbors = _common_neighbors(G, u, v)
     if Cu == Cv:
-        within = {w for w in cnbors if _community(G, w) == Cu}
+        within = set(w for w in cnbors if _community(G, w) == Cu)
         inter = cnbors - within
         return len(within) / (len(inter) + delta)
     else:
@@ -259,7 +259,7 @@ def within_inter_cluster(G, u, v, delta=0.001):
 
 def _common_neighbors(G, u, v):
     """Get the set of common neighbors between two nodes."""
-    return set(G[u].keys()) & set(G[v].keys())
+    return set(G[u]) & set(G[v])
 
 
 def _community(G, u):
