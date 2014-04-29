@@ -227,7 +227,6 @@ class TestColoring:
     def test_rsi_empty(self):
         graph = emptyGraph()
         coloring = nx.coloring(graph, strategy='rs', interchange=True, returntype='sets')
-        print coloring
         assert_true(len(coloring) == 0)
         assert_true(verifyColoring(graph, coloring, 'sets'))
 
