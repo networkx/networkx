@@ -176,7 +176,7 @@ def _tracemin_fiedler(L, normalized, tol, solver):
         A[i, i] = float('inf')
         solver = (_CholeskySolver if solver == 'chol' else _LUSolver)(A)
     else:
-        raise nx.NetworkXError('unknown solver.')
+        raise nx.NetworkXError('unknown linear system solver.')
 
     if normalized:
         L = NL
@@ -243,6 +243,17 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
     method : string
         Method of eigenvalue computation. It should be either 'tracemin'
         (TraceMIN) or 'lanczos' (Lanczos iteration). Default value: 'tracemin'.
+
+        The TraceMIN algorithm uses on a linear system solver. The following
+        values allow specifying the solver to be used.
+
+        =============== ========================================
+        Value           Solver
+        =============== ========================================
+        'tracemin_pcg'  Preconditioned conjugate gradient method
+        'tracemin_chol' Cholesky factorization
+        'tracemin_lu'   LU factorization
+        =============== ========================================
 
     Returns
     -------
@@ -321,6 +332,17 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
         Method of eigenvalue computation. It should be either 'tracemin'
         (TraceMIN) or 'lanczos' (Lanczos iteration). Default value: 'tracemin'.
 
+        The TraceMIN algorithm uses on a linear system solver. The following
+        values allow specifying the solver to be used.
+
+        =============== ========================================
+        Value           Solver
+        =============== ========================================
+        'tracemin_pcg'  Preconditioned conjugate gradient method
+        'tracemin_chol' Cholesky factorization
+        'tracemin_lu'   LU factorization
+        =============== ========================================
+
     Returns
     -------
     fiedler_vector : NumPy array of floats.
@@ -397,6 +419,17 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
     method : string
         Method of eigenvalue computation. It should be either 'tracemin'
         (TraceMIN) or 'lanczos' (Lanczos iteration). Default value: 'tracemin'.
+
+        The TraceMIN algorithm uses on a linear system solver. The following
+        values allow specifying the solver to be used.
+
+        =============== ========================================
+        Value           Solver
+        =============== ========================================
+        'tracemin_pcg'  Preconditioned conjugate gradient method
+        'tracemin_chol' Cholesky factorization
+        'tracemin_lu'   LU factorization
+        =============== ========================================
 
     Returns
     -------
