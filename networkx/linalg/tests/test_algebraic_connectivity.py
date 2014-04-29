@@ -3,16 +3,16 @@ from math import sqrt
 import networkx as nx
 from nose import SkipTest
 from nose.tools import *
-from random import getstate, seed, setstate, shuffle
+from numpy.random import get_state, seed, set_state, shuffle
 
 methods = ('tracemin_pcg', 'tracemin_chol', 'tracemin_lu', 'lanczos')
 
 
 @contextmanager
 def save_random_state():
-    state = getstate()
+    state = get_state()
     yield
-    setstate(state)
+    set_state(state)
 
 
 def preserve_random_state(func):
