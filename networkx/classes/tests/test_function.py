@@ -213,4 +213,4 @@ class TestFunction(object):
         expected = [(0, 1), (1, 0), (1, 2)]
         nedges = list(nx.non_edges(graph))
         for e in expected:
-            assert_in(e, nedges)
+            assert_true(e in nedges)
