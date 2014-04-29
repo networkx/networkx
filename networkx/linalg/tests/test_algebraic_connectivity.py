@@ -5,7 +5,7 @@ from nose import SkipTest
 from nose.tools import *
 from random import getstate, seed, setstate, shuffle
 
-methods = ('tracemin_pcg', 'tracemin_chol', 'tracemin_lu', 'arnoldi')
+methods = ('tracemin_pcg', 'tracemin_chol', 'tracemin_lu', 'lanczos')
 
 
 @contextmanager
@@ -52,7 +52,7 @@ class TestAlgebraicConnectivity(object):
     @preserve_random_state
     def test_directed(self):
         G = nx.DiGraph()
-        for method in ('tracemin', 'arnoldi'):
+        for method in ('tracemin', 'lanczos'):
             assert_raises(nx.NetworkXNotImplemented, nx.algebraic_connectivity,
                           G, method=method)
             assert_raises(nx.NetworkXNotImplemented, nx.fiedler_vector, G,
@@ -61,13 +61,13 @@ class TestAlgebraicConnectivity(object):
     @preserve_random_state
     def test_null_and_singleton(self):
         G = nx.Graph()
-        for method in ('tracemin', 'arnoldi'):
+        for method in ('tracemin', 'lanczos'):
             assert_raises(nx.NetworkXError, nx.algebraic_connectivity, G,
                           method=method)
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
                           method=method)
         G.add_edge(0, 0)
-        for method in ('tracemin', 'arnoldi'):
+        for method in ('tracemin', 'lanczos'):
             assert_raises(nx.NetworkXError, nx.algebraic_connectivity, G,
                           method=method)
             assert_raises(nx.NetworkXError, nx.fiedler_vector, G,
@@ -109,7 +109,7 @@ class TestAlgebraicConnectivity(object):
         G.add_edge(0, 1, spam=1)
         G.add_edge(0, 1, spam=-2)
         A = -3 * nx.laplacian_matrix(G, weight='spam')
-        for method in ('tracemin', 'arnoldi'):
+        for method in ('tracemin', 'lanczos'):
             assert_almost_equal(nx.algebraic_connectivity(
                 G, weight='spam', tol=1e-12, method=method), 6)
             x = nx.fiedler_vector(G, weight='spam', tol=1e-12, method=method)
@@ -175,7 +175,7 @@ class TestAlgebraicConnectivity(object):
                                       ('LU solver unavailable.',)):
                         raise
 
-    _methods = ('tracemin', 'arnoldi')
+    _methods = ('tracemin', 'lanczos')
 
 
 class TestSpectralOrdering(object):

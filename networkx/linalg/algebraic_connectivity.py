@@ -243,7 +243,7 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
 
     method : string
         Method of eigenvalue computation. It should be either 'tracemin'
-        (TraceMIN) or 'arnoldi' (Arnoldi iteration). Default value: 'tracemin'.
+        (TraceMIN) or 'lanczos' (Lanczos iteration). Default value: 'tracemin'.
 
     Returns
     -------
@@ -281,7 +281,7 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
     if match:
         sigma, X = _tracemin_fiedler(L, normalized, tol, match.group(1))
         return sigma[0]
-    elif method == 'arnoldi':
+    elif method == 'lanczos':
         L = csc_matrix(L, dtype=float)
         if normalized:
             D = spdiags(1. / sqrt(L.diagonal()), [0], *L.shape, format='csc')
@@ -290,7 +290,7 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
         return sigma[0]
     else:
         raise nx.NetworkXError(
-            "method should be either 'tracemin' or 'arnoldi'.")
+            "method should be either 'tracemin' or 'lanczos'.")
 
 
 @not_implemented_for('directed')
@@ -320,7 +320,7 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
 
     method : string
         Method of eigenvalue computation. It should be either 'tracemin'
-        (TraceMIN) or 'arnoldi' (Arnoldi iteration). Default value: 'tracemin'.
+        (TraceMIN) or 'lanczos' (Lanczos iteration). Default value: 'tracemin'.
 
     Returns
     -------
@@ -359,7 +359,7 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
     if match:
         sigma, X = _tracemin_fiedler(L, normalized, tol, match.group(1))
         return array(X[:, 0])
-    elif method == 'arnoldi':
+    elif method == 'lanczos':
         L = csc_matrix(L, dtype=float)
         if normalized:
             D = spdiags(1. / sqrt(L.diagonal()), [0], *L.shape, format='csc')
@@ -368,7 +368,7 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
         return array(X[:, 1])
     else:
         raise nx.NetworkXError(
-            "method should be either 'tracemin' or 'arnoldi'.")
+            "method should be either 'tracemin' or 'lanczos'.")
 
 
 def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
@@ -397,7 +397,7 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
 
     method : string
         Method of eigenvalue computation. It should be either 'tracemin'
-        (TraceMIN) or 'arnoldi' (Arnoldi iteration). Default value: 'tracemin'.
+        (TraceMIN) or 'lanczos' (Lanczos iteration). Default value: 'tracemin'.
 
     Returns
     -------
@@ -428,7 +428,7 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
         def find_fiedler(L, normalized):
             sigma, X = _tracemin_fiedler(L, normalized, tol, method)
             return array(X[:, 0])
-    elif method == 'arnoldi':
+    elif method == 'lanczos':
         def find_fiedler(L, normalized):
             L = csc_matrix(L, dtype=float)
             if normalized:
@@ -439,7 +439,7 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
             return array(X[:, 1])
     else:
         raise nx.NetworkXError(
-            "method should be either 'tracemin' or 'arnoldi'.")
+            "method should be either 'tracemin' or 'lanczos'.")
 
     order = []
     for component in nx.connected_components(G):
