@@ -135,7 +135,7 @@ def _tracemin_fiedler(L, normalized, tol, solver):
         e = sqrt(L.diagonal())
         D = spdiags(1. / e, [0], *L.shape, format='csr')
         NL = D * L * D
-        D = spdiags(e, [0], *L.shape, format='dia')
+        D = e.copy()
         e *= 1. / norm(e, 2)
 
     if not normalized:
@@ -156,12 +156,11 @@ def _tracemin_fiedler(L, normalized, tol, solver):
     def gram_schmidt(X):
         """Return an orthonormalized copy of X.
         """
-        V = asarray(X.copy(order='F'))
+        X = asarray(X)
         for j in range(q):
             for k in range(j):
-                V[:, j] -= dot(V[:, k], V[:, j]) * V[:, k]
-            V[:, j] *= 1. / norm(V[:, j], 2)
-        return asmatrix(V)
+                X[:, j] -= dot(X[:, k], X[:, j]) * X[:, k]
+            X[:, j] *= 1. / norm(X[:, j], 2)
 
     if solver is None or solver == 'pcg':
         M = (1. / L.diagonal()).__mul__
@@ -190,19 +189,19 @@ def _tracemin_fiedler(L, normalized, tol, solver):
 
     first = True
     while True:
-        V = gram_schmidt(X)
+        gram_schmidt(X)
         # Compute interation matrix H.
-        H = V.transpose() * (L * V)
+        H = X.T * (L * X)
         sigma, Y = eigh(H, overwrite_a=True)
         # Test for convergence.
         if not first:
-            r = L * X[:, 0] - sigma[0] * X[:, 0]
-            if norm(r, 1) < tol * Lnorm:
+            x = asarray(X)[:, 0]
+            if norm(L * x - sigma[0] * x, 1) < tol * Lnorm:
                 break
         else:
             first = False
         # Compute Ritz vectors.
-        X = V * Y
+        X *= Y
         # Solve saddle point problem using the Schur complement.
         if not normalized:
             for j in range(q):
@@ -211,9 +210,9 @@ def _tracemin_fiedler(L, normalized, tol, solver):
             for j in range(q):
                 asarray(W)[:, j] = D * solver.solve(D * asarray(X)[:, j])
         project(W)
-        S = X.transpose() * W  # Schur complement
-        N = solve(S, X.transpose() * X, overwrite_a=True, overwrite_b=True)
-        X = W * N
+        S = X.T * W  # Schur complement
+        N = solve(S, X.T * X, overwrite_a=True, overwrite_b=True)
+        X = (N.T * W.T).T  # X == N * W. Preserves Fortran storage order.
 
     return sigma, asarray(X)
 
