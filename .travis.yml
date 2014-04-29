@@ -9,8 +9,8 @@ python:
 before_install:
   # Current TravisCI VM is Ubuntu 12.04 which has Python 2.7 and 3.2.
   # So apt-get will only apply to those virtualenvs.
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then source ~/virtualenv/python2.7_with_system_site_packages/bin/activate; sudo apt-get install -qq python-numpy python-scipy python-matplotlib python-pydot python-gdal cython libsuitesparse-dev; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then source ~/virtualenv/python3.2_with_system_site_packages/bin/activate; sudo apt-get install -qq python3-numpy python3-scipy libsuitesparse-dev; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then source ~/virtualenv/python2.7_with_system_site_packages/bin/activate; sudo apt-get install -qq python-numpy python-scipy python-matplotlib python-pydot python-gdal; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then source ~/virtualenv/python3.2_with_system_site_packages/bin/activate; sudo apt-get install -qq python3-numpy python3-scipy; fi
 
   # Additionally, the TravisCI VM has numpy preinstalled on 2.6, 2.7 and 3.2.
   # So for 3.3 and pypy, numpy is not preinstalled and must be pip-installed.
@@ -26,9 +26,6 @@ before_install:
   - pip install pyyaml --use-mirrors
   - pip install pyparsing --use-mirrors
   - pip install coveralls --use-mirrors
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install scikits.sparse; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install Cython; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install scikits.sparse; fi
 
   # In general, 2.6, 3.2, 3.3, and pypy will have lower coverage levels
   # due to missing dependencies.  The coverage level reported by coveralls
