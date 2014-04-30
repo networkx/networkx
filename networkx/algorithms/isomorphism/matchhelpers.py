@@ -104,7 +104,8 @@ def categorical_node_match(attr, default):
             return values1 == values2
     return match
 
-categorical_edge_match = copyfunc(categorical_node_match, 'categorical_edge_match')
+def categorical_edge_match(*args, **kwargs):
+    return categorical_node_match(*args, **kwargs)
 
 def categorical_multiedge_match(attr, default):
     if nx.utils.is_string_like(attr):
@@ -181,7 +182,8 @@ def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08)
             return allclose(values1, values2, rtol=rtol, atol=atol)
     return match
 
-numerical_edge_match = copyfunc(numerical_node_match, 'numerical_edge_match')
+def numerical_edge_match(*args, **kwargs):
+    return numerical_node_match(*args, **kwargs)
 
 def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
     if nx.utils.is_string_like(attr):
@@ -266,7 +268,8 @@ def generic_node_match(attr, default, op):
                 return True
     return match
 
-generic_edge_match = copyfunc(generic_node_match, 'generic_edge_match')
+def generic_edge_match(*args, **kwargs):
+    return generic_node_match(*args, **kwargs)
 
 def generic_multiedge_match(attr, default, op):
     """Returns a comparison function for a generic attribute.
