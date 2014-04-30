@@ -41,8 +41,8 @@ def laplacian_spectrum(G, weight='weight'):
     --------
     laplacian_matrix
     """
-    from scipy.linalg import eigvals
-    return eigvals(nx.laplacian_matrix(G,weight=weight).todense())
+    from scipy.linalg import eigvalsh
+    return eigvalsh(nx.laplacian_matrix(G,weight=weight).todense())
 
 def adjacency_spectrum(G, weight='weight'):
     """Return eigenvalues of the adjacency matrix of G.
