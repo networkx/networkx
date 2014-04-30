@@ -4,6 +4,7 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
+  - "3.4"
   - "pypy"
 before_install:
   # Current TravisCI VM is Ubuntu 12.04 which has Python 2.7 and 3.2.
