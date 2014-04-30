@@ -46,6 +46,10 @@ script:
   - cp setup.cfg $NX_INSTALL
 
   # Move to new directory so that networkx is not imported from repository.
+  # Why? Because we want the tests to make sure that NetworkX was installed
+  # correctly. Example: setup.py might not have included some submodules.
+  # Testing from the git repository cannot catch a mistake like that.
+  #
   # Export current directory for logs.
   - cd $NX_INSTALL
   - printenv PWD
