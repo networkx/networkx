@@ -319,11 +319,11 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
             sigma = eigsh(L, 2, which='SM', tol=tol, return_eigenvectors=False)
             return sigma[0]
         else:
-            n = L.shape[0]
             X = ndarray((n, 2), dtype=float)
             X[:, 0] = 1.
             X[:, 1] = _rcm_estimate(G, G)
-            sigma, X = lobpcg(L, X, tol=tol, maxiter=n, largest=False)
+            M = spdiags(1. / L.diagonal(), [0], n, n)
+            sigma, X = lobpcg(L, X, M=M, tol=tol, maxiter=n, largest=False)
             return sigma[1]
     else:
         raise nx.NetworkXError("unknown method '%s'." % method)
@@ -423,7 +423,8 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
             X = ndarray((n, 2), dtype=float)
             X[:, 0] = 1.
             X[:, 1] = _rcm_estimate(G, G)
-            sigma, X = lobpcg(L, X, tol=tol, maxiter=n, largest=False)
+            M = spdiags(1. / L.diagonal(), [0], n, n)
+            sigma, X = lobpcg(L, X, M=M, tol=tol, maxiter=n, largest=False)
         return array(X[:, 1])
     else:
         raise nx.NetworkXError("unknown method '%s'." % method)
@@ -515,7 +516,8 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
                 X = ndarray((n, 2), dtype=float)
                 X[:, 0] = 1.
                 X[:, 1] = x
-                sigma, X = lobpcg(L, X, tol=tol, maxiter=n, largest=False)
+                M = spdiags(1. / L.diagonal(), [0], n, n)
+                sigma, X = lobpcg(L, X, M=M, tol=tol, maxiter=n, largest=False)
             return array(X[:, 1])
     else:
         raise nx.NetworkXError("unknown method '%s'." % method)
