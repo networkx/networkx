@@ -23,9 +23,9 @@ before_install:
   #   skipping pydot (for all) since it is not 3.x compatible.
   #   skipping gdal (for all) since it has errors while installing from pip.
 
-  - pip install pyyaml --use-mirrors
-  - pip install pyparsing --use-mirrors
-  - pip install coveralls --use-mirrors
+  - pip install pyyaml
+  - pip install pyparsing
+  - pip install coveralls
 
   # In general, 2.6, 3.2, 3.3, and pypy will have lower coverage levels
   # due to missing dependencies.  The coverage level reported by coveralls
