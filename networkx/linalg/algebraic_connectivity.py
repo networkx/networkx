@@ -20,7 +20,7 @@ try:
     from numpy.linalg import norm
     from numpy.random import normal
     from scipy.linalg import eigh, solve
-    from scipy.sparse import csc_matrix, diags
+    from scipy.sparse import csc_matrix, spdiags
     from scipy.sparse.linalg import eigsh, lobpcg
     __all__ = ['algebraic_connectivity', 'fiedler_vector', 'spectral_ordering']
 except ImportError:
@@ -147,7 +147,7 @@ def _tracemin_fiedler(L, X, normalized, tol, solver):
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = sqrt(L.diagonal())
-        D = diags(1. / e, 0, format='csr')
+        D = spdiags(1. / e, [0], n, n, format='csr')
         NL = D * L * D
         D = e.copy()
         e *= 1. / norm(e, 2)
@@ -310,7 +310,7 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
     elif method == 'lanczos' or method == 'lobpcg':
         L = csc_matrix(L, dtype=float)
         if normalized:
-            D = diags(1. / sqrt(L.diagonal()), 0, format='csc')
+            D = spdiags(1. / sqrt(L.diagonal()), [0], n, n, format='csc')
             L = D * L * D
         if method == 'lanczos' or L.shape[0] < 10:
             # Avoid LOBPCG when n < 10 due to
@@ -412,7 +412,7 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
     elif method == 'lanczos' or method == 'lobpcg':
         L = csc_matrix(L, dtype=float)
         if normalized:
-            D = diags(1. / sqrt(L.diagonal()), 0, format='csc')
+            D = spdiags(1. / sqrt(L.diagonal()), [0], n, n, format='csc')
             L = D * L * D
         if method == 'lanczos' or L.shape[0] < 10:
             # Avoid LOBPCG when n < 10 due to
@@ -502,8 +502,9 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
     elif method == 'lanczos' or method == 'lobpcg':
         def find_fiedler(L, x, normalized):
             L = csc_matrix(L, dtype=float)
+            n = L.shape[0]
             if normalized:
-                D = diags(1. / sqrt(L.diagonal()), 0, format='csc')
+                D = spdiags(1. / sqrt(L.diagonal()), [0], n, n, format='csc')
                 L = D * L * D
             if method == 'lanczos' or L.shape[0] < 10:
                 # Avoid LOBPCG when n < 10 due to
@@ -511,7 +512,6 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
                 # https://github.com/scipy/scipy/pull/3594
                 sigma, X = eigsh(L, 2, which='SM', tol=tol)
             else:
-                n = L.shape[0]
                 X = ndarray((n, 2), dtype=float)
                 X[:, 0] = 1.
                 X[:, 1] = x
