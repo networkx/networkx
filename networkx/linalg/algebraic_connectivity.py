@@ -312,7 +312,10 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
         if normalized:
             D = diags(1. / sqrt(L.diagonal()), 0, format='csc')
             L = D * L * D
-        if method == 'lanczos':
+        if method == 'lanczos' or L.shape[0] < 10:
+            # Avoid LOBPCG when n < 10 due to
+            # https://github.com/scipy/scipy/issues/3592
+            # https://github.com/scipy/scipy/pull/3594
             sigma = eigsh(L, 2, which='SM', tol=tol, return_eigenvectors=False)
             return sigma[0]
         else:
@@ -411,7 +414,10 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
         if normalized:
             D = diags(1. / sqrt(L.diagonal()), 0, format='csc')
             L = D * L * D
-        if method == 'lanczos':
+        if method == 'lanczos' or L.shape[0] < 10:
+            # Avoid LOBPCG when n < 10 due to
+            # https://github.com/scipy/scipy/issues/3592
+            # https://github.com/scipy/scipy/pull/3594
             sigma, X = eigsh(L, 2, which='SM', tol=tol)
         else:
             X = ndarray((n, 2), dtype=float)
@@ -499,7 +505,10 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
             if normalized:
                 D = diags(1. / sqrt(L.diagonal()), 0, format='csc')
                 L = D * L * D
-            if method == 'lanczos':
+            if method == 'lanczos' or L.shape[0] < 10:
+                # Avoid LOBPCG when n < 10 due to
+                # https://github.com/scipy/scipy/issues/3592
+                # https://github.com/scipy/scipy/pull/3594
                 sigma, X = eigsh(L, 2, which='SM', tol=tol)
             else:
                 n = L.shape[0]
