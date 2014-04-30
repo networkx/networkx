@@ -372,10 +372,10 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         if len(min_cut) >= len(this_cut):
             min_cut = this_cut
     # Same for non adjacent pairs of neighbors of v
-    for x,y in iter_func(neighbors(v),2):
+    for x, y in iter_func(neighbors(v), 2):
         if y in G[x]:
             continue
-        this_cut = minimum_st_node_cut(G, v, w, **kwargs)
+        this_cut = minimum_st_node_cut(G, x, y, **kwargs)
         if len(min_cut) >= len(this_cut):
             min_cut = this_cut
 
