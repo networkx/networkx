@@ -55,3 +55,12 @@ Decorators
    :toctree: generated/
 
    open_file
+
+Cuthill Mckee Ordering
+----------------------
+.. automodule:: networkx.utils.rcm
+.. autosummary::
+   :toctree: generated/
+
+   cuthill_mckee_ordering
+   reverse_cuthill_mckee_ordering

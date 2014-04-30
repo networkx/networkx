@@ -18,6 +18,7 @@ from networkx.algorithms.matching import *
 from networkx.algorithms.mis import *
 from networkx.algorithms.mst import *
 from networkx.algorithms.link_analysis import *
+from networkx.algorithms.link_prediction import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.shortest_paths import *
 from networkx.algorithms.smetric import *
@@ -51,5 +52,5 @@ import networkx.algorithms.operators
 import networkx.algorithms.tree 
 
 from networkx.algorithms.bipartite import projected_graph,project,is_bipartite
-from networkx.algorithms.isomorphism import is_isomorphic,could_be_isomorphic,\
-    fast_could_be_isomorphic,faster_could_be_isomorphic
+from networkx.algorithms.isomorphism import (is_isomorphic,could_be_isomorphic,
+    fast_could_be_isomorphic, faster_could_be_isomorphic)

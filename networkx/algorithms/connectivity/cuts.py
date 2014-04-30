@@ -68,11 +68,11 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity'):
     >>> G.add_edge('e','y', capacity = 3.0)
     >>> sorted(nx.minimum_edge_cut(G, 'x', 'y'))
     [('c', 'y'), ('x', 'b')]
-    >>> nx.min_cut(G, 'x', 'y')
+    >>> nx.minimum_cut_value(G, 'x', 'y')
     3.0
     """
     try:
-        flow, H = nx.ford_fulkerson_flow_and_auxiliary(G, s, t, capacity=capacity)
+        H = nx.ford_fulkerson(G, s, t, capacity=capacity)
         cutset = set()
         # Compute reachable nodes from source in the residual network
         reachable = set(nx.single_source_shortest_path(H,s))

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Max flow algorithm test suite on large graphs.
-
-Run with nose: nosetests -v test_max_flow.py
+"""Maximum flow algorithms test suite on large graphs.
 """
 
 __author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
@@ -11,9 +9,26 @@ __author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
 
 
 import os
+from functools import partial
+from nose.tools import *
 
 import networkx as nx
-from nose.tools import *
+from networkx.algorithms.flow.utils import *
+from networkx.algorithms.flow.edmonds_karp import *
+from networkx.algorithms.flow.ford_fulkerson import *
+from networkx.algorithms.flow.preflow_push import *
+from networkx.algorithms.flow.shortest_augmenting_path import *
+
+flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
+              shortest_augmenting_path]
+
+preflow_push = partial(preflow_push, value_only=False)
+preflow_push.__name__ = 'preflow_push'
+
+flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
+                shortest_augmenting_path]
+
+msg = "Assertion failed in function: {0}"
 
 def gen_pyramid(N):
         # This graph admits a flow of value 1 for which every arc is at
@@ -43,99 +58,91 @@ def read_graph(name):
     return nx.read_gpickle(path)
 
 
-def validate_flows(G, s, t, solnValue, flowValue, flowDict):
-    assert_equal(solnValue, flowValue)
-    assert_equal(set(G), set(flowDict))
+def validate_flows(G, s, t, solnValue, R, flow_func):
+    legacy = R.graph.get('algorithm') == "ford_fulkerson_legacy"
+    flowValue = R.graph['flow_value']
+    if legacy:
+        flowDict = R.graph['flow_dict']
+    else:
+        flowDict = build_flow_dict(G, R)
+    assert_equal(solnValue, flowValue, msg=msg.format(flow_func.__name__))
+    assert_equal(set(G), set(flowDict), msg=msg.format(flow_func.__name__))
     for u in G:
-        assert_equal(set(G[u]), set(flowDict[u]))
+        assert_equal(set(G[u]), set(flowDict[u]),
+                     msg=msg.format(flow_func.__name__))
     excess = dict((u, 0) for u in flowDict)
     for u in flowDict:
         for v, flow in flowDict[u].items():
-            ok_(flow <= G[u][v]['capacity'])
-            ok_(flow >= 0)
+            ok_(flow <= G[u][v].get('capacity', float('inf')),
+                msg=msg.format(flow_func.__name__))
+            ok_(flow >= 0, msg=msg.format(flow_func.__name__))
             excess[u] -= flow
             excess[v] += flow
     for u, exc in excess.items():
         if u == s:
-            assert_equal(exc, -solnValue)
+            assert_equal(exc, -solnValue, msg=msg.format(flow_func.__name__))
         elif u == t:
-            assert_equal(exc, solnValue)
+            assert_equal(exc, solnValue, msg=msg.format(flow_func.__name__))
         else:
-            assert_equal(exc, 0)
+            assert_equal(exc, 0, msg=msg.format(flow_func.__name__))
 
 
 class TestMaxflowLargeGraph:
+    def _test_graph(self, G, s, t, soln, pred=assert_equal):
+        validate = partial(validate_flows, G, s, t, soln, pred=pred)
+        #validate(*nx.ford_fulkerson(G, s, t))
+        validate(*nx.edmonds_karp(G, s, t))
+        validate(*nx.preflow_push(G, s, t))
+        validate(*nx.shortest_augmenting_path(G, s, t, two_phase=False))
+        validate(*nx.shortest_augmenting_path(G, s, t, two_phase=True))
+
     def test_complete_graph(self):
         N = 50
         G = nx.complete_graph(N)
         for (u, v) in G.edges():
             G[u][v]['capacity'] = 5
-        assert_equal(nx.ford_fulkerson(G, 1, 2)[0], 5 * (N - 1))
-        assert_equal(nx.preflow_push(G, 1, 2)[0], 5 * (N - 1))
-        assert_equal(nx.shortest_augmenting_path(G, 1, 2, two_phase=False)[0],
-                     5 * (N - 1))
-        assert_equal(nx.shortest_augmenting_path(G, 1, 2, two_phase=True)[0],
-                     5 * (N - 1))
+
+        for flow_func in flow_funcs:
+            R = flow_func(G, 1, 2)
+            flow_value = R.graph['flow_value']
+            assert_equal(flow_value, 5 * (N - 1),
+                         msg=msg.format(flow_func.__name__))
 
     def test_pyramid(self):
         N = 10
 #        N = 100 # this gives a graph with 5051 nodes
         G = gen_pyramid(N)
-        assert_almost_equal(nx.ford_fulkerson(G, (0, 0), 't')[0], 1.)
-        assert_almost_equal(nx.preflow_push(G, (0, 0), 't')[0], 1.)
-        assert_almost_equal(nx.shortest_augmenting_path(
-            G, (0, 0), 't', two_phase=False)[0], 1.)
-        assert_almost_equal(nx.shortest_augmenting_path(
-            G, (0, 0), 't', two_phase=True)[0], 1.)
+        for flow_func in flow_funcs:
+            R = flow_func(G, (0, 0), 't')
+            flow_value = R.graph['flow_value']
+            assert_almost_equal(flow_value, 1.,
+                                msg=msg.format(flow_func.__name__))
 
     def test_gl1(self):
         G = read_graph('gl1')
         s = 1
         t = len(G)
-        validate_flows(G, s, t, 156545, *nx.ford_fulkerson(G, s, t))
-        validate_flows(G, s, t, 156545, nx.preflow_push_value(G, s, t),
-                       nx.preflow_push_flow(G, s, t))
-        validate_flows(
-            G, s, t, 156545,
-            nx.shortest_augmenting_path_value(G, s, t, two_phase=False),
-            nx.shortest_augmenting_path_flow(G, s, t, two_phase=False))
-        validate_flows(G, s, t, 156545,
-            nx.shortest_augmenting_path_value(G, s, t, two_phase=True),
-            nx.shortest_augmenting_path_flow(G, s, t, two_phase=True))
+        for flow_func in flow_funcs:
+            validate_flows(G, s, t, 156545, flow_func(G, s, t),
+                           flow_func)
 
     def test_gw1(self):
         G = read_graph('gw1')
         s = 1
         t = len(G)
-        validate_flows(G, s, t, 1202018, *nx.ford_fulkerson(G, s, t))
-        validate_flows(G, s, t, 1202018, nx.preflow_push_value(G, s, t),
-                       nx.preflow_push_flow(G, s, t))
-        validate_flows(
-            G, s, t, 1202018,
-            nx.shortest_augmenting_path_value(G, s, t, two_phase=False),
-            nx.shortest_augmenting_path_flow(G, s, t, two_phase=False))
-        validate_flows(
-            G, s, t, 1202018,
-            nx.shortest_augmenting_path_value(G, s, t, two_phase=True),
-            nx.shortest_augmenting_path_flow(G, s, t, two_phase=True))
+        for flow_func in flow_funcs:
+            validate_flows(G, s, t, 1202018, flow_func(G, s, t),
+                           flow_func)
 
     def test_wlm3(self):
         G = read_graph('wlm3')
         s = 1
         t = len(G)
-        validate_flows(G, s, t, 11875108, *nx.ford_fulkerson(G, s, t))
-        validate_flows(G, s, t, 11875108, nx.preflow_push_value(G, s, t),
-                       nx.preflow_push_flow(G, s, t))
-        validate_flows(
-            G, s, t, 11875108,
-            nx.shortest_augmenting_path_value(G, s, t, two_phase=False),
-            nx.shortest_augmenting_path_flow(G, s, t, two_phase=False))
-        validate_flows(
-            G, s, t, 11875108,
-            nx.shortest_augmenting_path_value(G, s, t, two_phase=True),
-            nx.shortest_augmenting_path_flow(G, s, t, two_phase=True))
+        for flow_func in flow_funcs:
+            validate_flows(G, s, t, 11875108, flow_func(G, s, t),
+                           flow_func)
 
     def test_preflow_push_global_relabel(self):
         G = read_graph('gw1')
-        assert_equal(nx.preflow_push(G, 1, len(G), global_relabel_freq=50)[0],
-                     1202018)
+        R = nx.preflow_push(G, 1, len(G), global_relabel_freq=50)
+        assert_equal(R.graph['flow_value'], 1202018)
