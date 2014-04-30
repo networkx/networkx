@@ -66,7 +66,6 @@ def test_brandes_erlebach():
     G.add_edges_from([(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (2, 6), (3, 4),
                       (3, 6), (4, 6), (4, 7), (5, 7), (6, 8), (6, 9), (7, 8),
                       (7, 10), (8, 11), (9, 10), (9, 11), (10, 11)])
-
     for flow_func in flow_funcs:
         kwargs = dict(flow_func=flow_func)
         assert_equal(3, nx.local_edge_connectivity(G, 1, 11, **kwargs),
@@ -238,3 +237,15 @@ def test_directed_edge_connectivity():
                      msg=msg.format(flow_func.__name__))
         assert_equal(2, nx.edge_connectivity(D, 1, 4, flow_func=flow_func),
                      msg=msg.format(flow_func.__name__))
+
+def test_cutoff():
+    G = nx.complete_graph(5)
+    for local_func in [nx.local_edge_connectivity, nx.local_node_connectivity]:
+        for flow_func in flow_funcs:
+            if flow_func is preflow_push:
+                # cutoff is not supported by preflow_push
+                continue
+            for cutoff in [3, 2, 1]:
+                result = local_func(G, 0, 4, flow_func=flow_func, cutoff=cutoff)
+                assert_equal(cutoff, result,
+                             msg="cutoff error in {0}".format(flow_func.__name__))
