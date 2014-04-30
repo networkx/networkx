@@ -11,6 +11,7 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 from functools import partial
 import networkx as nx
 from networkx.utils import not_implemented_for
+from networkx.utils import reverse_cuthill_mckee_ordering
 from re import compile
 
 try:
@@ -19,8 +20,8 @@ try:
     from numpy.linalg import norm
     from numpy.random import normal
     from scipy.linalg import eigh, solve
-    from scipy.sparse import csc_matrix, spdiags
-    from scipy.sparse.linalg import eigsh
+    from scipy.sparse import csc_matrix, diags
+    from scipy.sparse.linalg import eigsh, lobpcg
     __all__ = ['algebraic_connectivity', 'fiedler_vector', 'spectral_ordering']
 except ImportError:
     __all__ = []
@@ -123,17 +124,30 @@ def _preprocess_graph(G, weight):
     return H
 
 
-def _tracemin_fiedler(L, normalized, tol, solver):
-    """Compute the Fiedler vector of L using the TRACEMIN-Fiedler algorithm.
+def _rcm_estimate(G, nodelist):
+    """Estimate the Fiedler vector using the reverse Cuthill-McKee ordering.
     """
-    n = L.shape[0]
-    q = 2
+    G = G.subgraph(nodelist)
+    order = reverse_cuthill_mckee_ordering(G)
+    n = len(nodelist)
+    index = dict(zip(nodelist, range(n)))
+    x = ndarray(n, dtype=float)
+    for i, u in enumerate(order):
+        x[index[u]] = i
+    x -= (n - 1) / 2.
+    return x
+
+
+def _tracemin_fiedler(L, X, normalized, tol, solver):
+    """Compute the Fiedler vector of L using the TraceMIN-Fiedler algorithm.
+    """
+    n, q = X.shape
 
     if normalized:
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = sqrt(L.diagonal())
-        D = spdiags(1. / e, [0], *L.shape, format='csr')
+        D = diags(1. / e, 0, format='csr')
         NL = D * L * D
         D = e.copy()
         e *= 1. / norm(e, 2)
@@ -182,8 +196,7 @@ def _tracemin_fiedler(L, normalized, tol, solver):
         L = NL
     Lnorm = abs(L).sum(axis=1).flatten().max()
 
-    # Randomly initialize eigenvectors.
-    X = asmatrix(asarray(normal(size=(n, q)), order='F'))
+    # Initialize eigenvectors.
     project(X)
     W = asmatrix(ndarray((n, q), order='F'))
 
@@ -241,8 +254,9 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
         Tolerance of eigenvalue computation. Default value: 1e-8.
 
     method : string
-        Method of eigenvalue computation. It should be either 'tracemin'
-        (TraceMIN) or 'lanczos' (Lanczos iteration). Default value: 'tracemin'.
+        Method of eigenvalue computation. It should be one of 'tracemin'
+        (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
+        Default value: 'tracemin'.
 
         The TraceMIN algorithm uses on a linear system solver. The following
         values allow specifying the solver to be used.
@@ -284,23 +298,32 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
         return 0.
 
     L = nx.laplacian_matrix(G)
-    if len(G) == 2:
+    n = L.shape[0]
+    if n == 2:
         return 2. * L[0, 0] if not normalized else 2.
 
     match = _tracemin_method.match(method)
     if match:
-        sigma, X = _tracemin_fiedler(L, normalized, tol, match.group(1))
+        X = asmatrix(normal(size=(2, n))).T
+        sigma, X = _tracemin_fiedler(L, X, normalized, tol, match.group(1))
         return sigma[0]
-    elif method == 'lanczos':
+    elif method == 'lanczos' or method == 'lobpcg':
         L = csc_matrix(L, dtype=float)
         if normalized:
-            D = spdiags(1. / sqrt(L.diagonal()), [0], *L.shape, format='csc')
+            D = diags(1. / sqrt(L.diagonal()), 0, format='csc')
             L = D * L * D
-        sigma = eigsh(L, 2, which='SM', tol=tol, return_eigenvectors=False)
-        return sigma[0]
+        if method == 'lanczos':
+            sigma = eigsh(L, 2, which='SM', tol=tol, return_eigenvectors=False)
+            return sigma[0]
+        else:
+            n = L.shape[0]
+            X = ndarray((n, 2), dtype=float)
+            X[:, 0] = 1.
+            X[:, 1] = _rcm_estimate(G, G)
+            sigma, X = lobpcg(L, X, tol=tol, maxiter=n, largest=False)
+            return sigma[1]
     else:
-        raise nx.NetworkXError(
-            "method should be either 'tracemin' or 'lanczos'.")
+        raise nx.NetworkXError("unknown method '%s'." % method)
 
 
 @not_implemented_for('directed')
@@ -329,8 +352,9 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
         value: 1e-8.
 
     method : string
-        Method of eigenvalue computation. It should be either 'tracemin'
-        (TraceMIN) or 'lanczos' (Lanczos iteration). Default value: 'tracemin'.
+        Method of eigenvalue computation. It should be one of 'tracemin'
+        (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
+        Default value: 'tracemin'.
 
         The TraceMIN algorithm uses on a linear system solver. The following
         values allow specifying the solver to be used.
@@ -375,21 +399,28 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
         return array([1., -1.])
 
     L = nx.laplacian_matrix(G)
+    n = L.shape[0]
 
     match = _tracemin_method.match(method)
     if match:
-        sigma, X = _tracemin_fiedler(L, normalized, tol, match.group(1))
+        X = asmatrix(normal(size=(2, n))).T
+        sigma, X = _tracemin_fiedler(L, X, normalized, tol, match.group(1))
         return array(X[:, 0])
-    elif method == 'lanczos':
+    elif method == 'lanczos' or method == 'lobpcg':
         L = csc_matrix(L, dtype=float)
         if normalized:
-            D = spdiags(1. / sqrt(L.diagonal()), [0], *L.shape, format='csc')
+            D = diags(1. / sqrt(L.diagonal()), 0, format='csc')
             L = D * L * D
-        sigma, X = eigsh(L, 2, which='SM', tol=tol)
+        if method == 'lanczos':
+            sigma, X = eigsh(L, 2, which='SM', tol=tol)
+        else:
+            X = ndarray((n, 2), dtype=float)
+            X[:, 0] = 1.
+            X[:, 1] = _rcm_estimate(G, G)
+            sigma, X = lobpcg(L, X, tol=tol, maxiter=n, largest=False)
         return array(X[:, 1])
     else:
-        raise nx.NetworkXError(
-            "method should be either 'tracemin' or 'lanczos'.")
+        raise nx.NetworkXError("unknown method '%s'." % method)
 
 
 def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
@@ -417,8 +448,9 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
         value: 1e-8.
 
     method : string
-        Method of eigenvalue computation. It should be either 'tracemin'
-        (TraceMIN) or 'lanczos' (Lanczos iteration). Default value: 'tracemin'.
+        Method of eigenvalue computation. It should be one of 'tracemin'
+        (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
+        Default value: 'tracemin'.
 
         The TraceMIN algorithm uses on a linear system solver. The following
         values allow specifying the solver to be used.
@@ -457,28 +489,35 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
     match = _tracemin_method.match(method)
     if match:
         method = match.group(1)
-        def find_fiedler(L, normalized):
-            sigma, X = _tracemin_fiedler(L, normalized, tol, method)
+        def find_fiedler(L, x, normalized):
+            X = asmatrix(normal(size=(2, L.shape[0]))).T
+            sigma, X = _tracemin_fiedler(L, X, normalized, tol, method)
             return array(X[:, 0])
-    elif method == 'lanczos':
-        def find_fiedler(L, normalized):
+    elif method == 'lanczos' or method == 'lobpcg':
+        def find_fiedler(L, x, normalized):
             L = csc_matrix(L, dtype=float)
             if normalized:
-                D = spdiags(1. / sqrt(L.diagonal()), [0], *L.shape,
-                            format='csc')
+                D = diags(1. / sqrt(L.diagonal()), 0, format='csc')
                 L = D * L * D
-            sigma, X = eigsh(L, 2, which='SM', tol=tol)
+            if method == 'lanczos':
+                sigma, X = eigsh(L, 2, which='SM', tol=tol)
+            else:
+                n = L.shape[0]
+                X = ndarray((n, 2), dtype=float)
+                X[:, 0] = 1.
+                X[:, 1] = x
+                sigma, X = lobpcg(L, X, tol=tol, maxiter=n, largest=False)
             return array(X[:, 1])
     else:
-        raise nx.NetworkXError(
-            "method should be either 'tracemin' or 'lanczos'.")
+        raise nx.NetworkXError("unknown method '%s'." % method)
 
     order = []
     for component in nx.connected_components(G):
         size = len(component)
         if size > 2:
             L = nx.laplacian_matrix(G, component)
-            fiedler = find_fiedler(L, normalized)
+            x = _rcm_estimate(G, component)
+            fiedler = find_fiedler(L, x, normalized)
             order.extend(
                 u for x, c, u in sorted(zip(fiedler, range(size), component)))
         else:
