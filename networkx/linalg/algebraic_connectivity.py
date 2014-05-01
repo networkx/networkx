@@ -230,6 +230,42 @@ def _tracemin_fiedler(L, X, normalized, tol, solver):
     return sigma, asarray(X)
 
 
+def _get_fiedler_func(method):
+    """Return a function that solves the Fiedler eigenvalue problem.
+    """
+    match = _tracemin_method.match(method)
+    if match:
+        method = match.group(1)
+        def find_fiedler(L, x, normalized, tol):
+            X = asmatrix(normal(size=(2, L.shape[0]))).T
+            sigma, X = _tracemin_fiedler(L, X, normalized, tol, method)
+            return sigma[0], X[:, 0]
+    elif method == 'lanczos' or method == 'lobpcg':
+        def find_fiedler(L, x, normalized, tol):
+            L = csc_matrix(L, dtype=float)
+            n = L.shape[0]
+            if normalized:
+                D = spdiags(1. / sqrt(L.diagonal()), [0], n, n, format='csc')
+                L = D * L * D
+            if method == 'lanczos' or n < 10:
+                # Avoid LOBPCG when n < 10 due to
+                # https://github.com/scipy/scipy/issues/3592
+                # https://github.com/scipy/scipy/pull/3594
+                sigma, X = eigsh(L, 2, which='SM', tol=tol,
+                                 return_eigenvectors=True)
+            else:
+                X = ndarray((n, 2), dtype=float)
+                X[:, 0] = 1.
+                X[:, 1] = x
+                M = spdiags(1. / L.diagonal(), [0], n, n)
+                sigma, X = lobpcg(L, X, M=M, tol=tol, maxiter=n, largest=False)
+            return sigma[1], X[:, 1]
+    else:
+        raise nx.NetworkXError("unknown method '%s'." % method)
+
+    return find_fiedler
+
+
 @not_implemented_for('directed')
 def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
                            method='tracemin'):
@@ -298,35 +334,12 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
         return 0.
 
     L = nx.laplacian_matrix(G)
-    n = L.shape[0]
-    if n == 2:
+    if L.shape[0] == 2:
         return 2. * L[0, 0] if not normalized else 2.
 
-    match = _tracemin_method.match(method)
-    if match:
-        X = asmatrix(normal(size=(2, n))).T
-        sigma, X = _tracemin_fiedler(L, X, normalized, tol, match.group(1))
-        return sigma[0]
-    elif method == 'lanczos' or method == 'lobpcg':
-        L = csc_matrix(L, dtype=float)
-        if normalized:
-            D = spdiags(1. / sqrt(L.diagonal()), [0], n, n, format='csc')
-            L = D * L * D
-        if method == 'lanczos' or L.shape[0] < 10:
-            # Avoid LOBPCG when n < 10 due to
-            # https://github.com/scipy/scipy/issues/3592
-            # https://github.com/scipy/scipy/pull/3594
-            sigma = eigsh(L, 2, which='SM', tol=tol, return_eigenvectors=False)
-            return sigma[0]
-        else:
-            X = ndarray((n, 2), dtype=float)
-            X[:, 0] = 1.
-            X[:, 1] = _rcm_estimate(G, G)
-            M = spdiags(1. / L.diagonal(), [0], n, n)
-            sigma, X = lobpcg(L, X, M=M, tol=tol, maxiter=n, largest=False)
-            return sigma[1]
-    else:
-        raise nx.NetworkXError("unknown method '%s'." % method)
+    find_fiedler = _get_fiedler_func(method)
+    x = None if method != 'lobpcg' else _rcm_estimate(G, G)
+    return find_fiedler(L, x, normalized, tol)[0]
 
 
 @not_implemented_for('directed')
@@ -401,33 +414,10 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
     if len(G) == 2:
         return array([1., -1.])
 
+    find_fiedler = _get_fiedler_func(method)
     L = nx.laplacian_matrix(G)
-    n = L.shape[0]
-
-    match = _tracemin_method.match(method)
-    if match:
-        X = asmatrix(normal(size=(2, n))).T
-        sigma, X = _tracemin_fiedler(L, X, normalized, tol, match.group(1))
-        return array(X[:, 0])
-    elif method == 'lanczos' or method == 'lobpcg':
-        L = csc_matrix(L, dtype=float)
-        if normalized:
-            D = spdiags(1. / sqrt(L.diagonal()), [0], n, n, format='csc')
-            L = D * L * D
-        if method == 'lanczos' or L.shape[0] < 10:
-            # Avoid LOBPCG when n < 10 due to
-            # https://github.com/scipy/scipy/issues/3592
-            # https://github.com/scipy/scipy/pull/3594
-            sigma, X = eigsh(L, 2, which='SM', tol=tol)
-        else:
-            X = ndarray((n, 2), dtype=float)
-            X[:, 0] = 1.
-            X[:, 1] = _rcm_estimate(G, G)
-            M = spdiags(1. / L.diagonal(), [0], n, n)
-            sigma, X = lobpcg(L, X, M=M, tol=tol, maxiter=n, largest=False)
-        return array(X[:, 1])
-    else:
-        raise nx.NetworkXError("unknown method '%s'." % method)
+    x = None if method != 'lobpcg' else _rcm_estimate(G, G)
+    return find_fiedler(L, x, normalized, tol)[1]
 
 
 def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
@@ -493,42 +483,14 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
         raise nx.NetworkXError('graph is empty.')
     G = _preprocess_graph(G, weight)
 
-    match = _tracemin_method.match(method)
-    if match:
-        method = match.group(1)
-        def find_fiedler(L, x, normalized):
-            X = asmatrix(normal(size=(2, L.shape[0]))).T
-            sigma, X = _tracemin_fiedler(L, X, normalized, tol, method)
-            return array(X[:, 0])
-    elif method == 'lanczos' or method == 'lobpcg':
-        def find_fiedler(L, x, normalized):
-            L = csc_matrix(L, dtype=float)
-            n = L.shape[0]
-            if normalized:
-                D = spdiags(1. / sqrt(L.diagonal()), [0], n, n, format='csc')
-                L = D * L * D
-            if method == 'lanczos' or L.shape[0] < 10:
-                # Avoid LOBPCG when n < 10 due to
-                # https://github.com/scipy/scipy/issues/3592
-                # https://github.com/scipy/scipy/pull/3594
-                sigma, X = eigsh(L, 2, which='SM', tol=tol)
-            else:
-                X = ndarray((n, 2), dtype=float)
-                X[:, 0] = 1.
-                X[:, 1] = x
-                M = spdiags(1. / L.diagonal(), [0], n, n)
-                sigma, X = lobpcg(L, X, M=M, tol=tol, maxiter=n, largest=False)
-            return array(X[:, 1])
-    else:
-        raise nx.NetworkXError("unknown method '%s'." % method)
-
+    find_fiedler = _get_fiedler_func(method)
     order = []
     for component in nx.connected_components(G):
         size = len(component)
         if size > 2:
             L = nx.laplacian_matrix(G, component)
-            x = _rcm_estimate(G, component)
-            fiedler = find_fiedler(L, x, normalized)
+            x = None if method != 'lobpcg' else _rcm_estimate(G, component)
+            fiedler = find_fiedler(L, x, normalized, tol)[1]
             order.extend(
                 u for x, c, u in sorted(zip(fiedler, range(size), component)))
         else:
