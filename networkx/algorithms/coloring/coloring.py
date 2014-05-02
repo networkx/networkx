@@ -2,17 +2,15 @@
 """
 Greedy graph coloring using various strategies.
 """
-#    Copyright (C) 2014 by 
+#    Copyright (C) 2014 by
 #    Christian Olsson <chro@itu.dk>
 #    Jan Aagaard Meier <jmei@itu.dk>
 #    Henrik Haugbølle <hhau@itu.dk>
 #    All rights reserved.
 #    BSD license.
-from heapq import heappush, heappop
-import itertools
 import networkx as nx
-import sys
 import random
+import itertools
 from . import coloring_with_interchange
 
 __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
@@ -21,27 +19,13 @@ __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
 __all__ = ['coloring']
 
 def min_degree_node(G):
-    min_node = None
-    min_degree = G.number_of_edges() + 1
-    for node, degree in G.degree_iter():
-        if degree < min_degree:
-            min_node = node
-            min_degree = degree
-
-    return min_node
+    return min(G, key=G.degree)
 
 def max_degree_node(G):
-    max_node = None
-    max_degree = -1
-    for node, degree in G.degree_iter():
-        if degree > max_degree:
-            max_node = node
-            max_degree = degree
-
-    return max_node
+    return max(G, key=G.degree)
 
 def dict_to_sets(colors, k):
-    sets = [set() for i in range(k)]
+    sets = [set() for _ in range(k)]
 
     for (node, color) in colors.items():
         sets[color].add(node)
@@ -52,67 +36,70 @@ def dict_to_sets(colors, k):
 Largest first (lf) ordering. Ordering the nodes by largest degree first.
 """
 
-def strategy_lf(G):
+def strategy_largest_first(G):
     nodes = G.nodes()
-    nodes.sort(key=lambda node: G.degree(node) * -1)
-    
+    nodes.sort(key=lambda node: -G.degree(node))
+
     return nodes
-    
+
 """
 Random sequential (RS) ordering. Scrambles nodes into random ordering.
 """
-def strategy_rs(G):
+def strategy_random_sequential(G):
     nodes = G.nodes()
     random.shuffle(nodes)
-    
-    return nodes
-    
-"""
-Smallest last (sl). Picking the node with smallest degree first, subtracting it from the graph, and starting over with the new smallest degree node. When
-the graph is empty, the reverse ordering of the one built is returned.
-"""
 
-def strategy_sl(G):
+    return nodes
+
+"""
+Smallest last (sl). Picking the node with smallest degree first, 
+subtracting it from the graph, and starting over with the new smallest degree node. 
+When the graph is empty, the reverse ordering of the one built is returned.
+"""
+def strategy_smallest_last(G):
     len_g = len(G)
     available_g = G.copy()
     nodes = [None]*len_g
-    
+
     for i in range(len_g):
         node = min_degree_node(available_g)
-        
+
         available_g.remove_node(node)
         nodes[len_g - i - 1] = node
-    
+
     return nodes
-    
+
 """
-Greedy independent set ordering (GIS). Generates a maximum independent set of nodes, and assigns color C to all nodes in this set. This set of nodes is now
+Greedy independent set ordering (GIS). Generates a maximal independent set of nodes, 
+and assigns color C to all nodes in this set. This set of nodes is now
 removed from the graph, and the algorithm runs 
 """
-def strategy_gis(G, colors):
+def strategy_independent_set(G, colors):
     len_g = len(G)
     no_colored = 0
     k = 0
 
     uncolored_g = G.copy()
-    while no_colored < len_g: # While there are uncolored nodes 
+    while no_colored < len_g: # While there are uncolored nodes
         available_g = uncolored_g.copy()
 
-        while available_g.number_of_nodes() > 0: # While there are still nodes available
+        while len(available_g): # While there are still nodes available
             node = min_degree_node(available_g)
             colors[node] = k # assign color to values
 
             no_colored += 1
             uncolored_g.remove_node(node)
-            available_g.remove_nodes_from(available_g.neighbors(node) + [node]) # Remove v and its neighbors from available
+             # Remove node and its neighbors from available
+            available_g.remove_nodes_from(available_g.neighbors(node) + [node])
         k += 1
     return k
 
 """
-Connected sequential ordering (CS). Yield nodes in such an order, that each node, except the first one, has at least one neighbour in the preceeding sequence.
+Connected sequential ordering (CS). Yield nodes in such an order, that each node, 
+except the first one, has at least one neighbour in the preceeding sequence.
 The sequence can be generated using both BFS and DFS search
 """
-def strategy_cs(G, traversal='bfs'):
+def strategy_connected_sequential(G, traversal='bfs'):
     source = G.nodes()[0]
 
     yield source # Pick the first node as source
@@ -128,21 +115,22 @@ def strategy_cs(G, traversal='bfs'):
 """
 Saturation largest first (SLF) or DSATUR.
 """
-def strategy_slf(G, colors):
+def strategy_saturation_largest_first(G, colors):
     len_g = len(G)
     no_colored = 0
     distinct_colors = {}
 
     for node in G.nodes_iter():
         distinct_colors[node] = set()
-        
+
     while no_colored != len_g:
-        if no_colored == 0: # When saturation for all nodes is 0, yield the node with highest degree
+        if no_colored == 0:
+             # When sat. for all nodes is 0, yield the node with highest degree
             no_colored += 1
             node = max_degree_node(G)
             yield node
             for neighbour in G.neighbors_iter(node):
-                distinct_colors[neighbour].add(0) 
+                distinct_colors[neighbour].add(0)
         else:
             highest_saturation = -1
             highest_saturation_nodes = []
@@ -176,8 +164,9 @@ def strategy_slf(G, colors):
             color = colors[node]
             for neighbour in G.neighbors_iter(node):
                 distinct_colors[neighbour].add(color)
-    
-"""Color a graph using various strategies of greedy graph coloring. The strategies are described in [1].
+
+"""Color a graph using various strategies of greedy graph coloring.
+The strategies are described in [1].
 
 Attempts to color a graph using as few colors as possible, where no 
 neighbours of a node can have same color as the node itself.
@@ -241,54 +230,53 @@ def coloring(G, strategy='lf', interchange=False, returntype='dict'):
     if len(G):
         # the type returned from strategies should probably be python generators
         if strategy == 'lf':
-            nodes = strategy_lf(G)
+            nodes = strategy_largest_first(G)
         elif strategy == 'rs':
-            nodes = strategy_rs(G)
+            nodes = strategy_random_sequential(G)
         elif strategy == 'sl':
-            nodes = strategy_sl(G)
+            nodes = strategy_smallest_last(G)
         elif strategy == 'gis':
-            if interchange == True:
-                raise nx.NetworkXPointlessConcept("""Interchange is not applicable for GIS""")
-            k = strategy_gis(G, colors)
+            if interchange:
+                raise nx.NetworkXPointlessConcept(
+                    'Interchange is not applicable for GIS')
+            k = strategy_independent_set(G, colors)
             if returntype == 'sets':
                 return dict_to_sets(colors, k)
             return colors
         elif strategy == 'cs' or strategy == 'cs-bfs':
-            nodes = strategy_cs(G)
+            nodes = strategy_connected_sequential(G)
         elif strategy == 'cs-dfs':
-            nodes = strategy_cs(G, traversal='dfs')
+            nodes = strategy_connected_sequential(G, traversal='dfs')
         elif strategy == 'slf':
-            if interchange == True:
-                raise nx.NetworkXPointlessConcept("""Interchange is not applicable for SLF""")
-            nodes = strategy_slf(G, colors)
+            if interchange:
+                raise nx.NetworkXPointlessConcept(
+                    'Interchange is not applicable for SLF')
+            nodes = strategy_saturation_largest_first(G, colors)
         else:
-            raise nx.NetworkXPointlessConcept('Strategy ' + strategy + ' does not exist.')
+            raise nx.NetworkXPointlessConcept(
+                'Strategy ' + strategy + ' does not exist.')
 
         if interchange:
             return coloring_with_interchange.coloring_with_interchange(G, nodes, returntype)
         else:
             for node in nodes:
-                neighbourColors = set() # set to keep track of colors of neighbours
+                neighbour_colors = set() # set to keep track of colors of neighbours
 
                 for neighbour in G.neighbors_iter(node): # iterate through the neighbours of the node
                     if neighbour in colors: # if the neighbour has been assigned a color ...
-                        neighbourColors.add(colors[neighbour]) # ... put it into the neighbour color set
+                        neighbour_colors.add(colors[neighbour]) # ... put it into the neighbour color set
 
-                i = 0 # initialize first potentially available color
-                color = -1 # initialize non-existant color (-1)
-                while color == -1: # loop over all possible colors, until a vacant has been found
-                    if i in neighbourColors: # check if the color is already occupied by a neighbour
-                        i = i + 1 # ... if that's the case, move to next color and reiterate
-                    else:
-                        color = i # ... if the color is vacant, choose it as the node's color
+                for color in itertools.count():
+                    if color not in neighbour_colors:
+                        break
 
                 colors[node] = color # assign the node the newly found color
 
                 if returntype == 'sets': # only maintain the list of sets, if the desired return type is 'set'
-                    if len(sets) <= i: # ensure that a set has been initialize at the 'color'/index of the list
+                    if len(sets) <= color: # ensure that a set has been initialize at the 'color'/index of the list
                         sets.append(set()) # ... if not, do it
                     
-                    sets[i].add(node) # add the node to the respective set
+                    sets[color].add(node) # add the node to the respective set
 
     if returntype == 'sets': # determine desired return type
         return sets

@@ -37,7 +37,7 @@ class TestColoring:
         assert_true(len(coloring) == 3)
         assert_true(verifyColoring(graph, coloring, 'sets'))
 
-    def test_rs_shc(sefl):
+    def test_rs_shc(self):
         graph = rs_shc()
         coloring = nx.coloring(graph, strategy='rs', interchange=False, returntype='sets')
         assert_true(len(coloring) == 2 or len(coloring) == 3)
@@ -68,7 +68,7 @@ class TestColoring:
         assert_true(len(coloring) == 3)
         assert_true(verifyColoring(graph, coloring, 'sets'))
 
-    def test_slf_shc(sefl):
+    def test_slf_shc(self):
         graph = slf_shc()
         coloring = nx.coloring(graph, strategy='slf', interchange=False, returntype='sets')
         assert_true(len(coloring) == 3 or len(coloring) == 4)
@@ -248,7 +248,7 @@ class TestColoring:
         assert_true(len(coloring) == 3)
         assert_true(verifyColoring(graph, coloring, 'sets'))
 
-    def test_rsi_rsshc(sefl):
+    def test_rsi_rsshc(self):
         graph = rs_shc()
         coloring = nx.coloring(graph, strategy='rs', interchange=True, returntype='sets')
         assert_true(len(coloring) == 2)
@@ -331,10 +331,10 @@ def verifyColoring(graph, coloring, returntype):
             for node in coloring[color]:
                 for neighbor in graph.neighbors(node):
                     correct = correct and (neighbor not in coloring[color])
-    elif(returntype == 'dict'):
+    elif returntype == 'dict':
         for node in graph.node_iter():
             color = coloring[node]
-            for neighbor in g.neighbors(node):
+            for neighbor in graph.neighbors(node):
                 correct = correct and coloring[neighbor] != color
     else:
         return False
