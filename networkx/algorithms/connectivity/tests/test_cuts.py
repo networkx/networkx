@@ -234,3 +234,8 @@ def tests_min_cut_complete_directed():
     for interface_func in [nx.minimum_edge_cut, nx.minimum_node_cut]:
         for flow_func in flow_funcs:
             assert_equal(4, len(interface_func(G, flow_func=flow_func)))
+
+def test_invalid_auxiliary():
+    G = nx.complete_graph(5)
+    assert_raises(nx.NetworkXError, nx.minimum_st_node_cut, G, 0, 3,
+                   auxiliary=G)

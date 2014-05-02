@@ -249,3 +249,8 @@ def test_cutoff():
                 result = local_func(G, 0, 4, flow_func=flow_func, cutoff=cutoff)
                 assert_equal(cutoff, result,
                              msg="cutoff error in {0}".format(flow_func.__name__))
+
+def test_invalid_auxiliary():
+    G = nx.complete_graph(5)
+    assert_raises(nx.NetworkXError, nx.local_node_connectivity, G, 0, 3,
+                  auxiliary=G)

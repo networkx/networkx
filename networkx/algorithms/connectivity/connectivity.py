@@ -27,8 +27,8 @@ __all__ = ['average_node_connectivity',
            'all_pairs_node_connectivity_matrix']
 
 
-def local_node_connectivity(G, s, t, flow_func=None, aux_digraph=None,
-                            mapping=None, residual=None, cutoff=None):
+def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
+                            residual=None, cutoff=None):
     r"""Computes local node connectivity for nodes s and t.
 
     Local node connectivity for two non adjacent nodes s and t is the
@@ -60,13 +60,11 @@ def local_node_connectivity(G, s, t, flow_func=None, aux_digraph=None,
         details. The choice of the default function may change from version
         to version and should not be relied on. Default value: None.
 
-    aux_digraph : NetworkX DiGraph
-        Auxiliary digraph to compute flow based node connectivity. If None
+    auxiliary : NetworkX DiGraph
+        Auxiliary digraph to compute flow based node connectivity. It has
+        to have a graph attribute called mapping with a dictionary with a
+        mapping of node names in G and in the auxiliary digraph. If None
         the auxiliary digraph is build. Default value: None.
-
-    mapping : dict
-        Dictionary with a mapping of node names in G and in the auxiliary
-        digraph. Default value: None.
 
     residual : NetworkX DiGraph
         Residual network to compute maximum flow. If provided it will be
@@ -96,17 +94,17 @@ def local_node_connectivity(G, s, t, flow_func=None, aux_digraph=None,
     nodes in the same graph, it is recommended that you reuse the
     data structures that NetworkX uses for computing the maximum 
     flow and the node connectivity: the auxiliary digraph for
-    node connectivity, and the residual network for maximum flow:
+    node connectivity, and the residual network for maximum flow.
 
     >>> # Import the function for building the auxiliary digraph
     >>> from networkx.algorithms.connectivity.utils import (
     ...     build_auxiliary_node_connectivity)
-    >>> H, mapping = build_auxiliary_node_connectivity(G)
+    >>> H = build_auxiliary_node_connectivity(G)
     >>> # Import the function for building the resudual network
     >>> from networkx.algorithms.flow.utils import build_residual_network
     >>> R = build_residual_network(H, 'capacity')
     >>> # You can reuse them by passing them as parameters
-    >>> kwargs = dict(aux_digraph=H, mapping=mapping, residual=R) 
+    >>> kwargs = dict(auxiliary=H, residual=R) 
     >>> nx.local_node_connectivity(G, 0, 6, **kwargs)
     5
 
@@ -163,10 +161,14 @@ def local_node_connectivity(G, s, t, flow_func=None, aux_digraph=None,
     if flow_func is None:
         flow_func = default_flow_func
 
-    if aux_digraph is None or mapping is None:
-        H, mapping = build_auxiliary_node_connectivity(G)
+    if auxiliary is None:
+        H = build_auxiliary_node_connectivity(G)
     else:
-        H = aux_digraph
+        H = auxiliary
+
+    mapping = H.graph.get('mapping', None)
+    if mapping is None:
+        raise nx.NetworkXError('Invalid auxiliary digraph.')
 
     kwargs = dict(flow_func=flow_func, residual=residual)
     if flow_func is shortest_augmenting_path:
@@ -291,10 +293,9 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
         neighbors = G.neighbors_iter
 
     # Reuse the auxiliary digraph and the residual network
-    H, mapping = build_auxiliary_node_connectivity(G)
+    H = build_auxiliary_node_connectivity(G)
     R = build_residual_network(H, 'capacity')
-    kwargs = dict(flow_func=flow_func, aux_digraph=H, mapping=mapping,
-                  residual=R)
+    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
     # Initial guess \kappa = n - 1
     K = G.order() - 1
@@ -369,10 +370,9 @@ def average_node_connectivity(G, flow_func=None):
         iter_func = itertools.combinations
 
     # Reuse the auxiliary digraph and the residual network
-    H, mapping = build_auxiliary_node_connectivity(G)
+    H = build_auxiliary_node_connectivity(G)
     R = build_residual_network(H, 'capacity')
-    kwargs = dict(flow_func=flow_func, aux_digraph=H, mapping=mapping,
-                  residual=R)
+    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
     num, den = 0, 0
     for u, v in iter_func(G, 2):
@@ -438,10 +438,10 @@ def all_pairs_node_connectivity_matrix(G, nodelist=None, flow_func=None):
     n = G.order()
     M = np.zeros((n, n), dtype=int)
     # Reuse auxiliary digraph and residual network
-    D, mapping = build_auxiliary_node_connectivity(G)
-    R = build_residual_network(D, 'capacity')
-    kwargs = dict(flow_func=flow_func, aux_digraph=D, mapping=mapping,
-                  residual=R)
+    H = build_auxiliary_node_connectivity(G)
+    mapping = H.graph['mapping']
+    R = build_residual_network(H, 'capacity')
+    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
     if G.is_directed():
         for u, v in itertools.permutations(G, 2):
@@ -455,7 +455,7 @@ def all_pairs_node_connectivity_matrix(G, nodelist=None, flow_func=None):
     return M
 
 
-def local_edge_connectivity(G, u, v, flow_func=None, aux_digraph=None,
+def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
                             residual=None, cutoff=None):
     r"""Returns local edge connectivity for nodes s and t in G.
 
@@ -489,7 +489,7 @@ def local_edge_connectivity(G, u, v, flow_func=None, aux_digraph=None,
         choice of the default function may change from version
         to version and should not be relied on. Default value: None.
 
-    aux_digraph : NetworkX DiGraph
+    auxiliary : NetworkX DiGraph
         Auxiliary digraph to compute flow based edge connectivity. If None
         the auxiliary digraph is build. Default value: None.
 
@@ -531,7 +531,7 @@ def local_edge_connectivity(G, u, v, flow_func=None, aux_digraph=None,
     >>> from networkx.algorithms.flow.utils import build_residual_network
     >>> R = build_residual_network(H, 'capacity')
     >>> # You can reuse them by passing them as parameters
-    >>> kwargs = dict(aux_digraph=H, residual=R)
+    >>> kwargs = dict(auxiliary=H, residual=R)
     >>> nx.local_edge_connectivity(G, 0, 6, **kwargs)
     5
 
@@ -579,10 +579,10 @@ def local_edge_connectivity(G, u, v, flow_func=None, aux_digraph=None,
     if flow_func is None:
         flow_func = default_flow_func
 
-    if aux_digraph is None:
+    if auxiliary is None:
         H = build_auxiliary_edge_connectivity(G)
     else:
-        H = aux_digraph
+        H = auxiliary
 
     kwargs = dict(flow_func=flow_func, residual=residual)
     if flow_func is shortest_augmenting_path:
@@ -690,7 +690,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
     # reuse auxiliary digraph and residual network
     H = build_auxiliary_edge_connectivity(G)
     R = build_residual_network(H, 'capacity')
-    kwargs = dict(flow_func=flow_func, aux_digraph=H, residual=R)
+    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
     if G.is_directed():
         # Algorithm 8 in [1]
@@ -728,6 +728,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
             # in complete graphs the dominating sets will always be of one node
             # thus we return min degree
             return L
+
         for w in D:
             kwargs['cutoff'] = L
             L = min(L, local_edge_connectivity(G, v, w, **kwargs))

@@ -10,7 +10,7 @@ __all__ = ['build_auxiliary_node_connectivity',
            'build_auxiliary_edge_connectivity']
 
 
-def build_auxiliary_node_connectivity(G, nodelist=None):
+def build_auxiliary_node_connectivity(G):
     r"""Creates a directed graph D from an undirected graph G to compute flow
     based node connectivity.
 
@@ -27,6 +27,9 @@ def build_auxiliary_node_connectivity(G, nodelist=None):
     arc `(vA,vB)` in D. Then for each arc (u,v) in G we add one arc (uB,vA)
     in D. Finally we set the attribute capacity = 1 for each arc in D.
 
+    A dictionary with a mapping between nodes in the original graph and the
+    auxiliary digraph is stored as a graph attribute: H.graph['mapping'].
+
     References
     ----------
     .. [1] Kammer, Frank and Hanjo Taubig. Graph Connectivity. in Brandes and
@@ -38,23 +41,24 @@ def build_auxiliary_node_connectivity(G, nodelist=None):
     directed = G.is_directed()
 
     mapping = {}
-    D = nx.DiGraph()
-    if nodelist is None:
-        nodelist = G
-    for i,node in enumerate(nodelist):
+    H = nx.DiGraph()
+    
+    for i, node in enumerate(G):
         mapping[node] = i
-        D.add_node('%dA' % i,id=node)
-        D.add_node('%dB' % i,id=node)
-        D.add_edge('%dA' % i, '%dB' % i, capacity=1)
+        H.add_node('%dA' % i, id=node)
+        H.add_node('%dB' % i, id=node)
+        H.add_edge('%dA' % i, '%dB' % i, capacity=1)
 
     edges = []
     for (source, target) in G.edges():
         edges.append(('%sB' % mapping[source], '%sA' % mapping[target]))
         if not directed:
             edges.append(('%sB' % mapping[target], '%sA' % mapping[source]))
+    H.add_edges_from(edges, capacity=1)
 
-    D.add_edges_from(edges, capacity=1)
-    return D, mapping
+    # Store mapping as graph attribute
+    H.graph['mapping'] = mapping
+    return H
 
 
 def build_auxiliary_edge_connectivity(G):
@@ -74,12 +78,12 @@ def build_auxiliary_edge_connectivity(G):
     if G.is_directed():
         if nx.get_edge_attributes(G, 'capacity'):
             return G
-        D = G.copy()
-        capacity = dict((e,1) for e in D.edges())
-        nx.set_edge_attributes(D, 'capacity', capacity)
-        return D
+        H = G.copy()
+        capacity = dict((e, 1) for e in H.edges())
+        nx.set_edge_attributes(H, 'capacity', capacity)
+        return H
     else:
-        D = G.to_directed()
-        capacity = dict((e,1) for e in D.edges())
-        nx.set_edge_attributes(D, 'capacity', capacity)
-        return D
+        H = G.to_directed()
+        capacity = dict((e, 1) for e in H.edges())
+        nx.set_edge_attributes(H, 'capacity', capacity)
+        return H
