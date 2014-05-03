@@ -306,11 +306,12 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     R = build_residual_network(H, 'capacity')
     kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
-    # Initial guess \kappa = n - 1
-    K = G.order() - 1
     # Pick a node with minimum degree
     degree = G.degree()
-    v = next(n for n, d in degree.items() if d == min(degree.values()))
+    minimum_degree = min(degree.values())
+    v = next(n for n, d in degree.items() if d == minimum_degree)
+    # Node connectivity is bounded by degree.
+    K = minimum_degree
     # compute local node connectivity with all its non-neighbors nodes
     for w in set(G) - set(neighbors(v)) - set([v]):
         kwargs['cutoff'] = K
