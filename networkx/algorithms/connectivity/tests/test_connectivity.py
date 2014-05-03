@@ -6,7 +6,13 @@ import networkx as nx
 from networkx.algorithms.flow.edmonds_karp import edmonds_karp
 from networkx.algorithms.flow.preflow_push import preflow_push
 from networkx.algorithms.flow.shortest_augmenting_path import shortest_augmenting_path
+
 flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
+
+# connectivity functions not imported to the base namespace
+from networkx.algorithms.connectivity import (local_edge_connectivity,
+    local_node_connectivity)
+
 
 msg = "Assertion failed in function: {0}"
 
@@ -68,11 +74,11 @@ def test_brandes_erlebach():
                       (7, 10), (8, 11), (9, 10), (9, 11), (10, 11)])
     for flow_func in flow_funcs:
         kwargs = dict(flow_func=flow_func)
-        assert_equal(3, nx.local_edge_connectivity(G, 1, 11, **kwargs),
+        assert_equal(3, local_edge_connectivity(G, 1, 11, **kwargs),
                      msg=msg.format(flow_func.__name__))
         assert_equal(3, nx.edge_connectivity(G, 1, 11, **kwargs),
                      msg=msg.format(flow_func.__name__))
-        assert_equal(2, nx.local_node_connectivity(G, 1, 11, **kwargs),
+        assert_equal(2, local_node_connectivity(G, 1, 11, **kwargs),
                      msg=msg.format(flow_func.__name__))
         assert_equal(2, nx.node_connectivity(G, 1, 11, **kwargs),
                      msg=msg.format(flow_func.__name__))
@@ -227,20 +233,20 @@ def test_directed_edge_connectivity():
     for flow_func in flow_funcs:
         assert_equal(1, nx.edge_connectivity(G, flow_func=flow_func),
                      msg=msg.format(flow_func.__name__))
-        assert_equal(1, nx.local_edge_connectivity(G, 1, 4, flow_func=flow_func),
+        assert_equal(1, local_edge_connectivity(G, 1, 4, flow_func=flow_func),
                      msg=msg.format(flow_func.__name__))
         assert_equal(1, nx.edge_connectivity(G, 1, 4, flow_func=flow_func),
                      msg=msg.format(flow_func.__name__))
         assert_equal(2, nx.edge_connectivity(D, flow_func=flow_func),
                      msg=msg.format(flow_func.__name__))
-        assert_equal(2, nx.local_edge_connectivity(D, 1, 4, flow_func=flow_func),
+        assert_equal(2, local_edge_connectivity(D, 1, 4, flow_func=flow_func),
                      msg=msg.format(flow_func.__name__))
         assert_equal(2, nx.edge_connectivity(D, 1, 4, flow_func=flow_func),
                      msg=msg.format(flow_func.__name__))
 
 def test_cutoff():
     G = nx.complete_graph(5)
-    for local_func in [nx.local_edge_connectivity, nx.local_node_connectivity]:
+    for local_func in [local_edge_connectivity, local_node_connectivity]:
         for flow_func in flow_funcs:
             if flow_func is preflow_push:
                 # cutoff is not supported by preflow_push
@@ -252,5 +258,5 @@ def test_cutoff():
 
 def test_invalid_auxiliary():
     G = nx.complete_graph(5)
-    assert_raises(nx.NetworkXError, nx.local_node_connectivity, G, 0, 3,
+    assert_raises(nx.NetworkXError, local_node_connectivity, G, 0, 3,
                   auxiliary=G)

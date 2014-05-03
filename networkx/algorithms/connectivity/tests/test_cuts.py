@@ -2,11 +2,14 @@ from nose.tools import assert_equal, assert_true, assert_false, assert_raises
 import networkx as nx
 
 # Flow functions to use in tests.
-# We do not test legacy implementation: it's too slow.
 from networkx.algorithms.flow.edmonds_karp import edmonds_karp
 from networkx.algorithms.flow.preflow_push import preflow_push
 from networkx.algorithms.flow.shortest_augmenting_path import shortest_augmenting_path
 flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
+
+# import connectivity functions not in base namespace
+from networkx.algorithms.connectivity import (minimum_st_edge_cut,
+    minimum_st_node_cut)
 
 msg = "Assertion failed in function: {0}"
 
@@ -54,7 +57,7 @@ def test_brandes_erlebach_book():
         H.remove_edges_from(edge_cut)
         assert_false(nx.is_connected(H), msg=msg.format(flow_func.__name__))
         # node cuts
-        assert_equal(set([6, 7]), nx.minimum_st_node_cut(G, 1, 11, **kwargs),
+        assert_equal(set([6, 7]), minimum_st_node_cut(G, 1, 11, **kwargs),
                      msg=msg.format(flow_func.__name__))
         assert_equal(set([6, 7]), nx.minimum_node_cut(G, 1, 11, **kwargs),
                      msg=msg.format(flow_func.__name__))
@@ -188,7 +191,7 @@ def test_empty_graphs():
 def test_unbounded():
     G = nx.complete_graph(5)
     for flow_func in flow_funcs:
-        assert_raises(nx.NetworkXUnbounded, nx.minimum_st_edge_cut, G, 1, 4)
+        assert_raises(nx.NetworkXUnbounded, minimum_st_edge_cut, G, 1, 4)
 
 def test_missing_source():
     G = nx.path_graph(4)
@@ -237,5 +240,5 @@ def tests_min_cut_complete_directed():
 
 def test_invalid_auxiliary():
     G = nx.complete_graph(5)
-    assert_raises(nx.NetworkXError, nx.minimum_st_node_cut, G, 0, 3,
+    assert_raises(nx.NetworkXError, minimum_st_node_cut, G, 0, 3,
                    auxiliary=G)

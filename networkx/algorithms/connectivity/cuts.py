@@ -12,8 +12,8 @@ from networkx.algorithms.flow import shortest_augmenting_path
 from networkx.algorithms.flow.utils import build_residual_network
 default_flow_func = edmonds_karp
 
-from networkx.algorithms.connectivity.utils import (
-    build_auxiliary_node_connectivity, build_auxiliary_edge_connectivity)
+from .utils import (build_auxiliary_node_connectivity,
+    build_auxiliary_edge_connectivity)
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -89,6 +89,10 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity', flow_func=None,
 
     Examples
     --------
+    This function is not imported in the base NetworkX namespace, so you
+    have to explicitly import it from the connectivity package:
+
+    >>> from networkx.algorithms.connectivity import minimum_st_edge_cut
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity = 3.0)
     >>> G.add_edge('x','b', capacity = 1.0)
@@ -98,7 +102,7 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity', flow_func=None,
     >>> G.add_edge('d','e', capacity = 2.0)
     >>> G.add_edge('c','y', capacity = 2.0)
     >>> G.add_edge('e','y', capacity = 3.0)
-    >>> cutset = nx.minimum_edge_cut(G, 'x', 'y')
+    >>> cutset = minimum_st_edge_cut(G, 'x', 'y')
     >>> sorted(cutset)
     [('c', 'y'), ('x', 'b')]
     >>> cut_value = nx.minimum_cut_value(G, 'x', 'y')
@@ -180,9 +184,16 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
 
     Examples
     --------
-    >>> # Platonic icosahedral graph has node connectivity 5
+    This function is not imported in the base NetworkX namespace, so you
+    have to explicitly import it from the connectivity package:
+
+    >>> from networkx.algorithms.connectivity import minimum_st_node_cut
+
+    We use in this example the platonic icosahedral graph, which has node
+    connectivity 5.
+
     >>> G = nx.icosahedral_graph()
-    >>> len(nx.minimum_st_node_cut(G, 0, 6))
+    >>> len(minimum_st_node_cut(G, 0, 6))
     5
 
     If you need to compute local st cuts between several pairs of
@@ -194,17 +205,19 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     Example of how to compute local st node cuts reusing the data
     structures:
 
-    >>> # Import the function for building the auxiliary digraph
-    >>> from networkx.algorithms.connectivity.utils import (
+    >>> # You also have to explicitly import the function for 
+    >>> # building the auxiliary digraph from the connectivity package
+    >>> from networkx.algorithms.connectivity import (
     ...     build_auxiliary_node_connectivity)
     >>> H = build_auxiliary_node_connectivity(G)
-    >>> # Import the function for building the resudual network
+    >>> # And the function for building the residual network from the
+    >>> # flow package
     >>> from networkx.algorithms.flow.utils import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
     >>> R = build_residual_network(H, 'capacity')
     >>> # Reuse the auxiliary digraph and the residual network by passing them
     >>> # as parameters
-    >>> len(nx.minimum_st_node_cut(G, 0, 6, auxiliary=H, residual=R))
+    >>> len(minimum_st_node_cut(G, 0, 6, auxiliary=H, residual=R))
     5
 
     You can also use alternative flow algorithms for computing minimum st
@@ -213,7 +226,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     the default :meth:`edmonds_karp` which is faster for sparse
     networks with highly skewed degree distributions.
 
-    >>> len(nx.minimum_st_node_cut(G, 0, 6, flow_func=nx.shortest_augmenting_path))
+    >>> len(minimum_st_node_cut(G, 0, 6, flow_func=nx.shortest_augmenting_path))
     5
 
     Notes

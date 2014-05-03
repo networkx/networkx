@@ -5,8 +5,8 @@ Flow based connectivity algorithms
 from __future__ import division
 
 import itertools
-import networkx as nx
 
+import networkx as nx
 # Define the default maximum flow function to use in all flow based
 # connectivity algorithms. 
 from networkx.algorithms.flow import edmonds_karp
@@ -14,8 +14,8 @@ from networkx.algorithms.flow import shortest_augmenting_path
 from networkx.algorithms.flow.utils import build_residual_network
 default_flow_func = edmonds_karp
 
-from networkx.algorithms.connectivity.utils import (
-    build_auxiliary_node_connectivity, build_auxiliary_edge_connectivity)
+from .utils import (build_auxiliary_node_connectivity,
+    build_auxiliary_edge_connectivity)
 
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
 
@@ -83,9 +83,16 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
 
     Examples
     --------
-    >>> # Platonic icosahedral graph has node connectivity 5
+    This function is not imported in the base NetworkX namespace, so you
+    have to explicitly import it from the connectivity package:
+
+    >>> from networkx.algorithms.connectivity import local_node_connectivity
+
+    We use in this example the platonic icosahedral graph, which has node
+    connectivity 5.
+
     >>> G = nx.icosahedral_graph()
-    >>> nx.local_node_connectivity(G, 0, 6)
+    >>> local_node_connectivity(G, 0, 6)
     5
 
     If you need to compute local connectivity on several pairs of
@@ -99,11 +106,13 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     the data structures.
 
     >>> import itertools
-    >>> # Import the function for building the auxiliary digraph
-    >>> from networkx.algorithms.connectivity.utils import (
+    >>> # You also have to explicitly import the function for 
+    >>> # building the auxiliary digraph from the connectivity package
+    >>> from networkx.algorithms.connectivity import (
     ...     build_auxiliary_node_connectivity)
     >>> H = build_auxiliary_node_connectivity(G)
-    >>> # Import the function for building the resudual network
+    >>> # And the function for building the residual network from the
+    >>> # flow package
     >>> from networkx.algorithms.flow.utils import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
     >>> R = build_residual_network(H, 'capacity')
@@ -111,7 +120,7 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     >>> # Reuse the auxiliary digraph and the residual network by passing them
     >>> # as parameters
     >>> for u, v in itertools.combinations(G, 2):
-    ...     k = nx.local_node_connectivity(G, u, v, auxiliary=H, residual=R)
+    ...     k = local_node_connectivity(G, u, v, auxiliary=H, residual=R)
     ...     result[u][v] = k
     >>> all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))
     True
@@ -120,9 +129,9 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     connectivity. For instance, in dense networks the algorithm
     :meth:`shortest_augmenting_path` will usually perform better than
     the default :meth:`edmonds_karp` which is faster for sparse 
-    network with highly skewed degree distributions:
+    networks with highly skewed degree distributions.
 
-    >>> nx.local_node_connectivity(G, 0, 6, flow_func=nx.shortest_augmenting_path)
+    >>> local_node_connectivity(G, 0, 6, flow_func=nx.shortest_augmenting_path)
     5
 
     Notes
@@ -450,9 +459,16 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
 
     Examples
     --------
-    >>> # Platonic icosahedral graph has edge connectivity 5
+    This function is not imported in the base NetworkX namespace, so you
+    have to explicitly import it from the connectivity package:
+
+    >>> from networkx.algorithms.connectivity import local_edge_connectivity
+
+    We use in this example the platonic icosahedral graph, which has edge
+    connectivity 5.
+
     >>> G = nx.icosahedral_graph()
-    >>> nx.local_edge_connectivity(G, 0, 6)
+    >>> local_edge_connectivity(G, 0, 6)
     5
 
     If you need to compute local connectivity on several pairs of
@@ -466,11 +482,13 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     the data structures.
 
     >>> import itertools
-    >>> # Import the function for building the auxiliary digraph
-    >>> from networkx.algorithms.connectivity.utils import (
+    >>> # You also have to explicitly import the function for 
+    >>> # building the auxiliary digraph from the connectivity package
+    >>> from networkx.algorithms.connectivity import (
     ...     build_auxiliary_edge_connectivity)
     >>> H = build_auxiliary_edge_connectivity(G)
-    >>> # Import the function for building the resudual network
+    >>> # And the function for building the residual network from the
+    >>> # flow package
     >>> from networkx.algorithms.flow.utils import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
     >>> R = build_residual_network(H, 'capacity')
@@ -478,7 +496,7 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     >>> # Reuse the auxiliary digraph and the residual network by passing them
     >>> # as parameters
     >>> for u, v in itertools.combinations(G, 2):
-    ...     k = nx.local_edge_connectivity(G, u, v, auxiliary=H, residual=R)
+    ...     k = local_edge_connectivity(G, u, v, auxiliary=H, residual=R)
     ...     result[u][v] = k
     >>> all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))
     True
@@ -487,9 +505,9 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     connectivity. For instance, in dense networks the algorithm
     :meth:`shortest_augmenting_path` will usually perform better than
     the default :meth:`edmonds_karp` which is faster for sparse
-    network with highly skewed degree distributions:
+    networks with highly skewed degree distributions.
 
-    >>> nx.local_edge_connectivity(G, 0, 6, flow_func=nx.shortest_augmenting_path)
+    >>> local_edge_connectivity(G, 0, 6, flow_func=nx.shortest_augmenting_path)
     5
 
     Notes

@@ -6,7 +6,6 @@ from networkx.algorithms.cluster import *
 from networkx.algorithms.clique import *
 from networkx.algorithms.community import *
 from networkx.algorithms.components import *
-from networkx.algorithms.connectivity import *
 from networkx.algorithms.core import *
 from networkx.algorithms.cycles import *
 from networkx.algorithms.dag import *
@@ -50,6 +49,12 @@ import networkx.algorithms.chordal
 import networkx.algorithms.operators
 import networkx.algorithms.tree 
 
-from networkx.algorithms.bipartite import projected_graph,project,is_bipartite
-from networkx.algorithms.isomorphism import (is_isomorphic,could_be_isomorphic,
+
+# bipartite
+from networkx.algorithms.bipartite import projected_graph, project, is_bipartite
+# connectivity
+from networkx.algorithms.connectivity import (minimum_edge_cut, minimum_node_cut,
+    average_node_connectivity, edge_connectivity, node_connectivity, stoer_wagner)
+# isomorphism
+from networkx.algorithms.isomorphism import (is_isomorphic, could_be_isomorphic,
     fast_could_be_isomorphic, faster_could_be_isomorphic)

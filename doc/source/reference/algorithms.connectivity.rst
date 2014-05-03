@@ -16,7 +16,6 @@ Flow-based Connectivity
    node_connectivity
    local_edge_connectivity
    edge_connectivity
-   all_pairs_node_connectivity_matrix
 
 Flow-based Minimum Cuts
 -----------------------
