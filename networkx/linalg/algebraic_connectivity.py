@@ -237,7 +237,8 @@ def _get_fiedler_func(method):
     if match:
         method = match.group(1)
         def find_fiedler(L, x, normalized, tol):
-            X = asmatrix(normal(size=(2, L.shape[0]))).T
+            q = 2 if method == 'pcg' else min(4, L.shape[0] - 1)
+            X = asmatrix(normal(size=(q, L.shape[0]))).T
             sigma, X = _tracemin_fiedler(L, X, normalized, tol, method)
             return sigma[0], X[:, 0]
     elif method == 'lanczos' or method == 'lobpcg':
