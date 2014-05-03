@@ -98,3 +98,6 @@ after_success:
   - cd $TRAVIS_BUILD_DIR
   # Report coverage for 2.7 only.
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coveralls; fi
+
+notifications:
+  email: false
