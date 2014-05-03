@@ -56,15 +56,15 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
         a source node, and a target node. And return a residual network 
         that follows NetworkX conventions (see :meth:`maximum_flow` for 
         details). If flow_func is None, the default maximum flow function 
-        (:meth:`edmonds_karp`) is used. See :meth:`node_connectivity` for
-        details. The choice of the default function may change from version
-        to version and should not be relied on. Default value: None.
+        (:meth:`edmonds_karp`) is used. See below for details. The choice
+        of the default function may change from version to version and 
+        should not be relied on. Default value: None.
 
     auxiliary : NetworkX DiGraph
         Auxiliary digraph to compute flow based node connectivity. It has
-        to have a graph attribute called mapping with a dictionary with a
-        mapping of node names in G and in the auxiliary digraph. If None
-        the auxiliary digraph is build. Default value: None.
+        to have a graph attribute called mapping with a dictionary mapping
+        node names in G and in the auxiliary digraph. If provided
+        it will be reused instead of recreated. Default value: None.
 
     residual : NetworkX DiGraph
         Residual network to compute maximum flow. If provided it will be
@@ -85,28 +85,37 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     Examples
     --------
     >>> # Platonic icosahedral graph has node connectivity 5
-    >>> # for each non adjacent node pair
     >>> G = nx.icosahedral_graph()
     >>> nx.local_node_connectivity(G, 0, 6)
     5
 
     If you need to compute local connectivity on several pairs of
     nodes in the same graph, it is recommended that you reuse the
-    data structures that NetworkX uses for computing the maximum 
-    flow and the node connectivity: the auxiliary digraph for
-    node connectivity, and the residual network for maximum flow.
+    data structures that NetworkX uses in the computation: the 
+    auxiliary digraph for node connectivity, and the residual
+    network for the underlying maximum flow computation.
 
+    Example of how to compute local node connectivity among
+    all pairs of nodes of the platonic icosahedral graph reusing
+    the data structures.
+
+    >>> import itertools
     >>> # Import the function for building the auxiliary digraph
     >>> from networkx.algorithms.connectivity.utils import (
     ...     build_auxiliary_node_connectivity)
     >>> H = build_auxiliary_node_connectivity(G)
     >>> # Import the function for building the resudual network
     >>> from networkx.algorithms.flow.utils import build_residual_network
+    >>> # Note that the auxiliary digraph has an edge attribute named capacity
     >>> R = build_residual_network(H, 'capacity')
-    >>> # You can reuse them by passing them as parameters
-    >>> kwargs = dict(auxiliary=H, residual=R) 
-    >>> nx.local_node_connectivity(G, 0, 6, **kwargs)
-    5
+    >>> result = dict.fromkeys(G, dict())
+    >>> # Reuse the auxiliary digraph and the residual network by passing them
+    >>> # as parameters
+    >>> for u, v in itertools.combinations(G, 2):
+    ...     k = nx.local_node_connectivity(G, u, v, auxiliary=H, residual=R)
+    ...     result[u][v] = k
+    >>> all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))
+    True
 
     You can also use alternative flow algorithms for computing node 
     connectivity. For instance, in dense networks the algorithm
@@ -120,31 +129,32 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     Notes
     -----
     This is a flow based implementation of node connectivity. We compute the
-    maximum flow using, by default, the :meth:`edmonds_karp` algorithm on an 
-    auxiliary digraph build from the original input graph:
+    maximum flow using, by default, the :meth:`edmonds_karp` algorithm (see:
+    :meth:`maximum_flow`) on an auxiliary digraph build from the original 
+    input graph:
 
     For an undirected graph G having `n` nodes and `m` edges we derive a
-    directed graph D with 2n nodes and 2m+n arcs by replacing each
+    directed graph H with 2n nodes and 2m+n arcs by replacing each
     original node `v` with two nodes `v_A`, `v_B` linked by an (internal)
-    arc in `D`. Then for each edge (`u`, `v`) in G we add two arcs
-    (`u_B`, `v_A`) and (`v_B`, `u_A`) in `D`. Finally we set the attribute
-    capacity = 1 for each arc in `D` [1]_ .
+    arc in `H`. Then for each edge (`u`, `v`) in G we add two arcs
+    (`u_B`, `v_A`) and (`v_B`, `u_A`) in `H`. Finally we set the attribute
+    capacity = 1 for each arc in `H` [1]_ .
 
     For a directed graph G having `n` nodes and `m` arcs we derive a
-    directed graph `D` with `2n` nodes and `m+n` arcs by replacing each
+    directed graph `H` with `2n` nodes and `m+n` arcs by replacing each
     original node `v` with two nodes `v_A`, `v_B` linked by an (internal)
-    arc `(v_A, v_B)` in D. Then for each arc `(u,v)` in G we add one arc
-    `(u_B,v_A)` in `D`. Finally we set the attribute capacity = 1 for
-    each arc in `D`.
+    arc `(v_A, v_B)` in H. Then for each arc `(u,v)` in G we add one arc
+    `(u_B,v_A)` in `H`. Finally we set the attribute capacity = 1 for
+    each arc in `H`.
 
     This is equal to the local node connectivity because the value of
-    a maximum s-t-flow is equal to the capacity of a minimum s-t-cut (Ford
-    and Fulkerson theorem).
+    a maximum s-t-flow is equal to the capacity of a minimum s-t-cut.
 
     See also
     --------
+    :meth:`local_edge_connectivity`
     :meth:`node_connectivity`
-    :meth:`edge_connectivity`
+    :meth:`minimum_node_cut`
     :meth:`maximum_flow`
     :meth:`edmonds_karp`
     :meth:`preflow_push`
@@ -177,8 +187,7 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     elif flow_func is edmonds_karp:
         kwargs['cutoff'] = cutoff
 
-    return nx.maximum_flow_value(H, '%sB' % mapping[s], '%sA' % mapping[t],
-                                 **kwargs)
+    return nx.maximum_flow_value(H, '%sB' % mapping[s], '%sA' % mapping[t], **kwargs)
 
 
 def node_connectivity(G, s=None, t=None, flow_func=None):
@@ -215,7 +224,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     -------
     K : integer
         Node connectivity of G, or local node connectivity if source
-        and target were provided
+        and target are provided.
 
     Examples
     --------
@@ -223,17 +232,26 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     >>> G = nx.icosahedral_graph()
     >>> nx.node_connectivity(G)
     5
-    >>> nx.node_connectivity(G, 3, 7)
-    5
 
-    You can use alternative flow algorithms for the underlying
-    maximum flow compututions. See meth:`local_node_connectivity`
-    and Notes for details.
+    You can use alternative flow algorithms for the underlying maximum
+    flow computation. In dense networks the algorithm
+    :meth:`shortest_augmenting_path` will usually perform better
+    than the default :meth:`edmonds_karp`, which is faster for
+    sparse networks with highly skewed degree distributions.
 
     >>> nx.node_connectivity(G, flow_func=nx.shortest_augmenting_path)
     5
-    >>> nx.node_connectivity(G, 3, 7, flow_func=nx.shortest_augmenting_path)
+
+    If you specify a pair of nodes (source and target) as parameters,
+    this function returns the value of local node connectivity.
+
+    >>> nx.node_connectivity(G, 3, 7)
     5
+
+    If you need to perform several local computations among different
+    pairs of nodes on the same graph, it is recommended that you reuse
+    the data structures used in the maximum flow computations. See 
+    :meth:`local_node_connectivity` for details.
 
     Notes
     -----
@@ -245,22 +263,14 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     :meth:`local_node_connectivity`. This implementation is based 
     on algorithm 11 in [1]_.
 
-    You can use alternative flow algorithms for the underlying maximum
-    flow computation. In dense networks the algorithm
-    :meth:`shortest_augmenting_path` will usually perform better
-    than the default :meth:`edmonds_karp`, which is faster for
-    sparse networks with highly skewed degree distributions.
-
     See also
     --------
     :meth:`local_node_connectivity`
     :meth:`edge_connectivity`
-    :meth:`local_edge_connectivity`
     :meth:`maximum_flow`
     :meth:`edmonds_karp`
     :meth:`preflow_push`
     :meth:`shortest_augmenting_path`
-    :meth:`stoer_wagner`
 
     References
     ----------
@@ -306,7 +316,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     for w in set(G) - set(neighbors(v)) - set([v]):
         kwargs['cutoff'] = K
         K = min(K, local_node_connectivity(G, v, w, **kwargs))
-    # Same for non adjacent pairs of neighbors of v
+    # Also for non adjacent pairs of neighbors of v
     for x, y in iter_func(neighbors(v), 2):
         if y in G[x]:
             continue
@@ -338,9 +348,9 @@ def average_node_connectivity(G, flow_func=None):
         a source node, and a target node. And return a residual network 
         that follows NetworkX conventions (see :meth:`maximum_flow` for 
         details). If flow_func is None, the default maximum flow function 
-        (:meth:`edmonds_karp`) is used. See :meth:`node_connectivity` for
-        details. The choice of the default function may change from version
-        to version and should not be relied on. Default value: None.
+        (:meth:`edmonds_karp`) is used. See :meth:`local_node_connectivity`
+        for details. The choice of the default function may change from 
+        version to version and should not be relied on. Default value: None.
 
     Returns
     -------
@@ -350,8 +360,8 @@ def average_node_connectivity(G, flow_func=None):
     See also
     --------
     :meth:`local_node_connectivity`
+    :meth:`node_connectivity`
     :meth:`edge_connectivity`
-    :meth:`local_edge_connectivity`
     :meth:`maximum_flow`
     :meth:`edmonds_karp`
     :meth:`preflow_push`
@@ -490,8 +500,8 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
         to version and should not be relied on. Default value: None.
 
     auxiliary : NetworkX DiGraph
-        Auxiliary digraph to compute flow based edge connectivity. If None
-        the auxiliary digraph is build. Default value: None.
+        Auxiliary digraph for computing flow based edge connectivity. If
+        provided it will be reused instead of recreated. Default value: None.
 
     residual : NetworkX DiGraph
         Residual network to compute maximum flow. If provided it will be
@@ -507,33 +517,42 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     Returns
     -------
     K : integer
-        local edge connectivity for nodes s and t
+        local edge connectivity for nodes s and t.
 
     Examples
     --------
     >>> # Platonic icosahedral graph has edge connectivity 5
-    >>> # for each non adjacent node pair
     >>> G = nx.icosahedral_graph()
     >>> nx.local_edge_connectivity(G, 0, 6)
     5
 
     If you need to compute local connectivity on several pairs of
     nodes in the same graph, it is recommended that you reuse the
-    data structures that NetworkX uses for computing the maximum 
-    flow and the node connectivity: the auxiliary digraph for
-    node connectivity, and the residual network for maximum flow:
+    data structures that NetworkX uses in the computation: the 
+    auxiliary digraph for edge connectivity, and the residual
+    network for the underlying maximum flow computation.
 
+    Example of how to compute local edge connectivity among
+    all pairs of nodes of the platonic icosahedral graph reusing
+    the data structures.
+
+    >>> import itertools
     >>> # Import the function for building the auxiliary digraph
     >>> from networkx.algorithms.connectivity.utils import (
     ...     build_auxiliary_edge_connectivity)
     >>> H = build_auxiliary_edge_connectivity(G)
     >>> # Import the function for building the resudual network
     >>> from networkx.algorithms.flow.utils import build_residual_network
+    >>> # Note that the auxiliary digraph has an edge attribute named capacity
     >>> R = build_residual_network(H, 'capacity')
-    >>> # You can reuse them by passing them as parameters
-    >>> kwargs = dict(auxiliary=H, residual=R)
-    >>> nx.local_edge_connectivity(G, 0, 6, **kwargs)
-    5
+    >>> result = dict.fromkeys(G, dict())
+    >>> # Reuse the auxiliary digraph and the residual network by passing them
+    >>> # as parameters
+    >>> for u, v in itertools.combinations(G, 2):
+    ...     k = nx.local_edge_connectivity(G, u, v, auxiliary=H, residual=R)
+    ...     result[u][v] = k
+    >>> all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))
+    True
 
     You can also use alternative flow algorithms for computing edge
     connectivity. For instance, in dense networks the algorithm
@@ -636,14 +655,25 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
     >>> nx.edge_connectivity(G)
     5
 
-    You can use alternative flow algorithms for the underlying
-    maximum flow compututions. See meth:`local_edge_connectivity`
-    and Notes for details.
+    You can use alternative flow algorithms for the underlying 
+    maximum flow computation. In dense networks the algorithm 
+    :meth:`shortest_augmenting_path` will usually perform better 
+    than the default :meth:`edmonds_karp`, which is faster for 
+    sparse networks with highly skewed degree distributions.
 
     >>> nx.edge_connectivity(G, flow_func=nx.shortest_augmenting_path)
     5
-    >>> nx.edge_connectivity(G, 3, 7, flow_func=nx.shortest_augmenting_path)
+
+    If you specify a pair of nodes (source and target) as parameters,
+    this function returns the value of local edge connectivity.
+
+    >>> nx.edge_connectivity(G, 3, 7)
     5
+
+    If you need to perform several local computations among different
+    pairs of nodes on the same graph, it is recommended that you reuse
+    the data structures used in the maximum flow computations. See 
+    :meth:`local_edge_connectivity` for details.
 
     Notes
     -----
@@ -656,15 +686,9 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
     For directed graphs, the algorithm does n calls to the maximum 
     flow function. This is an implementation of algorithm 8 in [1]_ .
 
-    You can use alternative flow algorithms for the underlying 
-    maximum flow computation. In dense networks the algorithm 
-    :meth:`shortest_augmenting_path` will usually perform better 
-    than the default :meth:`edmonds_karp`, which is faster for 
-    sparse networks with highly skewed degree distributions.
-
     See also
     --------
-    :meth:`edge_connectivity`
+    :meth:`local_edge_connectivity`
     :meth:`local_node_connectivity`
     :meth:`node_connectivity`
     :meth:`maximum_flow`

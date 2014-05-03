@@ -2,14 +2,11 @@
 """
 Flow based cut algorithms
 """
-# http://www.informatik.uni-augsburg.de/thi/personen/kammer/Graph_Connectivity.pdf
-# http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
 import itertools
-
 import networkx as nx
 
 # Define the default maximum flow function to use in all flow based
-# connectivity algorithms. 
+# cut algorithms.
 from networkx.algorithms.flow import edmonds_karp
 from networkx.algorithms.flow import shortest_augmenting_path
 from networkx.algorithms.flow.utils import build_residual_network
@@ -30,8 +27,8 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity', flow_func=None,
                         residual=None):
     """Returns the edges of the cut-set of a minimum (s, t)-cut.
 
-    We use the max-flow min-cut theorem, i.e., the capacity of a minimum
-    capacity cut is equal to the flow value of a maximum flow.
+    This function returns the set of edges of minimum cardinality that,
+    if removed, would destroy all paths among source and target in G.
 
     Parameters
     ----------
@@ -69,7 +66,7 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity', flow_func=None,
     Returns
     -------
     cutset : set
-        Set of edges that, if removed from the graph, will disconnect it
+        Set of edges that, if removed from the graph, will disconnect it.
 
     Raises
     ------
@@ -79,13 +76,13 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity', flow_func=None,
 
     See also
     --------
-    :meth:`maximum_flow`
     :meth:`minimum_cut`
     :meth:`minimum_node_cut`
     :meth:`minimum_edge_cut`
     :meth:`stoer_wagner`
     :meth:`node_connectivity`
     :meth:`edge_connectivity`
+    :meth:`maximum_flow`
     :meth:`edmonds_karp`
     :meth:`preflow_push`
     :meth:`shortest_augmenting_path`
@@ -106,6 +103,16 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity', flow_func=None,
     [('c', 'y'), ('x', 'b')]
     >>> cut_value = nx.minimum_cut_value(G, 'x', 'y')
     >>> cut_value == sum(G[u][v]['capacity'] for u, v in cutset)
+    True
+
+    You can also use alternative flow algorithms for the underlying 
+    maximum flow compution. For instance, in dense networks the 
+    algorithm :meth:`shortest_augmenting_path` will usually perform 
+    better than the default :meth:`edmonds_karp` which is faster for
+    sparse network with highly skewed degree distributions:
+
+    >>> cutset == nx.minimum_edge_cut(G, 'x', 'y',
+    ...                               flow_func=nx.shortest_augmenting_path)
     True
 
     """
@@ -151,15 +158,15 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
         a source node, and a target node. And return a residual network 
         that follows NetworkX conventions (see :meth:`maximum_flow` for 
         details). If flow_func is None, the default maximum flow function 
-        (:meth:`edmonds_karp`) is used. See :meth:`node_connectivity` for
-        details. The choice of the default function may change from version
-        to version and should not be relied on. Default value: None.
+        (:meth:`edmonds_karp`) is used. See below for details. The choice
+        of the default function may change from version to version and 
+        should not be relied on. Default value: None.
 
     auxiliary : NetworkX DiGraph
         Auxiliary digraph to compute flow based node connectivity. It has
-        to have a graph attribute called mapping with a dictionary with a
-        mapping of node names in G and in the auxiliary digraph. If None
-        the auxiliary digraph is build. Default value: None.
+        to have a graph attribute called mapping with a dictionary mapping
+        node names in G and in the auxiliary digraph. If provided
+        it will be reused instead of recreated. Default value: None.
 
     residual : NetworkX DiGraph
         Residual network to compute maximum flow. If provided it will be
@@ -178,11 +185,14 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     >>> len(nx.minimum_st_node_cut(G, 0, 6))
     5
 
-    If you need to compute local st cuts on several pairs of
+    If you need to compute local st cuts between several pairs of
     nodes in the same graph, it is recommended that you reuse the
-    data structures that NetworkX uses for computing the maximum 
-    flow and the node connectivity: the auxiliary digraph for
-    node connectivity, and the residual network for maximum flow:
+    data structures that NetworkX uses in the computation: the
+    auxiliary digraph for node connectivity and node cuts, and the
+    residual network for the underlying maximum flow computation.
+
+    Example of how to compute local st node cuts reusing the data
+    structures:
 
     >>> # Import the function for building the auxiliary digraph
     >>> from networkx.algorithms.connectivity.utils import (
@@ -190,17 +200,18 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     >>> H = build_auxiliary_node_connectivity(G)
     >>> # Import the function for building the resudual network
     >>> from networkx.algorithms.flow.utils import build_residual_network
+    >>> # Note that the auxiliary digraph has an edge attribute named capacity
     >>> R = build_residual_network(H, 'capacity')
-    >>> # You can reuse them by passing them as parameters
-    >>> kwargs = dict(auxiliary=H, residual=R) 
-    >>> len(nx.minimum_st_node_cut(G, 0, 6, **kwargs))
+    >>> # Reuse the auxiliary digraph and the residual network by passing them
+    >>> # as parameters
+    >>> len(nx.minimum_st_node_cut(G, 0, 6, auxiliary=H, residual=R))
     5
 
-    You can also use alternative flow algorithms for computing 
+    You can also use alternative flow algorithms for computing minimum st
     node cuts. For instance, in dense networks the algorithm
     :meth:`shortest_augmenting_path` will usually perform better than
-    the default :meth:`edmonds_karp` which is faster for sparse 
-    network with highly skewed degree distributions:
+    the default :meth:`edmonds_karp` which is faster for sparse
+    networks with highly skewed degree distributions.
 
     >>> len(nx.minimum_st_node_cut(G, 0, 6, flow_func=nx.shortest_augmenting_path))
     5
@@ -208,14 +219,11 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     Notes
     -----
     This is a flow based implementation of minimum node cut. The algorithm
-    is based in solving a number of max-flow problems (ie local st-node
-    connectivity, see :meth:`local_node_connectivity`) to determine the 
-    capacity of the minimum cut on an auxiliary directed network that 
-    corresponds to the minimum node cut of G. It handles both directed 
-    and undirected graphs.
-
-    This implementation is based on algorithm 11 in [1]_. We use the Ford
-    and Fulkerson algorithm to compute max flow (see ford_fulkerson).
+    is based in solving a number of maximum flow computations to determine
+    the capacity of the minimum cut on an auxiliary directed network that
+    corresponds to the minimum node cut of G. It handles both directed
+    and undirected graphs. This implementation is based on algorithm 11 
+    in [1]_.
 
     See also
     --------
@@ -294,23 +302,9 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     --------
     >>> # Platonic icosahedral graph has node connectivity 5
     >>> G = nx.icosahedral_graph()
-    >>> len(nx.minimum_node_cut(G))
+    >>> node_cut = nx.minimum_node_cut(G)
+    >>> len(node_cut)
     5
-    >>> # this is the minimum over any pair of non adjacent nodes
-    >>> from itertools import combinations
-    >>> for u,v in combinations(G, 2):
-    ...     if v not in G[u]:
-    ...         assert(len(nx.minimum_node_cut(G,u,v)) == 5)
-    ...
-
-    Notes
-    -----
-    This is a flow based implementation of minimum node cut. The algorithm
-    is based in solving a number of max-flow problems (ie local st-node
-    connectivity, see local_node_connectivity) to determine the capacity
-    of the minimum cut on an auxiliary directed network that corresponds
-    to the minimum node cut of G. It handles both directed and undirected
-    graphs. This implementation is based on algorithm 11 in [1]_.
 
     You can use alternative flow algorithms for the underlying maximum
     flow computation. In dense networks the algorithm
@@ -318,9 +312,33 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     than the default :meth:`edmonds_karp`, which is faster for
     sparse networks with highly skewed degree distributions.
 
+    >>> node_cut == nx.minimum_node_cut(G, flow_func=nx.shortest_augmenting_path)
+    True
+
+    If you specify a pair of nodes (source and target) as parameters,
+    this function returns a local st node cut.
+
+    >>> len(nx.minimum_node_cut(G, 3, 7))
+    5
+
+    If you need to perform several local st cuts among different
+    pairs of nodes on the same graph, it is recommended that you reuse
+    the data structures used in the maximum flow computations. See 
+    :meth:`minimum_st_node_cut` for details.
+
+    Notes
+    -----
+    This is a flow based implementation of minimum node cut. The algorithm
+    is based in solving a number of maximum flow computations to determine
+    the capacity of the minimum cut on an auxiliary directed network that
+    corresponds to the minimum node cut of G. It handles both directed
+    and undirected graphs. This implementation is based on algorithm 11 
+    in [1]_.
+
     See also
     --------
-    :meth:`minimum_node_cut`
+    :meth:`minimum_st_node_cut`
+    :meth:`minimum_cut`
     :meth:`minimum_edge_cut`
     :meth:`stoer_wagner`
     :meth:`node_connectivity`
@@ -336,7 +354,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
 
     """
-    # Local minimum node cut
+    # Local minimum node cut.
     if s is not None and t is not None:
         if s not in G:
             raise nx.NetworkXError('node %s not in graph' % s)
@@ -344,8 +362,8 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
             raise nx.NetworkXError('node %s not in graph' % t)
         return minimum_st_node_cut(G, s, t, flow_func=flow_func)
 
-    # Global minimum node cut
-    # Analog to the algoritm 11 for global node connectivity in [1]
+    # Global minimum node cut.
+    # Analog to the algoritm 11 for global node connectivity in [1].
     if G.is_directed():
         if not nx.is_weakly_connected(G):
             raise nx.NetworkXError('Input graph is not connected')
@@ -359,22 +377,22 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         iter_func = itertools.combinations
         neighbors = G.neighbors_iter
 
-    # Reuse the auxiliary digraph and the residual network
+    # Reuse the auxiliary digraph and the residual network.
     H = build_auxiliary_node_connectivity(G)
     R = build_residual_network(H, 'capacity')
     kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
-    # Choose a node with minimum degree
+    # Choose a node with minimum degree.
     deg = G.degree()
     v = next(n for n, d in deg.items() if d == min(deg.values()))
-    # Initial node cutset is all neighbors of the node with minimum degree
+    # Initial node cutset is all neighbors of the node with minimum degree.
     min_cut = set(G[v])
-    # compute st node cuts between v and all its non-neighbors nodes in G
+    # Compute st node cuts between v and all its non-neighbors nodes in G.
     for w in set(G) - set(neighbors(v)) - set([v]):
         this_cut = minimum_st_node_cut(G, v, w, **kwargs)
         if len(min_cut) >= len(this_cut):
             min_cut = this_cut
-    # Same for non adjacent pairs of neighbors of v
+    # Also for non adjacent pairs of neighbors of v.
     for x, y in iter_func(neighbors(v), 2):
         if y in G[x]:
             continue
@@ -383,6 +401,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
             min_cut = this_cut
 
     return min_cut
+
 
 def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     r"""Returns a set of edges of minimum cardinality that disconnects G.
@@ -425,11 +444,26 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     >>> G = nx.icosahedral_graph()
     >>> len(nx.minimum_edge_cut(G))
     5
-    >>> # this is the minimum over any pair of nodes
-    >>> from itertools import combinations
-    >>> for u,v in combinations(G, 2):
-    ...     assert(len(nx.minimum_edge_cut(G,u,v)) == 5)
-    ...
+
+    You can use alternative flow algorithms for the underlying 
+    maximum flow computation. In dense networks the algorithm 
+    :meth:`shortest_augmenting_path` will usually perform better 
+    than the default :meth:`edmonds_karp`, which is faster for 
+    sparse networks with highly skewed degree distributions.
+
+    >>> len(nx.minimum_edge_cut(G, flow_func=nx.shortest_augmenting_path))
+    5
+
+    If you specify a pair of nodes (source and target) as parameters,
+    this function returns the value of local edge connectivity.
+
+    >>> nx.edge_connectivity(G, 3, 7)
+    5
+
+    If you need to perform several local computations among different
+    pairs of nodes on the same graph, it is recommended that you reuse
+    the data structures used in the maximum flow computations. See 
+    :meth:`local_edge_connectivity` for details.
 
     Notes
     -----
@@ -441,16 +475,10 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     directed graphs, the algorithm does n calls to the max flow function.
     It is an implementation of algorithm 8 in [1]_.
 
-    You can use alternative flow algorithms for the underlying 
-    maximum flow computation. In dense networks the algorithm 
-    :meth:`shortest_augmenting_path` will usually perform better 
-    than the default :meth:`edmonds_karp`, which is faster for 
-    sparse networks with highly skewed degree distributions.
-
     See also
     --------
+    :meth:`minimum_st_edge_cut`
     :meth:`minimum_node_cut`
-    :meth:`minimum_edge_cut`
     :meth:`stoer_wagner`
     :meth:`node_connectivity`
     :meth:`edge_connectivity`
@@ -477,6 +505,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
         if t not in G:
             raise nx.NetworkXError('node %s not in graph' % t)
         return minimum_st_edge_cut(H, s, t, **kwargs)
+
     # Global minimum edge cut
     # Analog to the algoritm for global edge connectivity
     if G.is_directed():
@@ -499,6 +528,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
                 this_cut = minimum_st_edge_cut(H, nodes[i], nodes[0], **kwargs)
                 if len(this_cut) <= len(min_cut):
                     min_cut = this_cut
+
         return min_cut
 
     else: # undirected
