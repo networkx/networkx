@@ -53,7 +53,7 @@ install:
   - sudo apt-get update -qq
   - if [ "${OPTIONAL_DEPS}" == "true" ]; then sudo apt-get install graphviz; fi
   - if [ "${OPTIONAL_DEPS}" == "true" ]; then pip install --use-wheel pyyaml pyparsing; fi
-  - if [[ "${TRAVIS_PYTHON_VERSION}" == 2* ]]; then pip install pygraphviz; fi
+  - if [[ "${OPTIONAL_DEPS}" == "true" && "${TRAVIS_PYTHON_VERSION}" == 2* ]]; then pip install pygraphviz; fi
   - if [ "${OPTIONAL_DEPS}" == "true" ]; then $PIPINSTALL numpy scipy matplotlib Cython; fi
 
   # Try to install latest and greatest from source.
