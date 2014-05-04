@@ -262,7 +262,7 @@ should be numeric and holds values used by algorithms requiring weighted edges.
 Directed graphs
 ---------------
 
-The DiGraph class provides additional methods specific to directed
+The :class:`DiGraph` class provides additional methods specific to directed
 edges, e.g. 
 :meth:`DiGraph.out_edges`, 
 :meth:`DiGraph.in_degree`, 
