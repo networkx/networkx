@@ -31,7 +31,7 @@ env:
   global:
     # Install from wheels *only*.
     - PIPINSTALL="pip install -v --use-wheel --no-index --find-links=http://wheels.astropy.org --find-links=http://wheels2.astropy.org"
-
+    - NXOPTDEPS=""
   matrix:
     - OPTIONAL_DEPS=true
     - OPTIONAL_DEPS=false
@@ -52,12 +52,12 @@ install:
   # Skipping gdal (errors during pip installs)
   - sudo apt-get update -qq
   - if [ "${OPTIONAL_DEPS}" == "true" ]; then sudo apt-get install graphviz; fi
-  - if [ "${OPTIONAL_DEPS}" == "true" ]; then pip install --use-wheel pyyaml pyparsing; fi
+  - if [ "${OPTIONAL_DEPS}" == "true" ]; then pip install --use-wheel pyyaml pyparsing pygraphviz; fi
   - if [ "${OPTIONAL_DEPS}" == "true" ]; then $PIPINSTALL numpy scipy matplotlib Cython; fi
 
   # Try to install latest and greatest from source.
   - if [ "${FROM_SOURCE}" == "true" ]; then sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran; fi
-  - if [ "${FROM_SOURCE}" == "true" ]; then pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython; fi
+  - if [ "${FROM_SOURCE}" == "true" ]; then pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython pygraphviz; fi
 
 
 before_script:
