@@ -1,4 +1,8 @@
+# After changing this file, check it on:
+#   http://lint.travis-ci.org/
+#
 language: python
+
 python:
   - "2.6"
   - "2.7"
@@ -6,44 +10,72 @@ python:
   - "3.3"
   - "3.4"
   - "pypy"
+
+matrix:
+  fast_finish: true
+
+  include:
+    - python: "3.4"
+      env: FROM_SOURCE=true
+
+
+  allow_failures:
+    # 3.4 and pypy Wheels are not yet available.
+    - python: "3.4"
+      env: OPTIONAL_DEPS=true
+    - python: "pypy"
+      env: OPTIONAL_DEPS=true
+    - env: FROM_SOURCE=true
+
+env:
+  global:
+    # Install from wheels *only*.
+    - PIPINSTALL="pip install -v --use-wheel --no-index --find-links=http://wheels.astropy.org --find-links=http://wheels2.astropy.org"
+    - NXOPTDEPS=""
+  matrix:
+    - OPTIONAL_DEPS=true
+    - OPTIONAL_DEPS=false
+
 before_install:
-  # Current TravisCI VM is Ubuntu 12.04 which has Python 2.7 and 3.2.
-  # So apt-get will only apply to those virtualenvs.
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then source ~/virtualenv/python2.7_with_system_site_packages/bin/activate; sudo apt-get install -qq python-numpy python-scipy python-matplotlib python-pydot python-gdal cython libsuitesparse-dev; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then source ~/virtualenv/python3.2_with_system_site_packages/bin/activate; sudo apt-get install -qq python3-numpy python3-scipy libsuitesparse-dev; fi
+  ### Prepare the system to install prerequisites or dependencies
+  - uname -a
+  - printenv
+  - pip install --upgrade setuptools
+  - pip install --upgrade pip
+  - pip install wheel
+  - pip --version
 
-  # Additionally, the TravisCI VM has numpy preinstalled on 2.6, 2.7 and 3.2.
-  # So for 3.3 and pypy, numpy is not preinstalled and must be pip-installed.
-  # Matplotlib, pydot, and gdal are not available for 3.2 via apt-get.
-  # And they are also not available for 2.6, 3.3, and pypy except via pip.
-  # We could install via pip, but...
-  #   skipping numpy (for 3.3 and pypy) since it takes too long.
-  #   skipping scipy (for 2.6, 3.3, and pypy) since it takes too long.
-  #   skipping matplotlib (for 2.6, 3.3, and pypy) since it takes too long.
-  #   skipping pydot (for all) since it is not 3.x compatible.
-  #   skipping gdal (for all) since it has errors while installing from pip.
+install:
+  ### Install any prerequisites or dependencies necessary to run the build.
 
-  - pip install pyyaml --use-mirrors
-  - pip install pyparsing --use-mirrors
-  - pip install coveralls --use-mirrors
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install scikits.sparse; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install Cython; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install scikits.sparse; fi
+  # Skipping pydot (not 3.x compatible)
+  # Skipping gdal (errors during pip installs)
+  - sudo apt-get update -qq
+  - if [ "${OPTIONAL_DEPS}" == "true" ]; then sudo apt-get install graphviz libsuitesparse-dev; fi
+  - if [ "${OPTIONAL_DEPS}" == "true" ]; then pip install --use-wheel pyyaml pyparsing; fi
+  - if [[ "${OPTIONAL_DEPS}" == 2* ]]; then pip install pygraphviz; fi
+  - if [ "${OPTIONAL_DEPS}" == "true" ]; then $PIPINSTALL numpy scipy matplotlib Cython; fi
 
-  # In general, 2.6, 3.2, 3.3, and pypy will have lower coverage levels
-  # due to missing dependencies.  The coverage level reported by coveralls
-  # is the average coverage level over all builds.
+  # Try to install latest and greatest from source.
+  - if [ "${FROM_SOURCE}" == "true" ]; then sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran; fi
+  - if [ "${FROM_SOURCE}" == "true" ]; then pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython; fi
+
+
+before_script:
+  ### Use this to prepare your build for testing
+  - pip install --upgrade nose
+  - pip install --upgrade coverage
+  - pip install --upgrade coveralls
 
 script:
-  # Install networkx
   - printenv PWD
   - pip install .
 
   - export NX_INSTALL=`pip show networkx | grep Location | awk '{print $2"/networkx"}'`
 
-  ### nose 1.3.0 does not tell coverage to only cover the requested
-  ### package (except during the report).  So to restrict coverage, we must
-  ### inform coverage through the .coveragerc file.
+  # nose 1.3.0 does not tell coverage to only cover the requested
+  # package (except during the report).  So to restrict coverage, we must
+  # inform coverage through the .coveragerc file.
   - cp .coveragerc $NX_INSTALL
   - cp setup.cfg $NX_INSTALL
 
@@ -60,10 +92,13 @@ script:
   - nosetests --verbosity=2 --with-coverage --cover-package=networkx
 
 after_success:
-  # We must run coveralls from the git repo.
-  # But we ran tests from the installed directory.
-  # The .coverage file looks like it contains absolute paths,
-  # but coveralls does not seem to care.
+  # We must run coveralls from the git repo. But we ran tests from the
+  # installed directory. The .coverage file looks like it contains absolute
+  # paths, but coveralls does not seem to care.
   - cp .coverage $TRAVIS_BUILD_DIR
   - cd $TRAVIS_BUILD_DIR
+  # Report coverage for 2.7 only.
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coveralls; fi
+
+notifications:
+  email: false
