@@ -33,15 +33,14 @@ class _PCGSolver(object):
     """Preconditioned conjugate gradient method.
     """
 
-    def __init__(self, A, M, tol):
+    def __init__(self, A, M):
         self._A = A
         self._M = M or (lambda x: x)
-        self._tol = tol
 
-    def solve(self, b):
+    def solve(self, b, tol):
         A = self._A
         M = self._M
-        tol = self._tol * norm(b, 1)
+        tol *= norm(b, 1)
         # Initialize.
         x = zeros(b.shape)
         r = b.copy()
@@ -72,7 +71,7 @@ class _LUSolver(object):
             raise nx.NetworkXError('LU solver unavailable.')
         self._LU = self._splu(A)
 
-    def solve(self, b):
+    def solve(self, b, tol):
         return self._LU.solve(b)
 
     try:
@@ -159,7 +158,7 @@ def _tracemin_fiedler(L, X, normalized, tol, solver):
 
     if solver is None or solver == 'pcg':
         M = (1. / L.diagonal()).__mul__
-        solver = _PCGSolver(L, M, tol / 10)
+        solver = _PCGSolver(L, M)
     elif solver == 'lu':
         # Convert A to CSC to suppress SparseEfficiencyWarning.
         A = csc_matrix(L, dtype=float, copy=True)
@@ -176,6 +175,8 @@ def _tracemin_fiedler(L, X, normalized, tol, solver):
     if normalized:
         L = NL
     Lnorm = abs(L).sum(axis=1).flatten().max()
+    # Tolerance of linear system solver.
+    ls_tol = 0.1
 
     # Initialize eigenvectors.
     project(X)
@@ -190,8 +191,10 @@ def _tracemin_fiedler(L, X, normalized, tol, solver):
         # Test for convergence.
         if not first:
             x = asarray(X)[:, 0]
-            if norm(L * x - sigma[0] * x, 1) < tol * Lnorm:
+            res = norm(L * x - sigma[0] * x, 1) / Lnorm
+            if res < tol:
                 break
+            ls_tol = min(ls_tol, 0.1 * res)
         else:
             first = False
         # Compute Ritz vectors.
@@ -199,10 +202,10 @@ def _tracemin_fiedler(L, X, normalized, tol, solver):
         # Solve saddle point problem using the Schur complement.
         if not normalized:
             for j in range(q):
-                asarray(W)[:, j] = solver.solve(asarray(X)[:, j])
+                asarray(W)[:, j] = solver.solve(asarray(X)[:, j], ls_tol)
         else:
             for j in range(q):
-                asarray(W)[:, j] = D * solver.solve(D * asarray(X)[:, j])
+                asarray(W)[:, j] = D * solver.solve(D * asarray(X)[:, j], ls_tol)
         project(W)
         S = X.T * W  # Schur complement
         N = solve(S, X.T * X, overwrite_a=True, overwrite_b=True)
@@ -218,7 +221,8 @@ def _get_fiedler_func(method):
     if match:
         method = match.group(1)
         def find_fiedler(L, x, normalized, tol):
-            X = asmatrix(normal(size=(2, L.shape[0]))).T
+            q = 2 if method == 'pcg' else min(4, L.shape[0] - 1)
+            X = asmatrix(normal(size=(q, L.shape[0]))).T
             sigma, X = _tracemin_fiedler(L, X, normalized, tol, method)
             return sigma[0], X[:, 0]
     elif method == 'lanczos' or method == 'lobpcg':
