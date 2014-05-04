@@ -60,6 +60,9 @@ install:
   - if [ "${FROM_SOURCE}" == "true" ]; then sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran; fi
   - if [ "${FROM_SOURCE}" == "true" ]; then pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython; fi
 
+  # Install stuff that depends on Cython.
+  - if [ "${OPTIONAL_DEPS}" == "true" ]; then pip install scikits.sparse; fi
+
 
 before_script:
   ### Use this to prepare your build for testing
