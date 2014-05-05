@@ -15,8 +15,8 @@ from networkx.utils import reverse_cuthill_mckee_ordering
 from re import compile
 
 try:
-    from numpy import (array, asmatrix, asarray, dot, matrix, ndarray, reshape,
-                       sqrt, zeros)
+    from numpy import (array, asmatrix, asarray, dot, matrix, ndarray, ones,
+                       reshape, sqrt, zeros)
     from numpy.linalg import norm
     from numpy.random import normal
     from scipy.linalg import eigh, solve
@@ -238,13 +238,16 @@ def _get_fiedler_func(method):
                 # https://github.com/scipy/scipy/pull/3594
                 sigma, X = eigsh(L, 2, which='SM', tol=tol,
                                  return_eigenvectors=True)
+                return sigma[1], X[:, 1]
             else:
-                X = ndarray((n, 2), dtype=float)
-                X[:, 0] = 1.
-                X[:, 1] = x
+                X = asarray(asmatrix(x).T)
                 M = spdiags(1. / L.diagonal(), [0], n, n)
-                sigma, X = lobpcg(L, X, M=M, tol=tol, maxiter=n, largest=False)
-            return sigma[1], X[:, 1]
+                Y = ones(n)
+                if normalized:
+                    Y /= D.diagonal()
+                sigma, X = lobpcg(L, X, M=M, Y=asmatrix(Y).T, tol=tol,
+                                  maxiter=n, largest=False)
+                return sigma[0], X[:, 0]
     else:
         raise nx.NetworkXError("unknown method '%s'." % method)
 
