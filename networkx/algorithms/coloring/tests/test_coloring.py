@@ -15,210 +15,210 @@ class TestColoring:
 ############################## RS tests ##############################
     def test_rs_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
         assert_true(verify_length(coloring, 0))
         assert_true(verify_coloring(graph, coloring))
 
     def test_rs_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
         assert_true(verify_length(coloring, 1))
         assert_true(verify_coloring(graph, coloring))
 
     def test_rs_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
         assert_true(verify_length(coloring, 2))
         assert_true(verify_coloring(graph, coloring))
 
     def test_rs_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 
     def test_rs_shc(self):
         graph = rs_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
         assert_true(verify_length(coloring, 2) or verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 
 ############################## SLF tests ##############################
     def test_slf_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
         assert_true(verify_length(coloring, 0))
         assert_true(verify_coloring(graph, coloring))
 
     def test_slf_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
         assert_true(verify_length(coloring, 1))
         assert_true(verify_coloring(graph, coloring))
 
     def test_slf_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
         assert_true(verify_length(coloring, 2))
         assert_true(verify_coloring(graph, coloring))
 
     def test_slf_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 
     def test_slf_shc(self):
         graph = slf_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
         assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
 
     def test_slf_hc(self):
         graph = slf_hc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
         assert_true(verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
 
 ############################## LF tests ##############################
     def test_lf_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
         assert_true(verify_length(coloring, 0))
         assert_true(verify_coloring(graph, coloring))
 
     def test_lf_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
         assert_true(verify_length(coloring, 1))
         assert_true(verify_coloring(graph, coloring))
 
     def test_lf_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
         assert_true(verify_length(coloring, 2))
         assert_true(verify_coloring(graph, coloring))
 
     def test_lf_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 
     def test_lf_shc(self):
         graph = lf_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
         assert_true(verify_length(coloring, 2) or verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
         
     def test_lf_hc(self):
         graph = lf_hc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
         assert_true(verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
 
 ############################## SL tests ##############################
     def test_sl_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
         assert_true(verify_length(coloring, 0))
         assert_true(verify_coloring(graph, coloring))
 
     def test_sl_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
         assert_true(verify_length(coloring, 1))
         assert_true(verify_coloring(graph, coloring))
 
     def test_sl_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
         assert_true(verify_length(coloring, 2))
         assert_true(verify_coloring(graph, coloring))
 
     def test_sl_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 
     def test_sl_shc(self):
         graph = sl_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
         assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
     
     def test_sl_hc(self):
         graph = sl_hc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
         assert_true(verify_length(coloring, 5))
         assert_true(verify_coloring(graph, coloring))
         
 ############################## GIS tests ##############################
     def test_gis_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
         assert_true(verify_length(coloring, 0))
         assert_true(verify_coloring(graph, coloring))
 
     def test_gis_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
         assert_true(verify_length(coloring, 1))
         assert_true(verify_coloring(graph, coloring))
 
     def test_gis_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
         assert_true(verify_length(coloring, 2))
         assert_true(verify_coloring(graph, coloring))
 
     def test_gis_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 
     def test_gis_shc(self):
         graph = gis_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
         assert_true(verify_length(coloring, 2) or verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 
     def test_gis_hc(self):
         graph = gis_hc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 
 ############################## CS tests ##############################
     def test_cs_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
         assert_true(verify_length(coloring, 0))
         assert_true(verify_coloring(graph, coloring))
 
     def test_cs_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
         assert_true(verify_length(coloring, 1))
         assert_true(verify_coloring(graph, coloring))
 
     def test_cs_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
         assert_true(verify_length(coloring, 2))
         assert_true(verify_coloring(graph, coloring))
 
     def test_cs_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 
     def test_cs_shc(self):
         graph = cs_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
         assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
 
@@ -226,100 +226,100 @@ class TestColoring:
 # RSI
     def test_rsi_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
         assert_true(verify_length(coloring, 0))
         assert_true(verify_coloring(graph, coloring))
 
     def test_rsi_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
         assert_true(verify_length(coloring, 1))
         assert_true(verify_coloring(graph, coloring))
 
     def test_rsi_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
         assert_true(verify_length(coloring, 2))
         assert_true(verify_coloring(graph, coloring))
 
     def test_rsi_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 
     def test_rsi_rsshc(self):
         graph = rs_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
         assert_true(verify_length(coloring, 2))
         assert_true(verify_coloring(graph, coloring))
 
     def test_rsi_shc(self):
         graph = rsi_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
         assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
 # SLFI
     def test_slfi_slfshc(self):
         graph = oneNodeGraph()
-        assert_raises(nx.NetworkXPointlessConcept, nx.coloring.greedy_coloring, graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=True)
+        assert_raises(nx.NetworkXPointlessConcept, nx.coloring.greedy_color, graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=True)
 
 # LFI
     def test_lfi_lfshc(self):
         graph = lf_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
         assert_true(verify_length(coloring, 2))
         assert_true(verify_coloring(graph, coloring))        
     
     def test_lfi_lfhc(self):
         graph = lf_hc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
         
     def test_lfi_shc(self):
         graph = lfi_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
         assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
 
     def test_lfi_hc(self):
         graph = lfi_hc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
         assert_true(verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
 # SLI
     def test_sli_slshc(self):
         graph = sl_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
     
     def test_sli_slhc(self):
         graph = sl_hc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
         assert_true(verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
         
     def test_sli_shc(self):
         graph = sli_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
         assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
 
     def test_sli_hc(self):
         graph = sli_hc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
         assert_true(verify_length(coloring, 5))
         assert_true(verify_coloring(graph, coloring))
 #GISI
     def test_gisi_oneNode(self):
         graph = oneNodeGraph()
-        assert_raises(nx.NetworkXPointlessConcept, nx.coloring.greedy_coloring, graph, strategy=nx.coloring.strategy_independent_set, interchange=True)
+        assert_raises(nx.NetworkXPointlessConcept, nx.coloring.greedy_color, graph, strategy=nx.coloring.strategy_independent_set, interchange=True)
 # CS
     def test_csi_csshc(self):
         graph = cs_shc()
-        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=True)
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=True)
         assert_true(verify_length(coloring, 3))
         assert_true(verify_coloring(graph, coloring))
 

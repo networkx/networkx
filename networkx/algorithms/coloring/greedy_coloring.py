@@ -17,7 +17,7 @@ __author__ = "\n".join(["Christian Olsson <chro@itu.dk>",
                         "Jan Aagaard Meier <jmei@itu.dk>",
                         "Henrik Haugbølle <hhau@itu.dk>"])
 __all__ = [
-    'greedy_coloring',
+    'greedy_color',
     'strategy_largest_first',
     'strategy_random_sequential',
     'strategy_smallest_last',
@@ -205,14 +205,9 @@ corresponding coloring.
 Examples
 --------
 >>> G = nx.random_regular_graph(2, 4)
->>> d = nx.coloring(G, strategy='lf')
+>>> d = nx.coloring.greedy_color(G, strategy=nx.coloring.strategy_largest_first)
 >>> d
 {0: 0, 1: 1, 2: 0, 3: 1}
->>> s = nx.coloring(G, strategy='lf', returntype='sets')
->>> s
-[set([0, 2]), set([1, 3])]
->>> len(s)
-2
 
 References
 ----------
@@ -223,7 +218,7 @@ References
    Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983
    ISBN 0-486-45353-7
 """
-def greedy_coloring(G, strategy=strategy_largest_first, interchange=False):
+def greedy_color(G, strategy=strategy_largest_first, interchange=False):
     colors = dict() # dictionary to keep track of the colors of the nodes
 
     if len(G):
