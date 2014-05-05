@@ -16,16 +16,15 @@ matrix:
 
   include:
     - python: "3.4"
-      env: FROM_SOURCE=true
-
+      env: OPTIONAL_DEPS=source
 
   allow_failures:
     # 3.4 and pypy Wheels are not yet available.
     - python: "3.4"
-      env: OPTIONAL_DEPS=true
+      env: OPTIONAL_DEPS=pip
     - python: "pypy"
-      env: OPTIONAL_DEPS=true
-    - env: FROM_SOURCE=true
+      env: OPTIONAL_DEPS=pip
+    - env: OPTIONAL_DEPS=source
 
 env:
   global:
@@ -33,8 +32,8 @@ env:
     - PIPINSTALL="pip install -v --use-wheel --no-index --find-links=http://wheels.astropy.org --find-links=http://wheels2.astropy.org"
     - NXOPTDEPS=""
   matrix:
-    - OPTIONAL_DEPS=true
-    - OPTIONAL_DEPS=false
+    - OPTIONAL_DEPS=pip
+    - OPTIONAL_DEPS=no
 
 before_install:
   ### Prepare the system to install prerequisites or dependencies
@@ -51,15 +50,14 @@ install:
   # Skipping pydot (not 3.x compatible)
   # Skipping gdal (errors during pip installs)
   - sudo apt-get update -qq
-  - if [[ "${OPTIONAL_DEPS}" == "true" || "${FROM_SOURCE}" == "true" ]]; then sudo apt-get install graphviz; fi
-  - if [[ ( "${OPTIONAL_DEPS}" == "true" || "${FROM_SOURCE}" == "true" ) && "${TRAVIS_PYTHON_VERSION}" == 2* ]]; then pip install pygraphviz; fi
-  - if [ "${OPTIONAL_DEPS}" == "true" ]; then pip install --use-wheel pyyaml pyparsing; fi
-  - if [ "${OPTIONAL_DEPS}" == "true" ]; then $PIPINSTALL numpy scipy matplotlib Cython; fi
+  - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then sudo apt-get install graphviz; fi
+  - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\..(pip|source) ]]; then pip install pygraphviz; fi
+  - if [ "${OPTIONAL_DEPS}" == "pip" ]; then pip install --use-wheel pyyaml pyparsing; fi
+  - if [ "${OPTIONAL_DEPS}" == "pip" ]; then $PIPINSTALL numpy scipy matplotlib Cython; fi
 
   # Try to install latest and greatest from source.
-  - if [ "${FROM_SOURCE}" == "true" ]; then sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran; fi
-  - if [ "${FROM_SOURCE}" == "true" ]; then pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython; fi
-
+  - if [ "${OPTIONAL_DEPS}" == "source" ]; then sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran; fi
+  - if [ "${OPTIONAL_DEPS}" == "source" ]; then pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython; fi
 
 before_script:
   ### Use this to prepare your build for testing
@@ -97,8 +95,8 @@ after_success:
   # paths, but coveralls does not seem to care.
   - cp .coverage $TRAVIS_BUILD_DIR
   - cd $TRAVIS_BUILD_DIR
-  # Report coverage for 2.7 only.
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coveralls; fi
+  # Report coverage for 2.7 and 3.4 only.
+  - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7pip|3\.4source ]]; then coveralls; fi
 
 notifications:
   email: false
