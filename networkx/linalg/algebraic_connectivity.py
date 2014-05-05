@@ -259,12 +259,13 @@ def _get_fiedler_func(method):
                                  return_eigenvectors=True)
                 return sigma[1], X[:, 1]
             else:
+                X = asarray(asmatrix(x).T)
                 M = spdiags(1. / L.diagonal(), [0], n, n)
                 Y = ones(n)
                 if normalized:
                     Y /= D.diagonal()
-                sigma, X = lobpcg(L, asmatrix(x).T, M=M, Y=asmatrix(Y).T,
-                                  tol=tol, maxiter=n, largest=False)
+                sigma, X = lobpcg(L, X, M=M, Y=asmatrix(Y).T, tol=tol,
+                                  maxiter=n, largest=False)
                 return sigma[0], X[:, 0]
     else:
         raise nx.NetworkXError("unknown method '%s'." % method)
