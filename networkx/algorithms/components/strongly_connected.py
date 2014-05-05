@@ -311,7 +311,9 @@ def condensation(G, scc=None):
     C : NetworkX DiGraph
        The condensation of G. The node labels are integers corresponding
        to the index of the component in the list of strongly connected
-       components.
+       components. It has a graph attribute named 'mapping' with a
+       dictionary mapping the original nodes to the nodes in the
+       condensation graph (ie SCC) to which they belong.
 
     Raises
     ------
@@ -334,4 +336,6 @@ def condensation(G, scc=None):
     for u,v in G.edges():
         if mapping[u] != mapping[v]:
             C.add_edge(mapping[u],mapping[v])
+    # Add mapping dict as graph attribute
+    C.graph['mapping'] = mapping
     return C
