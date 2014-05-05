@@ -1,4 +1,7 @@
 import networkx as nx
+import itertools
+
+__all__ = ['greedy_coloring_with_interchange']
 
 class Node(object):
 
@@ -11,23 +14,24 @@ class Node(object):
         self.adj_color = [None for _ in range(n)]
 
     def __repr__(self):
-        return "Node_id: {0}, Color: {2}, Adj_list: ({3}), adj_color: ({4})".format(
+        return "Node_id: {0}, Color: {1}, Adj_list: ({2}), \
+            adj_color: ({3})".format(
             self.node_id, self.color, self.adj_list, self.adj_color)
 
-    def assign_color(self, adjEntry, color):
-        adjEntry.col_prev = None
-        adjEntry.col_next = self.adj_color[color]
-        self.adj_color[color] = adjEntry
-        if adjEntry.col_next != None:
-            adjEntry.col_next.col_prev = adjEntry
+    def assign_color(self, adj_entry, color):
+        adj_entry.col_prev = None
+        adj_entry.col_next = self.adj_color[color]
+        self.adj_color[color] = adj_entry
+        if adj_entry.col_next != None:
+            adj_entry.col_next.col_prev = adj_entry
 
-    def clear_color(self, adjEntry, color):
-        if adjEntry.col_prev == None:
-            self.adj_color[color] = adjEntry.col_next
+    def clear_color(self, adj_entry, color):
+        if adj_entry.col_prev == None:
+            self.adj_color[color] = adj_entry.col_next
         else:
-            adjEntry.col_prev.col_next = adjEntry.col_next
-        if adjEntry.col_next != None:
-            adjEntry.col_next.col_prev = adjEntry.col_prev
+            adj_entry.col_prev.col_next = adj_entry.col_next
+        if adj_entry.col_next != None:
+            adj_entry.col_next.col_prev = adj_entry.col_prev
 
     def iter_neighbors(self):
         adj_node = self.adj_list
@@ -38,7 +42,7 @@ class Node(object):
     def iter_neighbors_color(self, color):
         adj_color_node = self.adj_color[color]
         while adj_color_node != None:
-            yield adj_color_node
+            yield adj_color_node.node_id
             adj_color_node = adj_color_node.col_next
 
 class AdjEntry(object):
@@ -53,14 +57,22 @@ class AdjEntry(object):
         self.col_prev = None
 
     def __repr__(self):
-        return "Node_id: {0}, Next: ({1}), Mate: ({2}), col_next: ({3}), col_prev: ({4})".format(
-            self.node_id, self.next, self.mate.node_id, None if self.col_next == None else self.col_next.node_id, None if self.col_prev == None else self.col_prev.node_id)
+        return "Node_id: {0}, Next: ({1}), Mate: ({2}), \
+            col_next: ({3}), col_prev: ({4})".format(
+            self.node_id,
+            self.next,
+            self.mate.node_id,
+            None if self.col_next == None else self.col_next.node_id,
+            None if self.col_prev == None else self.col_prev.node_id
+        )
 
 """
-    This procedure is an adaption of the algorithm described by [1], and is an implementation of 
-    coloring with interchange. Please be advised, that the datastructures used are rather complex
-    because they are optimized to minimize the time spent identifying sub-components of the graph,
-    which are possible candidates for color interchange.
+    This procedure is an adaption of the algorithm described by [1],
+    and is an implementation of coloring with interchange. Please be 
+    advised, that the datastructures used are rather complex because 
+    they are optimized to minimize the time spent identifying sub-
+    components of the graph, which are possible candidates for color 
+    interchange.
 
 References
 ----------
@@ -68,11 +80,12 @@ References
     Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983
     ISBN 0-486-45353-7
 """
-def coloring_with_interchange(original_graph, nodes, returntype):
+def greedy_coloring_with_interchange(original_graph, nodes):
     n = len(original_graph)
-    graph = {}
-    for node_id in original_graph.nodes_iter():
-        graph[node_id] = Node(node_id, n)
+
+    graph = dict(
+        (node_id, Node(node_id, n)) for node_id in original_graph.nodes_iter())
+
     for (node1, node2) in original_graph.edges_iter():
         adj_entry1 = AdjEntry(node2)
         adj_entry2 = AdjEntry(node1)
@@ -87,15 +100,13 @@ def coloring_with_interchange(original_graph, nodes, returntype):
 
     k = 0
     for node in nodes:
-        # Find the color with the lowest possible value
-        k1 = 0
-        col_used = [0 for i in range(k+2)]
-        for adj_node in graph[node].iter_neighbors():
-            col = graph[adj_node.node_id].color
-            if col != -1:
-                col_used[col] = 1
-        while col_used[k1] != 0:
-            k1 += 1
+        # Find the smallest possible, unused color
+        neighbors = graph[node].iter_neighbors()
+        col_used = set(
+            graph[adj_node.node_id].color for adj_node in neighbors)
+        col_used.discard(-1)
+        k1 = next(itertools.dropwhile(
+            lambda x: x in col_used, itertools.count()))
 
         # k1 is now the lowest available color
         if k1 > k:
@@ -105,9 +116,9 @@ def coloring_with_interchange(original_graph, nodes, returntype):
             col2 = -1
             while connected and col1 < k:
                 col1 += 1
-                col1_adj = []
-                for col1_adj_iter in graph[node].iter_neighbors_color(col1):
-                    col1_adj.append(col1_adj_iter.node_id)
+                neighbor_cols = (
+                    graph[node].iter_neighbors_color(col1))
+                col1_adj = [it for it in neighbor_cols]
 
                 col2 = col1
                 while connected and col2 < k:
@@ -118,25 +129,31 @@ def coloring_with_interchange(original_graph, nodes, returntype):
                     while i < len(frontier):
                         search_node = frontier[i]
                         i += 1
-                        col_opp = col2 if graph[search_node].color == col1 else col1
-                        for neighbour in graph[search_node].iter_neighbors_color(col_opp):
-                            if not neighbour.node_id in visited:
-                                visited.add(neighbour.node_id)
-                                frontier.append(neighbour.node_id)
+                        col_opp = (
+                            col2 if graph[search_node].color == col1 else col1)
+                        neighbor_cols = (
+                            graph[search_node].iter_neighbors_color(col_opp))
+
+                        for neighbor in neighbor_cols:
+                            if neighbor not in visited:
+                                visited.add(neighbor)
+                                frontier.append(neighbor)
 
                     # Search if node is not adj to any col2 vertex
-                    connected = False
-                    for col2_adj in graph[node].iter_neighbors_color(col2):
-                        connected = connected or col2_adj.node_id in visited
+                    connected = len(visited.intersection(
+                        graph[node].iter_neighbors_color(col2))) > 0
 
             # If connected is false then we can swap !!!
             if not connected:
                 # Update all the nodes in the component
                 for search_node in visited:
-                    graph[search_node].color = col2 if graph[search_node].color == col1 else col1
+                    graph[search_node].color = (
+                        col2 if graph[search_node].color == col1 else col1)
                     col2_adj = graph[search_node].adj_color[col2]
-                    graph[search_node].adj_color[col2] = graph[search_node].adj_color[col1]
+                    graph[search_node].adj_color[col2] = (
+                        graph[search_node].adj_color[col1])
                     graph[search_node].adj_color[col1] = col2_adj
+
                 # Update all the neighboring nodes
                 for search_node in visited:
                     col = graph[search_node].color
@@ -144,27 +161,18 @@ def coloring_with_interchange(original_graph, nodes, returntype):
                     for adj_node in graph[search_node].iter_neighbors():
                         if graph[adj_node.node_id].color != col_opp:
                             adj_mate = adj_node.mate # Direct reference to entry
-                            graph[adj_node.node_id].clear_color(adj_mate, col_opp)
+                            graph[adj_node.node_id].clear_color(
+                                adj_mate, col_opp)
                             graph[adj_node.node_id].assign_color(adj_mate, col)
                 k1 = col1
 
         # We can color this node color k1
         graph[node].color = k1
-        if k1 > k:
-            k = k1
+        k = max(k1, k)
 
-        # Update this nodes neighbors
+        # Update the neighbors of this node
         for adj_node in graph[node].iter_neighbors():
             adj_mate = adj_node.mate
             graph[adj_node.node_id].assign_color(adj_mate, k1)
 
-    if returntype == 'sets': # determine desired return type
-        sets = [set() for i in range(k+1)]
-        for node in graph.values():
-            sets[node.color].add(node.node_id)
-        return sets
-    else:
-        colors = {}
-        for node in graph.values():
-            colors[node.node_id] = node.color
-        return colors
+    return dict((node.node_id, node.color) for node in graph.values())

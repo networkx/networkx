@@ -1,1 +1,2 @@
-from networkx.algorithms.coloring.coloring import *
+from networkx.algorithms.coloring.greedy_coloring import *
+

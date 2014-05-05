@@ -15,330 +15,339 @@ class TestColoring:
 ############################## RS tests ##############################
     def test_rs_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring(graph, strategy='rs', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 0)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
+        assert_true(verify_length(coloring, 0))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_rs_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring(graph, strategy='rs', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 1)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
+        assert_true(verify_length(coloring, 1))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_rs_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring(graph, strategy='rs', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 2)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_rs_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring(graph, strategy='rs', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_rs_shc(self):
         graph = rs_shc()
-        coloring = nx.coloring(graph, strategy='rs', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 2 or len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=False)
+        assert_true(verify_length(coloring, 2) or verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
 ############################## SLF tests ##############################
     def test_slf_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring(graph, strategy='slf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 0)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 0))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_slf_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring(graph, strategy='slf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 1)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 1))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_slf_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring(graph, strategy='slf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 2)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_slf_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring(graph, strategy='slf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_slf_shc(self):
         graph = slf_shc()
-        coloring = nx.coloring(graph, strategy='slf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 3 or len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_slf_hc(self):
         graph = slf_hc()
-        coloring = nx.coloring(graph, strategy='slf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
 
 ############################## LF tests ##############################
     def test_lf_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring(graph, strategy='lf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 0)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 0))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_lf_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring(graph, strategy='lf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 1)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 1))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_lf_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring(graph, strategy='lf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 2)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_lf_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring(graph, strategy='lf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_lf_shc(self):
         graph = lf_shc()
-        coloring = nx.coloring(graph, strategy='lf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 2 or len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 2) or verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
         
     def test_lf_hc(self):
         graph = lf_hc()
-        coloring = nx.coloring(graph, strategy='lf', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=False)
+        assert_true(verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
 
 ############################## SL tests ##############################
     def test_sl_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring(graph, strategy='sl', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 0)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        assert_true(verify_length(coloring, 0))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_sl_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring(graph, strategy='sl', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 1)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        assert_true(verify_length(coloring, 1))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_sl_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring(graph, strategy='sl', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 2)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_sl_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring(graph, strategy='sl', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_sl_shc(self):
         graph = sl_shc()
-        coloring = nx.coloring(graph, strategy='sl', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 3 or len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
     
     def test_sl_hc(self):
         graph = sl_hc()
-        coloring = nx.coloring(graph, strategy='sl', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 5)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=False)
+        assert_true(verify_length(coloring, 5))
+        assert_true(verify_coloring(graph, coloring))
         
 ############################## GIS tests ##############################
     def test_gis_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring(graph, strategy='gis', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 0)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        assert_true(verify_length(coloring, 0))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_gis_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring(graph, strategy='gis', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 1)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        assert_true(verify_length(coloring, 1))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_gis_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring(graph, strategy='gis', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 2)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_gis_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring(graph, strategy='gis', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_gis_shc(self):
         graph = gis_shc()
-        coloring = nx.coloring(graph, strategy='gis', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 2 or len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        assert_true(verify_length(coloring, 2) or verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_gis_hc(self):
         graph = gis_hc()
-        coloring = nx.coloring(graph, strategy='gis', interchange=False, returntype='sets')
-        assert_equal(len(coloring), 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_independent_set, interchange=False)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
 ############################## CS tests ##############################
     def test_cs_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring(graph, strategy='cs', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 0)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        assert_true(verify_length(coloring, 0))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_cs_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring(graph, strategy='cs', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 1)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        assert_true(verify_length(coloring, 1))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_cs_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring(graph, strategy='cs', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 2)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_cs_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring(graph, strategy='cs', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_cs_shc(self):
         graph = cs_shc()
-        coloring = nx.coloring(graph, strategy='cs', interchange=False, returntype='sets')
-        assert_true(len(coloring) == 3 or len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
 
 ############################## Interchange tests ##############################
 # RSI
     def test_rsi_empty(self):
         graph = emptyGraph()
-        coloring = nx.coloring(graph, strategy='rs', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 0)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        assert_true(verify_length(coloring, 0))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_rsi_oneNode(self):
         graph = oneNodeGraph()
-        coloring = nx.coloring(graph, strategy='rs', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 1)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        assert_true(verify_length(coloring, 1))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_rsi_twoNodes(self):
         graph = twoNodesGraph()
-        coloring = nx.coloring(graph, strategy='rs', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 2)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_rsi_threeNodeClique(self):
         graph = threeNodeClique()
-        coloring = nx.coloring(graph, strategy='rs', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_rsi_rsshc(self):
         graph = rs_shc()
-        coloring = nx.coloring(graph, strategy='rs', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 2)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_rsi_shc(self):
         graph = rsi_shc()
-        coloring = nx.coloring(graph, strategy='rs', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 3 or len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_random_sequential, interchange=True)
+        assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
 # SLFI
     def test_slfi_slfshc(self):
         graph = oneNodeGraph()
-        assert_raises(nx.NetworkXPointlessConcept, nx.coloring, graph, strategy='slf', interchange=True, returntype='sets')
+        assert_raises(nx.NetworkXPointlessConcept, nx.coloring.greedy_coloring, graph, strategy=nx.coloring.strategy_saturation_largest_first, interchange=True)
 
 # LFI
     def test_lfi_lfshc(self):
         graph = lf_shc()
-        coloring = nx.coloring(graph, strategy='lf', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 2)
-        assert_true(verifyColoring(graph, coloring, 'sets'))        
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))        
     
     def test_lfi_lfhc(self):
         graph = lf_hc()
-        coloring = nx.coloring(graph, strategy='lf', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
         
     def test_lfi_shc(self):
         graph = lfi_shc()
-        coloring = nx.coloring(graph, strategy='lf', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 3 or len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
+        assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_lfi_hc(self):
         graph = lfi_hc()
-        coloring = nx.coloring(graph, strategy='lf', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_largest_first, interchange=True)
+        assert_true(verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
 # SLI
     def test_sli_slshc(self):
         graph = sl_shc()
-        coloring = nx.coloring(graph, strategy='sl', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
     
     def test_sli_slhc(self):
         graph = sl_hc()
-        coloring = nx.coloring(graph, strategy='sl', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
+        assert_true(verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
         
     def test_sli_shc(self):
         graph = sli_shc()
-        coloring = nx.coloring(graph, strategy='sl', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 3 or len(coloring) == 4)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
+        assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
 
     def test_sli_hc(self):
         graph = sli_hc()
-        coloring = nx.coloring(graph, strategy='sl', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 5)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_smallest_last, interchange=True)
+        assert_true(verify_length(coloring, 5))
+        assert_true(verify_coloring(graph, coloring))
 #GISI
     def test_gisi_oneNode(self):
         graph = oneNodeGraph()
-        assert_raises(nx.NetworkXPointlessConcept, nx.coloring, graph, strategy='gis', interchange=True, returntype='sets')
+        assert_raises(nx.NetworkXPointlessConcept, nx.coloring.greedy_coloring, graph, strategy=nx.coloring.strategy_independent_set, interchange=True)
 # CS
     def test_csi_csshc(self):
         graph = cs_shc()
-        coloring = nx.coloring(graph, strategy='cs', interchange=True, returntype='sets')
-        assert_true(len(coloring) == 3)
-        assert_true(verifyColoring(graph, coloring, 'sets'))
+        coloring = nx.coloring.greedy_coloring(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=True)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
 
 ############################## Utility functions ##############################
-def verifyColoring(graph, coloring, returntype):
+def verify_coloring(graph, coloring):
     correct = True
-    if returntype == 'sets':
-        for color in range(len(coloring)):
-            for node in coloring[color]:
-                for neighbor in graph.neighbors(node):
-                    correct = correct and (neighbor not in coloring[color])
-    elif returntype == 'dict':
-        for node in graph.node_iter():
-            color = coloring[node]
-            for neighbor in graph.neighbors(node):
-                correct = correct and coloring[neighbor] != color
-    else:
-        return False
-    return correct 
+    for node in graph.nodes_iter():
+        color = coloring[node]
+        for neighbor in graph.neighbors(node):
+            correct = correct and coloring[neighbor] != color
+
+    return correct
+
+def verify_length(coloring, expected):
+    coloring = dict_to_sets(coloring)
+    return len(coloring) == expected
+
+def dict_to_sets(colors):
+    if len(colors) == 0:
+        return []
+
+    k = max(colors.values()) + 1
+    sets = [set() for _ in range(k)]
+
+    for (node, color) in colors.items():
+        sets[color].add(node)
+
+    return sets
 
 ############################## Graphs ##############################
 def emptyGraph():
@@ -611,3 +620,4 @@ def sli_hc():
         (8, 9)
     ])
     return graph
+
