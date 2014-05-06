@@ -19,7 +19,7 @@ try:
                        reshape, sqrt, zeros)
     from numpy.linalg import norm
     from numpy.random import normal
-    from scipy.linalg import eigh, solve
+    from scipy.linalg import eigh, inv
     from scipy.sparse import csc_matrix, spdiags
     from scipy.sparse.linalg import eigsh, lobpcg
     __all__ = ['algebraic_connectivity', 'fiedler_vector', 'spectral_ordering']
@@ -137,7 +137,7 @@ def _rcm_estimate(G, nodelist):
     return x
 
 
-def _tracemin_fiedler(L, X, normalized, tol, solver):
+def _tracemin_fiedler(L, X, normalized, tol, method):
     """Compute the Fiedler vector of L using the TraceMIN-Fiedler algorithm.
     """
     n, q = X.shape
@@ -148,7 +148,6 @@ def _tracemin_fiedler(L, X, normalized, tol, solver):
         e = sqrt(L.diagonal())
         D = spdiags(1. / e, [0], n, n, format='csr')
         NL = D * L * D
-        D = e.copy()
         e *= 1. / norm(e, 2)
 
     if not normalized:
@@ -175,25 +174,26 @@ def _tracemin_fiedler(L, X, normalized, tol, solver):
                 X[:, j] -= dot(X[:, k], X[:, j]) * X[:, k]
             X[:, j] *= 1. / norm(X[:, j], 2)
 
-    if solver is None or solver == 'pcg':
-        M = (1. / L.diagonal()).__mul__
+    if normalized:
+        L = NL
+    Lnorm = abs(L).sum(axis=1).flatten().max()
+
+    if method is None or method == 'pcg':
+        M = (1. / L.diagonal()).__mul__ if not normalized else None
         solver = _PCGSolver(L, M)
-    elif solver == 'chol' or solver == 'lu':
+    elif method == 'chol' or method == 'lu':
         # Convert A to CSC to suppress SparseEfficiencyWarning.
         A = csc_matrix(L, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
         # connected graph, its rank deficiency is one, and thus one diagonal
         # element needs to modified. Changing to infinity forces a zero in the
         # corresponding element in the solution.
-        i = A.diagonal().argmin()
+        i = (A.indptr[1:] - A.indptr[:-1]).argmax()
         A[i, i] = float('inf')
-        solver = (_CholeskySolver if solver == 'chol' else _LUSolver)(A)
+        solver = (_CholeskySolver if method == 'chol' else _LUSolver)(A)
     else:
         raise nx.NetworkXError('unknown linear system solver.')
 
-    if normalized:
-        L = NL
-    Lnorm = abs(L).sum(axis=1).flatten().max()
     # Tolerance of linear system solver.
     ls_tol = 0.1
 
@@ -201,34 +201,23 @@ def _tracemin_fiedler(L, X, normalized, tol, solver):
     project(X)
     W = asmatrix(ndarray((n, q), order='F'))
 
-    first = True
     while True:
         gram_schmidt(X)
         # Compute interation matrix H.
-        H = X.T * (L * X)
+        W[:, :] = L * X
+        H = X.T * W
         sigma, Y = eigh(H, overwrite_a=True)
-        # Test for convergence.
-        if not first:
-            x = asarray(X)[:, 0]
-            res = norm(L * x - sigma[0] * x, 1) / Lnorm
-            if res < tol:
-                break
-            ls_tol = min(ls_tol, 0.1 * res)
-        else:
-            first = False
         # Compute Ritz vectors.
         X *= Y
-        # Solve saddle point problem using the Schur complement.
-        if not normalized:
-            for j in range(q):
-                asarray(W)[:, j] = solver.solve(asarray(X)[:, j], ls_tol)
-        else:
-            for j in range(q):
-                asarray(W)[:, j] = D * solver.solve(D * asarray(X)[:, j], ls_tol)
+        # Test for convergence.
+        res = norm(W * asmatrix(Y)[:, 0] - sigma[0] * X[:, 0], 1) / Lnorm
+        if res < tol:
+            break
+        ls_tol = min(ls_tol, 0.1 * res)
+        for j in range(q):
+            asarray(W)[:, j] = solver.solve(asarray(X)[:, j], ls_tol)
         project(W)
-        S = X.T * W  # Schur complement
-        N = solve(S, X.T * X, overwrite_a=True, overwrite_b=True)
-        X = (N.T * W.T).T  # X == N * W. Preserves Fortran storage order.
+        X = (inv(W.T * X) * W.T).T
 
     return sigma, asarray(X)
 
