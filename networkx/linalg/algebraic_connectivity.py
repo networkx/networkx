@@ -46,7 +46,7 @@ class _PCGSolver(object):
         r = b.copy()
         z = M(r)
         rz = dot(r, z)
-        p = z
+        p = z.copy()
         # Iterate.
         while True:
             Ap = A * p
