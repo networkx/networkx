@@ -120,7 +120,7 @@ def strategy_connected_sequential(G, colors, traversal='bfs'):
         yield end # Then yield nodes in the order traversed by either BFS or DFS
 
 """
-Saturation largest first (SLF) or DSATUR.
+Saturation largest first (SLF). Also known as degree saturation (DSATUR).
 """
 def strategy_saturation_largest_first(G, colors):
     len_g = len(G)
