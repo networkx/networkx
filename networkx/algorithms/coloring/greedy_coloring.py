@@ -110,8 +110,11 @@ def strategy_connected_sequential(G, colors, traversal='bfs'):
 
     if traversal == 'bfs':
         tree = nx.bfs_edges(G, source)
-    else:
+    elif traversal == 'dfs':
         tree = nx.dfs_edges(G, source)
+    else:
+        raise nx.NetworkXError(
+            'Please specify bfs or dfs for connected sequential ordering')
 
     for (_, end) in tree:
         yield end # Then yield nodes in the order traversed by either BFS or DFS
