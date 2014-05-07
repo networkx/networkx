@@ -56,7 +56,7 @@ class _PCGSolver(object):
         p = z.copy()
         # Iterate.
         while True:
-            Ap = A * p
+            Ap = A(p)
             alpha = rz / dot(p, Ap)
             x += alpha * p
             r -= alpha * Ap
@@ -78,7 +78,7 @@ class _CholeskySolver(object):
             raise nx.NetworkXError('Cholesky solver unavailable.')
         self._chol = self._cholesky(A)
 
-    def solve(self, B, tol=None):
+    def solve(self, B):
         return self._chol(B)
 
     try:
@@ -97,7 +97,7 @@ class _LUSolver(object):
             raise nx.NetworkXError('LU solver unavailable.')
         self._LU = self._splu(A)
 
-    def solve(self, B, tol=None):
+    def solve(self, B):
         B = asarray(B)
         X = ndarray(B.shape, order='F')
         for j in range(B.shape[1]):
@@ -151,14 +151,14 @@ def _rcm_estimate(G, nodelist):
 def _tracemin_fiedler(L, X, normalized, tol, method):
     """Compute the Fiedler vector of L using the TraceMIN-Fiedler algorithm.
     """
-    n, q = X.shape
+    n = X.shape[0]
 
     if normalized:
         # Form the normalized Laplacian matrix and determine the eigenvector of
         # its nullspace.
         e = sqrt(L.diagonal())
         D = spdiags(1. / e, [0], n, n, format='csr')
-        NL = D * L * D
+        L = D * L * D
         e *= 1. / norm(e, 2)
 
     if not normalized:
@@ -166,23 +166,29 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             """Make X orthogonal to the nullspace of L.
             """
             X = asarray(X)
-            for j in range(q):
-                X[:, j] -= sum(X[:, j]) / n
+            for j in range(X.shape[1]):
+                X[:, j] -= X[:, j].sum() / n
     else:
         def project(X):
-            """Make X orthogonal to the nullspace of NL.
+            """Make X orthogonal to the nullspace of L.
             """
             X = asarray(X)
-            for j in range(q):
+            for j in range(X.shape[1]):
                 X[:, j] -= dot(X[:, j], e) * e
 
-    if normalized:
-        L = NL
-    Lnorm = abs(L).sum(axis=1).flatten().max()
 
-    if method is None or method == 'pcg':
-        M = (1. / L.diagonal()).__mul__ if not normalized else None
-        solver = _PCGSolver(L, M)
+    if method is None:
+        method = 'pcg'
+    if method == 'pcg':
+        # See comments below for the semantics of P and D.
+        def P(x):
+            x -= asarray(x * X * X.T)[0, :]
+            if not normalized:
+                x -= x.sum() / n
+            else:
+                x -= dot(x, e) * e
+            return x
+        solver = _PCGSolver(lambda x: P(L * P(x)), lambda x: D * x)
     elif method == 'chol' or method == 'lu':
         # Convert A to CSC to suppress SparseEfficiencyWarning.
         A = csc_matrix(L, dtype=float, copy=True)
@@ -196,29 +202,48 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     else:
         raise nx.NetworkXError('unknown linear system solver.')
 
-    # Tolerance of linear system solver.
-    ls_tol = 0.1
-
-    # Initialize eigenvectors.
+    # Initialize.
+    Lnorm = abs(L).sum(axis=1).flatten().max()
     project(X)
-    W = asmatrix(ndarray((n, q), order='F'))
+    W = asmatrix(ndarray(X.shape, order='F'))
 
     while True:
+        # Orthonormalize X.
         X = asmatrix(qr(X)[0])
         # Compute interation matrix H.
         W[:, :] = L * X
         H = X.T * W
         sigma, Y = eigh(H, overwrite_a=True)
-        # Compute Ritz vectors.
+        # Compute the Ritz vectors.
         X *= Y
-        # Test for convergence.
+        # Test for convergence exploiting the fact that L * X == W * Y.
         res = norm(W * asmatrix(Y)[:, 0] - sigma[0] * X[:, 0], 1) / Lnorm
         if res < tol:
             break
-        ls_tol = min(ls_tol, 0.1 * res)
-        W[:, :] = solver.solve(X, ls_tol)
-        project(W)
-        X = (inv(W.T * X) * W.T).T
+        # Depending on the linear solver to be used, two mathematically
+        # equivalent formulations are used.
+        if method == 'pcg':
+            # Compute X = X - (P * L * P) \ (P * L * X) where
+            # P = I - [e X] * [e X]' is a projection onto the orthogonal
+            # complement of [e X].
+            W[:, :] = L * X;
+            W -= X * (X.T * W)
+            project(W)
+            # Compute the diagonal of P * L * P as a Jacobi preconditioner.
+            D = L.diagonal()
+            D += 2. * (asarray(X) * asarray(W)).sum(axis=1)
+            D += (asarray(X) * asarray(X * (W.T * X))).sum(axis=1)
+            D = 1. / D
+            # Since TraceMIN is globally convergent, the relative residual can
+            # be loose.
+            W[:, :] = solver.solve(W, 0.1)
+            X -= W
+        else:
+            # Compute X = L \ X / (X' * (L \ X)). L \ X can have an arbitrary
+            # projection on the nullspace of L, which will be eliminated.
+            W[:, :] = solver.solve(X)
+            project(W)
+            X = (inv(W.T * X) * W.T).T  # Preserves Fortran storage order.
 
     return sigma, asarray(X)
 
