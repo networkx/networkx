@@ -17,7 +17,7 @@ from re import compile
 try:
     from numpy import (array, asmatrix, asarray, dot, matrix, ndarray, ones,
                        reshape, sqrt, zeros)
-    from numpy.linalg import norm
+    from numpy.linalg import norm, qr
     from numpy.random import normal
     from scipy.linalg import eigh, inv
     from scipy.sparse import csc_matrix, spdiags
@@ -165,15 +165,6 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             for j in range(q):
                 X[:, j] -= dot(X[:, j], e) * e
 
-    def gram_schmidt(X):
-        """Return an orthonormalized copy of X.
-        """
-        X = asarray(X)
-        for j in range(q):
-            for k in range(j):
-                X[:, j] -= dot(X[:, k], X[:, j]) * X[:, k]
-            X[:, j] *= 1. / norm(X[:, j], 2)
-
     if normalized:
         L = NL
     Lnorm = abs(L).sum(axis=1).flatten().max()
@@ -202,7 +193,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     W = asmatrix(ndarray((n, q), order='F'))
 
     while True:
-        gram_schmidt(X)
+        X = asmatrix(qr(X)[0])
         # Compute interation matrix H.
         W[:, :] = L * X
         H = X.T * W
