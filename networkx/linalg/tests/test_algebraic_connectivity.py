@@ -4,7 +4,7 @@ import networkx as nx
 from nose import SkipTest
 from nose.tools import *
 
-methods = ('tracemin_pcg', 'tracemin_lu', 'lanczos', 'lobpcg')
+methods = ('tracemin_pcg', 'tracemin_chol', 'tracemin_lu', 'lanczos', 'lobpcg')
 
 
 try:

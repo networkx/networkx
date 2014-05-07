@@ -62,6 +62,25 @@ class _PCGSolver(object):
             p += z
 
 
+class _CholeskySolver(object):
+    """Cholesky factorization.
+    """
+
+    def __init__(self, A):
+        if not self._cholesky:
+            raise nx.NetworkXError('Cholesky solver unavailable.')
+        self._chol = self._cholesky(A)
+
+    def solve(self, b, tol):
+        return self._chol(b)
+
+    try:
+        from scikits.sparse.cholmod import cholesky
+        _cholesky = cholesky
+    except ImportError:
+        _cholesky = None
+
+
 class _LUSolver(object):
     """LU factorization.
     """
@@ -153,7 +172,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     if method is None or method == 'pcg':
         M = (1. / L.diagonal()).__mul__ if not normalized else None
         solver = _PCGSolver(L, M)
-    elif method == 'lu':
+    elif method == 'chol' or method == 'lu':
         # Convert A to CSC to suppress SparseEfficiencyWarning.
         A = csc_matrix(L, dtype=float, copy=True)
         # Force A to be nonsingular. Since A is the Laplacian matrix of a
@@ -162,7 +181,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # corresponding element in the solution.
         i = (A.indptr[1:] - A.indptr[:-1]).argmax()
         A[i, i] = float('inf')
-        solver = _LUSolver(A)
+        solver = (_CholeskySolver if method == 'chol' else _LUSolver)(A)
     else:
         raise nx.NetworkXError('unknown linear system solver.')
 
@@ -269,6 +288,7 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
         Value           Solver
         =============== ========================================
         'tracemin_pcg'  Preconditioned conjugate gradient method
+        'tracemin_chol' Cholesky factorization
         'tracemin_lu'   LU factorization
         =============== ========================================
 
@@ -346,6 +366,7 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
         Value           Solver
         =============== ========================================
         'tracemin_pcg'  Preconditioned conjugate gradient method
+        'tracemin_chol' Cholesky factorization
         'tracemin_lu'   LU factorization
         =============== ========================================
 
@@ -422,6 +443,7 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
         Value           Solver
         =============== ========================================
         'tracemin_pcg'  Preconditioned conjugate gradient method
+        'tracemin_chol' Cholesky factorization
         'tracemin_lu'   LU factorization
         =============== ========================================
 
