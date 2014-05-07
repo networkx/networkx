@@ -37,7 +37,14 @@ class _PCGSolver(object):
         self._A = A
         self._M = M or (lambda x: x)
 
-    def solve(self, b, tol):
+    def solve(self, B, tol):
+        B = asarray(B)
+        X = ndarray(B.shape, order='F')
+        for j in range(B.shape[1]):
+            X[:, j] = self._solve(B[:, j], tol)
+        return X
+
+    def _solve(self, b, tol):
         A = self._A
         M = self._M
         tol *= norm(b, 1)
@@ -71,8 +78,8 @@ class _CholeskySolver(object):
             raise nx.NetworkXError('Cholesky solver unavailable.')
         self._chol = self._cholesky(A)
 
-    def solve(self, b, tol):
-        return self._chol(b)
+    def solve(self, B, tol=None):
+        return self._chol(B)
 
     try:
         from scikits.sparse.cholmod import cholesky
@@ -90,8 +97,12 @@ class _LUSolver(object):
             raise nx.NetworkXError('LU solver unavailable.')
         self._LU = self._splu(A)
 
-    def solve(self, b, tol):
-        return self._LU.solve(b)
+    def solve(self, B, tol=None):
+        B = asarray(B)
+        X = ndarray(B.shape, order='F')
+        for j in range(B.shape[1]):
+            X[:, j] = self._LU.solve(B[:, j])
+        return X
 
     try:
         from scipy.sparse.linalg import splu
@@ -156,7 +167,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             """
             X = asarray(X)
             for j in range(q):
-                X[:, j] -= sum(X[:, j]) * (1. / n)
+                X[:, j] -= sum(X[:, j]) / n
     else:
         def project(X):
             """Make X orthogonal to the nullspace of NL.
@@ -205,8 +216,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         if res < tol:
             break
         ls_tol = min(ls_tol, 0.1 * res)
-        for j in range(q):
-            asarray(W)[:, j] = solver.solve(asarray(X)[:, j], ls_tol)
+        W[:, :] = solver.solve(X, ls_tol)
         project(W)
         X = (inv(W.T * X) * W.T).T
 
