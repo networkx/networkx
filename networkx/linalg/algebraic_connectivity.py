@@ -233,6 +233,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             D = L.diagonal()
             D += 2. * (asarray(X) * asarray(W)).sum(axis=1)
             D += (asarray(X) * asarray(X * (W.T * X))).sum(axis=1)
+            D[D < tol * Lnorm] = 1.
             D = 1. / D
             # Since TraceMIN is globally convergent, the relative residual can
             # be loose.
