@@ -302,17 +302,18 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
     G : NetworkX graph
         An undirected graph.
 
-    weight : string or None
+    weight : object, optional
         The data key used to determine the weight of each edge. If None, then
         each edge has unit weight. Default value: None.
 
-    normalized : bool
-        Whether the normalized Laplacian matrix is used.
+    normalized : bool, optional
+        Whether the normalized Laplacian matrix is used. Default value: False.
 
-    tol : float
-        Tolerance of eigenvalue computation. Default value: 1e-8.
+    tol : float, optional
+        Tolerance of relative residual in eigenvalue computation. Default
+        value: 1e-8.
 
-    method : string
+    method : string, optional
         Method of eigenvalue computation. It should be one of 'tracemin'
         (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
         Default value: 'tracemin'.
@@ -335,10 +336,10 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If G is directed.
 
-    NetworkXError :
+    NetworkXError
         If G has less than two nodes.
 
     Notes
@@ -379,18 +380,18 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
     G : NetworkX graph
         An undirected graph.
 
-    weight : string or None
+    weight : object, optional
         The data key used to determine the weight of each edge. If None, then
         each edge has unit weight. Default value: None.
 
-    normalized : bool
-        Whether the normalized Laplacian matrix is used.
+    normalized : bool, optional
+        Whether the normalized Laplacian matrix is used. Default value: False.
 
-    tol : float
+    tol : float, optional
         Tolerance of relative residual in eigenvalue computation. Default
         value: 1e-8.
 
-    method : string
+    method : string, optional
         Method of eigenvalue computation. It should be one of 'tracemin'
         (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
         Default value: 'tracemin'.
@@ -413,10 +414,10 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
 
     Raises
     ------
-    NetworkXNotImplemented :
+    NetworkXNotImplemented
         If G is directed.
 
-    NetworkXError :
+    NetworkXError
         If G has less than two nodes or is not connected.
 
     Notes
@@ -456,18 +457,18 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
     G : NetworkX graph
         A graph.
 
-    weight : string or None
+    weight : object, optional
         The data key used to determine the weight of each edge. If None, then
         each edge has unit weight. Default value: None.
 
-    normalized : bool
-        Whether the normalized Laplacian matrix is used.
+    normalized : bool, optional
+        Whether the normalized Laplacian matrix is used. Default value: False.
 
-    tol : float
+    tol : float, optional
         Tolerance of relative residual in eigenvalue computation. Default
         value: 1e-8.
 
-    method : string
+    method : string, optional
         Method of eigenvalue computation. It should be one of 'tracemin'
         (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
         Default value: 'tracemin'.
@@ -490,7 +491,7 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
 
     Raises
     ------
-    NetworkXError :
+    NetworkXError
         If G is empty.
 
     Notes

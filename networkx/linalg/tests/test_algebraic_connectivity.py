@@ -13,8 +13,10 @@ try:
     @contextmanager
     def save_random_state():
         state = get_state()
-        yield
-        set_state(state)
+        try:
+            yield
+        finally:
+            set_state(state)
 
     def preserve_random_state(func):
         def wrapper(*args, **kwargs):
