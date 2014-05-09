@@ -20,6 +20,7 @@ try:
     from numpy.linalg import norm, qr
     from numpy.random import normal
     from scipy.linalg import eigh, inv
+    from scipy.linalg.blas import (dasum, daxpy, ddot)
     from scipy.sparse import csc_matrix, spdiags
     from scipy.sparse.linalg import eigsh, lobpcg
     __all__ = ['algebraic_connectivity', 'fiedler_vector', 'spectral_ordering']
@@ -35,7 +36,7 @@ class _PCGSolver(object):
 
     def __init__(self, A, M):
         self._A = A
-        self._M = M or (lambda x: x)
+        self._M = M or (lambda x: x.copy())
 
     def solve(self, B, tol):
         B = asarray(B)
@@ -47,26 +48,25 @@ class _PCGSolver(object):
     def _solve(self, b, tol):
         A = self._A
         M = self._M
-        tol *= norm(b, 1)
+        tol *= dasum(b)
         # Initialize.
         x = zeros(b.shape)
         r = b.copy()
         z = M(r)
-        rz = dot(r, z)
+        rz = ddot(r, z)
         p = z.copy()
         # Iterate.
         while True:
             Ap = A(p)
-            alpha = rz / dot(p, Ap)
-            x += alpha * p
-            r -= alpha * Ap
-            if norm(r, 1) < tol:
+            alpha = rz / ddot(p, Ap)
+            x = daxpy(p, x, a=alpha)
+            r = daxpy(Ap, r, a=-alpha)
+            if dasum(r) < tol:
                 return x
             z = M(r)
-            beta = dot(r, z)
+            beta = ddot(r, z)
             beta, rz = beta / rz, beta
-            p *= beta
-            p += z
+            p = daxpy(p, z, a=beta)
 
 
 class _CholeskySolver(object):
@@ -186,7 +186,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             if not normalized:
                 x -= x.sum() / n
             else:
-                x -= dot(x, e) * e
+                x = daxpy(e, x, a=-ddot(x, e))
             return x
         solver = _PCGSolver(lambda x: P(L * P(x)), lambda x: D * x)
     elif method == 'chol' or method == 'lu':
@@ -209,7 +209,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
 
     while True:
         # Orthonormalize X.
-        X = asmatrix(qr(X)[0])
+        X = qr(X)[0]
         # Compute interation matrix H.
         W[:, :] = L * X
         H = X.T * W
@@ -217,7 +217,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # Compute the Ritz vectors.
         X *= Y
         # Test for convergence exploiting the fact that L * X == W * Y.
-        res = norm(W * asmatrix(Y)[:, 0] - sigma[0] * X[:, 0], 1) / Lnorm
+        res = dasum(W * asmatrix(Y)[:, 0] - sigma[0] * X[:, 0]) / Lnorm
         if res < tol:
             break
         # Depending on the linear solver to be used, two mathematically
@@ -226,8 +226,8 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             # Compute X = X - (P * L * P) \ (P * L * X) where
             # P = I - [e X] * [e X]' is a projection onto the orthogonal
             # complement of [e X].
-            W[:, :] = L * X;
-            W -= X * (X.T * W)
+            W *= Y  # L * X == W * Y
+            W -= (W.T * X * X.T).T
             project(W)
             # Compute the diagonal of P * L * P as a Jacobi preconditioner.
             D = L.diagonal()
@@ -237,8 +237,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             D = 1. / D
             # Since TraceMIN is globally convergent, the relative residual can
             # be loose.
-            W[:, :] = solver.solve(W, 0.1)
-            X -= W
+            X -= solver.solve(W, 0.1)
         else:
             # Compute X = L \ X / (X' * (L \ X)). L \ X can have an arbitrary
             # projection on the nullspace of L, which will be eliminated.
