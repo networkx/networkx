@@ -318,7 +318,7 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
         (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
         Default value: 'tracemin'.
 
-        The TraceMIN algorithm uses on a linear system solver. The following
+        The TraceMIN algorithm uses a linear system solver. The following
         values allow specifying the solver to be used.
 
         =============== ========================================
@@ -346,6 +346,9 @@ def algebraic_connectivity(G, weight='weight', normalized=False, tol=1e-8,
     -----
     Edge weights are interpreted by their absolute values. For MultiGraph's,
     weights of parallel edges are summed. Zero-weighted edges are ignored.
+
+    To use Cholesky factorization in the TraceMIN algorithm, the
+    :samp:`scikits.sparse` package must be installed.
 
     See Also
     --------
@@ -396,7 +399,7 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
         (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
         Default value: 'tracemin'.
 
-        The TraceMIN algorithm uses on a linear system solver. The following
+        The TraceMIN algorithm uses a linear system solver. The following
         values allow specifying the solver to be used.
 
         =============== ========================================
@@ -424,6 +427,9 @@ def fiedler_vector(G, weight='weight', normalized=False, tol=1e-8,
     -----
     Edge weights are interpreted by their absolute values. For MultiGraph's,
     weights of parallel edges are summed. Zero-weighted edges are ignored.
+
+    To use Cholesky factorization in the TraceMIN algorithm, the
+    :samp:`scikits.sparse` package must be installed.
 
     See Also
     --------
@@ -473,7 +479,7 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
         (TraceMIN), 'lanczos' (Lanczos iteration) and 'lobpcg' (LOBPCG).
         Default value: 'tracemin'.
 
-        The TraceMIN algorithm uses on a linear system solver. The following
+        The TraceMIN algorithm uses a linear system solver. The following
         values allow specifying the solver to be used.
 
         =============== ========================================
@@ -498,6 +504,9 @@ def spectral_ordering(G, weight='weight', normalized=False, tol=1e-8,
     -----
     Edge weights are interpreted by their absolute values. For MultiGraph's,
     weights of parallel edges are summed. Zero-weighted edges are ignored.
+
+    To use Cholesky factorization in the TraceMIN algorithm, the
+    :samp:`scikits.sparse` package must be installed.
 
     See Also
     --------
