@@ -59,6 +59,9 @@ def weakly_connected_component_subgraphs(G, copy=True):
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 
+    A directed graph is weakly connected if, and only if, the graph
+    is connected when the direction of the edge between nodes is ignored.
+
     Parameters
     ----------
     G : NetworkX Graph
@@ -71,7 +74,9 @@ def is_weakly_connected(G):
 
     See Also
     --------
-    strongly_connected_components
+    is_strongly_connected
+    is_semiconnected
+    is_connected
 
     Notes
     -----
