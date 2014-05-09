@@ -71,7 +71,11 @@ class TestTreeRecognition(object):
         assert_false(nx.is_forest(self.N6))
         assert_false(nx.is_forest(self.NF1))
 
-
+def test_disconnected_graph():
+    # https://github.com/networkx/networkx/issues/1144
+    G = nx.Graph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 4)])
+    assert_false(nx.is_tree(G))
 
 
 
