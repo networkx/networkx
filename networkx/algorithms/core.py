@@ -159,8 +159,7 @@ def k_core(G,k=None,core_number=None):
 def k_shell(G,k=None,core_number=None):
     """Return the k-shell of G.
 
-    The k-shell is the subgraph of nodes in the k-core containing
-    nodes of exactly degree k.
+    The k-shell is the subgraph of nodes in the k-core but not in the (k+1)-core.
 
     Parameters
     ----------
