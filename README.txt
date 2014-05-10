@@ -10,4 +10,4 @@ Pieter Swart <swart@lanl.gov>
 
 Distributed with a BSD license; see LICENSE.txt.
 
-See http://networkx.lanl.gov/ for more information.
+See http://networkx.github.io/ for more information.
