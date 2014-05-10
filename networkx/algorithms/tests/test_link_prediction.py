@@ -5,56 +5,6 @@ from networkx.exception import *
 import networkx.algorithms.link_prediction as lp
 
 
-class TestCommonNeighbors():
-    def setUp(self):
-        self.func = lp.common_neighbors
-        def test_func(G, u, v, expected):
-            result = self.func(G, u, v)
-            assert_equal(result, expected)
-        self.test = test_func
-
-    def test_K5(self):
-        G = nx.complete_graph(5)
-        self.test(G, 0, 1, 3)
-
-    def test_P3(self):
-        G = nx.path_graph(3)
-        self.test(G, 0, 2, 1)
-
-    def test_S4(self):
-        G = nx.star_graph(4)
-        self.test(G, 1, 2, 1)
-
-    @raises(NetworkXNotImplemented)
-    def test_digraph(self):
-        G = nx.DiGraph()
-        G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
-
-    @raises(NetworkXNotImplemented)
-    def test_multigraph(self):
-        G = nx.MultiGraph()
-        G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
-
-    @raises(NetworkXNotImplemented)
-    def test_multidigraph(self):
-        G = nx.MultiDiGraph()
-        G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
-
-    def test_custom1(self):
-        """Case of no common neighbors."""
-        G = nx.Graph()
-        G.add_nodes_from([0, 1])
-        self.test(G, 0, 1, 0)
-
-    def test_custom2(self):
-        """Case of equal nodes."""
-        G = nx.complete_graph(4)
-        self.test(G, 0, 0, 3)
-
-
 class TestResourceAllocationIndex():
     def setUp(self):
         self.func = lp.resource_allocation_index

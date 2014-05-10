@@ -8,6 +8,7 @@
 #    BSD license.
 #
 import networkx as nx
+from networkx.utils import not_implemented_for
 import itertools
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
@@ -18,15 +19,19 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'freeze','is_frozen','subgraph','create_empty_copy',
            'set_node_attributes','get_node_attributes',
            'set_edge_attributes','get_edge_attributes',
-           'all_neighbors','non_neighbors', 'non_edges']
+           'all_neighbors','non_neighbors', 'non_edges',
+           'common_neighbors']
+
 
 def nodes(G):
     """Return a copy of the graph nodes in a list."""
     return G.nodes()
 
+
 def nodes_iter(G):
     """Return an iterator over the graph nodes."""
     return G.nodes_iter()
+
 
 def edges(G,nbunch=None):
     """Return list of  edges adjacent to nodes in nbunch.
@@ -37,6 +42,7 @@ def edges(G,nbunch=None):
     """
     return G.edges(nbunch)
 
+
 def edges_iter(G,nbunch=None):
     """Return iterator over  edges adjacent to nodes in nbunch.
 
@@ -46,23 +52,28 @@ def edges_iter(G,nbunch=None):
     """
     return G.edges_iter(nbunch)
 
+
 def degree(G,nbunch=None,weight=None):
     """Return degree of single node or of nbunch of nodes.
     If nbunch is ommitted, then return degrees of *all* nodes.
     """
     return G.degree(nbunch,weight)
 
+
 def neighbors(G,n):
     """Return a list of nodes connected to node n. """
     return G.neighbors(n)
+
 
 def number_of_nodes(G):
     """Return the number of nodes in the graph."""
     return G.number_of_nodes()
 
+
 def number_of_edges(G):
     """Return the number of edges in the graph. """
     return G.number_of_edges()
+
 
 def density(G):
     r"""Return the density of a graph.
@@ -99,6 +110,7 @@ def density(G):
         else:
             d= m*2.0/float(n*(n-1))
     return d
+
 
 def degree_histogram(G):
     """Return a list of the frequency of each degree value.
@@ -185,6 +197,7 @@ def freeze(G):
     G.frozen=True
     return G
 
+
 def is_frozen(G):
     """Return True if graph is frozen.
 
@@ -201,6 +214,7 @@ def is_frozen(G):
         return G.frozen
     except AttributeError:
         return False
+
 
 def subgraph(G, nbunch):
     """Return the subgraph induced on nodes in nbunch.
@@ -223,6 +237,7 @@ def subgraph(G, nbunch):
     subgraph(G) calls G.subgraph()
     """
     return G.subgraph(nbunch)
+
 
 def create_empty_copy(G,with_nodes=True):
     """Return a copy of the graph G with all of the edges removed.
@@ -283,6 +298,7 @@ def info(G, n=None):
         info+=' '.join(str(nbr) for nbr in G.neighbors(n))
     return info
 
+
 def set_node_attributes(G,name,attributes):
     """Set node attributes from dictionary of nodes and values
 
@@ -306,6 +322,7 @@ def set_node_attributes(G,name,attributes):
     """
     for node,value in attributes.items():
         G.node[node][name]=value
+
 
 def get_node_attributes(G,name):
     """Get node attributes from graph
@@ -355,6 +372,7 @@ def set_edge_attributes(G,name,attributes):
     """
     for (u,v),value in attributes.items():
         G[u][v][name]=value
+
 
 def get_edge_attributes(G,name):
     """Get edge attributes from graph
@@ -407,6 +425,7 @@ def all_neighbors(graph, node):
 
     return values
 
+
 def non_neighbors(graph, node):
     """Returns the non-neighbors of the node in the graph.
 
@@ -425,6 +444,7 @@ def non_neighbors(graph, node):
     """
     nbors = set(neighbors(graph, node)) | set([node])
     return (nnode for nnode in graph if nnode not in nbors)
+
 
 def non_edges(graph):
     """Returns the non-existent edges in the graph.
@@ -450,3 +470,41 @@ def non_edges(graph):
                 if (u, v) not in S:
                     yield (u, v)
                     S.add((v, u))
+
+
+@not_implemented_for('directed')
+def common_neighbors(G, u, v):
+    """Return the common neighbors of two nodes in a graph.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX undirected graph.
+
+    u, v : nodes
+        Nodes in the graph.
+
+    Returns
+    -------
+    cnbors : iterator
+        Iterator of common neighbors of u and v in the graph.
+
+    Raises
+    ------
+    NetworkXError
+        If u or v is not a node in the graph.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> sorted(nx.common_neighbors(G, 0, 1))
+    [2, 3, 4]
+    """
+    if u not in G:
+        raise nx.NetworkXError('u is not in the graph.')
+    if v not in G:
+        raise nx.NetworkXError('v is not in the graph.')
+
+    # Return a generator explicitly instead of yielding so that the above
+    # checks are executed eagerly.
+    return (w for w in G[u] if w in G[v] and w not in (u, v))
