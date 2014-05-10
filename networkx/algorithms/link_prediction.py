@@ -4,41 +4,14 @@ Link prediction algorithms.
 
 from __future__ import division
 
+import networkx as nx
 from networkx.exception import *
 from networkx.utils.decorators import *
 
-__all__ = ['common_neighbors',
-           'resource_allocation_index',
+__all__ = ['resource_allocation_index',
            'cn_soundarajan_hopcroft',
            'ra_index_soundarajan_hopcroft',
            'within_inter_cluster']
-
-
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def common_neighbors(G, u, v):
-    """Count the number of common neighbors of u and v.
-
-    Parameters
-    ----------
-    G : graph
-        A NetworkX undirected graph.
-
-    u, v : nodes
-        Nodes in the graph.
-
-    Returns
-    -------
-    value : int
-        The number of common neighbors of u and v.
-
-    Examples
-    --------
-    >>> G = nx.complete_graph(5)
-    >>> nx.common_neighbors(G, 0, 1)
-    3
-    """
-    return len(_common_neighbors(G, u, v))
 
 
 @not_implemented_for('directed')
@@ -75,7 +48,7 @@ def resource_allocation_index(G, u, v):
        Eur. Phys. J. B 71 (2009) 623.
        http://arxiv.org/pdf/0901.0553.pdf
     """
-    return sum(1 / G.degree(w) for w in _common_neighbors(G, u, v))
+    return sum(1 / G.degree(w) for w in nx.common_neighbors(G, u, v))
 
 
 @not_implemented_for('directed')
@@ -126,7 +99,7 @@ def cn_soundarajan_hopcroft(G, u, v):
     """
     Cu = _community(G, u)
     Cv = _community(G, v)
-    cnbors = _common_neighbors(G, u, v)
+    cnbors = list(nx.common_neighbors(G, u, v))
     if Cu == Cv:
         return len(cnbors) + sum(_community(G, w) == Cu for w in cnbors)
     else:
@@ -184,8 +157,8 @@ def ra_index_soundarajan_hopcroft(G, u, v):
     """
     Cu = _community(G, u)
     Cv = _community(G, v)
-    cnbors = _common_neighbors(G, u, v)
     if Cu == Cv:
+        cnbors = nx.common_neighbors(G, u, v)
         return sum(1 / G.degree(w) for w in cnbors if _community(G, w) == Cu)
     else:
         return 0
@@ -252,18 +225,13 @@ def within_inter_cluster(G, u, v, delta=0.001):
 
     Cu = _community(G, u)
     Cv = _community(G, v)
-    cnbors = _common_neighbors(G, u, v)
     if Cu == Cv:
+        cnbors = set(nx.common_neighbors(G, u, v))
         within = set(w for w in cnbors if _community(G, w) == Cu)
         inter = cnbors - within
         return len(within) / (len(inter) + delta)
     else:
         return 0
-
-
-def _common_neighbors(G, u, v):
-    """Get the set of common neighbors between two nodes."""
-    return set(G[u]) & set(G[v])
 
 
 def _community(G, u):
