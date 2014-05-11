@@ -50,7 +50,7 @@ def build_auxiliary_node_connectivity(G):
         H.add_edge('%dA' % i, '%dB' % i, capacity=1)
 
     edges = []
-    for (source, target) in G.edges():
+    for (source, target) in G.edges_iter():
         edges.append(('%sB' % mapping[source], '%sA' % mapping[target]))
         if not directed:
             edges.append(('%sB' % mapping[target], '%sA' % mapping[source]))
@@ -78,7 +78,9 @@ def build_auxiliary_edge_connectivity(G):
     if G.is_directed():
         if nx.get_edge_attributes(G, 'capacity'):
             return G
-        H = G.copy()
+        H = nx.DiGraph()
+        H.add_nodes_from(G.nodes_iter())
+        H.add_edges_from(G.edges_iter())
         capacity = dict((e, 1) for e in H.edges())
         nx.set_edge_attributes(H, 'capacity', capacity)
         return H
