@@ -309,9 +309,13 @@ def condensation(G, scc=None):
     Returns
     -------
     C : NetworkX DiGraph
-       The condensation of G. The node labels are integers corresponding
-       to the index of the component in the list of strongly connected
-       components.
+       The condensation graph C of G. The node labels are integers 
+       corresponding to the index of the component in the list of 
+       strongly connected components of G. C has a graph attribute named
+       'mapping' with a dictionary mapping the original nodes to the
+       nodes in C to which they belong. Each node in C also has a node
+       attribute 'members' with the list of original nodes in G that 
+       form the SCC that the node in C represents.
 
     Raises
     ------
@@ -325,13 +329,17 @@ def condensation(G, scc=None):
     if scc is None:
         scc = nx.strongly_connected_components(G)
     mapping = {}
+    members = {}
     C = nx.DiGraph()
-    for i,component in enumerate(scc):
-        for n in component:
-            mapping[n] = i
-    number_of_components = i+1
+    for i, component in enumerate(scc):
+        members[i] = component
+        mapping.update((n, i) for n in component)
+    number_of_components = i + 1
     C.add_nodes_from(range(number_of_components))
-    for u,v in G.edges():
-        if mapping[u] != mapping[v]:
-            C.add_edge(mapping[u],mapping[v])
+    C.add_edges_from((mapping[u], mapping[v]) for u, v in G.edges_iter()
+                     if mapping[u] != mapping[v])
+    # Add a list of members (ie original nodes) to each node (ie scc) in C.
+    nx.set_node_attributes(C, 'members', members)
+    # Add mapping dict as graph attribute
+    C.graph['mapping'] = mapping
     return C

@@ -128,6 +128,16 @@ class TestStronglyConnected:
             edge = (1,0)
         assert_equal(cG.edges(),[edge])
 
+    def test_condensation_mapping_and_members(self):
+        G, C = self.gc[1]
+        cG = nx.condensation(G)
+        mapping = cG.graph['mapping']
+        assert_true(all(n in G for n in mapping))
+        assert_true(all(0 == cN for n, cN in mapping.items() if n in C[0]))
+        assert_true(all(1 == cN for n, cN in mapping.items() if n in C[1]))
+        for n, d in cG.nodes(data=True):
+            assert_equal(C[n], cG.node[n]['members'])
+
     def test_connected_raise(self):
         G=nx.Graph()
         assert_raises(NetworkXNotImplemented,nx.strongly_connected_components,G)
