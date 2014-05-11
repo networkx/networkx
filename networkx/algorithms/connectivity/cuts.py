@@ -396,8 +396,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
     # Choose a node with minimum degree.
-    deg = G.degree()
-    v = next(n for n, d in deg.items() if d == min(deg.values()))
+    v = min(G, key=G.degree)
     # Initial node cutset is all neighbors of the node with minimum degree.
     min_cut = set(G[v])
     # Compute st node cuts between v and all its non-neighbors nodes in G.
@@ -527,8 +526,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
             raise nx.NetworkXError('Input graph is not connected')
 
         # Initial cutset is all edges of a node with minimum degree
-        deg = G.degree()
-        node = next(n for n,d in deg.items() if d==min(deg.values()))
+        node = min(G, key=G.degree)
         min_cut = G.edges(node)
         nodes = G.nodes()
         n = len(nodes)
@@ -550,8 +548,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
             raise nx.NetworkXError('Input graph is not connected')
 
         # Initial cutset is all edges of a node with minimum degree
-        deg = G.degree()
-        node = next(n for n,d in deg.items() if d==min(deg.values()))
+        node = min(G, key=G.degree)
         min_cut = G.edges(node)
         # A dominating set is \lambda-covering
         # We need a dominating set with at least two nodes
