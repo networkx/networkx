@@ -1,3 +1,5 @@
+import math
+
 from nose.tools import *
 
 import networkx as nx
@@ -110,6 +112,65 @@ class TestJaccardCoefficient():
         G = nx.Graph()
         G.add_nodes_from([0, 1])
         self.test(G, 0, 1, 0)
+
+
+class TestAdamicAdarIndex():
+    def setUp(self):
+        self.func = lp.adamic_adar_index
+        def test_func(G, u, v, expected):
+            tol = 1e-7
+            result = self.func(G, u, v)
+            assert_true(abs(result - expected) < tol)
+        self.test = test_func
+
+    def test_K5(self):
+        G = nx.complete_graph(5)
+        self.test(G, 0, 1, 3 / math.log(4))
+
+    def test_P3(self):
+        G = nx.path_graph(3)
+        self.test(G, 0, 2, 1 / math.log(2))
+
+    def test_S4(self):
+        G = nx.star_graph(4)
+        self.test(G, 1, 2, 1 / math.log(4))
+
+    @raises(NetworkXNotImplemented)
+    def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G, 0, 2)
+
+    @raises(NetworkXNotImplemented)
+    def test_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G, 0, 2)
+
+    @raises(NetworkXNotImplemented)
+    def test_multidigraph(self):
+        G = nx.MultiDiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G, 0, 2)
+
+    @raises(NetworkXError)
+    def test_nonexistent_node1(self):
+        G = nx.complete_graph(5)
+        self.func(G, 'A', 0)
+
+    @raises(NetworkXError)
+    def test_nonexistent_node2(self):
+        G = nx.complete_graph(5)
+        self.func(G, 0, 'A')
+
+    def test_no_common_neighbor(self):
+        G = nx.Graph()
+        G.add_nodes_from([0, 1])
+        self.test(G, 0, 1, 0)
+
+    def test_equal_nodes(self):
+        G = nx.complete_graph(4)
+        self.test(G, 0, 0, 3 / math.log(3))
 
 
 class TestCNSoundarajanHopcroft():
