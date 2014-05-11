@@ -56,6 +56,62 @@ class TestResourceAllocationIndex():
         self.test(G, 0, 0, 1)
 
 
+class TestJaccardCoefficient():
+    def setUp(self):
+        self.func = lp.jaccard_coefficient
+        def test_func(G, u, v, expected):
+            tol = 1e-7
+            result = self.func(G, u, v)
+            assert_true(abs(result - expected) < tol)
+        self.test = test_func
+
+    def test_K5(self):
+        G = nx.complete_graph(5)
+        self.test(G, 0, 1, 0.6)
+
+    def test_P4(self):
+        G = nx.path_graph(4)
+        self.test(G, 0, 2, 0.5)
+
+    @raises(NetworkXNotImplemented)
+    def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G, 0, 2)
+
+    @raises(NetworkXNotImplemented)
+    def test_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G, 0, 2)
+
+    @raises(NetworkXNotImplemented)
+    def test_multidigraph(self):
+        G = nx.MultiDiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G, 0, 2)
+
+    @raises(NetworkXError)
+    def test_nonexistent_node1(self):
+        G = nx.complete_graph(5)
+        self.func(G, 'A', 0)
+
+    @raises(NetworkXError)
+    def test_nonexistent_node2(self):
+        G = nx.complete_graph(5)
+        self.func(G, 0, 'A')
+
+    def test_no_common_neighbor(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (2, 3)])
+        self.test(G, 0, 2, 0)
+
+    def test_isolated_nodes(self):
+        G = nx.Graph()
+        G.add_nodes_from([0, 1])
+        self.test(G, 0, 1, 0)
+
+
 class TestCNSoundarajanHopcroft():
     def setUp(self):
         self.func = lp.cn_soundarajan_hopcroft
