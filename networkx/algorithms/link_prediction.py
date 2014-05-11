@@ -53,6 +53,18 @@ def resource_allocation_index(G, u, v):
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
+def jaccard_coefficient(G, u, v):
+    """Compute the Jaccard coefficient of u and v."""
+    cnbors = list(nx.common_neighbors(G, u, v))
+    union_size = len(set(G[u]) | set(G[v]))
+    if union_size == 0:
+        return 0
+    else:
+        return len(cnbors) / union_size
+
+
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def cn_soundarajan_hopcroft(G, u, v):
     """Count the number of common neighbors using community information.
 
