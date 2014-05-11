@@ -4,6 +4,8 @@ Link prediction algorithms.
 
 from __future__ import division
 
+import math
+
 import networkx as nx
 from networkx.exception import *
 from networkx.utils.decorators import *
@@ -61,6 +63,13 @@ def jaccard_coefficient(G, u, v):
         return 0
     else:
         return len(cnbors) / union_size
+
+
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
+def adamic_adar_index(G, u, v):
+    """Compute the Adamic-Adar index of u and v."""
+    return sum(1 / math.log(G.degree(w)) for w in nx.common_neighbors(G, u, v))
 
 
 @not_implemented_for('directed')
