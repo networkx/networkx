@@ -6,7 +6,6 @@ from nose.tools import *
 
 methods = ('tracemin_pcg', 'tracemin_chol', 'tracemin_lu', 'lanczos', 'lobpcg')
 
-
 try:
     from numpy.random import get_state, seed, set_state, shuffle
 
@@ -228,13 +227,13 @@ class TestSpectralOrdering(object):
         G = nx.Graph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1)],
                                   weight='spam')
-        for method in methods:
+        for method in self._methods:
             order = nx.spectral_ordering(G, weight='spam', method=method)
             assert_equal(set(order), set(G))
             ok_(set([1, 3]) in (set(order[:-1]), set(order[1:])))
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2), (2, 3, 1), (2, 3, 2)])
-        for method in methods:
+        for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
             assert_equal(set(order), set(G))
             ok_(set([2, 3]) in (set(order[:-1]), set(order[1:])))
@@ -245,7 +244,7 @@ class TestSpectralOrdering(object):
         shuffle(path)
         G = nx.Graph()
         G.add_path(path)
-        for method in methods:
+        for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
             ok_(order in [path, list(reversed(path))])
 
@@ -254,7 +253,7 @@ class TestSpectralOrdering(object):
         G = nx.Graph()
         G.add_path(range(0, 10, 2))
         G.add_path(range(1, 10, 2))
-        for method in methods:
+        for method in self._methods:
             order = nx.spectral_ordering(G, method=method)
             assert_equal(set(order), set(G))
             seqs = [list(range(0, 10, 2)), list(range(8, -1, -2)),
@@ -271,11 +270,19 @@ class TestSpectralOrdering(object):
         A = nx.laplacian_matrix(G).todense()
         for normalized in (False, True):
             for method in methods:
-                order = nx.spectral_ordering(G, normalized=normalized,
-                                             method=method)
-                if not normalized:
-                    ok_(order in [[1, 2, 0, 3, 4, 5, 6, 9, 7, 8],
-                                  [8, 7, 9, 6, 5, 4, 3, 0, 2, 1]])
+                try:
+                    order = nx.spectral_ordering(G, normalized=normalized,
+                                                 method=method)
+                except nx.NetworkXError as e:
+                    if e.args not in (('Cholesky solver unavailable.',),
+                                      ('LU solver unavailable.',)):
+                        raise
                 else:
-                    ok_(order in [[1, 2, 3, 0, 4, 5, 9, 6, 7, 8],
-                                  [8, 7, 6, 9, 5, 4, 0, 3, 2, 1]])
+                    if not normalized:
+                        ok_(order in [[1, 2, 0, 3, 4, 5, 6, 9, 7, 8],
+                                      [8, 7, 9, 6, 5, 4, 3, 0, 2, 1]])
+                    else:
+                        ok_(order in [[1, 2, 3, 0, 4, 5, 9, 6, 7, 8],
+                                      [8, 7, 6, 9, 5, 4, 0, 3, 2, 1]])
+
+    _methods = ('tracemin', 'lanczos', 'lobpcg')
