@@ -85,7 +85,10 @@ def build_auxiliary_edge_connectivity(G):
         nx.set_edge_attributes(H, 'capacity', capacity)
         return H
     else:
-        H = G.to_directed()
+        H = nx.DiGraph()
+        H.add_nodes_from(G.nodes_iter())
+        for (source, target) in G.edges_iter():
+            H.add_edges_from([(source, target), (target, source)])
         capacity = dict((e, 1) for e in H.edges())
         nx.set_edge_attributes(H, 'capacity', capacity)
         return H
