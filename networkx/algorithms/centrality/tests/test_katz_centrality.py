@@ -315,6 +315,7 @@ class TestKatzEigenvectorVKatz(object):
             raise SkipTest('SciPy not available.')
 
     def test_eigenvector_v_katz_random(self):
+        np.random.seed(1234)
         G = networkx.gnp_random_graph(10,0.5)
         l = float(max(eigvals(networkx.adjacency_matrix(G).todense())))
         e = networkx.eigenvector_centrality_numpy(G)
