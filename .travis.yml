@@ -20,8 +20,6 @@ matrix:
 
   allow_failures:
     # 3.4 and pypy Wheels are not yet available.
-    - python: "3.4"
-      env: OPTIONAL_DEPS=pip
     - python: "pypy"
       env: OPTIONAL_DEPS=pip
     - env: OPTIONAL_DEPS=source
