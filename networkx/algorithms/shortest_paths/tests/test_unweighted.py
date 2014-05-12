@@ -21,7 +21,7 @@ class TestUnweightedPath:
         assert_equal(nx.bidirectional_shortest_path(self.directed_cycle,0,3),
                      [0, 1, 2, 3])
 
-    @timed(1)
+    @timed(3)
     def test_bidirectional_shortest_path_very_long_path(self):
         size=100000
         G=nx.path_graph(size)
