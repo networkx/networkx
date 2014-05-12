@@ -4,8 +4,9 @@ import networkx as nx
 from nose import SkipTest
 from nose.tools import *
 
-methods = ('tracemin_pcg', 'tracemin_chol', 'tracemin_lu', 'lanczos', 'lobpcg')
-
+methods = ['tracemin_pcg', 'tracemin_lu', 'lanczos', 'lobpcg']
+if  nx.linalg.algebraicconnectivity._CholeskySolver._cholesky:
+    methods.insert(1, 'tracemin_chol')
 
 try:
     from numpy.random import get_state, seed, set_state, shuffle
