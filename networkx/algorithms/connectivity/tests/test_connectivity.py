@@ -260,3 +260,13 @@ def test_invalid_auxiliary():
     G = nx.complete_graph(5)
     assert_raises(nx.NetworkXError, local_node_connectivity, G, 0, 3,
                   auxiliary=G)
+
+def test_interface_only_source():
+    G = nx.complete_graph(5)
+    for interface_func in [nx.node_connectivity, nx.edge_connectivity]:
+        assert_raises(nx.NetworkXError, interface_func, G, s=0)
+
+def test_interface_only_target():
+    G = nx.complete_graph(5)
+    for interface_func in [nx.node_connectivity, nx.edge_connectivity]:
+        assert_raises(nx.NetworkXError, interface_func, G, t=3)

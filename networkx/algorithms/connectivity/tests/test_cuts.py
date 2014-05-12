@@ -183,10 +183,12 @@ def test_edge_cutset_random_graphs():
 def test_empty_graphs():
     G = nx.Graph()
     D = nx.DiGraph()
-    for func in [nx.minimum_node_cut, nx.minimum_edge_cut]:
+    for interface_func in [nx.minimum_node_cut, nx.minimum_edge_cut]:
         for flow_func in flow_funcs:
-            assert_raises(nx.NetworkXPointlessConcept, func, G)
-            assert_raises(nx.NetworkXPointlessConcept, func, D)
+            assert_raises(nx.NetworkXPointlessConcept, interface_func, G,
+                          flow_func=flow_func)
+            assert_raises(nx.NetworkXPointlessConcept, interface_func, D,
+                          flow_func=flow_func)
 
 def test_unbounded():
     G = nx.complete_graph(5)
@@ -242,3 +244,13 @@ def test_invalid_auxiliary():
     G = nx.complete_graph(5)
     assert_raises(nx.NetworkXError, minimum_st_node_cut, G, 0, 3,
                    auxiliary=G)
+
+def test_interface_only_source():
+    G = nx.complete_graph(5)
+    for interface_func in [nx.minimum_node_cut, nx.minimum_edge_cut]:
+        assert_raises(nx.NetworkXError, interface_func, G, s=0)
+
+def test_interface_only_target():
+    G = nx.complete_graph(5)
+    for interface_func in [nx.minimum_node_cut, nx.minimum_edge_cut]:
+        assert_raises(nx.NetworkXError, interface_func, G, t=3)

@@ -367,6 +367,9 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
 
     """
+    if (s is not None and t is None) or (s is None and t is not None):
+        raise nx.NetworkXError('Both source and target must be specified.')
+
     # Local minimum node cut.
     if s is not None and t is not None:
         if s not in G:
@@ -505,6 +508,9 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
 
     """
+    if (s is not None and t is None) or (s is None and t is not None):
+        raise nx.NetworkXError('Both source and target must be specified.')
+
     # reuse auxiliary digraph and residual network
     H = build_auxiliary_edge_connectivity(G)
     R = build_residual_network(H, 'capacity')

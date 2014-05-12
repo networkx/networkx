@@ -286,6 +286,9 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
 
     """
+    if (s is not None and t is None) or (s is None and t is not None):
+        raise nx.NetworkXError('Both source and target must be specified.')
+
     # Local node connectivity
     if s is not None and t is not None:
         if s not in G:
@@ -649,6 +652,9 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
 
     """
+    if (s is not None and t is None) or (s is None and t is not None):
+        raise nx.NetworkXError('Both source and target must be specified.')
+
     # Local edge connectivity
     if s is not None and t is not None:
         if s not in G:
