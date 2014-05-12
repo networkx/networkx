@@ -204,7 +204,7 @@ def test_edge_missing_source():
 def test_edge_missing_target():
     G = nx.path_graph(4)
     for flow_func in flow_funcs:
-        assert_raises(nx.NetworkXError, nx.node_connectivity, G, 1, 10,
+        assert_raises(nx.NetworkXError, nx.edge_connectivity, G, 1, 10,
                       flow_func=flow_func)
 
 def test_not_weakly_connected():
