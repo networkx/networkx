@@ -222,6 +222,50 @@ class TestColoring:
         assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
         assert_true(verify_coloring(graph, coloring))
 
+    def test_cs_dfs_empty(self):
+        graph = emptyGraph()
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential_dfs, interchange=False)
+        assert_true(verify_length(coloring, 0))
+        assert_true(verify_coloring(graph, coloring))
+
+    def test_cs_dfs_oneNode(self):
+        graph = oneNodeGraph()
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential_dfs, interchange=False)
+        assert_true(verify_length(coloring, 1))
+        assert_true(verify_coloring(graph, coloring))
+
+    def test_cs_dfs_twoNodes(self):
+        graph = twoNodesGraph()
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential_dfs, interchange=False)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))
+
+    def test_cs_dfs_threeNodeClique(self):
+        graph = threeNodeClique()
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential_dfs, interchange=False)
+        assert_true(verify_length(coloring, 3))
+        assert_true(verify_coloring(graph, coloring))
+
+    def test_cs_dfs_shc(self):
+        graph = cs_shc()
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential_dfs, interchange=False)
+        assert_true(verify_length(coloring, 3) or verify_length(coloring, 4))
+        assert_true(verify_coloring(graph, coloring))
+
+    def test_cs_disconnected(self):
+        # _connected_ sequential should still work on disconnected graphs
+        graph = nx.Graph()
+        graph.add_edges_from([
+            (1, 2),
+            (2, 3),
+            (4, 5),
+            (5, 6)
+        ])
+        coloring = nx.coloring.greedy_color(graph, strategy=nx.coloring.strategy_connected_sequential, interchange=False)
+        assert_true(verify_length(coloring, 2))
+        assert_true(verify_coloring(graph, coloring))
+
+
 ############################## Interchange tests ##############################
 # RSI
     def test_rsi_empty(self):
@@ -325,13 +369,16 @@ class TestColoring:
 
 ############################## Utility functions ##############################
 def verify_coloring(graph, coloring):
-    correct = True
     for node in graph.nodes_iter():
+        if node not in coloring:
+            return False
+
         color = coloring[node]
         for neighbor in graph.neighbors(node):
-            correct = correct and coloring[neighbor] != color
+            if coloring[neighbor] == color:
+                return False
 
-    return correct
+    return True
 
 def verify_length(coloring, expected):
     coloring = dict_to_sets(coloring)

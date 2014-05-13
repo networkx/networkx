@@ -23,6 +23,8 @@ __all__ = [
     'strategy_smallest_last',
     'strategy_independent_set',
     'strategy_connected_sequential',
+    'strategy_connected_sequential_dfs',
+    'strategy_connected_sequential_bfs',
     'strategy_saturation_largest_first'
 ]
 
@@ -36,7 +38,6 @@ def max_degree_node(G):
 Largest first (lf) ordering. Ordering the nodes by largest degree 
 first.
 """
-
 def strategy_largest_first(G, colors):
     nodes = G.nodes()
     nodes.sort(key=lambda node: -G.degree(node))
@@ -96,28 +97,45 @@ def strategy_independent_set(G, colors):
         k += 1
     return None
 
+"""
+Connected sequential ordering (CS). Yield nodes in such an order, that
+each node, except the first one, has at least one neighbour in the 
+preceeding sequence. The sequence is generated using BFS)
+"""
+def strategy_connected_sequential_bfs(G, colors):
+    return strategy_connected_sequential(G, colors, 'bfs')
+
+"""
+Connected sequential ordering (CS). Yield nodes in such an order, that
+each node, except the first one, has at least one neighbour in the 
+preceeding sequence. The sequence is generated using DFS)
+"""
+def strategy_connected_sequential_dfs(G, colors):
+    return strategy_connected_sequential(G, colors, 'dfs')
 
 """
 Connected sequential ordering (CS). Yield nodes in such an order, that
 each node, except the first one, has at least one neighbour in the 
 preceeding sequence. The sequence can be generated using both BFS and 
-DFS search.
+DFS search (using the strategy_connected_sequential_bfs and 
+strategy_connected_sequential_dfs method). The default is bfs.
 """
 def strategy_connected_sequential(G, colors, traversal='bfs'):
-    source = G.nodes()[0]
+    for component_graph in nx.connected_component_subgraphs(G):
+        source = component_graph.nodes()[0]
 
-    yield source # Pick the first node as source
+        yield source # Pick the first node as source
 
-    if traversal == 'bfs':
-        tree = nx.bfs_edges(G, source)
-    elif traversal == 'dfs':
-        tree = nx.dfs_edges(G, source)
-    else:
-        raise nx.NetworkXError(
-            'Please specify bfs or dfs for connected sequential ordering')
+        if traversal == 'bfs':
+            tree = nx.bfs_edges(component_graph, source)
+        elif traversal == 'dfs':
+            tree = nx.dfs_edges(component_graph, source)
+        else:
+            raise nx.NetworkXError(
+                'Please specify bfs or dfs for connected sequential ordering')
 
-    for (_, end) in tree:
-        yield end # Then yield nodes in the order traversed by either BFS or DFS
+        for (_, end) in tree:
+            yield end # Then yield nodes in the order traversed by either BFS or DFS
 
 """
 Saturation largest first (SLF). Also known as degree saturation (DSATUR).
@@ -183,22 +201,30 @@ Parameters
 ----------
 G : NetworkX graph
 
-strategy : string
-   Greedy coloring strategy. It is possible to choose from these 
-   strategies:
-   
-   lf: Largest first ordering
-   rs: Random sequential ordering
-   sl: Smallest last ordering
-   gis: Greedy independent set ordering
-   cs: Connected sequential ordering (using depth first search)
-   cs-dfs: (same as cs)
-   cs-bfs: Connected sequential ordering (using breath first search)
-   slf: Saturation largest first (also known as DSATUR)
-   
+strategy : function(G, colors)
+   A function that provides the coloring strategy, by returning nodes 
+   in the ordering they should be colored. G is the graph, and colors
+   is a dict of the currently assigned colors, keyed by nodes.
+
+   You can pass your own ordering function, or use one of the built in:
+
+   * strategy_largest_first
+   * strategy_random_sequential
+   * strategy_smallest_last
+   * strategy_independent_set
+   * strategy_connected_sequential (an alias of the BFS version)
+     * strategy_connected_sequential_bfs
+     * strategy_connected_sequential_dfs
+   * strategy_saturation_largest_first (also know as DSATUR)
+
 interchange: boolean
-   If strategy allows it, will use the color interchange algorithm 
-   described by [2] if set to true.
+   Will use the color interchange algorithm described by [2] if set
+   to true. 
+
+   Note that saturation largest first and independent set do not 
+   work with interchange. Furthermore, if you use interchange with 
+   your own strategy function, you cannot rely on the values in the
+   colors argument
    
 Returns
 -------
