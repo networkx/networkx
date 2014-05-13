@@ -113,11 +113,11 @@ def shortest_path(G, source=None, target=None, weight=None):
                 paths=nx.all_pairs_dijkstra_path(G,weight=weight)
         else:
             ## Find paths from all nodes co-accessible to the target.
-            with nx.utils.reversed(G) as H:
+            with nx.utils.reversed(G):
                 if weight is None:
-                    paths=nx.single_source_shortest_path(H, target)
+                    paths=nx.single_source_shortest_path(G, target)
                 else:
-                    paths=nx.single_source_dijkstra_path(H, target, weight=weight)
+                    paths=nx.single_source_dijkstra_path(G, target, weight=weight)
 
                 # Now flip the paths so they go from a source to the target.
                 for target in paths:
@@ -226,11 +226,11 @@ def shortest_path_length(G, source=None, target=None, weight=None):
                 paths=nx.all_pairs_dijkstra_path_length(G, weight=weight)
         else:
             ## Find paths from all nodes co-accessible to the target.
-            with nx.utils.reversed(G) as H:
+            with nx.utils.reversed(G):
                 if weight is None:
-                    paths=nx.single_source_shortest_path_length(H, target)
+                    paths=nx.single_source_shortest_path_length(G, target)
                 else:
-                    paths=nx.single_source_dijkstra_path_length(H, target,
+                    paths=nx.single_source_dijkstra_path_length(G, target,
                                                                 weight=weight)
     else:
         if target is None:

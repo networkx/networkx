@@ -17,9 +17,6 @@ def reversed(G):
     ----------
     G : graph
         A NetworkX graph
-    copy : bool
-        If True, then a new graph is returned. If False, then the graph is
-        reversed in place.
 
     Returns
     -------
@@ -30,13 +27,11 @@ def reversed(G):
     copy = False
     directed = G.is_directed()
     if directed:
-        H = G.reverse(copy=copy)
-    else:
-        H = G
+        G.reverse(copy=copy)
 
     try:
-        yield H
+        yield
     finally:
         if directed:
             # Reverse the reverse.
-            H.reverse(copy=copy)
+            G.reverse(copy=copy)
