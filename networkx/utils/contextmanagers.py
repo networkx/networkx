@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 @contextmanager
-def reversed(G, copy=True):
+def reversed(G):
     """
     A context manager for temporarily reversing a directed graph.
 
@@ -27,6 +27,7 @@ def reversed(G, copy=True):
         The reversed G.
 
     """
+    copy = False
     directed = G.is_directed()
     if directed:
         H = G.reverse(copy=copy)
@@ -36,6 +37,6 @@ def reversed(G, copy=True):
     try:
         yield H
     finally:
-        if directed and not copy:
+        if directed:
             # Reverse the reverse.
             H.reverse(copy=copy)
