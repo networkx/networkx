@@ -8,30 +8,22 @@ __all__ = [
 
 @contextmanager
 def reversed(G):
-    """
-    A context manager for temporarily reversing a directed graph.
+    """A context manager for temporarily reversing a directed graph in place.
 
     This is a no-op for undirected graphs.
 
     Parameters
     ----------
     G : graph
-        A NetworkX graph
-
-    Returns
-    -------
-    H : graph
-        The reversed G.
-
+        A NetworkX graph.
     """
-    copy = False
     directed = G.is_directed()
     if directed:
-        G.reverse(copy=copy)
+        G.reverse(copy=False)
 
     try:
         yield
     finally:
         if directed:
             # Reverse the reverse.
-            G.reverse(copy=copy)
+            G.reverse(copy=False)
