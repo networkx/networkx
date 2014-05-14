@@ -76,19 +76,13 @@ def build_auxiliary_edge_connectivity(G):
         http://www.cse.msu.edu/~cse835/Papers/Graph_connectivity_revised.pdf
     """
     if G.is_directed():
-        if nx.get_edge_attributes(G, 'capacity'):
-            return G
         H = nx.DiGraph()
         H.add_nodes_from(G.nodes_iter())
-        H.add_edges_from(G.edges_iter())
-        capacity = dict((e, 1) for e in H.edges())
-        nx.set_edge_attributes(H, 'capacity', capacity)
+        H.add_edges_from(G.edges_iter(), capacity=1)
         return H
     else:
         H = nx.DiGraph()
         H.add_nodes_from(G.nodes_iter())
         for (source, target) in G.edges_iter():
-            H.add_edges_from([(source, target), (target, source)])
-        capacity = dict((e, 1) for e in H.edges())
-        nx.set_edge_attributes(H, 'capacity', capacity)
+            H.add_edges_from([(source, target), (target, source)], capacity=1)
         return H
