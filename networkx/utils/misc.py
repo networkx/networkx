@@ -128,12 +128,10 @@ def dict_to_numpy_array(d,mapping=None):
 
 def dict_to_numpy_array2(d,mapping=None):
     """Convert a dictionary of dictionaries to a 2d numpy array
-    with optional mapping."""
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError(
-          "dict_to_numpy_array requires numpy : http://scipy.org/ ")
+    with optional mapping.
+
+    """
+    import numpy
     if mapping is None:
         s=set(d.keys())
         for k,v in d.items():
@@ -151,12 +149,10 @@ def dict_to_numpy_array2(d,mapping=None):
 
 def dict_to_numpy_array1(d,mapping=None):
     """Convert a dictionary of numbers to a 1d numpy array
-    with optional mapping."""
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError(
-          "dict_to_numpy_array requires numpy : http://scipy.org/ ")
+    with optional mapping.
+
+    """
+    import numpy
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s,range(len(s))))
