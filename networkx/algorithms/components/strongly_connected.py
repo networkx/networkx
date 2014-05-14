@@ -126,15 +126,15 @@ def kosaraju_strongly_connected_components(G,source=None):
     -----
     Uses Kosaraju's algorithm.
     """
-    G=G.reverse(copy=False)
-    post=list(nx.dfs_postorder_nodes(G,source=source))
-    G=G.reverse(copy=False)
-    seen={}
+    with nx.utils.reversed(G):
+        post = list(nx.dfs_postorder_nodes(G, source=source))
+
+    seen = {}
     while post:
-        r=post.pop()
+        r = post.pop()
         if r in seen:
             continue
-        c=nx.dfs_preorder_nodes(G,r)
+        c = nx.dfs_preorder_nodes(G,r)
         new=[v for v in c if v not in seen]
         seen.update([(u,True) for u in new])
         yield new
@@ -309,12 +309,12 @@ def condensation(G, scc=None):
     Returns
     -------
     C : NetworkX DiGraph
-       The condensation graph C of G. The node labels are integers 
-       corresponding to the index of the component in the list of 
+       The condensation graph C of G. The node labels are integers
+       corresponding to the index of the component in the list of
        strongly connected components of G. C has a graph attribute named
        'mapping' with a dictionary mapping the original nodes to the
        nodes in C to which they belong. Each node in C also has a node
-       attribute 'members' with the list of original nodes in G that 
+       attribute 'members' with the list of original nodes in G that
        form the SCC that the node in C represents.
 
     Raises
