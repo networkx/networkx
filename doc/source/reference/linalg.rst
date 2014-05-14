@@ -36,7 +36,7 @@ Spectrum
 
 Algebraic Connectivity
 ----------------------
-.. automodule:: networkx.linalg.algebraic_connectivity
+.. automodule:: networkx.linalg.algebraicconnectivity
 .. autosummary::
    :toctree: generated/
 
