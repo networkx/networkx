@@ -101,5 +101,6 @@ class TestNumpyArray(object):
         assert_allclose(a, numpy.array([[20,10],[2,1]]))
 
         d = {'a':1,'b':2}
-        a = dict_to_numpy_array(d)
+        mapping = {'a': 0, 'b': 1}
+        a = dict_to_numpy_array(d, mapping=mapping)
         assert_allclose(a, numpy.array([1,2]))
