@@ -23,12 +23,13 @@ __all__ = ['minimum_st_node_cut',
            'minimum_edge_cut']
 
 
-def minimum_st_edge_cut(G, s, t, capacity='capacity', flow_func=None,
+def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
                         residual=None):
     """Returns the edges of the cut-set of a minimum (s, t)-cut.
 
     This function returns the set of edges of minimum cardinality that,
     if removed, would destroy all paths among source and target in G.
+    Edge weights are not considered
 
     Parameters
     ----------
@@ -43,11 +44,11 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity', flow_func=None,
     t : node
         Sink node for the flow.
 
-    capacity: string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
+    auxiliary : NetworkX DiGraph
+        Auxiliary digraph to compute flow based node connectivity. It has
+        to have a graph attribute called mapping with a dictionary mapping
+        node names in G and in the auxiliary digraph. If provided
+        it will be reused instead of recreated. Default value: None.
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes.
@@ -68,12 +69,6 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity', flow_func=None,
     cutset : set
         Set of edges that, if removed from the graph, will disconnect it.
 
-    Raises
-    ------
-    NetworkXUnbounded
-        If the graph has a path of infinite capacity, all cuts have
-        infinite capacity and the function raises a NetworkXError.
-
     See also
     --------
     :meth:`minimum_cut`
@@ -93,50 +88,73 @@ def minimum_st_edge_cut(G, s, t, capacity='capacity', flow_func=None,
     have to explicitly import it from the connectivity package:
 
     >>> from networkx.algorithms.connectivity import minimum_st_edge_cut
-    >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity = 3.0)
-    >>> G.add_edge('x','b', capacity = 1.0)
-    >>> G.add_edge('a','c', capacity = 3.0)
-    >>> G.add_edge('b','c', capacity = 5.0)
-    >>> G.add_edge('b','d', capacity = 4.0)
-    >>> G.add_edge('d','e', capacity = 2.0)
-    >>> G.add_edge('c','y', capacity = 2.0)
-    >>> G.add_edge('e','y', capacity = 3.0)
-    >>> cutset = minimum_st_edge_cut(G, 'x', 'y')
-    >>> sorted(cutset)
-    [('c', 'y'), ('x', 'b')]
-    >>> cut_value = nx.minimum_cut_value(G, 'x', 'y')
-    >>> cut_value == sum(G[u][v]['capacity'] for u, v in cutset)
+
+    We use in this example the platonic icosahedral graph, which has edge
+    connectivity 5.
+
+    >>> G = nx.icosahedral_graph()
+    >>> len(minimum_st_edge_cut(G, 0, 6))
+    5
+
+    If you need to compute local edge cuts on several pairs of
+    nodes in the same graph, it is recommended that you reuse the
+    data structures that NetworkX uses in the computation: the 
+    auxiliary digraph for edge connectivity, and the residual
+    network for the underlying maximum flow computation.
+
+    Example of how to compute local edge cuts among all pairs of
+    nodes of the platonic icosahedral graph reusing the data 
+    structures.
+
+    >>> import itertools
+    >>> # You also have to explicitly import the function for 
+    >>> # building the auxiliary digraph from the connectivity package
+    >>> from networkx.algorithms.connectivity import (
+    ...     build_auxiliary_edge_connectivity)
+    >>> H = build_auxiliary_edge_connectivity(G)
+    >>> # And the function for building the residual network from the
+    >>> # flow package
+    >>> from networkx.algorithms.flow.utils import build_residual_network
+    >>> # Note that the auxiliary digraph has an edge attribute named capacity
+    >>> R = build_residual_network(H, 'capacity')
+    >>> result = dict.fromkeys(G, dict())
+    >>> # Reuse the auxiliary digraph and the residual network by passing them
+    >>> # as parameters
+    >>> for u, v in itertools.combinations(G, 2):
+    ...     k = len(minimum_st_edge_cut(G, u, v, auxiliary=H, residual=R))
+    ...     result[u][v] = k
+    >>> all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))
     True
 
-    You can also use alternative flow algorithms for the underlying 
-    maximum flow compution. For instance, in dense networks the 
-    algorithm :meth:`shortest_augmenting_path` will usually perform 
-    better than the default :meth:`edmonds_karp` which is faster for
-    sparse network with highly skewed degree distributions:
+    You can also use alternative flow algorithms for computing edge
+    cuts. For instance, in dense networks the algorithm
+    :meth:`shortest_augmenting_path` will usually perform better than
+    the default :meth:`edmonds_karp` which is faster for sparse
+    networks with highly skewed degree distributions.
 
-    >>> cutset == nx.minimum_edge_cut(G, 'x', 'y',
-    ...                               flow_func=nx.shortest_augmenting_path)
-    True
+    >>> len(minimum_st_edge_cut(G, 0, 6, flow_func=nx.shortest_augmenting_path))
+    5
 
     """
     if flow_func is None:
         flow_func = default_flow_func
 
-    kwargs = dict(capacity=capacity, flow_func=flow_func, residual=residual)
+    if auxiliary is None:
+        H = build_auxiliary_edge_connectivity(G)
+    else:
+        H = auxiliary
 
-    try:
-        cut_value, partition = nx.minimum_cut(G, s, t, **kwargs)
-        reachable, non_reachable = partition
-        # Any edge in the original graph linking the two sets in the 
-        # partition is part of the edge cutset
-        cutset = set()
-        for u, nbrs in ((n, G[n]) for n in reachable):
-            cutset.update((u, v) for v in nbrs if v in non_reachable)
-        return cutset
+    kwargs = dict(capacity='capacity', flow_func=flow_func, residual=residual)
 
-    except nx.NetworkXUnbounded:
-        raise nx.NetworkXUnbounded("Infinite capacity path, no minimum cut.")
+    cut_value, partition = nx.minimum_cut(H, s, t, **kwargs)
+    reachable, non_reachable = partition
+    # Any edge in the original graph linking the two sets in the 
+    # partition is part of the edge cutset
+    cutset = set()
+    for u, nbrs in ((n, G[n]) for n in reachable):
+        cutset.update((u, v) for v in nbrs if v in non_reachable)
+
+    return cutset
 
 
 def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
@@ -265,7 +283,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     if mapping is None:
         raise nx.NetworkXError('Invalid auxiliary digraph.')
 
-    kwargs = dict(flow_func=flow_func, residual=residual)
+    kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H)
 
     # The edge cut in the auxiliary digraph corresponds to the node cut in the
     # original graph.
@@ -514,7 +532,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     # reuse auxiliary digraph and residual network
     H = build_auxiliary_edge_connectivity(G)
     R = build_residual_network(H, 'capacity')
-    kwargs = dict(flow_func=flow_func, residual=R)
+    kwargs = dict(flow_func=flow_func, residual=R, auxiliary=H)
 
     # Local minimum edge cut if s and t are not None
     if s is not None and t is not None:

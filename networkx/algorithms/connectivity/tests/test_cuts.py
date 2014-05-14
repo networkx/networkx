@@ -193,7 +193,7 @@ def test_empty_graphs():
 def test_unbounded():
     G = nx.complete_graph(5)
     for flow_func in flow_funcs:
-        assert_raises(nx.NetworkXUnbounded, minimum_st_edge_cut, G, 1, 4)
+        assert_equal(4, len(minimum_st_edge_cut(G, 1, 4, flow_func=flow_func)))
 
 def test_missing_source():
     G = nx.path_graph(4)
