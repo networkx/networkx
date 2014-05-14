@@ -63,49 +63,59 @@ def test_make_str_with_unicode():
         assert_true(len(y) == 7)
 
 class TestNumpyArray(object):
-    numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
         global numpy
-        global assert_equal
-        global assert_almost_equal
+        global assert_allclose
         try:
             import numpy
-            from numpy.testing import assert_equal,assert_almost_equal
+            from numpy.testing import assert_allclose
         except ImportError:
              raise SkipTest('NumPy not available.')
 
     def test_dict_to_numpy_array1(self):
         d = {'a':1,'b':2}
+        a = dict_to_numpy_array1(d, mapping={'a':0, 'b':1})
+        assert_allclose(a, numpy.array([1,2]))
+        a = dict_to_numpy_array1(d, mapping={'b':0, 'a':1})
+        assert_allclose(a, numpy.array([2,1]))
+
         a = dict_to_numpy_array1(d)
-        assert_equal(a, numpy.array(list(d.values())))
-        a = dict_to_numpy_array1(d, mapping = {'b':0,'a':1})
-        assert_equal(a, numpy.array([2,1]))
+        assert_allclose(a.sum(), 3)
 
     def test_dict_to_numpy_array2(self):
         d = {'a': {'a':1,'b':2},
              'b': {'a':10,'b':20}}
-        a = dict_to_numpy_array(d)
-        if list(d.keys())[0] == 'a':
-            assert_equal(a, numpy.array([[1,2],[10,20]]))
-        elif list(d.keys())[0] == 'b':
-            assert_equal(a, numpy.array([[20,10],[2,1]]))
-        else:
-            raise
-        a = dict_to_numpy_array2(d, mapping = {'b':0,'a':1})
-        assert_equal(a, numpy.array([[20,10],[2,1]]))
 
+        mapping = {'a':1, 'b': 0}
+        a = dict_to_numpy_array2(d, mapping=mapping)
+        assert_allclose(a, numpy.array([[20,10],[2,1]]))
 
-    def test_dict_to_numpy_array(self):
+        a = dict_to_numpy_array2(d)
+        assert_allclose(a.sum(), 33)
+
+    def test_dict_to_numpy_array_a(self):
         d = {'a': {'a':1,'b':2},
              'b': {'a':10,'b':20}}
-        a = dict_to_numpy_array(d)
-        if list(d.keys())[0] == 'a':
-            assert_equal(a, numpy.array([[1,2],[10,20]]))
-        elif list(d.keys())[0] == 'b':
-            assert_equal(a, numpy.array([[20,10],[2,1]]))
-        else:
-            raise
+
+        mapping = {'a':0, 'b': 1}
+        a = dict_to_numpy_array(d, mapping=mapping)
+        assert_allclose(a, numpy.array([[1,2],[10,20]]))
+
+        mapping = {'a':1, 'b': 0}
+        a = dict_to_numpy_array(d, mapping=mapping)
+        assert_allclose(a, numpy.array([[20,10],[2,1]]))
+
+        a = dict_to_numpy_array2(d)
+        assert_allclose(a.sum(), 33)
+
+    def test_dict_to_numpy_array_b(self):
         d = {'a':1,'b':2}
-        a = dict_to_numpy_array(d)
-        assert_equal(a, numpy.array(list(d.values())))
+
+        mapping = {'a': 0, 'b': 1}
+        a = dict_to_numpy_array(d, mapping=mapping)
+        assert_allclose(a, numpy.array([1,2]))
+
+        a = dict_to_numpy_array1(d)
+        assert_allclose(a.sum(), 3)
+
