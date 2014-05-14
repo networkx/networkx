@@ -142,18 +142,18 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     input graph:
 
     For an undirected graph G having `n` nodes and `m` edges we derive a
-    directed graph H with 2n nodes and 2m+n arcs by replacing each
+    directed graph H with `2n` nodes and `2m+n` arcs by replacing each
     original node `v` with two nodes `v_A`, `v_B` linked by an (internal)
-    arc in `H`. Then for each edge (`u`, `v`) in G we add two arcs
-    (`u_B`, `v_A`) and (`v_B`, `u_A`) in `H`. Finally we set the attribute
-    capacity = 1 for each arc in `H` [1]_ .
+    arc in H. Then for each edge (`u`, `v`) in G we add two arcs
+    (`u_B`, `v_A`) and (`v_B`, `u_A`) in H. Finally we set the attribute
+    capacity = 1 for each arc in H [1]_ .
 
     For a directed graph G having `n` nodes and `m` arcs we derive a
-    directed graph `H` with `2n` nodes and `m+n` arcs by replacing each
+    directed graph H with `2n` nodes and `m+n` arcs by replacing each
     original node `v` with two nodes `v_A`, `v_B` linked by an (internal)
-    arc `(v_A, v_B)` in H. Then for each arc `(u,v)` in G we add one arc
-    `(u_B,v_A)` in `H`. Finally we set the attribute capacity = 1 for
-    each arc in `H`.
+    arc (`v_A`, `v_B`) in H. Then for each arc (`u`, `v`) in G we add one arc
+    (`u_B`, `v_A`) in H. Finally we set the attribute capacity = 1 for
+    each arc in H.
 
     This is equal to the local node connectivity because the value of
     a maximum s-t-flow is equal to the capacity of a minimum s-t-cut.
@@ -519,8 +519,8 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     maximum flow using, by default, the :meth:`edmonds_karp` algorithm on an 
     auxiliary digraph build from the original input graph:
 
-    If the input graph is undirected, we replace each edge (u,v) with
-    two reciprocal arcs `(u,v)` and `(v,u)` and then we set the attribute
+    If the input graph is undirected, we replace each edge (`u`,`v`) with
+    two reciprocal arcs (`u`, `v`) and (`v`, `u`) and then we set the attribute
     'capacity' for each arc to 1. If the input graph is directed we simply
     add the 'capacity' attribute. This is an implementation of algorithm 1
     in [1]_.

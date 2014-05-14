@@ -15,17 +15,18 @@ def build_auxiliary_node_connectivity(G):
     based node connectivity.
 
     For an undirected graph G having `n` nodes and `m` edges we derive a
-    directed graph D with 2n nodes and 2m+n arcs by replacing each
-    original node `v` with two nodes `vA`,`vB` linked by an (internal)
-    arc in D. Then for each edge (u,v) in G we add two arcs (uB,vA)
-    and (vB,uA) in D. Finally we set the attribute capacity = 1 for each
-    arc in D [1].
+    directed graph D with `2n` nodes and `2m+n` arcs by replacing each
+    original node `v` with two nodes `vA`, `vB` linked by an (internal)
+    arc in D. Then for each edge (`u`, `v`) in G we add two arcs (`uB`, `vA`)
+    and (`vB`, `uA`) in D. Finally we set the attribute capacity = 1 for each
+    arc in D [1]_.
 
     For a directed graph having `n` nodes and `m` arcs we derive a
-    directed graph D with 2n nodes and m+n arcs by replacing each
-    original node `v` with two nodes `vA`,`vB` linked by an (internal)
-    arc `(vA,vB)` in D. Then for each arc (u,v) in G we add one arc (uB,vA)
-    in D. Finally we set the attribute capacity = 1 for each arc in D.
+    directed graph D with `2n` nodes and `m+n` arcs by replacing each
+    original node `v` with two nodes `vA`, `vB` linked by an (internal)
+    arc (`vA`, `vB`) in D. Then for each arc (`u`, `v`) in G we add one 
+    arc (`uB`, `vA`) in D. Finally we set the attribute capacity = 1 for
+    each arc in D.
 
     A dictionary with a mapping between nodes in the original graph and the
     auxiliary digraph is stored as a graph attribute: H.graph['mapping'].
@@ -64,8 +65,8 @@ def build_auxiliary_node_connectivity(G):
 def build_auxiliary_edge_connectivity(G):
     """Auxiliary digraph for computing flow based edge connectivity
 
-    If the input graph is undirected, we replace each edge (u,v) with
-    two reciprocal arcs (u,v) and (v,u) and then we set the attribute
+    If the input graph is undirected, we replace each edge (`u`,`v`) with
+    two reciprocal arcs (`u`, `v`) and (`v`, `u`) and then we set the attribute
     'capacity' for each arc to 1. If the input graph is directed we simply
     add the 'capacity' attribute. Part of algorithm 1 in [1]_ .
 
