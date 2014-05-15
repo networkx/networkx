@@ -257,3 +257,95 @@ class TestCommonNeighbors():
         """Case of equal nodes."""
         G = nx.complete_graph(4)
         self.test(G, 0, 0, [1, 2, 3])
+
+
+def test_set_node_attributes():
+    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
+    for G in graphs:
+        G = nx.path_graph(3, create_using=G)
+
+        # Test single value
+        attr = 'hello'
+        vals = 100
+        nx.set_node_attributes(G, attr, vals)
+        assert_equal(G.node[0][attr], vals)
+        assert_equal(G.node[1][attr], vals)
+        assert_equal(G.node[2][attr], vals)
+
+        # Test multiple values
+        attr = 'hi'
+        vals = dict(zip(sorted(G.nodes()), range(len(G))))
+        nx.set_node_attributes(G, attr, vals)
+        assert_equal(G.node[0][attr], 0)
+        assert_equal(G.node[1][attr], 1)
+        assert_equal(G.node[2][attr], 2)
+
+def test_set_edge_attributes():
+    graphs = [nx.Graph(), nx.DiGraph()]
+    for G in graphs:
+        G = nx.path_graph(3, create_using=G)
+
+        # Test single value
+        attr = 'hello'
+        vals = 3
+        nx.set_edge_attributes(G, attr, vals)
+        assert_equal(G[0][1][attr], vals)
+        assert_equal(G[1][2][attr], vals)
+
+        # Test multiple values
+        attr = 'hi'
+        edges = [(0,1), (1,2)]
+        vals = dict(zip(edges, range(len(edges))))
+        nx.set_edge_attributes(G, attr, vals)
+        assert_equal(G[0][1][attr], 0)
+        assert_equal(G[1][2][attr], 1)
+
+def test_set_edge_attributes_multi():
+    graphs = [nx.MultiGraph(), nx.MultiDiGraph()]
+    for G in graphs:
+        G = nx.path_graph(3, create_using=G)
+
+        # Test single value
+        attr = 'hello'
+        vals = 3
+        nx.set_edge_attributes(G, attr, vals)
+        assert_equal(G[0][1][0][attr], vals)
+        assert_equal(G[1][2][0][attr], vals)
+
+        # Test multiple values
+        attr = 'hi'
+        edges = [(0,1,0), (1,2,0)]
+        vals = dict(zip(edges, range(len(edges))))
+        nx.set_edge_attributes(G, attr, vals)
+        assert_equal(G[0][1][0][attr], 0)
+        assert_equal(G[1][2][0][attr], 1)
+
+def test_get_node_attributes():
+    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
+    for G in graphs:
+        G = nx.path_graph(3, create_using=G)
+        attr = 'hello'
+        vals = 100
+        nx.set_node_attributes(G, attr, vals)
+        attrs = nx.get_node_attributes(G, attr)
+        assert_equal(attrs[0], vals)
+        assert_equal(attrs[1], vals)
+        assert_equal(attrs[2], vals)
+
+
+def test_get_edge_attributes():
+    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
+    for G in graphs:
+        G = nx.path_graph(3, create_using=G)
+        attr = 'hello'
+        vals = 100
+        nx.set_edge_attributes(G, attr, vals)
+        attrs = nx.get_edge_attributes(G, attr)
+
+        assert_equal(len(attrs), 2)
+        if G.is_multigraph():
+            keys = [(0,1,0), (1,2,0)]
+        else:
+            keys = [(0,1), (1,2)]
+        for key in keys:
+            assert_equal(attrs[key], 100)
