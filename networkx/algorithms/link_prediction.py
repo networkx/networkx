@@ -59,7 +59,41 @@ def resource_allocation_index(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def jaccard_coefficient(G, u, v):
-    """Compute the Jaccard coefficient of u and v."""
+    r"""Compute the Jaccard coefficient of `u` and `v`.
+
+    Jaccard coefficient of nodes `u` and `v` is defined as
+
+    .. math::
+
+        \frac{|\Gamma(u) \cap \Gamma(v)|}{|\Gamma(u) \cup \Gamma(v)|}
+
+    where :math:`\Gamma(u)` denotes the set of neighbors of `u`.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX undirected graph.
+
+    u, v : nodes
+        Nodes in the graph.
+
+    Returns
+    -------
+    value : float
+        The Jaccard coefficient of `u` and `v`.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> nx.jaccard_coefficient(G, 0, 1)
+    0.6
+
+    References
+    ----------
+    .. [1] D. Liben-Nowell, J. Kleinberg.
+           The Link Prediction Problem for Social Networks (2004).
+           http://www.cs.cornell.edu/home/kleinber/link-pred.pdf
+    """
     cnbors = list(nx.common_neighbors(G, u, v))
     union_size = len(set(G[u]) | set(G[v]))
     if union_size == 0:
@@ -71,14 +105,82 @@ def jaccard_coefficient(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def adamic_adar_index(G, u, v):
-    """Compute the Adamic-Adar index of u and v."""
+    r"""Compute the Adamic-Adar index of `u` and `v`.
+
+    Adamic-Adar index of `u` and `v` is defined as
+
+    .. math::
+
+        \sum_{w \in \Gamma(u) \cap \Gamma(v)} \frac{1}{\log |\Gamma(w)|}
+
+    where :math:`\Gamma(u)` denotes the set of neighbors of `u`.
+
+    Parameters
+    ----------
+    G : graph
+        NetworkX undirected graph.
+
+    u, v : nodes
+        Nodes in the graph.
+
+    Returns
+    -------
+    value : float
+        The Adamic-Adar index of `u` and `v`.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> nx.adamic_adar_index(G, 0, 1)
+    2.164042561333445
+
+    References
+    ----------
+    .. [1] D. Liben-Nowell, J. Kleinberg.
+           The Link Prediction Problem for Social Networks (2004).
+           http://www.cs.cornell.edu/home/kleinber/link-pred.pdf
+    """
     return sum(1 / math.log(G.degree(w)) for w in nx.common_neighbors(G, u, v))
 
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def preferential_attachment(G, u, v):
-    """Compute the preferential attachment score of u and v."""
+    r"""Compute the preferential attachment score of `u` and `v`.
+
+    Preferential attachment score of `u` and `v` is defined as
+
+    .. math::
+
+        |\Gamma(u)| |\Gamma(v)|
+
+    where :math:`\Gamma(u)` denotes the set of neighbors of `u`.
+
+    Parameters
+    ----------
+    G : graph
+        NetworkX undirected graph.
+
+    u, v : nodes
+        Nodes in the graph.
+
+    Returns
+    -------
+    value : int
+        The preferential attachment score of `u` and `v`.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> nx.preferential_attachment(G, 0, 1)
+    16
+
+    References
+    ----------
+    .. [1] D. Liben-Nowell, J. Kleinberg.
+           The Link Prediction Problem for Social Networks (2004).
+           http://www.cs.cornell.edu/home/kleinber/link-pred.pdf
+    """
     if u not in G:
         raise nx.NetworkXError('u is not in the graph.')
     if v not in G:
