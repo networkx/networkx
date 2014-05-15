@@ -299,7 +299,7 @@ def info(G, n=None):
     return info
 
 
-def set_node_attributes(G,name,attributes):
+def set_node_attributes(G, name, values):
     """Set node attributes from dictionary of nodes and values
 
     Parameters
@@ -309,22 +309,30 @@ def set_node_attributes(G,name,attributes):
     name : string
        Attribute name
 
-    attributes: dict
-       Dictionary of attributes keyed by node.
+    values: dict
+       Dictionary of attribute values keyed by node. If `values` is not a
+       dictionary, then it is treated as a single attribute value that is then
+       applied to every node in `G`.
 
     Examples
     --------
-    >>> G=nx.path_graph(3)
-    >>> bb=nx.betweenness_centrality(G)
-    >>> nx.set_node_attributes(G,'betweenness',bb)
+    >>> G = nx.path_graph(3)
+    >>> bb = nx.betweenness_centrality(G)
+    >>> nx.set_node_attributes(G, 'betweenness', bb)
     >>> G.node[1]['betweenness']
     1.0
     """
-    for node,value in attributes.items():
-        G.node[node][name]=value
+    try:
+        values.items
+    except AttributeError:
+        # Treat `value` as the attribute value for each node.
+        values = dict(zip(G.nodes(), [values] * len(G)))
+
+    for node, value in values.items():
+        G.node[node][name] = value
 
 
-def get_node_attributes(G,name):
+def get_node_attributes(G, name):
     """Get node attributes from graph
 
     Parameters
@@ -349,8 +357,8 @@ def get_node_attributes(G,name):
     return dict( (n,d[name]) for n,d in G.node.items() if name in d)
 
 
-def set_edge_attributes(G,name,attributes):
-    """Set edge attributes from dictionary of edge tuples and values
+def set_edge_attributes(G, name, values):
+    """Set edge attributes from dictionary of edge tuples and values.
 
     Parameters
     ----------
@@ -359,22 +367,41 @@ def set_edge_attributes(G,name,attributes):
     name : string
        Attribute name
 
-    attributes: dict
-       Dictionary of attributes keyed by edge (tuple).
+    values : dict
+       Dictionary of attribute values keyed by edge (tuple). For multigraphs,
+       the keys tuples must be of the form (u, v, key). For non-multigraphs,
+       the keys must be tuples of the form (u, v). If `values` is not a
+       dictionary, then it is treated as a single attribute value that is then
+       applied to every edge in `G`.
 
     Examples
     --------
-    >>> G=nx.path_graph(3)
-    >>> bb=nx.edge_betweenness_centrality(G, normalized=False)
-    >>> nx.set_edge_attributes(G,'betweenness',bb)
+    >>> G = nx.path_graph(3)
+    >>> bb = nx.edge_betweenness_centrality(G, normalized=False)
+    >>> nx.set_edge_attributes(G, 'betweenness', bb)
     >>> G[1][2]['betweenness']
     2.0
+
     """
-    for (u,v),value in attributes.items():
-        G[u][v][name]=value
+    try:
+        values.items
+    except AttributeError:
+        # Treat `value` as the attribute value for each edge.
+        if G.is_multigraph():
+            edges = G.edges(keys=True)
+        else:
+            edges = G.edges()
+        values = dict(zip(edges, [values] * len(edges)))
+
+    if G.is_multigraph():
+        for (u, v, key), value in values.items():
+            G[u][v][key][name] = value
+    else:
+        for (u, v), value in values.items():
+            G[u][v][name] = value
 
 
-def get_edge_attributes(G,name):
+def get_edge_attributes(G, name):
     """Get edge attributes from graph
 
     Parameters
@@ -386,7 +413,9 @@ def get_edge_attributes(G,name):
 
     Returns
     -------
-    Dictionary of attributes keyed by node.
+    Dictionary of attributes keyed by edge. For (di)graphs, the keys are
+    2-tuples of the form: (u,v). For multi(di)graphs, the keys are 3-tuples of
+    the form: (u, v, key).
 
     Examples
     --------
@@ -396,7 +425,12 @@ def get_edge_attributes(G,name):
     >>> color[(1,2)]
     'red'
     """
-    return dict( ((u,v),d[name]) for u,v,d in G.edges(data=True) if name in d)
+    if G.is_multigraph():
+        edges = G.edges(keys=True, data=True)
+    else:
+        edges = G.edges(data=True)
+    return dict( (x[:-1], x[-1][name]) for x in edges if name in x[-1] )
+
 
 
 def all_neighbors(graph, node):
