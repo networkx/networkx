@@ -22,10 +22,15 @@ __all__ = ['resource_allocation_index',
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def resource_allocation_index(G, u, v):
-    """Compute the resource allocation index of u and v.
+    r"""Compute the resource allocation index of `u` and `v`.
 
-    Resource allocation index of nodes u and v is defined as the sum of
-    reciprocals of the degree of all the common neighbors w of u and v.
+    Resource allocation index of `u` and `v` is defined as
+
+    .. math::
+
+        \sum_{w \in \Gamma(u) \cap \Gamma(v)} \frac{1}{|\Gamma(w)|}
+
+    where :math:`\Gamma(u)` denotes the set of neighbors of `u`.
 
     Parameters
     ----------
@@ -38,7 +43,7 @@ def resource_allocation_index(G, u, v):
     Returns
     -------
     value : float
-        The resource allocation index of u and v.
+        The resource allocation index of `u` and `v`.
 
     Examples
     --------
@@ -192,10 +197,18 @@ def preferential_attachment(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def cn_soundarajan_hopcroft(G, u, v):
-    """Count the number of common neighbors using community information.
+    r"""Count the number of common neighbors using community information.
 
     One is added to the count for each common neighbor that belongs
-    to the same community as u and v.
+    to the same community as `u` and `v`. Mathematically,
+
+    .. math::
+
+        |\Gamma(u) \cap \Gamma(v)| + \sum_{w \in \Gamma(u) \cap \Gamma(v)} f(w)
+
+    where `f(w)` equals 1 if `w` belongs to the same community as `u`
+    and `v` or 0 otherwise and :math:`\Gamma(u)` denotes the set of
+    neighbors of `u`.
 
     Parameters
     ----------
@@ -208,8 +221,9 @@ def cn_soundarajan_hopcroft(G, u, v):
     Returns
     -------
     value : int
-        The number of common neighbors between u and v plus bonus for
-        each common neighbor belonging to the same community as u and v.
+        The number of common neighbors between `u` and `v` plus bonus
+        for each common neighbor belonging to the same community as
+        `u` and `v`.
 
     Notes
     -----
@@ -247,12 +261,20 @@ def cn_soundarajan_hopcroft(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def ra_index_soundarajan_hopcroft(G, u, v):
-    """Compute the resource allocation index of u and v using community information.
+    r"""Compute the resource allocation index of `u` and `v` using community information.
 
-    Resource allocation index of two nodes is defined as the sum of
-    reciprocals of the degree of all their common neighbors. However,
-    this function only considers common neighbors belonging to the same
-    community as u and v.
+
+    This function computes the resource allocation index of `u` and `v`
+    considering only common neighbors belonging to the same community
+    as `u` and `v`. Mathematically,
+
+    .. math::
+
+        \sum_{w \in \Gamma(u) \cap \Gamma(v)} \frac{f(w)}{|\Gamma(w)|}
+
+    where `f(w)` equals 1 if `w` belongs to the same community as `u`
+    and `v` or 0 otherwise and :math:`\Gamma(u)` denotes the set of
+    neighbors of `u`.
 
     Parameters
     ----------
@@ -265,8 +287,9 @@ def ra_index_soundarajan_hopcroft(G, u, v):
     Returns
     -------
     value : float
-        The resource allocation index of u and v considering only
-        common neighbors that belong to the same community as u and v.
+        The resource allocation index of `u` and `v` considering only
+        common neighbors that belong to the same community as
+        `u` and `v`.
 
     Notes
     -----
@@ -305,12 +328,12 @@ def ra_index_soundarajan_hopcroft(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def within_inter_cluster(G, u, v, delta=0.001):
-    """Compute the ratio of within- and inter-cluster common neighbor.
+    """Compute the ratio of within- and inter-cluster common neighbors.
 
-    If a common neighbor w belongs to the same community with u and v,
-    w is considered as within-cluster common neighbor of u and v.
-    Otherwise, it is considered as inter-cluster common neighbor of u
-    and v. The ratio between the size of the set of within- and
+    If a common neighbor `w` belongs to the same community as `u`
+    and `v`, `w` is considered as within-cluster common neighbor of `u`
+    and `v`. Otherwise, it is considered as inter-cluster common neighbor
+    of `u` and `v`. The ratio between the size of the set of within- and
     inter-cluster common neighbors is defined as the WIC measure. [1]_
 
     Parameters
@@ -323,12 +346,12 @@ def within_inter_cluster(G, u, v, delta=0.001):
 
     delta : float, optional
         Value to prevent division by zero in case there is no inter-cluster
-        common neighbor of u and v. See [1]_ for details.
+        common neighbor of `u` and `v`. See [1]_ for details.
 
     Returns
     -------
     value : float
-        The WIC measure of u and v.
+        The WIC measure of `u` and `v`.
 
     Notes
     -----
