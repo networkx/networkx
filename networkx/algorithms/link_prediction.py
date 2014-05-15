@@ -74,6 +74,18 @@ def adamic_adar_index(G, u, v):
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
+def preferential_attachment(G, u, v):
+    """Compute the preferential attachment score of u and v."""
+    if u not in G:
+        raise nx.NetworkXError('u is not in the graph.')
+    if v not in G:
+        raise nx.NetworkXError('v is not in the graph.')
+
+    return G.degree(u) * G.degree(v)
+
+
+@not_implemented_for('directed')
+@not_implemented_for('multigraph')
 def cn_soundarajan_hopcroft(G, u, v):
     """Count the number of common neighbors using community information.
 
