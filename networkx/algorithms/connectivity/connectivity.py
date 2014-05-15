@@ -23,7 +23,8 @@ __all__ = ['average_node_connectivity',
            'local_node_connectivity',
            'node_connectivity',
            'local_edge_connectivity',
-           'edge_connectivity']
+           'edge_connectivity',
+           'all_pairs_node_connectivity_matrix']
 
 
 def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
@@ -404,6 +405,77 @@ def average_node_connectivity(G, flow_func=None):
     if den == 0: # Null Graph
         return 0
     return num / den
+
+
+def all_pairs_node_connectivity_matrix(G, nodelist=None, flow_func=None):
+    """Return a numpy 2d ndarray with node connectivity between all pairs
+    of nodes.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    nodelist: list
+        Ordering of nodes for rows and columns of matrix
+
+    flow_func : function
+        A function for computing the maximum flow among a pair of nodes.
+        The function has to accept at least three parameters: a Digraph, 
+        a source node, and a target node. And return a residual network 
+        that follows NetworkX conventions (see :meth:`maximum_flow` for 
+        details). If flow_func is None, the default maximum flow function 
+        (:meth:`edmonds_karp`) is used. See below for details. The
+        choice of the default function may change from version
+        to version and should not be relied on. Default value: None.
+
+    Returns
+    -------
+    K : 2d numpy ndarray
+         node connectivity between all pairs of nodes.
+
+    See also
+    --------
+    :meth:`local_node_connectivity`
+    :meth:`edge_connectivity`
+    :meth:`local_edge_connectivity`
+    :meth:`maximum_flow`
+    :meth:`edmonds_karp`
+    :meth:`preflow_push`
+    :meth:`shortest_augmenting_path`
+
+    """
+    import numpy as np
+    if nodelist is None:
+        nodelist = G
+
+    nlen = len(nodelist)
+
+    if nlen == 0:
+        raise nx.NetworkXError("Graph has no nodes or edges")
+
+    if len(nodelist) != len(set(nodelist)):
+        msg = "Ambiguous ordering: `nodelist` contained duplicates."
+        raise nx.NetworkXError(msg)
+
+    n = G.order()
+    M = np.zeros((n, n), dtype=int)
+    # Reuse auxiliary digraph and residual network
+    H = build_auxiliary_node_connectivity(G)
+    mapping = H.graph['mapping']
+    R = build_residual_network(H, 'capacity')
+    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+
+    if G.is_directed():
+        for u, v in itertools.permutations(G, 2):
+            K = local_node_connectivity(G, u, v, **kwargs)
+            M[mapping[u], mapping[v]] = K
+    else:
+        for u, v in itertools.combinations(G, 2):
+            K = local_node_connectivity(G, u, v, **kwargs)
+            M[mapping[u], mapping[v]] = M[mapping[v], mapping[u]] = K
+
+    return M
 
 
 def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
