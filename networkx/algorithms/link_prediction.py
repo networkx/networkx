@@ -22,7 +22,7 @@ __all__ = ['resource_allocation_index',
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def resource_allocation_index(G, u, v):
-    r"""Compute the resource allocation index of `u` and `v`.
+    r"""Compute the resource allocation index of two nodes.
 
     Resource allocation index of `u` and `v` is defined as
 
@@ -64,7 +64,7 @@ def resource_allocation_index(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def jaccard_coefficient(G, u, v):
-    r"""Compute the Jaccard coefficient of `u` and `v`.
+    r"""Compute the Jaccard coefficient of two nodes.
 
     Jaccard coefficient of nodes `u` and `v` is defined as
 
@@ -110,7 +110,7 @@ def jaccard_coefficient(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def adamic_adar_index(G, u, v):
-    r"""Compute the Adamic-Adar index of `u` and `v`.
+    r"""Compute the Adamic-Adar index of two nodes.
 
     Adamic-Adar index of `u` and `v` is defined as
 
@@ -151,7 +151,7 @@ def adamic_adar_index(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def preferential_attachment(G, u, v):
-    r"""Compute the preferential attachment score of `u` and `v`.
+    r"""Compute the preferential attachment score of two nodes.
 
     Preferential attachment score of `u` and `v` is defined as
 
@@ -197,7 +197,7 @@ def preferential_attachment(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def cn_soundarajan_hopcroft(G, u, v):
-    r"""Count the number of common neighbors using community information.
+    r"""Count the number of common neighbors of two nodes using community information.
 
     One is added to the count for each common neighbor that belongs
     to the same community as `u` and `v`. Mathematically,
@@ -261,7 +261,7 @@ def cn_soundarajan_hopcroft(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def ra_index_soundarajan_hopcroft(G, u, v):
-    r"""Compute the resource allocation index of `u` and `v` using community information.
+    r"""Compute the resource allocation index of two nodes using community information.
 
 
     This function computes the resource allocation index of `u` and `v`
@@ -328,7 +328,7 @@ def ra_index_soundarajan_hopcroft(G, u, v):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def within_inter_cluster(G, u, v, delta=0.001):
-    """Compute the ratio of within- and inter-cluster common neighbors.
+    """Compute the ratio of within- and inter-cluster common neighbors of two nodes.
 
     If a common neighbor `w` belongs to the same community as `u`
     and `v`, `w` is considered as within-cluster common neighbor of `u`

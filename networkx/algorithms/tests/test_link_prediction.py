@@ -4,12 +4,11 @@ from nose.tools import *
 
 import networkx as nx
 from networkx.exception import *
-import networkx.algorithms.link_prediction as lp
 
 
 class TestResourceAllocationIndex():
     def setUp(self):
-        self.func = lp.resource_allocation_index
+        self.func = nx.resource_allocation_index
         def test_func(G, u, v, expected):
             tol = 1e-7
             result = self.func(G, u, v)
@@ -46,21 +45,19 @@ class TestResourceAllocationIndex():
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    def test_custom1(self):
-        """Case of no common neighbors."""
+    def test_no_common_neighbor(self):
         G = nx.Graph()
         G.add_nodes_from([0, 1])
         self.test(G, 0, 1, 0)
 
-    def test_custom2(self):
-        """Case of equal nodes."""
+    def test_equal_nodes(self):
         G = nx.complete_graph(4)
         self.test(G, 0, 0, 1)
 
 
 class TestJaccardCoefficient():
     def setUp(self):
-        self.func = lp.jaccard_coefficient
+        self.func = nx.jaccard_coefficient
         def test_func(G, u, v, expected):
             tol = 1e-7
             result = self.func(G, u, v)
@@ -116,7 +113,7 @@ class TestJaccardCoefficient():
 
 class TestAdamicAdarIndex():
     def setUp(self):
-        self.func = lp.adamic_adar_index
+        self.func = nx.adamic_adar_index
         def test_func(G, u, v, expected):
             tol = 1e-7
             result = self.func(G, u, v)
@@ -175,7 +172,7 @@ class TestAdamicAdarIndex():
 
 class TestPreferentialAttachment():
     def setUp(self):
-        self.func = lp.preferential_attachment
+        self.func = nx.preferential_attachment
         def test_func(G, u, v, expected):
             result = self.func(G, u, v)
             assert_equal(result, expected)
@@ -229,7 +226,7 @@ class TestPreferentialAttachment():
 
 class TestCNSoundarajanHopcroft():
     def setUp(self):
-        self.func = lp.cn_soundarajan_hopcroft
+        self.func = nx.cn_soundarajan_hopcroft
         def test_func(G, u, v, expected):
             result = self.func(G, u, v)
             assert_equal(result, expected)
@@ -287,15 +284,14 @@ class TestCNSoundarajanHopcroft():
         G.node[2]['community'] = 0
         self.func(G, 0, 2)
 
-    def test_custom1(self):
-        """Case of no common neighbors."""
+    def test_no_common_neighbor(self):
         G = nx.Graph()
         G.add_nodes_from([0, 1])
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         self.test(G, 0, 1, 0)
 
-    def test_custom2(self):
+    def test_equal_nodes(self):
         """Case of equal nodes."""
         G = nx.complete_graph(3)
         G.node[0]['community'] = 0
@@ -303,8 +299,7 @@ class TestCNSoundarajanHopcroft():
         G.node[2]['community'] = 0
         self.test(G, 0, 0, 4)
 
-    def test_custom3(self):
-        """Case of different community."""
+    def test_different_community(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
         G.node[0]['community'] = 0
@@ -314,14 +309,12 @@ class TestCNSoundarajanHopcroft():
         self.test(G, 0, 3, 2)
 
     @raises(NetworkXAlgorithmError)
-    def test_custom4(self):
-        """Case of no community information."""
+    def test_no_community_information(self):
         G = nx.complete_graph(5)
         self.func(G, 0, 1)
 
     @raises(NetworkXAlgorithmError)
-    def test_custom5(self):
-        """Case of insufficient community information."""
+    def test_insufficient_community_information(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
         G.node[0]['community'] = 0
@@ -329,8 +322,7 @@ class TestCNSoundarajanHopcroft():
         G.node[3]['community'] = 0
         self.func(G, 0, 3)
 
-    def test_custom6(self):
-        """Case of sufficient community information."""
+    def test_sufficient_community_information(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 4), (3, 4), (4, 5)])
         G.node[1]['community'] = 0
@@ -342,7 +334,7 @@ class TestCNSoundarajanHopcroft():
 
 class TestRAIndexSoundarajanHopcroft():
     def setUp(self):
-        self.func = lp.ra_index_soundarajan_hopcroft
+        self.func = nx.ra_index_soundarajan_hopcroft
         def test_func(G, u, v, expected):
             tol = 1e-7
             result = self.func(G, u, v)
@@ -401,24 +393,21 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[2]['community'] = 0
         self.func(G, 0, 2)
 
-    def test_custom1(self):
-        """Case of no common neighbors."""
+    def test_no_common_neighbor(self):
         G = nx.Graph()
         G.add_nodes_from([0, 1])
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         self.test(G, 0, 1, 0)
 
-    def test_custom2(self):
-        """Case of equal nodes."""
+    def test_equal_nodes(self):
         G = nx.complete_graph(3)
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
         self.test(G, 0, 0, 1)
 
-    def test_custom3(self):
-        """Case of different community."""
+    def test_different_community(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
         G.node[0]['community'] = 0
@@ -428,14 +417,12 @@ class TestRAIndexSoundarajanHopcroft():
         self.test(G, 0, 3, 0)
 
     @raises(NetworkXAlgorithmError)
-    def test_custom4(self):
-        """Case of no community information."""
+    def test_no_community_information(self):
         G = nx.complete_graph(5)
         self.func(G, 0, 1)
 
     @raises(NetworkXAlgorithmError)
-    def test_custom5(self):
-        """Case of insufficient community information."""
+    def test_insufficient_community_information(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
         G.node[0]['community'] = 0
@@ -443,8 +430,7 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[3]['community'] = 0
         self.func(G, 0, 3)
 
-    def test_custom6(self):
-        """Case of sufficient community information."""
+    def test_sufficient_community_information(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 4), (3, 4), (4, 5)])
         G.node[1]['community'] = 0
@@ -457,7 +443,7 @@ class TestRAIndexSoundarajanHopcroft():
 class TestWithinInterCluster():
     def setUp(self):
         self.delta = 0.001
-        self.func = lp.within_inter_cluster
+        self.func = nx.within_inter_cluster
         def test_func(G, u, v, expected):
             tol = 1e-7
             result = self.func(G, u, v, self.delta)
@@ -516,24 +502,21 @@ class TestWithinInterCluster():
         G.node[2]['community'] = 0
         self.func(G, 0, 2, self.delta)
 
-    def test_custom1(self):
-        """Case of no common neighbors."""
+    def test_no_common_neighbor(self):
         G = nx.Graph()
         G.add_nodes_from([0, 1])
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         self.test(G, 0, 1, 0)
 
-    def test_custom2(self):
-        """Case of equal nodes."""
+    def test_equal_nodes(self):
         G = nx.complete_graph(3)
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
         self.test(G, 0, 0, 2 / self.delta)
 
-    def test_custom3(self):
-        """Case of different community."""
+    def test_different_community(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
         G.node[0]['community'] = 0
@@ -542,8 +525,7 @@ class TestWithinInterCluster():
         G.node[3]['community'] = 1
         self.test(G, 0, 3, 0)
 
-    def test_custom4(self):
-        """Case of no inter-cluster neighbor."""
+    def test_no_inter_cluster_common_neighbor(self):
         G = nx.complete_graph(4)
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
@@ -552,14 +534,12 @@ class TestWithinInterCluster():
         self.test(G, 0, 3, 2 / self.delta)
 
     @raises(NetworkXAlgorithmError)
-    def test_custom5(self):
-        """Case of no community information."""
+    def test_no_community_information(self):
         G = nx.complete_graph(5)
         self.func(G, 0, 1)
 
     @raises(NetworkXAlgorithmError)
-    def test_custom6(self):
-        """Case of insufficient community information."""
+    def test_insufficient_community_information(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
         G.node[0]['community'] = 0
@@ -567,8 +547,7 @@ class TestWithinInterCluster():
         G.node[3]['community'] = 0
         self.func(G, 0, 3)
 
-    def test_custom7(self):
-        """Case of sufficient community information."""
+    def test_sufficient_community_information(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 4), (3, 4), (4, 5)])
         G.node[1]['community'] = 0
@@ -578,8 +557,7 @@ class TestWithinInterCluster():
         self.test(G, 1, 4, 2 / self.delta)
 
     @raises(NetworkXAlgorithmError)
-    def test_custom8(self):
-        """Case of delta equals zero."""
+    def test_zero_delta(self):
         G = nx.complete_graph(3)
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
@@ -587,7 +565,7 @@ class TestWithinInterCluster():
         self.func(G, 0, 1, 0)
 
     @raises(NetworkXAlgorithmError)
-    def test_custom9(self):
+    def test_negative_delta(self):
         """Case of delta less than zero."""
         G = nx.complete_graph(3)
         G.node[0]['community'] = 0
