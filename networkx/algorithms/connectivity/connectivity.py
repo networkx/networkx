@@ -24,7 +24,7 @@ __all__ = ['average_node_connectivity',
            'node_connectivity',
            'local_edge_connectivity',
            'edge_connectivity',
-           'all_pairs_node_connectivity_matrix']
+           'all_pairs_node_connectivity']
 
 
 def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
@@ -407,17 +407,17 @@ def average_node_connectivity(G, flow_func=None):
     return num / den
 
 
-def all_pairs_node_connectivity_matrix(G, nodelist=None, flow_func=None):
-    """Return a numpy 2d ndarray with node connectivity between all pairs
-    of nodes.
+def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
+    """Compute node connectivity between all pairs of nodes of G.
 
     Parameters
     ----------
     G : NetworkX graph
         Undirected graph
 
-    nodelist: list
-        Ordering of nodes for rows and columns of matrix
+    nbunch: container
+        Container of nodes. If provided node connectivity will be computed
+        only over pairs of nodes in nbunch.
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes.
@@ -431,8 +431,9 @@ def all_pairs_node_connectivity_matrix(G, nodelist=None, flow_func=None):
 
     Returns
     -------
-    K : 2d numpy ndarray
-         node connectivity between all pairs of nodes.
+    all_pairs : dict
+        A dictionary with node connectivity between all pairs of nodes
+        in G, or in nbunch if provided.
 
     See also
     --------
@@ -445,37 +446,29 @@ def all_pairs_node_connectivity_matrix(G, nodelist=None, flow_func=None):
     :meth:`shortest_augmenting_path`
 
     """
-    import numpy as np
-    if nodelist is None:
-        nodelist = G
+    if nbunch is None:
+        nbunch = G
+    else:
+        nbunch = set(nbunch)
 
-    nlen = len(nodelist)
+    if G.is_directed():
+        iter_func = itertools.permutations
+    else:
+        iter_func = itertools.combinations
 
-    if nlen == 0:
-        raise nx.NetworkXError("Graph has no nodes or edges")
+    all_pairs = dict.fromkeys(nbunch, dict())
 
-    if len(nodelist) != len(set(nodelist)):
-        msg = "Ambiguous ordering: `nodelist` contained duplicates."
-        raise nx.NetworkXError(msg)
-
-    n = G.order()
-    M = np.zeros((n, n), dtype=int)
     # Reuse auxiliary digraph and residual network
     H = build_auxiliary_node_connectivity(G)
     mapping = H.graph['mapping']
     R = build_residual_network(H, 'capacity')
     kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
 
-    if G.is_directed():
-        for u, v in itertools.permutations(G, 2):
-            K = local_node_connectivity(G, u, v, **kwargs)
-            M[mapping[u], mapping[v]] = K
-    else:
-        for u, v in itertools.combinations(G, 2):
-            K = local_node_connectivity(G, u, v, **kwargs)
-            M[mapping[u], mapping[v]] = M[mapping[v], mapping[u]] = K
+    for u, v in iter_func(nbunch, 2):
+        K = local_node_connectivity(G, u, v, **kwargs)
+        all_pairs[u][v] = K
 
-    return M
+    return all_pairs
 
 
 def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,

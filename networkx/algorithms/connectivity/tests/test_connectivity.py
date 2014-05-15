@@ -1,3 +1,4 @@
+import itertools
 from nose.tools import assert_equal, assert_true, assert_false, assert_raises
 import networkx as nx
 
@@ -270,3 +271,52 @@ def test_interface_only_target():
     G = nx.complete_graph(5)
     for interface_func in [nx.node_connectivity, nx.edge_connectivity]:
         assert_raises(nx.NetworkXError, interface_func, G, t=3)
+
+class TestConnectivityPairs(object):
+
+    def test_all_pairs_connectivity_icosahedral(self):
+        G = nx.icosahedral_graph()
+        C = nx.all_pairs_node_connectivity(G)
+        assert_true(all(5 == C[u][v] for u, v in itertools.combinations(G, 2)))
+
+    def test_all_pairs_connectivity(self):
+        G = nx.Graph()
+        nodes = [0, 1, 2, 3]
+        G.add_path(nodes)
+        A = dict.fromkeys(G, dict())
+        for u, v in itertools.combinations(nodes,2):
+            A[u][v] = nx.node_connectivity(G, u, v)
+        C = nx.all_pairs_node_connectivity(G)
+        assert_equal(sorted((k, sorted(v)) for k, v in A.items()),
+                     sorted((k, sorted(v)) for k, v in C.items()))
+
+    def test_all_pairs_connectivity_directed(self):
+        G = nx.DiGraph()
+        nodes = [0, 1, 2, 3]
+        G.add_path(nodes)
+        A = dict.fromkeys(G, dict())
+        for u, v in itertools.permutations(nodes, 2):
+            A[u][v] = nx.node_connectivity(G, u, v)
+        C = nx.all_pairs_node_connectivity(G)
+        assert_equal(sorted((k, sorted(v)) for k, v in A.items()),
+                     sorted((k, sorted(v)) for k, v in C.items()))
+
+    def test_all_pairs_connectivity_nbunch(self):
+        G = nx.complete_graph(5)
+        nbunch = [0, 2, 3]
+        A = dict.fromkeys(nbunch, dict())
+        for u, v in itertools.combinations(nbunch, 2):
+            A[u][v] = nx.node_connectivity(G, u, v)
+        C = nx.all_pairs_node_connectivity(G, nbunch=nbunch)
+        assert_equal(sorted((k, sorted(v)) for k, v in A.items()),
+                     sorted((k, sorted(v)) for k, v in C.items()))
+
+    def test_all_pairs_connectivity_nbunch_iter(self):
+        G = nx.complete_graph(5)
+        nbunch = [0, 2, 3]
+        A = dict.fromkeys(nbunch, dict())
+        for u, v in itertools.combinations(nbunch, 2):
+            A[u][v] = nx.node_connectivity(G, u, v)
+        C = nx.all_pairs_node_connectivity(G, nbunch=iter(nbunch))
+        assert_equal(sorted((k, sorted(v)) for k, v in A.items()),
+                     sorted((k, sorted(v)) for k, v in C.items()))
