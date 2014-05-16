@@ -13,8 +13,7 @@ For directed graphs see DiGraph and MultiDiGraph.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from copy import copy, deepcopy
-from itertools import chain
+from copy import deepcopy
 import networkx as nx
 from networkx.exception import NetworkXError
 import networkx.convert as convert
@@ -321,39 +320,6 @@ class Graph(object):
         {1: {}}
         """
         return self.adj[n]
-
-    def __copy__(self):
-        """Return a shallow copy of the graph. Use the expression 'copy(G)'
-        where 'copy' is imported from the 'copy' module.
-
-        Returns
-        -------
-        H : NetworkX graph
-            A shallow copy of the graph.
-
-        Notes
-        -----
-        H has new internal data dictionaries but shares the dictionary keys and
-        values with the original graph. Only internal data dictionaries defined
-        by NetworkX are copied. Subclasses should override this function to
-        provide proper shallow copying semantics.
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2,3])
-        >>> G = copy(G)
-        >>> sorted(map(sorted, G.edges_iter()))
-        [[0, 1], [1, 2], [2, 3]]
-        """
-        H = self.__class__()
-        H.graph.update(self.graph)
-        H.add_nodes_from(self.nodes_iter(data=True))
-        kwargs = {'data': True}
-        if self.is_multigraph():
-            kwargs['keys'] = True
-        H.add_edges_from(self.edges_iter(**kwargs))
-        return H
 
     def add_node(self, n, attr_dict=None, **attr):
         """Add a single node n and update node attributes.
@@ -1348,38 +1314,30 @@ class Graph(object):
         self.node.clear()
         self.graph.clear()
 
-    def copy(self, data=True):
+    def copy(self):
         """Return a copy of the graph.
 
         Returns
         -------
-        G : NetworkX graph
+        G : Graph
             A copy of the graph.
-
-        data : bool or string, optional
-            If False, copy only the graph structure. If equal to the string
-            'shallow', return a shallow copy. Otherwise, return a deep copy.
-            Default value: True.
 
         See Also
         --------
-        to_directed
-        to_undirected
+        to_directed: return a directed copy of the graph.
+
+        Notes
+        -----
+        This makes a complete copy of the graph including all of the
+        node or edge attributes.
 
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.copy()
+
         """
-        if not data:
-            H = self.__class__()
-            H.add_nodes_from(self)
-            kwargs = {} if not self.is_multigraph() else {'keys': True}
-            H.add_edges_from(self.edges_iter(**kwargs))
-            return H
-        elif data == 'shallow':
-            return copy(self)
         return deepcopy(self)
 
     def is_multigraph(self):
@@ -1390,33 +1348,27 @@ class Graph(object):
         """Return True if graph is directed, False otherwise."""
         return False
 
-    def to_directed(self, data=True):
-        """Return a directed copy of the graph.
+    def to_directed(self):
+        """Return a directed representation of the graph.
 
         Returns
         -------
-        G : NetworkX graph
-            A directed copy of the graph.
-
-        data : bool or string, optional
-            If False, copy only the graph structure. If equal to the string
-            'shallow', return a shallow copy. Otherwise, return a deep copy.
-            Default value: True.
+        G : DiGraph
+            A directed graph with the same name, same nodes, and with
+            each edge (u,v,data) replaced by two directed edges
+            (u,v,data) and (v,u,data).
 
         Notes
         -----
-        If G is directed, 'G.to_directed(data)' is equivalent to
-        'G.copy(data)'.
+        This returns a "deepcopy" of the edge, node, and
+        graph attributes which attempts to completely copy
+        all of the data and references.
 
-        If G is undirected, each edge (u, v) becomes a pair of reciprocal edges
-        (u, v) and (v, u) with the same key (if G is a multigraph) and the same
-        data (if copied). Unless deep-copied, the key and the data contents are
-        referentially identical.
+        This is in contrast to the similar D=DiGraph(G) which returns a
+        shallow copy of the data.
 
-        See Also
-        --------
-        copy
-        to_undirected
+        See the Python copy module for more information on shallow
+        and deep copies, http://docs.python.org/library/copy.html.
 
         Examples
         --------
@@ -1434,54 +1386,40 @@ class Graph(object):
         >>> H.edges()
         [(0, 1)]
         """
-        if self.is_directed():
-            return self.copy(data)
-        multigraph = self.is_multigraph()
-        G = nx.DiGraph() if not multigraph else nx.MultiDiGraph()
+        from networkx import DiGraph
+        G = DiGraph()
+        G.name = self.name
         G.add_nodes_from(self)
-        if data:
-            G.graph.update(self.graph)
-            G.node.update(self.node)
-        kwargs = {'data': bool(data)}
-        if multigraph:
-            kwargs['keys'] = True
-        G.add_edges_from(chain.from_iterable(
-            [e, e[1::-1] + e[2:]]
-            for e in self.edges_iter(**kwargs)))
-        return deepcopy(G) if data and data != 'shallow' else G
+        G.add_edges_from(((u, v, deepcopy(data))
+                          for u, nbrs in self.adjacency_iter()
+                          for v, data in nbrs.items()))
+        G.graph = deepcopy(self.graph)
+        G.node = deepcopy(self.node)
+        return G
 
-    def to_undirected(self, reciprocal=False, data=True):
+    def to_undirected(self):
         """Return an undirected copy of the graph.
 
         Returns
         -------
-        G : NetworkX graph
-            An undirected copy of the graph.
-
-        reciprocal : bool, optional
-            If True, keep only edges that appear in both directions with the
-            same key.
-
-        data : bool or string, optional
-            If False, copy only the graph structure. If equal to the string
-            'shallow', return a shallow copy. Otherwise, return a deep copy.
-            Default value: True.
+        G : Graph/MultiGraph
+            A deepcopy of the graph.
 
         See Also
         --------
-        copy
-        to_directed
+        copy, add_edge, add_edges_from
 
         Notes
         -----
-        If G is undirected, 'G.to_undirected(data)' is equivalent to
-        'G.copy(data)'.
+        This returns a "deepcopy" of the edge, node, and
+        graph attributes which attempts to completely copy
+        all of the data and references.
 
-        If G is directed, each edge (u, v) becomes an undirected edge (u, v)
-        with the same key (if G is a multigraph) and the same data (if copied).
-        Each pair of reciprocal edges (with the same key if G is a multigraph)
-        becomes one undirected edge in the resulting graph. Their data, if
-        conflicting, are arbitrarily mixed.
+        This is in contrast to the similar G=DiGraph(D) which returns a
+        shallow copy of the data.
+
+        See the Python copy module for more information on shallow
+        and deep copies, http://docs.python.org/library/copy.html.
 
         Examples
         --------
@@ -1494,25 +1432,7 @@ class Graph(object):
         >>> G2.edges()
         [(0, 1)]
         """
-        if not self.is_directed():
-            return self.copy(data)
-        multigraph = self.is_multigraph()
-        G = nx.Graph() if not multigraph else nx.MultiGraph()
-        G.add_nodes_from(self)
-        if data:
-            G.graph.update(self.graph)
-            G.node.update(self.node)
-        kwargs = {'data': bool(data)}
-        if multigraph:
-            kwargs['keys'] = True
-        edges = self.edges_iter(**kwargs)
-        if reciprocal:
-            if not multigraph:
-                edges = (e for e in edges if self.has_edge(e[1], e[0]))
-            else:
-                edges = (e for e in edges if self.has_edge(e[1], e[0], e[2]))
-        G.add_edges_from(edges)
-        return deepcopy(G) if data and data != 'shallow' else G
+        return deepcopy(self)
 
     def subgraph(self, nbunch):
         """Return the subgraph induced on nodes in nbunch.

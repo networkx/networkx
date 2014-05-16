@@ -5,6 +5,7 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
 from networkx.exception import NetworkXError
@@ -1043,7 +1044,98 @@ class DiGraph(Graph):
         """Return True if graph is directed, False otherwise."""
         return True
 
-    def reverse(self, copy=True, data=True):
+    def to_directed(self):
+        """Return a directed copy of the graph.
+
+        Returns
+        -------
+        G : DiGraph
+            A deepcopy of the graph.
+
+        Notes
+        -----
+        This returns a "deepcopy" of the edge, node, and
+        graph attributes which attempts to completely copy
+        all of the data and references.
+
+        This is in contrast to the similar D=DiGraph(G) which returns a
+        shallow copy of the data.
+
+        See the Python copy module for more information on shallow
+        and deep copies, http://docs.python.org/library/copy.html.
+
+        Examples
+        --------
+        >>> G = nx.Graph()   # or MultiGraph, etc
+        >>> G.add_path([0,1])
+        >>> H = G.to_directed()
+        >>> H.edges()
+        [(0, 1), (1, 0)]
+
+        If already directed, return a (deep) copy
+
+        >>> G = nx.DiGraph()   # or MultiDiGraph, etc
+        >>> G.add_path([0,1])
+        >>> H = G.to_directed()
+        >>> H.edges()
+        [(0, 1)]
+        """
+        return deepcopy(self)
+
+    def to_undirected(self, reciprocal=False):
+        """Return an undirected representation of the digraph.
+
+        Parameters
+        ----------
+        reciprocal : bool (optional)
+          If True only keep edges that appear in both directions
+          in the original digraph.
+
+        Returns
+        -------
+        G : Graph
+            An undirected graph with the same name and nodes and
+            with edge (u,v,data) if either (u,v,data) or (v,u,data)
+            is in the digraph.  If both edges exist in digraph and
+            their edge data is different, only one edge is created
+            with an arbitrary choice of which edge data to use.
+            You must check and correct for this manually if desired.
+
+        Notes
+        -----
+        If edges in both directions (u,v) and (v,u) exist in the
+        graph, attributes for the new undirected edge will be a combination of
+        the attributes of the directed edges.  The edge data is updated
+        in the (arbitrary) order that the edges are encountered.  For
+        more customized control of the edge attributes use add_edge().
+
+        This returns a "deepcopy" of the edge, node, and
+        graph attributes which attempts to completely copy
+        all of the data and references.
+
+        This is in contrast to the similar G=DiGraph(D) which returns a
+        shallow copy of the data.
+
+        See the Python copy module for more information on shallow
+        and deep copies, http://docs.python.org/library/copy.html.
+        """
+        H = Graph()
+        H.name = self.name
+        H.add_nodes_from(self)
+        if reciprocal is True:
+            H.add_edges_from((u, v, deepcopy(d))
+                             for u, nbrs in self.adjacency_iter()
+                             for v, d in nbrs.items()
+                             if v in self.pred[u])
+        else:
+            H.add_edges_from((u, v, deepcopy(d))
+                             for u, nbrs in self.adjacency_iter()
+                             for v, d in nbrs.items())
+        H.graph = deepcopy(self.graph)
+        H.node = deepcopy(self.node)
+        return H
+
+    def reverse(self, copy=True):
         """Return the reverse of the graph.
 
         The reverse is a graph with the same nodes and edges
@@ -1051,23 +1143,22 @@ class DiGraph(Graph):
 
         Parameters
         ----------
-        copy : bool, optional
-            If True, make a copy before reversing the graph. Otherwise, reverse
-            the graph in place.
-
-        data : bool or string, optional
-            If False, copy only the graph structure. If equal to the string
-            'shallow', return a shallow copy. Otherwise, return a deep copy.
-            Ignored if 'copy' is False. Default value: True.
+        copy : bool optional (default=True)
+            If True, return a new DiGraph holding the reversed edges.
+            If False, reverse the reverse graph is created using
+            the original graph (this changes the original graph).
         """
         if copy:
-            H = self.copy(data)
-            if data:
-                H.name = 'Reverse of (%s)' % self.name
+            H = self.__class__(name="Reverse of (%s)" % self.name)
+            H.add_nodes_from(self)
+            H.add_edges_from((v, u, deepcopy(d)) for u, v, d
+                             in self.edges(data=True))
+            H.graph = deepcopy(self.graph)
+            H.node = deepcopy(self.node)
         else:
+            self.pred, self.succ = self.succ, self.pred
+            self.adj = self.succ
             H = self
-        H.pred, H.succ = H.succ, H.pred
-        H.adj = H.succ
         return H
 
     def subgraph(self, nbunch):
