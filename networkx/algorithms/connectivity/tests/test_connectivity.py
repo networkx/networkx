@@ -272,6 +272,16 @@ def test_interface_only_target():
     for interface_func in [nx.node_connectivity, nx.edge_connectivity]:
         assert_raises(nx.NetworkXError, interface_func, G, t=3)
 
+def test_edge_connectivity_flow_vs_stoer_wagner():
+    graph_funcs = [
+        nx.icosahedral_graph,
+        nx.octahedral_graph,
+        nx.dodecahedral_graph,
+    ]
+    for graph_func in graph_funcs:
+        G = graph_func()
+        assert_equal(nx.stoer_wagner(G)[0], nx.edge_connectivity(G))
+
 class TestConnectivityPairs(object):
 
     def test_all_pairs_connectivity_icosahedral(self):
