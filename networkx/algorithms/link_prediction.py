@@ -48,8 +48,8 @@ def resource_allocation_index(G, u, v):
     Examples
     --------
     >>> G = nx.complete_graph(5)
-    >>> nx.resource_allocation_index(G, 0, 1)
-    0.75
+    >>> '%.8f' % nx.resource_allocation_index(G, 0, 1)
+    '0.75000000'
 
     References
     ----------
@@ -90,8 +90,8 @@ def jaccard_coefficient(G, u, v):
     Examples
     --------
     >>> G = nx.complete_graph(5)
-    >>> nx.jaccard_coefficient(G, 0, 1)
-    0.6
+    >>> '%.8f' % nx.jaccard_coefficient(G, 0, 1)
+    '0.60000000'
 
     References
     ----------
@@ -136,8 +136,8 @@ def adamic_adar_index(G, u, v):
     Examples
     --------
     >>> G = nx.complete_graph(5)
-    >>> nx.adamic_adar_index(G, 0, 1)
-    2.164042561333445
+    >>> '%.8f' % nx.adamic_adar_index(G, 0, 1)
+    '2.16404256'
 
     References
     ----------
@@ -305,8 +305,8 @@ def ra_index_soundarajan_hopcroft(G, u, v):
     >>> G.node[1]['community'] = 0
     >>> G.node[2]['community'] = 1
     >>> G.node[3]['community'] = 0
-    >>> nx.ra_index_soundarajan_hopcroft(G, 0, 3)
-    0.5
+    >>> '%.8f' % nx.ra_index_soundarajan_hopcroft(G, 0, 3)
+    '0.50000000'
 
     References
     ----------
@@ -368,10 +368,10 @@ def within_inter_cluster(G, u, v, delta=0.001):
     >>> G.node[2]['community'] = 0
     >>> G.node[3]['community'] = 0
     >>> G.node[4]['community'] = 0
-    >>> nx.within_inter_cluster(G, 0, 4)
-    1.9980019980019983
-    >>> nx.within_inter_cluster(G, 0, 4, delta=0.5)
-    1.3333333333333333
+    >>> '%.8f' % nx.within_inter_cluster(G, 0, 4)
+    '1.99800200'
+    >>> '%.8f' % nx.within_inter_cluster(G, 0, 4, delta=0.5)
+    '1.33333333'
 
     References
     ----------
