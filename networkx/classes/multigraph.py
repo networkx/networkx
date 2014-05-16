@@ -5,7 +5,6 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from copy import deepcopy
 import networkx as nx
 from networkx.classes.graph import Graph
 from networkx import NetworkXError
@@ -754,56 +753,6 @@ class MultiGraph(Graph):
     def is_directed(self):
         """Return True if graph is directed, False otherwise."""
         return False
-
-    def to_directed(self):
-        """Return a directed representation of the graph.
-
-        Returns
-        -------
-        G : MultiDiGraph
-            A directed graph with the same name, same nodes, and with
-            each edge (u,v,data) replaced by two directed edges
-            (u,v,data) and (v,u,data).
-
-        Notes
-        -----
-        This returns a "deepcopy" of the edge, node, and
-        graph attributes which attempts to completely copy
-        all of the data and references.
-
-        This is in contrast to the similar D=DiGraph(G) which returns a
-        shallow copy of the data.
-
-        See the Python copy module for more information on shallow
-        and deep copies, http://docs.python.org/library/copy.html.
-
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or MultiGraph, etc
-        >>> G.add_path([0,1])
-        >>> H = G.to_directed()
-        >>> H.edges()
-        [(0, 1), (1, 0)]
-
-        If already directed, return a (deep) copy
-
-        >>> G = nx.DiGraph()   # or MultiDiGraph, etc
-        >>> G.add_path([0,1])
-        >>> H = G.to_directed()
-        >>> H.edges()
-        [(0, 1)]
-        """
-        from networkx.classes.multidigraph import MultiDiGraph
-        G = MultiDiGraph()
-        G.add_nodes_from(self)
-        G.add_edges_from((u, v, key, deepcopy(datadict))
-                         for u, nbrs in self.adjacency_iter()
-                         for v, keydict in nbrs.items()
-                         for key, datadict in keydict.items())
-        G.graph = deepcopy(self.graph)
-        G.node = deepcopy(self.node)
-        return G
 
     def selfloop_edges(self, data=False, keys=False):
         """Return a list of selfloop edges.
