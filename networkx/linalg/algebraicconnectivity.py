@@ -20,12 +20,26 @@ try:
     from numpy.linalg import norm, qr
     from numpy.random import normal
     from scipy.linalg import eigh, inv
-    from scipy.linalg.blas import (dasum, daxpy, ddot)
     from scipy.sparse import csc_matrix, spdiags
     from scipy.sparse.linalg import eigsh, lobpcg
     __all__ = ['algebraic_connectivity', 'fiedler_vector', 'spectral_ordering']
 except ImportError:
     __all__ = []
+
+try:
+    from scipy.linalg.blas import dasum, daxpy, ddot
+except ImportError:
+
+    if __all__:
+        # Make sure the imports succeeded.
+
+        # Use minimal replacements if BLAS is unavailable from SciPy.
+        dasum = partial(norm, ord=1)
+        ddot = dot
+
+        def daxpy(x, y, a):
+            y += a * x
+            return y
 
 _tracemin_method = compile('^tracemin(?:_(.*))?$')
 
