@@ -54,7 +54,10 @@ class TestAlgebraicConnectivity(object):
         global numpy
         try:
             import numpy.linalg
-            import scipy.sparse
+            # Some needed blas functions were not available in SciPy <0.12.
+            # https://github.com/networkx/networkx/issues/1169
+            from scipy.linalg.blas import (dasum, daxpy, ddot)
+            import scipy.sparse.linalg
         except ImportError:
             raise SkipTest('SciPy not available.')
 
@@ -197,6 +200,9 @@ class TestSpectralOrdering(object):
         try:
             import numpy.linalg
             import scipy.sparse
+            # Some needed blas functions were not available in SciPy <0.12.
+            # https://github.com/networkx/networkx/issues/1169
+            from scipy.linalg.blas import (dasum, daxpy, ddot)
         except ImportError:
             raise SkipTest('SciPy not available.')
 
