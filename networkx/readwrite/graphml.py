@@ -362,8 +362,6 @@ class GraphMLWriter(GraphML):
         if self.prettyprint:
             self.indent(self.xml)
         document = ElementTree(self.xml)
-        header='<?xml version="1.0" encoding="%s"?>'%self.encoding
-        stream.write(header.encode(self.encoding))
         document.write(stream, encoding=self.encoding)
 
     def indent(self, elem, level=0):
