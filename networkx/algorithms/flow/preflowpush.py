@@ -388,6 +388,11 @@ def preflow_push(G, s, t, capacity='capacity', residual=None,
     --------
     >>> import networkx as nx
     >>> from networkx.algorithms.flow import preflow_push
+
+    The functions that implement flow algorithms and output a residual
+    network, such as this one, are not imported to the base NetworkX
+    namespace, so you have to explicitly import them from the flow package.
+
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
