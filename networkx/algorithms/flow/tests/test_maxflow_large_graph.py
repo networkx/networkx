@@ -13,11 +13,9 @@ from functools import partial
 from nose.tools import *
 
 import networkx as nx
-from networkx.algorithms.flow.utils import *
-from networkx.algorithms.flow.edmonds_karp import *
-from networkx.algorithms.flow.ford_fulkerson import *
-from networkx.algorithms.flow.preflow_push import *
-from networkx.algorithms.flow.shortest_augmenting_path import *
+from networkx.algorithms.flow import build_flow_dict
+from networkx.algorithms.flow import (edmonds_karp, ford_fulkerson,
+    preflow_push, shortest_augmenting_path)
 
 flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
               shortest_augmenting_path]
@@ -144,5 +142,5 @@ class TestMaxflowLargeGraph:
 
     def test_preflow_push_global_relabel(self):
         G = read_graph('gw1')
-        R = nx.preflow_push(G, 1, len(G), global_relabel_freq=50)
+        R = preflow_push(G, 1, len(G), global_relabel_freq=50)
         assert_equal(R.graph['flow_value'], 1202018)

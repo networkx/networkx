@@ -217,6 +217,7 @@ def ford_fulkerson(G, s, t, capacity='capacity'):
     Examples
     --------
     >>> import networkx as nx
+    >>> from networkx.algorithms.flow import ford_fulkerson
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
@@ -232,7 +233,7 @@ def ford_fulkerson(G, s, t, capacity='capacity'):
     a dictionary with edges with infinite capacity flows, the flow 
     value, and a dictionary of flows:
 
-    >>> R = nx.ford_fulkerson(G, 'x', 'y')
+    >>> R = ford_fulkerson(G, 'x', 'y')
     >>> # A dictionary with infinite capacity flows can be found as an
     >>> # attribute of the residual network
     >>> inf_capacity_flows = R.graph['inf_capacity_flows']
@@ -244,7 +245,7 @@ def ford_fulkerson(G, s, t, capacity='capacity'):
     the output that the function ford_fulkerson used to produce:
 
     >>> flow_value, flow_dict = nx.maximum_flow(G, 'x', 'y',
-    ...                                         flow_func=nx.ford_fulkerson)
+    ...                                         flow_func=ford_fulkerson)
 
     """
     flow_value, R = ford_fulkerson_impl(G, s, t, capacity=capacity)

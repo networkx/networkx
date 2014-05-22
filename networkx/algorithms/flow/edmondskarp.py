@@ -222,6 +222,7 @@ def edmonds_karp(G, s, t, capacity='capacity', residual=None, value_only=False,
     Examples
     --------
     >>> import networkx as nx
+    >>> from networkx.algorithms.flow import edmonds_karp
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
@@ -231,7 +232,7 @@ def edmonds_karp(G, s, t, capacity='capacity', residual=None, value_only=False,
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = nx.edmonds_karp(G, 'x', 'y')
+    >>> R = edmonds_karp(G, 'x', 'y')
     >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
     >>> flow_value
     3.0

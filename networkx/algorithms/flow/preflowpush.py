@@ -387,6 +387,7 @@ def preflow_push(G, s, t, capacity='capacity', residual=None,
     Examples
     --------
     >>> import networkx as nx
+    >>> from networkx.algorithms.flow import preflow_push
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
@@ -396,7 +397,7 @@ def preflow_push(G, s, t, capacity='capacity', residual=None,
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = nx.preflow_push(G, 'x', 'y')
+    >>> R = preflow_push(G, 'x', 'y')
     >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
     >>> flow_value == R.graph['flow_value']
     True
@@ -406,7 +407,7 @@ def preflow_push(G, s, t, capacity='capacity', residual=None,
     True
     >>> # For some problems, you might only want to compute a
     >>> # maximum preflow.
-    >>> R = nx.preflow_push(G, 'x', 'y', value_only=True)
+    >>> R = preflow_push(G, 'x', 'y', value_only=True)
     >>> flow_value == R.graph['flow_value']
     True
     >>> flow_value == R.node['y']['excess']

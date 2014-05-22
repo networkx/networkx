@@ -5,10 +5,10 @@ Maximum flow (and minimum cut) algorithms on capacitated graphs.
 import networkx as nx
 
 # Define the default flow function for computing maximum flow.
-from .edmonds_karp import edmonds_karp
-from .ford_fulkerson import ford_fulkerson
-from .preflow_push import preflow_push
-from .shortest_augmenting_path import shortest_augmenting_path
+from .edmondskarp import edmonds_karp
+from .fordfulkerson import ford_fulkerson
+from .preflowpush import preflow_push
+from .shortestaugmentingpath import shortest_augmenting_path
 from .utils import build_flow_dict
 default_flow_func = preflow_push
 
@@ -145,8 +145,9 @@ def maximum_flow(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     You can also use alternative algorithms for computing the
     maximum flow by using the flow_func parameter.
 
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
     >>> flow_value == nx.maximum_flow(G, 'x', 'y',
-    ...                         flow_func=nx.shortest_augmenting_path)[0]
+    ...                         flow_func=shortest_augmenting_path)[0]
     True
 
     """
@@ -290,8 +291,9 @@ def maximum_flow_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     You can also use alternative algorithms for computing the
     maximum flow by using the flow_func parameter.
 
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
     >>> flow_value == nx.maximum_flow_value(G, 'x', 'y',
-    ...                                     flow_func=nx.shortest_augmenting_path)
+    ...                                     flow_func=shortest_augmenting_path)
     True
 
     """
@@ -441,8 +443,9 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     You can also use alternative algorithms for computing the
     minimum cut by using the flow_func parameter.
 
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
     >>> cut_value == nx.minimum_cut(G, 'x', 'y',
-    ...                             flow_func=nx.shortest_augmenting_path)[0]
+    ...                             flow_func=shortest_augmenting_path)[0]
     True
 
     """
@@ -598,8 +601,9 @@ def minimum_cut_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     You can also use alternative algorithms for computing the
     minimum cut by using the flow_func parameter.
 
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
     >>> cut_value == nx.minimum_cut_value(G, 'x', 'y',
-    ...                                   flow_func=nx.shortest_augmenting_path)
+    ...                                   flow_func=shortest_augmenting_path)
     True
 
     """

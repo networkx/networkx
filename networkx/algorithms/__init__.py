@@ -11,7 +11,6 @@ from networkx.algorithms.cycles import *
 from networkx.algorithms.dag import *
 from networkx.algorithms.distance_measures import *
 from networkx.algorithms.dominating import *
-from networkx.algorithms.flow import *
 from networkx.algorithms.hierarchy import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.mis import *
@@ -60,3 +59,7 @@ from networkx.algorithms.connectivity import (minimum_edge_cut, minimum_node_cut
 # isomorphism
 from networkx.algorithms.isomorphism import (is_isomorphic, could_be_isomorphic,
     fast_could_be_isomorphic, faster_could_be_isomorphic)
+# flow
+from networkx.algorithms.flow import (maximum_flow, maximum_flow_value,
+    minimum_cut, minimum_cut_value, capacity_scaling, network_simplex,
+    min_cost_flow_cost, max_flow_min_cost, min_cost_flow, cost_of_flow)

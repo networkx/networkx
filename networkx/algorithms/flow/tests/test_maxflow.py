@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 """Maximum flow algorithms test suite.
 """
-
-from functools import partial
 from nose.tools import *
 
 import networkx as nx
-from networkx.algorithms.flow.utils import *
-from networkx.algorithms.flow.edmonds_karp import *
-from networkx.algorithms.flow.ford_fulkerson import *
-from networkx.algorithms.flow.preflow_push import *
-from networkx.algorithms.flow.shortest_augmenting_path import *
+from networkx.algorithms.flow import build_flow_dict, build_residual_network
+from networkx.algorithms.flow import (edmonds_karp, ford_fulkerson,
+    preflow_push, shortest_augmenting_path)
 
 flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
               shortest_augmenting_path]
@@ -90,7 +86,7 @@ def compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity='capacity'):
         # Minimum cut
         if legacy:
             cut_value, partition = nx.minimum_cut(G, s, t,  capacity=capacity,
-                                                  flow_func=nx.ford_fulkerson)
+                                                  flow_func=ford_fulkerson)
         else:
             cut_value, partition = nx.minimum_cut(G, s, t, capacity=capacity,
                                                   flow_func=flow_func)
@@ -401,8 +397,8 @@ class TestMaxFlowMinCutInterface:
         G = self.H
         fv = 1.0
         to_test = (
-            (nx.shortest_augmenting_path, dict(two_phase=True)),
-            (nx.preflow_push, dict(global_relabel_freq=5)),
+            (shortest_augmenting_path, dict(two_phase=True)),
+            (preflow_push, dict(global_relabel_freq=5)),
         )
         for interface_func in interface_funcs:
             for flow_func, kwargs in to_test:
@@ -439,7 +435,7 @@ class TestMaxFlowMinCutInterface:
 def test_preflow_push_global_relabel_freq():
     G = nx.DiGraph()
     G.add_edge(1, 2, capacity=1)
-    R = nx.preflow_push(G, 1, 2, global_relabel_freq=None)
+    R = preflow_push(G, 1, 2, global_relabel_freq=None)
     assert_equal(R.graph['flow_value'], 1)
     assert_raises(nx.NetworkXError, preflow_push, G, 1, 2,
                   global_relabel_freq=-1)
