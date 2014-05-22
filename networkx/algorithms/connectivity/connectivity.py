@@ -9,9 +9,8 @@ import itertools
 import networkx as nx
 # Define the default maximum flow function to use in all flow based
 # connectivity algorithms. 
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import shortest_augmenting_path
-from networkx.algorithms.flow.utils import build_residual_network
+from networkx.algorithms.flow import edmonds_karp, shortest_augmenting_path
+from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
 
 from .utils import (build_auxiliary_node_connectivity,
@@ -114,7 +113,7 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     >>> H = build_auxiliary_node_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
-    >>> from networkx.algorithms.flow.utils import build_residual_network
+    >>> from networkx.algorithms.flow import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
     >>> R = build_residual_network(H, 'capacity')
     >>> result = dict.fromkeys(G, dict())
@@ -130,9 +129,11 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     connectivity. For instance, in dense networks the algorithm
     :meth:`shortest_augmenting_path` will usually perform better than
     the default :meth:`edmonds_karp` which is faster for sparse 
-    networks with highly skewed degree distributions.
+    networks with highly skewed degree distributions. Alternative flow
+    functions have to be explicitly imported from the flow package.
 
-    >>> local_node_connectivity(G, 0, 6, flow_func=nx.shortest_augmenting_path)
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> local_node_connectivity(G, 0, 6, flow_func=shortest_augmenting_path)
     5
 
     Notes
@@ -246,9 +247,11 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     flow computation. In dense networks the algorithm
     :meth:`shortest_augmenting_path` will usually perform better
     than the default :meth:`edmonds_karp`, which is faster for
-    sparse networks with highly skewed degree distributions.
+    sparse networks with highly skewed degree distributions. Alternative
+    flow functions have to be explicitly imported from the flow package.
 
-    >>> nx.node_connectivity(G, flow_func=nx.shortest_augmenting_path)
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> nx.node_connectivity(G, flow_func=shortest_augmenting_path)
     5
 
     If you specify a pair of nodes (source and target) as parameters,
@@ -557,7 +560,7 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     >>> H = build_auxiliary_edge_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
-    >>> from networkx.algorithms.flow.utils import build_residual_network
+    >>> from networkx.algorithms.flow import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
     >>> R = build_residual_network(H, 'capacity')
     >>> result = dict.fromkeys(G, dict())
@@ -573,9 +576,11 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     connectivity. For instance, in dense networks the algorithm
     :meth:`shortest_augmenting_path` will usually perform better than
     the default :meth:`edmonds_karp` which is faster for sparse
-    networks with highly skewed degree distributions.
+    networks with highly skewed degree distributions. Alternative flow
+    functions have to be explicitly imported from the flow package.
 
-    >>> local_edge_connectivity(G, 0, 6, flow_func=nx.shortest_augmenting_path)
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> local_edge_connectivity(G, 0, 6, flow_func=shortest_augmenting_path)
     5
 
     Notes
@@ -674,9 +679,12 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
     maximum flow computation. In dense networks the algorithm 
     :meth:`shortest_augmenting_path` will usually perform better 
     than the default :meth:`edmonds_karp`, which is faster for 
-    sparse networks with highly skewed degree distributions.
+    sparse networks with highly skewed degree distributions. 
+    Alternative flow functions have to be explicitly imported
+    from the flow package.
 
-    >>> nx.edge_connectivity(G, flow_func=nx.shortest_augmenting_path)
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> nx.edge_connectivity(G, flow_func=shortest_augmenting_path)
     5
 
     If you specify a pair of nodes (source and target) as parameters,
