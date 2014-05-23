@@ -48,21 +48,17 @@ def read_graph(name):
     return nx.read_gpickle(path)
 
 
-def validate_flows(G, s, t, solnValue, R, flow_func):
-    legacy = R.graph.get('algorithm') == "ford_fulkerson_legacy"
-    flowValue = R.graph['flow_value']
-    if legacy:
-        flowDict = R.graph['flow_dict']
-    else:
-        flowDict = build_flow_dict(G, R)
-    assert_equal(solnValue, flowValue, msg=msg.format(flow_func.__name__))
-    assert_equal(set(G), set(flowDict), msg=msg.format(flow_func.__name__))
+def validate_flows(G, s, t, soln_value, R, flow_func):
+    flow_value = R.graph['flow_value']
+    flow_dict = build_flow_dict(G, R)
+    assert_equal(soln_value, flow_value, msg=msg.format(flow_func.__name__))
+    assert_equal(set(G), set(flow_dict), msg=msg.format(flow_func.__name__))
     for u in G:
-        assert_equal(set(G[u]), set(flowDict[u]),
+        assert_equal(set(G[u]), set(flow_dict[u]),
                      msg=msg.format(flow_func.__name__))
-    excess = dict((u, 0) for u in flowDict)
-    for u in flowDict:
-        for v, flow in flowDict[u].items():
+    excess = dict((u, 0) for u in flow_dict)
+    for u in flow_dict:
+        for v, flow in flow_dict[u].items():
             ok_(flow <= G[u][v].get('capacity', float('inf')),
                 msg=msg.format(flow_func.__name__))
             ok_(flow >= 0, msg=msg.format(flow_func.__name__))
@@ -70,21 +66,14 @@ def validate_flows(G, s, t, solnValue, R, flow_func):
             excess[v] += flow
     for u, exc in excess.items():
         if u == s:
-            assert_equal(exc, -solnValue, msg=msg.format(flow_func.__name__))
+            assert_equal(exc, -soln_value, msg=msg.format(flow_func.__name__))
         elif u == t:
-            assert_equal(exc, solnValue, msg=msg.format(flow_func.__name__))
+            assert_equal(exc, soln_value, msg=msg.format(flow_func.__name__))
         else:
             assert_equal(exc, 0, msg=msg.format(flow_func.__name__))
 
 
 class TestMaxflowLargeGraph:
-    def _test_graph(self, G, s, t, soln, pred=assert_equal):
-        validate = partial(validate_flows, G, s, t, soln, pred=pred)
-        #validate(*nx.ford_fulkerson(G, s, t))
-        validate(*nx.edmonds_karp(G, s, t))
-        validate(*nx.preflow_push(G, s, t))
-        validate(*nx.shortest_augmenting_path(G, s, t, two_phase=False))
-        validate(*nx.shortest_augmenting_path(G, s, t, two_phase=True))
 
     def test_complete_graph(self):
         N = 50
