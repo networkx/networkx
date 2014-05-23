@@ -1,5 +1,13 @@
-from . import (maxflow, mincost, edmondskarp, fordfulkerson, preflowpush,
-    shortestaugmentingpath, capacityscaling, networksimplex, utils)
+from .maxflow import *
+from .mincost import *
+from .edmondskarp import *
+from .fordfulkerson import *
+from .preflowpush import *
+from .shortestaugmentingpath import *
+from .capacityscaling import *
+from .networksimplex import *
+from .utils import build_flow_dict, build_residual_network
+
 
 __all__ = sum([maxflow.__all__,
                 mincost.__all__,
@@ -10,13 +18,3 @@ __all__ = sum([maxflow.__all__,
                 capacityscaling.__all__,
                 networksimplex.__all__,
             ], [])
-
-from .maxflow import *
-from .mincost import *
-from .edmondskarp import *
-from .fordfulkerson import *
-from .preflowpush import *
-from .shortestaugmentingpath import *
-from .capacityscaling import *
-from .networksimplex import *
-from .utils import build_flow_dict, build_residual_network
