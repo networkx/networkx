@@ -68,8 +68,11 @@ Biconnected components
    articulation_points
 
 
+Semiconnectedness
+^^^^^^^^^^^^^^^^^
+.. automodule:: networkx.algorithms.components.semiconnected
+.. autosummary::
+   :toctree: generated/
 
-
-
-
+   is_semiconnected
 
