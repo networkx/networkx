@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-utils for connectivity package
+Utilities for connectivity package
 """
 import networkx as nx
 
