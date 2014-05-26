@@ -173,8 +173,7 @@ def is_forest(G):
     is_branching
 
     """
-    n = G.number_of_nodes()
-    if n == 0:
+    if len(G) == 0:
         raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
 
     if G.is_directed():
@@ -219,18 +218,16 @@ def is_tree(G):
     is_arborescence
 
     """
-    n = G.number_of_nodes()
-    if n == 0:
+    if len(G) == 0:
         raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
+
+    # A connected graph with no cycles has n-1 edges.
+    if G.number_of_edges() != len(G) - 1:
+        return False
 
     if G.is_directed():
         is_connected = nx.is_weakly_connected
     else:
         is_connected = nx.is_connected
-
-    # A simple, connected graph with no cycles has n-1 edges.
-
-    if G.number_of_edges() != n - 1:
-        return False
 
     return is_connected(G)
