@@ -32,11 +32,10 @@ Each convention has its reasons. The first convention emphasizes definitional
 similarity in that directed forests and trees are only concerned with
 acyclicity and do not have an in-degree constraint, just as their undirected
 counterparts do not. The second convention emphasizes functional similarity
-in the sense that the directed analog of a spanning tree is an arborescence.
-That is, take any spanning tree and choose one node as the root. Then
-every edge is assigned a direction such there is a directed path from the
-root to every other node. The result is an arborescence (or tree according to
-the second convention).
+in the sense that the directed analog of a spanning tree is a spanning
+arborescence. That is, take any spanning tree and choose one node as the root.
+Then every edge is assigned a direction such there is a directed path from the
+root to every other node. The result is a spanning arborescence.
 
 NetworkX follows the first convention. Explicitly, these are:
 
