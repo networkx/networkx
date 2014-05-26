@@ -29,7 +29,7 @@ problem is analogous to the min/max arborescence problem.
 
 An arborescence is a (weakly) connected branching. That is, if you look
 at the underlying graph, it is a spanning tree. Additionally, all edges
-are directed away from a unique root node, for if you had two nodes with
+are directed away from a unique root node, for if there were two nodes with
 in-degree zero, then weak connectivity would force some other node
 to have in-degree of at least 2 (which is not allowed in branchings).
 
@@ -115,8 +115,9 @@ def is_tree(G):
 
     A tree is a simple, connected graph with no cycles.
 
-    For directed graphs, the direction of edges is ignored, and the graph `G`
-    is considered to be a directed tree if the underlying graph is a tree.
+    For directed graphs, `G` is a tree if the underlying graph is a tree. The
+    underlying graph is obtained by treating each directed edge as a single
+    undirected edge in a multigraph.
 
     Parameters
     ----------
@@ -131,7 +132,7 @@ def is_tree(G):
     Notes
     -----
     Directed trees are also known as polytrees. Sometimes, "directed tree"
-    is defined more restrictively to mean "arboresence" instead.
+    is defined more restrictively to mean "arborescence" instead.
 
     """
     n = G.number_of_nodes()
