@@ -7,9 +7,8 @@ import networkx as nx
 
 # Define the default maximum flow function to use in all flow based
 # cut algorithms.
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import shortest_augmenting_path
-from networkx.algorithms.flow.utils import build_residual_network
+from networkx.algorithms.flow import edmonds_karp, shortest_augmenting_path
+from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
 
 from .utils import (build_auxiliary_node_connectivity,
@@ -114,7 +113,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
     >>> H = build_auxiliary_edge_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
-    >>> from networkx.algorithms.flow.utils import build_residual_network
+    >>> from networkx.algorithms.flow import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
     >>> R = build_residual_network(H, 'capacity')
     >>> result = dict.fromkeys(G, dict())
@@ -130,9 +129,11 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None,
     cuts. For instance, in dense networks the algorithm
     :meth:`shortest_augmenting_path` will usually perform better than
     the default :meth:`edmonds_karp` which is faster for sparse
-    networks with highly skewed degree distributions.
+    networks with highly skewed degree distributions. Alternative flow
+    functions have to be explicitly imported from the flow package.
 
-    >>> len(minimum_st_edge_cut(G, 0, 6, flow_func=nx.shortest_augmenting_path))
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> len(minimum_st_edge_cut(G, 0, 6, flow_func=shortest_augmenting_path))
     5
 
     """
@@ -230,7 +231,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     >>> H = build_auxiliary_node_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
-    >>> from networkx.algorithms.flow.utils import build_residual_network
+    >>> from networkx.algorithms.flow import build_residual_network
     >>> # Note that the auxiliary digraph has an edge attribute named capacity
     >>> R = build_residual_network(H, 'capacity')
     >>> # Reuse the auxiliary digraph and the residual network by passing them
@@ -242,9 +243,11 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     node cuts. For instance, in dense networks the algorithm
     :meth:`shortest_augmenting_path` will usually perform better than
     the default :meth:`edmonds_karp` which is faster for sparse
-    networks with highly skewed degree distributions.
+    networks with highly skewed degree distributions. Alternative flow
+    functions have to be explicitly imported from the flow package.
 
-    >>> len(minimum_st_node_cut(G, 0, 6, flow_func=nx.shortest_augmenting_path))
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> len(minimum_st_node_cut(G, 0, 6, flow_func=shortest_augmenting_path))
     5
 
     Notes
@@ -341,9 +344,11 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     flow computation. In dense networks the algorithm
     :meth:`shortest_augmenting_path` will usually perform better
     than the default :meth:`edmonds_karp`, which is faster for
-    sparse networks with highly skewed degree distributions.
+    sparse networks with highly skewed degree distributions. Alternative
+    flow functions have to be explicitly imported from the flow package.
 
-    >>> node_cut == nx.minimum_node_cut(G, flow_func=nx.shortest_augmenting_path)
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> node_cut == nx.minimum_node_cut(G, flow_func=shortest_augmenting_path)
     True
 
     If you specify a pair of nodes (source and target) as parameters,
@@ -483,8 +488,11 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     :meth:`shortest_augmenting_path` will usually perform better 
     than the default :meth:`edmonds_karp`, which is faster for 
     sparse networks with highly skewed degree distributions.
+    Alternative flow functions have to be explicitly imported
+    from the flow package.
 
-    >>> len(nx.minimum_edge_cut(G, flow_func=nx.shortest_augmenting_path))
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> len(nx.minimum_edge_cut(G, flow_func=shortest_augmenting_path))
     5
 
     If you specify a pair of nodes (source and target) as parameters,

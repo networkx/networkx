@@ -292,7 +292,8 @@ def max_flow_min_cost(G, s, t, capacity = 'capacity', weight = 'weight'):
     >>> mincostFlow = nx.max_flow_min_cost(G, 1, 7)
     >>> nx.cost_of_flow(G, mincostFlow)
     373
-    >>> R = nx.ford_fulkerson(G, 1, 7)
+    >>> from networkx.algorithms.flow import ford_fulkerson
+    >>> R = ford_fulkerson(G, 1, 7)
     >>> maxFlow = R.graph['flow_dict']
     >>> nx.cost_of_flow(G, maxFlow)
     428

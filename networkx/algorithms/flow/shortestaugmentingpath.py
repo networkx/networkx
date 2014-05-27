@@ -10,8 +10,8 @@ __author__ = """ysitu <ysitu@users.noreply.github.com>"""
 
 from collections import deque
 import networkx as nx
-from networkx.algorithms.flow.utils import *
-from networkx.algorithms.flow.edmonds_karp import edmonds_karp_core
+from .utils import *
+from .edmondskarp import edmonds_karp_core
 
 __all__ = ['shortest_augmenting_path']
 
@@ -273,6 +273,12 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', residual=None,
     Examples
     --------
     >>> import networkx as nx
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+
+    The functions that implement flow algorithms and output a residual
+    network, such as this one, are not imported to the base NetworkX
+    namespace, so you have to explicitly import them from the flow package.
+
     >>> G = nx.DiGraph()
     >>> G.add_edge('x','a', capacity=3.0)
     >>> G.add_edge('x','b', capacity=1.0)
@@ -282,7 +288,7 @@ def shortest_augmenting_path(G, s, t, capacity='capacity', residual=None,
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = nx.shortest_augmenting_path(G, 'x', 'y')
+    >>> R = shortest_augmenting_path(G, 'x', 'y')
     >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
     >>> flow_value
     3.0

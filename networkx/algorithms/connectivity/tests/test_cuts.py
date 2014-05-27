@@ -2,9 +2,10 @@ from nose.tools import assert_equal, assert_true, assert_false, assert_raises
 import networkx as nx
 
 # Flow functions to use in tests.
-from networkx.algorithms.flow.edmonds_karp import edmonds_karp
-from networkx.algorithms.flow.preflow_push import preflow_push
-from networkx.algorithms.flow.shortest_augmenting_path import shortest_augmenting_path
+# We do not test legacy ford_fulkerson implementation: it's too slow.
+from networkx.algorithms.flow import (edmonds_karp, preflow_push,
+    shortest_augmenting_path)
+
 flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
 
 # import connectivity functions not in base namespace

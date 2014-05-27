@@ -47,6 +47,15 @@ Preflow-Push
 
    preflow_push
 
+
+Utils
+-----
+.. autosummary::
+   :toctree: generated/
+
+   build_residual_network
+
+
 Network Simplex
 ---------------
 .. autosummary::
@@ -57,6 +66,7 @@ Network Simplex
     min_cost_flow
     cost_of_flow
     max_flow_min_cost
+
 
 Capacity Scaling Minimum Cost Flow
 ----------------------------------
