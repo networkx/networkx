@@ -203,7 +203,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
        If numeric values are specified they will be mapped to
        colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
-    edge_ cmap : Matplotlib colormap, optional (default=None)
+    edge_cmap : Matplotlib colormap, optional (default=None)
        Colormap for mapping intensities of edges
 
     edge_vmin,edge_vmax : floats, optional (default=None)
@@ -872,27 +872,82 @@ def draw_networkx_edge_labels(G, pos,
 
 
 def draw_circular(G, **kwargs):
-    """Draw the graph G with a circular layout."""
+    """Draw the graph G with a circular layout.
+    
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+       
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this 
+       function.
+    """
     draw(G, circular_layout(G), **kwargs)
 
 
 def draw_random(G, **kwargs):
-    """Draw the graph G with a random layout."""
+    """Draw the graph G with a random layout.
+    
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+       
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this 
+       function.
+    """
     draw(G, random_layout(G), **kwargs)
 
 
 def draw_spectral(G, **kwargs):
-    """Draw the graph G with a spectral layout."""
+    """Draw the graph G with a spectral layout.
+    
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+       
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this 
+       function.
+    """
     draw(G, spectral_layout(G), **kwargs)
 
 
 def draw_spring(G, **kwargs):
-    """Draw the graph G with a spring layout."""
+    """Draw the graph G with a spring layout.
+    
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this 
+       function.
+    """
     draw(G, spring_layout(G), **kwargs)
 
 
 def draw_shell(G, **kwargs):
-    """Draw networkx graph with shell layout."""
+    """Draw networkx graph with shell layout.
+    
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+       
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this 
+       function.
+    """
     nlist = kwargs.get('nlist', None)
     if nlist is not None:
         del(kwargs['nlist'])
@@ -900,7 +955,19 @@ def draw_shell(G, **kwargs):
 
 
 def draw_graphviz(G, prog="neato", **kwargs):
-    """Draw networkx graph with graphviz layout."""
+    """Draw networkx graph with graphviz layout.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    prog : string, optional
+      Name of Graphviz layout program
+
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords.
+    """
     pos = nx.drawing.graphviz_layout(G, prog)
     draw(G, pos, **kwargs)
 
