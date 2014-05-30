@@ -41,10 +41,11 @@ __all__ = ['generate_edgelist',
            'read_weighted_edgelist',
            'write_weighted_edgelist']
 
-from networkx.utils import open_file, make_str
+from operator import itemgetter
+from networkx.utils import open_file, make_str, sorter
 import networkx as nx
 
-def generate_edgelist(G, delimiter=' ', data=True):
+def generate_edgelist(G, delimiter=' ', data=True, sort=False):
     """Generate a single line of the graph G in edge list format.
 
     Parameters
@@ -58,6 +59,9 @@ def generate_edgelist(G, delimiter=' ', data=True):
        If False generate no edge data.  If True use a dictionary 
        representation of edge data.  If a list of keys use a list of data
        values corresponding to the keys.
+
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Returns
     -------
@@ -110,10 +114,10 @@ def generate_edgelist(G, delimiter=' ', data=True):
     write_adjlist, read_adjlist
     """
     if data is True or data is False:
-        for e in G.edges(data=data):
+        for e in sorter(G.edges(data=data), sort):
             yield delimiter.join(map(make_str,e))
     else:
-        for u,v,d in G.edges(data=True):
+        for u,v,d in sorter(G.edges(data=True), sort):
             e=[u,v]
             try:
                 e.extend(d[k] for k in data)
@@ -123,7 +127,7 @@ def generate_edgelist(G, delimiter=' ', data=True):
 
 @open_file(1,mode='wb')
 def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
-                   encoding = 'utf-8'):
+                   encoding = 'utf-8', sort=False):
     """Write graph as a list of edges.
 
     Parameters
@@ -144,6 +148,8 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
        in the list.
     encoding: string, optional
        Specify which encoding to use when writing file.
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Examples
     --------
@@ -167,7 +173,7 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
     write_weighted_edgelist()
     """
 
-    for line in generate_edgelist(G, delimiter, data):
+    for line in generate_edgelist(G, delimiter, data, sort):
         line+='\n'
         path.write(line.encode(encoding))
 

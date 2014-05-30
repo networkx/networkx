@@ -40,10 +40,11 @@ __all__ = ['generate_multiline_adjlist',
            'parse_multiline_adjlist',
            'read_multiline_adjlist']
 
-from networkx.utils import make_str, open_file
+from operator import itemgetter
+from networkx.utils import make_str, open_file, sorter
 import networkx as nx
 
-def generate_multiline_adjlist(G, delimiter = ' '):
+def generate_multiline_adjlist(G, delimiter = ' ', sort=False):
     """Generate a single line of the graph G in multiline adjacency list format.
 
     Parameters
@@ -52,6 +53,9 @@ def generate_multiline_adjlist(G, delimiter = ' '):
     
     delimiter : string, optional
        Separator for node labels 
+
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Returns
     -------
@@ -84,60 +88,71 @@ def generate_multiline_adjlist(G, delimiter = ' '):
     --------
     write_multiline_adjlist, read_multiline_adjlist
     """
+    def make_str_of_dict(d):
+        r = [ "'"+make_str(k)+"': '"+make_str(v)+"'"
+              for k,v in sorter(d.items(),sort,key=itemgetter(0))]
+        return '{'+', '.join(r)+'}'
     if G.is_directed():
         if G.is_multigraph():
-            for s,nbrs in G.adjacency_iter():
+            for s,nbrs in sorter(G.adjacency_iter(), sort, key=itemgetter(0)):
                 nbr_edges=[ (u,data) 
-                            for u,datadict in nbrs.items() 
-                            for key,data in datadict.items()]
+                            for u,datadict in sorter(nbrs.items(), sort,
+                                                     key=itemgetter(0))
+                            for key,data in sorter(datadict.items(), sort,
+                                                   key=itemgetter(0))]
                 deg=len(nbr_edges)
                 yield make_str(s)+delimiter+"%i"%(deg)
                 for u,d in nbr_edges:
                     if d is None:
                         yield make_str(u)
                     else:
-                        yield make_str(u)+delimiter+make_str(d)
+                        yield make_str(u)+delimiter+make_str_of_dict(d)
         else: # directed single edges
-            for s,nbrs in G.adjacency_iter():
+            for s,nbrs in sorter(G.adjacency_iter(), sort, key=itemgetter(0)):
                 deg=len(nbrs)
                 yield make_str(s)+delimiter+"%i"%(deg)
-                for u,d in nbrs.items():
+                for u,d in sorter(nbrs.items(), sort, key=itemgetter(0)):
                    if d is None:    
                        yield make_str(u)
                    else:   
-                       yield make_str(u)+delimiter+make_str(d)
+                       yield make_str(u)+delimiter+make_str_of_dict(d)
     else: # undirected
         if G.is_multigraph():
             seen=set()  # helper dict used to avoid duplicate edges
-            for s,nbrs in G.adjacency_iter():
+            for s,nbrs in sorter(G.adjacency_iter(), sort, key=itemgetter(0)):
                 nbr_edges=[ (u,data) 
-                            for u,datadict in nbrs.items() 
+                            for u,datadict in sorter(nbrs.items(), sort,
+                                                     key=itemgetter(0))
                             if u not in seen
-                            for key,data in datadict.items()]
+                            for key,data in sorter(datadict.items(), sort,
+                                                   key=itemgetter(0))]
                 deg=len(nbr_edges)
                 yield make_str(s)+delimiter+"%i"%(deg)
                 for u,d in nbr_edges:
                     if d is None:    
                         yield make_str(u)
                     else:   
-                        yield make_str(u)+delimiter+make_str(d)
+                        yield make_str(u)+delimiter+make_str_of_dict(d)
                 seen.add(s)
         else: # undirected single edges
             seen=set()  # helper dict used to avoid duplicate edges
-            for s,nbrs in G.adjacency_iter():
-                nbr_edges=[ (u,d) for u,d in nbrs.items() if u not in seen]
+            for s,nbrs in sorter(G.adjacency_iter(), sort, key=itemgetter(0)):
+                nbr_edges=[ (u,d) for u,d in sorter(nbrs.items(),
+                                                    sort,key=itemgetter(0))
+                            if u not in seen]
                 deg=len(nbr_edges)
                 yield  make_str(s)+delimiter+"%i"%(deg)
                 for u,d in nbr_edges:
                     if d is None:    
                         yield make_str(u)
                     else:   
-                        yield make_str(u)+delimiter+make_str(d)
+                        yield make_str(u)+delimiter+make_str_of_dict(d)
                 seen.add(s)
 
 @open_file(1,mode='wb')
 def write_multiline_adjlist(G, path, delimiter=' ', 
-                            comments='#', encoding = 'utf-8'):
+                            comments='#', encoding = 'utf-8',
+                            timestamp=True, sort=False):
     """ Write the graph G in multiline adjacency list format to path
 
     Parameters
@@ -152,6 +167,12 @@ def write_multiline_adjlist(G, path, delimiter=' ',
 
     encoding : string, optional
        Text encoding. 
+
+    timestamp : bool, optional (default=True)
+       print GMT timestamp in header
+
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Examples
     --------
@@ -176,12 +197,13 @@ def write_multiline_adjlist(G, path, delimiter=' ',
     import time
 
     pargs=comments+" ".join(sys.argv)
-    header = ("%s\n" % (pargs)
-             + comments + " GMT %s\n" % (time.asctime(time.gmtime()))
-             + comments + " %s\n" % (G.name))
+    header = "%s\n" % (pargs)
+    if timestamp:
+        header += comments + " GMT %s\n" % (time.asctime(time.gmtime()))
+    header += comments + " %s\n" % (G.name)
     path.write(header.encode(encoding))
 
-    for multiline in generate_multiline_adjlist(G, delimiter):
+    for multiline in generate_multiline_adjlist(G, delimiter, sort):
         multiline+='\n'
         path.write(multiline.encode(encoding))
 

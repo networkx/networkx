@@ -37,11 +37,12 @@ __all__ = ['generate_adjlist',
            'parse_adjlist',
            'read_adjlist']
 
-from networkx.utils import make_str, open_file
+from operator import itemgetter
+from networkx.utils import make_str, open_file, sorter
 import networkx as nx
 
 
-def generate_adjlist(G, delimiter = ' '):
+def generate_adjlist(G, delimiter = ' ', sort=False):
     """Generate a single line of the graph G in adjacency list format.
 
     Parameters
@@ -50,6 +51,8 @@ def generate_adjlist(G, delimiter = ' '):
 
     delimiter : string, optional
        Separator for node labels
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Returns
     -------
@@ -76,13 +79,13 @@ def generate_adjlist(G, delimiter = ' '):
     """
     directed=G.is_directed()
     seen=set()
-    for s,nbrs in G.adjacency_iter():
+    for s,nbrs in sorter(G.adjacency_iter(), sort, key=itemgetter(0)):
         line = make_str(s)+delimiter
-        for t,data in nbrs.items():
+        for t,data in sorter(nbrs.items(), sort, key=itemgetter(0)):
             if not directed and t in seen:
                 continue
             if G.is_multigraph():
-                for d in data.values():
+                for d in sorter(data.values(), sort):
                     line += make_str(t) + delimiter
             else:
                 line += make_str(t) + delimiter
@@ -91,7 +94,7 @@ def generate_adjlist(G, delimiter = ' '):
         yield line[:-len(delimiter)]
 
 @open_file(1,mode='wb')
-def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
+def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8', sort=False):
     """Write graph G in single-line adjacency-list format to path.
 
 
@@ -111,6 +114,9 @@ def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
 
     encoding : string, optional
        Text encoding.
+
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Examples
     --------
@@ -139,7 +145,7 @@ def write_adjlist(G, path, comments="#", delimiter=' ', encoding = 'utf-8'):
              + comments + " %s\n" % (G.name))
     path.write(header.encode(encoding))
 
-    for line in generate_adjlist(G, delimiter):
+    for line in generate_adjlist(G, delimiter, sort):
         line+='\n'
         path.write(line.encode(encoding))
 
