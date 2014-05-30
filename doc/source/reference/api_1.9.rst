@@ -106,9 +106,68 @@ True
 >>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=shortest_augmenting_path)
 >>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=edmonds_karp)
 
+Other new functionalities
+-------------------------
+
+* A :samp:`disperson` function is added in the centrality package
+  (:samp:`networkx.algorithms.centrality`) for computing the dispersion of
+  graphs.
+
+* A community package (:samp:`networkx.generators.community`) is added for
+  generating community graphs.
+
+* An :samp:`is_semiconnected` function is added in the connectivity package
+  (:samp:`networkx.algorithms.connectivity`) for recognizing semiconnected
+  graphs.
+
+* A :samp:`stoer_wagner` function is added in the connectivity package
+  (:samp:`networkx.algorithms.connectivity`) for computing the weighted minimum
+  cuts of undirected graphs using the Stoer–Wagner algorithm.
+
+* The :samp:`eulerian_circuit` function in the Euler package
+  (:samp:`networkx.algorithm.euler`) is changed to use a linear-time algorithm.
+
+* A :samp:`non_edges` function in added in the function package
+  (:samp:`networkx.functions`) for enumerating nonexistent edges between
+  existing nodes of graphs.
+
+* The linear algebra package (:samp:`networkx.linalg`) is changed to use SciPy
+  sparse matrices.
+
+* Functions :samp:`algebraic_connectivity`, :samp:`fiedler_vector` and
+  :samp:`spectral_ordering` are added in the linear algebra package
+  (:samp:`networkx.linalg`) for computing the algebraic connectivity, Fiedler
+  vectors and spectral orderings of directed graphs.
+
+* A link prediction package (:samp:`networkx.algorithms.link_prediction`) is
+  added to provide link prediction-related functionalities.
+
+* Write Support for the graph6 and sparse6 formats is added in the read/write
+  package (:samp:`networx.readwrite`).
+
+* A :samp:`goldberg_radzik` function is added in the shortest path package
+  (:samp:`networkx.algorithms.shortest_paths`) for computing shortest paths
+  using the Goldberg–Radzik algorithm.
+
+* A tree package (:samp:`networkx.tree`) is added to provide tree recognition
+  functionalities.
+
+* A context manager :samp:`reversed` is added in the utility package
+  (:samp:`networkx.utils`) for temporary in-place reversal of graphs.
+
 Miscellaneous changes
 ---------------------
 
-* The functions in the components package such as :samp:`connected_components`,
+* The functions in the components package
+  (:samp:`networkx.algorithms.components`) such as :samp:`connected_components`,
   :samp:`connected_components_subgraph` now return generators instead of lists.
   To recover the earlier behavior, use :samp:`list(connected_components(G))`.
+
+* JSON helpers in the JSON graph package (:samp:`networkx.readwrite.json_graph`)
+  are removed. Use functions from the standard library (e.g., `json.dumps`)
+  instead.
+
+* Support for Python 3.1 is dropped. Basic support is added for Jython 2.7 and
+  IronPython 2.7, although they remain not officially supported.
+
+* Numerous reported issues are fixed.
