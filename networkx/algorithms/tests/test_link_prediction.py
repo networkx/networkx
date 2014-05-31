@@ -9,9 +9,8 @@ class TestResourceAllocationIndex():
     def setUp(self):
         self.func = nx.resource_allocation_index
         def test_func(G, u, v, expected):
-            tol = 1e-7
             result = self.func(G, u, v)
-            assert_true(abs(result - expected) < tol)
+            assert_almost_equal(result, expected)
         self.test = test_func
 
     def test_K5(self):
@@ -58,9 +57,8 @@ class TestJaccardCoefficient():
     def setUp(self):
         self.func = nx.jaccard_coefficient
         def test_func(G, u, v, expected):
-            tol = 1e-7
             result = self.func(G, u, v)
-            assert_true(abs(result - expected) < tol)
+            assert_almost_equal(result, expected)
         self.test = test_func
 
     def test_K5(self):
@@ -114,9 +112,8 @@ class TestAdamicAdarIndex():
     def setUp(self):
         self.func = nx.adamic_adar_index
         def test_func(G, u, v, expected):
-            tol = 1e-7
             result = self.func(G, u, v)
-            assert_true(abs(result - expected) < tol)
+            assert_almost_equal(result, expected)
         self.test = test_func
 
     def test_K5(self):
@@ -227,9 +224,8 @@ class TestKatz():
     def setUp(self):
         self.func = nx.katz
         def test_func(G, u, v, expected):
-            tol = 1e-7
             result = self.func(G, u, v)
-            assert_true(abs(result - expected) < tol)
+            assert_almost_equal(result, expected)
         self.test = test_func
 
     def test_K5(self):
@@ -394,9 +390,8 @@ class TestRAIndexSoundarajanHopcroft():
     def setUp(self):
         self.func = nx.ra_index_soundarajan_hopcroft
         def test_func(G, u, v, expected):
-            tol = 1e-7
             result = self.func(G, u, v)
-            assert_true(abs(result - expected) < tol)
+            assert_almost_equal(result, expected)
         self.test = test_func
 
     def test_K5(self):
@@ -503,9 +498,8 @@ class TestWithinInterCluster():
         self.delta = 0.001
         self.func = nx.within_inter_cluster
         def test_func(G, u, v, expected):
-            tol = 1e-7
             result = self.func(G, u, v, self.delta)
-            assert_true(abs(result - expected) < tol)
+            assert_almost_equal(result, expected)
         self.test = test_func
 
     def test_K5(self):
