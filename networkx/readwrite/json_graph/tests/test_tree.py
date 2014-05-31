@@ -1,5 +1,5 @@
 import json
-from nose.tools import assert_equal, assert_raises, assert_not_equal,assert_true
+from nose.tools import assert_equal, assert_raises, assert_not_equal, assert_true, raises
 import networkx as nx
 from networkx.readwrite.json_graph import *
 
@@ -26,4 +26,10 @@ class TestTree:
         d = json.dumps(tree_data(G,1))
         H = tree_graph(json.loads(d))
         assert_equal(H.node[1]['color'],'red')
-        
+
+    @raises(nx.NetworkXError)
+    def test_exception(self):
+        G = nx.MultiDiGraph()
+        G.add_node(0)
+        attrs = dict(id='node', children='node')
+        tree_data(G, 0, attrs)

@@ -4,14 +4,15 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-from copy import deepcopy
-from itertools import count,repeat
-import json
+from itertools import chain, count
 import networkx as nx
 __author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
 __all__ = ['adjacency_data', 'adjacency_graph']
 
-def adjacency_data(G):
+_attrs = dict(id='id', key='key')
+
+
+def adjacency_data(G, attrs=_attrs):
     """Return data in adjacency format that is suitable for JSON serialization
     and use in Javascript documents.
 
@@ -19,10 +20,24 @@ def adjacency_data(G):
     ----------
     G : NetworkX graph
 
+    attrs : dict
+        A dictionary that contains two keys 'id' and 'key'. The corresponding
+        values provide the attribute names for storing NetworkX-internal graph
+        data. The values should be unique. Default value:
+        :samp:`dict(id='id', key='key')`.
+
+        If some user-defined graph data use these attribute names as data keys,
+        they may be silently dropped.
+
     Returns
     -------
     data : dict
-       A dictionary with node-link formatted data.
+       A dictionary with adjacency formatted data.
+
+    Raises
+    ------
+    NetworkXError
+        If values in attrs are not unique.
 
     Examples
     --------
@@ -41,31 +56,39 @@ def adjacency_data(G):
     but attribute keys must be strings if you want to serialize the resulting
     data with JSON.
 
+    The default value of attrs will be changed in a future release of NetworkX.
+
     See Also
     --------
     adjacency_graph, node_link_data, tree_data
     """
     multigraph = G.is_multigraph()
+    id_ = attrs['id']
+    # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
+    key = None if not multigraph else attrs['key']
+    if id_ == key:
+        raise nx.NetworkXError('Attribute names are not unique.')
     data = {}
     data['directed'] = G.is_directed()
     data['multigraph'] = multigraph
     data['graph'] = list(G.graph.items())
     data['nodes'] = []
     data['adjacency'] = []
-    for n,nbrdict in G.adjacency_iter():
-        data['nodes'].append(dict(id=n, **G.node[n]))
+    for n, nbrdict in G.adjacency_iter():
+        data['nodes'].append(dict(chain(G.node[n].items(), [(id_, n)])))
         adj = []
         if multigraph:
-            for nbr,key in nbrdict.items():
-                for k,d in key.items():
-                    adj.append(dict(id=nbr, key=k, **d))
+            for nbr, keys in nbrdict.items():
+                for k, d in keys.items():
+                    adj.append(dict(chain(d.items(), [(id_, nbr), (key, k)])))
         else:
-            for nbr,d in nbrdict.items():
-                adj.append(dict(id=nbr, **d))
+            for nbr, d in nbrdict.items():
+                adj.append(dict(chain(d.items(), [(id_, nbr)])))
         data['adjacency'].append(adj)
     return data
 
-def adjacency_graph(data, directed=False, multigraph=True):
+
+def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
     """Return graph from adjacency data format.
 
     Parameters
@@ -84,6 +107,12 @@ def adjacency_graph(data, directed=False, multigraph=True):
     multigraph : bool
         If True, and multigraph not specified in data, return a multigraph.
 
+    attrs : dict
+        A dictionary that contains two keys 'id' and 'key'. The corresponding
+        values provide the attribute names for storing NetworkX-internal graph
+        data. The values should be unique. Default value:
+        :samp:`dict(id='id', key='key')`.
+
     Examples
     --------
     >>> from networkx.readwrite import json_graph
@@ -91,33 +120,40 @@ def adjacency_graph(data, directed=False, multigraph=True):
     >>> data = json_graph.adjacency_data(G)
     >>> H = json_graph.adjacency_graph(data)
 
+    Notes
+    -----
+    The default value of attrs will be changed in a future release of NetworkX.
+
     See Also
     --------
     adjacency_graph, node_link_data, tree_data
     """
-    multigraph = data.get('multigraph',multigraph)
-    directed = data.get('directed',directed)
+    multigraph = data.get('multigraph', multigraph)
+    directed = data.get('directed', directed)
     if multigraph:
         graph = nx.MultiGraph()
     else:
         graph = nx.Graph()
     if directed:
         graph = graph.to_directed()
-    graph.graph = dict(data.get('graph',[]))
-    mapping=[]
+    id_ = attrs['id']
+    # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
+    key = None if not multigraph else attrs['key']
+    graph.graph = dict(data.get('graph', []))
+    mapping = []
     for d in data['nodes']:
         node_data = d.copy()
-        node = node_data.pop('id')
+        node = node_data.pop(id_)
         mapping.append(node)
         graph.add_node(node, attr_dict=node_data)
-    for i,d in enumerate(data['adjacency']):
+    for i, d in enumerate(data['adjacency']):
         source = mapping[i]
         for tdata in d:
             target_data = tdata.copy()
-            target = target_data.pop('id')
-            key = target_data.pop('key', None)
-            if not multigraph or key is None:
-                graph.add_edge(source,target,attr_dict=tdata)
+            target = target_data.pop(id_)
+            if not multigraph:
+                graph.add_edge(source, target, attr_dict=tdata)
             else:
-                graph.add_edge(source,target,key=key, attr_dict=tdata)
+                ky = target_data.pop(key, None)
+                graph.add_edge(source, target, key=ky, attr_dict=tdata)
     return graph
