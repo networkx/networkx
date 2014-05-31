@@ -26,7 +26,8 @@ __all__ = ['dijkstra_path',
            'goldberg_radzik']
 
 from collections import deque
-import heapq
+from heapq import heappush, heappop
+from itertools import count
 import networkx as nx
 from networkx.utils import generate_unique_node
 
@@ -217,12 +218,15 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     single_source_dijkstra()
 
     """
+    push = heappush
+    pop = heappop
     dist = {}  # dictionary of final distances
     seen = {source: 0}
+    c = count()
     fringe = []  # use heapq with (distance,label) tuples
-    heapq.heappush(fringe, (0, source))
+    push(fringe, (0, next(c), source))
     while fringe:
-        (d, v) = heapq.heappop(fringe)
+        (d, _, v) = pop(fringe)
         if v in dist:
             continue  # already searched this node.
         dist[v] = d
@@ -248,7 +252,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
                                      'negative weights?')
             elif w not in seen or vw_dist < seen[w]:
                 seen[w] = vw_dist
-                heapq.heappush(fringe, (vw_dist, w))
+                push(fringe, (vw_dist, next(c), w))
     return dist
 
 
@@ -308,13 +312,16 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
     """
     if source == target:
         return ({source: 0}, {source: [source]})
+    push = heappush
+    pop = heappop
     dist = {}  # dictionary of final distances
     paths = {source: [source]}  # dictionary of paths
     seen = {source: 0}
+    c = count()
     fringe = []  # use heapq with (distance,label) tuples
-    heapq.heappush(fringe, (0, source))
+    push(fringe, (0, next(c), source))
     while fringe:
-        (d, v) = heapq.heappop(fringe)
+        (d, _, v) = pop(fringe)
         if v in dist:
             continue  # already searched this node.
         dist[v] = d
@@ -342,7 +349,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
                                      'negative weights?')
             elif w not in seen or vw_dist < seen[w]:
                 seen[w] = vw_dist
-                heapq.heappush(fringe, (vw_dist, w))
+                push(fringe, (vw_dist, next(c), w))
                 paths[w] = paths[v] + [w]
     return (dist, paths)
 
@@ -378,15 +385,16 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
     The list of predecessors contains more than one element only when
     there are more than one shortest paths to the key node.
     """
-    push = heapq.heappush
-    pop = heapq.heappop
+    push = heappush
+    pop = heappop
     dist = {}  # dictionary of final distances
     pred = {source: []}  # dictionary of predecessors
     seen = {source: 0}
+    c = count()
     fringe = []  # use heapq with (distance,label) tuples
-    push(fringe, (0, source))
+    push(fringe, (0, next(c), source))
     while fringe:
-        (d, v) = pop(fringe)
+        (d, _, v) = pop(fringe)
         if v in dist:
             continue  # already searched this node.
         dist[v] = d
@@ -409,7 +417,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
                                      'negative weights?')
             elif w not in seen or vw_dist < seen[w]:
                 seen[w] = vw_dist
-                push(fringe, (vw_dist, w))
+                push(fringe, (vw_dist, next(c), w))
                 pred[w] = [v]
             elif vw_dist == seen[w]:
                 pred[w].append(v)
@@ -903,16 +911,19 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     """
     if source == target:
         return (0, [source])
+    push = heappush
+    pop = heappop
     # Init:   Forward             Backward
-    dists = [{},                {}]  # dictionary of final distances
-    paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
-    # heap of (distance, node) tuples for extracting next node to expand
-    fringe = [[],                []]
-    # dictionary of distances to nodes seen
-    seen = [{source: 0},        {target: 0}]
+    dists  = [{},                {}]  # dictionary of final distances
+    paths  = [{source: [source]}, {target: [target]}]  # dictionary of paths
+    fringe = [[],                []]  # heap of (distance, node) tuples for
+                                      # extracting next node to expand
+    seen   = [{source: 0},        {target: 0}]  # dictionary of distances to
+                                                # nodes seen
+    c = count()
     # initialize fringe heap
-    heapq.heappush(fringe[0], (0, source))
-    heapq.heappush(fringe[1], (0, target))
+    push(fringe[0], (0, next(c), source))
+    push(fringe[1], (0, next(c), target))
     # neighs for extracting correct neighbor information
     if G.is_directed():
         neighs = [G.successors_iter, G.predecessors_iter]
@@ -927,7 +938,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
         # dir == 0 is forward direction and dir == 1 is back
         dir = 1 - dir
         # extract closest to expand
-        (dist, v) = heapq.heappop(fringe[dir])
+        (dist, _, v) = pop(fringe[dir])
         if v in dists[dir]:
             # Shortest path to v has already been found
             continue
@@ -961,7 +972,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
             elif w not in seen[dir] or vwLength < seen[dir][w]:
                 # relaxing
                 seen[dir][w] = vwLength
-                heapq.heappush(fringe[dir], (vwLength, w))
+                push(fringe[dir], (vwLength, next(c), w))
                 paths[dir][w] = paths[dir][v] + [w]
                 if w in seen[0] and w in seen[1]:
                     # see if this path is better than than the already

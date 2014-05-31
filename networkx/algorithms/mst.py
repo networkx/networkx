@@ -18,6 +18,7 @@ __all__ = ['kruskal_mst',
 
 import networkx as nx
 from heapq import heappop, heappush
+from itertools import count
 
 
 def minimum_spanning_edges(G, weight='weight', data=True):
@@ -181,24 +182,28 @@ def prim_mst_edges(G, weight='weight', data=True):
         raise nx.NetworkXError(
             "Mimimum spanning tree not defined for directed graphs.")
 
+    push = heappush
+    pop = heappop
+
     nodes = G.nodes()
+    c = count()
 
     while nodes:
         u = nodes.pop(0)
         frontier = []
         visited = [u]
         for u, v in G.edges(u):
-            heappush(frontier, (G[u][v].get(weight, 1), u, v))
+            push(frontier, (G[u][v].get(weight, 1), next(c), u, v))
 
         while frontier:
-            W, u, v = heappop(frontier)
+            W, _, u, v = pop(frontier)
             if v in visited:
                 continue
             visited.append(v)
             nodes.remove(v)
             for v, w in G.edges(v):
                 if not w in visited:
-                    heappush(frontier, (G[v][w].get(weight, 1), v, w))
+                    push(frontier, (G[v][w].get(weight, 1), next(c), v, w))
             if data:
                 yield u, v, G[u][v]
             else:

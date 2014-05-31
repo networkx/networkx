@@ -40,48 +40,65 @@ def _setUp(self):
                            ('y', 's'), ('y', 'v')])
 
 
+def validate_path(G, s, t, soln_len, path):
+    assert_equal(path[0], s)
+    assert_equal(path[-1], t)
+    if not G.is_multigraph():
+        assert_equal(
+            soln_len, sum(G[u][v].get('weight', 1)
+                          for u, v in zip(path[:-1], path[1:])))
+    else:
+        assert_equal(
+            soln_len, sum(min(e.get('weight', 1) for e in G[u][v].values())
+                          for u, v in zip(path[:-1], path[1:])))
+
+
+def validate_length_path(G, s, t, soln_len, length, path):
+    assert_equal(soln_len, length)
+    validate_path(G, s, t, length, path)
+
+
 class TestWeightedPath:
 
     setUp = _setUp
 
     def test_dijkstra(self):
         (D, P) = nx.single_source_dijkstra(self.XG, 's')
-        assert_equal(P['v'], ['s', 'x', 'u', 'v'])
+        validate_path(self.XG, 's', 'v', 9, P['v'])
         assert_equal(D['v'], 9)
 
-        assert_equal(nx.single_source_dijkstra_path(self.XG, 's')['v'],
-                     ['s', 'x', 'u', 'v'])
+        validate_path(
+            self.XG, 's', 'v', 9, nx.single_source_dijkstra_path(self.XG, 's')['v'])
         assert_equal(
             nx.single_source_dijkstra_path_length(self.XG, 's')['v'], 9)
 
-        assert_equal(nx.single_source_dijkstra(self.XG, 's')[1]['v'],
-                     ['s', 'x', 'u', 'v'])
-
-        assert_equal(nx.single_source_dijkstra_path(self.MXG, 's')['v'],
-                     ['s', 'x', 'u', 'v'])
+        validate_path(
+            self.XG, 's', 'v', 9, nx.single_source_dijkstra(self.XG, 's')[1]['v'])
+        validate_path(
+            self.MXG, 's', 'v', 9, nx.single_source_dijkstra_path(self.MXG, 's')['v'])
 
         GG = self.XG.to_undirected()
         # make sure we get lower weight
         # to_undirected might choose either edge with weight 2 or weight 3
         GG['u']['x']['weight'] = 2
         (D, P) = nx.single_source_dijkstra(GG, 's')
-        assert_equal(P['v'], ['s', 'x', 'u', 'v'])
+        validate_path(GG, 's', 'v', 8, P['v'])
         assert_equal(D['v'], 8)     # uses lower weight of 2 on u<->x edge
-        assert_equal(nx.dijkstra_path(GG, 's', 'v'), ['s', 'x', 'u', 'v'])
+        validate_path(GG, 's', 'v', 8, nx.dijkstra_path(GG, 's', 'v'))
         assert_equal(nx.dijkstra_path_length(GG, 's', 'v'), 8)
 
-        assert_equal(nx.dijkstra_path(self.XG2, 1, 3), [1, 4, 5, 6, 3])
-        assert_equal(nx.dijkstra_path(self.XG3, 0, 3), [0, 1, 2, 3])
+        validate_path(self.XG2, 1, 3, 4, nx.dijkstra_path(self.XG2, 1, 3))
+        validate_path(self.XG3, 0, 3, 15, nx.dijkstra_path(self.XG3, 0, 3))
         assert_equal(nx.dijkstra_path_length(self.XG3, 0, 3), 15)
-        assert_equal(nx.dijkstra_path(self.XG4, 0, 2), [0, 1, 2])
+        validate_path(self.XG4, 0, 2, 4, nx.dijkstra_path(self.XG4, 0, 2))
         assert_equal(nx.dijkstra_path_length(self.XG4, 0, 2), 4)
-        assert_equal(nx.dijkstra_path(self.MXG4, 0, 2), [0, 1, 2])
-        assert_equal(nx.single_source_dijkstra(self.G, 's', 'v')[1]['v'],
-                     ['s', 'u', 'v'])
-        assert_equal(nx.single_source_dijkstra(self.G, 's')[1]['v'],
-                     ['s', 'u', 'v'])
+        validate_path(self.MXG4, 0, 2, 4, nx.dijkstra_path(self.MXG4, 0, 2))
+        validate_path(
+            self.G, 's', 'v', 2, nx.single_source_dijkstra(self.G, 's', 'v')[1]['v'])
+        validate_path(
+            self.G, 's', 'v', 2, nx.single_source_dijkstra(self.G, 's')[1]['v'])
 
-        assert_equal(nx.dijkstra_path(self.G, 's', 'v'), ['s', 'u', 'v'])
+        validate_path(self.G, 's', 'v', 2, nx.dijkstra_path(self.G, 's', 'v'))
         assert_equal(nx.dijkstra_path_length(self.G, 's', 'v'), 2)
 
         # NetworkXError: node s not reachable from moon
@@ -89,32 +106,30 @@ class TestWeightedPath:
         assert_raises(
             nx.NetworkXNoPath, nx.dijkstra_path_length, self.G, 's', 'moon')
 
-        assert_equal(nx.dijkstra_path(self.cycle, 0, 3), [0, 1, 2, 3])
-        assert_equal(nx.dijkstra_path(self.cycle, 0, 4), [0, 6, 5, 4])
+        validate_path(self.cycle, 0, 3, 3, nx.dijkstra_path(self.cycle, 0, 3))
+        validate_path(self.cycle, 0, 4, 3, nx.dijkstra_path(self.cycle, 0, 4))
 
         assert_equal(
             nx.single_source_dijkstra(self.cycle, 0, 0), ({0: 0}, {0: [0]}))
 
     def test_bidirectional_dijkstra(self):
-        assert_equal(nx.bidirectional_dijkstra(self.XG, 's', 'v'),
-                     (9, ['s', 'x', 'u', 'v']))
-        (dist, path) = nx.bidirectional_dijkstra(self.G, 's', 'v')
-        assert_equal(dist, 2)
-        # skip this test, correct path could also be ['s','u','v']
-#        assert_equal(nx.bidirectional_dijkstra(self.G,'s','v'),
-#                     (2, ['s', 'x', 'v']))
-        assert_equal(nx.bidirectional_dijkstra(self.cycle, 0, 3),
-                     (3, [0, 1, 2, 3]))
-        assert_equal(nx.bidirectional_dijkstra(self.cycle, 0, 4),
-                     (3, [0, 6, 5, 4]))
-        assert_equal(nx.bidirectional_dijkstra(self.XG3, 0, 3),
-                     (15, [0, 1, 2, 3]))
-        assert_equal(nx.bidirectional_dijkstra(self.XG4, 0, 2),
-                     (4, [0, 1, 2]))
+        validate_length_path(
+            self.XG, 's', 'v', 9, *nx.bidirectional_dijkstra(self.XG, 's', 'v'))
+        validate_length_path(
+            self.G, 's', 'v', 2, *nx.bidirectional_dijkstra(self.G, 's', 'v'))
+        validate_length_path(
+            self.cycle, 0, 3, 3, *nx.bidirectional_dijkstra(self.cycle, 0, 3))
+        validate_length_path(
+            self.cycle, 0, 4, 3, *nx.bidirectional_dijkstra(self.cycle, 0, 4))
+        validate_length_path(
+            self.XG3, 0, 3, 15, *nx.bidirectional_dijkstra(self.XG3, 0, 3))
+        validate_length_path(
+            self.XG4, 0, 2, 4, *nx.bidirectional_dijkstra(self.XG4, 0, 2))
 
         # need more tests here
-        assert_equal(nx.dijkstra_path(self.XG, 's', 'v'),
-                     nx.single_source_dijkstra_path(self.XG, 's')['v'])
+        P = nx.single_source_dijkstra_path(self.XG, 's')['v']
+        validate_path(self.XG, 's', 'v', sum(self.XG[u][v]['weight'] for u, v in zip(
+            P[:-1], P[1:])), nx.dijkstra_path(self.XG, 's', 'v'))
 
     @raises(nx.NetworkXNoPath)
     def test_bidirectional_dijkstra_no_path(self):
