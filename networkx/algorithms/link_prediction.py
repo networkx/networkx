@@ -21,7 +21,7 @@ __all__ = ['resource_allocation_index',
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def resource_allocation_index(G, u, v):
+def resource_allocation_index(G, ebunch=None):
     r"""Compute the resource allocation index of two nodes.
 
     Resource allocation index of `u` and `v` is defined as
@@ -58,12 +58,17 @@ def resource_allocation_index(G, u, v):
        Eur. Phys. J. B 71 (2009) 623.
        http://arxiv.org/pdf/0901.0553.pdf
     """
-    return sum(1 / G.degree(w) for w in nx.common_neighbors(G, u, v))
+    if ebunch is None:
+        ebunch = nx.non_edges(G)
+
+    for u, v in ebunch:
+        p = sum(1 / G.degree(w) for w in nx.common_neighbors(G, u, v))
+        yield (u, v, p)
 
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def jaccard_coefficient(G, u, v):
+def jaccard_coefficient(G, ebunch=None):
     r"""Compute the Jaccard coefficient of two nodes.
 
     Jaccard coefficient of nodes `u` and `v` is defined as
@@ -99,17 +104,25 @@ def jaccard_coefficient(G, u, v):
            The Link Prediction Problem for Social Networks (2004).
            http://www.cs.cornell.edu/home/kleinber/link-pred.pdf
     """
-    cnbors = list(nx.common_neighbors(G, u, v))
-    union_size = len(set(G[u]) | set(G[v]))
-    if union_size == 0:
-        return 0
-    else:
-        return len(cnbors) / union_size
+    if ebunch is None:
+        ebunch = nx.non_edges(G)
+
+    def score(u, v):
+        cnbors = list(nx.common_neighbors(G, u, v))
+        union_size = len(set(G[u]) | set(G[v]))
+        if union_size == 0:
+            return 0
+        else:
+            return len(cnbors) / union_size
+
+    for u, v in ebunch:
+        p = score(u, v)
+        yield (u, v, p)
 
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def adamic_adar_index(G, u, v):
+def adamic_adar_index(G, ebunch=None):
     r"""Compute the Adamic-Adar index of two nodes.
 
     Adamic-Adar index of `u` and `v` is defined as
@@ -145,12 +158,17 @@ def adamic_adar_index(G, u, v):
            The Link Prediction Problem for Social Networks (2004).
            http://www.cs.cornell.edu/home/kleinber/link-pred.pdf
     """
-    return sum(1 / math.log(G.degree(w)) for w in nx.common_neighbors(G, u, v))
+    if ebunch is None:
+        ebunch = nx.non_edges(G)
+
+    for u, v in ebunch:
+        p = sum(1 / math.log(G.degree(w)) for w in nx.common_neighbors(G, u, v))
+        yield (u, v, p)
 
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def preferential_attachment(G, u, v):
+def preferential_attachment(G, ebunch=None):
     r"""Compute the preferential attachment score of two nodes.
 
     Preferential attachment score of `u` and `v` is defined as
@@ -186,12 +204,12 @@ def preferential_attachment(G, u, v):
            The Link Prediction Problem for Social Networks (2004).
            http://www.cs.cornell.edu/home/kleinber/link-pred.pdf
     """
-    if u not in G:
-        raise nx.NetworkXError('u is not in the graph.')
-    if v not in G:
-        raise nx.NetworkXError('v is not in the graph.')
+    if ebunch is None:
+        ebunch = nx.non_edges(G)
 
-    return G.degree(u) * G.degree(v)
+    for u, v in ebunch:
+        p = G.degree(u) * G.degree(v)
+        yield (u, v, p)
 
 
 @not_implemented_for('directed')
@@ -229,7 +247,7 @@ def katz(G, u, v, beta=0.1, max_iter=1000, tol=1.0e-7):
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def cn_soundarajan_hopcroft(G, u, v):
+def cn_soundarajan_hopcroft(G, ebunch=None):
     r"""Count the number of common neighbors of two nodes using community information.
 
     One is added to the count for each common neighbor that belongs
@@ -282,18 +300,26 @@ def cn_soundarajan_hopcroft(G, u, v):
        World Wide Web (WWW '12 Companion). ACM, New York, NY, USA, 607-608.
        http://doi.acm.org/10.1145/2187980.2188150
     """
-    Cu = _community(G, u)
-    Cv = _community(G, v)
-    cnbors = list(nx.common_neighbors(G, u, v))
-    if Cu == Cv:
-        return len(cnbors) + sum(_community(G, w) == Cu for w in cnbors)
-    else:
-        return len(cnbors)
+    if ebunch is None:
+        ebunch = nx.non_edges(G)
+
+    def score(u, v):
+        Cu = _community(G, u)
+        Cv = _community(G, v)
+        cnbors = list(nx.common_neighbors(G, u, v))
+        if Cu == Cv:
+            return len(cnbors) + sum(_community(G, w) == Cu for w in cnbors)
+        else:
+            return len(cnbors)
+
+    for u, v in ebunch:
+        p = score(u, v)
+        yield (u, v, p)
 
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def ra_index_soundarajan_hopcroft(G, u, v):
+def ra_index_soundarajan_hopcroft(G, ebunch=None):
     r"""Compute the resource allocation index of two nodes using community information.
 
 
@@ -349,18 +375,26 @@ def ra_index_soundarajan_hopcroft(G, u, v):
        World Wide Web (WWW '12 Companion). ACM, New York, NY, USA, 607-608.
        http://doi.acm.org/10.1145/2187980.2188150
     """
-    Cu = _community(G, u)
-    Cv = _community(G, v)
-    if Cu == Cv:
-        cnbors = nx.common_neighbors(G, u, v)
-        return sum(1 / G.degree(w) for w in cnbors if _community(G, w) == Cu)
-    else:
-        return 0
+    if ebunch is None:
+        ebunch = nx.non_edges(G)
+
+    def score(u, v):
+        Cu = _community(G, u)
+        Cv = _community(G, v)
+        if Cu == Cv:
+            cnbors = nx.common_neighbors(G, u, v)
+            return sum(1 / G.degree(w) for w in cnbors if _community(G, w) == Cu)
+        else:
+            return 0
+
+    for u, v in ebunch:
+        p = score(u, v)
+        yield (u, v, p)
 
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def within_inter_cluster(G, u, v, delta=0.001):
+def within_inter_cluster(G, ebunch=None, delta=0.001):
     """Compute the ratio of within- and inter-cluster common neighbors of two nodes.
 
     If a common neighbor `w` belongs to the same community as `u`
@@ -417,15 +451,23 @@ def within_inter_cluster(G, u, v, delta=0.001):
     if delta <= 0:
         raise nx.NetworkXAlgorithmError('Delta must be greater than zero')
 
-    Cu = _community(G, u)
-    Cv = _community(G, v)
-    if Cu == Cv:
-        cnbors = set(nx.common_neighbors(G, u, v))
-        within = set(w for w in cnbors if _community(G, w) == Cu)
-        inter = cnbors - within
-        return len(within) / (len(inter) + delta)
-    else:
-        return 0
+    if ebunch is None:
+        ebunch = nx.non_edges(G)
+
+    def score(u, v):
+        Cu = _community(G, u)
+        Cv = _community(G, v)
+        if Cu == Cv:
+            cnbors = set(nx.common_neighbors(G, u, v))
+            within = set(w for w in cnbors if _community(G, w) == Cu)
+            inter = cnbors - within
+            return len(within) / (len(inter) + delta)
+        else:
+            return 0
+
+    for u, v in ebunch:
+        p = score(u, v)
+        yield (u, v, p)
 
 
 def _community(G, u):
