@@ -9,8 +9,8 @@ class TestResourceAllocationIndex():
     def setUp(self):
         self.func = nx.resource_allocation_index
         def test_func(G, u, v, expected):
-            result = self.func(G, u, v)
-            assert_almost_equal(result, expected)
+            result = list(self.func(G, [(u, v)]))
+            assert_almost_equal(result[0][2], expected)
         self.test = test_func
 
     def test_K5(self):
@@ -29,19 +29,19 @@ class TestResourceAllocationIndex():
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -57,8 +57,8 @@ class TestJaccardCoefficient():
     def setUp(self):
         self.func = nx.jaccard_coefficient
         def test_func(G, u, v, expected):
-            result = self.func(G, u, v)
-            assert_almost_equal(result, expected)
+            result = list(self.func(G, [(u, v)]))
+            assert_almost_equal(result[0][2], expected)
         self.test = test_func
 
     def test_K5(self):
@@ -73,19 +73,19 @@ class TestJaccardCoefficient():
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -102,8 +102,8 @@ class TestAdamicAdarIndex():
     def setUp(self):
         self.func = nx.adamic_adar_index
         def test_func(G, u, v, expected):
-            result = self.func(G, u, v)
-            assert_almost_equal(result, expected)
+            result = list(self.func(G, [(u, v)]))
+            assert_almost_equal(result[0][2], expected)
         self.test = test_func
 
     def test_K5(self):
@@ -122,19 +122,19 @@ class TestAdamicAdarIndex():
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -150,8 +150,8 @@ class TestPreferentialAttachment():
     def setUp(self):
         self.func = nx.preferential_attachment
         def test_func(G, u, v, expected):
-            result = self.func(G, u, v)
-            assert_equal(result, expected)
+            result = list(self.func(G, [(u, v)]))
+            assert_equal(result[0][2], expected)
         self.test = test_func
 
     def test_K5(self):
@@ -170,19 +170,19 @@ class TestPreferentialAttachment():
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     def test_zero_degrees(self):
         G = nx.Graph()
@@ -253,8 +253,8 @@ class TestCNSoundarajanHopcroft():
     def setUp(self):
         self.func = nx.cn_soundarajan_hopcroft
         def test_func(G, u, v, expected):
-            result = self.func(G, u, v)
-            assert_equal(result, expected)
+            result = list(self.func(G, [(u, v)]))
+            assert_equal(result[0][2], expected)
         self.test = test_func
 
     def test_K5(self):
@@ -289,7 +289,7 @@ class TestCNSoundarajanHopcroft():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
@@ -298,7 +298,7 @@ class TestCNSoundarajanHopcroft():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
@@ -307,7 +307,7 @@ class TestCNSoundarajanHopcroft():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -335,7 +335,7 @@ class TestCNSoundarajanHopcroft():
     @raises(nx.NetworkXAlgorithmError)
     def test_no_community_information(self):
         G = nx.complete_graph(5)
-        self.func(G, 0, 1)
+        list(self.func(G, [(0, 1)]))
 
     @raises(nx.NetworkXAlgorithmError)
     def test_insufficient_community_information(self):
@@ -344,7 +344,7 @@ class TestCNSoundarajanHopcroft():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[3]['community'] = 0
-        self.func(G, 0, 3)
+        list(self.func(G, [(0, 3)]))
 
     def test_sufficient_community_information(self):
         G = nx.Graph()
@@ -360,8 +360,8 @@ class TestRAIndexSoundarajanHopcroft():
     def setUp(self):
         self.func = nx.ra_index_soundarajan_hopcroft
         def test_func(G, u, v, expected):
-            result = self.func(G, u, v)
-            assert_almost_equal(result, expected)
+            result = list(self.func(G, [(u, v)]))
+            assert_almost_equal(result[0][2], expected)
         self.test = test_func
 
     def test_K5(self):
@@ -396,7 +396,7 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
@@ -405,7 +405,7 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
@@ -414,7 +414,7 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 2)
+        self.func(G, [(0, 2)])
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -442,7 +442,7 @@ class TestRAIndexSoundarajanHopcroft():
     @raises(nx.NetworkXAlgorithmError)
     def test_no_community_information(self):
         G = nx.complete_graph(5)
-        self.func(G, 0, 1)
+        list(self.func(G, [(0, 1)]))
 
     @raises(nx.NetworkXAlgorithmError)
     def test_insufficient_community_information(self):
@@ -451,7 +451,7 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[3]['community'] = 0
-        self.func(G, 0, 3)
+        list(self.func(G, [(0, 3)]))
 
     def test_sufficient_community_information(self):
         G = nx.Graph()
@@ -468,8 +468,8 @@ class TestWithinInterCluster():
         self.delta = 0.001
         self.func = nx.within_inter_cluster
         def test_func(G, u, v, expected):
-            result = self.func(G, u, v, self.delta)
-            assert_almost_equal(result, expected)
+            result = list(self.func(G, [(u, v)], self.delta))
+            assert_almost_equal(result[0][2], expected)
         self.test = test_func
 
     def test_K5(self):
@@ -504,7 +504,7 @@ class TestWithinInterCluster():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 2, self.delta)
+        self.func(G, [(0, 2)], self.delta)
 
     @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
@@ -513,7 +513,7 @@ class TestWithinInterCluster():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 2, self.delta)
+        self.func(G, [(0, 2)], self.delta)
 
     @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
@@ -522,7 +522,7 @@ class TestWithinInterCluster():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 2, self.delta)
+        self.func(G, [(0, 2)], self.delta)
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -558,7 +558,7 @@ class TestWithinInterCluster():
     @raises(nx.NetworkXAlgorithmError)
     def test_no_community_information(self):
         G = nx.complete_graph(5)
-        self.func(G, 0, 1)
+        list(self.func(G, [(0, 1)]))
 
     @raises(nx.NetworkXAlgorithmError)
     def test_insufficient_community_information(self):
@@ -567,7 +567,7 @@ class TestWithinInterCluster():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[3]['community'] = 0
-        self.func(G, 0, 3)
+        list(self.func(G, [(0, 3)]))
 
     def test_sufficient_community_information(self):
         G = nx.Graph()
@@ -584,7 +584,7 @@ class TestWithinInterCluster():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 1, 0)
+        list(self.func(G, [(0, 1)], 0))
 
     @raises(nx.NetworkXAlgorithmError)
     def test_negative_delta(self):
@@ -592,4 +592,4 @@ class TestWithinInterCluster():
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
-        self.func(G, 0, 1, -0.5)
+        list(self.func(G, [(0, 1)], -0.5))
