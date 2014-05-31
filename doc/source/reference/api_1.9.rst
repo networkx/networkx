@@ -137,7 +137,7 @@ Other new functionalities
 * Functions :samp:`algebraic_connectivity`, :samp:`fiedler_vector` and
   :samp:`spectral_ordering` are added in the linear algebra package
   (:samp:`networkx.linalg`) for computing the algebraic connectivity, Fiedler
-  vectors and spectral orderings of directed graphs.
+  vectors and spectral orderings of undirected graphs.
 
 * A link prediction package (:samp:`networkx.algorithms.link_prediction`) is
   added to provide link prediction-related functionalities.
@@ -164,8 +164,8 @@ Miscellaneous changes
   To recover the earlier behavior, use :samp:`list(connected_components(G))`.
 
 * JSON helpers in the JSON graph package (:samp:`networkx.readwrite.json_graph`)
-  are removed. Use functions from the standard library (e.g., `json.dumps`)
-  instead.
+  are removed. Use functions from the standard library (e.g.,
+  :samp:`json.dumps`) instead.
 
 * Support for Python 3.1 is dropped. Basic support is added for Jython 2.7 and
   IronPython 2.7, although they remain not officially supported.
