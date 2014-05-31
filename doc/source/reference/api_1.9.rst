@@ -56,7 +56,7 @@ Main changes
    :samp:`minimum_cut_value` returns only the value of the cut, which is what
    the removed :samp:`min_cut` function used to return before 1.9.
 
-6. The functions that the implement flow algorithms (i.e., :samp:`preflow_push`,
+6. The functions that implement flow algorithms (i.e., :samp:`preflow_push`,
    :samp:`edmonds_karp`, :samp:`shortest_augmenting_path` and
    :samp:`ford_fulkerson`) are not imported to the base NetworkX namespace. You
    have to explicitly import them from the flow package:
@@ -106,6 +106,56 @@ True
 >>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=shortest_augmenting_path)
 >>> flow_value, flow_dict = nx.maximum_flow(G, 0, 6, flow_func=edmonds_karp)
 
+Connectivity package
+--------------------
+
+The flow based connecitivity and cut algorithms from the connectivity
+package (:samp:`networkx.algorithms.connectivity`) were adapted to take
+advantage of the new interface to flow algorithms. As a result, flow-based
+connectivity algorithms are up to 10x faster than in NetworkX 1.8 for some
+problems, such as sparse networks with highly skewed degree distributions.
+A few backwards incompatible changes were introduced.
+
+* The local functions for flow-based connectivity and cuts accept now 
+arguments for the new parameters defined for the flow interface: 
+:samp:`flow_func` for defining the algorithm that will perform the 
+underlying maximum flow computations, :samp:`residual` that accepts
+as argument a residual network to be reused in repeated maximum
+flow computations, and :samp:`cutoff` for defining a maximum flow
+value at which the underlying maximum flow algorithm stops. The big
+speed improvement with respect to 1.8 comes mainly from the reuse
+of the residual network, and the use of :samp:`cutoff`.
+
+* We removed the flow-based local connectivity and cut functions from 
+the base namespace. Now they have to be explicitly imported from the
+connectivity package. The main entry point to flow-based connectivity
+and cut functions are the functions :samp:`edge_connectivity`,
+:samp:`node_connectivity`, :samp:`minimum_edge_cut`, and
+:samp:`minimum_node_cut`. All these functions accept a couple of nodes
+as optional arguments for computing local versions of these functions.
+
+* We improved the auxiliary digraph for connectivity functions: The node 
+mapping dict needed for node connectivity and minimum node cuts is now a
+graph attribute of the auxiliary digraph. Thus we removed the
+:samp:`mapping` parameter from the local version of connectivity and cut 
+functions. We also changed the parameter name for the auxuliary digraph
+from :samp:`aux_digraph` to :samp:`auxiliary`.
+
+* We changed the name of the function :samp:`all_pairs_node_connectiviy_matrix`
+to :samp:`all_pairs_node_connectivity`. This function now returns a dictionary
+instead of a numpy 2d array. We added a new parameter nbunch for computing node
+connectivity only among pairs of nodes in nbunch.
+
+* A :samp:`stoer_wagner` function was added to the connectivity package
+for computing the weighted minimum cuts of undirected graphs using 
+the Stoer–Wagner algorithm. This algorithm is not based in computing
+maximum flows. Several heap implementations were also added. 
+:class:`BinaryHeap` is recommeded over :class:`PairingHeap` for Python
+implementations without optimized attribute accesses (e.g., CPython)
+despite a slower asymptotic running time. For Python implementations
+with optimized attribute accesses (e.g., PyPy), :class:`PairingHeap`
+provides better performance.
+
 Other new functionalities
 -------------------------
 
@@ -119,10 +169,6 @@ Other new functionalities
 * An :samp:`is_semiconnected` function is added in the connectivity package
   (:samp:`networkx.algorithms.connectivity`) for recognizing semiconnected
   graphs.
-
-* A :samp:`stoer_wagner` function is added in the connectivity package
-  (:samp:`networkx.algorithms.connectivity`) for computing the weighted minimum
-  cuts of undirected graphs using the Stoer–Wagner algorithm.
 
 * The :samp:`eulerian_circuit` function in the Euler package
   (:samp:`networkx.algorithm.euler`) is changed to use a linear-time algorithm.
