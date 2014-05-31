@@ -87,16 +87,6 @@ class TestJaccardCoefficient():
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(nx.NetworkXError)
-    def test_nonexistent_node1(self):
-        G = nx.complete_graph(5)
-        self.func(G, 'A', 0)
-
-    @raises(nx.NetworkXError)
-    def test_nonexistent_node2(self):
-        G = nx.complete_graph(5)
-        self.func(G, 0, 'A')
-
     def test_no_common_neighbor(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (2, 3)])
@@ -146,16 +136,6 @@ class TestAdamicAdarIndex():
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(nx.NetworkXError)
-    def test_nonexistent_node1(self):
-        G = nx.complete_graph(5)
-        self.func(G, 'A', 0)
-
-    @raises(nx.NetworkXError)
-    def test_nonexistent_node2(self):
-        G = nx.complete_graph(5)
-        self.func(G, 0, 'A')
-
     def test_no_common_neighbor(self):
         G = nx.Graph()
         G.add_nodes_from([0, 1])
@@ -203,16 +183,6 @@ class TestPreferentialAttachment():
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
-
-    @raises(nx.NetworkXError)
-    def test_nonexistent_node1(self):
-        G = nx.complete_graph(5)
-        self.func(G, 'A', 0)
-
-    @raises(nx.NetworkXError)
-    def test_nonexistent_node2(self):
-        G = nx.complete_graph(5)
-        self.func(G, 0, 'A')
 
     def test_zero_degrees(self):
         G = nx.Graph()
