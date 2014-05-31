@@ -3,7 +3,6 @@ import math
 from nose.tools import *
 
 import networkx as nx
-from networkx.exception import *
 
 
 class TestResourceAllocationIndex():
@@ -27,19 +26,19 @@ class TestResourceAllocationIndex():
         G = nx.star_graph(4)
         self.test(G, 1, 2, 0.25)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -72,30 +71,30 @@ class TestJaccardCoefficient():
         G = nx.path_graph(4)
         self.test(G, 0, 2, 0.5)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXError)
+    @raises(nx.NetworkXError)
     def test_nonexistent_node1(self):
         G = nx.complete_graph(5)
         self.func(G, 'A', 0)
 
-    @raises(NetworkXError)
+    @raises(nx.NetworkXError)
     def test_nonexistent_node2(self):
         G = nx.complete_graph(5)
         self.func(G, 0, 'A')
@@ -132,30 +131,30 @@ class TestAdamicAdarIndex():
         G = nx.star_graph(4)
         self.test(G, 1, 2, 1 / math.log(4))
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXError)
+    @raises(nx.NetworkXError)
     def test_nonexistent_node1(self):
         G = nx.complete_graph(5)
         self.func(G, 'A', 0)
 
-    @raises(NetworkXError)
+    @raises(nx.NetworkXError)
     def test_nonexistent_node2(self):
         G = nx.complete_graph(5)
         self.func(G, 0, 'A')
@@ -190,30 +189,30 @@ class TestPreferentialAttachment():
         G = nx.star_graph(4)
         self.test(G, 0, 2, 4)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXError)
+    @raises(nx.NetworkXError)
     def test_nonexistent_node1(self):
         G = nx.complete_graph(5)
         self.func(G, 'A', 0)
 
-    @raises(NetworkXError)
+    @raises(nx.NetworkXError)
     def test_nonexistent_node2(self):
         G = nx.complete_graph(5)
         self.func(G, 0, 'A')
@@ -245,19 +244,19 @@ class TestKatz():
         G = nx.star_graph(4)
         self.test(G, 0, 1, 0.1)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -278,7 +277,7 @@ class TestKatz():
         G.add_nodes_from([0, 1])
         self.test(G, 0, 1, 0)
 
-    @raises(NetworkXAlgorithmError)
+    @raises(nx.NetworkXAlgorithmError)
     def test_not_convergent(self):
         G = nx.complete_graph(3)
         self.func(G, 0, 1, beta=1.0)
@@ -317,7 +316,7 @@ class TestCNSoundarajanHopcroft():
         G.node[4]['community'] = 0
         self.test(G, 1, 2, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -326,7 +325,7 @@ class TestCNSoundarajanHopcroft():
         G.node[2]['community'] = 0
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -335,7 +334,7 @@ class TestCNSoundarajanHopcroft():
         G.node[2]['community'] = 0
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -352,7 +351,6 @@ class TestCNSoundarajanHopcroft():
         self.test(G, 0, 1, 0)
 
     def test_equal_nodes(self):
-        """Case of equal nodes."""
         G = nx.complete_graph(3)
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0
@@ -368,12 +366,12 @@ class TestCNSoundarajanHopcroft():
         G.node[3]['community'] = 1
         self.test(G, 0, 3, 2)
 
-    @raises(NetworkXAlgorithmError)
+    @raises(nx.NetworkXAlgorithmError)
     def test_no_community_information(self):
         G = nx.complete_graph(5)
         self.func(G, 0, 1)
 
-    @raises(NetworkXAlgorithmError)
+    @raises(nx.NetworkXAlgorithmError)
     def test_insufficient_community_information(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
@@ -426,7 +424,7 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[4]['community'] = 0
         self.test(G, 1, 2, 0.25)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -435,7 +433,7 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[2]['community'] = 0
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -444,7 +442,7 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[2]['community'] = 0
         self.func(G, 0, 2)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -476,12 +474,12 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[3]['community'] = 1
         self.test(G, 0, 3, 0)
 
-    @raises(NetworkXAlgorithmError)
+    @raises(nx.NetworkXAlgorithmError)
     def test_no_community_information(self):
         G = nx.complete_graph(5)
         self.func(G, 0, 1)
 
-    @raises(NetworkXAlgorithmError)
+    @raises(nx.NetworkXAlgorithmError)
     def test_insufficient_community_information(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
@@ -535,7 +533,7 @@ class TestWithinInterCluster():
         G.node[4]['community'] = 0
         self.test(G, 1, 2, 1 / self.delta)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_digraph(self):
         G = nx.DiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -544,7 +542,7 @@ class TestWithinInterCluster():
         G.node[2]['community'] = 0
         self.func(G, 0, 2, self.delta)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multigraph(self):
         G = nx.MultiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -553,7 +551,7 @@ class TestWithinInterCluster():
         G.node[2]['community'] = 0
         self.func(G, 0, 2, self.delta)
 
-    @raises(NetworkXNotImplemented)
+    @raises(nx.NetworkXNotImplemented)
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
         G.add_edges_from([(0, 1), (1, 2)])
@@ -593,12 +591,12 @@ class TestWithinInterCluster():
         G.node[3]['community'] = 0
         self.test(G, 0, 3, 2 / self.delta)
 
-    @raises(NetworkXAlgorithmError)
+    @raises(nx.NetworkXAlgorithmError)
     def test_no_community_information(self):
         G = nx.complete_graph(5)
         self.func(G, 0, 1)
 
-    @raises(NetworkXAlgorithmError)
+    @raises(nx.NetworkXAlgorithmError)
     def test_insufficient_community_information(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
@@ -616,7 +614,7 @@ class TestWithinInterCluster():
         G.node[4]['community'] = 0
         self.test(G, 1, 4, 2 / self.delta)
 
-    @raises(NetworkXAlgorithmError)
+    @raises(nx.NetworkXAlgorithmError)
     def test_zero_delta(self):
         G = nx.complete_graph(3)
         G.node[0]['community'] = 0
@@ -624,9 +622,8 @@ class TestWithinInterCluster():
         G.node[2]['community'] = 0
         self.func(G, 0, 1, 0)
 
-    @raises(NetworkXAlgorithmError)
+    @raises(nx.NetworkXAlgorithmError)
     def test_negative_delta(self):
-        """Case of delta less than zero."""
         G = nx.complete_graph(3)
         G.node[0]['community'] = 0
         G.node[1]['community'] = 0

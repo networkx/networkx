@@ -7,7 +7,6 @@ from __future__ import division
 import math
 
 import networkx as nx
-from networkx.exception import *
 from networkx.utils.decorators import *
 
 __all__ = ['resource_allocation_index',
@@ -224,7 +223,7 @@ def katz(G, u, v, beta=0.1, max_iter=1000, tol=1.0e-7):
             if abs(K[x, y] - lastK[x, y]) < tol:
                 return K[x, y]
 
-    raise NetworkXAlgorithmError(
+    raise nx.NetworkXAlgorithmError(
         'Failed to converge in %d iterations.' % max_iter)
 
 
@@ -416,7 +415,7 @@ def within_inter_cluster(G, u, v, delta=0.001):
        http://dx.doi.org/10.1007/978-3-642-34459-6_10
     """
     if delta <= 0:
-        raise NetworkXAlgorithmError('Delta must be greater than zero')
+        raise nx.NetworkXAlgorithmError('Delta must be greater than zero')
 
     Cu = _community(G, u)
     Cv = _community(G, v)
@@ -434,4 +433,4 @@ def _community(G, u):
     try:
         return G.node[u]['community']
     except KeyError:
-        raise NetworkXAlgorithmError('No community information')
+        raise nx.NetworkXAlgorithmError('No community information')
