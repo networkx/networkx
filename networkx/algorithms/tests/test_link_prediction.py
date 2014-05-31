@@ -224,6 +224,66 @@ class TestPreferentialAttachment():
         self.test(G, 0, 1, 0)
 
 
+class TestKatz():
+    def setUp(self):
+        self.func = nx.katz
+        def test_func(G, u, v, expected):
+            tol = 1e-7
+            result = self.func(G, u, v)
+            assert_true(abs(result - expected) < tol)
+        self.test = test_func
+
+    def test_K5(self):
+        G = nx.complete_graph(5)
+        self.test(G, 0, 1, 0.1515150942489209)
+
+    def test_P3(self):
+        G = nx.path_graph(3)
+        self.test(G, 0, 2, 0.010000000000000002)
+
+    def test_S4(self):
+        G = nx.star_graph(4)
+        self.test(G, 0, 1, 0.1)
+
+    @raises(NetworkXNotImplemented)
+    def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G, 0, 2)
+
+    @raises(NetworkXNotImplemented)
+    def test_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G, 0, 2)
+
+    @raises(NetworkXNotImplemented)
+    def test_multidigraph(self):
+        G = nx.MultiDiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        self.func(G, 0, 2)
+
+    def test_custom_graph(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 3), (0, 4), (1, 3), (1, 2), (2, 4)])
+        self.test(G, 3, 4, 0.011467863000000002)
+
+    def test_weighted_graph(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 3), (0, 4), (1, 3), (1, 2), (2, 4)], weight=4.0)
+        self.test(G, 3, 4, 0.6451609689349883)
+
+    def test_no_path(self):
+        G = nx.Graph()
+        G.add_nodes_from([0, 1])
+        self.test(G, 0, 1, 0)
+
+    @raises(NetworkXAlgorithmError)
+    def test_not_convergent(self):
+        G = nx.complete_graph(3)
+        self.func(G, 0, 1, beta=1.0)
+
+
 class TestCNSoundarajanHopcroft():
     def setUp(self):
         self.func = nx.cn_soundarajan_hopcroft
