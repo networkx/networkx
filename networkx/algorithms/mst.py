@@ -3,7 +3,7 @@
 Computes minimum spanning tree of a weighted graph.
 
 """
-#    Copyright (C) 2009-2010 by 
+#    Copyright (C) 2009-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -19,8 +19,9 @@ __all__ = ['kruskal_mst',
 import networkx as nx
 from heapq import heappop, heappush
 
-def minimum_spanning_edges(G,weight='weight',data=True):
-    """Generate edges in a minimum spanning forest of an undirected 
+
+def minimum_spanning_edges(G, weight='weight', data=True):
+    """Generate edges in a minimum spanning forest of an undirected
     weighted graph.
 
     A minimum spanning tree is a subgraph of the graph (a tree)
@@ -30,19 +31,19 @@ def minimum_spanning_edges(G,weight='weight',data=True):
     Parameters
     ----------
     G : NetworkX Graph
-    
+
     weight : string
        Edge data key to use for weight (default 'weight').
 
     data : bool, optional
        If True yield the edge data along with the edge.
-       
+
     Returns
     -------
     edges : iterator
        A generator that produces edges in the minimum spanning tree.
        The edges are three-tuples (u,v,w) where w is the weight.
-    
+
     Examples
     --------
     >>> G=nx.cycle_graph(4)
@@ -74,18 +75,18 @@ def minimum_spanning_edges(G,weight='weight',data=True):
             "Mimimum spanning tree not defined for directed graphs.")
 
     subtrees = UnionFind()
-    edges = sorted(G.edges(data=True),key=lambda t: t[2].get(weight,1))
-    for u,v,d in edges:
+    edges = sorted(G.edges(data=True), key=lambda t: t[2].get(weight, 1))
+    for u, v, d in edges:
         if subtrees[u] != subtrees[v]:
             if data:
-                yield (u,v,d)
+                yield (u, v, d)
             else:
-                yield (u,v)
-            subtrees.union(u,v)
+                yield (u, v)
+            subtrees.union(u, v)
 
 
-def minimum_spanning_tree(G,weight='weight'):
-    """Return a minimum spanning tree or forest of an undirected 
+def minimum_spanning_tree(G, weight='weight'):
+    """Return a minimum spanning tree or forest of an undirected
     weighted graph.
 
     A minimum spanning tree is a subgraph of the graph (a tree) with
@@ -98,15 +99,15 @@ def minimum_spanning_tree(G,weight='weight'):
     Parameters
     ----------
     G : NetworkX Graph
-    
+
     weight : string
        Edge data key to use for weight (default 'weight').
 
     Returns
     -------
     G : NetworkX Graph
-       A minimum spanning tree or forest. 
-    
+       A minimum spanning tree or forest.
+
     Examples
     --------
     >>> G=nx.cycle_graph(4)
@@ -122,20 +123,21 @@ def minimum_spanning_tree(G,weight='weight'):
     If the graph edges do not have a weight attribute a default weight of 1
     will be used.
     """
-    T=nx.Graph(nx.minimum_spanning_edges(G,weight=weight,data=True))
+    T = nx.Graph(nx.minimum_spanning_edges(G, weight=weight, data=True))
     # Add isolated nodes
-    if len(T)!=len(G):
-        T.add_nodes_from([n for n,d in G.degree().items() if d==0])
+    if len(T) != len(G):
+        T.add_nodes_from([n for n, d in G.degree().items() if d == 0])
     # Add node and graph attributes as shallow copy
     for n in T:
-        T.node[n]=G.node[n].copy()
-    T.graph=G.graph.copy()
+        T.node[n] = G.node[n].copy()
+    T.graph = G.graph.copy()
     return T
 
-kruskal_mst=minimum_spanning_tree
+kruskal_mst = minimum_spanning_tree
 
-def prim_mst_edges(G, weight = 'weight', data = True):
-    """Generate edges in a minimum spanning forest of an undirected 
+
+def prim_mst_edges(G, weight='weight', data=True):
+    """Generate edges in a minimum spanning forest of an undirected
     weighted graph.
 
     A minimum spanning tree is a subgraph of the graph (a tree)
@@ -145,19 +147,19 @@ def prim_mst_edges(G, weight = 'weight', data = True):
     Parameters
     ----------
     G : NetworkX Graph
-    
+
     weight : string
        Edge data key to use for weight (default 'weight').
 
     data : bool, optional
        If True yield the edge data along with the edge.
-       
+
     Returns
     -------
     edges : iterator
        A generator that produces edges in the minimum spanning tree.
        The edges are three-tuples (u,v,w) where w is the weight.
-    
+
     Examples
     --------
     >>> G=nx.cycle_graph(4)
@@ -194,7 +196,7 @@ def prim_mst_edges(G, weight = 'weight', data = True):
                 continue
             visited.append(v)
             nodes.remove(v)
-            for v, w  in G.edges(v):
+            for v, w in G.edges(v):
                 if not w in visited:
                     heappush(frontier, (G[v][w].get(weight, 1), v, w))
             if data:
@@ -203,8 +205,8 @@ def prim_mst_edges(G, weight = 'weight', data = True):
                 yield u, v
 
 
-def prim_mst(G, weight = 'weight'):
-    """Return a minimum spanning tree or forest of an undirected 
+def prim_mst(G, weight='weight'):
+    """Return a minimum spanning tree or forest of an undirected
     weighted graph.
 
     A minimum spanning tree is a subgraph of the graph (a tree) with
@@ -217,15 +219,15 @@ def prim_mst(G, weight = 'weight'):
     Parameters
     ----------
     G : NetworkX Graph
-    
+
     weight : string
        Edge data key to use for weight (default 'weight').
 
     Returns
     -------
     G : NetworkX Graph
-       A minimum spanning tree or forest. 
-    
+       A minimum spanning tree or forest.
+
     Examples
     --------
     >>> G=nx.cycle_graph(4)
@@ -242,13 +244,12 @@ def prim_mst(G, weight = 'weight'):
     will be used.
     """
 
-    T=nx.Graph(nx.prim_mst_edges(G,weight=weight,data=True))
+    T = nx.Graph(nx.prim_mst_edges(G, weight=weight, data=True))
     # Add isolated nodes
-    if len(T)!=len(G):
-        T.add_nodes_from([n for n,d in G.degree().items() if d==0])
+    if len(T) != len(G):
+        T.add_nodes_from([n for n, d in G.degree().items() if d == 0])
     # Add node and graph attributes as shallow copy
     for n in T:
-        T.node[n]=G.node[n].copy()
-    T.graph=G.graph.copy()
+        T.node[n] = G.node[n].copy()
+    T.graph = G.graph.copy()
     return T
-
