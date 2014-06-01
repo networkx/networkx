@@ -8,6 +8,7 @@ import networkx as nx
 class TestResourceAllocationIndex():
     def setUp(self):
         self.func = nx.resource_allocation_index
+
         def test_func(G, ebunch, expected):
             result = self.func(G, ebunch)
             for res, exp in zip(result, expected):
@@ -66,6 +67,7 @@ class TestResourceAllocationIndex():
 class TestJaccardCoefficient():
     def setUp(self):
         self.func = nx.jaccard_coefficient
+
         def test_func(G, ebunch, expected):
             result = self.func(G, ebunch)
             for res, exp in zip(result, expected):
@@ -121,6 +123,7 @@ class TestJaccardCoefficient():
 class TestAdamicAdarIndex():
     def setUp(self):
         self.func = nx.adamic_adar_index
+
         def test_func(G, ebunch, expected):
             result = self.func(G, ebunch)
             for res, exp in zip(result, expected):
@@ -174,12 +177,13 @@ class TestAdamicAdarIndex():
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (2, 3)])
         self.test(G, None, [(0, 3, 1 / math.log(2)), (1, 2, 1 / math.log(2)),
-            (1, 3, 0)])
+                  (1, 3, 0)])
 
 
 class TestPreferentialAttachment():
     def setUp(self):
         self.func = nx.preferential_attachment
+
         def test_func(G, ebunch, expected):
             result = self.func(G, ebunch)
             for res, exp in zip(result, expected):
@@ -234,6 +238,7 @@ class TestPreferentialAttachment():
 class TestCNSoundarajanHopcroft():
     def setUp(self):
         self.func = nx.cn_soundarajan_hopcroft
+
         def test_func(G, ebunch, expected, community='community'):
             result = self.func(G, ebunch, community)
             for res, exp in zip(result, expected):
@@ -364,6 +369,7 @@ class TestCNSoundarajanHopcroft():
 class TestRAIndexSoundarajanHopcroft():
     def setUp(self):
         self.func = nx.ra_index_soundarajan_hopcroft
+
         def test_func(G, ebunch, expected, community='community'):
             result = self.func(G, ebunch, community)
             for res, exp in zip(result, expected):
@@ -495,6 +501,7 @@ class TestWithinInterCluster():
     def setUp(self):
         self.delta = 0.001
         self.func = nx.within_inter_cluster
+
         def test_func(G, ebunch, expected, delta=self.delta,
                       community='community'):
             result = self.func(G, ebunch, delta, community)
