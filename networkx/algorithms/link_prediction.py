@@ -503,6 +503,8 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
 
 def _community(G, u, community):
     """Get the community of the given node."""
-    if community not in G.node[u]:
+    node_u = G.node[u]
+    try:
+        return node_u[community]
+    except KeyError:
         raise nx.NetworkXAlgorithmError('No community information')
-    return G.node[u][community]
