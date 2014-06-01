@@ -25,8 +25,9 @@ specification and http://gexf.net/format/basic.html for examples.
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['write_gexf', 'read_gexf', 'relabel_gexf_graph', 'generate_gexf']
 import itertools
+from operator import itemgetter
 import networkx as nx
-from networkx.utils import open_file, make_str
+from networkx.utils import open_file, make_str, sorter
 try:
     from xml.etree.cElementTree import Element, ElementTree, tostring
 except ImportError:
@@ -36,7 +37,7 @@ except ImportError:
         pass
 
 @open_file(1,mode='wb')
-def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
+def write_gexf(G, path, encoding='utf-8',prettyprint=True,sort=False,version='1.1draft'):
     """Write G in GEXF format to path.
 
     "GEXF (Graph Exchange XML Format) is a language for describing
@@ -53,6 +54,8 @@ def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
        Encoding for text data.
     prettyprint : bool (optional)
        If True use line breaks and indenting in output XML.
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Examples
     --------
@@ -73,11 +76,11 @@ def write_gexf(G, path, encoding='utf-8',prettyprint=True,version='1.1draft'):
     .. [1] GEXF graph format, http://gexf.net/format/
     """
     writer = GEXFWriter(encoding=encoding,prettyprint=prettyprint,
-                        version=version)
+                        sort=sort,version=version)
     writer.add_graph(G)
     writer.write(path)
 
-def generate_gexf(G, encoding='utf-8',prettyprint=True,version='1.1draft'):
+def generate_gexf(G, encoding='utf-8',prettyprint=True,sort=False,version='1.1draft'):
     """Generate lines of GEXF format representation of G"
 
     "GEXF (Graph Exchange XML Format) is a language for describing
@@ -91,6 +94,8 @@ def generate_gexf(G, encoding='utf-8',prettyprint=True,version='1.1draft'):
        Encoding for text data.
     prettyprint : bool (optional)
        If True use line breaks and indenting in output XML.
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Examples
     --------
@@ -114,7 +119,7 @@ def generate_gexf(G, encoding='utf-8',prettyprint=True,version='1.1draft'):
     .. [1] GEXF graph format, http://gexf.net/format/
     """
     writer = GEXFWriter(encoding=encoding,prettyprint=prettyprint,
-                        version=version)
+                        sort=sort,version=version)
     writer.add_graph(G)
     for line in str(writer).splitlines():
         yield line
@@ -245,7 +250,7 @@ class GEXFWriter(GEXF):
     # class for writing GEXF format files
     # use write_gexf() function
     def __init__(self, graph=None, encoding="utf-8", prettyprint=True,
-                 version='1.1draft'):
+                 sort=False, version='1.1draft'):
         try:
             import xml.etree.ElementTree
         except ImportError:
@@ -253,6 +258,7 @@ class GEXFWriter(GEXF):
                                'xml.elementtree.ElementTree')
         self.prettyprint=prettyprint
         self.encoding = encoding
+        self.sort = sort
         self.set_version(version)
         self.xml = Element("gexf",
                            {'xmlns':self.NS_GEXF,
@@ -303,7 +309,8 @@ class GEXFWriter(GEXF):
 
     def add_nodes(self, G, graph_element):
         nodes_element = Element('nodes')
-        for node,data in G.nodes_iter(data=True):
+        for node,data in sorter(G.nodes_iter(data=True),
+                                self.sort, key=itemgetter(0)):
             node_data=data.copy()
             node_id = make_str(node_data.pop('id', node))
             kw={'id':node_id}
@@ -336,7 +343,8 @@ class GEXFWriter(GEXF):
         def edge_key_data(G):
             # helper function to unify multigraph and graph edge iterator
             if G.is_multigraph():
-                for u,v,key,data in G.edges_iter(data=True,keys=True):
+                for u,v,key,data in sorter(G.edges_iter(data=True,keys=True),
+                                           self.sort, key=itemgetter(0,1,2)):
                     edge_data=data.copy()
                     edge_data.update(key=key)
                     edge_id=edge_data.pop('id',None)
@@ -344,7 +352,8 @@ class GEXFWriter(GEXF):
                         edge_id=next(self.edge_id)
                     yield u,v,edge_id,edge_data
             else:
-                for u,v,data in G.edges_iter(data=True):
+                for u,v,data in sorter(G.edges_iter(data=True),
+                                       self.sort, key=itemgetter(0,1)):
                     edge_data=data.copy()
                     edge_id=edge_data.pop('id',None)
                     if edge_id is None:
@@ -352,7 +361,8 @@ class GEXFWriter(GEXF):
                     yield u,v,edge_id,edge_data
 
         edges_element = Element('edges')
-        for u,v,key,edge_data in edge_key_data(G):
+        for u,v,key,edge_data in sorter(edge_key_data(G),
+                                        self.sort, key=itemgetter(0,1,2)):
             kw={'id':make_str(key)}
             try:
                 edge_weight=edge_data.pop('weight')
@@ -399,7 +409,7 @@ class GEXFWriter(GEXF):
         if len(data)==0:
             return data
         mode='static'
-        for k,v in data.items():
+        for k,v in sorter(data.items(), self.sort, key=itemgetter(0)):
             # rename generic multigraph key to avoid any name conflict
             if k == 'key':
                 k='networkx_key'

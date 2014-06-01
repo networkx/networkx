@@ -42,7 +42,8 @@ __all__ = ['write_graphml', 'read_graphml', 'generate_graphml',
            'parse_graphml', 'GraphMLWriter', 'GraphMLReader']
 
 import networkx as nx
-from networkx.utils import open_file, make_str
+from operator import itemgetter
+from networkx.utils import open_file, make_str, sorter
 import warnings
 try:
     from xml.etree.cElementTree import Element, ElementTree, tostring, fromstring
@@ -53,7 +54,7 @@ except ImportError:
         pass
 
 @open_file(1,mode='wb')
-def write_graphml(G, path, encoding='utf-8',prettyprint=True):
+def write_graphml(G, path, encoding='utf-8',prettyprint=True, sort=False):
     """Write G in GraphML XML format to path
 
     Parameters
@@ -67,6 +68,8 @@ def write_graphml(G, path, encoding='utf-8',prettyprint=True):
        Encoding for text data.
     prettyprint : bool (optional)
        If True use line breaks and indenting in output XML.
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Examples
     --------
@@ -78,11 +81,11 @@ def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     This implementation does not support mixed graphs (directed and unidirected
     edges together) hyperedges, nested graphs, or ports.
     """
-    writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint)
+    writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint,sort=sort)
     writer.add_graph_element(G)
     writer.dump(path)
 
-def generate_graphml(G, encoding='utf-8',prettyprint=True):
+def generate_graphml(G, encoding='utf-8',prettyprint=True, sort=False):
     """Generate GraphML lines for G
 
     Parameters
@@ -93,6 +96,8 @@ def generate_graphml(G, encoding='utf-8',prettyprint=True):
        Encoding for text data.
     prettyprint : bool (optional)
        If True use line breaks and indenting in output XML.
+    sort : bool, optional (default=False)
+        Output in sorted order. Requires nodes to be sortable.
 
     Examples
     --------
@@ -107,7 +112,7 @@ def generate_graphml(G, encoding='utf-8',prettyprint=True):
     This implementation does not support mixed graphs (directed and unidirected
     edges together) hyperedges, nested graphs, or ports.
     """
-    writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint)
+    writer = GraphMLWriter(encoding=encoding,prettyprint=prettyprint,sort=sort)
     writer.add_graph_element(G)
     for line in str(writer).splitlines():
         yield line
@@ -230,7 +235,8 @@ class GraphML(object):
     }
 
 class GraphMLWriter(GraphML):
-    def __init__(self, graph=None, encoding="utf-8",prettyprint=True):
+    def __init__(self, graph=None, encoding="utf-8",prettyprint=True,
+                 sort=False):
         try:
             import xml.etree.ElementTree
         except ImportError:
@@ -238,6 +244,7 @@ class GraphMLWriter(GraphML):
                                'xml.elementtree.ElementTree')
         self.prettyprint=prettyprint
         self.encoding = encoding
+        self.sort = sort
         self.xml = Element("graphml",
                            {'xmlns':self.NS_GRAPHML,
                             'xmlns:xsi':self.NS_XSI,
@@ -294,14 +301,15 @@ class GraphMLWriter(GraphML):
     def add_attributes(self, scope, xml_obj, data, default):
         """Appends attributes to edges or nodes.
         """
-        for k,v in data.items():
+        for k,v in sorter(data.items(), self.sort, key=itemgetter(0)):
             default_value=default.get(k)
             obj=self.add_data(make_str(k), type(v), make_str(v),
                               scope=scope, default=default_value)
             xml_obj.append(obj)
 
     def add_nodes(self, G, graph_element):
-        for node,data in G.nodes_iter(data=True):
+        for node,data in sorter(G.nodes_iter(data=True),
+                                self.sort, key=itemgetter(0)):
             node_element = Element("node", id = make_str(node))
             default=G.graph.get('node_default',{})
             self.add_attributes("node", node_element, data, default)
@@ -309,7 +317,8 @@ class GraphMLWriter(GraphML):
 
     def add_edges(self, G, graph_element):
         if G.is_multigraph():
-            for u,v,key,data in G.edges_iter(data=True,keys=True):
+            for u,v,key,data in sorter(G.edges_iter(data=True,keys=True),
+                                       self.sort, key=itemgetter(0,1,2)):
                 edge_element = Element("edge",source=make_str(u),
                                        target=make_str(v))
                 default=G.graph.get('edge_default',{})
@@ -318,7 +327,8 @@ class GraphMLWriter(GraphML):
                                     {'key':key}, default)
                 graph_element.append(edge_element)
         else:
-            for u,v,data in G.edges_iter(data=True):
+            for u,v,data in sorter(G.edges_iter(data=True),
+                                   self.sort, key=itemgetter(0,1)):
                 edge_element = Element("edge",source=make_str(u),
                                        target=make_str(v))
                 default=G.graph.get('edge_default',{})

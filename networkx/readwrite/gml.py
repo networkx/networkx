@@ -39,8 +39,9 @@ __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 from cgi import escape
 
 import networkx as nx
+from operator import itemgetter
 from networkx.exception import NetworkXError
-from networkx.utils import is_string_like, open_file
+from networkx.utils import is_string_like, open_file, sorter
 
 ##
 # Removes HTML or XML character references and entities from a text string.
@@ -284,12 +285,14 @@ def pyparse_gml():
 
     return graph
 
-def generate_gml(G):
+def generate_gml(G, sort=False):
     """Generate a single entry of the graph G in GML format.
 
     Parameters
     ----------
     G : NetworkX graph
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Returns
     -------
@@ -315,7 +318,7 @@ def generate_gml(G):
     # recursively make dicts into gml brackets
     def listify(d,indent,indentlevel):
         result='[ \n'
-        for k,v in d.items():
+        for k,v in sorter(d.items(), sort):
             result += (indentlevel+1)*indent + \
                 string_item(k,v,indentlevel*indent)+'\n'
         return result+indentlevel*indent+"]"
@@ -349,12 +352,12 @@ def generate_gml(G):
     if G.is_directed():
         yield indent + "directed 1"
     # write graph attributes
-    for k,v in G.graph.items():
+    for k,v in sorter(G.graph.items(), sort, key=itemgetter(0)):
         if k == 'directed':
             continue
         yield indent + string_item(k,v,indent)
     # write nodes
-    for n in G:
+    for n in sorter(G, sort):
         yield indent + "node ["
         # get id or assign number
         nid = G.node[n].get('id',next(count))
@@ -366,16 +369,16 @@ def generate_gml(G):
         label = escape(label, quote=True)
         yield 2 * indent + 'label "{0}"'.format(label)
         if n in G:
-          for k,v in G.node[n].items():
+          for k,v in sorter(G.node[n].items(), sort, key=itemgetter(0)):
               if k == 'id' or k == 'label': continue
               yield 2 * indent + string_item(k,v,indent)
         yield indent + "]"
     # write edges
-    for u,v,edgedata in G.edges_iter(data=True):
+    for u,v,edgedata in sorter(G.edges_iter(data=True), sort, key=itemgetter(0,1)):
         yield indent + "edge ["
         yield 2 * indent + "source {0}".format(node_id[u])
         yield 2 * indent + "target {0}".format(node_id[v])
-        for k, v in edgedata.items():
+        for k, v in sorter(edgedata.items(), sort, key=itemgetter(0)):
             if k == 'source': continue
             if k == 'target': continue
             yield 2 * indent + string_item(k, v, indent)
@@ -383,7 +386,7 @@ def generate_gml(G):
     yield "]"
 
 @open_file(1, mode='wb')
-def write_gml(G, path):
+def write_gml(G, path, sort=False):
     """
     Write the graph G in GML format to the file or file handle path.
 
@@ -426,7 +429,7 @@ def write_gml(G, path):
 
     >>> nx.write_gml(G,"test.gml.gz")
     """
-    for line in generate_gml(G):
+    for line in generate_gml(G, sort):
         line += '\n'
         path.write(line.encode('ascii', 'xmlcharrefreplace'))
 

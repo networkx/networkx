@@ -19,17 +19,20 @@ for format information.
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
-from networkx.utils import is_string_like, open_file, make_str
+from operator import itemgetter
+from networkx.utils import is_string_like, open_file, make_str, sorter
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __all__ = ['read_pajek', 'parse_pajek', 'generate_pajek', 'write_pajek']
 
-def generate_pajek(G):
+def generate_pajek(G, sort=False):
     """Generate lines in Pajek graph format.
 
     Parameters
     ----------
     G : graph
        A Networkx graph
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     References
     ----------
@@ -46,7 +49,7 @@ def generate_pajek(G):
 
     # write nodes with attributes
     yield '*vertices %s'%(G.order())
-    nodes = G.nodes()
+    nodes = sorter(G.nodes(), sort)
     # make dictionary mapping nodes to integers
     nodenumber=dict(zip(nodes,range(1,len(nodes)+1)))
     for n in nodes:
@@ -57,7 +60,7 @@ def generate_pajek(G):
         nodenumber[n]=id
         shape=na.get('shape','ellipse')
         s=' '.join(map(make_qstr,(id,n,x,y,shape)))
-        for k,v in na.items():
+        for k,v in sorter(na.items(), sort, key=itemgetter(0)):
             s+=' %s %s'%(make_qstr(k),make_qstr(v))
         yield s
 
@@ -66,17 +69,17 @@ def generate_pajek(G):
         yield '*arcs'
     else:
         yield '*edges'
-    for u,v,edgedata in G.edges(data=True):
+    for u,v,edgedata in sorter(G.edges(data=True), sort, key=itemgetter(0,1)):
         d=edgedata.copy()
         value=d.pop('weight',1.0) # use 1 as default edge value
         s=' '.join(map(make_qstr,(nodenumber[u],nodenumber[v],value)))
-        for k,v in d.items():
+        for k,v in sorter(d.items(), sort, key=itemgetter(0)):
             s+=' %s %s'%(make_qstr(k),make_qstr(v))
             s+=' %s %s'%(k,v)
         yield s
 
 @open_file(1,mode='wb')
-def write_pajek(G, path, encoding='UTF-8'):
+def write_pajek(G, path, encoding='UTF-8', sort=False):
     """Write graph in Pajek format to path.
 
     Parameters
@@ -86,6 +89,8 @@ def write_pajek(G, path, encoding='UTF-8'):
     path : file or string
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
+    sort : bool, optional (default=False)
+       Output in sorted order. Requires nodes to be sortable.
 
     Examples
     --------
@@ -97,7 +102,7 @@ def write_pajek(G, path, encoding='UTF-8'):
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
     for format information.
     """
-    for line in generate_pajek(G):
+    for line in generate_pajek(G, sort):
         line+='\n'
         path.write(line.encode(encoding))
 

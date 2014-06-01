@@ -164,3 +164,11 @@ def dict_to_numpy_array1(d,mapping=None):
         i = mapping[k1]
         a[i] = d[k1]
     return a
+
+def sorter(l, sort, **kwargs):
+    """Return the iterable sorted or unsorted
+    """
+    if sort:
+        return sorted(l, **kwargs)
+    else:
+        return l
