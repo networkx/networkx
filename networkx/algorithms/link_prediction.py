@@ -22,7 +22,7 @@ __all__ = ['resource_allocation_index',
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def resource_allocation_index(G, ebunch=None):
-    r"""Compute the resource allocation index of two nodes.
+    r"""Compute the resource allocation index of all node pairs in ebunch.
 
     Resource allocation index of `u` and `v` is defined as
 
@@ -37,19 +37,28 @@ def resource_allocation_index(G, ebunch=None):
     G : graph
         A NetworkX undirected graph.
 
-    u, v : nodes
-        Nodes in the graph.
+    ebunch : container of node pairs, optional
+        Resource allocation index will be computed for each pair of
+        nodes given in the container. The pairs must be given as
+        2-tuples (u, v) where u and v are nodes in the graph. If ebunch
+        is None then all non-existent edges in the graph will be used.
 
     Returns
     -------
-    value : float
-        The resource allocation index of `u` and `v`.
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their resource allocation index.
 
     Examples
     --------
+    >>> import networkx as nx
     >>> G = nx.complete_graph(5)
-    >>> '%.8f' % nx.resource_allocation_index(G, 0, 1)
-    '0.75000000'
+    >>> preds = nx.resource_allocation_index(G, [(0, 1), (2, 3)])
+    >>> for u, v, p in preds:
+    ...     '(%d, %d) -> %.8f' % (u, v, p)
+    ...
+    '(0, 1) -> 0.75000000'
+    '(2, 3) -> 0.75000000'
 
     References
     ----------
@@ -69,7 +78,7 @@ def resource_allocation_index(G, ebunch=None):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def jaccard_coefficient(G, ebunch=None):
-    r"""Compute the Jaccard coefficient of two nodes.
+    r"""Compute the Jaccard coefficient of all node pairs in ebunch.
 
     Jaccard coefficient of nodes `u` and `v` is defined as
 
@@ -84,19 +93,28 @@ def jaccard_coefficient(G, ebunch=None):
     G : graph
         A NetworkX undirected graph.
 
-    u, v : nodes
-        Nodes in the graph.
+    ebunch : container of node pairs, optional
+        Jaccard coefficient will be computed for each pair of nodes
+        given in the container. The pairs must be given as 2-tuples
+        (u, v) where u and v are nodes in the graph. If ebunch is None
+        then all non-existent edges in the graph will be used.
 
     Returns
     -------
-    value : float
-        The Jaccard coefficient of `u` and `v`.
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their Jaccard coefficient.
 
     Examples
     --------
+    >>> import networkx as nx
     >>> G = nx.complete_graph(5)
-    >>> '%.8f' % nx.jaccard_coefficient(G, 0, 1)
-    '0.60000000'
+    >>> preds = nx.jaccard_coefficient(G, [(0, 1), (2, 3)])
+    >>> for u, v, p in preds:
+    ...     '(%d, %d) -> %.8f' % (u, v, p)
+    ...
+    '(0, 1) -> 0.60000000'
+    '(2, 3) -> 0.60000000'
 
     References
     ----------
@@ -123,7 +141,7 @@ def jaccard_coefficient(G, ebunch=None):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def adamic_adar_index(G, ebunch=None):
-    r"""Compute the Adamic-Adar index of two nodes.
+    r"""Compute the Adamic-Adar index of all node pairs in ebunch.
 
     Adamic-Adar index of `u` and `v` is defined as
 
@@ -138,19 +156,28 @@ def adamic_adar_index(G, ebunch=None):
     G : graph
         NetworkX undirected graph.
 
-    u, v : nodes
-        Nodes in the graph.
+    ebunch : container of node pairs, optional
+        Adamic-Adar index will be computed for each pair of nodes given
+        in the container. The pairs must be given as 2-tuples (u, v)
+        where u and v are nodes in the graph. If ebunch is None then all
+        non-existent edges in the graph will be used.
 
     Returns
     -------
-    value : float
-        The Adamic-Adar index of `u` and `v`.
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their Adamic-Adar index.
 
     Examples
     --------
+    >>> import networkx as nx
     >>> G = nx.complete_graph(5)
-    >>> '%.8f' % nx.adamic_adar_index(G, 0, 1)
-    '2.16404256'
+    >>> preds = nx.adamic_adar_index(G, [(0, 1), (2, 3)])
+    >>> for u, v, p in preds:
+    ...     '(%d, %d) -> %.8f' % (u, v, p)
+    ...
+    '(0, 1) -> 2.16404256'
+    '(2, 3) -> 2.16404256'
 
     References
     ----------
@@ -169,7 +196,7 @@ def adamic_adar_index(G, ebunch=None):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def preferential_attachment(G, ebunch=None):
-    r"""Compute the preferential attachment score of two nodes.
+    r"""Compute the preferential attachment score of all node pairs in ebunch.
 
     Preferential attachment score of `u` and `v` is defined as
 
@@ -184,19 +211,28 @@ def preferential_attachment(G, ebunch=None):
     G : graph
         NetworkX undirected graph.
 
-    u, v : nodes
-        Nodes in the graph.
+    ebunch : container of node pairs, optional
+        Preferential attachment score will be computed for each pair of
+        nodes given in the container. The pairs must be given as
+        2-tuples (u, v) where u and v are nodes in the graph. If ebunch
+        is None then all non-existent edges in the graph will be used.
 
     Returns
     -------
-    value : int
-        The preferential attachment score of `u` and `v`.
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their preferential attachment score.
 
     Examples
     --------
+    >>> import networkx as nx
     >>> G = nx.complete_graph(5)
-    >>> nx.preferential_attachment(G, 0, 1)
-    16
+    >>> preds = nx.preferential_attachment(G, [(0, 1), (2, 3)])
+    >>> for u, v, p in preds:
+    ...     '(%d, %d) -> %d' % (u, v, p)
+    ...
+    '(0, 1) -> 16'
+    '(2, 3) -> 16'
 
     References
     ----------
@@ -248,10 +284,12 @@ def katz(G, u, v, beta=0.1, max_iter=1000, tol=1.0e-7):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def cn_soundarajan_hopcroft(G, ebunch=None):
-    r"""Count the number of common neighbors of two nodes using community information.
+    r"""Count the number of common neighbors of all node pairs in ebunch
+        using community information.
 
-    One is added to the count for each common neighbor that belongs
-    to the same community as `u` and `v`. Mathematically,
+    For two nodes `u` and `v`, this function computes the number of
+    common neighbors and bonus one for each common neighbor belonging to
+    the same community as `u` and `v`. Mathematically,
 
     .. math::
 
@@ -266,15 +304,17 @@ def cn_soundarajan_hopcroft(G, ebunch=None):
     G : graph
         A NetworkX undirected graph.
 
-    u, v : nodes
-        Nodes in the graph.
+    ebunch : container of node pairs, optional
+        The score will be computed for each pair of nodes given in the
+        container. The pairs must be given as 2-tuples (u, v) where u
+        and v are nodes in the graph. If ebunch is None then all
+        non-existent edges in the graph will be used.
 
     Returns
     -------
-    value : int
-        The number of common neighbors between `u` and `v` plus bonus
-        for each common neighbor belonging to the same community as
-        `u` and `v`.
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their score.
 
     Notes
     -----
@@ -289,8 +329,11 @@ def cn_soundarajan_hopcroft(G, ebunch=None):
     >>> G.node[0]['community'] = 0
     >>> G.node[1]['community'] = 0
     >>> G.node[2]['community'] = 0
-    >>> nx.cn_soundarajan_hopcroft(G, 0, 2)
-    2
+    >>> preds = nx.cn_soundarajan_hopcroft(G, [(0, 2)])
+    >>> for u, v, p in preds:
+    ...     '(%d, %d) -> %d' % (u, v, p)
+    ...
+    '(0, 2) -> 2'
 
     References
     ----------
@@ -320,12 +363,12 @@ def cn_soundarajan_hopcroft(G, ebunch=None):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def ra_index_soundarajan_hopcroft(G, ebunch=None):
-    r"""Compute the resource allocation index of two nodes using community information.
+    r"""Compute the resource allocation index of all node pairs in
+    ebunch using community information.
 
-
-    This function computes the resource allocation index of `u` and `v`
-    considering only common neighbors belonging to the same community
-    as `u` and `v`. Mathematically,
+    For two nodes `u` and `v`, this function computes the resource
+    allocation index considering only common neighbors belonging to the
+    same community as `u` and `v`. Mathematically,
 
     .. math::
 
@@ -340,15 +383,17 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None):
     G : graph
         A NetworkX undirected graph.
 
-    u, v : nodes
-        Nodes in the graph.
+    ebunch : container of node pairs, optional
+        The score will be computed for each pair of nodes given in the
+        container. The pairs must be given as 2-tuples (u, v) where u
+        and v are nodes in the graph. If ebunch is None then all
+        non-existent edges in the graph will be used.
 
     Returns
     -------
-    value : float
-        The resource allocation index of `u` and `v` considering only
-        common neighbors that belong to the same community as
-        `u` and `v`.
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their score.
 
     Notes
     -----
@@ -358,14 +403,18 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> G = nx.Graph()
     >>> G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
     >>> G.node[0]['community'] = 0
     >>> G.node[1]['community'] = 0
     >>> G.node[2]['community'] = 1
     >>> G.node[3]['community'] = 0
-    >>> '%.8f' % nx.ra_index_soundarajan_hopcroft(G, 0, 3)
-    '0.50000000'
+    >>> preds = nx.ra_index_soundarajan_hopcroft(G, [(0, 3)])
+    >>> for u, v, p in preds:
+    ...     '(%d, %d) -> %.8f' % (u, v, p)
+    ...
+    '(0, 3) -> 0.50000000'
 
     References
     ----------
@@ -395,30 +444,37 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None):
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def within_inter_cluster(G, ebunch=None, delta=0.001):
-    """Compute the ratio of within- and inter-cluster common neighbors of two nodes.
+    """Compute the ratio of within- and inter-cluster common neighbors
+    of all node pairs in ebunch.
 
-    If a common neighbor `w` belongs to the same community as `u`
-    and `v`, `w` is considered as within-cluster common neighbor of `u`
-    and `v`. Otherwise, it is considered as inter-cluster common neighbor
-    of `u` and `v`. The ratio between the size of the set of within- and
-    inter-cluster common neighbors is defined as the WIC measure. [1]_
+    For two nodes `u` and `v`, if a common neighbor `w` belongs to the
+    same community as them, `w` is considered as within-cluster common
+    neighbor of `u` and `v`. Otherwise, it is considered as
+    inter-cluster common neighbor of `u` and `v`. The ratio between the
+    size of the set of within- and inter-cluster common neighbors is
+    defined as the WIC measure. [1]_
 
     Parameters
     ----------
     G : graph
         A NetworkX undirected graph.
 
-    u, v : nodes
-        Nodes in the graph.
+    ebunch : container of node pairs, optional
+        The WIC measure will be computed for each pair of nodes given in
+        the container. The pairs must be given as 2-tuples (u, v) where
+        u and v are nodes in the graph. If ebunch is None then all
+        non-existent edges in the graph will be used.
 
     delta : float, optional
-        Value to prevent division by zero in case there is no inter-cluster
-        common neighbor of `u` and `v`. See [1]_ for details.
+        Value to prevent division by zero in case there is no
+        inter-cluster common neighbor between two nodes. See [1]_ for
+        details.
 
     Returns
     -------
-    value : float
-        The WIC measure of `u` and `v`.
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their WIC measure.
 
     Notes
     -----
@@ -428,6 +484,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> G = nx.Graph()
     >>> G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 4), (2, 4), (3, 4)])
     >>> G.node[0]['community'] = 0
@@ -435,10 +492,16 @@ def within_inter_cluster(G, ebunch=None, delta=0.001):
     >>> G.node[2]['community'] = 0
     >>> G.node[3]['community'] = 0
     >>> G.node[4]['community'] = 0
-    >>> '%.8f' % nx.within_inter_cluster(G, 0, 4)
-    '1.99800200'
-    >>> '%.8f' % nx.within_inter_cluster(G, 0, 4, delta=0.5)
-    '1.33333333'
+    >>> preds = nx.within_inter_cluster(G, [(0, 4)])
+    >>> for u, v, p in preds:
+    ...     '(%d, %d) -> %.8f' % (u, v, p)
+    ...
+    '(0, 4) -> 1.99800200'
+    >>> preds = nx.within_inter_cluster(G, [(0, 4)], delta=0.5)
+    >>> for u, v, p in preds:
+    ...     '(%d, %d) -> %.8f' % (u, v, p)
+    ...
+    '(0, 4) -> 1.33333333'
 
     References
     ----------
