@@ -36,11 +36,12 @@ def resource_allocation_index(G, ebunch=None):
     G : graph
         A NetworkX undirected graph.
 
-    ebunch : container of node pairs, optional
+    ebunch : iterable of node pairs, optional (default = None)
         Resource allocation index will be computed for each pair of
-        nodes given in the container. The pairs must be given as
+        nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
         is None then all non-existent edges in the graph will be used.
+        Default value: None.
 
     Returns
     -------
@@ -93,11 +94,12 @@ def jaccard_coefficient(G, ebunch=None):
     G : graph
         A NetworkX undirected graph.
 
-    ebunch : container of node pairs, optional
+    ebunch : iterable of node pairs, optional (default = None)
         Jaccard coefficient will be computed for each pair of nodes
-        given in the container. The pairs must be given as 2-tuples
+        given in the iterable. The pairs must be given as 2-tuples
         (u, v) where u and v are nodes in the graph. If ebunch is None
         then all non-existent edges in the graph will be used.
+        Default value: None.
 
     Returns
     -------
@@ -154,11 +156,12 @@ def adamic_adar_index(G, ebunch=None):
     G : graph
         NetworkX undirected graph.
 
-    ebunch : container of node pairs, optional
+    ebunch : iterable of node pairs, optional (default = None)
         Adamic-Adar index will be computed for each pair of nodes given
-        in the container. The pairs must be given as 2-tuples (u, v)
+        in the iterable. The pairs must be given as 2-tuples (u, v)
         where u and v are nodes in the graph. If ebunch is None then all
         non-existent edges in the graph will be used.
+        Default value: None.
 
     Returns
     -------
@@ -211,11 +214,12 @@ def preferential_attachment(G, ebunch=None):
     G : graph
         NetworkX undirected graph.
 
-    ebunch : container of node pairs, optional
+    ebunch : iterable of node pairs, optional (default = None)
         Preferential attachment score will be computed for each pair of
-        nodes given in the container. The pairs must be given as
+        nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
         is None then all non-existent edges in the graph will be used.
+        Default value: None.
 
     Returns
     -------
@@ -269,26 +273,23 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
     G : graph
         A NetworkX undirected graph.
 
-    ebunch : container of node pairs, optional
+    ebunch : iterable of node pairs, optional (default = None)
         The score will be computed for each pair of nodes given in the
-        container. The pairs must be given as 2-tuples (u, v) where u
+        iterable. The pairs must be given as 2-tuples (u, v) where u
         and v are nodes in the graph. If ebunch is None then all
         non-existent edges in the graph will be used.
+        Default value: None.
 
     community : string, optional (default = 'community')
         Nodes attribute name containing the community information.
+        G[u][community] identifies which community u belongs to. Each
+        node belongs to at most one community. Default value: 'community'.
 
     Returns
     -------
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their score.
-
-    Notes
-    -----
-    The community information is defined as the information of which
-    community each node belongs to. Each node belongs to at most one
-    community.
 
     Examples
     --------
@@ -351,26 +352,23 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
     G : graph
         A NetworkX undirected graph.
 
-    ebunch : container of node pairs, optional
+    ebunch : iterable of node pairs, optional (default = None)
         The score will be computed for each pair of nodes given in the
-        container. The pairs must be given as 2-tuples (u, v) where u
+        iterable. The pairs must be given as 2-tuples (u, v) where u
         and v are nodes in the graph. If ebunch is None then all
         non-existent edges in the graph will be used.
+        Default value: None.
 
     community : string, optional (default = 'community')
         Nodes attribute name containing the community information.
+        G[u][community] identifies which community u belongs to. Each
+        node belongs to at most one community. Default value: 'community'.
 
     Returns
     -------
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their score.
-
-    Notes
-    -----
-    The community information is defined as the information of which
-    community each node belongs to. Each node belongs to at most one
-    community.
 
     Examples
     --------
@@ -430,31 +428,28 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
     G : graph
         A NetworkX undirected graph.
 
-    ebunch : container of node pairs, optional
+    ebunch : iterable of node pairs, optional (default = None)
         The WIC measure will be computed for each pair of nodes given in
-        the container. The pairs must be given as 2-tuples (u, v) where
+        the iterable. The pairs must be given as 2-tuples (u, v) where
         u and v are nodes in the graph. If ebunch is None then all
         non-existent edges in the graph will be used.
+        Default value: None.
 
-    delta : float, optional
+    delta : float, optional (default = 0.001)
         Value to prevent division by zero in case there is no
         inter-cluster common neighbor between two nodes. See [1]_ for
-        details.
+        details. Default value: 0.001.
 
     community : string, optional (default = 'community')
         Nodes attribute name containing the community information.
+        G[u][community] identifies which community u belongs to. Each
+        node belongs to at most one community. Default value: 'community'.
 
     Returns
     -------
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their WIC measure.
-
-    Notes
-    -----
-    The community information is defined as the information of which
-    community each node belongs to. Each node belongs to at most one
-    community.
 
     Examples
     --------
