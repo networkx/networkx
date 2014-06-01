@@ -276,6 +276,9 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
         and v are nodes in the graph. If ebunch is None then all
         non-existent edges in the graph will be used.
 
+    community : string, optional (default = 'community')
+        Nodes attribute name containing the community information.
+
     Returns
     -------
     piter : iterator
@@ -285,8 +288,8 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
     Notes
     -----
     The community information is defined as the information of which
-    community each node belongs to. This information should be stored
-    as the nodes attribute with 'community' as the name.
+    community each node belongs to. Each node belongs to at most one
+    community.
 
     Examples
     --------
@@ -356,6 +359,9 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
         and v are nodes in the graph. If ebunch is None then all
         non-existent edges in the graph will be used.
 
+    community : string, optional (default = 'community')
+        Nodes attribute name containing the community information.
+
     Returns
     -------
     piter : iterator
@@ -365,8 +371,8 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
     Notes
     -----
     The community information is defined as the information of which
-    community each node belongs to. This information should be stored
-    as the nodes attribute with 'community' as the name.
+    community each node belongs to. Each node belongs to at most one
+    community.
 
     Examples
     --------
@@ -438,6 +444,9 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
         inter-cluster common neighbor between two nodes. See [1]_ for
         details.
 
+    community : string, optional (default = 'community')
+        Nodes attribute name containing the community information.
+
     Returns
     -------
     piter : iterator
@@ -447,8 +456,8 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
     Notes
     -----
     The community information is defined as the information of which
-    community each node belongs to. This information should be stored
-    as the nodes attribute with 'community' as the name.
+    community each node belongs to. Each node belongs to at most one
+    community.
 
     Examples
     --------
