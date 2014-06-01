@@ -13,7 +13,6 @@ __all__ = ['resource_allocation_index',
            'jaccard_coefficient',
            'adamic_adar_index',
            'preferential_attachment',
-           'katz',
            'cn_soundarajan_hopcroft',
            'ra_index_soundarajan_hopcroft',
            'within_inter_cluster']
@@ -246,39 +245,6 @@ def preferential_attachment(G, ebunch=None):
     for u, v in ebunch:
         p = G.degree(u) * G.degree(v)
         yield (u, v, p)
-
-
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def katz(G, u, v, beta=0.1, max_iter=1000, tol=1.0e-7):
-    try:
-        import numpy.matlib
-    except ImportError:
-        raise ImportError('Requires NumPy: http://www.numpy.org/')
-
-    try:
-        s = nx.shortest_path_length(G, u, v)
-    except nx.NetworkXNoPath:
-        return 0.0
-
-    A = nx.to_numpy_matrix(G)
-    K = numpy.matlib.zeros(A.shape)
-    I = numpy.matlib.eye(A.shape[0])
-    nodes = list(G.nodes())
-    x, y = nodes.index(u), nodes.index(v)
-
-    for i in range(max_iter):
-        if i < s:  # K[x, y] = 0
-            K = beta * A * (I + K)
-        else:  # K[x, y] > 0
-            lastK = K
-            K = beta * A * (I + K)
-            # Check convergence
-            if abs(K[x, y] - lastK[x, y]) < tol:
-                return K[x, y]
-
-    raise nx.NetworkXAlgorithmError(
-        'Failed to converge in %d iterations.' % max_iter)
 
 
 @not_implemented_for('directed')
