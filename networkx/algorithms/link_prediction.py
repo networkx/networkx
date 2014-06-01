@@ -69,9 +69,10 @@ def resource_allocation_index(G, ebunch=None):
     if ebunch is None:
         ebunch = nx.non_edges(G)
 
-    for u, v in ebunch:
-        p = sum(1 / G.degree(w) for w in nx.common_neighbors(G, u, v))
-        yield (u, v, p)
+    def predict(u, v):
+        return sum(1 / G.degree(w) for w in nx.common_neighbors(G, u, v))
+
+    return ((u, v, predict(u, v)) for u, v in ebunch)
 
 
 @not_implemented_for('directed')
@@ -124,7 +125,7 @@ def jaccard_coefficient(G, ebunch=None):
     if ebunch is None:
         ebunch = nx.non_edges(G)
 
-    def score(u, v):
+    def predict(u, v):
         cnbors = list(nx.common_neighbors(G, u, v))
         union_size = len(set(G[u]) | set(G[v]))
         if union_size == 0:
@@ -132,9 +133,7 @@ def jaccard_coefficient(G, ebunch=None):
         else:
             return len(cnbors) / union_size
 
-    for u, v in ebunch:
-        p = score(u, v)
-        yield (u, v, p)
+    return ((u, v, predict(u, v)) for u, v in ebunch)
 
 
 @not_implemented_for('directed')
@@ -187,9 +186,11 @@ def adamic_adar_index(G, ebunch=None):
     if ebunch is None:
         ebunch = nx.non_edges(G)
 
-    for u, v in ebunch:
-        p = sum(1 / math.log(G.degree(w)) for w in nx.common_neighbors(G, u, v))
-        yield (u, v, p)
+    def predict(u, v):
+        return sum(1 / math.log(G.degree(w))
+                   for w in nx.common_neighbors(G, u, v))
+
+    return ((u, v, predict(u, v)) for u, v in ebunch)
 
 
 @not_implemented_for('directed')
@@ -242,9 +243,7 @@ def preferential_attachment(G, ebunch=None):
     if ebunch is None:
         ebunch = nx.non_edges(G)
 
-    for u, v in ebunch:
-        p = G.degree(u) * G.degree(v)
-        yield (u, v, p)
+    return ((u, v, G.degree(u) * G.degree(v)) for u, v in ebunch)
 
 
 @not_implemented_for('directed')
@@ -315,7 +314,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
     if ebunch is None:
         ebunch = nx.non_edges(G)
 
-    def score(u, v):
+    def predict(u, v):
         Cu = _community(G, u, community)
         Cv = _community(G, v, community)
         cnbors = list(nx.common_neighbors(G, u, v))
@@ -325,9 +324,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
         else:
             return len(cnbors)
 
-    for u, v in ebunch:
-        p = score(u, v)
-        yield (u, v, p)
+    return ((u, v, predict(u, v)) for u, v in ebunch)
 
 
 @not_implemented_for('directed')
@@ -400,7 +397,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
     if ebunch is None:
         ebunch = nx.non_edges(G)
 
-    def score(u, v):
+    def predict(u, v):
         Cu = _community(G, u, community)
         Cv = _community(G, v, community)
         if Cu == Cv:
@@ -410,9 +407,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
         else:
             return 0
 
-    for u, v in ebunch:
-        p = score(u, v)
-        yield (u, v, p)
+    return ((u, v, predict(u, v)) for u, v in ebunch)
 
 
 @not_implemented_for('directed')
@@ -494,7 +489,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
     if ebunch is None:
         ebunch = nx.non_edges(G)
 
-    def score(u, v):
+    def predict(u, v):
         Cu = _community(G, u, community)
         Cv = _community(G, v, community)
         if Cu == Cv:
@@ -506,9 +501,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
         else:
             return 0
 
-    for u, v in ebunch:
-        p = score(u, v)
-        yield (u, v, p)
+    return ((u, v, predict(u, v)) for u, v in ebunch)
 
 
 def _community(G, u, community):
