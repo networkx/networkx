@@ -249,7 +249,7 @@ def preferential_attachment(G, ebunch=None):
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def cn_soundarajan_hopcroft(G, ebunch=None):
+def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
     r"""Count the number of common neighbors of all node pairs in ebunch
         using community information.
 
@@ -313,11 +313,12 @@ def cn_soundarajan_hopcroft(G, ebunch=None):
         ebunch = nx.non_edges(G)
 
     def score(u, v):
-        Cu = _community(G, u)
-        Cv = _community(G, v)
+        Cu = _community(G, u, community)
+        Cv = _community(G, v, community)
         cnbors = list(nx.common_neighbors(G, u, v))
         if Cu == Cv:
-            return len(cnbors) + sum(_community(G, w) == Cu for w in cnbors)
+            return len(cnbors) + sum(_community(G, w, community) == Cu
+                                     for w in cnbors)
         else:
             return len(cnbors)
 
@@ -328,7 +329,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None):
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def ra_index_soundarajan_hopcroft(G, ebunch=None):
+def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
     r"""Compute the resource allocation index of all node pairs in
     ebunch using community information.
 
@@ -394,11 +395,12 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None):
         ebunch = nx.non_edges(G)
 
     def score(u, v):
-        Cu = _community(G, u)
-        Cv = _community(G, v)
+        Cu = _community(G, u, community)
+        Cv = _community(G, v, community)
         if Cu == Cv:
             cnbors = nx.common_neighbors(G, u, v)
-            return sum(1 / G.degree(w) for w in cnbors if _community(G, w) == Cu)
+            return sum(1 / G.degree(w) for w in cnbors
+                       if _community(G, w, community) == Cu)
         else:
             return 0
 
@@ -409,7 +411,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None):
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def within_inter_cluster(G, ebunch=None, delta=0.001):
+def within_inter_cluster(G, ebunch=None, delta=0.001, community='community'):
     """Compute the ratio of within- and inter-cluster common neighbors
     of all node pairs in ebunch.
 
@@ -484,11 +486,12 @@ def within_inter_cluster(G, ebunch=None, delta=0.001):
         ebunch = nx.non_edges(G)
 
     def score(u, v):
-        Cu = _community(G, u)
-        Cv = _community(G, v)
+        Cu = _community(G, u, community)
+        Cv = _community(G, v, community)
         if Cu == Cv:
             cnbors = set(nx.common_neighbors(G, u, v))
-            within = set(w for w in cnbors if _community(G, w) == Cu)
+            within = set(w for w in cnbors
+                         if _community(G, w, community) == Cu)
             inter = cnbors - within
             return len(within) / (len(inter) + delta)
         else:
@@ -499,9 +502,9 @@ def within_inter_cluster(G, ebunch=None, delta=0.001):
         yield (u, v, p)
 
 
-def _community(G, u):
+def _community(G, u, community):
     """Get the community of the given node."""
     try:
-        return G.node[u]['community']
+        return G.node[u][community]
     except KeyError:
         raise nx.NetworkXAlgorithmError('No community information')

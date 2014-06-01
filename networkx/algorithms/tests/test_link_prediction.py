@@ -193,8 +193,8 @@ class TestPreferentialAttachment():
 class TestCNSoundarajanHopcroft():
     def setUp(self):
         self.func = nx.cn_soundarajan_hopcroft
-        def test_func(G, u, v, expected):
-            result = list(self.func(G, [(u, v)]))
+        def test_func(G, u, v, expected, community='community'):
+            result = list(self.func(G, [(u, v)], community))
             assert_equal(result[0][2], expected)
         self.test = test_func
 
@@ -296,12 +296,21 @@ class TestCNSoundarajanHopcroft():
         G.node[4]['community'] = 0
         self.test(G, 1, 4, 4)
 
+    def test_custom_community_attribute_name(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
+        G.node[0]['cmty'] = 0
+        G.node[1]['cmty'] = 0
+        G.node[2]['cmty'] = 0
+        G.node[3]['cmty'] = 1
+        self.test(G, 0, 3, 2, community='cmty')
+
 
 class TestRAIndexSoundarajanHopcroft():
     def setUp(self):
         self.func = nx.ra_index_soundarajan_hopcroft
-        def test_func(G, u, v, expected):
-            result = list(self.func(G, [(u, v)]))
+        def test_func(G, u, v, expected, community='community'):
+            result = list(self.func(G, [(u, v)], community))
             assert_almost_equal(result[0][2], expected)
         self.test = test_func
 
@@ -403,13 +412,22 @@ class TestRAIndexSoundarajanHopcroft():
         G.node[4]['community'] = 0
         self.test(G, 1, 4, 1)
 
+    def test_custom_community_attribute_name(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
+        G.node[0]['cmty'] = 0
+        G.node[1]['cmty'] = 0
+        G.node[2]['cmty'] = 0
+        G.node[3]['cmty'] = 1
+        self.test(G, 0, 3, 0, community='cmty')
+
 
 class TestWithinInterCluster():
     def setUp(self):
         self.delta = 0.001
         self.func = nx.within_inter_cluster
-        def test_func(G, u, v, expected):
-            result = list(self.func(G, [(u, v)], self.delta))
+        def test_func(G, u, v, expected, community='community'):
+            result = list(self.func(G, [(u, v)], self.delta, community))
             assert_almost_equal(result[0][2], expected)
         self.test = test_func
 
@@ -534,3 +552,11 @@ class TestWithinInterCluster():
         G.node[1]['community'] = 0
         G.node[2]['community'] = 0
         list(self.func(G, [(0, 1)], -0.5))
+
+    def test_custom_community_attribute_name(self):
+        G = nx.complete_graph(4)
+        G.node[0]['cmty'] = 0
+        G.node[1]['cmty'] = 0
+        G.node[2]['cmty'] = 0
+        G.node[3]['cmty'] = 0
+        self.test(G, 0, 3, 2 / self.delta, community='cmty')
