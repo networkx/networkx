@@ -48,7 +48,6 @@ packages=["networkx",
           "networkx.algorithms.tree",
           "networkx.classes",
           "networkx.external",
-          "networkx.external.decorator",
           "networkx.generators",
           "networkx.drawing",
           "networkx.linalg",
@@ -57,11 +56,6 @@ packages=["networkx",
           "networkx.tests",
           "networkx.testing",
           "networkx.utils"]
-
-if sys.version >= '3':
-    packages.append('networkx.external.decorator.decorator3')
-else:
-    packages.append('networkx.external.decorator.decorator2')
 
 docdirbase  = 'share/doc/networkx-%s' % version
 # add basic documentation
@@ -114,6 +108,8 @@ package_data     = {
     'networkx.utils': ['tests/*.py']
     }
 
+install_requires = ['decorator>=3.4.0']
+
 if __name__ == "__main__":
 
     setup(
@@ -133,6 +129,7 @@ if __name__ == "__main__":
         classifiers      = release.classifiers,
         packages         = packages,
         data_files       = data,
-        package_data     = package_data
+        package_data     = package_data,
+        install_requires = install_requires
       )
 
