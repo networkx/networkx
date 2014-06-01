@@ -306,7 +306,8 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community='community'):
     References
     ----------
     .. [1] Sucheta Soundarajan and John Hopcroft.
-       Using community information to improve the precision of link prediction methods.
+       Using community information to improve the precision of link
+       prediction methods.
        In Proceedings of the 21st international conference companion on
        World Wide Web (WWW '12 Companion). ACM, New York, NY, USA, 607-608.
        http://doi.acm.org/10.1145/2187980.2188150
@@ -389,7 +390,8 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community='community'):
     References
     ----------
     .. [1] Sucheta Soundarajan and John Hopcroft.
-       Using community information to improve the precision of link prediction methods.
+       Using community information to improve the precision of link
+       prediction methods.
        In Proceedings of the 21st international conference companion on
        World Wide Web (WWW '12 Companion). ACM, New York, NY, USA, 607-608.
        http://doi.acm.org/10.1145/2187980.2188150
