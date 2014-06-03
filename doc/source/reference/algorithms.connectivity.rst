@@ -31,7 +31,7 @@ Flow-based Minimum Cuts
 
 Stoer-Wagner minimum cut
 ------------------------
-.. automodule:: networkx.algorithms.connectivity.stoer_wagner
+.. automodule:: networkx.algorithms.connectivity.stoerwagner
 .. autosummary::
    :toctree: generated/
 
