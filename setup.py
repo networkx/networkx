@@ -13,10 +13,7 @@ import sys
 if os.path.exists('MANIFEST'):
     os.remove('MANIFEST')
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 if sys.argv[-1] == 'setup.py':
     print("To install, run 'python setup.py install'")
@@ -118,8 +115,6 @@ package_data     = {
     'networkx.utils': ['tests/*.py']
     }
 
-install_requires = ['setuptools']
-
 if __name__ == "__main__":
 
     setup(
@@ -140,7 +135,6 @@ if __name__ == "__main__":
         packages         = packages,
         data_files       = data,
         package_data     = package_data,
-        install_requires = install_requires,
         test_suite       = 'nose.collector',
         tests_require    = ['nose>=0.10.1'],
         zip_safe         = False
