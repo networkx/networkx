@@ -19,7 +19,6 @@ import subprocess
 import uuid
 
 import networkx as nx
-from networkx.external.decorator import decorator
 
 __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)',
