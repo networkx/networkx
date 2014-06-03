@@ -172,7 +172,12 @@ def parse_pajek(lines):
             nodelabels={}
             l,nnodes=l.split()
             for i in range(int(nnodes)):
-                splitline=shlex.split(str(next(lines)))
+                l = next(lines)
+                try:
+                    splitline=[x.decode('utf-8') for x in
+                           shlex.split(make_str(l).encode('utf-8'))]
+                except:
+                    splitline = shlex.split(str(l))
                 id,label=splitline[0:2]
                 G.add_node(label)
                 nodelabels[id]=label
@@ -194,7 +199,12 @@ def parse_pajek(lines):
                # switch to directed with multiple arcs for each existing edge
                 G=G.to_directed()
             for l in lines:
-                splitline=shlex.split(str(l))
+                try:
+                    splitline = [x.decode('utf-8') for x in
+                                 shlex.split(make_str(l).encode('utf-8'))]
+                except:
+                    splitline = shlex.split(str(l))
+
                 if len(splitline)<2:
                     continue
                 ui,vi=splitline[0:2]
