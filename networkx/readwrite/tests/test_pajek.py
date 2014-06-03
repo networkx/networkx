@@ -72,8 +72,6 @@ class TestPajek(object):
         nx.write_pajek(G,fh)
         fh.seek(0)
         H=nx.read_pajek(fh)
-        assert_equal(sorted(G.nodes()),sorted(H.nodes()))
-        assert_equal(
-            sorted(sorted(e) for e in G.edges()),
-            sorted(sorted(e) for e in H.edges()))
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
         assert_equal(G.graph,H.graph)

@@ -176,7 +176,7 @@ def parse_pajek(lines):
                 try:
                     splitline=[x.decode('utf-8') for x in
                            shlex.split(make_str(l).encode('utf-8'))]
-                except:
+                except AttributeError:
                     splitline = shlex.split(str(l))
                 id,label=splitline[0:2]
                 G.add_node(label)
@@ -202,7 +202,7 @@ def parse_pajek(lines):
                 try:
                     splitline = [x.decode('utf-8') for x in
                                  shlex.split(make_str(l).encode('utf-8'))]
-                except:
+                except AttributeError:
                     splitline = shlex.split(str(l))
 
                 if len(splitline)<2:
