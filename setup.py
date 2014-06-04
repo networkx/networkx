@@ -5,14 +5,15 @@ Setup script for networkx
 
 You can install networkx with
 
-python setup_egg.py install
+python setup.py install
 """
 from glob import glob
 import os
 import sys
-if os.path.exists('MANIFEST'): os.remove('MANIFEST')
+if os.path.exists('MANIFEST'):
+    os.remove('MANIFEST')
 
-from distutils.core import setup
+from setuptools import setup
 
 if sys.argv[-1] == 'setup.py':
     print("To install, run 'python setup.py install'")
@@ -70,13 +71,13 @@ for d in ['advanced',
           'multigraph',
           'pygraphviz',
           'readwrite']:
-    dd=os.path.join(docdirbase,'examples',d)
-    pp=os.path.join('examples',d)
-    data.append((dd,glob(os.path.join(pp,"*.py"))))
-    data.append((dd,glob(os.path.join(pp,"*.bz2"))))
-    data.append((dd,glob(os.path.join(pp,"*.gz"))))
-    data.append((dd,glob(os.path.join(pp,"*.mbox"))))
-    data.append((dd,glob(os.path.join(pp,"*.edgelist"))))
+    dd = os.path.join(docdirbase,'examples', d)
+    pp = os.path.join('examples', d)
+    data.append((dd, glob(os.path.join(pp ,"*.py"))))
+    data.append((dd, glob(os.path.join(pp ,"*.bz2"))))
+    data.append((dd, glob(os.path.join(pp ,"*.gz"))))
+    data.append((dd, glob(os.path.join(pp ,"*.mbox"))))
+    data.append((dd, glob(os.path.join(pp ,"*.edgelist"))))
 
 # add the tests
 package_data     = {
@@ -130,6 +131,8 @@ if __name__ == "__main__":
         packages         = packages,
         data_files       = data,
         package_data     = package_data,
-        install_requires = install_requires
-      )
-
+        install_requires = install_requires,
+        test_suite       = 'nose.collector',
+        tests_require    = ['nose>=0.10.1'],
+        zip_safe         = False
+    )
