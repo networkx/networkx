@@ -6,7 +6,7 @@ Release Log
 
 NetworkX 1.9
 ------------
-Release date: TBD
+Release date: est. 13 June 2014
 
 Support for Python 3.1 is dropped in this release.
 
