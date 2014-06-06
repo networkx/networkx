@@ -224,12 +224,12 @@ authors = {'Hagberg' : ('Aric Hagberg','hagberg@lanl.gov'),
            }
 maintainer = "NetworkX Developers"
 maintainer_email = "networkx-discuss@googlegroups.com"
-url = 'http://networkx.lanl.gov/'
-download_url="http://networkx.lanl.gov/download/networkx"
+url = 'http://networkx.github.io/'
+download_url= 'https://pypi.python.org/pypi/networkx/'
 platforms = ['Linux','Mac OSX','Windows','Unix']
 keywords = ['Networks', 'Graph Theory', 'Mathematics', 'network', 'graph', 'discrete mathematics', 'math']
 classifiers = [
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
@@ -240,6 +240,7 @@ classifiers = [
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Scientific/Engineering :: Information Analysis',
