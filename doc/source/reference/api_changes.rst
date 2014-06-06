@@ -5,6 +5,7 @@ API changes
 .. toctree::
    :maxdepth: 2
 
+   api_2.0
    api_1.9
    api_1.8
    api_1.7
