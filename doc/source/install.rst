@@ -105,13 +105,10 @@ Requirements
 Python
 ------
 
-To use NetworkX you need Python version 2.6 or later.
-Most of NetworkX works with Python version 3.1.2 or later.
-http://www.python.org/
+To use NetworkX you need Python 2.7, 3.2 or later.
 
 The easiest way to get Python and most optional packages is to install
-the Enthought Python distribution "Canopy"
-https://www.enthought.com/products/canopy/
+the Enthought Python distribution "`Canopy <https://www.enthought.com/products/canopy/>`_".
 
 There are several other distributions that contain the key packages you need for scientific computing.  See http://scipy.org/install.html for a list.
 
