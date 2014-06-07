@@ -246,10 +246,10 @@ def greedy_color(G, strategy=strategy_largest_first, interchange=False):
 
     Examples
     --------
-    >>> G = nx.random_regular_graph(2, 4)
+    >>> G = nx.cycle_graph(4)
     >>> d = nx.coloring.greedy_color(G, strategy=nx.coloring.strategy_largest_first)
-    >>> d
-    {0: 0, 1: 1, 2: 0, 3: 1}
+    >>> d in [{0: 0, 1: 1, 2: 0, 3: 1}, {0: 1, 1: 0, 2: 1, 3: 0}]
+    True
 
     References
     ----------
