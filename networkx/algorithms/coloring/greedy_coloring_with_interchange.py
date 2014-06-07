@@ -86,8 +86,7 @@ def greedy_coloring_with_interchange(original_graph, nodes):
     """
     n = len(original_graph)
 
-    graph = dict(
-        (node_id, Node(node_id, n)) for node_id in original_graph.nodes_iter())
+    graph = {node_id: Node(node_id, n) for node_id in original_graph}
 
     for (node1, node2) in original_graph.edges_iter():
         adj_entry1 = AdjEntry(node2)
@@ -105,8 +104,7 @@ def greedy_coloring_with_interchange(original_graph, nodes):
     for node in nodes:
         # Find the smallest possible, unused color
         neighbors = graph[node].iter_neighbors()
-        col_used = set(
-            graph[adj_node.node_id].color for adj_node in neighbors)
+        col_used = {graph[adj_node.node_id].color for adj_node in neighbors}
         col_used.discard(-1)
         k1 = next(itertools.dropwhile(
             lambda x: x in col_used, itertools.count()))
@@ -179,4 +177,4 @@ def greedy_coloring_with_interchange(original_graph, nodes):
             adj_mate = adj_node.mate
             graph[adj_node.node_id].assign_color(adj_mate, k1)
 
-    return dict((node.node_id, node.color) for node in graph.values())
+    return {node.node_id: node.color for node in graph.values()}

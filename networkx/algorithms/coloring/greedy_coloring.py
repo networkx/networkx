@@ -259,7 +259,7 @@ def greedy_color(G, strategy=strategy_largest_first, interchange=False):
        Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983
        ISBN 0-486-45353-7
     """
-    colors = dict()  # dictionary to keep track of the colors of the nodes
+    colors = {}  # dictionary to keep track of the colors of the nodes
 
     if len(G):
         if interchange and (
