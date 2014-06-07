@@ -9,19 +9,17 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
-  - "pypy"
 
 matrix:
   fast_finish: true
 
   include:
+    - python: "pypy"
+      env: OPTIONAL_DEPS=no
     - python: "3.4"
       env: OPTIONAL_DEPS=source
 
   allow_failures:
-    # 3.4 and pypy Wheels are not yet available.
-    - python: "pypy"
-      env: OPTIONAL_DEPS=pip
     - env: OPTIONAL_DEPS=source
 
 env:
