@@ -3,6 +3,7 @@ import itertools
 
 __all__ = ['greedy_coloring_with_interchange']
 
+
 class Node(object):
 
     __slots__ = ['node_id', 'color', 'adj_list', 'adj_color']
@@ -45,6 +46,7 @@ class Node(object):
             yield adj_color_node.node_id
             adj_color_node = adj_color_node.col_next
 
+
 class AdjEntry(object):
 
     __slots__ = ['node_id', 'next', 'mate', 'col_next', 'col_prev']
@@ -66,21 +68,22 @@ class AdjEntry(object):
             None if self.col_prev == None else self.col_prev.node_id
         )
 
-"""
-    This procedure is an adaption of the algorithm described by [1],
-    and is an implementation of coloring with interchange. Please be 
-    advised, that the datastructures used are rather complex because 
-    they are optimized to minimize the time spent identifying sub-
-    components of the graph, which are possible candidates for color 
-    interchange.
 
-References
-----------
-... [1] Maciej M. Syslo, Marsingh Deo, Janusz S. Kowalik,
-    Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983
-    ISBN 0-486-45353-7
-"""
 def greedy_coloring_with_interchange(original_graph, nodes):
+    """
+        This procedure is an adaption of the algorithm described by [1]_,
+        and is an implementation of coloring with interchange. Please be
+        advised, that the datastructures used are rather complex because
+        they are optimized to minimize the time spent identifying
+        subcomponents of the graph, which are possible candidates for color
+        interchange.
+
+    References
+    ----------
+    ... [1] Maciej M. Syslo, Marsingh Deo, Janusz S. Kowalik,
+        Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983
+        ISBN 0-486-45353-7
+    """
     n = len(original_graph)
 
     graph = dict(
@@ -160,7 +163,8 @@ def greedy_coloring_with_interchange(original_graph, nodes):
                     col_opp = col1 if col == col2 else col2
                     for adj_node in graph[search_node].iter_neighbors():
                         if graph[adj_node.node_id].color != col_opp:
-                            adj_mate = adj_node.mate # Direct reference to entry
+                            # Direct reference to entry
+                            adj_mate = adj_node.mate
                             graph[adj_node.node_id].clear_color(
                                 adj_mate, col_opp)
                             graph[adj_node.node_id].assign_color(adj_mate, col)
