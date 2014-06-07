@@ -127,7 +127,7 @@ def get_revision():
     if os.path.isdir(hgdir):
         vcs = 'mercurial'
         try:
-            p = subprocess.Popen(['hg', 'id'], 
+            p = subprocess.Popen(['hg', 'id'],
                                  cwd=basedir,
                                  stdout=subprocess.PIPE)
         except OSError:
@@ -137,7 +137,7 @@ def get_revision():
             stdout = p.communicate()[0]
             # Force strings instead of unicode.
             x = list(map(str, stdout.decode().strip().split()))
-            
+
             if len(x) == 0:
                 # Somehow stdout was empty. This can happen, for example,
                 # if you're running in a terminal which has redirected stdout.
@@ -149,7 +149,7 @@ def get_revision():
             else:
                 revision = str(x[0])
                 tag = str(x[1])
-                
+
     elif os.path.isdir(gitdir):
         vcs = 'git'
         # For now, we are not bothering with revision and tag.
@@ -200,8 +200,8 @@ def get_info(dynamic=True):
 
 ## Version information
 name = 'networkx'
-major = "1"
-minor = "9"
+major = "2"
+minor = "0"
 
 
 ## Declare current release as a development release.
