@@ -18,6 +18,7 @@ Algorithms
    algorithms.chordal
    algorithms.clique
    algorithms.clustering
+   algorithms.coloring
    algorithms.community
    algorithms.component
    algorithms.connectivity

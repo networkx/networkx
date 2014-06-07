@@ -7,7 +7,17 @@ This page reflects API changes from NetworkX 1.9 to NetworkX 2.0.
 Please send comments and questions to the networkx-discuss mailing list:
 <http://groups.google.com/group/networkx-discuss>.
 
+New functionalities
+-------------------
+
+* [`#1105 <https://github.com/networkx/networkx/pull/1105>`_]
+  A coloring package (:samp:`networkx.algorithms.coloring`) is created for
+  graph coloring algorithms. Initially, a :samp:`greedy_color` function is
+  provided for coloring graphs using various greedy heuristics.
+
+
 Miscellaneous changes
 ---------------------
 
-* Support for Python 2.6 is dropped.
+* [`#1192 <https://github.com/networkx/networkx/pull/1192>`_]
+  Support for Python 2.6 is dropped.

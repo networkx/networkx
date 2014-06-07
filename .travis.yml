@@ -24,7 +24,7 @@ matrix:
 env:
   global:
     # Install from wheels *only*.
-    - PIPINSTALL="pip install -v --use-wheel --no-index --find-links=http://wheels.astropy.org --find-links=http://wheels2.astropy.org"
+    - PIPINSTALL="pip install -v --use-wheel --no-index --find-links=http://sunpy.cadair.com/wheelhouse/"
     - NXOPTDEPS=""
   matrix:
     - OPTIONAL_DEPS=pip
