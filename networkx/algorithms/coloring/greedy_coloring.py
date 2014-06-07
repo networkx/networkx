@@ -224,19 +224,20 @@ def greedy_color(G, strategy=strategy_largest_first, interchange=False):
        * strategy_random_sequential
        * strategy_smallest_last
        * strategy_independent_set
-       * strategy_connected_sequential (an alias of the BFS version)
-         * strategy_connected_sequential_bfs
-         * strategy_connected_sequential_dfs
-       * strategy_saturation_largest_first (also know as DSATUR)
+       * strategy_connected_sequential_bfs
+       * strategy_connected_sequential_dfs
+       * strategy_connected_sequential
+         (alias of strategy_connected_sequential_bfs)
+       * strategy_saturation_largest_first (also known as DSATUR)
 
-    interchange: boolean
-       Will use the color interchange algorithm described by [2] if set
+    interchange: bool
+       Will use the color interchange algorithm described by [2]_ if set
        to true.
 
        Note that saturation largest first and independent set do not
        work with interchange. Furthermore, if you use interchange with
        your own strategy function, you cannot rely on the values in the
-       colors argument
+       colors argument.
 
     Returns
     -------
@@ -253,11 +254,11 @@ def greedy_color(G, strategy=strategy_largest_first, interchange=False):
     References
     ----------
     .. [1] Adrian Kosowski, and Krzysztof Manuszewski,
-       Classical Coloring of Graphs, Graph Colorings, 2-19, 2004,
+       Classical Coloring of Graphs, Graph Colorings, 2-19, 2004.
        ISBN 0-8218-3458-4.
-       [2] Maciej M. Syslo, Marsingh Deo, Janusz S. Kowalik,
-       Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983
-       ISBN 0-486-45353-7
+    .. [2] Maciej M. Syslo, Marsingh Deo, Janusz S. Kowalik,
+       Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983.
+       ISBN 0-486-45353-7.
     """
     colors = {}  # dictionary to keep track of the colors of the nodes
 

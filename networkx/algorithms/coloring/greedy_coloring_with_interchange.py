@@ -80,9 +80,9 @@ def greedy_coloring_with_interchange(original_graph, nodes):
 
     References
     ----------
-    ... [1] Maciej M. Syslo, Marsingh Deo, Janusz S. Kowalik,
-        Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983
-        ISBN 0-486-45353-7
+    .. [1] Maciej M. Syslo, Marsingh Deo, Janusz S. Kowalik,
+       Discrete Optimization Algorithms with Pascal Programs, 415-424, 1983.
+       ISBN 0-486-45353-7.
     """
     n = len(original_graph)
 
