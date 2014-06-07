@@ -4,6 +4,12 @@
 Release Log
 ===========
 
+NetworkX 2.0
+------------
+Release date: TBD
+
+Support for Python 2.6 is dropped in this release.
+
 NetworkX 1.9
 ------------
 Release date: TBD
