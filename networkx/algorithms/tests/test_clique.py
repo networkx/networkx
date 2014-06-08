@@ -113,10 +113,10 @@ class TestCliques:
         cliques = nx.find_cliques(nx.DiGraph())
 
 
-class TestGetAllCliques:
+class TestEnumerateAllCliques:
 
     def test_paper_figure_4(self):
-        # Same graph as given in Fig. 4 of paper get_all_cliques is
+        # Same graph as given in Fig. 4 of paper enumerate_all_cliques is
         # based on.
         # http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1559964&isnumber=33129
         G = nx.Graph()
