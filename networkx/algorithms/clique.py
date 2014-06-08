@@ -17,6 +17,12 @@ http://en.wikipedia.org/wiki/Clique_problem
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from collections import deque
+from itertools import chain, islice
+try:
+    from itertools import ifilter as filter
+except ImportError:
+    pass
 import networkx
 from networkx.utils.decorators import *
 __author__ = """Dan Schult (dschult@colgate.edu)"""
@@ -26,17 +32,18 @@ __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'number_of_cliques', 'cliques_containing_node',
            'project_down', 'project_up', 'enumerate_all_cliques']
 
+
 @not_implemented_for('directed')
 def enumerate_all_cliques(G):
     """Returns all cliques in an undirected graph.
 
-    This method returns cliques of size (cardinality) 
+    This method returns cliques of size (cardinality)
     k = 1, 2, 3, ..., maxDegree - 1.
 
     Where maxDegree is the maximal degree of any node in the graph.
 
-    Keyword arguments
-    -----------------
+    Parameters
+    ----------
     G: undirected graph
 
     Returns
@@ -45,95 +52,53 @@ def enumerate_all_cliques(G):
 
     Notes
     -----
-    To obtain a list of all cliques, use list(enumerate_all_cliques(G)).
+    To obtain a list of all cliques, use
+    :samp:`list(enumerate_all_cliques(G))`.
 
-    Based on the algorithm published by Zhang et al. (2005) [1]_ 
+    Based on the algorithm published by Zhang et al. (2005) [1]_
     and adapted to output all cliques discovered.
-    
-    This algorithm is not suitable for directed graphs.
+
+    This algorithm is not applicable on directed graphs.
 
     This algorithm ignores self-loops and parallel edges as
     clique is not conventionally defined with such edges.
 
-    There are often many cliques in graphs. 
+    There are often many cliques in graphs.
     This algorithm however, hopefully, does not run out of memory
-    since it only keeps candidate sublists in memory and 
+    since it only keeps candidate sublists in memory and
     continuously removes exhausted sublists.
 
     References
     ----------
-    .. [1] Yun Zhang, Abu-Khzam, F.N., Baldwin, N.E., Chesler, E.J., 
-           Langston, M.A., Samatova, N.F., 
-           Genome-Scale Computational Approaches to Memory-Intensive 
-           Applications in Systems Biology 
-           Supercomputing, 2005. Proceedings of the ACM/IEEE SC 2005 
-           Conference , vol., no., pp. 12, 12-18 Nov. 2005
-           doi: 10.1109/SC.2005.29
+    .. [1] Yun Zhang, Abu-Khzam, F.N., Baldwin, N.E., Chesler, E.J.,
+           Langston, M.A., Samatova, N.F.,
+           Genome-Scale Computational Approaches to Memory-Intensive
+           Applications in Systems Biology.
+           Supercomputing, 2005. Proceedings of the ACM/IEEE SC 2005
+           Conference, pp. 12, 12-18 Nov. 2005.
+           doi: 10.1109/SC.2005.29.
            http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1559964&isnumber=33129
     """
+    index = {}
+    nbrs = {}
+    for u in G:
+        index[u] = len(index)
+        # Neighbors of u that appear after u in the iteration order of G.
+        nbrs[u] = {v for v in G[u] if v not in index}
 
-    def greater_neighbors(G, a_node):
-        """Helper method used in enumerate_all_cliques"""
-        nodes_sorted = sorted(G.nodes())
-        a_node_index = nodes_sorted.index(a_node)
-        
-        neighbors_of_a_node = []
-
-        for another_node_index, another_node in enumerate(nodes_sorted):
-            if another_node_index > a_node_index and another_node in G.neighbors(a_node):
-                neighbors_of_a_node.append(another_node)
-    
-        return tuple(neighbors_of_a_node)
-
-    # sorted list of nodes in graph
-    nodes_sorted = sorted(G.nodes())
-
-    # starting point: build all 2-clique sublists
-    clique_sublists = []
-    for a_node_index, a_node in enumerate(nodes_sorted):
-        clique_sublist = {}
-        # sublist base, sb
-        clique_sublist['sb'] = [a_node]
-        # common neighbors, cn
-        clique_sublist['cn'] = greater_neighbors(G, a_node)
-        clique_sublists.append(clique_sublist)
-
-    # output cliques of size k = 1
-    for node in nodes_sorted:
-        yield [node]
-
-    # output cliques of size k >= 2
-    while clique_sublists:
-        a_sublist = clique_sublists.pop(0)
-        for node_added in a_sublist['cn']:
-            neighbors_of_node_added = greater_neighbors(G, node_added)
-
-            current_sublist_base = [] + a_sublist['sb'] + [node_added]
-            current_sublist_cn = tuple(sorted(set(neighbors_of_node_added).intersection(a_sublist['cn'])))
-
-            #print 'clique: '+str(current_sublist_base)
-            yield [node for node in current_sublist_base]
-
-            for node in current_sublist_cn:
-                new_sublist_base = [] + current_sublist_base 
-                new_sublist_base.append(node)
-                #print 'current_sublist_based =',str(current_sublist_base)
-                #print 'new_sublist_base =',str(new_sublist_base)
-                new_sublist_cn = tuple(sorted(set(current_sublist_cn).intersection(greater_neighbors(G, node))))
-    
-                if len(new_sublist_cn) == 0:
-                    #print 'clique: '+str(new_sublist_base)
-                    yield [n for n in new_sublist_base]
-                elif len(new_sublist_cn) == 1:
-                    #print 'clique: '+str(new_sublist_base)
-                    #print 'new_sublist_base + list(new_sublist_cn):',new_sublist_base+list(new_sublist_cn)
-                    yield [n for n in new_sublist_base]
-                    #print 'clique: '+str(new_sublist_base+new_sublist_cn)
-                    
-                    yield [n for n in new_sublist_base + list(new_sublist_cn)]
-                else:
-                    #print 'candidate sublist: '+str([new_sublist_base, new_sublist_cn])
-                    clique_sublists.append({'sb': new_sublist_base, 'cn': new_sublist_cn})
+    queue = deque(([u], sorted(nbrs[u], key=index.__getitem__)) for u in G)
+    # Loop invariants:
+    # 1. len(base) is nondecreasing.
+    # 2. (base + cnbrs) is sorted with respect to the iteration order of G.
+    # 3. cnbrs is a set of common neighbors of nodes in base.
+    while queue:
+        base, cnbrs = map(list, queue.popleft())
+        yield base
+        for i, u in enumerate(cnbrs):
+            # Use generators to reduce memory consumption.
+            queue.append((chain(base, [u]),
+                          filter(nbrs[u].__contains__,
+                                 islice(cnbrs, i + 1, None))))
 
 
 @not_implemented_for('directed')

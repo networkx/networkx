@@ -129,6 +129,9 @@ class TestGetAllCliques:
         G.add_edges_from(edges_fig_4)
 
         cliques = list(nx.enumerate_all_cliques(G))
+        clique_sizes = list(map(len, cliques))
+        assert_equal(sorted(clique_sizes), clique_sizes)
+
         expected_cliques = [['a'],
                             ['b'],
                             ['c'],
@@ -170,8 +173,10 @@ class TestGetAllCliques:
                             ['d', 'g'],
                             ['e', 'g'],
                             ['f', 'g'],
+                            ['a', 'b', 'c'],
                             ['a', 'b', 'c', 'd'],
                             ['a', 'b', 'c', 'd', 'e'],
                             ['a', 'b', 'c', 'e']]
 
-        assert_equal(cliques, expected_cliques)
+        assert_equal(sorted(map(sorted, cliques)),
+                     sorted(map(sorted, expected_cliques)))
