@@ -24,10 +24,10 @@ __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'make_clique_bipartite' ,'graph_clique_number',
            'graph_number_of_cliques', 'node_clique_number',
            'number_of_cliques', 'cliques_containing_node',
-           'project_down', 'project_up']
+           'project_down', 'project_up', 'enumerate_all_cliques']
 
 @not_implemented_for('directed')
-def get_all_cliques(G):
+def enumerate_all_cliques(G):
     """Returns all cliques in an undirected graph.
 
     This method returns cliques of size (cardinality) 
@@ -45,7 +45,7 @@ def get_all_cliques(G):
 
     Notes
     -----
-    To obtain a list of all cliques, use list(get_all_cliques(G)).
+    To obtain a list of all cliques, use list(enumerate_all_cliques(G)).
 
     Based on the algorithm published by Zhang et al. (2005) [1]_ 
     and adapted to output all cliques discovered.
@@ -73,7 +73,7 @@ def get_all_cliques(G):
     """
 
     def greater_neighbors(G, a_node):
-        """Helper method used in get_all_cliques"""
+        """Helper method used in enumerate_all_cliques"""
         nodes_sorted = sorted(G.nodes())
         a_node_index = nodes_sorted.index(a_node)
         

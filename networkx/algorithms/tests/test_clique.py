@@ -128,7 +128,7 @@ class TestGetAllCliques:
                        ('g', 'f'), ('g', 'c'), ('g', 'd'), ('g', 'e')]
         G.add_edges_from(edges_fig_4)
 
-        cliques = list(nx.get_all_cliques(G))
+        cliques = list(nx.enumerate_all_cliques(G))
         expected_cliques = [['a'],
                             ['b'],
                             ['c'],
