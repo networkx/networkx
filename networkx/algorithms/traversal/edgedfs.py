@@ -29,6 +29,8 @@ def helper_funcs(G, orientation):
     # unique identifier from the edge and key (if present). If the graph
     # is undirected, then the head and tail need to be stored as a frozenset.
     if ignore_orientation:
+        # edge is a 4-tuple: (u, v, key, direction)
+        # u and v always represent the true tail and head of the edge.
         def key(edge):
             # We want everything but the direction.
             return edge[:-1]
@@ -37,6 +39,7 @@ def helper_funcs(G, orientation):
             def key(edge):
                 return edge
         else:
+            # edge is a 3-tuple:  (u, v, key)
             def key(edge):
                 new_edge = (frozenset(edge[:2]),) + edge[2:]
                 return new_edge
