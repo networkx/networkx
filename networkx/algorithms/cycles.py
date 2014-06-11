@@ -357,6 +357,19 @@ def find_cycle(G, source=None, orientation='respect'):
         direction. When the direction is forward, the value of `direction`
         is 1, and when the direction in reverse, the value is 0.
 
+    Example
+    -------
+    In this example, we construct a DAG and find, in the first call, that there
+    are no directed  cycles. In the second call, we ignore edge orientations
+    and find that there is an undirected cycle.
+
+    >>> import networkx as nx
+    >>> G = nx.DiGraph([(0,1), (0,2), (1,2)])
+    >>> list(find_cycle(G, orientation='respect'))
+    []
+    >>> list(find_cycle(G, orientation='ignore'))
+    [(0, 1, 1), (1, 2, 1), (0, 2, 0)]
+
     """
     from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
     out_edge, key, tailhead = helper_funcs(G, orientation)
