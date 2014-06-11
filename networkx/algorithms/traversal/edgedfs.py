@@ -100,22 +100,22 @@ def edge_dfs(G, source=None, orientation='respect'):
     >>> nodes = [0, 1, 2, 3]
     >>> edges = [(0, 1), (1, 0), (1, 0), (2, 1), (3, 1)]
 
-    >>> list(nx.edges_dfs(nx.Graph(edges), nodes))
+    >>> list(nx.edge_dfs(nx.Graph(edges), nodes))
     [(0, 1), (1, 2), (1, 3)]
 
-    >>> list(nx.edges_dfs(nx.DiGraph(edges), nodes))
+    >>> list(nx.edge_dfs(nx.DiGraph(edges), nodes))
     [(0, 1), (1, 0), (2, 1), (3, 1)]
 
-    >>> list(nx.edges_dfs(nx.MultiGraph(edges), nodes))
+    >>> list(nx.edge_dfs(nx.MultiGraph(edges), nodes))
     [(0, 1, 0), (1, 0, 1), (0, 1, 2), (1, 2, 0), (1, 3, 0)]
 
-    >>> list(nx.edges_dfs(nx.MultiDiGraph(edges), nodes))
+    >>> list(nx.edge_dfs(nx.MultiDiGraph(edges), nodes))
     [(0, 1, 0), (1, 0, 0), (1, 0, 1), (2, 1, 0), (3, 1, 0)]
 
-    >>> list(edge_dfs(nx.DiGraph(edges), nodes, orientation='ignore'))
+    >>> list(nx.edge_dfs(nx.DiGraph(edges), nodes, orientation='ignore'))
     [(0, 1, 1), (1, 0, 1), (2, 1, 0), (3, 1, 0)]
 
-    >>> list(edge_dfs(nx.MultiDiGraph(edges), nodes, orientation='ignore'))
+    >>> list(nx.edge_dfs(nx.MultiDiGraph(edges), nodes, orientation='ignore'))
     [(0, 1, 0, 1), (1, 0, 0, 1), (1, 0, 1, 0), (2, 1, 0, 0), (3, 1, 0, 0)]
 
     Notes
