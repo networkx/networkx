@@ -13,7 +13,10 @@ import networkx as nx
 from networkx.utils import *
 from collections import defaultdict
 
-__all__ = ['cycle_basis','simple_cycles','recursive_simple_cycles']
+__all__ = [
+    'cycle_basis','simple_cycles','recursive_simple_cycles', 'find_cycle'
+]
+
 __author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Aric Hagberg <hagberg@lanl.gov>'])
@@ -318,3 +321,118 @@ def recursive_simple_cycles(G):
                 B[node][:] = []
             dummy=circuit(startnode, startnode, component)
     return result
+
+def find_cycle(G, source=None, orientation='respect'):
+    """
+    Returns the edges of a cycle found via a depth-first traversal.
+
+    Parameters
+    ----------
+    G : graph
+        A directed/undirected graph/multigraph.
+
+    source : node, list of nodes
+        The node from which the traversal begins. If `None`, then a source
+        is chosen arbitrarily and repeatedly until all edges from each node in
+        the graph are searched.
+
+    orientation : 'respect' | 'ignore'
+        For directed graphs and multigraphs, the orientation of the edges can
+        be respected or ignored.  When set to 'ignore', then each directed
+        edge is treated as a single undirected edge. For undirected graphs and
+        multigraphs, the value of this parameter is not considered.
+
+    Returns
+    ------
+    edges : directed edges
+        A list of directed edges indicating the path taken for the loop. If
+        no cycle is found, then `edges` will be an empty list. For graphs, an
+        edge is of the form (u, v) where `u` and `v` are the tail and head of
+        the edge as determined by the traversal. For multigraphs, an edge is of
+        the form (u, v, key), where `key` is the key of the edge. When the
+        graph is directed, then `u` and `v` are always in the order of the
+        actual directed edge. If orientation is 'ignore', then  an edge takes
+        the form (u, v, key, direction) where direction indicates if the edge
+        was followed in the forward (tail to head) or reverse (head to tail)
+        direction. When the direction is forward, the value of `direction`
+        is 1, and when the direction in reverse, the value is 0.
+
+    """
+    from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
+    out_edge, key, tailhead = helper_funcs(G, orientation)
+
+    explored = set()
+    cycle = []
+    final_node = None
+    for start_node in G.nbunch_iter(source):
+
+        if start_node in explored:
+            # No loop is possible.
+            continue
+
+        edges = []
+        # All nodes seen in this iteration of edge_dfs
+        seen = set([start_node])
+        # Nodes in active path.
+        active_nodes = set([start_node])
+        previous_node = None
+        for edge in edge_dfs(G, start_node, orientation):
+            # Determine if this edge is a continuation of the active path.
+            tail, head = tailhead(edge)
+            if previous_node is not None and tail != previous_node:
+                # This edge results from backtracking.
+                # Pop until we get a node whose head equals the current tail.
+                # So for example, we might have:
+                #  (0,1), (1,2), (2,3), (1,4)
+                # which must become:
+                #  (0,1), (1,4)
+                while True:
+                    try:
+                        popped_edge = edges.pop()
+                    except IndexError:
+                        edges = []
+                        active_nodes = set([tail])
+                        break
+                    else:
+                        popped_head = tailhead(popped_edge)[1]
+                        active_nodes.remove(popped_head)
+
+                    if len(edges):
+                        last_head = tailhead(edges[-1])[1]
+                        if tail == last_head:
+                            break
+
+            edges.append(edge)
+
+            if head in active_nodes:
+                # We have a loop!
+                cycle.extend(edges)
+                final_node = head
+                break
+            elif head in explored:
+                # Then we've already explored it. No loop is possible.
+                break
+            else:
+                seen.add(head)
+                active_nodes.add(head)
+                previous_node = head
+
+        if cycle:
+            break
+        else:
+            explored.update(seen)
+
+    else:
+        assert(len(cycle) == 0)
+        return cycle
+
+    # We now have a list of edges which ends on a cycle.
+    # So we need to remove from the beginning edges that are not relevant.
+
+    for i, edge in enumerate(cycle):
+        tail, head = tailhead(edge)
+        if tail == final_node:
+            break
+
+    return cycle[i:]
+
