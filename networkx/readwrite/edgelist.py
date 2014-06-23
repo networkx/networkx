@@ -304,7 +304,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     Parameters
     ----------
     path : file or string
-       File or filename to write. If a file is provided, it must be
+       File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
        Filenames ending in .gz or .bz2 will be uncompressed.
     comments : string, optional
@@ -412,7 +412,7 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
     Parameters
     ----------
     path : file or string
-       File or filename to write. If a file is provided, it must be
+       File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
        Filenames ending in .gz or .bz2 will be uncompressed.
     comments : string, optional
