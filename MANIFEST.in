@@ -1,5 +1,4 @@
 include MANIFEST.in
-include setup_egg.py
 include setup.py
 include INSTALL.txt
 include LICENSE.txt
@@ -18,8 +17,6 @@ include networkx/*/*/tests/*.py
 include networkx/*/*/tests/*.A99
 include networkx/*/*/tests/*.B99
 include networkx/*/*/tests/*.bz2
-
-include networkx/external/decorator/*/*.py
 
 global-exclude *~
 global-exclude *.pyc

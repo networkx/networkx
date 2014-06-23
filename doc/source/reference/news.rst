@@ -12,7 +12,7 @@ Support for Python 2.6 is dropped in this release.
 
 NetworkX 1.9
 ------------
-Release date: TBD
+Release date: 21 June 2014
 
 Support for Python 3.1 is dropped in this release.
 
