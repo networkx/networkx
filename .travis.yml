@@ -45,17 +45,27 @@ install:
   # Skipping pydot (not 3.x compatible)
   # Skipping gdal (errors during pip installs)
   - sudo apt-get update -qq
-  - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then sudo apt-get install graphviz libsuitesparse-dev; fi
-  - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\..(pip|source) ]]; then pip install pygraphviz; fi
-  - if [ "${OPTIONAL_DEPS}" == "pip" ]; then pip install --use-wheel pyyaml pyparsing; fi
-  - if [ "${OPTIONAL_DEPS}" == "pip" ]; then $PIPINSTALL numpy scipy matplotlib Cython; fi
+  - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then
+      sudo apt-get install graphviz libsuitesparse-dev;
+    fi
+  - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\..(pip|source) ]]; then
+      pip install pygraphviz;
+    fi
+  - if [ "${OPTIONAL_DEPS}" == "pip" ]; then
+      pip install --use-wheel pyyaml pyparsing;
+      $PIPINSTALL numpy scipy matplotlib Cython;
+    fi
 
   # Try to install latest and greatest from source.
-  - if [ "${OPTIONAL_DEPS}" == "source" ]; then sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran; fi
-  - if [ "${OPTIONAL_DEPS}" == "source" ]; then pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython; fi
+  - if [ "${OPTIONAL_DEPS}" == "source" ]; then
+      sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran;
+      pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython;
+    fi
 
   # Install stuff that depends on Cython.
-  - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then pip install scikits.sparse; fi
+  - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then
+      pip install scikits.sparse;
+    fi
 
 before_script:
   ### Use this to prepare your build for testing
@@ -94,7 +104,9 @@ after_success:
   - cp .coverage $TRAVIS_BUILD_DIR
   - cd $TRAVIS_BUILD_DIR
   # Report coverage for 2.7 and 3.4 only.
-  - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7pip|3\.4source ]]; then coveralls; fi
+  - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7pip|3\.4source ]]; then
+      coveralls;
+    fi
 
 notifications:
   email: false
