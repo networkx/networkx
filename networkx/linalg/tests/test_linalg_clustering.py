@@ -1,4 +1,5 @@
 import networkx as nx
+from nose import SkipTest
 
 class TestLinalg_Clustering(object):
     numpy = 1  # nosetests attribute, use nosetests -a 'not numpy' to skip test
