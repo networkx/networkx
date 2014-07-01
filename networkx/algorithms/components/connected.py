@@ -66,13 +66,13 @@ def connected_component_subgraphs(G, copy=True):
     G : NetworkX graph
        An undirected graph.
 
+    copy: bool (default=True)
+      If True make a copy of the graph attributes
+
     Returns
     -------
     comp : generator
       A generator of graphs, one for each connected component of G.
-
-    copy: bool (default=True)
-      If True make a copy of the graph attributes
 
     Examples
     --------
