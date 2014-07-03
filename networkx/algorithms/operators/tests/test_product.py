@@ -42,7 +42,7 @@ def test_tensor_product_size():
     P5 = nx.path_graph(5)
     K3 = nx.complete_graph(3)
     K5 = nx.complete_graph(5)
-    
+
     G=tensor_product(P5,K3)
     assert_equal(nx.number_of_nodes(G),5*3)
     G=tensor_product(K3,K5)
@@ -101,12 +101,13 @@ def test_cartesian_product_multigraph():
     H.add_edge(3,4,key=0)
     H.add_edge(3,4,key=1)
     GH=cartesian_product(G,H)
-    assert_equal( set(GH) , set([(1, 3), (2, 3), (2, 4), (1, 4)]))
-    assert_equal( set(GH.edges(keys=True)) ,
-                  set([((1, 3), (2, 3), 0), ((1, 3), (2, 3), 1), 
-                       ((1, 3), (1, 4), 0), ((1, 3), (1, 4), 1), 
-                       ((2, 3), (2, 4), 0), ((2, 3), (2, 4), 1), 
-                       ((2, 4), (1, 4), 0), ((2, 4), (1, 4), 1)]))    
+    assert_equal(set(GH), {(1, 3), (2, 3), (2, 4), (1, 4)})
+    assert_equal({(frozenset([u, v]), k) for u, v, k in GH.edges(keys=True)},
+                 {(frozenset([u, v]), k) for u, v, k in
+                  [((1, 3), (2, 3), 0), ((1, 3), (2, 3), 1),
+                   ((1, 3), (1, 4), 0), ((1, 3), (1, 4), 1),
+                   ((2, 3), (2, 4), 0), ((2, 3), (2, 4), 1),
+                   ((2, 4), (1, 4), 0), ((2, 4), (1, 4), 1)]})
 
 @raises(nx.NetworkXError)
 def test_cartesian_product_raises():
