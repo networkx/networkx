@@ -15,7 +15,6 @@ True
 #    All rights reserved.
 #    BSD license.
 import sys
-import subprocess
 import uuid
 
 import networkx as nx
@@ -110,11 +109,13 @@ def default_opener(filename):
         The path of the file to be opened.
 
     """
+    from subprocess import call
+
     cmds = {'darwin': ['open'],
             'linux2': ['xdg-open'],
             'win32': ['cmd.exe', '/C', 'start', '']}
     cmd = cmds[sys.platform] + [filename]
-    subprocess.call(cmd)
+    call(cmd)
 
 
 def dict_to_numpy_array(d,mapping=None):
