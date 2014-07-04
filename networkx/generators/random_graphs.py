@@ -748,7 +748,7 @@ def duplication_divergence_graph(n, p, seed=None):
        Phys. Rev. E, 71, 061911, 2005.
 
     """
-    if p > 1 or p < 0:
+    if p > 1 or p =< 0:
         raise nx.NetworkXError(\
               "NetworkXError p must be in [0,1], p=%f"%(p))
     if seed is not None:

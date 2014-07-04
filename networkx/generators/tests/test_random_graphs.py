@@ -42,7 +42,6 @@ class TestGeneratorsRandom():
         assert_equal(G.number_of_edges(),(97*3))
 
         G=duplication_divergence_graph(100,1.0,seed)
-        G=duplication_divergence_graph(100,0.0,seed)
         assert_equal(len(G), 100)
 
         G=random_regular_graph(10,20,seed)
