@@ -16,7 +16,6 @@ import itertools
 import random
 import math
 import networkx as nx
-import numpy as np
 from networkx.generators.classic import empty_graph, path_graph, complete_graph
 
 from collections import defaultdict
