@@ -750,7 +750,7 @@ def duplication_divergence_graph(n, p, seed=None):
     """
     if p > 1 or p =< 0:
         raise nx.NetworkXError(\
-              "NetworkXError p must be in [0,1], p=%f"%(p))
+              "NetworkXError p must be in (0,1], p=%f"%(p))
     if seed is not None:
         random.seed(seed)
 
