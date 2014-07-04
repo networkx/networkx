@@ -16,18 +16,18 @@ You can read or write three formats of edge lists with these functions.
 
 Node pairs with no data::
 
- 1 2 
+ 1 2
 
 Python dictionary as data::
 
- 1 2 {'weight':7, 'color':'green'} 
+ 1 2 {'weight':7, 'color':'green'}
 
 Arbitrary data::
 
  1 2 7 green
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -50,12 +50,12 @@ def generate_edgelist(G, delimiter=' ', data=True):
     Parameters
     ----------
     G : NetworkX graph
-    
-    delimiter : string, optional
-       Separator for node labels 
 
-    data : bool or list of keys       
-       If False generate no edge data.  If True use a dictionary 
+    delimiter : string, optional
+       Separator for node labels
+
+    data : bool or list of keys
+       If False generate no edge data.  If True use a dictionary
        representation of edge data.  If a list of keys use a list of data
        values corresponding to the keys.
 
@@ -134,13 +134,13 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
        File or filename to write. If a file is provided, it must be
        opened in 'wb' mode. Filenames ending in .gz or .bz2 will be compressed.
     comments : string, optional
-       The character used to indicate the start of a comment 
+       The character used to indicate the start of a comment
     delimiter : string, optional
        The string used to separate values.  The default is whitespace.
     data : bool or list, optional
        If False write no edge data.
-       If True write a string representation of the edge data dictionary..  
-       If a list (or other iterable) is provided, write the  keys specified 
+       If True write a string representation of the edge data dictionary..
+       If a list (or other iterable) is provided, write the  keys specified
        in the list.
     encoding: string, optional
        Specify which encoding to use when writing file.
@@ -160,7 +160,7 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
     >>> nx.write_edgelist(G,'test.edgelist',data=False)
     >>> nx.write_edgelist(G,'test.edgelist',data=['color'])
     >>> nx.write_edgelist(G,'test.edgelist',data=['color','weight'])
-    
+
     See Also
     --------
     write_edgelist()
@@ -211,7 +211,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     [(1, 2), (2, 3), (3, 4)]
 
     Edgelist with data in Python dictionary representation:
-    
+
     >>> lines = ["1 2 {'weight':3}",
     ...          "2 3 {'weight':27}",
     ...          "3 4 {'weight':3.0}"]
@@ -297,21 +297,21 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     return G
 
 @open_file(0,mode='rb')
-def read_edgelist(path, comments="#", delimiter=None, create_using=None, 
+def read_edgelist(path, comments="#", delimiter=None, create_using=None,
                   nodetype=None, data=True, edgetype=None, encoding='utf-8'):
     """Read a graph from a list of edges.
 
     Parameters
     ----------
     path : file or string
-       File or filename to read. If a file is provided, it must be
+       File or filename to write. If a file is provided, it must be
        opened in 'rb' mode.
        Filenames ending in .gz or .bz2 will be uncompressed.
     comments : string, optional
-       The character used to indicate the start of a comment. 
+       The character used to indicate the start of a comment.
     delimiter : string, optional
        The string used to separate values.  The default is whitespace.
-    create_using : Graph container, optional, 
+    create_using : Graph container, optional,
        Use specified container to build graph.  The default is networkx.Graph,
        an undirected graph.
     nodetype : int, float, str, Python type, optional
@@ -361,7 +361,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     Notes
     -----
     Since nodes must be hashable, the function nodetype must return hashable
-    types (e.g. int, float, str, frozenset - or tuples of those, etc.) 
+    types (e.g. int, float, str, frozenset - or tuples of those, etc.)
     """
     lines = (line.decode(encoding) for line in path)
     return parse_edgelist(lines,comments=comments, delimiter=delimiter,
@@ -369,7 +369,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
                           data=data)
 
 
-def write_weighted_edgelist(G, path, comments="#", 
+def write_weighted_edgelist(G, path, comments="#",
                             delimiter=' ', encoding='utf-8'):
     """Write graph G as a list of edges with numeric weights.
 
@@ -382,7 +382,7 @@ def write_weighted_edgelist(G, path, comments="#",
        opened in 'wb' mode.
        Filenames ending in .gz or .bz2 will be compressed.
     comments : string, optional
-       The character used to indicate the start of a comment 
+       The character used to indicate the start of a comment
     delimiter : string, optional
        The string used to separate values.  The default is whitespace.
     encoding: string, optional
@@ -403,7 +403,7 @@ def write_weighted_edgelist(G, path, comments="#",
     """
     write_edgelist(G,path, comments=comments, delimiter=delimiter,
                    data=('weight',), encoding = encoding)
-    
+
 def read_weighted_edgelist(path, comments="#", delimiter=None,
                            create_using=None, nodetype=None, encoding='utf-8'):
 
@@ -412,14 +412,14 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
     Parameters
     ----------
     path : file or string
-       File or filename to read. If a file is provided, it must be
+       File or filename to write. If a file is provided, it must be
        opened in 'rb' mode.
        Filenames ending in .gz or .bz2 will be uncompressed.
     comments : string, optional
-       The character used to indicate the start of a comment. 
+       The character used to indicate the start of a comment.
     delimiter : string, optional
        The string used to separate values.  The default is whitespace.
-    create_using : Graph container, optional, 
+    create_using : Graph container, optional,
        Use specified container to build graph.  The default is networkx.Graph,
        an undirected graph.
     nodetype : int, float, str, Python type, optional
@@ -435,15 +435,15 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
     Notes
     -----
     Since nodes must be hashable, the function nodetype must return hashable
-    types (e.g. int, float, str, frozenset - or tuples of those, etc.) 
+    types (e.g. int, float, str, frozenset - or tuples of those, etc.)
 
     Example edgelist file format.
 
-    With numeric edge data:: 
+    With numeric edge data::
 
-     # read with 
+     # read with
      # >>> G=nx.read_weighted_edgelist(fh)
-     # source target data  
+     # source target data
      a b 1
      a c 3.14159
      d e 42
@@ -461,6 +461,7 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
 # fixture for nose tests
 def teardown_module(module):
     import os
-    os.unlink('test.edgelist')
-    os.unlink('test.edgelist.gz')
-    os.unlink('test.weighted.edgelist')
+    for fname in ['test.edgelist', 'test.edgelist.gz',
+                  'test.weighted.edgelist']:
+        if os.path.isfile(fname):
+            os.unlink(fname)
