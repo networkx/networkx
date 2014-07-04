@@ -524,6 +524,9 @@ class DiGraph(Graph):
         Adding the same edge twice has no effect but any edge data
         will be updated when each duplicate edge is added.
 
+        Edge attributes specified in edges as a tuple take precedence
+        over attributes specified generally.        
+
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc

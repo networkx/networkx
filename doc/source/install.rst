@@ -2,24 +2,31 @@
 Installing
 **********
 
+Before installing NetworkX, you need to have
+`setuptools <https://pypi.python.org/pypi/setuptools>`_ installed.
+
 Quick install
 =============
 
 Get NetworkX from the Python Package Index at
 http://pypi.python.org/pypi/networkx
 
-or install it with::
+or install it with
+
+::
 
    pip install networkx
 
 and an attempt will be made to find and install an appropriate version
 that matches your operating system and Python version.
 
-You can install the development version (at github.com) with::
+You can install the development version (at github.com) with
+
+::
 
   pip install git://github.com/networkx/networkx.git#egg=networkx
 
-More download file options are at http://networkx.github.io/download.html
+More download file options are at http://networkx.github.io/download.html.
 
 Installing from source
 ======================
@@ -42,12 +49,13 @@ Source archive file
   2. Unpack and change directory to the source directory
      (it should have the files README.txt and setup.py).
 
-  3. Run "python setup.py install" to build and install
+  3. Run :samp:`python setup.py install` to build and install
 
-  4. (optional) Run "python setup_egg.py nosetests" to execute the tests
+  4. (Optional) Run :samp:`nosetests` to execute the tests if you have
+     `nose <https://pypi.python.org/pypi/nose>`_ installed.
 
 
-Github
+GitHub
 ------
 
   1. Clone the networkx repostitory
@@ -56,30 +64,39 @@ Github
 
   (see https://github.com/networkx/networkx/ for other options)
 
-  2. Change directory to "networkx"
+  2. Change directory to :samp:`networkx`
 
-  3.  Run "python setup.py install" to build and install
+  3. Run :samp:`python setup.py install` to build and install
 
-  4. (optional) Run "python setup_egg.py nosetests" to execute the tests
+  4. (Optional) Run :samp:`nosetests` to execute the tests if you have
+     `nose <https://pypi.python.org/pypi/nose>`_ installed.
 
 
 If you don't have permission to install software on your
 system, you can install into another directory using
-the --user, --prefix, or --home flags to setup.py.
+the :samp:`--user`, :samp:`--prefix`, or :samp:`--home` flags to setup.py.
 
 For example
 
 ::
 
     python setup.py install --prefix=/home/username/python
-    or
+
+or
+
+::
+
     python setup.py install --home=~
-    or
+
+or
+
+::
+
     python setup.py install --user
 
 If you didn't install in the standard Python site-packages directory
 you will need to set your PYTHONPATH variable to the alternate location.
-Seehttp://docs.python.org/2/install/index.html#search-path for further details.
+See http://docs.python.org/2/install/index.html#search-path for further details.
 
 
 Requirements
@@ -88,15 +105,12 @@ Requirements
 Python
 ------
 
-To use NetworkX you need Python version 2.6 or later.
-Most of NetworkX works with Python version 3.1.2 or later.
-http://www.python.org/
+To use NetworkX you need Python 2.7, 3.2 or later.
 
 The easiest way to get Python and most optional packages is to install
-the Enthought Python distribution "Canopy"
-https://www.enthought.com/products/canopy/
+the Enthought Python distribution "`Canopy <https://www.enthought.com/products/canopy/>`_".
 
-There are several other distributions that contain the key packages you need for scientific computing.  See the following link for a list: http://scipy.org/install.html
+There are several other distributions that contain the key packages you need for scientific computing.  See http://scipy.org/install.html for a list.
 
 
 Optional packages

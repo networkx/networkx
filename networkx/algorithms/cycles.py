@@ -128,11 +128,12 @@ def simple_cycles(G):
     -----
     The implementation follows pp. 79-80 in [1]_.
 
-    The time complexity is O((n+e)(c+1)) for n nodes, e edges and c
+    The time complexity is `O((n+e)(c+1))` for `n` nodes, `e` edges and `c`
     elementary circuits.
 
     To filter the cycles so that they don't include certain nodes or edges,
     copy your graph and eliminate those nodes or edges before calling.
+
     >>> copyG = G.copy()
     >>> copyG.remove_nodes_from([1])
     >>> copyG.remove_edges_from([(0,1)])
@@ -144,10 +145,8 @@ def simple_cycles(G):
     .. [1] Finding all the elementary circuits of a directed graph.
        D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
        http://dx.doi.org/10.1137/0204007
-
     .. [2] Enumerating the cycles of a digraph: a new preprocessing strategy.
        G. Loizou and P. Thanish, Information Sciences, v. 27, 163-182, 1982.
-
     .. [3] A search strategy for the elementary cycles of a directed graph.
        J.L. Szwarcfiter and P.E. Lauer, BIT NUMERICAL MATHEMATICS,
        v. 16, no. 2, 192-204, 1976.
@@ -240,6 +239,7 @@ def recursive_simple_cycles(G):
     and last node being the same.
 
     Example:
+
     >>> G = nx.DiGraph([(0, 0), (0, 1), (0, 2), (1, 2), (2, 0), (2, 1), (2, 2)])
     >>> nx.recursive_simple_cycles(G)
     [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
@@ -252,7 +252,7 @@ def recursive_simple_cycles(G):
     -----
     The implementation follows pp. 79-80 in [1]_.
 
-    The time complexity is O((n+e)(c+1)) for n nodes, e edges and c
+    The time complexity is `O((n+e)(c+1))` for `n` nodes, `e` edges and `c`
     elementary circuits.
 
     References

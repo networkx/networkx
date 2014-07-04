@@ -175,25 +175,27 @@ def parse_edgelist(lines, comments='#', delimiter=None,
                    create_using=None, nodetype=None, data=True):
     """Parse lines of an edge list representation of a graph.
 
+    Parameters
+    ----------
+    lines : list or iterator of strings
+        Input data in edgelist format
+    comments : string, optional
+       Marker for comment lines
+    delimiter : string, optional
+       Separator for node labels
+    create_using: NetworkX graph container, optional
+       Use given NetworkX graph for holding nodes or edges.
+    nodetype : Python type, optional
+       Convert nodes to this type.
+    data : bool or list of (label,type) tuples
+       If False generate no edge data or if True use a dictionary
+       representation of edge data or a list tuples specifying dictionary
+       key names and types for edge data.
 
     Returns
     -------
     G: NetworkX Graph
         The graph corresponding to lines
-    data : bool or list of (label,type) tuples
-       If False generate no edge data or if True use a dictionary 
-       representation of edge data or a list tuples specifying dictionary 
-       key names and types for edge data.
-    create_using: NetworkX graph container, optional
-       Use given NetworkX graph for holding nodes or edges.
-    nodetype : Python type, optional
-       Convert nodes to this type.  
-    comments : string, optional
-       Marker for comment lines
-    delimiter : string, optional
-       Separator for node labels 
-    create_using: NetworkX graph container       
-       Use given NetworkX graph for holding nodes or edges.
 
     Examples
     --------
@@ -302,7 +304,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     Parameters
     ----------
     path : file or string
-       File or filename to write. If a file is provided, it must be
+       File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
        Filenames ending in .gz or .bz2 will be uncompressed.
     comments : string, optional
@@ -410,7 +412,7 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
     Parameters
     ----------
     path : file or string
-       File or filename to write. If a file is provided, it must be
+       File or filename to read. If a file is provided, it must be
        opened in 'rb' mode.
        Filenames ending in .gz or .bz2 will be uncompressed.
     comments : string, optional

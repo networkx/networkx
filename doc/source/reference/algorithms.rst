@@ -18,6 +18,7 @@ Algorithms
    algorithms.chordal
    algorithms.clique
    algorithms.clustering
+   algorithms.coloring
    algorithms.community
    algorithms.component
    algorithms.connectivity
@@ -33,6 +34,7 @@ Algorithms
    algorithms.isolates
    algorithms.isomorphism
    algorithms.link_analysis
+   algorithms.link_prediction
    algorithms.matching
    algorithms.mis
    algorithms.mst
@@ -44,6 +46,3 @@ Algorithms
    algorithms.traversal
    algorithms.tree
    algorithms.vitality
-
-
-

@@ -23,6 +23,11 @@ class TestNetworkSimplex:
         assert_equal(nx.min_cost_flow(G), soln)
         assert_equal(nx.cost_of_flow(G, H), 24)
 
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, 24)
+        assert_equal(nx.cost_of_flow(G, H), 24)
+        assert_equal(H, soln)
+
     def test_negcycle_infcap(self):
         G = nx.DiGraph()
         G.add_node('s', demand = -5)
@@ -34,6 +39,7 @@ class TestNetworkSimplex:
         G.add_edge('d', 'c', weight = -2)
         G.add_edge('d', 't', weight = 1, capacity = 3)
         assert_raises(nx.NetworkXUnbounded, nx.network_simplex, G)
+        assert_raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
 
     def test_sum_demands_not_zero(self):
         G = nx.DiGraph()
@@ -46,6 +52,7 @@ class TestNetworkSimplex:
         G.add_edge('c', 'd', weight = -2)
         G.add_edge('d', 't', weight = 1, capacity = 3)
         assert_raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+        assert_raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
 
     def test_no_flow_satisfying_demands(self):
         G = nx.DiGraph()
@@ -58,6 +65,7 @@ class TestNetworkSimplex:
         G.add_edge('c', 'd', weight = -2)
         G.add_edge('d', 't', weight = 1, capacity = 3)
         assert_raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+        assert_raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
 
     def test_transshipment(self):
         G = nx.DiGraph()
@@ -100,6 +108,11 @@ class TestNetworkSimplex:
         assert_equal(nx.min_cost_flow(G), soln)
         assert_equal(nx.cost_of_flow(G, H), 41)
 
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, 41)
+        assert_equal(nx.cost_of_flow(G, H), 41)
+        assert_equal(H, soln)
+
     def test_max_flow_min_cost(self):
         G = nx.DiGraph()
         G.add_edge('s', 'a', bandwidth = 6)
@@ -116,6 +129,16 @@ class TestNetworkSimplex:
                 't': {}}
         flow = nx.max_flow_min_cost(G, 's', 't', capacity = 'bandwidth',
                                     weight = 'cost')
+        assert_equal(flow, soln)
+        assert_equal(nx.cost_of_flow(G, flow, weight = 'cost'), 90)
+
+        G.add_edge('t', 's', cost = -100)
+        flowCost, flow = nx.capacity_scaling(G, capacity = 'bandwidth',
+                                             weight = 'cost')
+        G.remove_edge('t', 's')
+        assert_equal(flowCost, -410)
+        assert_equal(flow['t']['s'], 5)
+        del flow['t']['s']
         assert_equal(flow, soln)
         assert_equal(nx.cost_of_flow(G, flow, weight = 'cost'), 90)
 
@@ -145,6 +168,11 @@ class TestNetworkSimplex:
         assert_equal(nx.min_cost_flow_cost(G), 150)
         assert_equal(H, soln)
         assert_equal(nx.min_cost_flow(G), soln)
+        assert_equal(nx.cost_of_flow(G, H), 150)
+
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, 150)
+        assert_equal(H, soln)
         assert_equal(nx.cost_of_flow(G, H), 150)
 
     def test_digraph2(self):
@@ -177,6 +205,15 @@ class TestNetworkSimplex:
                 't': {}}
         assert_equal(flow, soln)
 
+        G.add_edge('t', 's', weight=-100)
+        flowCost, flow = nx.capacity_scaling(G)
+        G.remove_edge('t', 's')
+        assert_equal(flow['t']['s'], 32)
+        assert_equal(flowCost, -3007)
+        del flow['t']['s']
+        assert_equal(flow, soln)
+        assert_equal(nx.cost_of_flow(G, flow), 193)
+
     def test_digraph3(self):
         """Combinatorial Optimization: Algorithms and Complexity,
         Papadimitriou Steiglitz at page 140 has an example, 7.1, but that
@@ -200,6 +237,20 @@ class TestNetworkSimplex:
         assert_equal(sol['a'], {'b': 1, 't': 1})
         assert_equal(sol['b'], {'a': 0, 't': 3})
         assert_equal(sol['t'], {})
+
+        G.add_edge('t', 's', {1: -100})
+        flowCost, sol = nx.capacity_scaling(G, capacity=0, weight=1)
+        G.remove_edge('t', 's')
+        flow = sum(v for v in sol['s'].values())
+        assert_equal(4, flow)
+        assert_equal(sol['t']['s'], 4)
+        assert_equal(flowCost, -377)
+        del sol['t']['s']
+        assert_equal(sol['s'], {'a': 2, 'b': 2})
+        assert_equal(sol['a'], {'b': 1, 't': 1})
+        assert_equal(sol['b'], {'a': 0, 't': 3})
+        assert_equal(sol['t'], {})
+        assert_equal(nx.cost_of_flow(G, sol, weight=1), 23)
 
     def test_zero_capacity_edges(self):
         """Address issue raised in ticket #617 by arv."""
@@ -227,6 +278,11 @@ class TestNetworkSimplex:
         assert_equal(nx.min_cost_flow(G), soln)
         assert_equal(nx.cost_of_flow(G, H), 6)
 
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, 6)
+        assert_equal(H, soln)
+        assert_equal(nx.cost_of_flow(G, H), 6)
+
     def test_digon(self):
         """Check if digons are handled properly. Taken from ticket
         #618 by arv."""
@@ -251,6 +307,11 @@ class TestNetworkSimplex:
         assert_equal(nx.min_cost_flow(G), soln)
         assert_equal(nx.cost_of_flow(G, H), 2857140)
 
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, 2857140)
+        assert_equal(H, soln)
+        assert_equal(nx.cost_of_flow(G, H), 2857140)
+
     def test_infinite_capacity_neg_digon(self):
         """An infinite capacity negative cost digon results in an unbounded
         instance."""
@@ -266,7 +327,8 @@ class TestNetworkSimplex:
         G = nx.DiGraph(edges)
         G.add_nodes_from(nodes)
         assert_raises(nx.NetworkXUnbounded, nx.network_simplex, G)
-        
+        assert_raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
+
     def test_finite_capacity_neg_digon(self):
         """The digon should receive the maximum amount of flow it can handle.
         Taken from ticket #749 by @chuongdo."""
@@ -276,9 +338,41 @@ class TestNetworkSimplex:
         min_cost = -2
         assert_equal(nx.min_cost_flow_cost(G), min_cost)
 
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, -2)
+        assert_equal(H, {'a': {'b': 1}, 'b': {'a': 1}})
+        assert_equal(nx.cost_of_flow(G, H), -2)
+
     def test_multidigraph(self):
         """Raise an exception for multidigraph."""
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (2, 3, 2)], weight='capacity')
         assert_raises(nx.NetworkXError, nx.network_simplex, G)
 
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, 0)
+        assert_equal(H, {1: {2: {0: 0}}, 2: {3: {0: 0}}, 3: {}})
+
+    def test_negative_selfloops(self):
+        """Negative selfloops should cause an exception if uncapacitated and
+        always be saturated otherwise.
+        """
+        G = nx.DiGraph()
+        G.add_edge(1, 1, weight=-1)
+        assert_raises(nx.NetworkXUnbounded, nx.network_simplex, G)
+        assert_raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
+        G[1][1]['capacity'] = 2
+        flowCost, H = nx.network_simplex(G)
+        assert_equal(flowCost, -2)
+        assert_equal(H, {1: {1: 2}})
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, -2)
+        assert_equal(H, {1: {1: 2}})
+
+        G = nx.MultiDiGraph()
+        G.add_edge(1, 1, 'x', weight=-1)
+        assert_raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
+        G[1][1]['x']['capacity'] = 2
+        flowCost, H = nx.capacity_scaling(G)
+        assert_equal(flowCost, -2)
+        assert_equal(H, {1: {1: {'x': 2}}})

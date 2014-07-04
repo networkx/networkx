@@ -1,6 +1,6 @@
 #  -*- coding: utf-8 -*-
 import json
-from nose.tools import assert_equal, assert_raises, assert_not_equal,assert_true
+from nose.tools import assert_equal, assert_raises, assert_not_equal, assert_true, raises
 import networkx as nx
 from networkx.readwrite.json_graph import *
 
@@ -56,3 +56,9 @@ class TestNodeLink:
         data = json.loads(output)
         H = node_link_graph(data)
         assert_equal(H.node[1][q], q)
+
+    @raises(nx.NetworkXError)
+    def test_exception(self):
+        G = nx.MultiDiGraph()
+        attrs = dict(id='id', source='node', target='node', key='node')
+        node_link_data(G, attrs)

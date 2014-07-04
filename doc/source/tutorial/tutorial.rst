@@ -262,7 +262,7 @@ should be numeric and holds values used by algorithms requiring weighted edges.
 Directed graphs
 ---------------
 
-The DiGraph class provides additional methods specific to directed
+The :class:`DiGraph` class provides additional methods specific to directed
 edges, e.g. 
 :meth:`DiGraph.out_edges`, 
 :meth:`DiGraph.in_degree`, 
@@ -290,7 +290,7 @@ and undirected graphs together is dangerous.  If you want to treat
 a directed graph as undirected for some measurement you should probably
 convert it using :meth:`Graph.to_undirected` or with
 
->>> H= nx.Graph(G) # convert H to undirected graph
+>>> H = nx.Graph(G) # convert G to undirected graph
 
 
 Multigraphs

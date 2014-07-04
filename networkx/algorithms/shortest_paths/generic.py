@@ -4,9 +4,6 @@ Compute the shortest paths and path lengths between nodes in the graph.
 
 These algorithms work with undirected and directed graphs.
 
-For directed graphs the paths can be computed in the reverse
-order by first flipping the edge orientation using R=G.reverse(copy=False).
-
 """
 #    Copyright (C) 2004-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -100,10 +97,6 @@ def shortest_path(G, source=None, target=None, weight=None):
     There may be more than one shortest path between a source and target.
     This returns only one of them.
 
-    For digraphs this returns a shortest directed path. To find paths in the
-    reverse direction first use G.reverse(copy=False) to flip the edge
-    orientation.
-
     See Also
     --------
     all_pairs_shortest_path()
@@ -120,21 +113,16 @@ def shortest_path(G, source=None, target=None, weight=None):
                 paths=nx.all_pairs_dijkstra_path(G,weight=weight)
         else:
             ## Find paths from all nodes co-accessible to the target.
-            directed = G.is_directed()
-            if directed:
-               G.reverse(copy=False)
+            with nx.utils.reversed(G):
+                if weight is None:
+                    paths=nx.single_source_shortest_path(G, target)
+                else:
+                    paths=nx.single_source_dijkstra_path(G, target, weight=weight)
 
-            if weight is None:
-                paths=nx.single_source_shortest_path(G,target)
-            else:
-                paths=nx.single_source_dijkstra_path(G,target,weight=weight)
+                # Now flip the paths so they go from a source to the target.
+                for target in paths:
+                    paths[target] = list(reversed(paths[target]))
 
-            # Now flip the paths so they go from a source to the target.
-            for target in paths:
-                paths[target] = list(reversed(paths[target]))
-
-            if directed:
-                G.reverse(copy=False)
     else:
         if target is None:
             ## Find paths to all nodes accessible from the source.
@@ -238,18 +226,12 @@ def shortest_path_length(G, source=None, target=None, weight=None):
                 paths=nx.all_pairs_dijkstra_path_length(G, weight=weight)
         else:
             ## Find paths from all nodes co-accessible to the target.
-            directed = G.is_directed()
-            if directed:
-               G.reverse(copy=False)
-
-            if weight is None:
-                paths=nx.single_source_shortest_path_length(G,target)
-            else:
-                paths=nx.single_source_dijkstra_path_length(G,target,
-                                                            weight=weight)
-
-            if directed:
-                G.reverse(copy=False)
+            with nx.utils.reversed(G):
+                if weight is None:
+                    paths=nx.single_source_shortest_path_length(G, target)
+                else:
+                    paths=nx.single_source_dijkstra_path_length(G, target,
+                                                                weight=weight)
     else:
         if target is None:
             ## Find paths to all nodes accessible from the source.

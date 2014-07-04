@@ -157,7 +157,7 @@ class TestGeneratorThreshold():
         try:
             import numpy as N
             eigenval=N.linalg.eigvals
-            import scipoy
+            import scipy
         except ImportError:
             raise SkipTest('SciPy not available.')
 

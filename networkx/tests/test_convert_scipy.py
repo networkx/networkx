@@ -177,3 +177,13 @@ class TestConvertNumpy(object):
         G.add_edge(3,1)
         M = nx.to_scipy_sparse_matrix(G,nodelist=[3,2,1])
         np_assert_equal(M.todense(), np.matrix([[0,0,1],[1,0,0],[0,1,0]]))
+
+    def test_selfloop_graph(self):
+        G = nx.Graph([(1,1)])
+        M = nx.to_scipy_sparse_matrix(G)
+        np_assert_equal(M.todense(), np.matrix([[1]]))
+
+    def test_selfloop_digraph(self):
+        G = nx.DiGraph([(1,1)])
+        M = nx.to_scipy_sparse_matrix(G)
+        np_assert_equal(M.todense(), np.matrix([[1]]))

@@ -4,25 +4,57 @@ Flows
 
 .. automodule:: networkx.algorithms.flow
 
+
+Maximum Flow
+------------
+.. autosummary::
+   :toctree: generated/
+
+   maximum_flow
+   maximum_flow_value
+   minimum_cut
+   minimum_cut_value
+
+
+Edmonds-Karp
+------------
+.. autosummary::
+   :toctree: generated/
+
+   edmonds_karp
+
+
 Ford-Fulkerson
 --------------
 .. autosummary::
    :toctree: generated/
 
-   max_flow
-   min_cut
    ford_fulkerson
-   ford_fulkerson_flow
-   ford_fulkerson_flow_and_auxiliary
 
-Preflow-push
+
+Shortest Augmenting Path
+------------------------
+.. autosummary::
+   :toctree: generated/
+
+   shortest_augmenting_path
+
+
+Preflow-Push
 ------------
 .. autosummary::
    :toctree: generated/
 
    preflow_push
-   preflow_push_value
-   preflow_push_flow
+
+
+Utils
+-----
+.. autosummary::
+   :toctree: generated/
+
+   build_residual_network
+
 
 Network Simplex
 ---------------
@@ -35,3 +67,10 @@ Network Simplex
     cost_of_flow
     max_flow_min_cost
 
+
+Capacity Scaling Minimum Cost Flow
+----------------------------------
+.. autosummary::
+   :toctree: generated/
+
+    capacity_scaling

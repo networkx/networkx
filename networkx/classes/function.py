@@ -8,6 +8,7 @@
 #    BSD license.
 #
 import networkx as nx
+from networkx.utils import not_implemented_for
 import itertools
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Pieter Swart (swart@lanl.gov)',
@@ -18,15 +19,19 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'freeze','is_frozen','subgraph','create_empty_copy',
            'set_node_attributes','get_node_attributes',
            'set_edge_attributes','get_edge_attributes',
-           'all_neighbors','non_neighbors']
+           'all_neighbors','non_neighbors', 'non_edges',
+           'common_neighbors']
+
 
 def nodes(G):
     """Return a copy of the graph nodes in a list."""
     return G.nodes()
 
+
 def nodes_iter(G):
     """Return an iterator over the graph nodes."""
     return G.nodes_iter()
+
 
 def edges(G,nbunch=None):
     """Return list of  edges adjacent to nodes in nbunch.
@@ -37,6 +42,7 @@ def edges(G,nbunch=None):
     """
     return G.edges(nbunch)
 
+
 def edges_iter(G,nbunch=None):
     """Return iterator over  edges adjacent to nodes in nbunch.
 
@@ -46,23 +52,28 @@ def edges_iter(G,nbunch=None):
     """
     return G.edges_iter(nbunch)
 
+
 def degree(G,nbunch=None,weight=None):
     """Return degree of single node or of nbunch of nodes.
     If nbunch is ommitted, then return degrees of *all* nodes.
     """
     return G.degree(nbunch,weight)
 
+
 def neighbors(G,n):
     """Return a list of nodes connected to node n. """
     return G.neighbors(n)
+
 
 def number_of_nodes(G):
     """Return the number of nodes in the graph."""
     return G.number_of_nodes()
 
+
 def number_of_edges(G):
     """Return the number of edges in the graph. """
     return G.number_of_edges()
+
 
 def density(G):
     r"""Return the density of a graph.
@@ -99,6 +110,7 @@ def density(G):
         else:
             d= m*2.0/float(n*(n-1))
     return d
+
 
 def degree_histogram(G):
     """Return a list of the frequency of each degree value.
@@ -185,6 +197,7 @@ def freeze(G):
     G.frozen=True
     return G
 
+
 def is_frozen(G):
     """Return True if graph is frozen.
 
@@ -201,6 +214,7 @@ def is_frozen(G):
         return G.frozen
     except AttributeError:
         return False
+
 
 def subgraph(G, nbunch):
     """Return the subgraph induced on nodes in nbunch.
@@ -223,6 +237,7 @@ def subgraph(G, nbunch):
     subgraph(G) calls G.subgraph()
     """
     return G.subgraph(nbunch)
+
 
 def create_empty_copy(G,with_nodes=True):
     """Return a copy of the graph G with all of the edges removed.
@@ -283,7 +298,8 @@ def info(G, n=None):
         info+=' '.join(str(nbr) for nbr in G.neighbors(n))
     return info
 
-def set_node_attributes(G,name,attributes):
+
+def set_node_attributes(G, name, values):
     """Set node attributes from dictionary of nodes and values
 
     Parameters
@@ -293,21 +309,30 @@ def set_node_attributes(G,name,attributes):
     name : string
        Attribute name
 
-    attributes: dict
-       Dictionary of attributes keyed by node.
+    values: dict
+       Dictionary of attribute values keyed by node. If `values` is not a
+       dictionary, then it is treated as a single attribute value that is then
+       applied to every node in `G`.
 
     Examples
     --------
-    >>> G=nx.path_graph(3)
-    >>> bb=nx.betweenness_centrality(G)
-    >>> nx.set_node_attributes(G,'betweenness',bb)
+    >>> G = nx.path_graph(3)
+    >>> bb = nx.betweenness_centrality(G)
+    >>> nx.set_node_attributes(G, 'betweenness', bb)
     >>> G.node[1]['betweenness']
     1.0
     """
-    for node,value in attributes.items():
-        G.node[node][name]=value
+    try:
+        values.items
+    except AttributeError:
+        # Treat `value` as the attribute value for each node.
+        values = dict(zip(G.nodes(), [values] * len(G)))
 
-def get_node_attributes(G,name):
+    for node, value in values.items():
+        G.node[node][name] = value
+
+
+def get_node_attributes(G, name):
     """Get node attributes from graph
 
     Parameters
@@ -332,8 +357,8 @@ def get_node_attributes(G,name):
     return dict( (n,d[name]) for n,d in G.node.items() if name in d)
 
 
-def set_edge_attributes(G,name,attributes):
-    """Set edge attributes from dictionary of edge tuples and values
+def set_edge_attributes(G, name, values):
+    """Set edge attributes from dictionary of edge tuples and values.
 
     Parameters
     ----------
@@ -342,21 +367,41 @@ def set_edge_attributes(G,name,attributes):
     name : string
        Attribute name
 
-    attributes: dict
-       Dictionary of attributes keyed by edge (tuple).
+    values : dict
+       Dictionary of attribute values keyed by edge (tuple). For multigraphs,
+       the keys tuples must be of the form (u, v, key). For non-multigraphs,
+       the keys must be tuples of the form (u, v). If `values` is not a
+       dictionary, then it is treated as a single attribute value that is then
+       applied to every edge in `G`.
 
     Examples
     --------
-    >>> G=nx.path_graph(3)
-    >>> bb=nx.edge_betweenness_centrality(G, normalized=False)
-    >>> nx.set_edge_attributes(G,'betweenness',bb)
+    >>> G = nx.path_graph(3)
+    >>> bb = nx.edge_betweenness_centrality(G, normalized=False)
+    >>> nx.set_edge_attributes(G, 'betweenness', bb)
     >>> G[1][2]['betweenness']
     2.0
-    """
-    for (u,v),value in attributes.items():
-        G[u][v][name]=value
 
-def get_edge_attributes(G,name):
+    """
+    try:
+        values.items
+    except AttributeError:
+        # Treat `value` as the attribute value for each edge.
+        if G.is_multigraph():
+            edges = G.edges(keys=True)
+        else:
+            edges = G.edges()
+        values = dict(zip(edges, [values] * len(edges)))
+
+    if G.is_multigraph():
+        for (u, v, key), value in values.items():
+            G[u][v][key][name] = value
+    else:
+        for (u, v), value in values.items():
+            G[u][v][name] = value
+
+
+def get_edge_attributes(G, name):
     """Get edge attributes from graph
 
     Parameters
@@ -368,7 +413,9 @@ def get_edge_attributes(G,name):
 
     Returns
     -------
-    Dictionary of attributes keyed by node.
+    Dictionary of attributes keyed by edge. For (di)graphs, the keys are
+    2-tuples of the form: (u,v). For multi(di)graphs, the keys are 3-tuples of
+    the form: (u, v, key).
 
     Examples
     --------
@@ -378,7 +425,12 @@ def get_edge_attributes(G,name):
     >>> color[(1,2)]
     'red'
     """
-    return dict( ((u,v),d[name]) for u,v,d in G.edges(data=True) if name in d)
+    if G.is_multigraph():
+        edges = G.edges(keys=True, data=True)
+    else:
+        edges = G.edges(data=True)
+    return dict( (x[:-1], x[-1][name]) for x in edges if name in x[-1] )
+
 
 
 def all_neighbors(graph, node):
@@ -407,6 +459,7 @@ def all_neighbors(graph, node):
 
     return values
 
+
 def non_neighbors(graph, node):
     """Returns the non-neighbors of the node in the graph.
 
@@ -425,3 +478,67 @@ def non_neighbors(graph, node):
     """
     nbors = set(neighbors(graph, node)) | set([node])
     return (nnode for nnode in graph if nnode not in nbors)
+
+
+def non_edges(graph):
+    """Returns the non-existent edges in the graph.
+
+    Parameters
+    ----------
+    graph : NetworkX graph.
+        Graph to find non-existent edges.
+
+    Returns
+    -------
+    non_edges : iterator
+        Iterator of edges that are not in the graph.
+    """
+    if graph.is_directed():
+        for u in graph.nodes_iter():
+            for v in non_neighbors(graph, u):
+                yield (u, v)
+    else:
+        S = set()
+        for u in graph.nodes_iter():
+            for v in non_neighbors(graph, u):
+                if (u, v) not in S:
+                    yield (u, v)
+                    S.add((v, u))
+
+
+@not_implemented_for('directed')
+def common_neighbors(G, u, v):
+    """Return the common neighbors of two nodes in a graph.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX undirected graph.
+
+    u, v : nodes
+        Nodes in the graph.
+
+    Returns
+    -------
+    cnbors : iterator
+        Iterator of common neighbors of u and v in the graph.
+
+    Raises
+    ------
+    NetworkXError
+        If u or v is not a node in the graph.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> sorted(nx.common_neighbors(G, 0, 1))
+    [2, 3, 4]
+    """
+    if u not in G:
+        raise nx.NetworkXError('u is not in the graph.')
+    if v not in G:
+        raise nx.NetworkXError('v is not in the graph.')
+
+    # Return a generator explicitly instead of yielding so that the above
+    # checks are executed eagerly.
+    return (w for w in G[u] if w in G[v] and w not in (u, v))

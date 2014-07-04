@@ -117,10 +117,6 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
         nodelist = G.nodes()
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
                                   format='csr')
-    # the convention for normalized Laplacian is to not count self loops
-    # twice in the diagonal.  So we remove one here.
-    for n,_ in G.selfloop_edges():
-        A[n,n] -= 1
     n,m = A.shape
     diags = A.sum(axis=1).flatten()
     D = scipy.sparse.spdiags(diags, [0], m, n, format='csr')

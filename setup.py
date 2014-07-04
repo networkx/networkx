@@ -5,21 +5,22 @@ Setup script for networkx
 
 You can install networkx with
 
-python setup_egg.py install
+python setup.py install
 """
 from glob import glob
 import os
 import sys
-if os.path.exists('MANIFEST'): os.remove('MANIFEST')
+if os.path.exists('MANIFEST'):
+    os.remove('MANIFEST')
 
-from distutils.core import setup
+from setuptools import setup
 
 if sys.argv[-1] == 'setup.py':
     print("To install, run 'python setup.py install'")
     print()
 
-if sys.version_info[:2] < (2, 6):
-    print("NetworkX requires Python version 2.6 or later (%d.%d detected)." %
+if sys.version_info[:2] < (2, 7):
+    print("NetworkX requires Python 2.7 or later (%d.%d detected)." %
           sys.version_info[:2])
     sys.exit(-1)
 
@@ -38,6 +39,7 @@ packages=["networkx",
           "networkx.algorithms.community",
           "networkx.algorithms.components",
           "networkx.algorithms.connectivity",
+          "networkx.algorithms.coloring",
           "networkx.algorithms.flow",
           "networkx.algorithms.traversal",
           "networkx.algorithms.isomorphism",
@@ -48,7 +50,6 @@ packages=["networkx",
           "networkx.algorithms.tree",
           "networkx.classes",
           "networkx.external",
-          "networkx.external.decorator",
           "networkx.generators",
           "networkx.drawing",
           "networkx.linalg",
@@ -57,11 +58,6 @@ packages=["networkx",
           "networkx.tests",
           "networkx.testing",
           "networkx.utils"]
-
-if sys.version >= '3':
-    packages.append('networkx.external.decorator.decorator3')
-else:
-    packages.append('networkx.external.decorator.decorator2')
 
 docdirbase  = 'share/doc/networkx-%s' % version
 # add basic documentation
@@ -76,13 +72,13 @@ for d in ['advanced',
           'multigraph',
           'pygraphviz',
           'readwrite']:
-    dd=os.path.join(docdirbase,'examples',d)
-    pp=os.path.join('examples',d)
-    data.append((dd,glob(os.path.join(pp,"*.py"))))
-    data.append((dd,glob(os.path.join(pp,"*.bz2"))))
-    data.append((dd,glob(os.path.join(pp,"*.gz"))))
-    data.append((dd,glob(os.path.join(pp,"*.mbox"))))
-    data.append((dd,glob(os.path.join(pp,"*.edgelist"))))
+    dd = os.path.join(docdirbase,'examples', d)
+    pp = os.path.join('examples', d)
+    data.append((dd, glob(os.path.join(pp ,"*.py"))))
+    data.append((dd, glob(os.path.join(pp ,"*.bz2"))))
+    data.append((dd, glob(os.path.join(pp ,"*.gz"))))
+    data.append((dd, glob(os.path.join(pp ,"*.mbox"))))
+    data.append((dd, glob(os.path.join(pp ,"*.edgelist"))))
 
 # add the tests
 package_data     = {
@@ -95,6 +91,7 @@ package_data     = {
     'networkx.algorithms.community': ['tests/*.py'],
     'networkx.algorithms.components': ['tests/*.py'],
     'networkx.algorithms.connectivity': ['tests/*.py'],
+    'networkx.algorithms.coloring': ['tests/*.py'],
     'networkx.algorithms.flow': ['tests/*.py', 'tests/*.bz2'],
     'networkx.algorithms.traversal': ['tests/*.py'],
     'networkx.algorithms.isomorphism': ['tests/*.py','tests/*.*99'],
@@ -113,6 +110,8 @@ package_data     = {
     'networkx.testing': ['tests/*.py'],
     'networkx.utils': ['tests/*.py']
     }
+
+install_requires = ['decorator>=3.4.0']
 
 if __name__ == "__main__":
 
@@ -133,6 +132,9 @@ if __name__ == "__main__":
         classifiers      = release.classifiers,
         packages         = packages,
         data_files       = data,
-        package_data     = package_data
-      )
-
+        package_data     = package_data,
+        install_requires = install_requires,
+        test_suite       = 'nose.collector',
+        tests_require    = ['nose>=0.10.1'],
+        zip_safe         = False
+    )

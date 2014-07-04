@@ -2,33 +2,24 @@
 """
 Maximum flow (and minimum cut) algorithms on capacitated graphs.
 """
-
-__author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
-# Copyright (C) 2010 Loïc Séguin-C. <loicseguin@gmail.com>
-# All rights reserved.
-# BSD license.
-
 import networkx as nx
 
-__all__ = ['ford_fulkerson',
-           'ford_fulkerson_flow',
-           'ford_fulkerson_flow_and_auxiliary',
-           'max_flow',
-           'min_cut']
+# Define the default flow function for computing maximum flow.
+from .edmondskarp import edmonds_karp
+from .fordfulkerson import ford_fulkerson
+from .preflowpush import preflow_push
+from .shortestaugmentingpath import shortest_augmenting_path
+from .utils import build_flow_dict
+default_flow_func = preflow_push
 
-def ford_fulkerson_flow_and_auxiliary(G, s, t, capacity='capacity'):
-    """Find a maximum single-commodity flow using the Ford-Fulkerson
-    algorithm.
-    
-    This function returns both the value of the maximum flow and the 
-    auxiliary network resulting after finding the maximum flow, which
-    is also named residual network in the literature. The 
-    auxiliary network has edges with capacity equal to the capacity 
-    of the edge in the original network minus the flow that went 
-    throught that edge. Notice that it can happen that a flow 
-    from v to u is allowed in the auxiliary network, though disallowed 
-    in the original network. A dictionary with infinite capacity edges 
-    can be found as an attribute of the auxiliary network.
+__all__ = ['maximum_flow',
+           'maximum_flow_value',
+           'minimum_cut',
+           'minimum_cut_value']
+
+
+def maximum_flow(G, s, t, capacity='capacity', flow_func=None, **kwargs):
+    """Find a maximum single-commodity flow.
 
     Parameters
     ----------
@@ -43,21 +34,34 @@ def ford_fulkerson_flow_and_auxiliary(G, s, t, capacity='capacity'):
     t : node
         Sink node for the flow.
 
-    capacity: string
+    capacity : string
         Edges of the graph G are expected to have an attribute capacity
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
+
+    flow_func : function
+        A function for computing the maximum flow among a pair of nodes
+        in a capacitated graph. The function has to accept at least three
+        parameters: a Graph or Digraph, a source node, and a target node.
+        And return a residual network that follows NetworkX conventions
+        (see Notes). If flow_func is None, the default maximum
+        flow function (:meth:`preflow_push`) is used. See below for
+        alternative algorithms. The choice of the default function may change
+        from version to version and should not be relied on. Default value:
+        None.
+
+    kwargs : Any other keyword parameter is passed to the function that
+        computes the maximum flow.
 
     Returns
     -------
     flow_value : integer, float
         Value of the maximum flow, i.e., net outflow from the source.
 
-    auxiliary : DiGraph
-        Residual/auxiliary network after finding the maximum flow. 
-        A dictionary with infinite capacity edges can be found as 
-        an attribute of this network: auxiliary.graph['inf_capacity_flows']
+    flow_dict : dict
+        A dictionary containing the value of the flow that went through
+        each edge.
 
     Raises
     ------
@@ -67,14 +71,54 @@ def ford_fulkerson_flow_and_auxiliary(G, s, t, capacity='capacity'):
         NetworkXError is raised.
 
     NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a 
+        If the graph has a path of infinite capacity, the value of a
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
+
+    See also
+    --------
+    :meth:`maximum_flow_value`
+    :meth:`minimum_cut`
+    :meth:`minimum_cut_value`
+    :meth:`edmonds_karp`
+    :meth:`ford_fulkerson`
+    :meth:`preflow_push`
+    :meth:`shortest_augmenting_path`
 
     Notes
     -----
-    This algorithm uses Edmonds-Karp-Dinitz path selection rule which
-    guarantees a running time of `O(nm^2)` for `n` nodes and `m` edges.
+    The function used in the flow_func paramter has to return a residual
+    network that follows NetworkX conventions:
+
+    The residual network :samp:`R` from an input graph :samp:`G` has the
+    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
+    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
+    in :samp:`G`.
+
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']`
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists
+    in :samp:`G` or zero otherwise. If the capacity is infinite,
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value
+    that does not affect the solution of the problem. This value is stored in
+    :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
+    :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
+    satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    The flow value, defined as the total flow into :samp:`t`, the sink, is
+    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    only edges :samp:`(u, v)` such that
+    :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
+    :samp:`s`-:samp:`t` cut.
+
+    Specific algorithms may store extra data in :samp:`R`.
+
+    The function should supports an optional boolean parameter value_only. When
+    True, it can optionally terminate the algorithm as soon as the maximum flow
+    value and the minimum cut can be determined.
+
+    The legacy :meth:`ford_fulkerson` maximum flow implementation doesn't
+    follow this conventions but it is supported as a valid flow_func.
 
     Examples
     --------
@@ -88,146 +132,46 @@ def ford_fulkerson_flow_and_auxiliary(G, s, t, capacity='capacity'):
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow, auxiliary = nx.ford_fulkerson_flow_and_auxiliary(G, 'x', 'y')
-    >>> flow
+
+    maximum_flow returns both the value of the maximum flow and a
+    dictionary with all flows.
+
+    >>> flow_value, flow_dict = nx.maximum_flow(G, 'x', 'y')
+    >>> flow_value
     3.0
-    >>> # A dictionary with infinite capacity flows can be found as an
-    >>> # attribute of the auxiliary network
-    >>> inf_capacity_flows = auxiliary.graph['inf_capacity_flows']
+    >>> print(flow_dict['x']['b'])
+    1.0
+
+    You can also use alternative algorithms for computing the
+    maximum flow by using the flow_func parameter.
+
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> flow_value == nx.maximum_flow(G, 'x', 'y',
+    ...                         flow_func=shortest_augmenting_path)[0]
+    True
 
     """
-    if G.is_multigraph():
-        raise nx.NetworkXError(
-                'MultiGraph and MultiDiGraph not supported (yet).')
+    if flow_func is None:
+        if kwargs:
+            raise nx.NetworkXError("You have to explicitly set a flow_func if"
+                                   " you need to pass parameters via kwargs.")
+        flow_func = default_flow_func
 
-    if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
-    if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
+    if not callable(flow_func):
+        raise nx.NetworkXError("flow_func has to be callable.")
 
-    auxiliary = _create_auxiliary_digraph(G, capacity=capacity)
-    inf_capacity_flows = auxiliary.graph['inf_capacity_flows']
-
-    flow_value = 0   # Initial feasible flow.
-
-    # As long as there is an (s, t)-path in the auxiliary digraph, find
-    # the shortest (with respect to the number of arcs) such path and
-    # augment the flow on this path.
-    while True:
-        try:
-            path_nodes = nx.bidirectional_shortest_path(auxiliary, s, t)
-        except nx.NetworkXNoPath:
-            break
-
-        # Get the list of edges in the shortest path.
-        path_edges = list(zip(path_nodes[:-1], path_nodes[1:]))
-
-        # Find the minimum capacity of an edge in the path.
-        try:
-            path_capacity = min([auxiliary[u][v][capacity]
-                                for u, v in path_edges
-                                if capacity in auxiliary[u][v]])
-        except ValueError: 
-            # path of infinite capacity implies no max flow
-            raise nx.NetworkXUnbounded(
-                    "Infinite capacity path, flow unbounded above.")
-        
-        flow_value += path_capacity
-
-        # Augment the flow along the path.
-        for u, v in path_edges:
-            edge_attr = auxiliary[u][v]
-            if capacity in edge_attr:
-                edge_attr[capacity] -= path_capacity
-                if edge_attr[capacity] == 0:
-                    auxiliary.remove_edge(u, v)
-            else:
-                inf_capacity_flows[(u, v)] += path_capacity
-
-            if auxiliary.has_edge(v, u):
-                if capacity in auxiliary[v][u]:
-                    auxiliary[v][u][capacity] += path_capacity
-            else:
-                auxiliary.add_edge(v, u, {capacity: path_capacity})
-    
-    auxiliary.graph['inf_capacity_flows'] = inf_capacity_flows
-    return flow_value, auxiliary
-
-def _create_auxiliary_digraph(G, capacity='capacity'):
-    """Initialize an auxiliary digraph and dict of infinite capacity
-    edges for a given graph G.
-    Ignore edges with capacity <= 0.
-    """
-    auxiliary = nx.DiGraph()
-    auxiliary.add_nodes_from(G)
-    inf_capacity_flows = {}
-    if nx.is_directed(G):
-        for edge in G.edges(data = True):
-            if capacity in edge[2]:
-                if edge[2][capacity] > 0:
-                    auxiliary.add_edge(*edge)
-            else:
-                auxiliary.add_edge(*edge)
-                inf_capacity_flows[(edge[0], edge[1])] = 0
+    if flow_func is ford_fulkerson:
+        R = flow_func(G, s, t, capacity=capacity)
+        flow_dict = R.graph['flow_dict']
     else:
-        for edge in G.edges(data = True):
-            if capacity in edge[2]:
-                if edge[2][capacity] > 0:
-                    auxiliary.add_edge(*edge)
-                    auxiliary.add_edge(edge[1], edge[0], edge[2])
-            else:
-                auxiliary.add_edge(*edge)
-                auxiliary.add_edge(edge[1], edge[0], edge[2])
-                inf_capacity_flows[(edge[0], edge[1])] = 0
-                inf_capacity_flows[(edge[1], edge[0])] = 0
+        R = flow_func(G, s, t, capacity=capacity, value_only=False, **kwargs)
+        flow_dict = build_flow_dict(G, R)
 
-    auxiliary.graph['inf_capacity_flows'] = inf_capacity_flows
-    return auxiliary
+    return (R.graph['flow_value'], flow_dict)
 
 
-def _create_flow_dict(G, H, capacity='capacity'):
-    """Creates the flow dict of dicts on G corresponding to the
-    auxiliary digraph H and infinite capacity edges flows
-    inf_capacity_flows.
-    """
-    inf_capacity_flows = H.graph['inf_capacity_flows']
-    flow = dict([(u, {}) for u in G])
-
-    if G.is_directed():
-        for u, v in G.edges_iter():
-            if H.has_edge(u, v):
-                if capacity in G[u][v]:
-                    flow[u][v] = max(0, G[u][v][capacity] - H[u][v][capacity])
-                elif G.has_edge(v, u) and not capacity in G[v][u]:
-                    flow[u][v] = max(0, inf_capacity_flows[(u, v)] -
-                                     inf_capacity_flows[(v, u)])
-                else:
-                    flow[u][v] = max(0, H[v].get(u, {}).get(capacity, 0) -
-                                     G[v].get(u, {}).get(capacity, 0))
-            else:
-                flow[u][v] = G[u][v][capacity]
-
-    else: # undirected
-        for u, v in G.edges_iter():
-            if H.has_edge(u, v):
-                if capacity in G[u][v]:
-                    flow[u][v] = abs(G[u][v][capacity] - H[u][v][capacity])
-                else:
-                    flow[u][v] = abs(inf_capacity_flows[(u, v)] -
-                                     inf_capacity_flows[(v, u)])
-            else:
-                flow[u][v] = G[u][v][capacity]
-            flow[v][u] = flow[u][v]
-
-    return flow
-
-def ford_fulkerson(G, s, t, capacity='capacity'):
-    """Find a maximum single-commodity flow using the Ford-Fulkerson
-    algorithm.
-    
-    This algorithm uses Edmonds-Karp-Dinitz path selection rule which
-    guarantees a running time of `O(nm^2)` for `n` nodes and `m` edges.
-
+def maximum_flow_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
+    """Find the value of maximum single-commodity flow.
 
     Parameters
     ----------
@@ -242,144 +186,25 @@ def ford_fulkerson(G, s, t, capacity='capacity'):
     t : node
         Sink node for the flow.
 
-    capacity: string
+    capacity : string
         Edges of the graph G are expected to have an attribute capacity
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
 
-    Returns
-    -------
-    flow_value : integer, float
-        Value of the maximum flow, i.e., net outflow from the source.
+    flow_func : function
+        A function for computing the maximum flow among a pair of nodes
+        in a capacitated graph. The function has to accept at least three
+        parameters: a Graph or Digraph, a source node, and a target node.
+        And return a residual network that follows NetworkX conventions
+        (see Notes). If flow_func is None, the default maximum
+        flow function (:meth:`preflow_push`) is used. See below for
+        alternative algorithms. The choice of the default function may change
+        from version to version and should not be relied on. Default value:
+        None.
 
-    flow_dict : dictionary
-        Dictionary of dictionaries keyed by nodes such that
-        flow_dict[u][v] is the flow edge (u, v).
-
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support MultiGraph and MultiDiGraph. If
-        the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
-
-    NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a 
-        feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow, F = nx.ford_fulkerson(G, 'x', 'y')
-    >>> flow
-    3.0
-    """
-    flow_value, auxiliary = ford_fulkerson_flow_and_auxiliary(G, 
-                                s, t, capacity=capacity)
-    flow_dict = _create_flow_dict(G, auxiliary, capacity=capacity)
-    return flow_value, flow_dict
-
-def ford_fulkerson_flow(G, s, t, capacity='capacity'):
-    """Return a maximum flow for a single-commodity flow problem.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        Edges of the graph are expected to have an attribute called
-        'capacity'. If this attribute is not present, the edge is
-        considered to have infinite capacity.
-
-    s : node
-        Source node for the flow.
-
-    t : node
-        Sink node for the flow.
-
-    capacity: string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
-
-    Returns
-    -------
-    flow_dict : dictionary
-        Dictionary of dictionaries keyed by nodes such that
-        flow_dict[u][v] is the flow edge (u, v).
-
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support MultiGraph and MultiDiGraph. If
-        the input graph is an instance of one of these two classes, a
-        NetworkXError is raised.
-
-    NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a 
-        feasible flow on the graph is unbounded above and the function
-        raises a NetworkXUnbounded.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> F = nx.ford_fulkerson_flow(G, 'x', 'y')
-    >>> for u, v in sorted(G.edges_iter()):
-    ...     print('(%s, %s) %.2f' % (u, v, F[u][v]))
-    ... 
-    (a, c) 2.00
-    (b, c) 0.00
-    (b, d) 1.00
-    (c, y) 2.00
-    (d, e) 1.00
-    (e, y) 1.00
-    (x, a) 2.00
-    (x, b) 1.00
-    """
-    flow_value, auxiliary = ford_fulkerson_flow_and_auxiliary(G,
-                                s, t, capacity=capacity)
-    return _create_flow_dict(G, auxiliary, capacity=capacity)
-
-def max_flow(G, s, t, capacity='capacity'):
-    """Find the value of a maximum single-commodity flow.
-    
-    Parameters
-    ----------
-    G : NetworkX graph
-        Edges of the graph are expected to have an attribute called
-        'capacity'. If this attribute is not present, the edge is
-        considered to have infinite capacity.
-
-    s : node
-        Source node for the flow.
-
-    t : node
-        Sink node for the flow.
-
-    capacity: string
-        Edges of the graph G are expected to have an attribute capacity
-        that indicates how much flow the edge can support. If this
-        attribute is not present, the edge is considered to have
-        infinite capacity. Default value: 'capacity'.
+    kwargs : Any other keyword parameter is passed to the function that
+        computes the maximum flow.
 
     Returns
     -------
@@ -394,9 +219,54 @@ def max_flow(G, s, t, capacity='capacity'):
         NetworkXError is raised.
 
     NetworkXUnbounded
-        If the graph has a path of infinite capacity, the value of a 
+        If the graph has a path of infinite capacity, the value of a
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
+
+    See also
+    --------
+    :meth:`maximum_flow`
+    :meth:`minimum_cut`
+    :meth:`minimum_cut_value`
+    :meth:`edmonds_karp`
+    :meth:`ford_fulkerson`
+    :meth:`preflow_push`
+    :meth:`shortest_augmenting_path`
+
+    Notes
+    -----
+    The function used in the flow_func paramter has to return a residual
+    network that follows NetworkX conventions:
+
+    The residual network :samp:`R` from an input graph :samp:`G` has the
+    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
+    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
+    in :samp:`G`.
+
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']`
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists
+    in :samp:`G` or zero otherwise. If the capacity is infinite,
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value
+    that does not affect the solution of the problem. This value is stored in
+    :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
+    :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
+    satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    The flow value, defined as the total flow into :samp:`t`, the sink, is
+    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    only edges :samp:`(u, v)` such that
+    :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
+    :samp:`s`-:samp:`t` cut.
+
+    Specific algorithms may store extra data in :samp:`R`.
+
+    The function should supports an optional boolean parameter value_only. When
+    True, it can optionally terminate the algorithm as soon as the maximum flow
+    value and the minimum cut can be determined.
+
+    The legacy :meth:`ford_fulkerson` maximum flow implementation doesn't
+    follow this conventions but it is supported as a valid flow_func.
 
     Examples
     --------
@@ -410,14 +280,213 @@ def max_flow(G, s, t, capacity='capacity'):
     >>> G.add_edge('d','e', capacity=2.0)
     >>> G.add_edge('c','y', capacity=2.0)
     >>> G.add_edge('e','y', capacity=3.0)
-    >>> flow = nx.max_flow(G, 'x', 'y')
-    >>> flow
+
+    maximum_flow_value computes only the value of the
+    maximum flow:
+
+    >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
+    >>> flow_value
     3.0
+
+    You can also use alternative algorithms for computing the
+    maximum flow by using the flow_func parameter.
+
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> flow_value == nx.maximum_flow_value(G, 'x', 'y',
+    ...                                     flow_func=shortest_augmenting_path)
+    True
+
     """
-    return ford_fulkerson_flow_and_auxiliary(G, s, t, capacity=capacity)[0]
+    if flow_func is None:
+        if kwargs:
+            raise nx.NetworkXError("You have to explicitly set a flow_func if"
+                                   " you need to pass parameters via kwargs.")
+        flow_func = default_flow_func
+
+    if not callable(flow_func):
+        raise nx.NetworkXError("flow_func has to be callable.")
+
+    if flow_func is ford_fulkerson:
+        R = flow_func(G, s, t, capacity=capacity)
+    else:
+        R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
+
+    return R.graph['flow_value']
 
 
-def min_cut(G, s, t, capacity='capacity'):
+def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
+    """Compute the value and the node partition of a minimum (s, t)-cut.
+
+    Use the max-flow min-cut theorem, i.e., the capacity of a minimum
+    capacity cut is equal to the flow value of a maximum flow.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Edges of the graph are expected to have an attribute called
+        'capacity'. If this attribute is not present, the edge is
+        considered to have infinite capacity.
+
+    s : node
+        Source node for the flow.
+
+    t : node
+        Sink node for the flow.
+
+    capacity : string
+        Edges of the graph G are expected to have an attribute capacity
+        that indicates how much flow the edge can support. If this
+        attribute is not present, the edge is considered to have
+        infinite capacity. Default value: 'capacity'.
+
+    flow_func : function
+        A function for computing the maximum flow among a pair of nodes
+        in a capacitated graph. The function has to accept at least three
+        parameters: a Graph or Digraph, a source node, and a target node.
+        And return a residual network that follows NetworkX conventions
+        (see Notes). If flow_func is None, the default maximum
+        flow function (:meth:`preflow_push`) is used. See below for
+        alternative algorithms. The choice of the default function may change
+        from version to version and should not be relied on. Default value:
+        None.
+
+    kwargs : Any other keyword parameter is passed to the function that
+        computes the maximum flow.
+
+    Returns
+    -------
+    cut_value : integer, float
+        Value of the minimum cut.
+
+    partition : pair of node sets
+        A partitioning of the nodes that defines a minimum cut.
+
+    Raises
+    ------
+    NetworkXUnbounded
+        If the graph has a path of infinite capacity, all cuts have
+        infinite capacity and the function raises a NetworkXError.
+
+    See also
+    --------
+    :meth:`maximum_flow`
+    :meth:`maximum_flow_value`
+    :meth:`minimum_cut_value`
+    :meth:`edmonds_karp`
+    :meth:`ford_fulkerson`
+    :meth:`preflow_push`
+    :meth:`shortest_augmenting_path`
+
+    Notes
+    -----
+    The function used in the flow_func paramter has to return a residual
+    network that follows NetworkX conventions:
+
+    The residual network :samp:`R` from an input graph :samp:`G` has the
+    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
+    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
+    in :samp:`G`.
+
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']`
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists
+    in :samp:`G` or zero otherwise. If the capacity is infinite,
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value
+    that does not affect the solution of the problem. This value is stored in
+    :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
+    :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
+    satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    The flow value, defined as the total flow into :samp:`t`, the sink, is
+    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    only edges :samp:`(u, v)` such that
+    :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
+    :samp:`s`-:samp:`t` cut.
+
+    Specific algorithms may store extra data in :samp:`R`.
+
+    The function should supports an optional boolean parameter value_only. When
+    True, it can optionally terminate the algorithm as soon as the maximum flow
+    value and the minimum cut can be determined.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.DiGraph()
+    >>> G.add_edge('x','a', capacity = 3.0)
+    >>> G.add_edge('x','b', capacity = 1.0)
+    >>> G.add_edge('a','c', capacity = 3.0)
+    >>> G.add_edge('b','c', capacity = 5.0)
+    >>> G.add_edge('b','d', capacity = 4.0)
+    >>> G.add_edge('d','e', capacity = 2.0)
+    >>> G.add_edge('c','y', capacity = 2.0)
+    >>> G.add_edge('e','y', capacity = 3.0)
+
+    minimum_cut computes both the value of the
+    minimum cut and the node partition:
+
+    >>> cut_value, partition = nx.minimum_cut(G, 'x', 'y')
+    >>> reachable, non_reachable = partition
+
+    'partition' here is a tuple with the two sets of nodes that define
+    the minimum cut. You can compute the cut set of edges that induce
+    the minimum cut as follows:
+
+    >>> cutset = set()
+    >>> for u, nbrs in ((n, G[n]) for n in reachable):
+    ...     cutset.update((u, v) for v in nbrs if v in non_reachable)
+    >>> print(sorted(cutset))
+    [('c', 'y'), ('x', 'b')]
+    >>> cut_value == sum(G.edge[u][v]['capacity'] for (u, v) in cutset)
+    True
+
+    You can also use alternative algorithms for computing the
+    minimum cut by using the flow_func parameter.
+
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> cut_value == nx.minimum_cut(G, 'x', 'y',
+    ...                             flow_func=shortest_augmenting_path)[0]
+    True
+
+    """
+    if flow_func is None:
+        if kwargs:
+            raise nx.NetworkXError("You have to explicitly set a flow_func if"
+                                   " you need to pass parameters via kwargs.")
+        flow_func = default_flow_func
+
+    if not callable(flow_func):
+        raise nx.NetworkXError("flow_func has to be callable.")
+
+    if (kwargs.get('cutoff') is not None and
+        flow_func in (edmonds_karp, ford_fulkerson, preflow_push,
+                      shortest_augmenting_path)):
+        raise nx.NetworkXError("cutoff should not be specified.")
+
+    if flow_func is ford_fulkerson:
+        R = flow_func(G, s, t, capacity=capacity)
+        # legacy always removes saturated edges
+        cutset = None 
+    else:
+        R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
+        # Remove saturated edges from the residual network 
+        cutset = [(u, v, d) for u, v, d in R.edges(data=True) 
+                     if d['flow'] == d['capacity']]
+        R.remove_edges_from(cutset)
+
+    # Then, reachable and non reachable nodes from source in the
+    # residual network form the node partition that defines
+    # the minimum cut.
+    non_reachable = set(nx.shortest_path_length(R, target=t))
+    partition = (set(G) - non_reachable, non_reachable)
+    # Finaly add again cutset edges to the residual network to make
+    # sure that it is reusable.
+    if cutset is not None:
+        R.add_edges_from(cutset)
+    return (R.graph['flow_value'], partition)
+
+
+def minimum_cut_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
     """Compute the value of a minimum (s, t)-cut.
 
     Use the max-flow min-cut theorem, i.e., the capacity of a minimum
@@ -436,23 +505,79 @@ def min_cut(G, s, t, capacity='capacity'):
     t : node
         Sink node for the flow.
 
-    capacity: string
+    capacity : string
         Edges of the graph G are expected to have an attribute capacity
         that indicates how much flow the edge can support. If this
         attribute is not present, the edge is considered to have
         infinite capacity. Default value: 'capacity'.
 
+    flow_func : function
+        A function for computing the maximum flow among a pair of nodes
+        in a capacitated graph. The function has to accept at least three
+        parameters: a Graph or Digraph, a source node, and a target node.
+        And return a residual network that follows NetworkX conventions
+        (see Notes). If flow_func is None, the default maximum
+        flow function (:meth:`preflow_push`) is used. See below for
+        alternative algorithms. The choice of the default function may change
+        from version to version and should not be relied on. Default value:
+        None.
+
+    kwargs : Any other keyword parameter is passed to the function that
+        computes the maximum flow.
+
     Returns
     -------
-    cutValue : integer, float
+    cut_value : integer, float
         Value of the minimum cut.
-    
+
     Raises
     ------
     NetworkXUnbounded
         If the graph has a path of infinite capacity, all cuts have
         infinite capacity and the function raises a NetworkXError.
-    
+
+    See also
+    --------
+    :meth:`maximum_flow`
+    :meth:`maximum_flow_value`
+    :meth:`minimum_cut`
+    :meth:`edmonds_karp`
+    :meth:`ford_fulkerson`
+    :meth:`preflow_push`
+    :meth:`shortest_augmenting_path`
+
+    Notes
+    -----
+    The function used in the flow_func paramter has to return a residual
+    network that follows NetworkX conventions:
+
+    The residual network :samp:`R` from an input graph :samp:`G` has the
+    same nodes as :samp:`G`. :samp:`R` is a DiGraph that contains a pair
+    of edges :samp:`(u, v)` and :samp:`(v, u)` iff :samp:`(u, v)` is not a
+    self-loop, and at least one of :samp:`(u, v)` and :samp:`(v, u)` exists
+    in :samp:`G`.
+
+    For each edge :samp:`(u, v)` in :samp:`R`, :samp:`R[u][v]['capacity']`
+    is equal to the capacity of :samp:`(u, v)` in :samp:`G` if it exists
+    in :samp:`G` or zero otherwise. If the capacity is infinite,
+    :samp:`R[u][v]['capacity']` will have a high arbitrary finite value
+    that does not affect the solution of the problem. This value is stored in
+    :samp:`R.graph['inf']`. For each edge :samp:`(u, v)` in :samp:`R`,
+    :samp:`R[u][v]['flow']` represents the flow function of :samp:`(u, v)` and
+    satisfies :samp:`R[u][v]['flow'] == -R[v][u]['flow']`.
+
+    The flow value, defined as the total flow into :samp:`t`, the sink, is
+    stored in :samp:`R.graph['flow_value']`. Reachability to :samp:`t` using
+    only edges :samp:`(u, v)` such that
+    :samp:`R[u][v]['flow'] < R[u][v]['capacity']` induces a minimum
+    :samp:`s`-:samp:`t` cut.
+
+    Specific algorithms may store extra data in :samp:`R`.
+
+    The function should supports an optional boolean parameter value_only. When
+    True, it can optionally terminate the algorithm as soon as the maximum flow
+    value and the minimum cut can be determined.
+
     Examples
     --------
     >>> import networkx as nx
@@ -465,13 +590,40 @@ def min_cut(G, s, t, capacity='capacity'):
     >>> G.add_edge('d','e', capacity = 2.0)
     >>> G.add_edge('c','y', capacity = 2.0)
     >>> G.add_edge('e','y', capacity = 3.0)
-    >>> nx.min_cut(G, 'x', 'y')
+
+    minimum_cut_value computes only the value of the
+    minimum cut:
+
+    >>> cut_value = nx.minimum_cut_value(G, 'x', 'y')
+    >>> cut_value
     3.0
+
+    You can also use alternative algorithms for computing the
+    minimum cut by using the flow_func parameter.
+
+    >>> from networkx.algorithms.flow import shortest_augmenting_path
+    >>> cut_value == nx.minimum_cut_value(G, 'x', 'y',
+    ...                                   flow_func=shortest_augmenting_path)
+    True
+
     """
+    if flow_func is None:
+        if kwargs:
+            raise nx.NetworkXError("You have to explicitly set a flow_func if"
+                                   " you need to pass parameters via kwargs.")
+        flow_func = default_flow_func
 
-    try:
-        return ford_fulkerson_flow_and_auxiliary(G, s, t, capacity=capacity)[0]
-    except nx.NetworkXUnbounded:
-        raise nx.NetworkXUnbounded(
-                "Infinite capacity path, no minimum cut.")
+    if not callable(flow_func):
+        raise nx.NetworkXError("flow_func has to be callable.")
 
+    if (kwargs.get('cutoff') is not None and
+        flow_func in (edmonds_karp, ford_fulkerson, preflow_push,
+                      shortest_augmenting_path)):
+        raise nx.NetworkXError("cutoff should not be specified.")
+
+    if flow_func is ford_fulkerson:
+        R = flow_func(G, s, t, capacity=capacity)
+    else:
+        R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
+
+    return R.graph['flow_value']
