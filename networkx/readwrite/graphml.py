@@ -362,7 +362,7 @@ class GraphMLWriter(GraphML):
         if self.prettyprint:
             self.indent(self.xml)
         document = ElementTree(self.xml)
-        document.write(stream, encoding=self.encoding)
+        document.write(stream, encoding=self.encoding, xml_declaration=True)
 
     def indent(self, elem, level=0):
         # in-place prettyprint formatter
