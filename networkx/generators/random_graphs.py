@@ -714,6 +714,61 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
         source += 1
     return G
 
+def duplication_divergence_graph(n, p, seed=None):
+    """Return a undirected graph using the Duplication-Divergence model
+
+    A graph of n nodes is created by duplicating the initial nodes and 
+    retain edges of the original nodes with a retention probability p.
+
+    Parameters
+    ----------
+    n : int
+        the number of nodes
+    p : float,
+        Probability for retaining the edge of the replicated node 
+    seed : int, optional
+        Seed for random number generator (default=None).
+
+    Returns
+    -------
+    G : Graph
+
+    Notes
+    -----
+    The initialization is a graph with with 2 connected nodes.
+
+    References
+    ----------
+    .. [1] I. Ispolatov, P. L. Krapivsky, A. Yuryev,
+       "Duplication-divergence model of protein interaction network",
+       Phys. Rev. E, 71, 061911, 2005.
+
+    """
+    if p > 1 or p < 0:
+        raise nx.NetworkXError(\
+              "NetworkXError p must be in [0,1], p=%f"%(p))
+    if seed is not None:
+        random.seed(seed)
+
+    G = nx.Graph()
+    G.name="Duplication-Divergence Graph"
+    G.add_edge(0,1) # initialize the graph with two connected nodes
+    i=2
+    while i<n:
+        # choose a random node from current graph to duplicate
+        random_node = random.choice(G.nodes()) 
+        G.add_node(i) # make the replica
+        flag=False # to indicate whether at least one edge is connected on the replica
+        for nbr in G.neighbors(random_node):
+            if random.random()<p: # link retention step
+                G.add_edge(i, nbr)
+                flag=True
+        if not flag: # delete replica if no edges retained
+            G.remove_node(i)
+        else: # successful duplication
+            i+=1
+    return G
+
 def random_lobster(n, p1, p2, seed=None):
     """Return a random lobster.
 
