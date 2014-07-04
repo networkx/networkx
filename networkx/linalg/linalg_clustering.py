@@ -75,18 +75,26 @@ def la_clustering(G, weight='weight'):
                           'http://scipy.org/')
 
     W = np.abs(nx.adjacency_matrix(G, weight=weight))
-    W = W.todense()
     W = W / W.max()
-    A = np.array(W != 0, dtype=int)
-    d_out = np.sum(A, axis=1).flatten()
-    d_in = np.sum(A, axis=0).flatten()
+    A = W != 0
+    A = A.astype(int)
+    d_out = A.sum(axis=1).flatten()
+    d_in = A.sum(axis=0).flatten()
     d_tot = np.array(d_out + d_in, dtype=float)
-    d_double = np.diag(np.dot(A, A))
+    d_double = np.dot(A, A).diagonal()
 
-    C = np.power(W, (1/3.0)) + np.power(W.T, (1/3.0))
-    C = np.diagonal(np.dot(C, C).dot(C)).copy()
+    #C = np.power(W, (1/3.0)) + np.power(W.T, (1/3.0))
+    # Since we work with sparse matrix, we have to change it a bit:
+    W_T = W.T.copy()
+
+    W.data **= (1/3.0)
+    W_T.data **= (1/3.0)
+    C = W + W_T
+
+    C = np.dot(C, C).dot(C).diagonal().copy()
     # Actual number of triangles present
-    max_triangles = 2*(d_tot*(d_tot-1)-2*d_double)
+    max_triangles = 2*(d_tot*(d_tot-1)-2*d_double).flatten()
+
     # Maximum number of triangles, the -2*d_double factor
     # accounts for the presence of double edges.
     C /= max_triangles
