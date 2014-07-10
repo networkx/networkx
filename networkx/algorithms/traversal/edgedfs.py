@@ -1,7 +1,29 @@
 import collections
+import enum
 
-FORWARD = 1
-REVERSE = 0
+class Direction(enum.Enum):
+    """
+    An enum specifying the traversal direction of a directed edge.
+
+    In this context, a directed edge from u to v can be represented as (u, v).
+    Associated with that edge is an enum value:
+
+    Direction.Forward
+        The edge was traversed from u to v.
+
+    Direction.Reverse
+        The edge was traversed from v to u.
+
+    For undirected edges, the tuple (u, v) always means that the edge was
+    traversed from u to v, and so an enum value is not necessary.
+
+    See Also
+    --------
+    edge_dfs
+
+    """
+    Forward = 1
+    Reverse = 2
 
 __all__ = ['edge_dfs']
 
@@ -17,9 +39,9 @@ def helper_funcs(G, orientation):
         # was traversed, so we add an integer representing the direction.
         def out_edges(u, **kwds):
             for edge in G.out_edges(u, **kwds):
-                yield edge + (FORWARD,)
+                yield edge + (Direction.Forward,)
             for edge in G.in_edges(u, **kwds):
-                yield edge + (REVERSE,)
+                yield edge + (Direction.Reverse,)
     else:
         # If "yield from" were an option, we could pass kwds automatically.
         out_edges = G.edges_iter
@@ -51,7 +73,7 @@ def helper_funcs(G, orientation):
         So in general, this is different from the true tail and head.
 
         """
-        if ignore_orientation and edge[-1] == REVERSE:
+        if ignore_orientation and edge[-1] == Direction.Reverse:
             tail, head = edge[1], edge[0]
         else:
             tail, head = edge[0], edge[1]
@@ -113,10 +135,17 @@ def edge_dfs(G, source=None, orientation='respect'):
     [(0, 1, 0), (1, 0, 0), (1, 0, 1), (2, 1, 0), (3, 1, 0)]
 
     >>> list(nx.edge_dfs(nx.DiGraph(edges), nodes, orientation='ignore'))
-    [(0, 1, 1), (1, 0, 1), (2, 1, 0), (3, 1, 0)]
+    [(0, 1, <Direction.Forward: 1>),
+     (1, 0, <Direction.Forward: 1>),
+     (2, 1, <Direction.Reverse: 2>),
+     (3, 1, <Direction.Reverse: 2>)]
 
     >>> list(nx.edge_dfs(nx.MultiDiGraph(edges), nodes, orientation='ignore'))
-    [(0, 1, 0, 1), (1, 0, 0, 1), (1, 0, 1, 0), (2, 1, 0, 0), (3, 1, 0, 0)]
+    [(0, 1, 0, <Direction.Forward: 1>),
+     (1, 0, 0, <Direction.Forward: 1>),
+     (1, 0, 1, <Direction.Reverse: 2>),
+     (2, 1, 0, <Direction.Reverse: 2>),
+     (3, 1, 0, <Direction.Reverse: 2>)]
 
     Notes
     -----

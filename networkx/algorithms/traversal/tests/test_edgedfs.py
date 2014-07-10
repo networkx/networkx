@@ -2,6 +2,7 @@ from nose.tools import *
 
 import networkx as nx
 edge_dfs = nx.algorithms.edge_dfs
+Direction = nx.algorithms.Direction
 
 class TestEdgeDFS(object):
     def setUp(self):
@@ -40,13 +41,16 @@ class TestEdgeDFS(object):
     def test_digraph_ignore(self):
         G = nx.DiGraph(self.edges)
         x = list(edge_dfs(G, self.nodes, orientation='ignore'))
-        x_ = [(0, 1, 1), (1, 0, 1), (2, 1, 0), (3, 1, 0)]
+        x_ = [(0, 1, Direction.Forward), (1, 0, Direction.Forward),
+              (2, 1, Direction.Reverse), (3, 1, Direction.Reverse)]
         assert_equal(x, x_)
 
     def test_multidigraph_ignore(self):
         G = nx.MultiDiGraph(self.edges)
         x = list(edge_dfs(G, self.nodes, orientation='ignore'))
-        x_ = [(0, 1, 0, 1), (1, 0, 0, 1), (1, 0, 1, 0), (2, 1, 0, 0), (3, 1, 0, 0)]
+        x_ = [(0, 1, 0, Direction.Forward), (1, 0, 0, Direction.Forward),
+              (1, 0, 1, Direction.Reverse), (2, 1, 0, Direction.Reverse),
+              (3, 1, 0, Direction.Reverse)]
         assert_equal(x, x_)
 
 
