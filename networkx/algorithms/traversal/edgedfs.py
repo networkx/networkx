@@ -34,12 +34,18 @@ def helper_funcs(G, orientation):
 
     """
     ignore_orientation = G.is_directed() and orientation == 'ignore'
+    reverse_orientation = G.is_directed() and orientation == 'reverse'
+
     if ignore_orientation:
         # When we ignore the orientation, we still need to know how the edge
         # was traversed, so we add an integer representing the direction.
         def out_edges(u, **kwds):
             for edge in G.out_edges(u, **kwds):
                 yield edge + (Direction.Forward,)
+            for edge in G.in_edges(u, **kwds):
+                yield edge + (Direction.Reverse,)
+    elif reverse_orientation:
+        def out_edges(u, **kwds):
             for edge in G.in_edges(u, **kwds):
                 yield edge + (Direction.Reverse,)
     else:
@@ -50,7 +56,7 @@ def helper_funcs(G, orientation):
     # edges had been visited. Since that is not available, we will form a
     # unique identifier from the edge and key (if present). If the graph
     # is undirected, then the head and tail need to be stored as a frozenset.
-    if ignore_orientation:
+    if ignore_orientation or reverse_orientation:
         # edge is a 4-tuple: (u, v, key, direction)
         # u and v always represent the true tail and head of the edge.
         def key(edge):
@@ -73,7 +79,8 @@ def helper_funcs(G, orientation):
         So in general, this is different from the true tail and head.
 
         """
-        if ignore_orientation and edge[-1] == Direction.Reverse:
+        if (ignore_orientation or reverse_orientation) \
+        and edge[-1] == Direction.Reverse:
             tail, head = edge[1], edge[0]
         else:
             tail, head = edge[0], edge[1]
@@ -81,7 +88,7 @@ def helper_funcs(G, orientation):
 
     return out_edges, key, traversed_tailhead
 
-def edge_dfs(G, source=None, orientation='respect'):
+def edge_dfs(G, source=None, orientation='original'):
     """
     A directed, depth-first traversal of edges in G, beginning at `source`.
 
@@ -95,12 +102,14 @@ def edge_dfs(G, source=None, orientation='respect'):
         is chosen arbitrarily and repeatedly until all edges from each node in
         the graph are searched.
 
-    orientation : 'respect' | 'ignore'
-        For directed graphs and directed multigraphs, the orientation of the
-        edges can be respected or ignored.  When set to 'ignore', then each
-        directed edge is treated as a single undirected edge. For undirected
-        graphs and undirected multigraphs, the value of this parameter is not
-        used by the algorithm.
+    orientation : 'original' | 'reverse' | 'ignore'
+        For directed graphs and directed multigraphs, edge traversals need not
+        respect the original orientation of the edges. When set to 'reverse',
+        then every edge will be traversed in the reverse direction. When set to
+        'ignore', then each directed edge is treated as a single undirected
+        edge that can be traversed in either direction. For undirected graphs
+        and undirected multigraphs, this parameter is meaningless and is not
+        consulted by the algorithm.
 
     Yields
     ------
@@ -110,11 +119,11 @@ def edge_dfs(G, source=None, orientation='respect'):
         tail and head of the edge as determined by the traversal. For
         multigraphs, `edge` is of the form (u, v, key), where `key` is the key
         of the edge. When the graph is directed, then `u` and `v` are always in
-        the order of the actual directed edge. If orientation is 'ignore', then
-        `edge` takes the form (u, v, key, direction) where direction indicates
-        if the edge was followed in the forward (tail to head) or reverse
-        (head to tail) direction. When the direction is forward, the value of
-        `direction` is 1, and when the direction in reverse, the value is 0.
+        the order of the actual directed edge. If orientation is 'reverse' or
+        'ignore', then `edge` takes the form (u, v, key, direction) where
+        direction is an enum indicating if the edge was traversed in the
+        forward (tail to head) or reverse (head to tail) direction. The enum
+        is `Direction.Forward` or `Direction.Reverse`.
 
     Examples
     --------

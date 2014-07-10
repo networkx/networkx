@@ -26,6 +26,13 @@ class TestEdgeDFS(object):
         x_= [(0, 1), (1, 0), (2, 1), (3, 1)]
         assert_equal(x, x_)
 
+    def test_digraph_rev(self):
+        G = nx.DiGraph(self.edges)
+        x = list(edge_dfs(G, self.nodes, orientation='reverse'))
+        x_= [(1, 0, Direction.Reverse), (0, 1, Direction.Reverse),
+             (2, 1, Direction.Reverse), (3, 1, Direction.Reverse)]
+        assert_equal(x, x_)
+
     def test_multigraph(self):
         G = nx.MultiGraph(self.edges)
         x = list(edge_dfs(G, self.nodes))
@@ -36,6 +43,16 @@ class TestEdgeDFS(object):
         G = nx.MultiDiGraph(self.edges)
         x = list(edge_dfs(G, self.nodes))
         x_ = [(0, 1, 0), (1, 0, 0), (1, 0, 1), (2, 1, 0), (3, 1, 0)]
+        assert_equal(x, x_)
+
+    def test_multidigraph_rev(self):
+        G = nx.MultiDiGraph(self.edges)
+        x = list(edge_dfs(G, self.nodes, orientation='reverse'))
+        x_ = [(1, 0, 0, Direction.Reverse),
+              (1, 0, 1, Direction.Reverse),
+              (0, 1, 0, Direction.Reverse),
+              (2, 1, 0, Direction.Reverse),
+              (3, 1, 0, Direction.Reverse)]
         assert_equal(x, x_)
 
     def test_digraph_ignore(self):
