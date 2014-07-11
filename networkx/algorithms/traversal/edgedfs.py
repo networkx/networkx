@@ -144,17 +144,10 @@ def edge_dfs(G, source=None, orientation='original'):
     [(0, 1, 0), (1, 0, 0), (1, 0, 1), (2, 1, 0), (3, 1, 0)]
 
     >>> list(nx.edge_dfs(nx.DiGraph(edges), nodes, orientation='ignore'))
-    [(0, 1, <Direction.Forward: 1>),
-     (1, 0, <Direction.Forward: 1>),
-     (2, 1, <Direction.Reverse: 2>),
-     (3, 1, <Direction.Reverse: 2>)]
+    [(0, 1, <Direction.Forward: 1>), (1, 0, <Direction.Forward: 1>), (2, 1, <Direction.Reverse: 2>), (3, 1, <Direction.Reverse: 2>)]
 
     >>> list(nx.edge_dfs(nx.MultiDiGraph(edges), nodes, orientation='ignore'))
-    [(0, 1, 0, <Direction.Forward: 1>),
-     (1, 0, 0, <Direction.Forward: 1>),
-     (1, 0, 1, <Direction.Reverse: 2>),
-     (2, 1, 0, <Direction.Reverse: 2>),
-     (3, 1, 0, <Direction.Reverse: 2>)]
+    [(0, 1, 0, <Direction.Forward: 1>), (1, 0, 0, <Direction.Forward: 1>), (1, 0, 1, <Direction.Reverse: 2>), (2, 1, 0, <Direction.Reverse: 2>), (3, 1, 0, <Direction.Reverse: 2>)]
 
     Notes
     -----
