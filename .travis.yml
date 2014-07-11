@@ -54,6 +54,11 @@ before_install:
       tar xf decorator-3.4.0.tar.gz;
       popd;
       cp /tmp/decorator-3.4.0/src/decorator.py IronPython-2.7.5b2/Lib;
+      curl -L -o /tmp/enum34-1.0.tar.gz https://pypi.python.org/packages/source/e/enum34/enum34-1.0.tar.gz;
+      pushd /tmp;
+      tar xf enum34-1.0.tar.gz;
+      popd;
+      cp /tmp/enum34-1.0/enum/enum.py IronPython-2.7.5b2/Lib;
       curl -L -o /tmp/nose-1.3.3.tar.gz https://pypi.python.org/packages/source/n/nose/nose-1.3.3.tar.gz;
       pushd /tmp;
       tar xf nose-1.3.3.tar.gz;
