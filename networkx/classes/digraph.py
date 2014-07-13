@@ -319,7 +319,12 @@ class DiGraph(Graph):
         """
         for n in nodes:
             try:
-                newnode=n not in self.succ
+                if n not in self.succ:
+                    self.succ[n] = {}
+                    self.pred[n] = {}
+                    self.node[n] = attr.copy()
+                else:
+                    self.node[n].update(attr)
             except TypeError:
                 nn,ndict = n
                 if nn not in self.succ:
@@ -332,13 +337,6 @@ class DiGraph(Graph):
                     olddict = self.node[nn]
                     olddict.update(attr)
                     olddict.update(ndict)
-                continue
-            if newnode:
-                self.succ[n] = {}
-                self.pred[n] = {}
-                self.node[n] = attr.copy()
-            else:
-                self.node[n].update(attr)
 
     def remove_node(self, n):
         """Remove node n.
@@ -525,7 +523,7 @@ class DiGraph(Graph):
         will be updated when each duplicate edge is added.
 
         Edge attributes specified in edges as a tuple take precedence
-        over attributes specified generally.        
+        over attributes specified generally.
 
         Examples
         --------
@@ -803,7 +801,7 @@ class DiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -856,7 +854,7 @@ class DiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -905,7 +903,7 @@ class DiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -954,7 +952,7 @@ class DiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -996,7 +994,7 @@ class DiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -1099,8 +1097,8 @@ class DiGraph(Graph):
         Parameters
         ----------
         reciprocal : bool (optional)
-          If True only keep edges that appear in both directions 
-          in the original digraph. 
+          If True only keep edges that appear in both directions
+          in the original digraph.
 
         Returns
         -------
@@ -1136,7 +1134,7 @@ class DiGraph(Graph):
         if reciprocal is True:
             H.add_edges_from( (u,v,deepcopy(d))
                               for u,nbrs in self.adjacency_iter()
-                              for v,d in nbrs.items() 
+                              for v,d in nbrs.items()
                               if v in self.pred[u])
         else:
             H.add_edges_from( (u,v,deepcopy(d))
@@ -1163,7 +1161,7 @@ class DiGraph(Graph):
         if copy:
             H = self.__class__(name="Reverse of (%s)"%self.name)
             H.add_nodes_from(self)
-            H.add_edges_from( (v,u,deepcopy(d)) for u,v,d 
+            H.add_edges_from( (v,u,deepcopy(d)) for u,v,d
                               in self.edges(data=True) )
             H.graph=deepcopy(self.graph)
             H.node=deepcopy(self.node)

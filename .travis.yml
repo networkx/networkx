@@ -47,18 +47,21 @@ before_install:
     else
       sudo apt-get install -qq mono-devel;
       pushd ..;
-      curl -L -o /tmp/IronPython-2.7.5b2.zip "http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=ironpython&DownloadId=815751&FileTime=130455203824130000&Build=20919";
-      unzip /tmp/IronPython-2.7.5b2.zip;
-      curl -L -o /tmp/decorator-3.4.0.tar.gz https://pypi.python.org/packages/source/d/decorator/decorator-3.4.0.tar.gz;
-      pushd /tmp;
+      curl -L -o IronPython-2.7.5b2.zip "http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=ironpython&DownloadId=815751&FileTime=130455203824130000&Build=20919";
+      unzip IronPython-2.7.5b2.zip;
+
+      curl -L -o decorator-3.4.0.tar.gz https://pypi.python.org/packages/source/d/decorator/decorator-3.4.0.tar.gz;
       tar xf decorator-3.4.0.tar.gz;
-      popd;
-      cp /tmp/decorator-3.4.0/src/decorator.py IronPython-2.7.5b2/Lib;
-      curl -L -o /tmp/nose-1.3.3.tar.gz https://pypi.python.org/packages/source/n/nose/nose-1.3.3.tar.gz;
-      pushd /tmp;
+      cp decorator-3.4.0/src/decorator.py IronPython-2.7.5b2/Lib;
+
+      curl -L -o enum34-1.0.tar.gz https://pypi.python.org/packages/source/e/enum34/enum34-1.0.tar.gz;
+      tar xf enum34-1.0.tar.gz;
+      cp enum34-1.0/enum/enum.py IronPython-2.7.5b2/Lib;
+
+      curl -L -o nose-1.3.3.tar.gz https://pypi.python.org/packages/source/n/nose/nose-1.3.3.tar.gz;
       tar xf nose-1.3.3.tar.gz;
-      popd;
-      cp -R /tmp/nose-1.3.3/nose IronPython-2.7.5b2/Lib;
+      cp -R nose-1.3.3/nose IronPython-2.7.5b2/Lib;
+
       popd;
     fi
 

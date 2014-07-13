@@ -424,7 +424,11 @@ class Graph(object):
         """
         for n in nodes:
             try:
-                newnode=n not in self.node
+                if n not in self.node:
+                    self.adj[n] = {}
+                    self.node[n] = attr.copy()
+                else:
+                    self.node[n].update(attr)
             except TypeError:
                 nn,ndict = n
                 if nn not in self.node:
@@ -436,12 +440,6 @@ class Graph(object):
                     olddict = self.node[nn]
                     olddict.update(attr)
                     olddict.update(ndict)
-                continue
-            if newnode:
-                self.adj[n] = {}
-                self.node[n] = attr.copy()
-            else:
-                self.node[n].update(attr)
 
     def remove_node(self,n):
         """Remove node n.
@@ -515,7 +513,7 @@ class Graph(object):
         for n in nodes:
             try:
                 del self.node[n]
-                for u in list(adj[n].keys()):   # keys() handles self-loops 
+                for u in list(adj[n].keys()):   # keys() handles self-loops
                     del adj[u][n]         #(allows mutation of dict in loop)
                 del adj[n]
             except KeyError:
@@ -814,8 +812,8 @@ class Graph(object):
 
         Notes
         -----
-        Adding the same edge twice for Graph/DiGraph simply updates 
-        the edge data.  For MultiGraph/MultiDiGraph, duplicate edges 
+        Adding the same edge twice for Graph/DiGraph simply updates
+        the edge data.  For MultiGraph/MultiDiGraph, duplicate edges
         are stored.
 
         Examples
@@ -1223,7 +1221,7 @@ class Graph(object):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -1262,7 +1260,7 @@ class Graph(object):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -1289,7 +1287,7 @@ class Graph(object):
             nodes_nbrs = self.adj.items()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
-  
+
         if weight is None:
             for n,nbrs in nodes_nbrs:
                 yield (n,len(nbrs)+(n in nbrs)) # return tuple (n,degree)
@@ -1398,8 +1396,8 @@ class Graph(object):
         G=DiGraph()
         G.name=self.name
         G.add_nodes_from(self)
-        G.add_edges_from( ((u,v,deepcopy(data)) 
-                           for u,nbrs in self.adjacency_iter() 
+        G.add_edges_from( ((u,v,deepcopy(data))
+                           for u,nbrs in self.adjacency_iter()
                            for v,data in nbrs.items()) )
         G.graph=deepcopy(self.graph)
         G.node=deepcopy(self.node)
@@ -1597,7 +1595,7 @@ class Graph(object):
         Parameters
         ----------
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
 
         Returns
@@ -1813,7 +1811,7 @@ class Graph(object):
                     elif 'hashable' in message:
                         raise NetworkXError(\
                             "Node %s in the sequence nbunch is not a valid node."%n)
-                    else: 
-                        raise 
+                    else:
+                        raise
             bunch=bunch_iter(nbunch,self.adj)
         return bunch
