@@ -112,11 +112,10 @@ def kosaraju_strongly_connected_components(G,source=None):
     -------
     comp : generator of lists
        A list of nodes for each component of G.
-       The list is ordered from largest connected component to smallest.
 
     Raises
     ------
-    NetworkXNotImplemented: If G is undirected
+    NetworkXNotImplemented: If G is undirected.
 
     See Also
     --------
