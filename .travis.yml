@@ -19,6 +19,8 @@ matrix:
       env: PYTHON_VM=cpython OPTIONAL_DEPS=source
     - python: "2.7"
       env: PYTHON_VM=ipy OPTIONAL_DEPS=no
+    - python: "2.7"
+      env: PYTHON_VM=ipy OPTIONAL_DEPS=source
 
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
@@ -85,6 +87,15 @@ install:
   - if [ "${OPTIONAL_DEPS}" == "source" ]; then
       sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran;
       pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython;
+    fi
+
+  # Install lxml.
+  - if [ "${OPTIONAL_DEPS}" == "source" ]; then
+     if [ "${PYTHON_VM}" == "ipy" ]; then
+       sudo apt-get install python-lxml;
+     else
+       sudo apt-get install python3-lxml;
+     fi
     fi
 
   # Install stuff that depends on Cython.
