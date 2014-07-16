@@ -1,5 +1,4 @@
 import collections
-import enum
 
 FORWARD = 'forward'
 REVERSE = 'reverse'
