@@ -112,10 +112,6 @@ package_data     = {
     }
 
 install_requires = ['decorator>=3.4.0']
-try:
-    import enum
-except ImportError:
-    install_requires.append('enum34')
 
 if __name__ == "__main__":
 

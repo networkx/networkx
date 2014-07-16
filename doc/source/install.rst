@@ -112,12 +112,6 @@ the Enthought Python distribution "`Canopy <https://www.enthought.com/products/c
 
 There are several other distributions that contain the key packages you need for scientific computing.  See http://scipy.org/install.html for a list.
 
-Python Packages
----------------
-For Python versions less than 3.4, NetworkX requires the `enum34` package.
-This package will be automatically installed during installation, but if
-errors are encountered, try installing it separately first.
-
 
 Optional packages
 =================
