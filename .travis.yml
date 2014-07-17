@@ -15,8 +15,6 @@ matrix:
   include:
     - python: "pypy"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-    - python: "pypy"
-      env: PYTHON_VM=pypy OPTIONAL_DEPS=source
     - python: "3.4"
       env: PYTHON_VM=cpython OPTIONAL_DEPS=source
     - python: "2.7"
