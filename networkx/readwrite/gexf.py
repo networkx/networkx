@@ -579,7 +579,7 @@ class GEXFWriter(GEXF):
         if self.prettyprint:
             self.indent(self.xml)
         document = ElementTree(self.xml)
-        document.write(fh, encoding=self.encoding)
+        document.write(fh, encoding=self.encoding, xml_declaration=True)
 
 
     def indent(self, elem, level=0):
