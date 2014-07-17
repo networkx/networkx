@@ -15,6 +15,8 @@ matrix:
   include:
     - python: "pypy"
       env: PYTHON_VM=pypy OPTIONAL_DEPS=no
+    - python: "pypy"
+      env: PYTHON_VM=pypy OPTIONAL_DEPS=source
     - python: "3.4"
       env: PYTHON_VM=cpython OPTIONAL_DEPS=source
     - python: "2.7"
@@ -24,7 +26,6 @@ matrix:
 
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - env: PYTHON_VM=cpython OPTIONAL_DEPS=source
 
 env:
   global:
@@ -85,17 +86,8 @@ install:
 
   # Try to install latest and greatest from source.
   - if [ "${OPTIONAL_DEPS}" == "source" ]; then
-      sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran;
-      pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython;
-    fi
-
-  # Install lxml.
-  - if [ "${OPTIONAL_DEPS}" == "source" ] && [ "${PYTHON_VM}" == "cpython" ]; then
-     if [ "${TRAVIS_PYTHON_VERSION}" =~ 2\.. ]; then
-       sudo apt-get install python-lxml;
-     else
-       sudo apt-get install python3-lxml;
-     fi
+      sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran libxml2-dev libxslt1-dev;
+      pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython lxml;
     fi
 
   # Install stuff that depends on Cython.
