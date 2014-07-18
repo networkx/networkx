@@ -89,6 +89,9 @@ def write_graphml(G, path, encoding='utf-8',prettyprint=True):
     writer.dump(path)
 
 
+write_graphml_etree = write_graphml
+
+
 @open_file(1, mode='wb')
 def write_graphml_lxml(G, path, encoding='utf-8', prettyprint=True):
     """Write G in GraphML XML format to path
