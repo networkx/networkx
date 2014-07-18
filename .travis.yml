@@ -146,7 +146,7 @@ after_success:
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       cp .coverage $TRAVIS_BUILD_DIR;
       cd $TRAVIS_BUILD_DIR;
-      sed -i "s|$VIRTUAL_ENV/lib/python.*/site-packages/networkx/|$TRAVIS_BUILD_DIR/networkx/|g" .coverage;
+      python fixcoverage.py "$VIRTUAL_ENV/lib/python.*/site-packages/networkx/" "$TRAVIS_BUILD_DIR/networkx/";
       if [[ "${TRAVIS_PYTHON_VERSION}" =~ 2\.7|3\.4 ]]; then
         coveralls;
       fi;
