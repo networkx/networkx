@@ -132,15 +132,21 @@ script:
     fi
 
 after_success:
-  # We must run coveralls from the git repo. But we ran tests from the
-  # installed directory. The .coverage file looks like it contains absolute
-  # paths, but coveralls does not seem to care.
+  # `coveralls` needs to be run from the git repository, and it requires
+  # the .coverage file that was generated during the testing phase. The
+  # .coverage file stores absolute paths to the modules, and since we ran
+  # tests from the installed directory, the paths do not point to files in
+  # the git repository. Although this does not affect reported statistics,
+  # it does prevent coveralls from providing more detailed information on
+  # each file. So the paths in .coverage must be modified to match the
+  # repository paths. This is what `fixcoverage.py` does.
   #
   # Report coverage for 2.7 and 3.4 only.
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       cp .coverage $TRAVIS_BUILD_DIR;
       cd $TRAVIS_BUILD_DIR;
       if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7pip|3\.4source ]]; then
+        python fixcoverage.py "$VIRTUAL_ENV/lib/python.*/site-packages/networkx/" "$TRAVIS_BUILD_DIR/networkx/";
         coveralls;
       fi;
     fi
