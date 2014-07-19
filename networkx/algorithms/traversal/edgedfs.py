@@ -141,7 +141,7 @@ def edge_dfs(G, source=None, orientation='original'):
     familiar depth-first traversal of nodes, as provided by
     :func:`networkx.algorithms.traversal.depth_first_search.dfs_edges`, in
     that it does not stop once every node has been visited. In a directed graph
-    with edges (0, 1), (1, 2), and (2, 1), the edge (2, 1) would not be visited
+    with edges [(0, 1), (1, 2), (2, 1)], the edge (2, 1) would not be visited
     if not for the functionality provided by this function.
 
     See Also
