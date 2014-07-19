@@ -24,7 +24,7 @@ def helper_funcs(G, orientation):
 
     if ignore_orientation:
         # When we ignore the orientation, we still need to know how the edge
-        # was traversed, so we add an integer representing the direction.
+        # was traversed, so we add an object representing the direction.
         def out_edges(u, **kwds):
             for edge in G.out_edges(u, **kwds):
                 yield edge + (FORWARD,)
@@ -63,10 +63,10 @@ def helper_funcs(G, orientation):
         Returns the tail and head of an edge, as it was traversed.
 
         So in general, this is different from the true tail and head.
+        (Also, undirected edges have no true tail or head.)
 
         """
-        if (ignore_orientation or reverse_orientation) \
-        and edge[-1] == REVERSE:
+        if (ignore_orientation or reverse_orientation) and edge[-1] == REVERSE:
             tail, head = edge[1], edge[0]
         else:
             tail, head = edge[0], edge[1]
@@ -174,7 +174,7 @@ def edge_dfs(G, source=None, orientation='original'):
                 visited_nodes.add(current_node)
 
             try:
-                edge = edges[current_node][-1]
+                edge = edges[current_node].pop()
             except IndexError:
                 # No more edges from the current node.
                 stack.pop()
@@ -182,9 +182,7 @@ def edge_dfs(G, source=None, orientation='original'):
                 edge_key = key(edge)
                 if edge_key not in visited_edges:
                     visited_edges.add(edge_key)
-                    # Mark the traversed "to" node as to-be-explored. Note,
-                    # this does not correspond to the true "to" node.
-                    stack.append(edge[1])
+                    # Mark the traversed "to" node as to-be-explored.
+                    stack.append(tailhead(edge)[1])
                     yield edge
 
-                edges[current_node].pop()
