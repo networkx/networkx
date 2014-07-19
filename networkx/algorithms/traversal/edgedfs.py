@@ -1,3 +1,11 @@
+"""
+===========================
+Depth First Search on Edges
+===========================
+
+Algorithms for a depth-first traversal of edges in a graph.
+
+"""
 import collections
 
 FORWARD = 'forward'
@@ -68,7 +76,7 @@ def helper_funcs(G, orientation):
 
 def edge_dfs(G, source=None, orientation='original'):
     """
-    A directed, depth-first traversal of edges in G, beginning at `source`.
+    A directed, depth-first traversal of edges in ``G``, beginning at ``source``.
 
     Parameters
     ----------
@@ -76,7 +84,7 @@ def edge_dfs(G, source=None, orientation='original'):
         A directed/undirected graph/multigraph.
 
     source : node, list of nodes
-        The node from which the traversal begins. If `None`, then a source
+        The node from which the traversal begins. If ``None``, then a source
         is chosen arbitrarily and repeatedly until all edges from each node in
         the graph are searched.
 
@@ -93,15 +101,15 @@ def edge_dfs(G, source=None, orientation='original'):
     ------
     edge : directed edge
         A directed edge indicating the path taken by the depth-first traversal.
-        For graphs, `edge` is of the form (u, v) where `u` and `v` are the
-        tail and head of the edge as determined by the traversal. For
-        multigraphs, `edge` is of the form (u, v, key), where `key` is the key
-        of the edge. When the graph is directed, then `u` and `v` are always in
-        the order of the actual directed edge. If orientation is 'reverse' or
-        'ignore', then `edge` takes the form (u, v, key, direction) where
-        direction is a string, 'forward' or 'reverse', that indicates if the
-        edge was traversed in the forward (tail to head) or reverse (head to
-        tail) direction, respectively.
+        For graphs, ``edge`` is of the form ``(u, v)`` where ``u`` and ``v``
+        are the tail and head of the edge as determined by the traversal. For
+        multigraphs, ``edge`` is of the form ``(u, v, key)``, where `key` is
+        the key of the edge. When the graph is directed, then ``u`` and ``v``
+        are always in the order of the actual directed edge. If orientation is
+        'reverse' or 'ignore', then ``edge`` takes the form
+        ``(u, v, key, direction)`` where direction is a string, 'forward' or
+        'reverse', that indicates if the edge was traversed in the forward
+        (tail to head) or reverse (head to tail) direction, respectively.
 
     Examples
     --------
@@ -130,14 +138,15 @@ def edge_dfs(G, source=None, orientation='original'):
     Notes
     -----
     The goal of this function is to visit edges. It differs from the more
-    familiar depth-first traversal of nodes, as provided by `dfs_edges`, in
+    familiar depth-first traversal of nodes, as provided by
+    :func:`networkx.algorithms.traversal.depth_first_search.dfs_edges`, in
     that it does not stop once every node has been visited. In a directed graph
-    with edges (0,1), (1,2), and (2,1), the edge (2,1) would not be
-    visited by `dfs_edges`.
+    with edges (0, 1), (1, 2), and (2, 1), the edge (2, 1) would not be visited
+    if not for the functionality provided by this function.
 
     See Also
     --------
-    `dfs_edges`
+    dfs_edges
 
     """
     nodes = list(G.nbunch_iter(source))
