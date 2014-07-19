@@ -358,7 +358,7 @@ def find_cycle(G, source=None, orientation='original'):
         the form (u, v, key, direction) where direction indicates if the edge
         was followed in the forward (tail to head) or reverse (head to tail)
         direction. When the direction is forward, the value of ``direction``
-        is 'forward'. When the direction is reverse, the value of ``direction''
+        is 'forward'. When the direction is reverse, the value of ``direction``
         is 'reverse'.
 
     Example
