@@ -322,9 +322,9 @@ def recursive_simple_cycles(G):
             dummy=circuit(startnode, startnode, component)
     return result
 
-def find_cycle(G, source=None, orientation='respect'):
+def find_cycle(G, source=None, orientation='original'):
     """
-    Returns the edges of a cycle found via a depth-first traversal.
+    Returns the edges of a cycle found via a directed, depth-first traversal.
 
     Parameters
     ----------
@@ -332,40 +332,46 @@ def find_cycle(G, source=None, orientation='respect'):
         A directed/undirected graph/multigraph.
 
     source : node, list of nodes
-        The node from which the traversal begins. If `None`, then a source
+        The node from which the traversal begins. If ``None``, then a source
         is chosen arbitrarily and repeatedly until all edges from each node in
         the graph are searched.
 
-    orientation : 'respect' | 'ignore'
-        For directed graphs and multigraphs, the orientation of the edges can
-        be respected or ignored.  When set to 'ignore', then each directed
-        edge is treated as a single undirected edge. For undirected graphs and
-        multigraphs, the value of this parameter is not considered.
+    orientation : 'original' | respect' | 'ignore'
+        For directed graphs and directed multigraphs, edge traversals need not
+        respect the original orientation of the edges. When set to 'reverse',
+        then every edge will be traversed in the reverse direction. When set to
+        'ignore', then each directed edge is treated as a single undirected
+        edge that can be traversed in either direction. For undirected graphs
+        and undirected multigraphs, this parameter is meaningless and is not
+        consulted by the algorithm.
 
     Returns
     ------
     edges : directed edges
         A list of directed edges indicating the path taken for the loop. If
-        no cycle is found, then `edges` will be an empty list. For graphs, an
-        edge is of the form (u, v) where `u` and `v` are the tail and head of
-        the edge as determined by the traversal. For multigraphs, an edge is of
-        the form (u, v, key), where `key` is the key of the edge. When the
-        graph is directed, then `u` and `v` are always in the order of the
-        actual directed edge. If orientation is 'ignore', then  an edge takes
+        no cycle is found, then ``edges`` will be an empty list. For graphs, an
+        edge is of the form (u, v) where ``u`` and ``v`` are the tail and head
+        of the edge as determined by the traversal. For multigraphs, an edge is
+        of the form (u, v, key), where ``key`` is the key of the edge. When the
+        graph is directed, then ``u`` and ``v`` are always in the order of the
+        actual directed edge. If orientation is 'ignore', then an edge takes
         the form (u, v, key, direction) where direction indicates if the edge
         was followed in the forward (tail to head) or reverse (head to tail)
-        direction. When the direction is forward, the value of `direction`
-        is 1, and when the direction in reverse, the value is 0.
+        direction. When the direction is forward, the value of ``direction``
+        is 'forward'. When the direction is reverse, the value of ``direction''
+        is 'reverse'.
 
     Example
     -------
     In this example, we construct a DAG and find, in the first call, that there
-    are no directed  cycles. In the second call, we ignore edge orientations
-    and find that there is an undirected cycle.
+    are no directed cycles. In the second call, we ignore edge orientations
+    and find that there is an undirected cycle. Note that the second call finds
+    a directed cycle while effectively traversing an undirected graph, and so,
+    we found an "undirected cycle".
 
     >>> import networkx as nx
     >>> G = nx.DiGraph([(0,1), (0,2), (1,2)])
-    >>> list(find_cycle(G, orientation='respect'))
+    >>> list(find_cycle(G, orientation='original'))
     []
     >>> list(find_cycle(G, orientation='ignore'))
     [(0, 1, 1), (1, 2, 1), (0, 2, 0)]
