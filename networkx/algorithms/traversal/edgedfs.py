@@ -6,7 +6,6 @@ Depth First Search on Edges
 Algorithms for a depth-first traversal of edges in a graph.
 
 """
-import collections
 
 FORWARD = 'forward'
 REVERSE = 'reverse'
@@ -161,21 +160,19 @@ def edge_dfs(G, source=None, orientation='original'):
 
     visited_edges = set()
     visited_nodes = set()
-    edges = collections.defaultdict(list)
+    edges = {}
 
     for start_node in nodes:
         stack = [start_node]
         while stack:
             current_node = stack[-1]
             if current_node not in visited_nodes:
-                edges[current_node].extend(out_edges(current_node, **kwds))
-                # Reverse so we visit in added order in case of OrderedDicts
-                edges[current_node].reverse()
+                edges[current_node] = out_edges(current_node, **kwds)
                 visited_nodes.add(current_node)
 
             try:
-                edge = edges[current_node].pop()
-            except IndexError:
+                edge = next(edges[current_node])
+            except StopIteration:
                 # No more edges from the current node.
                 stack.pop()
             else:
