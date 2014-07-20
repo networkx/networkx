@@ -1,8 +1,9 @@
 *********************************
-Version 2.0 notes and API changes
+Version 2.0 Notes and API Changes
 *********************************
 
-This page reflects API changes from NetworkX 1.9 to NetworkX 2.0.
+This page includes more detailed release information and API changes from
+NetworkX 1.9 to NetworkX 2.0.
 
 Please send comments and questions to the networkx-discuss mailing list:
 <http://groups.google.com/group/networkx-discuss>.
@@ -20,6 +21,13 @@ New functionalities
   graph coloring algorithms. Initially, a :samp:`greedy_color` function is
   provided for coloring graphs using various greedy heuristics.
 
+* [`#1193 <https://github.com/networkx/networkx/pull/1193>`_]
+  A new generator :samp:`edge_dfs`, added to :samp:`networkx.algorithms.traversal`,
+  implements a depth-first traversal of the edges in a graph. This complements
+  functionality provided by a depth-first traversal of the nodes in a graph.
+  For multigraphs, it allows the user to know precisely which edges were
+  followed in a traversal. All NetworkX graph types are supported. A traversal
+  can also reverse edge orientations or ignore them.
 
 Miscellaneous changes
 ---------------------
