@@ -336,7 +336,7 @@ def find_cycle(G, source=None, orientation='original'):
         is chosen arbitrarily and repeatedly until all edges from each node in
         the graph are searched.
 
-    orientation : 'original' | respect' | 'ignore'
+    orientation : 'original' | 'reverse' | 'ignore'
         For directed graphs and directed multigraphs, edge traversals need not
         respect the original orientation of the edges. When set to 'reverse',
         then every edge will be traversed in the reverse direction. When set to

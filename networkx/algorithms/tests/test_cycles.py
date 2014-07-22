@@ -4,6 +4,8 @@ import networkx
 import networkx as nx
 
 from networkx.algorithms import find_cycle
+FORWARD = nx.algorithms.edgedfs.FORWARD
+REVERSE = nx.algorithms.edgedfs.REVERSE
 
 class TestCycles:
     def setUp(self):
@@ -140,6 +142,10 @@ class TestCycles:
         for rc in rcc:
             assert_true(any(self.is_cyclic_permutation(rc,c) for c in cc))
 
+# These tests might fail with hash randomization since they depend on
+# edge_dfs. For more information, see the comments in:
+#    networkx/algorithms/traversal/tests/test_edgedfs.py
+
 class TestFindCycle(object):
     def setUp(self):
         self.nodes = [0, 1, 2, 3]
@@ -175,13 +181,13 @@ class TestFindCycle(object):
     def test_digraph_ignore(self):
         G = nx.DiGraph(self.edges)
         x = list(find_cycle(G, self.nodes, orientation='ignore'))
-        x_ = [(0, 1, 1), (1, 0, 1)]
+        x_ = [(0, 1, FORWARD), (1, 0, FORWARD)]
         assert_equal(x, x_)
 
     def test_multidigraph_ignore(self):
         G = nx.MultiDiGraph(self.edges)
         x = list(find_cycle(G, self.nodes, orientation='ignore'))
-        x_ = [(0, 1, 0, 1), (1, 0, 0, 1)] # or (1, 0, 1, 1)
+        x_ = [(0, 1, 0, FORWARD), (1, 0, 0, FORWARD)] # or (1, 0, 1, 1)
         assert_equal(x[0], x_[0])
         assert_equal(x[1][:2], x_[1][:2])
         assert_equal(x[1][3], x_[1][3])
@@ -190,7 +196,7 @@ class TestFindCycle(object):
         # Loop traversed an edge while ignoring its orientation.
         G = nx.MultiDiGraph([(0,1), (1,2), (1,2)])
         x = list(find_cycle(G, [0,1,2], orientation='ignore'))
-        x_ = [(1,2,0,1), (1,2,1,0)]
+        x_ = [(1,2,0,FORWARD), (1,2,1,REVERSE)]
         assert_equal(x, x_)
 
     def test_multidigraph_ignore2(self):
@@ -208,4 +214,4 @@ class TestFindCycle(object):
         x = list(find_cycle(G, orientation='original'))
         assert_equal(x, [])
         x = list(find_cycle(G, orientation='ignore'))
-        assert_equal(x, [(0,1,1), (1,2,1), (0,2,0)])
+        assert_equal(x, [(0,1,FORWARD), (1,2,FORWARD), (0,2,REVERSE)])
