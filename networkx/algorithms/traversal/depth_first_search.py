@@ -3,7 +3,7 @@
 Depth-first search
 ==================
 
-Basic algorithms for depth-first searching.
+Basic algorithms for depth-first searching the nodes of a graph.
 
 Based on http://www.ics.uci.edu/~eppstein/PADS/DFS.py
 by D. Eppstein, July 2004.

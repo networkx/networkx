@@ -3,7 +3,7 @@
 Breadth-first search
 ====================
 
-Basic algorithms for breadth-first searching.
+Basic algorithms for breadth-first searching the nodes of a graph.
 """
 import networkx as nx
 from collections import defaultdict, deque
