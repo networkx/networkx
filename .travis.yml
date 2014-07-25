@@ -18,11 +18,12 @@ matrix:
     - python: "3.4"
       env: PYTHON_VM=cpython OPTIONAL_DEPS=source
     - python: "2.7"
+      env: PYTHON_VM=cpython OPTIONAL_DEPS=source
+    - python: "2.7"
       env: PYTHON_VM=ipy OPTIONAL_DEPS=no
 
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - env: PYTHON_VM=cpython OPTIONAL_DEPS=source
 
 env:
   global:
@@ -71,7 +72,7 @@ install:
   # Skipping pydot (not 3.x compatible)
   # Skipping gdal (errors during pip installs)
   - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then
-      sudo apt-get install graphviz libsuitesparse-dev;
+      sudo apt-get install graphviz libsuitesparse-dev libxml2-dev libxslt1-dev;
     fi
   - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\..(pip|source) ]]; then
       pip install pygraphviz;
@@ -89,7 +90,7 @@ install:
 
   # Install stuff that depends on Cython.
   - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then
-      pip install scikits.sparse;
+      pip install scikits.sparse lxml;
     fi
 
 before_script:
@@ -135,12 +136,18 @@ after_success:
   # We must run coveralls from the git repo. But we ran tests from the
   # installed directory. The .coverage file looks like it contains absolute
   # paths, but coveralls does not seem to care.
+  # Actually coveralls does care, because when you want to see the coverage
+  # results coveralls cannot find the file. And shows the following error:
+  # The file "/home/travis/virtualenv/python3.4.0/lib/python3.4/site-packages/networkx/readwrite/graphml.py" isn't available on GitHub.
+  # Hence the output needs to be fixed by replacing the path to files in the
+  # virtualenv to paths in the source repo.
   #
   # Report coverage for 2.7 and 3.4 only.
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       cp .coverage $TRAVIS_BUILD_DIR;
       cd $TRAVIS_BUILD_DIR;
-      if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7pip|3\.4source ]]; then
+      python fixcoverage.py "$VIRTUAL_ENV/lib/python.*/site-packages/networkx/" "$TRAVIS_BUILD_DIR/networkx/";
+      if [[ "${TRAVIS_PYTHON_VERSION}" =~ 2\.7|3\.4 ]]; then
         coveralls;
       fi;
     fi
