@@ -496,7 +496,7 @@ def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
        Use specified graph for result.  The default is Graph()
 
     edge_attribute: string
-       Name of edge attrbute to store matrix numeric value. The data will
+       Name of edge attribute to store matrix numeric value. The data will
        have the same type as the matrix entry (int, float, (real,imag)).
 
     Examples
@@ -512,17 +512,11 @@ def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
               "Adjacency matrix is not square. nx,ny=%s"%(A.shape,))
     G.add_nodes_from(range(n)) # make sure we get isolated nodes
 
-    if A.format == 'coo':
-        for i,j,d in zip(A.row, A.col, A.data):
-            G.add_edge(i,j,**{edge_attribute:d})
-    elif A.format == 'dia':
-        # make a copy - could be done more efficiently
-        B = A.tocoo()
-        for i,j,d in zip(B.row, B.col, B.data):
-            G.add_edge(i,j,**{edge_attribute:d})
-    else:
-        for i,j in zip(*A.nonzero()):
-            G.add_edge(i,j,**{edge_attribute:A[i,j]})
+    # Use the COO format.
+    # Note that this conversion sums data values at repeated edges.
+    coo = A.tocoo()
+    triples = zip(coo.row, coo.col, coo.data)
+    G.add_edges_from(((u, v, {weight:d}) for u, v, d in triples))
     return G
 
 # fixture for nose tests
