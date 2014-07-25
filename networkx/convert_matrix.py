@@ -516,7 +516,7 @@ def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
     # Note that this conversion sums data values at repeated edges.
     coo = A.tocoo()
     triples = zip(coo.row, coo.col, coo.data)
-    G.add_edges_from(((u, v, {weight:d}) for u, v, d in triples))
+    G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G
 
 # fixture for nose tests
