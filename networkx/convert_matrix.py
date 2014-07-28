@@ -484,6 +484,39 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     except AttributeError:
         raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)
 
+
+def _csr_gen_triples(A):
+    # Helper function for conversion from csr formatted scipy.sparse matrix.
+    nrows = A.shape[0]
+    data, indices, indptr = A.data, A.indices, A.indptr
+    for i in range(nrows):
+        for j in range(indptr[i], indptr[i+1]):
+            yield i, indices[j], data[j]
+
+
+def _csc_gen_triples(A):
+    # Helper function for conversion from csc formatted scipy.sparse matrix.
+    ncols = A.shape[1]
+    data, indices, indptr = A.data, A.indices, A.indptr
+    for i in range(ncols):
+        for j in range(indptr[i], indptr[i+1]):
+            yield indices[j], i, data[j]
+
+
+def _coo_gen_triples(A):
+    # Helper function for conversion from coo formatted scipy.sparse matrix.
+    from scipy.lib.six import zip as izip
+    row, col, data = A.row, A.col, A.data
+    return izip(row, col, data)
+
+
+def _dok_gen_triples(A):
+    # Helper function for conversion from coo formatted scipy.sparse matrix.
+    from scipy.lib.six import iteritems
+    for (r, c), v in iteritems(A):
+        yield r, c, v
+
+
 def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
     """Return a graph from scipy sparse matrix adjacency list.
 
@@ -512,10 +545,16 @@ def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
               "Adjacency matrix is not square. nx,ny=%s"%(A.shape,))
     G.add_nodes_from(range(n)) # make sure we get isolated nodes
 
-    # Use the COO format.
-    # Note that this conversion sums data values at repeated edges.
-    coo = A.tocoo()
-    triples = zip(coo.row, coo.col, coo.data)
+    if A.format == 'csr':
+        triples = _csr_gen_triples(A)
+    elif A.format == 'csc':
+        triples = _csc_gen_triples(A)
+    elif A.format == 'dok':
+        triples = _dok_gen_triples(A)
+    else:
+        if A.format != 'coo':
+            A = A.tocoo()
+        triples = _coo_gen_triples(A)
     G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G
 
