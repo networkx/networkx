@@ -308,7 +308,6 @@ def _fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
         pos+=delta_pos
         # cool temperature
         t-=dt
-        pos=_rescale_layout(pos)
     return pos
 
 
@@ -381,7 +380,6 @@ def _sparse_fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
         pos+=(displacement*t/length).T
         # cool temperature
         t-=dt
-        pos=_rescale_layout(pos)
     return pos
 
 
