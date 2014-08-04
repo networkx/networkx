@@ -4,25 +4,33 @@
 language: python
 
 python:
+  - "pypy"
+  - "3.4"
   - "2.7"
   - "3.2"
   - "3.3"
-  - "3.4"
 
 matrix:
   fast_finish: true
 
   include:
-    - python: "pypy"
-      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
-    - python: "3.4"
-      env: PYTHON_VM=cpython OPTIONAL_DEPS=source
     - python: "2.7"
       env: PYTHON_VM=ipy OPTIONAL_DEPS=no
 
+  exclude:
+    - python: "pypy"
+      env: OPTIONAL_DEPS=source
+    - python: "pypy"
+      env: OPTIONAL_DEPS=pip
+    - python: "2.7"
+      env: OPTIONAL_DEPS=source
+    - python: "3.2"
+      env: OPTIONAL_DEPS=source
+    - python: "3.3"
+      env: OPTIONAL_DEPS=source
+
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-    - env: PYTHON_VM=cpython OPTIONAL_DEPS=source
 
 env:
   global:
@@ -31,8 +39,9 @@ env:
     - NXOPTDEPS=""
 
   matrix:
-    - PYTHON_VM=cpython OPTIONAL_DEPS=pip
-    - PYTHON_VM=cpython OPTIONAL_DEPS=no
+    - OPTIONAL_DEPS=source
+    - OPTIONAL_DEPS=pip
+    - OPTIONAL_DEPS=no
 
 before_install:
   ### Prepare the system to install prerequisites or dependencies
