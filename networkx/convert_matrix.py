@@ -487,19 +487,21 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
 
 def _csr_gen_triples(A):
     # Helper function for conversion from csr formatted scipy.sparse matrix.
+    from scipy.lib.six import xrange
     nrows = A.shape[0]
     data, indices, indptr = A.data, A.indices, A.indptr
-    for i in range(nrows):
-        for j in range(indptr[i], indptr[i+1]):
+    for i in xrange(nrows):
+        for j in xrange(indptr[i], indptr[i+1]):
             yield i, indices[j], data[j]
 
 
 def _csc_gen_triples(A):
     # Helper function for conversion from csc formatted scipy.sparse matrix.
+    from scipy.lib.six import xrange
     ncols = A.shape[1]
     data, indices, indptr = A.data, A.indices, A.indptr
-    for i in range(ncols):
-        for j in range(indptr[i], indptr[i+1]):
+    for i in xrange(ncols):
+        for j in xrange(indptr[i], indptr[i+1]):
             yield indices[j], i, data[j]
 
 
