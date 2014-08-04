@@ -268,9 +268,9 @@ def pyparse_gml():
     dblQuotedString.setParseAction( removeQuotes )
     key = Word(alphas,alphanums+'_')
     value_atom = (real | integer | Word(alphanums) | dblQuotedString)
-    value = Forward()   # to be defined later with << operator
+    value = Forward()   # to be defined later with <<= operator
     keyvalue = Group(key+value)
-    value << (value_atom | Group( lbrack + ZeroOrMore(keyvalue) + rbrack ))
+    value <<= (value_atom | Group( lbrack + ZeroOrMore(keyvalue) + rbrack ))
     node = Group(Literal("node") + lbrack + Group(OneOrMore(keyvalue)) + rbrack)
     edge = Group(Literal("edge") + lbrack + Group(OneOrMore(keyvalue)) + rbrack)
 
