@@ -11,6 +11,7 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['cuthill_mckee_ordering',
            'reverse_cuthill_mckee_ordering']
 
+
 def cuthill_mckee_ordering(G, heuristic=None):
     """Generate an ordering (permutation) of the graph nodes to make
     a sparse matrix.
@@ -69,6 +70,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
         for n in connected_cuthill_mckee_ordering(G.subgraph(c), heuristic):
             yield n
 
+
 def reverse_cuthill_mckee_ordering(G, heuristic=None):
     """Generate an ordering (permutation) of the graph nodes to make
     a sparse matrix.
@@ -125,6 +127,7 @@ def reverse_cuthill_mckee_ordering(G, heuristic=None):
     """
     return reversed(list(cuthill_mckee_ordering(G, heuristic=heuristic)))
 
+
 def connected_cuthill_mckee_ordering(G, heuristic=None):
     # the cuthill mckee algorithm for connected graphs
     if heuristic is None:
@@ -135,7 +138,7 @@ def connected_cuthill_mckee_ordering(G, heuristic=None):
     visited = set([start])
     stack = [(start, iter(G[start]))]
     while stack:
-        parent,children = stack[0]
+        parent, children = stack[0]
         if parent not in visited:
             yield parent
         try:
@@ -145,10 +148,11 @@ def connected_cuthill_mckee_ordering(G, heuristic=None):
                 visited.add(child)
                 # add children to stack, sorted by degree (lowest first)
                 nd = sorted(G.degree(G[child]).items(), key=itemgetter(1))
-                children = (n for n,d in nd)
-                stack.append((child,children))
+                children = (n for n, d in nd)
+                stack.append((child, children))
         except StopIteration:
             stack.pop(0)
+
 
 def pseudo_peripheral_node(G):
     # helper for cuthill-mckee to find a node in a "pseudo peripheral pair"
@@ -162,6 +166,6 @@ def pseudo_peripheral_node(G):
         if l <= lp:
             break
         lp = l
-        farthest = (n for n,dist in spl.items() if dist==l)
+        farthest = (n for n, dist in spl.items() if dist == l)
         v, deg = min(G.degree(farthest).items(), key=itemgetter(1))
     return v
