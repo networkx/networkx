@@ -731,7 +731,7 @@ def duplication_divergence_graph(n, p, seed=None):
     p : float,
         Probability for retaining the edge of the replicated node
     seed : int, optional
-        Seed for the random number generator of `random` (default=None).
+        Seed for the random number generator of ``random`` (default=None).
 
     Returns
     -------
