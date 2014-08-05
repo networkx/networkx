@@ -29,6 +29,12 @@ New functionalities
   followed in a traversal. All NetworkX graph types are supported. A traversal
   can also reverse edge orientations or ignore them.
 
+Removed functionalities
+-----------------------
+
+* [`#1236 <https://github.com/networkx/networkx/pull/1236>`_]
+  The legacy :samp:`ford_fulkerson` maximum flow function is removed.
+
 Miscellaneous changes
 ---------------------
 

@@ -5,11 +5,9 @@ from nose.tools import *
 
 import networkx as nx
 from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import (edmonds_karp, ford_fulkerson,
-    preflow_push, shortest_augmenting_path)
+from networkx.algorithms.flow import edmonds_karp, preflow_push, shortest_augmenting_path
 
-flow_funcs = [edmonds_karp, ford_fulkerson, preflow_push,
-              shortest_augmenting_path]
+flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
 max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
 flow_value_funcs = [nx.maximum_flow_value, nx.minimum_cut_value]
 interface_funcs = sum([max_min_funcs, flow_value_funcs], [])
@@ -72,24 +70,13 @@ def compare_flows_and_cuts(G, s, t, solnFlows, solnValue, capacity='capacity'):
     for flow_func in flow_funcs:
         R = flow_func(G, s, t, capacity)
         # Test both legacy and new implementations.
-        legacy = R.graph.get('algorithm') == "ford_fulkerson_legacy"
         flow_value = R.graph['flow_value']
-        if legacy:
-            flow_dict = R.graph['flow_dict']
-        else:
-            flow_dict = build_flow_dict(G, R)
+        flow_dict = build_flow_dict(G, R)
         assert_equal(flow_value, solnValue, msg=msg.format(flow_func.__name__))
-        if legacy:
-            assert_equal(flow_dict, solnFlows, msg=msg.format(flow_func.__name__))
-        else:
-            validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
+        validate_flows(G, s, t, flow_dict, solnValue, capacity, flow_func)
         # Minimum cut
-        if legacy:
-            cut_value, partition = nx.minimum_cut(G, s, t,  capacity=capacity,
-                                                  flow_func=ford_fulkerson)
-        else:
-            cut_value, partition = nx.minimum_cut(G, s, t, capacity=capacity,
-                                                  flow_func=flow_func)
+        cut_value, partition = nx.minimum_cut(G, s, t, capacity=capacity,
+                                              flow_func=flow_func)
         validate_cuts(G, s, t, solnValue, partition, capacity, flow_func)
 
 
