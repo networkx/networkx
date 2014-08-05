@@ -11,11 +11,8 @@ from nose.tools import *
 
 import networkx as nx
 from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import (edmonds_karp, ford_fulkerson,
-    preflow_push, shortest_augmenting_path)
+from networkx.algorithms.flow import (edmonds_karp, preflow_push, shortest_augmenting_path)
 
-# Do not use the legacy ford_fulkerson implementation
-# for tests on large graphs.
 flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
 
 msg = "Assertion failed in function: {0}"
