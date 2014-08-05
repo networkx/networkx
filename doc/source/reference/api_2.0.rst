@@ -10,6 +10,8 @@ Please send comments and questions to the networkx-discuss mailing list:
 
 New functionalities
 -------------------
+* [`#1210 <https://github.com/networkx/networkx/pull/1210>`_]
+  Add a random generator for the duplication-divergence model.
 
 * [`#823 <https://github.com/networkx/networkx/pull/823>`_]
   A :samp:`enumerate_all_cliques` function is added in the clique package
