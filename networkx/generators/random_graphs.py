@@ -727,19 +727,21 @@ def duplication_divergence_graph(n, p, seed=None):
     Parameters
     ----------
     n : int
-        the number of nodes
-    p : float,
-        Probability for retaining the edge of the replicated node
+        The desired number of nodes in the graph.
+    p : float
+        The probability for retaining the edge of the replicated node.
     seed : int, optional
-        Seed for the random number generator of ``random`` (default=None).
+        A seed for the random number generator of ``random`` (default=None).
 
     Returns
     -------
     G : Graph
 
-    Notes
-    -----
-    The initialization is a graph with with 2 connected nodes.
+    Raises
+    ------
+    NetworkXError
+        If `p` is not a valid probability.
+        If `n` is less than 2.
 
     References
     ----------
@@ -748,8 +750,8 @@ def duplication_divergence_graph(n, p, seed=None):
        Phys. Rev. E, 71, 061911, 2005.
 
     """
-    if p > 1 or p <= 0:
-        msg = "NetworkXError p must be in (0,1], p=%f".format(p)
+    if p > 1 or p < 0:
+        msg = "NetworkXError p={0} is not in [0,1].".format(p)
         raise nx.NetworkXError(msg)
     if n < 2:
         msg = 'n must be greater than or equal to 2'
