@@ -5,11 +5,13 @@ Cuthill-McKee ordering of graph nodes to produce sparse matrices
 #    Aric Hagberg <aric.hagberg@gmail.com>
 #    All rights reserved.
 #    BSD license.
+from collections import deque
 from operator import itemgetter
 import networkx as nx
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['cuthill_mckee_ordering',
            'reverse_cuthill_mckee_ordering']
+
 
 def cuthill_mckee_ordering(G, heuristic=None):
     """Generate an ordering (permutation) of the graph nodes to make
@@ -42,7 +44,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
     Smallest degree node as heuristic function:
 
     >>> def smallest_degree(G):
-    ...     node,deg = sorted(G.degree().items(), key = lambda x:x[1])[0]
+    ...     node, deg = min(G.degree().items(), key=lambda x: x[1])
     ...     return node
     >>> rcm = list(cuthill_mckee_ordering(G, heuristic=smallest_degree))
 
@@ -68,6 +70,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
     for c in nx.connected_components(G):
         for n in connected_cuthill_mckee_ordering(G.subgraph(c), heuristic):
             yield n
+
 
 def reverse_cuthill_mckee_ordering(G, heuristic=None):
     """Generate an ordering (permutation) of the graph nodes to make
@@ -101,7 +104,7 @@ def reverse_cuthill_mckee_ordering(G, heuristic=None):
     Smallest degree node as heuristic function:
 
     >>> def smallest_degree(G):
-    ...     node,deg = sorted(G.degree().items(), key = lambda x:x[1])[0]
+    ...     node, deg = min(G.degree().items(), key=lambda x: x[1])
     ...     return node
     >>> rcm = list(reverse_cuthill_mckee_ordering(G, heuristic=smallest_degree))
 
@@ -125,30 +128,24 @@ def reverse_cuthill_mckee_ordering(G, heuristic=None):
     """
     return reversed(list(cuthill_mckee_ordering(G, heuristic=heuristic)))
 
+
 def connected_cuthill_mckee_ordering(G, heuristic=None):
     # the cuthill mckee algorithm for connected graphs
     if heuristic is None:
         start = pseudo_peripheral_node(G)
     else:
         start = heuristic(G)
-    yield start
-    visited = set([start])
-    stack = [(start, iter(G[start]))]
-    while stack:
-        parent,children = stack[0]
-        if parent not in visited:
-            yield parent
-        try:
-            child = next(children)
-            if child not in visited:
-                yield child
-                visited.add(child)
-                # add children to stack, sorted by degree (lowest first)
-                nd = sorted(G.degree(G[child]).items(), key=itemgetter(1))
-                children = (n for n,d in nd)
-                stack.append((child,children))
-        except StopIteration:
-            stack.pop(0)
+    visited = {start}
+    queue = deque([start])
+    while queue:
+        parent = queue.popleft()
+        yield parent
+        nd = sorted(G.degree(set(G[parent]) - visited).items(),
+                    key=itemgetter(1))
+        children = [n for n, d in nd]
+        visited.update(children)
+        queue.extend(children)
+
 
 def pseudo_peripheral_node(G):
     # helper for cuthill-mckee to find a node in a "pseudo peripheral pair"
@@ -162,6 +159,6 @@ def pseudo_peripheral_node(G):
         if l <= lp:
             break
         lp = l
-        farthest = (n for n,dist in spl.items() if dist==l)
+        farthest = (n for n, dist in spl.items() if dist == l)
         v, deg = min(G.degree(farthest).items(), key=itemgetter(1))
     return v
