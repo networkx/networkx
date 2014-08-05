@@ -10,9 +10,6 @@ Please send comments and questions to the networkx-discuss mailing list:
 
 New functionalities
 -------------------
-* [`#1210 <https://github.com/networkx/networkx/pull/1210>`_]
-  Add a random generator for the duplication-divergence model.
-
 * [`#823 <https://github.com/networkx/networkx/pull/823>`_]
   A :samp:`enumerate_all_cliques` function is added in the clique package
   (:samp:`networkx.algorithms.clique`) for enumerating all cliques (including
@@ -30,6 +27,9 @@ New functionalities
   For multigraphs, it allows the user to know precisely which edges were
   followed in a traversal. All NetworkX graph types are supported. A traversal
   can also reverse edge orientations or ignore them.
+
+* [`#1210 <https://github.com/networkx/networkx/pull/1210>`_]
+  Add a random generator for the duplication-divergence model.
 
 Miscellaneous changes
 ---------------------
