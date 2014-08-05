@@ -484,6 +484,37 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     except AttributeError:
         raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)
 
+
+def _csr_gen_triples(A):
+    # Helper function for conversion from csr formatted scipy.sparse matrix.
+    nrows = A.shape[0]
+    data, indices, indptr = A.data, A.indices, A.indptr
+    for i in range(nrows):
+        for j in range(indptr[i], indptr[i+1]):
+            yield i, indices[j], data[j]
+
+
+def _csc_gen_triples(A):
+    # Helper function for conversion from csc formatted scipy.sparse matrix.
+    ncols = A.shape[1]
+    data, indices, indptr = A.data, A.indices, A.indptr
+    for i in range(ncols):
+        for j in range(indptr[i], indptr[i+1]):
+            yield indices[j], i, data[j]
+
+
+def _coo_gen_triples(A):
+    # Helper function for conversion from coo formatted scipy.sparse matrix.
+    row, col, data = A.row, A.col, A.data
+    return zip(row, col, data)
+
+
+def _dok_gen_triples(A):
+    # Helper function for conversion from coo formatted scipy.sparse matrix.
+    for (r, c), v in A.items():
+        yield r, c, v
+
+
 def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
     """Return a graph from scipy sparse matrix adjacency list.
 
@@ -496,7 +527,7 @@ def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
        Use specified graph for result.  The default is Graph()
 
     edge_attribute: string
-       Name of edge attrbute to store matrix numeric value. The data will
+       Name of edge attribute to store matrix numeric value. The data will
        have the same type as the matrix entry (int, float, (real,imag)).
 
     Examples
@@ -512,17 +543,17 @@ def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
               "Adjacency matrix is not square. nx,ny=%s"%(A.shape,))
     G.add_nodes_from(range(n)) # make sure we get isolated nodes
 
-    if A.format == 'coo':
-        for i,j,d in zip(A.row, A.col, A.data):
-            G.add_edge(i,j,**{edge_attribute:d})
-    elif A.format == 'dia':
-        # make a copy - could be done more efficiently
-        B = A.tocoo()
-        for i,j,d in zip(B.row, B.col, B.data):
-            G.add_edge(i,j,**{edge_attribute:d})
+    if A.format == 'csr':
+        triples = _csr_gen_triples(A)
+    elif A.format == 'csc':
+        triples = _csc_gen_triples(A)
+    elif A.format == 'dok':
+        triples = _dok_gen_triples(A)
     else:
-        for i,j in zip(*A.nonzero()):
-            G.add_edge(i,j,**{edge_attribute:A[i,j]})
+        if A.format != 'coo':
+            A = A.tocoo()
+        triples = _coo_gen_triples(A)
+    G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G
 
 # fixture for nose tests
