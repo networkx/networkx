@@ -374,7 +374,7 @@ def find_cycle(G, source=None, orientation='original'):
     >>> list(find_cycle(G, orientation='original'))
     []
     >>> list(find_cycle(G, orientation='ignore'))
-    [(0, 1, 1), (1, 2, 1), (0, 2, 0)]
+    [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
     """
     from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
