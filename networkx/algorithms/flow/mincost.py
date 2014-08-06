@@ -271,8 +271,7 @@ def max_flow_min_cost(G, s, t, capacity = 'capacity', weight = 'weight'):
 
     See also
     --------
-    cost_of_flow, ford_fulkerson, min_cost_flow, min_cost_flow_cost,
-    network_simplex
+    cost_of_flow, min_cost_flow, min_cost_flow_cost, network_simplex
 
     Examples
     --------
@@ -290,13 +289,13 @@ def max_flow_min_cost(G, s, t, capacity = 'capacity', weight = 'weight'):
     ...                   (6, 7, {'weight': 8}),
     ...                   (7, 4, {'capacity': 6, 'weight': 6})])
     >>> mincostFlow = nx.max_flow_min_cost(G, 1, 7)
-    >>> nx.cost_of_flow(G, mincostFlow)
+    >>> mincost = nx.cost_of_flow(G, mincostFlow)
+    >>> mincost
     373
-    >>> from networkx.algorithms.flow import ford_fulkerson
-    >>> R = ford_fulkerson(G, 1, 7)
-    >>> maxFlow = R.graph['flow_dict']
-    >>> nx.cost_of_flow(G, maxFlow)
-    428
+    >>> from networkx.algorithms.flow import maximum_flow
+    >>> maxFlow = maximum_flow(G, 1, 7)[1]
+    >>> nx.cost_of_flow(G, maxFlow) >= mincost
+    True
     >>> mincostFlowValue = (sum((mincostFlow[u][7] for u in G.predecessors(7)))
     ...                     - sum((mincostFlow[7][v] for v in G.successors(7))))
     >>> mincostFlowValue == nx.maximum_flow_value(G, 1, 7)

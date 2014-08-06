@@ -356,7 +356,6 @@ def preflow_push(G, s, t, capacity='capacity', residual=None,
     :meth:`maximum_flow`
     :meth:`minimum_cut`
     :meth:`edmonds_karp`
-    :meth:`ford_fulkerson`
     :meth:`shortest_augmenting_path`
 
     Notes

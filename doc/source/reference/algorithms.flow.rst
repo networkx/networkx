@@ -24,14 +24,6 @@ Edmonds-Karp
    edmonds_karp
 
 
-Ford-Fulkerson
---------------
-.. autosummary::
-   :toctree: generated/
-
-   ford_fulkerson
-
-
 Shortest Augmenting Path
 ------------------------
 .. autosummary::

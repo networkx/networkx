@@ -1,8 +1,6 @@
 from nose.tools import assert_equal, assert_true, assert_false, assert_raises
 import networkx as nx
 
-# Flow functions to use in tests.
-# We do not test legacy ford_fulkerson implementation: it's too slow.
 from networkx.algorithms.flow import (edmonds_karp, preflow_push,
     shortest_augmenting_path)
 

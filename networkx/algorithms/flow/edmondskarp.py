@@ -192,7 +192,6 @@ def edmonds_karp(G, s, t, capacity='capacity', residual=None, value_only=False,
     --------
     :meth:`maximum_flow`
     :meth:`minimum_cut`
-    :meth:`ford_fulkerson`
     :meth:`preflow_push`
     :meth:`shortest_augmenting_path`
 
