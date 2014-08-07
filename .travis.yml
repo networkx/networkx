@@ -155,7 +155,7 @@ after_success:
       cp .coverage $TRAVIS_BUILD_DIR;
       cd $TRAVIS_BUILD_DIR;
       if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7pip|3\.4source ]]; then
-        python fixcoverage.py "$VIRTUAL_ENV/lib/python.*/site-packages/networkx/" "$TRAVIS_BUILD_DIR/networkx/";
+        python fixcoverage.py "$VIRTUAL_ENV/lib/python.*/site-packages/networkx/" "networkx/";
         coveralls;
       fi;
     fi
