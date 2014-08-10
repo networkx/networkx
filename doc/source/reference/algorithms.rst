@@ -27,6 +27,7 @@ Algorithms
    algorithms.dag
    algorithms.distance_measures
    algorithms.distance_regular
+   algorithms.dominance
    algorithms.euler
    algorithms.flow
    algorithms.graphical

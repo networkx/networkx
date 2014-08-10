@@ -1,5 +1,5 @@
 """
-The Cooper-Harvey-Kennedy dominance algorithm.
+Dominance algorithms.
 """
 
 __author__ = 'ysitu <ysitu@users.noreply.github.com>'
