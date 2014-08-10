@@ -34,9 +34,10 @@ New functionalities
 
 * [`#1241 <https://github.com/networkx/networkx/pull/1210>`_]
   A new :samp:`networkx.algorithms.dominance` package is added for
-  dominance/dominator algorithms on directed graphs. Initially, a
-  :samp:`immediate_dominators` is provided for computing immediate
-  dominators/dominator trees.
+  dominance/dominator algorithms on directed graphs. It contains a
+  :samp:`immediate_dominators` function for computing immediate
+  dominators/dominator trees and a :samp:`dominance_frontiers` function for
+  computing dominance frontiers.
 
 Removed functionalities
 -----------------------

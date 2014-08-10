@@ -7,3 +7,4 @@ Dominance
    :toctree: generated/
 
    immediate_dominators
+   dominance_frontiers
