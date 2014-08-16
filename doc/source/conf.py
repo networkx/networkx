@@ -175,6 +175,6 @@ intersphinx_mapping = {'http://docs.python.org/': None,
 
 default_role = 'math'
 trac_url = 'https://networkx.lanl.gov/trac/'
-mathjax_path = 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS_HTML'
+mathjax_path = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML'
 
 numpydoc_show_class_members = False
