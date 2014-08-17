@@ -40,7 +40,7 @@ def _detect_unboundedness(R):
     if nx.negative_edge_cycle(G):
         raise nx.NetworkXUnbounded(
             'Negative cost cycle of infinite capacity found. '
-            'Min cost flow unbounded below.')
+            'Min cost flow may be unbounded below.')
 
 
 @not_implemented_for('undirected')
@@ -60,7 +60,7 @@ def _build_residual_network(G, demand, capacity, weight):
         if e.get(weight, 0) < 0 and e.get(capacity, inf) == inf:
             raise nx.NetworkXUnbounded(
                 'Negative cost cycle of infinite capacity found. '
-                'Min cost flow bounded below.')
+                'Min cost flow may be unbounded below.')
 
     # Extract edges with positive capacities. Self loops excluded.
     if G.is_multigraph():
@@ -193,7 +193,7 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
     ------
     NetworkXError
         This exception is raised if the input graph is not directed,
-        not connected or is a multigraph.
+        not connected.
 
     NetworkXUnfeasible
         This exception is raised in the following situations:
