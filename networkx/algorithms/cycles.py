@@ -9,9 +9,12 @@ Cycle finding algorithms
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+
+from collections import defaultdict
+
 import networkx as nx
 from networkx.utils import *
-from collections import defaultdict
+from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
 
 __all__ = [
     'cycle_basis','simple_cycles','recursive_simple_cycles', 'find_cycle'
@@ -377,7 +380,7 @@ def find_cycle(G, source=None, orientation='original'):
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
     """
-    from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
+
     out_edge, key, tailhead = helper_funcs(G, orientation)
 
     explored = set()
