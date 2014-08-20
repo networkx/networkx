@@ -394,9 +394,9 @@ def find_cycle(G, source=None, orientation='original'):
 
         edges = []
         # All nodes seen in this iteration of edge_dfs
-        seen = set([start_node])
+        seen = {start_node}
         # Nodes in active path.
-        active_nodes = set([start_node])
+        active_nodes = {start_node}
         previous_node = None
         for edge in edge_dfs(G, start_node, orientation):
             # Determine if this edge is a continuation of the active path.
@@ -413,7 +413,7 @@ def find_cycle(G, source=None, orientation='original'):
                         popped_edge = edges.pop()
                     except IndexError:
                         edges = []
-                        active_nodes = set([tail])
+                        active_nodes = {tail}
                         break
                     else:
                         popped_head = tailhead(popped_edge)[1]
