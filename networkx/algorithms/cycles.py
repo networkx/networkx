@@ -364,23 +364,25 @@ def find_cycle(G, source=None, orientation='original'):
         is 'forward'. When the direction is reverse, the value of ``direction``
         is 'reverse'.
 
-    Example
-    -------
+    Examples
+    --------
     In this example, we construct a DAG and find, in the first call, that there
-    are no directed cycles. In the second call, we ignore edge orientations
-    and find that there is an undirected cycle. Note that the second call finds
-    a directed cycle while effectively traversing an undirected graph, and so,
-    we found an "undirected cycle".
+    are no directed cycles, and so an exception is raised. In the second call,
+    we ignore edge orientations and find that there is an undirected cycle.
+    Note that the second call finds a directed cycle while effectively
+    traversing an undirected graph, and so, we found an "undirected cycle".
 
     >>> import networkx as nx
     >>> G = nx.DiGraph([(0,1), (0,2), (1,2)])
-    >>> list(find_cycle(G, orientation='original'))
-    []
+    >>> try:
+    ...    find_cycle(G, orientation='original')
+    ... except:
+    ...    pass
+    ...
     >>> list(find_cycle(G, orientation='ignore'))
     [(0, 1, 'forward'), (1, 2, 'forward'), (0, 2, 'reverse')]
 
     """
-
     out_edge, key, tailhead = helper_funcs(G, orientation)
 
     explored = set()
@@ -446,7 +448,7 @@ def find_cycle(G, source=None, orientation='original'):
 
     else:
         assert(len(cycle) == 0)
-        return cycle
+        raise nx.exception.NetworkXNoCycle('No cycle found.')
 
     # We now have a list of edges which ends on a cycle.
     # So we need to remove from the beginning edges that are not relevant.
