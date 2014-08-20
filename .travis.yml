@@ -5,6 +5,7 @@ language: python
 
 python:
   - "pypy"
+  - "pypy3"
   - "3.4"
   - "2.7"
   - "3.2"
@@ -21,6 +22,10 @@ matrix:
     - python: "pypy"
       env: OPTIONAL_DEPS=source
     - python: "pypy"
+      env: OPTIONAL_DEPS=pip
+    - python: "pypy3"
+      env: OPTIONAL_DEPS=source
+    - python: "pypy3"
       env: OPTIONAL_DEPS=pip
     - python: "2.7"
       env: OPTIONAL_DEPS=source
