@@ -419,7 +419,7 @@ def find_cycle(G, source=None, orientation='original'):
                         popped_head = tailhead(popped_edge)[1]
                         active_nodes.remove(popped_head)
 
-                    if len(edges):
+                    if edges:
                         last_head = tailhead(edges[-1])[1]
                         if tail == last_head:
                             break
