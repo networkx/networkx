@@ -481,9 +481,11 @@ def draw_networkx_edges(G, pos,
     try:
         import matplotlib
         import matplotlib.pyplot as plt
+        import matplotlib.patches as patches
         import matplotlib.cbook as cb
         from matplotlib.colors import colorConverter, Colormap
         from matplotlib.collections import LineCollection
+        from matplotlib.collections import PatchCollection
         import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -534,35 +536,38 @@ def draw_networkx_edges(G, pos,
         else:
             raise ValueError('edge_color must be a single color or list of exactly m colors where m is the number or edges')
 
-    edge_collection = LineCollection(edge_pos,
-                                     colors=edge_colors,
-                                     linewidths=lw,
-                                     antialiaseds=(1,),
-                                     linestyle=style,
-                                     transOffset = ax.transData,
-                                     )
+    edge_collection = None
 
-    edge_collection.set_zorder(1)  # edges go behind nodes
-    edge_collection.set_label(label)
-    ax.add_collection(edge_collection)
+    if not arrows:
+        edge_collection = LineCollection(edge_pos,
+                                         colors=edge_colors,
+                                         linewidths=lw,
+                                         antialiaseds=(1,),
+                                         linestyle=style,
+                                         transOffset = ax.transData,
+                                         )
 
-    # Note: there was a bug in mpl regarding the handling of alpha values for
-    # each line in a LineCollection.  It was fixed in matplotlib in r7184 and
-    # r7189 (June 6 2009).  We should then not set the alpha value globally,
-    # since the user can instead provide per-edge alphas now.  Only set it
-    # globally if provided as a scalar.
-    if cb.is_numlike(alpha):
-        edge_collection.set_alpha(alpha)
+        edge_collection.set_zorder(1)  # edges go behind nodes
+        edge_collection.set_label(label)
+        ax.add_collection(edge_collection)
 
-    if edge_colors is None:
-        if edge_cmap is not None:
-            assert(isinstance(edge_cmap, Colormap))
-        edge_collection.set_array(numpy.asarray(edge_color))
-        edge_collection.set_cmap(edge_cmap)
-        if edge_vmin is not None or edge_vmax is not None:
-            edge_collection.set_clim(edge_vmin, edge_vmax)
-        else:
-            edge_collection.autoscale()
+        # Note: there was a bug in mpl regarding the handling of alpha values for
+        # each line in a LineCollection.  It was fixed in matplotlib in r7184 and
+        # r7189 (June 6 2009).  We should then not set the alpha value globally,
+        # since the user can instead provide per-edge alphas now.  Only set it
+        # globally if provided as a scalar.
+        if cb.is_numlike(alpha):
+            edge_collection.set_alpha(alpha)
+
+        if edge_colors is None:
+            if edge_cmap is not None:
+                assert(isinstance(edge_cmap, Colormap))
+            edge_collection.set_array(numpy.asarray(edge_color))
+            edge_collection.set_cmap(edge_cmap)
+            if edge_vmin is not None or edge_vmax is not None:
+                edge_collection.set_clim(edge_vmin, edge_vmax)
+            else:
+                edge_collection.autoscale()
 
     arrow_collection = None
 
@@ -572,35 +577,27 @@ def draw_networkx_edges(G, pos,
         # draw thick line segments at head end of edge
         # waiting for someone else to implement arrows that will work
         arrow_colors = edge_colors
-        a_pos = []
-        p = 1.0-0.25  # make head segment 25 percent of edge length
+        arrow_patches = []
         for src, dst in edge_pos:
             x1, y1 = src
             x2, y2 = dst
             dx = x2-x1   # x offset
             dy = y2-y1   # y offset
-            d = numpy.sqrt(float(dx**2 + dy**2))  # length of edge
-            if d == 0:   # source and target at same position
-                continue
-            if dx == 0:  # vertical edge
-                xa = x2
-                ya = dy*p+y1
-            if dy == 0:  # horizontal edge
-                ya = y2
-                xa = dx*p+x1
-            else:
-                theta = numpy.arctan2(dy, dx)
-                xa = p*d*numpy.cos(theta)+x1
-                ya = p*d*numpy.sin(theta)+y1
+            arrow_width = width / 20.0
+            line_width = arrow_width / 20.0
+            arrow_patch = patches.FancyArrow(x1, y1, dx, dy, width=line_width,
+                                             length_includes_head=True, head_width=arrow_width,
+                                             head_length=arrow_width)
+            arrow_patches.append(arrow_patch)
 
-            a_pos.append(((xa, ya), (x2, y2)))
-
-        arrow_collection = LineCollection(a_pos,
-                                colors=arrow_colors,
-                                linewidths=[4*ww for ww in lw],
-                                antialiaseds=(1,),
-                                transOffset = ax.transData,
-                                )
+        arrow_collection = PatchCollection(arrow_patches,
+                                           edgecolors=arrow_colors,
+                                           facecolors=arrow_colors,
+                                           linewidths=lw,
+                                           linestyle=style,
+                                           antialiaseds=(1,),
+                                           transOffset = ax.transData,
+                                          )
 
         arrow_collection.set_zorder(1)  # edges go behind nodes
         arrow_collection.set_label(label)
@@ -619,9 +616,10 @@ def draw_networkx_edges(G, pos,
     ax.update_datalim(corners)
     ax.autoscale_view()
 
-#    if arrow_collection:
-
-    return edge_collection
+    if arrow_collection:
+        return arrow_collection
+    else:
+        return edge_collection
 
 
 def draw_networkx_labels(G, pos,
@@ -864,7 +862,7 @@ def draw_networkx_edge_labels(G, pos,
                     transform=ax.transData,
                     bbox=bbox,
                     zorder=1,
-                    clip_on=True,
+                    clip_on=True
                     )
         text_items[(n1, n2)] = t
 
