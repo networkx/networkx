@@ -61,7 +61,7 @@ before_install:
     else
       sudo apt-get install -qq mono-devel;
       pushd ..;
-      curl -L -o IronPython-2.7.5b2.zip "http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=ironpython&DownloadId=815751&FileTime=130455203824130000&Build=20919";
+      curl -L -o IronPython-2.7.5b2.zip 'https://db.tt/oq9lXfME?dl=1';
       unzip IronPython-2.7.5b2.zip;
 
       curl -L -o decorator-3.4.0.tar.gz https://pypi.python.org/packages/source/d/decorator/decorator-3.4.0.tar.gz;
