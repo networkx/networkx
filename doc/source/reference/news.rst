@@ -6,10 +6,11 @@ Release Log
 
 NetworkX 1.9.1
 --------------
-Release date: 6 August 2014
+Release date: 13 September 2014
 
 Bugfix release for minor installation and documentation issues.
 
+https://github.com/networkx/networkx/milestones/networkx-1.9.1
 
 NetworkX 1.9
 ------------
