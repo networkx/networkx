@@ -12,3 +12,7 @@ code, .rst-content tt, .linenodiv pre, div[class^="highlight"] pre {
     font-family: 'Inconsolata', 'Monaco', 'Consolas', monospace;
     font-size: 85%;
 }
+
+p.rubric {
+    font-weight: bold !important;
+}
