@@ -10,6 +10,14 @@ Release date: TBD
 
 Support for Python 2.6 is dropped in this release.
 
+NetworkX 1.9.1
+--------------
+Release date: 13 September 2014
+
+Bugfix release for minor installation and documentation issues.
+
+https://github.com/networkx/networkx/milestones/networkx-1.9.1
+
 NetworkX 1.9
 ------------
 Release date: 21 June 2014
@@ -37,7 +45,7 @@ NetworkX 1.8.1
 --------------
 Release date:  4 August 2013
 
-Bugfix release for missing files in source packaging
+Bugfix release for missing files in source packaging.
 
 
 NetworkX 1.8
