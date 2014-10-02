@@ -52,7 +52,10 @@ def _calculate_label_frequencies(node, labeling, G):
     counts = dict()
     for q in G.neighbors(node):
         qlabel = labeling[q]
-        counts[qlabel] = 1 if qlabel not in counts else counts[qlabel] + 1
+        if qlabel not in counts:
+            counts[qlabel] = 1 
+        else:
+            counts[qlabel] += 1              
     return counts
 
 def _color_network(G):
@@ -65,7 +68,10 @@ def _color_network(G):
     finally_colored_nodes = set()
     
     for n in G.nodes():
-        color = 0 if n not in lookup else lookup[n]
+        if n not in lookup:
+            color = 0                 
+        else:
+            color = lookup[n]
         lookup[n] = color
         finally_colored_nodes.add(n)
         if color not in coloring: 
@@ -147,9 +153,4 @@ def _update_label( node, labeling, G):
     elif len(high_labels) > 1:
         labeling[node] = _break_color_tie( labeling[node] , high_labels )
 
-
-from networkx.generators.random_graphs import barabasi_albert_graph
-G = barabasi_albert_graph(100, 10)
-for r in label_propagation_communities(G):
-    print r
 
