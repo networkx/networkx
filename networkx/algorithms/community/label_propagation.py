@@ -87,7 +87,6 @@ def _form_communities(labeling, G):
     """Determines the communities from the labels of the network, returning a
        dict of sets of nodes.
     """
-    print labeling
     communities = dict() # label => set(nodes)
     for n in G.nodes():
         label = labeling[n]
