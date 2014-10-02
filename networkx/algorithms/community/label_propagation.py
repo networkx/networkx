@@ -27,7 +27,7 @@ def label_propagation_communities(G):
         _update_labels(labeling, coloring, G)
         
     for label in set(labeling.values()):
-        yield [x for x in labeling if labeling[x] == label]
+        yield set((x for x in labeling if labeling[x] == label))
     
     
 def _break_color_tie(current, labels):
@@ -152,3 +152,4 @@ from networkx.generators.random_graphs import barabasi_albert_graph
 G = barabasi_albert_graph(100, 10)
 for r in label_propagation_communities(G):
     print r
+
