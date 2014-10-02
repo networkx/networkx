@@ -14,6 +14,8 @@ BSD license.
 
 import sys
 
+__all__ = ["label_propagation_communities"]
+
 def label_propagation_communities(G):
     #__inform_user( "coloring network ..." )
     coloring = _color_network(G)
@@ -23,8 +25,9 @@ def label_propagation_communities(G):
     while not _labeling_complete(labeling, G):
         nrounds += 1
         _update_labels(labeling, coloring, G)
-    communities = _form_communities(labeling, G)
-    return communities
+        
+    for label in set(labeling.values()):
+        yield [x for x in labeling if labeling[x] == label]
     
     
 def _break_color_tie(current, labels):
@@ -78,6 +81,7 @@ def _form_communities(labeling, G):
     """Determines the communities from the labels of the network, returning a
        dict of sets of nodes.
     """
+    print labeling
     communities = dict() # label => set(nodes)
     for n in G.nodes():
         label = labeling[n]
@@ -144,3 +148,7 @@ def _update_label( node, labeling, G):
         labeling[node] = _break_color_tie( labeling[node] , high_labels )
 
 
+from networkx.generators.random_graphs import barabasi_albert_graph
+G = barabasi_albert_graph(100, 10)
+for r in label_propagation_communities(G):
+    print r
