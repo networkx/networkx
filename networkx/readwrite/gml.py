@@ -188,7 +188,11 @@ def parse_gml(lines, relabel=True):
             if type(v) == listtype:
                 result[str(k)] = wrap(v)
             else:
-                result[str(k)] = v
+                attr = result.get(str(k))
+                if attr:
+                    result[str(k)] = [attr, v] if type(attr) != list else attr.append(k)
+                else:
+                    result[str(k)] = v
         return result
 
     # Set flag
@@ -212,7 +216,7 @@ def parse_gml(lines, relabel=True):
                 multigraph=True
             G.add_edge(source,target,attr_dict=vdict)
         else:
-            G.graph[k]=v
+            G.graph[k] = v
 
     # switch to Graph or DiGraph if no parallel edges were found.
     if not multigraph:
@@ -366,9 +370,13 @@ def generate_gml(G):
         label = escape(label, quote=True)
         yield 2 * indent + 'label "{0}"'.format(label)
         if n in G:
-          for k,v in G.node[n].items():
-              if k == 'id' or k == 'label': continue
-              yield 2 * indent + string_item(k,v,indent)
+            for k,v in G.node[n].items():
+                if k == 'id' or k == 'label': continue
+                if type(v) == list:
+                    for entry in v:
+                        yield 2 * indent + string_item(k,entry,indent)
+                else:
+                    yield 2 * indent + string_item(k,v,indent)
         yield indent + "]"
     # write edges
     for u,v,edgedata in G.edges_iter(data=True):
@@ -378,7 +386,11 @@ def generate_gml(G):
         for k, v in edgedata.items():
             if k == 'source': continue
             if k == 'target': continue
-            yield 2 * indent + string_item(k, v, indent)
+            if type(v) == list:
+                for entry in v:
+                    yield 2 * indent + string_item(k,entry,indent)
+            else:
+                yield 2 * indent + string_item(k,v,indent)
         yield indent + "]"
     yield "]"
 
