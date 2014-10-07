@@ -42,7 +42,10 @@ __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 from cgi import escape
 from collections import deque
 from functools import partial
-from types import StringTypes
+try:
+    from types import StringTypes as str_types
+except ImportError:
+    str_types = (str)
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -179,7 +182,7 @@ def write_gml(G, path):
 
 
 def parse_gml(lines, relabel=True):
-    if isinstance(lines, StringTypes):
+    if isinstance(lines, str_types):
         lines = lines.split('\n')
     elms = parse(lines)
     G = nx.MultiGraph()
@@ -196,7 +199,7 @@ def parse_gml(lines, relabel=True):
 
     if relabel and len(G):
         # relabel, but check for duplicate labels first
-        mapping = [ (n, d['label']) for n, d in G.node.iteritems() ]
+        mapping = [ (n, d['label']) for n, d in G.node.items() ]
         labels = zip(*mapping)[1]
         if len(set(labels)) != len(G):
             raise NetworkXError('Failed to relabel nodes: '
@@ -209,19 +212,19 @@ def parse_gml(lines, relabel=True):
 def generate_gml(G):
     ensure_correct_ids(G)
     indent, lines = '  ', ['graph [']
-    for k, v in G.graph.iteritems():
+    for k, v in G.graph.items():
         lines.append(format_attribute(k, v, indent))
     for node_num, (n, d) in enumerate(G.nodes_iter(data=True)):
         lines.append('  node [')
         lines.append(format_attribute('id', n, indent * 2))
-        for k, v in d.iteritems():
+        for k, v in d.items():
             lines.append(format_attribute(k, v, indent * 2))
         lines.append('  ]')
     for u, v, d in G.edges_iter(data=True):
         lines.append('  edge [')
         lines.append(format_attribute('source', u, indent * 2))
         lines.append(format_attribute('target', v, indent * 2))
-        for k, v in d.iteritems():
+        for k, v in d.items():
             lines.append(format_attribute(k, v, indent * 2))
         lines.append('  ]')
     lines.append(']')
@@ -345,7 +348,7 @@ def add_attribute(attrs, attribute):
         for av in v: add_attribute(d, av)
         attrs[k] = d
     # list
-    elif attrs.has_key(k):
+    elif k in attrs:
         attrs[k] = [attrs[k], v] if type(attrs[k]) != list else attrs[k].append(v)
     # dict entry
     else:
@@ -356,7 +359,7 @@ def add_attribute(attrs, attribute):
 def ensure_correct_ids(G):
     for n in G.node:
         if not is_int(n):
-          mapping = zip(G.node.iterkeys(), range(0, len(G)))
+          mapping = zip(G.node.keys(), range(0, len(G)))
           nx.relabel_nodes(G, dict(mapping), copy = False)
           for old, new in mapping: G.node[new]['label'] = '"{}"'.format(old)
 
@@ -378,14 +381,14 @@ def format_list_attribute(k, v, indent):
 
 def format_dict_attribute(k, v, indent):
     d = ['{0}{1} ['.format(indent, k)]
-    for kk, vv in v.iteritems():
+    for kk, vv in v.items():
         d.append(format_attribute(kk, vv, indent + '  '))
     d.append('{}]'.format(indent))
     return '\n'.join(d)
 
 
 def format_value(v, indent='  '):
-    if isinstance(v, StringTypes) and v.startswith('"'): v = v.replace('"', '')
+    if isinstance(v, str_types) and v.startswith('"'): v = v.replace('"', '')
     if isinstance(v, bool):         return 1 if v else 0
     if isinstance(v, (int, float)): return v
     else: return '"{}"'.format(escape(v, quote = True))
