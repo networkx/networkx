@@ -56,22 +56,6 @@ class TestGraph(object):
           ]
           """
 
-        self.gml_label_as_string_literal = """
-          graph [
-            "graph label"
-            node [
-              "node label 0"
-            ]
-            node [
-              "node label 1"
-            ]
-            edge [
-              source 0
-              target 1
-              "edge label"
-            ]
-          ]"""
-
         self.gml_without_graph = """ [
             name "G1"
             node [
@@ -138,12 +122,6 @@ class TestGraph(object):
         assert_equals(0, len(G))
         assert_equals(0, len(G.edge))
 
-    def test_string_literal_label(self):
-        G = networkx.parse_gml(self.gml_label_as_string_literal, relabel=False)
-        assert_equals(G.graph, {'label': "graph label"})
-        assert_equals(G.node[0], {'label': "node label 0"})
-        assert_equals(G.node[1], {'label': "node label 1"})
-        assert_equals(G.edge[0][1], {'label': "edge label"})
 
     @raises(SyntaxError)
     def test_missing_graph_parse_gml(self):

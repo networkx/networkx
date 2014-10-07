@@ -241,22 +241,13 @@ def ignore_line(line):
     return not len(line) or line.strip().startswith('#')
 
 
-def skip_ignored_lines(lines):
+def remove_ignored_lines(lines):
     lines[:] = list(ifilterfalse(ignore_line, lines))
-    return lines
-
-def normalized_lines(lines):
-    return labeled_lines(skip_ignored_lines(lines))
-
-
-def labeled_lines(lines):
-    for i, line in enumerate(lines):
-        if line.strip().startswith('"'): lines[i] = 'label ' + line
     return lines
 
 
 def tokenize(lines):
-    s = ('\n'.join(normalized_lines(lines))
+    s = ('\n'.join(remove_ignored_lines(lines))
              .replace('[', ' [ ')
              .replace(']', ' ] '))
     # This way a quoted string is a token
