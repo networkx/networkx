@@ -4,79 +4,160 @@ from __future__ import unicode_literals
 
 import io
 from nose.tools import *
-from nose import SkipTest
 import networkx
 
 class TestGraph(object):
-    @classmethod
-    def setupClass(cls):
-        global pyparsing
-        try:
-            import pyparsing
-        except ImportError:
-            try:
-                import matplotlib.pyparsing as pyparsing
-            except:
-                raise SkipTest('gml test: pyparsing not available.')
 
     def setUp(self):
-        self.simple_data="""Creator me
-graph [
- comment "This is a sample graph"
- directed 1
- IsPlanar 1
- pos  [ x 0 y 1 ]
- node [
-   id 1
-   label "Node 1"
-   pos [ x 1 y 1 ]
- ]
- node [
-    id 2
-    pos [ x 1 y 2 ]
-    label "Node 2"
-    ]
-  node [
-    id 3
-    label "Node 3"
-    pos [ x 1 y 3 ]
-  ]
-  edge [
-    source 1
-    target 2
-    label "Edge from node 1 to node 2"
-    color [line "blue" thickness 3]
+        self.simple_data="""graph [
+           comment "This is a sample graph"
+           directed 1
+           IsPlanar 1
+           pos  [ x 0 y 1 ]
+           node [
+             id 1
+             label "Node 1"
+             pos [ x 1 y 1 ]
+             features 0
+             features 1
+           ]
 
-  ]
-  edge [
-    source 2
-    target 3
-    label "Edge from node 2 to node 3"
-  ]
-  edge [
-    source 3
-    target 1
-    label "Edge from node 3 to node 1"
-  ]
-]
-"""
+           NOTE "this"
+           # AND
+           NOTE "this"
+
+           node [
+              id 2
+              pos [ x 1 y 2 ]
+              label "Node 2"
+              ]
+            node [
+              id 3
+              label "Node 3"
+              pos [ x 1 y 3 ]
+            ]
+            edge [
+              source 1
+              target 2
+              label "Edge from node 1 to node 2"
+              color [line "blue" thickness 3]
+
+            ]
+            edge [
+              source 2
+              target 3
+              label "Edge from node 2 to node 3"
+            ]
+            edge [
+              source 3
+              target 1
+              label "Edge from node 3 to node 1"
+            ]
+          ]
+          """
+
+        self.gml_label_as_string_literal = """
+          graph [
+            "graph label"
+            node [
+              "node label 0"
+            ]
+            node [
+              "node label 1"
+            ]
+            edge [
+              source 0
+              target 1
+              "edge label"
+            ]
+          ]"""
+
+        self.gml_without_graph = """ [
+            name "G1"
+            node [
+              id 1
+            node []
+          ]"""
+
+        self.gml_missing_source_graph = """graph[
+            node[]
+            node[]
+            edge[
+              target 1
+            ]
+          ]"""
+
+        self.gml_missing_target_graph = """graph[
+            node[]
+            node[]
+            edge[
+              source 1
+            ]
+          ]"""
+
     def test_parse_gml(self):
-        G=networkx.parse_gml(self.simple_data,relabel=True)
-        assert_equals(sorted(G.nodes()),\
-                          ['Node 1', 'Node 2', 'Node 3'])
-        assert_equals( [e for e in sorted(G.edges())],\
-                           [('Node 1', 'Node 2'),
-                            ('Node 2', 'Node 3'),
-                            ('Node 3', 'Node 1')])
+        graph = {
+            'comment': "This is a sample graph",
+            'IsPlanar': 1,
+            'pos': { 'x': 0, 'y': 1 },
+            'NOTE': ['this', 'this']
+        }
+        node_ids = [
+            (1, {'label': "Node 1",
+                 'pos': { 'x': 1, 'y': 1 },
+                 'features': [0, 1] }),
+            (2, {'label': "Node 2",
+                 'pos': { 'x': 1, 'y': 2 }}),
+            (3, {'label': "Node 3",
+                 'pos': { 'x': 1, 'y': 3 }})
+        ]
+        e12 = {'label': 'Edge from node 1 to node 2',
+               'color': {'line': 'blue', 'thickness': 3}}
+        e23 = {'label': 'Edge from node 2 to node 3'}
+        e31 = {'label': 'Edge from node 3 to node 1'}
 
-        assert_equals( [e for e in sorted(G.edges(data=True))],\
-                           [('Node 1', 'Node 2',
-                             {'color': {'line': 'blue', 'thickness': 3},
-                              'label': 'Edge from node 1 to node 2'}),
-                            ('Node 2', 'Node 3',
-                             {'label': 'Edge from node 2 to node 3'}),
-                            ('Node 3', 'Node 1',
-                             {'label': 'Edge from node 3 to node 1'})])
+        G = networkx.parse_gml(self.simple_data)
+        for k, v in G.graph.iteritems(): assert_equals(v, graph[k])
+        assert_equals(node_ids[0][1], G.node["Node 1"])
+        assert_equals(node_ids[1][1], G.node["Node 2"])
+        assert_equals(node_ids[2][1], G.node["Node 3"])
+        assert_equals(e12, G.edge["Node 1"]["Node 2"])
+        assert_equals(e12, G.edge["Node 2"]["Node 1"])
+        assert_equals(e23, G.edge["Node 2"]["Node 3"])
+        assert_equals(e23, G.edge["Node 3"]["Node 2"])
+        assert_equals(e31, G.edge["Node 3"]["Node 1"])
+        assert_equals(e31, G.edge["Node 1"]["Node 3"])
+
+        G = networkx.parse_gml(self.simple_data, relabel=False)
+        for k, v in G.graph.iteritems(): assert_equals(v, graph[k])
+        for i, (n, d) in enumerate(G.nodes_iter(data=True)):
+            assert_equals(n, node_ids[i][0])
+            assert_equals(d, node_ids[i][1])
+
+        G = networkx.parse_gml("graph[]")
+        assert_equals(0, len(G))
+        assert_equals(0, len(G.edge))
+
+    def test_string_literal_label(self):
+        G = networkx.parse_gml(self.gml_label_as_string_literal, relabel=False)
+        assert_equals(G.graph, {'label': "graph label"})
+        assert_equals(G.node[0], {'label': "node label 0"})
+        assert_equals(G.node[1], {'label': "node label 1"})
+        assert_equals(G.edge[0][1], {'label': "edge label"})
+
+    @raises(SyntaxError)
+    def test_missing_graph_parse_gml(self):
+        networkx.parse_gml(self.gml_without_graph)
+
+
+    @raises(networkx.NetworkXError)
+    def test_missing_source_for_edge_parse_gml(self):
+        networkx.parse_gml(self.gml_missing_source_graph)
+
+
+    @raises(networkx.NetworkXError)
+    def test_missing_target_for_edge_parse_gml(self):
+        networkx.parse_gml(self.gml_missing_target_graph)
 
 
     def test_read_gml(self):
@@ -92,46 +173,46 @@ graph [
         os.close(fd)
         os.unlink(fname)
 
+
     def test_relabel_duplicate(self):
         data="""
-graph
-[
-	label	""
-	directed	1
-	node
-	[
-		id	0
-		label	"same"
-	]
-	node
-	[
-		id	1
-		label	"same"
-	]
-]
-"""
+            graph
+            [
+              label ""
+              directed	1
+              node
+              [
+                id 0
+                label "same"
+              ]
+              node
+              [
+                id 1
+                label "same"
+              ]
+            ]
+            """
         fh = io.BytesIO(data.encode('UTF-8'))
         fh.seek(0)
         assert_raises(networkx.NetworkXError,networkx.read_gml,fh,relabel=True)
+
 
     def test_bool(self):
         G=networkx.Graph()
         G.add_node(1,on=True)
         G.add_edge(1,2,on=False)
-        data = '\n'.join(list(networkx.generate_gml(G)))
+        data = networkx.generate_gml(G)
         answer ="""graph [
   node [
-    id 0
-    label "1"
+    id 1
     on 1
   ]
   node [
-    id 1
-    label "2"
+    id 2
   ]
   edge [
-    source 0
-    target 1
+    source 1
+    target 2
     on 0
   ]
 ]"""
@@ -143,7 +224,7 @@ graph
         # Writing tuple labels to GML failed.
         G = networkx.Graph()
         G.add_edge((0,1), (1,0))
-        data = '\n'.join(list(networkx.generate_gml(G)))
+        data = networkx.generate_gml(G)
         answer = """graph [
   node [
     id 0
@@ -175,12 +256,16 @@ graph
         fobj.seek(0)
         # Should be bytes in 2.x and 3.x
         data = fobj.read().strip()
+        fobj.seek(0)
         answer = b"""graph [
   name "path_graph(1)"
   node [
     id 0
-    label "0"
     demo "This is &quot;quoted&quot; and this is a copyright: &#169;"
   ]
 ]"""
         assert_equal(data, answer)
+        G = networkx.read_gml(fobj)
+        assert_equal('path_graph(1)', G.graph['name'])
+        assert_equal(1, len(G))
+        assert_equal(G.node[0], {'demo': 'This is "quoted" and this is a copyright: ©'})
