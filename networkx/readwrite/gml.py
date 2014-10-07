@@ -277,7 +277,7 @@ def raise_with_context(msg, tokens):
 
 
 def string_item(s):
-    return unescape(s.replace('"', '').decode('ascii'))
+    return unescape(s.replace('"', ''))
 
 
 def parse_graph(tokens):
