@@ -41,7 +41,6 @@ __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 
 from cgi import escape
 from collections import deque
-from itertools import (ifilter, ifilterfalse)
 from functools import partial
 from types import StringTypes
 
@@ -185,7 +184,7 @@ def parse_gml(lines, relabel=True):
     elms = parse(lines)
     G = nx.MultiGraph()
 
-    edge_elms = list(ifilter(partial(filter_and_build_elm, G), elms))
+    edge_elms = filter(partial(filter_and_build_elm, G), elms)
     # remaining entries should be only edges
     for k, v in edge_elms:
         add_edge(G, v)
@@ -229,6 +228,11 @@ def generate_gml(G):
     return '\n'.join(lines)
 
 
+def filterfalse(predicate, iterable):
+    fn = lambda *args: not predicate(*args)
+    return filter(fn, iterable)
+
+
 def is_int(v):
     try:
         int(v)
@@ -242,7 +246,7 @@ def ignore_line(line):
 
 
 def remove_ignored_lines(lines):
-    lines[:] = list(ifilterfalse(ignore_line, lines))
+    lines[:] = filterfalse(ignore_line, lines)
     return lines
 
 
