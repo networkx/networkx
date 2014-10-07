@@ -5,7 +5,7 @@ include LICENSE.txt
 include README.txt
 
 recursive-include examples *.py *.edgelist *.mbox *.gz *.bz2 *.zip
-recursive-include doc *.py *.rst Makefile *.html *.png *.txt *.css
+recursive-include doc *.py *.rst Makefile *.html *.png *.txt *.css *.inc
 
 include scripts/*
 include networkx/tests/*.txt
