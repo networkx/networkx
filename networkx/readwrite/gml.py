@@ -249,8 +249,7 @@ def ignore_line(line):
 
 
 def remove_ignored_lines(lines):
-    lines[:] = filterfalse(ignore_line, lines)
-    return lines
+    return filterfalse(ignore_line, lines)
 
 
 def tokenize(lines):
