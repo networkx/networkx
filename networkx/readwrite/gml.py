@@ -66,6 +66,11 @@ except ImportError:
     # Python 3.x
     import html.entities as htmlentitydefs
 
+try:
+    unichr(0)
+except NameError:
+    unichr = chr
+
 def unescape(text):
     def fixup(m):
         text = m.group(0)
@@ -131,7 +136,7 @@ def read_gml(path, relabel=False):
     >>> H=nx.read_gml('test.gml')
     """
 
-    G = parse_gml(path.read(), relabel=relabel)
+    G = parse_gml(path.read().decode('utf-8'), relabel=relabel)
     return G
 
 @open_file(1, mode='wb')
@@ -200,7 +205,7 @@ def parse_gml(lines, relabel=True):
     if relabel and len(G):
         # relabel, but check for duplicate labels first
         mapping = [ (n, d['label']) for n, d in G.node.items() ]
-        labels = zip(*mapping)[1]
+        nodes, labels = zip(*mapping)
         if len(set(labels)) != len(G):
             raise NetworkXError('Failed to relabel nodes: '
                               'duplicate node labels found. '
@@ -356,9 +361,10 @@ def add_attribute(attrs, attribute):
 
 
 def ensure_correct_ids(G):
+    # import pdb;pdb.set_trace()
     for n in G.node:
         if not is_int(n):
-          mapping = zip(G.node.keys(), range(0, len(G)))
+          mapping = list(zip(G.node.keys(), range(0, len(G))))
           nx.relabel_nodes(G, dict(mapping), copy = False)
           for old, new in mapping: G.node[new]['label'] = '"{}"'.format(old)
 

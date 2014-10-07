@@ -101,7 +101,7 @@ class TestGraph(object):
         e31 = {'label': 'Edge from node 3 to node 1'}
 
         G = networkx.parse_gml(self.simple_data)
-        for k, v in G.graph.iteritems(): assert_equals(v, graph[k])
+        for k, v in G.graph.items(): assert_equals(v, graph[k])
         assert_equals(node_ids[0][1], G.node["Node 1"])
         assert_equals(node_ids[1][1], G.node["Node 2"])
         assert_equals(node_ids[2][1], G.node["Node 3"])
@@ -113,7 +113,7 @@ class TestGraph(object):
         assert_equals(e31, G.edge["Node 1"]["Node 3"])
 
         G = networkx.parse_gml(self.simple_data, relabel=False)
-        for k, v in G.graph.iteritems(): assert_equals(v, graph[k])
+        for k, v in G.graph.items(): assert_equals(v, graph[k])
         for i, (n, d) in enumerate(G.nodes_iter(data=True)):
             assert_equals(n, node_ids[i][0])
             assert_equals(d, node_ids[i][1])
@@ -217,7 +217,7 @@ class TestGraph(object):
     target 1
   ]
 ]"""
-        assert_equal(data, answer)
+        assert_equal(answer, data)
 
 
     def test_quotes(self):
@@ -234,7 +234,6 @@ class TestGraph(object):
         fobj.seek(0)
         # Should be bytes in 2.x and 3.x
         data = fobj.read().strip()
-        fobj.seek(0)
         answer = b"""graph [
   name "path_graph(1)"
   node [
@@ -243,7 +242,7 @@ class TestGraph(object):
   ]
 ]"""
         assert_equal(data, answer)
-        G = networkx.read_gml(fobj)
+        G = networkx.read_gml(fobj.name)
         assert_equal('path_graph(1)', G.graph['name'])
         assert_equal(1, len(G))
         assert_equal(G.node[0], {'demo': 'This is "quoted" and this is a copyright: ©'})
