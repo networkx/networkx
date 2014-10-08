@@ -364,10 +364,10 @@ def add_attribute(attrs, attribute):
 def ensure_correct_ids(G):
     for n in G.node:
         if not is_int(n):
-          mapping = list(zip(G.node.keys(), range(0, len(G))))
-          nx.relabel_nodes(G, dict(mapping), copy = False)
-          for old, new in mapping: G.node[new]['label'] = '"{}"'.format(old)
-
+            mapping = list(zip(G.node.keys(), range(0, len(G))))
+            nx.relabel_nodes(G, dict(mapping), copy = False)
+            for old, new in mapping: G.node[new]['label'] = '"{}"'.format(old)
+            break
 
 def format_attribute(k, v, indent='  '):
     if isinstance(v, list): v = format_list_attribute(k, v, indent)
