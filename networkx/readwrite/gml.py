@@ -42,10 +42,6 @@ __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 from cgi import escape
 from collections import deque
 from functools import partial
-try:
-    from types import StringTypes as str_types
-except ImportError:
-    str_types = (str)
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -67,9 +63,14 @@ except ImportError:
     import html.entities as htmlentitydefs
 
 try:
-    unichr(0)
+    chr = unichr
 except NameError:
-    unichr = chr
+    pass
+
+try:
+    str = unicode
+except NameError:
+    pass
 
 def unescape(text):
     def fixup(m):
@@ -78,15 +79,15 @@ def unescape(text):
             # character reference
             try:
                 if text[:3] == "&#x":
-                    return unichr(int(text[3:-1], 16))
+                    return chr(int(text[3:-1], 16))
                 else:
-                    return unichr(int(text[2:-1]))
+                    return chr(int(text[2:-1]))
             except ValueError:
                 pass
         else:
             # named entity
             try:
-                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+                text = chr(htmlentitydefs.name2codepoint[text[1:-1]])
             except KeyError:
                 pass
         return text # leave as is
@@ -187,7 +188,7 @@ def write_gml(G, path):
 
 
 def parse_gml(lines, relabel=True):
-    if isinstance(lines, str_types):
+    if isinstance(lines, str):
         lines = lines.split('\n')
     elms = parse(lines)
     G = nx.MultiGraph()
@@ -361,7 +362,6 @@ def add_attribute(attrs, attribute):
 
 
 def ensure_correct_ids(G):
-    # import pdb;pdb.set_trace()
     for n in G.node:
         if not is_int(n):
           mapping = list(zip(G.node.keys(), range(0, len(G))))
@@ -393,10 +393,10 @@ def format_dict_attribute(k, v, indent):
 
 
 def format_value(v, indent='  '):
-    if isinstance(v, str_types) and v.startswith('"'): v = v.replace('"', '')
+    if isinstance(v, str) and v.startswith('"'): v = v.replace('"', '')
     if isinstance(v, bool):         return 1 if v else 0
     if isinstance(v, (int, float)): return v
-    else: return '"{}"'.format(escape(v, quote = True))
+    else: return '"{}"'.format(escape(str(v), quote = True))
 
 
 # fixture for nose tests
