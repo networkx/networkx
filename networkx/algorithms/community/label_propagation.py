@@ -110,7 +110,7 @@ def _labeling_complete(labeling, G):
             high_labels = _select_labels_of_highest_frequency(counts)
             if labeling[node] not in high_labels: 
                 result = False
-                break;
+                break
     return result
 
 def _select_labels_of_highest_frequency(freqs):
