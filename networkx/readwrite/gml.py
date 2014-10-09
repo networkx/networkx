@@ -26,10 +26,10 @@ http://www-personal.umich.edu/~mejn/netdata/
 """
 from __future__ import unicode_literals
 
-__author__ = [
-    """Aric Hagberg (hagberg@lanl.gov)""",
-    """Luca Pandini (luca1.pandini@gmail.com)"""
-]
+__author__ = """\n""".join([
+    'Aric Hagberg (hagberg@lanl.gov)',
+    'Luca Pandini (luca1.pandini@gmail.com)'
+])
 #    Copyright (C) 2008-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
