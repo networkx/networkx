@@ -79,20 +79,5 @@ def _remove_highest_betweenness_edge(G):
     # Remove the edge
     G.remove_edge(*highest_betweenness_edge)    
         
-
-if __name__ == '__main__':
-
-    test = nx.DiGraph()
-    test.add_edge('a','b')
-    test.add_edge('a','c')
-    test.add_edge('c','b')
-    test.add_edge('a','d')
-    test.add_edge('d','e')
-    test.add_edge('d','f')
-    test.add_edge('f','e')
-    components = girvan_newman_communities(test)
-    for x in components:
-        print x
-
     
             
