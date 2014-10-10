@@ -15,6 +15,9 @@ The community structure finding algorithm follows this steps:
     
 The result is a dendogram where the leaves are the individual nodes.
 
+The algorithm works on undirected networks with only a single node type and does
+not take it account edge weight.
+
 @author: Aitor Almeida (aitoralmeida@gmail.com)
 All rights reserved.
 BSD license.
@@ -27,11 +30,15 @@ __all__ = ["girvan_newman_communities"]
 def girvan_newman_communities(original_graph, preserve_original = True):    
     # The algorithm is divisive and the edges of the graph are going to be deleted.
     # preserve_original allows to make a copy of the original graph so it is not
-    # destroyed, but this way the algorithm uses more memory.  
+    # destroyed, but this way the algorithm uses more memory.    
+    
+    # Only works on undirected networks
+    if original_graph.is_directed():
+        raise nx.NetworkXNotImplemented('not implemented for directed type')
    
     if len(original_graph.nodes()) < 2:
-        raise nx.NetworkXError("There must be more than 1 node to find communities")
-    
+        raise nx.NetworkXError('there must be more than 1 node to find communities')
+          
     if preserve_original:
         G = original_graph.copy()
     else:
@@ -75,7 +82,7 @@ def _remove_highest_betweenness_edge(G):
 
 if __name__ == '__main__':
 
-    test = nx.Graph()
+    test = nx.DiGraph()
     test.add_edge('a','b')
     test.add_edge('a','c')
     test.add_edge('c','b')
