@@ -27,7 +27,11 @@ __all__ = ["girvan_newman_communities"]
 def girvan_newman_communities(original_graph, preserve_original = True):    
     # The algorithm is divisive and the edges of the graph are going to be deleted.
     # preserve_original allows to make a copy of the original graph so it is not
-    # destroyed, but this way the algorithm uses more memory.    
+    # destroyed, but this way the algorithm uses more memory.  
+   
+    if len(original_graph.nodes()) < 2:
+        raise nx.NetworkXError("There must be more than 1 node to find communities")
+    
     if preserve_original:
         G = original_graph.copy()
     else:
