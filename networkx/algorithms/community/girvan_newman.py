@@ -16,7 +16,7 @@ The community structure finding algorithm follows this steps:
 The result is a dendogram where the leaves are the individual nodes.
 
 The algorithm works on undirected networks with only a single node type and does
-not take it account edge weight.
+not take it account edge weights.
 
 @author: Aitor Almeida (aitoralmeida@gmail.com)
 All rights reserved.
@@ -37,7 +37,7 @@ def girvan_newman_communities(original_graph, preserve_original = True):
         raise nx.NetworkXNotImplemented('not implemented for directed type')
    
     if len(original_graph.nodes()) < 2:
-        raise nx.NetworkXError('there must be more than 1 node to find communities')
+        raise nx.NetworkXError('there must be more than 1 nodes to find communities')
           
     if preserve_original:
         G = original_graph.copy()
