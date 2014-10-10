@@ -237,10 +237,7 @@ def parse_gml(lines, relabel=True):
     for k, v in edge_elms:
         add_edge(G, v)
 
-    if not 'multigraph' in G.graph:
-        G = nx.DiGraph(G) if G.is_directed() else nx.Graph(G)
-    else:
-        G.graph.pop('multigraph')
+    G = convert_graph_type(G)
 
     if relabel and len(G):
         # relabel, but check for duplicate labels first
@@ -254,9 +251,21 @@ def parse_gml(lines, relabel=True):
     return G
 
 
+def convert_graph_type(G):
+    """ G is assumed to be a MultiGraph """
+    directed   = G.graph.pop('directed', 0)
+    multigraph = G.graph.pop('multigraph', False)
+    if directed == 1:
+        G = nx.MultiDiGraph(G) if multigraph else nx.DiGraph(G)
+    elif not multigraph:
+        G = nx.Graph(G)
+    return G
+
+
 def generate_gml(G):
     ensure_correct_ids(G)
     indent, lines = '  ', ['graph [']
+    if G.is_directed(): G.graph['directed'] = True
     for k, v in G.graph.items():
         lines.append(format_attribute(k, v, indent))
     for node_num, (n, d) in enumerate(G.nodes_iter(data=True)):
@@ -354,8 +363,6 @@ def filter_and_build_elm(G, elm):
     k, v = elm
     if k == "node": add_node(G, v)
     elif k == "edge": return elm
-    elif k == "directed":
-        G = G.to_directed()
     else:
         add_attribute(G.graph, elm)
 
