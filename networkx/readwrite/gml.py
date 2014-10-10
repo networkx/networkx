@@ -137,7 +137,8 @@ def read_gml(path, relabel=False):
     >>> H=nx.read_gml('test.gml')
     """
 
-    G = parse_gml(path.read().decode('utf-8'), relabel=relabel)
+    lines = map(lambda line: line.decode('utf-8'), path.readlines())
+    G = parse_gml(lines, relabel=relabel)
     return G
 
 @open_file(1, mode='wb')
