@@ -108,7 +108,8 @@ def read_gml(path, relabel=False):
 
     Returns
     -------
-    G : MultiGraph or MultiDiGraph
+    G : Graph, DiGraph, MultiGraph or MultiDiGraph depending on whether the
+        graph is indirect, direct, has edges with same source and target.
 
     NetworkXError
         If relabel is True and there are nodes with the same label.
@@ -163,11 +164,10 @@ def write_gml(G, path):
 
     This implementation does not support all Python data types as GML
     data.  Nodes, node attributes, edge attributes, and graph
-    attributes must be either dictionaries or single stings or
-    numbers.  If they are not an attempt is made to represent them as
-    strings.  For example, a tuple as edge data
-    G.add_node(0, {'somedata': (1,2) }), will be represented in the GML file
-    as::
+    attributes must be either dictionaries, lists with at least two elements,
+    single stings or numbers.  If they are not an attempt is made to represent 
+    them as strings.  For example, a tuple as edge data will be represented in 
+    the GML file as::
 
        edge [
          source 1
@@ -202,7 +202,8 @@ def parse_gml(lines, relabel=True):
 
     Returns
     -------
-    G : MultiGraph or MultiDiGraph
+    G : Graph, DiGraph, MultiGraph or MultiDiGraph depending on whether the
+        graph is indirect, direct, has edges with same source and target.
 
     Raises
     ------
@@ -263,6 +264,33 @@ def convert_graph_type(G):
 
 
 def generate_gml(G):
+    """Generate a single entry of the graph G in GML format.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Returns
+    -------
+    lines: string
+       Lines in GML format.
+
+    Notes
+    -----
+    This implementation does not support all Python data types as GML
+    data.  Nodes, node attributes, edge attributes, and graph
+    attributes must be either dictionaries, lists with at least two elements,
+    single stings or numbers.  If they are not an attempt is made to represent 
+    them as strings.  For example, a tuple as edge data will be represented in 
+    the GML file as::
+
+       edge [
+         source 1
+         target 2
+         somedata "(1, 2)"
+       ]
+    """
+
     ensure_correct_ids(G)
     indent, lines = '  ', ['graph [']
     if G.is_directed(): G.graph['directed'] = True
