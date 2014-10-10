@@ -110,10 +110,11 @@ def read_gml(path, relabel=False):
     -------
     G : MultiGraph or MultiDiGraph
 
-    Raises
-    ------
-    ImportError
-        If the pyparsing module is not available.
+    NetworkXError
+        If relabel is True and there are nodes with the same label.
+
+    SyntaxError
+        If a syntax error is encountered while parsing. 
 
     See Also
     --------
@@ -121,7 +122,6 @@ def read_gml(path, relabel=False):
 
     Notes
     -----
-    Requires pyparsing: http://pyparsing.wikispaces.com/
     The GML specification says that files should be ASCII encoded, with any
     extended ASCII characters (iso8859-1) appearing as HTML character entities.
 
@@ -132,9 +132,9 @@ def read_gml(path, relabel=False):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> nx.write_gml(G,'test.gml')
-    >>> H=nx.read_gml('test.gml')
+    >>> H = nx.read_gml('test.gml')
     """
 
     lines = map(lambda line: line.decode('utf-8'), path.readlines())
@@ -165,14 +165,14 @@ def write_gml(G, path):
     data.  Nodes, node attributes, edge attributes, and graph
     attributes must be either dictionaries or single stings or
     numbers.  If they are not an attempt is made to represent them as
-    strings.  For example, a list as edge data
-    G[1][2]['somedata']=[1,2,3], will be represented in the GML file
+    strings.  For example, a tuple as edge data
+    G.add_node(0, {'somedata': (1,2) }), will be represented in the GML file
     as::
 
        edge [
          source 1
          target 2
-         somedata "[1, 2, 3]"
+         somedata "(1, 2)"
        ]
 
 
@@ -189,6 +189,44 @@ def write_gml(G, path):
 
 
 def parse_gml(lines, relabel=True):
+    """Parse GML graph from a string or iterable.
+
+    Parameters
+    ----------
+    lines : string or iterable
+       Data in GML format.
+
+    relabel : bool, optional
+       If True use the GML node label attribute for node names otherwise use
+       the node id.
+
+    Returns
+    -------
+    G : MultiGraph or MultiDiGraph
+
+    Raises
+    ------
+    NetworkXError
+        If relabel is True and there are nodes with the same label.
+
+    SyntaxError
+        If a syntax error is encountered while parsing. 
+
+    See Also
+    --------
+    write_gml, read_gml
+
+    Notes
+    -----
+    This stores nested GML attributes as dictionaries in the
+    NetworkX graph, node, and edge attribute structures.
+
+    References
+    ----------
+    GML specification:
+    http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
+    """
+
     if isinstance(lines, str):
         lines = lines.split('\n')
     elms = parse(lines)
