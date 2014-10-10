@@ -106,7 +106,6 @@ class TestGraph(object):
         assert_equals(node_ids[1][1], G.node["Node 2"])
         assert_equals(node_ids[2][1], G.node["Node 3"])
         assert_equals(e12, G.edge["Node 1"]["Node 2"])
-        print G.edge
         assert_equals(e12, G.edge["Node 2"]["Node 1"])
         assert_equals(e23, G.edge["Node 2"]["Node 3"])
         assert_equals(e23, G.edge["Node 3"]["Node 2"])
