@@ -46,19 +46,25 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
     nodes : dictionary
        Dictionary of nodes with centrality as the value.
 
-        
     See Also
     --------
     betweenness_centrality() 
 
     Notes
     -----
-    Load centrality is slightly different than betweenness.
-    For this load algorithm see the reference
-    Scientific collaboration networks: II.
-    Shortest paths, weighted networks, and centrality,
-    M. E. J. Newman, Phys. Rev. E 64, 016132 (2001).
+    Load centrality is slightly different than betweenness. It was originally introduced by [2]_.
+    For this load algorithm see [1]_.
 
+    References
+    ----------
+    .. [1] Mark E. J. Newman:
+       Scientific collaboration networks. II. Shortest paths, weighted networks, and centrality.
+       Physical Review E 64, 016132, 2001.
+       http://journals.aps.org/pre/abstract/10.1103/PhysRevE.64.016132
+    .. [2] Kwang-Il Goh, Byungnam Kahng and Doochul Kim
+       Universal behavior of Load Distribution in Scale-Free Networks.
+       Physical Review Letters 87(27):1–4, 2001.
+       http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
     """
     if v is not None:   # only one node
         betweenness=0.0

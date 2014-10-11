@@ -70,8 +70,8 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
 
     References
     ----------
-    .. [1] Freeman, L.C., 1979. Centrality in networks: I.
-       Conceptual clarification.  Social Networks 1, 215--239.
+    .. [1] Linton C. Freeman: Centrality in networks: I.
+       Conceptual clarification. Social Networks 1:215-239, 1979.
        http://www.soc.ucsb.edu/faculty/friedkin/Syllabi/Soc146/Freeman78.PDF
     """
     if distance is not None:

@@ -13,7 +13,7 @@ Who uses NetworkX?
 ------------------
 
 The potential audience for NetworkX includes mathematicians,
-physicists, biologists, computer scientists, and social scientists.  Good 
+physicists, biologists, computer scientists, and social scientists. Good 
 reviews of the state-of-the-art in the science of
 complex networks are presented in Albert and Barabási [BA02]_, Newman
 [Newman03]_, and Dorogovtsev and Mendes [DM03]_. See also the classic
