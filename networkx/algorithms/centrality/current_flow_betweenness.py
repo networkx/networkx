@@ -190,7 +190,7 @@ def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
     sparse methods you can achieve `O(nm{\sqrt k})` where `k` is the
     Laplacian matrix condition number.
 
-    The space required is `O(nw) where `w` is the width of the sparse
+    The space required is `O(nw)` where `w` is the width of the sparse
     Laplacian matrix.  Worse case is `w=n` for `O(n^2)`.
 
     If the edges have a 'weight' attribute they will be used as

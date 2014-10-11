@@ -1,3 +1,4 @@
+# coding=utf8
 """
 Eigenvector centrality.
 """
@@ -18,16 +19,17 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
                            weight='weight'):
     """Compute the eigenvector centrality for the graph G.
 
-    Eigenvector centrality computes the centrality for a node based on the centrality
-    of its neighbors. The eigenvector centrality for node `i` is    
+    Eigenvector centrality computes the centrality for a node based on the
+    centrality of its neighbors. The eigenvector centrality for node `i` is
 
     .. math::
 
         \mathbf{Ax} = \lambda \mathbf{x}
 
-    where `A` is the adjacency matrix of the graph G with eigenvalue `\lambda`. By virtue 
-    of the Perron–Frobenius theorem, there is a unique and positive solution if `\lambda` is
-    the largest eigenvalue associated with the eigenvector of the adjacency matrix `A` ([2]_).
+    where `A` is the adjacency matrix of the graph G with eigenvalue `\lambda`.
+    By virtue of the Perron–Frobenius theorem, there is a unique and positive
+    solution if `\lambda` is the largest eigenvalue associated with the
+    eigenvector of the adjacency matrix `A` ([2]_).
 
     Parameters
     ----------
@@ -68,15 +70,15 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     Notes
     ------
     The measure was introduced by [1]_.
-    
-    The eigenvector calculation is done by the power iteration method
-    and has no guarantee of convergence. The iteration will stop
-    after max_iter iterations or an error tolerance of
-    number_of_nodes(G)*tol has been reached.
+
+    The eigenvector calculation is done by the power iteration method and has
+    no guarantee of convergence. The iteration will stop after ``max_iter``
+    iterations or an error tolerance of ``number_of_nodes(G)*tol`` has been
+    reached.
 
     For directed graphs this is "left" eigenvector centrality which corresponds
     to the in-edges in the graph. For out-edges eigenvector centrality
-    first reverse the graph with G.reverse().
+    first reverse the graph with ``G.reverse()``.
 
     References
     ------
@@ -103,7 +105,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
         x = nstart
     # normalize starting vector
     s = 1.0/sum(x.values())
-    for k in x: 
+    for k in x:
         x[k] *= s
     nnodes = G.number_of_nodes()
     # make up to max_iter iterations
@@ -134,16 +136,17 @@ power iteration failed to converge in %d iterations."%(i+1))""")
 def eigenvector_centrality_numpy(G, weight='weight'):
     """Compute the eigenvector centrality for the graph G.
 
-    Eigenvector centrality computes the centrality for a node based on the centrality
-    of its neighbors. The eigenvector centrality for node `i` is    
+    Eigenvector centrality computes the centrality for a node based on the
+    centrality of its neighbors. The eigenvector centrality for node `i` is
 
     .. math::
 
         \mathbf{Ax} = \lambda \mathbf{x}
 
-    where `A` is the adjacency matrix of the graph G with eigenvalue `\lambda`. By virtue 
-    of the Perron–Frobenius theorem, there is a unique and positive solution if `\lambda` is
-    the largest eigenvalue associated with the eigenvector of the adjacency matrix `A` ([2]_).
+    where `A` is the adjacency matrix of the graph G with eigenvalue `\lambda`.
+    By virtue of the Perron–Frobenius theorem, there is a unique and positive
+    solution if `\lambda` is the largest eigenvalue associated with the
+    eigenvector of the adjacency matrix `A` ([2]_).
 
     Parameters
     ----------
@@ -199,7 +202,7 @@ def eigenvector_centrality_numpy(G, weight='weight'):
         raise nx.NetworkXException('Empty graph.')
     M = nx.to_scipy_sparse_matrix(G, nodelist=G.nodes(), weight=weight,
                                   dtype=float)
-    eigenvalue, eigenvector = linalg.eigs(M.T, k=1, which='LR') 
+    eigenvalue, eigenvector = linalg.eigs(M.T, k=1, which='LR')
     largest = eigenvector.flatten().real
     norm = sp.sign(largest.sum())*sp.linalg.norm(largest)
     centrality = dict(zip(G,map(float,largest/norm)))

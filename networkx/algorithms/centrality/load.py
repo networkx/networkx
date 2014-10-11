@@ -1,8 +1,9 @@
+# coding=utf8
 """
-Load centrality. 
+Load centrality.
 
 """
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -22,19 +23,19 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
                            weight=None):
     """Compute load centrality for nodes.
 
-    The load centrality of a node is the fraction of all shortest 
+    The load centrality of a node is the fraction of all shortest
     paths that pass through that node.
 
     Parameters
     ----------
     G : graph
-      A networkx graph 
+      A networkx graph
 
     normalized : bool, optional
       If True the betweenness values are normalized by b=b/(n-1)(n-2) where
       n is the number of nodes in G.
-       
-    weight : None or string, optional  
+
+    weight : None or string, optional
       If None, edge weights are ignored.
       Otherwise holds the name of the edge attribute used as weight.
 
@@ -48,17 +49,18 @@ def newman_betweenness_centrality(G,v=None,cutoff=None,
 
     See Also
     --------
-    betweenness_centrality() 
+    betweenness_centrality()
 
     Notes
     -----
-    Load centrality is slightly different than betweenness. It was originally introduced by [2]_.
-    For this load algorithm see [1]_.
+    Load centrality is slightly different than betweenness. It was originally
+    introduced by [2]_. For this load algorithm see [1]_.
 
     References
     ----------
     .. [1] Mark E. J. Newman:
-       Scientific collaboration networks. II. Shortest paths, weighted networks, and centrality.
+       Scientific collaboration networks. II.
+       Shortest paths, weighted networks, and centrality.
        Physical Review E 64, 016132, 2001.
        http://journals.aps.org/pre/abstract/10.1103/PhysRevE.64.016132
     .. [2] Kwang-Il Goh, Byungnam Kahng and Doochul Kim
@@ -120,22 +122,22 @@ def _node_betweenness(G,source,cutoff=False,normalized=True,weight=None):
     onodes = [ (l,vert) for (vert,l) in length.items() ]
     onodes.sort()
     onodes[:] = [vert for (l,vert) in onodes if l>0]
-    
+
     # intialize betweenness
     between={}.fromkeys(length,1.0)
 
     while onodes:
         v=onodes.pop()
         if v in pred:
-            num_paths=len(pred[v])   # Discount betweenness if more than 
+            num_paths=len(pred[v])   # Discount betweenness if more than
             for x in pred[v]:        # one shortest path.
-                if x==source:   # stop if hit source because all remaining v  
+                if x==source:   # stop if hit source because all remaining v
                     break       #  also have pred[v]==[source]
                 between[x]+=between[v]/float(num_paths)
     #  remove source
     for v in between:
         between[v]-=1
-    # rescale to be between 0 and 1                
+    # rescale to be between 0 and 1
     if normalized:
         l=len(between)
         if l > 2:
@@ -172,7 +174,7 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
     """
     between={}
     # get the predecessor data
-    #(pred,length)=_fast_predecessor(G,source,cutoff=cutoff) 
+    #(pred,length)=_fast_predecessor(G,source,cutoff=cutoff)
     (pred,length)=nx.predecessor(G,source,cutoff=cutoff,return_seen=True)
     # order the nodes by path length
     onodes = [ nn for dd,nn in sorted( (dist,n) for n,dist in length.items() )]
@@ -184,10 +186,10 @@ def _edge_betweenness(G,source,nodes,cutoff=False):
     while onodes:           # work through all paths
         v=onodes.pop()
         if v in pred:
-            num_paths=len(pred[v])   # Discount betweenness if more than 
+            num_paths=len(pred[v])   # Discount betweenness if more than
             for w in pred[v]:        # one shortest path.
                 if w in pred:
-                    num_paths=len(pred[w])  # Discount betweenness, mult path  
+                    num_paths=len(pred[w])  # Discount betweenness, mult path
                     for x in pred[w]:
                         between[(w,x)]+=between[(v,w)]/num_paths
                         between[(x,w)]+=between[(w,v)]/num_paths
