@@ -74,8 +74,8 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
 
     References
     ----------
-    .. [1] Centrality Measures Based on Current Flow.
-       Ulrik Brandes and Daniel Fleischer,
+    .. [1] Ulrik Brandes and Daniel Fleischer:
+       Centrality Measures Based on Current Flow.
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
        http://www.inf.uni-konstanz.de/algo/publications/bf-cmbcf-05.pdf

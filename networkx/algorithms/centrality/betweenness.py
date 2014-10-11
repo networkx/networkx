@@ -71,7 +71,7 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     Notes
     -----
     The algorithm is from Ulrik Brandes [1]_.
-    See [2]_ for details on algorithms for variations and related metrics.
+    See [4]_ for the original first published version and [2]_ for details on algorithms for variations and related metrics.
 
     For approximate betweenness calculations set k=#samples to use
     k nodes ("pivots") to estimate the betweenness values. For an estimate
@@ -83,8 +83,8 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
 
     References
     ----------
-    .. [1]  A Faster Algorithm for Betweenness Centrality.
-       Ulrik Brandes,
+    .. [1] Ulrik Brandes:
+       A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
        http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
@@ -95,6 +95,11 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
        Centrality Estimation in Large Networks.
        International Journal of Bifurcation and Chaos 17(7):2303-2318, 2007.
        http://www.inf.uni-konstanz.de/algo/publications/bp-celn-06.pdf
+    .. [4] Linton C. Freeman:
+       A set of measures of centrality based on betweenness.
+       Sociometry 40: 35–41, 1977
+       http://moreno.ss.uci.edu/23.pdf
+
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     if k is None:
