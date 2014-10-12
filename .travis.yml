@@ -76,6 +76,9 @@ before_install:
       tar xf nose-1.3.3.tar.gz;
       cp -R nose-1.3.3/nose IronPython-2.7.5b2/Lib;
 
+      curl -L -o IronPython-2.7.5b2/Lib/lib2to3/Grammar.txt https://raw.githubusercontent.com/IronLanguages/main/master/External.LCA_RESTRICTED/Languages/CPython/27/Lib/lib2to3/Grammar.txt;
+      curl -L -o IronPython-2.7.5b2/Lib/lib2to3/PatternGrammar.txt https://raw.githubusercontent.com/IronLanguages/main/master/External.LCA_RESTRICTED/Languages/CPython/27/Lib/lib2to3/PatternGrammar.txt;
+
       popd;
     fi
 
