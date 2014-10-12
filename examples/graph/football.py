@@ -17,11 +17,6 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    All rights reserved.
 #    BSD license.
 
-try:
-    import pyparsing
-except ImportError as e:
-    raise ImportError(str(e)+". Check http://pyparsing.wikispaces.com/")
-    
 from networkx import *
 
 url="http://www-personal.umich.edu/~mejn/netdata/football.zip"

@@ -156,13 +156,6 @@ provides graph drawing and graph layout algorithms.
 
   - Download: http://graphviz.org/
 
-Pyparsing
----------
-
-http://pyparsing.wikispaces.com/
-
-Required for pydot, GML file reading.
-
 PyYAML
 ------
 
