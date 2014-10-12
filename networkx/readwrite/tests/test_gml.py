@@ -238,7 +238,7 @@ class TestGraph(object):
   name "path_graph(1)"
   node [
     id 0
-    demo "This is &quot;quoted&quot; and this is a copyright: &#169;"
+    demo "This is &quot;quoted&quot; and this is a copyright: &copy;"
   ]
 ]"""
         assert_equal(data, answer)

@@ -39,59 +39,38 @@ __author__ = """\n""".join([
 
 __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 
-from cgi import escape
 from collections import deque
 from functools import partial
+import re
+from xml.sax.saxutils import escape
+try:
+    string_types = (str, unicode)
+    import HTMLParser as html
+    unescape = partial(html.HTMLParser.unescape, html.HTMLParser())
+    from htmlentitydefs import entitydefs as entities
+    str = unicode
+    # See xml.sax.saxutils.escape doc
+    entities.pop('gt')
+    entities.pop('lt')
+    entities.pop('amp')
+    entity_keys = map(lambda k: k.decode('latin-1'), entities.values())
+except NameError:
+    # Python 3.x
+    string_types = (str)
+    from html.parser import unescape
+    from html.entities import entitydefs as entities
+    entities.pop('gt')
+    entities.pop('lt')
+    entities.pop('amp')
+    entity_keys = map(lambda k: k, entities.values())
+
+
+mapping = zip(entity_keys, map(lambda e: u'&'+e+';', entities.keys()))
+entities = dict(mapping)
 
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file
-
-##
-# Removes HTML or XML character references and entities from a text string.
-#
-# @param text The HTML (or XML) source text (as a unicode object)
-# @return The plain text, as a Unicode string, if necessary.
-#
-# Source: http://effbot.org/zone/re-sub.htm#unescape-html
-#
-import re
-try:
-    import htmlentitydefs
-except ImportError:
-    # Python 3.x
-    import html.entities as htmlentitydefs
-
-try:
-    chr = unichr
-except NameError:
-    pass
-
-try:
-    str = unicode
-except NameError:
-    pass
-
-def unescape(text):
-    def fixup(m):
-        text = m.group(0)
-        if text[:2] == "&#":
-            # character reference
-            try:
-                if text[:3] == "&#x":
-                    return chr(int(text[3:-1], 16))
-                else:
-                    return chr(int(text[2:-1]))
-            except ValueError:
-                pass
-        else:
-            # named entity
-            try:
-                text = chr(htmlentitydefs.name2codepoint[text[1:-1]])
-            except KeyError:
-                pass
-        return text # leave as is
-    return re.sub("&#?\w+;", fixup, text)
 
 @open_file(0, mode='rb')
 def read_gml(path, relabel=False):
@@ -138,8 +117,7 @@ def read_gml(path, relabel=False):
     >>> H = nx.read_gml('test.gml')
     """
 
-    lines = map(lambda line: line.decode('utf-8'), path.readlines())
-    G = parse_gml(lines, relabel=relabel)
+    G = parse_gml(path.readlines(), relabel=relabel)
     return G
 
 @open_file(1, mode='wb')
@@ -185,7 +163,7 @@ def write_gml(G, path):
 
     >>> nx.write_gml(G,"test.gml.gz")
     """
-    path.write(generate_gml(G).encode('ascii', 'xmlcharrefreplace'))
+    path.write(generate_gml(G).encode('ascii'))
 
 
 def parse_gml(lines, relabel=True):
@@ -228,8 +206,15 @@ def parse_gml(lines, relabel=True):
     http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
     """
 
-    if isinstance(lines, str):
+    # As input it can get:
+    #   - an ascii string in py2.7
+    #   - a unicode string in both py2.7 and py3
+    #   - a byte array in py3, e. g. when it's invoked by read_gml
+    #   - a list of the previous points
+
+    if is_string_or_bytes(lines):
         lines = lines.split('\n')
+
     elms = parse(lines)
     G = nx.MultiGraph()
 
@@ -313,11 +298,6 @@ def generate_gml(G):
     return '\n'.join(lines)
 
 
-def filterfalse(predicate, iterable):
-    fn = lambda *args: not predicate(*args)
-    return filter(fn, iterable)
-
-
 def is_int(v):
     try:
         int(v)
@@ -327,19 +307,30 @@ def is_int(v):
 
 
 def ignore_line(line):
-    return not len(line) or line.strip().startswith('#')
+    line = line.strip()          
+    return len(line) and not line.startswith('#')
 
 
 def remove_ignored_lines(lines):
-    return filterfalse(ignore_line, lines)
+    return filter(ignore_line, lines)
+
+
+def tokens(line):
+    s = line.replace('[', ' [ ').replace(']', ' ] ')
+    return re.findall('([^\s"]+|"[^"]*")', s)
+
+
+def to_string_lines(lines):
+    return (l.decode('latin-1') if isinstance(l, bytes) else l for l in lines)
 
 
 def tokenize(lines):
-    s = ('\n'.join(remove_ignored_lines(lines))
-             .replace('[', ' [ ')
-             .replace(']', ' ] '))
-    # This way a quoted string is a token
-    return deque(re.findall('([^\s"]+|"[^"]*")', s))
+    d = deque()
+    lines = remove_ignored_lines(to_string_lines(lines))
+    for line in lines: 
+        if isinstance(line, bytes): line = line.decode('utf-8')
+        d.extend(tokens(line))
+    return d
 
 
 def parse(lines):
@@ -467,10 +458,18 @@ def format_dict_attribute(k, v, indent):
 
 
 def format_value(v, indent='  '):
-    if isinstance(v, str) and v.startswith('"'): v = v.replace('"', '')
+    if isinstance(v, string_types) and v.startswith('"'): v = v.replace('"', '')
     if isinstance(v, bool):         return 1 if v else 0
     if isinstance(v, (int, float)): return v
-    else: return '"{}"'.format(escape(str(v), quote = True))
+    else: return '"{}"'.format(escape_string(str(v)))
+
+
+def is_string_or_bytes(s):
+    return isinstance(s, string_types) or isinstance(s, bytes)
+
+
+def escape_string(s):
+    return escape(s, entities)
 
 
 # fixture for nose tests
