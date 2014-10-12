@@ -184,3 +184,39 @@ graph
   ]
 ]"""
         assert_equal(data, answer)
+
+    def test_write_list_attribute(self):
+        import tempfile
+        G = networkx.path_graph(1)
+        # This is a unicode string (due to the __future__ import)
+        # It was decoded from utf-8 since that the encoding of this file.
+        G.node[0]['baz'] = ['foo', 'bar']
+        file = tempfile.NamedTemporaryFile()
+        networkx.write_gml(G, file)
+        file.seek(0)
+        # Should be bytes in 2.x and 3.x
+        data = file.read().strip()
+        answer = b"""graph [
+  name "path_graph(1)"
+  node [
+    id 0
+    label "0"
+    baz "foo"
+    baz "bar"
+  ]
+]"""
+        assert_equal(data, answer)
+
+    def test_parse_list_attribute(self):
+        gml = """graph [
+  name "path_graph(1)"
+  node [
+    id 0
+    label "0"
+    baz "foo"
+    baz "bar"
+  ]
+]"""
+        G = networkx.parse_gml(gml, relabel=True)
+        #                  BUG: it should be an integer...
+        assert_equal(G.node['0']['baz'], ['foo', 'bar'])
