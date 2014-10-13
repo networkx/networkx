@@ -39,34 +39,36 @@ __author__ = """\n""".join([
 
 __all__ = ['read_gml', 'parse_gml', 'generate_gml', 'write_gml']
 
+from sys import version as python_version
 from collections import deque
 from functools import partial
 import re
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import (escape, unescape)
+
 try:
     string_types = (str, unicode)
-    import HTMLParser as html
-    unescape = partial(html.HTMLParser.unescape, html.HTMLParser())
-    from htmlentitydefs import entitydefs as entities
+    from htmlentitydefs import entitydefs as name_to_code_entities
     str = unicode
     # See xml.sax.saxutils.escape doc
-    entities.pop('gt')
-    entities.pop('lt')
-    entities.pop('amp')
-    entity_keys = map(lambda k: k.decode('latin-1'), entities.values())
+    name_to_code_entities.pop('gt')
+    name_to_code_entities.pop('lt')
+    name_to_code_entities.pop('amp')
+    entity_codes = map(lambda k: k.decode('latin-1'), name_to_code_entities.values())
+    for k, v in name_to_code_entities.items():
+        name_to_code_entities[k] = v.decode('latin-1')
 except NameError:
     # Python 3.x
     string_types = (str)
-    from html.parser import unescape
-    from html.entities import entitydefs as entities
-    entities.pop('gt')
-    entities.pop('lt')
-    entities.pop('amp')
-    entity_keys = map(lambda k: k, entities.values())
+    from html.entities import entitydefs as name_to_code_entities    
+    name_to_code_entities.pop('gt')
+    name_to_code_entities.pop('lt')
+    name_to_code_entities.pop('amp')
+    entity_codes = list(name_to_code_entities.values())
 
+entity_names = list(map(lambda e: '&'+e+';', name_to_code_entities.keys()))
+name_to_code_entities = dict(zip(entity_names, entity_codes))
+code_to_name_entities = dict(zip(entity_codes, entity_names))
 
-mapping = zip(entity_keys, map(lambda e: u'&'+e+';', entities.keys()))
-entities = dict(mapping)
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -94,7 +96,7 @@ def read_gml(path, relabel=False):
         If relabel is True and there are nodes with the same label.
 
     SyntaxError
-        If a syntax error is encountered while parsing. 
+        If a syntax error is encountered while parsing.
 
     See Also
     --------
@@ -143,8 +145,8 @@ def write_gml(G, path):
     This implementation does not support all Python data types as GML
     data.  Nodes, node attributes, edge attributes, and graph
     attributes must be either dictionaries, lists with at least two elements,
-    single stings or numbers.  If they are not an attempt is made to represent 
-    them as strings.  For example, a tuple as edge data will be represented in 
+    single stings or numbers.  If they are not an attempt is made to represent
+    them as strings.  For example, a tuple as edge data will be represented in
     the GML file as::
 
        edge [
@@ -163,7 +165,11 @@ def write_gml(G, path):
 
     >>> nx.write_gml(G,"test.gml.gz")
     """
-    path.write(generate_gml(G).encode('ascii'))
+    
+    if python_version < '3':
+        path.write(generate_gml(G).encode('ascii'))
+    else:
+        path.write(bytes(generate_gml(G), 'ascii'))
 
 
 def parse_gml(lines, relabel=True):
@@ -189,7 +195,7 @@ def parse_gml(lines, relabel=True):
         If relabel is True and there are nodes with the same label.
 
     SyntaxError
-        If a syntax error is encountered while parsing. 
+        If a syntax error is encountered while parsing.
 
     See Also
     --------
@@ -265,8 +271,8 @@ def generate_gml(G):
     This implementation does not support all Python data types as GML
     data.  Nodes, node attributes, edge attributes, and graph
     attributes must be either dictionaries, lists with at least two elements,
-    single stings or numbers.  If they are not an attempt is made to represent 
-    them as strings.  For example, a tuple as edge data will be represented in 
+    single stings or numbers.  If they are not an attempt is made to represent
+    them as strings.  For example, a tuple as edge data will be represented in
     the GML file as::
 
        edge [
@@ -295,6 +301,7 @@ def generate_gml(G):
             lines.append(format_attribute(k, v, indent * 2))
         lines.append('  ]')
     lines.append(']')
+
     return '\n'.join(lines)
 
 
@@ -307,7 +314,7 @@ def is_int(v):
 
 
 def ignore_line(line):
-    line = line.strip()          
+    line = line.strip()
     return len(line) and not line.startswith('#')
 
 
@@ -327,7 +334,7 @@ def to_string_lines(lines):
 def tokenize(lines):
     d = deque()
     lines = remove_ignored_lines(to_string_lines(lines))
-    for line in lines: 
+    for line in lines:
         if isinstance(line, bytes): line = line.decode('utf-8')
         d.extend(tokens(line))
     return d
@@ -350,7 +357,7 @@ def raise_with_context(msg, tokens):
 
 
 def string_item(s):
-    return unescape(s.replace('"', ''))
+    return unescape_string(s.replace('"', ''))
 
 
 def parse_graph(tokens):
@@ -469,7 +476,11 @@ def is_string_or_bytes(s):
 
 
 def escape_string(s):
-    return escape(s, entities)
+    return escape(s, code_to_name_entities)
+
+
+def unescape_string(s):
+    return unescape(s, name_to_code_entities)
 
 
 # fixture for nose tests
