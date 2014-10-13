@@ -267,7 +267,10 @@ def parse_gml(lines, label='label', destringizer=None):
 
     def filter_lines(lines):
         if isinstance(lines, (str, unicode)):
-            lines = decode_line(lines).split('\n')
+            lines = decode_line(lines)
+            if lines and lines[-1] == '\n':
+                lines = lines[:-1]
+            lines = lines.split('\n')
             for line in lines:
                 yield line
         else:
