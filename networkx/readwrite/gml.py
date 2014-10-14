@@ -290,7 +290,7 @@ def parse_gml(lines, label='label', destringizer=None):
 def parse_gml_lines(lines, label, destringizer):
     """Parse GML into a graph.
     """
-    def tokenize(lines):
+    def tokenize():
         patterns = [
             r'Creator\s.*$',  # 'Creator' line
             r'Version\s.*$',  # 'Version' line
@@ -302,8 +302,8 @@ def parse_gml_lines(lines, label, destringizer):
             r'\]',            # dict end
             r'#.*$|\s+'       # comments and whitespaces
             ]
-        tokens = re.compile('|'.join('(' + pattern + ')'
-                                     for pattern in patterns))
+        tokens = re.compile(
+            '|'.join('(' + pattern + ')' for pattern in patterns))
         lineno = 0
         for line in lines:
             length = len(line)
@@ -339,6 +339,13 @@ def parse_gml_lines(lines, label, destringizer):
             (expected, repr(value) if value is not None else 'EOF', lineno,
              pos))
 
+    def consume(curr_token, type, expected, optional=False):
+        if curr_token[0] == type:
+            return next(tokens)
+        if not optional:
+            unexpected(curr_token, expected)
+        return curr_token
+
     # Each of the parse_xxx functions below takes two parameter curr_token and
     # tokens. curr_token represents the current token to be processed; tokens
     # contains the remaining unprocessed tokens. Advancement in the token
@@ -348,39 +355,25 @@ def parse_gml_lines(lines, label, destringizer):
     #
     # within a single function and by
     #
-    #     curr_token = parse_xxx(curr_token, tokens)
+    #     curr_token [, value] = parse_xxx(curr_token)
     #
     # across function boundaries, i.e., the callee returns the last fetched
     # token so that the caller can update its reference to the current token.
 
-    def parse_metadata(curr_token, tokens):
-        type = curr_token[0]
-        if type == 0:  # 'Creator' line
-            curr_token = next(tokens)
-            type = curr_token[0]
-        elif type is None:
-            unexpected(curr_token, "'Creator', 'Version' or 'graph'")
-        if type == 1:  # 'Version' line
-            curr_token = next(tokens)
-        elif type is None:
-            unexpected(curr_token, "'Version' or 'graph'")
+    def parse_metadata(curr_token):
+        curr_token = consume(curr_token, 0, "'Creator', 'Version' or 'graph'",
+                             True)
+        curr_token = consume(curr_token, 1, "'Version' or 'graph'", True)
         return curr_token
 
-    def parse_graph(curr_token, tokens):
-        if curr_token[:2] == (2, 'graph'):
-            curr_token = next(tokens)
-        else:
-            unexpected(curr_token, "'graph'")
-        if curr_token[:2] == (6, '['):  # dict start
-            curr_token = next(tokens)
-        else:
-            unexpected(curr_token, "'['")
+    def parse_dict(curr_token, subparsers={}):
+        curr_token = consume(curr_token, 6, "'['")  # dict start
+        dct = {}
         while curr_token[0] == 2:  # keys
             key = curr_token[1]
-            if key == 'node':
-                curr_token = parse_node(curr_token, tokens)
-            elif key == 'edge':
-                curr_token = parse_edge(curr_token, tokens)
+            subparser = subparsers.get(key)
+            if subparser:
+                curr_token = subparser(curr_token)
             else:
                 curr_token = next(tokens)
                 type = curr_token[0]
@@ -396,90 +389,60 @@ def parse_gml_lines(lines, label, destringizer):
                             pass
                     curr_token = next(tokens)
                 elif type == 6:  # dict start
-                    curr_token, value = parse_dict(curr_token, tokens)
+                    curr_token, value = parse_dict(curr_token)
                 else:
                     unexpected(curr_token, "an int, float, string or '['")
-                graph[key] = value
-        if curr_token[:2] == (7, ']'):  # dict end
-            curr_token = next(tokens)
-        else:
-            unexpected(curr_token, "']'")
-        return curr_token
+                dct[key] = value
+        curr_token = consume(curr_token, 7, "']'")  #dict end
+        return curr_token, dct
+
+    def parse_graph(curr_token):
+        curr_token = consume(curr_token, 2, "'graph'")
+        subparsers = {'node': parse_node, 'edge': parse_edge}
+        return parse_dict(curr_token, subparsers)
 
     def missing_attr(obj, attr, lineno, pos):
         raise NetworkXError(
             '%s defined at (%d, %d) does not have %r attribute' %
             (obj, lineno, pos, attr))
 
-    def parse_node(curr_token, tokens):
+    def parse_node(curr_token):
         lineno, pos = curr_token[2:]
         curr_token = next(tokens)
-        curr_token, value = parse_dict(curr_token, tokens)
+        curr_token, value = parse_dict(curr_token)
         for attr in ['id', label]:
             if attr not in value:
                 missing_attr('node', attr, lineno, pos)
         nodes[value.pop('id')].update(value)
         return curr_token
 
-    def parse_edge(curr_token, tokens):
+    def parse_edge(curr_token):
         lineno, pos = curr_token[2:]
         curr_token = next(tokens)
-        curr_token, value = parse_dict(curr_token, tokens)
+        curr_token, value = parse_dict(curr_token)
         for attr in ['source', 'target']:
             if attr not in value:
                 missing_attr('edge', attr, lineno, pos)
         edges.append((value, lineno, pos))
         return curr_token
 
-    def parse_dict(curr_token, tokens):
-        if curr_token[:2] == (6, '['):  # dict start
-            curr_token = next(tokens)
-        else:
-            unexpected(curr_token, "'['")
-        dct = {}
-        while curr_token[0] == 2:  # keys
-            key = curr_token[1]
-            curr_token = next(tokens)
-            type = curr_token[0]
-            if type == 3 or type == 4:  # reals or ints
-                value = curr_token[1]
-                curr_token = next(tokens)
-            elif type == 5:  # strings
-                value = unescape(curr_token[1][1:-1])
-                if destringizer:
-                    try:
-                        value = destringizer(value)
-                    except NetworkXError:
-                        pass
-                curr_token = next(tokens)
-            elif type == 6:  # dict start
-                curr_token, value = parse_dict(curr_token, tokens)
-            else:
-                unexpected(curr_token, "an int, float, string or '['")
-            dct[key] = value
-        if curr_token[:2] == (7, ']'):  # dict end
-            curr_token = next(tokens)
-        else:
-            unexpected(curr_token, "']'")
-        return curr_token, dct
-
-    def parse_gml_tree(tokens):
+    def parse_gml_tree():
         curr_token = next(tokens)
-        curr_token = parse_metadata(curr_token, tokens)
-        curr_token = parse_graph(curr_token, tokens)
+        curr_token = parse_metadata(curr_token)
+        curr_token, graph = parse_graph(curr_token)
         if curr_token[0] is not None:  # EOF
             unexpected(curr_token, 'EOF')
+        return graph
 
     if label is None:
         label = 'id'
-    # Graph attributes
-    graph = {}
     # Node attributes indexed by node IDs
     nodes = defaultdict(dict)
     # Edge attributes
     edges = []
-    tokens = tokenize(lines)
-    parse_gml_tree(tokens)
+    tokens = tokenize()
+    # Graph attributes
+    graph = parse_gml_tree()
     if label != 'id':
         # Mapping for relabling nodes
         mapping = {id: attrs.pop(label) for id, attrs in nodes.items()}
