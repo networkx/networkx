@@ -106,11 +106,8 @@ class TestGraph(object):
         assert_equals(node_ids[1][1], G.node["Node 2"])
         assert_equals(node_ids[2][1], G.node["Node 3"])
         assert_equals(e12, G.edge["Node 1"]["Node 2"])
-        assert_equals(e12, G.edge["Node 2"]["Node 1"])
         assert_equals(e23, G.edge["Node 2"]["Node 3"])
-        assert_equals(e23, G.edge["Node 3"]["Node 2"])
         assert_equals(e31, G.edge["Node 3"]["Node 1"])
-        assert_equals(e31, G.edge["Node 1"]["Node 3"])
 
         G = networkx.parse_gml(self.simple_data, relabel=False)
         for k, v in G.graph.items(): assert_equals(v, graph[k])
@@ -260,16 +257,64 @@ class TestGraph(object):
         assert_equal(gml, networkx.generate_gml(G))
 
 
-    def test_parse_gml_directed_attribute(self):
-        gml = "graph []"
-        G = networkx.parse_gml(gml)
+    # def test_parse_gml_directed_attribute(self):
+    #     gml = "graph []"
+    #     G = networkx.parse_gml(gml)
+    #     assert(isinstance(G, networkx.Graph))
+    #     assert_false(isinstance(G, networkx.DiGraph))
+    #     assert_false(isinstance(G, networkx.MultiGraph))
+    #     gml = "graph [directed 1 node[] node[] edge[source 0 target 1]]"
+    #     G = networkx.parse_gml(gml, relabel=False)
+    #     assert(isinstance(G, networkx.DiGraph))
+    #     assert_equal({0: {1: {}}, 1: {}}, G.edge)
+    #     assert_false(isinstance(G, networkx.MultiDiGraph))
+    #     gml = """graph [
+    #         node []
+    #         node []
+    #         edge [source 0 target 1]
+    #         edge [source 0 target 1]
+    #     ]"""
+    #     G = networkx.parse_gml(gml, relabel=False)
+    #     assert(isinstance(G, networkx.MultiGraph))
+    #     assert_false(isinstance(G, networkx.MultiDiGraph))
+    #     gml = """graph [
+    #         directed 1
+    #         node []
+    #         node []
+    #         edge [source 0 target 1]
+    #         edge [source 0 target 1]
+    #     ]"""
+    #     G = networkx.parse_gml(gml, relabel=False)
+    #     assert(isinstance(G, networkx.MultiDiGraph))
+
+    def test_parse_gml_graph_type(self):
+        gml = """graph [
+            node []
+            node []
+            edge [source 0 target 1]
+        ]"""
+        G = networkx.parse_gml(gml, relabel=False)
         assert(isinstance(G, networkx.Graph))
-        assert_false(isinstance(G, networkx.DiGraph))
-        assert_false(isinstance(G, networkx.MultiGraph))
-        gml = "graph [directed 1]"
-        G = networkx.parse_gml(gml)
+        assert_equal({0: {1: {}}, 1: {0: {}}}, G.edge)
+        assert_false(isinstance(G, (networkx.DiGraph, networkx.MultiGraph)))
+
+
+    def test_parse_gml_digraph_type(self):
+        gml = """graph [
+            node []
+
+            directed 1
+
+            node []
+            edge [source 0 target 1]
+        ]"""
+        G = networkx.parse_gml(gml, relabel=False)
         assert(isinstance(G, networkx.DiGraph))
-        assert_false(isinstance(G, networkx.MultiDiGraph))
+        assert_equal({0: {1: {}}, 1: {}}, G.edge)
+        assert_false(isinstance(G, (networkx.MultiGraph, networkx.MultiDiGraph)))
+
+
+    def test_parse_gml_multigraph_type(self):
         gml = """graph [
             node []
             node []
@@ -277,8 +322,12 @@ class TestGraph(object):
             edge [source 0 target 1]
         ]"""
         G = networkx.parse_gml(gml, relabel=False)
+        assert_equal({0: {1: {0: {}, 1: {}}}, 1: {0: {0: {}, 1: {}}}}, G.edge)
         assert(isinstance(G, networkx.MultiGraph))
         assert_false(isinstance(G, networkx.MultiDiGraph))
+
+
+    def test_parse_gml_multidigraph_type(self):
         gml = """graph [
             directed 1
             node []
@@ -288,4 +337,5 @@ class TestGraph(object):
         ]"""
         G = networkx.parse_gml(gml, relabel=False)
         assert(isinstance(G, networkx.MultiDiGraph))
+        assert_equal({0: {1: {0: {}, 1: {}}}, 1: {}}, G.edge)
 

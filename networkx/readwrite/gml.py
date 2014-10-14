@@ -222,7 +222,7 @@ def parse_gml(lines, relabel=True):
         lines = lines.split('\n')
 
     elms = parse(lines)
-    G = nx.MultiGraph()
+    G = nx.MultiDiGraph()
 
     edge_elms = filter(partial(filter_and_build_elm, G), elms)
     # remaining entries should be only edges
@@ -240,17 +240,6 @@ def parse_gml(lines, relabel=True):
                               'duplicate node labels found. '
                   'Use relabel=False.')
         nx.relabel_nodes(G, dict(mapping), copy = False)
-    return G
-
-
-def convert_graph_type(G):
-    """ G is assumed to be a MultiGraph """
-    directed   = G.graph.pop('directed', 0)
-    multigraph = G.graph.pop('multigraph', False)
-    if directed == 1:
-        G = nx.MultiDiGraph(G) if multigraph else nx.DiGraph(G)
-    elif not multigraph:
-        G = nx.Graph(G)
     return G
 
 
@@ -481,6 +470,17 @@ def escape_string(s):
 
 def unescape_string(s):
     return unescape(s, name_to_code_entities)
+
+
+def convert_graph_type(G):
+    """ G is assumed to be a MultiDiGraph """
+    directed   = G.graph.pop('directed', 0)
+    multigraph = G.graph.pop('multigraph', False)
+    if directed == 0:
+        G = nx.MultiGraph(G) if multigraph else nx.Graph(G)
+    elif not multigraph:
+        G = nx.DiGraph(G)
+    return G
 
 
 # fixture for nose tests
