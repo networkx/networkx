@@ -4,7 +4,7 @@ from nose.tools import *
 import networkx as nx
 from networkx import girvan_newman
 
-@raises(nx.NetworkXError)
+@raises(nx.NetworkXNotImplemented)
 def test_directed_not_supported():
     # not supported for directed graphs
     test = nx.DiGraph()
