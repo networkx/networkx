@@ -28,11 +28,16 @@ def test_no_communities_1():
 
 def test_simple_communities():
     # When two edges have the same betweenness the one to be deleted is choosen
-    # randomly, thats why the test graph must be very simple.
+    # randomly, thats why the test graph must be very simple:
+    #    a-c
+    #    |
+    #    b-d
     test = nx.Graph()
     test.add_edge('a','b')
     test.add_edge('a','c')
     test.add_edge('b','d')    
+    
+    # The expected communities are:    
     ground_truth = set([frozenset(['a', 'c']), 
                         frozenset(['a']), 
                         frozenset(['c']), 
