@@ -28,7 +28,6 @@ def test_one_node():
 
 def test_simple_communities():
     test = nx.Graph()
-    test.add_edge('a', 'b')
     test.add_edge('a', 'c')
     test.add_edge('a', 'd')
     test.add_edge('d', 'c')
