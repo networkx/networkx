@@ -12,7 +12,6 @@ All rights reserved.
 BSD license.
 """
 
-import sys
 from networkx.utils.decorators import not_implemented_for
 
 __author__ = """Aitor Almeida <aitoralmeida@gmail.com"""
@@ -121,7 +120,7 @@ def _select_labels_of_highest_frequency(freqs):
        Returns a set.
     """
     labels = set()
-    mx = -(sys.maxint) - 1
+    mx = -1000000
     for label, freq in freqs.items():
         if mx <= freq:
             if mx < freq:
