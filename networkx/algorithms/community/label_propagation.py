@@ -7,19 +7,20 @@ Based on the code donated by Tyler Rush
 LPA community detection algorithm (based off of 'Community Detection via 
 Semi-Synchronous Label Propagation Algorithms' Cordasco and Gargano, 2011
 
-@author: Aitor Almeida <aitor.almeida@deusto.es>
+@author: Aitor Almeida <aitoralmeida@gmail.com>
 All rights reserved.
 BSD license.
 """
 
 import sys
+from networkx.utils.decorators import not_implemented_for
 
+__author__ = """Aitor Almeida <aitoralmeida@gmail.com"""
 __all__ = ["label_propagation_communities"]
 
+@not_implemented_for('directed')
 def label_propagation_communities(G):
-    #__inform_user( "coloring network ..." )
     coloring = _color_network(G)
-    #__inform_user( "uniquely labeling network ..." )
     labeling = _uniquely_label(G)
     nrounds = 1
     while not _labeling_complete(labeling, G):
@@ -60,8 +61,8 @@ def _calculate_label_frequencies(node, labeling, G):
 
 def _color_network(G):
     """Colors the network so that neighboring nodes all have distinct colors.
-       Returns a dict of set of nodes and also a lookup of nodes to colors, in a
-       tuple in that order.
+       Returns a dict of set of nodes and also a lookup of nodes to colors, in 
+       a tuple in that order.
     """
     coloring = dict() # color => set(node)
     lookup = dict() # node => color
@@ -96,8 +97,8 @@ def _form_communities(labeling, G):
     return communities
 
 def _labeling_complete(labeling, G):
-    """Determines whether or not LPA is done. It is complete when all nodes have
-       a label that is in the set of highest frequency labels amongst its
+    """Determines whether or not LPA is done. It is complete when all nodes 
+       have a label that is in the set of highest frequency labels amongst its
        neighbors.
 
        Nodes with no neighbors are themselves a community and are therefore
@@ -145,11 +146,9 @@ def _update_labels(labeling, coloring, G):
 
 def _update_label( node, labeling, G):
     """Updates the label of a SINGLE node in the network."""
-    counts = _calculate_label_frequencies( node, labeling, G)
-    high_labels = _select_labels_of_highest_frequency( counts )
+    counts = _calculate_label_frequencies(node, labeling, G)
+    high_labels = _select_labels_of_highest_frequency(counts)
     if len(high_labels) == 1:
         labeling[node] = high_labels.pop()
     elif len(high_labels) > 1:
-        labeling[node] = _break_color_tie( labeling[node] , high_labels )
-
-
+        labeling[node] = _break_color_tie(labeling[node] , high_labels)
