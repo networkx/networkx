@@ -140,8 +140,6 @@ graph
         # https://github.com/networkx/networkx/issues/1061
         # Encoding quotes as HTML entities.
         G = nx.path_graph(1)
-        # This is a unicode string (due to the __future__ import)
-        # It was decoded from utf-8 since that the encoding of this file.
         attr = 'This is "quoted" and this is a copyright: ' + unichr(169)
         G.node[0]['demo'] = attr
         fobj = tempfile.NamedTemporaryFile()

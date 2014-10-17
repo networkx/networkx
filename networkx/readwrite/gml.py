@@ -47,14 +47,6 @@ import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file
 
-##
-# Removes HTML or XML character references and entities from a text string.
-#
-# @param text The HTML (or XML) source text (as a unicode object)
-# @return The plain text, as a Unicode string, if necessary.
-#
-# Source: http://effbot.org/zone/re-sub.htm#unescape-html
-#
 import re
 try:
     import htmlentitydefs
@@ -166,7 +158,8 @@ def read_gml(path, label='label', destringizer=None):
         attributes indicated by ``label``. Default value: ``'label'``.
 
     destringizer : callable, optional
-        A destringizer will recovers values stored as strings in GML. Default
+        A destringizer that recovers values stored as strings in GML. If it
+        cannot convert a string to a value, a NetworkXError is raised. Default
         value : ``None``.
 
     Returns
@@ -229,7 +222,8 @@ def parse_gml(lines, label='label', destringizer=None):
         attributes indicated by ``label``. Default value: ``'label'``.
 
     destringizer : callable, optional
-        A destringizer will recovers values stored as strings in GML. Default
+        A destringizer that recovers values stored as strings in GML. If it
+        cannot convert a string to a value, a NetworkXError is raised. Default
         value : ``None``.
 
     Returns
