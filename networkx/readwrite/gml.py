@@ -128,7 +128,7 @@ def literal_destringizer(rep):
 
     Raises
     ------
-    NetworkXError
+    ValueError
         If ``rep`` is not a Python literal.
     """
     if isinstance(rep, str):
@@ -159,7 +159,7 @@ def read_gml(path, label='label', destringizer=None):
 
     destringizer : callable, optional
         A destringizer that recovers values stored as strings in GML. If it
-        cannot convert a string to a value, a NetworkXError is raised. Default
+        cannot convert a string to a value, a ``ValueError`` is raised. Default
         value : ``None``.
 
     Returns
@@ -223,7 +223,7 @@ def parse_gml(lines, label='label', destringizer=None):
 
     destringizer : callable, optional
         A destringizer that recovers values stored as strings in GML. If it
-        cannot convert a string to a value, a NetworkXError is raised. Default
+        cannot convert a string to a value, a ``ValueError`` is raised. Default
         value : ``None``.
 
     Returns
@@ -379,7 +379,7 @@ def parse_gml_lines(lines, label, destringizer):
                     if destringizer:
                         try:
                             value = destringizer(value)
-                        except NetworkXError:
+                        except ValueError:
                             pass
                     curr_token = next(tokens)
                 elif type == 6:  # dict start
@@ -497,7 +497,7 @@ def literal_stringizer(value):
 
     Raises
     ------
-    NetworkXError
+    ValueError
         If ``value`` cannot be converted to GML.
 
     Notes
@@ -573,7 +573,7 @@ def literal_stringizer(value):
                 stringize(item)
             buf.write('}')
         else:
-            raise NetworkXError(
+            raise ValueError(
                 '%r cannot be converted into a Python literal' % value)
 
     buf = StringIO()
@@ -641,7 +641,11 @@ def generate_gml(G, stringizer=None):
                 yield indent + ']'
             else:
                 if stringizer:
-                    value = stringizer(value)
+                    try:
+                        value = stringizer(value)
+                    except ValueError:
+                        raise NetworkXError(
+                            '%r cannot be converted into a string' % value)
                 elif not isinstance(value, (str, unicode)):
                     raise NetworkXError('%r is not a string' % value)
                 yield indent + key + ' "' + escape(value) + '"'
