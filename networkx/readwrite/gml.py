@@ -139,9 +139,9 @@ def literal_destringizer(rep):
                     rep + '\n', '<string>'))[:-1]
             return literal_eval(rep)
         except (ParseError, SyntaxError):
-            raise NetworkXError('%r is not a valid Python literal' % orig_rep)
+            raise ValueError('%r is not a valid Python literal' % orig_rep)
     else:
-        raise NetworkXError('%r is not a string' % rep)
+        raise ValueError('%r is not a string' % rep)
 
 
 @open_file(0, mode='rb')
