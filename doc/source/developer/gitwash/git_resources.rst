@@ -9,7 +9,7 @@ Tutorials and summaries
 
 `github help`_ is Git's own help and tutorial site. `github more help`_
  lists more resources for learning Git and GitHub, including YouTube
-channels. The list is constantly update. In case you are used to subversion_
+channels. The list is constantly updated. In case you are used to subversion_
 , you can directly consult the `git svn crash course`_.
 
 To make full use of Git, you need to understand the concept behind Git.
@@ -22,7 +22,7 @@ in many languages
 * `git concepts`_ |emdash| a technical page on the concepts
 
 Other than that, many devlopers list their personal tipps and tricks.
-Among theres are `Fernando Perez`_, `Nick Quaranto`_ and `Linus Torvalds`_.
+Among others there are `Fernando Perez`_, `Nick Quaranto`_ and `Linus Torvalds`_.
 
 Manual pages online
 ===================
