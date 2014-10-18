@@ -52,29 +52,41 @@ before_install:
   ### Prepare the system to install prerequisites or dependencies
   - uname -a
   - printenv
-  - sudo apt-get update -qq
   - if [[ "${PYTHON_VM}" != ipy ]]; then
+      sudo apt-get update -qq;
       pip install --upgrade setuptools;
       pip install --upgrade pip;
       pip install wheel;
       pip --version;
     else
-      sudo apt-get install -qq mono-devel;
       pushd ..;
-      curl -L -o IronPython-2.7.5b2.zip 'https://db.tt/oq9lXfME?dl=1';
-      unzip IronPython-2.7.5b2.zip;
+      curl -L -o xamarin.pgp http://download.mono-project.com/repo/xamarin.gpg;
+      sudo apt-key add xamarin.pgp;
+      sudo sh -c 'echo "deb http://download.mono-project.com/repo/debian wheezy main" >> /etc/apt/sources.list';
+      sudo sh -c 'echo "deb http://download.mono-project.com/repo/debian wheezy-libtiff-compat main" >> /etc/apt/sources.list';
+      sudo apt-get update -qq;
+      sudo apt-get install -qq mono-devel;
+
+      curl -L -o ipy-2.7-maint.zip https://github.com/IronLanguages/main/archive/ipy-2.7-maint.zip;
+      unzip -q ipy-2.7-maint.zip;
+      pushd main-ipy-2.7-maint;
+      sed -i '708 s/pGroup/pGroup = null/' 'Languages/IronPython/IronPython.SQLite/c#sqlite/pcache1_c.cs';
+      xbuild /p:Configuration=Release Solutions/IronPython.sln;
+      export IPY="${PWD}/bin/Release/ipy.exe";
+      export IRONPYTHONPATH="${PWD}/External.LCA_RESTRICTED/Languages/IronPython/27/Lib";
+      popd;
 
       curl -L -o decorator-3.4.0.tar.gz https://pypi.python.org/packages/source/d/decorator/decorator-3.4.0.tar.gz;
       tar xf decorator-3.4.0.tar.gz;
-      cp decorator-3.4.0/src/decorator.py IronPython-2.7.5b2/Lib;
+      cp decorator-3.4.0/src/decorator.py "${IRONPYTHONPATH}";
 
       curl -L -o enum34-1.0.tar.gz https://pypi.python.org/packages/source/e/enum34/enum34-1.0.tar.gz;
       tar xf enum34-1.0.tar.gz;
-      cp enum34-1.0/enum/enum.py IronPython-2.7.5b2/Lib;
+      cp enum34-1.0/enum/enum.py "${IRONPYTHONPATH}";
 
-      curl -L -o nose-1.3.3.tar.gz https://pypi.python.org/packages/source/n/nose/nose-1.3.3.tar.gz;
-      tar xf nose-1.3.3.tar.gz;
-      cp -R nose-1.3.3/nose IronPython-2.7.5b2/Lib;
+      curl -L -o nose-1.3.4.tar.gz https://pypi.python.org/packages/source/n/nose/nose-1.3.4.tar.gz;
+      tar xf nose-1.3.4.tar.gz;
+      cp -R nose-1.3.4/nose "${IRONPYTHONPATH}";
 
       popd;
     fi
@@ -142,7 +154,7 @@ script:
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       nosetests --verbosity=2 --with-coverage --cover-package=networkx;
     else
-      mono ../IronPython-2.7.5b2/ipy.exe -X:ExceptionDetail -X:FullFrames -c 'from nose import main; main()' \--verbosity=2;
+      mono "${IPY}" -X:ExceptionDetail -X:FullFrames -c 'from nose import main; main()' \--verbosity=2;
     fi
 
 after_success:

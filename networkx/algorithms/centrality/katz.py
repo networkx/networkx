@@ -1,3 +1,4 @@
+# coding=utf8
 """
 Katz centrality.
 """
@@ -125,8 +126,8 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     The iteration will stop after max_iter iterations or an error tolerance of
     number_of_nodes(G)*tol has been reached.
 
-    When `\alpha = 1/\lambda_{max}` and `\beta=0`, Katz centrality is the same as
-    eigenvector centrality.
+    When `\alpha = 1/\lambda_{max}` and `\beta=0`, Katz centrality is the same
+    as eigenvector centrality.
 
     For directed graphs this finds "left" eigenvectors which corresponds
     to the in-edges in the graph. For out-edges Katz centrality
