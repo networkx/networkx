@@ -590,18 +590,20 @@ def generate_gml(G, stringizer=None):
         The graph to be converted to GML.
 
     stringizer : callable, optional
-        A stringizer which converts non-int/float/dict values into strings.
-        Default value: ``None``.
+        A stringizer which converts non-int/float/dict values into strings. If
+        it cannot convert a value into a string, it should raise a
+        ``ValueError`` raised to indicate that. Default value: ``None``.
 
     Returns
     -------
     lines: generator of strings
-       Lines of GML data. Newlines are not appended.
+        Lines of GML data. Newlines are not appended.
 
     Raises
     ------
     NetworkXError
-       If the graph cannot be converted to GML.
+        If ``stringizer`` cannot convert a value into a string, or the value to
+        convert is not a string while ``stringizer`` is ``None``.
 
     Notes
     -----
@@ -710,13 +712,15 @@ def write_gml(G, path, stringizer=None):
         .bz2 will be compressed.
 
     stringizer : callable, optional
-        A stringizer which converts non-int/float/dict values into strings.
-        Default value: ``None``.
+        A stringizer which converts non-int/float/dict values into strings. If
+        it cannot convert a value into a string, it should raise a
+        ``ValueError`` raised to indicate that. Default value: ``None``.
 
     Raises
     ------
     NetworkXError
-       If the graph cannot be converted to GML.
+        If ``stringizer`` cannot convert a value into a string, or the value to
+        convert is not a string while ``stringizer`` is ``None``.
 
     See Also
     --------
