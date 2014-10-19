@@ -69,6 +69,7 @@ except NameError:
 try:
     literal_eval(r"u'\u4444'")
 except SyntaxError:
+    # Remove 'u' prefixes in unicode literals in Python 3
     rtp_fix_unicode = RefactoringTool(['lib2to3.fixes.fix_unicode'],
                                       {'print_function': True})
 else:
@@ -134,6 +135,7 @@ def literal_destringizer(rep):
     if isinstance(rep, str):
         orig_rep = rep
         try:
+            # Python 3.2 does not recognize 'u' prefixes before string literals
             if rtp_fix_unicode:
                 rep = str(rtp_fix_unicode.refactor_string(
                     rep + '\n', '<string>'))[:-1]
