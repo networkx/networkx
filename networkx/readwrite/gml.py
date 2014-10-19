@@ -139,9 +139,9 @@ def literal_destringizer(rep):
                     rep + '\n', '<string>'))[:-1]
             return literal_eval(rep)
         except (ParseError, SyntaxError):
-            raise ValueError('%r is not a valid Python literal' % orig_rep)
+            raise ValueError('%r is not a valid Python literal' % (orig_rep,))
     else:
-        raise ValueError('%r is not a string' % rep)
+        raise ValueError('%r is not a string' % (rep,))
 
 
 @open_file(0, mode='rb')
@@ -204,8 +204,7 @@ def read_gml(path, label='label', destringizer=None):
                 line = line[:-1]
             yield line
 
-    G = parse_gml_lines(filter_lines(path), label=label,
-                        destringizer=destringizer)
+    G = parse_gml_lines(filter_lines(path), label, destringizer)
     return G
 
 
@@ -276,8 +275,7 @@ def parse_gml(lines, label='label', destringizer=None):
                     raise NetworkXError('input line contains newline')
                 yield line
 
-    G = parse_gml_lines(filter_lines(lines), label=label,
-                        destringizer=destringizer)
+    G = parse_gml_lines(filter_lines(lines), label, destringizer)
     return G
 
 
@@ -286,8 +284,6 @@ def parse_gml_lines(lines, label, destringizer):
     """
     def tokenize():
         patterns = [
-            r'Creator\s.*$',  # 'Creator' line
-            r'Version\s.*$',  # 'Version' line
             r'[A-Za-z][0-9A-Za-z]*\s+',  # keys
             r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',  # reals
             r'[+-]?[0-9]+',   # ints
@@ -308,15 +304,15 @@ def parse_gml_lines(lines, label, destringizer):
                     for i in range(len(patterns)):
                         group = match.group(i + 1)
                         if group is not None:
-                            if i == 2:    # keys
+                            if i == 0:    # keys
                                 value = group.rstrip()
-                            elif i == 3:  # reals
+                            elif i == 1:  # reals
                                 value = float(group)
-                            elif i == 4:  # ints
+                            elif i == 2:  # ints
                                 value = int(group)
                             else:
                                 value = group
-                            if i != 8:    # comments and whitespaces
+                            if i != 6:    # comments and whitespaces
                                 yield (i, value, lineno + 1, pos + 1)
                             pos += len(group)
                             break
@@ -340,109 +336,51 @@ def parse_gml_lines(lines, label, destringizer):
             unexpected(curr_token, expected)
         return curr_token
 
-    # Each of the parse_xxx functions below takes two parameter curr_token and
-    # tokens. curr_token represents the current token to be processed; tokens
-    # contains the remaining unprocessed tokens. Advancement in the token
-    # stream is accomplished by
-    #
-    #     curr_token = next(tokens)
-    #
-    # within a single function and by
-    #
-    #     curr_token [, value] = parse_xxx(curr_token)
-    #
-    # across function boundaries, i.e., the callee returns the last fetched
-    # token so that the caller can update its reference to the current token.
-
-    def parse_metadata(curr_token):
-        curr_token = consume(curr_token, 0, "'Creator', 'Version' or 'graph'",
-                             True)
-        curr_token = consume(curr_token, 1, "'Version' or 'graph'", True)
-        return curr_token
-
-    def parse_dict(curr_token, subparsers={}):
-        curr_token = consume(curr_token, 6, "'['")  # dict start
-        dct = {}
-        while curr_token[0] == 2:  # keys
+    def parse_kv(curr_token):
+        dct = defaultdict(list)
+        while curr_token[0] == 0:  # keys
             key = curr_token[1]
-            subparser = subparsers.get(key)
-            if subparser:
-                curr_token = subparser(curr_token)
-            else:
+            curr_token = next(tokens)
+            type = curr_token[0]
+            if type == 1 or type == 2:  # reals or ints
+                value = curr_token[1]
                 curr_token = next(tokens)
-                type = curr_token[0]
-                if type == 3 or type == 4:  # reals or ints
-                    value = curr_token[1]
-                    curr_token = next(tokens)
-                elif type == 5:  # strings
-                    value = unescape(curr_token[1][1:-1])
-                    if destringizer:
-                        try:
-                            value = destringizer(value)
-                        except ValueError:
-                            pass
-                    curr_token = next(tokens)
-                elif type == 6:  # dict start
-                    curr_token, value = parse_dict(curr_token)
-                else:
-                    unexpected(curr_token, "an int, float, string or '['")
-                dct[key] = value
-        curr_token = consume(curr_token, 7, "']'")  #dict end
+            elif type == 3:  # strings
+                value = unescape(curr_token[1][1:-1])
+                if destringizer:
+                    try:
+                        value = destringizer(value)
+                    except ValueError:
+                        pass
+                curr_token = next(tokens)
+            elif type == 4:  # dict start
+                curr_token, value = parse_dict(curr_token)
+            else:
+                unexpected(curr_token, "an int, float, string or '['")
+            dct[key].append(value)
+        dct = {key: (value if not isinstance(value, list) or len(value) != 1
+                     else value[0]) for key, value in dct.items()}
         return curr_token, dct
 
-    def parse_graph(curr_token):
-        curr_token = consume(curr_token, 2, "'graph'")
-        subparsers = {'node': parse_node, 'edge': parse_edge}
-        return parse_dict(curr_token, subparsers)
+    def parse_dict(curr_token):
+        curr_token = consume(curr_token, 4, "'['")    # dict start
+        curr_token, dct = parse_kv(curr_token)
+        curr_token = consume(curr_token, 5, "']'")  # dict end
+        return curr_token, dct
 
-    def missing_attr(obj, attr, lineno, pos):
-        raise NetworkXError(
-            '%s defined at (%d, %d) does not have %r attribute' %
-            (obj, lineno, pos, attr))
-
-    def parse_node(curr_token):
-        lineno, pos = curr_token[2:]
-        curr_token = next(tokens)
-        curr_token, value = parse_dict(curr_token)
-        for attr in ['id', label]:
-            if attr not in value:
-                missing_attr('node', attr, lineno, pos)
-        nodes[value.pop('id')].update(value)
-        return curr_token
-
-    def parse_edge(curr_token):
-        lineno, pos = curr_token[2:]
-        curr_token = next(tokens)
-        curr_token, value = parse_dict(curr_token)
-        for attr in ['source', 'target']:
-            if attr not in value:
-                missing_attr('edge', attr, lineno, pos)
-        edges.append((value, lineno, pos))
-        return curr_token
-
-    def parse_gml_tree():
-        curr_token = next(tokens)
-        curr_token = parse_metadata(curr_token)
-        curr_token, graph = parse_graph(curr_token)
+    def parse_graph():
+        curr_token, dct = parse_kv(next(tokens))
         if curr_token[0] is not None:  # EOF
             unexpected(curr_token, 'EOF')
+        if 'graph' not in dct:
+            raise NetworkXError('input contains no graph')
+        graph = dct['graph']
+        if isinstance('graph', list):
+            raise NetworkXError('input contains more than one graph')
         return graph
 
-    if label is None:
-        label = 'id'
-    # Node attributes indexed by node IDs
-    nodes = defaultdict(dict)
-    # Edge attributes
-    edges = []
     tokens = tokenize()
-    # Graph attributes
-    graph = parse_gml_tree()
-    if label != 'id':
-        # Mapping for relabling nodes
-        mapping = {id: attrs.pop(label) for id, attrs in nodes.items()}
-        if len(set(mapping.values())) < len(mapping):
-            raise NetworkXError(
-                'there are nodes with duplicate %r attributes' % label)
+    graph = parse_graph()
 
     directed = graph.pop('directed', False)
     multigraph = graph.pop('multigraph', False)
@@ -450,22 +388,41 @@ def parse_gml_lines(lines, label, destringizer):
         G = nx.DiGraph() if directed else nx.Graph()
     else:
         G = nx.MultiDiGraph() if directed else nx.MultiGraph()
-    G.graph.update(graph)
+    G.graph.update((key, value) for key, value in graph.items()
+                   if key != 'node' and key != 'edge')
 
-    for id, attrs in nodes.items():
-        G.add_node(id, attrs)
+    def pop_attr(dct, type, attr, i):
+        try:
+            return dct.pop(attr)
+        except KeyError:
+            raise NetworkXError(
+                "%s #%d has no '%s' attribute" % (type, i, attr))
 
-    for edge, lineno, pos in edges:
-        source = edge.pop('source')
-        target = edge.pop('target')
+    nodes = graph.get('node', [])
+    mapping = {}
+    labels = set()
+    for i, node in enumerate(nodes if isinstance(nodes, list) else [nodes]):
+        id = pop_attr(node, 'node', 'id', i)
+        if id in G:
+            raise NetworkXError('node id %r is duplicated' % (id,))
+        if label != 'id':
+            label = pop_attr(node, 'node', 'label', i)
+            if label in labels:
+                raise NetworkXError('node label %r is duplicated' % (label,))
+            labels.add(label)
+            mapping[id] = label
+        G.add_node(id, node)
+
+    edges = graph.get('edge', [])
+    for i, edge in enumerate(edges if isinstance(edges, list) else [edges]):
+        source = pop_attr(edge, 'edge', 'source', i)
+        target = pop_attr(edge, 'edge', 'target', i)
         if source not in G:
             raise NetworkXError(
-                'edge defined at (%d, %d) has an undefined source %r' %
-                (lineno, pos, source))
+                'edge #%d has an undefined source %r' % (i, source))
         if target not in G:
             raise NetworkXError(
-                'edge defined at (%d, %d) has an undefined target %r' %
-                (lineno, pos, source))
+                'edge #%d has an undefined target %r' % (i, target))
         if not multigraph:
             G.add_edge(source, target, edge)
         else:
@@ -574,7 +531,7 @@ def literal_stringizer(value):
             buf.write('}')
         else:
             raise ValueError(
-                '%r cannot be converted into a Python literal' % value)
+                '%r cannot be converted into a Python literal' % (value,))
 
     buf = StringIO()
     stringize(value)
@@ -615,11 +572,11 @@ def generate_gml(G, stringizer=None):
     """
     valid_keys = re.compile('^[A-Za-z][0-9A-Za-z]*$')
 
-    def stringize(key, value, ignored_keys, indent):
+    def stringize(key, value, ignored_keys, indent, in_list=False):
         if not isinstance(key, (str, unicode)):
-            raise NetworkXError('%r is not a string' % key)
+            raise NetworkXError('%r is not a string' % (key,))
         if not valid_keys.match(key):
-            raise NetworkXError('%r is not a valid key')
+            raise NetworkXError('%r is not a valid key' % (key,))
         if not isinstance(key, str):
             key = str(key)
         if key not in ignored_keys:
@@ -641,15 +598,20 @@ def generate_gml(G, stringizer=None):
                     for line in stringize(key, value, (), next_indent):
                         yield line
                 yield indent + ']'
+            elif isinstance(value, list) and not in_list:
+                next_indent = indent + '  '
+                for value in value:
+                    for line in stringize(key, value, (), next_indent, True):
+                        yield line
             else:
                 if stringizer:
                     try:
                         value = stringizer(value)
                     except ValueError:
                         raise NetworkXError(
-                            '%r cannot be converted into a string' % value)
+                            '%r cannot be converted into a string' % (value,))
                 elif not isinstance(value, (str, unicode)):
-                    raise NetworkXError('%r is not a string' % value)
+                    raise NetworkXError('%r is not a string' % (value,))
                 yield indent + key + ' "' + escape(value) + '"'
 
     multigraph = G.is_multigraph()

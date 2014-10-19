@@ -19,8 +19,8 @@ except NameError:
 class TestGraph(object):
 
     def setUp(self):
-        self.simple_data = """Creator me
-Version xx
+        self.simple_data = """Creator "me"
+Version "xx"
 graph [
  comment "This is a sample graph"
  directed 1
@@ -179,7 +179,7 @@ graph
 
     def test_data_types(self):
         data = [10 ** 20, -2e33, "'", '"&&amp;&&#34;"',
-                {(b'\xfd',): '\x7f', unichr(0x4444): (1, 2)}]
+                [{(b'\xfd',): '\x7f', unichr(0x4444): (1, 2)}]]
         try:
             data.append(unichr(0x14444))  # fails under IronPython
         except ValueError:
