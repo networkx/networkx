@@ -21,7 +21,7 @@ The following pages might help you:
 in many languages
 * `git concepts`_ |emdash| a technical page on the concepts
 
-Other than that, many devlopers list their personal tipps and tricks.
+Other than that, many devlopers list their personal tips and tricks.
 Among others there are `Fernando Perez`_, `Nick Quaranto`_ and `Linus Torvalds`_.
 
 Manual pages online
