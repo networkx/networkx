@@ -96,20 +96,20 @@ def unescape(text):
         text = m.group(0)
         if text[1] == '#':
             # Character reference
-            try:
-                if text[2] == 'x':
-                    code = int(text[3:-1], 16)
-                else:
-                    code = int(text[2:-1])
-            except ValueError:
-                return text  # leave unchanged
+            if text[2] == 'x':
+                code = int(text[3:-1], 16)
+            else:
+                code = int(text[2:-1])
         else:
             # Named entity
             try:
                 code = htmlentitydefs.name2codepoint[text[1:-1]]
             except KeyError:
                 return text  # leave unchanged
-        return chr(code) if code < 256 else unichr(code)
+        try:
+            return chr(code) if code < 256 else unichr(code)
+        except (ValueError, OverflowError):
+            return text  # leave unchanged
 
     return re.sub("&(?:[0-9A-Za-z]+|#(?:[0-9]+|x[0-9A-Fa-f]+));", fixup, text)
 
@@ -132,7 +132,7 @@ def literal_destringizer(rep):
     ValueError
         If ``rep`` is not a Python literal.
     """
-    if isinstance(rep, str):
+    if isinstance(rep, (str, unicode)):
         orig_rep = rep
         try:
             # Python 3.2 does not recognize 'u' prefixes before string literals
@@ -252,10 +252,11 @@ def parse_gml(lines, label='label', destringizer=None):
     http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html
     """
     def decode_line(line):
-        try:
-            line.encode('ascii')
-        except UnicodeEncodeError:
-            raise NetworkXError('input is not ASCII-encoded')
+        if isinstance(line, bytes):
+            try:
+                line.decode('ascii')
+            except UnicodeDecodeError:
+                raise NetworkXError('input is not ASCII-encoded')
         if not isinstance(line, str):
             line = str(line)
         return line
@@ -263,9 +264,7 @@ def parse_gml(lines, label='label', destringizer=None):
     def filter_lines(lines):
         if isinstance(lines, (str, unicode)):
             lines = decode_line(lines)
-            if lines and lines[-1] == '\n':
-                lines = lines[:-1]
-            lines = lines.split('\n')
+            lines = lines.splitlines()
             for line in lines:
                 yield line
         else:
@@ -377,7 +376,7 @@ def parse_gml_lines(lines, label, destringizer):
         if 'graph' not in dct:
             raise NetworkXError('input contains no graph')
         graph = dct['graph']
-        if isinstance('graph', list):
+        if isinstance(graph, list):
             raise NetworkXError('input contains more than one graph')
         return graph
 
@@ -426,9 +425,18 @@ def parse_gml_lines(lines, label, destringizer):
             raise NetworkXError(
                 'edge #%d has an undefined target %r' % (i, target))
         if not multigraph:
-            G.add_edge(source, target, edge)
+            if not G.has_edge(source, target):
+                G.add_edge(source, target, edge)
+            else:
+                raise nx.NetworkXError(
+                    'edge #%d (%r%s%r) is duplicated' %
+                    (i, source, '->' if directed else '--', target))
         else:
             key = edge.pop('key', None)
+            if key is not None and G.has_edge(source, target, key):
+                raise nx.NetworkXError(
+                    'edge #%d (%r%s%r, %r) is duplicated' %
+                    (i, source, '->' if directed else '--', target, key))
             G.add_edge(source, target, key, edge)
 
     if label != 'id':

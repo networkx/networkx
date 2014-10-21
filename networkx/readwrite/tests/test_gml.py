@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 from ast import literal_eval
+import codecs
 import io
 from nose.tools import *
 from nose import SkipTest
@@ -10,6 +11,10 @@ from networkx.readwrite.gml import literal_stringizer, literal_destringizer
 import os
 import tempfile
 
+try:
+    unicode
+except NameError:
+    unicode = str
 try:
     unichr
 except NameError:
@@ -157,6 +162,13 @@ graph
 ]"""
         assert_equal(data, answer)
 
+    def test_name(self):
+        G = nx.parse_gml('graph [ name "x" node [ id 0 label "x" ] ]')
+        assert_equal('x', G.graph['name'])
+        G = nx.parse_gml('graph [ node [ id 0 label "x" ] ]')
+        assert_equal('', G.name)
+        assert_not_in('name', G.graph)
+
     def test_graph_types(self):
         for directed in [None, False, True]:
             for multigraph in [None, False, True]:
@@ -200,3 +212,94 @@ graph
         assert_equal(G.nodes(data=True),
                      [(0, dict(int=-1, data=dict(data=data)))])
         assert_equal(G.edges(data=True), [(0, 0, dict(float=-2.5, data=data))])
+        G = nx.Graph()
+        G.graph['data'] = 'frozenset([1, 2, 3])'
+        G = nx.parse_gml(nx.generate_gml(G), destringizer=literal_eval)
+        assert_equal(G.graph['data'], 'frozenset([1, 2, 3])')
+
+    def test_escape_unescape(self):
+        gml = """graph [
+  name "&amp;&#34;&#xf;&#x4444;&#1234567890;&#x1234567890abcdef;&unknown;"
+]"""
+        G = nx.parse_gml(gml)
+        assert_equal(
+            '&"\x0f' + unichr(0x4444) + '&#1234567890;&#x1234567890abcdef;&unknown;',
+            G.name)
+        gml = '\n'.join(nx.generate_gml(G))
+        assert_equal("""graph [
+  name "&#38;&#34;&#15;&#17476;&#38;#1234567890;&#38;#x1234567890abcdef;&#38;unknown;"
+]""", gml)
+
+    def test_exceptions(self):
+        assert_raises(ValueError, literal_destringizer, '(')
+        assert_raises(ValueError, literal_destringizer, 'frozenset([1, 2, 3])')
+        assert_raises(ValueError, literal_destringizer, literal_destringizer)
+        assert_raises(ValueError, literal_stringizer, frozenset([1, 2, 3]))
+        assert_raises(ValueError, literal_stringizer, literal_stringizer)
+        with tempfile.TemporaryFile() as f:
+            f.write(codecs.BOM_UTF8 + 'graph[]'.encode('ascii'))
+            f.seek(0)
+            assert_raises(nx.NetworkXError, nx.read_gml, f)
+
+        def assert_parse_error(gml):
+            assert_raises(nx.NetworkXError, nx.parse_gml, gml)
+
+        assert_parse_error(['graph [\n\n', unicode(']')])
+        assert_parse_error('')
+        assert_parse_error('Creator ""')
+        assert_parse_error('0')
+        assert_parse_error('graph ]')
+        assert_parse_error('graph [ 1 ]')
+        assert_parse_error('graph [ 1.E+2 ]')
+        assert_parse_error('graph [ "A" ]')
+        assert_parse_error('graph [ ] graph ]')
+        assert_parse_error('graph [ ] graph [ ]')
+        assert_parse_error('graph [ data [1, 2, 3] ]')
+        assert_parse_error('graph [ node [ ] ]')
+        assert_parse_error('graph [ node [ id 0 ] ]')
+        nx.parse_gml('graph [ node [ id "a" ] ]', label='id')
+        assert_parse_error(
+            'graph [ node [ id 0 label 0 ] node [ id 0 label 1 ] ]')
+        assert_parse_error(
+            'graph [ node [ id 0 label 0 ] node [ id 1 label 0 ] ]')
+        assert_parse_error('graph [ node [ id 0 label 0 ] edge [ ] ]')
+        assert_parse_error('graph [ node [ id 0 label 0 ] edge [ source 0 ] ]')
+        nx.parse_gml(
+            'graph [ node [ id 0 label 0 ] edge [ source 0 target 0 ] ]')
+        assert_parse_error(
+            'graph [ node [ id 0 label 0 ] node [ id 1 label 1 ] '
+            'edge [ source 0 target 1 ] edge [ source 1 target 0 ] ]')
+        nx.parse_gml(
+            'graph [ node [ id 0 label 0 ] node [ id 1 label 1 ] '
+            'edge [ source 0 target 1 ] edge [ source 1 target 0 ] '
+            'directed 1 ]')
+        nx.parse_gml(
+            'graph [ node [ id 0 label 0 ] node [ id 1 label 1 ] '
+            'edge [ source 0 target 1 ] edge [ source 0 target 1 ]'
+            'multigraph 1 ]')
+        nx.parse_gml(
+            'graph [ node [ id 0 label 0 ] node [ id 1 label 1 ] '
+            'edge [ source 0 target 1 key 0 ] edge [ source 0 target 1 ]'
+            'multigraph 1 ]')
+        assert_parse_error(
+            'graph [ node [ id 0 label 0 ] node [ id 1 label 1 ] '
+            'edge [ source 0 target 1 key 0 ] edge [ source 0 target 1 key 0 ]'
+            'multigraph 1 ]')
+        nx.parse_gml(
+            'graph [ node [ id 0 label 0 ] node [ id 1 label 1 ] '
+            'edge [ source 0 target 1 key 0 ] edge [ source 1 target 0 key 0 ]'
+            'directed 1 multigraph 1 ]')
+
+        def assert_generate_error(*args, **kwargs):
+            assert_raises(nx.NetworkXError,
+                          lambda: list(nx.generate_gml(*args, **kwargs)))
+
+        G = nx.Graph()
+        G.graph[3] = 3
+        assert_generate_error(G)
+        G = nx.Graph()
+        G.graph['3'] = 3
+        assert_generate_error(G)
+        G = nx.Graph()
+        G.graph['data'] = frozenset([1, 2, 3])
+        assert_generate_error(G, stringizer=literal_stringizer)
