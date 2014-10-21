@@ -177,6 +177,8 @@ graph
                     gml += ' directed ' + str(int(directed))
                 if multigraph is not None:
                     gml += ' multigraph ' + str(int(multigraph))
+                gml += ' node [ id 0 label 0 ]'
+                gml += ' edge [ source 0 target 0 ]'
                 gml += ' ]'
                 G = nx.parse_gml(gml)
                 assert_equal(bool(directed), G.is_directed())
@@ -186,7 +188,17 @@ graph
                     gml += '  directed 1\n'
                 if multigraph is True:
                     gml += '  multigraph 1\n'
-                gml += ']'
+                gml += """  node [
+    id 0
+    label 0
+  ]
+  edge [
+    source 0
+    target 0
+"""
+                if multigraph:
+                    gml += '    key 0\n'
+                gml += '  ]\n]'
                 assert_equal(gml, '\n'.join(nx.generate_gml(G)))
 
     def test_data_types(self):
@@ -208,7 +220,7 @@ graph
         gml = '\n'.join(nx.generate_gml(G, stringizer=literal_stringizer))
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert_equal(data, G.name)
-        assert_equal(dict(name=data, data=data), G.graph)
+        assert_equal({'name': data, unicode('data'): data}, G.graph)
         assert_equal(G.nodes(data=True),
                      [(0, dict(int=-1, data=dict(data=data)))])
         assert_equal(G.edges(data=True), [(0, 0, dict(float=-2.5, data=data))])
@@ -265,7 +277,11 @@ graph
         assert_parse_error('graph [ node [ id 0 label 0 ] edge [ ] ]')
         assert_parse_error('graph [ node [ id 0 label 0 ] edge [ source 0 ] ]')
         nx.parse_gml(
-            'graph [ node [ id 0 label 0 ] edge [ source 0 target 0 ] ]')
+            'graph [edge [ source 0 target 0 ] node [ id 0 label 0 ] ]')
+        assert_parse_error(
+            'graph [ node [ id 0 label 0 ] edge [ source 1 target 0 ] ]')
+        assert_parse_error(
+            'graph [ node [ id 0 label 0 ] edge [ source 0 target 1 ] ]')
         assert_parse_error(
             'graph [ node [ id 0 label 0 ] node [ id 1 label 1 ] '
             'edge [ source 0 target 1 ] edge [ source 1 target 0 ] ]')
@@ -303,3 +319,7 @@ graph
         G = nx.Graph()
         G.graph['data'] = frozenset([1, 2, 3])
         assert_generate_error(G, stringizer=literal_stringizer)
+        G = nx.Graph()
+        G.graph['data'] = []
+        assert_generate_error(G)
+        assert_generate_error(G, stringizer=len)

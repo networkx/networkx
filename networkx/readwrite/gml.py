@@ -330,12 +330,10 @@ def parse_gml_lines(lines, label, destringizer):
             (expected, repr(value) if value is not None else 'EOF', lineno,
              pos))
 
-    def consume(curr_token, type, expected, optional=False):
+    def consume(curr_token, type, expected):
         if curr_token[0] == type:
             return next(tokens)
-        if not optional:
-            unexpected(curr_token, expected)
-        return curr_token
+        unexpected(curr_token, expected)
 
     def parse_kv(curr_token):
         dct = defaultdict(list)
@@ -608,7 +606,7 @@ def generate_gml(G, stringizer=None):
                     for line in stringize(key, value, (), next_indent):
                         yield line
                 yield indent + ']'
-            elif isinstance(value, list) and not in_list:
+            elif isinstance(value, list) and value and not in_list:
                 next_indent = indent + '  '
                 for value in value:
                     for line in stringize(key, value, (), next_indent, True):
@@ -620,7 +618,7 @@ def generate_gml(G, stringizer=None):
                     except ValueError:
                         raise NetworkXError(
                             '%r cannot be converted into a string' % (value,))
-                elif not isinstance(value, (str, unicode)):
+                if not isinstance(value, (str, unicode)):
                     raise NetworkXError('%r is not a string' % (value,))
                 yield indent + key + ' "' + escape(value) + '"'
 
