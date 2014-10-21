@@ -5,7 +5,7 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-#    NetworkX:http://networkx.lanl.gov/
+#    NetworkX:http://networkx.github.io/
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for

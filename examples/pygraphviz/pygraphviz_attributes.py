@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
 An example showing how to use the interface to the pygraphviz
-AGraph class to convert to and from graphviz. 
+AGraph class to convert to and from graphviz.
 
 Also see the pygraphviz documentation and examples at
-https://networkx.lanl.gov/pygraphviz/
+http://pygraphviz.github.io/
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
@@ -27,10 +27,10 @@ G.add_node(3)
 G.add_node(4)
 
 # convert to a graphviz agraph 
-A=nx.to_agraph(G)   
+A=nx.to_agraph(G)
 
 # write to dot file
-A.write('k5_attributes.dot')   
+A.write('k5_attributes.dot')
 
 # convert back to networkx Graph with attributes on edges and
 # default attributes as dictionary data
