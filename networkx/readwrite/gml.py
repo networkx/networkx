@@ -42,6 +42,7 @@ except ImportError:
 from ast import literal_eval
 from collections import defaultdict
 from lib2to3.pgen2.parse import ParseError
+from lib2to3.pgen2.tokenize import TokenError
 from lib2to3.refactor import RefactoringTool
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -140,7 +141,7 @@ def literal_destringizer(rep):
                 rep = str(rtp_fix_unicode.refactor_string(
                     rep + '\n', '<string>'))[:-1]
             return literal_eval(rep)
-        except (ParseError, SyntaxError):
+        except (ParseError, SyntaxError, TokenError):
             raise ValueError('%r is not a valid Python literal' % (orig_rep,))
     else:
         raise ValueError('%r is not a string' % (rep,))
