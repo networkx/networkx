@@ -29,6 +29,11 @@ New functionalities
   followed in a traversal. All NetworkX graph types are supported. A traversal
   can also reverse edge orientations or ignore them.
 
+* [`#1194 <https://github.com/networkx/networkx/pull/1194>`_]
+  A :samp:`find_cycle` function is added to the :samp:`networkx.algorithms.cycles`
+  package to find a cycle in a graph. Edge orientations can be optionally reversed
+  or ignored.
+
 * [`#1210 <https://github.com/networkx/networkx/pull/1210>`_]
   Add a random generator for the duplication-divergence model.
 
