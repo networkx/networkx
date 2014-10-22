@@ -146,7 +146,7 @@ GraphViz
 
 In conjunction with either
 
-      - PyGraphviz:  http://networkx.lanl.gov/pygraphviz/
+      - PyGraphviz:  http://pygraphviz.github.io/
 
       or
 

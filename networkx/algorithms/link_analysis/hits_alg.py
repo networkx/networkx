@@ -6,7 +6,7 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-#    NetworkX:http://networkx.lanl.gov/
+#    NetworkX:http://networkx.github.io/
 import networkx as nx
 from networkx.exception import NetworkXError
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""

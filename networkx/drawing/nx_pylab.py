@@ -8,9 +8,9 @@ Draw networks with matplotlib.
 See Also
 --------
 
-matplotlib:     http://matplotlib.sourceforge.net/
+matplotlib:     http://matplotlib.org/
 
-pygraphviz:     http://networkx.lanl.gov/pygraphviz/
+pygraphviz:     http://pygraphviz.github.io/
 
 """
 #    Copyright (C) 2004-2012 by
@@ -98,7 +98,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     >>> plt.draw()  # pyplot draw()
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
     """
     try:
         import matplotlib.pyplot as plt
@@ -239,7 +239,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     >>> limits=plt.axis('off') # turn of axis
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
 
     See Also
     --------
@@ -340,7 +340,7 @@ def draw_networkx_nodes(G, pos,
     >>> nodes=nx.draw_networkx_nodes(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
 
     See Also
     --------
@@ -467,7 +467,7 @@ def draw_networkx_edges(G, pos,
     >>> edges=nx.draw_networkx_edges(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
 
     See Also
     --------
@@ -675,7 +675,7 @@ def draw_networkx_labels(G, pos,
     >>> labels=nx.draw_networkx_labels(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
 
 
     See Also
@@ -792,7 +792,7 @@ def draw_networkx_edge_labels(G, pos,
     >>> edge_labels=nx.draw_networkx_edge_labels(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
 
     See Also
     --------
