@@ -2,25 +2,6 @@
 """
 Created on Thu Oct 09 16:31:16 2014
 
-Bases on the algorithm described in:
-  - Girvan, Michelle, and Mark EJ Newman. "Community structure in social and 
-    biological networks." Proceedings of the National Academy of Sciences 99.12 
-    (2002): 7821-7826.
-  - Newman, Mark EJ, and Michelle Girvan. "Finding and evaluating community 
-    structure in networks." Physical review E 69.2 (2004): 026113.
-  - http://en.wikipedia.org/wiki/Girvan%E2%80%93Newman_algorithm
-
-The community structure finding algorithm follows this steps:
-    1.- Calculate the betweenness for all the edges
-    2.- Find the edge with the highest score and remove it from the network
-    3.- Recalculate the betweenness
-    4.- Repeat from 2 until there are no more edges
-    
-The result is a dendogram where the leaves are the individual nodes.
-
-The algorithm works on undirected networks with only a single node type and 
-does not take it account edge weights.
-
 @author: Aitor Almeida (aitoralmeida@gmail.com)
 All rights reserved.
 BSD license.
@@ -32,10 +13,46 @@ __author__ = """Aitor Almeida (aitoralmeida@gmail.com)"""
 __all__ = ["girvan_newman_communities"]
 
 @not_implemented_for('directed')
-def girvan_newman_communities(original_graph, preserve_original = True):    
-    # The algorithm is divisive and the edges of the graph are going to be 
-    # deleted. preserve_original allows to make a copy of the original graph so 
-    # it is not destroyed, but this way the algorithm uses more memory.    
+def girvan_newman_communities(original_graph, preserve_original = True):
+    r"""Finds communities in graph using the Girvan-Newman Algorithm[1]_. The 
+    community structure finding algorithm follows this steps:
+    1.- Calculate the betweenness for all the edges
+    2.- Find the edge with the highest score and remove it from the network
+    3.- Recalculate the betweenness
+    4.- Repeat from 2 until there are no more edges
+    
+    The result is a dendogram where the leaves are the individual nodes.
+
+    The algorithm works on undirected networks with only a single node type and 
+    does not take it account edge weights.
+    
+    Parameters
+    ----------
+    G : graph
+      An undirected NetworkX graph
+    
+    preserve_original : bool, optional (default=True)
+      The algorithm is divisive and the edges of the graph are going to be 
+      deleted. If True makes a copy of the original graph so it is not 
+      destroyed. 
+    
+    Returns
+    -------
+    nodes : dictionary
+    Dictionary of nodes with betweenness centrality as the value.
+   
+    
+    
+    References
+    ----------
+    .. [1] Girvan, Michelle, and Mark EJ Newman. "Community structure in social
+       and biological networks." Proceedings of the National Academy of 
+       Sciences 99.12 (2002): 7821-7826.
+    .. [2] Newman, Mark EJ, and Michelle Girvan. "Finding and evaluating 
+       community structure in networks." Physical review E 69.2 (2004): 026113.
+    
+    """
+   
     
     if len(original_graph) < 2:
         raise nx.NetworkXError('''there must be more than one node to find 
