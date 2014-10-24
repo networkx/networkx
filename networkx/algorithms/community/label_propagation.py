@@ -174,22 +174,5 @@ def _update_label( node, labeling, G):
     elif len(high_labels) > 1:
         labeling[node] = _break_color_tie(labeling[node] , high_labels)
 
-import networkx as nx        
-test = nx.Graph()
-test.add_edge('a', 'c')
-test.add_edge('a', 'd')
-test.add_edge('d', 'c')
-test.add_edge('b', 'e')
-test.add_edge('e', 'f')
-test.add_edge('f', 'b')
-# The expected communities are:    
-ground_truth = set([frozenset(['a', 'c', 'd']), 
-                    frozenset(['b', 'e', 'f'])])
-
-communities = label_propagation_communities(test)
-result = set()
-for c in communities:
-    print c
-    result.add(frozenset(c))  
 
     
