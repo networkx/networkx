@@ -4,7 +4,7 @@ Created on Thu Oct 02 14:03:50 2014
 Based on the code donated by Tyler Rush 
 (https://github.com/networkx/networkx/issues/617)
 
-LPA community detection algorithm (based off of 'Community Detection via 
+LPA community detection algorithm (based on 'Community Detection via 
 Semi-Synchronous Label Propagation Algorithms' Cordasco and Gargano, 2011
 
 @author: Aitor Almeida <aitoralmeida@gmail.com>
@@ -19,6 +19,28 @@ __all__ = ["label_propagation_communities"]
 
 @not_implemented_for('directed')
 def label_propagation_communities(G):
+    r"""Finds communities in graph using the label propagation method[1]_. This
+    method uses the diffusion of information in the network to identify
+    communities. Not implemented for directed graphs.
+    
+    Parameters
+    ----------
+    G : graph
+    An undirected NetworkX graph.      
+    
+    Returns
+    -------
+    communities : list
+    List of the communities (sets) 
+    
+  
+    References
+    ----------
+    .. [1] Cordasco, G., & Gargano, L. (2010, December). Community detection 
+       via semi-synchronous label propagation algorithms. In Business 
+       Applications of Social Network Analysis (BASNA), 2010 IEEE International 
+       Workshop on (pp. 1-8). IEEE.
+    """
     coloring = _color_network(G)
     labeling = _uniquely_label(G)
     nrounds = 1
@@ -151,3 +173,23 @@ def _update_label( node, labeling, G):
         labeling[node] = high_labels.pop()
     elif len(high_labels) > 1:
         labeling[node] = _break_color_tie(labeling[node] , high_labels)
+
+import networkx as nx        
+test = nx.Graph()
+test.add_edge('a', 'c')
+test.add_edge('a', 'd')
+test.add_edge('d', 'c')
+test.add_edge('b', 'e')
+test.add_edge('e', 'f')
+test.add_edge('f', 'b')
+# The expected communities are:    
+ground_truth = set([frozenset(['a', 'c', 'd']), 
+                    frozenset(['b', 'e', 'f'])])
+
+communities = label_propagation_communities(test)
+result = set()
+for c in communities:
+    print c
+    result.add(frozenset(c))  
+
+    
