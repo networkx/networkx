@@ -136,7 +136,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
        The edge attribute that holds the numerical value used as a weight.
        If None, then each edge has weight 1.
 
-    count_zeros : bool (default=False)       
+    count_zeros : bool
        If False include only the nodes with nonzero clustering in the average.
 
     Returns
