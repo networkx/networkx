@@ -300,3 +300,9 @@ def write_sparse6(G, path, nodes=None, header=True):
     """
     path.write(generate_sparse6(G, nodes=nodes, header=header))
     path.write('\n')
+
+
+def teardown_module(test):
+    import os
+    if os.path.isfile('test.s6'):
+        os.unlink('test.s6')
