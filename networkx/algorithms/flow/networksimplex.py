@@ -170,7 +170,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     References
     ----------
     .. [1] Z. Kiraly, P. Kovacs.
-           Efficient implementatin of minimum-cost flow algorithms.
+           Efficient implementation of minimum-cost flow algorithms.
            Acta Universitatis Sapientiae, Informatica 4(1):67--118. 2012.
     .. [2] R. Barr, F. Glover, D. Klingman.
            Enhancement of spanning tree labeling procedures for network
