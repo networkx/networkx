@@ -349,7 +349,7 @@ def find_cycle(G, source=None, orientation='original'):
         consulted by the algorithm.
 
     Returns
-    ------
+    -------
     edges : directed edges
         A list of directed edges indicating the path taken for the loop. If
         no cycle is found, then ``edges`` will be an empty list. For graphs, an
@@ -371,6 +371,8 @@ def find_cycle(G, source=None, orientation='original'):
     we ignore edge orientations and find that there is an undirected cycle.
     Note that the second call finds a directed cycle while effectively
     traversing an undirected graph, and so, we found an "undirected cycle".
+    This means that this DAG structure does not form a directed tree (which
+    is also known as a polytree).
 
     >>> import networkx as nx
     >>> G = nx.DiGraph([(0,1), (0,2), (1,2)])
