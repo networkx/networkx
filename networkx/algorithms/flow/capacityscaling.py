@@ -344,27 +344,31 @@ def capacity_scaling(G, demand='demand', capacity='capacity', weight='weight',
                     d_v = d_u + wmin - p_u + R_node[v]['potential']
                     if h_insert(v, d_v):
                         pred[v] = (u, kmin, emin)
-            if t is None:
+            if t is not None:
+                # Augment Δ units of flow from s to t.
+                while u != s:
+                    v = u
+                    u, k, e = pred[v]
+                    e['flow'] += delta
+                    R_succ[v][u][(k[0], not k[1])]['flow'] -= delta
+                # Account node excess and deficit.
+                R_node[s]['excess'] -= delta
+                R_node[t]['excess'] += delta
+                if R_node[s]['excess'] < delta:
+                    S_remove(s)
+                if R_node[t]['excess'] > -delta:
+                    T_remove(t)
+                # Update node potentials.
+                d_t = d[t]
+                for u, d_u in d.items():
+                    R_node[u]['potential'] -= d_u - d_t
+            else:
                 # Path not found.
-                raise nx.NetworkXUnfeasible('No flow satisfying all demands.')
-            # Augment Δ units of flow from s to t.
-            while u != s:
-                v = u
-                u, k, e = pred[v]
-                e['flow'] += delta
-                R_succ[v][u][(k[0], not k[1])]['flow'] -= delta
-            # Account node excess and deficit.
-            R_node[s]['excess'] -= delta
-            R_node[t]['excess'] += delta
-            if R_node[s]['excess'] < delta:
                 S_remove(s)
-            if R_node[t]['excess'] > -delta:
-                T_remove(t)
-            # Update node potentials.
-            d_t = d[t]
-            for u, d_u in d.items():
-                R_node[u]['potential'] -= d_u - d_t
         delta //= 2
+
+    if any(R.node[u]['excess'] != 0 for u in R):
+        raise nx.NetworkXUnfeasible('No flow satisfying all demands.')
 
     # Calculate the flow cost.
     for u in R:
