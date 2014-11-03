@@ -32,12 +32,16 @@ New functionalities
 * [`#1210 <https://github.com/networkx/networkx/pull/1210>`_]
   Add a random generator for the duplication-divergence model.
 
-* [`#1241 <https://github.com/networkx/networkx/pull/1210>`_]
+* [`#1241 <https://github.com/networkx/networkx/pull/1241>`_]
   A new :samp:`networkx.algorithms.dominance` package is added for
   dominance/dominator algorithms on directed graphs. It contains a
   :samp:`immediate_dominators` function for computing immediate
   dominators/dominator trees and a :samp:`dominance_frontiers` function for
   computing dominance frontiers.
+
+* [`#1269 <https://github.com/networkx/networkx/pull/1269>`_]
+  The GML reader/parser and writer/generator have been rewritten to remove the
+  dependence on pyparsing and enable handling of arbitrary graph data.
 
 Removed functionalities
 -----------------------
