@@ -138,13 +138,13 @@ def simple_cycles(G):
     elementary circuits.
 
     To filter the cycles so that they don't include certain nodes or edges,
-    copy your graph and eliminate those nodes or edges before calling.
+    copy your graph and eliminate those nodes or edges before calling::
 
-    >>> copyG = G.copy()
-    >>> copyG.remove_nodes_from([1])
-    >>> copyG.remove_edges_from([(0,1)])
-    >>> list(nx.simple_cycles(copyG))
-    [[2], [2, 0], [0]]
+        >>> copyG = G.copy()
+        >>> copyG.remove_nodes_from([1])
+        >>> copyG.remove_edges_from([(0,1)])
+        >>> list(nx.simple_cycles(copyG))
+        [[2], [2, 0], [0]]
 
     References
     ----------
