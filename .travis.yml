@@ -88,6 +88,9 @@ before_install:
       tar xf nose-1.3.4.tar.gz;
       cp -R nose-1.3.4/nose "${IRONPYTHONPATH}";
 
+      curl -L -o IronPython-2.7.5b2/Lib/lib2to3/Grammar.txt https://raw.githubusercontent.com/IronLanguages/main/master/External.LCA_RESTRICTED/Languages/CPython/27/Lib/lib2to3/Grammar.txt;
+      curl -L -o IronPython-2.7.5b2/Lib/lib2to3/PatternGrammar.txt https://raw.githubusercontent.com/IronLanguages/main/master/External.LCA_RESTRICTED/Languages/CPython/27/Lib/lib2to3/PatternGrammar.txt;
+
       popd;
     fi
 
@@ -103,14 +106,14 @@ install:
       pip install pygraphviz;
     fi
   - if [ "${OPTIONAL_DEPS}" == "pip" ]; then
-      pip install --use-wheel pyyaml pyparsing;
+      pip install --use-wheel pyyaml;
       $PIPINSTALL numpy scipy matplotlib Cython;
     fi
 
   # Try to install latest and greatest from source.
   - if [ "${OPTIONAL_DEPS}" == "source" ]; then
       sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran;
-      pip install --upgrade pyyaml pyparsing numpy scipy matplotlib Cython;
+      pip install --upgrade pyyaml numpy scipy matplotlib Cython;
     fi
 
   # Install stuff that depends on Cython.
