@@ -9,7 +9,7 @@ for serializing and de-serializing a Python object
 structure. "Pickling" is the process whereby a Python object hierarchy
 is converted into a byte stream, and "unpickling" is the inverse
 operation, whereby a byte stream is converted back into an object
-hierarchy." 
+hierarchy."
 
 Note that NetworkX graphs can contain any hashable Python object as
 node (not just integers and strings).  For arbitrary data types it may
@@ -21,7 +21,7 @@ Format
 See http://docs.python.org/library/pickle.html
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -38,7 +38,8 @@ try:
 except ImportError:
     import pickle
 
-@open_file(1,mode='wb')
+
+@open_file(1, mode='wb')
 def write_gpickle(G, path):
     """Write graph in Python pickle format.
 
@@ -50,13 +51,13 @@ def write_gpickle(G, path):
     G : graph
        A NetworkX graph
     path : file or string
-       File or filename to write. 
+       File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> nx.write_gpickle(G,"test.gpickle")
+    >>> G = nx.path_graph(4)
+    >>> nx.write_gpickle(G, "test.gpickle")
 
     References
     ----------
@@ -64,7 +65,8 @@ def write_gpickle(G, path):
     """
     pickle.dump(G, path, pickle.HIGHEST_PROTOCOL)
 
-@open_file(0,mode='rb')
+
+@open_file(0, mode='rb')
 def read_gpickle(path):
     """Read graph object in Python pickle format.
 
@@ -74,7 +76,7 @@ def read_gpickle(path):
     Parameters
     ----------
     path : file or string
-       File or filename to write. 
+       File or filename to write.
        Filenames ending in .gz or .bz2 will be uncompressed.
 
     Returns
@@ -84,9 +86,9 @@ def read_gpickle(path):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> nx.write_gpickle(G,"test.gpickle")
-    >>> G=nx.read_gpickle("test.gpickle")
+    >>> G = nx.path_graph(4)
+    >>> nx.write_gpickle(G, "test.gpickle")
+    >>> G = nx.read_gpickle("test.gpickle")
 
     References
     ----------
@@ -95,6 +97,8 @@ def read_gpickle(path):
     return pickle.load(path)
 
 # fixture for nose tests
+
+
 def teardown_module(module):
     import os
     os.unlink('test.gpickle')
