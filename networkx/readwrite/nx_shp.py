@@ -62,7 +62,7 @@ def read_shp(path):
             return [f.GetField(f.GetFieldIndex(x)) for x in flds]
 
     def addlyr(lyr, fields):
-        for findex in xrange(lyr.GetFeatureCount()):
+        for findex in range(lyr.GetFeatureCount()):
             f = lyr.GetFeature(findex)
             flddata = getfieldinfo(lyr, f, fields)
             g = f.geometry()
@@ -80,7 +80,7 @@ def read_shp(path):
     if isinstance(path, str):
         shp = ogr.Open(path)
         lyrcount = shp.GetLayerCount()  # multiple layers indicate a directory
-        for lyrindex in xrange(lyrcount):
+        for lyrindex in range(lyrcount):
             lyr = shp.GetLayerByIndex(lyrindex)
             flds = [x.GetName() for x in lyr.schema]
             addlyr(lyr, flds)
@@ -154,7 +154,7 @@ def write_shp(G, outdir):
         feature.SetGeometry(g)
         if attributes != None:
             # Loop through attributes, assigning data to each field
-            for field, data in attributes.iteritems():
+            for field, data in attributes.items():
                 feature.SetField(field, data)
         lyr.CreateFeature(feature)
         feature.Destroy()
@@ -189,7 +189,7 @@ def write_shp(G, outdir):
         data = G.get_edge_data(*e)
         g = netgeometry(e, data)
         # Loop through attribute data in edges
-        for key, data in e[2].iteritems():
+        for key, data in e[2].items():
             # Reject spatial data not required for attribute table
             if (key != 'Json' and key != 'Wkt' and key != 'Wkb'
                 and key != 'ShpName'):

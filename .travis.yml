@@ -52,6 +52,11 @@ before_install:
   ### Prepare the system to install prerequisites or dependencies
   - uname -a
   - printenv
+  # Workaround for travis-ci/travis-ci#2683
+  - if [[ "${PYTHON_VM}" != ipy ]]; then
+      sudo rm /etc/apt/sources.list.d/pgdg-source.list*;
+      sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable;
+    fi
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       sudo apt-get update -qq;
       pip install --upgrade setuptools;
@@ -88,22 +93,20 @@ before_install:
       tar xf nose-1.3.4.tar.gz;
       cp -R nose-1.3.4/nose "${IRONPYTHONPATH}";
 
-      curl -L -o IronPython-2.7.5b2/Lib/lib2to3/Grammar.txt https://raw.githubusercontent.com/IronLanguages/main/master/External.LCA_RESTRICTED/Languages/CPython/27/Lib/lib2to3/Grammar.txt;
-      curl -L -o IronPython-2.7.5b2/Lib/lib2to3/PatternGrammar.txt https://raw.githubusercontent.com/IronLanguages/main/master/External.LCA_RESTRICTED/Languages/CPython/27/Lib/lib2to3/PatternGrammar.txt;
-
       popd;
     fi
 
 install:
   ### Install any prerequisites or dependencies necessary to run the build.
 
-  # Skipping pydot (not 3.x compatible)
-  # Skipping gdal (errors during pip installs)
   - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then
       sudo apt-get install graphviz libsuitesparse-dev;
     fi
+  # Skip GDAL (for Python 3.x) and pydot due to incompatibility
   - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\..(pip|source) ]]; then
+      sudo apt-get install libgdal-dev;
       pip install pygraphviz;
+      pip install --global-option=build_ext --global-option=-I/usr/include/gdal GDAL==1.10.0;
     fi
   - if [ "${OPTIONAL_DEPS}" == "pip" ]; then
       pip install --use-wheel pyyaml;
