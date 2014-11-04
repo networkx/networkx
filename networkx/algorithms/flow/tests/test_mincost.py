@@ -2,6 +2,7 @@
 
 import networkx as nx
 from nose.tools import assert_equal, assert_raises
+import os
 
 class TestMinCostFlow:
     def test_simple_digraph(self):
@@ -38,7 +39,7 @@ class TestMinCostFlow:
         G.add_edge('b', 'd', weight = 1)
         G.add_edge('d', 'c', weight = -2)
         G.add_edge('d', 't', weight = 1, capacity = 3)
-        assert_raises(nx.NetworkXUnbounded, nx.network_simplex, G)
+        assert_raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
         assert_raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
 
     def test_sum_demands_not_zero(self):
@@ -344,10 +345,12 @@ class TestMinCostFlow:
         assert_equal(nx.cost_of_flow(G, H), -2)
 
     def test_multidigraph(self):
-        """Raise an exception for multidigraph."""
+        """Multidigraphs are acceptable."""
         G = nx.MultiDiGraph()
         G.add_weighted_edges_from([(1, 2, 1), (2, 3, 2)], weight='capacity')
-        assert_raises(nx.NetworkXError, nx.network_simplex, G)
+        flowCost, H = nx.network_simplex(G)
+        assert_equal(flowCost, 0)
+        assert_equal(H, {1: {2: {0: 0}}, 2: {3: {0: 0}}, 3: {}})
 
         flowCost, H = nx.capacity_scaling(G)
         assert_equal(flowCost, 0)
@@ -371,11 +374,16 @@ class TestMinCostFlow:
 
         G = nx.MultiDiGraph()
         G.add_edge(1, 1, 'x', weight=-1)
+        G.add_edge(1, 1, 'y', weight=1)
+        assert_raises(nx.NetworkXUnbounded, nx.network_simplex, G)
         assert_raises(nx.NetworkXUnbounded, nx.capacity_scaling, G)
         G[1][1]['x']['capacity'] = 2
+        flowCost, H = nx.network_simplex(G)
+        assert_equal(flowCost, -2)
+        assert_equal(H, {1: {1: {'x': 2, 'y': 0}}})
         flowCost, H = nx.capacity_scaling(G)
         assert_equal(flowCost, -2)
-        assert_equal(H, {1: {1: {'x': 2}}})
+        assert_equal(H, {1: {1: {'x': 2, 'y': 0}}})
 
     def test_bone_shaped(self):
         # From #1283
@@ -399,3 +407,44 @@ class TestMinCostFlow:
         assert_equal(flowCost, 0)
         assert_equal(
             H, {0: {1: 2, 2: 2, 3: 0}, 1: {}, 2: {}, 3: {}, 4: {3: 2}, 5: {3: 2}})
+
+    def test_exceptions(self):
+        G = nx.Graph()
+        assert_raises(nx.NetworkXNotImplemented, nx.network_simplex, G)
+        assert_raises(nx.NetworkXNotImplemented, nx.capacity_scaling, G)
+        G = nx.MultiGraph()
+        assert_raises(nx.NetworkXNotImplemented, nx.network_simplex, G)
+        assert_raises(nx.NetworkXNotImplemented, nx.capacity_scaling, G)
+        G = nx.DiGraph()
+        assert_raises(nx.NetworkXError, nx.network_simplex, G)
+        assert_raises(nx.NetworkXError, nx.capacity_scaling, G)
+        G.add_node(0, demand=float('inf'))
+        assert_raises(nx.NetworkXError, nx.network_simplex, G)
+        assert_raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        G.node[0]['demand'] = 0
+        G.add_node(1, demand=0)
+        G.add_edge(0, 1, weight=-float('inf'))
+        assert_raises(nx.NetworkXError, nx.network_simplex, G)
+        assert_raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        G[0][1]['weight'] = 0
+        G.add_edge(0, 0, weight=float('inf'))
+        assert_raises(nx.NetworkXError, nx.network_simplex, G)
+        #assert_raises(nx.NetworkXError, nx.capacity_scaling, G)
+        G[0][0]['weight'] = 0
+        G[0][1]['capacity'] = -1
+        assert_raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+        #assert_raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+        G[0][1]['capacity'] = 0
+        G[0][0]['capacity'] = -1
+        assert_raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+        #assert_raises(nx.NetworkXUnfeasible, nx.capacity_scaling, G)
+
+    def test_large(self):
+        fname = os.path.join(os.path.dirname(__file__), 'netgen-2.gpickle.bz2')
+        G = nx.read_gpickle(fname)
+        flowCost, flowDict = nx.network_simplex(G)
+        assert_equal(6749969302, flowCost)
+        assert_equal(6749969302, nx.cost_of_flow(G, flowDict))
+        flowCost, flowDict = nx.capacity_scaling(G)
+        assert_equal(6749969302, flowCost)
+        assert_equal(6749969302, nx.cost_of_flow(G, flowDict))
