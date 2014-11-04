@@ -40,7 +40,7 @@ except ImportError:
 
 
 @open_file(1, mode='wb')
-def write_gpickle(G, path):
+def write_gpickle(G, path, protocol=pickle.HIGHEST_PROTOCOL):
     """Write graph in Python pickle format.
 
     Pickles are a serialized byte stream of a Python object [1]_.
@@ -50,9 +50,13 @@ def write_gpickle(G, path):
     ----------
     G : graph
        A NetworkX graph
+
     path : file or string
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
+
+    protocol : integer
+        Pickling protocol to use. Default value: ``pickle.HIGHEST_PROTOCOL``.
 
     Examples
     --------
@@ -63,7 +67,7 @@ def write_gpickle(G, path):
     ----------
     .. [1] http://docs.python.org/library/pickle.html
     """
-    pickle.dump(G, path, pickle.HIGHEST_PROTOCOL)
+    pickle.dump(G, path, protocol)
 
 
 @open_file(0, mode='rb')
