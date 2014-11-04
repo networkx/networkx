@@ -45,8 +45,14 @@ New functionalities
   computing dominance frontiers.
 
 * [`#1269 <https://github.com/networkx/networkx/pull/1269>`_]
-  The GML reader/parser and writer/generator have been rewritten to remove the
+  The GML reader/parser and writer/generator are rewritten to remove the
   dependence on pyparsing and enable handling of arbitrary graph data.
+
+* [`#1280 <https://github.com/networkx/networkx/pull/1280>`_]
+  The network simplex method in the :samp:`networkx.algorithms.flow` package is
+  rewritten to improve its performance and support multi- and disconnected
+  networks. For some cases, the new implementation is two or three orders of
+  magnitude faster than the old implementation.
 
 Removed functionalities
 -----------------------
