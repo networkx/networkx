@@ -25,6 +25,11 @@ __author__ = """Aric Hagberg (aric.hagberg@gmail.com)"""
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
 @open_file(1,mode='w')
 def write_dot(G,path):
     """Write NetworkX graph G to Graphviz dot format on path.
@@ -126,13 +131,13 @@ def from_pydot(P):
         if isinstance(u, basestring):
             s.append(u.strip('"'))
         else:
-            for unodes in u['nodes'].iterkeys():
+            for unodes in u['nodes']:
                 s.append(unodes.strip('"'))
 
         if isinstance(v, basestring):
             d.append(v.strip('"'))
         else:
-            for vnodes in v['nodes'].iterkeys():
+            for vnodes in v['nodes']:
                 d.append(vnodes.strip('"'))
 
         for source_node in s:

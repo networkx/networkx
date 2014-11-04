@@ -102,10 +102,10 @@ install:
   - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then
       sudo apt-get install graphviz libsuitesparse-dev;
     fi
-  # Skip GDAL (for Python 3.x) and pydot due to incompatibility
+  # Skip GDAL and pydot for Python 3.x due to incompatibility
   - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\..(pip|source) ]]; then
       sudo apt-get install libgdal-dev;
-      pip install pygraphviz;
+      pip install pygraphviz pydot2;
       pip install --global-option=build_ext --global-option=-I/usr/include/gdal GDAL==1.10.0;
     fi
   - if [ "${OPTIONAL_DEPS}" == "pip" ]; then
