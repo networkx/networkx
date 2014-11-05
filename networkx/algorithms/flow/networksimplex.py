@@ -10,7 +10,7 @@ __author__ = """Loïc Séguin-C. <loicseguin@gmail.com>"""
 
 __all__ = ['network_simplex']
 
-from itertools import chain, islice, repeat, starmap
+from itertools import chain, islice, repeat
 from math import ceil, sqrt
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -384,6 +384,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         We.reverse()
         We.append(i)
         WnR, WeR = trace_path(q, w)
+        del WnR[-1]
         Wn += WnR
         We += WeR
         return Wn, We
@@ -398,7 +399,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     def find_leaving_edge(Wn, We):
         """Return the leaving edge in a cycle represented by Wn and We.
         """
-        j, s = min(zip(reversed(We), islice(reversed(Wn), 1, None)),
+        j, s = min(zip(reversed(We), reversed(Wn)),
                    key=lambda i_p: residual_capacity(*i_p))
         t = T[j] if S[j] == s else S[j]
         return j, s, t
@@ -526,7 +527,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
             if parent[t] != s:
                 # Ensure that s is the parent of t.
                 s, t = t, s
-            if all(r != q for r in trace_subtree(t)):
+            if We.index(i) > We.index(j):
                 # Ensure that q is in the subtree rooted at t.
                 p, q = q, p
             remove_edge(s, t)
