@@ -327,6 +327,24 @@ class TestGeneratorClassic():
         mb=lollipop_graph(m1, m2, create_using=MultiGraph())
         assert_true(mb.edges(), b.edges())
 
+    def test_margulis_gabber_galil_graph(self):
+        try:
+            import numpy as np
+        except ImportError as e:
+            np = None
+        for n in 2, 3, 5, 6, 10:
+            g = margulis_gabber_galil_graph(n, create_using=MultiGraph())
+            assert_equal(number_of_nodes(g), n*n)
+            for node in g:
+                assert_equal(g.degree(node), 8)
+                assert_equal(len(node), 2)
+                for i in node:
+                    assert_equal(int(i), i)
+                    assert_true(0 <= i < n)
+            if np is not None:
+                w = sorted(np.linalg.eigvalsh(adjacency_matrix(g).A))
+                assert_less(w[-2], 5*np.sqrt(2))
+
     def test_null_graph(self):
         assert_equal(number_of_nodes(null_graph()), 0)
 
