@@ -34,7 +34,7 @@ def nodes_iter(G):
 
 
 def edges(G,nbunch=None):
-    """Return list of  edges adjacent to nodes in nbunch.
+    """Return list of edges incident to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
 
@@ -44,7 +44,7 @@ def edges(G,nbunch=None):
 
 
 def edges_iter(G,nbunch=None):
-    """Return iterator over  edges adjacent to nodes in nbunch.
+    """Return iterator over edges incident to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
 
