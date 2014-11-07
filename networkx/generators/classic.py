@@ -418,7 +418,7 @@ def ladder_graph(n,create_using=None):
     return G
 
 def lollipop_graph(m,n,create_using=None):
-    """Return the Lollipop Graph; K_m connected to P_n.
+    """Return the Lollipop Graph; `K_m` connected to `P_n`.
 
     This is the Barbell Graph without the right barbell.
 
@@ -454,19 +454,19 @@ def lollipop_graph(m,n,create_using=None):
     return G
 
 def margulis_gabber_galil_graph(n, create_using=None):
-    """Return the Margulis-Gabber-Galil undirected MultiGraph on n^2 nodes.
+    """Return the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
 
-    The undirected MultiGraph is regular with degree 8. Nodes are integer pairs.
-    The second-largest eigenvalue of the adjacency matrix of the graph is at
-    most ``5 * sqrt(2)``, regardless of `n`.
+    The undirected MultiGraph is regular with degree `8`. Nodes are integer
+    pairs. The second-largest eigenvalue of the adjacency matrix of the graph
+    is at most `5 \sqrt{2}`, regardless of `n`.
 
     Parameters
     ----------
     n : int
-        Determines the number of nodes in the graph: ``n ** 2``.
+        Determines the number of nodes in the graph: `n^2`.
     create_using : graph-like
-        A graph-like object that receives the constructed edges. If `None`,
-        then a :class:`MultiGraph` instance is used.
+        A graph-like object that receives the constructed edges. If ``None``,
+        then a :class:`~networkx.MultiGraph` instance is used.
 
     Returns
     -------

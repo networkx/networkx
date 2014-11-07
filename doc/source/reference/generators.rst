@@ -33,7 +33,7 @@ Classic
    hypercube_graph
    ladder_graph
    lollipop_graph
-   margulis-gabber-galil
+   margulis_gabber_galil_graph
    null_graph
    path_graph
    star_graph
