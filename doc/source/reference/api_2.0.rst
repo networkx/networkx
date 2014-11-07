@@ -54,6 +54,9 @@ New functionalities
   networks. For some cases, the new implementation is two or three orders of
   magnitude faster than the old implementation.
 
+* [`#1286 <https://github.com/networkx/networkx/pull/1286>`_]
+  Added the Margulis-Gabber-Galil graph to ``networkx.generators``.
+
 Removed functionalities
 -----------------------
 

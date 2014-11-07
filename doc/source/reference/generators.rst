@@ -19,7 +19,7 @@ Classic
 .. automodule:: networkx.generators.classic
 .. autosummary::
    :toctree: generated/
-   
+
    balanced_tree
    barbell_graph
    complete_graph
@@ -33,6 +33,7 @@ Classic
    hypercube_graph
    ladder_graph
    lollipop_graph
+   margulis-gabber-galil
    null_graph
    path_graph
    star_graph
