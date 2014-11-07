@@ -18,10 +18,10 @@ class TestGeneratorClassic():
             t=balanced_tree(r,h)
             order=t.order()
             assert_true(order==(r**(h+1)-1)/(r-1))
-            assert_true(is_connected(t)) 
+            assert_true(is_connected(t))
             assert_true(t.size()==order-1)
             dh = degree_histogram(t)
-            assert_equal(dh[0],0) # no nodes of 0 
+            assert_equal(dh[0],0) # no nodes of 0
             assert_equal(dh[1],r**h) # nodes of degree 1 are leaves
             assert_equal(dh[r],1)  # root is degree r
             assert_equal(dh[r+1],order-r**h-1)# everyone else is degree r+1
@@ -43,7 +43,7 @@ class TestGeneratorClassic():
         assert_equal(t.order(),n)
         assert_true(is_connected(t))
         dh = degree_histogram(t)
-        assert_equal(dh[0],0) # no nodes of 0 
+        assert_equal(dh[0],0) # no nodes of 0
         assert_equal(dh[1],5) # nodes of degree 1 are leaves
         assert_equal(dh[r],1)  # root is degree r
         assert_equal(dh[r+1],9-5-1) # everyone else is degree r+1
@@ -110,26 +110,26 @@ class TestGeneratorClassic():
         b=barbell_graph(m1,m2)
         assert_true(is_isomorphic(b, path_graph(m2+4)))
 
-        assert_raises(networkx.exception.NetworkXError, barbell_graph, m1, m2, 
+        assert_raises(networkx.exception.NetworkXError, barbell_graph, m1, m2,
                       create_using=DiGraph())
-        
+
         mb=barbell_graph(m1, m2, create_using=MultiGraph())
         assert_true(mb.edges()==b.edges())
 
     def test_complete_graph(self):
-        # complete_graph(m) is a connected graph with 
+        # complete_graph(m) is a connected graph with
         # m nodes and  m*(m+1)/2 edges
         for m in [0, 1, 3, 5]:
             g = complete_graph(m)
             assert_true(number_of_nodes(g) == m)
             assert_true(number_of_edges(g) == m * (m - 1) // 2)
 
-        
+
         mg=complete_graph(m, create_using=MultiGraph())
         assert_true(mg.edges()==g.edges())
 
     def test_complete_digraph(self):
-        # complete_graph(m) is a connected graph with 
+        # complete_graph(m) is a connected graph with
         # m nodes and  m*(m+1)/2 edges
         for m in [0, 1, 3, 5]:
             g = complete_graph(m,create_using=nx.DiGraph())
@@ -139,7 +139,7 @@ class TestGeneratorClassic():
     def test_complete_bipartite_graph(self):
         G=complete_bipartite_graph(0,0)
         assert_true(is_isomorphic( G, null_graph() ))
-        
+
         for i in [1, 5]:
             G=complete_bipartite_graph(i,0)
             assert_true(is_isomorphic( G, empty_graph(i) ))
@@ -164,7 +164,7 @@ class TestGeneratorClassic():
 
         assert_raises(networkx.exception.NetworkXError,
                       complete_bipartite_graph, 7, 3, create_using=DiGraph())
-        
+
         mG=complete_bipartite_graph(7, 3, create_using=MultiGraph())
         assert_equal(mG.edges(), G.edges())
 
@@ -183,7 +183,7 @@ class TestGeneratorClassic():
         G=cycle_graph(4, create_using=DiGraph())
         assert_false(G.has_edge(2,1))
         assert_true(G.has_edge(1,2))
-        
+
     def test_dorogovtsev_goltsev_mendes_graph(self):
         G=dorogovtsev_goltsev_mendes_graph(0)
         assert_equal(G.edges(), [(0, 1)])
@@ -227,7 +227,7 @@ class TestGeneratorClassic():
         assert_equal(number_of_edges(G), 0)
         assert_equal(G.name, 'empty_graph(42)')
         assert_true(isinstance(G,MultiGraph))
-        
+
         # create empty graph from another
         pete=petersen_graph()
         G=empty_graph(42,create_using=pete)
@@ -235,7 +235,7 @@ class TestGeneratorClassic():
         assert_equal(number_of_edges(G), 0)
         assert_equal(G.name, 'empty_graph(42)')
         assert_true(isinstance(G,Graph))
-        
+
     def test_grid_2d_graph(self):
         n=5;m=6
         G=grid_2d_graph(n,m)
@@ -246,7 +246,7 @@ class TestGeneratorClassic():
         assert_equal(DG.pred, G.adj)
         MG=grid_2d_graph(n,m, create_using=MultiGraph())
         assert_equal(MG.edges(), G.edges())
-        
+
     def test_grid_graph(self):
         """grid_graph([n,m]) is a connected simple graph with the
         following properties:
@@ -259,7 +259,7 @@ class TestGeneratorClassic():
             assert_equal(number_of_nodes(g), n*m)
             assert_equal(degree_histogram(g), [0,0,4,2*(n+m)-8,(n-2)*(m-2)])
             assert_equal(dim,[n,m])
-        
+
         for n, m in [(1, 5), (5, 1)]:
             dim=[n,m]
             g=grid_graph(dim)
@@ -282,7 +282,7 @@ class TestGeneratorClassic():
         assert_equal(degree_histogram(g), [0, 0, 0, 0, 0, 32])
         g=hypercube_graph(6)
         assert_equal(degree_histogram(g), [0, 0, 0, 0, 0, 0, 64])
-        
+
 #        mg=hypercube_graph(6, create_using=MultiGraph())
 #        assert_equal(mg.edges(), g.edges())
 
@@ -293,7 +293,7 @@ class TestGeneratorClassic():
 
         assert_raises(networkx.exception.NetworkXError,
                       ladder_graph, 2, create_using=DiGraph())
-        
+
         g = ladder_graph(2)
         mg=ladder_graph(2, create_using=MultiGraph())
         assert_equal(mg.edges(), g.edges())
@@ -323,7 +323,7 @@ class TestGeneratorClassic():
 
         assert_raises(networkx.exception.NetworkXError,
                       lollipop_graph, m1, m2, create_using=DiGraph())
-        
+
         mb=lollipop_graph(m1, m2, create_using=MultiGraph())
         assert_true(mb.edges(), b.edges())
 
@@ -338,7 +338,7 @@ class TestGeneratorClassic():
         except ImportError as e:
             has_scipy = False
         for n in 2, 3, 5, 6, 10:
-            g = margulis_gabber_galil_graph(n, create_using=MultiGraph())
+            g = margulis_gabber_galil_graph(n)
             assert_equal(number_of_nodes(g), n*n)
             for node in g:
                 assert_equal(g.degree(node), 8)
@@ -351,6 +351,10 @@ class TestGeneratorClassic():
                 # but the implementation in numpy does not guarantee order.
                 w = sorted(scipy.linalg.eigvalsh(adjacency_matrix(g).A))
                 assert_less(w[-2], 5*np.sqrt(2))
+
+    def test_margulis_gabber_galil_graph_badinput(self):
+        assert_raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.DiGraph())
+        assert_raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.Graph())
 
     def test_null_graph(self):
         assert_equal(number_of_nodes(null_graph()), 0)
@@ -373,7 +377,7 @@ class TestGeneratorClassic():
         dp=path_graph(3, create_using=DiGraph())
         assert_true(dp.has_edge(0,1))
         assert_false(dp.has_edge(1,0))
-        
+
         mp=path_graph(10, create_using=MultiGraph())
         assert_true(mp.edges()==p.edges())
 
@@ -398,14 +402,14 @@ class TestGeneratorClassic():
         assert_true(is_isomorphic(star_graph(0), empty_graph(1)))
         assert_true(is_isomorphic(star_graph(1), path_graph(2)))
         assert_true(is_isomorphic(star_graph(2), path_graph(3)))
-        
+
         s=star_graph(10)
         assert_equal(sorted(list(s.degree().values())),
                      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10])
-        
+
         assert_raises(networkx.exception.NetworkXError,
                       star_graph, 10, create_using=DiGraph())
-        
+
         ms=star_graph(10, create_using=MultiGraph())
         assert_true(ms.edges()==s.edges())
 
@@ -418,16 +422,16 @@ class TestGeneratorClassic():
                      (4, complete_graph(4))]:
             g=wheel_graph(n)
             assert_true(is_isomorphic( g, G))
-        
+
         assert_equal(g.name, 'wheel_graph(4)')
 
         g=wheel_graph(10)
         assert_equal(sorted(list(g.degree().values())),
                      [3, 3, 3, 3, 3, 3, 3, 3, 3, 9])
-        
+
         assert_raises(networkx.exception.NetworkXError,
                       wheel_graph, 10, create_using=DiGraph())
-        
+
         mg=wheel_graph(10, create_using=MultiGraph())
         assert_equal(mg.edges(), g.edges())
-        
+
