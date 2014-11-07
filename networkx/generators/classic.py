@@ -33,6 +33,7 @@ __all__ = [ 'balanced_tree',
             'hypercube_graph',
             'ladder_graph',
             'lollipop_graph',
+            'margulis_gabber_galil_graph',
             'null_graph',
             'path_graph',
             'star_graph',
@@ -450,6 +451,29 @@ def lollipop_graph(m,n,create_using=None):
     # connect ball to stick
     if m>0: G.add_edge(m-1,m)
     G.name="lollipop_graph(%d,%d)"%(m,n)
+    return G
+
+def margulis_gabber_galil_graph(n, create_using=None):
+    """Return the Margulis-Gabber-Galil undirected MultiGraph on n^2 nodes.
+
+    The undirected MultiGraph is regular with degree 8.
+    Nodes are integer pairs.
+    The second-largest eigenvalue of the adjacency matrix of
+    the graph is at most 5*sqrt(2), regardless of n.
+
+    """
+    G = empty_graph(0, create_using)
+    for x in range(n):
+        for y in range(n):
+            a = (x, y)
+            for b in (
+                    ((x + 2*y) % n, y),
+                    ((x + (2*y + 1)) % n, y),
+                    (x, (y + 2*x) % n),
+                    (x, (y + (2*x + 1)) % n),
+                    ):
+                G.add_edge(a, b)
+    G.name = "margulis_gabber_galil_graph(%d)" % n
     return G
 
 def null_graph(create_using=None):
