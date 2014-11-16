@@ -1042,7 +1042,15 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
             rgba_colors = numpy.array([colorConverter.to_rgba(color) for color in colors])
     # Set the final column of the rgba_colors to have the relevant alpha values.
     try:
-        rgba_colors[:, -1] = list(itertools.islice(itertools.cycle(alpha), len(rgba_colors)))
+        # If alpha is longer than the number of colors, resize to the number of elements.
+        # Also, if rgba_colors.size (the number of elements of rgba_colors) is the same as the number of
+        # elements, resize the array, to avoid it being interpreted as a colormap by scatter()
+        if len(alpha) > len(rgba_colors) or rgba_colors.size == len(elem_list):
+            rgba_colors.resize((len(elem_list), 4))
+            rgba_colors[1:, 0] = rgba_colors[0, 0]
+            rgba_colors[1:, 1] = rgba_colors[0, 1]
+            rgba_colors[1:, 2] = rgba_colors[0, 2]
+        rgba_colors[:,  3] = list(itertools.islice(itertools.cycle(alpha), len(rgba_colors)))
     except TypeError:
         rgba_colors[:, -1] = alpha
     return rgba_colors
