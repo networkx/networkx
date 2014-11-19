@@ -257,7 +257,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
 
     M /= M.sum(axis=1)  # Normalize rows to sum to 1
 
-    return alpha * M + (1 - alpha) * np.outer(np.ones(N), p)
+    return alpha * M + (1 - alpha) * p
 
 
 def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
