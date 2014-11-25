@@ -88,17 +88,16 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
     resulting Pandas DataFrame can be modified as follows:
 
     >>> import pandas as pd
+    >>> import numpy as np
     >>> G = nx.Graph([(1,1)])
     >>> df = nx.to_pandas_dataframe(G)
     >>> df
        1
     1  1
-    [1 rows x 1 columns]
     >>> df.values[np.diag_indices_from(df)] *= 2
     >>> df
        1
     1  2
-    [1 rows x 1 columns]
 
     Examples
     --------
@@ -112,7 +111,6 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
     0  0  2  0
     1  1  0  0
     2  0  0  4
-    [3 rows x 3 columns]
     """
     import pandas as pd
     M = to_numpy_matrix(G, nodelist, None, None, multigraph_weight, weight, nonedge)
@@ -156,7 +154,7 @@ def from_pandas_dataframe(df,create_using=None):
     >>> df=pd.DataFrame([[1,1],[2,1]])
     >>> G=nx.from_pandas_dataframe(df)
     """
-
+    
     import pandas as pd
     A = df.values
     G = from_numpy_matrix(A, create_using)
