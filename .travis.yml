@@ -123,13 +123,13 @@ install:
     fi
   - if [ "${OPTIONAL_DEPS}" == "pip" ]; then
       pip install --use-wheel pyyaml;
-      $PIPINSTALL numpy scipy matplotlib Cython;
+      $PIPINSTALL numpy pandas scipy matplotlib Cython;
     fi
 
   # Try to install latest and greatest from source.
   - if [ "${OPTIONAL_DEPS}" == "source" ]; then
       sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran;
-      pip install --upgrade pyyaml numpy scipy matplotlib Cython;
+      pip install --upgrade pyyaml numpy pandas scipy matplotlib Cython;
     fi
 
   # Install stuff that depends on Cython.
