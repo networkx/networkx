@@ -40,14 +40,12 @@ def _prep_create_using(create_using):
 
     """
     if create_using is None:
-        G=nx.Graph()
-    else:
-        G=create_using
-        try:
-            G.clear()
-        except:
-            raise TypeError("Input graph is not a networkx graph type")
-    return G
+        return nx.Graph()
+    try:
+        create_using.clear()
+    except:
+        raise TypeError("Input graph is not a networkx graph type")
+    return create_using
 
 def to_networkx_graph(data,create_using=None,multigraph_input=False):
     """Make a NetworkX graph from a known data structure.
