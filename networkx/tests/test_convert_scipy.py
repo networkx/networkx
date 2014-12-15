@@ -3,6 +3,8 @@ from nose.tools import assert_raises, assert_true, assert_equal, raises
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph,cycle_graph,path_graph
+from networkx.testing.utils import assert_graphs_equal
+
 
 class TestConvertNumpy(object):
     @classmethod
@@ -187,3 +189,26 @@ class TestConvertNumpy(object):
         G = nx.DiGraph([(1,1)])
         M = nx.to_scipy_sparse_matrix(G)
         np_assert_equal(M.todense(), np.matrix([[1]]))
+
+    def test_from_scipy_sparse_matrix_parallel_edges(self):
+        """Tests that the :func:`networkx.from_scipy_sparse_matrix` function
+        interprets integer weights as the number of parallel edges when
+        creating a multigraph.
+
+        """
+        A = sparse.csr_matrix([[1, 1], [1, 2]])
+        # First, with a simple graph, each integer entry in the adjacency
+        # matrix is interpreted as the weight of a single edge in the graph.
+        expected = nx.DiGraph()
+        edges = [(0, 0), (0, 1), (1, 0)]
+        expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
+        expected.add_edge(1, 1, weight=2)
+        actual = nx.from_scipy_sparse_matrix(A, create_using=nx.DiGraph())
+        assert_graphs_equal(actual, expected)
+        # Now each integer entry in the adjacency matrix is interpreted as the
+        # number of parallel edges in the graph.
+        expected = nx.MultiDiGraph()
+        edges = [(0, 0), (0, 1), (1, 0), (1, 1), (1, 1)]
+        expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
+        actual = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiDiGraph())
+        assert_graphs_equal(actual, expected)

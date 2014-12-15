@@ -27,6 +27,7 @@ nx_pygraphviz, nx_pydot
 #    All rights reserved.
 #    BSD license.
 import warnings
+import itertools
 import networkx as nx
 from networkx.convert import _prep_create_using
 from networkx.utils import not_implemented_for
@@ -201,10 +202,15 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     return M
 
 
-def from_numpy_matrix(A,create_using=None):
+def from_numpy_matrix(A, create_using=None):
     """Return a graph from numpy matrix.
 
     The numpy matrix is interpreted as an adjacency matrix for the graph.
+
+    If `create_using` is an instance of :class:`networkx.MultiGraph` or
+    :class:`networkx.MultiDiGraph` and the entries of `A` are of type ``int``,
+    then this function returns a multigraph (of the same type as
+    `create_using`) with parallel edges.
 
     Parameters
     ----------
@@ -235,6 +241,15 @@ def from_numpy_matrix(A,create_using=None):
     >>> A=numpy.matrix([[1,1],[2,1]])
     >>> G=nx.from_numpy_matrix(A)
 
+    If `create_using` is a multigraph and the matrix has only integer entries,
+    the entries will be interpreted as parallel edges between the vertices:
+
+    >>> import numpy
+    >>> A = numpy.matrix([[1, 1], [1, 2]])
+    >>> G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph())
+    >>> G[1][1]
+    {0: {'weight': 1}, 1: {'weight': 1}}
+
     User defined compound data type on edges:
 
     >>> import numpy
@@ -247,6 +262,7 @@ def from_numpy_matrix(A,create_using=None):
     2
     >>> G[0][0]['weight']
     1.0
+
     """
     # This should never fail if you have created a numpy matrix with numpy...
     import numpy as np
@@ -276,20 +292,36 @@ def from_numpy_matrix(A,create_using=None):
     # make sure we get isolated nodes
     G.add_nodes_from(range(n))
     # get a list of edges
-    x,y=np.asarray(A).nonzero()
+    edges = zip(*np.asarray(A).nonzero())
 
     # handle numpy constructed data type
     if python_type is 'void':
         fields=sorted([(offset,dtype,name) for name,(dtype,offset) in
                        A.dtype.fields.items()])
-        for (u,v) in zip(x,y):
+        for (u,v) in edges:
             attr={}
             for (offset,dtype,name),val in zip(fields,A[u,v]):
                 attr[name]=kind_to_python_type[dtype.kind](val)
             G.add_edge(u,v,attr)
-    else: # basic data type
-        G.add_edges_from( ((u,v,{'weight':python_type(A[u,v])})
-                           for (u,v) in zip(x,y)) )
+    else:
+        # If the entries in the adjacency matrix are integers and the graph is
+        # a multigraph, then create parallel edges, each with weight 1, for
+        # each entry in the adjacency matrix. Otherwise, create one edge for
+        # each positive entry in the adjacency matrix and set the weight of
+        # that edge to be the entry in the matrix.
+        if python_type is int and isinstance(G, nx.MultiGraph):
+            chain = itertools.chain.from_iterable
+            # The following line is equivalent to:
+            #
+            #     for (u, v) in edges:
+            #         for d in range(A[u, v]):
+            #             G.add_edge(u, v, weight=1)
+            #
+            G.add_edges_from(chain(((u, v) for d in range(A[u, v]))
+                                   for (u, v) in edges), weight=1)
+        else:
+            G.add_weighted_edges_from((u, v, python_type(A[u, v]))
+                                      for (u, v) in edges)
     return G
 
 
@@ -530,11 +562,30 @@ def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
        Name of edge attribute to store matrix numeric value. The data will
        have the same type as the matrix entry (int, float, (real,imag)).
 
+    Notes
+    -----
+
+    If `create_using` is an instance of :class:`networkx.MultiGraph` or
+    :class:`networkx.MultiDiGraph` and the entries of `A` are of type ``int``,
+    then this function returns a multigraph (of the same type as
+    `create_using`) with parallel edges. In this case, `edge_attribute` will be
+    ignored.
+
     Examples
     --------
     >>> import scipy.sparse
     >>> A = scipy.sparse.eye(2,2,1)
     >>> G = nx.from_scipy_sparse_matrix(A)
+
+    If `create_using` is a multigraph and the matrix has only integer entries,
+    the entries will be interpreted as parallel edges between the vertices:
+
+    >>> import scipy
+    >>> A = scipy.sparse.csr_matrix([[1, 1], [1, 2]])
+    >>> G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph())
+    >>> G[1][1]
+    {0: {'weight': 1}, 1: {'weight': 1}}
+
     """
     G = _prep_create_using(create_using)
     n,m = A.shape
@@ -553,8 +604,26 @@ def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
         if A.format != 'coo':
             A = A.tocoo()
         triples = _coo_gen_triples(A)
-    G.add_weighted_edges_from(triples, weight=edge_attribute)
+
+    # If the entries in the adjacency matrix are integers and the graph is a
+    # multigraph, then create parallel edges, each with weight 1, for each
+    # entry in the adjacency matrix. Otherwise, create one edge for each
+    # positive entry in the adjacency matrix and set the weight of that edge to
+    # be the entry in the matrix.
+    if A.dtype.kind in ('i', 'u') and isinstance(G, nx.MultiGraph):
+        chain = itertools.chain.from_iterable
+        # The following line is equivalent to:
+        #
+        #     for (u, v) in edges:
+        #         for d in range(A[u, v]):
+        #             G.add_edge(u, v, weight=1)
+        #
+        G.add_edges_from(chain(((u, v) for d in range(w))
+                               for (u, v, w) in triples), weight=1)
+    else:
+        G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G
+
 
 # fixture for nose tests
 def setup_module(module):
