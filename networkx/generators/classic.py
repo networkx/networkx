@@ -33,7 +33,6 @@ __all__ = [ 'balanced_tree',
             'hypercube_graph',
             'ladder_graph',
             'lollipop_graph',
-            'margulis_gabber_galil_graph',
             'null_graph',
             'path_graph',
             'star_graph',
@@ -453,52 +452,6 @@ def lollipop_graph(m,n,create_using=None):
     G.name="lollipop_graph(%d,%d)"%(m,n)
     return G
 
-def margulis_gabber_galil_graph(n, create_using=None):
-    """Return the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
-
-    The undirected MultiGraph is regular with degree `8`. Nodes are integer
-    pairs. The second-largest eigenvalue of the adjacency matrix of the graph
-    is at most `5 \sqrt{2}`, regardless of `n`.
-
-    Parameters
-    ----------
-    n : int
-        Determines the number of nodes in the graph: `n^2`.
-    create_using : graph-like
-        A graph-like object that receives the constructed edges. If ``None``,
-        then a :class:`~networkx.MultiGraph` instance is used.
-
-    Returns
-    -------
-    G : graph
-        The constructed undirected multigraph.
-
-    Raises
-    ------
-    NetworkXError
-        If the graph is directed or not a multigraph.
-
-    """
-    if create_using is None:
-        create_using = nx.MultiGraph()
-    elif create_using.is_directed() or not create_using.is_multigraph():
-        msg = "`create_using` must be an undirected multigraph."
-        raise nx.NetworkXError(msg)
-
-    G = create_using
-    G.clear()
-    for x in range(n):
-        for y in range(n):
-            a = (x, y)
-            for b in (
-                    ((x + 2*y) % n, y),
-                    ((x + (2*y + 1)) % n, y),
-                    (x, (y + 2*x) % n),
-                    (x, (y + (2*x + 1)) % n),
-                    ):
-                G.add_edge(a, b)
-    G.graph['name'] = "margulis_gabber_galil_graph({0})".format(n)
-    return G
 
 def null_graph(create_using=None):
     """Return the Null graph with no nodes or edges.

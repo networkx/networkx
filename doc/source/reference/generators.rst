@@ -33,12 +33,20 @@ Classic
    hypercube_graph
    ladder_graph
    lollipop_graph
-   margulis_gabber_galil_graph
    null_graph
    path_graph
    star_graph
    trivial_graph
    wheel_graph
+
+Expanders
+---------
+.. automodule:: networkx.generators.expanders
+.. autosummary::
+   :toctree:generated/
+
+   margulis_gabber_galil_graph
+   chordal_cycle_graph
 
 Small
 -----
