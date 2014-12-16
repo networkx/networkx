@@ -327,35 +327,6 @@ class TestGeneratorClassic():
         mb=lollipop_graph(m1, m2, create_using=MultiGraph())
         assert_true(mb.edges(), b.edges())
 
-    def test_margulis_gabber_galil_graph(self):
-        try:
-            # Scipy is required for conversion to an adjacency matrix.
-            # We also use scipy for computing the eigenvalues,
-            # but this second use could be done using only numpy.
-            import numpy as np
-            import scipy.linalg
-            has_scipy = True
-        except ImportError as e:
-            has_scipy = False
-        for n in 2, 3, 5, 6, 10:
-            g = margulis_gabber_galil_graph(n)
-            assert_equal(number_of_nodes(g), n*n)
-            for node in g:
-                assert_equal(g.degree(node), 8)
-                assert_equal(len(node), 2)
-                for i in node:
-                    assert_equal(int(i), i)
-                    assert_true(0 <= i < n)
-            if has_scipy:
-                # Eigenvalues are already sorted using the scipy eigvalsh,
-                # but the implementation in numpy does not guarantee order.
-                w = sorted(scipy.linalg.eigvalsh(adjacency_matrix(g).A))
-                assert_less(w[-2], 5*np.sqrt(2))
-
-    def test_margulis_gabber_galil_graph_badinput(self):
-        assert_raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.DiGraph())
-        assert_raises(nx.NetworkXError, margulis_gabber_galil_graph, 3, nx.Graph())
-
     def test_null_graph(self):
         assert_equal(number_of_nodes(null_graph()), 0)
 
