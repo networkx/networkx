@@ -242,8 +242,8 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
     G.add_nodes_from(range(n))
     (xmin,ymin,xmax,ymax)=domain
     for n in G:
-        G.node[n]['pos']=((xmin + (xmax-xmin))*random.random(),
-                          (ymin + (ymax-ymin))*random.random())
+        G.node[n]['pos']=(xmin + ((xmax-xmin)*random.random()),
+                          ymin + ((ymax-ymin)*random.random()))
     if L is None:
         # find maximum distance L between two nodes
         l = 0
