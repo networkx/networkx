@@ -1,6 +1,7 @@
 from networkx.algorithms.assortativity import *
 from networkx.algorithms.boundary import *
 from networkx.algorithms.centrality import *
+from networkx.algorithms.chordal import *
 from networkx.algorithms.cluster import *
 from networkx.algorithms.clique import *
 from networkx.algorithms.communicability_alg import *
@@ -12,35 +13,36 @@ from networkx.algorithms.cycles import *
 from networkx.algorithms.cuts import *
 from networkx.algorithms.dag import *
 from networkx.algorithms.distance_measures import *
+from networkx.algorithms.distance_regular import *
 from networkx.algorithms.dominance import *
 from networkx.algorithms.dominating import *
+from networkx.algorithms.euler import *
+from networkx.algorithms.graphical import *
 from networkx.algorithms.hierarchy import *
 from networkx.algorithms.hybrid import *
+from networkx.algorithms.isolate import *
+from networkx.algorithms.link_analysis import *
+from networkx.algorithms.link_prediction import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.minors import *
 from networkx.algorithms.mis import *
-from networkx.algorithms.link_analysis import *
-from networkx.algorithms.link_prediction import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.reciprocity import *
+from networkx.algorithms.richclub import *
 from networkx.algorithms.shortest_paths import *
+from networkx.algorithms.simple_paths import *
 from networkx.algorithms.smetric import *
+from networkx.algorithms.swap import *
 from networkx.algorithms.triads import *
 from networkx.algorithms.traversal import *
-from networkx.algorithms.isolate import *
-from networkx.algorithms.euler import *
 from networkx.algorithms.vitality import *
-from networkx.algorithms.chordal import *
-from networkx.algorithms.richclub import *
-from networkx.algorithms.distance_regular import *
-from networkx.algorithms.swap import *
-from networkx.algorithms.graphical import *
-from networkx.algorithms.simple_paths import *
+from networkx.algorithms.walks import *
 from networkx.algorithms.wiener import *
 
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
 import networkx.algorithms.centrality
+import networkx.algorithms.chordal
 import networkx.algorithms.cluster
 import networkx.algorithms.clique
 import networkx.algorithms.components
@@ -49,10 +51,9 @@ import networkx.algorithms.coloring
 import networkx.algorithms.flow
 import networkx.algorithms.isomorphism
 import networkx.algorithms.link_analysis
+import networkx.algorithms.operators
 import networkx.algorithms.shortest_paths
 import networkx.algorithms.traversal
-import networkx.algorithms.chordal
-import networkx.algorithms.operators
 import networkx.algorithms.tournament
 import networkx.algorithms.tree
 
