@@ -57,4 +57,5 @@ Algorithms
    algorithms.triads
    algorithms.vitality
    algorithms.voronoi
+   algorithms.walks
    algorithms.wiener

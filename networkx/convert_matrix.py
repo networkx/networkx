@@ -1,3 +1,14 @@
+#    Copyright (C) 2006-2014 by
+#    Aric Hagberg <hagberg@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
+#    Pieter Swart <swart@lanl.gov>
+#    All rights reserved.
+#    BSD license.
+#
+# Authors:
+#    Aric Hagberg <aric.hagberg@gmail.com>
+#    Pieter Swart <swart@lanl.gov>
+#    Dan Schult <dschult@colgate.edu>
 """Functions to convert NetworkX graphs to and from numpy/scipy matrices.
 
 The preferred way of converting data to a NetworkX graph is through the
@@ -20,20 +31,12 @@ See Also
 --------
 nx_agraph, nx_pydot
 """
-#    Copyright (C) 2006-2014 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import warnings
 import itertools
 import networkx as nx
 from networkx.convert import _prep_create_using
 from networkx.utils import not_implemented_for
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
+
 __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
            'from_pandas_dataframe', 'to_pandas_dataframe',
            'to_numpy_recarray',
@@ -752,63 +755,112 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)
 
 
-def _csr_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Compressed Sparse Row** format to
-    an iterable of weighted edge triples.
+def _csr_matrix_entries(A, row=None):
+    """Iterator over the nonzero entries of the matrix `A`.
+
+    `A` is a SciPy sparse matrix in Compressed Sparse Row ('csr')
+    format.
+
+    If `row` is specified, this function iterates over pairs of the form
+    ``(j, A[row, j])``. Otherwise, this function iterates over triples
+    of the form ``(i, j, A[i, j])``.
 
     """
-    nrows = A.shape[0]
     data, indices, indptr = A.data, A.indices, A.indptr
-    for i in range(nrows):
-        for j in range(indptr[i], indptr[i+1]):
-            yield i, indices[j], data[j]
+    if row is None:
+        nrows = A.shape[0]
+        for i in range(nrows):
+            for j in range(indptr[i], indptr[i+1]):
+                yield i, indices[j], data[j]
+    else:
+        i = row
+        for j in range(indptr[i], indptr[i + 1]):
+            yield indices[j], data[j]
 
 
-def _csc_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Compressed Sparse Column** format to
-    an iterable of weighted edge triples.
+def _csc_matrix_entries(A, row=None):
+    """Iterator over the nonzero entries of the matrix `A`.
+
+    `A` is a SciPy sparse matrix in Compressed Sparse Column ('csc')
+    format.
+
+    If `row` is specified, this function iterates over pairs of the form
+    ``(j, A[row, j])``. Otherwise, this function iterates over triples
+    of the form ``(i, j, A[i, j])``.
 
     """
     ncols = A.shape[1]
-    data, indices, indptr = A.data, A.indices, A.indptr
-    for i in range(ncols):
-        for j in range(indptr[i], indptr[i+1]):
-            yield indices[j], i, data[j]
+    if row is None:
+        data, indices, indptr = A.data, A.indices, A.indptr
+        for i in range(ncols):
+            for j in range(indptr[i], indptr[i+1]):
+                yield indices[j], i, data[j]
+    else:
+        # Calling the `getrow()` method on a 'csc' sparse matrix returns
+        # a 'csr' sparse matrix representing just that row.
+        for i, j, x in _csr_matrix_entries(A.getrow(row)):
+            yield j, x
 
 
-def _coo_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Coordinate** format to an iterable
-    of weighted edge triples.
+def _coo_matrix_entries(A, row=None):
+    """Iterator over the nonzero entries of the matrix `A`.
+
+    `A` is a SciPy sparse matrix in COOrdinate ('coo') format.
+
+    If `row` is specified, this function iterates over pairs of the form
+    ``(j, A[row, j])``. Otherwise, this function iterates over triples
+    of the form ``(i, j, A[i, j])``.
 
     """
-    row, col, data = A.row, A.col, A.data
-    return zip(row, col, data)
+    if row is None:
+        row, col, data = A.row, A.col, A.data
+        # TODO In Python 3.3+, this should be `yield from ...`.
+        for i, j, x in zip(row, col, data):
+            yield i, j, x
+    else:
+        # Calling the `getrow()` method on a 'coo' sparse matrix returns
+        # a 'csr' sparse matrix representing just that row.
+        for i, j, x in _csr_matrix_entries(A.getrow(row)):
+            yield j, x
 
 
-def _dok_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Dictionary of Keys** format to an
-    iterable of weighted edge triples.
+def _dok_matrix_entries(A, row=None):
+    """Iterator over the nonzero entries of the matrix `A`.
+
+    `A` is a SciPy sparse matrix in Dictionary Of Keys ('dok') format.
+
+    If `row` is specified, this function iterates over pairs of the form
+    ``(j, A[row, j])``. Otherwise, this function iterates over triples
+    of the form ``(i, j, A[i, j])``.
 
     """
-    for (r, c), v in A.items():
-        yield r, c, v
+    if row is None:
+        for (r, c), v in A.items():
+            yield r, c, v
+    else:
+        # We are guaranteed that each `r` equals `row`.
+        for (r, c), v in A[row].items():
+            yield c, v
 
 
-def _generate_weighted_edges(A):
-    """Returns an iterable over (u, v, w) triples, where u and v are adjacent
-    vertices and w is the weight of the edge joining u and v.
+def _matrix_entries(A, row=None):
+    """Iterator over the nonzero entries of the matrix `A`.
 
-    `A` is a SciPy sparse matrix (in any format).
+    `A` is a SciPy sparse matrix in any format.
+
+    If `row` is specified, this function iterates over pairs of the form
+    ``(j, A[row, j])``. Otherwise, this function iterates over triples
+    of the form ``(i, j, A[i, j])``.
 
     """
     if A.format == 'csr':
-        return _csr_gen_triples(A)
+        return _csr_matrix_entries(A, row=row)
     if A.format == 'csc':
-        return _csc_gen_triples(A)
+        return _csc_matrix_entries(A, row=row)
     if A.format == 'dok':
-        return _dok_gen_triples(A)
+        return _dok_matrix_entries(A, row=row)
     # If A is in any other format (including COO), convert it to COO format.
-    return _coo_gen_triples(A.tocoo())
+    return _coo_matrix_entries(A.tocoo(), row=row)
 
 
 def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
@@ -885,7 +937,7 @@ def from_scipy_sparse_matrix(A, parallel_edges=False, create_using=None,
     G.add_nodes_from(range(n))
     # Create an iterable over (u, v, w) triples and for each triple, add an
     # edge from u to v with weight w.
-    triples = _generate_weighted_edges(A)
+    triples = _matrix_entries(A)
     # If the entries in the adjacency matrix are integers, the graph is a
     # multigraph, and parallel_edges is True, then create parallel edges, each
     # with weight 1, for each entry in the adjacency matrix. Otherwise, create

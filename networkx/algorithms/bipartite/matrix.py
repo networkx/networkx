@@ -12,7 +12,7 @@ Biadjacency matrices
 #    BSD license.
 import itertools
 from networkx.convert import _prep_create_using
-from networkx.convert_matrix import _generate_weighted_edges
+from networkx.convert_matrix import _matrix_entries
 import networkx as nx
 __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
@@ -154,7 +154,7 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
     G.add_nodes_from(range(n,n+m), bipartite=1)
     # Create an iterable over (u, v, w) triples and for each triple, add an
     # edge from u to v with weight w.
-    triples = ((u, n+v, d) for (u, v, d) in _generate_weighted_edges(A))
+    triples = ((u, n + v, d) for (u, v, d) in _matrix_entries(A))
     # If the entries in the adjacency matrix are integers and the graph is a
     # multigraph, then create parallel edges, each with weight 1, for each
     # entry in the adjacency matrix. Otherwise, create one edge for each
