@@ -1,6 +1,7 @@
 import networkx as nx
 from networkx import tensor_product, cartesian_product, lexicographic_product, strong_product
 from nose.tools import assert_raises, assert_true, assert_equal, raises
+from networkx.testing.utils import assert_graphs_equal
 
 
 @raises(nx.NetworkXError)
@@ -335,7 +336,6 @@ def test_strong_product_combinations():
 
     # No classic easily found classic results for strong product
 
-
 def test_strong_product_random():
     G = nx.erdos_renyi_graph(10, 2 / 10.)
     H = nx.erdos_renyi_graph(10, 2 / 10.)
@@ -370,3 +370,179 @@ def test_graph_power():
                              (5, 6), (5, 7), (6, 7), (6, 8), (7, 8), (7, 9),
                              (8, 9)])
     assert_raises(ValueError, nx.power, G, -1)
+
+
+class TestWalkPower(object):
+    """Unit tests for the
+    :func:`~networkx.algorithms.operators.product.walk_power` function.
+
+    """
+
+    def test_multidigraph(self):
+        """Tests for getting the second walk power of a multidigraph."""
+        # Create a directed multigraph with four nodes and five edges,
+        # including one pair of parallel edges.
+        G = nx.MultiDiGraph()
+        G.add_nodes_from(range(4))
+        G.add_edges_from([(0, 1), (0, 3), (0, 3), (1, 3), (3, 2)])
+        # After squaring, we expect to get the following directed
+        # multigraph; this can be verified with pen and paper.
+        expected = nx.MultiDiGraph()
+        expected.add_nodes_from(range(4))
+        expected.add_edges_from([(0, 2), (0, 2), (0, 3), (1, 2)], weight=1)
+        # Compare the expected graph with the computed one.
+        actual = nx.walk_power(G, 2)
+        assert_graphs_equal(expected, actual)
+
+    def test_cube(self):
+        """Tests for getting the third walk power of a multigraph."""
+        # Test a higher power.
+        G = nx.MultiGraph(nx.path_graph(3))
+        actual = nx.walk_power(G, 3, parallel_edges=True,
+                               create_using=nx.MultiGraph())
+        expected = nx.MultiGraph()
+        expected.add_edges_from([(0, 1), (0, 1), (1, 2), (1, 2)], weight=1)
+        assert_graphs_equal(expected, actual)
+
+    @raises(ValueError)
+    def test_negative_exponent(self):
+        """Tests that an attempt to raise a graph to a negative power
+        raises an exception.
+
+        """
+        nx.walk_power(nx.Graph(), -1)
+
+    def test_parallel_edges_directed(self):
+        """Tests for computing the power of a graph using a directed
+        multigraph, but forcing the "logical" (Boolean) graph power
+        instead of the power with multiple edges.
+
+        """
+        # Create a directed multigraph with four nodes and five edges,
+        # including one pair of parallel edges.
+        G = nx.MultiDiGraph()
+        G.add_nodes_from(range(4))
+        G.add_edges_from([(0, 1), (0, 3), (0, 3), (1, 3), (3, 2)])
+        # After squaring, we expect to get the following directed
+        # multigraph; this can be verified with pen and paper.
+        expected = nx.MultiDiGraph()
+        expected.add_nodes_from(range(4))
+        expected.add_weighted_edges_from([(0, 2, 2), (0, 3, 1), (1, 2, 1)])
+        # Compare the expected graph with the computed one.
+        actual = nx.walk_power(G, 2, parallel_edges=False)
+        assert_graphs_equal(expected, actual)
+
+    def test_parallel_edges_undirected(self):
+        """Tests for computing the power of a graph using an undirected
+        multigraph, but forcing the "logical" (Boolean) graph power
+        instead of the power with multiple edges.
+
+        """
+        G = nx.cycle_graph(4)
+        expected = nx.MultiGraph()
+        edges = [(0, 0, 2), (0, 2, 2), (1, 1, 2), (1, 3, 2), (2, 2, 2),
+                 (3, 3, 2)]
+        expected.add_weighted_edges_from(edges)
+        actual = nx.walk_power(G, 2, parallel_edges=False)
+        assert_graphs_equal(expected, actual)
+
+    def test_create_using(self):
+        """Tests for computing the power of a graph while specifying the
+        type of output graph.
+
+        """
+        # There are many possibilities: two possible values for
+        # `parallel_edges`, four possible graph types for the input
+        # graph, and four possible graph types for the output graph
+        # (that is, the value of `create_using`).
+        G = nx.cycle_graph(4)
+        def check(parallel_edges, create_using, expected):
+            actual = nx.walk_power(G, 2, parallel_edges, create_using)
+            assert_graphs_equal(expected, actual)
+
+        # Parallel edges can't be created in an instance of
+        # :class:`Graph`, so there should only be one edge joining each
+        # pair of adjacent vertices.
+        parallel = True
+        create_using = nx.Graph()
+        expected = nx.Graph()
+        edges = [(0, 0, 2), (0, 2, 2), (1, 1, 2), (1, 3, 2), (2, 2, 2),
+                 (3, 3, 2)]
+        expected.add_weighted_edges_from(edges)
+        check(parallel, create_using, expected)
+
+        # Parallel edges can't be created in an instance of
+        # :class:`DiGraph`, but complementary edges can.
+        parallel = True
+        create_using = nx.DiGraph()
+        expected = nx.DiGraph()
+        edges = [(0, 0, 2), (0, 2, 2), (1, 1, 2), (1, 3, 2), (2, 0, 2),
+                 (2, 2, 2), (3, 1, 2), (3, 3, 2)]
+        expected.add_weighted_edges_from(edges)
+        check(parallel, create_using, expected)
+
+        # Create parallel edges in an undirected multigraph.
+        parallel = True
+        create_using = nx.MultiGraph()
+        expected = nx.MultiGraph()
+        edges = [(0, 0), (0, 2), (1, 1), (1, 3), (2, 2), (3, 3)]
+        # We expect each of these edges to appear twice.
+        expected.add_edges_from(edges, weight=1)
+        expected.add_edges_from(edges, weight=1)
+        check(parallel, create_using, expected)
+
+        # Create parallel edges in a directed multigraph.
+        parallel = True
+        create_using = nx.MultiDiGraph()
+        expected = nx.MultiDiGraph()
+        # We expect each vertex to have two self-loops.
+        for u in range(4):
+            expected.add_edge(u, u, weight=1)
+            expected.add_edge(u, u, weight=1)
+        # For each pair of vertices at distance two, there are two paths
+        # joining the pair in either direction.
+        for u, v in [(0, 2), (1, 3)]:
+            expected.add_edge(u, v, weight=1)
+            expected.add_edge(u, v, weight=1)
+            expected.add_edge(v, u, weight=1)
+            expected.add_edge(v, u, weight=1)
+        check(parallel, create_using, expected)
+
+        # Since parallel edges can't be created in a simple graph
+        # anyway, this should be the same as the ``parallel = True``
+        # case above.
+        parallel = False
+        create_using = nx.Graph()
+        expected = nx.walk_power(G, 2, parallel_edges=True,
+                                 create_using=create_using)
+        check(parallel, create_using, expected)
+
+        # Since parallel edges can't be created in a simple graph
+        # anyway, this should be the same as the ``parallel = True``
+        # case from above.
+        parallel = False
+        create_using = nx.DiGraph()
+        expected = nx.walk_power(G, 2, parallel_edges=True,
+                                 create_using=create_using)
+        check(parallel, create_using, expected)
+
+        # Since we will not be creating parallel edges in the resulting
+        # graph, we expect that there will be at most one edge joining
+        # any pair of vertices.
+        parallel = False
+        create_using = nx.MultiGraph()
+        expected = nx.MultiGraph()
+        edges = [(0, 0, 2), (0, 2, 2), (1, 1, 2), (1, 3, 2), (2, 2, 2),
+                 (3, 3, 2)]
+        expected.add_weighted_edges_from(edges)
+        check(parallel, create_using, expected)
+
+        # Again, there will be at most one edge joining any pair of
+        # vertices, but now the complementary edges appear as well.
+        parallel = False
+        create_using = nx.MultiDiGraph()
+        expected = nx.MultiDiGraph()
+        edges = [(0, 0, 2), (0, 2, 2), (2, 0, 2), (1, 1, 2), (1, 3, 2),
+                 (3, 1, 2), (2, 2, 2), (3, 3, 2)]
+        expected.add_weighted_edges_from(edges)
+        check(parallel, create_using, expected)

@@ -13,13 +13,22 @@
 """
 Graph products.
 """
+from itertools import chain
+from itertools import combinations_with_replacement
 from itertools import product
+
+try:
+    import scipy
+except:
+    scipy_is_available = False
+else:
+    scipy_is_available = True
 
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['tensor_product', 'cartesian_product',
-           'lexicographic_product', 'strong_product', 'power']
+__all__ = ['tensor_product', 'cartesian_product', 'lexicographic_product',
+           'power', 'strong_product', 'walk_power']
 
 
 def _dict_product(d1, d2):
@@ -127,6 +136,174 @@ def _init_product_graph(G, H):
     return GH
 
 
+def _walk_power_networkx(G, k, parallel_edges=True, create_using=None):
+    """Computes the specified walk power of the graph.
+
+    This function uses only pure NetworkX functionality (no SciPy) to
+    compute the *k*th walk power of *G*.
+
+    """
+    # By default, the output should be a multigraph.
+    if create_using is None:
+        create_using = (nx.MultiDiGraph() if G.is_directed()
+                        else nx.MultiGraph())
+    H = create_using
+    H.clear()
+    num_walks = nx.all_pairs_number_of_walks(G, k)
+    # This function faces some of the same problems as
+    # `nx.from_numpy_matrix` concerning parallel edges in multigraphs,
+    # including the following.
+    #
+    # If we are creating an undirected multigraph, only add the edges
+    # from the upper triangle of the adjacency matrix. Otherwise, add
+    # all the edges.
+    #
+    # Without this check, we run into a problem where each edge is added
+    # twice when ``H.add_edges_from()`` is invoked below.
+    if H.is_multigraph() and not H.is_directed():
+        pairs = combinations_with_replacement(G, 2)
+    else:
+        pairs = product(G, repeat=2)
+    if H.is_multigraph() and parallel_edges:
+        # The following lines are functionally equivalent to:
+        #
+        #     new_edges = []
+        #     for u in G:
+        #         for v in G:
+        #             for n in range(num_walks[u][v]):
+        #                 new_edges.append((u, v, dict(weight=1)))
+        #
+        new_edges = chain.from_iterable(((u, v, dict(weight=1))
+                                         for n in range(num_walks[u][v]))
+                                        for u, v in pairs)
+    else:
+        # Need to exclude length zero walks.
+        new_edges = ((u, v, dict(weight=num_walks[u][v]))
+                     for u, v in pairs if num_walks[u][v] > 0)
+    H.add_nodes_from(G)
+    H.add_edges_from(new_edges)
+    return H
+
+
+def _walk_power_scipy(G, k, parallel_edges=True, create_using=None):
+    """Computes the specified walk power of the graph.
+
+    This function uses SciPy to perform the exponentiation of the
+    adjacency matrix of ``G``. It will raise an exception if SciPy is
+    not available.
+
+    """
+    A = nx.adjacency_matrix(G)
+    power = A ** k
+    if create_using is None:
+        create_using = (nx.MultiDiGraph() if G.is_directed()
+                        else nx.MultiGraph())
+    return nx.from_scipy_sparse_matrix(power, parallel_edges=parallel_edges,
+                                       create_using=create_using)
+
+
+def walk_power(G, k, parallel_edges=True, create_using=None):
+    """Returns the specified "walk power" of a graph.
+
+    The `k`th *walk power* of the graph `G` is a multigraph whose node
+    set is the same as that of `G` and whose edge set is a multiset
+    containing one edge from vertex ``u`` to vertex ``v`` for each walk
+    of length `k` from ``u`` to ``v``.
+
+    Parameters
+    ----------
+    G: graph
+
+      A NetworkX graph object.
+
+    k: non-negative integer
+
+      The power to which to raise the graph `G`.
+
+    parallel_edges : Boolean (default ``True``)
+
+      If this is ``False`` and `create_using` is a multigraph, then instead of
+      *d* parallel edges joining vertices, there will be a single edge with
+      weight *d* in the returned graph, where *d* is the number of walks of
+      length exactly `k` joining the vertices.
+
+    create_using : a NetworkX Graph object
+
+      The type of this graph will be used to construct the output graph. If
+      this is an instance of :class:`networkx.Graph` or
+      :class:`networkx.DiGraph`, then the `parallel_edges` keyword argument
+      will be ignored (since any parallel edges will be collapsed to a single
+      edge anyway).
+
+    Returns
+    -------
+    NetworkX graph
+
+      `G` to the `k`th walk power. If `create_using` is not ``None``, then the
+      returned graph will have the same type as `create_using`. If
+      `create_using` is ``None``, the returned graph will be a multigraph,
+      directed if and only if `G` is directed.
+
+    Raises
+    ------
+    :exc:`ValueError`
+
+      If the exponent `k` is negative.
+
+    Implementation
+    --------------
+    If SciPy is available, the returned graph is generated from the
+    `k`th matrix power of the adjacency matrix of the input graph. If
+    SciPy is not available, then we use a pure Python NetworkX algorithm
+    that computes the number of walks of length exactly `k` joining each
+    pair of vertices in the graph.
+
+    Examples
+    --------
+    The second walk power of the path graph has a self-loop for each
+    vertex on the ends, two self-loops for each internal vertex, and an
+    edge joining each pair of vertices at distance two::
+
+        >>> G = nx.path_graph(4)
+        >>> list(G.edges())
+        [(0, 1), (1, 2), (2, 3)]
+        >>> H = nx.walk_power(G, 2)
+        >>> list(H.edges())
+        [(0, 0), (0, 2), (1, 1), (1, 1), (1, 3), (2, 2), (2, 2), (3, 3)]
+
+    Force the output to be a simple graph instead of a multigraph
+    (contrast with the previous example)::
+
+        >>> G = nx.path_graph(4)
+        >>> H = nx.walk_power(G, 2, create_using=nx.Graph())
+        >>> list(H.edges())
+        [(0, 0), (0, 2), (1, 1), (1, 3), (2, 2), (3, 3)]
+
+    To force the returned graph to be a multigraph with a single
+    weighted edge instead of multiple parallel edges, set the
+    `parallel_edges` keyword argument to ``False``. In this example, the
+    second walk power of the cycle graph on four vertices has two
+    parallel self-loops on each vertex, and two parallel edges joining
+    each pair of vertices at distance two. Each pair of parallel edges
+    becomes a single edge (in an instance of
+    :class:`networkx.MultiGraph`) with weight two::
+
+        >>> G = nx.cycle_graph(4)
+        >>> list(G.edges())
+        [(0, 1), (0, 3), (1, 2), (2, 3)]
+        >>> H = nx.walk_power(G, 2, parallel_edges=False)
+        >>> list(H.edges())
+        [(0, 0), (0, 2), (1, 1), (1, 3), (2, 2), (3, 3)]
+        >>> H[0][0]
+        {0: {'weight': 2}}
+
+    """
+    if k < 0:
+        raise ValueError('exponent must be positive: {0}'.format(k))
+    impl = _walk_power_scipy if scipy_is_available else _walk_power_networkx
+    return impl(G, k, parallel_edges=parallel_edges, create_using=create_using)
+
+
 def tensor_product(G, H):
     r"""Return the tensor product of G and H.
 
@@ -142,7 +319,7 @@ def tensor_product(G, H):
     Parameters
     ----------
     G, H: graphs
-     Networkx graphs. 
+     Networkx graphs.
 
     Returns
     -------

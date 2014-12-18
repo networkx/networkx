@@ -41,3 +41,4 @@ Operators
    strong_product
    tensor_product
    power
+   walk_power
