@@ -4,6 +4,7 @@ from nose.tools import *
 
 import networkx as nx
 
+
 def test_reversed():
     G = nx.DiGraph()
     G.add_edge('A', 'B')

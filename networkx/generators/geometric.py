@@ -21,12 +21,15 @@ __all__ = ['random_geometric_graph',
 from bisect import bisect_left
 from functools import reduce
 from itertools import product
-import math, random, sys
+import math
+import random
+import sys
 import networkx as nx
 
 #---------------------------------------------------------------------------
 #  Random Geometric Graphs
 #---------------------------------------------------------------------------
+
 
 def random_geometric_graph(n, radius, dim=2, pos=None):
     r"""Return the random geometric graph in the unit cube.
@@ -77,27 +80,28 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
     .. [1] Penrose, Mathew, Random Geometric Graphs,
        Oxford Studies in Probability, 5, 2003.
     """
-    G=nx.Graph()
-    G.name="Random Geometric Graph"
+    G = nx.Graph()
+    G.name = "Random Geometric Graph"
     G.add_nodes_from(range(n))
     if pos is None:
         # random positions
         for n in G:
-            G.node[n]['pos']=[random.random() for i in range(0,dim)]
+            G.node[n]['pos'] = [random.random() for i in range(0, dim)]
     else:
-        nx.set_node_attributes(G,'pos',pos)
+        nx.set_node_attributes(G, 'pos', pos)
     # connect nodes within "radius" of each other
     # n^2 algorithm, could use a k-d tree implementation
     nodes = G.nodes(data=True)
     while nodes:
-        u,du = nodes.pop()
+        u, du = nodes.pop()
         pu = du['pos']
-        for v,dv in nodes:
+        for v, dv in nodes:
             pv = dv['pos']
-            d = sum(((a-b)**2 for a,b in zip(pu,pv)))
-            if d <= radius**2:
-                G.add_edge(u,v)
+            d = sum(((a - b) ** 2 for a, b in zip(pu, pv)))
+            if d <= radius ** 2:
+                G.add_edge(u, v)
     return G
+
 
 def geographical_threshold_graph(n, theta, alpha=2, dim=2,
                                  pos=None, weight=None):
@@ -162,7 +166,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2,
        in Algorithms and Models for the Web-Graph (WAW 2007),
        Antony Bonato and Fan Chung (Eds), pp. 209--216, 2007
     """
-    G=nx.Graph()
+    G = nx.Graph()
     # add n nodes
     G.add_nodes_from([v for v in range(n)])
     if weight is None:
@@ -170,32 +174,35 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2,
         for n in G:
             G.node[n]['weight'] = random.expovariate(1.0)
     else:
-        nx.set_node_attributes(G,'weight',weight)
+        nx.set_node_attributes(G, 'weight', weight)
     if pos is None:
         # random positions
         for n in G:
-            G.node[n]['pos']=[random.random() for i in range(0,dim)]
+            G.node[n]['pos'] = [random.random() for i in range(0, dim)]
     else:
-        nx.set_node_attributes(G,'pos',pos)
+        nx.set_node_attributes(G, 'pos', pos)
     G.add_edges_from(geographical_threshold_edges(G, theta, alpha))
     return G
 
+
 def geographical_threshold_edges(G, theta, alpha=2):
     # generate edges for a geographical threshold graph given a graph
-    # with positions and weights assigned as node attributes 'pos' and 'weight'.
+    # with positions and weights assigned as node attributes 'pos' and
+    # 'weight'.
     nodes = G.nodes(data=True)
     while nodes:
-        u,du = nodes.pop()
+        u, du = nodes.pop()
         wu = du['weight']
         pu = du['pos']
-        for v,dv in nodes:
+        for v, dv in nodes:
             wv = dv['weight']
             pv = dv['pos']
-            r = math.sqrt(sum(((a-b)**2 for a,b in zip(pu,pv))))
-            if wu+wv >= theta*r**alpha:
-                yield(u,v)
+            r = math.sqrt(sum(((a - b) ** 2 for a, b in zip(pu, pv))))
+            if wu + wv >= theta * r ** alpha:
+                yield(u, v)
 
-def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
+
+def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1)):
     r"""Return a Waxman random graph.
 
     The Waxman random graph models place n nodes uniformly at random
@@ -240,46 +247,46 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
     # build graph of n nodes with random positions in the unit square
     G = nx.Graph()
     G.add_nodes_from(range(n))
-    (xmin,ymin,xmax,ymax)=domain
+    (xmin, ymin, xmax, ymax) = domain
     for n in G:
-        G.node[n]['pos']=(xmin + ((xmax-xmin)*random.random()),
-                          ymin + ((ymax-ymin)*random.random()))
+        G.node[n]['pos'] = (xmin + ((xmax - xmin) * random.random()),
+                            ymin + ((ymax - ymin) * random.random()))
     if L is None:
         # find maximum distance L between two nodes
         l = 0
-        pos = list(nx.get_node_attributes(G,'pos').values())
+        pos = list(nx.get_node_attributes(G, 'pos').values())
         while pos:
-            x1,y1 = pos.pop()
-            for x2,y2 in pos:
-                r2 = (x1-x2)**2 + (y1-y2)**2
+            x1, y1 = pos.pop()
+            for x2, y2 in pos:
+                r2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
                 if r2 > l:
                     l = r2
-        l=math.sqrt(l)
+        l = math.sqrt(l)
     else:
         # user specified maximum distance
         l = L
 
-    nodes=G.nodes()
+    nodes = G.nodes()
     if L is None:
         # Waxman-1 model
         # try all pairs, connect randomly based on euclidean distance
         while nodes:
             u = nodes.pop()
-            x1,y1 = G.node[u]['pos']
+            x1, y1 = G.node[u]['pos']
             for v in nodes:
-                x2,y2 = G.node[v]['pos']
-                r = math.sqrt((x1-x2)**2 + (y1-y2)**2)
-                if random.random() < alpha*math.exp(-r/(beta*l)):
-                    G.add_edge(u,v)
+                x2, y2 = G.node[v]['pos']
+                r = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+                if random.random() < alpha * math.exp(-r / (beta * l)):
+                    G.add_edge(u, v)
     else:
         # Waxman-2 model
         # try all pairs, connect randomly based on randomly chosen l
         while nodes:
             u = nodes.pop()
             for v in nodes:
-                r = random.random()*l
-                if random.random() < alpha*math.exp(-r/(beta*l)):
-                    G.add_edge(u,v)
+                r = random.random() * l
+                if random.random() < alpha * math.exp(-r / (beta * l)):
+                    G.add_edge(u, v)
     return G
 
 
@@ -332,18 +339,18 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     if not seed is None:
         random.seed(seed)
     G = nx.DiGraph()
-    nodes = list(product(range(n),repeat=dim))
+    nodes = list(product(range(n), repeat=dim))
     for p1 in nodes:
         probs = [0]
         for p2 in nodes:
-            if p1==p2:
+            if p1 == p2:
                 continue
-            d = sum((abs(b-a) for a,b in zip(p1,p2)))
+            d = sum((abs(b - a) for a, b in zip(p1, p2)))
             if d <= p:
-                G.add_edge(p1,p2)
-            probs.append(d**-r)
+                G.add_edge(p1, p2)
+            probs.append(d ** -r)
         cdf = list(nx.utils.cumulative_sum(probs))
         for _ in range(q):
-            target = nodes[bisect_left(cdf,random.uniform(0, cdf[-1]))]
-            G.add_edge(p1,target)
+            target = nodes[bisect_left(cdf, random.uniform(0, cdf[-1]))]
+            G.add_edge(p1, target)
     return G

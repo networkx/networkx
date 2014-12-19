@@ -72,6 +72,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
         counts[R_node[u]['height']] += 1
 
     inf = R.graph['inf']
+
     def augment(path):
         """Augment flow along a path from s to t.
         """
@@ -121,7 +122,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase,
         while True:
             v, attr = curr_edge.get()
             if (height == R_node[v]['height'] + 1 and
-                attr['flow'] < attr['capacity']):
+                    attr['flow'] < attr['capacity']):
                 # Advance to the next node following an admissible edge.
                 path.append(v)
                 u = v

@@ -11,15 +11,15 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 import itertools
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
+                            'Pieter Swart (swart@lanl.gov)',
+                            'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
-           'nodes_iter', 'edges_iter', 'is_directed','info',
-           'freeze','is_frozen','subgraph','create_empty_copy',
-           'set_node_attributes','get_node_attributes',
-           'set_edge_attributes','get_edge_attributes',
-           'all_neighbors','non_neighbors', 'non_edges',
+           'nodes_iter', 'edges_iter', 'is_directed', 'info',
+           'freeze', 'is_frozen', 'subgraph', 'create_empty_copy',
+           'set_node_attributes', 'get_node_attributes',
+           'set_edge_attributes', 'get_edge_attributes',
+           'all_neighbors', 'non_neighbors', 'non_edges',
            'common_neighbors']
 
 
@@ -33,7 +33,7 @@ def nodes_iter(G):
     return G.nodes_iter()
 
 
-def edges(G,nbunch=None):
+def edges(G, nbunch=None):
     """Return list of edges incident to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
@@ -43,7 +43,7 @@ def edges(G,nbunch=None):
     return G.edges(nbunch)
 
 
-def edges_iter(G,nbunch=None):
+def edges_iter(G, nbunch=None):
     """Return iterator over edges incident to nodes in nbunch.
 
     Return all edges if nbunch is unspecified or nbunch=None.
@@ -53,14 +53,14 @@ def edges_iter(G,nbunch=None):
     return G.edges_iter(nbunch)
 
 
-def degree(G,nbunch=None,weight=None):
+def degree(G, nbunch=None, weight=None):
     """Return degree of single node or of nbunch of nodes.
     If nbunch is ommitted, then return degrees of *all* nodes.
     """
-    return G.degree(nbunch,weight)
+    return G.degree(nbunch, weight)
 
 
-def neighbors(G,n):
+def neighbors(G, n):
     """Return a list of nodes connected to node n. """
     return G.neighbors(n)
 
@@ -100,15 +100,15 @@ def density(G):
     Self loops are counted in the total number of edges so graphs with self
     loops can have density higher than 1.
     """
-    n=number_of_nodes(G)
-    m=number_of_edges(G)
-    if m==0 or n <= 1:
-        d=0.0
+    n = number_of_nodes(G)
+    m = number_of_edges(G)
+    if m == 0 or n <= 1:
+        d = 0.0
     else:
         if G.is_directed():
-            d=m/float(n*(n-1))
+            d = m / float(n * (n - 1))
         else:
-            d= m*2.0/float(n*(n-1))
+            d = m * 2.0 / float(n * (n - 1))
     return d
 
 
@@ -131,9 +131,9 @@ def degree_histogram(G):
     Note: the bins are width one, hence len(list) can be large
     (Order(number_of_edges))
     """
-    degseq=list(G.degree().values())
-    dmax=max(degseq)+1
-    freq= [ 0 for d in range(dmax) ]
+    degseq = list(G.degree().values())
+    dmax = max(degseq) + 1
+    freq = [0 for d in range(dmax)]
     for d in degseq:
         freq[d] += 1
     return freq
@@ -185,16 +185,16 @@ def freeze(G):
     --------
     is_frozen
     """
-    G.add_node=frozen
-    G.add_nodes_from=frozen
-    G.remove_node=frozen
-    G.remove_nodes_from=frozen
-    G.add_edge=frozen
-    G.add_edges_from=frozen
-    G.remove_edge=frozen
-    G.remove_edges_from=frozen
-    G.clear=frozen
-    G.frozen=True
+    G.add_node = frozen
+    G.add_nodes_from = frozen
+    G.remove_node = frozen
+    G.remove_nodes_from = frozen
+    G.add_edge = frozen
+    G.add_edges_from = frozen
+    G.remove_edge = frozen
+    G.remove_edges_from = frozen
+    G.clear = frozen
+    G.frozen = True
     return G
 
 
@@ -239,7 +239,7 @@ def subgraph(G, nbunch):
     return G.subgraph(nbunch)
 
 
-def create_empty_copy(G,with_nodes=True):
+def create_empty_copy(G, with_nodes=True):
     """Return a copy of the graph G with all of the edges removed.
 
     Parameters
@@ -254,7 +254,7 @@ def create_empty_copy(G,with_nodes=True):
     -----
     Graph, node, and edge data is not propagated to the new graph.
     """
-    H=G.__class__()
+    H = G.__class__()
     if with_nodes:
         H.add_nodes_from(G)
     return H
@@ -270,32 +270,32 @@ def info(G, n=None):
     n : node (any hashable)
        A node in the graph G
     """
-    info='' # append this all to a string
+    info = ''  # append this all to a string
     if n is None:
-        info+="Name: %s\n"%G.name
+        info += "Name: %s\n" % G.name
         type_name = [type(G).__name__]
-        info+="Type: %s\n"%",".join(type_name)
-        info+="Number of nodes: %d\n"%G.number_of_nodes()
-        info+="Number of edges: %d\n"%G.number_of_edges()
-        nnodes=G.number_of_nodes()
+        info += "Type: %s\n" % ",".join(type_name)
+        info += "Number of nodes: %d\n" % G.number_of_nodes()
+        info += "Number of edges: %d\n" % G.number_of_edges()
+        nnodes = G.number_of_nodes()
         if len(G) > 0:
             if G.is_directed():
-                info+="Average in degree: %8.4f\n"%\
-                    (sum(G.in_degree().values())/float(nnodes))
-                info+="Average out degree: %8.4f"%\
-                    (sum(G.out_degree().values())/float(nnodes))
+                info += "Average in degree: %8.4f\n" %\
+                    (sum(G.in_degree().values()) / float(nnodes))
+                info += "Average out degree: %8.4f" %\
+                    (sum(G.out_degree().values()) / float(nnodes))
             else:
-                s=sum(G.degree().values())
-                info+="Average degree: %8.4f"%\
-                    (float(s)/float(nnodes))
+                s = sum(G.degree().values())
+                info += "Average degree: %8.4f" %\
+                    (float(s) / float(nnodes))
 
     else:
         if n not in G:
-            raise nx.NetworkXError("node %s not in graph"%(n,))
-        info+="Node % s has the following properties:\n"%n
-        info+="Degree: %d\n"%G.degree(n)
-        info+="Neighbors: "
-        info+=' '.join(str(nbr) for nbr in G.neighbors(n))
+            raise nx.NetworkXError("node %s not in graph" % (n,))
+        info += "Node % s has the following properties:\n" % n
+        info += "Degree: %d\n" % G.degree(n)
+        info += "Neighbors: "
+        info += ' '.join(str(nbr) for nbr in G.neighbors(n))
     return info
 
 
@@ -354,7 +354,7 @@ def get_node_attributes(G, name):
     >>> color[1]
     'red'
     """
-    return dict( (n,d[name]) for n,d in G.node.items() if name in d)
+    return dict((n, d[name]) for n, d in G.node.items() if name in d)
 
 
 def set_edge_attributes(G, name, values):
@@ -429,8 +429,7 @@ def get_edge_attributes(G, name):
         edges = G.edges(keys=True, data=True)
     else:
         edges = G.edges(data=True)
-    return dict( (x[:-1], x[-1][name]) for x in edges if name in x[-1] )
-
+    return dict((x[:-1], x[-1][name]) for x in edges if name in x[-1])
 
 
 def all_neighbors(graph, node):

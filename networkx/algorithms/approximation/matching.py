@@ -17,6 +17,7 @@ import networkx as nx
 __all__ = ["min_maximal_matching"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
+
 def min_maximal_matching(G):
     r"""Returns the minimum maximal matching of G. That is, out of all maximal
     matchings of the graph G, the smallest is returned.

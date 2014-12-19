@@ -12,19 +12,20 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Renato Fabbri'])
 __all__ = ['closeness_vitality']
 
+
 def weiner_index(G, weight=None):
     # compute sum of distances between all node pairs
     # (with optional weights)
-    weiner=0.0
+    weiner = 0.0
     if weight is None:
         for n in G:
-            path_length=nx.single_source_shortest_path_length(G,n)
-            weiner+=sum(path_length.values())
+            path_length = nx.single_source_shortest_path_length(G, n)
+            weiner += sum(path_length.values())
     else:
         for n in G:
-            path_length=nx.single_source_dijkstra_path_length(G,
-                    n,weight=weight)
-            weiner+=sum(path_length.values())
+            path_length = nx.single_source_dijkstra_path_length(G,
+                                                                n, weight=weight)
+            weiner += sum(path_length.values())
     return weiner
 
 
@@ -64,21 +65,21 @@ def closeness_vitality(G, weight=None):
        http://books.google.com/books?id=TTNhSm7HYrIC
     """
     multigraph = G.is_multigraph()
-    wig = weiner_index(G,weight)
+    wig = weiner_index(G, weight)
     closeness_vitality = {}
     for n in G:
         # remove edges connected to node n and keep list of edges with data
         # could remove node n but it doesn't count anyway
         if multigraph:
-            edges = G.edges(n,data=True,keys=True)
+            edges = G.edges(n, data=True, keys=True)
             if G.is_directed():
-                edges += G.in_edges(n,data=True,keys=True)
+                edges += G.in_edges(n, data=True, keys=True)
         else:
-            edges = G.edges(n,data=True)
+            edges = G.edges(n, data=True)
             if G.is_directed():
-                edges += G.in_edges(n,data=True)
+                edges += G.in_edges(n, data=True)
         G.remove_edges_from(edges)
-        closeness_vitality[n] = wig - weiner_index(G,weight)
+        closeness_vitality[n] = wig - weiner_index(G, weight)
         # add edges and data back to graph
         G.add_edges_from(edges)
     return closeness_vitality

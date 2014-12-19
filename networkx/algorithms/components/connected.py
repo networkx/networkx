@@ -16,8 +16,9 @@ __authors__ = "\n".join(['Eben Kenah',
                          'Aric Hagberg <aric.hagberg@gmail.com>'
                          'Christopher Ellison'])
 __all__ = ['number_connected_components', 'connected_components',
-           'connected_component_subgraphs','is_connected',
+           'connected_component_subgraphs', 'is_connected',
            'node_connected_component']
+
 
 @not_implemented_for('directed')
 def connected_components(G):
@@ -50,12 +51,13 @@ def connected_components(G):
     -----
     For undirected graphs only.
     """
-    seen={}
+    seen = {}
     for v in G:
         if v not in seen:
             c = sp_length(G, v)
             yield list(c)
             seen.update(c)
+
 
 @not_implemented_for('directed')
 def connected_component_subgraphs(G, copy=True):
@@ -95,6 +97,7 @@ def connected_component_subgraphs(G, copy=True):
         else:
             yield G.subgraph(c)
 
+
 def number_connected_components(G):
     """Return the number of connected components.
 
@@ -117,6 +120,7 @@ def number_connected_components(G):
     For undirected graphs only.
     """
     return len(list(connected_components(G)))
+
 
 @not_implemented_for('directed')
 def is_connected(G):
@@ -150,6 +154,7 @@ def is_connected(G):
         raise nx.NetworkXPointlessConcept('Connectivity is undefined ',
                                           'for the null graph.')
     return len(sp_length(G, next(G.nodes_iter()))) == len(G)
+
 
 @not_implemented_for('directed')
 def node_connected_component(G, n):

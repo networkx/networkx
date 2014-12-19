@@ -250,7 +250,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
                 'edge %r has negative capacity' % (e[:-1],))
 
     ###########################################################################
-    # Initialization 
+    # Initialization
     ###########################################################################
 
     # Add a dummy node -1 and connect all existing nodes to it with infinite-
@@ -281,9 +281,12 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
     parent = list(chain(repeat(-1, n), [None]))  # parent nodes
     edge = list(range(e, e + n))                 # edges to parents
     size = list(chain(repeat(1, n), [n + 1]))    # subtree sizes
-    next = list(chain(range(1, n), [-1, 0]))     # next nodes in depth-first thread 
-    prev = list(range(-1, n))                    # previous nodes in depth-first thread
-    last = list(chain(range(n), [n - 1]))        # last descendants in depth-first thread
+    # next nodes in depth-first thread
+    next = list(chain(range(1, n), [-1, 0]))
+    # previous nodes in depth-first thread
+    prev = list(range(-1, n))
+    # last descendants in depth-first thread
+    last = list(chain(range(n), [n - 1]))
 
     ###########################################################################
     # Pivot loop
@@ -308,7 +311,7 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         B = int(ceil(sqrt(e)))  # pivot block size
         M = (e + B - 1) // B    # number of blocks needed to cover all edges
         m = 0                   # number of consecutive blocks without eligible
-                                # entering edges
+        # entering edges
         f = 0                   # first edge in block
         while m < M:
             # Determine the next block of edges.
@@ -388,7 +391,6 @@ def network_simplex(G, demand='demand', capacity='capacity', weight='weight'):
         Wn += WnR
         We += WeR
         return Wn, We
-
 
     def residual_capacity(i, p):
         """Return the residual capacity of an edge i in the direction away

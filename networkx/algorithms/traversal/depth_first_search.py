@@ -13,8 +13,9 @@ from collections import defaultdict
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['dfs_edges', 'dfs_tree',
            'dfs_predecessors', 'dfs_successors',
-           'dfs_preorder_nodes','dfs_postorder_nodes',
+           'dfs_preorder_nodes', 'dfs_postorder_nodes',
            'dfs_labeled_edges']
+
 
 def dfs_edges(G, source=None):
     """Produce edges in a depth-first-search (DFS).
@@ -53,22 +54,23 @@ def dfs_edges(G, source=None):
     else:
         # produce edges for components with source
         nodes = [source]
-    visited=set()
+    visited = set()
     for start in nodes:
         if start in visited:
             continue
         visited.add(start)
-        stack = [(start,iter(G[start]))]
+        stack = [(start, iter(G[start]))]
         while stack:
-            parent,children = stack[-1]
+            parent, children = stack[-1]
             try:
                 child = next(children)
                 if child not in visited:
-                    yield parent,child
+                    yield parent, child
                     visited.add(child)
-                    stack.append((child,iter(G[child])))
+                    stack.append((child, iter(G[child])))
             except StopIteration:
                 stack.pop()
+
 
 def dfs_tree(G, source):
     """Return oriented tree constructed from a depth-first-search from source.
@@ -98,8 +100,9 @@ def dfs_tree(G, source):
         T.add_nodes_from(G)
     else:
         T.add_node(source)
-    T.add_edges_from(dfs_edges(G,source))
+    T.add_edges_from(dfs_edges(G, source))
     return T
+
 
 def dfs_predecessors(G, source=None):
     """Return dictionary of predecessors in depth-first-search from source.
@@ -132,7 +135,7 @@ def dfs_predecessors(G, source=None):
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
     """
-    return dict((t,s) for s,t in dfs_edges(G,source=source))
+    return dict((t, s) for s, t in dfs_edges(G, source=source))
 
 
 def dfs_successors(G, source=None):
@@ -167,12 +170,12 @@ def dfs_successors(G, source=None):
     repeatedly until all components in the graph are searched.
     """
     d = defaultdict(list)
-    for s,t in dfs_edges(G,source=source):
+    for s, t in dfs_edges(G, source=source):
         d[s].append(t)
     return dict(d)
 
 
-def dfs_postorder_nodes(G,source=None):
+def dfs_postorder_nodes(G, source=None):
     """Produce nodes in a depth-first-search post-ordering starting
     from source.
 
@@ -204,8 +207,8 @@ def dfs_postorder_nodes(G,source=None):
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
     """
-    post=(v for u,v,d in nx.dfs_labeled_edges(G,source=source)
-          if d['dir']=='reverse')
+    post = (v for u, v, d in nx.dfs_labeled_edges(G, source=source)
+            if d['dir'] == 'reverse')
     # potential modification: chain source to end of post-ordering
     # return chain(post,[source])
     return post
@@ -243,8 +246,8 @@ def dfs_preorder_nodes(G, source=None):
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
     """
-    pre=(v for u,v,d in nx.dfs_labeled_edges(G,source=source)
-         if d['dir']=='forward')
+    pre = (v for u, v, d in nx.dfs_labeled_edges(G, source=source)
+           if d['dir'] == 'forward')
     # potential modification: chain source to beginning of pre-ordering
     # return chain([source],pre)
     return pre
@@ -293,21 +296,21 @@ def dfs_labeled_edges(G, source=None):
     for start in nodes:
         if start in visited:
             continue
-        yield start,start,{'dir':'forward'}
+        yield start, start, {'dir': 'forward'}
         visited.add(start)
-        stack = [(start,iter(G[start]))]
+        stack = [(start, iter(G[start]))]
         while stack:
-            parent,children = stack[-1]
+            parent, children = stack[-1]
             try:
                 child = next(children)
                 if child in visited:
-                    yield parent,child,{'dir':'nontree'}
+                    yield parent, child, {'dir': 'nontree'}
                 else:
-                    yield parent,child,{'dir':'forward'}
+                    yield parent, child, {'dir': 'forward'}
                     visited.add(child)
-                    stack.append((child,iter(G[child])))
+                    stack.append((child, iter(G[child])))
             except StopIteration:
                 stack.pop()
                 if stack:
-                    yield stack[-1][0],parent,{'dir':'reverse'}
-        yield start,start,{'dir':'reverse'}
+                    yield stack[-1][0], parent, {'dir': 'reverse'}
+        yield start, start, {'dir': 'reverse'}

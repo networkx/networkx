@@ -15,6 +15,7 @@ __all__ = ['MinHeap', 'PairingHeap', 'BinaryHeap']
 
 
 class MinHeap(object):
+
     """Base class for min-heaps.
 
     A MinHeap stores a collection of key-value pairs ordered by their values.
@@ -23,6 +24,7 @@ class MinHeap(object):
     """
 
     class _Item(object):
+
         """Used by subclassess to represent a key-value pair.
         """
         __slots__ = ('key', 'value')
@@ -147,10 +149,12 @@ def _inherit_doc(cls):
 
 
 class PairingHeap(MinHeap):
+
     """A pairing heap.
     """
 
     class _Node(MinHeap._Item):
+
         """A node in a pairing heap.
 
         A tree in a pairing heap is stored using the left-child, right-sibling
@@ -302,8 +306,10 @@ class PairingHeap(MinHeap):
 
 
 class BinaryHeap(MinHeap):
+
     """A binary heap.
     """
+
     def __init__(self):
         """Initialize a binary heap.
         """

@@ -45,6 +45,7 @@ _tracemin_method = compile('^tracemin(?:_(.*))?$')
 
 
 class _PCGSolver(object):
+
     """Preconditioned conjugate gradient method.
     """
 
@@ -84,6 +85,7 @@ class _PCGSolver(object):
 
 
 class _CholeskySolver(object):
+
     """Cholesky factorization.
     """
 
@@ -103,6 +105,7 @@ class _CholeskySolver(object):
 
 
 class _LUSolver(object):
+
     """LU factorization.
     """
 
@@ -190,7 +193,6 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
             for j in range(X.shape[1]):
                 X[:, j] -= dot(X[:, j], e) * e
 
-
     if method is None:
         method = 'pcg'
     if method == 'pcg':
@@ -268,6 +270,7 @@ def _get_fiedler_func(method):
     match = _tracemin_method.match(method)
     if match:
         method = match.group(1)
+
         def find_fiedler(L, x, normalized, tol):
             q = 2 if method == 'pcg' else min(4, L.shape[0] - 1)
             X = asmatrix(normal(size=(q, L.shape[0]))).T

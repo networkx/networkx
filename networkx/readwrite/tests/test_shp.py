@@ -10,6 +10,7 @@ import networkx as nx
 
 
 class TestShp(object):
+
     @classmethod
     def setupClass(cls):
         global ogr
@@ -43,10 +44,10 @@ class TestShp(object):
         shp = drv.CreateDataSource(shppath)
         lyr = createlayer(shp)
         self.names = ['a', 'b', 'c']  # edgenames
-        self.paths = (  [(1.0, 1.0), (2.0, 2.0)],
-                        [(2.0, 2.0), (3.0, 3.0)],
-                        [(0.9, 0.9), (4.0, 2.0)]
-                    )
+        self.paths = ([(1.0, 1.0), (2.0, 2.0)],
+                      [(2.0, 2.0), (3.0, 3.0)],
+                      [(0.9, 0.9), (4.0, 2.0)]
+                      )
         for path, name in zip(self.paths, self.names):
             feat = ogr.Feature(lyr.GetLayerDefn())
             g = ogr.Geometry(ogr.wkbLineString)

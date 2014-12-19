@@ -42,7 +42,8 @@ def laplacian_spectrum(G, weight='weight'):
     laplacian_matrix
     """
     from scipy.linalg import eigvalsh
-    return eigvalsh(nx.laplacian_matrix(G,weight=weight).todense())
+    return eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
+
 
 def adjacency_spectrum(G, weight='weight'):
     """Return eigenvalues of the adjacency matrix of G.
@@ -71,9 +72,11 @@ def adjacency_spectrum(G, weight='weight'):
     adjacency_matrix
     """
     from scipy.linalg import eigvals
-    return eigvals(nx.adjacency_matrix(G,weight=weight).todense())
+    return eigvals(nx.adjacency_matrix(G, weight=weight).todense())
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:

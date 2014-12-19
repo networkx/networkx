@@ -30,6 +30,7 @@ __author__ = """\n""".join(['Tomas Gavenciak <gavento@ucw.cz>',
 __all__ = ['read_sparse6', 'parse_sparse6',
            'generate_sparse6', 'write_sparse6']
 
+
 def parse_sparse6(string):
     """Read an undirected graph in sparse6 format from string.
 
@@ -67,32 +68,32 @@ def parse_sparse6(string):
         raise NetworkXError('Expected leading colon in sparse6')
     n, data = data_to_n(graph6_to_data(string[1:]))
     k = 1
-    while 1<<k < n:
+    while 1 << k < n:
         k += 1
 
     def parseData():
         """Return stream of pairs b[i], x[i] for sparse6 format."""
         chunks = iter(data)
-        d = None # partial data word
-        dLen = 0 # how many unparsed bits are left in d
+        d = None  # partial data word
+        dLen = 0  # how many unparsed bits are left in d
 
-        while 1:
+        while True:
             if dLen < 1:
                 d = next(chunks)
                 dLen = 6
             dLen -= 1
-            b = (d>>dLen) & 1 # grab top remaining bit
+            b = (d >> dLen) & 1  # grab top remaining bit
 
-            x = d & ((1<<dLen)-1) # partially built up value of x
+            x = d & ((1 << dLen) - 1)  # partially built up value of x
             xLen = dLen		# how many bits included so far in x
-            while xLen < k:	# now grab full chunks until we have enough
+            while xLen < k:  # now grab full chunks until we have enough
                 d = next(chunks)
                 dLen = 6
-                x = (x<<6) + d
+                x = (x << 6) + d
                 xLen += 6
-            x = (x >> (xLen - k)) # shift back the extra bits
+            x = (x >> (xLen - k))  # shift back the extra bits
             dLen = xLen - k
-            yield b,x
+            yield b, x
 
     v = 0
 
@@ -100,7 +101,7 @@ def parse_sparse6(string):
     G.add_nodes_from(range(n))
 
     multigraph = False
-    for b,x in parseData():
+    for b, x in parseData():
         if b == 1:
             v += 1
         # padding with ones can cause overlarge number here
@@ -109,14 +110,15 @@ def parse_sparse6(string):
         elif x > v:
             v = x
         else:
-            if G.has_edge(x,v):
+            if G.has_edge(x, v):
                 multigraph = True
-            G.add_edge(x,v)
+            G.add_edge(x, v)
     if not multigraph:
         G = nx.Graph(G)
     return G
 
-@open_file(0,mode='rt')
+
+@open_file(0, mode='rt')
 def read_sparse6(path):
     """Read an undirected graph in sparse6 format from path.
 
@@ -160,6 +162,7 @@ def read_sparse6(path):
         return glist[0]
     else:
         return glist
+
 
 @not_implemented_for('directed')
 def generate_sparse6(G, nodes=None, header=True):
@@ -206,33 +209,32 @@ def generate_sparse6(G, nodes=None, header=True):
     """
     n = G.order()
     k = 1
-    while 1<<k < n:
+    while 1 << k < n:
         k += 1
 
     def enc(x):
         """Big endian k-bit encoding of x"""
-        return [1 if (x & 1 << (k-1-i)) else 0 for i in range(k)]
+        return [1 if (x & 1 << (k - 1 - i)) else 0 for i in range(k)]
 
     if nodes is None:
-        ns = list(G.nodes()) # number -> node
+        ns = list(G.nodes())  # number -> node
     else:
         ns = list(nodes)
-    ndict = dict(((ns[i], i) for i in range(len(ns)))) # node -> number
+    ndict = dict(((ns[i], i) for i in range(len(ns))))  # node -> number
     edges = [(ndict[u], ndict[v]) for (u, v) in G.edges()]
-    edges = [(max(u,v), min(u,v)) for (u, v) in edges]
-    edges.sort()
+    edges = sorted([(max(u, v), min(u, v)) for (u, v) in edges])
 
     bits = []
     curv = 0
     for (v, u) in edges:
-        if v == curv: # current vertex edge
+        if v == curv:  # current vertex edge
             bits.append(0)
             bits.extend(enc(u))
-        elif v == curv + 1: # next vertex edge
+        elif v == curv + 1:  # next vertex edge
             curv += 1
             bits.append(1)
             bits.extend(enc(u))
-        else: # skip to vertex v and then add edge to u
+        else:  # skip to vertex v and then add edge to u
             curv = v
             bits.append(1)
             bits.extend(enc(v))
@@ -248,15 +250,16 @@ def generate_sparse6(G, nodes=None, header=True):
     else:
         bits.extend([1] * ((-len(bits)) % 6))
 
-    data = [(bits[i+0]<<5) + (bits[i+1]<<4) + (bits[i+2]<<3) + (bits[i+3]<<2) +
-            (bits[i+4]<<1) + (bits[i+5]<<0) for i in range(0, len(bits), 6)]
+    data = [(bits[i + 0] << 5) + (bits[i + 1] << 4) + (bits[i + 2] << 3) + (bits[i + 3] << 2) +
+            (bits[i + 4] << 1) + (bits[i + 5] << 0) for i in range(0, len(bits), 6)]
 
     res = (':' + data_to_graph6(n_to_data(n)) +
-                data_to_graph6(data))
+           data_to_graph6(data))
     if header:
         return '>>sparse6<<' + res
     else:
         return res
+
 
 @open_file(1, mode='wt')
 def write_sparse6(G, path, nodes=None, header=True):

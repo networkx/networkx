@@ -15,7 +15,7 @@ you have to keep track of which set each node belongs to, and make
 sure that there is no edge between nodes of the same set. The convention used
 in NetworkX is to use a node attribute named "bipartite" with values 0 or 1 to
 identify the sets each node belongs to.
- 
+
 For example:
 
 >>> B = nx.Graph()
@@ -25,8 +25,8 @@ For example:
 
 Many algorithms of the bipartite module of NetworkX require, as an argument, a
 container with all the nodes that belong to one set, in addition to the bipartite
-graph `B`. If `B` is connected, you can find the node sets using a two-coloring 
-algorithm: 
+graph `B`. If `B` is connected, you can find the node sets using a two-coloring
+algorithm:
 
 >>> nx.is_connected(B)
 True
@@ -69,7 +69,7 @@ container with all nodes that belong to one node set:
 >>> G.edges()
 [(1, 2), (1, 4)]
 
-All bipartite graph generators in NetworkX build bipartite graphs with the 
+All bipartite graph generators in NetworkX build bipartite graphs with the
 "bipartite" node attribute. Thus, you can use the same approach:
 
 >>> RB = nx.bipartite_random_graph(5, 7, 0.2)

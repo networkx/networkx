@@ -10,6 +10,7 @@ from collections import defaultdict, deque
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['bfs_edges', 'bfs_tree', 'bfs_predecessors', 'bfs_successors']
 
+
 def bfs_edges(G, source, reverse=False):
     """Produce edges in a breadth-first-search starting at source.
 
@@ -61,6 +62,7 @@ def bfs_edges(G, source, reverse=False):
         except StopIteration:
             queue.popleft()
 
+
 def bfs_tree(G, source, reverse=False):
     """Return an oriented tree constructed from of a breadth-first-search
     starting at source.
@@ -98,8 +100,9 @@ def bfs_tree(G, source, reverse=False):
     """
     T = nx.DiGraph()
     T.add_node(source)
-    T.add_edges_from(bfs_edges(G,source,reverse=reverse))
+    T.add_edges_from(bfs_edges(G, source, reverse=reverse))
     return T
+
 
 def bfs_predecessors(G, source):
     """Return dictionary of predecessors in breadth-first-search from source.
@@ -132,7 +135,8 @@ def bfs_predecessors(G, source):
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
     """
-    return dict((t,s) for s,t in bfs_edges(G,source))
+    return dict((t, s) for s, t in bfs_edges(G, source))
+
 
 def bfs_successors(G, source):
     """Return dictionary of successors in breadth-first-search from source.
@@ -166,6 +170,6 @@ def bfs_successors(G, source):
     repeatedly until all components in the graph are searched.
     """
     d = defaultdict(list)
-    for s,t in bfs_edges(G,source):
+    for s, t in bfs_edges(G, source):
         d[s].append(t)
     return dict(d)

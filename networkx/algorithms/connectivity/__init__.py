@@ -9,4 +9,4 @@ __all__ = sum([connectivity.__all__,
                cuts.__all__,
                stoerwagner.__all__,
                utils.__all__,
-              ], [])
+               ], [])

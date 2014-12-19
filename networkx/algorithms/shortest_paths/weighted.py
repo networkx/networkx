@@ -256,7 +256,8 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     return dist
 
 
-def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight'):
+def single_source_dijkstra(
+        G, source, target=None, cutoff=None, weight='weight'):
     """Compute shortest paths and lengths in a weighted graph G.
 
     Uses Dijkstra's algorithm for shortest paths.
@@ -914,12 +915,12 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     push = heappush
     pop = heappop
     # Init:   Forward             Backward
-    dists  = [{},                {}]  # dictionary of final distances
-    paths  = [{source: [source]}, {target: [target]}]  # dictionary of paths
-    fringe = [[],                []]  # heap of (distance, node) tuples for
-                                      # extracting next node to expand
-    seen   = [{source: 0},        {target: 0}]  # dictionary of distances to
-                                                # nodes seen
+    dists = [{}, {}]  # dictionary of final distances
+    paths = [{source: [source]}, {target: [target]}]  # dictionary of paths
+    fringe = [[], []]  # heap of (distance, node) tuples for
+    # extracting next node to expand
+    seen = [{source: 0}, {target: 0}]  # dictionary of distances to
+    # nodes seen
     c = count()
     # initialize fringe heap
     push(fringe[0], (0, next(c), source))

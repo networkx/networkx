@@ -6,13 +6,15 @@ except ImportError:
 from nose.tools import *
 import networkx as nx
 import networkx.readwrite.sparse6 as sg6
-import os,tempfile
+import os
+import tempfile
+
 
 class TestSparseGraph6(object):
 
     def test_parse_sparse6(self):
-        data=""":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"""
-        G=nx.parse_sparse6(data)
+        data = """:Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"""
+        G = nx.parse_sparse6(data)
         assert_equal(sorted(G.nodes()),
                      [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
                       10, 11, 12, 13, 14, 15, 16, 17])
@@ -32,20 +34,20 @@ class TestSparseGraph6(object):
         assert_true(type(M), nx.MultiGraph)
 
     def test_read_sparse6(self):
-        data=""":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"""
-        G=nx.parse_sparse6(data)
+        data = """:Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"""
+        G = nx.parse_sparse6(data)
         fh = StringIO(data)
-        Gin=nx.read_sparse6(fh)
-        assert_equal(sorted(G.nodes()),sorted(Gin.nodes()))
-        assert_equal(sorted(G.edges()),sorted(Gin.edges()))
+        Gin = nx.read_sparse6(fh)
+        assert_equal(sorted(G.nodes()), sorted(Gin.nodes()))
+        assert_equal(sorted(G.edges()), sorted(Gin.edges()))
 
     def test_read_many_graph6(self):
         # Read many graphs into list
-        data=':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n'+\
+        data = ':Q___eDcdFcDeFcE`GaJ`IaHbKNbLM\n' +\
             ':Q___dCfDEdcEgcbEGbFIaJ`JaHN`IM'
         fh = StringIO(data)
-        glist=nx.read_sparse6(fh)
-        assert_equal(len(glist),2)
+        glist = nx.read_sparse6(fh)
+        assert_equal(len(glist), 2)
         for G in glist:
             assert_equal(sorted(G.nodes()),
                          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -80,13 +82,12 @@ class TestSparseGraph6(object):
 
     def test_write_sparse6(self):
         fh = StringIO()
-        nx.write_sparse6(nx.complete_bipartite_graph(6,9), fh)
+        nx.write_sparse6(nx.complete_bipartite_graph(6, 9), fh)
         fh.seek(0)
         assert_equal(fh.read(),
-                     '>>sparse6<<:Nk?G`cJ?G`cJ?G`cJ?G`'+
+                     '>>sparse6<<:Nk?G`cJ?G`cJ?G`cJ?G`' +
                      'cJ?G`cJ?G`cJ?G`cJ?G`cJ?G`cJ\n')
         # Compared with sage
-
 
     def test_generate_and_parse_sparse6(self):
         for i in list(range(13)) + [31, 47, 62, 63, 64, 72]:

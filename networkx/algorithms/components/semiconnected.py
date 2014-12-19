@@ -13,6 +13,7 @@ from networkx.utils import not_implemented_for
 
 __all__ = ['is_semiconnected']
 
+
 @not_implemented_for('undirected')
 def is_semiconnected(G):
     """Return True if the graph is semiconnected, False otherwise.

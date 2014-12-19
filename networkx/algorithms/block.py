@@ -2,16 +2,17 @@
 """
 Functions for creating network blockmodels from node partitions.
 
-Created by Drew Conway <drew.conway@nyu.edu> 
+Created by Drew Conway <drew.conway@nyu.edu>
 Copyright (c) 2010. All rights reserved.
 """
 __author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
                             'Aric Hagberg <hagberg@lanl.gov>'])
-__all__=['blockmodel']
+__all__ = ['blockmodel']
 
 import networkx as nx
 
-def blockmodel(G,partitions,multigraph=False):
+
+def blockmodel(G, partitions, multigraph=False):
     """Returns a reduced graph constructed using the generalized block modeling
     technique.
 
@@ -31,7 +32,7 @@ def blockmodel(G,partitions,multigraph=False):
     ----------
     G : graph
         A networkx Graph or DiGraph
-    partitions : list of lists, or list of sets 
+    partitions : list of lists, or list of sets
         The partition of the nodes.  Must be non-overlapping.
     multigraph : bool, optional
         If True return a MultiGraph with the edge data of the original
@@ -42,7 +43,7 @@ def blockmodel(G,partitions,multigraph=False):
     Returns
     -------
     blockmodel : a Networkx graph object
-    
+
     Examples
     --------
     >>> G=nx.path_graph(6)
@@ -52,64 +53,66 @@ def blockmodel(G,partitions,multigraph=False):
     References
     ----------
     .. [1] Patrick Doreian, Vladimir Batagelj, and Anuska Ferligoj
-    	"Generalized Blockmodeling",Cambridge University Press, 2004.
+        "Generalized Blockmodeling",Cambridge University Press, 2004.
     """
     # Create sets of node partitions
-    part=list(map(set,partitions)) 
+    part = list(map(set, partitions))
 
     # Check for overlapping node partitions
-    u=set()
-    for p1,p2 in zip(part[:-1],part[1:]):
+    u = set()
+    for p1, p2 in zip(part[:-1], part[1:]):
         u.update(p1)
-        #if not u.isdisjoint(p2):  # Python 2.6 required
-        if len (u.intersection(p2))>0:
+        # if not u.isdisjoint(p2):  # Python 2.6 required
+        if len(u.intersection(p2)) > 0:
             raise nx.NetworkXException("Overlapping node partitions.")
 
     # Initialize blockmodel graph
     if multigraph:
         if G.is_directed():
-            M=nx.MultiDiGraph() 
+            M = nx.MultiDiGraph()
         else:
-            M=nx.MultiGraph() 
+            M = nx.MultiGraph()
     else:
         if G.is_directed():
-            M=nx.DiGraph() 
+            M = nx.DiGraph()
         else:
-            M=nx.Graph() 
-        
-    # Add nodes and properties to blockmodel            
+            M = nx.Graph()
+
+    # Add nodes and properties to blockmodel
     # The blockmodel nodes are node-induced subgraphs of G
     # Label them with integers starting at 0
-    for i,p in zip(range(len(part)),part):
+    for i, p in zip(range(len(part)), part):
         M.add_node(i)
-        # The node-induced subgraph is stored as the node 'graph' attribute 
-        SG=G.subgraph(p)
-        M.node[i]['graph']=SG        
-        M.node[i]['nnodes']=SG.number_of_nodes()
-        M.node[i]['nedges']=SG.number_of_edges()
-        M.node[i]['density']=nx.density(SG)
-        
-    # Create mapping between original node labels and new blockmodel node labels
-    block_mapping={}
-    for n in M:
-        nodes_in_block=M.node[n]['graph'].nodes()
-        block_mapping.update(dict.fromkeys(nodes_in_block,n))
+        # The node-induced subgraph is stored as the node 'graph' attribute
+        SG = G.subgraph(p)
+        M.node[i]['graph'] = SG
+        M.node[i]['nnodes'] = SG.number_of_nodes()
+        M.node[i]['nedges'] = SG.number_of_edges()
+        M.node[i]['density'] = nx.density(SG)
 
-    # Add edges to block graph 
-    for u,v,d in G.edges(data=True):
-        bmu=block_mapping[u]
-        bmv=block_mapping[v]
-        if bmu==bmv: # no self loops
+    # Create mapping between original node labels and new blockmodel node
+    # labels
+    block_mapping = {}
+    for n in M:
+        nodes_in_block = M.node[n]['graph'].nodes()
+        block_mapping.update(dict.fromkeys(nodes_in_block, n))
+
+    # Add edges to block graph
+    for u, v, d in G.edges(data=True):
+        bmu = block_mapping[u]
+        bmv = block_mapping[v]
+        if bmu == bmv:  # no self loops
             continue
-        if multigraph: 
+        if multigraph:
             # For multigraphs add an edge for each edge in original graph
-            M.add_edge(bmu,bmv,attr_dict=d)
+            M.add_edge(bmu, bmv, attr_dict=d)
         else:
             # For graphs and digraphs add single weighted edge
-            weight=d.get('weight',1.0) # default to 1 if no weight specified
-            if M.has_edge(bmu,bmv):
-                M[bmu][bmv]['weight']+=weight
+            weight = d.get(
+                'weight',
+                1.0)  # default to 1 if no weight specified
+            if M.has_edge(bmu, bmv):
+                M[bmu][bmv]['weight'] += weight
             else:
-                M.add_edge(bmu,bmv,weight=weight)
+                M.add_edge(bmu, bmv, weight=weight)
     return M
-

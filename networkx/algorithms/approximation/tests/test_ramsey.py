@@ -2,6 +2,7 @@ from nose.tools import *
 import networkx as nx
 import networkx.algorithms.approximation as apxa
 
+
 def test_ramsey():
     # this should only find the complete graph
     graph = nx.complete_graph(10)

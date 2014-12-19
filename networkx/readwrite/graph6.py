@@ -27,6 +27,7 @@ __author__ = """\n""".join(['Tomas Gavenciak <gavento@ucw.cz>',
                             'Aric Hagberg <aric.hagberg@lanl.gov'])
 __all__ = ['read_graph6', 'parse_graph6', 'generate_graph6', 'write_graph6']
 
+
 def parse_graph6(string):
     """Read a simple undirected graph in graph6 format from string.
 
@@ -63,27 +64,29 @@ def parse_graph6(string):
         """Return sequence of individual bits from 6-bit-per-value
         list of data values."""
         for d in data:
-            for i in [5,4,3,2,1,0]:
-                yield (d>>i)&1
+            for i in [5, 4, 3, 2, 1, 0]:
+                yield (d >> i) & 1
 
     if string.startswith('>>graph6<<'):
         string = string[10:]
     data = graph6_to_data(string)
     n, data = data_to_n(data)
-    nd = (n*(n-1)//2 + 5) // 6
+    nd = (n * (n - 1) // 2 + 5) // 6
     if len(data) != nd:
-        raise NetworkXError(\
-            'Expected %d bits but got %d in graph6' % (n*(n-1)//2, len(data)*6))
+        raise NetworkXError(
+            'Expected %d bits but got %d in graph6' % (n * (n - 1) // 2, len(data) * 6))
 
-    G=nx.Graph()
+    G = nx.Graph()
     G.add_nodes_from(range(n))
-    for (i,j),b in zip([(i,j) for j in range(1,n) for i in range(j)], bits()):
+    for (i, j), b in zip([(i, j) for j in range(1, n)
+                          for i in range(j)], bits()):
         if b:
-            G.add_edge(i,j)
+            G.add_edge(i, j)
 
     return G
 
-@open_file(0,mode='rt')
+
+@open_file(0, mode='rt')
 def read_graph6(path):
     """Read simple undirected graphs in graph6 format from path.
 
@@ -129,8 +132,9 @@ def read_graph6(path):
     else:
         return glist
 
-@not_implemented_for('directed','multigraph')
-def generate_graph6(G, nodes = None, header=True):
+
+@not_implemented_for('directed', 'multigraph')
+def generate_graph6(G, nodes=None, header=True):
     """Generate graph6 format string from a simple undirected graph.
 
     Parameters
@@ -180,8 +184,8 @@ def generate_graph6(G, nodes = None, header=True):
         ns = list(G)
 
     def bits():
-        for (i,j) in [(i,j) for j in range(1,n) for i in range(j)]:
-            yield G.has_edge(ns[i],ns[j])
+        for (i, j) in [(i, j) for j in range(1, n) for i in range(j)]:
+            yield G.has_edge(ns[i], ns[j])
 
     n = G.order()
     data = n_to_data(n)
@@ -197,14 +201,14 @@ def generate_graph6(G, nodes = None, header=True):
     if flush:
         data.append(d)
 
-    string_data =  data_to_graph6(data)
+    string_data = data_to_graph6(data)
     if header:
-        string_data  =  '>>graph6<<' + string_data
+        string_data = '>>graph6<<' + string_data
     return string_data
 
 
 @open_file(1, mode='wt')
-def write_graph6(G, path, nodes = None, header=True):
+def write_graph6(G, path, nodes=None, header=True):
     """Write a simple undirected graph to path in graph6 format.
 
     Parameters
@@ -250,18 +254,21 @@ def write_graph6(G, path, nodes = None, header=True):
 
 # helper functions
 
+
 def graph6_to_data(string):
     """Convert graph6 character sequence to 6-bit integers."""
-    v = [ord(c)-63 for c in string]
+    v = [ord(c) - 63 for c in string]
     if len(v) > 0 and (min(v) < 0 or max(v) > 63):
         return None
     return v
+
 
 def data_to_graph6(data):
     """Convert 6-bit integer sequence to graph6 character sequence."""
     if len(data) > 0 and (min(data) < 0 or max(data) > 63):
         raise NetworkXError("graph6 data units must be within 0..63")
-    return ''.join([chr(d+63) for d in data])
+    return ''.join([chr(d + 63) for d in data])
+
 
 def data_to_n(data):
     """Read initial one-, four- or eight-unit value from graph6
@@ -271,9 +278,10 @@ def data_to_n(data):
     if data[0] <= 62:
         return data[0], data[1:]
     if data[1] <= 62:
-        return (data[1]<<12) + (data[2]<<6) + data[3], data[4:]
-    return ((data[2]<<30) + (data[3]<<24) + (data[4]<<18) +
-            (data[5]<<12) + (data[6]<<6) + data[7], data[8:])
+        return (data[1] << 12) + (data[2] << 6) + data[3], data[4:]
+    return ((data[2] << 30) + (data[3] << 24) + (data[4] << 18) +
+            (data[5] << 12) + (data[6] << 6) + data[7], data[8:])
+
 
 def n_to_data(n):
     """Convert an integer to one-, four- or eight-unit graph6 sequence."""
@@ -282,12 +290,13 @@ def n_to_data(n):
     if n <= 62:
         return [n]
     if n <= 258047:
-        return [63, (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
+        return [63, (n >> 12) & 0x3f, (n >> 6) & 0x3f, n & 0x3f]
     if n <= 68719476735:
         return [63, 63,
-            (n>>30) & 0x3f, (n>>24) & 0x3f, (n>>18) & 0x3f,
-            (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
-    raise NetworkXError("Numbers above 68719476735 are not supported by graph6")
+                (n >> 30) & 0x3f, (n >> 24) & 0x3f, (n >> 18) & 0x3f,
+                (n >> 12) & 0x3f, (n >> 6) & 0x3f, n & 0x3f]
+    raise NetworkXError(
+        "Numbers above 68719476735 are not supported by graph6")
 
 
 def teardown_module(module):

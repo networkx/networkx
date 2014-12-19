@@ -17,16 +17,17 @@ from networkx.utils import *
 from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
 
 __all__ = [
-    'cycle_basis','simple_cycles','recursive_simple_cycles', 'find_cycle'
+    'cycle_basis', 'simple_cycles', 'recursive_simple_cycles', 'find_cycle'
 ]
 
 __author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Aric Hagberg <hagberg@lanl.gov>'])
 
+
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
-def cycle_basis(G,root=None):
+def cycle_basis(G, root=None):
     """ Returns a list of cycles which form a basis for cycles of G.
 
     A basis for cycles of a network is a minimal collection of
@@ -68,36 +69,36 @@ def cycle_basis(G,root=None):
     --------
     simple_cycles
     """
-    gnodes=set(G.nodes())
-    cycles=[]
+    gnodes = set(G.nodes())
+    cycles = []
     while gnodes:  # loop over connected components
         if root is None:
-            root=gnodes.pop()
-        stack=[root]
-        pred={root:root}
-        used={root:set()}
+            root = gnodes.pop()
+        stack = [root]
+        pred = {root: root}
+        used = {root: set()}
         while stack:  # walk the spanning tree finding cycles
-            z=stack.pop()  # use last-in so cycles easier to find
-            zused=used[z]
+            z = stack.pop()  # use last-in so cycles easier to find
+            zused = used[z]
             for nbr in G[z]:
                 if nbr not in used:   # new node
-                    pred[nbr]=z
+                    pred[nbr] = z
                     stack.append(nbr)
-                    used[nbr]=set([z])
+                    used[nbr] = set([z])
                 elif nbr == z:        # self loops
                     cycles.append([z])
-                elif nbr not in zused:# found a cycle
-                    pn=used[nbr]
-                    cycle=[nbr,z]
-                    p=pred[z]
+                elif nbr not in zused:  # found a cycle
+                    pn = used[nbr]
+                    cycle = [nbr, z]
+                    p = pred[z]
                     while p not in pn:
                         cycle.append(p)
-                        p=pred[p]
+                        p = pred[p]
                     cycle.append(p)
                     cycles.append(cycle)
                     used[nbr].add(z)
-        gnodes-=set(pred)
-        root=None
+        gnodes -= set(pred)
+        root = None
     return cycles
 
 
@@ -161,10 +162,10 @@ def simple_cycles(G):
     --------
     cycle_basis
     """
-    def _unblock(thisnode,blocked,B):
-        stack=set([thisnode])
+    def _unblock(thisnode, blocked, B):
+        stack = set([thisnode])
         while stack:
-            node=stack.pop()
+            node = stack.pop()
             if node in blocked:
                 blocked.remove(node)
                 stack.update(B[node])
@@ -173,23 +174,25 @@ def simple_cycles(G):
     # Johnson's algorithm requires some ordering of the nodes.
     # We assign the arbitrary ordering given by the strongly connected comps
     # There is no need to track the ordering as each node removed as processed.
-    subG = type(G)(G.edges_iter()) # save the actual graph so we can mutate it here
-                              # We only take the edges because we do not want to
-                              # copy edge and node attributes here.
+    # save the actual graph so we can mutate it here
+    subG = type(G)(G.edges_iter())
+    # We only take the edges because we do not want to
+    # copy edge and node attributes here.
     sccs = list(nx.strongly_connected_components(subG))
     while sccs:
-        scc=sccs.pop()
+        scc = sccs.pop()
         # order of scc determines ordering of nodes
         startnode = scc.pop()
         # Processing node runs "circuit" routine from recursive version
-        path=[startnode]
-        blocked = set() # vertex: blocked from search?
-        closed = set() # nodes involved in a cycle
+        path = [startnode]
+        blocked = set()  # vertex: blocked from search?
+        closed = set()  # nodes involved in a cycle
         blocked.add(startnode)
-        B=defaultdict(set) # graph portions that yield no elementary circuit
-        stack=[ (startnode,list(subG[startnode])) ]  # subG gives component nbrs
+        B = defaultdict(set)  # graph portions that yield no elementary circuit
+        # subG gives component nbrs
+        stack = [(startnode, list(subG[startnode]))]
         while stack:
-            thisnode,nbrs = stack[-1]
+            thisnode, nbrs = stack[-1]
             if nbrs:
                 nextnode = nbrs.pop()
 #                    print thisnode,nbrs,":",nextnode,blocked,B,path,stack,startnode
@@ -200,14 +203,14 @@ def simple_cycles(G):
 #                        print "Found a cycle",path,closed
                 elif nextnode not in blocked:
                     path.append(nextnode)
-                    stack.append( (nextnode,list(subG[nextnode])) )
+                    stack.append((nextnode, list(subG[nextnode])))
                     closed.discard(nextnode)
                     blocked.add(nextnode)
                     continue
             # done with nextnode... look for more neighbors
             if not nbrs:  # no more nbrs
                 if thisnode in closed:
-                    _unblock(thisnode,blocked,B)
+                    _unblock(thisnode, blocked, B)
                 else:
                     for nbr in subG[thisnode]:
                         if thisnode not in B[nbr]:
@@ -217,7 +220,7 @@ def simple_cycles(G):
                 path.pop()
         # done processing this node
         subG.remove_node(startnode)
-        H=subG.subgraph(scc)  # make smaller to avoid work in SCC routine
+        H = subG.subgraph(scc)  # make smaller to avoid work in SCC routine
         sccs.extend(list(nx.strongly_connected_components(H)))
 
 
@@ -280,10 +283,10 @@ def recursive_simple_cycles(G):
                 _unblock(B[thisnode].pop())
 
     def circuit(thisnode, startnode, component):
-        closed = False # set to True if elementary path is closed
+        closed = False  # set to True if elementary path is closed
         path.append(thisnode)
         blocked[thisnode] = True
-        for nextnode in component[thisnode]: # direct successors of thisnode
+        for nextnode in component[thisnode]:  # direct successors of thisnode
             if nextnode == startnode:
                 result.append(path[:])
                 closed = True
@@ -294,18 +297,18 @@ def recursive_simple_cycles(G):
             _unblock(thisnode)
         else:
             for nextnode in component[thisnode]:
-                if thisnode not in B[nextnode]: # TODO: use set for speedup?
+                if thisnode not in B[nextnode]:  # TODO: use set for speedup?
                     B[nextnode].append(thisnode)
-        path.pop() # remove thisnode from path
+        path.pop()  # remove thisnode from path
         return closed
 
-    path = [] # stack of nodes in current path
-    blocked = defaultdict(bool) # vertex: blocked from search?
-    B = defaultdict(list) # graph portions that yield no elementary circuit
-    result = [] # list to accumulate the circuits found
+    path = []  # stack of nodes in current path
+    blocked = defaultdict(bool)  # vertex: blocked from search?
+    B = defaultdict(list)  # graph portions that yield no elementary circuit
+    result = []  # list to accumulate the circuits found
     # Johnson's algorithm requires some ordering of the nodes.
     # They might not be sortable so we assign an arbitrary ordering.
-    ordering=dict(zip(G,range(len(G))))
+    ordering = dict(zip(G, range(len(G))))
     for s in ordering:
         # Build the subgraph induced by s and following nodes in the ordering
         subgraph = G.subgraph(node for node in G
@@ -313,17 +316,18 @@ def recursive_simple_cycles(G):
         # Find the strongly connected component in the subgraph
         # that contains the least node according to the ordering
         strongcomp = nx.strongly_connected_components(subgraph)
-        mincomp=min(strongcomp,
-                    key=lambda nodes: min(ordering[n] for n in nodes))
+        mincomp = min(strongcomp,
+                      key=lambda nodes: min(ordering[n] for n in nodes))
         component = G.subgraph(mincomp)
         if component:
             # smallest node in the component according to the ordering
-            startnode = min(component,key=ordering.__getitem__)
+            startnode = min(component, key=ordering.__getitem__)
             for node in component:
                 blocked[node] = False
                 B[node][:] = []
-            dummy=circuit(startnode, startnode, component)
+            dummy = circuit(startnode, startnode, component)
     return result
+
 
 def find_cycle(G, source=None, orientation='original'):
     """
@@ -461,4 +465,3 @@ def find_cycle(G, source=None, orientation='original'):
             break
 
     return cycle[i:]
-

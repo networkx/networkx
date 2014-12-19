@@ -17,8 +17,8 @@ __all__ = ['min_cost_flow_cost',
 import networkx as nx
 
 
-def min_cost_flow_cost(G, demand = 'demand', capacity = 'capacity',
-                        weight = 'weight'):
+def min_cost_flow_cost(G, demand='demand', capacity='capacity',
+                       weight='weight'):
     """Find the cost of a minimum cost flow satisfying all demands in digraph G.
 
     G is a digraph with edge costs and capacities and in which nodes
@@ -96,12 +96,12 @@ def min_cost_flow_cost(G, demand = 'demand', capacity = 'capacity',
     >>> flowCost
     24
     """
-    return nx.network_simplex(G, demand = demand, capacity = capacity,
-                              weight = weight)[0]
+    return nx.network_simplex(G, demand=demand, capacity=capacity,
+                              weight=weight)[0]
 
 
-def min_cost_flow(G, demand = 'demand', capacity = 'capacity',
-                  weight = 'weight'):
+def min_cost_flow(G, demand='demand', capacity='capacity',
+                  weight='weight'):
     """Return a minimum cost flow satisfying all demands in digraph G.
 
     G is a digraph with edge costs and capacities and in which nodes
@@ -178,11 +178,11 @@ def min_cost_flow(G, demand = 'demand', capacity = 'capacity',
     >>> G.add_edge('c', 'd', weight = 2, capacity = 5)
     >>> flowDict = nx.min_cost_flow(G)
     """
-    return nx.network_simplex(G, demand = demand, capacity = capacity,
-                              weight = weight)[1]
+    return nx.network_simplex(G, demand=demand, capacity=capacity,
+                              weight=weight)[1]
 
 
-def cost_of_flow(G, flowDict, weight = 'weight'):
+def cost_of_flow(G, flowDict, weight='weight'):
     """Compute the cost of the flow given by flowDict on graph G.
 
     Note that this function does not check for the validity of the
@@ -216,10 +216,10 @@ def cost_of_flow(G, flowDict, weight = 'weight'):
     max_flow_min_cost, min_cost_flow, min_cost_flow_cost, network_simplex
     """
     return sum((flowDict[u][v] * d.get(weight, 0)
-                for u, v, d in G.edges_iter(data = True)))
+                for u, v, d in G.edges_iter(data=True)))
 
 
-def max_flow_min_cost(G, s, t, capacity = 'capacity', weight = 'weight'):
+def max_flow_min_cost(G, s, t, capacity='capacity', weight='weight'):
     """Return a maximum (s, t)-flow of minimum cost.
 
     G is a digraph with edge costs and capacities. There is a source
@@ -303,8 +303,8 @@ def max_flow_min_cost(G, s, t, capacity = 'capacity', weight = 'weight'):
 
 
     """
-    maxFlow = nx.maximum_flow_value(G, s, t, capacity = capacity)
+    maxFlow = nx.maximum_flow_value(G, s, t, capacity=capacity)
     H = nx.DiGraph(G)
-    H.add_node(s, demand = -maxFlow)
-    H.add_node(t, demand = maxFlow)
-    return min_cost_flow(H, capacity = capacity, weight = weight)
+    H.add_node(s, demand=-maxFlow)
+    H.add_node(t, demand=maxFlow)
+    return min_cost_flow(H, capacity=capacity, weight=weight)

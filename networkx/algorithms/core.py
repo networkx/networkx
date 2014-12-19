@@ -20,9 +20,16 @@ __author__ = "\n".join(['Dan Schult (dschult@colgate.edu)',
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-__all__ = ['core_number','k_core','k_shell','k_crust','k_corona','find_cores']
+__all__ = [
+    'core_number',
+    'k_core',
+    'k_shell',
+    'k_crust',
+    'k_corona',
+    'find_cores']
 
 import networkx as nx
+
 
 def core_number(G):
     """Return the core number for each vertex.
@@ -62,49 +69,51 @@ def core_number(G):
     """
     if G.is_multigraph():
         raise nx.NetworkXError(
-                'MultiGraph and MultiDiGraph types not supported.')
+            'MultiGraph and MultiDiGraph types not supported.')
 
-    if G.number_of_selfloops()>0:
+    if G.number_of_selfloops() > 0:
         raise nx.NetworkXError(
-                'Input graph has self loops; the core number is not defined.',
-                'Consider using G.remove_edges_from(G.selfloop_edges()).')
+            'Input graph has self loops; the core number is not defined.',
+            'Consider using G.remove_edges_from(G.selfloop_edges()).')
 
     if G.is_directed():
         import itertools
+
         def neighbors(v):
             return itertools.chain.from_iterable([G.predecessors_iter(v),
                                                   G.successors_iter(v)])
     else:
-        neighbors=G.neighbors_iter
-    degrees=G.degree()
+        neighbors = G.neighbors_iter
+    degrees = G.degree()
     # sort nodes by degree
-    nodes=sorted(degrees,key=degrees.get)
-    bin_boundaries=[0]
-    curr_degree=0
-    for i,v in enumerate(nodes):
-        if degrees[v]>curr_degree:
-            bin_boundaries.extend([i]*(degrees[v]-curr_degree))
-            curr_degree=degrees[v]
-    node_pos = dict((v,pos) for pos,v in enumerate(nodes))
+    nodes = sorted(degrees, key=degrees.get)
+    bin_boundaries = [0]
+    curr_degree = 0
+    for i, v in enumerate(nodes):
+        if degrees[v] > curr_degree:
+            bin_boundaries.extend([i] * (degrees[v] - curr_degree))
+            curr_degree = degrees[v]
+    node_pos = dict((v, pos) for pos, v in enumerate(nodes))
     # initial guesses for core is degree
-    core=degrees
-    nbrs=dict((v,set(neighbors(v))) for v in G)
+    core = degrees
+    nbrs = dict((v, set(neighbors(v))) for v in G)
     for v in nodes:
         for u in nbrs[v]:
             if core[u] > core[v]:
                 nbrs[u].remove(v)
-                pos=node_pos[u]
-                bin_start=bin_boundaries[core[u]]
-                node_pos[u]=bin_start
-                node_pos[nodes[bin_start]]=pos
-                nodes[bin_start],nodes[pos]=nodes[pos],nodes[bin_start]
-                bin_boundaries[core[u]]+=1
-                core[u]-=1
+                pos = node_pos[u]
+                bin_start = bin_boundaries[core[u]]
+                node_pos[u] = bin_start
+                node_pos[nodes[bin_start]] = pos
+                nodes[bin_start], nodes[pos] = nodes[pos], nodes[bin_start]
+                bin_boundaries[core[u]] += 1
+                core[u] -= 1
     return core
 
-find_cores=core_number
+find_cores = core_number
 
-def k_core(G,k=None,core_number=None):
+
+def k_core(G, k=None, core_number=None):
     """Return the k-core of G.
 
     A k-core is a maximal subgraph that contains nodes of degree k or more.
@@ -150,13 +159,14 @@ def k_core(G,k=None,core_number=None):
        http://arxiv.org/abs/cs.DS/0310049
     """
     if core_number is None:
-        core_number=nx.core_number(G)
+        core_number = nx.core_number(G)
     if k is None:
-        k=max(core_number.values()) # max core
-    nodes=(n for n in core_number if core_number[n]>=k)
+        k = max(core_number.values())  # max core
+    nodes = (n for n in core_number if core_number[n] >= k)
     return G.subgraph(nodes).copy()
 
-def k_shell(G,k=None,core_number=None):
+
+def k_shell(G, k=None, core_number=None):
     """Return the k-shell of G.
 
     The k-shell is the subgraph of nodes in the k-core but not in the (k+1)-core.
@@ -206,13 +216,14 @@ def k_shell(G,k=None,core_number=None):
        http://www.pnas.org/content/104/27/11150.full
     """
     if core_number is None:
-        core_number=nx.core_number(G)
+        core_number = nx.core_number(G)
     if k is None:
-        k=max(core_number.values()) # max core
-    nodes=(n for n in core_number if core_number[n]==k)
+        k = max(core_number.values())  # max core
+    nodes = (n for n in core_number if core_number[n] == k)
     return G.subgraph(nodes).copy()
 
-def k_crust(G,k=None,core_number=None):
+
+def k_crust(G, k=None, core_number=None):
     """Return the k-crust of G.
 
     The k-crust is the graph G with the k-core removed.
@@ -260,10 +271,10 @@ def k_crust(G,k=None,core_number=None):
        http://www.pnas.org/content/104/27/11150.full
     """
     if core_number is None:
-        core_number=nx.core_number(G)
+        core_number = nx.core_number(G)
     if k is None:
-        k=max(core_number.values())-1
-    nodes=(n for n in core_number if core_number[n]<=k)
+        k = max(core_number.values()) - 1
+    nodes = (n for n in core_number if core_number[n] <= k)
     return G.subgraph(nodes).copy()
 
 

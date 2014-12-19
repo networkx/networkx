@@ -287,13 +287,14 @@ def parse_gml_lines(lines, label, destringizer):
     def tokenize():
         patterns = [
             r'[A-Za-z][0-9A-Za-z]*\s+',  # keys
-            r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',  # reals
+            # reals
+            r'[+-]?(?:[0-9]*\.[0-9]+|[0-9]+\.[0-9]*)(?:[Ee][+-]?[0-9]+)?',
             r'[+-]?[0-9]+',   # ints
             r'".*?"',         # strings
             r'\[',            # dict start
             r'\]',            # dict end
             r'#.*$|\s+'       # comments and whitespaces
-            ]
+        ]
         tokens = re.compile(
             '|'.join('(' + pattern + ')' for pattern in patterns))
         lineno = 0

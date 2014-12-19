@@ -18,16 +18,18 @@ __all__ = ['number_weakly_connected_components',
            'is_weakly_connected'
            ]
 
+
 @not_implemented_for('undirected')
 def weakly_connected_components(G):
     """Generate weakly connected components of G.
     """
-    seen={}
+    seen = {}
     for v in G:
         if v not in seen:
-            c=_single_source_shortest_unipath_length(G,v)
+            c = _single_source_shortest_unipath_length(G, v)
             yield list(c.keys())
             seen.update(c)
+
 
 @not_implemented_for('undirected')
 def number_weakly_connected_components(G):
@@ -35,6 +37,7 @@ def number_weakly_connected_components(G):
     For directed graphs only.
     """
     return len(list(weakly_connected_components(G)))
+
 
 @not_implemented_for('undirected')
 def weakly_connected_component_subgraphs(G, copy=True):
@@ -54,6 +57,7 @@ def weakly_connected_component_subgraphs(G, copy=True):
             yield G.subgraph(comp).copy()
         else:
             yield G.subgraph(comp)
+
 
 @not_implemented_for('undirected')
 def is_weakly_connected(G):
@@ -82,13 +86,14 @@ def is_weakly_connected(G):
     -----
     For directed graphs only.
     """
-    if len(G)==0:
+    if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
-    return len(list(weakly_connected_components(G))[0])==len(G)
+    return len(list(weakly_connected_components(G))[0]) == len(G)
 
-def _single_source_shortest_unipath_length(G,source,cutoff=None):
+
+def _single_source_shortest_unipath_length(G, source, cutoff=None):
     """Compute the shortest path lengths from source to all reachable nodes.
 
     The direction of the edge between nodes is ignored.
@@ -114,17 +119,18 @@ def _single_source_shortest_unipath_length(G,source,cutoff=None):
     Gsucc = G.succ
     Gpred = G.pred
 
-    seen={}                  # level (number of hops) when seen in BFS
-    level=0                  # the current level
-    nextlevel = set([source]) # set of nodes to check at next level
+    seen = {}                  # level (number of hops) when seen in BFS
+    level = 0                  # the current level
+    nextlevel = set([source])  # set of nodes to check at next level
     while nextlevel:
-        thislevel=nextlevel  # advance to next level
+        thislevel = nextlevel  # advance to next level
         nextlevel = set()         # and start a new list (fringe)
         for v in thislevel:
             if v not in seen:
-                seen[v]=level # set the level of vertex v
-                nextlevel.update(Gsucc[v]) # add successors of v
-                nextlevel.update(Gpred[v]) # add predecessors of v
-        if (cutoff is not None and cutoff <= level):  break
-        level=level+1
+                seen[v] = level  # set the level of vertex v
+                nextlevel.update(Gsucc[v])  # add successors of v
+                nextlevel.update(Gpred[v])  # add predecessors of v
+        if (cutoff is not None and cutoff <= level):
+            break
+        level = level + 1
     return seen  # return all path lengths as dictionary

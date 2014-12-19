@@ -40,7 +40,7 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
     u : node, optional
       Return only the value for node u
     distance : edge attribute key, optional (default=None)
-      Use the specified edge attribute as the edge distance in shortest 
+      Use the specified edge attribute as the edge distance in shortest
       path calculations
     normalized : bool, optional
       If True (default) normalize by the number of nodes in the connected
@@ -75,7 +75,7 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
        http://leonidzhukov.ru/hse/2013/socialnetworks/papers/freeman79-centrality.pdf
     """
     if distance is not None:
-        # use Dijkstra's algorithm with specified attribute as edge weight 
+        # use Dijkstra's algorithm with specified attribute as edge weight
         path_length = functools.partial(nx.single_source_dijkstra_path_length,
                                         weight=distance)
     else:
@@ -87,13 +87,13 @@ def closeness_centrality(G, u=None, distance=None, normalized=True):
         nodes = [u]
     closeness_centrality = {}
     for n in nodes:
-        sp = path_length(G,n)
+        sp = path_length(G, n)
         totsp = sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
-            closeness_centrality[n] = (len(sp)-1.0) / totsp
+            closeness_centrality[n] = (len(sp) - 1.0) / totsp
             # normalize to number of nodes-1 in connected part
             if normalized:
-                s = (len(sp)-1.0) / ( len(G) - 1 )
+                s = (len(sp) - 1.0) / (len(G) - 1)
                 closeness_centrality[n] *= s
         else:
             closeness_centrality[n] = 0.0

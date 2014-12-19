@@ -44,6 +44,7 @@ __all__ = ['generate_edgelist',
 from networkx.utils import open_file, make_str
 import networkx as nx
 
+
 def generate_edgelist(G, delimiter=' ', data=True):
     """Generate a single line of the graph G in edge list format.
 
@@ -111,19 +112,20 @@ def generate_edgelist(G, delimiter=' ', data=True):
     """
     if data is True or data is False:
         for e in G.edges(data=data):
-            yield delimiter.join(map(make_str,e))
+            yield delimiter.join(map(make_str, e))
     else:
-        for u,v,d in G.edges(data=True):
-            e=[u,v]
+        for u, v, d in G.edges(data=True):
+            e = [u, v]
             try:
                 e.extend(d[k] for k in data)
             except KeyError:
-                pass # missing data for this edge, should warn?
-            yield delimiter.join(map(make_str,e))
+                pass  # missing data for this edge, should warn?
+            yield delimiter.join(map(make_str, e))
 
-@open_file(1,mode='wb')
+
+@open_file(1, mode='wb')
 def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
-                   encoding = 'utf-8'):
+                   encoding='utf-8'):
     """Write graph as a list of edges.
 
     Parameters
@@ -168,8 +170,9 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
     """
 
     for line in generate_edgelist(G, delimiter, data):
-        line+='\n'
+        line += '\n'
         path.write(line.encode(encoding))
+
 
 def parse_edgelist(lines, comments='#', delimiter=None,
                    create_using=None, nodetype=None, data=True):
@@ -239,64 +242,65 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     """
     from ast import literal_eval
     if create_using is None:
-        G=nx.Graph()
+        G = nx.Graph()
     else:
         try:
-            G=create_using
+            G = create_using
             G.clear()
         except:
             raise TypeError("create_using input is not a NetworkX graph type")
 
     for line in lines:
-        p=line.find(comments)
-        if p>=0:
+        p = line.find(comments)
+        if p >= 0:
             line = line[:p]
         if not len(line):
             continue
         # split line, should have 2 or more
-        s=line.strip().split(delimiter)
-        if len(s)<2:
+        s = line.strip().split(delimiter)
+        if len(s) < 2:
             continue
-        u=s.pop(0)
-        v=s.pop(0)
-        d=s
+        u = s.pop(0)
+        v = s.pop(0)
+        d = s
         if nodetype is not None:
             try:
-                u=nodetype(u)
-                v=nodetype(v)
+                u = nodetype(u)
+                v = nodetype(v)
             except:
                 raise TypeError("Failed to convert nodes %s,%s to type %s."
-                                %(u,v,nodetype))
+                                % (u, v, nodetype))
 
-        if len(d)==0 or data is False:
+        if len(d) == 0 or data is False:
             # no data or data type specified
-            edgedata={}
+            edgedata = {}
         elif data is True:
             # no edge types specified
-            try: # try to evaluate as dictionary
-                edgedata=dict(literal_eval(' '.join(d)))
+            try:  # try to evaluate as dictionary
+                edgedata = dict(literal_eval(' '.join(d)))
             except:
                 raise TypeError(
-                    "Failed to convert edge data (%s) to dictionary."%(d))
+                    "Failed to convert edge data (%s) to dictionary." % (d))
         else:
             # convert edge data to dictionary with specified keys and type
-            if len(d)!=len(data):
+            if len(d) != len(data):
                 raise IndexError(
-                    "Edge data %s and data_keys %s are not the same length"%
+                    "Edge data %s and data_keys %s are not the same length" %
                     (d, data))
-            edgedata={}
-            for (edge_key,edge_type),edge_value in zip(data,d):
+            edgedata = {}
+            for (edge_key, edge_type), edge_value in zip(data, d):
                 try:
-                    edge_value=edge_type(edge_value)
+                    edge_value = edge_type(edge_value)
                 except:
                     raise TypeError(
                         "Failed to convert %s data %s to type %s."
-                        %(edge_key, edge_value, edge_type))
-                edgedata.update({edge_key:edge_value})
+                        % (edge_key, edge_value, edge_type))
+                edgedata.update({edge_key: edge_value})
         G.add_edge(u, v, attr_dict=edgedata)
     return G
 
-@open_file(0,mode='rb')
+
+@open_file(0, mode='rb')
 def read_edgelist(path, comments="#", delimiter=None, create_using=None,
                   nodetype=None, data=True, edgetype=None, encoding='utf-8'):
     """Read a graph from a list of edges.
@@ -364,7 +368,7 @@ def read_edgelist(path, comments="#", delimiter=None, create_using=None,
     types (e.g. int, float, str, frozenset - or tuples of those, etc.)
     """
     lines = (line.decode(encoding) for line in path)
-    return parse_edgelist(lines,comments=comments, delimiter=delimiter,
+    return parse_edgelist(lines, comments=comments, delimiter=delimiter,
                           create_using=create_using, nodetype=nodetype,
                           data=data)
 
@@ -401,12 +405,12 @@ def write_weighted_edgelist(G, path, comments="#",
     write_weighted_edgelist()
 
     """
-    write_edgelist(G,path, comments=comments, delimiter=delimiter,
+    write_edgelist(G, path, comments=comments, delimiter=delimiter,
                    data=('weight',), encoding = encoding)
+
 
 def read_weighted_edgelist(path, comments="#", delimiter=None,
                            create_using=None, nodetype=None, encoding='utf-8'):
-
     """Read a graph as list of edges with numeric weights.
 
     Parameters
@@ -453,7 +457,7 @@ def read_weighted_edgelist(path, comments="#", delimiter=None,
                          delimiter=delimiter,
                          create_using=create_using,
                          nodetype=nodetype,
-                         data=(('weight',float),),
+                         data=(('weight', float),),
                          encoding = encoding
                          )
 

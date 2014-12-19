@@ -10,7 +10,9 @@ Union-find data structure.
 import networkx as nx
 from operator import itemgetter
 
+
 class UnionFind:
+
     """Union-find data structure.
 
     Each unionFind instance X maintains a family of disjoint sets of
@@ -72,6 +74,3 @@ class UnionFind:
             if r != heaviest:
                 self.weights[heaviest] += self.weights[r]
                 self.parents[r] = heaviest
-
-
-

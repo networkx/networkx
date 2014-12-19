@@ -15,7 +15,9 @@ REVERSE = nx.algorithms.edgedfs.REVERSE
 # failures due to hash randomization will not occur. For an example of how
 # this can fail, see TestEdgeDFS.test_multigraph.
 
+
 class TestEdgeDFS(object):
+
     def setUp(self):
         self.nodes = [0, 1, 2, 3]
         self.edges = [(0, 1), (1, 0), (1, 0), (2, 1), (3, 1)]
@@ -34,7 +36,7 @@ class TestEdgeDFS(object):
     def test_digraph(self):
         G = nx.DiGraph(self.edges)
         x = list(edge_dfs(G, self.nodes))
-        x_= [(0, 1), (1, 0), (2, 1), (3, 1)]
+        x_ = [(0, 1), (1, 0), (2, 1), (3, 1)]
         assert_equal(x, x_)
 
     def test_digraph2(self):
@@ -48,8 +50,8 @@ class TestEdgeDFS(object):
     def test_digraph_rev(self):
         G = nx.DiGraph(self.edges)
         x = list(edge_dfs(G, self.nodes, orientation='reverse'))
-        x_= [(1, 0, REVERSE), (0, 1, REVERSE),
-             (2, 1, REVERSE), (3, 1, REVERSE)]
+        x_ = [(1, 0, REVERSE), (0, 1, REVERSE),
+              (2, 1, REVERSE), (3, 1, REVERSE)]
         assert_equal(x, x_)
 
     def test_digraph_rev2(self):
@@ -110,5 +112,3 @@ class TestEdgeDFS(object):
               (1, 0, 1, REVERSE), (2, 1, 0, REVERSE),
               (3, 1, 0, REVERSE)]
         assert_equal(x, x_)
-
-

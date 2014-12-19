@@ -19,6 +19,7 @@ __all__ = ['communicability_centrality_exp',
            'estrada_index',
            ]
 
+
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
 def communicability_centrality_exp(G):
@@ -77,14 +78,15 @@ def communicability_centrality_exp(G):
     """
     # alternative implementation that calculates the matrix exponential
     import scipy.linalg
-    nodelist = G.nodes() # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G,nodelist)
+    nodelist = G.nodes()  # ordering of nodes in matrix
+    A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
-    A[A!=0.0] = 1
+    A[A != 0.0] = 1
     expA = scipy.linalg.expm(A)
     # convert diagonal to dictionary keyed by node
-    sc = dict(zip(nodelist,map(float,expA.diagonal())))
+    sc = dict(zip(nodelist, map(float, expA.diagonal())))
     return sc
+
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
@@ -148,17 +150,18 @@ def communicability_centrality(G):
     """
     import numpy
     import numpy.linalg
-    nodelist = G.nodes() # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G,nodelist)
+    nodelist = G.nodes()  # ordering of nodes in matrix
+    A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
-    A[A!=0.0] = 1
-    w,v = numpy.linalg.eigh(A)
-    vsquare = numpy.array(v)**2
+    A[A != 0.0] = 1
+    w, v = numpy.linalg.eigh(A)
+    vsquare = numpy.array(v) ** 2
     expw = numpy.exp(w)
-    xg = numpy.dot(vsquare,expw)
+    xg = numpy.dot(vsquare, expw)
     # convert vector dictionary keyed by node
-    sc = dict(zip(nodelist,map(float,xg)))
+    sc = dict(zip(nodelist, map(float, xg)))
     return sc
+
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
@@ -236,42 +239,43 @@ def communicability_betweenness_centrality(G, normalized=True):
     """
     import scipy
     import scipy.linalg
-    nodelist = G.nodes() # ordering of nodes in matrix
+    nodelist = G.nodes()  # ordering of nodes in matrix
     n = len(nodelist)
-    A = nx.to_numpy_matrix(G,nodelist)
+    A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
-    A[A!=0.0] = 1
+    A[A != 0.0] = 1
     expA = scipy.linalg.expm(A)
-    mapping = dict(zip(nodelist,range(n)))
+    mapping = dict(zip(nodelist, range(n)))
     sc = {}
     for v in G:
         # remove row and col of node v
         i = mapping[v]
-        row = A[i,:].copy()
-        col = A[:,i].copy()
-        A[i,:] = 0
-        A[:,i] = 0
+        row = A[i, :].copy()
+        col = A[:, i].copy()
+        A[i, :] = 0
+        A[:, i] = 0
         B = (expA - scipy.linalg.expm(A)) / expA
         # sum with row/col of node v and diag set to zero
-        B[i,:] = 0
-        B[:,i] = 0
+        B[i, :] = 0
+        B[:, i] = 0
         B -= scipy.diag(scipy.diag(B))
         sc[v] = float(B.sum())
         # put row and col back
-        A[i,:] = row
-        A[:,i] = col
+        A[i, :] = row
+        A[:, i] = col
     # rescaling
-    sc = _rescale(sc,normalized=normalized)
+    sc = _rescale(sc, normalized=normalized)
     return sc
 
-def _rescale(sc,normalized):
+
+def _rescale(sc, normalized):
     # helper to rescale betweenness centrality
     if normalized is True:
-        order=len(sc)
-        if order <=2:
-            scale=None
+        order = len(sc)
+        if order <= 2:
+            scale = None
         else:
-            scale=1.0/((order-1.0)**2-(order-1.0))
+            scale = 1.0 / ((order - 1.0) ** 2 - (order - 1.0))
     if scale is not None:
         for v in sc:
             sc[v] *= scale
@@ -340,25 +344,26 @@ def communicability(G):
     """
     import numpy
     import scipy.linalg
-    nodelist = G.nodes() # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G,nodelist)
+    nodelist = G.nodes()  # ordering of nodes in matrix
+    A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
-    A[A!=0.0] = 1
-    w,vec = numpy.linalg.eigh(A)
+    A[A != 0.0] = 1
+    w, vec = numpy.linalg.eigh(A)
     expw = numpy.exp(w)
-    mapping = dict(zip(nodelist,range(len(nodelist))))
-    sc={}
+    mapping = dict(zip(nodelist, range(len(nodelist))))
+    sc = {}
     # computing communicabilities
     for u in G:
-        sc[u]={}
+        sc[u] = {}
         for v in G:
             s = 0
             p = mapping[u]
             q = mapping[v]
             for j in range(len(nodelist)):
-                s += vec[:,j][p,0]*vec[:,j][q,0]*expw[j]
+                s += vec[:, j][p, 0] * vec[:, j][q, 0] * expw[j]
             sc[u][v] = float(s)
     return sc
+
 
 @not_implemented_for('directed')
 @not_implemented_for('multigraph')
@@ -420,19 +425,20 @@ def communicability_exp(G):
     >>> c = nx.communicability_exp(G)
     """
     import scipy.linalg
-    nodelist = G.nodes() # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G,nodelist)
+    nodelist = G.nodes()  # ordering of nodes in matrix
+    A = nx.to_numpy_matrix(G, nodelist)
     # convert to 0-1 matrix
-    A[A!=0.0] = 1
+    A[A != 0.0] = 1
     # communicability matrix
     expA = scipy.linalg.expm(A)
-    mapping = dict(zip(nodelist,range(len(nodelist))))
+    mapping = dict(zip(nodelist, range(len(nodelist))))
     sc = {}
     for u in G:
-        sc[u]={}
+        sc[u] = {}
         for v in G:
-            sc[u][v] = float(expA[mapping[u],mapping[v]])
+            sc[u][v] = float(expA[mapping[u], mapping[v]])
     return sc
+
 
 def estrada_index(G):
     r"""Return the Estrada index of a the graph G.
@@ -477,6 +483,8 @@ def estrada_index(G):
     return sum(communicability_centrality(G).values())
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:

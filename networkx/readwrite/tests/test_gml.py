@@ -209,7 +209,8 @@ graph
         except ValueError:
             data.append(unichr(0x1444))
         try:
-            data.append(literal_eval('{2.3j, 1 - 2.3j, ()}'))  # fails under Python 2.7
+            # fails under Python 2.7
+            data.append(literal_eval('{2.3j, 1 - 2.3j, ()}'))
         except ValueError:
             data.append([2.3j, 1 - 2.3j, ()])
         G = nx.Graph()
@@ -235,7 +236,8 @@ graph
 ]"""
         G = nx.parse_gml(gml)
         assert_equal(
-            '&"\x0f' + unichr(0x4444) + '&#1234567890;&#x1234567890abcdef;&unknown;',
+            '&"\x0f' + unichr(0x4444) +
+            '&#1234567890;&#x1234567890abcdef;&unknown;',
             G.name)
         gml = '\n'.join(nx.generate_gml(G))
         assert_equal("""graph [

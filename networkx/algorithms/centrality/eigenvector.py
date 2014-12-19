@@ -15,6 +15,7 @@ __author__ = "\n".join(['Aric Hagberg (aric.hagberg@gmail.com)',
 __all__ = ['eigenvector_centrality',
            'eigenvector_centrality_numpy']
 
+
 def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
                            weight='weight'):
     """Compute the eigenvector centrality for the graph G.
@@ -92,7 +93,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
 
     """
     from math import sqrt
-    if type(G) == nx.MultiGraph or type(G) == nx.MultiDiGraph:
+    if isinstance(G, nx.MultiGraph) or isinstance(G, nx.MultiDiGraph):
         raise nx.NetworkXException("Not defined for multigraphs.")
 
     if len(G) == 0:
@@ -100,11 +101,11 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
 
     if nstart is None:
         # choose starting vector with entries of 1/len(G)
-        x = dict([(n,1.0/len(G)) for n in G])
+        x = dict([(n, 1.0 / len(G)) for n in G])
     else:
         x = nstart
     # normalize starting vector
-    s = 1.0/sum(x.values())
+    s = 1.0 / sum(x.values())
     for k in x:
         x[k] *= s
     nnodes = G.number_of_nodes()
@@ -118,15 +119,15 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
                 x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
         # normalize vector
         try:
-            s = 1.0/sqrt(sum(v**2 for v in x.values()))
+            s = 1.0 / sqrt(sum(v ** 2 for v in x.values()))
         # this should never be zero?
         except ZeroDivisionError:
             s = 1.0
         for n in x:
             x[n] *= s
         # check convergence
-        err = sum([abs(x[n]-xlast[n]) for n in x])
-        if err < nnodes*tol:
+        err = sum([abs(x[n] - xlast[n]) for n in x])
+        if err < nnodes * tol:
             return x
 
     raise nx.NetworkXError("""eigenvector_centrality():
@@ -204,8 +205,8 @@ def eigenvector_centrality_numpy(G, weight='weight'):
                                   dtype=float)
     eigenvalue, eigenvector = linalg.eigs(M.T, k=1, which='LR')
     largest = eigenvector.flatten().real
-    norm = sp.sign(largest.sum())*sp.linalg.norm(largest)
-    centrality = dict(zip(G,map(float,largest/norm)))
+    norm = sp.sign(largest.sum()) * sp.linalg.norm(largest)
+    centrality = dict(zip(G, map(float, largest / norm)))
     return centrality
 
 

@@ -76,11 +76,12 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
             edgelist = G.edges(keys=True)
         else:
             edgelist = G.edges()
-    A = scipy.sparse.lil_matrix((len(nodelist),len(edgelist)))
-    node_index = dict( (node,i) for i,node in enumerate(nodelist) )
-    for ei,e in enumerate(edgelist):
-        (u,v) = e[:2]
-        if u == v: continue  # self loops give zero column
+    A = scipy.sparse.lil_matrix((len(nodelist), len(edgelist)))
+    node_index = dict((node, i) for i, node in enumerate(nodelist))
+    for ei, e in enumerate(edgelist):
+        (u, v) = e[:2]
+        if u == v:
+            continue  # self loops give zero column
         try:
             ui = node_index[u]
             vi = node_index[v]
@@ -92,16 +93,17 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
         else:
             if G.is_multigraph():
                 ekey = e[2]
-                wt = G[u][v][ekey].get(weight,1)
+                wt = G[u][v][ekey].get(weight, 1)
             else:
-                wt = G[u][v].get(weight,1)
+                wt = G[u][v].get(weight, 1)
         if oriented:
-            A[ui,ei] = -wt
-            A[vi,ei] = wt
+            A[ui, ei] = -wt
+            A[vi, ei] = wt
         else:
-            A[ui,ei] = wt
-            A[vi,ei] = wt
+            A[ui, ei] = wt
+            A[vi, ei] = wt
     return A.asformat('csc')
+
 
 def adjacency_matrix(G, nodelist=None, weight='weight'):
     """Return adjacency matrix of G.
@@ -157,11 +159,13 @@ def adjacency_matrix(G, nodelist=None, weight='weight'):
     to_scipy_sparse_matrix
     to_dict_of_dicts
     """
-    return nx.to_scipy_sparse_matrix(G,nodelist=nodelist,weight=weight)
+    return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight)
 
-adj_matrix=adjacency_matrix
+adj_matrix = adjacency_matrix
 
 # fixture for nose tests
+
+
 def setup_module(module):
     from nose import SkipTest
     try:

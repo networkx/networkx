@@ -6,6 +6,7 @@ import networkx as nx
 
 
 class TestResourceAllocationIndex():
+
     def setUp(self):
         self.func = nx.resource_allocation_index
 
@@ -65,6 +66,7 @@ class TestResourceAllocationIndex():
 
 
 class TestJaccardCoefficient():
+
     def setUp(self):
         self.func = nx.jaccard_coefficient
 
@@ -121,6 +123,7 @@ class TestJaccardCoefficient():
 
 
 class TestAdamicAdarIndex():
+
     def setUp(self):
         self.func = nx.adamic_adar_index
 
@@ -177,10 +180,11 @@ class TestAdamicAdarIndex():
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (2, 3)])
         self.test(G, None, [(0, 3, 1 / math.log(2)), (1, 2, 1 / math.log(2)),
-                  (1, 3, 0)])
+                            (1, 3, 0)])
 
 
 class TestPreferentialAttachment():
+
     def setUp(self):
         self.func = nx.preferential_attachment
 
@@ -236,6 +240,7 @@ class TestPreferentialAttachment():
 
 
 class TestCNSoundarajanHopcroft():
+
     def setUp(self):
         self.func = nx.cn_soundarajan_hopcroft
 
@@ -367,6 +372,7 @@ class TestCNSoundarajanHopcroft():
 
 
 class TestRAIndexSoundarajanHopcroft():
+
     def setUp(self):
         self.func = nx.ra_index_soundarajan_hopcroft
 
@@ -498,6 +504,7 @@ class TestRAIndexSoundarajanHopcroft():
 
 
 class TestWithinInterCluster():
+
     def setUp(self):
         self.delta = 0.001
         self.func = nx.within_inter_cluster
