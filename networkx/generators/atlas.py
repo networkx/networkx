@@ -12325,12 +12325,4 @@ def graph_atlas_g():
        [5, 6],
        [5, 7],
        [6, 7]]]]
-
-    GAG=[]
-
-    for i in range(1253):
-        g=make_small_graph(descr_list[i])
-        GAG.append(g)
-
-    return GAG
-
+    return [make_small_graph(G) for G in descr_list]
