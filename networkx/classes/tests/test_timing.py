@@ -45,6 +45,7 @@ all_tests=[
           ' for nbr,data in nbrs.items():\n  pass'),
             basic_setup, 3, 1) ),
     ('degree', ('for d in G.degree():\n  pass', basic_setup, 3, 1) ),
+    ('copy', ('H=G.copy()', basic_setup, 3, 1) ),
     ('dijkstra',
         ('p=NX.single_source_dijkstra(G,i)', 'i=6\n'+basic_setup, 3, 1) ),
     ('shortest_path',
@@ -53,7 +54,7 @@ all_tests=[
     ('subgraph',
         ('G.subgraph(nlist)',
          'nlist=range(100,150)\n'+basic_setup, 3, 1) ),
-    ('numpy_matrix', ('NX.to_numpy_matrix(G)', basic_setup, 3, 1) ),
+    #('numpy_matrix', ('NX.to_numpy_matrix(G)', basic_setup, 3, 1) ),
   ]
 
 
