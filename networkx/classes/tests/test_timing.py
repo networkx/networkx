@@ -89,6 +89,7 @@ class Benchmark(object):
         self.tests = tests
 
     def run(self, verbose=False, cutoff_default=2.0):
+        errors=''
         headers=list(self.gc)
         if verbose:
             raw_times=" ".join( gc.rjust(12) for gc in headers )
@@ -103,26 +104,28 @@ class Benchmark(object):
             for gc in headers:
                 t,bt = self.time_me(gc, tst, params[:4])
                 cutoff=params[4] if len(params)>4 else cutoff_default
-                times.append( (t, bt, t/bt, cutoff) )
+                rat=t/bt
+                times.append( (tst, params, gc, t, bt, rat, cutoff) )
+                if rat > cutoff:
+                    errors+='Timing "'+tst+'" failed for class "'+gc+'". '
+                    errors+='Time ratio (new/base): {:f}\n'.format(rat)
                 if verbose:
                     print("{:12.3e}".format(t), end=" ")
             results.append(times)
-        if verbose == True:
+        if verbose:
             print('\n')
             hdrs=" ".join(gc.rjust(12) for gc in headers)
             print('Time Ratio to Baseline'.ljust(23) + hdrs)
             print("="*(23+len(hdrs)))
-            for (tst,params),res in zip(self.tests, results):
-                output = " ".join( "{:12.3f}".format(t[2]) for t in res )
+            for res in results:
+                tst=res[0][0]
+                output = " ".join( "{:12.3f}".format(t[5]) for t in res )
                 print(tst.ljust(23) + output)
         self.results=results
-
-    def check_ratios(self):
-        for res in self.results:
-            for t in res:
-                if t[2] >= t[3]:
-                    return False
-        return True
+        if errors != '':
+            print(errors)
+            return False #not all passed
+        return True #all passed
 
     def time_me(self, gc, tst, params):
         """ Time the test for class gc and its comparison TimingClass """
@@ -150,8 +153,7 @@ class Test_Benchmark(Benchmark):
         self.tests = all_tests
 
     def test_ratios(self):
-        self.run(verbose=False, cutoff_default=2.0)
-        assert_true(self.check_ratios())
+        assert_true(self.run(verbose=False, cutoff_default=2.0))
 
 if __name__ == "__main__":
     classes=['Graph','MultiGraph','DiGraph','MultiDiGraph']
@@ -159,5 +161,4 @@ if __name__ == "__main__":
 #            'SpecialDiGraph','SpecialMultiDiGraph']
     b=Benchmark(classes,tests=all_tests)
 #    b=Benchmark(classes,tests=dict( (k,v) for k,v in all_tests.items() if "add" in k ))
-    b.run(verbose=True)
-    assert b.check_ratios()
+    assert b.run(verbose=True)
