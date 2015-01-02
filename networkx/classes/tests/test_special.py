@@ -18,12 +18,12 @@ except ImportError:  # python 2.6
 class SpecialGraphTester(TestGraph):
     def setUp(self):
         TestGraph.setUp(self)
-        self.Graph=nx.SpecialGraph
+        self.Graph=nx.Graph
 
 class OrderedGraphTester(TestGraph):
     def setUp(self):
         TestGraph.setUp(self)
-        class MyGraph(nx.SpecialGraph):
+        class MyGraph(nx.Graph):
             node_dict_factory = OrderedDict
             adjlist_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
@@ -32,7 +32,7 @@ class OrderedGraphTester(TestGraph):
 class ThinGraphTester(TestGraph):
     def setUp(self):
         all_edge_dict = {'weight' : 1}
-        class MyGraph(nx.SpecialGraph):
+        class MyGraph(nx.Graph):
             edge_attr_dict_factory = lambda : all_edge_dict
         self.Graph=MyGraph
         # build dict-of-dict-of-dict K3
@@ -55,12 +55,12 @@ class ThinGraphTester(TestGraph):
 class SpecialDiGraphTester(TestDiGraph):
     def setUp(self):
         TestDiGraph.setUp(self)
-        self.Graph=nx.SpecialDiGraph
+        self.Graph=nx.DiGraph
 
 class OrderedDiGraphTester(TestDiGraph):
     def setUp(self):
         TestGraph.setUp(self)
-        class MyGraph(nx.SpecialDiGraph):
+        class MyGraph(nx.DiGraph):
             node_dict_factory = OrderedDict
             adjlist_dict_factory = OrderedDict
             edge_attr_dict_factory = OrderedDict
@@ -69,7 +69,7 @@ class OrderedDiGraphTester(TestDiGraph):
 class ThinDiGraphTester(TestDiGraph):
     def setUp(self):
         all_edge_dict = {'weight' : 1}
-        class MyGraph(nx.SpecialDiGraph):
+        class MyGraph(nx.DiGraph):
             edge_attr_dict_factory = lambda : all_edge_dict
         self.Graph=MyGraph
         # build dict-of-dict-of-dict K3
@@ -91,12 +91,12 @@ class ThinDiGraphTester(TestDiGraph):
 class SpecialMultiGraphTester(TestMultiGraph):
     def setUp(self):
         TestMultiGraph.setUp(self)
-        self.Graph=nx.SpecialMultiGraph
+        self.Graph=nx.MultiGraph
 
 class OrderedMultiGraphTester(TestMultiGraph):
     def setUp(self):
         TestMultiGraph.setUp(self)
-        class MyGraph(nx.SpecialMultiGraph):
+        class MyGraph(nx.MultiGraph):
             node_dict_factory = OrderedDict
             adjlist_dict_factory = OrderedDict
             edge_key_dict_factory = OrderedDict
@@ -107,12 +107,12 @@ class OrderedMultiGraphTester(TestMultiGraph):
 class SpecialMultiDiGraphTester(TestMultiDiGraph):
     def setUp(self):
         TestMultiDiGraph.setUp(self)
-        self.Graph=nx.SpecialMultiDiGraph
+        self.Graph=nx.MultiDiGraph
 
 class OrderedMultiDiGraphTester(TestMultiDiGraph):
     def setUp(self):
         TestMultiDiGraph.setUp(self)
-        class MyGraph(nx.SpecialMultiDiGraph):
+        class MyGraph(nx.MultiDiGraph):
             node_dict_factory = OrderedDict
             adjlist_dict_factory = OrderedDict
             edge_key_dict_factory = OrderedDict
