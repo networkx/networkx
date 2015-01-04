@@ -630,6 +630,7 @@ def draw_networkx_labels(G, pos,
                          font_family='sans-serif',
                          font_weight='normal',
                          alpha=1.0,
+                         bbox=None,
                          ax=None,
                          **kwds):
     """Draw node labels on the graph G.
@@ -719,6 +720,7 @@ def draw_networkx_labels(G, pos,
                   horizontalalignment=horizontalalignment,
                   verticalalignment=verticalalignment,
                   transform=ax.transData,
+                  bbox=bbox,
                   clip_on=True,
                   )
         text_items[n] = t
