@@ -88,6 +88,7 @@ For other bipartite graph generators see the bipartite section of
 from networkx.algorithms.bipartite.basic import *
 from networkx.algorithms.bipartite.centrality import *
 from networkx.algorithms.bipartite.cluster import *
+from networkx.algorithms.bipartite.matching import *
 from networkx.algorithms.bipartite.projection import *
 from networkx.algorithms.bipartite.redundancy import *
 from networkx.algorithms.bipartite.spectral import *
