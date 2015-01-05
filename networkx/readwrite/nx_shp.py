@@ -55,16 +55,15 @@ def read_shp(path):
     except ImportError:
         raise ImportError("read_shp requires OGR: http://www.gdal.org/")
 
+    if not isinstance(path, str):
+        return
+
     net = nx.DiGraph()
-
-    def getfieldinfo(lyr, feature, flds):
-            f = feature
-            return [f.GetField(f.GetFieldIndex(x)) for x in flds]
-
-    def addlyr(lyr, fields):
-        for findex in range(lyr.GetFeatureCount()):
-            f = lyr.GetFeature(findex)
-            flddata = getfieldinfo(lyr, f, fields)
+    shp = ogr.Open(path)
+    for lyr in shp:
+        fields = [x.GetName() for x in lyr.schema]
+        for f in lyr:
+            flddata = [f.GetField(f.GetFieldIndex(x)) for x in fields]
             g = f.geometry()
             attributes = dict(zip(fields, flddata))
             attributes["ShpName"] = lyr.GetName()
@@ -76,14 +75,6 @@ def read_shp(path):
                 attributes["Json"] = g.ExportToJson()
                 last = g.GetPointCount() - 1
                 net.add_edge(g.GetPoint_2D(0), g.GetPoint_2D(last), attributes)
-
-    if isinstance(path, str):
-        shp = ogr.Open(path)
-        lyrcount = shp.GetLayerCount()  # multiple layers indicate a directory
-        for lyrindex in range(lyrcount):
-            lyr = shp.GetLayerByIndex(lyrindex)
-            flds = [x.GetName() for x in lyr.schema]
-            addlyr(lyr, flds)
     return net
 
 
@@ -168,7 +159,7 @@ def write_shp(G, outdir):
         pass
     nodes = shpdir.CreateLayer("nodes", None, ogr.wkbPoint)
     for n in G:
-        data = G.node[n] or {}
+        data = G.node[n]
         g = netgeometry(n, data)
         create_feature(g, nodes)
     try:
