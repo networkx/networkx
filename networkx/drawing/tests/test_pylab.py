@@ -16,6 +16,7 @@ class TestPylab(object):
             import matplotlib as mpl
             mpl.use('PS',warn=False)
             import matplotlib.pyplot as plt
+            plt.rcParams['text.usetex'] = False
         except ImportError:
             raise SkipTest('matplotlib not available.')
         except RuntimeError:
@@ -26,15 +27,20 @@ class TestPylab(object):
 
 
     def test_draw(self):
-        N=self.G
-        nx.draw_spring(N)
-        plt.savefig("test.ps")
-        nx.draw_random(N)
-        plt.savefig("test.ps")
-        nx.draw_circular(N)
-        plt.savefig("test.ps")
-        nx.draw_spectral(N)
-        plt.savefig("test.ps")
-        nx.draw_spring(N.to_directed())
-        plt.savefig("test.ps")
-        os.unlink('test.ps')
+        try:
+            N=self.G
+            nx.draw_spring(N)
+            plt.savefig("test.ps")
+            nx.draw_random(N)
+            plt.savefig("test.ps")
+            nx.draw_circular(N)
+            plt.savefig("test.ps")
+            nx.draw_spectral(N)
+            plt.savefig("test.ps")
+            nx.draw_spring(N.to_directed())
+            plt.savefig("test.ps")
+        finally:
+            try:
+                os.unlink('test.ps')
+            except OSError:
+                pass
