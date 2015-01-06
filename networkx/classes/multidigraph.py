@@ -1,5 +1,5 @@
 """Base class for MultiDiGraph."""
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -170,7 +170,85 @@ class MultiDiGraph(MultiGraph,DiGraph):
     as well as the number of nodes and edges.
 
     For details on these and other miscellaneous methods, see below.
+
+    **Subclasses (Advanced):**
+
+    The MultiDiGraph class uses a dict-of-dict-of-dict-of-dict structure.
+    The outer dict (node_dict) holds adjacency lists keyed by node.
+    The next dict (adjlist) represents the adjacency list and holds
+    edge_key dicts keyed by neighbor. The edge_key dict holds each edge_attr
+    dict keyed by edge key. The inner dict (edge_attr) represents
+    the edge data and holds edge attribute values keyed by attribute names.
+
+    Each of these four dicts in the dict-of-dict-of-dict-of-dict
+    structure can be replaced by a user defined dict-like object.  
+    In general, the dict-like features should be maintained but 
+    extra features can be added. To replace one of the dicts create 
+    a new graph class by changing the class(!) variable holding the 
+    factory for that dict-like structure. The variable names
+    are node_dict_factory, adjlist_dict_factory, edge_key_dict_factory
+    and edge_attr_dict_factory.
+
+    node_dict_factory : function, (default: dict)
+        Factory function to be used to create the outer-most dict
+        in the data structure that holds adjacency lists keyed by node.
+        It should require no arguments and return a dict-like object.
+
+    adjlist_dict_factory : function, (default: dict)
+        Factory function to be used to create the adjacency list
+        dict which holds multiedge key dicts keyed by neighbor.
+        It should require no arguments and return a dict-like object.
+
+    edge_key_dict_factory : function, (default: dict)
+        Factory function to be used to create the edge key dict
+        which holds edge data keyed by edge key.
+        It should require no arguments and return a dict-like object.
+
+    edge_attr_dict_factory : function, (default: dict)
+        Factory function to be used to create the edge attribute
+        dict which holds attrbute values keyed by attribute name.
+        It should require no arguments and return a dict-like object.
+
+    Examples
+    --------
+    Create a multigraph object that tracks the order nodes are added.
+
+    >>> from collections import OrderedDict
+    >>> class OrderedGraph(nx.MultiDiGraph):
+    ...    node_dict_factory = OrderedDict
+    >>> G = OrderedGraph()
+    >>> G.add_nodes_from( (2,1) )
+    >>> G.nodes()
+    [2, 1]
+    >>> G.add_edges_from( ((2,2), (2,1), (2,1), (1,1)) )
+    >>> G.edges()
+    [(2, 1), (2, 1), (2, 2), (1, 1)]
+
+    Create a multdigraph object that tracks the order nodes are added
+    and for each node track the order that neighbors are added and for
+    each neighbor tracks the order that multiedges are added.
+
+    >>> class OrderedGraph(nx.MultiDiGraph):
+    ...    node_dict_factory = OrderedDict
+    ...    adjlist_dict_factory = OrderedDict
+    ...    edge_key_dict_factory = OrderedDict
+    >>> G = OrderedGraph()
+    >>> G.add_nodes_from( (2,1) )
+    >>> G.nodes()
+    [2, 1]
+    >>> G.add_edges_from( ((2,2), (2,1,2,{'weight':0.1}), (2,1,1,{'weight':0.2}), (1,1)) )
+    >>> G.edges(keys=True)
+    [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]
+
     """
+    #node_dict_factory=dict    # already assigned in Graph
+    #adjlist_dict_factory=dict
+    edge_key_dict_factory=dict
+    #edge_attr_dict_factory=dict
+    def __init__(self, data=None, **attr):
+        self.edge_key_dict_factory = self.edge_key_dict_factory
+        DiGraph.__init__(self, data, **attr)
+
     def add_edge(self, u, v, key=None, attr_dict=None, **attr):
         """Add an edge between u and v.
 
@@ -235,12 +313,12 @@ class MultiDiGraph(MultiGraph,DiGraph):
                     "The attr_dict argument must be a dictionary.")
         # add nodes
         if u not in self.succ:
-            self.succ[u] = {}
-            self.pred[u] = {}
+            self.succ[u] = self.adjlist_dict_factory()
+            self.pred[u] = self.adjlist_dict_factory()
             self.node[u] = {}
         if v not in self.succ:
-            self.succ[v] = {}
-            self.pred[v] = {}
+            self.succ[v] = self.adjlist_dict_factory()
+            self.pred[v] = self.adjlist_dict_factory()
             self.node[v] = {}
         if v in self.succ[u]:
             keydict=self.adj[u][v]
@@ -250,16 +328,17 @@ class MultiDiGraph(MultiGraph,DiGraph):
                 key=len(keydict)
                 while key in keydict:
                     key+=1
-            datadict=keydict.get(key,{})
+            datadict=keydict.get(key,self.edge_key_dict_factory())
             datadict.update(attr_dict)
             keydict[key]=datadict
         else:
             # selfloops work this way without special treatment
             if key is None:
                 key=0
-            datadict={}
+            datadict=self.edge_attr_dict_factory()
             datadict.update(attr_dict)
-            keydict={key:datadict}
+            keydict=self.edge_key_dict_factory()
+            keydict[key]=datadict
             self.succ[u][v] = keydict
             self.pred[v][u] = keydict
 
@@ -738,6 +817,13 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
+
+        Warning
+        -------
+        If you have subclassed MultiGraph to use dict-like objects in the
+        data structure, those changes do not transfer to the MultiDiGraph
+        created by this method.
+        
         """
         H=MultiGraph()
         H.name=self.name
@@ -809,8 +895,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
         self_pred=self.pred
         # add nodes
         for n in H:
-            H_succ[n]={}
-            H_pred[n]={}
+            H_succ[n]=H.adjlist_dict_factory()
+            H_pred[n]=H.adjlist_dict_factory()
         # add edges
         for u in H_succ:
             Hnbrs=H_succ[u]
