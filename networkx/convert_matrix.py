@@ -34,8 +34,137 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
+           'from_pandas_dataframe', 'to_pandas_dataframe',
            'to_numpy_recarray',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix']
+
+def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight', nonedge=0.0):
+    """Return the graph adjacency matrix as a Pandas DataFrame.
+
+    Parameters
+    ----------
+    G : graph
+        The NetworkX graph used to construct the Pandas DataFrame.
+
+    nodelist : list, optional
+       The rows and columns are ordered according to the nodes in `nodelist`.
+       If `nodelist` is None, then the ordering is produced by G.nodes().
+
+    multigraph_weight : {sum, min, max}, optional
+        An operator that determines how weights in multigraphs are handled.
+        The default is to sum the weights of the multiple edges.
+
+    weight : string or None, optional
+        The edge attribute that holds the numerical value used for
+        the edge weight.  If an edge does not have that attribute, then the
+        value 1 is used instead.
+
+    nonedge : float, optional
+        The matrix values corresponding to nonedges are typically set to zero.
+        However, this could be undesirable if there are matrix values
+        corresponding to actual edges that also have the value zero. If so,
+        one might prefer nonedges to have some other value, such as nan.
+
+    Returns
+    -------
+    df : Pandas DataFrame
+       Graph adjacency matrix
+
+    Notes
+    -----
+    The DataFrame entries are assigned to the weight edge attribute. When
+    an edge does not have a weight attribute, the value of the entry is set to
+    the number 1.  For multiple (parallel) edges, the values of the entries
+    are determined by the 'multigraph_weight' parameter.  The default is to
+    sum the weight attributes for each of the parallel edges.
+
+    When `nodelist` does not contain every node in `G`, the matrix is built
+    from the subgraph of `G` that is induced by the nodes in `nodelist`.
+
+    The convention used for self-loop edges in graphs is to assign the
+    diagonal matrix entry value to the weight attribute of the edge
+    (or the number 1 if the edge has no weight attribute).  If the
+    alternate convention of doubling the edge weight is desired the
+    resulting Pandas DataFrame can be modified as follows:
+
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> G = nx.Graph([(1,1)])
+    >>> df = nx.to_pandas_dataframe(G)
+    >>> df
+       1
+    1  1
+    >>> df.values[np.diag_indices_from(df)] *= 2
+    >>> df
+       1
+    1  2
+
+    Examples
+    --------
+    >>> G = nx.MultiDiGraph()
+    >>> G.add_edge(0,1,weight=2)
+    >>> G.add_edge(1,0)
+    >>> G.add_edge(2,2,weight=3)
+    >>> G.add_edge(2,2)
+    >>> nx.to_pandas_dataframe(G, nodelist=[0,1,2])
+       0  1  2
+    0  0  2  0
+    1  1  0  0
+    2  0  0  4
+    """
+    import pandas as pd
+    M = to_numpy_matrix(G, nodelist, None, None, multigraph_weight, weight, nonedge)
+    if nodelist is None:
+        nodelist = G.nodes()
+    nodeset = set(nodelist)
+    df = pd.DataFrame(data=M, index = nodelist ,columns = nodelist)
+    return df
+
+def from_pandas_dataframe(df,create_using=None):
+    """Return a graph from Pandas DataFrame.
+
+    The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
+
+    Parameters
+    ----------
+    df : Pandas DataFrame
+      An adjacency matrix representation of a graph
+
+    create_using : NetworkX graph
+       Use specified graph for result.  The default is Graph()
+
+    Notes
+    -----
+    If the numpy matrix has a single data type for each matrix entry it
+    will be converted to an appropriate Python data type.
+
+    If the numpy matrix has a user-specified compound data type the names
+    of the data fields will be used as attribute keys in the resulting
+    NetworkX graph.
+
+    See Also
+    --------
+    from_pandas_dataframe
+
+    Examples
+    --------
+    Simple integer weights on edges:
+
+    >>> import pandas as pd
+    >>> df=pd.DataFrame([[1,1],[2,1]])
+    >>> G=nx.from_pandas_dataframe(df)
+    """
+
+    import pandas as pd
+    A = df.values
+    G = from_numpy_matrix(A, create_using)
+    try:
+        df = df[df.index]
+    except:
+        raise nx.NetworkXError("Columns must match Indices.",
+                               "%s not in columns"%list(set(df.index).difference(set(df.columns))))
+    nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
+    return G
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     multigraph_weight=sum, weight='weight', nonedge=0.0):
@@ -90,14 +219,14 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     The matrix entries are assigned to the weight edge attribute. When
     an edge does not have a weight attribute, the value of the entry is set to
     the number 1.  For multiple (parallel) edges, the values of the entries
-    are determined by the 'multigraph_weight' paramter.  The default is to
+    are determined by the 'multigraph_weight' parameter.  The default is to
     sum the weight attributes for each of the parallel edges.
 
     When `nodelist` does not contain every node in `G`, the matrix is built
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
 
     The convention used for self-loop edges in graphs is to assign the
-    diagonal matrix entry value to the weight attributr of the edge
+    diagonal matrix entry value to the weight attribute of the edge
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
     resulting Numpy matrix can be modified as follows:
