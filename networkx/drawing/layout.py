@@ -183,7 +183,7 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
 
     pos : dict or None  optional (default=None)
        Initial positions for nodes as a dictionary with node as keys
-       and values as a list or tuple.  If None, then nuse random initial
+       and values as a list or tuple.  If None, then use random initial
        positions.
 
     fixed : list or None  optional (default=None)
