@@ -128,15 +128,15 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
     # Pandas DataFrame
     try:
         import pandas as pd
-        if isinstance(data,pd.DataFrame):
+        if isinstance(data, pd.DataFrame):
             try:
-                return nx.from_pandas_dataframe(data,create_using=create_using)
+                return nx.from_pandas_dataframe(data, create_using=create_using)
             except:
-                raise nx.NetworkXError(\
-                  "Input is not a correct Pandas DataFrame.")
+                msg = "Input is not a correct Pandas DataFrame."
+                raise nx.NetworkXError(msg)
     except ImportError:
-        warnings.warn('pandas not found, skipping conversion test.',
-                      ImportWarning)
+        msg = 'pandas not found, skipping conversion test.'
+        warnings.warn(msg, ImportWarning)
 
     # numpy matrix or ndarray
     try:
