@@ -59,7 +59,7 @@ all_tests=[
 
 
 class Benchmark(object):
-    """ 
+    """
     Class to benchmark (time) various Graph routines.
 
     Parameters
@@ -67,7 +67,7 @@ class Benchmark(object):
     graph_classes :  List of classes to test.
     tests : List of tests to run on each class.
 
-    Format for tests:  
+    Format for tests:
     (name, (test_string, setup_string, runs, repeats, [cutoff_ratio]))
 
     name: A string used to identify this test when reporting results.
@@ -82,13 +82,13 @@ class Benchmark(object):
 
     Notes
     -----
-    Benchmark uses the timeit package and timeit.Timer class. 
+    Benchmark uses the timeit package and timeit.Timer class.
     """
     def __init__(self, graph_classes, tests=all_tests):
         self.gc = graph_classes
         self.tests = tests
 
-    def run(self, verbose=False, cutoff_default=2.0):
+    def run(self, verbose=False, cutoff_default=3):
         errors=''
         headers=list(self.gc)
         if verbose:
