@@ -34,13 +34,26 @@ matrix:
     - python: "3.3"
       env: OPTIONAL_DEPS=source
 
+  # 2014-01-05:
+  #   https://github.com/networkx/networkx/pull/1313#issuecomment-68612307
+  #   Excluding dependencies for 3.x until the wheelhouse offers them again.
+
+    - python: "3.2"
+      env: OPTIONAL_DEPS=pip
+    - python: "3.3"
+      env: OPTIONAL_DEPS=pip
+    - python: "3.4"
+      env: OPTIONAL_DEPS=pip
+    - python: "3.4"
+      env: OPTIONAL_DEPS=source
+
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
 
 env:
   global:
     # Install from wheels *only*.
-    - PIPINSTALL="pip install -v --use-wheel --no-index --find-links=http://sunpy.cadair.com/wheelhouse/"
+    - PIPINSTALL="pip install -v --use-wheel --no-index --find-links=http://sunpy.cadair.com/wheelhouse/ --trusted-host sunpy.cadair.com"
     - NXOPTDEPS=""
 
   matrix:
