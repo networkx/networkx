@@ -125,6 +125,19 @@ def to_networkx_graph(data,create_using=None,multigraph_input=False):
         except:
             raise nx.NetworkXError("Input is not a valid edge list")
 
+    # Pandas DataFrame
+    try:
+        import pandas as pd
+        if isinstance(data,pd.DataFrame):
+            try:
+                return nx.from_pandas_dataframe(data,create_using=create_using)
+            except:
+                raise nx.NetworkXError(\
+                  "Input is not a correct Pandas DataFrame.")
+    except ImportError:
+        warnings.warn('pandas not found, skipping conversion test.',
+                      ImportWarning)
+
     # numpy matrix or ndarray
     try:
         import numpy

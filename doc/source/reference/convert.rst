@@ -48,3 +48,11 @@ Scipy
 
    to_scipy_sparse_matrix
    from_scipy_sparse_matrix
+
+Pandas
+-----
+.. autosummary::
+   :toctree: generated/
+
+   to_pandas_dataframe
+   from_pandas_dataframe
