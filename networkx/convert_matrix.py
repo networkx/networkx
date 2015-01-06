@@ -33,7 +33,7 @@ from networkx.utils import not_implemented_for
 __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
-__all__ = ['from_numpy_matrix', 'to_numpy_matrix', 
+__all__ = ['from_numpy_matrix', 'to_numpy_matrix',
            'from_pandas_dataframe', 'to_pandas_dataframe',
            'to_numpy_recarray',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix']
@@ -54,12 +54,12 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
         An operator that determines how weights in multigraphs are handled.
         The default is to sum the weights of the multiple edges.
 
-    weight : string or None   optional (default='weight')
+    weight : string or None, optional
         The edge attribute that holds the numerical value used for
         the edge weight.  If an edge does not have that attribute, then the
         value 1 is used instead.
 
-    nonedge : float (default=0.0)
+    nonedge : float, optional
         The matrix values corresponding to nonedges are typically set to zero.
         However, this could be undesirable if there are matrix values
         corresponding to actual edges that also have the value zero. If so,
@@ -154,7 +154,7 @@ def from_pandas_dataframe(df,create_using=None):
     >>> df=pd.DataFrame([[1,1],[2,1]])
     >>> G=nx.from_pandas_dataframe(df)
     """
-    
+
     import pandas as pd
     A = df.values
     G = from_numpy_matrix(A, create_using)
@@ -165,7 +165,7 @@ def from_pandas_dataframe(df,create_using=None):
                                "%s not in columns"%list(set(df.index).difference(set(df.columns))))
     nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
     return G
-    
+
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     multigraph_weight=sum, weight='weight', nonedge=0.0):
     """Return the graph adjacency matrix as a NumPy matrix.
