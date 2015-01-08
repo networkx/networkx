@@ -182,7 +182,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
        marker, one of 'so^>v<dph8'.
 
     alpha : float, optional (default=1.0)
-       The node transparency
+       The node and edge transparency
 
     cmap : Matplotlib colormap, optional (default=None)
        Colormap for mapping intensities of nodes
@@ -395,7 +395,7 @@ def draw_networkx_edges(G, pos,
                         width=1.0,
                         edge_color='k',
                         style='solid',
-                        alpha=None,
+                        alpha=1.0,
                         edge_cmap=None,
                         edge_vmin=None,
                         edge_vmax=None,
