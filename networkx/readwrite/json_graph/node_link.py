@@ -56,8 +56,9 @@ def node_link_data(G, attrs=_attrs):
 
     Notes
     -----
-    Graph, node, and link attributes are stored in this format but keys
-    for attributes must be strings if you want to serialize with JSON.
+    Graph, node, and link attributes are stored in this format. Note that
+    attribute keys will be converted to strings in order to comply with
+    JSON.
 
     The default value of attrs will be changed in a future release of NetworkX.
 
@@ -77,7 +78,7 @@ def node_link_data(G, attrs=_attrs):
     data = {}
     data['directed'] = G.is_directed()
     data['multigraph'] = multigraph
-    data['graph'] = list(G.graph.items())
+    data['graph'] = G.graph
     data['nodes'] = [dict(chain(G.node[n].items(), [(id_, n)])) for n in G]
     if multigraph:
         data['links'] = [
@@ -129,6 +130,7 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=_attrs):
     -----
     The default value of attrs will be changed in a future release of NetworkX.
 
+
     See Also
     --------
     node_link_data, adjacency_data, tree_data
@@ -147,7 +149,7 @@ def node_link_graph(data, directed=False, multigraph=True, attrs=_attrs):
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
     key = None if not multigraph else attrs['key']
     mapping = []
-    graph.graph = dict(data.get('graph', []))
+    graph.graph = data.get('graph', {})
     c = count()
     for d in data['nodes']:
         node = d.get(id_, next(c))
