@@ -4,12 +4,10 @@
 language: python
 
 python:
-  - "pypy"
-  - "pypy3"
-  - "3.4"
   - "2.7"
   - "3.2"
   - "3.3"
+  - "3.4"
 
 matrix:
   fast_finish: true
@@ -17,48 +15,18 @@ matrix:
   include:
     - python: "2.7"
       env: PYTHON_VM=ipy OPTIONAL_DEPS=no
-
-  exclude:
     - python: "pypy"
-      env: OPTIONAL_DEPS=source
-    - python: "pypy"
-      env: OPTIONAL_DEPS=pip
+      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
     - python: "pypy3"
-      env: OPTIONAL_DEPS=source
-    - python: "pypy3"
-      env: OPTIONAL_DEPS=pip
-    - python: "2.7"
-      env: OPTIONAL_DEPS=source
-    - python: "3.2"
-      env: OPTIONAL_DEPS=source
-    - python: "3.3"
-      env: OPTIONAL_DEPS=source
-
-  # 2014-01-05:
-  #   https://github.com/networkx/networkx/pull/1313#issuecomment-68612307
-  #   Excluding dependencies for 3.x until the wheelhouse offers them again.
-
-    - python: "3.2"
-      env: OPTIONAL_DEPS=pip
-    - python: "3.3"
-      env: OPTIONAL_DEPS=pip
-    - python: "3.4"
-      env: OPTIONAL_DEPS=pip
-    - python: "3.4"
-      env: OPTIONAL_DEPS=source
+      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
 
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
 
-env:
-  global:
-    # Install from wheels *only*.
-    - PIPINSTALL="pip install -v --use-wheel --no-index --find-links=http://sunpy.cadair.com/wheelhouse/ --trusted-host sunpy.cadair.com"
-    - NXOPTDEPS=""
 
+env:
   matrix:
-    - OPTIONAL_DEPS=source
-    - OPTIONAL_DEPS=pip
+    - OPTIONAL_DEPS=miniconda
     - OPTIONAL_DEPS=no
 
 before_install:
@@ -69,14 +37,23 @@ before_install:
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       sudo rm /etc/apt/sources.list.d/pgdg-source.list*;
       sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable;
-    fi
-  - if [[ "${PYTHON_VM}" != ipy ]]; then
       sudo apt-get update -qq;
-      pip install --upgrade setuptools;
-      pip install --upgrade pip;
-      pip install wheel;
-      pip --version;
-    else
+    fi
+  - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
+      if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+        wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh;
+      else
+        wget http://repo.continuum.io/miniconda/Miniconda3-3.7.0-Linux-x86_64.sh -O miniconda.sh;
+      fi;
+      bash miniconda.sh -b -p $HOME/miniconda;
+      export PATH="$HOME/miniconda/bin:$PATH";
+      hash -r;
+      conda info -a;
+      conda config --set always_yes yes --set changeps1 no;
+      conda update -q conda;
+    fi
+ 
+  - if [[ "${PYTHON_VM}" == ipy ]]; then
       pushd ..;
       curl -L -o xamarin.pgp http://download.mono-project.com/repo/xamarin.gpg;
       sudo apt-key add xamarin.pgp;
@@ -111,34 +88,19 @@ before_install:
 
 install:
   ### Install any prerequisites or dependencies necessary to run the build.
-
-  - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then
-      sudo apt-get install graphviz libsuitesparse-dev;
-    fi
-  # Skip GDAL and pydot for Python 3.x due to incompatibility
-  - if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\..(pip|source) ]]; then
+  - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
+      DEPS="pyyaml numpy scipy matplotlib Cython pandas pip";
+      sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran libsuitesparse-dev;
       sudo apt-get install libgdal-dev;
-      pip install pygraphviz pydot2;
-      pip install --global-option=build_ext --global-option=-I/usr/include/gdal GDAL==1.10.0;
+      conda create -n test-environment python=$TRAVIS_PYTHON_VERSION $DEPS gdal;
+      conda install -n test-environment --channel https://conda.binstar.org/patricksnape scikits-sparse;
+      source activate test-environment;
+      python -c "from osgeo import ogr;print('importing ogr worked')";
+      if [[ "${TRAVIS_PYTHON_VERSION}" =~ "2.7" ]]; then
+        sudo apt-get install graphviz;
+        pip install pygraphviz pydot2;
+      fi;
     fi
-  - if [ "${OPTIONAL_DEPS}" == "pip" ]; then
-      pip install --use-wheel pyyaml;
-      $PIPINSTALL numpy pandas scipy matplotlib Cython;
-    fi
-
-  # Try to install latest and greatest from source.
-  - if [ "${OPTIONAL_DEPS}" == "source" ]; then
-      sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran;
-      pip install --upgrade pyyaml numpy pandas scipy matplotlib Cython;
-    fi
-
-  # Install stuff that depends on Cython.
-  - if [[ "${OPTIONAL_DEPS}" =~ pip|source ]]; then
-      pip install scikits.sparse;
-    fi
-
-before_script:
-  ### Use this to prepare your build for testing
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       pip install --upgrade nose coverage coveralls;
     fi
@@ -190,7 +152,7 @@ after_success:
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       cp .coverage $TRAVIS_BUILD_DIR;
       cd $TRAVIS_BUILD_DIR;
-      if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7pip|3\.4source ]]; then
+      if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7miniconda|3\.4miniconda ]]; then
         python fixcoverage.py "$VIRTUAL_ENV/lib/python.*/site-packages/networkx/" "$TRAVIS_BUILD_DIR/networkx/";
         coveralls;
       fi;
