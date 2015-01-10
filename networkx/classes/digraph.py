@@ -399,8 +399,16 @@ class DiGraph(Graph):
 
         """
         for n in nodes:
+            # keep all this inside try/except because
+            # CPython throws TypeError on n not in self.succ,
+            # while pre-2.7.5 ironpython throws on self.succ[n] 
             try:
-                newnode=n not in self.succ
+                if n not in self.succ:
+                    self.succ[n] = self.adjlist_dict_factory()
+                    self.pred[n] = self.adjlist_dict_factory()
+                    self.node[n] = attr.copy()
+                else:
+                    self.node[n].update(attr)
             except TypeError:
                 nn,ndict = n
                 if nn not in self.succ:
@@ -413,13 +421,6 @@ class DiGraph(Graph):
                     olddict = self.node[nn]
                     olddict.update(attr)
                     olddict.update(ndict)
-                continue
-            if newnode:
-                self.succ[n] = self.adjlist_dict_factory()
-                self.pred[n] = self.adjlist_dict_factory()
-                self.node[n] = attr.copy()
-            else:
-                self.node[n].update(attr)
 
     def remove_node(self, n):
         """Remove node n.
