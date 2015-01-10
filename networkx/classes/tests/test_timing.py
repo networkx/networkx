@@ -145,15 +145,17 @@ class Benchmark(object):
         bt = tcc.repeat(repeat = runs, number = reps)
         return min(t),min(bt)
 
-class Test_Benchmark(Benchmark):
-    """ Class to allow nosetests to perform benchmark tests """
-    def __init__(self):
-        classes=['Graph','MultiGraph','DiGraph','MultiDiGraph']
-        self.gc = classes
-        self.tests = all_tests
-
-    def test_ratios(self):
-        assert_true(self.run(verbose=False, cutoff_default=2.0))
+# The fluctuations in timing make this problematic for travis-CI
+# uncomment it to use with nosetests.
+#class Test_Benchmark(Benchmark):
+#    """ Class to allow nosetests to perform benchmark tests """
+#    def __init__(self):
+#        classes=['Graph','MultiGraph','DiGraph','MultiDiGraph']
+#        self.gc = classes
+#        self.tests = all_tests
+#
+#    def test_ratios(self):
+#        assert_true(self.run(verbose=False, cutoff_default=3))
 
 if __name__ == "__main__":
     classes=['Graph','MultiGraph','DiGraph','MultiDiGraph']
