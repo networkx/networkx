@@ -33,7 +33,6 @@ from networkx.algorithms.swap import *
 from networkx.algorithms.graphical import *
 from networkx.algorithms.simple_paths import *
 from networkx.algorithms.tree import *
-from networkx.algorithms.knotty import *
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
 import networkx.algorithms.centrality

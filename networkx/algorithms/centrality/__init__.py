@@ -8,6 +8,7 @@ from networkx.algorithms.centrality.degree_alg import *
 from networkx.algorithms.centrality.dispersion import *
 from networkx.algorithms.centrality.eigenvector import *
 from networkx.algorithms.centrality.katz import *
+from networkx.algorithms.centrality.knotty import *
 from networkx.algorithms.centrality.load import *
 from networkx.algorithms.centrality.communicability_alg import *
 import networkx.algorithms.centrality.betweenness
