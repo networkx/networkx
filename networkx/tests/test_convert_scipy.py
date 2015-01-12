@@ -2,6 +2,7 @@ from nose import SkipTest
 from nose.tools import assert_raises, assert_true, assert_equal, raises
 
 import networkx as nx
+from networkx.testing import assert_graphs_equal
 from networkx.generators.classic import barbell_graph,cycle_graph,path_graph
 from networkx.testing.utils import assert_graphs_equal
 
@@ -212,3 +213,15 @@ class TestConvertNumpy(object):
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         actual = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiDiGraph())
         assert_graphs_equal(actual, expected)
+
+    def test_symmetric(self):
+        """Tests that a symmetric matrix has edges added only once to an
+        undirected multigraph when using
+        :func:`networkx.from_scipy_sparse_matrix`.
+
+        """
+        A = sparse.csr_matrix([[0, 1], [1, 0]])
+        G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph())
+        expected = nx.MultiGraph()
+        expected.add_edge(0, 1, weight=1)
+        assert_graphs_equal(G, expected)

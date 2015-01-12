@@ -194,3 +194,14 @@ class TestConvertNumpy(object):
         expected.add_weighted_edges_from([(u, v, 1) for (u, v) in edges])
         actual = nx.from_numpy_matrix(A, create_using=nx.MultiDiGraph())
         assert_graphs_equal(actual, expected)
+
+    def test_symmetric(self):
+        """Tests that a symmetric matrix has edges added only once to an
+        undirected multigraph when using :func:`networkx.from_numpy_matrix`.
+
+        """
+        A = np.matrix([[0, 1], [1, 0]])
+        G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph())
+        expected = nx.MultiGraph()
+        expected.add_edge(0, 1, weight=1)
+        assert_graphs_equal(G, expected)
