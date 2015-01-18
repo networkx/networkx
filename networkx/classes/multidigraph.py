@@ -159,8 +159,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
     ...                (n,nbr,eattr['weight'])
     (1, 2, 4)
     (2, 3, 8)
-    >>> [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
-    [(1, 2, 4), (2, 3, 8)]
+    >>> G.edges(data='weight')
+    [(1, 2, 4), (1, 2, None), (2, 3, 8), (3, 4, None), (4, 5, None)]
 
     **Reporting:**
 
@@ -405,7 +405,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
             del self.pred[v][u]
 
 
-    def edges_iter(self, nbunch=None, data=False, keys=False):
+    def edges_iter(self, nbunch=None, data=False, keys=False, default=None):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data and keys
@@ -416,10 +416,15 @@ class MultiDiGraph(MultiGraph,DiGraph):
         nbunch : iterable container, optional (default= all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        data : bool, optional (default=False)
-            If True, return edge attribute dict with each edge.
+        data : string or bool, optional (default=False)
+            The edge attribute returned in 3-tuple (u,v,ddict[data]).
+            If True, return edge attribute dict in 3-tuple (u,v,ddict).
+            If False, return 2-tuple (u,v). 
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
+        default : value, optional (default=None)
+            Value used for edges that dont have the requested attribute.
+            Only relevant if data is not True or False.
 
         Returns
         -------
@@ -438,11 +443,20 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Examples
         --------
         >>> G = nx.MultiDiGraph()
-        >>> G.add_path([0,1,2,3])
+        >>> G.add_path([0,1,2])
+        >>> G.add_edge(2,3,weight=5)
         >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
-        [(0, 1, {}), (1, 2, {}), (2, 3, {})]
+        [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
+        >>> list(G.edges_iter(data='weight', default=1)) 
+        [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
+        >>> list(G.edges(keys=True)) # default keys are integers
+        [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
+        >>> list(G.edges(data=True,keys=True)) # default keys are integers
+        [(0, 1, 0, {}), (1, 2, 0, {}), (2, 3, 0, {'weight': 5})]
+        >>> list(G.edges(data='weight',default=1,keys=True))
+        [(0, 1, 0, 1), (1, 2, 0, 1), (2, 3, 0, 5)]
         >>> list(G.edges_iter([0,2]))
         [(0, 1), (2, 3)]
         >>> list(G.edges_iter(0))
@@ -453,22 +467,22 @@ class MultiDiGraph(MultiGraph,DiGraph):
             nodes_nbrs = self.adj.items()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
-        if data:
+        if data is True:
             for n,nbrs in nodes_nbrs:
                 for nbr,keydict in nbrs.items():
-                    for key,data in keydict.items():
-                        if keys:
-                            yield (n,nbr,key,data)
-                        else:
-                            yield (n,nbr,data)
+                    for key,ddict in keydict.items():
+                        yield (n,nbr,key,ddict) if keys else (n,nbr,ddict)
+        elif data is not False:
+            for n,nbrs in nodes_nbrs:
+                for nbr,keydict in nbrs.items():
+                    for key,ddict in keydict.items():
+                        d=ddict[data] if data in ddict else default
+                        yield (n,nbr,key,d) if keys else (n,nbr,d)
         else:
             for n,nbrs in nodes_nbrs:
                 for nbr,keydict in nbrs.items():
-                    for key,data in keydict.items():
-                        if keys:
-                            yield (n,nbr,key)
-                        else:
-                            yield (n,nbr)
+                    for key in keydict:
+                        yield (n,nbr,key) if keys else (n,nbr)
 
     # alias out_edges to edges
     out_edges_iter=edges_iter

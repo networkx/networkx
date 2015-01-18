@@ -160,8 +160,8 @@ class Graph(object):
     (2, 1, 4)
     (2, 3, 8)
     (3, 2, 8)
-    >>> [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
-    [(1, 2, 4), (2, 3, 8)]
+    >>> G.edges(data='weight')
+    [(1, 2, 4), (2, 3, 8), (3, 4, None), (4, 5, None)]
 
     **Reporting:**
 
@@ -1089,7 +1089,7 @@ class Graph(object):
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
-    def edges(self, nbunch=None, data=False):
+    def edges(self, nbunch=None, data=False, default=None):
         """Return a list of edges.
 
         Edges are returned as tuples with optional data
@@ -1121,20 +1121,23 @@ class Graph(object):
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2,3])
+        >>> G.add_path([0,1,2])
+        >>> G.add_edge(2,3,weight=5)
         >>> G.edges()
         [(0, 1), (1, 2), (2, 3)]
         >>> G.edges(data=True) # default edge data is {} (empty dictionary)
-        [(0, 1, {}), (1, 2, {}), (2, 3, {})]
+        [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
+        >>> list(G.edges_iter(data='weight', default=1)) 
+        [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> G.edges([0,3])
         [(0, 1), (3, 2)]
         >>> G.edges(0)
         [(0, 1)]
 
         """
-        return list(self.edges_iter(nbunch, data))
+        return list(self.edges_iter(nbunch, data, default))
 
-    def edges_iter(self, nbunch=None, data=False):
+    def edges_iter(self, nbunch=None, data=False, default=None):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data
@@ -1145,8 +1148,13 @@ class Graph(object):
         nbunch : iterable container, optional (default= all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        data : bool, optional (default=False)
-            If True, return edge attribute dict in 3-tuple (u,v,data).
+        data : string or bool, optional (default=False)
+            The edge attribute returned in 3-tuple (u,v,ddict[data]).
+            If True, return edge attribute dict in 3-tuple (u,v,ddict).
+            If False, return 2-tuple (u,v). 
+        default : value, optional (default=None)
+            Value used for edges that dont have the requested attribute.
+            Only relevant if data is not True or False.
 
         Returns
         -------
@@ -1165,11 +1173,14 @@ class Graph(object):
         Examples
         --------
         >>> G = nx.Graph()   # or MultiGraph, etc
-        >>> G.add_path([0,1,2,3])
+        >>> G.add_path([0,1,2])
+        >>> G.add_edge(2,3,weight=5)
         >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
-        [(0, 1, {}), (1, 2, {}), (2, 3, {})]
+        [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
+        >>> list(G.edges_iter(data='weight', default=1)) 
+        [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> list(G.edges_iter([0,3]))
         [(0, 1), (3, 2)]
         >>> list(G.edges_iter(0))
@@ -1181,13 +1192,20 @@ class Graph(object):
             nodes_nbrs = self.adj.items()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
-        if data:
+        if data is True:
             for n,nbrs in nodes_nbrs:
-                for nbr,data in nbrs.items():
+                for nbr,ddict in nbrs.items():
                     if nbr not in seen:
-                        yield (n,nbr,data)
+                        yield (n,nbr,ddict)
                 seen[n]=1
-        else:
+        elif data is not False:
+            for n,nbrs in nodes_nbrs:
+                for nbr,ddict in nbrs.items():
+                    if nbr not in seen:
+                        d=ddict[data] if data in ddict else default
+                        yield (n,nbr,d)
+                seen[n] = 1
+        else: # data is False
             for n,nbrs in nodes_nbrs:
                 for nbr in nbrs:
                     if nbr not in seen:
@@ -1619,16 +1637,20 @@ class Graph(object):
         """
         return [ n for n,nbrs in self.adj.items() if n in nbrs ]
 
-    def selfloop_edges(self, data=False):
+    def selfloop_edges(self, data=False, default=None):
         """Return a list of selfloop edges.
 
         A selfloop edge has the same node at both ends.
 
         Parameters
         -----------
-        data : bool, optional (default=False)
+        data : string or bool, optional (default=False)
             Return selfloop edges as two tuples (u,v) (data=False)
-            or three-tuples (u,v,data) (data=True)
+            or three-tuples (u,v,datadict) (data=True)
+            or three-tuples (u,v,datavalue) (data='attrname')
+        default : value, optional (default=None)
+            Value used for edges that dont have the requested attribute.
+            Only relevant if data is not True or False.
 
         Returns
         -------
@@ -1649,8 +1671,11 @@ class Graph(object):
         >>> G.selfloop_edges(data=True)
         [(1, 1, {})]
         """
-        if data:
+        if data is True:
             return [ (n,n,nbrs[n])
+                     for n,nbrs in self.adj.items() if n in nbrs ]
+        elif data is not False:
+            return [ (n,n,nbrs[n].get(data,default) )
                      for n,nbrs in self.adj.items() if n in nbrs ]
         else:
             return [ (n,n)
