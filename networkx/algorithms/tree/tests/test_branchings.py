@@ -280,4 +280,11 @@ def test_mst():
     for u, v, d in x.edges(data=True):
         assert_true( (set([u,v]), d['weight']) in edges )
 
-
+def test_mixed_nodetypes():
+    # Smoke test to make sure no TypeError is raised for mixed node types.
+    G = nx.Graph()
+    edgelist = [(0, 3, [('weight', 5)]),
+                (0, '1', [('weight', 5)])]
+    G.add_edges_from(edgelist)
+    G = G.to_directed()
+    x = branchings.minimum_spanning_arborescence(G)

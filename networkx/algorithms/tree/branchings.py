@@ -184,7 +184,12 @@ def greedy_branching(G, attr='weight', default=1, kind='max'):
              for (u, v, data) in G.edges(data=True)]
 
     # We sort by weight, but also by nodes to normalize behavior across runs.
-    edges.sort(key=lambda x: (x[2], x[0], x[1]), reverse=reverse)
+    try:
+        edges.sort(key=itemgetter(2, 0, 1), reverse=reverse)
+    except TypeError:
+        # This will fail in Python 3.x if the nodes are of varying types.
+        # In that case, we use the arbitrary order.
+        edges.sort(key=itemgetter(2), reverse=reverse)
 
     # The branching begins with a forest of no edges.
     B = nx.DiGraph()
@@ -505,11 +510,6 @@ class Edmonds(object):
                                     # Outgoing edge. Make it from new node
                                     dd = data.copy()
                                     new_edges.append((new_node, v, key, dd))
-                                    #G.add_edge(new_node, v, key=key, **dd)
-                                    #if 'candidate' in dd:
-                                    #    del dd['candidate']
-                                    #    B.add_edge(new_node, v, key=key, **dd)
-                                    #    uf.union(new_node, v)
                             else:
                                 if v in Q_incoming_weight:
                                     # Incoming edge. Change its weight
@@ -518,12 +518,6 @@ class Edmonds(object):
                                     dd = data.copy()
                                     dd[attr] = w
                                     new_edges.append((u, new_node, key, dd))
-                                    #G.add_edge(u, new_node, key=key, **dd)
-                                    #if 'candidate' in dd:
-                                    #    del dd['candidate']
-                                    #    B.add_edge(new_node, v, **dd)
-                                    #    uf.union(new_node, v)
-
                                 else:
                                     # Outside edge. No modification necessary.
                                     continue
