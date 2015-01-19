@@ -290,7 +290,7 @@ def get_path(G, u, v):
 
     def first_key(i, vv):
         # Needed for 2.x/3.x compatibilitity
-        keys = G[nodes][i][vv].keys()
+        keys = G[nodes[i]][vv].keys()
         # Normalize behavior
         keys = list(keys)
         return keys[0]
