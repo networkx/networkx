@@ -36,7 +36,6 @@ import random
 from operator import itemgetter
 
 import networkx as nx
-import numpy as np
 
 from .recognition import *
 
@@ -53,6 +52,8 @@ STYLES = {
     'branching' : 'branching',
     'arborescence': 'arborescence',
 }
+
+INF = float('inf')
 
 def edge_subgraph(G, ebunch):
     """Return the subgraph induced on edges in `ebunch`.
@@ -418,7 +419,7 @@ class Edmonds(object):
 
             # Find an edge directed toward v that has maximial weight.
             edge = None
-            weight = -np.inf
+            weight = -INF
             for u, _, key, data in G.in_edges(v, data=True, keys=True):
                 new_weight = data[attr]
                 if new_weight > weight:
@@ -468,7 +469,7 @@ class Edmonds(object):
                         # Apply (I2).
                         # Get the edge in the cycle with the minimum weight.
                         # Also, save the incoming weights for each node.
-                        minweight = np.inf
+                        minweight = INF
                         minedge = None
                         Q_incoming_weight = {}
                         for edge_key in Q_edges:
