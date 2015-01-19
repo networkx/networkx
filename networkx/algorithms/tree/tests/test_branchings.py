@@ -31,20 +31,25 @@ G_array = np.array([
     [ 0,  0,  0,  0,  0,  0,  0, 18,  0], # 8
 ], dtype=int)
 
+# We convert to MultiDiGraph after using from_numpy_matrix
 # https://github.com/networkx/networkx/pull/1305
-G_array = G_array.astype(float)
+
 
 def G1():
-    G = nx.MultiDiGraph()
-    return nx.from_numpy_matrix(G_array, create_using=G)
+    G = nx.DiGraph()
+    G = nx.from_numpy_matrix(G_array, create_using=G)
+    G = nx.MultiDiGraph(G)
+    return G
 
 def G2():
     # Now we shift all the weights by -10.
     # Should not affect optimal arborescence, but does affect optimal branching.
-    G = nx.MultiDiGraph()
+    G = nx.DiGraph()
     Garr = G_array.copy()
     Garr[np.nonzero(Garr)] -= 10
-    return nx.from_numpy_matrix(Garr, create_using=G)
+    G = nx.from_numpy_matrix(Garr, create_using=G)
+    G = nx.MultiDiGraph(G)
+    return G
 
 # An optimal branching for G1 that is also a spanning arborescence. So it is
 # also an optimal spanning arborescence.
@@ -288,3 +293,21 @@ def test_mixed_nodetypes():
     G.add_edges_from(edgelist)
     G = G.to_directed()
     x = branchings.minimum_spanning_arborescence(G)
+
+def test_edmonds1_minbranch():
+    # Using -G_array and min should give the same as optimal_arborescence_1,
+    # but with all edges negative.
+    edges = [ (u, v, -w) for (u, v, w) in optimal_arborescence_1 ]
+
+    G = nx.DiGraph()
+    G = nx.from_numpy_matrix(-G_array, create_using=G)
+
+    # Quickly make sure max branching is empty.
+    x = branchings.maximum_branching(G)
+    x_ = build_branching([])
+    assert_equal_branchings(x, x_)
+
+    # Now test the min branching.
+    x = branchings.minimum_branching(G)
+    x_ = build_branching(edges)
+    assert_equal_branchings(x, x_)
