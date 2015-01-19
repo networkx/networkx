@@ -120,7 +120,7 @@ def edge_subgraph(G, ebunch):
 
     return H
 
-def random_string(L=1, seed=None):
+def random_string(L=15, seed=None):
     random.seed(seed)
     return ''.join([random.choice(string.ascii_letters) for n in range(L)])
 
@@ -457,7 +457,6 @@ class Edmonds(object):
                     dd = {attr: weight}
                     B.add_edge(u, v, key=edge[2], **dd)
                     G[u][v][edge[2]]['candidate'] = True
-                    print repr(u), repr(v)
                     uf.union(u, v)
                     if Q_edges is not None:
                         #print "Edge introduced a simple cycle:"
