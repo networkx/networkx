@@ -1,7 +1,12 @@
+from nose import SkipTest
 from nose.tools import *
 
 import networkx as nx
-import numpy as np
+
+try:
+    import numpy as np
+except:
+    raise SkipTest('NumPy not available.')
 
 from networkx.algorithms.tree import branchings
 from networkx.algorithms.tree import recognition

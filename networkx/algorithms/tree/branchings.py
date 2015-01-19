@@ -457,6 +457,7 @@ class Edmonds(object):
                     dd = {attr: weight}
                     B.add_edge(u, v, key=edge[2], **dd)
                     G[u][v][edge[2]]['candidate'] = True
+                    print repr(u), repr(v)
                     uf.union(u, v)
                     if Q_edges is not None:
                         #print "Edge introduced a simple cycle:"
