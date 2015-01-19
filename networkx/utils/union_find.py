@@ -1,13 +1,14 @@
 """
 Union-find data structure.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from operator import itemgetter
 
 class UnionFind:
     """Union-find data structure.
@@ -57,7 +58,7 @@ class UnionFind:
         for ancestor in path:
             self.parents[ancestor] = root
         return root
-        
+
     def __iter__(self):
         """Iterate through all items ever found or unioned by this structure."""
         return iter(self.parents)
@@ -65,7 +66,8 @@ class UnionFind:
     def union(self, *objects):
         """Find the sets containing the objects and merge them all."""
         roots = [self[x] for x in objects]
-        heaviest = max([(self.weights[r],r) for r in roots])[1]
+        candidates = [(self.weights[r], r) for r in roots]
+        heaviest = max(candidates, key=itemgetter(0))[1]
         for r in roots:
             if r != heaviest:
                 self.weights[heaviest] += self.weights[r]

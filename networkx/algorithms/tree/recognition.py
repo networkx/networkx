@@ -20,7 +20,7 @@ convention's forest and tree.
 Summarizing::
 
    +-----------------------------+
-   | Convention 1 | Convention 2 |
+   | Convention A | Convention B |
    +=============================+
    | forest       | polyforest   |
    | tree         | polytree     |
@@ -37,7 +37,7 @@ arborescence. That is, take any spanning tree and choose one node as the root.
 Then every edge is assigned a direction such there is a directed path from the
 root to every other node. The result is a spanning arborescence.
 
-NetworkX follows the first convention. Explicitly, these are:
+NetworkX follows convention "A". Explicitly, these are:
 
 undirected forest
    An undirected graph with no undirected cycles.
@@ -48,20 +48,29 @@ undirected tree
 directed forest
    A directed graph with no undirected cycles. Equivalently, the underlying
    graph structure (which ignores edge orientations) is an undirected forest.
-   In another convention, this is known as a polyforest.
+   In convention B, this is known as a polyforest.
 
 directed tree
    A weakly connected, directed forest. Equivalently, the underlying graph
    structure (which ignores edge orientations) is an undirected tree. In
-   another convention, this is known as a polytree.
+   convention B, this is known as a polytree.
 
 branching
    A directed forest with each node having, at most, one parent. So the maximum
-   in-degree is equal to 1. In another convention, this is known as a forest.
+   in-degree is equal to 1. In convention B, this is known as a forest.
 
 arborescence
    A directed tree with each node having, at most, one parent. So the maximum
-   in-degree is equal to 1. In another convention, this is known as a tree.
+   in-degree is equal to 1. In convention B, this is known as a tree.
+
+For trees and arborescences, the adjective "spanning" may be added to designate
+that the graph, when considered as a forest/branching, consists of a single
+tree/arborescence that includes all nodes in the graph. It is true, by
+definition, that every tree/arborescence is spanning with respect to the nodes
+that define the tree/arborescence and so, it might seem redundant to introduce
+the notion of "spanning". However, the nodes may represent a subset of
+nodes from a larger graph, and it is in this context that the term "spanning"
+becomes a useful notion.
 
 """
 
@@ -78,7 +87,7 @@ __all__ = ['is_arborescence', 'is_branching', 'is_forest', 'is_tree']
 @nx.utils.not_implemented_for('undirected')
 def is_arborescence(G):
     """
-    Returns `True` if `G` is an arborescence.
+    Returns ``True`` if ``G`` is an arborescence.
 
     An arborescence is a directed tree with maximum in-degree equal to 1.
 
@@ -90,7 +99,7 @@ def is_arborescence(G):
     Returns
     -------
     b : bool
-        A boolean that is `True` if `G` is an arborescence.
+        A boolean that is ``True`` if ``G`` is an arborescence.
 
     Notes
     -----
@@ -112,7 +121,7 @@ def is_arborescence(G):
 @nx.utils.not_implemented_for('undirected')
 def is_branching(G):
     """
-    Returns `True` if `G` is a branching.
+    Returns ``True`` if ``G`` is a branching.
 
     A branching is a directed forest with maximum in-degree equal to 1.
 
@@ -124,7 +133,7 @@ def is_branching(G):
     Returns
     -------
     b : bool
-        A boolean that is `True` if `G` is a branching.
+        A boolean that is ``True`` if ``G`` is a branching.
 
     Notes
     -----
@@ -145,11 +154,11 @@ def is_branching(G):
 
 def is_forest(G):
     """
-    Returns `True` if G is a forest.
+    Returns ``True`` if ``G`` is a forest.
 
     A forest is a graph with no undirected cycles.
 
-    For directed graphs, `G` is a forest if the underlying graph is a forest.
+    For directed graphs, ``G`` is a forest if the underlying graph is a forest.
     The underlying graph is obtained by treating each directed edge as a single
     undirected edge in a multigraph.
 
@@ -161,7 +170,7 @@ def is_forest(G):
     Returns
     -------
     b : bool
-        A boolean that is `True` if `G` is a forest.
+        A boolean that is ``True`` if ``G`` is a forest.
 
     Notes
     -----
@@ -190,11 +199,11 @@ def is_forest(G):
 
 def is_tree(G):
     """
-    Returns `True` if `G` is a tree.
+    Returns ``True`` if ``G`` is a tree.
 
     A tree is a connected graph with no undirected cycles.
 
-    For directed graphs, `G` is a tree if the underlying graph is a tree. The
+    For directed graphs, ``G`` is a tree if the underlying graph is a tree. The
     underlying graph is obtained by treating each directed edge as a single
     undirected edge in a multigraph.
 
@@ -206,7 +215,7 @@ def is_tree(G):
     Returns
     -------
     b : bool
-        A boolean that is `True` if `G` is a tree.
+        A boolean that is ``True`` if ``G`` is a tree.
 
     Notes
     -----
