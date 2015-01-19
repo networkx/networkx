@@ -68,6 +68,11 @@ def in_degree_centrality(G):
     nodes : dictionary
         Dictionary of nodes with in-degree centrality as values.
 
+    Raises
+    ------
+    NetworkXError
+       If the graph is undirected.
+
     See Also
     --------
     degree_centrality, out_degree_centrality
@@ -105,6 +110,11 @@ def out_degree_centrality(G):
     -------
     nodes : dictionary
         Dictionary of nodes with out-degree centrality as values.
+
+    Raises
+    ------
+    NetworkXError
+       If the graph is undirected.
 
     See Also
     --------

@@ -8,3 +8,4 @@ Cycles
 
    cycle_basis
    simple_cycles
+   find_cycle

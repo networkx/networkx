@@ -12,7 +12,7 @@ Format
 See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
 for format information.
 """
-#    Copyright (C) 2008-2011 by
+#    Copyright (C) 2008-2014 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -20,7 +20,7 @@ for format information.
 #    BSD license.
 import networkx as nx
 from networkx.utils import is_string_like, open_file, make_str
-__author__ = """Aric Hagberg (hagberg@lanl.gov)"""
+__author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
 __all__ = ['read_pajek', 'parse_pajek', 'generate_pajek', 'write_pajek']
 
 def generate_pajek(G):
@@ -172,7 +172,12 @@ def parse_pajek(lines):
             nodelabels={}
             l,nnodes=l.split()
             for i in range(int(nnodes)):
-                splitline=shlex.split(str(next(lines)))
+                l = next(lines)
+                try:
+                    splitline=[x.decode('utf-8') for x in
+                           shlex.split(make_str(l).encode('utf-8'))]
+                except AttributeError:
+                    splitline = shlex.split(str(l))
                 id,label=splitline[0:2]
                 G.add_node(label)
                 nodelabels[id]=label
@@ -194,7 +199,12 @@ def parse_pajek(lines):
                # switch to directed with multiple arcs for each existing edge
                 G=G.to_directed()
             for l in lines:
-                splitline=shlex.split(str(l))
+                try:
+                    splitline = [x.decode('utf-8') for x in
+                                 shlex.split(make_str(l).encode('utf-8'))]
+                except AttributeError:
+                    splitline = shlex.split(str(l))
+
                 if len(splitline)<2:
                     continue
                 ui,vi=splitline[0:2]

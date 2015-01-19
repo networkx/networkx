@@ -18,13 +18,11 @@ class TestPajek(object):
                                ('D2', 'Bb')])
 
         self.G.graph['name']='Tralala'
-        (self.fd,self.fname)=tempfile.mkstemp()
-        fh=open(self.fname,'wb')
-        fh.write(self.data.encode('UTF-8'))
-        fh.close()
+        (fd,self.fname)=tempfile.mkstemp()
+        with os.fdopen(fd, 'wb') as fh:
+            fh.write(self.data.encode('UTF-8'))
 
     def tearDown(self):
-        os.close(self.fd)
         os.unlink(self.fname)
 
     def test_parse_pajek_simple(self):
@@ -57,3 +55,21 @@ class TestPajek(object):
         other_lines = self.data.split('\n')[1:]
         data = line + '\n'.join(other_lines)
         G = parse_pajek(data)
+
+    def test_unicode(self):
+        import io
+        G = nx.Graph()
+        try: # Python 3.x
+            name1 = chr(2344) + chr(123) + chr(6543)
+            name2 = chr(5543) + chr(1543) + chr(324)
+        except ValueError: # Python 2.6+
+            name1 = unichr(2344) + unichr(123) + unichr(6543)
+            name2 = unichr(5543) + unichr(1543) + unichr(324)
+        G.add_edge(name1, 'Radiohead', attr_dict={'foo': name2})
+        fh = io.BytesIO()
+        nx.write_pajek(G,fh)
+        fh.seek(0)
+        H=nx.read_pajek(fh)
+        assert_nodes_equal(G.nodes(), H.nodes())
+        assert_edges_equal(G.edges(), H.edges())
+        assert_equal(G.graph,H.graph)

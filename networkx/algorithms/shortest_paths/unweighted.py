@@ -140,15 +140,16 @@ def bidirectional_shortest_path(G,source,target):
 
     # build path from pred+w+succ
     path=[]
+    # from source to w
+    while w is not None:
+        path.append(w)
+        w=pred[w]
+    path.reverse()
     # from w to target
+    w=succ[path[-1]]
     while w is not None:
         path.append(w)
         w=succ[w]
-    # from source to w
-    w=pred[path[0]]
-    while w is not None:
-        path.insert(0,w)
-        w=pred[w]
 
     return path
 

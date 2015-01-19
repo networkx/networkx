@@ -32,6 +32,7 @@ __all__ = ['fast_gnp_random_graph',
            'random_regular_graph',
            'barabasi_albert_graph',
            'powerlaw_cluster_graph',
+           'duplication_divergence_graph',
            'random_lobster',
            'random_shell_graph',
            'random_powerlaw_tree',
@@ -715,6 +716,73 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
 
         repeated_nodes.extend([source]*m)  # add source node to list m times
         source += 1
+    return G
+
+def duplication_divergence_graph(n, p, seed=None):
+    """Return a undirected graph using the Duplication-Divergence model
+
+    A graph of n nodes is created by duplicating the initial nodes and
+    retain edges of the original nodes with a retention probability p.
+
+    Parameters
+    ----------
+    n : int
+        The desired number of nodes in the graph.
+    p : float
+        The probability for retaining the edge of the replicated node.
+    seed : int, optional
+        A seed for the random number generator of ``random`` (default=None).
+
+    Returns
+    -------
+    G : Graph
+
+    Raises
+    ------
+    NetworkXError
+        If `p` is not a valid probability.
+        If `n` is less than 2.
+
+    References
+    ----------
+    .. [1] I. Ispolatov, P. L. Krapivsky, A. Yuryev,
+       "Duplication-divergence model of protein interaction network",
+       Phys. Rev. E, 71, 061911, 2005.
+
+    """
+    if p > 1 or p < 0:
+        msg = "NetworkXError p={0} is not in [0,1].".format(p)
+        raise nx.NetworkXError(msg)
+    if n < 2:
+        msg = 'n must be greater than or equal to 2'
+        raise nx.NetworkXError(msg)
+    if seed is not None:
+        random.seed(seed)
+
+    G = nx.Graph()
+    G.graph['name'] = "Duplication-Divergence Graph"
+
+    # Initialize the graph with two connected nodes.
+    G.add_edge(0,1)
+    i = 2
+    while i < n:
+        # Choose a random node from current graph to duplicate.
+        random_node = random.choice(G.nodes())
+        # Make the replica.
+        G.add_node(i)
+        # flag indicates whether at least one edge is connected on the replica.
+        flag=False
+        for nbr in G.neighbors(random_node):
+            if random.random() < p:
+                # Link retention step.
+                G.add_edge(i, nbr)
+                flag = True
+        if not flag:
+            # Delete replica if no edges retained.
+            G.remove_node(i)
+        else:
+            # Successful duplication.
+            i += 1
     return G
 
 def random_lobster(n, p1, p2, seed=None):

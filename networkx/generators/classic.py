@@ -6,11 +6,11 @@ The typical graph generator is called as follows:
 >>> G=nx.complete_graph(100)
 
 returning the complete graph on n nodes labeled 0,..,99
-as a simple graph. Except for empty_graph, all the generators 
+as a simple graph. Except for empty_graph, all the generators
 in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -62,7 +62,7 @@ def _tree_edges(n,r):
                 break
 
 def full_rary_tree(r, n, create_using=None):
-    """Creates a full r-ary tree of n vertices. 
+    """Creates a full r-ary tree of n vertices.
 
     Sometimes called a k-ary, n-ary, or m-ary tree.  "... all non-leaf
     vertices have exactly r children and all levels are full except
@@ -77,7 +77,7 @@ def full_rary_tree(r, n, create_using=None):
     n : int
         Number of nodes in the tree
     create_using : NetworkX graph type, optional
-        Use specified type to construct graph (default = networkx.Graph)    
+        Use specified type to construct graph (default = networkx.Graph)
 
     Returns
     -------
@@ -103,7 +103,7 @@ def balanced_tree(r, h, create_using=None):
     h : int
         Height of the tree
     create_using : NetworkX graph type, optional
-        Use specified type to construct graph (default = networkx.Graph)    
+        Use specified type to construct graph (default = networkx.Graph)
 
     Returns
     -------
@@ -163,7 +163,7 @@ def barbell_graph(m1,m2,create_using=None):
     # left barbell
     G=complete_graph(m1,create_using)
     G.name="barbell_graph(%d,%d)"%(m1,m2)
-    
+
     # connecting path
     G.add_nodes_from([v for v in range(m1,m1+m2-1)])
     if m2>1:
@@ -177,8 +177,8 @@ def barbell_graph(m1,m2,create_using=None):
     return G
 
 def complete_graph(n,create_using=None):
-    """ Return the complete graph K_n with n nodes. 
-    
+    """ Return the complete graph K_n with n nodes.
+
     Node labels are the integers 0 to n-1.
     """
     G=empty_graph(n,create_using)
@@ -194,13 +194,13 @@ def complete_graph(n,create_using=None):
 
 def complete_bipartite_graph(n1,n2,create_using=None):
     """Return the complete bipartite graph K_{n1_n2}.
-    
-    Composed of two partitions with n1 nodes in the first 
-    and n2 nodes in the second. Each node in the first is 
+
+    Composed of two partitions with n1 nodes in the first
+    and n2 nodes in the second. Each node in the first is
     connected to each node in the second.
 
     Node labels are the integers 0 to n1+n2-1
-    
+
     """
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
@@ -218,7 +218,7 @@ def circular_ladder_graph(n,create_using=None):
     each of the n pairs of concentric nodes are joined by an edge.
 
     Node labels are the integers 0 to n-1
-    
+
     """
     G=ladder_graph(n,create_using)
     G.name="circular_ladder_graph(%d)"%n
@@ -228,12 +228,12 @@ def circular_ladder_graph(n,create_using=None):
 
 def cycle_graph(n,create_using=None):
     """Return the cycle graph C_n over n nodes.
-   
+
     C_n is the n-path with two end-nodes connected.
 
     Node labels are the integers 0 to n-1
     If create_using is a DiGraph, the direction is in increasing order.
-    
+
     """
     G=path_graph(n,create_using)
     G.name="cycle_graph(%d)"%n
@@ -245,7 +245,7 @@ def dorogovtsev_goltsev_mendes_graph(n,create_using=None):
 
     n is the generation.
     See: arXiv:/cond-mat/0112143 by Dorogovtsev, Goltsev and Mendes.
-    
+
     """
     if create_using is not None:
         if create_using.is_directed():
@@ -278,13 +278,13 @@ def empty_graph(n=0,create_using=None):
     10
     >>> G.number_of_edges()
     0
- 
+
     The variable create_using should point to a "graph"-like object that
     will be cleaned (nodes and edges will be removed) and refitted as
     an empty "graph" with n nodes with integer labels. This capability
     is useful for specifying the class-nature of the resulting empty
     "graph" (i.e. Graph, DiGraph, MyWeirdGraphClass, etc.).
-    
+
     The variable create_using has two main uses:
     Firstly, the variable create_using can be used to create an
     empty digraph, network,etc.  For example,
@@ -302,7 +302,7 @@ def empty_graph(n=0,create_using=None):
     graph (resp. digraph, pseudograph, etc.).
 
     See also create_empty_copy(G).
-    
+
     """
     if create_using is None:
         # default empty graph is a simple graph
@@ -312,7 +312,7 @@ def empty_graph(n=0,create_using=None):
         G.clear()
 
     G.add_nodes_from(range(n))
-    G.name="empty_graph(%d)"%n 
+    G.name="empty_graph(%d)"%n
     return G
 
 def grid_2d_graph(m,n,periodic=False,create_using=None):
@@ -354,7 +354,7 @@ def grid_graph(dim,periodic=False):
 
     If periodic=True then join grid edges with periodic boundary conditions.
 
-    """    
+    """
     dlabel="%s"%dim
     if dim==[]:
         G=empty_graph(0)
@@ -364,7 +364,7 @@ def grid_graph(dim,periodic=False):
         raise nx.NetworkXError("dim is not a list of integers")
     if min(dim)<=0:
         raise nx.NetworkXError(\
-              "dim is not a list of strictly positive integers")      
+              "dim is not a list of strictly positive integers")
     if periodic:
         func=cycle_graph
     else:
@@ -374,11 +374,11 @@ def grid_graph(dim,periodic=False):
     current_dim=dim.pop()
     G=func(current_dim)
     while len(dim)>0:
-        current_dim=dim.pop() 
+        current_dim=dim.pop()
         # order matters: copy before it is cleared during the creation of Gnew
-        Gold=G.copy() 
+        Gold=G.copy()
         Gnew=func(current_dim)
-        # explicit: create_using=None 
+        # explicit: create_using=None
         # This is so that we get a new graph of Gnew's class.
         G=nx.cartesian_product(Gnew,Gold)
     # graph G is done but has labels of the form (1,(2,(3,1)))
@@ -405,33 +405,33 @@ def ladder_graph(n,create_using=None):
     each pair connected by a single edge.
 
     Node labels are the integers 0 to 2*n - 1.
-    
+
     """
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
     G=empty_graph(2*n,create_using)
-    G.name="ladder_graph_(%d)"%n 
+    G.name="ladder_graph_(%d)"%n
     G.add_edges_from([(v,v+1) for v in range(n-1)])
     G.add_edges_from([(v,v+1) for v in range(n,2*n-1)])
     G.add_edges_from([(v,v+n) for v in range(n)])
     return G
 
 def lollipop_graph(m,n,create_using=None):
-    """Return the Lollipop Graph; K_m connected to P_n.
+    """Return the Lollipop Graph; `K_m` connected to `P_n`.
 
     This is the Barbell Graph without the right barbell.
 
-    For m>1 and n>=0, the complete graph K_m is connected to the 
+    For m>1 and n>=0, the complete graph K_m is connected to the
     path P_n.  The resulting m+n nodes are labelled 0,...,m-1 for the
     complete graph and m,...,m+n-1 for the path. The 2 subgraphs
-    are joined via the edge (m-1,m).  If n=0, this is merely a complete 
+    are joined via the edge (m-1,m).  If n=0, this is merely a complete
     graph.
 
     Node labels are the integers 0 to number_of_nodes - 1.
 
     (This graph is an extremal example in David Aldous and Jim
     Fill's etext on Random Walks on Graphs.)
-    
+
     """
     if create_using is not None and create_using.is_directed():
         raise nx.NetworkXError("Directed Graph not supported")
@@ -452,8 +452,9 @@ def lollipop_graph(m,n,create_using=None):
     G.name="lollipop_graph(%d,%d)"%(m,n)
     return G
 
+
 def null_graph(create_using=None):
-    """ Return the Null graph with no nodes or edges. 
+    """Return the Null graph with no nodes or edges.
 
     See empty_graph for the use of create_using.
 
@@ -466,7 +467,7 @@ def path_graph(n,create_using=None):
     """Return the Path graph P_n of n nodes linearly connected by n-1 edges.
 
     Node labels are the integers 0 to n - 1.
-    If create_using is a DiGraph then the edges are directed in 
+    If create_using is a DiGraph then the edges are directed in
     increasing order.
 
     """
@@ -494,7 +495,7 @@ def trivial_graph(create_using=None):
     return G
 
 def wheel_graph(n,create_using=None):
-    """ Return the wheel graph: a single hub node connected to each node of the (n-1)-node cycle graph. 
+    """ Return the wheel graph: a single hub node connected to each node of the (n-1)-node cycle graph.
 
    Node labels are the integers 0 to n - 1.
 

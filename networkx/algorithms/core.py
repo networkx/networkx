@@ -159,8 +159,7 @@ def k_core(G,k=None,core_number=None):
 def k_shell(G,k=None,core_number=None):
     """Return the k-shell of G.
 
-    The k-shell is the subgraph of nodes in the k-core containing
-    nodes of exactly degree k.
+    The k-shell is the subgraph of nodes in the k-core but not in the (k+1)-core.
 
     Parameters
     ----------
@@ -271,7 +270,7 @@ def k_crust(G,k=None,core_number=None):
 def k_corona(G, k, core_number=None):
     """Return the k-corona of G.
 
-    The k-corona is the subset of vertices in the k-core which have
+    The k-corona is the subgraph of nodes in the k-core which have
     exactly k neighbours in the k-core.
 
     Parameters
@@ -319,6 +318,6 @@ def k_corona(G, k, core_number=None):
     if core_number is None:
         core_number = nx.core_number(G)
     nodes = (n for n in core_number
-             if core_number[n] >= k
+             if core_number[n] == k
              and len([v for v in G[n] if core_number[v] >= k]) == k)
     return G.subgraph(nodes).copy()

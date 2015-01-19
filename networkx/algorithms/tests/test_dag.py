@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from itertools import combinations
 from nose.tools import *
 import networkx as nx
 
@@ -16,7 +17,7 @@ class TestDAG:
         DG.add_edge(3,2)
         assert_raises(nx.NetworkXUnfeasible, nx.topological_sort, DG)
         assert_raises(nx.NetworkXUnfeasible, nx.topological_sort_recursive, DG)
-        
+
         DG.remove_edge(2,3)
         assert_equal(nx.topological_sort(DG),[1, 3, 2])
         assert_equal(nx.topological_sort_recursive(DG),[1, 3, 2])
@@ -32,7 +33,7 @@ class TestDAG:
                 nx.topological_sort, DG, reverse=True)
         assert_raises(nx.NetworkXUnfeasible,
                 nx.topological_sort_recursive, DG, reverse=True)
-        
+
         DG.remove_edge(2,3)
         assert_equal(nx.topological_sort(DG, reverse=True),[2, 3, 1])
         assert_equal(nx.topological_sort_recursive(DG, reverse=True),[2, 3, 1])
@@ -66,10 +67,13 @@ class TestDAG:
         DG.add_edges_from([(2,i) for i in range(5,9)])
         DG.add_edges_from([(6,i) for i in range(9,12)])
         DG.add_edges_from([(4,i) for i in range(12,15)])
-        assert_equal(nx.topological_sort_recursive(DG),
-                     [1, 4, 14, 13, 12, 3, 2, 7, 6, 11, 10, 9, 5, 8])
-        assert_equal(nx.topological_sort(DG),
-                     [1, 2, 8, 5, 6, 9, 10, 11, 7, 3, 4, 12, 13, 14])
+        def validate(order):
+            ok_(isinstance(order, list))
+            assert_equal(set(order), set(DG))
+            for u, v in combinations(order, 2):
+                assert_false(nx.has_path(DG, v, u))
+        validate(nx.topological_sort_recursive(DG))
+        validate(nx.topological_sort(DG))
 
         DG.add_edge(14,1)
         assert_raises(nx.NetworkXUnfeasible, nx.topological_sort, DG)
@@ -134,7 +138,7 @@ def test_is_aperiodic_cycle3():
     G.add_cycle([1,2,3,4])
     G.add_cycle([3,4,5,6])
     assert_false(nx.is_aperiodic(G))
-    
+
 def test_is_aperiodic_cycle4():
     G = nx.DiGraph()
     G.add_cycle([1,2,3,4])
@@ -171,7 +175,7 @@ def test_is_aperiodic_disconnected():
     G.add_edge(1,3)
     G.add_edge(5,7)
     assert_true(nx.is_aperiodic(G))
-    
+
 def test_is_aperiodic_disconnected2():
     G = nx.DiGraph()
     G.add_cycle([0,1,2])

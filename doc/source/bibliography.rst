@@ -44,8 +44,7 @@ Bibliography
     Engineering, 2004. 
 
 .. [Martelli03]  A. Martelli, "Python in a Nutshell", O'Reilly Media
-   Inc, 2003. (A useful guide to the language:
-   :pdf:`http://www.oreilly.com/catalog/pythonian/chapter/ch04.pdf`)
+   Inc, 2003.
 
 .. [Newman03] M.E.J. Newman, "The Structure and Function of Complex
    Networks", SIAM Review, 45, pp. 167-256, 2003. 

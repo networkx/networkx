@@ -310,5 +310,6 @@ def read_adjlist(path, comments="#", delimiter=None, create_using=None,
 # fixture for nose tests
 def teardown_module(module):
     import os
-    os.unlink('test.adjlist')
-    os.unlink('test.adjlist.gz')
+    for fname in ['test.adjlist', 'test.adjlist.gz']:
+        if os.path.isfile(fname):
+            os.unlink(fname)

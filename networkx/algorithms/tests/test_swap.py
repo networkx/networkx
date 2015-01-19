@@ -2,6 +2,9 @@
 from nose.tools import *
 from networkx import *
 
+import random
+random.seed(0)
+
 def test_double_edge_swap():
     graph = barabasi_albert_graph(200,1)
     degrees = sorted(graph.degree().values())
@@ -32,7 +35,6 @@ def test_connected_double_edge_swap_not_connected():
     G = nx.path_graph(3)
     G.add_path([10,11,12])
     G = nx.connected_double_edge_swap(G)
-
 
 def test_degree_seq_c4():
     G = cycle_graph(4)

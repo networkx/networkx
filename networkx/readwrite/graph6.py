@@ -288,3 +288,9 @@ def n_to_data(n):
             (n>>30) & 0x3f, (n>>24) & 0x3f, (n>>18) & 0x3f,
             (n>>12) & 0x3f, (n>>6) & 0x3f, n & 0x3f]
     raise NetworkXError("Numbers above 68719476735 are not supported by graph6")
+
+
+def teardown_module(module):
+    import os
+    if os.path.isfile('test.g6'):
+        os.unlink('test.g6')

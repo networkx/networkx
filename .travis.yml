@@ -1,63 +1,162 @@
+# After changing this file, check it on:
+#   http://lint.travis-ci.org/
+#
 language: python
+
 python:
-  - "2.6"
   - "2.7"
   - "3.2"
   - "3.3"
-  - "pypy"
-virtualenv:
-  system_site_packages: true
+  - "3.4"
+
+matrix:
+  fast_finish: true
+
+  include:
+    - python: "2.7"
+      env: PYTHON_VM=ipy OPTIONAL_DEPS=no
+    - python: "pypy"
+      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
+    - python: "pypy3"
+      env: PYTHON_VM=pypy OPTIONAL_DEPS=no
+
+  allow_failures:
+    - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
+
+
+env:
+  matrix:
+    - OPTIONAL_DEPS=miniconda
+    - OPTIONAL_DEPS=no
+
 before_install:
-  # Current TravisCI VM is Ubuntu 12.04 which has Python 2.7 and 3.2.
-  # So apt-get will only apply to those virtualenvs.
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then sudo apt-get install -qq python-numpy python-scipy python-matplotlib python-pydot python-gdal; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then sudo apt-get install -qq python3-numpy python3-scipy; fi
+  ### Prepare the system to install prerequisites or dependencies
+  - uname -a
+  - printenv
+  # Workaround for travis-ci/travis-ci#2683
+  - if [[ "${PYTHON_VM}" != ipy ]]; then
+      sudo rm /etc/apt/sources.list.d/pgdg-source.list*;
+      sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable;
+      sudo apt-get update -qq;
+    fi
+  - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
+      if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+        wget http://repo.continuum.io/miniconda/Miniconda-3.7.0-Linux-x86_64.sh -O miniconda.sh;
+      else
+        wget http://repo.continuum.io/miniconda/Miniconda3-3.7.0-Linux-x86_64.sh -O miniconda.sh;
+      fi;
+      bash miniconda.sh -b -p $HOME/miniconda;
+      export PATH="$HOME/miniconda/bin:$PATH";
+      hash -r;
+      conda info -a;
+      conda config --set always_yes yes --set changeps1 no;
+      conda update -q conda;
+    fi
+ 
+  - if [[ "${PYTHON_VM}" == ipy ]]; then
+      pushd ..;
+      curl -L -o xamarin.pgp http://download.mono-project.com/repo/xamarin.gpg;
+      sudo apt-key add xamarin.pgp;
+      sudo sh -c 'echo "deb http://download.mono-project.com/repo/debian wheezy main" >> /etc/apt/sources.list';
+      sudo sh -c 'echo "deb http://download.mono-project.com/repo/debian wheezy-libtiff-compat main" >> /etc/apt/sources.list';
+      sudo apt-get update -qq;
+      sudo apt-get install -qq mono-devel;
 
-  # Additionally, the TravisCI VM has numpy preinstalled on 2.6, 2.7 and 3.2.
-  # So for 3.3 and pypy, numpy is not preinstalled and must be pip-installed.
-  # Matplotlib, pydot, and gdal are not available for 3.2 via apt-get.
-  # And they are also not available for 2.6, 3.3, and pypy except via pip.
-  # We could install via pip, but...
-  #   skipping numpy (for 3.3 and pypy) since it takes too long.
-  #   skipping scipy (for 2.6, 3.3, and pypy) since it takes too long.
-  #   skipping matplotlib (for 2.6, 3.3, and pypy) since it takes too long.
-  #   skipping pydot (for all) since it is not 3.x compatible.
-  #   skipping gdal (for all) since it has errors while installing from pip.
+      curl -L -o ipy-2.7-maint.zip https://github.com/IronLanguages/main/archive/ipy-2.7-maint.zip;
+      unzip -q ipy-2.7-maint.zip;
+      pushd main-ipy-2.7-maint;
+      sed -i '708 s/pGroup/pGroup = null/' 'Languages/IronPython/IronPython.SQLite/c#sqlite/pcache1_c.cs';
+      xbuild /p:Configuration=Release Solutions/IronPython.sln;
+      export IPY="${PWD}/bin/Release/ipy.exe";
+      export IRONPYTHONPATH="${PWD}/External.LCA_RESTRICTED/Languages/IronPython/27/Lib";
+      popd;
 
-  - pip install pyyaml --use-mirrors
-  - pip install pyparsing --use-mirrors
-  - pip install coveralls --use-mirrors
+      curl -L -o decorator-3.4.0.tar.gz https://pypi.python.org/packages/source/d/decorator/decorator-3.4.0.tar.gz;
+      tar xf decorator-3.4.0.tar.gz;
+      cp decorator-3.4.0/src/decorator.py "${IRONPYTHONPATH}";
 
-  # In general, 2.6, 3.2, 3.3, and pypy will have lower coverage levels
-  # due to missing dependencies.  The coverage level reported by coveralls
-  # is the average coverage level over all builds.
+      curl -L -o enum34-1.0.tar.gz https://pypi.python.org/packages/source/e/enum34/enum34-1.0.tar.gz;
+      tar xf enum34-1.0.tar.gz;
+      cp enum34-1.0/enum/enum.py "${IRONPYTHONPATH}";
+
+      curl -L -o nose-1.3.4.tar.gz https://pypi.python.org/packages/source/n/nose/nose-1.3.4.tar.gz;
+      tar xf nose-1.3.4.tar.gz;
+      cp -R nose-1.3.4/nose "${IRONPYTHONPATH}";
+
+      popd;
+    fi
+
+install:
+  ### Install any prerequisites or dependencies necessary to run the build.
+  - if [[ "${OPTIONAL_DEPS}" == miniconda ]]; then
+      DEPS="pyyaml numpy scipy matplotlib Cython pandas pip";
+      sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran libsuitesparse-dev;
+      sudo apt-get install libgdal-dev;
+      conda create -n test-environment python=$TRAVIS_PYTHON_VERSION $DEPS gdal;
+      conda install -n test-environment --channel https://conda.binstar.org/patricksnape scikits-sparse;
+      source activate test-environment;
+      python -c "from osgeo import ogr;print('importing ogr worked')";
+      if [[ "${TRAVIS_PYTHON_VERSION}" =~ "2.7" ]]; then
+        sudo apt-get install graphviz;
+        pip install pygraphviz pydot2;
+      fi;
+    fi
+  - if [[ "${PYTHON_VM}" != ipy ]]; then
+      pip install --upgrade nose coverage coveralls;
+    fi
 
 script:
-  # Install networkx
   - printenv PWD
-  - pip install .
+  - if [[ "${PYTHON_VM}" != ipy ]]; then
+      pip install .;
+      export NX_INSTALL=`pip show networkx | grep Location | awk '{print $2"/networkx"}'`;
+    fi
 
-  - export NX_INSTALL=`pip show networkx | grep Location | awk '{print $2"/networkx"}'`
-
-  ### nose 1.3.0 does not tell coverage to only cover the requested
-  ### package (except during the report).  So to restrict coverage, we must
-  ### inform coverage through the .coveragerc file.
-  - cp .coveragerc $NX_INSTALL
-  - cp setup.cfg $NX_INSTALL
+  # nose 1.3.0 does not tell coverage to only cover the requested
+  # package (except during the report).  So to restrict coverage, we must
+  # inform coverage through the .coveragerc file.
+  - if [[ "${PYTHON_VM}" != ipy ]]; then
+      cp .coveragerc $NX_INSTALL;
+      cp setup.cfg $NX_INSTALL;
+    fi
 
   # Move to new directory so that networkx is not imported from repository.
+  # Why? Because we want the tests to make sure that NetworkX was installed
+  # correctly. Example: setup.py might not have included some submodules.
+  # Testing from the git repository cannot catch a mistake like that.
+  #
   # Export current directory for logs.
-  - cd $NX_INSTALL
-  - printenv PWD
+  - if [[ "${PYTHON_VM}" != ipy ]]; then
+      cd $NX_INSTALL;
+      printenv PWD;
+    fi
 
-  # Run nosetests.
-  - nosetests --verbosity=2 --with-coverage --cover-package=networkx
+      # Run nosetests.
+  - if [[ "${PYTHON_VM}" != ipy ]]; then
+      nosetests --verbosity=2 --with-coverage --cover-package=networkx;
+    else
+      mono "${IPY}" -X:ExceptionDetail -X:FullFrames -c 'from nose import main; main()' \--verbosity=2;
+    fi
 
 after_success:
-  # We must run coveralls from the git repo.
-  # But we ran tests from the installed directory.
-  # The .coverage file looks like it contains absolute paths,
-  # but coveralls does not seem to care.
-  - cp .coverage $TRAVIS_BUILD_DIR
-  - cd $TRAVIS_BUILD_DIR
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then coveralls; fi
+  # `coveralls` needs to be run from the git repository, and it requires
+  # the .coverage file that was generated during the testing phase. The
+  # .coverage file stores absolute paths to the modules, and since we ran
+  # tests from the installed directory, the paths do not point to files in
+  # the git repository. Although this does not affect reported statistics,
+  # it does prevent coveralls from providing more detailed information on
+  # each file. So the paths in .coverage must be modified to match the
+  # repository paths. This is what `fixcoverage.py` does.
+  #
+  # Report coverage for 2.7 and 3.4 only.
+  - if [[ "${PYTHON_VM}" != ipy ]]; then
+      cp .coverage $TRAVIS_BUILD_DIR;
+      cd $TRAVIS_BUILD_DIR;
+      if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7miniconda|3\.4miniconda ]]; then
+        python fixcoverage.py "$VIRTUAL_ENV/lib/python.*/site-packages/networkx/" "$TRAVIS_BUILD_DIR/networkx/";
+        coveralls;
+      fi;
+    fi
+
+notifications:
+  email: false

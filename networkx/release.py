@@ -42,7 +42,6 @@ import os
 import sys
 import time
 import datetime
-import subprocess
 
 basedir = os.path.abspath(os.path.split(__file__)[0])
 
@@ -124,33 +123,7 @@ def get_revision():
     hgdir = os.path.join(basedir, '..', '.hg')
     gitdir = os.path.join(basedir, '..', '.git')
 
-    if os.path.isdir(hgdir):
-        vcs = 'mercurial'
-        try:
-            p = subprocess.Popen(['hg', 'id'], 
-                                 cwd=basedir,
-                                 stdout=subprocess.PIPE)
-        except OSError:
-            # Could not run hg, even though this is a mercurial repository.
-            pass
-        else:
-            stdout = p.communicate()[0]
-            # Force strings instead of unicode.
-            x = list(map(str, stdout.decode().strip().split()))
-            
-            if len(x) == 0:
-                # Somehow stdout was empty. This can happen, for example,
-                # if you're running in a terminal which has redirected stdout.
-                # In this case, we do not use any revision/tag info.
-                pass
-            elif len(x) == 1:
-                # We don't have 'tip' or anything similar...so no tag.
-                revision = str(x[0])
-            else:
-                revision = str(x[0])
-                tag = str(x[1])
-                
-    elif os.path.isdir(gitdir):
+    if os.path.isdir(gitdir):
         vcs = 'git'
         # For now, we are not bothering with revision and tag.
 
@@ -200,8 +173,8 @@ def get_info(dynamic=True):
 
 ## Version information
 name = 'networkx'
-major = "1"
-minor = "9"
+major = "2"
+minor = "0"
 
 
 ## Declare current release as a development release.
@@ -224,22 +197,22 @@ authors = {'Hagberg' : ('Aric Hagberg','hagberg@lanl.gov'),
            }
 maintainer = "NetworkX Developers"
 maintainer_email = "networkx-discuss@googlegroups.com"
-url = 'http://networkx.lanl.gov/'
-download_url="http://networkx.lanl.gov/download/networkx"
+url = 'http://networkx.github.io/'
+download_url= 'https://pypi.python.org/pypi/networkx/'
 platforms = ['Linux','Mac OSX','Windows','Unix']
 keywords = ['Networks', 'Graph Theory', 'Mathematics', 'network', 'graph', 'discrete mathematics', 'math']
 classifiers = [
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Scientific/Engineering :: Information Analysis',

@@ -6,7 +6,7 @@ class TestMST:
 
     def setUp(self):
     # example from Wikipedia: http://en.wikipedia.org/wiki/Kruskal's_algorithm
-        G=nx.Graph() 
+        G=nx.Graph()
         edgelist = [(0,3,[('weight',5)]),
                     (0,1,[('weight',7)]),
                     (1,3,[('weight',9)]),
@@ -18,7 +18,7 @@ class TestMST:
                     (4,5,[('weight',8)]),
                     (4,6,[('weight',9)]),
                     (5,6,[('weight',11)])]
-                     
+
 
         G.add_edges_from(edgelist)
         self.G=G
@@ -44,7 +44,7 @@ class TestMST:
         G.add_path([1,2])
         G.add_path([10,20])
         T=nx.minimum_spanning_tree(G)
-        assert_equal(sorted(T.edges()),[(1, 2), (20, 10)])
+        assert_equal(sorted(map(sorted,T.edges())),[[1, 2], [10, 20]])
         assert_equal(sorted(T.nodes()),[1, 2, 10, 20])
 
     def test_mst_isolate(self):
@@ -95,7 +95,7 @@ class TestMST:
         G.add_path([1,2])
         G.add_path([10,20])
         T=nx.prim_mst(G)
-        assert_equal(sorted(T.edges()),[(1, 2), (20, 10)])
+        assert_equal(sorted(map(sorted,T.edges())),[[1, 2], [10, 20]])
         assert_equal(sorted(T.nodes()),[1, 2, 10, 20])
 
     def test_prim_mst_isolate(self):

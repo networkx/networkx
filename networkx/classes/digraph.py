@@ -1,5 +1,5 @@
 """Base class for directed graphs."""
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -161,6 +161,83 @@ class DiGraph(Graph):
     as well as the number of nodes and edges.
 
     For details on these and other miscellaneous methods, see below.
+
+    **Subclasses (Advanced):**
+
+    The Graph class uses a dict-of-dict-of-dict data structure.
+    The outer dict (node_dict) holds adjacency lists keyed by node.
+    The next dict (adjlist) represents the adjacency list and holds
+    edge data keyed by neighbor.  The inner dict (edge_attr) represents
+    the edge data and holds edge attribute values keyed by attribute names.
+
+    Each of these three dicts can be replaced by a user defined 
+    dict-like object. In general, the dict-like features should be
+    maintained but extra features can be added. To replace one of the
+    dicts create a new graph class by changing the class(!) variable
+    holding the factory for that dict-like structure. The variable names
+    are node_dict_factory, adjlist_dict_factory and edge_attr_dict_factory.
+
+    node_dict_factory : function, optional (default: dict)
+        Factory function to be used to create the outer-most dict
+        in the data structure that holds adjacency lists keyed by node.
+        It should require no arguments and return a dict-like object.
+
+    adjlist_dict_factory : function, optional (default: dict)
+        Factory function to be used to create the adjacency list
+        dict which holds edge data keyed by neighbor.
+        It should require no arguments and return a dict-like object
+
+    edge_attr_dict_factory : function, optional (default: dict)
+        Factory function to be used to create the edge attribute
+        dict which holds attrbute values keyed by attribute name.
+        It should require no arguments and return a dict-like object.
+
+    Examples
+    --------
+    Create a graph object that tracks the order nodes are added.
+
+    >>> from collections import OrderedDict
+    >>> class OrderedNodeGraph(nx.Graph):
+    ...     node_dict_factory=OrderedDict
+    >>> G=OrderedNodeGraph()
+    >>> G.add_nodes_from( (2,1) )
+    >>> G.nodes()
+    [2, 1]
+    >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
+    >>> G.edges()
+    [(2, 1), (2, 2), (1, 1)]
+
+    Create a graph object that tracks the order nodes are added
+    and for each node track the order that neighbors are added.
+
+    >>> class OrderedGraph(nx.Graph):
+    ...    node_dict_factory = OrderedDict
+    ...    adjlist_dict_factory = OrderedDict
+    >>> G = OrderedGraph()
+    >>> G.add_nodes_from( (2,1) )
+    >>> G.nodes()
+    [2, 1]
+    >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
+    >>> G.edges()
+    [(2, 2), (2, 1), (1, 1)]
+
+    Create a low memory graph class that effectively disallows edge
+    attributes by using a single attribute dict for all edges.
+    This reduces the memory used, but you lose edge attributes.
+
+    >>> class ThinGraph(nx.Graph):
+    ...     all_edge_dict = {'weight': 1}
+    ...     def single_edge_dict(self):
+    ...         return self.all_edge_dict
+    ...     edge_attr_dict_factory = single_edge_dict
+    >>> G = ThinGraph()
+    >>> G.add_edge(2,1)
+    >>> G.edges(data= True)
+    [(1, 2, {'weight': 1})]
+    >>> G.add_edge(2,2)
+    >>> G[2][1] is G[2][2]
+    True
+
     """
     def __init__(self, data=None, **attr):
         """Initialize a graph with edges, name, graph attributes.
@@ -196,13 +273,17 @@ class DiGraph(Graph):
         {'day': 'Friday'}
 
         """
+        self.node_dict_factory = ndf = self.node_dict_factory
+        self.adjlist_dict_factory = self.adjlist_dict_factory
+        self.edge_attr_dict_factory = self.edge_attr_dict_factory
+
         self.graph = {} # dictionary for graph attributes
-        self.node = {} # dictionary for node attributes
+        self.node = ndf() # dictionary for node attributes
         # We store two adjacency lists:
         # the  predecessors of node n are stored in the dict self.pred
         # the successors of node n are stored in the dict self.succ=self.adj
-        self.adj = {}  # empty adjacency dictionary
-        self.pred = {}  # predecessor
+        self.adj = ndf()  # empty adjacency dictionary
+        self.pred = ndf()  # predecessor
         self.succ = self.adj  # successor
 
         # attempt to load graph with data
@@ -265,8 +346,8 @@ class DiGraph(Graph):
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
         if n not in self.succ:
-            self.succ[n] = {}
-            self.pred[n] = {}
+            self.succ[n] = self.adjlist_dict_factory()
+            self.pred[n] = self.adjlist_dict_factory()
             self.node[n] = attr_dict
         else: # update attr even if node already exists
             self.node[n].update(attr_dict)
@@ -318,13 +399,21 @@ class DiGraph(Graph):
 
         """
         for n in nodes:
+            # keep all this inside try/except because
+            # CPython throws TypeError on n not in self.succ,
+            # while pre-2.7.5 ironpython throws on self.succ[n] 
             try:
-                newnode=n not in self.succ
+                if n not in self.succ:
+                    self.succ[n] = self.adjlist_dict_factory()
+                    self.pred[n] = self.adjlist_dict_factory()
+                    self.node[n] = attr.copy()
+                else:
+                    self.node[n].update(attr)
             except TypeError:
                 nn,ndict = n
                 if nn not in self.succ:
-                    self.succ[nn] = {}
-                    self.pred[nn] = {}
+                    self.succ[nn] = self.adjlist_dict_factory()
+                    self.pred[nn] = self.adjlist_dict_factory()
                     newdict = attr.copy()
                     newdict.update(ndict)
                     self.node[nn] = newdict
@@ -332,13 +421,6 @@ class DiGraph(Graph):
                     olddict = self.node[nn]
                     olddict.update(attr)
                     olddict.update(ndict)
-                continue
-            if newnode:
-                self.succ[n] = {}
-                self.pred[n] = {}
-                self.node[n] = attr.copy()
-            else:
-                self.node[n].update(attr)
 
     def remove_node(self, n):
         """Remove node n.
@@ -483,15 +565,15 @@ class DiGraph(Graph):
                     "The attr_dict argument must be a dictionary.")
         # add nodes
         if u not in self.succ:
-            self.succ[u]={}
-            self.pred[u]={}
+            self.succ[u]= self.adjlist_dict_factory()
+            self.pred[u]= self.adjlist_dict_factory()
             self.node[u] = {}
         if v not in self.succ:
-            self.succ[v]={}
-            self.pred[v]={}
+            self.succ[v]= self.adjlist_dict_factory()
+            self.pred[v]= self.adjlist_dict_factory()
             self.node[v] = {}
         # add the edge
-        datadict=self.adj[u].get(v,{})
+        datadict=self.adj[u].get(v,self.edge_attr_dict_factory())
         datadict.update(attr_dict)
         self.succ[u][v]=datadict
         self.pred[v][u]=datadict
@@ -524,8 +606,8 @@ class DiGraph(Graph):
         Adding the same edge twice has no effect but any edge data
         will be updated when each duplicate edge is added.
 
-        Edge attributes specified in edges as a tuple take precedence
-        over attributes specified generally.        
+        Edge attributes specified in edges take precedence
+        over attributes specified generally.
 
         Examples
         --------
@@ -561,14 +643,14 @@ class DiGraph(Graph):
                 raise NetworkXError(\
                     "Edge tuple %s must be a 2-tuple or 3-tuple."%(e,))
             if u not in self.succ:
-                self.succ[u] = {}
-                self.pred[u] = {}
+                self.succ[u] = self.adjlist_dict_factory()
+                self.pred[u] = self.adjlist_dict_factory()
                 self.node[u] = {}
             if v not in self.succ:
-                self.succ[v] = {}
-                self.pred[v] = {}
+                self.succ[v] = self.adjlist_dict_factory()
+                self.pred[v] = self.adjlist_dict_factory()
                 self.node[v] = {}
-            datadict=self.adj[u].get(v,{})
+            datadict=self.adj[u].get(v,self.edge_attr_dict_factory())
             datadict.update(attr_dict)
             datadict.update(dd)
             self.succ[u][v] = datadict
@@ -803,7 +885,7 @@ class DiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -856,7 +938,7 @@ class DiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -905,7 +987,7 @@ class DiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -954,7 +1036,7 @@ class DiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -996,7 +1078,7 @@ class DiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -1099,8 +1181,8 @@ class DiGraph(Graph):
         Parameters
         ----------
         reciprocal : bool (optional)
-          If True only keep edges that appear in both directions 
-          in the original digraph. 
+          If True only keep edges that appear in both directions
+          in the original digraph.
 
         Returns
         -------
@@ -1129,6 +1211,12 @@ class DiGraph(Graph):
 
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
+
+        Warning
+        -------
+        If you have subclassed DiGraph to use dict-like objects in the
+        data structure, those changes do not transfer to the Graph
+        created by this method.
         """
         H=Graph()
         H.name=self.name
@@ -1136,7 +1224,7 @@ class DiGraph(Graph):
         if reciprocal is True:
             H.add_edges_from( (u,v,deepcopy(d))
                               for u,nbrs in self.adjacency_iter()
-                              for v,d in nbrs.items() 
+                              for v,d in nbrs.items()
                               if v in self.pred[u])
         else:
             H.add_edges_from( (u,v,deepcopy(d))
@@ -1163,7 +1251,7 @@ class DiGraph(Graph):
         if copy:
             H = self.__class__(name="Reverse of (%s)"%self.name)
             H.add_nodes_from(self)
-            H.add_edges_from( (v,u,deepcopy(d)) for u,v,d 
+            H.add_edges_from( (v,u,deepcopy(d)) for u,v,d
                               in self.edges(data=True) )
             H.graph=deepcopy(self.graph)
             H.node=deepcopy(self.node)
@@ -1225,8 +1313,8 @@ class DiGraph(Graph):
         self_succ=self.succ
         # add nodes
         for n in H:
-            H_succ[n]={}
-            H_pred[n]={}
+            H_succ[n]=H.adjlist_dict_factory()
+            H_pred[n]=H.adjlist_dict_factory()
         # add edges
         for u in H_succ:
             Hnbrs=H_succ[u]

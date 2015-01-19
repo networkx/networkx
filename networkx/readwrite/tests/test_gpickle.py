@@ -49,3 +49,16 @@ class TestGpickle(object):
             assert_graphs_equal(G, Gin)
             os.close(fd)
             os.unlink(fname)
+
+    def test_protocol(self):
+        for G in [self.G, self.DG, self.MG, self.MDG,
+                  self.fG, self.fDG, self.fMG, self.fMDG]:
+            with tempfile.TemporaryFile() as f:
+                nx.write_gpickle(G, f, 0)
+                f.seek(0)
+                Gin = nx.read_gpickle(f)
+                assert_nodes_equal(G.nodes(data=True),
+                                   Gin.nodes(data=True))
+                assert_edges_equal(G.edges(data=True),
+                                   Gin.edges(data=True))
+                assert_graphs_equal(G, Gin)

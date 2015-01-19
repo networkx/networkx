@@ -41,6 +41,13 @@ class TestGeneratorsRandom():
         G=powerlaw_cluster_graph(100,3,0.0,seed)
         assert_equal(G.number_of_edges(),(97*3))
 
+        G=duplication_divergence_graph(100,1.0,seed)
+        assert_equal(len(G), 100)
+        assert_raises(networkx.exception.NetworkXError,
+                      duplication_divergence_graph, 100, 2)
+        assert_raises(networkx.exception.NetworkXError,
+                      duplication_divergence_graph, 100, -1)
+
         G=random_regular_graph(10,20,seed)
 
         assert_raises(networkx.exception.NetworkXError,

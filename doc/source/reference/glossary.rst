@@ -53,7 +53,7 @@ Glossary
       A node can be any hashable Python object except None.
       
    dictionary
-      A Python dictionary maps keys to values.  Also known as "hashes",
+      A Python dictionary maps keys to values. Also known as "hashes",
       or "associative arrays".
       See http://docs.python.org/tutorial/datastructures.html#dictionaries
 

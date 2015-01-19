@@ -1,12 +1,11 @@
 include MANIFEST.in
-include setup_egg.py
 include setup.py
 include INSTALL.txt
 include LICENSE.txt
-include README.txt
+include README.rst
 
 recursive-include examples *.py *.edgelist *.mbox *.gz *.bz2 *.zip
-recursive-include doc *.py *.rst Makefile *.html *.png *.txt *.css
+recursive-include doc *.py *.rst Makefile *.html *.png *.txt *.css *.inc
 
 include scripts/*
 include networkx/tests/*.txt
@@ -18,8 +17,6 @@ include networkx/*/*/tests/*.py
 include networkx/*/*/tests/*.A99
 include networkx/*/*/tests/*.B99
 include networkx/*/*/tests/*.bz2
-
-include networkx/external/decorator/*/*.py
 
 global-exclude *~
 global-exclude *.pyc

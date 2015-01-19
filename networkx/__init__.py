@@ -34,8 +34,8 @@ Using
 from __future__ import absolute_import
 
 import sys
-if sys.version_info[:2] < (2, 6):
-    m = "Python version 2.6 or later is required for NetworkX (%d.%d detected)."
+if sys.version_info[:2] < (2, 7):
+    m = "Python 2.7 or later is required for NetworkX (%d.%d detected)."
     raise ImportError(m % sys.version_info[:2])
 del sys
 
@@ -50,11 +50,22 @@ __license__  = release.license
 __date__ = release.date
 __version__ = release.version
 
+__bibtex__ = """@inproceedings{hagberg-2008-exploring,
+author = {Aric A. Hagberg and Daniel A. Schult and Pieter J. Swart},
+title = {Exploring network structure, dynamics, and function using {NetworkX}},
+year = {2008},
+month = Aug,
+urlpdf = {http://math.lanl.gov/~hagberg/Papers/hagberg-2008-exploring.pdf},
+booktitle = {Proceedings of the 7th Python in Science Conference (SciPy2008)},
+editors = {G\"{a}el Varoquaux, Travis Vaught, and Jarrod Millman},
+address = {Pasadena, CA USA},
+pages = {11--15}
+}"""
+
 #These are import orderwise
 from networkx.exception import  *
 import networkx.external
 import networkx.utils
-# these packages work with Python >= 2.6
 
 import networkx.classes
 from networkx.classes import *

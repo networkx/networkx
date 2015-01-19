@@ -2,6 +2,20 @@
 from nose.tools import *
 import networkx as nx
 
+def validate_grid_path(r, c, s, t, p):
+    ok_(isinstance(p, list))
+    assert_equal(p[0], s)
+    assert_equal(p[-1], t)
+    s = ((s - 1) // c, (s - 1) % c)
+    t = ((t - 1) // c, (t - 1) % c)
+    assert_equal(len(p), abs(t[0] - s[0]) + abs(t[1] - s[1]) + 1)
+    p = [((u - 1) // c, (u - 1) % c) for u in p]
+    for u in p:
+        ok_(0 <= u[0] < r)
+        ok_(0 <= u[1] < c)
+    for u, v in zip(p[:-1], p[1:]):
+        ok_((abs(v[0] - u[0]), abs(v[1] - u[1])) in [(0, 1), (1, 0)])
+
 class TestGenericPath:
 
     def setUp(self):
@@ -14,12 +28,12 @@ class TestGenericPath:
     def test_shortest_path(self):
         assert_equal(nx.shortest_path(self.cycle,0,3),[0, 1, 2, 3])
         assert_equal(nx.shortest_path(self.cycle,0,4),[0, 6, 5, 4])
-        assert_equal(nx.shortest_path(self.grid,1,12),[1, 2, 3, 4, 8, 12])
+        validate_grid_path(4, 4, 1, 12, nx.shortest_path(self.grid,1,12))
         assert_equal(nx.shortest_path(self.directed_cycle,0,3),[0, 1, 2, 3])
         # now with weights
         assert_equal(nx.shortest_path(self.cycle,0,3,weight='weight'),[0, 1, 2, 3])
         assert_equal(nx.shortest_path(self.cycle,0,4,weight='weight'),[0, 6, 5, 4])
-        assert_equal(nx.shortest_path(self.grid,1,12,weight='weight'),[1, 2, 3, 4, 8, 12])
+        validate_grid_path(4, 4, 1, 12, nx.shortest_path(self.grid,1,12,weight='weight'))
         assert_equal(nx.shortest_path(self.directed_cycle,0,3,weight='weight'),
                      [0, 1, 2, 3])
 
@@ -47,13 +61,13 @@ class TestGenericPath:
         assert_equal(p[3],[0,1,2,3])
         assert_equal(p,nx.single_source_shortest_path(self.cycle,0))
         p=nx.shortest_path(self.grid,1)
-        assert_equal(p[12],[1, 2, 3, 4, 8, 12])
+        validate_grid_path(4, 4, 1, 12, p[12])
         # now with weights
         p=nx.shortest_path(self.cycle,0,weight='weight')
         assert_equal(p[3],[0,1,2,3])
         assert_equal(p,nx.single_source_dijkstra_path(self.cycle,0))
         p=nx.shortest_path(self.grid,1,weight='weight')
-        assert_equal(p[12],[1, 2, 3, 4, 8, 12])
+        validate_grid_path(4, 4, 1, 12, p[12])
 
 
     def test_single_source_shortest_path_length(self):
@@ -75,13 +89,13 @@ class TestGenericPath:
         assert_equal(p[0][3],[0,1,2,3])
         assert_equal(p,nx.all_pairs_shortest_path(self.cycle))
         p=nx.shortest_path(self.grid)
-        assert_equal(p[1][12],[1, 2, 3, 4, 8, 12])
+        validate_grid_path(4, 4, 1, 12, p[1][12])
         # now with weights
         p=nx.shortest_path(self.cycle,weight='weight')
         assert_equal(p[0][3],[0,1,2,3])
         assert_equal(p,nx.all_pairs_dijkstra_path(self.cycle))
         p=nx.shortest_path(self.grid,weight='weight')
-        assert_equal(p[1][12],[1, 2, 3, 4, 8, 12])
+        validate_grid_path(4, 4, 1, 12, p[1][12])
 
 
     def test_all_pairs_shortest_path_length(self):

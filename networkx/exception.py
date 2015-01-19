@@ -42,6 +42,10 @@ class NetworkXNoPath(NetworkXUnfeasible):
     """Exception for algorithms that should return a path when running
     on graphs where such a path does not exist."""
 
+class NetworkXNoCycle(NetworkXUnfeasible):
+    """Exception for algorithms that should return a cycle when running
+    on graphs where such a cycle does not exist."""
+
 class NetworkXUnbounded(NetworkXAlgorithmError):
     """Exception raised by algorithms trying to solve a maximization
     or a minimization problem instance that is unbounded."""

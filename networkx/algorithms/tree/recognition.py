@@ -1,37 +1,67 @@
 #-*- coding: utf-8 -*-
 """
-We use the following definitions:
+Recognition Tests
+=================
 
-A forest is an (undirected) graph with no cycles.
-A tree is a connected forest.
+A *forest* is an acyclic, undirected graph, and a *tree* is a connected forest.
+Depending on the subfield, there are various conventions for generalizing these
+definitions to directed graphs.
 
-A directed forest is a directed graph whose underlying graph is a forest.
-A directed tree is a (weakly) connected, directed forest.
-    Equivalently: It is a directed graph whose underlying graph is a tree.
-    Note: Some take the term directed tree to be synonymous with an
-        arborescence. We do not follow that convention here.
-    Note: Since the underlying graph is a tree, any orientation defines a DAG
-        So all directed trees are DAGs. Thus, the definition we use here is,
-        in fact, equivalent to a polytree.
+In one convention, directed variants of forest and tree are defined in an
+identical manner, except that the direction of the edges is ignored. In effect,
+each directed edge is treated as a single undirected edge. Then, additional
+restrictions are imposed to define *branchings* and *arborescences*.
 
-A DAG is a directed graph with no directed cycles.
-    Example:  A -> B, A -> C, B -> C is a DAG that is not a directed tree.
+In another convention, directed variants of forest and tree correspond to
+the previous convention's branchings and arborescences, respectively. Then two
+new terms, *polyforest* and *polytree*, are defined to correspond to the other
+convention's forest and tree.
 
-A polyforest is a DAG that is also a directed forest.
-A polytree is a weakly connected polyforest.
-    Equivalently, a polytree is a DAG whose underlying graph is a tree.
+Summarizing::
 
-A branching is a polyforest with each edge directed to a different node.
-So the maximum in-degree is, at most, one. The maximum number of edges any
-branching can have is n-1. In this case, the branching spans the graph, and
-we have an arborescence. It is in this sense that the min/max spanning tree
-problem is analogous to the min/max arborescence problem.
+   +-----------------------------+
+   | Convention 1 | Convention 2 |
+   +=============================+
+   | forest       | polyforest   |
+   | tree         | polytree     |
+   | branching    | forest       |
+   | arborescence | tree         |
+   +-----------------------------+
 
-An arborescence is a (weakly) connected branching. That is, if you look
-at the underlying graph, it is a spanning tree. Additionally, all edges
-are directed away from a unique root node, for if you had two nodes with
-in-degree zero, then weak connectivity would force some other node
-to have in-degree of at least 2 (which is not allowed in branchings).
+Each convention has its reasons. The first convention emphasizes definitional
+similarity in that directed forests and trees are only concerned with
+acyclicity and do not have an in-degree constraint, just as their undirected
+counterparts do not. The second convention emphasizes functional similarity
+in the sense that the directed analog of a spanning tree is a spanning
+arborescence. That is, take any spanning tree and choose one node as the root.
+Then every edge is assigned a direction such there is a directed path from the
+root to every other node. The result is a spanning arborescence.
+
+NetworkX follows the first convention. Explicitly, these are:
+
+undirected forest
+   An undirected graph with no undirected cycles.
+
+undirected tree
+   A connected, undirected forest.
+
+directed forest
+   A directed graph with no undirected cycles. Equivalently, the underlying
+   graph structure (which ignores edge orientations) is an undirected forest.
+   In another convention, this is known as a polyforest.
+
+directed tree
+   A weakly connected, directed forest. Equivalently, the underlying graph
+   structure (which ignores edge orientations) is an undirected tree. In
+   another convention, this is known as a polytree.
+
+branching
+   A directed forest with each node having, at most, one parent. So the maximum
+   in-degree is equal to 1. In another convention, this is known as a forest.
+
+arborescence
+   A directed tree with each node having, at most, one parent. So the maximum
+   in-degree is equal to 1. In another convention, this is known as a tree.
 
 """
 
@@ -49,6 +79,26 @@ __all__ = ['is_arborescence', 'is_branching', 'is_forest', 'is_tree']
 def is_arborescence(G):
     """
     Returns `True` if `G` is an arborescence.
+
+    An arborescence is a directed tree with maximum in-degree equal to 1.
+
+    Parameters
+    ----------
+    G : graph
+        The graph to test.
+
+    Returns
+    -------
+    b : bool
+        A boolean that is `True` if `G` is an arborescence.
+
+    Notes
+    -----
+    In another convention, an arborescence is known as a *tree*.
+
+    See Also
+    --------
+    is_tree
 
     """
     if not is_tree(G):
@@ -76,6 +126,14 @@ def is_branching(G):
     b : bool
         A boolean that is `True` if `G` is a branching.
 
+    Notes
+    -----
+    In another convention, a branching is also known as a *forest*.
+
+    See Also
+    --------
+    is_forest
+
     """
     if not is_forest(G):
         return False
@@ -89,12 +147,33 @@ def is_forest(G):
     """
     Returns `True` if G is a forest.
 
-    For directed graphs, the direction of edges is ignored, and the graph `G`
-    is considered to be a directed forest if the underlying graph is a forest.
+    A forest is a graph with no undirected cycles.
+
+    For directed graphs, `G` is a forest if the underlying graph is a forest.
+    The underlying graph is obtained by treating each directed edge as a single
+    undirected edge in a multigraph.
+
+    Parameters
+    ----------
+    G : graph
+        The graph to test.
+
+    Returns
+    -------
+    b : bool
+        A boolean that is `True` if `G` is a forest.
+
+    Notes
+    -----
+    In another convention, a directed forest is known as a *polyforest* and
+    then *forest* corresponds to a *branching*.
+
+    See Also
+    --------
+    is_branching
 
     """
-    n = G.number_of_nodes()
-    if n == 0:
+    if len(G) == 0:
         raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
 
     if G.is_directed():
@@ -113,10 +192,11 @@ def is_tree(G):
     """
     Returns `True` if `G` is a tree.
 
-    A tree is a simple, connected graph with no cycles.
+    A tree is a connected graph with no undirected cycles.
 
-    For directed graphs, the direction of edges is ignored, and the graph `G`
-    is considered to be a directed tree if the underlying graph is a tree.
+    For directed graphs, `G` is a tree if the underlying graph is a tree. The
+    underlying graph is obtained by treating each directed edge as a single
+    undirected edge in a multigraph.
 
     Parameters
     ----------
@@ -130,22 +210,24 @@ def is_tree(G):
 
     Notes
     -----
-    Directed trees are also known as polytrees. Sometimes, "directed tree"
-    is defined more restrictively to mean "arboresence" instead.
+    In another convention, a directed tree is known as a *polytree* and then
+    *tree* corresponds to an *arborescence*.
+
+    See Also
+    --------
+    is_arborescence
 
     """
-    n = G.number_of_nodes()
-    if n == 0:
+    if len(G) == 0:
         raise nx.exception.NetworkXPointlessConcept('G has no nodes.')
+
+    # A connected graph with no cycles has n-1 edges.
+    if G.number_of_edges() != len(G) - 1:
+        return False
 
     if G.is_directed():
         is_connected = nx.is_weakly_connected
     else:
         is_connected = nx.is_connected
-
-    # A simple, connected graph with no cycles has n-1 edges.
-
-    if G.number_of_edges() != n - 1:
-        return False
 
     return is_connected(G)

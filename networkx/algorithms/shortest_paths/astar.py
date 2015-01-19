@@ -10,6 +10,7 @@
 #    BSD license.
 
 from heapq import heappush, heappop
+from itertools import count
 from networkx import NetworkXError
 import networkx as nx
 
@@ -73,12 +74,17 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
         # The default heuristic is h=0 - same as Dijkstra's algorithm
         def heuristic(u, v):
             return 0
+
+    push = heappush
+    pop = heappop
+
     # The queue stores priority, node, cost to reach, and parent.
     # Uses Python heapq to keep in priority order.
-    # Add each node's hash to the queue to prevent the underlying heap from
+    # Add a counter to the queue to prevent the underlying heap from
     # attempting to compare the nodes themselves. The hash breaks ties in the
     # priority and is guarenteed unique for all nodes in the graph.
-    queue = [(0, hash(source), source, 0, None)]
+    c = count()
+    queue = [(0, next(c), source, 0, None)]
 
     # Maps enqueued nodes to distance of discovered paths and the
     # computed heuristics to target. We avoid computing the heuristics
@@ -89,7 +95,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
 
     while queue:
         # Pop the smallest item from queue.
-        _, __, curnode, dist, parent = heappop(queue)
+        _, __, curnode, dist, parent = pop(queue)
 
         if curnode == target:
             path = [curnode]
@@ -120,8 +126,7 @@ def astar_path(G, source, target, heuristic=None, weight='weight'):
             else:
                 h = heuristic(neighbor, target)
             enqueued[neighbor] = ncost, h
-            heappush(queue, (ncost + h, hash(neighbor), neighbor,
-                             ncost, curnode))
+            push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
     raise nx.NetworkXNoPath("Node %s not reachable from %s" % (source, target))
 

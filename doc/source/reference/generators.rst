@@ -19,7 +19,7 @@ Classic
 .. automodule:: networkx.generators.classic
 .. autosummary::
    :toctree: generated/
-   
+
    balanced_tree
    barbell_graph
    complete_graph
@@ -38,6 +38,15 @@ Classic
    star_graph
    trivial_graph
    wheel_graph
+
+Expanders
+---------
+.. automodule:: networkx.generators.expanders
+.. autosummary::
+   :toctree:generated/
+
+   margulis_gabber_galil_graph
+   chordal_cycle_graph
 
 Small
 -----

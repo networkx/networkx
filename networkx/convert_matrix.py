@@ -1,33 +1,33 @@
-"""Functions to convert NetworkX graphs to and from other formats.
+"""Functions to convert NetworkX graphs to and from numpy/scipy matrices.
 
 The preferred way of converting data to a NetworkX graph is through the
 graph constuctor.  The constructor calls the to_networkx_graph() function
 which attempts to guess the input type and convert it automatically.
 
 Examples
-
-
+--------
 Create a 10 node random graph from a numpy matrix
 
 >>> import numpy
->>> a=numpy.reshape(numpy.random.random_integers(0,1,size=100),(10,10))
->>> D=nx.DiGraph(a)
+>>> a = numpy.reshape(numpy.random.random_integers(0,1,size=100),(10,10))
+>>> D = nx.DiGraph(a)
 
 or equivalently
 
->>> D=nx.to_networkx_graph(a,create_using=nx.DiGraph())
+>>> D = nx.to_networkx_graph(a,create_using=nx.DiGraph())
 
 See Also
 --------
 nx_pygraphviz, nx_pydot
 """
-#    Copyright (C) 2006-2013 by
+#    Copyright (C) 2006-2014 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 import warnings
+import itertools
 import networkx as nx
 from networkx.convert import _prep_create_using
 from networkx.utils import not_implemented_for
@@ -35,8 +35,137 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                            'Pieter Swart (swart@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['from_numpy_matrix', 'to_numpy_matrix',
+           'from_pandas_dataframe', 'to_pandas_dataframe',
            'to_numpy_recarray',
            'from_scipy_sparse_matrix', 'to_scipy_sparse_matrix']
+
+def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight', nonedge=0.0):
+    """Return the graph adjacency matrix as a Pandas DataFrame.
+
+    Parameters
+    ----------
+    G : graph
+        The NetworkX graph used to construct the Pandas DataFrame.
+
+    nodelist : list, optional
+       The rows and columns are ordered according to the nodes in `nodelist`.
+       If `nodelist` is None, then the ordering is produced by G.nodes().
+
+    multigraph_weight : {sum, min, max}, optional
+        An operator that determines how weights in multigraphs are handled.
+        The default is to sum the weights of the multiple edges.
+
+    weight : string or None, optional
+        The edge attribute that holds the numerical value used for
+        the edge weight.  If an edge does not have that attribute, then the
+        value 1 is used instead.
+
+    nonedge : float, optional
+        The matrix values corresponding to nonedges are typically set to zero.
+        However, this could be undesirable if there are matrix values
+        corresponding to actual edges that also have the value zero. If so,
+        one might prefer nonedges to have some other value, such as nan.
+
+    Returns
+    -------
+    df : Pandas DataFrame
+       Graph adjacency matrix
+
+    Notes
+    -----
+    The DataFrame entries are assigned to the weight edge attribute. When
+    an edge does not have a weight attribute, the value of the entry is set to
+    the number 1.  For multiple (parallel) edges, the values of the entries
+    are determined by the 'multigraph_weight' parameter.  The default is to
+    sum the weight attributes for each of the parallel edges.
+
+    When `nodelist` does not contain every node in `G`, the matrix is built
+    from the subgraph of `G` that is induced by the nodes in `nodelist`.
+
+    The convention used for self-loop edges in graphs is to assign the
+    diagonal matrix entry value to the weight attribute of the edge
+    (or the number 1 if the edge has no weight attribute).  If the
+    alternate convention of doubling the edge weight is desired the
+    resulting Pandas DataFrame can be modified as follows:
+
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> G = nx.Graph([(1,1)])
+    >>> df = nx.to_pandas_dataframe(G)
+    >>> df
+       1
+    1  1
+    >>> df.values[np.diag_indices_from(df)] *= 2
+    >>> df
+       1
+    1  2
+
+    Examples
+    --------
+    >>> G = nx.MultiDiGraph()
+    >>> G.add_edge(0,1,weight=2)
+    >>> G.add_edge(1,0)
+    >>> G.add_edge(2,2,weight=3)
+    >>> G.add_edge(2,2)
+    >>> nx.to_pandas_dataframe(G, nodelist=[0,1,2])
+       0  1  2
+    0  0  2  0
+    1  1  0  0
+    2  0  0  4
+    """
+    import pandas as pd
+    M = to_numpy_matrix(G, nodelist, None, None, multigraph_weight, weight, nonedge)
+    if nodelist is None:
+        nodelist = G.nodes()
+    nodeset = set(nodelist)
+    df = pd.DataFrame(data=M, index = nodelist ,columns = nodelist)
+    return df
+
+def from_pandas_dataframe(df,create_using=None):
+    """Return a graph from Pandas DataFrame.
+
+    The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
+
+    Parameters
+    ----------
+    df : Pandas DataFrame
+      An adjacency matrix representation of a graph
+
+    create_using : NetworkX graph
+       Use specified graph for result.  The default is Graph()
+
+    Notes
+    -----
+    If the numpy matrix has a single data type for each matrix entry it
+    will be converted to an appropriate Python data type.
+
+    If the numpy matrix has a user-specified compound data type the names
+    of the data fields will be used as attribute keys in the resulting
+    NetworkX graph.
+
+    See Also
+    --------
+    from_pandas_dataframe
+
+    Examples
+    --------
+    Simple integer weights on edges:
+
+    >>> import pandas as pd
+    >>> df=pd.DataFrame([[1,1],[2,1]])
+    >>> G=nx.from_pandas_dataframe(df)
+    """
+
+    import pandas as pd
+    A = df.values
+    G = from_numpy_matrix(A, create_using)
+    try:
+        df = df[df.index]
+    except:
+        raise nx.NetworkXError("Columns must match Indices.",
+                               "%s not in columns"%list(set(df.index).difference(set(df.columns))))
+    nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
+    return G
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     multigraph_weight=sum, weight='weight', nonedge=0.0):
@@ -80,7 +209,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     Returns
     -------
     M : NumPy matrix
-       Graph adjacency matrix.
+       Graph adjacency matrix
 
     See Also
     --------
@@ -88,13 +217,29 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
 
     Notes
     -----
-    The matrix entries are assigned with weight edge attribute. When
-    an edge does not have the weight attribute, the value of the entry is 1.
-    For multiple edges, the values of the entries are the sums of the edge
-    attributes for each edge.
+    The matrix entries are assigned to the weight edge attribute. When
+    an edge does not have a weight attribute, the value of the entry is set to
+    the number 1.  For multiple (parallel) edges, the values of the entries
+    are determined by the 'multigraph_weight' parameter.  The default is to
+    sum the weight attributes for each of the parallel edges.
 
     When `nodelist` does not contain every node in `G`, the matrix is built
     from the subgraph of `G` that is induced by the nodes in `nodelist`.
+
+    The convention used for self-loop edges in graphs is to assign the
+    diagonal matrix entry value to the weight attribute of the edge
+    (or the number 1 if the edge has no weight attribute).  If the
+    alternate convention of doubling the edge weight is desired the
+    resulting Numpy matrix can be modified as follows:
+
+    >>> import numpy as np
+    >>> G = nx.Graph([(1,1)])
+    >>> A = nx.to_numpy_matrix(G)
+    >>> A
+    matrix([[ 1.]])
+    >>> A.A[np.diag_indices_from(A)] *= 2
+    >>> A
+    matrix([[ 2.]])
 
     Examples
     --------
@@ -186,7 +331,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     return M
 
 
-def from_numpy_matrix(A,create_using=None):
+def from_numpy_matrix(A, create_using=None):
     """Return a graph from numpy matrix.
 
     The numpy matrix is interpreted as an adjacency matrix for the graph.
@@ -201,6 +346,15 @@ def from_numpy_matrix(A,create_using=None):
 
     Notes
     -----
+    If `create_using` is an instance of :class:`networkx.MultiGraph` or
+    :class:`networkx.MultiDiGraph` and the entries of `A` are of type ``int``,
+    then this function returns a multigraph (of the same type as
+    `create_using`) with parallel edges.
+
+    If `create_using` is an undirected multigraph, then only the edges
+    indicated by the upper triangle of the matrix `A` will be added to the
+    graph.
+
     If the numpy matrix has a single data type for each matrix entry it
     will be converted to an appropriate Python data type.
 
@@ -220,6 +374,15 @@ def from_numpy_matrix(A,create_using=None):
     >>> A=numpy.matrix([[1,1],[2,1]])
     >>> G=nx.from_numpy_matrix(A)
 
+    If `create_using` is a multigraph and the matrix has only integer entries,
+    the entries will be interpreted as parallel edges between the vertices:
+
+    >>> import numpy
+    >>> A = numpy.matrix([[1, 1], [1, 2]])
+    >>> G = nx.from_numpy_matrix(A, create_using=nx.MultiGraph())
+    >>> G[1][1]
+    {0: {'weight': 1}, 1: {'weight': 1}}
+
     User defined compound data type on edges:
 
     >>> import numpy
@@ -232,6 +395,7 @@ def from_numpy_matrix(A,create_using=None):
     2
     >>> G[0][0]['weight']
     1.0
+
     """
     # This should never fail if you have created a numpy matrix with numpy...
     import numpy as np
@@ -258,23 +422,48 @@ def from_numpy_matrix(A,create_using=None):
     except:
         raise TypeError("Unknown numpy data type: %s"%dt)
 
-    # make sure we get isolated nodes
+    # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
-    # get a list of edges
-    x,y=np.asarray(A).nonzero()
-
+    # Get a list of all the entries in the matrix with nonzero entries. These
+    # coordinates will become the edges in the graph.
+    edges = zip(*(np.asarray(A).nonzero()))
     # handle numpy constructed data type
     if python_type is 'void':
-        fields=sorted([(offset,dtype,name) for name,(dtype,offset) in
-                       A.dtype.fields.items()])
-        for (u,v) in zip(x,y):
-            attr={}
-            for (offset,dtype,name),val in zip(fields,A[u,v]):
-                attr[name]=kind_to_python_type[dtype.kind](val)
-            G.add_edge(u,v,attr)
-    else: # basic data type
-        G.add_edges_from( ((u,v,{'weight':python_type(A[u,v])})
-                           for (u,v) in zip(x,y)) )
+        # Sort the fields by their offset, then by dtype, then by name.
+        fields = sorted((offset, dtype, name) for name, (dtype, offset) in
+                        A.dtype.fields.items())
+        triples = ((u, v, {name: kind_to_python_type[dtype.kind](val)
+                           for (_, dtype, name), val in zip(fields, A[u, v])})
+                   for u, v in edges)
+    # If the entries in the adjacency matrix are integers and the graph is a
+    # multigraph, then create parallel edges, each with weight 1, for each
+    # entry in the adjacency matrix. Otherwise, create one edge for each
+    # positive entry in the adjacency matrix and set the weight of that edge to
+    # be the entry in the matrix.
+    elif python_type is int and G.is_multigraph():
+        chain = itertools.chain.from_iterable
+        # The following line is equivalent to:
+        #
+        #     for (u, v) in edges:
+        #         for d in range(A[u, v]):
+        #             G.add_edge(u, v, weight=1)
+        #
+        triples = chain(((u, v, dict(weight=1)) for d in range(A[u, v]))
+                        for (u, v) in edges)
+    else:  # basic data type
+        triples = ((u, v, dict(weight=python_type(A[u, v])))
+                   for u, v in edges)
+    # If we are creating an undirected multigraph, only add the edges from the
+    # upper triangle of the matrix. Otherwise, add all the edges. This relies
+    # on the fact that the vertices created in the
+    # ``_generated_weighted_edges()`` function are actually the row/column
+    # indices for the matrix ``A``.
+    #
+    # Without this check, we run into a problem where each edge is added twice
+    # when ``G.add_edges_from()`` is invoked below.
+    if G.is_multigraph() and not G.is_directed():
+        triples = ((u, v, d) for u, v, d in triples if u <= v)
+    G.add_edges_from(triples)
     return G
 
 
@@ -394,6 +583,21 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     Uses coo_matrix format. To convert to other formats specify the
     format= keyword.
 
+    The convention used for self-loop edges in graphs is to assign the
+    diagonal matrix entry value to the weight attribute of the edge
+    (or the number 1 if the edge has no weight attribute).  If the
+    alternate convention of doubling the edge weight is desired the
+    resulting Scipy sparse matrix can be modified as follows:
+
+    >>> import scipy as sp
+    >>> G = nx.Graph([(1,1)])
+    >>> A = nx.to_scipy_sparse_matrix(G)
+    >>> print(A.todense())
+    [[1]]
+    >>> A.setdiag(A.diagonal()*2)
+    >>> print(A.todense())
+    [[2]]
+
     Examples
     --------
     >>> G = nx.MultiDiGraph()
@@ -435,15 +639,88 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
                               shape=(nlen,nlen), dtype=dtype)
     else:
         # symmetrize matrix
-        M = sparse.coo_matrix((data+data, (row+col,col+row)),
-                              shape=(nlen,nlen), dtype=dtype)
+        d = data + data
+        r = row + col
+        c = col + row
+        # selfloop entries get double counted when symmetrizing
+        # so we subtract the data on the diagonal
+        selfloops = G.selfloop_edges(data=True)
+        if selfloops:
+            diag_index,diag_data = zip(*((index[u],-d.get(weight,1))
+                                         for u,v,d in selfloops
+                                         if u in index and v in index))
+            d += diag_data
+            r += diag_index
+            c += diag_index
+        M = sparse.coo_matrix((d, (r, c)), shape=(nlen,nlen), dtype=dtype)
     try:
         return M.asformat(format)
     except AttributeError:
         raise nx.NetworkXError("Unknown sparse matrix format: %s"%format)
 
+
+def _csr_gen_triples(A):
+    """Converts a SciPy sparse matrix in **Compressed Sparse Row** format to
+    an iterable of weighted edge triples.
+
+    """
+    nrows = A.shape[0]
+    data, indices, indptr = A.data, A.indices, A.indptr
+    for i in range(nrows):
+        for j in range(indptr[i], indptr[i+1]):
+            yield i, indices[j], data[j]
+
+
+def _csc_gen_triples(A):
+    """Converts a SciPy sparse matrix in **Compressed Sparse Column** format to
+    an iterable of weighted edge triples.
+
+    """
+    ncols = A.shape[1]
+    data, indices, indptr = A.data, A.indices, A.indptr
+    for i in range(ncols):
+        for j in range(indptr[i], indptr[i+1]):
+            yield indices[j], i, data[j]
+
+
+def _coo_gen_triples(A):
+    """Converts a SciPy sparse matrix in **Coordinate** format to an iterable
+    of weighted edge triples.
+
+    """
+    row, col, data = A.row, A.col, A.data
+    return zip(row, col, data)
+
+
+def _dok_gen_triples(A):
+    """Converts a SciPy sparse matrix in **Dictionary of Keys** format to an
+    iterable of weighted edge triples.
+
+    """
+    for (r, c), v in A.items():
+        yield r, c, v
+
+
+def _generate_weighted_edges(A):
+    """Returns an iterable over (u, v, w) triples, where u and v are adjacent
+    vertices and w is the weight of the edge joining u and v.
+
+    `A` is a SciPy sparse matrix (in any format).
+
+    """
+    if A.format == 'csr':
+        return _csr_gen_triples(A)
+    if A.format == 'csc':
+        return _csc_gen_triples(A)
+    if A.format == 'dok':
+        return _dok_gen_triples(A)
+    # If A is in any other format (including COO), convert it to COO format.
+    return _coo_gen_triples(A.tocoo())
+
+
 def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
-    """Return a graph from scipy sparse matrix adjacency list.
+    """Creates a new graph from an adjacency matrix given as a SciPy sparse
+    matrix.
 
     Parameters
     ----------
@@ -454,34 +731,75 @@ def from_scipy_sparse_matrix(A, create_using=None, edge_attribute='weight'):
        Use specified graph for result.  The default is Graph()
 
     edge_attribute: string
-       Name of edge attrbute to store matrix numeric value. The data will
+       Name of edge attribute to store matrix numeric value. The data will
        have the same type as the matrix entry (int, float, (real,imag)).
+
+    Notes
+    -----
+
+    If `create_using` is an instance of :class:`networkx.MultiGraph` or
+    :class:`networkx.MultiDiGraph` and the entries of `A` are of type ``int``,
+    then this function returns a multigraph (of the same type as
+    `create_using`) with parallel edges. In this case, `edge_attribute` will be
+    ignored.
+
+    If `create_using` is an undirected multigraph, then only the edges
+    indicated by the upper triangle of the matrix `A` will be added to the
+    graph.
 
     Examples
     --------
     >>> import scipy.sparse
     >>> A = scipy.sparse.eye(2,2,1)
     >>> G = nx.from_scipy_sparse_matrix(A)
+
+    If `create_using` is a multigraph and the matrix has only integer entries,
+    the entries will be interpreted as parallel edges between the vertices:
+
+    >>> import scipy
+    >>> A = scipy.sparse.csr_matrix([[1, 1], [1, 2]])
+    >>> G = nx.from_scipy_sparse_matrix(A, create_using=nx.MultiGraph())
+    >>> G[1][1]
+    {0: {'weight': 1}, 1: {'weight': 1}}
+
     """
     G = _prep_create_using(create_using)
     n,m = A.shape
     if n != m:
         raise nx.NetworkXError(\
               "Adjacency matrix is not square. nx,ny=%s"%(A.shape,))
-    G.add_nodes_from(range(n)) # make sure we get isolated nodes
-
-    if A.format == 'coo':
-        for i,j,d in zip(A.row, A.col, A.data):
-            G.add_edge(i,j,**{edge_attribute:d})
-    elif A.format == 'dia':
-        # make a copy - could be done more efficiently
-        B = A.tocoo()
-        for i,j,d in zip(B.row, B.col, B.data):
-            G.add_edge(i,j,**{edge_attribute:d})
-    else:
-        for i,j in zip(*A.nonzero()):
-            G.add_edge(i,j,**{edge_attribute:A[i,j]})
+    # Make sure we get even the isolated nodes of the graph.
+    G.add_nodes_from(range(n))
+    # Create an iterable over (u, v, w) triples and for each triple, add an
+    # edge from u to v with weight w.
+    triples = _generate_weighted_edges(A)
+    # If the entries in the adjacency matrix are integers and the graph is a
+    # multigraph, then create parallel edges, each with weight 1, for each
+    # entry in the adjacency matrix. Otherwise, create one edge for each
+    # positive entry in the adjacency matrix and set the weight of that edge to
+    # be the entry in the matrix.
+    if A.dtype.kind in ('i', 'u') and G.is_multigraph():
+        chain = itertools.chain.from_iterable
+        # The following line is equivalent to:
+        #
+        #     for (u, v) in edges:
+        #         for d in range(A[u, v]):
+        #             G.add_edge(u, v, weight=1)
+        #
+        triples = chain(((u, v, 1) for d in range(w)) for (u, v, w) in triples)
+    # If we are creating an undirected multigraph, only add the edges from the
+    # upper triangle of the matrix. Otherwise, add all the edges. This relies
+    # on the fact that the vertices created in the
+    # ``_generated_weighted_edges()`` function are actually the row/column
+    # indices for the matrix ``A``.
+    #
+    # Without this check, we run into a problem where each edge is added twice
+    # when `G.add_weighted_edges_from()` is invoked below.
+    if G.is_multigraph() and not G.is_directed():
+        triples = ((u, v, d) for u, v, d in triples if u <= v)
+    G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G
+
 
 # fixture for nose tests
 def setup_module(module):

@@ -8,9 +8,9 @@ Draw networks with matplotlib.
 See Also
 --------
 
-matplotlib:     http://matplotlib.sourceforge.net/
+matplotlib:     http://matplotlib.org/
 
-pygraphviz:     http://networkx.lanl.gov/pygraphviz/
+pygraphviz:     http://pygraphviz.github.io/
 
 """
 #    Copyright (C) 2004-2012 by
@@ -98,7 +98,7 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
     >>> plt.draw()  # pyplot draw()
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
     """
     try:
         import matplotlib.pyplot as plt
@@ -119,11 +119,10 @@ def draw(G, pos=None, ax=None, hold=None, **kwds):
         else:
             ax = cf.gca()
 
- # allow callers to override the hold state by passing hold=True|False
-
     if 'with_labels' not in kwds:
-        kwds['with_labels'] = False
+        kwds['with_labels'] = 'labels' in kwds
     b = plt.ishold()
+    # allow callers to override the hold state by passing hold=True|False
     h = kwds.pop('hold', None)
     if h is not None:
         plt.hold(h)
@@ -183,7 +182,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
        marker, one of 'so^>v<dph8'.
 
     alpha : float, optional (default=1.0)
-       The node transparency
+       The node and edge transparency
 
     cmap : Matplotlib colormap, optional (default=None)
        Colormap for mapping intensities of nodes
@@ -203,7 +202,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
        If numeric values are specified they will be mapped to
        colors using the edge_cmap and edge_vmin,edge_vmax parameters.
 
-    edge_ cmap : Matplotlib colormap, optional (default=None)
+    edge_cmap : Matplotlib colormap, optional (default=None)
        Colormap for mapping intensities of edges
 
     edge_vmin,edge_vmax : floats, optional (default=None)
@@ -240,7 +239,7 @@ def draw_networkx(G, pos=None, with_labels=True, **kwds):
     >>> limits=plt.axis('off') # turn of axis
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
 
     See Also
     --------
@@ -341,7 +340,7 @@ def draw_networkx_nodes(G, pos,
     >>> nodes=nx.draw_networkx_nodes(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
 
     See Also
     --------
@@ -396,7 +395,7 @@ def draw_networkx_edges(G, pos,
                         width=1.0,
                         edge_color='k',
                         style='solid',
-                        alpha=None,
+                        alpha=1.0,
                         edge_cmap=None,
                         edge_vmin=None,
                         edge_vmax=None,
@@ -468,7 +467,7 @@ def draw_networkx_edges(G, pos,
     >>> edges=nx.draw_networkx_edges(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
 
     See Also
     --------
@@ -631,6 +630,7 @@ def draw_networkx_labels(G, pos,
                          font_family='sans-serif',
                          font_weight='normal',
                          alpha=1.0,
+                         bbox=None,
                          ax=None,
                          **kwds):
     """Draw node labels on the graph G.
@@ -676,7 +676,7 @@ def draw_networkx_labels(G, pos,
     >>> labels=nx.draw_networkx_labels(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
 
 
     See Also
@@ -720,6 +720,7 @@ def draw_networkx_labels(G, pos,
                   horizontalalignment=horizontalalignment,
                   verticalalignment=verticalalignment,
                   transform=ax.transData,
+                  bbox=bbox,
                   clip_on=True,
                   )
         text_items[n] = t
@@ -793,7 +794,7 @@ def draw_networkx_edge_labels(G, pos,
     >>> edge_labels=nx.draw_networkx_edge_labels(G,pos=nx.spring_layout(G))
 
     Also see the NetworkX drawing examples at
-    http://networkx.lanl.gov/gallery.html
+    http://networkx.github.io/documentation/latest/gallery.html
 
     See Also
     --------
@@ -872,27 +873,82 @@ def draw_networkx_edge_labels(G, pos,
 
 
 def draw_circular(G, **kwargs):
-    """Draw the graph G with a circular layout."""
+    """Draw the graph G with a circular layout.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
     draw(G, circular_layout(G), **kwargs)
 
 
 def draw_random(G, **kwargs):
-    """Draw the graph G with a random layout."""
+    """Draw the graph G with a random layout.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
     draw(G, random_layout(G), **kwargs)
 
 
 def draw_spectral(G, **kwargs):
-    """Draw the graph G with a spectral layout."""
+    """Draw the graph G with a spectral layout.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
     draw(G, spectral_layout(G), **kwargs)
 
 
 def draw_spring(G, **kwargs):
-    """Draw the graph G with a spring layout."""
+    """Draw the graph G with a spring layout.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
     draw(G, spring_layout(G), **kwargs)
 
 
 def draw_shell(G, **kwargs):
-    """Draw networkx graph with shell layout."""
+    """Draw networkx graph with shell layout.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
     nlist = kwargs.get('nlist', None)
     if nlist is not None:
         del(kwargs['nlist'])
@@ -900,7 +956,19 @@ def draw_shell(G, **kwargs):
 
 
 def draw_graphviz(G, prog="neato", **kwargs):
-    """Draw networkx graph with graphviz layout."""
+    """Draw networkx graph with graphviz layout.
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    prog : string, optional
+      Name of Graphviz layout program
+
+    **kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords.
+    """
     pos = nx.drawing.graphviz_layout(G, prog)
     draw(G, pos, **kwargs)
 

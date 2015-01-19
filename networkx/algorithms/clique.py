@@ -17,6 +17,12 @@ http://en.wikipedia.org/wiki/Clique_problem
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from collections import deque
+from itertools import chain, islice
+try:
+    from itertools import ifilter as filter
+except ImportError:
+    pass
 import networkx
 from networkx.utils.decorators import *
 __author__ = """Dan Schult (dschult@colgate.edu)"""
@@ -24,7 +30,75 @@ __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
            'make_clique_bipartite' ,'graph_clique_number',
            'graph_number_of_cliques', 'node_clique_number',
            'number_of_cliques', 'cliques_containing_node',
-           'project_down', 'project_up']
+           'project_down', 'project_up', 'enumerate_all_cliques']
+
+
+@not_implemented_for('directed')
+def enumerate_all_cliques(G):
+    """Returns all cliques in an undirected graph.
+
+    This method returns cliques of size (cardinality)
+    k = 1, 2, 3, ..., maxDegree - 1.
+
+    Where maxDegree is the maximal degree of any node in the graph.
+
+    Parameters
+    ----------
+    G: undirected graph
+
+    Returns
+    -------
+    generator of lists: generator of list for each clique.
+
+    Notes
+    -----
+    To obtain a list of all cliques, use
+    :samp:`list(enumerate_all_cliques(G))`.
+
+    Based on the algorithm published by Zhang et al. (2005) [1]_
+    and adapted to output all cliques discovered.
+
+    This algorithm is not applicable on directed graphs.
+
+    This algorithm ignores self-loops and parallel edges as
+    clique is not conventionally defined with such edges.
+
+    There are often many cliques in graphs.
+    This algorithm however, hopefully, does not run out of memory
+    since it only keeps candidate sublists in memory and
+    continuously removes exhausted sublists.
+
+    References
+    ----------
+    .. [1] Yun Zhang, Abu-Khzam, F.N., Baldwin, N.E., Chesler, E.J.,
+           Langston, M.A., Samatova, N.F.,
+           Genome-Scale Computational Approaches to Memory-Intensive
+           Applications in Systems Biology.
+           Supercomputing, 2005. Proceedings of the ACM/IEEE SC 2005
+           Conference, pp. 12, 12-18 Nov. 2005.
+           doi: 10.1109/SC.2005.29.
+           http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1559964&isnumber=33129
+    """
+    index = {}
+    nbrs = {}
+    for u in G:
+        index[u] = len(index)
+        # Neighbors of u that appear after u in the iteration order of G.
+        nbrs[u] = {v for v in G[u] if v not in index}
+
+    queue = deque(([u], sorted(nbrs[u], key=index.__getitem__)) for u in G)
+    # Loop invariants:
+    # 1. len(base) is nondecreasing.
+    # 2. (base + cnbrs) is sorted with respect to the iteration order of G.
+    # 3. cnbrs is a set of common neighbors of nodes in base.
+    while queue:
+        base, cnbrs = map(list, queue.popleft())
+        yield base
+        for i, u in enumerate(cnbrs):
+            # Use generators to reduce memory consumption.
+            queue.append((chain(base, [u]),
+                          filter(nbrs[u].__contains__,
+                                 islice(cnbrs, i + 1, None))))
 
 
 @not_implemented_for('directed')
@@ -49,7 +123,7 @@ def find_cliques(G):
     To obtain a list of cliques, use list(find_cliques(G)).
 
     Based on the algorithm published by Bron & Kerbosch (1973) [1]_
-    as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
+    as adapted by Tomita, Tanaka and Takahashi (2006) [2]_
     and discussed in Cazals and Karande (2008) [3]_.
     The method essentially unrolls the recursion used in
     the references to avoid issues of recursion stack depth.
@@ -84,89 +158,42 @@ def find_cliques(G):
        Volume 407, Issues 1-3, 6 November 2008, Pages 564-568,
        http://dx.doi.org/10.1016/j.tcs.2008.05.010
     """
-    # Cache nbrs and find first pivot (highest degree)
-    maxconn=-1
-    nnbrs={}
-    pivotnbrs=set() # handle empty graph
-    for n,nbrs in G.adjacency_iter():
-        nbrs=set(nbrs)
-        nbrs.discard(n)
-        conn = len(nbrs)
-        if conn > maxconn:
-            nnbrs[n] = pivotnbrs = nbrs
-            maxconn = conn
-        else:
-            nnbrs[n] = nbrs
-    # Initial setup
-    cand=set(nnbrs)
-    smallcand = set(cand - pivotnbrs)
-    done=set()
-    stack=[]
-    clique_so_far=[]
-    # Start main loop
-    while smallcand or stack:
-        try:
-            # Any nodes left to check?
-            n=smallcand.pop()
-        except KeyError:
-            # back out clique_so_far
-            cand,done,smallcand = stack.pop()
-            clique_so_far.pop()
-            continue
-        # Add next node to clique
-        clique_so_far.append(n)
-        cand.remove(n)
-        done.add(n)
-        nn=nnbrs[n]
-        new_cand = cand & nn
-        new_done = done & nn
-        # check if we have more to search
-        if not new_cand:
-            if not new_done:
-                # Found a clique!
-                yield clique_so_far[:]
-            clique_so_far.pop()
-            continue
-        # Shortcut--only one node left!
-        if not new_done and len(new_cand)==1:
-            yield clique_so_far + list(new_cand)
-            clique_so_far.pop()
-            continue
-        # find pivot node (max connected in cand)
-        # look in done nodes first
-        numb_cand=len(new_cand)
-        maxconndone=-1
-        for n in new_done:
-            cn = new_cand & nnbrs[n]
-            conn=len(cn)
-            if conn > maxconndone:
-                pivotdonenbrs=cn
-                maxconndone=conn
-                if maxconndone==numb_cand:
-                    break
-        # Shortcut--this part of tree already searched
-        if maxconndone == numb_cand:
-            clique_so_far.pop()
-            continue
-        # still finding pivot node
-        # look in cand nodes second
-        maxconn=-1
-        for n in new_cand:
-            cn = new_cand & nnbrs[n]
-            conn=len(cn)
-            if conn > maxconn:
-                pivotnbrs=cn
-                maxconn=conn
-                if maxconn == numb_cand-1:
-                    break
-        # pivot node is max connected in cand from done or cand
-        if maxconndone > maxconn:
-            pivotnbrs = pivotdonenbrs
-        # save search status for later backout
-        stack.append( (cand, done, smallcand) )
-        cand=new_cand
-        done=new_done
-        smallcand = cand - pivotnbrs
+    if len(G) == 0:
+        return
+
+    adj = {u: {v for v in G[u] if v != u} for u in G}
+    Q = [None]
+
+    subg = set(G)
+    cand = set(G)
+    u = max(subg, key=lambda u: len(cand & adj[u]))
+    ext_u = cand - adj[u]
+    stack = []
+
+    try:
+        while True:
+            if ext_u:
+                q = ext_u.pop()
+                cand.remove(q)
+                Q[-1] = q
+                adj_q = adj[q]
+                subg_q = subg & adj_q
+                if not subg_q:
+                    yield Q[:]
+                else:
+                    cand_q = cand & adj_q
+                    if cand_q:
+                        stack.append((subg, cand, ext_u))
+                        Q.append(None)
+                        subg = subg_q
+                        cand = cand_q
+                        u = max(subg, key=lambda u: len(cand & adj[u]))
+                        ext_u = cand - adj[u]
+            else:
+                Q.pop()
+                subg, cand, ext_u = stack.pop()
+    except IndexError:
+        pass
 
 
 def find_cliques_recursive(G):
@@ -187,7 +214,7 @@ def find_cliques_recursive(G):
     Notes
     -----
     Based on the algorithm published by Bron & Kerbosch (1973) [1]_
-    as adapated by Tomita, Tanaka and Takahashi (2006) [2]_
+    as adapted by Tomita, Tanaka and Takahashi (2006) [2]_
     and discussed in Cazals and Karande (2008) [3]_.
 
     This implementation returns a list of lists each of
@@ -218,55 +245,29 @@ def find_cliques_recursive(G):
        Volume 407, Issues 1-3, 6 November 2008, Pages 564-568,
        http://dx.doi.org/10.1016/j.tcs.2008.05.010
     """
-    nnbrs={}
-    for n,nbrs in G.adjacency_iter():
-        nbrs=set(nbrs)
-        nbrs.discard(n)
-        nnbrs[n]=nbrs
-    if not nnbrs: return [] # empty graph
-    cand=set(nnbrs)
-    done=set()
-    clique_so_far=[]
-    cliques=[]
-    _extend(nnbrs,cand,done,clique_so_far,cliques)
-    return cliques
+    if len(G) == 0:
+        return iter([])
 
-def _extend(nnbrs,cand,done,so_far,cliques):
-    # find pivot node (max connections in cand)
-    maxconn=-1
-    numb_cand=len(cand)
-    for n in done:
-        cn = cand & nnbrs[n]
-        conn=len(cn)
-        if conn > maxconn:
-            pivotnbrs=cn
-            maxconn=conn
-            if conn==numb_cand:
-                # All possible cliques already found
-                return
-    for n in cand:
-        cn = cand & nnbrs[n]
-        conn=len(cn)
-        if conn > maxconn:
-            pivotnbrs=cn
-            maxconn=conn
-    # Use pivot to reduce number of nodes to examine
-    smallercand = set(cand - pivotnbrs)
-    for n in smallercand:
-        cand.remove(n)
-        so_far.append(n)
-        nn=nnbrs[n]
-        new_cand=cand & nn
-        new_done=done & nn
-        if not new_cand and not new_done:
-            # Found the clique
-            cliques.append(so_far[:])
-        elif not new_done and len(new_cand) is 1:
-            # shortcut if only one node left
-            cliques.append(so_far+list(new_cand))
-        else:
-            _extend(nnbrs, new_cand, new_done, so_far, cliques)
-        done.add(so_far.pop())
+    adj = {u: {v for v in G[u] if v != u} for u in G}
+    Q = []
+
+    def expand(subg, cand):
+        u = max(subg, key=lambda u: len(cand & adj[u]))
+        for q in cand - adj[u]:
+            cand.remove(q)
+            Q.append(q)
+            adj_q = adj[q]
+            subg_q = subg & adj_q
+            if not subg_q:
+                yield Q[:]
+            else:
+                cand_q = cand & adj_q
+                if cand_q:
+                    for clique in expand(subg_q, cand_q):
+                        yield clique
+            Q.pop()
+
+    return expand(set(G), set(G))
 
 
 def make_max_clique_graph(G,create_using=None,name=None):

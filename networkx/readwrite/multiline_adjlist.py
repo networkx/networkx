@@ -5,9 +5,9 @@ Multi-line Adjacency List
 *************************
 Read and write NetworkX graphs as multi-line adjacency lists.
 
-The multi-line adjacency list format is useful for graphs with 
-nodes that can be meaningfully represented as strings.  With this format 
-simple edge data can be stored but node or graph data is not. 
+The multi-line adjacency list format is useful for graphs with
+nodes that can be meaningfully represented as strings.  With this format
+simple edge data can be stored but node or graph data is not.
 
 Format
 ------
@@ -15,8 +15,8 @@ The first label in a line is the source node label followed by the node degree
 d.  The next d lines are target node labels and optional edge data.
 That pattern repeats for all nodes in the graph.
 
-The graph with edges a-b, a-c, d-e can be represented as the following 
-adjacency list (anything following the # in a line is a comment):: 
+The graph with edges a-b, a-c, d-e can be represented as the following
+adjacency list (anything following the # in a line is a comment)::
 
      # example.multiline-adjlist
      a 2
@@ -28,7 +28,7 @@ adjacency list (anything following the # in a line is a comment)::
 __author__ = '\n'.join(['Aric Hagberg <hagberg@lanl.gov>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Loïc Séguin-C. <loicseguin@gmail.com>'])
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2010 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -49,9 +49,9 @@ def generate_multiline_adjlist(G, delimiter = ' '):
     Parameters
     ----------
     G : NetworkX graph
-    
+
     delimiter : string, optional
-       Separator for node labels 
+       Separator for node labels
 
     Returns
     -------
@@ -62,7 +62,7 @@ def generate_multiline_adjlist(G, delimiter = ' '):
     --------
     >>> G = nx.lollipop_graph(4, 3)
     >>> for line in nx.generate_multiline_adjlist(G):
-    ...     print(line)    
+    ...     print(line)
     0 3
     1 {}
     2 {}
@@ -87,8 +87,8 @@ def generate_multiline_adjlist(G, delimiter = ' '):
     if G.is_directed():
         if G.is_multigraph():
             for s,nbrs in G.adjacency_iter():
-                nbr_edges=[ (u,data) 
-                            for u,datadict in nbrs.items() 
+                nbr_edges=[ (u,data)
+                            for u,datadict in nbrs.items()
                             for key,data in datadict.items()]
                 deg=len(nbr_edges)
                 yield make_str(s)+delimiter+"%i"%(deg)
@@ -102,24 +102,24 @@ def generate_multiline_adjlist(G, delimiter = ' '):
                 deg=len(nbrs)
                 yield make_str(s)+delimiter+"%i"%(deg)
                 for u,d in nbrs.items():
-                   if d is None:    
+                   if d is None:
                        yield make_str(u)
-                   else:   
+                   else:
                        yield make_str(u)+delimiter+make_str(d)
     else: # undirected
         if G.is_multigraph():
             seen=set()  # helper dict used to avoid duplicate edges
             for s,nbrs in G.adjacency_iter():
-                nbr_edges=[ (u,data) 
-                            for u,datadict in nbrs.items() 
+                nbr_edges=[ (u,data)
+                            for u,datadict in nbrs.items()
                             if u not in seen
                             for key,data in datadict.items()]
                 deg=len(nbr_edges)
                 yield make_str(s)+delimiter+"%i"%(deg)
                 for u,d in nbr_edges:
-                    if d is None:    
+                    if d is None:
                         yield make_str(u)
-                    else:   
+                    else:
                         yield make_str(u)+delimiter+make_str(d)
                 seen.add(s)
         else: # undirected single edges
@@ -129,29 +129,29 @@ def generate_multiline_adjlist(G, delimiter = ' '):
                 deg=len(nbr_edges)
                 yield  make_str(s)+delimiter+"%i"%(deg)
                 for u,d in nbr_edges:
-                    if d is None:    
+                    if d is None:
                         yield make_str(u)
-                    else:   
+                    else:
                         yield make_str(u)+delimiter+make_str(d)
                 seen.add(s)
 
 @open_file(1,mode='wb')
-def write_multiline_adjlist(G, path, delimiter=' ', 
+def write_multiline_adjlist(G, path, delimiter=' ',
                             comments='#', encoding = 'utf-8'):
     """ Write the graph G in multiline adjacency list format to path
 
     Parameters
     ----------
     G : NetworkX graph
-    
+
     comments : string, optional
        Marker for comment lines
 
     delimiter : string, optional
-       Separator for node labels 
+       Separator for node labels
 
     encoding : string, optional
-       Text encoding. 
+       Text encoding.
 
     Examples
     --------
@@ -195,19 +195,19 @@ def parse_multiline_adjlist(lines, comments = '#', delimiter = None,
     lines : list or iterator of strings
         Input data in multiline adjlist format
 
-    create_using: NetworkX graph container       
+    create_using: NetworkX graph container
        Use given NetworkX graph for holding nodes or edges.
 
     nodetype : Python type, optional
-       Convert nodes to this type.  
-       
+       Convert nodes to this type.
+
     comments : string, optional
        Marker for comment lines
 
     delimiter : string, optional
-       Separator for node labels.  The default is whitespace. 
+       Separator for node labels.  The default is whitespace.
 
-    create_using: NetworkX graph container       
+    create_using: NetworkX graph container
        Use given NetworkX graph for holding nodes or edges.
 
 
@@ -286,7 +286,7 @@ def parse_multiline_adjlist(lines, comments = '#', delimiter = None,
                             "Failed to convert edge data (%s) to type %s"\
                                     %(data, edgetype))
             else:
-                try: # try to evaluate 
+                try: # try to evaluate
                     edgedata=literal_eval(data)
                 except:
                     edgedata={}
@@ -307,12 +307,12 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
        Filename or file handle to read.
        Filenames ending in .gz or .bz2 will be uncompressed.
 
-    create_using: NetworkX graph container       
+    create_using: NetworkX graph container
        Use given NetworkX graph for holding nodes or edges.
 
     nodetype : Python type, optional
-       Convert nodes to this type.  
-       
+       Convert nodes to this type.
+
     edgetype : Python type, optional
        Convert edge data to this type.
 
@@ -320,9 +320,9 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
        Marker for comment lines
 
     delimiter : string, optional
-       Separator for node labels.  The default is whitespace. 
+       Separator for node labels.  The default is whitespace.
 
-    create_using: NetworkX graph container       
+    create_using: NetworkX graph container
        Use given NetworkX graph for holding nodes or edges.
 
 
@@ -355,17 +355,17 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
 
     will attempt to convert all nodes to integer type.
 
-    The optional edgetype is a function to convert edge data strings to 
-    edgetype.  
+    The optional edgetype is a function to convert edge data strings to
+    edgetype.
 
     >>> G=nx.read_multiline_adjlist("test.adjlist")
 
     The optional create_using parameter is a NetworkX graph container.
-    The default is Graph(), an undirected graph.  To read the data as 
+    The default is Graph(), an undirected graph.  To read the data as
     a directed graph use
 
     >>> G=nx.read_multiline_adjlist("test.adjlist", create_using=nx.DiGraph())
-    
+
     Notes
     -----
     This format does not store graph, node, or edge data.
@@ -375,7 +375,7 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
     write_multiline_adjlist
     """
     lines = (line.decode(encoding) for line in path)
-    return parse_multiline_adjlist(lines, 
+    return parse_multiline_adjlist(lines,
                                    comments = comments,
                                    delimiter = delimiter,
                                    create_using = create_using,
@@ -386,5 +386,6 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
 # fixture for nose tests
 def teardown_module(module):
     import os
-    os.unlink('test.adjlist')
-    os.unlink('test.adjlist.gz')
+    for fname in ['test.adjlist', 'test.adjlist.gz']:
+        if os.path.isfile(fname):
+            os.unlink(fname)

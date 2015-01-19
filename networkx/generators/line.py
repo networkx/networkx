@@ -89,8 +89,8 @@ def line_graph(G, create_using=None):
     --------
     >>> G = nx.star_graph(3)
     >>> L = nx.line_graph(G)
-    >>> print(sorted(L.edges())) # makes a clique, K3
-    [((0, 1), (0, 2)), ((0, 1), (0, 3)), ((0, 3), (0, 2))]
+    >>> print(sorted(map(sorted, L.edges()))) # makes a clique, K3
+    [[(0, 1), (0, 2)], [(0, 1), (0, 3)], [(0, 2), (0, 3)]]
 
     Notes
     -----

@@ -11,6 +11,7 @@ Node positioning algorithms for graph drawing.
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import collections
 import networkx as nx
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 __all__ = ['circular_layout',
@@ -182,7 +183,7 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
 
     pos : dict or None  optional (default=None)
        Initial positions for nodes as a dictionary with node as keys
-       and values as a list or tuple.  If None, then nuse random initial
+       and values as a list or tuple.  If None, then use random initial
        positions.
 
     fixed : list or None  optional (default=None)
@@ -222,7 +223,9 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
         fixed=np.asarray([nfixed[v] for v in fixed])
 
     if pos is not None:
-        pos_arr=np.asarray(np.random.random((len(G),dim)))
+        # Determine size of existing domain to adjust initial positions
+        dom_size = max(flatten(pos.values()))
+        pos_arr=np.asarray(np.random.random((len(G),dim)))*dom_size
         for i,n in enumerate(G):
             if n in pos:
                 pos_arr[i]=np.asarray(pos[n])
@@ -239,9 +242,17 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
         if len(G) < 500:  # sparse solver for large graphs
             raise ValueError
         A=nx.to_scipy_sparse_matrix(G,weight=weight,dtype='f')
+        if k is None and fixed is not None:
+           # We must adjust k by domain size for layouts that are not near 1x1
+           nnodes,_ = A.shape
+           k=dom_size/np.sqrt(nnodes)
         pos=_sparse_fruchterman_reingold(A,dim,k,pos_arr,fixed,iterations)
     except:
         A=nx.to_numpy_matrix(G,weight=weight)
+        if k is None and fixed is not None:
+           # We must adjust k by domain size for layouts that are not near 1x1
+           nnodes,_ = A.shape
+           k=dom_size/np.sqrt(nnodes)
         pos=_fruchterman_reingold(A,dim,k,pos_arr,fixed,iterations)
     if fixed is None:
         pos=_rescale_layout(pos,scale=scale)
@@ -278,7 +289,9 @@ def _fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
         k=np.sqrt(1.0/nnodes)
     # the initial "temperature"  is about .1 of domain area (=1x1)
     # this is the largest step allowed in the dynamics.
-    t=0.1
+    # We need to calculate this in case our fixed positions force our domain
+    # to be much bigger than 1x1
+    t = max(max(pos.T[0]) - min(pos.T[0]), max(pos.T[1]) - min(pos.T[1]))*0.1
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
     dt=t/float(iterations+1)
@@ -308,7 +321,6 @@ def _fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
         pos+=delta_pos
         # cool temperature
         t-=dt
-        pos=_rescale_layout(pos)
     return pos
 
 
@@ -381,7 +393,6 @@ def _sparse_fruchterman_reingold(A, dim=2, k=None, pos=None, fixed=None,
         pos+=(displacement*t/length).T
         # cool temperature
         t-=dt
-        pos=_rescale_layout(pos)
     return pos
 
 
@@ -414,7 +425,7 @@ def spectral_layout(G, dim=2, weight='weight', scale=1):
 
     Notes
     -----
-    Directed graphs will be considered as unidrected graphs when
+    Directed graphs will be considered as undirected graphs when
     positioning the nodes.
 
     For larger graphs (>500 nodes) this will use the SciPy sparse
@@ -538,3 +549,17 @@ def setup_module(module):
         import scipy
     except:
         raise SkipTest("SciPy not available")
+
+def flatten(l):
+    try:
+        bs = basestring
+    except NameError:
+        # Py3k
+        bs = str
+    for el in l:
+        if isinstance(el, collections.Iterable) and not isinstance(el, bs):
+            for sub in flatten(el):
+                yield sub
+        else:
+            yield el
+

@@ -1,3 +1,4 @@
+# coding=utf8
 """
 Katz centrality.
 """
@@ -24,8 +25,9 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     r"""Compute the Katz centrality for the nodes of the graph G.
 
 
-    Katz centrality is related to eigenvalue centrality and PageRank.
-    The Katz centrality for node `i` is
+    Katz centrality computes the centrality for a node based on the centrality
+    of its neighbors. It is a generalization of the eigenvector centrality. The
+    Katz centrality for node `i` is
 
     .. math::
 
@@ -62,7 +64,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
       Attenuation factor
 
     beta : scalar or dictionary, optional (default=1.0)
-      Weight attributed to the immediate neighborhood. If not a scalar the
+      Weight attributed to the immediate neighborhood. If not a scalar, the
       dictionary must have an value for every node.
 
     max_iter : integer, optional (default=1000)
@@ -86,6 +88,12 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     nodes : dictionary
        Dictionary of nodes with Katz centrality as the value.
 
+    Raises
+    ------
+    NetworkXError
+       If the parameter `beta` is not a scalar but lacks a value for at least
+       one node
+
     Examples
     --------
     >>> import math
@@ -99,28 +107,6 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     2 0.60
     3 0.37
 
-    Notes
-    -----
-    This algorithm it uses the power method to find the eigenvector
-    corresponding to the largest eigenvalue of the adjacency matrix of G.
-    The constant alpha should be strictly less than the inverse of largest
-    eigenvalue of the adjacency matrix for the algorithm to converge.
-    The iteration will stop after max_iter iterations or an error tolerance of
-    number_of_nodes(G)*tol has been reached.
-
-    When `\alpha = 1/\lambda_{max}` and `\beta=1` Katz centrality is the same as
-    eigenvector centrality.
-
-    For directed graphs this finds "left" eigenvectors which corresponds
-    to the in-edges in the graph.  For out-edges Katz centrality
-    first reverse the graph with G.reverse().
-
-
-    References
-    ----------
-    .. [1] M. Newman, Networks: An Introduction. Oxford University Press,
-       USA, 2010, p. 720.
-
     See Also
     --------
     katz_centrality_numpy
@@ -128,6 +114,34 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     eigenvector_centrality_numpy
     pagerank
     hits
+
+    Notes
+    -----
+    Katz centrality was introduced by [2]_.
+
+    This algorithm it uses the power method to find the eigenvector
+    corresponding to the largest eigenvalue of the adjacency matrix of G.
+    The constant alpha should be strictly less than the inverse of largest
+    eigenvalue of the adjacency matrix for the algorithm to converge.
+    The iteration will stop after max_iter iterations or an error tolerance of
+    number_of_nodes(G)*tol has been reached.
+
+    When `\alpha = 1/\lambda_{max}` and `\beta=0`, Katz centrality is the same
+    as eigenvector centrality.
+
+    For directed graphs this finds "left" eigenvectors which corresponds
+    to the in-edges in the graph. For out-edges Katz centrality
+    first reverse the graph with G.reverse().
+
+    References
+    ----------
+    .. [1] Mark E. J. Newman:
+       Networks: An Introduction.
+       Oxford University Press, USA, 2010, p. 720.
+    .. [2] Leo Katz:
+       A New Status Index Derived from Sociometric Index.
+       Psychometrika 18(1):39–43, 1953
+       http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
     """
     from math import sqrt
 
@@ -144,7 +158,7 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
 
     try:
         b = dict.fromkeys(G,float(beta))
-    except (TypeError,ValueError):
+    except (TypeError,ValueError,AttributeError):
         b = beta
         if set(beta) != set(G):
             raise nx.NetworkXError('beta dictionary '
@@ -185,9 +199,9 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
                           weight = 'weight'):
     r"""Compute the Katz centrality for the graph G.
 
-
-    Katz centrality is related to eigenvalue centrality and PageRank.
-    The Katz centrality for node `i` is
+    Katz centrality computes the centrality for a node based on the centrality
+    of its neighbors. It is a generalization of the eigenvector centrality. The
+    Katz centrality for node `i` is
 
     .. math::
 
@@ -238,6 +252,12 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     nodes : dictionary
        Dictionary of nodes with Katz centrality as the value.
 
+    Raises
+    ------
+    NetworkXError
+       If the parameter `beta` is not a scalar but lacks a value for at least
+       one node
+
     Examples
     --------
     >>> import math
@@ -251,23 +271,6 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     2 0.60
     3 0.37
 
-    Notes
-    ------
-    This algorithm uses a direct linear solver to solve the above equation.
-    The constant alpha should be strictly less than the inverse of largest
-    eigenvalue of the adjacency matrix for there to be a solution.  When
-    `\alpha = 1/\lambda_{max}` and `\beta=1` Katz centrality is the same as
-    eigenvector centrality.
-
-    For directed graphs this finds "left" eigenvectors which corresponds
-    to the in-edges in the graph.  For out-edges Katz centrality
-    first reverse the graph with G.reverse().
-
-    References
-    ----------
-    .. [1] M. Newman, Networks: An Introduction. Oxford University Press,
-       USA, 2010, p. 720.
-
     See Also
     --------
     katz_centrality
@@ -275,6 +278,30 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
     eigenvector_centrality
     pagerank
     hits
+
+    Notes
+    ------
+    Katz centrality was introduced by [2]_.
+
+    This algorithm uses a direct linear solver to solve the above equation.
+    The constant alpha should be strictly less than the inverse of largest
+    eigenvalue of the adjacency matrix for there to be a solution.  When
+    `\alpha = 1/\lambda_{max}` and `\beta=0`, Katz centrality is the same as
+    eigenvector centrality.
+
+    For directed graphs this finds "left" eigenvectors which corresponds
+    to the in-edges in the graph. For out-edges Katz centrality
+    first reverse the graph with G.reverse().
+
+    References
+    ----------
+    .. [1] Mark E. J. Newman:
+       Networks: An Introduction.
+       Oxford University Press, USA, 2010, p. 720.
+    .. [2] Leo Katz:
+       A New Status Index Derived from Sociometric Index.
+       Psychometrika 18(1):39–43, 1953
+       http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
     """
     try:
         import numpy as np
@@ -292,7 +319,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
         nodelist = G.nodes()
         try:
             b = np.ones((len(nodelist),1))*float(beta)
-        except (TypeError,ValueError):
+        except (TypeError,ValueError,AttributeError):
             raise nx.NetworkXError('beta must be a number')
 
     A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).todense().T

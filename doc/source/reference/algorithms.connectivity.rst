@@ -12,11 +12,11 @@ Flow-based Connectivity
    :toctree: generated/
 
    average_node_connectivity
+   all_pairs_node_connectivity
+   edge_connectivity
+   local_edge_connectivity
    local_node_connectivity
    node_connectivity
-   local_edge_connectivity
-   edge_connectivity
-   all_pairs_node_connectivity_matrix
 
 Flow-based Minimum Cuts
 -----------------------
@@ -24,16 +24,24 @@ Flow-based Minimum Cuts
 .. autosummary::
    :toctree: generated/
 
-   minimum_st_node_cut
+   minimum_edge_cut
    minimum_node_cut
    minimum_st_edge_cut
-   minimum_edge_cut
+   minimum_st_node_cut
 
 Stoer-Wagner minimum cut
 ------------------------
-.. automodule:: networkx.algorithms.connectivity.stoer_wagner
+.. automodule:: networkx.algorithms.connectivity.stoerwagner
 .. autosummary::
    :toctree: generated/
 
    stoer_wagner
 
+Utils for flow-based connectivity
+---------------------------------
+.. automodule:: networkx.algorithms.connectivity.utils
+.. autosummary::
+   :toctree: generated/
+
+    build_auxiliary_edge_connectivity
+    build_auxiliary_node_connectivity

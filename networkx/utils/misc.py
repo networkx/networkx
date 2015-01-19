@@ -15,11 +15,9 @@ True
 #    All rights reserved.
 #    BSD license.
 import sys
-import subprocess
 import uuid
 
 import networkx as nx
-from networkx.external.decorator import decorator
 
 __author__ = '\n'.join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)',
@@ -111,11 +109,13 @@ def default_opener(filename):
         The path of the file to be opened.
 
     """
+    from subprocess import call
+
     cmds = {'darwin': ['open'],
             'linux2': ['xdg-open'],
             'win32': ['cmd.exe', '/C', 'start', '']}
     cmd = cmds[sys.platform] + [filename]
-    subprocess.call(cmd)
+    call(cmd)
 
 
 def dict_to_numpy_array(d,mapping=None):
@@ -123,17 +123,17 @@ def dict_to_numpy_array(d,mapping=None):
     with optional mapping."""
     try:
         return dict_to_numpy_array2(d, mapping)
-    except AttributeError:
+    except (AttributeError, TypeError):
+        # AttributeError is when no mapping was provided and v.keys() fails.
+        # TypeError is when a mapping was provided and d[k1][k2] fails.
         return dict_to_numpy_array1(d,mapping)
 
 def dict_to_numpy_array2(d,mapping=None):
     """Convert a dictionary of dictionaries to a 2d numpy array
-    with optional mapping."""
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError(
-          "dict_to_numpy_array requires numpy : http://scipy.org/ ")
+    with optional mapping.
+
+    """
+    import numpy
     if mapping is None:
         s=set(d.keys())
         for k,v in d.items():
@@ -151,12 +151,10 @@ def dict_to_numpy_array2(d,mapping=None):
 
 def dict_to_numpy_array1(d,mapping=None):
     """Convert a dictionary of numbers to a 1d numpy array
-    with optional mapping."""
-    try:
-        import numpy
-    except ImportError:
-        raise ImportError(
-          "dict_to_numpy_array requires numpy : http://scipy.org/ ")
+    with optional mapping.
+
+    """
+    import numpy
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s,range(len(s))))

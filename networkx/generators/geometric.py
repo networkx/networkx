@@ -2,14 +2,12 @@
 """
 Generators for geometric graphs.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
-
-from __future__ import print_function
 
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Dan Schult (dschult@colgate.edu)',
@@ -29,13 +27,13 @@ import networkx as nx
 #---------------------------------------------------------------------------
 #  Random Geometric Graphs
 #---------------------------------------------------------------------------
-        
+
 def random_geometric_graph(n, radius, dim=2, pos=None):
     r"""Return the random geometric graph in the unit cube.
 
-    The random geometric graph model places n nodes uniformly at random 
+    The random geometric graph model places n nodes uniformly at random
     in the unit cube  Two nodes `u,v` are connected with an edge if
-    `d(u,v)<=r` where `d` is the Euclidean distance and `r` is a radius 
+    `d(u,v)<=r` where `d` is the Euclidean distance and `r` is a radius
     threshold.
 
     Parameters
@@ -43,7 +41,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
     n : int
         Number of nodes
     radius: float
-        Distance threshold value  
+        Distance threshold value
     dim : int, optional
         Dimension of graph
     pos : dict, optional
@@ -52,7 +50,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
     Returns
     -------
     Graph
-      
+
     Examples
     --------
     >>> G = nx.random_geometric_graph(20,0.1)
@@ -76,14 +74,14 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
 
     References
     ----------
-    .. [1] Penrose, Mathew, Random Geometric Graphs, 
+    .. [1] Penrose, Mathew, Random Geometric Graphs,
        Oxford Studies in Probability, 5, 2003.
     """
     G=nx.Graph()
     G.name="Random Geometric Graph"
-    G.add_nodes_from(range(n)) 
+    G.add_nodes_from(range(n))
     if pos is None:
-        # random positions 
+        # random positions
         for n in G:
             G.node[n]['pos']=[random.random() for i in range(0,dim)]
     else:
@@ -101,19 +99,19 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
                 G.add_edge(u,v)
     return G
 
-def geographical_threshold_graph(n, theta, alpha=2, dim=2, 
+def geographical_threshold_graph(n, theta, alpha=2, dim=2,
                                  pos=None, weight=None):
     r"""Return a geographical threshold graph.
 
     The geographical threshold graph model places n nodes uniformly at random
-    in a rectangular domain.  Each node `u` is assigned a weight `w_u`. 
+    in a rectangular domain.  Each node `u` is assigned a weight `w_u`.
     Two nodes `u,v` are connected with an edge if
 
     .. math::
 
        w_u + w_v \ge \theta r^{\alpha}
 
-    where `r` is the Euclidean distance between `u` and `v`, 
+    where `r` is the Euclidean distance between `u` and `v`,
     and `\theta`, `\alpha` are parameters.
 
     Parameters
@@ -134,7 +132,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2,
     Returns
     -------
     Graph
-      
+
     Examples
     --------
     >>> G = nx.geographical_threshold_graph(20,50)
@@ -143,38 +141,38 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2,
     -----
     If weights are not specified they are assigned to nodes by drawing randomly
     from an the exponential distribution with rate parameter `\lambda=1`.
-    To specify a weights from a different distribution assign them to a 
+    To specify a weights from a different distribution assign them to a
     dictionary and pass it as the weight= keyword
 
     >>> import random
     >>> n = 20
     >>> w=dict((i,random.expovariate(5.0)) for i in range(n))
     >>> G = nx.geographical_threshold_graph(20,50,weight=w)
-    
+
     If node positions are not specified they are randomly assigned from the
     uniform distribution.
 
     References
     ----------
-    .. [1] Masuda, N., Miwa, H., Konno, N.: 
+    .. [1] Masuda, N., Miwa, H., Konno, N.:
        Geographical threshold graphs with small-world and scale-free properties.
        Physical Review E 71, 036108 (2005)
-    .. [2]  Milan Bradonjić, Aric Hagberg and Allon G. Percus, 
-       Giant component and connectivity in geographical threshold graphs, 
-       in Algorithms and Models for the Web-Graph (WAW 2007), 
+    .. [2]  Milan Bradonjić, Aric Hagberg and Allon G. Percus,
+       Giant component and connectivity in geographical threshold graphs,
+       in Algorithms and Models for the Web-Graph (WAW 2007),
        Antony Bonato and Fan Chung (Eds), pp. 209--216, 2007
     """
     G=nx.Graph()
     # add n nodes
-    G.add_nodes_from([v for v in range(n)])  
+    G.add_nodes_from([v for v in range(n)])
     if weight is None:
-        # choose weights from exponential distribution 
+        # choose weights from exponential distribution
         for n in G:
             G.node[n]['weight'] = random.expovariate(1.0)
     else:
         nx.set_node_attributes(G,'weight',weight)
     if pos is None:
-        # random positions 
+        # random positions
         for n in G:
             G.node[n]['pos']=[random.random() for i in range(0,dim)]
     else:
@@ -183,7 +181,7 @@ def geographical_threshold_graph(n, theta, alpha=2, dim=2,
     return G
 
 def geographical_threshold_edges(G, theta, alpha=2):
-    # generate edges for a geographical threshold graph given a graph 
+    # generate edges for a geographical threshold graph given a graph
     # with positions and weights assigned as node attributes 'pos' and 'weight'.
     nodes = G.nodes(data=True)
     while nodes:
@@ -207,7 +205,7 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
     .. math::
             p = \alpha*exp(-d/(\beta*L)).
 
-    This function implements both Waxman models.            
+    This function implements both Waxman models.
 
     Waxman-1:  `L` not specified
        The distance `d` is the Euclidean distance between the nodes u and v.
@@ -236,16 +234,16 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
 
     References
     ----------
-    .. [1]  B. M. Waxman, Routing of multipoint connections. 
-       IEEE J. Select. Areas Commun. 6(9),(1988) 1617-1622. 
+    .. [1]  B. M. Waxman, Routing of multipoint connections.
+       IEEE J. Select. Areas Commun. 6(9),(1988) 1617-1622.
     """
     # build graph of n nodes with random positions in the unit square
     G = nx.Graph()
     G.add_nodes_from(range(n))
     (xmin,ymin,xmax,ymax)=domain
     for n in G:
-        G.node[n]['pos']=((xmin + (xmax-xmin))*random.random(),
-                          (ymin + (ymax-ymin))*random.random())
+        G.node[n]['pos']=(xmin + ((xmax-xmin)*random.random()),
+                          ymin + ((ymax-ymin)*random.random()))
     if L is None:
         # find maximum distance L between two nodes
         l = 0
@@ -257,7 +255,7 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0,0,1,1)):
                 if r2 > l:
                     l = r2
         l=math.sqrt(l)
-    else: 
+    else:
         # user specified maximum distance
         l = L
 
@@ -293,14 +291,14 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 
     Begin with a set of nodes that are identified with the set of lattice
     points in an `n \times n` square, `{(i,j): i\in {1,2,\ldots,n}, j\in {1,2,\ldots,n}}`
-    and define the lattice distance between two nodes `(i,j)` and `(k,l)` 
-    to be the number of "lattice steps" separating them: `d((i,j),(k,l)) = |k-i|+|l-j|`.  
+    and define the lattice distance between two nodes `(i,j)` and `(k,l)`
+    to be the number of "lattice steps" separating them: `d((i,j),(k,l)) = |k-i|+|l-j|`.
 
-    For a universal constant `p`, the node `u` has a directed edge to every other 
+    For a universal constant `p`, the node `u` has a directed edge to every other
     node within lattice distance `p` (local contacts) .
 
     For universal constants `q\ge 0` and `r\ge 0` construct directed edges from `u` to `q`
-    other nodes (long-range contacts) using independent random trials;  the i'th 
+    other nodes (long-range contacts) using independent random trials;  the i'th
     directed edge from `u` has endpoint `v` with probability proportional to `d(u,v)^{-r}`.
 
     Parameters
@@ -313,17 +311,17 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     q : int
         The number of long-range connections for each node.
     r : float
-        Exponent for decaying probability of connections.  The probability of 
+        Exponent for decaying probability of connections.  The probability of
         connecting to a node at lattice distance d is 1/d^r.
     dim : int
         Dimension of grid
     seed : int, optional
-        Seed for random number generator (default=None). 
-      
+        Seed for random number generator (default=None).
+
     References
     ----------
-    .. [1] J. Kleinberg. The small-world phenomenon: An algorithmic 
-       perspective. Proc. 32nd ACM Symposium on Theory of Computing, 2000. 
+    .. [1] J. Kleinberg. The small-world phenomenon: An algorithmic
+       perspective. Proc. 32nd ACM Symposium on Theory of Computing, 2000.
     """
     if (p < 1):
         raise nx.NetworkXException("p must be >= 1")
@@ -349,4 +347,3 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
             target = nodes[bisect_left(cdf,random.uniform(0, cdf[-1]))]
             G.add_edge(p1,target)
     return G
-  
