@@ -1,33 +1,32 @@
 # encoding: utf-8
 """
-Algorithms relating to optimum branchings and arborescences.
+Algorithms for finding optimum branchings and spanning arborescences.
 
 This implementation is based on:
 
     J. Edmonds, Optimum branchings, J. Res. Natl. Bur. Standards 71B (1967),
     233–240. URL: http://archive.org/details/jresv71Bn4p233
 
-TODO: Implement method from Gabow, Galil, Spence and Tarjan:
-
-@article{
-    year={1986},
-    issn={0209-9683},
-    journal={Combinatorica},
-    volume={6},
-    number={2},
-    doi={10.1007/BF02579168},
-    title={Efficient algorithms for finding minimum spanning trees in
-        undirected and directed graphs},
-    url={http://dx.doi.org/10.1007/BF02579168},
-    publisher={Springer-Verlag},
-    keywords={68 B 15; 68 C 05},
-    author={Gabow, Harold N. and Galil, Zvi and Spencer, Thomas and Tarjan,
-        Robert E.},
-    pages={109-122},
-    language={English}
-}
-
 """
+# TODO: Implement method from Gabow, Galil, Spence and Tarjan:
+#
+#@article{
+#    year={1986},
+#    issn={0209-9683},
+#    journal={Combinatorica},
+#    volume={6},
+#    number={2},
+#    doi={10.1007/BF02579168},
+#    title={Efficient algorithms for finding minimum spanning trees in
+#        undirected and directed graphs},
+#    url={http://dx.doi.org/10.1007/BF02579168},
+#    publisher={Springer-Verlag},
+#    keywords={68 B 15; 68 C 05},
+#    author={Gabow, Harold N. and Galil, Zvi and Spencer, Thomas and Tarjan,
+#        Robert E.},
+#    pages={109-122},
+#    language={English}
+#}
 
 from __future__ import division
 
@@ -49,8 +48,9 @@ __all__ = [
 KINDS = set(['max', 'min'])
 
 STYLES = {
-    'branching' : 'branching',
+    'branching': 'branching',
     'arborescence': 'arborescence',
+    'spanning arborescence': 'arborescence'
 }
 
 INF = float('inf')
@@ -157,7 +157,7 @@ def greedy_branching(G, attr='weight', default=1, kind='max'):
         The attribute to use as weights. If None, then each edge will be
         treated equally with a weight of 1.
     default : float
-        When `attr` is not None, then in edge does not have that attribute,
+        When `attr` is not None, then if an edge does not have that attribute,
         `default` specifies what value it should take.
     kind : str
         The type of optimum to search for: 'min' or 'max' greedy branching.
@@ -306,7 +306,7 @@ def get_path(G, u, v):
 
 class Edmonds(object):
     """
-    Implementation of Edmonds algorithm for optimal branchings.
+    Edmonds algorithm for finding optimal branchings and spanning arborescences.
 
     """
     def __init__(self, G, seed=None):
@@ -378,11 +378,34 @@ class Edmonds(object):
 
     def find_optimum(self, attr='weight', default=1, kind='max', style='branching'):
         """
-        Returns a branching or spanning arborescence from G.
+        Returns a branching from G.
+
+        Parameters
+        ----------
+        attr : str
+            The edge attribute used to in determining optimality.
+        default : float
+            The value of the edge attribute used if an edge does not have
+            the attribute `attr`.
+        kind : {'min', 'max'}
+            The type of optimum to search for, either 'min' or 'max'.
+        style : {'branching', 'arborescence'}
+            If 'branching', then an optimal branching is found. If `style` is
+            'arborescence', then a branching is found, such that if the
+            branching is also an arborescence, then the branching is an
+            optimal spanning arborescences. A given graph G need not have
+            an optimal spanning arborescence.
+
+        Returns
+        -------
+        H : (multi)digraph
+            The branching.
 
         """
         self._init(attr, default, kind, style)
         uf = self.uf
+
+        # This enormous while loop could use some refactoring...
 
         G, B = self.G, self.B
         D = set([])
@@ -651,3 +674,42 @@ def minimum_spanning_arborescence(G, attr='weight', default=1):
         msg = 'No maximum spanning arborescence in G.'
         raise nx.exception.NetworkXException(msg)
     return B
+
+docstring_branching = """
+Returns a {kind} {style} from G.
+
+Parameters
+----------
+G : (multi)digraph-like
+    The graph to be searched.
+attr : str
+    The edge attribute used to in determining optimality.
+default : float
+    The value of the edge attribute used if an edge does not have
+    the attribute `attr`.
+
+Returns
+-------
+B : (multi)digraph-like
+    A {kind} {style}.
+"""
+
+docstring_arborescence = docstring_branching + """
+Raises
+------
+NetworkXException
+    If the graph does not contain a {kind} {style}.
+
+"""
+
+maximum_branching.__doc__ = \
+    docstring_branching.format(kind='maximum', style='branching')
+
+minimum_branching.__doc__ = \
+    docstring_branching.format(kind='minimum', style='branching')
+
+maximum_spanning_arborescence.__doc__ = \
+    docstring_arborescence.format(kind='maximum', style='spanning arborescence')
+
+minimum_spanning_arborescence.__doc__ = \
+    docstring_arborescence.format(kind='minimum', style='spanning arborescence')

@@ -57,6 +57,9 @@ New functionalities
 * [`#1286 <https://github.com/networkx/networkx/pull/1286>`_]
   Added the Margulis-Gabber-Galil graph to ``networkx.generators``.
 
+* [`#1338 <https://github.com/networkx/networkx/pull/1338>`_]
+  Added support for finding optimum branchings and arborescences.
+
 Removed functionalities
 -----------------------
 
