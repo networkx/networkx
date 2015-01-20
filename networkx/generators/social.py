@@ -119,41 +119,41 @@ def davis_southern_women_graph():
     """
     G = nx.Graph()
     # Top nodes
-    G.add_nodes_from(["Evelyn Jefferson",
-                      "Laura Mandeville",
-                      "Theresa Anderson",
-                      "Brenda Rogers",
-                      "Charlotte McDowd",
-                      "Frances Anderson",
-                      "Eleanor Nye",
-                      "Pearl Oglethorpe",
-                      "Ruth DeSand",
-                      "Verne Sanderson",
-                      "Myra Liddel",
-                      "Katherina Rogers",
-                      "Sylvia Avondale",
-                      "Nora Fayette",
-                      "Helen Lloyd",
-                      "Dorothy Murchison",
-                      "Olivia Carleton",
-                      "Flora Price"], 
-                     bipartite=0)
+    women = ["Evelyn Jefferson",
+             "Laura Mandeville",
+             "Theresa Anderson",
+             "Brenda Rogers",
+             "Charlotte McDowd",
+             "Frances Anderson",
+             "Eleanor Nye",
+             "Pearl Oglethorpe",
+             "Ruth DeSand",
+             "Verne Sanderson",
+             "Myra Liddel",
+             "Katherina Rogers",
+             "Sylvia Avondale",
+             "Nora Fayette",
+             "Helen Lloyd",
+             "Dorothy Murchison",
+             "Olivia Carleton",
+             "Flora Price"]
+    G.add_nodes_from(women, bipartite=0)
     # Bottom nodes
-    G.add_nodes_from(["E1",
-                      "E2",
-                      "E3",
-                      "E4",
-                      "E5",
-                      "E6",
-                      "E7",
-                      "E8",
-                      "E9",
-                      "E10",
-                      "E11",
-                      "E12",
-                      "E13",
-                      "E14"], 
-                     bipartite=1)
+    events = ["E1",
+              "E2",
+              "E3",
+              "E4",
+              "E5",
+              "E6",
+              "E7",
+              "E8",
+              "E9",
+              "E10",
+              "E11",
+              "E12",
+              "E13",
+              "E14"]
+    G.add_nodes_from(events, bipartite=1)
 
     G.add_edges_from([("Evelyn Jefferson","E1"),
                       ("Evelyn Jefferson","E2"),
@@ -244,6 +244,8 @@ def davis_southern_women_graph():
                       ("Olivia Carleton","E11"),
                       ("Flora Price","E9"),
                       ("Flora Price","E11")])
+    G.graph['top'] = women
+    G.graph['bottom'] = events
     return G
 
 def florentine_families_graph():
