@@ -121,7 +121,8 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
     df = pd.DataFrame(data=M, index = nodelist ,columns = nodelist)
     return df
 
-def from_pandas_dataframe(df,create_using=None):
+def from_pandas_dataframe(df,create_using=None, mask_zero=True,
+        mask_nan=True):
     """Return a graph from Pandas DataFrame.
 
     The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
@@ -134,39 +135,64 @@ def from_pandas_dataframe(df,create_using=None):
     create_using : NetworkX graph
        Use specified graph for result.  The default is Graph()
 
+    mask_zero : Boolean
+       Remove weights weights == 0. The default is False
+
+    mask_nan : Boolean
+       Remove weights weights == NaN. The default is False
+
     Notes
     -----
-    If the numpy matrix has a single data type for each matrix entry it
-    will be converted to an appropriate Python data type.
-
-    If the numpy matrix has a user-specified compound data type the names
-    of the data fields will be used as attribute keys in the resulting
-    NetworkX graph.
+    Unlike from_numpy_matrix, the DataFrame does not need to be square (i.e.
+    same columns and rows).
 
     See Also
     --------
-    from_pandas_dataframe
+    to_pandas_dataframe
 
     Examples
     --------
     Simple integer weights on edges:
 
     >>> import pandas as pd
-    >>> df=pd.DataFrame([[1,1],[2,1]])
+    >>> df=pd.DataFrame(np.random.randn(2,3), index=['A', 'B'],
+            columns=['A', 'E', 'F'])
     >>> G=nx.from_pandas_dataframe(df)
+    >>> G.edges(data=True)
+    [('B', 'E', {'weight': 0.24471326510478486}),
+     ('B', 'A', {'weight': 0.097855928878542192}),
+     ('B', 'F', {'weight': 1.1057186527218668}),
+     ('F', 'A', {'weight': -0.47823811217661222}),
+     ('A', 'A', {'weight': -1.2596433505654037}),
+     ('A', 'E', {'weight': -0.25104027507672699})]
     """
 
-    import pandas as pd
-    A = df.values
-    G = from_numpy_matrix(A, create_using)
-    try:
-        df = df[df.index]
-    except:
-        raise nx.NetworkXError("Columns must match Indices.",
-                               "%s not in columns"%list(set(df.index).difference(set(df.columns))))
-    nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
+    G = _prep_create_using(create_using)
+    G.add_edges_from(_returner(df, mask_zero=mask_zero, mask_nan=mask_nan))
     return G
 
+def _returner(df, mask_zero=True, mask_nan=True):
+    """Generator that returns an ebunch tuple from a DataFrame.
+    
+    Use mask_zero and mask_nan to remove these edges from the graph.
+    """
+    import numpy as np
+    import pandas as pd
+    # Create bool mask with same length and index as column
+    mask = pd.Series(np.ones(len(df), dtype=bool,),
+                     index=df.index)
+    for col_name, column in df.iteritems():
+        # Reset the mask
+        mask[:] = True
+        if mask_zero:
+            mask = mask & (column != 0)
+        if mask_nan:
+            mask = mask & ~column.isnull()
+        # Ignore empty sets.
+        if mask.any():
+            for row_name, value in column[mask].iteritems():
+                yield col_name, row_name, {'weight':value}
+    
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     multigraph_weight=sum, weight='weight', nonedge=0.0):
     """Return the graph adjacency matrix as a NumPy matrix.
