@@ -121,30 +121,29 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
     df = pd.DataFrame(data=M, index = nodelist ,columns = nodelist)
     return df
 
-def from_pandas_dataframe(df,create_using=None, mask_zero=True,
-        mask_nan=True):
+def from_pandas_dataframe(df, source, target, edge_attr=None, create_using=None):
     """Return a graph from Pandas DataFrame.
 
-    The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
+    The Pandas DataFrame is interpreted as an edge list for the graph.
 
     Parameters
     ----------
     df : Pandas DataFrame
-      An adjacency matrix representation of a graph
+      An edge list representation of a graph
+
+    source : str
+      Column name of the source nodes (for the directed case).
+
+    target : str
+      Column name of the target nodes (for the directed case).
+
+    edge_attr : str or iterable
+      When edge_attr is anything but None, it will be used to retrieve
+      attributes from a pandas.DataFrame row and added to the graph as edge
+      attributes.
 
     create_using : NetworkX graph
        Use specified graph for result.  The default is Graph()
-
-    mask_zero : Boolean
-       Remove weights weights == 0. The default is False
-
-    mask_nan : Boolean
-       Remove weights weights == NaN. The default is False
-
-    Notes
-    -----
-    Unlike from_numpy_matrix, the DataFrame does not need to be square (i.e.
-    same columns and rows).
 
     See Also
     --------
@@ -167,32 +166,16 @@ def from_pandas_dataframe(df,create_using=None, mask_zero=True,
      ('A', 'E', {'weight': -0.25104027507672699})]
     """
 
-    G = _prep_create_using(create_using)
-    G.add_edges_from(_returner(df, mask_zero=mask_zero, mask_nan=mask_nan))
-    return G
+    g = _prep_create_using(create_using)
+    if edge_attr is not None:
+        if isinstance(edge_attr, str): # Python 2 unicode problems here
+            edge_attr = [edge_attr]
+        else:
+            edge_attr = list(edge_attr)
+        for row in df.iterrows():
+            g.add_edge(row[source], row[target], **row[edge_attr])
+    return g
 
-def _returner(df, mask_zero=True, mask_nan=True):
-    """Generator that returns an ebunch tuple from a DataFrame.
-    
-    Use mask_zero and mask_nan to remove these edges from the graph.
-    """
-    import numpy as np
-    import pandas as pd
-    # Create bool mask with same length and index as column
-    mask = pd.Series(np.ones(len(df), dtype=bool,),
-                     index=df.index)
-    for col_name, column in df.iteritems():
-        # Reset the mask
-        mask[:] = True
-        if mask_zero:
-            mask = mask & (column != 0)
-        if mask_nan:
-            mask = mask & ~column.isnull()
-        # Ignore empty sets.
-        if mask.any():
-            for row_name, value in column[mask].iteritems():
-                yield col_name, row_name, {'weight':value}
-    
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     multigraph_weight=sum, weight='weight', nonedge=0.0):
     """Return the graph adjacency matrix as a NumPy matrix.
