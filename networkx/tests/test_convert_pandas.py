@@ -16,22 +16,42 @@ class TestConvertPandas(object):
             raise SkipTest('Pandas not available.')
 
     def __init__(self, ):
-        self.r = np.random.RandomState(seed=1)
-        self.ints = self.r.random_integers(0, 10, size=(2,3))
-        self.index = ['A', 'B']
-        self.columns = ['A', 'E', 'F']
-
-        self.G1 = nx.Graph([('A', 'A', {'weight': 5}),
-                            ('A', 'F', {'weight': 9}),
-                            ('A', 'E', {'weight': 8}),
-                            ('A', 'B', {'weight': 5})])
+        self.r = np.random.RandomState(seed=5)
+        ints = self.r.random_integers(1, 10, size=(3,2))
+        a = ['A', 'B', 'C']
+        b = ['D', 'A', 'E']
+        df = pd.DataFrame(ints, columns=['weight', 'cost'])
+        df[0] = a # Column label 0 (int)
+        df['b'] = b # Column label 'b' (str)
+        self.df = df
 
     def assert_equal(self, G1, G2):
-        assert_true( sorted(G1.nodes())==sorted(G2.nodes()) )
-        assert_true( sorted(G1.edges(data=True))==sorted(G2.edges(data=True)) )
+        assert_true( nx.is_isomorphic(G1, G2, edge_match=lambda x, y: x == y ))
 
-    def test_from_dataframe_remove_zeros(self, ):
-        df = pd.DataFrame(self.ints, columns=self.columns, index=self.index)
-        G=nx.from_pandas_dataframe(df)
-        self.assert_equal(G, self.G1)
+    def test_from_dataframe_all_attr(self, ):
+        Gtrue = nx.Graph([('E', 'C', {'cost': 9, 'weight': 10}),
+                               ('B', 'A', {'cost': 1, 'weight': 7}),
+                               ('A', 'D', {'cost': 7, 'weight': 4})])
+        G=nx.from_pandas_dataframe(self.df, 0, 'b', True)
+        self.assert_equal(G, Gtrue)
 
+    def test_from_dataframe_multi_attr(self, ):
+        Gtrue = nx.Graph([('E', 'C', {'cost': 9, 'weight': 10}),
+                               ('B', 'A', {'cost': 1, 'weight': 7}),
+                               ('A', 'D', {'cost': 7, 'weight': 4})])
+        G=nx.from_pandas_dataframe(self.df, 0, 'b', ['weight', 'cost'])
+        self.assert_equal(G, Gtrue)
+
+    def test_from_dataframe_one_attr(self, ):
+        Gtrue = nx.Graph([('E', 'C', {'weight': 10}),
+                               ('B', 'A', {'weight': 7}),
+                               ('A', 'D', {'weight': 4})])
+        G=nx.from_pandas_dataframe(self.df, 0, 'b', 'weight')
+        self.assert_equal(G, Gtrue)
+
+    def test_from_dataframe_no_attr(self, ):
+        Gtrue = nx.Graph([('E', 'C', {}),
+                               ('B', 'A', {}),
+                               ('A', 'D', {})])
+        G=nx.from_pandas_dataframe(self.df, 0, 'b',)
+        self.assert_equal(G, Gtrue)
