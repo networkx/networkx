@@ -127,7 +127,12 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
 
     The Pandas DataFrame should contain at least two columns of node names and
     zero or more columns of node attributes. Each row will be processed as one
-    edge instance. 
+    edge instance.
+
+    Note: This function uses DataFrame.iterrows, which is not guaranteed to
+    retain the data type in the row. This is only a problem if your row is
+    entirely numeric and a mix of ints and floats. In that case, all values
+    will be returned as floats.
 
     Parameters
     ----------
@@ -160,16 +165,24 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
     Simple integer weights on edges:
 
     >>> import pandas as pd
-    >>> df=pd.DataFrame(np.random.randn(2,3), index=['A', 'B'],
-            columns=['A', 'E', 'F'])
-    >>> G=nx.from_pandas_dataframe(df)
+    >>> import numpy as np
+    >>> r = np.random.RandomState(seed=5)
+    >>> ints = r.random_integers(1, 10, size=(3,2))
+    >>> a = ['A', 'B', 'C']
+    >>> b = ['D', 'A', 'E']
+    >>> df = pd.DataFrame(ints, columns=['weight', 'cost'])
+    >>> df
+       weight  cost  0  b
+    0       4     7  A  D
+    1       7     1  B  A
+    2      10     9  C  E
+    >>> df[0] = a
+    >>> df['b'] = b
+    >>> G=nx.from_pandas_dataframe(df, 0, 'b', ['weight', 'cost'])
     >>> G.edges(data=True)
-    [('B', 'E', {'weight': 0.24471326510478486}),
-     ('B', 'A', {'weight': 0.097855928878542192}),
-     ('B', 'F', {'weight': 1.1057186527218668}),
-     ('F', 'A', {'weight': -0.47823811217661222}),
-     ('A', 'A', {'weight': -1.2596433505654037}),
-     ('A', 'E', {'weight': -0.25104027507672699})]
+    [('E','C',{'cost':9,'weight':10}),
+    ('B','A',{'cost':1,'weight':7}),
+    ('A','D',{'cost':7,'weight':4})]
     """
 
     g = _prep_create_using(create_using)
