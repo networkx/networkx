@@ -121,26 +121,32 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
     df = pd.DataFrame(data=M, index = nodelist ,columns = nodelist)
     return df
 
-def from_pandas_dataframe(df, source, target, edge_attr=None, create_using=None):
+def from_pandas_dataframe(df, source, target, edge_attr=None,
+        create_using=None):
     """Return a graph from Pandas DataFrame.
 
-    The Pandas DataFrame is interpreted as an edge list for the graph.
+    The Pandas DataFrame should contain at least two columns of node names and
+    zero or more columns of node attributes. Each row will be processed as one
+    edge instance. 
 
     Parameters
     ----------
     df : Pandas DataFrame
       An edge list representation of a graph
 
-    source : str
-      Column name of the source nodes (for the directed case).
+    source : str (or int)
+      Column name (or index if no column names) of the source nodes (for the
+      directed case).
 
-    target : str
-      Column name of the target nodes (for the directed case).
+    target : str (or int)
+      Column name (or index if no column names) of the target nodes (for the
+      directed case).
 
-    edge_attr : str or iterable
-      When edge_attr is anything but None, it will be used to retrieve
-      attributes from a pandas.DataFrame row and added to the graph as edge
-      attributes.
+    edge_attr : str (or int), iterable, True
+      A name (str or index if no column names) or list of names that will be
+      used to retrieve attributes from the row that should be added to the
+      graph as edge attributes. If `True` is passed as the key, all of the
+      remaining columns will be added.
 
     create_using : NetworkX graph
        Use specified graph for result.  The default is Graph()
@@ -167,13 +173,37 @@ def from_pandas_dataframe(df, source, target, edge_attr=None, create_using=None)
     """
 
     g = _prep_create_using(create_using)
-    if edge_attr is not None:
-        if isinstance(edge_attr, str): # Python 2 unicode problems here
-            edge_attr = [edge_attr]
-        else:
+
+    if edge_attr:
+        # If all additional columns requested
+        if edge_attr == True:
+            # Create a list of all columns
+            cols = list(df.columns)
+            cols.remove(source)
+            cols.remove(target)
+            edge_attr = cols
+        # If a list or tuple of name is requested
+        elif isinstance(edge_attr, (list, tuple)):
             edge_attr = list(edge_attr)
-        for row in df.iterrows():
-            g.add_edge(row[source], row[target], **row[edge_attr])
+        # If a string or int (index) is passed
+        else:
+            edge_attr = [edge_attr,]
+
+        length = len(edge_attr)
+        if length > 1:
+            for idx, row in df.iterrows():
+                g.add_edge(row[source], row[target], **row[edge_attr])
+        # If only one edge_attr, can't use kwarg expansion
+        elif length == 1:
+            meta = edge_attr[0]
+            for idx, row in df.iterrows():
+                g.add_edge(row[source], row[target], {meta:row[meta]})
+    
+    # If no column names are given, then just return the edges.
+    else:
+        for idx, row in df.iterrows():
+            g.add_edge(row[source], row[target])
+
     return g
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
