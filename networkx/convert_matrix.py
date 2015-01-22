@@ -121,30 +121,40 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
     df = pd.DataFrame(data=M, index = nodelist ,columns = nodelist)
     return df
 
-def from_pandas_dataframe(df,create_using=None, mask_zero=True,
-        mask_nan=True):
+def from_pandas_dataframe(df, source, target, edge_attr=None,
+        create_using=None):
     """Return a graph from Pandas DataFrame.
 
-    The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
+    The Pandas DataFrame should contain at least two columns of node names and
+    zero or more columns of node attributes. Each row will be processed as one
+    edge instance.
+
+    Note: This function uses DataFrame.iterrows, which is not guaranteed to
+    retain the data type in the row. This is only a problem if your row is
+    entirely numeric and a mix of ints and floats. In that case, all values
+    will be returned as floats.
 
     Parameters
     ----------
     df : Pandas DataFrame
-      An adjacency matrix representation of a graph
+      An edge list representation of a graph
+
+    source : str (or int)
+      Column name (or index if no column names) of the source nodes (for the
+      directed case).
+
+    target : str (or int)
+      Column name (or index if no column names) of the target nodes (for the
+      directed case).
+
+    edge_attr : str (or int), iterable, True
+      A name (str or index if no column names) or list of names that will be
+      used to retrieve attributes from the row that should be added to the
+      graph as edge attributes. If `True` is passed as the key, all of the
+      remaining columns will be added.
 
     create_using : NetworkX graph
        Use specified graph for result.  The default is Graph()
-
-    mask_zero : Boolean
-       Remove weights weights == 0. The default is False
-
-    mask_nan : Boolean
-       Remove weights weights == NaN. The default is False
-
-    Notes
-    -----
-    Unlike from_numpy_matrix, the DataFrame does not need to be square (i.e.
-    same columns and rows).
 
     See Also
     --------
@@ -155,44 +165,60 @@ def from_pandas_dataframe(df,create_using=None, mask_zero=True,
     Simple integer weights on edges:
 
     >>> import pandas as pd
-    >>> df=pd.DataFrame(np.random.randn(2,3), index=['A', 'B'],
-            columns=['A', 'E', 'F'])
-    >>> G=nx.from_pandas_dataframe(df)
+    >>> import numpy as np
+    >>> r = np.random.RandomState(seed=5)
+    >>> ints = r.random_integers(1, 10, size=(3,2))
+    >>> a = ['A', 'B', 'C']
+    >>> b = ['D', 'A', 'E']
+    >>> df = pd.DataFrame(ints, columns=['weight', 'cost'])
+    >>> df
+       weight  cost  0  b
+    0       4     7  A  D
+    1       7     1  B  A
+    2      10     9  C  E
+    >>> df[0] = a
+    >>> df['b'] = b
+    >>> G=nx.from_pandas_dataframe(df, 0, 'b', ['weight', 'cost'])
     >>> G.edges(data=True)
-    [('B', 'E', {'weight': 0.24471326510478486}),
-     ('B', 'A', {'weight': 0.097855928878542192}),
-     ('B', 'F', {'weight': 1.1057186527218668}),
-     ('F', 'A', {'weight': -0.47823811217661222}),
-     ('A', 'A', {'weight': -1.2596433505654037}),
-     ('A', 'E', {'weight': -0.25104027507672699})]
+    [('E','C',{'cost':9,'weight':10}),
+    ('B','A',{'cost':1,'weight':7}),
+    ('A','D',{'cost':7,'weight':4})]
     """
 
-    G = _prep_create_using(create_using)
-    G.add_edges_from(_returner(df, mask_zero=mask_zero, mask_nan=mask_nan))
-    return G
+    g = _prep_create_using(create_using)
 
-def _returner(df, mask_zero=True, mask_nan=True):
-    """Generator that returns an ebunch tuple from a DataFrame.
+    if edge_attr:
+        # If all additional columns requested
+        if edge_attr == True:
+            # Create a list of all columns
+            cols = list(df.columns)
+            cols.remove(source)
+            cols.remove(target)
+            edge_attr = cols
+        # If a list or tuple of name is requested
+        elif isinstance(edge_attr, (list, tuple)):
+            edge_attr = list(edge_attr)
+        # If a string or int (index) is passed
+        else:
+            edge_attr = [edge_attr,]
+
+        length = len(edge_attr)
+        if length > 1:
+            for idx, row in df.iterrows():
+                g.add_edge(row[source], row[target], **row[edge_attr])
+        # If only one edge_attr, can't use kwarg expansion
+        elif length == 1:
+            meta = edge_attr[0]
+            for idx, row in df.iterrows():
+                g.add_edge(row[source], row[target], {meta:row[meta]})
     
-    Use mask_zero and mask_nan to remove these edges from the graph.
-    """
-    import numpy as np
-    import pandas as pd
-    # Create bool mask with same length and index as column
-    mask = pd.Series(np.ones(len(df), dtype=bool,),
-                     index=df.index)
-    for col_name, column in df.iteritems():
-        # Reset the mask
-        mask[:] = True
-        if mask_zero:
-            mask = mask & (column != 0)
-        if mask_nan:
-            mask = mask & ~column.isnull()
-        # Ignore empty sets.
-        if mask.any():
-            for row_name, value in column[mask].iteritems():
-                yield col_name, row_name, {'weight':value}
-    
+    # If no column names are given, then just return the edges.
+    else:
+        for idx, row in df.iterrows():
+            g.add_edge(row[source], row[target])
+
+    return g
+
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     multigraph_weight=sum, weight='weight', nonedge=0.0):
     """Return the graph adjacency matrix as a NumPy matrix.
