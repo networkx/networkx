@@ -171,51 +171,49 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
     >>> a = ['A', 'B', 'C']
     >>> b = ['D', 'A', 'E']
     >>> df = pd.DataFrame(ints, columns=['weight', 'cost'])
+    >>> df[0] = a
+    >>> df['b'] = b
     >>> df
        weight  cost  0  b
     0       4     7  A  D
     1       7     1  B  A
     2      10     9  C  E
-    >>> df[0] = a
-    >>> df['b'] = b
     >>> G=nx.from_pandas_dataframe(df, 0, 'b', ['weight', 'cost'])
-    >>> G.edges(data=True)
-    [('E','C',{'cost':9,'weight':10}),
-    ('B','A',{'cost':1,'weight':7}),
-    ('A','D',{'cost':7,'weight':4})]
+    >>> G['E']['C']['weight']
+    10
+    >>> G['E']['C']['cost']
+    9
     """
 
     g = _prep_create_using(create_using)
 
+    # Index of source and target
+    src_i = df.columns.get_loc(source)
+    tar_i = df.columns.get_loc(target)
     if edge_attr:
-        # If all additional columns requested
+        # If all additional columns requested, build up a list of tuples
+        # [(name, index),...]
         if edge_attr == True:
-            # Create a list of all columns
-            cols = list(df.columns)
-            cols.remove(source)
-            cols.remove(target)
-            edge_attr = cols
+            # Create a list of all columns indices, ignore nodes
+            edge_i = []
+            for i, col in enumerate(df.columns):
+                if col is not source and col is not target:
+                    edge_i.append((col, i))
         # If a list or tuple of name is requested
         elif isinstance(edge_attr, (list, tuple)):
-            edge_attr = list(edge_attr)
-        # If a string or int (index) is passed
+            edge_i = [(i, df.columns.get_loc(i)) for i in edge_attr]
+        # If a string or int is passed
         else:
-            edge_attr = [edge_attr,]
+            edge_i = [(edge_attr, df.columns.get_loc(edge_attr)),]
 
-        length = len(edge_attr)
-        if length > 1:
-            for idx, row in df.iterrows():
-                g.add_edge(row[source], row[target], **row[edge_attr])
-        # If only one edge_attr, can't use kwarg expansion
-        elif length == 1:
-            meta = edge_attr[0]
-            for idx, row in df.iterrows():
-                g.add_edge(row[source], row[target], {meta:row[meta]})
+        # Iteration on values returns the rows as Numpy arrays
+        for row in df.values:
+            g.add_edge(row[src_i], row[tar_i], {i:row[j] for i, j in edge_i})
     
     # If no column names are given, then just return the edges.
     else:
-        for idx, row in df.iterrows():
-            g.add_edge(row[source], row[target])
+        for row in df.values:
+            g.add_edge(row[src_i], row[tar_i])
 
     return g
 
