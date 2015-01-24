@@ -19,6 +19,17 @@ Basic functions
    degrees
    biadjacency_matrix
 
+Matching
+--------
+.. automodule:: networkx.algorithms.bipartite.matching
+.. autosummary::
+   :toctree: generated/
+
+   eppstein_matching
+   hopcroft_karp_matching
+   to_vertex_cover
+
+
 Projections
 -----------
 .. automodule:: networkx.algorithms.bipartite.projection
