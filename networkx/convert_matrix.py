@@ -129,29 +129,29 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
     zero or more columns of node attributes. Each row will be processed as one
     edge instance.
 
-    Note: This function uses DataFrame.iterrows, which is not guaranteed to
-    retain the data type in the row. This is only a problem if your row is
-    entirely numeric and a mix of ints and floats. In that case, all values
-    will be returned as floats.
+    Note: This function iterates over DataFrame.values, which is not
+    guaranteed to retain the data type across columns in the row. This is only
+    a problem if your row is entirely numeric and a mix of ints and floats. In
+    that case, all values will be returned as floats. See the
+    DataFrame.iterrows documentation for an example.
 
     Parameters
     ----------
     df : Pandas DataFrame
       An edge list representation of a graph
 
-    source : str (or int)
-      Column name (or index if no column names) of the source nodes (for the
+    source : str or int
+      A valid column name (string or iteger) for the source nodes (for the
       directed case).
 
-    target : str (or int)
-      Column name (or index if no column names) of the target nodes (for the
+    target : str or int
+      A valid column name (string or iteger) for the target nodes (for the
       directed case).
 
-    edge_attr : str (or int), iterable, True
-      A name (str or index if no column names) or list of names that will be
-      used to retrieve attributes from the row that should be added to the
-      graph as edge attributes. If `True` is passed as the key, all of the
-      remaining columns will be added.
+    edge_attr : str or int, iterable, True
+      A valid column name (str or integer) or list of column names that will
+      be used to retrieve items from the row and add them to the graph as edge
+      attributes. If `True`, all of the remaining columns will be added.
 
     create_using : NetworkX graph
        Use specified graph for result.  The default is Graph()
