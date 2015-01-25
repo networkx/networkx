@@ -7,7 +7,10 @@ from networkx.drawing.nx_pylab import *
 # prefer pygraphviz/agraph (it's faster)
 from networkx.drawing.nx_agraph import *
 try:
-    import pydot
+    try:
+        import pydot
+    except ImportError:
+        import pydotplus as pydot
     import networkx.drawing.nx_pydot
     from networkx.drawing.nx_pydot import *
 except ImportError:

@@ -14,8 +14,11 @@ class TestPydot(object):
     def setupClass(cls):
         global pydot
         try:
-            import pydot
-            import dot_parser
+            try:
+                import pydot
+            except ImportError:
+                import pydotplus as pydot
+            # import dot_parser
         except ImportError:
             raise SkipTest('pydot not available.')
 
