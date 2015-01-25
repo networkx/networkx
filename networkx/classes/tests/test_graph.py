@@ -358,12 +358,15 @@ class BaseAttrGraphTester(BaseGraphTester):
         G=self.Graph()
         G.add_edge(1,2,foo='bar')
         assert_equal(G.edges(data=True), [(1,2,{'foo':'bar'})])
+        assert_equal(G.edges(data='foo'), [(1,2,'bar')])
 
     def test_edge_attr2(self):
         G=self.Graph()
         G.add_edges_from([(1,2),(3,4)],foo='foo')
         assert_equal(sorted(G.edges(data=True)),
                      [(1,2,{'foo':'foo'}),(3,4,{'foo':'foo'})])
+        assert_equal(sorted(G.edges(data='foo')),
+                     [(1,2,'foo'),(3,4,'foo')])
 
     def test_edge_attr3(self):
         G=self.Graph()
@@ -440,6 +443,8 @@ class BaseAttrGraphTester(BaseGraphTester):
         G.add_edge(1,1,weight=2)
         assert_equal(G.selfloop_edges(data=True),
                 [(0,0,{}),(1,1,{'weight':2})])
+        assert_equal(G.selfloop_edges(data='weight'),
+                [(0,0,None),(1,1,2)])
 
 
 class TestGraph(BaseAttrGraphTester):

@@ -150,8 +150,8 @@ class DiGraph(Graph):
     ...            (n,nbr,eattr['weight'])
     (1, 2, 4)
     (2, 3, 8)
-    >>> [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
-    [(1, 2, 4), (2, 3, 8)]
+    >>> G.edges(data='weight')
+    [(1, 2, 4), (2, 3, 8), (3, 4, None), (4, 5, None)]
 
     **Reporting:**
 
@@ -772,7 +772,7 @@ class DiGraph(Graph):
     neighbors = successors
     neighbors_iter = successors_iter
 
-    def edges_iter(self, nbunch=None, data=False):
+    def edges_iter(self, nbunch=None, data=False, default=None):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data
@@ -783,8 +783,13 @@ class DiGraph(Graph):
         nbunch : iterable container, optional (default= all nodes)
             A container of nodes.  The container will be iterated
             through once.
-        data : bool, optional (default=False)
-            If True, return edge attribute dict in 3-tuple (u,v,data).
+        data : string or bool, optional (default=False)
+            The edge attribute returned in 3-tuple (u,v,ddict[data]).
+            If True, return edge attribute dict in 3-tuple (u,v,ddict).
+            If False, return 2-tuple (u,v). 
+        default : value, optional (default=None)
+            Value used for edges that dont have the requested attribute.
+            Only relevant if data is not True or False.
 
         Returns
         -------
@@ -803,11 +808,14 @@ class DiGraph(Graph):
         Examples
         --------
         >>> G = nx.DiGraph()   # or MultiDiGraph, etc
-        >>> G.add_path([0,1,2,3])
+        >>> G.add_path([0,1,2])
+        >>> G.add_edge(2,3,weight=5)
         >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
-        [(0, 1, {}), (1, 2, {}), (2, 3, {})]
+        [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
+        >>> list(G.edges_iter(data='weight', default=1)) 
+        [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> list(G.edges_iter([0,2]))
         [(0, 1), (2, 3)]
         >>> list(G.edges_iter(0))
@@ -818,10 +826,15 @@ class DiGraph(Graph):
             nodes_nbrs=self.adj.items()
         else:
             nodes_nbrs=((n,self.adj[n]) for n in self.nbunch_iter(nbunch))
-        if data:
+        if data is True:
             for n,nbrs in nodes_nbrs:
-                for nbr,data in nbrs.items():
-                    yield (n,nbr,data)
+                for nbr,ddict in nbrs.items():
+                    yield (n,nbr,ddict)
+        elif data is not False:
+            for n,nbrs in nodes_nbrs:
+                for nbr,ddict in nbrs.items():
+                    d=ddict[data] if data in ddict else default
+                    yield (n,nbr,d)
         else:
             for n,nbrs in nodes_nbrs:
                 for nbr in nbrs:

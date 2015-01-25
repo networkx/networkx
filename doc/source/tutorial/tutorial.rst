@@ -198,6 +198,12 @@ Note that for undirected graphs this actually looks at each edge twice.
 (3, 4, 0.375)
 (4, 3, 0.375)
 
+Convenient access to all edges is achieved with the edges method.
+
+>>> for (u,v,d) in FG.edges(data='weight'):
+...     if d<0.5: print('(%d, %d, %.3f)'%(n,nbr,d))
+(1, 2, 0.125)
+(3, 4, 0.375)
 
 Adding attributes to graphs, nodes, and edges
 ---------------------------------------------
