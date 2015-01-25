@@ -25,30 +25,40 @@ __author__ = """Aric Hagberg (aric.hagberg@gmail.com)"""
 __all__ = ['write_dot', 'read_dot', 'graphviz_layout', 'pydot_layout',
            'to_pydot', 'from_pydot']
 
+# 2.x/3.x compatibility
 try:
     basestring
 except NameError:
     basestring = str
 
-@open_file(1,mode='w')
-def write_dot(G,path):
+PYDOT_LIBRARIES = ['pydot', 'pydotplus']
+
+def load_pydot():
+    for library in PYDOT_LIBRARIES:
+        try:
+            module = __import__(library, fromlist=[''])
+        except ImportError:
+            pass
+        else:
+            break
+    else:
+        msg = "pydot could not be loaded: http://code.google.com/p/pydot/"
+        raise ImportError(msg)
+
+    return module
+
+@open_file(1, mode='w')
+def write_dot(G, path):
     """Write NetworkX graph G to Graphviz dot format on path.
 
     Path can be a string or a file handle.
     """
-    try:
-        import pydot
-    except ImportError:
-        try:
-            import pydotplus as pydot
-        except ImportError:
-            raise ImportError("write_dot() requires pydot",
-                              "http://code.google.com/p/pydot/")
+    pydot = load_pydot()
     P=to_pydot(G)
     path.write(P.to_string())
     return
 
-@open_file(0,mode='r')
+@open_file(0, mode='r')
 def read_dot(path):
     """Return a NetworkX MultiGraph or MultiDiGraph from a dot file on path.
 
@@ -65,17 +75,9 @@ def read_dot(path):
     -----
     Use G=nx.Graph(nx.read_dot(path)) to return a Graph instead of a MultiGraph.
     """
-    try:
-        import pydot
-    except ImportError:
-        try:
-            import pydotplus as pydot
-        except ImportError:
-            raise ImportError("read_dot() requires pydot",
-                              "http://code.google.com/p/pydot/")
-
-    data=path.read()
-    P=pydot.graph_from_dot_data(data)
+    pydot = load_pydot()
+    data = path.read()
+    P = pydot.graph_from_dot_data(data)
     return from_pydot(P)
 
 def from_pydot(P):
@@ -179,14 +181,7 @@ def to_pydot(N, strict=True):
     -----
 
     """
-    try:
-        import pydot
-    except ImportError:
-        try:
-            import pydotplus as pydot
-        except ImportError:
-            raise ImportError('to_pydot() requires pydot: '
-                              'http://code.google.com/p/pydot/')
+    pydot = load_pydot()
 
     # set Graphviz graph type
     if N.is_directed():
@@ -272,14 +267,7 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
     >>> pos=nx.pydot_layout(G)
     >>> pos=nx.pydot_layout(G,prog='dot')
     """
-    try:
-        import pydot
-    except ImportError:
-        try:
-            import pydotplus as pydot
-        except ImportError:
-            raise ImportError('pydot_layout() requires pydot ',
-                              'http://code.google.com/p/pydot/')
+    pydot = load_pydot()
 
     P=to_pydot(G)
     if root is not None :
@@ -315,10 +303,6 @@ def pydot_layout(G,prog='neato',root=None, **kwds):
 def setup_module(module):
     from nose import SkipTest
     try:
-        try:
-            import pydot
-        except ImportError:
-            import pydotplus as pydot
-        # import dot_parser
-    except:
+        pydot = load_pydot()
+    except ImportError:
         raise SkipTest("pydot not available")
