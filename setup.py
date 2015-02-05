@@ -55,8 +55,6 @@ packages=["networkx",
           "networkx.linalg",
           "networkx.readwrite",
           "networkx.readwrite.json_graph",
-          "networkx.tests",
-          "networkx.testing",
           "networkx.utils"]
 
 docdirbase  = 'share/doc/networkx-%s' % version
@@ -80,37 +78,6 @@ for d in ['advanced',
     data.append((dd, glob(os.path.join(pp ,"*.mbox"))))
     data.append((dd, glob(os.path.join(pp ,"*.edgelist"))))
 
-# add the tests
-package_data     = {
-    'networkx': ['tests/*.py'],
-    'networkx.algorithms': ['tests/*.py'],
-    'networkx.algorithms.assortativity': ['tests/*.py'],
-    'networkx.algorithms.bipartite': ['tests/*.py'],
-    'networkx.algorithms.centrality': ['tests/*.py'],
-    'networkx.algorithms.chordal': ['tests/*.py'],
-    'networkx.algorithms.community': ['tests/*.py'],
-    'networkx.algorithms.components': ['tests/*.py'],
-    'networkx.algorithms.connectivity': ['tests/*.py'],
-    'networkx.algorithms.coloring': ['tests/*.py'],
-    'networkx.algorithms.flow': ['tests/*.py', 'tests/*.bz2'],
-    'networkx.algorithms.traversal': ['tests/*.py'],
-    'networkx.algorithms.isomorphism': ['tests/*.py','tests/*.*99'],
-    'networkx.algorithms.link_analysis': ['tests/*.py'],
-    'networkx.algorithms.approximation': ['tests/*.py'],
-    'networkx.algorithms.operators': ['tests/*.py'],
-    'networkx.algorithms.shortest_paths': ['tests/*.py'],
-    'networkx.algorithms.traversal': ['tests/*.py'],
-    'networkx.algorithms.tree': ['tests/*.py'],
-    'networkx.classes': ['tests/*.py'],
-    'networkx.generators': ['tests/*.py'],
-    'networkx.drawing': ['tests/*.py'],
-    'networkx.linalg': ['tests/*.py'],
-    'networkx.readwrite': ['tests/*.py'],
-    'networkx.readwrite.json_graph': ['tests/*.py'],
-    'networkx.testing': ['tests/*.py'],
-    'networkx.utils': ['tests/*.py']
-    }
-
 install_requires = ['decorator>=3.4.0']
 
 if __name__ == "__main__":
@@ -132,7 +99,6 @@ if __name__ == "__main__":
         classifiers      = release.classifiers,
         packages         = packages,
         data_files       = data,
-        package_data     = package_data,
         install_requires = install_requires,
         test_suite       = 'nose.collector',
         tests_require    = ['nose>=0.10.1'],
