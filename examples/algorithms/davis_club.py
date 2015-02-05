@@ -16,8 +16,8 @@ G = nx.davis_southern_women_graph()
 women = G.graph['top']
 clubs = G.graph['bottom']
 
-print "Biadjacency matrix"
-print bipartite.biadjacency_matrix(G,women,clubs)
+print("Biadjacency matrix")
+print(bipartite.biadjacency_matrix(G,women,clubs))
 
 # project bipartite graph onto women nodes
 W = bipartite.projected_graph(G, women)
