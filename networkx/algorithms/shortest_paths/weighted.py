@@ -18,6 +18,12 @@ __all__ = ['dijkstra_path',
            'single_source_dijkstra',
            'single_source_dijkstra_path',
            'single_source_dijkstra_path_length',
+           'single_source_dijkstra_weighted_node',
+           'single_source_dijkstra_weighted_node_path',
+           'single_source_dijkstra_weighted_node_path_length',
+           'dijkstra_weighted_node_path',
+           'dijkstra_predecessor_and_distance_weighted_node',
+           'dijkstra_weighted_node_path_length',
            'all_pairs_dijkstra_path',
            'all_pairs_dijkstra_path_length',
            'dijkstra_predecessor_and_distance',
@@ -354,6 +360,338 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
     return (dist, paths)
 
 
+def dijkstra_weighted_node_path(G, source, target, weight='weight'):
+    """Returns the shortest path from source to target in a weighted graph with weighted nodes G.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node
+       Starting node
+
+    target : node
+       Ending node
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight
+
+    Returns
+    -------
+    path : list
+       List of nodes in a shortest path.
+
+    Raises
+    ------
+    NetworkXNoPath
+       If no path exists between source and target.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> print(nx.dijkstra_path(G,0,4))
+    [0, 1, 2, 3, 4]
+
+    Notes
+    ------
+    Edge weight attributes must be numerical.
+    Node weight attributes must be numerical (by default it is 0 if there is no weight attribute).
+    Distances are calculated as sums of weighted edges and weighted nodes traversed.
+    Effective weight is calculated by adding the weight weight of vertex(v) in a (u,v) edge.
+
+    See Also
+    --------
+    
+    """
+    (length, path) = single_source_dijkstra_weighted_node(G, source, target=target,
+                                            weight=weight)
+    try:
+        return path[target]
+    except KeyError:
+        raise nx.NetworkXNoPath(
+            "node %s not reachable from %s" % (source, target))
+
+
+def dijkstra_weighted_node_path_length(G, source, target, weight='weight'):
+    """Returns the shortest path length from source to target
+    in a weighted graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node label
+       starting node for path
+
+    target : node label
+       ending node for path
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight
+
+    Returns
+    -------
+    length : number
+        Shortest path length.
+
+    Raises
+    ------
+    NetworkXNoPath
+        If no path exists between source and target.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> print(nx.dijkstra_path_length(G,0,4))
+    4
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Node weight attributes must be numerical (by default it is 0 if there is no weight attribute).
+    Distances are calculated as sums of weighted edges and weighted nodes traversed.
+    Effective weight is calculated by adding the weight weight of vertex(v) in a (u,v) edge.
+
+    See Also
+    --------
+    
+    """
+    length = single_source_dijkstra_weighted_node_path_length(G, source, weight=weight)
+    try:
+        return length[target]
+    except KeyError:
+        raise nx.NetworkXNoPath(
+            "node %s not reachable from %s" % (source, target))
+
+
+def single_source_dijkstra_weighted_node_path(G, source, cutoff=None, weight='weight'):
+    """Compute shortest path between source and all other reachable
+    nodes for a weighted graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node
+       Starting node for path.
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    paths : dictionary
+       Dictionary of shortest path lengths keyed by target.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> path=nx.single_source_dijkstra_path(G,0)
+    >>> path[4]
+    [0, 1, 2, 3, 4]
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Node weight attributes must be numerical (by default it is 0 if there is no weight attribute).
+    Distances are calculated as sums of weighted edges and weighted nodes traversed.
+    Effective weight is calculated by adding the weight weight of vertex(v) in a (u,v) edge.
+
+    See Also
+    --------
+    single_source_dijkstra_weighted_node()
+
+    """
+    (length, path) = single_source_dijkstra_weighted_node(
+        G, source, cutoff=cutoff, weight=weight)
+    return path
+
+
+def single_source_dijkstra_weighted_node_path_length(G, source, cutoff=None,
+                                       weight='weight'):
+    """Compute the shortest path length between source and all other
+    reachable nodes for a weighted graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node label
+       Starting node for path
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight.
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    length : dictionary
+       Dictionary of shortest lengths keyed by target.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> length=nx.single_source_dijkstra_path_length(G,0)
+    >>> length[4]
+    4
+    >>> print(length)
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Node weight attributes must be numerical (by default it is 0 if there is no weight attribute).
+    Distances are calculated as sums of weighted edges and weighted nodes traversed.
+    Effective weight is calculated by adding the weight weight of vertex(v) in a (u,v) edge.
+
+    See Also
+    --------
+    single_source_dijkstra_weighted_node()
+
+    """
+    push = heappush
+    pop = heappop
+    dist = {}  # dictionary of final distances
+    seen = {source: 0}
+    c = count()
+    fringe = []  # use heapq with (distance,label) tuples
+    push(fringe, (0, next(c), source))
+    while fringe:
+        (d, _, v) = pop(fringe)
+        if v in dist:
+            continue  # already searched this node.
+        dist[v] = d
+        # for ignore,w,edgedata in G.edges_iter(v,data=True):
+        # is about 30% slower than the following
+        if G.is_multigraph():
+            edata = []
+            for w, keydata in G[v].items():
+                minweight = min((dd.get(weight, 1)
+                                 for k, dd in keydata.items()))
+                edata.append((w, {weight: minweight}))
+        else:
+            edata = iter(G[v].items())
+
+        for w, edgedata in edata:
+            vw_dist = dist[v] + edgedata.get(weight, 1) + G.node[v].get(weight, 0)
+            if cutoff is not None:
+                if vw_dist > cutoff:
+                    continue
+            if w in dist:
+                if vw_dist < dist[w]:
+                    raise ValueError('Contradictory paths found:',
+                                     'negative weights?')
+            elif w not in seen or vw_dist < seen[w]:
+                seen[w] = vw_dist
+                push(fringe, (vw_dist, next(c), w))
+    return dist
+
+
+def single_source_dijkstra_weighted_node(G, source, target=None, cutoff=None, weight='weight'):
+    """Compute shortest paths and lengths in a weighted graph G.
+
+    Uses Dijkstra's algorithm for shortest paths.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node label
+       Starting node for path
+
+    target : node label, optional
+       Ending node for path
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    distance,path : dictionaries
+       Returns a tuple of two dictionaries keyed by node.
+       The first dictionary stores distance from the source.
+       The second stores the path from the source to that node.
+
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> length,path=nx.single_source_dijkstra(G,0)
+    >>> print(length[4])
+    4
+    >>> print(length)
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    >>> path[4]
+    [0, 1, 2, 3, 4]
+
+    Notes
+    ---------
+    Edge weight attributes must be numerical.
+    Node weight attributes must be numerical (by default it is 0 if there is no weight attribute).
+    Distances are calculated as sums of weighted edges and weighted nodes traversed.
+    Effective weight is calculated by adding the weight weight of vertex(v) in a (u,v) edge.
+
+    Based on the Python cookbook recipe (119466) at
+    http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/119466
+
+    This algorithm is not guaranteed to work if edge weights
+    are negative or are floating point numbers
+    (overflows and roundoff errors can cause problems).
+
+    See Also
+    --------
+    single_source_dijkstra_weighted_node_path()
+    single_source_dijkstra_weighted_node_path_length()
+    """
+    if source == target:
+        return ({source: 0}, {source: [source]})
+    push = heappush
+    pop = heappop
+    dist = {}  # dictionary of final distances
+    paths = {source: [source]}  # dictionary of paths
+    seen = {source: 0}
+    c = count()
+    fringe = []  # use heapq with (distance,label) tuples
+    push(fringe, (0, next(c), source))
+    while fringe:
+        (d, _, v) = pop(fringe)
+        if v in dist:
+            continue  # already searched this node.
+        dist[v] = d
+        if v == target:
+            break
+        # for ignore,w,edgedata in G.edges_iter(v,data=True):
+        # is about 30% slower than the following
+        if G.is_multigraph():
+            edata = []
+            for w, keydata in G[v].items():
+                minweight = min((dd.get(weight, 1)
+                                 for k, dd in keydata.items()))
+                edata.append((w, {weight: minweight}))
+        else:
+            edata = iter(G[v].items())
+
+        for w, edgedata in edata:
+            vw_dist = dist[v] + edgedata.get(weight, 1) + G.node[v].get(weight, 0)
+            if cutoff is not None:
+                if vw_dist > cutoff:
+                    continue
+            if w in dist:
+                if vw_dist < dist[w]:
+                    raise ValueError('Contradictory paths found:',
+                                     'negative weights?')
+            elif w not in seen or vw_dist < seen[w]:
+                seen[w] = vw_dist
+                push(fringe, (vw_dist, next(c), w))
+                paths[w] = paths[v] + [w]
+    return (dist, paths)
+
+
 def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
     """Compute shortest path length and predecessors on shortest paths
     in weighted graphs.
@@ -408,6 +746,78 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
             edata = iter(G[v].items())
         for w, edgedata in edata:
             vw_dist = dist[v] + edgedata.get(weight, 1)
+            if cutoff is not None:
+                if vw_dist > cutoff:
+                    continue
+            if w in dist:
+                if vw_dist < dist[w]:
+                    raise ValueError('Contradictory paths found:',
+                                     'negative weights?')
+            elif w not in seen or vw_dist < seen[w]:
+                seen[w] = vw_dist
+                push(fringe, (vw_dist, next(c), w))
+                pred[w] = [v]
+            elif vw_dist == seen[w]:
+                pred[w].append(v)
+    return (pred, dist)
+
+
+def dijkstra_predecessor_and_distance_weighted_node(G, source, cutoff=None, weight='weight'):
+    """Compute shortest path length and predecessors on shortest paths
+    in weighted graphs.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node label
+       Starting node for path
+
+    weight: string, optional (default='weight')
+       Edge data key corresponding to the edge weight
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    pred,distance : dictionaries
+       Returns two dictionaries representing a list of predecessors
+       of a node and the distance to each node.
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Node weight attributes must be numerical (by default it is 0 if there is no weight attribute).
+    Distances are calculated as sums of weighted edges and weighted nodes traversed.
+    Effective weight is calculated by adding the weight weight of vertex(v) in a (u,v) edge.
+
+    The list of predecessors contains more than one element only when
+    there are more than one shortest paths to the key node.
+    """
+    push = heappush
+    pop = heappop
+    dist = {}  # dictionary of final distances
+    pred = {source: []}  # dictionary of predecessors
+    seen = {source: 0}
+    c = count()
+    fringe = []  # use heapq with (distance,label) tuples
+    push(fringe, (0, next(c), source))
+    while fringe:
+        (d, _, v) = pop(fringe)
+        if v in dist:
+            continue  # already searched this node.
+        dist[v] = d
+        if G.is_multigraph():
+            edata = []
+            for w, keydata in G[v].items():
+                minweight = min((dd.get(weight, 1)
+                                 for k, dd in keydata.items()))
+                edata.append((w, {weight: minweight}))
+        else:
+            edata = iter(G[v].items())
+        for w, edgedata in edata:
+            vw_dist = dist[v] + edgedata.get(weight, 1) + G.node[v].get(weight, 0)
             if cutoff is not None:
                 if vw_dist > cutoff:
                     continue
