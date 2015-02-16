@@ -1,8 +1,6 @@
 """
 OrderedDict variants of the default base classes.
 
-These classes are especially useful for doctests and unit tests.
-
 """
 try:
     # Python 2.7+
