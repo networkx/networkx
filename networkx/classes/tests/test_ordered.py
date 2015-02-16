@@ -1,14 +1,4 @@
-#!/usr/bin/env python
-from nose.tools import *
-from nose import SkipTest
-
 import networkx as nx
-
-from networkx.classes.ordered import OrderedDict
-
-if OrderedDict is None:
-    raise SkipTest('OrderedDict not available')
-
 
 class SmokeTestOrdered(object):
     # Just test instantiation.
