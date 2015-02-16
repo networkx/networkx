@@ -141,7 +141,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq,
         while True:
             v, attr = curr_edge.get()
             if (height == R_node[v]['height'] + 1 and
-                attr['flow'] < attr['capacity']):
+                    attr['flow'] < attr['capacity']):
                 flow = min(R_node[u]['excess'],
                            attr['capacity'] - attr['flow'])
                 push(u, v, flow)

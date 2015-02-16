@@ -9,7 +9,8 @@ Cliques.
 import networkx as nx
 from networkx.algorithms.approximation import ramsey
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
-__all__ = ["clique_removal","max_clique"]
+__all__ = ["clique_removal", "max_clique"]
+
 
 def max_clique(G):
     r"""Find the Maximum Clique
@@ -57,6 +58,7 @@ def max_clique(G):
     cgraph = nx.complement(G)
     iset, _ = clique_removal(cgraph)
     return iset
+
 
 def clique_removal(G):
     """ Repeatedly remove cliques from the graph.

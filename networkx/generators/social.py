@@ -6,26 +6,27 @@ __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
                             'Katy Bold <kbold@princeton.edu>',
                             'Aric Hagberg <aric.hagberg@gmail.com)'])
 
-__all__ = ['karate_club_graph','davis_southern_women_graph',
+__all__ = ['karate_club_graph', 'davis_southern_women_graph',
            'florentine_families_graph']
+
 
 def karate_club_graph():
     """Return Zachary's Karate club graph.
 
     References
     ----------
-    .. [1] Zachary W. 
+    .. [1] Zachary W.
        An information flow model for conflict and fission in small groups.
        Journal of Anthropological Research, 33, 452-473, (1977).
 
     .. [2] Data file from:
        http://vlado.fmf.uni-lj.si/pub/networks/data/Ucinet/UciData.htm
     """
-    G=nx.Graph()
+    G = nx.Graph()
     G.add_nodes_from(range(34))
-    G.name="Zachary's Karate Club"
+    G.name = "Zachary's Karate Club"
 
-    zacharydat="""\
+    zacharydat = """\
 0 1 1 1 1 1 1 1 1 0 1 1 1 1 0 0 0 1 0 1 0 1 0 0 0 0 0 0 0 0 0 1 0 0
 1 0 1 1 0 0 0 1 0 0 0 0 0 1 0 0 0 1 0 1 0 1 0 0 0 0 0 0 0 0 1 0 0 0
 1 1 0 1 0 0 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 1 0
@@ -60,51 +61,50 @@ def karate_club_graph():
 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 1 0 0 0 1 1
 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 1 0 0 1 0 1 0 1 1 0 0 0 0 0 1 1 1 0 1
 0 0 0 0 0 0 0 0 1 1 0 0 0 1 1 1 0 0 1 1 1 0 1 1 0 0 1 1 1 1 1 1 1 0"""
-    row=0
+    row = 0
     for line in zacharydat.split('\n'):
-        thisrow=list(map(int,line.split(' ')))
-        for col in range(0,len(thisrow)):
-            if thisrow[col]==1:
-                G.add_edge(row,col) # col goes from 0,33
-        row+=1
-    club1 = 'Mr. Hi' 
+        thisrow = list(map(int, line.split(' ')))
+        for col in range(0, len(thisrow)):
+            if thisrow[col] == 1:
+                G.add_edge(row, col)  # col goes from 0,33
+        row += 1
+    club1 = 'Mr. Hi'
     club2 = 'Officer'
-    G.node[0]['club'] = club1 
-    G.node[1]['club'] = club1 
-    G.node[2]['club'] = club1 
-    G.node[3]['club'] = club1 
-    G.node[4]['club'] = club1 
-    G.node[5]['club'] = club1 
-    G.node[6]['club'] = club1 
-    G.node[7]['club'] = club1 
-    G.node[8]['club'] = club1 
-    G.node[9]['club'] = club2 
-    G.node[10]['club'] = club1 
-    G.node[11]['club'] = club1 
-    G.node[12]['club'] = club1 
-    G.node[13]['club'] = club1 
-    G.node[14]['club'] = club2 
-    G.node[15]['club'] = club2 
-    G.node[16]['club'] = club1 
-    G.node[17]['club'] = club1 
-    G.node[18]['club'] = club2 
-    G.node[19]['club'] = club1 
-    G.node[20]['club'] = club2 
-    G.node[21]['club'] = club1 
-    G.node[22]['club'] = club2 
-    G.node[23]['club'] = club2 
-    G.node[24]['club'] = club2 
-    G.node[25]['club'] = club2 
-    G.node[26]['club'] = club2 
-    G.node[27]['club'] = club2 
-    G.node[28]['club'] = club2 
-    G.node[29]['club'] = club2 
-    G.node[30]['club'] = club2 
-    G.node[31]['club'] = club2 
-    G.node[32]['club'] = club2 
-    G.node[33]['club'] = club2 
+    G.node[0]['club'] = club1
+    G.node[1]['club'] = club1
+    G.node[2]['club'] = club1
+    G.node[3]['club'] = club1
+    G.node[4]['club'] = club1
+    G.node[5]['club'] = club1
+    G.node[6]['club'] = club1
+    G.node[7]['club'] = club1
+    G.node[8]['club'] = club1
+    G.node[9]['club'] = club2
+    G.node[10]['club'] = club1
+    G.node[11]['club'] = club1
+    G.node[12]['club'] = club1
+    G.node[13]['club'] = club1
+    G.node[14]['club'] = club2
+    G.node[15]['club'] = club2
+    G.node[16]['club'] = club1
+    G.node[17]['club'] = club1
+    G.node[18]['club'] = club2
+    G.node[19]['club'] = club1
+    G.node[20]['club'] = club2
+    G.node[21]['club'] = club1
+    G.node[22]['club'] = club2
+    G.node[23]['club'] = club2
+    G.node[24]['club'] = club2
+    G.node[25]['club'] = club2
+    G.node[26]['club'] = club2
+    G.node[27]['club'] = club2
+    G.node[28]['club'] = club2
+    G.node[29]['club'] = club2
+    G.node[30]['club'] = club2
+    G.node[31]['club'] = club2
+    G.node[32]['club'] = club2
+    G.node[33]['club'] = club2
     return G
-
 
 
 def davis_southern_women_graph():
@@ -114,7 +114,7 @@ def davis_southern_women_graph():
 
     References
     ----------
-    .. [1] A. Davis, Gardner, B. B., Gardner, M. R., 1941. Deep South.    
+    .. [1] A. Davis, Gardner, B. B., Gardner, M. R., 1941. Deep South.
         University of Chicago Press, Chicago, IL.
     """
     G = nx.Graph()
@@ -248,35 +248,35 @@ def davis_southern_women_graph():
     G.graph['bottom'] = events
     return G
 
+
 def florentine_families_graph():
     """Return Florentine families graph.
-    
+
     References
     ----------
     .. [1] Ronald L. Breiger and Philippa E. Pattison
        Cumulated social roles: The duality of persons and their algebras,1
-       Social Networks, Volume 8, Issue 3, September 1986, Pages 215-256 
+       Social Networks, Volume 8, Issue 3, September 1986, Pages 215-256
     """
-    G=nx.Graph()
-    G.add_edge('Acciaiuoli','Medici')
-    G.add_edge('Castellani','Peruzzi')
-    G.add_edge('Castellani','Strozzi')
-    G.add_edge('Castellani','Barbadori')
-    G.add_edge('Medici','Barbadori')
-    G.add_edge('Medici','Ridolfi')
-    G.add_edge('Medici','Tornabuoni')
-    G.add_edge('Medici','Albizzi')
-    G.add_edge('Medici','Salviati')
-    G.add_edge('Salviati','Pazzi')
-    G.add_edge('Peruzzi','Strozzi')
-    G.add_edge('Peruzzi','Bischeri')
-    G.add_edge('Strozzi','Ridolfi')
-    G.add_edge('Strozzi','Bischeri')
-    G.add_edge('Ridolfi','Tornabuoni')
-    G.add_edge('Tornabuoni','Guadagni')
-    G.add_edge('Albizzi','Ginori')
-    G.add_edge('Albizzi','Guadagni')
-    G.add_edge('Bischeri','Guadagni')
-    G.add_edge('Guadagni','Lamberteschi')
+    G = nx.Graph()
+    G.add_edge('Acciaiuoli', 'Medici')
+    G.add_edge('Castellani', 'Peruzzi')
+    G.add_edge('Castellani', 'Strozzi')
+    G.add_edge('Castellani', 'Barbadori')
+    G.add_edge('Medici', 'Barbadori')
+    G.add_edge('Medici', 'Ridolfi')
+    G.add_edge('Medici', 'Tornabuoni')
+    G.add_edge('Medici', 'Albizzi')
+    G.add_edge('Medici', 'Salviati')
+    G.add_edge('Salviati', 'Pazzi')
+    G.add_edge('Peruzzi', 'Strozzi')
+    G.add_edge('Peruzzi', 'Bischeri')
+    G.add_edge('Strozzi', 'Ridolfi')
+    G.add_edge('Strozzi', 'Bischeri')
+    G.add_edge('Ridolfi', 'Tornabuoni')
+    G.add_edge('Tornabuoni', 'Guadagni')
+    G.add_edge('Albizzi', 'Ginori')
+    G.add_edge('Albizzi', 'Guadagni')
+    G.add_edge('Bischeri', 'Guadagni')
+    G.add_edge('Guadagni', 'Lamberteschi')
     return G
-

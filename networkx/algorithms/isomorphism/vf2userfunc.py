@@ -39,7 +39,7 @@ __all__ = ['GraphMatcher',
            'DiGraphMatcher',
            'MultiGraphMatcher',
            'MultiDiGraphMatcher',
-          ]
+           ]
 
 
 def _semantic_feasibility(self, G1_node, G2_node):
@@ -76,8 +76,10 @@ def _semantic_feasibility(self, G1_node, G2_node):
 
 
 class GraphMatcher(vf2.GraphMatcher):
+
     """VF2 isomorphism checker for undirected graphs.
     """
+
     def __init__(self, G1, G2, node_match=None, edge_match=None):
         """Initialize graph matcher.
 
@@ -123,8 +125,10 @@ class GraphMatcher(vf2.GraphMatcher):
 
 
 class DiGraphMatcher(vf2.DiGraphMatcher):
+
     """VF2 isomorphism checker for directed graphs.
     """
+
     def __init__(self, G1, G2, node_match=None, edge_match=None):
         """Initialize graph matcher.
 
@@ -166,7 +170,6 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
         self.G1_adj = self.G1.adj
         self.G2_adj = self.G2.adj
 
-
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if mapping G1_node to G2_node is semantically feasible."""
 
@@ -184,15 +187,18 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
 
         return feasible
 
-## The "semantics" of edge_match are different for multi(di)graphs, but
-## the implementation is the same.  So, technically we do not need to
-## provide "multi" versions, but we do so to match NetworkX's base classes.
+# The "semantics" of edge_match are different for multi(di)graphs, but
+# the implementation is the same.  So, technically we do not need to
+# provide "multi" versions, but we do so to match NetworkX's base classes.
+
 
 class MultiGraphMatcher(GraphMatcher):
+
     """VF2 isomorphism checker for undirected multigraphs. """
     pass
 
+
 class MultiDiGraphMatcher(DiGraphMatcher):
+
     """VF2 isomorphism checker for directed multigraphs. """
     pass
-

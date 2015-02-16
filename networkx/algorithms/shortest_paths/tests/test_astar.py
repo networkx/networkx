@@ -3,20 +3,21 @@ from nose.tools import *
 import networkx as nx
 from random import random, choice
 
+
 class TestAStar:
 
     def setUp(self):
-        self.XG=nx.DiGraph()
-        self.XG.add_edges_from([('s','u',{'weight':10}),
-                                ('s','x',{'weight':5}),
-                                ('u','v',{'weight':1}),
-                                ('u','x',{'weight':2}),
-                                ('v','y',{'weight':1}),
-                                ('x','u',{'weight':3}),
-                                ('x','v',{'weight':5}),
-                                ('x','y',{'weight':2}),
-                                ('y','s',{'weight':7}),
-                                ('y','v',{'weight':6})])
+        self.XG = nx.DiGraph()
+        self.XG.add_edges_from([('s', 'u', {'weight': 10}),
+                                ('s', 'x', {'weight': 5}),
+                                ('u', 'v', {'weight': 1}),
+                                ('u', 'x', {'weight': 2}),
+                                ('v', 'y', {'weight': 1}),
+                                ('x', 'u', {'weight': 3}),
+                                ('x', 'v', {'weight': 5}),
+                                ('x', 'y', {'weight': 2}),
+                                ('y', 's', {'weight': 7}),
+                                ('y', 'v', {'weight': 6})])
 
     def test_random_graph(self):
 
@@ -42,60 +43,59 @@ class TestAStar:
         assert path == nx.dijkstra_path(G, points[0], points[-1])
 
     def test_astar_directed(self):
-        assert nx.astar_path(self.XG,'s','v')==['s', 'x', 'u', 'v']
-        assert nx.astar_path_length(self.XG,'s','v')==9
+        assert nx.astar_path(self.XG, 's', 'v') == ['s', 'x', 'u', 'v']
+        assert nx.astar_path_length(self.XG, 's', 'v') == 9
 
     def test_astar_multigraph(self):
-         G=nx.MultiDiGraph(self.XG)
-         assert_raises((TypeError,nx.NetworkXError),
-                      nx.astar_path, [G,'s','v'])
-         assert_raises((TypeError,nx.NetworkXError),
-                      nx.astar_path_length, [G,'s','v'])
+        G = nx.MultiDiGraph(self.XG)
+        assert_raises((TypeError, nx.NetworkXError),
+                      nx.astar_path, [G, 's', 'v'])
+        assert_raises((TypeError, nx.NetworkXError),
+                      nx.astar_path_length, [G, 's', 'v'])
 
     def test_astar_undirected(self):
-        GG=self.XG.to_undirected()
+        GG = self.XG.to_undirected()
         # make sure we get lower weight
         # to_undirected might choose either edge with weight 2 or weight 3
-        GG['u']['x']['weight']=2
+        GG['u']['x']['weight'] = 2
         GG['y']['v']['weight'] = 2
-        assert_equal(nx.astar_path(GG,'s','v'),['s', 'x', 'u', 'v'])
-        assert_equal(nx.astar_path_length(GG,'s','v'),8)
+        assert_equal(nx.astar_path(GG, 's', 'v'), ['s', 'x', 'u', 'v'])
+        assert_equal(nx.astar_path_length(GG, 's', 'v'), 8)
 
     def test_astar_directed2(self):
-        XG2=nx.DiGraph()
-        XG2.add_edges_from([[1,4,{'weight':1}],
-                            [4,5,{'weight':1}],
-                            [5,6,{'weight':1}],
-                            [6,3,{'weight':1}],
-                            [1,3,{'weight':50}],
-                            [1,2,{'weight':100}],
-                            [2,3,{'weight':100}]])
-        assert nx.astar_path(XG2,1,3)==[1, 4, 5, 6, 3]
+        XG2 = nx.DiGraph()
+        XG2.add_edges_from([[1, 4, {'weight': 1}],
+                            [4, 5, {'weight': 1}],
+                            [5, 6, {'weight': 1}],
+                            [6, 3, {'weight': 1}],
+                            [1, 3, {'weight': 50}],
+                            [1, 2, {'weight': 100}],
+                            [2, 3, {'weight': 100}]])
+        assert nx.astar_path(XG2, 1, 3) == [1, 4, 5, 6, 3]
 
     def test_astar_undirected2(self):
-        XG3=nx.Graph()
-        XG3.add_edges_from([ [0,1,{'weight':2}],
-                             [1,2,{'weight':12}],
-                             [2,3,{'weight':1}],
-                             [3,4,{'weight':5}],
-                             [4,5,{'weight':1}],
-                             [5,0,{'weight':10}] ])
-        assert nx.astar_path(XG3,0,3)==[0, 1, 2, 3]
-        assert nx.astar_path_length(XG3,0,3)==15
-
+        XG3 = nx.Graph()
+        XG3.add_edges_from([[0, 1, {'weight': 2}],
+                            [1, 2, {'weight': 12}],
+                            [2, 3, {'weight': 1}],
+                            [3, 4, {'weight': 5}],
+                            [4, 5, {'weight': 1}],
+                            [5, 0, {'weight': 10}]])
+        assert nx.astar_path(XG3, 0, 3) == [0, 1, 2, 3]
+        assert nx.astar_path_length(XG3, 0, 3) == 15
 
     def test_astar_undirected3(self):
-        XG4=nx.Graph()
-        XG4.add_edges_from([ [0,1,{'weight':2}],
-                             [1,2,{'weight':2}],
-                             [2,3,{'weight':1}],
-                             [3,4,{'weight':1}],
-                             [4,5,{'weight':1}],
-                             [5,6,{'weight':1}],
-                             [6,7,{'weight':1}],
-                             [7,0,{'weight':1}] ])
-        assert nx.astar_path(XG4,0,2)==[0, 1, 2]
-        assert nx.astar_path_length(XG4,0,2)==4
+        XG4 = nx.Graph()
+        XG4.add_edges_from([[0, 1, {'weight': 2}],
+                            [1, 2, {'weight': 2}],
+                            [2, 3, {'weight': 1}],
+                            [3, 4, {'weight': 1}],
+                            [4, 5, {'weight': 1}],
+                            [5, 6, {'weight': 1}],
+                            [6, 7, {'weight': 1}],
+                            [7, 0, {'weight': 1}]])
+        assert nx.astar_path(XG4, 0, 2) == [0, 1, 2]
+        assert nx.astar_path_length(XG4, 0, 2) == 4
 
 
 # >>> MXG4=NX.MultiGraph(XG4)
@@ -104,25 +104,26 @@ class TestAStar:
 # [0, 1, 2]
 
     def test_astar_w1(self):
-        G=nx.DiGraph()
-        G.add_edges_from([('s','u'), ('s','x'), ('u','v'), ('u','x'),
-            ('v','y'), ('x','u'), ('x','w'), ('w', 'v'), ('x','y'),
-            ('y','s'), ('y','v')])
-        assert nx.astar_path(G,'s','v')==['s', 'u', 'v']
-        assert nx.astar_path_length(G,'s','v')== 2
+        G = nx.DiGraph()
+        G.add_edges_from([('s', 'u'), ('s', 'x'), ('u', 'v'), ('u', 'x'),
+                          ('v', 'y'), ('x', 'u'), ('x',
+                                                   'w'), ('w', 'v'), ('x', 'y'),
+                          ('y', 's'), ('y', 'v')])
+        assert nx.astar_path(G, 's', 'v') == ['s', 'u', 'v']
+        assert nx.astar_path_length(G, 's', 'v') == 2
 
     @raises(nx.NetworkXNoPath)
     def test_astar_nopath(self):
-        p = nx.astar_path(self.XG,'s','moon')
+        p = nx.astar_path(self.XG, 's', 'moon')
 
     def test_cycle(self):
-        C=nx.cycle_graph(7)
-        assert nx.astar_path(C,0,3)==[0, 1, 2, 3]
-        assert nx.dijkstra_path(C,0,4)==[0, 6, 5, 4]
-
+        C = nx.cycle_graph(7)
+        assert nx.astar_path(C, 0, 3) == [0, 1, 2, 3]
+        assert nx.dijkstra_path(C, 0, 4) == [0, 6, 5, 4]
 
     def test_orderable(self):
-        class UnorderableClass: pass
+        class UnorderableClass:
+            pass
         node_1 = UnorderableClass()
         node_2 = UnorderableClass()
         node_3 = UnorderableClass()
@@ -132,6 +133,4 @@ class TestAStar:
         G.add_edge(node_1, node_3)
         G.add_edge(node_2, node_4)
         G.add_edge(node_3, node_4)
-        path=nx.algorithms.shortest_paths.astar.astar_path(G, node_1, node_4)
-
-
+        path = nx.algorithms.shortest_paths.astar.astar_path(G, node_1, node_4)

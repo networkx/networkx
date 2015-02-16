@@ -17,7 +17,8 @@ __all__ = ['could_be_isomorphic',
            'faster_could_be_isomorphic',
            'is_isomorphic']
 
-def could_be_isomorphic(G1,G2):
+
+def could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
     True does NOT guarantee isomorphism.
 
@@ -32,20 +33,19 @@ def could_be_isomorphic(G1,G2):
     """
 
     # Check global properties
-    if G1.order() != G2.order(): return False
+    if G1.order() != G2.order():
+        return False
 
     # Check local properties
-    d1=G1.degree()
-    t1=nx.triangles(G1)
-    c1=nx.number_of_cliques(G1)
-    props1=[ [d1[v], t1[v], c1[v]] for v in d1 ]
-    props1.sort()
+    d1 = G1.degree()
+    t1 = nx.triangles(G1)
+    c1 = nx.number_of_cliques(G1)
+    props1 = sorted([[d1[v], t1[v], c1[v]] for v in d1])
 
-    d2=G2.degree()
-    t2=nx.triangles(G2)
-    c2=nx.number_of_cliques(G2)
-    props2=[ [d2[v], t2[v], c2[v]] for v in d2 ]
-    props2.sort()
+    d2 = G2.degree()
+    t2 = nx.triangles(G2)
+    c2 = nx.number_of_cliques(G2)
+    props2 = sorted([[d2[v], t2[v], c2[v]] for v in d2])
 
     if props1 != props2:
         return False
@@ -53,9 +53,10 @@ def could_be_isomorphic(G1,G2):
     # OK...
     return True
 
-graph_could_be_isomorphic=could_be_isomorphic
+graph_could_be_isomorphic = could_be_isomorphic
 
-def fast_could_be_isomorphic(G1,G2):
+
+def fast_could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
 
     True does NOT guarantee isomorphism.
@@ -70,27 +71,28 @@ def fast_could_be_isomorphic(G1,G2):
     Checks for matching degree and triangle sequences.
     """
     # Check global properties
-    if G1.order() != G2.order(): return False
+    if G1.order() != G2.order():
+        return False
 
     # Check local properties
-    d1=G1.degree()
-    t1=nx.triangles(G1)
-    props1=[ [d1[v], t1[v]] for v in d1 ]
-    props1.sort()
+    d1 = G1.degree()
+    t1 = nx.triangles(G1)
+    props1 = sorted([[d1[v], t1[v]] for v in d1])
 
-    d2=G2.degree()
-    t2=nx.triangles(G2)
-    props2=[ [d2[v], t2[v]] for v in d2 ]
-    props2.sort()
+    d2 = G2.degree()
+    t2 = nx.triangles(G2)
+    props2 = sorted([[d2[v], t2[v]] for v in d2])
 
-    if props1 != props2: return False
+    if props1 != props2:
+        return False
 
     # OK...
     return True
 
-fast_graph_could_be_isomorphic=fast_could_be_isomorphic
+fast_graph_could_be_isomorphic = fast_could_be_isomorphic
 
-def faster_could_be_isomorphic(G1,G2):
+
+def faster_could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
 
     True does NOT guarantee isomorphism.
@@ -105,20 +107,21 @@ def faster_could_be_isomorphic(G1,G2):
     Checks for matching degree sequences.
     """
     # Check global properties
-    if G1.order() != G2.order(): return False
+    if G1.order() != G2.order():
+        return False
 
     # Check local properties
-    d1=list(G1.degree().values())
-    d1.sort()
-    d2=list(G2.degree().values())
-    d2.sort()
+    d1 = sorted(G1.degree().values())
+    d2 = sorted(G2.degree().values())
 
-    if d1 != d2: return False
+    if d1 != d2:
+        return False
 
     # OK...
     return True
 
-faster_graph_could_be_isomorphic=faster_could_be_isomorphic
+faster_graph_could_be_isomorphic = faster_could_be_isomorphic
+
 
 def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     """Returns True if the graphs G1 and G2 are isomorphic and False otherwise.
@@ -220,7 +223,7 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     elif (not G1.is_directed()) and (not G2.is_directed()):
         GM = nx.algorithms.isomorphism.GraphMatcher
     else:
-       raise NetworkXError("Graphs G1 and G2 are not of the same type.")
+        raise NetworkXError("Graphs G1 and G2 are not of the same type.")
 
     gm = GM(G1, G2, node_match=node_match, edge_match=edge_match)
 

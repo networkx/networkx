@@ -60,7 +60,7 @@ def min_weighted_dominating_set(G, weight=None):
 
     # min cover = min dominating set
     dom_set = set([])
-    cost_func = dict((node, nd.get(weight, 1)) \
+    cost_func = dict((node, nd.get(weight, 1))
                      for node, nd in G.nodes_iter(data=True))
 
     vertices = set(G)

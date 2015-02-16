@@ -22,6 +22,7 @@ __all__ = ['number_strongly_connected_components',
            'kosaraju_strongly_connected_components',
            'condensation']
 
+
 @not_implemented_for('undirected')
 def strongly_connected_components(G):
     """Generate nodes in strongly connected components of graph.
@@ -58,41 +59,42 @@ def strongly_connected_components(G):
        E. Nuutila and E. Soisalon-Soinen
        Information Processing Letters 49(1): 9-14, (1994)..
     """
-    preorder={}
-    lowlink={}
-    scc_found={}
+    preorder = {}
+    lowlink = {}
+    scc_found = {}
     scc_queue = []
-    i=0     # Preorder counter
+    i = 0     # Preorder counter
     for source in G:
         if source not in scc_found:
-            queue=[source]
+            queue = [source]
             while queue:
-                v=queue[-1]
+                v = queue[-1]
                 if v not in preorder:
-                    i=i+1
-                    preorder[v]=i
-                done=1
-                v_nbrs=G[v]
+                    i = i + 1
+                    preorder[v] = i
+                done = 1
+                v_nbrs = G[v]
                 for w in v_nbrs:
                     if w not in preorder:
                         queue.append(w)
-                        done=0
+                        done = 0
                         break
-                if done==1:
-                    lowlink[v]=preorder[v]
+                if done == 1:
+                    lowlink[v] = preorder[v]
                     for w in v_nbrs:
                         if w not in scc_found:
-                            if preorder[w]>preorder[v]:
-                                lowlink[v]=min([lowlink[v],lowlink[w]])
+                            if preorder[w] > preorder[v]:
+                                lowlink[v] = min([lowlink[v], lowlink[w]])
                             else:
-                                lowlink[v]=min([lowlink[v],preorder[w]])
+                                lowlink[v] = min([lowlink[v], preorder[w]])
                     queue.pop()
-                    if lowlink[v]==preorder[v]:
-                        scc_found[v]=True
-                        scc=[v]
-                        while scc_queue and preorder[scc_queue[-1]]>preorder[v]:
-                            k=scc_queue.pop()
-                            scc_found[k]=True
+                    if lowlink[v] == preorder[v]:
+                        scc_found[v] = True
+                        scc = [v]
+                        while scc_queue and preorder[
+                                scc_queue[-1]] > preorder[v]:
+                            k = scc_queue.pop()
+                            scc_found[k] = True
                             scc.append(k)
                         yield scc
                     else:
@@ -100,7 +102,7 @@ def strongly_connected_components(G):
 
 
 @not_implemented_for('undirected')
-def kosaraju_strongly_connected_components(G,source=None):
+def kosaraju_strongly_connected_components(G, source=None):
     """Generate nodes in strongly connected components of graph.
 
     Parameters
@@ -133,10 +135,11 @@ def kosaraju_strongly_connected_components(G,source=None):
         r = post.pop()
         if r in seen:
             continue
-        c = nx.dfs_preorder_nodes(G,r)
-        new=[v for v in c if v not in seen]
-        seen.update([(u,True) for u in new])
+        c = nx.dfs_preorder_nodes(G, r)
+        new = [v for v in c if v not in seen]
+        seen.update([(u, True) for u in new])
         yield new
+
 
 @not_implemented_for('undirected')
 def strongly_connected_components_recursive(G):
@@ -176,36 +179,37 @@ def strongly_connected_components_recursive(G):
        E. Nuutila and E. Soisalon-Soinen
        Information Processing Letters 49(1): 9-14, (1994)..
     """
-    def visit(v,cnt):
-        root[v]=cnt
-        visited[v]=cnt
-        cnt+=1
+    def visit(v, cnt):
+        root[v] = cnt
+        visited[v] = cnt
+        cnt += 1
         stack.append(v)
         for w in G[v]:
             if w not in visited:
-                for c in visit(w,cnt):
+                for c in visit(w, cnt):
                     yield c
             if w not in component:
-                root[v]=min(root[v],root[w])
-        if root[v]==visited[v]:
-            component[v]=root[v]
-            tmpc=[v] # hold nodes in this component
-            while stack[-1]!=v:
-                w=stack.pop()
-                component[w]=root[v]
+                root[v] = min(root[v], root[w])
+        if root[v] == visited[v]:
+            component[v] = root[v]
+            tmpc = [v]  # hold nodes in this component
+            while stack[-1] != v:
+                w = stack.pop()
+                component[w] = root[v]
                 tmpc.append(w)
             stack.remove(v)
             yield tmpc
 
-    visited={}
-    component={}
-    root={}
-    cnt=0
-    stack=[]
+    visited = {}
+    component = {}
+    root = {}
+    cnt = 0
+    stack = []
     for source in G:
         if source not in visited:
-            for c in visit(source,cnt):
+            for c in visit(source, cnt):
                 yield c
+
 
 @not_implemented_for('undirected')
 def strongly_connected_component_subgraphs(G, copy=True):
@@ -282,11 +286,12 @@ def is_strongly_connected(G):
     -----
     For directed graphs only.
     """
-    if len(G)==0:
+    if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
-    return len(list(strongly_connected_components(G))[0])==len(G)
+    return len(list(strongly_connected_components(G))[0]) == len(G)
+
 
 @not_implemented_for('undirected')
 def condensation(G, scc=None):

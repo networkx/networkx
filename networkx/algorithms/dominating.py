@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>'])
-__all__ = [ 'dominating_set', 'is_dominating_set']
+__all__ = ['dominating_set', 'is_dominating_set']
+
 
 def dominating_set(G, start_with=None):
     r"""Finds a dominating set for the graph G.
@@ -42,7 +43,7 @@ def dominating_set(G, start_with=None):
     """
     all_nodes = set(G)
     if start_with is None:
-        v = set(G).pop() # pick a node
+        v = set(G).pop()  # pick a node
     else:
         if start_with not in G:
             raise nx.NetworkXError('node %s not in G' % start_with)
@@ -56,6 +57,7 @@ def dominating_set(G, start_with=None):
         ND.update([nbr for nbr in G[w] if nbr not in D])
         other = all_nodes - ND - D
     return D
+
 
 def is_dominating_set(G, nbunch):
     r"""Checks if nodes in nbunch are a dominating set for G.

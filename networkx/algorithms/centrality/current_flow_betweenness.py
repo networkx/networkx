@@ -97,44 +97,45 @@ def approximate_current_flow_betweenness_centrality(G, normalized=True,
                                'not defined for digraphs.')
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
-    solvername={"full" :FullInverseLaplacian,
-                "lu": SuperLUInverseLaplacian,
-                "cg": CGInverseLaplacian}
+    solvername = {"full": FullInverseLaplacian,
+                  "lu": SuperLUInverseLaplacian,
+                  "cg": CGInverseLaplacian}
     n = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
-    H = nx.relabel_nodes(G,dict(zip(ordering,range(n))))
+    H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
     L = laplacian_sparse_matrix(H, nodelist=range(n), weight=weight,
                                 dtype=dtype, format='csc')
-    C = solvername[solver](L, dtype=dtype) # initialize solver
-    betweenness = dict.fromkeys(H,0.0)
-    nb = (n-1.0)*(n-2.0) # normalization factor
-    cstar = n*(n-1)/nb
-    l = 1 # parameter in approximation, adjustable
-    k = l*int(np.ceil((cstar/epsilon)**2*np.log(n)))
+    C = solvername[solver](L, dtype=dtype)  # initialize solver
+    betweenness = dict.fromkeys(H, 0.0)
+    nb = (n - 1.0) * (n - 2.0)  # normalization factor
+    cstar = n * (n - 1) / nb
+    l = 1  # parameter in approximation, adjustable
+    k = l * int(np.ceil((cstar / epsilon) ** 2 * np.log(n)))
     if k > kmax:
-        raise nx.NetworkXError('Number random pairs k>kmax (%d>%d) '%(k,kmax),
+        raise nx.NetworkXError('Number random pairs k>kmax (%d>%d) ' % (k, kmax),
                                'Increase kmax or epsilon')
-    cstar2k = cstar/(2*k)
+    cstar2k = cstar / (2 * k)
     for i in range(k):
-        s,t = random.sample(range(n),2)
+        s, t = random.sample(range(n), 2)
         b = np.zeros(n, dtype=dtype)
         b[s] = 1
         b[t] = -1
         p = C.solve(b)
         for v in H:
-            if v==s or v==t:
+            if v == s or v == t:
                 continue
             for nbr in H[v]:
-                w = H[v][nbr].get(weight,1.0)
-                betweenness[v] += w*np.abs(p[v]-p[nbr])*cstar2k
+                w = H[v][nbr].get(weight, 1.0)
+                betweenness[v] += w * np.abs(p[v] - p[nbr]) * cstar2k
     if normalized:
         factor = 1.0
     else:
-        factor = nb/2.0
+        factor = nb / 2.0
     # remap to original node names and "unnormalize" if required
-    return dict((ordering[k],float(v*factor)) for k,v in betweenness.items())
+    return dict((ordering[k], float(v * factor))
+                for k, v in betweenness.items())
 
 
 def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
@@ -227,21 +228,21 @@ def current_flow_betweenness_centrality(G, normalized=True, weight='weight',
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
-    H = nx.relabel_nodes(G,dict(zip(ordering,range(n))))
-    betweenness = dict.fromkeys(H,0.0) # b[v]=0 for v in H
-    for row,(s,t) in flow_matrix_row(H, weight=weight, dtype=dtype,
-                                     solver=solver):
-        pos = dict(zip(row.argsort()[::-1],range(n)))
+    H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
+    betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
+    for row, (s, t) in flow_matrix_row(H, weight=weight, dtype=dtype,
+                                       solver=solver):
+        pos = dict(zip(row.argsort()[::-1], range(n)))
         for i in range(n):
-            betweenness[s] += (i-pos[i])*row[i]
-            betweenness[t] += (n-i-1-pos[i])*row[i]
+            betweenness[s] += (i - pos[i]) * row[i]
+            betweenness[t] += (n - i - 1 - pos[i]) * row[i]
     if normalized:
-        nb = (n-1.0)*(n-2.0) # normalization factor
+        nb = (n - 1.0) * (n - 2.0)  # normalization factor
     else:
         nb = 2.0
-    for i,v in enumerate(H): # map integers to nodes
-        betweenness[v] = float((betweenness[v]-i)*2.0/nb)
-    return dict((ordering[k],v) for k,v in betweenness.items())
+    for i, v in enumerate(H):  # map integers to nodes
+        betweenness[v] = float((betweenness[v] - i) * 2.0 / nb)
+    return dict((ordering[k], v) for k, v in betweenness.items())
 
 
 def edge_current_flow_betweenness_centrality(G, normalized=True,
@@ -334,21 +335,21 @@ def edge_current_flow_betweenness_centrality(G, normalized=True,
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
-    H = nx.relabel_nodes(G,dict(zip(ordering,range(n))))
-    betweenness=(dict.fromkeys(H.edges(),0.0))
+    H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
+    betweenness = (dict.fromkeys(H.edges(), 0.0))
     if normalized:
-        nb=(n-1.0)*(n-2.0) # normalization factor
+        nb = (n - 1.0) * (n - 2.0)  # normalization factor
     else:
-        nb=2.0
-    for row,(e) in flow_matrix_row(H, weight=weight, dtype=dtype,
-                                   solver=solver):
-        pos=dict(zip(row.argsort()[::-1],range(1,n+1)))
+        nb = 2.0
+    for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype,
+                                    solver=solver):
+        pos = dict(zip(row.argsort()[::-1], range(1, n + 1)))
         for i in range(n):
-            betweenness[e]+=(i+1-pos[i])*row[i]
-            betweenness[e]+=(n-i-pos[i])*row[i]
-        betweenness[e]/=nb
-    return dict(((ordering[s],ordering[t]),float(v))
-                for (s,t),v in betweenness.items())
+            betweenness[e] += (i + 1 - pos[i]) * row[i]
+            betweenness[e] += (n - i - pos[i]) * row[i]
+        betweenness[e] /= nb
+    return dict(((ordering[s], ordering[t]), float(v))
+                for (s, t), v in betweenness.items())
 
 
 # fixture for nose tests

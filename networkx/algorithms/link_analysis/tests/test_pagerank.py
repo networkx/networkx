@@ -118,14 +118,11 @@ class TestPageRank(object):
         for n in self.G:
             assert_almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
 
-
-
     def test_empty(self):
         G = networkx.Graph()
         assert_equal(networkx.pagerank(G), {})
         assert_equal(networkx.pagerank_numpy(G), {})
         assert_equal(networkx.google_matrix(G).shape, (0, 0))
-
 
 
 class TestPageRankScipy(TestPageRank):

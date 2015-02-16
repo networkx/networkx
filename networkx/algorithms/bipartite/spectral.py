@@ -4,7 +4,7 @@ Spectral bipartivity measure.
 """
 import networkx as nx
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2011 by 
+#    Copyright (C) 2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -12,12 +12,13 @@ __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 #    BSD license.
 __all__ = ['spectral_bipartivity']
 
+
 def spectral_bipartivity(G, nodes=None, weight='weight'):
     """Returns the spectral bipartivity.
 
     Parameters
     ----------
-    G : NetworkX graph 
+    G : NetworkX graph
 
     nodes : list or container  optional(default is all nodes)
       Nodes to return value of spectral bipartivity contribution.
@@ -31,7 +32,7 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
        A single number if the keyword nodes is not specified, or
        a dictionary keyed by node with the spectral bipartivity contribution
        of that node as the value.
-       
+
     Examples
     --------
     >>> from networkx.algorithms import bipartite
@@ -42,7 +43,7 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
     Notes
     -----
     This implementation uses Numpy (dense) matrices which are not efficient
-    for storing large sparse graphs.  
+    for storing large sparse graphs.
 
     See Also
     --------
@@ -58,7 +59,7 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
     except ImportError:
         raise ImportError('spectral_bipartivity() requires SciPy: ',
                           'http://scipy.org/')
-    nodelist = G.nodes() # ordering of nodes in matrix
+    nodelist = G.nodes()  # ordering of nodes in matrix
     A = nx.to_numpy_matrix(G, nodelist, weight=weight)
     expA = scipy.linalg.expm(A)
     expmA = scipy.linalg.expm(-A)
@@ -74,6 +75,7 @@ def spectral_bipartivity(G, nodes=None, weight='weight'):
             i = index[n]
             sb[n] = coshA[i, i] / expA[i, i]
         return sb
+
 
 def setup_module(module):
     """Fixture for nose tests."""

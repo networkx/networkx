@@ -10,6 +10,7 @@ from networkx.utils import not_implemented_for
 __author__ = "Aric Hagberg <aric.hagberg@gmail.com>"
 __all__ = ['stochastic_graph']
 
+
 @not_implemented_for('multigraph')
 @not_implemented_for('undirected')
 def stochastic_graph(G, copy=True, weight='weight'):
@@ -34,12 +35,12 @@ def stochastic_graph(G, copy=True, weight='weight'):
     if copy:
         W = nx.DiGraph(G)
     else:
-        W = G # reference original graph, no copy
+        W = G  # reference original graph, no copy
     degree = W.out_degree(weight=weight)
-    for (u,v,d) in W.edges(data=True):
+    for (u, v, d) in W.edges(data=True):
         if degree[u] == 0:
-            warnings.warn('zero out-degree for node %s'%u)
+            warnings.warn('zero out-degree for node %s' % u)
             d[weight] = 0.0
         else:
-            d[weight] = float(d.get(weight,1.0))/degree[u]
+            d[weight] = float(d.get(weight, 1.0)) / degree[u]
     return W

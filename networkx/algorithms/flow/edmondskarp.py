@@ -22,6 +22,7 @@ def edmonds_karp_core(R, s, t, cutoff):
     R_succ = R.succ
 
     inf = R.graph['inf']
+
     def augment(path):
         """Augment flow along a path from s to t.
         """

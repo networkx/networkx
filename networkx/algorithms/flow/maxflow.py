@@ -442,11 +442,11 @@ def minimum_cut(G, s, t, capacity='capacity', flow_func=None, **kwargs):
         raise nx.NetworkXError("flow_func has to be callable.")
 
     if (kwargs.get('cutoff') is not None and
-        flow_func in (edmonds_karp, preflow_push, shortest_augmenting_path)):
+            flow_func in (edmonds_karp, preflow_push, shortest_augmenting_path)):
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)
-    # Remove saturated edges from the residual network 
+    # Remove saturated edges from the residual network
     cutset = [(u, v, d) for u, v, d in R.edges(data=True)
               if d['flow'] == d['capacity']]
     R.remove_edges_from(cutset)
@@ -593,7 +593,7 @@ def minimum_cut_value(G, s, t, capacity='capacity', flow_func=None, **kwargs):
         raise nx.NetworkXError("flow_func has to be callable.")
 
     if (kwargs.get('cutoff') is not None and
-        flow_func in (edmonds_karp, preflow_push, shortest_augmenting_path)):
+            flow_func in (edmonds_karp, preflow_push, shortest_augmenting_path)):
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(G, s, t, capacity=capacity, value_only=True, **kwargs)

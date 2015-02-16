@@ -6,6 +6,7 @@ __all__ = [
     'reversed',
 ]
 
+
 @contextmanager
 def reversed(G):
     """A context manager for temporarily reversing a directed graph in place.

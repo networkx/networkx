@@ -23,8 +23,9 @@ __all__ = ['is_graphical',
            'is_digraphical',
            'is_valid_degree_sequence_erdos_gallai',
            'is_valid_degree_sequence_havel_hakimi',
-           'is_valid_degree_sequence', # deprecated
+           'is_valid_degree_sequence',  # deprecated
            ]
+
 
 def is_graphical(sequence, method='eg'):
     """Returns True if sequence is a valid degree sequence.
@@ -73,25 +74,27 @@ def is_graphical(sequence, method='eg'):
 
 is_valid_degree_sequence = is_graphical
 
+
 def _basic_graphical_tests(deg_sequence):
     # Sort and perform some simple tests on the sequence
     if not nx.utils.is_list_of_ints(deg_sequence):
         raise nx.NetworkXUnfeasible
     p = len(deg_sequence)
-    num_degs = [0]*p
+    num_degs = [0] * p
     dmax, dmin, dsum, n = 0, p, 0, 0
     for d in deg_sequence:
         # Reject if degree is negative or larger than the sequence length
-        if d<0 or d>=p:
+        if d < 0 or d >= p:
             raise nx.NetworkXUnfeasible
         # Process only the non-zero integers
-        elif d>0:
-            dmax, dmin, dsum, n = max(dmax,d), min(dmin,d), dsum+d, n+1
+        elif d > 0:
+            dmax, dmin, dsum, n = max(dmax, d), min(dmin, d), dsum + d, n + 1
             num_degs[d] += 1
     # Reject sequence if it has odd sum or is oversaturated
-    if dsum%2 or dsum>n*(n-1):
+    if dsum % 2 or dsum > n * (n - 1):
         raise nx.NetworkXUnfeasible
-    return dmax,dmin,dsum,n,num_degs
+    return dmax, dmin, dsum, n, num_degs
+
 
 def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     r"""Returns True if deg_sequence can be realized by a simple graph.
@@ -113,7 +116,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     Notes
     -----
     The ZZ condition says that for the sequence d if
-    
+
     .. math::
         |d| >= \frac{(\max(d) + \min(d) + 1)^2}{4*\min(d)}
 
@@ -128,40 +131,40 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
 
     """
     try:
-        dmax,dmin,dsum,n,num_degs = _basic_graphical_tests(deg_sequence)
-    except nx.NetworkXUnfeasible: 
+        dmax, dmin, dsum, n, num_degs = _basic_graphical_tests(deg_sequence)
+    except nx.NetworkXUnfeasible:
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
-    if n==0 or 4*dmin*n >= (dmax+dmin+1) * (dmax+dmin+1):
+    if n == 0 or 4 * dmin * n >= (dmax + dmin + 1) * (dmax + dmin + 1):
         return True
 
-    modstubs = [0]*(dmax+1)
+    modstubs = [0] * (dmax + 1)
     # Successively reduce degree sequence by removing the maximum degree
     while n > 0:
         # Retrieve the maximum degree in the sequence
         while num_degs[dmax] == 0:
-            dmax -= 1;
+            dmax -= 1
         # If there are not enough stubs to connect to, then the sequence is
         # not graphical
-        if dmax > n-1:
+        if dmax > n - 1:
             return False
 
         # Remove largest stub in list
-        num_degs[dmax], n = num_degs[dmax]-1, n-1
+        num_degs[dmax], n = num_degs[dmax] - 1, n - 1
         # Reduce the next dmax largest stubs
         mslen = 0
         k = dmax
         for i in range(dmax):
             while num_degs[k] == 0:
                 k -= 1
-            num_degs[k], n = num_degs[k]-1, n-1
+            num_degs[k], n = num_degs[k] - 1, n - 1
             if k > 1:
-                modstubs[mslen] = k-1
+                modstubs[mslen] = k - 1
                 mslen += 1
         # Add back to the list any non-zero stubs that were removed
-        for i  in range(mslen):
+        for i in range(mslen):
             stub = modstubs[i]
-            num_degs[stub], n = num_degs[stub]+1, n+1
+            num_degs[stub], n = num_degs[stub] + 1, n + 1
     return True
 
 
@@ -201,7 +204,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     This particular rearrangement comes from the proof of Theorem 3 in [2]_.
 
     The ZZ condition says that for the sequence d if
-    
+
     .. math::
         |d| >= \frac{(\max(d) + \min(d) + 1)^2}{4*\min(d)}
 
@@ -217,30 +220,33 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     [EG1960]_, [choudum1986]_
     """
     try:
-        dmax,dmin,dsum,n,num_degs = _basic_graphical_tests(deg_sequence)
-    except nx.NetworkXUnfeasible: 
+        dmax, dmin, dsum, n, num_degs = _basic_graphical_tests(deg_sequence)
+    except nx.NetworkXUnfeasible:
         return False
     # Accept if sequence has no non-zero degrees or passes the ZZ condition
-    if n==0 or 4*dmin*n >= (dmax+dmin+1) * (dmax+dmin+1):
+    if n == 0 or 4 * dmin * n >= (dmax + dmin + 1) * (dmax + dmin + 1):
         return True
 
     # Perform the EG checks using the reformulation of Zverovich and Zverovich
     k, sum_deg, sum_nj, sum_jnj = 0, 0, 0, 0
-    for dk in range(dmax, dmin-1, -1):
-        if dk < k+1:            # Check if already past Durfee index
+    for dk in range(dmax, dmin - 1, -1):
+        if dk < k + 1:            # Check if already past Durfee index
             return True
         if num_degs[dk] > 0:
-            run_size = num_degs[dk] # Process a run of identical-valued degrees
-            if dk < k+run_size:     # Check if end of run is past Durfee index
-                run_size = dk-k     # Adjust back to Durfee index
+            # Process a run of identical-valued degrees
+            run_size = num_degs[dk]
+            # Check if end of run is past Durfee index
+            if dk < k + run_size:
+                run_size = dk - k     # Adjust back to Durfee index
             sum_deg += run_size * dk
             for v in range(run_size):
-                sum_nj += num_degs[k+v]
-                sum_jnj += (k+v) * num_degs[k+v]
+                sum_nj += num_degs[k + v]
+                sum_jnj += (k + v) * num_degs[k + v]
             k += run_size
-            if sum_deg > k*(n-1) - k*sum_nj + sum_jnj:
+            if sum_deg > k * (n - 1) - k * sum_nj + sum_jnj:
                 return False
     return True
+
 
 def is_multigraphical(sequence):
     """Returns True if some multigraph can realize the sequence.
@@ -270,12 +276,13 @@ def is_multigraphical(sequence):
         return False
     dsum, dmax = 0, 0
     for d in deg_sequence:
-        if d<0:
+        if d < 0:
             return False
-        dsum, dmax = dsum+d, max(dmax,d)
-    if dsum%2 or dsum<2*dmax:
+        dsum, dmax = dsum + d, max(dmax, d)
+    if dsum % 2 or dsum < 2 * dmax:
         return False
     return True
+
 
 def is_pseudographical(sequence):
     """Returns True if some pseudograph can realize the sequence.
@@ -306,10 +313,11 @@ def is_pseudographical(sequence):
     s = list(sequence)
     if not nx.utils.is_list_of_ints(s):
         return False
-    return sum(s)%2 == 0 and min(s) >= 0
+    return sum(s) % 2 == 0 and min(s) >= 0
+
 
 def is_digraphical(in_sequence, out_sequence):
-    r"""Returns True if some directed graph can realize the in- and out-degree 
+    r"""Returns True if some directed graph can realize the in- and out-degree
     sequences.
 
     Parameters
@@ -345,37 +353,39 @@ def is_digraphical(in_sequence, out_sequence):
         return False
     # Process the sequences and form two heaps to store degree pairs with
     # either zero or non-zero out degrees
-    sumin, sumout, nin, nout = 0, 0, len(in_deg_sequence), len(out_deg_sequence)
+    sumin, sumout, nin, nout = 0, 0, len(
+        in_deg_sequence), len(out_deg_sequence)
     maxn = max(nin, nout)
     maxin = 0
-    if maxn==0:
+    if maxn == 0:
         return True
-    stubheap, zeroheap = [ ], [ ]
+    stubheap, zeroheap = [], []
     for n in range(maxn):
         in_deg, out_deg = 0, 0
-        if n<nout:
+        if n < nout:
             out_deg = out_deg_sequence[n]
-        if n<nin:
+        if n < nin:
             in_deg = in_deg_sequence[n]
-        if in_deg<0 or out_deg<0:
+        if in_deg < 0 or out_deg < 0:
             return False
-        sumin, sumout, maxin = sumin+in_deg, sumout+out_deg, max(maxin, in_deg)
+        sumin, sumout, maxin = sumin + \
+            in_deg, sumout + out_deg, max(maxin, in_deg)
         if in_deg > 0:
-            stubheap.append((-1*out_deg, -1*in_deg))
+            stubheap.append((-1 * out_deg, -1 * in_deg))
         elif out_deg > 0:
-            zeroheap.append(-1*out_deg)
+            zeroheap.append(-1 * out_deg)
     if sumin != sumout:
         return False
     heapq.heapify(stubheap)
     heapq.heapify(zeroheap)
 
-    modstubs = [(0,0)]*(maxin+1)
+    modstubs = [(0, 0)] * (maxin + 1)
     # Successively reduce degree sequence by removing the maximum out degree
     while stubheap:
         # Take the first value in the sequence with non-zero in degree
-        (freeout, freein) =  heapq.heappop( stubheap )
+        (freeout, freein) = heapq.heappop(stubheap)
         freein *= -1
-        if freein > len(stubheap)+len(zeroheap):
+        if freein > len(stubheap) + len(zeroheap):
             return False
 
         # Attach out stubs to the nodes with the most in stubs
@@ -389,8 +399,8 @@ def is_digraphical(in_sequence, out_sequence):
             if stubout == 0:
                 return False
             # Check if target is now totally connected
-            if stubout+1<0 or stubin<0:
-                modstubs[mslen] =  (stubout+1, stubin)
+            if stubout + 1 < 0 or stubin < 0:
+                modstubs[mslen] = (stubout + 1, stubin)
                 mslen += 1
 
         # Add back the nodes to the heap that still have available stubs
@@ -400,6 +410,6 @@ def is_digraphical(in_sequence, out_sequence):
                 heapq.heappush(stubheap, stub)
             else:
                 heapq.heappush(zeroheap, stub[0])
-        if freeout<0:
+        if freeout < 0:
             heapq.heappush(zeroheap, freeout)
     return True

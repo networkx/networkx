@@ -7,6 +7,7 @@ from nose.tools import *
 import networkx as nx
 import networkx.readwrite.graph6 as g6
 
+
 class TestGraph6Utils(object):
 
     def test_n_data_n_conversion(self):
@@ -17,7 +18,7 @@ class TestGraph6Utils(object):
                          [42, 43])
 
     def test_data_sparse6_data_conversion(self):
-        for data in [[], [0], [63], [63, 63], [0]*42,
+        for data in [[], [0], [63], [63, 63], [0] * 42,
                      [0, 1, 62, 42, 3, 11, 0, 11]]:
             assert_equal(g6.graph6_to_data(g6.data_to_graph6(data)), data)
             assert_equal(len(g6.data_to_graph6(data)), len(data))
@@ -26,28 +27,28 @@ class TestGraph6Utils(object):
 class TestGraph6(object):
 
     def test_parse_graph6(self):
-        data="""DF{"""
-        G=nx.parse_graph6(data)
-        assert_equal(sorted(G.nodes()),[0, 1, 2, 3, 4])
+        data = """DF{"""
+        G = nx.parse_graph6(data)
+        assert_equal(sorted(G.nodes()), [0, 1, 2, 3, 4])
         assert_equal([e for e in sorted(G.edges())],
                      [(0, 3), (0, 4), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
 
     def test_read_graph6(self):
-        data="""DF{"""
-        G=nx.parse_graph6(data)
+        data = """DF{"""
+        G = nx.parse_graph6(data)
         fh = StringIO(data)
-        Gin=nx.read_graph6(fh)
-        assert_equal(sorted(G.nodes()),sorted(Gin.nodes()))
-        assert_equal(sorted(G.edges()),sorted(Gin.edges()))
+        Gin = nx.read_graph6(fh)
+        assert_equal(sorted(G.nodes()), sorted(Gin.nodes()))
+        assert_equal(sorted(G.edges()), sorted(Gin.edges()))
 
     def test_read_many_graph6(self):
         # Read many graphs into list
-        data="""DF{\nD`{\nDqK\nD~{\n"""
+        data = """DF{\nD`{\nDqK\nD~{\n"""
         fh = StringIO(data)
-        glist=nx.read_graph6(fh)
-        assert_equal(len(glist),4)
+        glist = nx.read_graph6(fh)
+        assert_equal(len(glist), 4)
         for G in glist:
-            assert_equal(sorted(G.nodes()),[0, 1, 2, 3, 4])
+            assert_equal(sorted(G.nodes()), [0, 1, 2, 3, 4])
 
     def test_generate_graph6(self):
         assert_equal(nx.generate_graph6(nx.empty_graph(0)), '>>graph6<<?')
@@ -57,9 +58,9 @@ class TestGraph6(object):
         assert_equal(nx.generate_graph6(G1, header=True), '>>graph6<<C~')
         assert_equal(nx.generate_graph6(G1, header=False), 'C~')
 
-        G2 = nx.complete_bipartite_graph(6,9)
+        G2 = nx.complete_bipartite_graph(6, 9)
         assert_equal(nx.generate_graph6(G2, header=False),
-                     'N??F~z{~Fw^_~?~?^_?') # verified by Sage
+                     'N??F~z{~Fw^_~?~?^_?')  # verified by Sage
 
         G3 = nx.complete_graph(67)
         assert_equal(nx.generate_graph6(G3, header=False),
@@ -67,7 +68,7 @@ class TestGraph6(object):
 
     def test_write_graph6(self):
         fh = StringIO()
-        nx.write_graph6(nx.complete_bipartite_graph(6,9), fh)
+        nx.write_graph6(nx.complete_bipartite_graph(6, 9), fh)
         fh.seek(0)
         assert_equal(fh.read(), '>>graph6<<N??F~z{~Fw^_~?~?^_?\n')
 
@@ -76,7 +77,7 @@ class TestGraph6(object):
             g = nx.random_graphs.gnm_random_graph(i, i * i // 4, seed=i)
             gstr = nx.generate_graph6(g, header=False)
             assert_equal(len(gstr),
-                         ((i-1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
+                         ((i - 1) * i // 2 + 5) // 6 + (1 if i < 63 else 4))
             g2 = nx.parse_graph6(gstr)
             assert_equal(g2.order(), g.order())
             assert_equal(sorted(g2.edges()), sorted(g.edges()))

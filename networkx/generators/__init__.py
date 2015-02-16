@@ -1,5 +1,5 @@
 """
-A package for generating various graphs in networkx. 
+A package for generating various graphs in networkx.
 
 """
 from networkx.generators.bipartite import *

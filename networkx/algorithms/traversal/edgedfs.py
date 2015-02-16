@@ -12,6 +12,7 @@ REVERSE = 'reverse'
 
 __all__ = ['edge_dfs']
 
+
 def helper_funcs(G, orientation):
     """
     These are various G-specific functions that help us implement the algorithm
@@ -72,6 +73,7 @@ def helper_funcs(G, orientation):
         return tail, head
 
     return out_edges, key, traversed_tailhead
+
 
 def edge_dfs(G, source=None, orientation='original'):
     """
@@ -182,4 +184,3 @@ def edge_dfs(G, source=None, orientation='original'):
                     # Mark the traversed "to" node as to-be-explored.
                     stack.append(tailhead(edge)[1])
                     yield edge
-

@@ -11,6 +11,7 @@ from networkx.algorithms.centrality.flow_matrix import *
 __author__ = """Aric Hagberg <aric.hagberg@gmail.com>"""
 __all__ = ['current_flow_closeness_centrality', 'information_centrality']
 
+
 def current_flow_closeness_centrality(G, weight='weight',
                                       dtype=float, solver='lu'):
     """Compute current-flow closeness centrality for nodes.
@@ -87,7 +88,7 @@ def current_flow_closeness_centrality(G, weight='weight',
     for v in H:
         col = C2.get_row(v)
         for w in H:
-            betweenness[v] += col[v]-2*col[w]
+            betweenness[v] += col[v] - 2 * col[w]
             betweenness[w] += col[v]
     for v in H:
         betweenness[v] = 1.0 / (betweenness[v])

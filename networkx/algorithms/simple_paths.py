@@ -8,6 +8,7 @@ __author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
 __all__ = ['all_simple_paths']
 
+
 def all_simple_paths(G, source, target, cutoff=None):
     """Generate all simple paths in the graph G from source to target.
 
@@ -65,15 +66,16 @@ def all_simple_paths(G, source, target, cutoff=None):
     all_shortest_paths, shortest_path
     """
     if source not in G:
-        raise nx.NetworkXError('source node %s not in graph'%source)
+        raise nx.NetworkXError('source node %s not in graph' % source)
     if target not in G:
-        raise nx.NetworkXError('target node %s not in graph'%target)
+        raise nx.NetworkXError('target node %s not in graph' % target)
     if cutoff is None:
-        cutoff = len(G)-1
+        cutoff = len(G) - 1
     if G.is_multigraph():
         return _all_simple_paths_multigraph(G, source, target, cutoff=cutoff)
     else:
         return _all_simple_paths_graph(G, source, target, cutoff=cutoff)
+
 
 def _all_simple_paths_graph(G, source, target, cutoff=None):
     if cutoff < 1:
@@ -92,7 +94,7 @@ def _all_simple_paths_graph(G, source, target, cutoff=None):
             elif child not in visited:
                 visited.append(child)
                 stack.append(iter(G[child]))
-        else: #len(visited) == cutoff:
+        else:  # len(visited) == cutoff:
             if child == target or target in children:
                 yield visited + [target]
             stack.pop()
@@ -103,7 +105,7 @@ def _all_simple_paths_multigraph(G, source, target, cutoff=None):
     if cutoff < 1:
         return
     visited = [source]
-    stack = [(v for u,v in G.edges(source))]
+    stack = [(v for u, v in G.edges(source))]
     while stack:
         children = stack[-1]
         child = next(children, None)
@@ -115,9 +117,9 @@ def _all_simple_paths_multigraph(G, source, target, cutoff=None):
                 yield visited + [target]
             elif child not in visited:
                 visited.append(child)
-                stack.append((v for u,v in G.edges(child)))
-        else: #len(visited) == cutoff:
-            count = ([child]+list(children)).count(target)
+                stack.append((v for u, v in G.edges(child)))
+        else:  # len(visited) == cutoff:
+            count = ([child] + list(children)).count(target)
             for i in range(count):
                 yield visited + [target]
             stack.pop()

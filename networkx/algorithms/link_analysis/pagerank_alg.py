@@ -136,7 +136,7 @@ def pagerank(G, alpha=0.85, personalization=None,
                                 'must have a value for every node. '
                                 'Missing nodes %s' % missing)
         s = float(sum(dangling.values()))
-        dangling_weights = dict((k, v/s) for k, v in dangling.items())
+        dangling_weights = dict((k, v / s) for k, v in dangling.items())
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
     # power iteration: make up to max_iter iterations
@@ -152,7 +152,7 @@ def pagerank(G, alpha=0.85, personalization=None,
             x[n] += danglesum * dangling_weights[n] + (1.0 - alpha) * p[n]
         # check convergence, l1 norm
         err = sum([abs(x[n] - xlast[n]) for n in x])
-        if err < N*tol:
+        if err < N * tol:
             return x
     raise NetworkXError('pagerank: power iteration failed to converge '
                         'in %d iterations.' % max_iter)

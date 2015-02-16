@@ -10,6 +10,7 @@ import networkx as nx
 __all__ = ["ramsey_R2"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
+
 def ramsey_R2(G):
     r"""Approximately computes the Ramsey number `R(2;s,t)` for graph.
 

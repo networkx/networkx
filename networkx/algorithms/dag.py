@@ -2,7 +2,7 @@
 from fractions import gcd
 import networkx as nx
 """Algorithms for directed acyclic graphs (DAGs)."""
-#    Copyright (C) 2006-2011 by 
+#    Copyright (C) 2006-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -13,10 +13,11 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Ben Edwards (bedwards@cs.unm.edu)'])
 __all__ = ['descendants',
            'ancestors',
-           'topological_sort', 
+           'topological_sort',
            'topological_sort_recursive',
            'is_directed_acyclic_graph',
            'is_aperiodic']
+
 
 def descendants(G, source):
     """Return all nodes reachable from `source` in G.
@@ -36,6 +37,7 @@ def descendants(G, source):
     des = set(nx.shortest_path_length(G, source=source).keys()) - set([source])
     return des
 
+
 def ancestors(G, source):
     """Return all nodes having a path to `source` in G.
 
@@ -54,10 +56,11 @@ def ancestors(G, source):
     anc = set(nx.shortest_path_length(G, target=source).keys()) - set([source])
     return anc
 
+
 def is_directed_acyclic_graph(G):
-    """Return True if the graph G is a directed acyclic graph (DAG) or 
+    """Return True if the graph G is a directed acyclic graph (DAG) or
     False if not.
-    
+
     Parameters
     ----------
     G : NetworkX graph
@@ -75,6 +78,7 @@ def is_directed_acyclic_graph(G):
         return True
     except nx.NetworkXUnfeasible:
         return False
+
 
 def topological_sort(G, nbunch=None, reverse=False):
     """Return a list of nodes in topological sort order.
@@ -116,27 +120,27 @@ def topological_sort(G, nbunch=None, reverse=False):
 
     References
     ----------
-    .. [1] Skiena, S. S. The Algorithm Design Manual  (Springer-Verlag, 1998). 
+    .. [1] Skiena, S. S. The Algorithm Design Manual  (Springer-Verlag, 1998).
         http://www.amazon.com/exec/obidos/ASIN/0387948600/ref=ase_thealgorithmrepo/
     """
     if not G.is_directed():
         raise nx.NetworkXError(
-                "Topological sort not defined on undirected graphs.")
+            "Topological sort not defined on undirected graphs.")
 
     # nonrecursive version
     seen = set()
-    order = [] 
-    explored = set() 
-                     
+    order = []
+    explored = set()
+
     if nbunch is None:
-        nbunch = G.nodes_iter() 
+        nbunch = G.nodes_iter()
     for v in nbunch:     # process all vertices in G
-        if v in explored: 
+        if v in explored:
             continue
         fringe = [v]   # nodes yet to look at
         while fringe:
             w = fringe[-1]  # depth first search
-            if w in explored: # already looked down this branch
+            if w in explored:  # already looked down this branch
                 fringe.pop()
                 continue
             seen.add(w)     # mark as seen
@@ -144,7 +148,7 @@ def topological_sort(G, nbunch=None, reverse=False):
             new_nodes = []
             for n in G[w]:
                 if n not in explored:
-                    if n in seen: #CYCLE !!
+                    if n in seen:  # CYCLE !!
                         raise nx.NetworkXUnfeasible("Graph contains a cycle.")
                     new_nodes.append(n)
             if new_nodes:   # Add new_nodes to fringe
@@ -157,6 +161,7 @@ def topological_sort(G, nbunch=None, reverse=False):
         return order
     else:
         return list(reversed(order))
+
 
 def topological_sort_recursive(G, nbunch=None, reverse=False):
     """Return a list of nodes in topological sort order.
@@ -224,16 +229,17 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
     for v in nbunch:
         if v not in explored:
             _dfs(v)
-            
+
     if reverse:
         return order
     else:
         return list(reversed(order))
 
+
 def is_aperiodic(G):
     """Return True if G is aperiodic.
 
-    A directed graph is aperiodic if there is no integer k > 1 that 
+    A directed graph is aperiodic if there is no integer k > 1 that
     divides the length of every cycle in the graph.
 
     Parameters
@@ -265,10 +271,11 @@ def is_aperiodic(G):
        A Multidisciplinary Approach, CRC Press.
     """
     if not G.is_directed():
-        raise nx.NetworkXError("is_aperiodic not defined for undirected graphs")
+        raise nx.NetworkXError(
+            "is_aperiodic not defined for undirected graphs")
 
     s = next(G.nodes_iter())
-    levels = {s:0}
+    levels = {s: 0}
     this_level = [s]
     g = 0
     l = 1
@@ -276,14 +283,14 @@ def is_aperiodic(G):
         next_level = []
         for u in this_level:
             for v in G[u]:
-                if v in levels: # Non-Tree Edge
-                    g = gcd(g, levels[u]-levels[v] + 1)
-                else: # Tree Edge
+                if v in levels:  # Non-Tree Edge
+                    g = gcd(g, levels[u] - levels[v] + 1)
+                else:  # Tree Edge
                     next_level.append(v)
                     levels[v] = l
         this_level = next_level
         l += 1
-    if len(levels)==len(G): #All nodes in tree
-        return g==1
+    if len(levels) == len(G):  # All nodes in tree
+        return g == 1
     else:
-        return g==1 and nx.is_aperiodic(G.subgraph(set(G)-set(levels)))
+        return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))

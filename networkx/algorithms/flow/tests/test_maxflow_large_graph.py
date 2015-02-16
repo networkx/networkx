@@ -11,32 +11,36 @@ from nose.tools import *
 
 import networkx as nx
 from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import (edmonds_karp, preflow_push, shortest_augmenting_path)
+from networkx.algorithms.flow import (
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path)
 
 flow_funcs = [edmonds_karp, preflow_push, shortest_augmenting_path]
 
 msg = "Assertion failed in function: {0}"
 
+
 def gen_pyramid(N):
-        # This graph admits a flow of value 1 for which every arc is at
-        # capacity (except the arcs incident to the sink which have
-        # infinite capacity).
-        G = nx.DiGraph()
+    # This graph admits a flow of value 1 for which every arc is at
+    # capacity (except the arcs incident to the sink which have
+    # infinite capacity).
+    G = nx.DiGraph()
 
-        for i in range(N - 1):
-            cap = 1. / (i + 2)
-            for j in range(i + 1):
-                G.add_edge((i, j), (i + 1, j),
-                           capacity = cap)
-                cap = 1. / (i + 1) - cap
-                G.add_edge((i, j), (i + 1, j + 1),
-                        capacity = cap)
-                cap = 1. / (i + 2) - cap
+    for i in range(N - 1):
+        cap = 1. / (i + 2)
+        for j in range(i + 1):
+            G.add_edge((i, j), (i + 1, j),
+                       capacity=cap)
+            cap = 1. / (i + 1) - cap
+            G.add_edge((i, j), (i + 1, j + 1),
+                       capacity=cap)
+            cap = 1. / (i + 2) - cap
 
-        for j in range(N):
-            G.add_edge((N - 1, j), 't')
+    for j in range(N):
+        G.add_edge((N - 1, j), 't')
 
-        return G
+    return G
 
 
 def read_graph(name):
@@ -87,7 +91,7 @@ class TestMaxflowLargeGraph:
 
     def test_pyramid(self):
         N = 10
-        #N = 100 # this gives a graph with 5051 nodes
+        # N = 100 # this gives a graph with 5051 nodes
         G = gen_pyramid(N)
         R = build_residual_network(G, 'capacity')
         kwargs = dict(residual=R)

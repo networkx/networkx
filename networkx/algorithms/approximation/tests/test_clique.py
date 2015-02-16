@@ -2,6 +2,7 @@ from nose.tools import *
 import networkx as nx
 import networkx.algorithms.approximation as apxa
 
+
 def test_clique_removal():
     graph = nx.complete_graph(10)
     i, cs = apxa.clique_removal(graph)
@@ -28,10 +29,12 @@ def test_clique_removal():
         cdens = nx.density(graph.subgraph(clique))
         eq_(cdens, 1.0, "clique not found by clique_removal!")
 
+
 def test_max_clique_smoke():
     # smoke test
     G = nx.Graph()
-    assert_equal(len(apxa.max_clique(G)),0)
+    assert_equal(len(apxa.max_clique(G)), 0)
+
 
 def test_max_clique():
     # create a complete graph

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Generate graphs with given degree and triangle sequence.
 """
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2011 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -15,17 +15,18 @@ __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
 __all__ = ['random_clustered_graph']
 
 
-def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
+def random_clustered_graph(
+        joint_degree_sequence, create_using=None, seed=None):
     """Generate a random graph with the given joint degree and triangle
     degree sequence.
-	
+
     This uses a configuration model-like approach to generate a
     random pseudograph (graph with parallel edges and self loops) by
-    randomly assigning edges to match the given indepdenent edge 
+    randomly assigning edges to match the given indepdenent edge
     and triangle degree sequence.
 
-    Parameters 
-    ---------- 
+    Parameters
+    ----------
     joint_degree_sequence : list of integer pairs
         Each list entry corresponds to the independent edge degree and
         triangle degree of a node.
@@ -40,7 +41,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
         A graph with the specified degree sequence. Nodes are labeled
         starting at 0 with an index corresponding to the position in
         deg_sequence.
-	
+
     Raises
     ------
     NetworkXError
@@ -51,13 +52,13 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
     -----
     As described by Miller [1]_ (see also Newman [2]_ for an equivalent
     description).
-	
+
     A non-graphical degree sequence (not realizable by some simple
     graph) is allowed since this function returns graphs with self
     loops and parallel edges.  An exception is raised if the
     independent degree sequence does not have an even sum or the
     triangle degree sequence sum is not divisible by 3.
-	
+
     This configuration model-like construction process can lead to
     duplicate edges and loops.  You can remove the self-loops and
     parallel edges (see below) which will likely result in a graph
@@ -70,7 +71,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
         Physical Review E, Rapid Communication (to appear).
     .. [2] M.E.J. Newman, "Random clustered networks".
         Physical Review Letters (to appear).
-	       
+
     Examples
     --------
     >>> deg_tri=[[1,0],[1,0],[1,0],[2,0],[1,0],[2,1],[0,1],[0,1]]
@@ -79,7 +80,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
     To remove parallel edges:
 
     >>> G=nx.Graph(G)
-	
+
     To remove self loops:
 
     >>> G.remove_edges_from(G.selfloop_edges())
@@ -97,7 +98,7 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
     joint_degree_sequence = list(joint_degree_sequence)
 
     N = len(joint_degree_sequence)
-    G = nx.empty_graph(N,create_using)
+    G = nx.empty_graph(N, create_using)
 
     ilist = []
     tlist = []
@@ -108,18 +109,17 @@ def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
         for tcount in range(degrees[1]):
             tlist.append(n)
 
-    if len(ilist)%2 != 0 or len(tlist)%3 != 0:
+    if len(ilist) % 2 != 0 or len(tlist) % 3 != 0:
         raise nx.NetworkXError('Invalid degree sequence')
 
     random.shuffle(ilist)
     random.shuffle(tlist)
     while ilist:
-        G.add_edge(ilist.pop(),ilist.pop())
+        G.add_edge(ilist.pop(), ilist.pop())
     while tlist:
         n1 = tlist.pop()
         n2 = tlist.pop()
         n3 = tlist.pop()
-        G.add_edges_from([(n1,n2),(n1,n3),(n2,n3)])
-    G.name = "random_clustered %d nodes %d edges"%(G.order(),G.size())
+        G.add_edges_from([(n1, n2), (n1, n3), (n2, n3)])
+    G.name = "random_clustered %d nodes %d edges" % (G.order(), G.size())
     return G
-

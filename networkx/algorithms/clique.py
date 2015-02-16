@@ -27,7 +27,7 @@ import networkx
 from networkx.utils.decorators import *
 __author__ = """Dan Schult (dschult@colgate.edu)"""
 __all__ = ['find_cliques', 'find_cliques_recursive', 'make_max_clique_graph',
-           'make_clique_bipartite' ,'graph_clique_number',
+           'make_clique_bipartite', 'graph_clique_number',
            'graph_number_of_cliques', 'node_clique_number',
            'number_of_cliques', 'cliques_containing_node',
            'project_down', 'project_up', 'enumerate_all_cliques']
@@ -270,7 +270,7 @@ def find_cliques_recursive(G):
     return expand(set(G), set(G))
 
 
-def make_max_clique_graph(G,create_using=None,name=None):
+def make_max_clique_graph(G, create_using=None, name=None):
     """ Create the maximal clique graph of a graph.
 
     Finds the maximal cliques and treats these as nodes.
@@ -283,25 +283,26 @@ def make_max_clique_graph(G,create_using=None,name=None):
     This should be the same as make_clique_bipartite followed
     by project_up, but it saves all the intermediate steps.
     """
-    cliq=list(map(set,find_cliques(G)))
+    cliq = list(map(set, find_cliques(G)))
     if create_using:
-        B=create_using
+        B = create_using
         B.clear()
     else:
-        B=networkx.Graph()
+        B = networkx.Graph()
     if name is not None:
-        B.name=name
+        B.name = name
 
-    for i,cl in enumerate(cliq):
-        B.add_node(i+1)
-        for j,other_cl in enumerate(cliq[:i]):
+    for i, cl in enumerate(cliq):
+        B.add_node(i + 1)
+        for j, other_cl in enumerate(cliq[:i]):
             # if not cl.isdisjoint(other_cl): #Requires 2.6
-            intersect=cl & other_cl
+            intersect = cl & other_cl
             if intersect:     # Not empty
-                B.add_edge(i+1,j+1)
+                B.add_edge(i + 1, j + 1)
     return B
 
-def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
+
+def make_clique_bipartite(G, fpos=None, create_using=None, name=None):
     """Create a bipartite clique graph from a graph G.
 
     Nodes of G are retained as the "bottom nodes" of B and
@@ -316,43 +317,44 @@ def make_clique_bipartite(G,fpos=None,create_using=None,name=None):
     is created to hold the position tuple of each node for viewing
     the bipartite graph.
     """
-    cliq=list(find_cliques(G))
+    cliq = list(find_cliques(G))
     if create_using:
-        B=create_using
+        B = create_using
         B.clear()
     else:
-        B=networkx.Graph()
+        B = networkx.Graph()
     if name is not None:
-        B.name=name
+        B.name = name
 
     B.add_nodes_from(G)
-    B.node_type={}   # New Attribute for B
+    B.node_type = {}   # New Attribute for B
     for n in B:
-        B.node_type[n]="Bottom"
+        B.node_type[n] = "Bottom"
 
     if fpos:
-       B.pos={}     # New Attribute for B
-       delta_cpos=1./len(cliq)
-       delta_ppos=1./G.order()
-       cpos=0.
-       ppos=0.
-    for i,cl in enumerate(cliq):
-       name= -i-1   # Top nodes get negative names
-       B.add_node(name)
-       B.node_type[name]="Top"
-       if fpos:
-          if name not in B.pos:
-             B.pos[name]=(0.2,cpos)
-             cpos +=delta_cpos
-       for v in cl:
-          B.add_edge(name,v)
-          if fpos is not None:
-             if v not in B.pos:
-                B.pos[v]=(0.8,ppos)
-                ppos +=delta_ppos
+        B.pos = {}     # New Attribute for B
+        delta_cpos = 1. / len(cliq)
+        delta_ppos = 1. / G.order()
+        cpos = 0.
+        ppos = 0.
+    for i, cl in enumerate(cliq):
+        name = -i - 1   # Top nodes get negative names
+        B.add_node(name)
+        B.node_type[name] = "Top"
+        if fpos:
+            if name not in B.pos:
+                B.pos[name] = (0.2, cpos)
+                cpos += delta_cpos
+        for v in cl:
+            B.add_edge(name, v)
+            if fpos is not None:
+                if v not in B.pos:
+                    B.pos[v] = (0.8, ppos)
+                    ppos += delta_ppos
     return B
 
-def project_down(B,create_using=None,name=None):
+
+def project_down(B, create_using=None, name=None):
     """Project a bipartite graph B down onto its "bottom nodes".
 
     The nodes retain their names and are connected if they
@@ -361,21 +363,22 @@ def project_down(B,create_using=None,name=None):
     Returns a Graph.
     """
     if create_using:
-        G=create_using
+        G = create_using
         G.clear()
     else:
-        G=networkx.Graph()
+        G = networkx.Graph()
     if name is not None:
-        G.name=name
+        G.name = name
 
-    for v,Bvnbrs in B.adjacency_iter():
-       if B.node_type[v]=="Bottom":
-          G.add_node(v)
-          for cv in Bvnbrs:
-             G.add_edges_from([(v,u) for u in B[cv] if u!=v])
+    for v, Bvnbrs in B.adjacency_iter():
+        if B.node_type[v] == "Bottom":
+            G.add_node(v)
+            for cv in Bvnbrs:
+                G.add_edges_from([(v, u) for u in B[cv] if u != v])
     return G
 
-def project_up(B,create_using=None,name=None):
+
+def project_up(B, create_using=None, name=None):
     """Project a bipartite graph B down onto its "bottom nodes".
 
     The nodes retain their names and are connected if they
@@ -384,43 +387,44 @@ def project_up(B,create_using=None,name=None):
     Returns a Graph.
     """
     if create_using:
-        G=create_using
+        G = create_using
         G.clear()
     else:
-        G=networkx.Graph()
+        G = networkx.Graph()
     if name is not None:
-        G.name=name
+        G.name = name
 
-    for v,Bvnbrs in B.adjacency_iter():
-       if B.node_type[v]=="Top":
-          vname= -v   #Change sign of name for Top Nodes
-          G.add_node(vname)
-          for cv in Bvnbrs:
-             # Note: -u changes the name (not Top node anymore)
-             G.add_edges_from([(vname,-u) for u in B[cv] if u!=v])
+    for v, Bvnbrs in B.adjacency_iter():
+        if B.node_type[v] == "Top":
+            vname = -v  # Change sign of name for Top Nodes
+            G.add_node(vname)
+            for cv in Bvnbrs:
+                # Note: -u changes the name (not Top node anymore)
+                G.add_edges_from([(vname, -u) for u in B[cv] if u != v])
     return G
 
-def graph_clique_number(G,cliques=None):
+
+def graph_clique_number(G, cliques=None):
     """Return the clique number (size of the largest clique) for G.
 
     An optional list of cliques can be input if already computed.
     """
     if cliques is None:
-        cliques=find_cliques(G)
-    return   max( [len(c) for c in cliques] )
+        cliques = find_cliques(G)
+    return max([len(c) for c in cliques])
 
 
-def graph_number_of_cliques(G,cliques=None):
+def graph_number_of_cliques(G, cliques=None):
     """Returns the number of maximal cliques in G.
 
     An optional list of cliques can be input if already computed.
     """
     if cliques is None:
-        cliques=list(find_cliques(G))
-    return   len(cliques)
+        cliques = list(find_cliques(G))
+    return len(cliques)
 
 
-def node_clique_number(G,nodes=None,cliques=None):
+def node_clique_number(G, nodes=None, cliques=None):
     """ Returns the size of the largest maximal clique containing
     each given node.
 
@@ -430,29 +434,29 @@ def node_clique_number(G,nodes=None,cliques=None):
     if cliques is None:
         if nodes is not None:
             # Use ego_graph to decrease size of graph
-            if isinstance(nodes,list):
-                d={}
+            if isinstance(nodes, list):
+                d = {}
                 for n in nodes:
-                    H=networkx.ego_graph(G,n)
-                    d[n]=max( (len(c) for c in find_cliques(H)) )
+                    H = networkx.ego_graph(G, n)
+                    d[n] = max((len(c) for c in find_cliques(H)))
             else:
-                H=networkx.ego_graph(G,nodes)
-                d=max( (len(c) for c in find_cliques(H)) )
+                H = networkx.ego_graph(G, nodes)
+                d = max((len(c) for c in find_cliques(H)))
             return d
         # nodes is None--find all cliques
-        cliques=list(find_cliques(G))
+        cliques = list(find_cliques(G))
 
     if nodes is None:
-        nodes=G.nodes()   # none, get entire graph
+        nodes = G.nodes()   # none, get entire graph
 
     if not isinstance(nodes, list):   # check for a list
-        v=nodes
+        v = nodes
         # assume it is a single value
-        d=max([len(c) for c in cliques if v in c])
+        d = max([len(c) for c in cliques if v in c])
     else:
-        d={}
+        d = {}
         for v in nodes:
-            d[v]=max([len(c) for c in cliques if v in c])
+            d[v] = max([len(c) for c in cliques if v in c])
     return d
 
     # if nodes is None:                 # none, use entire graph
@@ -471,47 +475,47 @@ def node_clique_number(G,nodes=None,cliques=None):
     # return d
 
 
-def number_of_cliques(G,nodes=None,cliques=None):
+def number_of_cliques(G, nodes=None, cliques=None):
     """Returns the number of maximal cliques for each node.
 
     Returns a single or list depending on input nodes.
     Optional list of cliques can be input if already computed.
     """
     if cliques is None:
-        cliques=list(find_cliques(G))
+        cliques = list(find_cliques(G))
 
     if nodes is None:
-        nodes=G.nodes()   # none, get entire graph
+        nodes = G.nodes()   # none, get entire graph
 
     if not isinstance(nodes, list):   # check for a list
-        v=nodes
+        v = nodes
         # assume it is a single value
-        numcliq=len([1 for c in cliques if v in c])
+        numcliq = len([1 for c in cliques if v in c])
     else:
-        numcliq={}
+        numcliq = {}
         for v in nodes:
-            numcliq[v]=len([1 for c in cliques if v in c])
+            numcliq[v] = len([1 for c in cliques if v in c])
     return numcliq
 
 
-def cliques_containing_node(G,nodes=None,cliques=None):
+def cliques_containing_node(G, nodes=None, cliques=None):
     """Returns a list of cliques containing the given node.
 
     Returns a single list or list of lists depending on input nodes.
     Optional list of cliques can be input if already computed.
     """
     if cliques is None:
-        cliques=list(find_cliques(G))
+        cliques = list(find_cliques(G))
 
     if nodes is None:
-        nodes=G.nodes()   # none, get entire graph
+        nodes = G.nodes()   # none, get entire graph
 
     if not isinstance(nodes, list):   # check for a list
-        v=nodes
+        v = nodes
         # assume it is a single value
-        vcliques=[c for c in cliques if v in c]
+        vcliques = [c for c in cliques if v in c]
     else:
-        vcliques={}
+        vcliques = {}
         for v in nodes:
-            vcliques[v]=[c for c in cliques if v in c]
+            vcliques[v] = [c for c in cliques if v in c]
     return vcliques
