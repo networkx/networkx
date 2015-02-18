@@ -20,6 +20,8 @@ pygraphviz:     http://pygraphviz.github.io/
 #    All rights reserved.
 #    BSD license.
 import networkx as nx
+from matplotlib.patches import FancyArrow
+
 from networkx.drawing.layout import shell_layout,\
     circular_layout,spectral_layout,spring_layout,random_layout
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
@@ -483,6 +485,7 @@ def draw_networkx_edges(G, pos,
         import matplotlib.cbook as cb
         from matplotlib.colors import colorConverter, Colormap
         from matplotlib.collections import LineCollection
+        from matplotlib.collections import PolyCollection
         import numpy
     except ImportError:
         raise ImportError("Matplotlib required for draw()")
@@ -566,13 +569,10 @@ def draw_networkx_edges(G, pos,
     arrow_collection = None
 
     if G.is_directed() and arrows:
-
-        # a directed graph hack
-        # draw thick line segments at head end of edge
-        # waiting for someone else to implement arrows that will work
+        # Better arrows, but it is still necessary to get the edge radius
+        # in order to adjust the arrow end
         arrow_colors = edge_colors
-        a_pos = []
-        p = 1.0-0.25  # make head segment 25 percent of edge length
+        arrows = []
         for src, dst in edge_pos:
             x1, y1 = src
             x2, y2 = dst
@@ -581,29 +581,19 @@ def draw_networkx_edges(G, pos,
             d = numpy.sqrt(float(dx**2 + dy**2))  # length of edge
             if d == 0:   # source and target at same position
                 continue
-            if dx == 0:  # vertical edge
-                xa = x2
-                ya = dy*p+y1
-            if dy == 0:  # horizontal edge
-                ya = y2
-                xa = dx*p+x1
-            else:
-                theta = numpy.arctan2(dy, dx)
-                xa = p*d*numpy.cos(theta)+x1
-                ya = p*d*numpy.sin(theta)+y1
-
-            a_pos.append(((xa, ya), (x2, y2)))
-
-        arrow_collection = LineCollection(a_pos,
-                                colors=arrow_colors,
-                                linewidths=[4*ww for ww in lw],
-                                antialiaseds=(1,),
-                                transOffset = ax.transData,
-                                )
-
-        arrow_collection.set_zorder(1)  # edges go behind nodes
-        arrow_collection.set_label(label)
-        ax.add_collection(arrow_collection)
+            (dx, dy) = (0.94*dx, 0.94*dy)
+            fa = FancyArrow(x1,y1,dx,dy,head_width=0.02,length_includes_head=True)
+            arrows.append(fa.get_verts())
+            
+        edge_collection = PolyCollection(arrows,
+            facecolors       = edge_colors,
+            linewidths   = lw,
+            antialiaseds = (1,),
+            transOffset = ax.transData,
+            )
+        edge_collection.set_zorder(0)  # edges go behind nodes
+        edge_collection.set_label(label)
+        ax.add_collection(edge_collection)
 
     # update view
     minx = numpy.amin(numpy.ravel(edge_pos[:, :, 0]))
