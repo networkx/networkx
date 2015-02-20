@@ -13,7 +13,6 @@ Node positioning algorithms for graph drawing.
 #    BSD license.
 import collections
 import networkx as nx
-import types
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult(dschult@colgate.edu)"""
 __all__ = ['circular_layout',
            'random_layout',
@@ -56,10 +55,11 @@ def random_layout(G,dim=2,center=None):
         import numpy as np
     except ImportError:
         raise ImportError("random_layout() requires numpy: http://scipy.org/ ")
-    if not isinstance(G, nx.classes.graph.Graph):
+    if not isinstance(G, type(nx.Graph())):
         empty_graph = nx.Graph()
         empty_graph.add_nodes_from(G)
-    if isinstance(center, types.NoneType):
+        G = empty_graph
+    if isinstance(center, type(None)):
         center = np.zeros(dim)
     if len(center) != dim:
         raise ValueError("length of center coordinates must match dimension of layout")
@@ -105,10 +105,11 @@ def circular_layout(G, dim=2, scale=1, center=None):
         import numpy as np
     except ImportError:
         raise ImportError("circular_layout() requires numpy: http://scipy.org/ ")
-    if not isinstance(G, nx.classes.graph.Graph):
+    if not isinstance(G, type(nx.Graph())):
         empty_graph = nx.Graph()
         empty_graph.add_nodes_from(G)
-    if isinstance(center, types.NoneType):
+        G = empty_graph
+    if isinstance(center, type(None)):
         center = np.zeros(dim)
     if len(center) != dim:
         raise ValueError("length of center coordinates must match dimension of layout")
@@ -161,10 +162,11 @@ def shell_layout(G,nlist=None,dim=2,scale=1,center=None):
         import numpy as np
     except ImportError:
         raise ImportError("shell_layout() requires numpy: http://scipy.org/ ")
-    if not isinstance(G, nx.classes.graph.Graph):
+    if not isinstance(G, type(nx.Graph())):
         empty_graph = nx.Graph()
         empty_graph.add_nodes_from(G)
-    if isinstance(center, types.NoneType):
+        G = empty_graph
+    if isinstance(center, type(None)):
         center = np.zeros(dim)
     if len(center) != dim:
         raise ValueError("length of center coordinates must match dimension of layout")
@@ -253,10 +255,11 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
         import numpy as np
     except ImportError:
         raise ImportError("fruchterman_reingold_layout() requires numpy: http://scipy.org/ ")
-    if not isinstance(G, nx.classes.graph.Graph):
+    if not isinstance(G, type(nx.Graph())):
         empty_graph = nx.Graph()
         empty_graph.add_nodes_from(G)
-    if isinstance(center, types.NoneType):
+        G = empty_graph
+    if isinstance(center, type(None)):
         center = np.zeros(dim)
     if len(center) != dim:
         raise ValueError("length of center coordinates must match dimension of layout")
@@ -481,10 +484,11 @@ def spectral_layout(G, dim=2, weight='weight', scale=1, center=None):
         import numpy as np
     except ImportError:
         raise ImportError("spectral_layout() requires numpy: http://scipy.org/ ")
-    if not isinstance(G, nx.classes.graph.Graph):
+    if not isinstance(G, type(nx.Graph())):
         empty_graph = nx.Graph()
         empty_graph.add_nodes_from(G)
-    if isinstance(center, types.NoneType):
+        G = empty_graph
+    if isinstance(center, type(None)):
         center = np.zeros(dim)
     if len(center) != dim:
         raise ValueError("length of center coordinates must match dimension of layout")
