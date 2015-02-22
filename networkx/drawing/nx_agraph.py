@@ -32,6 +32,11 @@ __all__ = ['from_agraph', 'to_agraph',
            'pygraphviz_layout',
            'view_pygraphviz']
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
 def from_agraph(A,create_using=None):
     """Return a NetworkX Graph or DiGraph from a PyGraphviz graph.
 
@@ -106,7 +111,7 @@ def from_agraph(A,create_using=None):
     N.graph['edge']=dict(A.edge_attr)
     return N
 
-def to_agraph(N):
+def to_agraph(N, escape_backslashes=False):
     """Return a pygraphviz graph from a NetworkX graph N.
 
     Parameters
@@ -142,6 +147,10 @@ def to_agraph(N):
 
     # add nodes
     for n,nodedata in N.nodes(data=True):
+        if escape_backslashes:
+            if isinstance(n, basestring):
+                n = n.replace('\\', '\\\\')
+
         A.add_node(n,**nodedata)
 
     # loop over edges
@@ -158,7 +167,7 @@ def to_agraph(N):
 
     return A
 
-def write_dot(G,path):
+def write_dot(G,path, escape_backslashes=False):
     """Write NetworkX graph G to Graphviz dot format on path.
 
     Parameters
@@ -173,7 +182,7 @@ def write_dot(G,path):
     except ImportError:
         raise ImportError('requires pygraphviz ',
                           'http://pygraphviz.github.io/')
-    A=to_agraph(G)
+    A=to_agraph(G, escape_backslashes=escape_backslashes)
     A.write(path)
     A.clear()
     return

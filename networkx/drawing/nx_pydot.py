@@ -48,13 +48,13 @@ def load_pydot():
     return module
 
 @open_file(1, mode='w')
-def write_dot(G, path):
+def write_dot(G, path, escape_backslashes=False):
     """Write NetworkX graph G to Graphviz dot format on path.
 
     Path can be a string or a file handle.
     """
     pydot = load_pydot()
-    P=to_pydot(G)
+    P=to_pydot(G, escape_backslashes=escape_backslashes)
     path.write(P.to_string())
     return
 
@@ -164,7 +164,7 @@ def from_pydot(P):
         N.graph['edge']={}
     return N
 
-def to_pydot(N, strict=True):
+def to_pydot(N, strict=True, escape_backslashes=False):
     """Return a pydot graph from a NetworkX graph N.
 
     Parameters
@@ -208,7 +208,12 @@ def to_pydot(N, strict=True):
 
     for n,nodedata in N.nodes_iter(data=True):
         str_nodedata=dict((k,make_str(v)) for k,v in nodedata.items())
-        p=pydot.Node(make_str(n),**str_nodedata)
+
+        unicode_n = make_str(n)
+        if escape_backslashes:
+            unicode_n = unicode_n.replace('\\', '\\\\')
+
+        p=pydot.Node(unicode_n,**str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
