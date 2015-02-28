@@ -17,7 +17,8 @@ class BaseDiGraphTester(BaseGraphTester):
     def test_successors_iter(self):
         G=self.K3
         assert_equal(sorted(G.successors_iter(0)),[1,2])
-        assert_raises((KeyError,networkx.NetworkXError), G.successors_iter,-1)
+        f=lambda x:list(G.successors_iter(x))
+        assert_raises((KeyError,networkx.NetworkXError), f,-1)
 
     def test_has_predecessor(self):
         G=self.K3
@@ -32,7 +33,8 @@ class BaseDiGraphTester(BaseGraphTester):
     def test_predecessors_iter(self):
         G=self.K3
         assert_equal(sorted(G.predecessors_iter(0)),[1,2])
-        assert_raises((KeyError,networkx.NetworkXError), G.predecessors_iter,-1)
+        f=lambda x:list(G.predecessors_iter(x))
+        assert_raises((KeyError,networkx.NetworkXError), f,-1)
 
     def test_edges(self):
         G=self.K3

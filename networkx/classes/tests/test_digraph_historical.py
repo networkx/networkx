@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+    #!/usr/bin/env python
 """Original NetworkX graph tests"""
 from nose.tools import *
 import networkx
@@ -63,7 +63,8 @@ class TestDiGraphHistorical(HistoricalTests):
         assert_equal(sorted(G.neighbors_iter('C')),['D'])
         assert_equal(sorted(G.neighbors('A')),['B', 'C'])
         assert_raises(nx.NetworkXError,G.neighbors,'j')
-        assert_raises(nx.NetworkXError,G.neighbors_iter,'j')
+        f=lambda x:list(G.neighbors_iter(x))
+        assert_raises(nx.NetworkXError,f,'j')
 
     def test_successors(self):
         G=self.G()
@@ -76,7 +77,8 @@ class TestDiGraphHistorical(HistoricalTests):
         assert_equal(sorted(G.successors('D')),[])
         assert_equal(sorted(G.successors_iter('G')),[])
         assert_raises(nx.NetworkXError,G.successors,'j')
-        assert_raises(nx.NetworkXError,G.successors_iter,'j')
+        f=lambda x:list(G.neighbors_iter(x))
+        assert_raises(nx.NetworkXError,f,'j')
         
 
     def test_predecessors(self):
@@ -93,7 +95,8 @@ class TestDiGraphHistorical(HistoricalTests):
         assert_equal(sorted(G.successors_iter('D')),[])
 
         assert_raises(nx.NetworkXError,G.predecessors,'j')
-        assert_raises(nx.NetworkXError,G.predecessors,'j')
+        f=lambda x:list(G.predecessors_iter(x))
+        assert_raises(nx.NetworkXError,f,'j')
 
 
 

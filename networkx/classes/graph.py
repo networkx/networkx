@@ -1025,7 +1025,7 @@ class Graph(object):
             return False
 
 
-    def neighbors(self, n):
+    def neighbors(self, n, data=False):
         """Return a list of the nodes connected to the node n.
 
         Parameters
@@ -1062,11 +1062,11 @@ class Graph(object):
 
         """
         try:
-            return list(self.adj[n])
+            return list(self.neighbors_iter(n, data))
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
-    def neighbors_iter(self, n):
+    def neighbors_iter(self, n, data=False):
         """Return an iterator over all neighbors of node n.
 
         Examples
@@ -1085,7 +1085,31 @@ class Graph(object):
         [1]
         """
         try:
-            return iter(self.adj[n])
+            nodes_neigh = self.adj[n]
+            if not isinstance(self,nx.MultiGraph):
+                if data is True:
+                    for nbr,ddict in nodes_neigh.items():
+                        yield (nbr,ddict)
+                elif data is not False:
+                    for nbr,ddict in nodes_neigh.items():
+                        d=ddict[data] if data in ddict else None
+                        yield (nbr,d)
+                else:
+                    for nbr,ddict in nodes_neigh.items():
+                        yield (nbr)
+            else:
+                if data is True:
+                    for nbr,ddict in nodes_neigh.items():
+                        for key,ddata in ddict.items():
+                            yield (nbr,ddata)
+                elif data is not False:
+                    for nbr,ddict in nodes_neigh.items():
+                        for key,ddata in ddict.items():
+                            d=ddata[data] if data in ddata else None
+                            yield (nbr,d)
+                else:
+                    for nbr,ddict in nodes_neigh.items():
+                        yield (nbr)
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 

@@ -418,7 +418,8 @@ class HistoricalTests(object):
                      [('A', 2), ('B', 3), ('C', 3), ('D', 2), 
                       ('G', 0), ('J', 0), ('K', 0)])
         assert_equal(sorted(G.neighbors_iter('A')),['B', 'C'])
-        assert_raises(nx.NetworkXError,G.neighbors_iter,'X')
+        f=lambda x:list(G.neighbors_iter(x))
+        assert_raises(nx.NetworkXError,f,'X')
         G.clear()
         assert_equal(nx.number_of_nodes(G),0)
         assert_equal(nx.number_of_edges(G),0)
