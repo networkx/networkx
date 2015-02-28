@@ -739,33 +739,81 @@ class DiGraph(Graph):
         """
         return (u in self.pred and v in self.pred[u])
 
-    def successors_iter(self,n):
+    def successors_iter(self, n, data=False):
         """Return an iterator over successor nodes of n.
 
         neighbors_iter() and successors_iter() are the same.
         """
         try:
-            return iter(self.succ[n])
+            nodes_neigh = self.succ[n]
+            if not isinstance(self,nx.MultiGraph):
+                if data is True:
+                    for nbr,ddict in nodes_neigh.items():
+                        yield (nbr,ddict)
+                elif data is not False:
+                    for nbr,ddict in nodes_neigh.items():
+                        d=ddict[data] if data in ddict else None
+                        yield (nbr,d)
+                else:
+                    for nbr,ddict in nodes_neigh.items():
+                        yield (nbr)
+            else:
+                if data is True:
+                    for nbr,ddict in nodes_neigh.items():
+                        for key,ddata in ddict.items():
+                            yield (nbr,ddata)
+                elif data is not False:
+                    for nbr,ddict in nodes_neigh.items():
+                        for key,ddata in ddict.items():
+                            d=ddata[data] if data in ddata else None
+                            yield (nbr,d)
+                else:
+                    for nbr,ddict in nodes_neigh.items():
+                        yield (nbr)
         except KeyError:
             raise NetworkXError("The node %s is not in the digraph."%(n,))
 
-    def predecessors_iter(self,n):
+    def predecessors_iter(self, n, data=False):
         """Return an iterator over predecessor nodes of n."""
         try:
-            return iter(self.pred[n])
+            nodes_neigh = self.pred[n]
+            if not isinstance(self,nx.MultiGraph):
+                if data is True:
+                    for nbr,ddict in nodes_neigh.items():
+                        yield (nbr,ddict)
+                elif data is not False:
+                    for nbr,ddict in nodes_neigh.items():
+                        d=ddict[data] if data in ddict else None
+                        yield (nbr,d)
+                else:
+                    for nbr,ddict in nodes_neigh.items():
+                        yield (nbr)
+            else:
+                if data is True:
+                    for nbr,ddict in nodes_neigh.items():
+                        for key,ddata in ddict.items():
+                            yield (nbr,ddata)
+                elif data is not False:
+                    for nbr,ddict in nodes_neigh.items():
+                        for key,ddata in ddict.items():
+                            d=ddata[data] if data in ddata else None
+                            yield (nbr,d)
+                else:
+                    for nbr,ddict in nodes_neigh.items():
+                        yield (nbr)
         except KeyError:
             raise NetworkXError("The node %s is not in the digraph."%(n,))
 
-    def successors(self, n):
+    def successors(self, n, data=False):
         """Return a list of successor nodes of n.
 
         neighbors() and successors() are the same function.
         """
-        return list(self.successors_iter(n))
+        return list(self.successors_iter(n, data))
 
-    def predecessors(self, n):
+    def predecessors(self, n, data=False):
         """Return a list of predecessor nodes of n."""
-        return list(self.predecessors_iter(n))
+        return list(self.predecessors_iter(n, data))
 
 
     # digraph definitions

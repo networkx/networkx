@@ -45,10 +45,12 @@ class BaseGraphTester(object):
         assert_equal(sorted(G.neighbors(0)),[1,2])
         assert_raises((KeyError,networkx.NetworkXError), G.neighbors,-1)
 
+
     def test_neighbors_iter(self):
         G=self.K3
         assert_equal(sorted(G.neighbors_iter(0)),[1,2])
-        assert_raises((KeyError,networkx.NetworkXError), G.neighbors_iter,-1)
+        f=lambda x:list(G.neighbors_iter(x))
+        assert_raises((KeyError,networkx.NetworkXError), f,-1)
 
     def test_edges(self):
         G=self.K3
