@@ -6,7 +6,7 @@ and has been developed with the help of many others.
 
 Thanks to Guido van Rossum for the idea of using Python for
 implementing a graph data structure
-http://www.python.org/doc/essays/graphs.html
+https://www.python.org/doc/essays/graphs
 
 Thanks to David Eppstein for the idea of representing a graph G so
 that "for n in G" loops over the nodes in G and G[n] are node n's
