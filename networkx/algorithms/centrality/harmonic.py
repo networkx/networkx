@@ -13,11 +13,11 @@ __author__ = "\n".join(['Alessandro Luongo (alessandro.luongo@studenti.unimi.it'
 __all__ = ['harmonic_centrality']
 
 
-def harmonic_centrality(G, u=None, distance=None):
-    """Compute harmonic centrality for nodes.
+def harmonic_centrality(G, distance=None):
+    r"""Compute harmonic centrality for nodes.
 
-    Harmonic centrality [1] of a node `u` is the sum of the reciprocal
-    of the shortest path distances from `n-1` other nodes to `u`.
+    Harmonic centrality [1] of a node `u` is the sum of the reciprocal of the
+    nonzero shortest paths from all other nodes.
 
     .. math::
 
@@ -31,12 +31,10 @@ def harmonic_centrality(G, u=None, distance=None):
     Parameters
     ----------
     G : graph
-      A NetworkX graph
-    u : nodes, optional
-      Return only the value for nodes u
+      A NetworkX graph.
     distance : edge attribute key, optional (default=None)
-      Use the specified edge attribute as the edge distance in shortest
-      path calculations
+      Use the specified edge attribute as the edge distance in shortest path
+      calculations. If `None`, then each edge will have distance equal to 1.
 
     Returns
     -------
@@ -50,14 +48,14 @@ def harmonic_centrality(G, u=None, distance=None):
 
     Notes
     -----
-
     If the 'distance' keyword is set to an edge attribute key then the
     shortest-path length will be computed using Dijkstra's algorithm with
     that edge attribute as the edge weight.
 
     References
     ----------
-    .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality." Internet Mathematics 10.3-4 (2014): 222-262.
+    .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality."
+    Internet Mathematics 10.3-4 (2014): 222-262.
     """
 
     if distance is not None:
@@ -67,11 +65,7 @@ def harmonic_centrality(G, u=None, distance=None):
     else:
         path_length = nx.all_pairs_shortest_path_length
 
-    if u is None:
-        nodes = G.nodes()
-    else:
-        nodes = [u]
-
+    nodes = G.nodes()
     harmonic_centrality = {}
 
     if len(G) <= 1:
@@ -82,10 +76,9 @@ def harmonic_centrality(G, u=None, distance=None):
     sp = path_length(G.reverse() if G.is_directed() else G)
 
     for n in nodes:
-        harmonic_centrality[n] = sum([1/i if i > 0 else 0 for i in sp[n].values()])
-    if u is not None:
-        return harmonic_centrality[u]
-    else:
-        return harmonic_centrality
+        harmonic_centrality[n] = sum([1/i if i > 0 else 0
+                                      for i in sp[n].values()])
+
+    return harmonic_centrality
 
 
