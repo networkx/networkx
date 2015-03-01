@@ -2,7 +2,7 @@
 [run]
 branch = False
 source = networkx
-omit = */tests/*,*release.py, */external/*
+omit = *release.py, */external/*
 
 
 [report]

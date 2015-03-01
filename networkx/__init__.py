@@ -93,7 +93,6 @@ from networkx.algorithms import *
 import networkx.linalg
 
 from networkx.linalg import *
-from networkx.tests.test import run as test
 
 import networkx.drawing
 from networkx.drawing import *
