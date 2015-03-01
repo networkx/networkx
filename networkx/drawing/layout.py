@@ -185,11 +185,11 @@ def shell_layout(G,nlist=None,dim=2,scale=1,center=None):
     npos={}
     for nodes in nlist:
         t=np.arange(0,2.0*np.pi,2.0*np.pi/len(nodes),dtype=np.float32)
-        pos=np.transpose(np.array([radius*np.cos(t),radius*np.sin(t)]))+center
+        pos=np.transpose(np.array([np.cos(t),np.sin(t)]))
+        pos=_rescale_layout(pos,scale=scale*radius/len(nlist))+center
         npos.update(zip(nodes,pos))
         radius+=1.0
 
-    # FIXME: rescale
     return npos
 
 
@@ -581,14 +581,14 @@ def _sparse_spectral(A,dim=2):
 
 
 def _rescale_layout(pos,scale=1):
-    # rescale to (0,pscale) in all axes
+    # rescale to (-scale,scale) in all axes
 
     # shift origin to (0,0)
     lim=0 # max coordinate for all axes
     for i in range(pos.shape[1]):
-        pos[:,i]-=pos[:,i].min()
+        pos[:,i]-=pos[:,i].mean()
         lim=max(pos[:,i].max(),lim)
-    # rescale to (0,scale) in all directions, preserves aspect
+    # rescale to (-scale,scale) in all directions, preserves aspect
     for i in range(pos.shape[1]):
         pos[:,i]*=scale/lim
     return pos
