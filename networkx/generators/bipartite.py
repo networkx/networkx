@@ -24,7 +24,49 @@ __all__=['bipartite_configuration_model',
          'bipartite_preferential_attachment_graph',
          'bipartite_random_graph',
          'bipartite_gnmk_random_graph',
+         'complete_bipartite_graph',
          ]
+
+
+def complete_bipartite_graph(n1, n2, create_using=None):
+    """Return the complete bipartite graph `K_{n_1,n_2}`.
+
+    Composed of two partitions with `n_1` nodes in the first
+    and `n_2` nodes in the second. Each node in the first is
+    connected to each node in the second.
+
+    Parameters
+    ----------
+    n1 : integer
+       Number of nodes for node set A.
+    n2 : integer
+       Number of nodes for node set B.
+    create_using : NetworkX graph instance, optional
+       Return graph of this type.
+
+    Notes
+    -----
+    Node labels are the integers 0 to `n_1 + n_2 - 1`.
+
+    The nodes are assigned the attribute 'bipartite' with the value 0 or 1
+    to indicate which bipartite set the node belongs to.
+
+    """
+    if create_using is None:
+        G = nx.Graph()
+    else:
+        if create_using.is_directed():
+            raise nx.NetworkXError("Directed Graph not supported")
+        G = create_using
+        G.clear()
+    
+    top = set(range(n1))
+    bottom = set(range(n1, n1+n2))
+    G.add_nodes_from(top, bipartite=1)
+    G.add_nodes_from(bottom, bipartite=0)
+    G.add_edges_from((u, v) for u in top for v in bottom)
+    G.graph['name'] = "complete_bipartite_graph(%d,%d)" % (n1, n2)
+    return G
 
 
 def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):

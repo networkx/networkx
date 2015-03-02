@@ -23,7 +23,6 @@ Classic
    balanced_tree
    barbell_graph
    complete_graph
-   complete_bipartite_graph
    circular_ladder_graph
    cycle_graph
    dorogovtsev_goltsev_mendes_graph
@@ -168,6 +167,7 @@ Bipartite
 .. autosummary::
    :toctree: generated/
 
+   complete_bipartite_graph
    bipartite_configuration_model
    bipartite_havel_hakimi_graph
    bipartite_reverse_havel_hakimi_graph
