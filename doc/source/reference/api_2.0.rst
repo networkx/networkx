@@ -57,8 +57,32 @@ New functionalities
 * [`#1286 <https://github.com/networkx/networkx/pull/1286>`_]
   Added the Margulis-Gabber-Galil graph to ``networkx.generators``.
 
+* [`#1306 <https://github.com/networkx/networkx/pull/1306>`_]
+  Added the chordal p-cycle graph, a mildly explicit algebraic construction
+  of a family of 3-regular expander graphs. Also, moves both the existing
+  expander graph generator function (for the Margulis-Gabber-Galil
+  expander) and the new chordal cycle graph function to a new module,
+  ``networkx.generators.expanders``.
+
+* [`#1314 <https://github.com/networkx/networkx/pull/1314>`_]
+  Allow overwriting of base class dict with dict-like: 
+  OrderedGraph, ThinGraph, LogGraph, etc.
+
+* [`#1321 <https://github.com/networkx/networkx/pull/1321>`_]
+  Added ``to_pandas_dataframe`` and ``from_pandas_dataframe``
+
+* [`#1322 <https://github.com/networkx/networkx/pull/1322>`_]
+  Added the Hopcroft--Karp algorithm for finding a maximum cardinality
+  matching in bipartite graphs.
+
+* [`#1336 <https://github.com/networkx/networkx/pull/1336>`_]
+  Expanded data keyword in G.edges and added default keyword
+
 * [`#1338 <https://github.com/networkx/networkx/pull/1338>`_]
   Added support for finding optimum branchings and arborescences.
+
+* [`#1356 <https://github.com/networkx/networkx/pull/1356>`_]
+  Added ordered variants of default graph class.
 
 * [`#1360 <https://github.com/networkx/networkx/pull/1360>`_]
   Added harmonic centrality to ``network.algorithms.centrality``.
