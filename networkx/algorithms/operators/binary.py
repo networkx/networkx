@@ -293,7 +293,6 @@ def compose(G, H, name=None):
     """Return a new graph of G composed with H.
 
     Composition is the simple union of the node sets and edge sets.
-    The node sets of G and H need not be disjoint.
 
     Parameters
     ----------
