@@ -62,8 +62,8 @@ def complete_bipartite_graph(n1, n2, create_using=None):
     
     top = set(range(n1))
     bottom = set(range(n1, n1+n2))
-    G.add_nodes_from(top, bipartite=1)
-    G.add_nodes_from(bottom, bipartite=0)
+    G.add_nodes_from(top, bipartite=0)
+    G.add_nodes_from(bottom, bipartite=1)
     G.add_edges_from((u, v) for u in top for v in bottom)
     G.graph['name'] = "complete_bipartite_graph(%d,%d)" % (n1, n2)
     return G
