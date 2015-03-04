@@ -63,7 +63,7 @@ class TestGEXF(object):
         <attvalues>
           <attvalue for="0" value="http://webatlas.fr"/>
           <attvalue for="1" value="2"/>
-          <attvalue for="2" value="False"/>
+          <attvalue for="2" value="false"/>
         </attvalues>
       </node>
       <node id="2" label="RTGI">
@@ -77,7 +77,7 @@ class TestGEXF(object):
         <attvalues>
           <attvalue for="0" value="http://barabasilab.com"/>
           <attvalue for="1" value="1"/>
-          <attvalue for="2" value="True"/>
+          <attvalue for="2" value="true"/>
         </attvalues>
       </node>
     </nodes>

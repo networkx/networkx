@@ -472,28 +472,30 @@ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdr
   </key>
   <graph id="G" edgedefault="directed">
     <node id="n0">
-      <data key="d0">True</data>
+      <data key="d0">true</data>
     </node>
     <node id="n1"/>
     <node id="n2">
-      <data key="d0">False</data>
-    </node>
-    <node id="n3">
-      <data key="d0">true</data>
-    </node>
-    <node id="n4">
       <data key="d0">false</data>
     </node>
-
-
+    <node id="n3">
+      <data key="d0">FaLsE</data>
+    </node>
+    <node id="n4">
+      <data key="d0">True</data>
+    </node>
   </graph>
 </graphml>
 """
         fh = io.BytesIO(s.encode('UTF-8'))
-        G=nx.read_graphml(fh)
-        assert_equal(G.node['n0']['test'],True)
-        assert_equal(G.node['n2']['test'],False)
+        G = nx.read_graphml(fh)
+        assert_equal(G.node['n0']['test'], True)
+        assert_equal(G.node['n2']['test'], False)
+        assert_equal(G.node['n3']['test'], False)
+        assert_equal(G.node['n4']['test'], True)
 
-        H=nx.parse_graphml(s)
-        assert_equal(H.node['n0']['test'],True)
-        assert_equal(H.node['n2']['test'],False)
+        H = nx.parse_graphml(s)
+        assert_equal(H.node['n0']['test'], True)
+        assert_equal(H.node['n2']['test'], False)
+        assert_equal(G.node['n3']['test'], False)
+        assert_equal(G.node['n4']['test'], True)
