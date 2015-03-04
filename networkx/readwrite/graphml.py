@@ -226,10 +226,10 @@ class GraphML(object):
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
-    # http://www.w3.org/TR/xmlschema-2/#boolean
+
+    # http://en.wikibooks.org/wiki/Java_Programming/Literals#Boolean_Literals
     convert_bool = {
         'true': True, 'false': False,
-        'True': True, 'False': False,
         '0': False, 0: False,
         '1': False, 1: True
     }
@@ -554,8 +554,10 @@ class GraphMLReader(GraphML):
             text=data_element.text
             # assume anything with subelements is a yfiles extension
             if text is not None and len(list(data_element))==0:
-                if data_type==bool:
-                    data[data_name] = self.convert_bool[text]
+                if data_type == bool:
+                    # Ignore cases.
+                    # http://docs.oracle.com/javase/6/docs/api/java/lang/Boolean.html#parseBoolean%28java.lang.String%29
+                    data[data_name] = self.convert_bool[text.lower()]
                 else:
                     data[data_name] = data_type(text)
             elif len(list(data_element)) > 0:

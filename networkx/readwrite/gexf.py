@@ -205,6 +205,7 @@ class GEXF(object):
 
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
+
     # http://www.w3.org/TR/xmlschema-2/#boolean
     convert_bool = {
         'true': True, 'false': False,
