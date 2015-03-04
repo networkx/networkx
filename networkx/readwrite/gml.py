@@ -172,6 +172,7 @@ def parse_gml(lines, relabel=True):
                               'http://pyparsing.wikispaces.com/')
     try:
         data = "".join(lines)
+        data = unescape(data.decode('ascii'))
         gml = pyparse_gml()
         tokens = gml.parseString(data)
     except ParseException as err:
