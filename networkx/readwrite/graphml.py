@@ -227,11 +227,16 @@ class GraphML(object):
     xml_type = dict(types)
     python_type = dict(reversed(a) for a in types)
 
-    # http://en.wikibooks.org/wiki/Java_Programming/Literals#Boolean_Literals
+    # This page says that data types in GraphML follow Java(TM).
+    #   http://graphml.graphdrawing.org/primer/graphml-primer.html#AttributesDefinition
+    # true and false are the only boolean literals:
+    #   http://en.wikibooks.org/wiki/Java_Programming/Literals#Boolean_Literals
     convert_bool = {
+        # We use data.lower() in actual use.
         'true': True, 'false': False,
+        # Include integer strings for convenience.
         '0': False, 0: False,
-        '1': False, 1: True
+        '1': True, 1: True
     }
 
 class GraphMLWriter(GraphML):
