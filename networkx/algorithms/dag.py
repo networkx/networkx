@@ -16,7 +16,8 @@ __all__ = ['descendants',
            'topological_sort', 
            'topological_sort_recursive',
            'is_directed_acyclic_graph',
-           'is_aperiodic']
+           'is_aperiodic',
+           'single_target_longest_path_length_in_dag']
 
 def descendants(G, source):
     """Return all nodes reachable from `source` in G.
@@ -287,3 +288,64 @@ def is_aperiodic(G):
         return g==1
     else:
         return g==1 and nx.is_aperiodic(G.subgraph(set(G)-set(levels)))
+
+def single_target_longest_path_length_in_dag(G, target, weight='weight'):
+    """Compute the longest path length between target and all other
+    nodes from which the target is reachable for a weighted graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    target : node label
+       Final node for path
+
+    weight : string, optional (default='weight')
+       Edge data key corresponding to the edge weight.
+
+    Returns
+    -------
+    length : dictionary
+       Dictionary of longest lengths keyed by source.
+
+    Examples
+    --------
+    >>> G=nx.path_graph(5)
+    >>> length=nx.single_target_longest_path_length_in_dag(G,5)
+    >>> length[4]
+    4
+    >>> print(length)
+    {0: 4, 1: 3, 2: 2, 3: 1, 4: 0}
+
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    See Also
+    --------
+    TODO: other interfaces
+
+    """
+    dist = {target: 0}  # dictionary of final distances
+    top_sorted = topological_sort(G)
+
+    for v in top_sorted[::-1]:
+        if G.is_multigraph():
+            edata = []
+            for w, keydata in G[v].items():
+                maxweight = max((dd.get(weight, 1)
+                    for k, dd in keydata.items()))
+                edata.append((w, {weight: maxweight}))
+        else:
+            edata = iter(G[v].items())
+
+        for w, edgedata in edata:
+            if w in dist:
+                ww_dist = dist[w] + edgedata.get(weight, 1)
+                if v not in dist:
+                    dist[v] = ww_dist
+                else:
+                    dist[v] = max(dist[v], ww_dist)
+
+    return dist

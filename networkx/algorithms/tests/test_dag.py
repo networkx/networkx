@@ -121,6 +121,50 @@ class TestDAG:
         assert_equal(descendants(G, 3), set())
         assert_raises(nx.NetworkXError, descendants, G, 8)
 
+    def test_single_target_longest_path_length1(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(1, 2), (1, 3), (2, 3)])
+        assert_equal(nx.single_target_longest_path_length_in_dag(G, target=3), {1: 2, 2: 1, 3: 0})
+
+    def test_single_target_longest_path_length2(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(1, 2), (2, 3), (4, 5), (4, 6)])
+        assert_equal(nx.single_target_longest_path_length_in_dag(G, target=5), {4:1, 5:0})
+
+    def test_single_target_longest_path_length3(self):
+        G = nx.MultiDiGraph()
+        G.add_weighted_edges_from([(2, 3, 3),
+                                   (9, 10, 1),
+                                   (13, 14, 0),
+                                   (16, 18, 4),
+                                   (1, 5, 5),
+                                   (7, 17, 12),
+                                   (4, 8, 6),
+                                   (11, 15, 7),
+                                   (6, 12, 10),
+                                   (1, 2, 0),
+                                   (2, 3, 0),
+                                   (3, 4, 0),
+                                   (4, 5, 0),
+                                   (5, 6, 0),
+                                   (6, 7, 0),
+                                   (7, 8, 0),
+                                   (8, 9, 0),
+                                   (9, 10, 0),
+                                   (10, 11, 0),
+                                   (11, 12, 0),
+                                   (12, 13, 0),
+                                   (13, 14, 0),
+                                   (14, 15, 0),
+                                   (15, 16, 0),
+                                   (16, 17, 0),
+                                   (17, 18, 0),
+                                   ])
+        true_dist = {18: 0, 17: 0, 16: 4, 15: 4, 14: 4, 13: 4, 12: 4, 11: 11, 10: 11,
+                     9: 12, 8: 12, 7: 12, 6: 14, 5: 14, 4: 18, 3: 18, 2: 21, 1: 21}
+        dist = nx.single_target_longest_path_length_in_dag(G, target=18)
+        assert_equal(dist, true_dist)
+
 
 def test_is_aperiodic_cycle():
     G=nx.DiGraph()
