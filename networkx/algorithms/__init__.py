@@ -51,7 +51,7 @@ import networkx.algorithms.operators
 import networkx.algorithms.tree
 
 # bipartite
-from networkx.algorithms.bipartite import projected_graph, project, is_bipartite, complete_bipartite_graph
+from networkx.algorithms.bipartite import projected_graph, project, is_bipartite, complete_bipartite_graph, random_graph
 # connectivity
 from networkx.algorithms.connectivity import (minimum_edge_cut, minimum_node_cut,
     average_node_connectivity, edge_connectivity, node_connectivity,
