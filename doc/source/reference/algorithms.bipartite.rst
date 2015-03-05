@@ -84,8 +84,8 @@ Centrality
    betweenness_centrality
 
 
-Bipartite
----------
+Generators
+----------
 .. automodule:: networkx.algorithms.bipartite.generators
 .. autosummary::
    :toctree: generated/
