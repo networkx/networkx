@@ -17,7 +17,7 @@ in this module return a Graph class (i.e. a simple, undirected graph).
 #    All rights reserved.
 #    BSD license.
 import itertools
-from networkx.generators.bipartite import complete_bipartite_graph
+from networkx.algorithms.bipartite.generators import complete_bipartite_graph
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
 
 __all__ = [ 'balanced_tree',
