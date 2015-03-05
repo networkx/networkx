@@ -31,7 +31,7 @@ try:
 except NameError:
     basestring = str
 
-PYDOT_LIBRARIES = ['pydot', 'pydotplus']
+PYDOT_LIBRARIES = ['pydot', 'pydotplus', 'pydot_ng']
 
 def load_pydot():
     for library in PYDOT_LIBRARIES:
