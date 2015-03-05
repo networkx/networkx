@@ -44,7 +44,7 @@ def uniform_random_intersection_graph(n, m, p, seed=None):
        An equivalence theorem relating the evolution of the g(n, m, p)
        and g(n, p) models. Random Struct. Algorithms 16, 2 (2000), 156–176.
     """
-    G=nx.bipartite_random_graph(n, m, p, seed=seed)
+    G=nx.random_graph(n, m, p, seed=seed)
     return nx.projected_graph(G, range(n)) 
 
 def k_random_intersection_graph(n,m,k):
