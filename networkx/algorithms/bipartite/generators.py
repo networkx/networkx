@@ -50,7 +50,6 @@ def complete_bipartite_graph(n1, n2, create_using=None):
 
     The nodes are assigned the attribute 'bipartite' with the value 0 or 1
     to indicate which bipartite set the node belongs to.
-
     """
     if create_using is None:
         G = nx.Graph()
@@ -96,6 +95,9 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
 
     The nodes are assigned the attribute 'bipartite' with the value 0 or 1
     to indicate which bipartite set the node belongs to.
+
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
     """
     if create_using is None:
         create_using=networkx.MultiGraph()
@@ -141,7 +143,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
 
     G.add_edges_from([[astubs[i],bstubs[i]] for i in range(suma)])
 
-    G.name="configuration_model"
+    G.name="bipartite_configuration_model"
     return G
 
 
@@ -164,6 +166,9 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
 
     Notes
     -----
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
+
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
     If no graph type is specified use MultiGraph with parallel edges.
     If you want a graph with no parallel edges use create_using=Graph()
@@ -212,7 +217,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
             if target[0]==0:
                 bstubs.remove(target)
 
-    G.name="havel_hakimi_graph"
+    G.name="bipartite_havel_hakimi_graph"
     return G
 
 def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
@@ -235,6 +240,9 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
 
     Notes
     -----
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
+
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
     If no graph type is specified use MultiGraph with parallel edges.
     If you want a graph with no parallel edges use create_using=Graph()
@@ -283,7 +291,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
             if target[0]==0:
                 bstubs.remove(target)
 
-    G.name="reverse_havel_hakimi_graph"
+    G.name="bipartite_reverse_havel_hakimi_graph"
     return G
 
 
@@ -308,6 +316,9 @@ def alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
 
     Notes
     -----
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
+
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
     If no graph type is specified use MultiGraph with parallel edges.
     If you want a graph with no parallel edges use create_using=Graph()
@@ -358,7 +369,7 @@ def alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
             if target[0]==0:
                 bstubs.remove(target)
 
-    G.name="alternating_havel_hakimi_graph"
+    G.name="bipartite_alternating_havel_hakimi_graph"
     return G
 
 def preferential_attachment_graph(aseq,p,create_using=None,seed=None):
@@ -382,6 +393,12 @@ def preferential_attachment_graph(aseq,p,create_using=None,seed=None):
        Bipartite structure of all complex networks,
        Inf. Process. Lett. 90, 2004, pg. 215-221
        http://dx.doi.org/10.1016/j.ipl.2004.03.007
+
+    Notes
+    -----
+
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
     """
     if create_using is None:
         create_using=networkx.MultiGraph()
@@ -442,6 +459,9 @@ def random_graph(n, m, p, seed=None, directed=False):
       
     Notes
     -----
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
+
     The bipartite random graph algorithm chooses each of the n*m (undirected) 
     or 2*nm (directed) possible edges with probability p.
 
@@ -532,6 +552,9 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
 
     Notes
     -----
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
+
     If k > m * n then a complete bipartite graph is returned.
 
     This graph is a bipartite version of the `G_{nm}` random graph model.
