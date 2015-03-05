@@ -6,7 +6,7 @@ class TestBipartiteCentrality(object):
 
     def setUp(self):
         self.P4 = nx.path_graph(4)
-        self.K3 = nx.bipartite.complete_bipartite_graph(3,3)
+        self.K3 = nx.complete_bipartite_graph(3,3)
         self.C4 = nx.cycle_graph(4)
         self.davis = nx.davis_southern_women_graph()
         self.top_nodes = [n for n,d in self.davis.nodes(data=True) 
