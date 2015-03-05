@@ -23,7 +23,7 @@ class TestBipartiteBasic:
 
 
     def test_bipartite_directed(self):
-        G = nx.bipartite_random_graph(10, 10, 0.1, directed=True)
+        G = bipartite.random_graph(10, 10, 0.1, directed=True)
         assert_true(bipartite.is_bipartite(G))
 
     def test_bipartite_sets(self):
@@ -97,7 +97,7 @@ class TestBipartiteBasic:
         tops = [2,5,10]
         bots = [5,10,15]
         for i in range(len(tops)):
-            G = nx.bipartite_random_graph(tops[i], bots[i], 0.2)
+            G = bipartite.random_graph(tops[i], bots[i], 0.2)
             top = [n for n,d in G.nodes(data=True) if d['bipartite']==0]
             M = bipartite.biadjacency_matrix(G, top)
             assert_equal(M.shape[0],tops[i])
