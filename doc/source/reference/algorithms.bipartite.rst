@@ -90,7 +90,7 @@ Generators
 .. autosummary::
    :toctree: generated/
 
-   bipartite_graph
+   complete_bipartite_graph
    configuration_model
    havel_hakimi_graph
    reverse_havel_hakimi_graph
