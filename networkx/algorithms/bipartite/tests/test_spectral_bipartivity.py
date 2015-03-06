@@ -85,7 +85,7 @@ class TestSpectralBipartivity(object):
         assert_almost_equal(sbn[1],0.85,places=2)
         assert_almost_equal(sbn[2],0.77,places=2)
 
-        G=nx.bipartite.complete_bipartite_graph(2,3)
+        G=nx.complete_bipartite_graph(2,3)
         G.add_edge(0,1)
         sbn=sb(G,nodes=[1,2])
         assert_almost_equal(sbn[1],0.73,places=2)
