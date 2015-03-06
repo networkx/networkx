@@ -63,6 +63,11 @@ New functionalities
 * [`#1360 <https://github.com/networkx/networkx/pull/1360>`_]
   Added harmonic centrality to ``network.algorithms.centrality``.
 
+* [`#1390 <https://github.com/networkx/networkx/pull/1390>`_]
+  The ``generators.bipartite`` have been moved to
+  ``algorithms.bipartite.generators``. The functions are not imported in the
+  main  namespace, so to use it, the bipartite package has to be imported.
+
 Removed functionalities
 -----------------------
 

@@ -161,22 +161,6 @@ Hybrid
    is_kl_connected
 
 
-Bipartite
----------
-.. automodule:: networkx.generators.bipartite
-.. autosummary::
-   :toctree: generated/
-
-   complete_bipartite_graph
-   bipartite_configuration_model
-   bipartite_havel_hakimi_graph
-   bipartite_reverse_havel_hakimi_graph
-   bipartite_alternating_havel_hakimi_graph
-   bipartite_preferential_attachment_graph
-   bipartite_random_graph
-   bipartite_gnmk_random_graph
-
-
 Line Graph
 ----------
 .. automodule:: networkx.generators.line
