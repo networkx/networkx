@@ -301,6 +301,11 @@ class MultiGraph(Graph):
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
 
+        Returns
+        -------
+        key : hashable identifier
+            The key of the added edge.
+
         See Also
         --------
         add_edges_from : add a collection of edges
@@ -369,6 +374,7 @@ class MultiGraph(Graph):
             self.adj[u][v] = keydict
             self.adj[v][u] = keydict
 
+        return key
 
     def add_edges_from(self, ebunch, attr_dict=None, **attr):
         """Add all the edges in ebunch.
@@ -390,6 +396,10 @@ class MultiGraph(Graph):
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
 
+        Returns
+        -------
+        keys : list
+            The keys for each added edge.
 
         See Also
         --------
@@ -426,6 +436,7 @@ class MultiGraph(Graph):
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
         # process ebunch
+        keys = []
         for e in ebunch:
             ne=len(e)
             if ne==4:
@@ -443,7 +454,9 @@ class MultiGraph(Graph):
             ddd={}
             ddd.update(attr_dict)
             ddd.update(dd)
-            self.add_edge(u, v, key, ddd)
+            keys.append(self.add_edge(u, v, key, ddd))
+
+        return keys
 
 
     def remove_edge(self, u, v, key=None):
@@ -456,6 +469,13 @@ class MultiGraph(Graph):
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
             If None remove a single (abritrary) edge between u and v.
+
+        Returns
+        -------
+        key : hashable identifier
+            The key of the edge that was deleted.
+        data : dict-like
+            The data of the edge that was deleted.
 
         Raises
         ------
@@ -490,24 +510,31 @@ class MultiGraph(Graph):
 
         """
         try:
-            d=self.adj[u][v]
+            d = self.adj[u][v]
         except (KeyError):
-            raise NetworkXError(
-                "The edge %s-%s is not in the graph."%(u,v))
-        # remove the edge with specified data
+            msg = "The edge {0}-{1} is not in the graph.".format(u,v)
+            raise NetworkXError(msg)
+
+        # remove the edge with specified key
         if key is None:
-            d.popitem()
+            key, data = d.popitem()
         else:
             try:
-                del d[key]
+                data = d[key]
             except (KeyError):
-                raise NetworkXError(
-                "The edge %s-%s with key %s is not in the graph."%(u,v,key))
-        if len(d)==0:
+                msg = "The edge {0}-{1} with key {2} is not in the graph."
+                msg = msg.format(u, v, key)
+                raise NetworkXError(msg)
+            else:
+                del d[key]
+
+        if not d:
             # remove the key entries if last edge
             del self.adj[u][v]
-            if u!=v:  # check for selfloop
+            if u != v:  # check for selfloop
                 del self.adj[v][u]
+
+        return key, data
 
 
     def remove_edges_from(self, ebunch):
@@ -522,6 +549,12 @@ class MultiGraph(Graph):
                 - 2-tuples (u,v) All edges between u and v are removed.
                 - 3-tuples (u,v,key) The edge identified by key is removed.
                 - 4-tuples (u,v,key,data) where data is ignored.
+
+        Returns
+        -------
+        out : list
+            A list of 2-tuples. Each 2-tuple consists of the (key, data) for
+            each edge that was deleted.
 
         See Also
         --------
@@ -549,12 +582,14 @@ class MultiGraph(Graph):
         >>> G.edges() # now empty graph
         []
         """
+        out = []
         for e in ebunch:
             try:
-                self.remove_edge(*e[:3])
+                out.append(self.remove_edge(*e[:3]))
             except NetworkXError:
                 pass
 
+        return out
 
     def has_edge(self, u, v, key=None):
         """Return True if the graph has an edge between nodes u and v.

@@ -273,6 +273,11 @@ class MultiDiGraph(MultiGraph,DiGraph):
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
 
+        Returns
+        -------
+        key : hashable identifier
+            The key of the added edge.
+
         See Also
         --------
         add_edges_from : add a collection of edges
@@ -340,6 +345,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
             self.succ[u][v] = keydict
             self.pred[v][u] = keydict
 
+        return key
+
     def remove_edge(self, u, v, key=None):
         """Remove an edge between u and v.
 
@@ -350,6 +357,13 @@ class MultiDiGraph(MultiGraph,DiGraph):
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
             If None remove a single (abritrary) edge between u and v.
+
+        Returns
+        -------
+        key : hashable identifier
+            The key of the edge that was deleted.
+        data : dict-like
+            The data of the edge that was deleted.
 
         Raises
         ------
@@ -384,24 +398,31 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         """
         try:
-            d=self.adj[u][v]
+            d = self.adj[u][v]
         except (KeyError):
-            raise NetworkXError(
-                "The edge %s-%s is not in the graph."%(u,v))
-        # remove the edge with specified data
+            msg = "The edge {0}-{1} is not in the graph.".format(u,v)
+            raise NetworkXError(msg)
+
+        # remove the edge with specified key
         if key is None:
-            d.popitem()
+            key, data = d.popitem()
         else:
             try:
-                del d[key]
+                data = d[key]
             except (KeyError):
-                raise NetworkXError(
-                "The edge %s-%s with key %s is not in the graph."%(u,v,key))
-        if len(d)==0:
+                msg = "The edge {0}-{1} with key {2} is not in the graph."
+                msg = msg.format(u, v, key)
+                raise NetworkXError(msg)
+            else:
+                del d[key]
+
+        if not d:
+            # remove the key entries if last edge
             # remove the key entries if last edge
             del self.succ[u][v]
             del self.pred[v][u]
 
+        return key, data
 
     def edges_iter(self, nbunch=None, data=False, keys=False, default=None):
         """Return an iterator over the edges.
