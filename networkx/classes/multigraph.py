@@ -182,10 +182,10 @@ class MultiGraph(Graph):
     the edge data and holds edge attribute values keyed by attribute names.
 
     Each of these four dicts in the dict-of-dict-of-dict-of-dict
-    structure can be replaced by a user defined dict-like object.  
-    In general, the dict-like features should be maintained but 
-    extra features can be added. To replace one of the dicts create 
-    a new graph class by changing the class(!) variable holding the 
+    structure can be replaced by a user defined dict-like object.
+    In general, the dict-like features should be maintained but
+    extra features can be added. To replace one of the dicts create
+    a new graph class by changing the class(!) variable holding the
     factory for that dict-like structure. The variable names
     are node_dict_factory, adjlist_dict_factory, edge_key_dict_factory
     and edge_attr_dict_factory.
@@ -622,7 +622,7 @@ class MultiGraph(Graph):
         [(0, 1), (1, 2), (2, 3)]
         >>> G.edges(data=True) # default edge data is {} (empty dictionary)
         [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1)) 
+        >>> list(G.edges_iter(data='weight', default=1))
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> G.edges(keys=True) # default keys are integers
         [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
@@ -652,7 +652,7 @@ class MultiGraph(Graph):
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v). 
+            If False, return 2-tuple (u,v).
         default : value, optional (default=None)
             Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
@@ -682,7 +682,7 @@ class MultiGraph(Graph):
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1)) 
+        >>> list(G.edges_iter(data='weight', default=1))
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> list(G.edges(keys=True)) # default keys are integers
         [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
@@ -792,7 +792,7 @@ class MultiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -894,7 +894,7 @@ class MultiGraph(Graph):
         G.add_edges_from( (u,v,key,deepcopy(datadict))
                            for u,nbrs in self.adjacency_iter()
                            for v,keydict in nbrs.items()
-                           for key,datadict in keydict.items() ) 
+                           for key,datadict in keydict.items() )
         G.graph=deepcopy(self.graph)
         G.node=deepcopy(self.node)
         return G

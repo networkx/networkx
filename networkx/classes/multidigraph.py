@@ -181,10 +181,10 @@ class MultiDiGraph(MultiGraph,DiGraph):
     the edge data and holds edge attribute values keyed by attribute names.
 
     Each of these four dicts in the dict-of-dict-of-dict-of-dict
-    structure can be replaced by a user defined dict-like object.  
-    In general, the dict-like features should be maintained but 
-    extra features can be added. To replace one of the dicts create 
-    a new graph class by changing the class(!) variable holding the 
+    structure can be replaced by a user defined dict-like object.
+    In general, the dict-like features should be maintained but
+    extra features can be added. To replace one of the dicts create
+    a new graph class by changing the class(!) variable holding the
     factory for that dict-like structure. The variable names
     are node_dict_factory, adjlist_dict_factory, edge_key_dict_factory
     and edge_attr_dict_factory.
@@ -419,7 +419,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v). 
+            If False, return 2-tuple (u,v).
         keys : bool, optional (default=False)
             If True, return edge keys with each edge.
         default : value, optional (default=None)
@@ -449,7 +449,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1)) 
+        >>> list(G.edges_iter(data='weight', default=1))
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> list(G.edges(keys=True)) # default keys are integers
         [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
@@ -600,7 +600,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights.
 
@@ -659,7 +659,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -711,7 +711,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights.
 
@@ -807,8 +807,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
         Parameters
         ----------
         reciprocal : bool (optional)
-          If True only keep edges that appear in both directions 
-          in the original digraph. 
+          If True only keep edges that appear in both directions
+          in the original digraph.
 
         Returns
         -------
@@ -837,7 +837,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         If you have subclassed MultiGraph to use dict-like objects in the
         data structure, those changes do not transfer to the MultiDiGraph
         created by this method.
-        
+
         """
         H=MultiGraph()
         H.name=self.name
@@ -940,7 +940,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
         if copy:
             H = self.__class__(name="Reverse of (%s)"%self.name)
             H.add_nodes_from(self)
-            H.add_edges_from( (v,u,k,deepcopy(d)) for u,v,k,d 
+            H.add_edges_from( (v,u,k,deepcopy(d)) for u,v,k,d
                               in self.edges(keys=True, data=True) )
             H.graph=deepcopy(self.graph)
             H.node=deepcopy(self.node)
