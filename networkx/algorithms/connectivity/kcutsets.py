@@ -82,6 +82,9 @@ def all_node_cuts(G, k=None, flow_func=None):
             http://onlinelibrary.wiley.com/doi/10.1002/net.3230230604/abstract
 
     """
+    if not nx.is_connected(G):
+        raise nx.NetworkXError('Input graph is disconnected.')
+
     # Initialize data structures.
     # Even-Tarjan reduction is what we call auxiliary digraph 
     # for node connectivity.
@@ -103,7 +106,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     degree = G.degree().items()
     X = set(n for n, d in sorted(degree, key=itemgetter(1), reverse=True)[:k])
     # Check if X is a k-node-cutset
-    if is_separating_set(G, X):
+    if _is_separating_set(G, X):
         yield X
 
     for x in X:
@@ -197,10 +200,8 @@ def antichain_generator(G):
             antichains_queues.append((new_antichain, new_queue))
 
 
-def is_separating_set(G, cut):
-    if not nx.is_connected(G):
-        raise nx.NetworkXError('Input graph is disconnected')
-
+def _is_separating_set(G, cut):
+    """Assumes that the input graph is connected"""
     if len(cut) == len(G) - 1:
         return True
 

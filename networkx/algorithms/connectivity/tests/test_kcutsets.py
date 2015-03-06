@@ -1,6 +1,6 @@
 # Jordi Torrents
 # Test for k-cutsets
-from nose.tools import assert_equal, assert_false, assert_true
+from nose.tools import assert_equal, assert_false, assert_true, assert_raises
 import networkx as nx
 
 ##
@@ -186,3 +186,9 @@ def test_grid_2d_graph():
     ]
     for cut in nx.all_node_cuts(G):
         assert_true(cut in solution)
+
+
+def test_disconnected_graph():
+    G = nx.fast_gnp_random_graph(100, 0.01)
+    cuts = nx.all_node_cuts(G)
+    assert_raises(nx.NetworkXError, next, cuts)
