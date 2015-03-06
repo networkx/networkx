@@ -246,9 +246,37 @@ class MultiGraph(Graph):
     #adjlist_dict_factory=dict
     edge_key_dict_factory=dict
     #edge_attr_dict_factory=dict
+
     def __init__(self, data=None, **attr):
         self.edge_key_dict_factory = self.edge_key_dict_factory
         Graph.__init__(self, data, **attr)
+
+    def _keyfunc(self, u, v):
+        """Returns a new key to be used for an edge between u and v.
+
+        Parameters
+        ----------
+        u, v : node
+            Nodes that are in the graph already.
+
+        Returns
+        -------
+        key : integer
+            The key to use for the edge between u and v.
+
+        """
+        try:
+            keydict = self.adj[u][v]
+        except KeyError:
+            # This is the first edge between u and v.
+            key = 0
+        else:
+            # Skip integers that are probably occupied.
+            key = len(keydict)
+            while key in keydict:
+                key += 1
+
+        return key
 
     def add_edge(self, u, v, key=None, attr_dict=None, **attr):
         """Add an edge between u and v.
@@ -312,32 +340,32 @@ class MultiGraph(Graph):
             except AttributeError:
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
-        # add nodes
+
+        # Add the nodes.
         if u not in self.adj:
             self.adj[u] = self.adjlist_dict_factory()
             self.node[u] = {}
         if v not in self.adj:
             self.adj[v] = self.adjlist_dict_factory()
             self.node[v] = {}
+
+        if key is None:
+            key = self._keyfunc(u, v)
+
+        # Add the edge.
         if v in self.adj[u]:
-            keydict=self.adj[u][v]
-            if key is None:
-                # find a unique integer key
-                # other methods might be better here?
-                key=len(keydict)
-                while key in keydict:
-                    key+=1
-            datadict=keydict.get(key,self.edge_attr_dict_factory())
+            # Note the other direction is covered (even for self-loops) since:
+            #   (self.adj[v][u] is keydict) == True.
+            keydict = self.adj[u][v]
+            datadict = keydict.get(key, self.edge_attr_dict_factory())
             datadict.update(attr_dict)
-            keydict[key]=datadict
+            keydict[key] = datadict
         else:
-            # selfloops work this way without special treatment
-            if key is None:
-                key=0
-            datadict=self.edge_attr_dict_factory()
+            # New selfloops are also handled by this without special treatment.
+            keydict = self.edge_key_dict_factory()
+            datadict = keydict.get(key, self.edge_attr_dict_factory())
             datadict.update(attr_dict)
-            keydict=self.edge_key_dict_factory()
-            keydict[key]=datadict
+            keydict[key] = datadict
             self.adj[u][v] = keydict
             self.adj[v][u] = keydict
 

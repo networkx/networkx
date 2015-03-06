@@ -245,6 +245,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
     #adjlist_dict_factory=dict
     edge_key_dict_factory=dict
     #edge_attr_dict_factory=dict
+
     def __init__(self, data=None, **attr):
         self.edge_key_dict_factory = self.edge_key_dict_factory
         DiGraph.__init__(self, data, **attr)
@@ -320,25 +321,22 @@ class MultiDiGraph(MultiGraph,DiGraph):
             self.succ[v] = self.adjlist_dict_factory()
             self.pred[v] = self.adjlist_dict_factory()
             self.node[v] = {}
+
+        if key is None:
+            key = self._keyfunc(u, v)
+
+        # add edge
         if v in self.succ[u]:
-            keydict=self.adj[u][v]
-            if key is None:
-                # find a unique integer key
-                # other methods might be better here?
-                key=len(keydict)
-                while key in keydict:
-                    key+=1
-            datadict=keydict.get(key,self.edge_key_dict_factory())
+            keydict = self.adj[u][v]
+            datadict = keydict.get(key, self.edge_key_dict_factory())
             datadict.update(attr_dict)
-            keydict[key]=datadict
+            keydict[key] = datadict
         else:
-            # selfloops work this way without special treatment
-            if key is None:
-                key=0
-            datadict=self.edge_attr_dict_factory()
+            # New selfloops are also handled by this without special treatment.
+            keydict = self.edge_key_dict_factory()
+            datadict = keydict.get(key, self.edge_attr_dict_factory())
             datadict.update(attr_dict)
-            keydict=self.edge_key_dict_factory()
-            keydict[key]=datadict
+            keydict[key] = datadict
             self.succ[u][v] = keydict
             self.pred[v][u] = keydict
 
