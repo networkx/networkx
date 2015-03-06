@@ -1,7 +1,16 @@
 # Jordi Torrents
 # Test for k-cutsets
+from operator import itemgetter
 from nose.tools import assert_equal, assert_false, assert_true, assert_raises
 import networkx as nx
+from networkx.algorithms.connectivity.kcutsets import _is_separating_set
+
+from networkx.algorithms.flow import (
+    edmonds_karp,
+    shortest_augmenting_path,
+    preflow_push,
+)
+
 
 ##
 ## Some nice synthetic graphs
@@ -166,7 +175,7 @@ def _generate_no_biconnected(max_attempts=50):
 
 def test_articulation_points():
     Ggen = _generate_no_biconnected()
-    for i in range(3):
+    for i in range(2):
         G = next(Ggen)
         articulation_points = list({a} for a in nx.articulation_points(G))
         for cut in nx.all_node_cuts(G):
@@ -192,3 +201,27 @@ def test_disconnected_graph():
     G = nx.fast_gnp_random_graph(100, 0.01)
     cuts = nx.all_node_cuts(G)
     assert_raises(nx.NetworkXError, next, cuts)
+
+
+def test_alternative_flow_functions():
+    flow_funcs = [edmonds_karp, shortest_augmenting_path, preflow_push]
+    graph_funcs = [graph_example_1, nx.davis_southern_women_graph]
+    for graph_func in graph_funcs:
+        G = graph_func()
+        for flow_func in flow_funcs:
+            for cut in nx.all_node_cuts(G, flow_func=flow_func):
+                assert_equal(nx.node_connectivity(G), len(cut))
+                H = G.copy()
+                H.remove_nodes_from(cut)
+                assert_false(nx.is_connected(H))
+
+def test_is_separating_set_complete_graph():
+    G = nx.complete_graph(5)
+    assert_true(_is_separating_set(G, {0, 1, 2, 3}))
+
+
+def test_is_separating_set():
+    for i in [5, 10, 15]:
+        G = nx.star_graph(i)
+        max_degree_node = max(G, key=G.degree)
+        assert_true(_is_separating_set(G, {max_degree_node}))
