@@ -544,7 +544,8 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
         
     Examples
     --------
-    G = nx.gnmk_random_graph(10,20,50)
+    from networkx.algorithms import bipartite
+    G = bipartite.gnmk_random_graph(10,20,50)
 
     See Also
     --------
