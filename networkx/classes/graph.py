@@ -519,7 +519,7 @@ class Graph(object):
             except TypeError:
                 nn,ndict = n
                 if nn not in self.node:
-                    self.adj[nn] = {}
+                    self.adj[nn] = self.adjlist_dict_factory()
                     newdict = attr.copy()
                     newdict.update(ndict)
                     self.node[nn] = newdict
@@ -860,7 +860,7 @@ class Graph(object):
                 u,v,dd = e
             elif ne==2:
                 u,v = e
-                dd = {}
+                dd = {} #doesnt need edge_attr_dict_factory
             else:
                 raise NetworkXError(\
                     "Edge tuple %s must be a 2-tuple or 3-tuple."%(e,))
