@@ -129,8 +129,8 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
 
     Notes
     -----
-    The nodes are labeled with the attribute `part` set to an integer 0 or 1 
-    representing membership in part 0 or part 1 of the bipartite graph.
+    The nodes are labeled with the attribute `bipartite` set to an integer 
+    0 or 1 representing membership in part 0 or part 1 of the bipartite graph.
 
     If `create_using` is an instance of :class:`networkx.MultiGraph` or
     :class:`networkx.MultiDiGraph` and the entries of `A` are of type ``int``,
@@ -150,8 +150,8 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
     G = _prep_create_using(create_using)
     n, m = A.shape
     # Make sure we get even the isolated nodes of the graph.
-    G.add_nodes_from(range(n), part=0)
-    G.add_nodes_from(range(n,n+m), part=1)
+    G.add_nodes_from(range(n), bipartite=0)
+    G.add_nodes_from(range(n,n+m), bipartite=1)
     # Create an iterable over (u, v, w) triples and for each triple, add an
     # edge from u to v with weight w.
     triples = ((u, n+v, d) for (u, v, d) in _generate_weighted_edges(A))

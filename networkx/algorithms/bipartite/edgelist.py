@@ -64,8 +64,8 @@ def write_edgelist(G, path, comments="#", delimiter=' ', data=True,
     Examples
     --------
     >>> G=nx.path_graph(4)
-    >>> G.add_nodes_from([0,2], part=0)
-    >>> G.add_nodes_from([1,3], part=1)
+    >>> G.add_nodes_from([0,2], bipartite=0)
+    >>> G.add_nodes_from([1,3], bipartite=1)
     >>> nx.write_edgelist(G, "test.edgelist")
     >>> fh=open("test.edgelist",'wb')
     >>> nx.write_edgelist(G, fh)
@@ -115,8 +115,8 @@ def generate_edgelist(G, delimiter=' ', data=True):
     --------
     >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> G.add_nodes_from([0,2], part=0)
-    >>> G.add_nodes_from([1,3], part=1)
+    >>> G.add_nodes_from([0,2], bipartite=0)
+    >>> G.add_nodes_from([1,3], bipartite=1)
     >>> G[1][2]['weight'] = 3
     >>> G[2][3]['capacity'] = 12
     >>> for line in bipartite.generate_edgelist(G, data=False):
@@ -138,9 +138,9 @@ def generate_edgelist(G, delimiter=' ', data=True):
     2 3
     """
     try:
-        part0 = [n for n,d in G.node.items() if d['part'] == 0]
+        part0 = [n for n,d in G.node.items() if d['bipartite'] == 0]
     except:
-        raise AttributeError("Missing node attribute `part`") 
+        raise AttributeError("Missing node attribute `bipartite`") 
     if data is True or data is False:
         for n in part0:
             for e in G.edges(n, data=data):
@@ -194,7 +194,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     >>> sorted(G.nodes())
     [1, 2, 3, 4]
     >>> sorted(G.nodes(data=True))
-    [(1, {'part': 0}), (2, {'part': 0}), (3, {'part': 0}), (4, {'part': 1})]
+    [(1, {'bipartite': 0}), (2, {'bipartite': 0}), (3, {'bipartite': 0}), (4, {'bipartite': 1})]
     >>> sorted(G.edges())
     [(1, 2), (2, 3), (3, 4)]
 
@@ -271,8 +271,8 @@ def parse_edgelist(lines, comments='#', delimiter=None,
                         "Failed to convert %s data %s to type %s."
                         %(edge_key, edge_value, edge_type))
                 edgedata.update({edge_key:edge_value})
-        G.add_node(u, part=0)
-        G.add_node(v, part=1)
+        G.add_node(u, bipartite=0)
+        G.add_node(v, bipartite=1)
         G.add_edge(u, v, attr_dict=edgedata)
     return G
 
@@ -315,8 +315,8 @@ def read_edgelist(path, comments="#",
     --------
     >>> from networkx.algorithms import bipartite
     >>> G = nx.path_graph(4)
-    >>> G.add_nodes_from([0,2], part=0)
-    >>> G.add_nodes_from([1,3], part=1)
+    >>> G.add_nodes_from([0,2], bipartite=0)
+    >>> G.add_nodes_from([1,3], bipartite=1)
     >>> bipartite.write_edgelist(G, "test.edgelist")
     >>> G = bipartite.read_edgelist("test.edgelist")
 
