@@ -6,9 +6,11 @@ from operator import itemgetter
 
 import networkx as nx
 from .utils import build_auxiliary_node_connectivity
-from networkx.algorithms.flow import build_residual_network
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import shortest_augmenting_path
+from networkx.algorithms.flow import (
+    build_residual_network,
+    edmonds_karp,
+    shortest_augmenting_path,
+)
 # Define the default maximum flow function.
 default_flow_func = edmonds_karp
 
@@ -131,13 +133,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                 cmap = L.graph['mapping']
                 # step 7: Compute antichains of L; they map to closed sets in H
                 # Any edge in H that links a closed set is part of a cutset
-                antichains = antichain_generator(L)
-
-                found = False
-                while not found:
-                    antichain = next(antichains, None)
-                    if antichain is None:
-                        break
+                for antichain in antichain_generator(L):
                     # Nodes in an antichain of the condensation graph of
                     # the residual network map to a closed set of nodes that
                     # define a node partition of the auxiliary digraph H.
@@ -166,7 +162,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                                    capacity=1)
                         R.add_edge('%sA' % mapping[v], '%sB' % mapping[x],
                                    capacity=1)
-                        found = True
+                        break
                 # Add again the saturated edges to reuse the residual network
                 R.add_edges_from(saturated_edges)
 
@@ -185,7 +181,6 @@ def transitive_closure(G):
 def antichain_generator(G):
     # Based on SAGE combinat.posets.hasse_diagram.py
     TC = transitive_closure(G)
-    #print nx.to_numpy_matrix(TC)
     antichains_queues = [([], nx.topological_sort(G, reverse=True))]
     while antichains_queues:
         (antichain, queue) = antichains_queues.pop()
