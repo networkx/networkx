@@ -4,6 +4,7 @@ from nose import SkipTest
 from nose.plugins.attrib import attr
 import networkx as nx
 from networkx.algorithms import bipartite
+
 class TestBipartiteBasic:
 
     def test_is_bipartite(self):
