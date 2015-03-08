@@ -23,6 +23,11 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'common_neighbors', 'is_weighted','is_negatively_weighted',
            'is_empty']
 
+#: This tuple includes the names of each method that mutates a graph.
+MUTATORS = ('add_edge', 'add_edges_from', 'add_node', 'add_nodes_from',
+            'clear', 'remove_edge', 'remove_edges_from', 'remove_node',
+            'remove_nodes_from')
+
 
 def nodes(G):
     """Return a copy of the graph nodes in a list."""
@@ -186,16 +191,9 @@ def freeze(G):
     --------
     is_frozen
     """
-    G.add_node=frozen
-    G.add_nodes_from=frozen
-    G.remove_node=frozen
-    G.remove_nodes_from=frozen
-    G.add_edge=frozen
-    G.add_edges_from=frozen
-    G.remove_edge=frozen
-    G.remove_edges_from=frozen
-    G.clear=frozen
-    G.frozen=True
+    for method in MUTATORS:
+        setattr(G, method, frozen)
+    G.frozen = True
     return G
 
 
@@ -671,4 +669,3 @@ def is_empty(G):
 
     """
     return not any(G.adj.values())
-
