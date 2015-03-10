@@ -80,7 +80,4 @@ Making copies and subgraphs
    MultiGraph.to_undirected
    MultiGraph.to_directed
    MultiGraph.subgraph
-
-
-
-
+   MultiGraph.edge_subgraph

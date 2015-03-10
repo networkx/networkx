@@ -88,6 +88,6 @@ Making copies and subgraphs
    MultiDiGraph.copy
    MultiDiGraph.to_undirected
    MultiDiGraph.to_directed
+   MultiDiGraph.edge_subgraph
    MultiDiGraph.subgraph
    MultiDiGraph.reverse
-

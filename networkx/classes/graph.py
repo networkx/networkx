@@ -1488,6 +1488,74 @@ class Graph(object):
         H.graph = self.graph
         return H
 
+    def edge_subgraph(self, edges):
+        """Returns the subgraph induced by the specified edges.
+
+        The induced subgraph contains each edge in ``edges`` and each
+        node incident to any one of those edges.
+
+        Parameters
+        ----------
+        edges : iterable
+            An iterable of edges in this graph.
+
+        Returns
+        -------
+        G : Graph
+            An edge-induced subgraph of this graph with the same edge
+            attributes.
+
+        Notes
+        -----
+        The graph, edge, and node attributes in the returned subgraph
+        are references to the corresponding attributes in the original
+        graph. Thus changes to the node or edge structure of the
+        returned graph will not be reflected in the original graph, but
+        changes to the attributes will.
+
+        To create a subgraph with its own copy of the edge or node
+        attributes, use::
+
+            >>> nx.Graph(G.edge_subgraph(edges))  # doctest: +SKIP
+
+        If edge attributes are containers, a deep copy of the attributes
+        can be obtained using::
+
+            >>> G.edge_subgraph(edges).copy()  # doctest: +SKIP
+
+        Examples
+        --------
+        >>> G = nx.path_graph(5)
+        >>> H = G.edge_subgraph([(0, 1), (3, 4)])
+        >>> list(H.nodes())
+        [0, 1, 3, 4]
+        >>> list(H.edges())
+        [(0, 1), (3, 4)]
+
+        """
+        H = self.__class__()
+        adj = self.adj
+        # Filter out edges that don't correspond to nodes in the graph.
+        edges = ((u, v) for u, v in edges if u in adj and v in adj[u])
+        for u, v in edges:
+            # Copy the node attributes if they haven't been copied
+            # already.
+            if u not in H.node:
+                H.node[u] = self.node[u]
+            if v not in H.node:
+                H.node[v] = self.node[v]
+            # Create an entry in the adjacency dictionary for the
+            # nodes u and v if they don't exist yet.
+            if u not in H.adj:
+                H.adj[u] = H.adjlist_dict_factory()
+            if v not in H.adj:
+                H.adj[v] = H.adjlist_dict_factory()
+            # Copy the edge attributes.
+            H.edge[u][v] = self.edge[u][v]
+            H.edge[v][u] = self.edge[v][u]
+        H.graph = self.graph
+        return H
+
     def nodes_with_selfloops(self):
         """Returns an iterator over nodes with self loops.
 

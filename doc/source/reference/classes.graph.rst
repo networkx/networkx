@@ -80,7 +80,4 @@ Making copies and subgraphs
    Graph.to_undirected
    Graph.to_directed
    Graph.subgraph
-
-
-
-
+   Graph.edge_subgraph

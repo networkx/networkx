@@ -1,6 +1,12 @@
-from nose.tools import (assert_equal, assert_raises, assert_true, raises,
-                        assert_not_equal)
+from nose.tools import assert_equal
+from nose.tools import assert_is
+from nose.tools import assert_not_equal
+from nose.tools import assert_raises
+from nose.tools import assert_true
+from nose.tools import raises
+
 import networkx
+
 
 class BaseGraphTester(object):
     """ Tests for data-structure independent graph class features."""
@@ -601,7 +607,6 @@ class TestGraph(BaseAttrGraphTester):
         f = lambda x: list(G.edges(x))
         assert_raises((KeyError,networkx.NetworkXError), f,-1)
 
-
     def test_get_edge_data(self):
         G=self.K3
         assert_equal(G.get_edge_data(0,1),{})
@@ -609,3 +614,80 @@ class TestGraph(BaseAttrGraphTester):
         assert_equal(G.get_edge_data(10,20),None)
         assert_equal(G.get_edge_data(-1,0),None)
         assert_equal(G.get_edge_data(-1,0,default=1),1)
+
+
+class TestEdgeSubgraph(object):
+    """Unit tests for the :meth:`Graph.edge_subgraph` method."""
+
+    def setup(self):
+        # Create a path graph on five nodes.
+        G = networkx.path_graph(5)
+        # Add some node, edge, and graph attributes.
+        for i in range(5):
+            G.node[i]['name'] = 'node{}'.format(i)
+        G.edge[0][1]['name'] = 'edge01'
+        G.edge[3][4]['name'] = 'edge34'
+        G.graph['name'] = 'graph'
+        # Get the subgraph induced by the first and last edges.
+        self.G = G
+        self.H = G.edge_subgraph([(0, 1), (3, 4)])
+
+    def test_correct_nodes(self):
+        """Tests that the subgraph has the correct nodes."""
+        assert_equal([0, 1, 3, 4], sorted(self.H.nodes()))
+
+    def test_correct_edges(self):
+        """Tests that the subgraph has the correct edges."""
+        assert_equal([(0, 1, 'edge01'), (3, 4, 'edge34')],
+                     sorted(self.H.edges(data='name')))
+
+    def test_add_node(self):
+        """Tests that adding a node to the original graph does not
+        affect the nodes of the subgraph.
+
+        """
+        self.G.add_node(5)
+        assert_equal([0, 1, 3, 4], sorted(self.H.nodes()))
+
+    def test_remove_node(self):
+        """Tests that removing a node in the original graph does not
+        affect the nodes of the subgraph.
+
+        """
+        self.G.remove_node(0)
+        assert_equal([0, 1, 3, 4], sorted(self.H.nodes()))
+
+    def test_node_attr_dict(self):
+        """Tests that the node attribute dictionary of the two graphs is
+        the same object.
+
+        """
+        for v in self.H:
+            assert_equal(self.G.node[v], self.H.node[v])
+        # Making a change to G should make a change in H and vice versa.
+        self.G.node[0]['name'] = 'foo'
+        assert_equal(self.G.node[0], self.H.node[0])
+        self.H.node[1]['name'] = 'bar'
+        assert_equal(self.G.node[1], self.H.node[1])
+
+    def test_edge_attr_dict(self):
+        """Tests that the edge attribute dictionary of the two graphs is
+        the same object.
+
+        """
+        for u, v in self.H.edges():
+            assert_equal(self.G.edge[u][v], self.H.edge[u][v])
+        # Making a change to G should make a change in H and vice versa.
+        self.G.edge[0][1]['name'] = 'foo'
+        assert_equal(self.G.edge[0][1]['name'],
+                     self.H.edge[0][1]['name'])
+        self.H.edge[3][4]['name'] = 'bar'
+        assert_equal(self.G.edge[3][4]['name'],
+                     self.H.edge[3][4]['name'])
+
+    def test_graph_attr_dict(self):
+        """Tests that the graph attribute dictionary of the two graphs
+        is the same object.
+
+        """
+        assert_is(self.G.graph, self.H.graph)

@@ -929,6 +929,91 @@ class MultiDiGraph(MultiGraph,DiGraph):
         H.graph = self.graph
         return H
 
+    def edge_subgraph(self, edges):
+        """Returns the subgraph induced by the specified edges.
+
+        The induced subgraph contains each edge in ``edges`` and each
+        node incident to any one of those edges.
+
+        Parameters
+        ----------
+        edges : iterable
+            An iterable of edges in this graph.
+
+        Returns
+        -------
+        G : Graph
+            An edge-induced subgraph of this graph with the same edge
+            attributes.
+
+        Notes
+        -----
+        The graph, edge, and node attributes in the returned subgraph
+        are references to the corresponding attributes in the original
+        graph. Thus changes to the node or edge structure of the
+        returned graph will not be reflected in the original graph, but
+        changes to the attributes will.
+
+        To create a subgraph with its own copy of the edge or node
+        attributes, use::
+
+            >>> nx.MultiDiGraph(G.edge_subgraph(edges))  # doctest: +SKIP
+
+        If edge attributes are containers, a deep copy of the attributes
+        can be obtained using::
+
+            >>> G.edge_subgraph(edges).copy()  # doctest: +SKIP
+
+        Examples
+        --------
+        Get a subgraph induced by only those edges that have a certain
+        attribute::
+
+            >>> # Create a graph in which some edges are "good" and some "bad".
+            >>> G = nx.MultiDiGraph()
+            >>> G.add_edge(0, 1, key=0, good=True)
+            >>> G.add_edge(0, 1, key=1, good=False)
+            >>> G.add_edge(1, 2, key=0, good=False)
+            >>> G.add_edge(1, 2, key=1, good=True)
+            >>> # Keep only those edges that are marked as "good".
+            >>> edges = G.edges(keys=True, data='good')
+            >>> edges = ((u, v, k) for (u, v, k, good) in edges if good)
+            >>> H = G.edge_subgraph(edges)
+            >>> list(H.edges(keys=True, data=True))
+            [(0, 1, 0, {'good': True}), (1, 2, 1, {'good': True})]
+
+        """
+        H = self.__class__()
+        succ = self.succ
+        # Filter out edges that don't correspond to nodes in the graph.
+        def is_in_graph(u, v, k):
+            return u in succ and v in succ[u] and k in succ[u][v]
+        edges = (e for e in edges if is_in_graph(*e))
+        for u, v, k in edges:
+            # Copy the node attributes if they haven't been copied
+            # already.
+            if u not in H.node:
+                H.node[u] = self.node[u]
+            if v not in H.node:
+                H.node[v] = self.node[v]
+            # Create an entry in the successors and predecessors
+            # dictionary for the nodes u and v if they don't exist yet.
+            if u not in H.succ:
+                H.succ[u] = H.adjlist_dict_factory()
+            if v not in H.pred:
+                H.pred[v] = H.adjlist_dict_factory()
+            # Create an entry in the edge dictionary for the edges (u,
+            # v) and (v, u) if the don't exist yet.
+            if v not in H.succ[u]:
+                H.succ[u][v] = H.edge_key_dict_factory()
+            if u not in H.pred[v]:
+                H.pred[v][u] = H.edge_key_dict_factory()
+            # Copy the edge attributes.
+            H.edge[u][v][k] = self.edge[u][v][k]
+            H.pred[v][u][k] = self.pred[v][u][k]
+        H.graph = self.graph
+        return H
+
     def reverse(self, copy=True):
         """Return the reverse of the graph.
 
