@@ -179,6 +179,15 @@ def transitive_closure(G):
 
    
 def antichain_generator(G):
+    """Generates antichains from a graph that represents a Hasse diagram.
+
+    This function was originally developed by Peter Jipsen and Franco Saliola
+    for the SAGE project. It's included in NetworkX with permission from the 
+    authors. Original SAGE code at:
+
+    https://sage.informatik.uni-goettingen.de/src/combinat/posets/hasse_diagram.py
+
+    """
     # Based on SAGE combinat.posets.hasse_diagram.py
     TC = transitive_closure(G)
     antichains_queues = [([], nx.topological_sort(G, reverse=True))]
