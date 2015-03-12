@@ -88,6 +88,8 @@ def all_node_cuts(G, k=None, flow_func=None):
         raise nx.NetworkXError('Input graph is disconnected.')
 
     # Initialize data structures.
+    # Keep track of the cuts already computed so we do not repeat them.
+    seen = []
     # Even-Tarjan reduction is what we call auxiliary digraph 
     # for node connectivity.
     H = build_auxiliary_node_connectivity(G)
@@ -109,6 +111,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     X = set(n for n, d in sorted(degree, key=itemgetter(1), reverse=True)[:k])
     # Check if X is a k-node-cutset
     if _is_separating_set(G, X):
+        seen.append(X)
         yield X
 
     for x in X:
@@ -147,7 +150,9 @@ def all_node_cuts(G, k=None, flow_func=None):
                     node_cut = set(H.node[n]['id'] for edge in cutset for n in edge)
 
                     if len(node_cut) == k:
-                        yield node_cut
+                        if node_cut not in seen:
+                            yield node_cut
+                            seen.append(node_cut)
                         # Add an edge (x, v) to make sure that we do not
                         # find this cutset again. This is equivalent
                         # of adding the edge in the input graph 
@@ -179,7 +184,7 @@ def transitive_closure(G):
 
    
 def antichain_generator(G):
-    """Generates antichains from a graph that represents a Hasse diagram.
+    """Generates antichains from a DAG.
 
     This function was originally developed by Peter Jipsen and Franco Saliola
     for the SAGE project. It's included in NetworkX with permission from the 
