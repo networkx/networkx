@@ -65,14 +65,14 @@ New functionalities
   ``networkx.generators.expanders``.
 
 * [`#1314 <https://github.com/networkx/networkx/pull/1314>`_]
-  Allow overwriting of base class dict with dict-like: 
+  Allow overwriting of base class dict with dict-like:
   OrderedGraph, ThinGraph, LogGraph, etc.
 
 * [`#1321 <https://github.com/networkx/networkx/pull/1321>`_]
   Added ``to_pandas_dataframe`` and ``from_pandas_dataframe``
 
 * [`#1322 <https://github.com/networkx/networkx/pull/1322>`_]
-  Added the Hopcroft--Karp algorithm for finding a maximum cardinality
+  Added the Hopcroft-Karp algorithm for finding a maximum cardinality
   matching in bipartite graphs.
 
 * [`#1336 <https://github.com/networkx/networkx/pull/1336>`_]
@@ -96,7 +96,8 @@ Removed functionalities
 -----------------------
 
 * [`#1236 <https://github.com/networkx/networkx/pull/1236>`_]
-  The legacy ``ford_fulkerson`` maximum flow function is removed.
+  The legacy ``ford_fulkerson`` maximum flow function is removed. Use
+  ``edmonds_karp`` instead.
 
 Miscellaneous changes
 ---------------------
