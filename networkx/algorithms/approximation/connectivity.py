@@ -43,7 +43,8 @@ def local_node_connectivity(G, source, target, cutoff=None):
         Ending node for node connectivity
 
     cutoff : integer
-        Maximum number of paths to consider. Default value None.
+        Maximum node connectivity to consider. If None, the minimum degree
+        of source or target is used as a cutoff. Default value None.
 
     Returns
     -------
@@ -56,7 +57,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
     >>> # for each non adjacent node pair
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.icosahedral_graph()
-    >>> approx.local_node_connectivity(G,0,6)
+    >>> approx.local_node_connectivity(G, 0, 6)
     5
 
     Notes 
@@ -239,7 +240,9 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
         only over pairs of nodes in nbunch.
 
     cutoff : integer
-        Maximum node connectivity to consider. Default value None.
+        Maximum node connectivity to consider. If None, the minimum degree
+        of source or target is used as a cutoff in each pair of nodes.
+        Default value None.
 
     Returns
     -------
