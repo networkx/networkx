@@ -104,7 +104,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
     exclude = set()
     for i in range(min(possible, cutoff)):
         try:
-            path = _bidirectional_shortest_path(G,source,target,exclude=exclude)
+            path = _bidirectional_shortest_path(G, source, target, exclude)
             exclude.update(set(path))
             K += 1
         except nx.NetworkXNoPath:
@@ -282,7 +282,7 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
     return all_pairs
 
 
-def _bidirectional_shortest_path(G, source, target, exclude=None):
+def _bidirectional_shortest_path(G, source, target, exclude):
     """Return shortest path between source and target ignoring nodes in the
     container 'exclude'.
 
@@ -297,7 +297,7 @@ def _bidirectional_shortest_path(G, source, target, exclude=None):
     target : node
         Ending node for path
 
-    exclude: container, iterable (optional)
+    exclude: container
         Container for nodes to exclude from the search for shortest paths
 
     Returns
@@ -326,7 +326,7 @@ def _bidirectional_shortest_path(G, source, target, exclude=None):
     
     """
     # call helper to do the real work
-    results = _bidirectional_pred_succ(G, source, target, exclude=exclude)
+    results = _bidirectional_pred_succ(G, source, target, exclude)
     pred, succ, w = results
 
     # build path from pred+w+succ
@@ -345,7 +345,7 @@ def _bidirectional_shortest_path(G, source, target, exclude=None):
     return path
 
 
-def _bidirectional_pred_succ(G, source, target, exclude=None):
+def _bidirectional_pred_succ(G, source, target, exclude):
     # does BFS from both source and target and meets in the middle
     # excludes nodes in the container "exclude" from the search
     if source is None or target is None:
@@ -354,9 +354,6 @@ def _bidirectional_pred_succ(G, source, target, exclude=None):
     if target == source:
         return ({target:None},{source:None},source)
 
-    if exclude is None:
-        exclude = set()
-    
     # handle either directed or undirected
     if G.is_directed():
         Gpred = G.predecessors_iter
