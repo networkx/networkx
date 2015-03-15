@@ -454,12 +454,13 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     else:
         nbunch = set(nbunch)
 
-    if G.is_directed():
+    directed = G.is_directed()
+    if directed:
         iter_func = itertools.permutations
     else:
         iter_func = itertools.combinations
 
-    all_pairs = dict.fromkeys(nbunch, dict())
+    all_pairs = {n: {} for n in nbunch}
 
     # Reuse auxiliary digraph and residual network
     H = build_auxiliary_node_connectivity(G)
@@ -470,6 +471,8 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     for u, v in iter_func(nbunch, 2):
         K = local_node_connectivity(G, u, v, **kwargs)
         all_pairs[u][v] = K
+        if not directed:
+            all_pairs[v][u] = K
 
     return all_pairs
 
