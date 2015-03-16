@@ -6,7 +6,7 @@ Drawing
 
 Matplotlib
 ==========
-.. automodule:: networkx.drawing.nx_pylab
+.. automodule:: networkx.networkx_matplotlib
 .. autosummary::
    :toctree: generated/
 

@@ -98,3 +98,5 @@ from networkx.tests.test import run as test
 import networkx.drawing
 from networkx.drawing import *
 
+import networkx.networkx_matplotlib
+from networkx.networkx_matplotlib import *
