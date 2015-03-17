@@ -84,9 +84,13 @@ Thanks especially to the following contributors:
  - Nick Mancuso wrote the approximation algorithms for dominating set,
    edge dominating set, independent set, max clique, and min-weighted
    vertex cover.
- - Brian Cloteaux contributed the linear-time graphicality tests and Havel-Hakimi graph generators
+ - Brian Cloteaux contributed the linear-time graphicality tests and 
+   Havel-Hakimi graph generators.
  - Alejandro Weinstein contributed the directed Laplacian code
  - Dustin Smith wrote the dictionary to numpy array function
  - Mathieu Larose sped up the topological sort code
  - Vincent Gauthier contributed the Katz centrality algorithm
  - Sérgio Nery Simões developed the code for finding all simple paths
+ - Peter Jipsen and Franco Saliola contributed the antichains generator.
+   This function was originally developed for the SAGE project. Included
+   in NetworkX with permission from the authors.
