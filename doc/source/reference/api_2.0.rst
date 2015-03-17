@@ -55,7 +55,7 @@ New functionalities
   magnitude faster than the old implementation.
 
 * [`#1286 <https://github.com/networkx/networkx/pull/1286>`_]
-  Added the Margulis-Gabber-Galil graph to ``networkx.generators``.
+  Added the Margulis--Gabber--Galil graph to ``networkx.generators``.
 
 * [`#1306 <https://github.com/networkx/networkx/pull/1306>`_]
   Added the chordal p-cycle graph, a mildly explicit algebraic construction
@@ -72,7 +72,7 @@ New functionalities
   Added ``to_pandas_dataframe`` and ``from_pandas_dataframe``
 
 * [`#1322 <https://github.com/networkx/networkx/pull/1322>`_]
-  Added the Hopcroft-Karp algorithm for finding a maximum cardinality
+  Added the Hopcroft--Karp algorithm for finding a maximum cardinality
   matching in bipartite graphs.
 
 * [`#1336 <https://github.com/networkx/networkx/pull/1336>`_]
