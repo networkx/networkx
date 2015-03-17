@@ -117,7 +117,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     for x in X:
         # step 3: Compute local connectivity flow of x with all other
         # non adjacent nodes in G
-        non_adjacent = (n for n in set(G) - X if n not in G[x])
+        non_adjacent = set(G) - X - set(G[x])
         for v in non_adjacent:
             # step 4: compute maximum flow in an Even-Tarjan reduction H of G
             # and step:5 build the associated residual network R
@@ -126,9 +126,9 @@ def all_node_cuts(G, k=None, flow_func=None):
 
             if flow_value == k:
                 ## Remove saturated edges form the residual network
-                saturated_edges = list((u, w, d) for (u, w, d) in 
-                                        R.edges_iter(data=True)
-                                        if d['capacity'] == d['flow'])
+                saturated_edges = [(u, w, d) for (u, w, d) in
+                                    R.edges_iter(data=True)
+                                    if d['capacity'] == d['flow']]
                 R.remove_edges_from(saturated_edges)
                 # step 6: shrink the strongly connected components of 
                 # residual flow network R and call it L
@@ -143,8 +143,8 @@ def all_node_cuts(G, k=None, flow_func=None):
                     S = set(n for n, scc in cmap.items() if scc in antichain)
                     # Find the cutset that links the node partition (S,~S) in H
                     cutset = set()
-                    for u, nbrs in ((n, H[n]) for n in S):
-                        cutset.update((u, w) for w in nbrs if w not in S)
+                    for u in S:
+                        cutset.update((u, w) for w in H[u] if w not in S)
                     # The edges in H that form the cutset are internal edges
                     # (ie edges that represent a node of the original graph G)
                     node_cut = set(H.node[n]['id'] for edge in cutset for n in edge)
