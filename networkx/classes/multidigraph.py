@@ -342,7 +342,7 @@ class MultiDiGraph(MultiGraph,DiGraph):
             self.succ[u][v] = keydict
             self.pred[v][u] = keydict
 
-    def remove_edge(self, u, v, key=None):
+    def remove_edge(self, u, v, key=None, all_edges=False):
         """Remove an edge between u and v.
 
         Parameters
@@ -352,6 +352,8 @@ class MultiDiGraph(MultiGraph,DiGraph):
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
             If None remove a single (abritrary) edge between u and v.
+        all_edges : bool, optional (default=False)
+            Remove all_edges between u and v if set to True.
 
         Raises
         ------
@@ -392,7 +394,10 @@ class MultiDiGraph(MultiGraph,DiGraph):
                 "The edge %s-%s is not in the graph."%(u,v))
         # remove the edge with specified data
         if key is None:
-            d.popitem()
+            if all_edges:
+                d.clear()
+            else:
+                d.popitem()
         else:
             try:
                 del d[key]

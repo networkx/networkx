@@ -418,7 +418,7 @@ class MultiGraph(Graph):
             self.add_edge(u, v, key, ddd)
 
 
-    def remove_edge(self, u, v, key=None):
+    def remove_edge(self, u, v, key=None, all_edges=False):
         """Remove an edge between u and v.
 
         Parameters
@@ -428,6 +428,8 @@ class MultiGraph(Graph):
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
             If None remove a single (abritrary) edge between u and v.
+        all_edges : bool, optional (default=False)
+            Remove all_edges between u and v if set to True.
 
         Raises
         ------
@@ -468,7 +470,10 @@ class MultiGraph(Graph):
                 "The edge %s-%s is not in the graph."%(u,v))
         # remove the edge with specified data
         if key is None:
-            d.popitem()
+            if all_edges:
+                d.clear()
+            else:
+                d.popitem()
         else:
             try:
                 del d[key]
@@ -494,6 +499,9 @@ class MultiGraph(Graph):
                 - 2-tuples (u,v) All edges between u and v are removed.
                 - 3-tuples (u,v,key) The edge identified by key is removed.
                 - 4-tuples (u,v,key,data) where data is ignored.
+                - 5-tuples (u,v,key,data,all_edges) where data is ignored
+                  and all_edges indicates if all edges between u and v is
+                  to be removed.
 
         See Also
         --------
@@ -523,7 +531,8 @@ class MultiGraph(Graph):
         """
         for e in ebunch:
             try:
-                self.remove_edge(*e[:3])
+                all_edges = e[4] if len(e) == 5 else False
+                self.remove_edge(*e[:3], all_edges=all_edges)
             except NetworkXError:
                 pass
 
