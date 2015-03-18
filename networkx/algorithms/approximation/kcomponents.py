@@ -60,7 +60,7 @@ def k_components(G, exact=False, min_density=0.95):
     --------
     >>> # Petersen graph has 10 nodes and it is triconnected, thus all 
     >>> # nodes are in a single component on all three connectivity levels
-    >>> from networkx.algorithms.connectivity import approximation as apxa
+    >>> from networkx.algorithms import approximation as apxa
     >>> G = nx.petersen_graph()
     >>> k_components = apxa.k_components(G)
     
