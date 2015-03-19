@@ -1933,3 +1933,47 @@ class Graph(object):
                         raise
             bunch=bunch_iter(nbunch,self.adj)
         return bunch
+
+
+    def node_strength(self , n, weight = "weight"):
+        """Returns the node strength of a specific node
+
+        Node strength is the sum of weights of links connected to the node.
+
+        Parameters
+        ----------
+        n : node
+
+        weight : string, optional (default='weight')
+            Edge data key corresponding to the edge weight.
+
+        Returns
+        -------
+        strength : node strength of the given node
+
+        Examples
+        --------
+        >>> G = nx.Graph()
+        >>> G.add_edge(1, 2, weight = 2)
+        >>> G.add_edge(2, 3, weight = 3)
+        >>> G.node_strength(2)
+        5
+        >>> G.node_strength(3)
+        3
+        >>> G = nx.MultiGraph()
+        >>> G.add_edge(1, 2, weight = 2)
+        >>> G.add_edge(1, 2, weight = 3)
+        >>> G.add_edge(2, 3, weight = 2)
+        >>> G.node_strength(2)
+        7
+
+        """
+        strength = 0
+        if self.is_multigraph():
+            for n,keydata in self[n].items():
+                for k,edgedata in keydata.items():
+                    strength += edgedata.get(weight, 1)
+        else:
+            for n,keydata in self[n].items():
+                strength += keydata.get(weight, 1)
+        return strength
