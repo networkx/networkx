@@ -55,7 +55,7 @@ class AntiGraph(nx.Graph):
            The adjacency dictionary for nodes connected to n.
 
         """
-        return dict((node, self.single_edge_dict()) for node in 
+        return dict((node, self.all_edge_dict) for node in
                     set(self.adj) - set(self.adj[n]) - set([n]))
 
 
@@ -138,11 +138,11 @@ class AntiGraph(nx.Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs = ((n, {v: self.single_edge_dict() for v in 
+            nodes_nbrs = ((n, {v: self.all_edge_dict for v in
                             set(self.adj) - set(self.adj[n]) - set([n])})
                             for n in self.nodes_iter())
         else:
-            nodes_nbrs= ((n, {v: self.single_edge_dict() for v in 
+            nodes_nbrs= ((n, {v: self.all_edge_dict for v in
                             set(self.nodes()) - set(self.adj[n]) - set([n])})
                             for n in self.nbunch_iter(nbunch))
 
@@ -183,21 +183,21 @@ if __name__ == '__main__':
     Ad = AntiGraph(nx.complement(Gd))
     Gk = nx.karate_club_graph()
     Ak = AntiGraph(nx.complement(Gk))
-    GA = [(Gnp, Anp), (Gd, Ad), (Gk, Ak)]
+    pairs = [(Gnp, Anp), (Gd, Ad), (Gk, Ak)]
     # test connected components
-    for G, A in GA:
+    for G, A in pairs:
         gc = [set(c) for c in nx.connected_components(G)]
         ac = [set(c) for c in nx.connected_components(A)]
         for comp in ac:
             assert comp in gc
     # test biconnected components
-    for G, A in GA:
+    for G, A in pairs:
         gc = [set(c) for c in nx.biconnected_components(G)]
         ac = [set(c) for c in nx.biconnected_components(A)]
         for comp in ac:
             assert comp in gc
     # test degree
-    for G, A in GA:
+    for G, A in pairs:
         node = list(G.nodes())[0]
         nodes = list(G.nodes())[1:4]
         assert G.degree(node) == A.degree(node)

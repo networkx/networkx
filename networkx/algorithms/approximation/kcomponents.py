@@ -248,9 +248,8 @@ class _AntiGraph(nx.Graph):
            The adjacency dictionary for nodes connected to n.
 
         """
-        return dict((node, self.single_edge_dict()) for node in 
+        return dict((node, self.all_edge_dict) for node in 
                     set(self.adj) - set(self.adj[n]) - set([n]))
-
 
     def neighbors(self, n):
         """Return a list of the nodes connected to the node n in 
@@ -331,11 +330,11 @@ class _AntiGraph(nx.Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs = ((n, {v: self.single_edge_dict() for v in 
+            nodes_nbrs = ((n, {v: self.all_edge_dict for v in
                             set(self.adj) - set(self.adj[n]) - set([n])})
                             for n in self.nodes_iter())
         else:
-            nodes_nbrs= ((n, {v: self.single_edge_dict() for v in 
+            nodes_nbrs = ((n, {v: self.all_edge_dict for v in
                             set(self.nodes()) - set(self.adj[n]) - set([n])})
                             for n in self.nbunch_iter(nbunch))
 
