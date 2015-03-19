@@ -1,7 +1,7 @@
 """
 Harmonic centrality measure.
 """
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2015 by
 #    Alessandro Luongo
 #    BSD license.
 from __future__ import division
@@ -17,14 +17,13 @@ def harmonic_centrality(G, u=None, distance=None):
     """Compute harmonic centrality for nodes.
 
     Harmonic centrality [1] of a node `u` is the sum of the reciprocal
-    of the shortest path distances from `n-1` other nodes to `u`.
+    of the shortest path distances from the other nodes v to `u`.
 
     .. math::
 
-        C(u) = \sum_{v=1}^{n-1} \frac{1}{d(v, u)},
+        C(u) = \sum_{v \neq u} \frac{1}{d(v, u)},
 
-    where `d(v, u)` is the shortest-path distance between `v` and `u`,
-    and `n` is the number of nodes in the graph.
+    where `d(v, u)` is the shortest-path distance from `v` to `u`.
 
     Notice that higher values indicate higher centrality.
 
