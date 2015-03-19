@@ -121,6 +121,47 @@ class TestDAG:
         assert_equal(descendants(G, 3), set())
         assert_raises(nx.NetworkXError, descendants, G, 8)
 
+    def test_transitive_closure(self):
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+        transitive_closure = nx.algorithms.dag.transitive_closure
+        assert_equal(transitive_closure(G).edges(), [(1, 2), (1, 3),
+                                                     (1, 4), (2, 3), (2, 4),
+                                                     (3, 4)])
+        G = nx.DiGraph([(1, 2), (2, 3), (2, 4)])
+        assert_equal(transitive_closure(G).edges(), [(1, 2), (1, 3),
+                                                     (1, 4), (2, 3), (2, 4)])
+        G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+        assert_raises(nx.NetworkXNotImplemented, transitive_closure, G)
+
+    def test_antichains(self):
+        antichains = nx.algorithms.dag.antichains
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+        assert_equal(list(antichains(G)), [[], [4], [3], [2], [1]])
+        G = nx.DiGraph([(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (5, 7)])
+        assert_equal(list(antichains(G)), [[], [4], [7], [7, 4], [6],
+                                           [6, 4], [6, 7], [6, 7, 4],
+                                           [5], [5, 4], [3], [3, 4],
+                                           [2], [1]])
+        G = nx.DiGraph([(1, 2), (1, 3), (3, 4), (3, 5), (5, 6)])
+        assert_equal(list(antichains(G)), [[], [6], [5], [4], [4, 6],
+                                           [4, 5], [3], [2], [2, 6],
+                                           [2, 5], [2, 4], [2, 4, 6],
+                                           [2, 4, 5], [2, 3], [1]])
+        G = nx.DiGraph({0: [1, 2], 1: [4], 2: [3], 3: [4]})
+        assert_equal(
+            list(antichains(G)), [[], [4], [3], [2], [1], [1, 3], [1, 2], [0]])
+        G = nx.DiGraph()
+        assert_equal(list(antichains(G)), [[]])
+        G = nx.DiGraph()
+        G.add_nodes_from([0, 1, 2])
+        assert_equal(list(antichains(G)), [[], [0], [1], [1, 0], [2], [2, 0],
+                                           [2, 1], [2, 1, 0]])
+        f = lambda x: list(antichains(x))
+        G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+        assert_raises(nx.NetworkXNotImplemented, f, G)
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+        assert_raises(nx.NetworkXUnfeasible, f, G)
+
 
 def test_is_aperiodic_cycle():
     G=nx.DiGraph()

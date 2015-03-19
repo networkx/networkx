@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from fractions import gcd
 import networkx as nx
+from networkx.utils.decorators import *
 """Algorithms for directed acyclic graphs (DAGs)."""
 #    Copyright (C) 2006-2011 by 
 #    Aric Hagberg <hagberg@lanl.gov>
@@ -16,7 +17,9 @@ __all__ = ['descendants',
            'topological_sort', 
            'topological_sort_recursive',
            'is_directed_acyclic_graph',
-           'is_aperiodic']
+           'is_aperiodic',
+           'transitive_closure',
+           'antichains']
 
 def descendants(G, source):
     """Return all nodes reachable from `source` in G.
@@ -287,3 +290,94 @@ def is_aperiodic(G):
         return g==1
     else:
         return g==1 and nx.is_aperiodic(G.subgraph(set(G)-set(levels)))
+
+@not_implemented_for('undirected')
+def transitive_closure(G):
+    """ Returns transitive closure of a directed graph
+
+    The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
+    for all v,w in V there is an edge (v,w) in E+ if and only if there
+    is a non-null path from v to w in G.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+      Graph
+
+    Returns
+    -------
+    TC : NetworkX DiGraph
+       Graph
+
+    Raises
+    ------
+    NetworkXNotImplemented
+      If G is not directed
+
+    References
+    ----------
+    .. [1] http://www.ics.uci.edu/~eppstein/PADS/PartialOrder.py
+
+    """
+    TC = nx.DiGraph()
+    TC.add_nodes_from(G.nodes_iter())
+    TC.add_edges_from(G.edges_iter())
+    for v in G:
+        TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
+                          if v != u)
+    return TC
+
+@not_implemented_for('undirected')
+def antichains(G):
+    """Generates antichains from a DAG.
+
+    An antichain is a subset of a partially ordered set such that any
+    two elements in the subset are incomparable.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+      Graph
+
+    Returns
+    -------
+    antichain : generator object
+
+    Raises
+    ------
+    NetworkXNotImplemented
+      If G is not directed
+
+    NetworkXUnfeasible
+       If G contains a cycle
+
+    Notes
+    -----
+    This function was originally developed by Peter Jipsen and Franco Saliola
+    for the SAGE project. It's included in NetworkX with permission from the
+    authors. Original SAGE code at:
+
+    https://sage.informatik.uni-goettingen.de/src/combinat/posets/hasse_diagram.py
+
+    References
+    ----------
+    .. [1] Free Lattices, by R. Freese, J. Jezek and J. B. Nation,
+    AMS, Vol 42, 1995, p. 226.
+
+    """
+    # Based on SAGE combinat.posets.hasse_diagram.py
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXUnfeasible("Graph contains a cycle")
+    TC = nx.transitive_closure(G)
+    antichains_queues = [([], nx.topological_sort(G, reverse=True))]
+    while antichains_queues:
+        (antichain, queue) = antichains_queues.pop()
+        # Invariant:
+        #  - the elements of antichain are independent
+        #  - the elements of queue are independent from those of antichain
+        yield antichain
+        while queue:
+            x = queue.pop()
+            new_antichain = antichain + [x]
+            new_queue = [t for t in queue if not ((t in TC[x]) or (x in TC[t]))]
+            antichains_queues.append((new_antichain, new_queue))
