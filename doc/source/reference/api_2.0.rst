@@ -60,6 +60,9 @@ New functionalities
 * [`#1338 <https://github.com/networkx/networkx/pull/1338>`_]
   Added support for finding optimum branchings and arborescences.
 
+* [`#1360 <https://github.com/networkx/networkx/pull/1360>`_]
+  Added harmonic centrality to ``network.algorithms.centrality``.
+
 Removed functionalities
 -----------------------
 
