@@ -365,19 +365,16 @@ def antichains(G):
     AMS, Vol 42, 1995, p. 226.
 
     """
-    # Based on SAGE combinat.posets.hasse_diagram.py
-    if not nx.is_directed_acyclic_graph(G):
-        raise nx.NetworkXUnfeasible("Graph contains a cycle")
     TC = nx.transitive_closure(G)
-    antichains_queues = [([], nx.topological_sort(G, reverse=True))]
-    while antichains_queues:
-        (antichain, queue) = antichains_queues.pop()
+    antichains_stacks = [([], nx.topological_sort(G, reverse=True))]
+    while antichains_stacks:
+        (antichain, stack) = antichains_stacks.pop()
         # Invariant:
         #  - the elements of antichain are independent
-        #  - the elements of queue are independent from those of antichain
+        #  - the elements of stack are independent from those of antichain
         yield antichain
-        while queue:
-            x = queue.pop()
+        while stack:
+            x = stack.pop()
             new_antichain = antichain + [x]
-            new_queue = [t for t in queue if not ((t in TC[x]) or (x in TC[t]))]
-            antichains_queues.append((new_antichain, new_queue))
+            new_stack = [t for t in stack if not ((t in TC[x]) or (x in TC[t]))]
+            antichains_stacks.append((new_antichain, new_stack))
