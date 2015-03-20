@@ -182,10 +182,10 @@ class MultiGraph(Graph):
     the edge data and holds edge attribute values keyed by attribute names.
 
     Each of these four dicts in the dict-of-dict-of-dict-of-dict
-    structure can be replaced by a user defined dict-like object.  
-    In general, the dict-like features should be maintained but 
-    extra features can be added. To replace one of the dicts create 
-    a new graph class by changing the class(!) variable holding the 
+    structure can be replaced by a user defined dict-like object.
+    In general, the dict-like features should be maintained but
+    extra features can be added. To replace one of the dicts create
+    a new graph class by changing the class(!) variable holding the
     factory for that dict-like structure. The variable names
     are node_dict_factory, adjlist_dict_factory, edge_key_dict_factory
     and edge_attr_dict_factory.
@@ -246,9 +246,37 @@ class MultiGraph(Graph):
     #adjlist_dict_factory=dict
     edge_key_dict_factory=dict
     #edge_attr_dict_factory=dict
+
     def __init__(self, data=None, **attr):
         self.edge_key_dict_factory = self.edge_key_dict_factory
         Graph.__init__(self, data, **attr)
+
+    def _keyfunc(self, u, v):
+        """Returns a new key to be used for an edge between u and v.
+
+        Parameters
+        ----------
+        u, v : node
+            Nodes that are in the graph already.
+
+        Returns
+        -------
+        key : integer
+            The key to use for the edge between u and v.
+
+        """
+        try:
+            keydict = self.adj[u][v]
+        except KeyError:
+            # This is the first edge between u and v.
+            key = 0
+        else:
+            # Skip integers that are probably occupied.
+            key = len(keydict)
+            while key in keydict:
+                key += 1
+
+        return key
 
     def add_edge(self, u, v, key=None, attr_dict=None, **attr):
         """Add an edge between u and v.
@@ -272,6 +300,11 @@ class MultiGraph(Graph):
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
+
+        Returns
+        -------
+        key : hashable identifier
+            The key of the added edge.
 
         See Also
         --------
@@ -312,35 +345,36 @@ class MultiGraph(Graph):
             except AttributeError:
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
-        # add nodes
+
+        # Add the nodes.
         if u not in self.adj:
             self.adj[u] = self.adjlist_dict_factory()
             self.node[u] = {}
         if v not in self.adj:
             self.adj[v] = self.adjlist_dict_factory()
             self.node[v] = {}
+
+        if key is None:
+            key = self._keyfunc(u, v)
+
+        # Add the edge.
         if v in self.adj[u]:
-            keydict=self.adj[u][v]
-            if key is None:
-                # find a unique integer key
-                # other methods might be better here?
-                key=len(keydict)
-                while key in keydict:
-                    key+=1
-            datadict=keydict.get(key,self.edge_attr_dict_factory())
+            # Note the other direction is covered (even for self-loops) since:
+            #   (self.adj[v][u] is keydict) == True.
+            keydict = self.adj[u][v]
+            datadict = keydict.get(key, self.edge_attr_dict_factory())
             datadict.update(attr_dict)
-            keydict[key]=datadict
+            keydict[key] = datadict
         else:
-            # selfloops work this way without special treatment
-            if key is None:
-                key=0
-            datadict=self.edge_attr_dict_factory()
+            # New selfloops are also handled by this without special treatment.
+            keydict = self.edge_key_dict_factory()
+            datadict = keydict.get(key, self.edge_attr_dict_factory())
             datadict.update(attr_dict)
-            keydict=self.edge_key_dict_factory()
-            keydict[key]=datadict
+            keydict[key] = datadict
             self.adj[u][v] = keydict
             self.adj[v][u] = keydict
 
+        return key
 
     def add_edges_from(self, ebunch, attr_dict=None, **attr):
         """Add all the edges in ebunch.
@@ -362,6 +396,10 @@ class MultiGraph(Graph):
             Edge data (or labels or objects) can be assigned using
             keyword arguments.
 
+        Returns
+        -------
+        keys : list
+            The keys for each added edge.
 
         See Also
         --------
@@ -398,6 +436,7 @@ class MultiGraph(Graph):
                 raise NetworkXError(\
                     "The attr_dict argument must be a dictionary.")
         # process ebunch
+        keys = []
         for e in ebunch:
             ne=len(e)
             if ne==4:
@@ -415,7 +454,9 @@ class MultiGraph(Graph):
             ddd={}
             ddd.update(attr_dict)
             ddd.update(dd)
-            self.add_edge(u, v, key, ddd)
+            keys.append(self.add_edge(u, v, key, ddd))
+
+        return keys
 
 
     def remove_edge(self, u, v, key=None):
@@ -428,6 +469,13 @@ class MultiGraph(Graph):
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
             If None remove a single (abritrary) edge between u and v.
+
+        Returns
+        -------
+        key : hashable identifier
+            The key of the edge that was deleted.
+        data : dict-like
+            The data of the edge that was deleted.
 
         Raises
         ------
@@ -462,24 +510,31 @@ class MultiGraph(Graph):
 
         """
         try:
-            d=self.adj[u][v]
+            d = self.adj[u][v]
         except (KeyError):
-            raise NetworkXError(
-                "The edge %s-%s is not in the graph."%(u,v))
-        # remove the edge with specified data
+            msg = "The edge {0}-{1} is not in the graph.".format(u,v)
+            raise NetworkXError(msg)
+
+        # remove the edge with specified key
         if key is None:
-            d.popitem()
+            key, data = d.popitem()
         else:
             try:
-                del d[key]
+                data = d[key]
             except (KeyError):
-                raise NetworkXError(
-                "The edge %s-%s with key %s is not in the graph."%(u,v,key))
-        if len(d)==0:
+                msg = "The edge {0}-{1} with key {2} is not in the graph."
+                msg = msg.format(u, v, key)
+                raise NetworkXError(msg)
+            else:
+                del d[key]
+
+        if not d:
             # remove the key entries if last edge
             del self.adj[u][v]
-            if u!=v:  # check for selfloop
+            if u != v:  # check for selfloop
                 del self.adj[v][u]
+
+        return key, data
 
 
     def remove_edges_from(self, ebunch):
@@ -494,6 +549,12 @@ class MultiGraph(Graph):
                 - 2-tuples (u,v) All edges between u and v are removed.
                 - 3-tuples (u,v,key) The edge identified by key is removed.
                 - 4-tuples (u,v,key,data) where data is ignored.
+
+        Returns
+        -------
+        out : list
+            A list of 2-tuples. Each 2-tuple consists of the (key, data) for
+            each edge that was deleted.
 
         See Also
         --------
@@ -521,12 +582,14 @@ class MultiGraph(Graph):
         >>> G.edges() # now empty graph
         []
         """
+        out = []
         for e in ebunch:
             try:
-                self.remove_edge(*e[:3])
+                out.append(self.remove_edge(*e[:3]))
             except NetworkXError:
                 pass
 
+        return out
 
     def has_edge(self, u, v, key=None):
         """Return True if the graph has an edge between nodes u and v.
@@ -622,7 +685,7 @@ class MultiGraph(Graph):
         [(0, 1), (1, 2), (2, 3)]
         >>> G.edges(data=True) # default edge data is {} (empty dictionary)
         [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1)) 
+        >>> list(G.edges_iter(data='weight', default=1))
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> G.edges(keys=True) # default keys are integers
         [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
@@ -652,7 +715,7 @@ class MultiGraph(Graph):
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u,v,ddict[data]).
             If True, return edge attribute dict in 3-tuple (u,v,ddict).
-            If False, return 2-tuple (u,v). 
+            If False, return 2-tuple (u,v).
         default : value, optional (default=None)
             Value used for edges that dont have the requested attribute.
             Only relevant if data is not True or False.
@@ -682,7 +745,7 @@ class MultiGraph(Graph):
         [(0, 1), (1, 2), (2, 3)]
         >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1)) 
+        >>> list(G.edges_iter(data='weight', default=1))
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
         >>> list(G.edges(keys=True)) # default keys are integers
         [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
@@ -792,7 +855,7 @@ class MultiGraph(Graph):
             through once.
 
         weight : string or None, optional (default=None)
-           The edge attribute that holds the numerical value used 
+           The edge attribute that holds the numerical value used
            as a weight.  If None, then each edge has weight 1.
            The degree is the sum of the edge weights adjacent to the node.
 
@@ -894,7 +957,7 @@ class MultiGraph(Graph):
         G.add_edges_from( (u,v,key,deepcopy(datadict))
                            for u,nbrs in self.adjacency_iter()
                            for v,keydict in nbrs.items()
-                           for key,datadict in keydict.items() ) 
+                           for key,datadict in keydict.items() )
         G.graph=deepcopy(self.graph)
         G.node=deepcopy(self.node)
         return G
