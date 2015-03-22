@@ -23,6 +23,7 @@ Classic
    balanced_tree
    barbell_graph
    complete_graph
+   complete_multipartite_graph
    circular_ladder_graph
    cycle_graph
    dorogovtsev_goltsev_mendes_graph
