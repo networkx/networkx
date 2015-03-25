@@ -1919,8 +1919,6 @@ class Graph(object):
                             yield n
                 except TypeError as e:
                     message=e.args[0]
-                    import sys
-                    sys.stdout.write(message)
                     # capture error for non-sequence/iterator nbunch.
                     if 'iter' in message:
                         raise NetworkXError(\
