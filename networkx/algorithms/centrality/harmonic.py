@@ -22,8 +22,7 @@ def harmonic_centrality(G, u=None, distance=None):
 
         C(u) = \sum_{v \neq u \epsilon G} \frac{1}{d(v, u)},
 
-    where `d(v, u)` is the shortest-path distance between `v` and `u`,
-    and `n` is the number of nodes in the graph.
+    where `d(v, u)` is the shortest-path distance between `v` and `u`.
 
     Notice that higher values indicate higher centrality.
 
@@ -35,7 +34,8 @@ def harmonic_centrality(G, u=None, distance=None):
       Return only the value for nodes u
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
-      path calculations
+      path calculations.  If `None`, then each edge will have distance equal to 1.
+
 
     Returns
     -------
