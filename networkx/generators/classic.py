@@ -24,6 +24,7 @@ __all__ = [ 'balanced_tree',
             'barbell_graph',
             'complete_graph',
             'circular_ladder_graph',
+            'circulant_graph',
             'cycle_graph',
             'dorogovtsev_goltsev_mendes_graph',
             'empty_graph',
@@ -205,6 +206,22 @@ def circular_ladder_graph(n,create_using=None):
     G.name="circular_ladder_graph(%d)"%n
     G.add_edge(0,n-1)
     G.add_edge(n,2*n-1)
+    return G
+
+
+def circulant_graph(n,offsets,create_using=None):
+    """Return the circulant graph Ci_n(x_1, x_2, ..., x_m) with n vertices.
+
+    Ci_n(x_1, ..., x_m) consists of n vertices 0, ..., n-1 such that the vertex
+    with label i is connected to the vertices labelled (i + x) and (i - x),
+    for all x in x_1 up to x_m, taken modulo n.
+    """
+    G=empty_graph(n,create_using)
+    G.name='circulant_graph(%d, [%s])' % (n, ', '.join(str(j) for j in offsets))
+    for i in range(n):
+        for j in offsets:
+            G.add_edge(i, (i - j) % n)
+            G.add_edge(i, (i + j) % n)
     return G
 
 def cycle_graph(n,create_using=None):
