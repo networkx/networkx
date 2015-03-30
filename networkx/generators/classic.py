@@ -216,8 +216,8 @@ def circulant_graph(n,offsets,create_using=None):
     with label i is connected to the vertices labelled (i + x) and (i - x),
     for all x in x_1 up to x_m, taken modulo n.
     """
-    G=empty_graph(n,create_using)
-    G.name='circulant_graph(%d, [%s])' % (n, ', '.join(str(j) for j in offsets))
+    G = empty_graph(n, create_using)
+    G.name = 'circulant_graph(%d, [%s])' % (n, ', '.join(str(j) for j in offsets))
     for i in range(n):
         for j in offsets:
             G.add_edge(i, (i - j) % n)
