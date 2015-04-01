@@ -419,8 +419,8 @@ def draw_networkx_edges(G, pos,
     edgelist : collection of edge tuples
        Draw only specified edges(default=G.edges())
 
-    width : float
-       Line width of edges (default =1.0)
+    width : float, or array of floats
+       Line width of edges (default=1.0)
 
     edge_color : color string, or array of floats
        Edge color. Can be a single color format string (default='r'),
