@@ -1,5 +1,3 @@
-.. contents::
-
 Credits
 =======
 
@@ -8,11 +6,14 @@ and has been developed with the help of many others. Thanks to everyone who has
 improved NetworkX by contributing code, bug reports (and fixes), documentation,
 and input on design, features, and the future of NetworkX.
 
-This file aims to provide a list of people and projects that have contributed
-to ``networkx``. It is intended to be an *inclusive* list, and anyone who has
-contributed and wishes to make that contribution known is welcome to add an
-entry into this file.  Generally, no name should be added to this list without
-the approval of the person associated with that name.
+Contributions
+-------------
+
+This section aims to provide a list of people and projects that have
+contributed to ``networkx``. It is intended to be an *inclusive* list, and
+anyone who has contributed and wishes to make that contribution known is
+welcome to add an entry into this file.  Generally, no name should be added to
+this list without the approval of the person associated with that name.
 
 Creating a comprehensive list of contributors can be difficult, and the list
 within this file is almost certainly incomplete.  Contributors include
@@ -34,34 +35,81 @@ list of names that have commits in ``networkx``'s
 
     git log --raw | grep "^Author: " | sort | uniq
 
-A more detailed, but still incomplete, listing of contributors and their
-contributions to some of the earlier versions of NetworkX can be found
-:doc:`here </references/credits_old>`.
+A historical, partial listing of contributors and their contributions to some
+of the earlier versions of NetworkX can be found
+`here </reference/credits_old.html>`_.
 
 
 Original Authors
-----------------
+^^^^^^^^^^^^^^^^
+
 | Aric Hagberg
 | Dan Schult
 | Pieter Swart
+|
 
 
 Contributors
-------------
-[Optionally, add your desired name and include a few relevant links.]
+^^^^^^^^^^^^
 
-Aric Hagberg
-    GitHub: `hagberg <https://github.com/hagberg>`_
-Dan Schult
-    GitHub: `dschult <https://github.com/dschult>`_
-Pieter Swart
-chebee7i
-    GitHub: `chebee7i <https://github.com/chebee7i>`_
-...
+Optionally, add your desired name and include a few relevant links. The order
+is partially historical, and now, mostly arbitrary.
+
+- Aric Hagberg, GitHub: `hagberg <https://github.com/hagberg>`_
+- Dan Schult, GitHub: `dschult <https://github.com/dschult>`_
+- Pieter Swart
+- Katy Bold
+- Hernan Rozenfeld
+- Brendt Wohlberg
+- Jim Bagrow
+- Holly Johnsen
+- Arnar Flatberg
+- Chris Myers
+- Joel Miller
+- Keith Briggs
+- Ignacio Rozada
+- Phillipp Pagel
+- Sverre Sundsdal
+- Ross M. Richardson
+- Eben Kenah
+- Sasha Gutfriend
+- Udi Weinsberg
+- Matteo Dell'Amico
+- Andrew Conway
+- Raf Guns
+- Salim Fadhley
+- Matteo Dell'Amico
+- Fabrice Desclaux
+- Arpad Horvath
+- Minh Van Nguyen
+- Willem Ligtenberg
+- Loïc Séguin-C.
+- Paul McGuire
+- Jesus Cerquides
+- Ben Edwards
+- Jon Olav Vik
+- Hugh Brown
+- Ben Reilly
+- Leo Lopes
+- Jordi Torrents
+- Dheeraj M R
+- Franck Kalala
+- Simon Knight
+- Conrad Lee
+- Sérgio Nery Simões
+- Robert King
+- Nick Mancuso
+- Brian Cloteaux
+- Alejandro Weinstein
+- Dustin Smith
+- Mathieu Larose
+- Vincent Gauthier
+- Sérgio Nery Simões
+- chebee7i, GitHub: `chebee7i <https://github.com/chebee7i>`_
 
 
 Support
-=======
+-------
 
 ``networkx`` and those who have contributed to ``networkx`` have received
 support throughout the years from a variety of sources.  We list them below.
@@ -71,7 +119,8 @@ let us know if you'd like something modified or corrected.
 
 
 Research Groups
----------------
+^^^^^^^^^^^^^^^
+
 ``networkx`` acknowledges support from the following:
 
 - `Center for Nonlinear Studies <http://cnls.lanl.gov>`_, Los Alamos National
@@ -89,7 +138,8 @@ Research Groups
 
 
 Funding
--------
+^^^^^^^
+
 ``networkx`` acknowledges support from the following:
 
 - Google Summer of Code via Python Software Foundation
