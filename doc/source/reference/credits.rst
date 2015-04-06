@@ -91,7 +91,7 @@ is partially historical, and now, mostly arbitrary.
 - Hugh Brown
 - Ben Reilly
 - Leo Lopes
-- Jordi Torrents
+- Jordi Torrents, GitHub: `jtorrents <https://github.com/jtorrents>`_
 - Dheeraj M R
 - Franck Kalala
 - Simon Knight
