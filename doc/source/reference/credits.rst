@@ -2,28 +2,28 @@ Credits
 -------
 
 NetworkX was originally written by Aric Hagberg, Dan Schult, and Pieter Swart,
-and has been developed with the help of many others.   
+and has been developed with the help of many others.
 
 Thanks to Guido van Rossum for the idea of using Python for
 implementing a graph data structure
-https://www.python.org/doc/essays/graphs
+https://www.python.org/doc/essays/graphs/
 
 Thanks to David Eppstein for the idea of representing a graph G so
 that "for n in G" loops over the nodes in G and G[n] are node n's
 neighbors.
 
 Thanks to everyone who has improved NetworkX by contributing code,
-bug reports (and fixes), documentation, and input on design, featues,
+bug reports (and fixes), documentation, and input on design, features,
 and the future of NetworkX.
 
 Thanks especially to the following contributors:
 
  - Katy Bold contributed the Karate Club graph.
- - Hernan Rozenfeld added dorogovtsev_goltsev_mendes_graph and did 
+ - Hernan Rozenfeld added dorogovtsev_goltsev_mendes_graph and did
    stress testing.
  - Brendt Wohlberg added examples from the Stanford GraphBase.
- - Jim Bagrow reported bugs in the search methods. 
- - Holly Johnsen helped fix the path based centrality measures. 
+ - Jim Bagrow reported bugs in the search methods.
+ - Holly Johnsen helped fix the path based centrality measures.
  - Arnar Flatberg fixed the graph laplacian routines.
  - Chris Myers suggested using None as a default datatype, suggested
    improvements for the IO routines, added grid generator index tuple
@@ -34,9 +34,9 @@ Thanks especially to the following contributors:
  - Keith Briggs sorted out naming issues for random graphs and
    wrote dense_gnm_random_graph.
  - Ignacio Rozada provided the Krapivsky-Redner graph generator.
- - Phillipp Pagel helped fix eccentricity etc. for disconnected graphs. 
+ - Phillipp Pagel helped fix eccentricity etc. for disconnected graphs.
  - Sverre Sundsdal contributed bidirectional shortest path and
-   Dijkstra routines, s-metric computation and graph generation  
+   Dijkstra routines, s-metric computation and graph generation
  - Ross M. Richardson contributed the expected degree graph generator
    and helped test the pygraphviz interface.
  - Christopher Ellison implemented the VF2 isomorphism algorithm
@@ -56,12 +56,12 @@ Thanks especially to the following contributors:
    and documentation for the Graph and MultiGraph classes.
  - Willem Ligtenberg contributed the directed scale free graph
    generator.
- - Loïc Séguin-C. contributed the Ford-Fulkerson max flow and min cut 
-   algorithms, and ported all of NetworkX to Python3.  He is a 
+ - Loïc Séguin-C. contributed the Ford-Fulkerson max flow and min cut
+   algorithms, and ported all of NetworkX to Python3.  He is a
    NetworkX core developer.
  - Paul McGuire improved the performance of the GML data parser.
  - Jesus Cerquides contributed the chordal graph algorithms.
- - Ben Edwards contributed tree generating functions, the rich club 
+ - Ben Edwards contributed tree generating functions, the rich club
    coefficient algorithm, the graph product functions, and a whole lot
    of other useful nuts and bolts.
  - Jon Olav Vik contributed cycle finding algorithms.
@@ -70,9 +70,9 @@ Thanks especially to the following contributors:
  - Leo Lopes contributed the maximal independent set algorithm.
  - Jordi Torrents contributed the bipartite clustering, bipartite
    node redundancy, square clustering, bipartite projection
-   articulation point, and flow-based connectivity algorithms.  
+   articulation point, and flow-based connectivity algorithms.
  - Dheeraj M R contributed the distance-regular testing algorithm
- - Franck Kalala contributed the subgraph_centrality and communicability 
+ - Franck Kalala contributed the subgraph_centrality and communicability
    algorithms
  - Simon Knight improved the GraphML functions to handle yEd/yfiles data,
    and to handle types correctly.
