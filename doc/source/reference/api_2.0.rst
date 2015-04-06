@@ -92,6 +92,15 @@ New functionalities
   ``algorithms.bipartite.generators``. The functions are not imported in the
   main  namespace, so to use it, the bipartite package has to be imported.
 
+* [`#1405 <https://github.com/networkx/networkx/pull/1405>`_]
+  Added fast approximation for node connectivity based on White and
+  Newman's approximation algorithm for finding node independent paths
+  between two nodes.
+
+* [`#1413 <https://github.com/networkx/networkx/pull/1413>`_]
+  Added transitive closure and antichains function for directed acyclic
+  graphs in ``algorithms.dag``
+
 Removed functionalities
 -----------------------
 
