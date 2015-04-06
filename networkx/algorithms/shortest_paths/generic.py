@@ -355,7 +355,7 @@ def all_shortest_paths(G, source, target, weight=None):
         pred,dist = nx.dijkstra_predecessor_and_distance(G,source,weight=weight)
     else:
         pred = nx.predecessor(G,source)
-    if target not in pred:
+    if source not in G or target not in pred:
         raise nx.NetworkXNoPath()
     stack = [[target,0]]
     top = 0
