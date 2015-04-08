@@ -54,7 +54,6 @@ def modularity_matrix(G, nodelist=None):
     if nodelist is None:
         nodelist = G.nodes()
     A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format='csr')
-    r, s = A.shape
     k = A.sum(axis=1)
     m = G.number_of_edges()
     # Expected adjacency matrix
