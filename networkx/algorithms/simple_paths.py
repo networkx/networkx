@@ -7,6 +7,7 @@ from heapq import heappush, heappop
 from itertools import count
 
 import networkx as nx
+from networkx.utils import not_implemented_for
 
 __author__ = """\n""".join(['Sérgio Nery Simões <sergionery@gmail.com>',
                             'Aric Hagberg <aric.hagberg@gmail.com>',
@@ -136,9 +137,10 @@ def _all_simple_paths_multigraph(G, source, target, cutoff=None):
             visited.pop()
 
 
+@not_implemented_for('multigraph')
 def shortest_simple_paths(G, source, target, weight=None):
     """Generate all simple paths in the graph G from source to target,
-    starting from shortest ones.
+       starting from shortest ones.
 
     A simple path is a path with no repeated nodes.
 
@@ -165,10 +167,27 @@ def shortest_simple_paths(G, source, target, weight=None):
        A generator that produces lists of simple paths, in order from
        shortest to longest.
 
+    Raises
+    ------
+    NetworkXNoPath
+       If no path exists between source and target.
+
+    NetworkXError
+       If source or target nodes are not in the input graph.
+
+    NetworkXNotImplemented
+       If the input graph is a Multi[Di]Graph.
+
     Notes
     -----
     This procedure is based on algorithm by Jin Y. Yen [1]_.  Finding
     the first K paths requires O(KN^3) operations.
+
+    See Also
+    --------
+    all_shortest_paths
+    shortest_path
+    all_simple_paths
 
     References
     ----------
@@ -176,11 +195,13 @@ def shortest_simple_paths(G, source, target, weight=None):
        Network", Management Science, Vol. 17, No. 11, Theory Series
        (Jul., 1971), pp. 712-716.
 
-    See Also
-    --------
-    all_shortest_paths, shortest_path
-
     """
+    if source not in G:
+        raise nx.NetworkXError('source node %s not in graph' % source)
+
+    if target not in G:
+        raise nx.NetworkXError('target node %s not in graph' % target)
+
     if weight is None:
         length_func = len
         shortest_path_func = _bidirectional_shortest_path
@@ -194,13 +215,14 @@ def shortest_simple_paths(G, source, target, weight=None):
     prev_path = None
     while True:
         if not prev_path:
-            length, path = shortest_path_func(G, source, target)
+            length, path = shortest_path_func(G, source, target, weight=weight)
             listB.push(length, path)
         else:
             ignore_nodes = set()
             ignore_edges = set()
             for i in range(1, len(prev_path)):
                 root = prev_path[:i]
+                root_length = length_func(root)
                 for path in listA:
                     if path[:i] == root:
                         ignore_edges.add((path[i-1], path[i]))
@@ -208,17 +230,15 @@ def shortest_simple_paths(G, source, target, weight=None):
                 try:
                     length, spur = shortest_path_func(G, root[-1], target,
                                                       ignore_nodes=ignore_nodes,
-                                                      ignore_edges=ignore_edges)
-                    assert root[-1] == spur[0]
-                    assert not set(root[:-1]).intersection(set(spur))
+                                                      ignore_edges=ignore_edges,
+                                                      weight=weight)
                     path = root[:-1] + spur
-                    listB.push(length_func(path), path)
+                    listB.push(root_length + length, path)
                 except nx.NetworkXNoPath:
                     pass
 
         if listB:
             path = listB.pop()
-            assert path not in listA
             yield path
             listA.append(path)
             prev_path = path
@@ -250,12 +270,13 @@ class PathBuffer:
 
 def _bidirectional_shortest_path(G, source, target,
                                  ignore_nodes=None,
-                                 ignore_edges=None):
-    """Return the shortest path between source and target ignoring nodes and 
-       edges in the containers ignore_nodes and ignore_edges.
+                                 ignore_edges=None,
+                                 weight=None):
+    """Return the shortest path between source and target ignoring
+       nodes and edges in the containers ignore_nodes and ignore_edges.
 
-    This is a custom modification of the standard bidirectional shortest path implementation
-    at networkx.algorithms.unweighted
+    This is a custom modification of the standard bidirectional shortest 
+    path implementation at networkx.algorithms.unweighted
 
     Parameters
     ----------
@@ -272,6 +293,10 @@ def _bidirectional_shortest_path(G, source, target,
 
     ignore_edges : container of edges
        edges to ignore, optional
+
+    weight : None
+       This function accepts a weight argument for convinience of 
+       shortest_simple_paths function. It will be ignored.
 
     Returns
     -------
