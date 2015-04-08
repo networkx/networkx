@@ -16,7 +16,8 @@ __all__ = ['modularity_matrix']
 
 
 @not_implemented_for('directed')
-def modularity_matrix(G, nodelist=None, weight='weight'):
+@not_implemented_for('multigraph')
+def modularity_matrix(G, nodelist=None):
     """Return the modularity matrix of G.
 
     The modularity matrix is the matrix B = A - <A>, where A is the adjacency
@@ -32,13 +33,9 @@ def modularity_matrix(G, nodelist=None, weight='weight'):
        The rows and columns are ordered according to the nodes in nodelist.
        If nodelist is None, then the ordering is produced by G.nodes().
 
-    weight : string or None, optional (default='weight')
-       The edge data key used to compute each value in the matrix.
-       If None, then each edge has weight 1.
-
     Returns
     -------
-    B : SciPy sparse matrix
+    B : Numpy matrix
       The modularity matrix of G.
 
     Notes
@@ -58,13 +55,12 @@ def modularity_matrix(G, nodelist=None, weight='weight'):
     """
     if nodelist is None:
         nodelist = G.nodes()
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  format='csr')
+    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, format='csr')
     r, s = A.shape
     k = A.sum(axis=1)
     m = G.number_of_edges()
     # Expected adjacency matrix
-    X = k[nodelist] * k[nodelist].transpose() / (2 * m)
+    X = k * k.transpose() / (2 * m)
     return A - X
 
 
