@@ -99,7 +99,7 @@ def modularity_spectrum(G):
     References
     ----------
     .. [1] M. E. J. Newman, "Modularity and community structure in networks",
-       Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577–8582, 2006.
+       Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
     from scipy.linalg import eigvals
     return eigvals(nx.modularity_matrix(G))

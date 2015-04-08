@@ -6,8 +6,10 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from __future__ import division
 import networkx as nx
 from networkx.utils import not_implemented_for
+
 __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Pieter Swart (swart@lanl.gov)',
                         'Dan Schult (dschult@colgate.edu)',
@@ -51,7 +53,7 @@ def modularity_matrix(G, nodelist=None):
     References
     ----------
     .. [1] M. E. J. Newman, "Modularity and community structure in networks",
-       Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577–8582, 2006.
+       Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
     if nodelist is None:
         nodelist = G.nodes()
