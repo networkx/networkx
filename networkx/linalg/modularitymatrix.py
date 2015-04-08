@@ -40,10 +40,6 @@ def modularity_matrix(G, nodelist=None):
     B : Numpy matrix
       The modularity matrix of G.
 
-    Notes
-    -----
-    For MultiGraph/MultiDiGraph, the edges weights are summed.
-
     See Also
     --------
     to_numpy_matrix

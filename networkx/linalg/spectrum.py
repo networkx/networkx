@@ -87,11 +87,6 @@ def modularity_spectrum(G):
     evals : NumPy array
       Eigenvalues
 
-    Notes
-    -----
-    For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_matrix for other options.
-
     See Also
     --------
     modularity_matrix
