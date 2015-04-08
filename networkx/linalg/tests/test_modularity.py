@@ -31,7 +31,7 @@ class TestModularity(object):
 
     def test_modularity(self):
         "Modularity matrix"
-        B = numpy.array([[-1.125,  0.25 ,  0.25 ,  0.625,  0.   ],
+        B = numpy.matrix([[-1.125,  0.25 ,  0.25 ,  0.625,  0.   ],
                          [ 0.25 , -0.5  ,  0.5  , -0.25 ,  0.   ],
                          [ 0.25 ,  0.5  , -0.5  , -0.25 ,  0.   ],
                          [ 0.625, -0.25 , -0.25 , -0.125,  0.   ],

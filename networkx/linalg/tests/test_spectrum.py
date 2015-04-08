@@ -47,5 +47,5 @@ class TestSpectrum(object):
         "Modularity eigenvalues"
         evals=numpy.array([-1.5, 0., 0.])
         e=sorted(nx.modularity_spectrum(self.P))
-        assert_equal(e,evals)
+        assert_almost_equal(e,evals)
 
