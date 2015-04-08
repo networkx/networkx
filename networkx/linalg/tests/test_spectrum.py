@@ -43,3 +43,9 @@ class TestSpectrum(object):
         e=sorted(nx.adjacency_spectrum(self.P))
         assert_almost_equal(e,evals)
 
+    def test_modularity_spectrum(self):
+        "Modularity eigenvalues"
+        evals=numpy.array([-1.5, 0., 0.])
+        e=sorted(nx.modularity_spectrum(self.P))
+        assert_equal(e,evals)
+
