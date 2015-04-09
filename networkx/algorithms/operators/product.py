@@ -16,7 +16,7 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Ben Edwards(bedwards@cs.unm.edu)'])
 
 __all__ = ['tensor_product','cartesian_product',
-           'lexicographic_product', 'strong_product']
+           'lexicographic_product', 'strong_product', 'power']
 
 def _dict_product(d1,d2):
     return dict((k,(d1.get(k),d2.get(k))) for k in set(d1)|set(d2))
@@ -328,3 +328,84 @@ def strong_product(G,H):
         GH.add_edges_from(_undirected_edges_cross_edges(G,H))
     GH.name = "Strong product("+G.name+","+H.name+")"
     return GH
+
+def power(G, k):
+    """Returns the specified power of a graph.
+
+    ..
+       The *k*th power of a simple graph *G* = (*V*, *E*) is the graph
+       *G<sup>k</sup>* whose vertex set is *V*, two distinct vertices being
+       adjacent in *G<sup>k</sup>* if and only if their [shortest path]
+       distance in *G* is at most *k*.
+       -- Exercise 3.1.6 of *Graph Theory* by J. A. Bondy and U. S. R. Murty
+          [1]_
+
+    Parameters
+    ----------
+    G: graph
+      A NetworkX simple graph object.
+    k: positive integer
+      The power to which to raise the graph `G`.
+
+    Returns
+    -------
+    NetworkX simple graph
+      `G` to the `k`th power.
+
+    Raises
+    ------
+    :exc:`ValueError`
+      If the exponent `k` is not positive.
+
+    NetworkXError
+      If G is not a simple graph.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> nx.power(G,2).edges()
+    [(0, 1), (0, 2), (1, 2), (1, 3), (2, 3)]
+    >>> nx.power(G,3).edges()
+    [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
+
+    A complete graph of order n is returned if *k* is greater than equal to n/2
+    for a cycle graph of even order n, and if *k* is greater than equal to
+    (n-1)/2 for a cycle graph of odd order.
+
+    >>> G = nx.cycle_graph(5)
+    >>> nx.power(G,2).edges() == nx.complete_graph(5).edges()
+    True
+    >>> G = nx.cycle_graph(8)
+    >>> nx.power(G,4).edges() == nx.complete_graph(8).edges()
+    True
+
+    References
+    ----------
+    .. [1] J. A. Bondy, U. S. R. Murty:
+       Graph Theory.
+       Springer, 2008.
+    """
+    if k <= 0:
+        raise ValueError('k must be a positive integer')
+    if G.is_multigraph() or G.is_directed():
+        raise nx.NetworkXError("G should be a simple graph")
+    H = nx.Graph()
+    # update BFS code to ignore self loops.
+    for n in G:
+        seen = {}                  # level (number of hops) when seen in BFS
+        level = 1                  # the current level
+        nextlevel = G[n]
+        while nextlevel:
+            thislevel = nextlevel  # advance to next level
+            nextlevel = {}         # and start a new list (fringe)
+            for v in thislevel:
+                if v == n:         # avoid self loop
+                    continue
+                if v not in seen:
+                    seen[v] = level         # set the level of vertex v
+                    nextlevel.update(G[v])  # add neighbors of v
+            if (k <= level):
+                break
+            level = level + 1
+        H.add_edges_from((n, nbr) for nbr in seen)
+    return H
