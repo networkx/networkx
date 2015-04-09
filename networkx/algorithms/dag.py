@@ -19,7 +19,9 @@ __all__ = ['descendants',
            'is_directed_acyclic_graph',
            'is_aperiodic',
            'transitive_closure',
-           'antichains']
+           'antichains',
+           'dag_longest_path',
+           'dag_longest_path_length']
 
 def descendants(G, source):
     """Return all nodes reachable from `source` in G.
@@ -378,3 +380,66 @@ def antichains(G):
             new_antichain = antichain + [x]
             new_stack = [t for t in stack if not ((t in TC[x]) or (x in TC[t]))]
             antichains_stacks.append((new_antichain, new_stack))
+
+@not_implemented_for('undirected')
+def dag_longest_path(G):
+    """Returns the longest path in a DAG
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+      Graph
+
+    Returns
+    -------
+    list : The longest path
+
+    Raises
+    ------
+    NetworkXNotImplemented
+      If G is not directed
+
+    See also
+    --------
+    dag_longest_path_length
+    """
+    dist = {}  # stores [node, distance] pair
+    for node in nx.topological_sort(G):
+        # pairs of dist,node for all incoming edges
+        pairs = [(dist[v][0] + 1, v) for v in G.pred[node]]
+        if pairs:
+            dist[node] = max(pairs)
+        else:
+            dist[node] = (0, node)
+    node, (length, _) = max(dist.items(), key=lambda x: x[1])
+    path = []
+    while length > 0:
+        path.append(node)
+        length, node = dist[node]
+    return list(reversed(path))
+
+
+@not_implemented_for('undirected')
+def dag_longest_path_length(G):
+    """Returns the longest path length in a DAG
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+      Graph
+
+    Returns
+    -------
+    int : The longest path length
+
+    Raises
+    ------
+    NetworkXNotImplemented
+      If G is not directed
+
+    See also
+    --------
+    dag_longest_path
+    """
+    path_length = len(nx.dag_longest_path(G)) - 1
+    return path_length

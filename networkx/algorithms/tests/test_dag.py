@@ -166,6 +166,24 @@ class TestDAG:
         G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
         assert_raises(nx.NetworkXUnfeasible, f, G)
 
+    def test_dag_longest_path(self):
+        longest_path = nx.algorithms.dag.dag_longest_path
+        G = nx.DiGraph([(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (5, 7)])
+        assert_equal(longest_path(G), [1, 2, 3, 5, 6])
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)])
+        assert_equal(longest_path(G), [1, 2, 3, 4, 5])
+        G = nx.Graph()
+        assert_raises(nx.NetworkXNotImplemented, longest_path, G)
+
+    def test_dag_longest_path_length(self):
+        longest_path_length = nx.algorithms.dag.dag_longest_path_length
+        G = nx.DiGraph([(1, 2), (2, 3), (2, 4), (3, 5), (5, 6), (5, 7)])
+        assert_equal(longest_path_length(G), 4)
+        G = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)])
+        assert_equal(longest_path_length(G), 4)
+        G = nx.Graph()
+        assert_raises(nx.NetworkXNotImplemented, longest_path_length, G)
+
 
 def test_is_aperiodic_cycle():
     G=nx.DiGraph()
