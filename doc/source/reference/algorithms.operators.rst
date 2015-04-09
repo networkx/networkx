@@ -40,7 +40,4 @@ Operators
    lexicographic_product
    strong_product
    tensor_product
-
-
-
-
+   power

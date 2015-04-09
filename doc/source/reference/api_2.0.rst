@@ -101,6 +101,9 @@ New functionalities
   Added transitive closure and antichains function for directed acyclic
   graphs in ``algorithms.dag``
 
+* [`#1399 <https://github.com/networkx/networkx/pull/1399>`_]
+  Added power function for simple graphs
+
 Removed functionalities
 -----------------------
 
