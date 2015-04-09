@@ -1903,9 +1903,13 @@ class Graph(object):
                         if n in adj:
                             yield n
                 except TypeError as e:
+<<<<<<< HEAD
                     message = e.args[0]
                     import sys
                     sys.stdout.write(message)
+=======
+                    message=e.args[0]
+>>>>>>> pebenito/master
                     # capture error for non-sequence/iterator nbunch.
                     if 'iter' in message:
                         raise NetworkXError(
