@@ -1,96 +1,157 @@
 Credits
--------
+=======
 
 NetworkX was originally written by Aric Hagberg, Dan Schult, and Pieter Swart,
-and has been developed with the help of many others.   
+and has been developed with the help of many others. Thanks to everyone who has
+improved NetworkX by contributing code, bug reports (and fixes), documentation,
+and input on design, features, and the future of NetworkX.
 
-Thanks to Guido van Rossum for the idea of using Python for
-implementing a graph data structure
-https://www.python.org/doc/essays/graphs
+Contributions
+-------------
 
-Thanks to David Eppstein for the idea of representing a graph G so
-that "for n in G" loops over the nodes in G and G[n] are node n's
-neighbors.
+This section aims to provide a list of people and projects that have
+contributed to ``networkx``. It is intended to be an *inclusive* list, and
+anyone who has contributed and wishes to make that contribution known is
+welcome to add an entry into this file.  Generally, no name should be added to
+this list without the approval of the person associated with that name.
 
-Thanks to everyone who has improved NetworkX by contributing code,
-bug reports (and fixes), documentation, and input on design, featues,
-and the future of NetworkX.
+Creating a comprehensive list of contributors can be difficult, and the list
+within this file is almost certainly incomplete.  Contributors include
+testers, bug reporters, contributors who wish to remain anonymous, funding
+sources, academic advisors, end users, and even build/integration systems (such
+as `TravisCI <https://travis-ci.org>`_, `coveralls <https://coveralls.io>`_,
+and `readthedocs <https://readthedocs.org>`_).
 
-Thanks especially to the following contributors:
+Do you want to make your contribution known? If you have commit access, edit
+this file and add your name. If you do not have commit access, feel free to
+open an `issue <https://github.com/networkx/networkx/issues/new>`_, submit a
+`pull request <https://github.com/networkx/networkx/compare/>`_, or get in
+contact with one of the official team
+`members <https://github.com/networkx?tab=members>`_.
 
- - Katy Bold contributed the Karate Club graph.
- - Hernan Rozenfeld added dorogovtsev_goltsev_mendes_graph and did 
-   stress testing.
- - Brendt Wohlberg added examples from the Stanford GraphBase.
- - Jim Bagrow reported bugs in the search methods. 
- - Holly Johnsen helped fix the path based centrality measures. 
- - Arnar Flatberg fixed the graph laplacian routines.
- - Chris Myers suggested using None as a default datatype, suggested
-   improvements for the IO routines, added grid generator index tuple
-   labeling and associated routines, and reported bugs.
- - Joel Miller tested and improved the connected components methods
-   fixed bugs and typos in the graph generators, and contributed
-   the random clustered graph generator.
- - Keith Briggs sorted out naming issues for random graphs and
-   wrote dense_gnm_random_graph.
- - Ignacio Rozada provided the Krapivsky-Redner graph generator.
- - Phillipp Pagel helped fix eccentricity etc. for disconnected graphs. 
- - Sverre Sundsdal contributed bidirectional shortest path and
-   Dijkstra routines, s-metric computation and graph generation  
- - Ross M. Richardson contributed the expected degree graph generator
-   and helped test the pygraphviz interface.
- - Christopher Ellison implemented the VF2 isomorphism algorithm
-   and is a core developer.
- - Eben Kenah contributed the strongly connected components and
-   DFS functions.
- - Sasha Gutfriend contributed edge betweenness algorithms.
- - Udi Weinsberg helped develop intersection and difference operators.
- - Matteo Dell'Amico wrote the random regular graph generator.
- - Andrew Conway contributed ego_graph, eigenvector centrality,
-   line graph and much more.
- - Raf Guns wrote the GraphML writer.
- - Salim Fadhley and Matteo Dell'Amico contributed the A* algorithm.
- - Fabrice Desclaux contributed the Matplotlib edge labeling code.
- - Arpad Horvath fixed the barabasi_albert_graph() generator.
- - Minh Van Nguyen contributed the connected_watts_strogatz_graph()
-   and documentation for the Graph and MultiGraph classes.
- - Willem Ligtenberg contributed the directed scale free graph
-   generator.
- - Loïc Séguin-C. contributed the Ford-Fulkerson max flow and min cut 
-   algorithms, and ported all of NetworkX to Python3.  He is a 
-   NetworkX core developer.
- - Paul McGuire improved the performance of the GML data parser.
- - Jesus Cerquides contributed the chordal graph algorithms.
- - Ben Edwards contributed tree generating functions, the rich club 
-   coefficient algorithm, the graph product functions, and a whole lot
-   of other useful nuts and bolts.
- - Jon Olav Vik contributed cycle finding algorithms.
- - Hugh Brown improved the words.py example from the n^2 algorithm.
- - Ben Reilly contributed the shapefile reader and writer.
- - Leo Lopes contributed the maximal independent set algorithm.
- - Jordi Torrents contributed the bipartite clustering, bipartite
-   node redundancy, square clustering, bipartite projection
-   articulation point, and flow-based connectivity algorithms.  
- - Dheeraj M R contributed the distance-regular testing algorithm
- - Franck Kalala contributed the subgraph_centrality and communicability 
-   algorithms
- - Simon Knight improved the GraphML functions to handle yEd/yfiles data,
-   and to handle types correctly.
- - Conrad Lee contributed the k-clique community finding algorithm.
- - Sérgio Nery Simões wrote the function for finding all simple paths,
-   and all shortest paths.
- - Robert King contributed union, disjoint union, compose, and intersection
-   operators that work on lists of graphs.
- - Nick Mancuso wrote the approximation algorithms for dominating set,
-   edge dominating set, independent set, max clique, and min-weighted
-   vertex cover.
- - Brian Cloteaux contributed the linear-time graphicality tests and 
-   Havel-Hakimi graph generators.
- - Alejandro Weinstein contributed the directed Laplacian code
- - Dustin Smith wrote the dictionary to numpy array function
- - Mathieu Larose sped up the topological sort code
- - Vincent Gauthier contributed the Katz centrality algorithm
- - Sérgio Nery Simões developed the code for finding all simple paths
- - Peter Jipsen and Franco Saliola contributed the antichains generator.
-   This function was originally developed for the SAGE project. Included
-   in NetworkX with permission from the authors.
+A supplementary (but still incomplete) list of contributors is given by the
+list of names that have commits in ``networkx``'s
+`git <http://git-scm.com>`_ repository. This can be obtained via::
+
+    git log --raw | grep "^Author: " | sort | uniq
+
+A historical, partial listing of contributors and their contributions to some
+of the earlier versions of NetworkX can be found
+`here </reference/credits_old.html>`_.
+
+
+Original Authors
+^^^^^^^^^^^^^^^^
+
+| Aric Hagberg
+| Dan Schult
+| Pieter Swart
+|
+
+
+Contributors
+^^^^^^^^^^^^
+
+Optionally, add your desired name and include a few relevant links. The order
+is partially historical, and now, mostly arbitrary.
+
+- Aric Hagberg, GitHub: `hagberg <https://github.com/hagberg>`_
+- Dan Schult, GitHub: `dschult <https://github.com/dschult>`_
+- Pieter Swart
+- Katy Bold
+- Hernan Rozenfeld
+- Brendt Wohlberg
+- Jim Bagrow
+- Holly Johnsen
+- Arnar Flatberg
+- Chris Myers
+- Joel Miller
+- Keith Briggs
+- Ignacio Rozada
+- Phillipp Pagel
+- Sverre Sundsdal
+- Ross M. Richardson
+- Eben Kenah
+- Sasha Gutfriend
+- Udi Weinsberg
+- Matteo Dell'Amico
+- Andrew Conway
+- Raf Guns
+- Salim Fadhley
+- Matteo Dell'Amico
+- Fabrice Desclaux
+- Arpad Horvath
+- Minh Van Nguyen
+- Willem Ligtenberg
+- Loïc Séguin-C.
+- Paul McGuire
+- Jesus Cerquides
+- Ben Edwards
+- Jon Olav Vik
+- Hugh Brown
+- Ben Reilly
+- Leo Lopes
+- Jordi Torrents, GitHub: `jtorrents <https://github.com/jtorrents>`_
+- Dheeraj M R
+- Franck Kalala
+- Simon Knight
+- Conrad Lee
+- Sérgio Nery Simões
+- Robert King
+- Nick Mancuso
+- Brian Cloteaux
+- Alejandro Weinstein
+- Dustin Smith
+- Mathieu Larose
+- Vincent Gauthier
+- Sérgio Nery Simões
+- chebee7i, GitHub: `chebee7i <https://github.com/chebee7i>`_
+
+
+Support
+-------
+
+``networkx`` and those who have contributed to ``networkx`` have received
+support throughout the years from a variety of sources.  We list them below.
+If you have provided support to ``networkx`` and a support acknowledgment does
+not appear below, please help us remedy the situation, and similarly, please
+let us know if you'd like something modified or corrected.
+
+
+Research Groups
+^^^^^^^^^^^^^^^
+
+``networkx`` acknowledges support from the following:
+
+- `Center for Nonlinear Studies <http://cnls.lanl.gov>`_, Los Alamos National
+  Laboratory, PI: Aric Hagberg
+
+- `Open Source Programs Office <https://developers.google.com/open-source/>`_,
+  Google
+
+- `Complexity Sciences Center <http://csc.ucdavis.edu/>`_, Department of
+  Physics, University of California-Davis, PI: James P. Crutchfield
+
+- `Center for Complexity and Collective Computation <http://c4.discovery.wisc.edu>`_,
+  Wisconsin Institute for Discovery, University of Wisconsin-Madison,
+  PIs: Jessica C. Flack and David C. Krakauer
+
+
+Funding
+^^^^^^^
+
+``networkx`` acknowledges support from the following:
+
+- Google Summer of Code via Python Software Foundation
+
+- U.S. Army Research Office grant W911NF-12-1-0288
+
+- DARPA Physical Intelligence Subcontract No. 9060-000709
+
+- NSF Grant No. PHY-0748828
+
+- John Templeton Foundation through a grant to the Santa Fe Institute to
+  study complexity
+
+- U.S. Army Research Laboratory and the U.S. Army Research Office under
+  contract number W911NF-13-1-0340
