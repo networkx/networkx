@@ -18,3 +18,4 @@ from networkx.generators.threshold import *
 from networkx.generators.intersection import *
 from networkx.generators.random_clustered import *
 from networkx.generators.community import *
+from networkx.generators.nonisomorphic_trees import *
