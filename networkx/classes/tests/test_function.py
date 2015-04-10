@@ -214,6 +214,25 @@ class TestFunction(object):
         for e in expected:
             assert_true(e in nedges)
 
+    def test_weighted_edges(self):
+        G = nx.path_graph(4)
+        assert_false(nx.weighted_edges(G))
+        assert_false(nx.weighted_edges(G, (2, 3)))
+        G.add_node(4)
+        G.add_edge(3, 4, weight=4)
+        assert_false(nx.weighted_edges(G))
+        assert_true(nx.weighted_edges(G, (3, 4)))
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -5),
+                                     ('0', '2', 2), ('1', '2', 4),
+                                     ('2', '3', 1)])
+        assert_true(nx.weighted_edges(G))
+        assert_true(nx.weighted_edges(G, ('1', '0')))
+        G = G.to_undirected()
+        assert_true(nx.weighted_edges(G))
+        assert_true(nx.weighted_edges(G, ('1', '0')))
+        assert_raises(nx.NetworkXError, nx.weighted_edges, G, (1, 2))
+
 
 class TestCommonNeighbors():
     def setUp(self):
