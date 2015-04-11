@@ -12,7 +12,7 @@ __author__ = "\n".join(['Alessandro Luongo (alessandro.luongo@studenti.unimi.it'
 __all__ = ['harmonic_centrality']
 
 
-def harmonic_centrality(G, u=None, distance=None):
+def harmonic_centrality(G, distance=None):
     """Compute harmonic centrality for nodes.
 
     Harmonic centrality [1] of a node `u` is the sum of the reciprocal
@@ -30,8 +30,6 @@ def harmonic_centrality(G, u=None, distance=None):
     ----------
     G : graph
       A NetworkX graph
-    u : nodes, optional
-      Return only the value for nodes u
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
       path calculations.  If `None`, then each edge will have distance equal to 1.
