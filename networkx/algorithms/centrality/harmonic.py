@@ -34,7 +34,6 @@ def harmonic_centrality(G, distance=None):
       Use the specified edge attribute as the edge distance in shortest
       path calculations.  If `None`, then each edge will have distance equal to 1.
 
-
     Returns
     -------
     nodes : dictionary
@@ -47,7 +46,6 @@ def harmonic_centrality(G, distance=None):
 
     Notes
     -----
-
     If the 'distance' keyword is set to an edge attribute key then the
     shortest-path length will be computed using Dijkstra's algorithm with
     that edge attribute as the edge weight.
@@ -64,11 +62,7 @@ def harmonic_centrality(G, distance=None):
     else:
         path_length = nx.all_pairs_shortest_path_length
 
-    if u is None:
-        nodes = G.nodes()
-    else:
-        nodes = [u]
-
+    nodes = G.nodes()
     harmonic_centrality = {}
 
     if len(G) <= 1:
@@ -80,9 +74,7 @@ def harmonic_centrality(G, distance=None):
 
     for n in nodes:
         harmonic_centrality[n] = sum([1/i if i > 0 else 0 for i in sp[n].values()])
-    if u is not None:
-        return harmonic_centrality[u]
-    else:
-        return harmonic_centrality
+
+    return harmonic_centrality
 
 
