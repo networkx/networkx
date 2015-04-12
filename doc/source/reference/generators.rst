@@ -23,7 +23,6 @@ Classic
    balanced_tree
    barbell_graph
    complete_graph
-   complete_bipartite_graph
    circular_ladder_graph
    cycle_graph
    dorogovtsev_goltsev_mendes_graph
@@ -160,21 +159,6 @@ Hybrid
 
    kl_connected_subgraph
    is_kl_connected
-
-
-Bipartite
----------
-.. automodule:: networkx.generators.bipartite
-.. autosummary::
-   :toctree: generated/
-
-   bipartite_configuration_model
-   bipartite_havel_hakimi_graph
-   bipartite_reverse_havel_hakimi_graph
-   bipartite_alternating_havel_hakimi_graph
-   bipartite_preferential_attachment_graph
-   bipartite_random_graph
-   bipartite_gnmk_random_graph
 
 
 Line Graph

@@ -293,7 +293,7 @@ def compose(G, H, name=None):
     """Return a new graph of G composed with H.
 
     Composition is the simple union of the node sets and edge sets.
-    The node sets of G and H need not be disjoint.
+    The node sets of G and H do not need to be disjoint.
 
     Parameters
     ----------
@@ -314,20 +314,22 @@ def compose(G, H, name=None):
     """
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError('G and H must both be graphs or multigraphs.')
+
     if name is None:
         name = "compose( %s, %s )"%(G.name,H.name)
     R = G.__class__()
     R.name = name
     R.add_nodes_from(H.nodes())
     R.add_nodes_from(G.nodes())
-    if H.is_multigraph():
-        R.add_edges_from(H.edges_iter(keys=True, data=True))
-    else:
-        R.add_edges_from(H.edges_iter(data=True))
     if G.is_multigraph():
         R.add_edges_from(G.edges_iter(keys=True, data=True))
     else:
         R.add_edges_from(G.edges_iter(data=True))
+    if H.is_multigraph():
+        R.add_edges_from(H.edges_iter(keys=True, data=True))
+    else:
+        R.add_edges_from(H.edges_iter(data=True))
+
 
     # add node attributes, H attributes take precedent over G attributes
     R.node.update(G.node)

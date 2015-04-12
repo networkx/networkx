@@ -72,7 +72,7 @@ container with all nodes that belong to one node set:
 All bipartite graph generators in NetworkX build bipartite graphs with the 
 "bipartite" node attribute. Thus, you can use the same approach:
 
->>> RB = nx.bipartite_random_graph(5, 7, 0.2)
+>>> RB = bipartite.random_graph(5, 7, 0.2)
 >>> RB_top = set(n for n,d in RB.nodes(data=True) if d['bipartite']==0)
 >>> RB_bottom = set(RB) - RB_top
 >>> list(RB_top)
@@ -88,7 +88,10 @@ For other bipartite graph generators see the bipartite section of
 from networkx.algorithms.bipartite.basic import *
 from networkx.algorithms.bipartite.centrality import *
 from networkx.algorithms.bipartite.cluster import *
+from networkx.algorithms.bipartite.edgelist import *
 from networkx.algorithms.bipartite.matching import *
+from networkx.algorithms.bipartite.matrix import *
 from networkx.algorithms.bipartite.projection import *
 from networkx.algorithms.bipartite.redundancy import *
 from networkx.algorithms.bipartite.spectral import *
+from networkx.algorithms.bipartite.generators import *

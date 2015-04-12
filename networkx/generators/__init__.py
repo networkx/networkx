@@ -2,7 +2,6 @@
 A package for generating various graphs in networkx. 
 
 """
-from networkx.generators.bipartite import *
 from networkx.generators.classic import *
 from networkx.generators.degree_seq import *
 from networkx.generators.directed import *

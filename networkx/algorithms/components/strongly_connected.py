@@ -215,14 +215,14 @@ def strongly_connected_component_subgraphs(G, copy=True):
     ----------
     G : NetworkX Graph
        A graph.
+    copy : boolean, optional
+      if copy is True, Graph, node, and edge attributes are copied to
+      the subgraphs.
 
     Returns
     -------
     comp : generator of lists
       A list of graphs, one for each strongly connected component of G.
-    copy : boolean
-      if copy is True, Graph, node, and edge attributes are copied to
-      the subgraphs.
 
     See Also
     --------
