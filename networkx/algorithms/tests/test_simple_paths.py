@@ -5,6 +5,7 @@ from nose.tools import *
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 from networkx.algorithms.simple_paths import _bidirectional_shortest_path
+from networkx.algorithms.simple_paths import _bidirectional_dijkstra
 
 # Tests for all_simple_paths
 def test_all_simple_paths():
@@ -116,6 +117,19 @@ def test_weighted_shortest_simple_path():
         assert_true(cost <= this_cost)
         cost = this_cost
 
+def test_directed_weighted_shortest_simple_path():
+    def cost_func(path):
+        return sum(G.edge[u][v]['weight'] for (u, v) in zip(path, path[1:]))
+    G = nx.complete_graph(5)
+    G = G.to_directed()
+    weight = {(u, v): random.randint(1, 100) for (u, v) in G.edges()}
+    nx.set_edge_attributes(G, 'weight', weight)
+    cost = 0
+    for path in nx.shortest_simple_paths(G, 0, 3, weight='weight'):
+        this_cost = cost_func(path)
+        assert_true(cost <= this_cost)
+        cost = this_cost
+
 def test_weight_name():
     G = nx.cycle_graph(7)
     nx.set_edge_attributes(G, 'weight', 1)
@@ -146,8 +160,8 @@ def test_ssp_multigraph():
 @raises(nx.NetworkXNoPath)
 def test_ssp_source_missing():
     G = nx.Graph()
-    G.add_path([0,1,2])
-    G.add_path([3,4,5])
+    G.add_path([0, 1, 2])
+    G.add_path([3, 4, 5])
     paths = list(nx.shortest_simple_paths(G, 0, 3))
 
 def test_bidirectional_shortest_path_restricted():
@@ -187,3 +201,61 @@ def test_bidirectional_shortest_path_restricted():
         0, 3, 
         ignore_edges=[(1, 2)],
     )
+
+def validate_path(G, s, t, soln_len, path):
+    assert_equal(path[0], s)
+    assert_equal(path[-1], t)
+    assert_equal(soln_len, sum(G[u][v].get('weight', 1)
+                    for u, v in zip(path[:-1], path[1:])))
+
+def validate_length_path(G, s, t, soln_len, length, path):
+    assert_equal(soln_len, length)
+    validate_path(G, s, t, length, path)
+
+def test_bidirectional_dijksta_restricted():
+    XG = nx.DiGraph()
+    XG.add_weighted_edges_from([('s', 'u', 10), ('s', 'x', 5),
+                                ('u', 'v', 1), ('u', 'x', 2),
+                                ('v', 'y', 1), ('x', 'u', 3),
+                                ('x', 'v', 5), ('x', 'y', 2),
+                                ('y', 's', 7), ('y', 'v', 6)])
+
+    XG3 = nx.Graph()
+    XG3.add_weighted_edges_from([[0, 1, 2], [1, 2, 12],
+                                 [2, 3, 1], [3, 4, 5],
+                                 [4, 5, 1], [5, 0, 10]])
+    validate_length_path(XG, 's', 'v', 9, 
+                         *_bidirectional_dijkstra(XG, 's', 'v'))
+    validate_length_path(XG, 's', 'v', 10,
+                         *_bidirectional_dijkstra(XG, 's', 'v', ignore_nodes=['u']))
+    validate_length_path(XG, 's', 'v', 11,
+                         *_bidirectional_dijkstra(XG, 's', 'v', ignore_edges=[('s', 'x')]))
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_dijkstra,
+        XG,
+        's', 'v',
+        ignore_nodes=['u'],
+        ignore_edges=[('s', 'x')],
+    )
+    validate_length_path(XG3, 0, 3, 15, *_bidirectional_dijkstra(XG3, 0, 3))
+    validate_length_path(XG3, 0, 3, 16,
+                         *_bidirectional_dijkstra(XG3, 0, 3, ignore_nodes=[1]))
+    validate_length_path(XG3, 0, 3, 16,
+                         *_bidirectional_dijkstra(XG3, 0, 3, ignore_edges=[(2, 3)]))
+    assert_raises(
+        nx.NetworkXNoPath,
+        _bidirectional_dijkstra,
+        XG3,
+        0, 3,
+        ignore_nodes=[1],
+        ignore_edges=[(5, 4)],
+    )
+
+@raises(nx.NetworkXNoPath)
+def test_bidirectional_dijkstra_no_path():
+    G = nx.Graph()
+    G.add_path([1, 2, 3])
+    G.add_path([4, 5, 6])
+    path = _bidirectional_dijkstra(G, 1, 6)
+

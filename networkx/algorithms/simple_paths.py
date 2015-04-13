@@ -178,6 +178,25 @@ def shortest_simple_paths(G, source, target, weight=None):
     NetworkXNotImplemented
        If the input graph is a Multi[Di]Graph.
 
+    Example
+    -------
+
+    >>> G = nx.cycle_graph(7)
+    >>> paths = list(nx.shortest_simple_paths(G, 0, 3))
+    >>> print(paths)
+    [[0, 1, 2, 3], [0, 6, 5, 4, 3]]
+
+    You can use this function to efficiently compute the k shortest/best
+    paths between two nodes.
+
+    >>> from itertools import islice
+    >>> def k_shortest_paths(G, source, target, k, weight=None):
+    ...     return list(islice(nx.shortest_simple_paths(G, source, target, weight=weight), k))
+    >>> for path in k_shortest_paths(G, 0, 3, 2):
+    ...     print(path)
+    [0, 1, 2, 3]
+    [0, 6, 5, 4, 3]
+
     Notes
     -----
     This procedure is based on algorithm by Jin Y. Yen [1]_.  Finding
@@ -246,7 +265,8 @@ def shortest_simple_paths(G, source, target, weight=None):
             break
 
 
-class PathBuffer:
+class PathBuffer(object):
+
     def __init__(self):
         self.paths = set()
         self.sortedpaths = list()
@@ -433,6 +453,13 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
                             ignore_nodes=None, ignore_edges=None):
     """Dijkstra's algorithm for shortest paths using bidirectional search.
 
+    This function returns the shortest path between source and target
+    ignoring nodes and edges in the containers ignore_nodes and 
+    ignore_edges.
+
+    This is a custom modification of the standard Dijkstra bidirectional
+    shortest path implementation at networkx.algorithms.weighted
+
     Parameters
     ----------
     G : NetworkX graph
@@ -445,6 +472,12 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
 
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight
+
+    ignore_nodes : container of nodes
+       nodes to ignore, optional
+
+    ignore_edges : container of edges
+       edges to ignore, optional
 
     Returns
     -------
@@ -459,15 +492,6 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
     ------
     NetworkXNoPath
         If no path exists between source and target.
-
-    Examples
-    --------
-    >>> G=nx.path_graph(5)
-    >>> length,path=nx.bidirectional_dijkstra(G,0,4)
-    >>> print(length)
-    4
-    >>> print(path)
-    [0, 1, 2, 3, 4]
 
     Notes
     -----
