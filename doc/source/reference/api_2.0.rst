@@ -114,6 +114,11 @@ New functionalities
   Added the directed modularity matrix to the  
   ``networkx.linealg.modularity_matrix`` module.
 
+* [`#1447 <https://github.com/networkx/networkx/pull/1447>`_]
+  Added function to generate all simple paths starting with the shortest
+  ones based on Yen's algorithm for finding k shortest paths at
+  ``algorithms.simple_paths``
+
 Removed functionalities
 -----------------------
 
