@@ -18,6 +18,7 @@ __all__.extend([
     'OrderedMultiDiGraph',
 ])
 
+
 class OrderedGraph(Graph):
     node_dict_factory = OrderedDict
     adjlist_dict_factory = OrderedDict
