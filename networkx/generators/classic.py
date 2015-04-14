@@ -235,20 +235,26 @@ def circulant_graph(n, offsets, create_using=None):
 
     >>> import networkx
     >>> G = networkx.generators.classic.circulant_graph(10, [1])
-    >>> G.edges()
-    [(0, 9), (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8),
-     (8, 9)]
+    >>> edges = [
+    ...     (0, 9), (0, 1), (1, 2), (2, 3), (3, 4),
+    ...     (4, 5), (5, 6), (6, 7), (7, 8), (8, 9)]
+    ...
+    >>> sorted(edges) == sorted(G.edges())
 
     Similarly, we can generate the complete graph on 5 points with the set of
     offsets [1, 2]:
 
     >>> G = networkx.generators.classic.circulant_graph(5, [1, 2])
-    >>> G.edges()
-    [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+    >>> edges = [
+    ...     (0, 1), (0, 2), (0, 3), (0, 4), (1, 2),
+    ...     (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+    ...
+    >>> sorted(edges) == sorted(G.edges())
 
     """
     G = empty_graph(n, create_using)
-    G.name = 'circulant_graph(%d, [%s])' % (n, ', '.join(str(j) for j in offsets))
+    template = 'circulant_graph(%d, [%s])'
+    G.name = template % (n, ', '.join(str(j) for j in offsets))
     for i in range(n):
         for j in offsets:
             G.add_edge(i, (i - j) % n)
