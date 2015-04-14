@@ -209,12 +209,43 @@ def circular_ladder_graph(n,create_using=None):
     return G
 
 
-def circulant_graph(n,offsets,create_using=None):
-    """Return the circulant graph Ci_n(x_1, x_2, ..., x_m) with n vertices.
+def circulant_graph(n, offsets, create_using=None):
+    """Generates the circulant graph Ci_n(x_1, x_2, ..., x_m) with n vertices.
 
-    Ci_n(x_1, ..., x_m) consists of n vertices 0, ..., n-1 such that the vertex
-    with label i is connected to the vertices labelled (i + x) and (i - x),
-    for all x in x_1 up to x_m, taken modulo n.
+    Returns
+    -------
+    The graph Ci_n(x_1, ..., x_m) consisting of n vertices 0, ..., n-1 such
+    that the vertex with label i is connected to the vertices labelled (i + x)
+    and (i - x), for all x in x_1 up to x_m, with the indices taken modulo n.
+
+    Parameters
+    ----------
+    n : integer
+        The number of vertices the generated graph is to contain.
+    offsets : list of integers
+        A list of vertex offsets, x_1 up to x_m, as described above.
+    create_using : NetworkX graph type, optional
+        Use specified type to construct graph (default = networkx.Graph)
+
+    Examples
+    --------
+    Many well-known graph families are subfamilies of the circulant graphs; for
+    example, to generate the cycle graph on n points, we connect every vertex to
+    every other at offset plus or minus one. For n = 10,
+
+    >>> import networkx
+    >>> G = networkx.generators.classic.circulant_graph(10, [1])
+    >>> G.edges()
+    [(0, 9), (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8),
+     (8, 9)]
+
+    Similarly, we can generate the complete graph on 5 points with the set of
+    offsets [1, 2]:
+
+    >>> G = networkx.generators.classic.circulant_graph(5, [1, 2])
+    >>> G.edges()
+    [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+
     """
     G = empty_graph(n, create_using)
     G.name = 'circulant_graph(%d, [%s])' % (n, ', '.join(str(j) for j in offsets))
