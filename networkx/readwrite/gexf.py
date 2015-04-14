@@ -175,7 +175,7 @@ class GEXF(object):
        }
     versions['1.1draft']=d
     d={'NS_GEXF':"http://www.gexf.net/1.2draft",
-       'NS_VIZ':"http://www.gexf.net/1.2draft/viz",
+       'NS_VIZ':"http://www.gexf.net/1.2draft/viz.xsd",
        'NS_XSI':"http://www.w3.org/2001/XMLSchema-instance",
        'SCHEMALOCATION':' '.join(['http://www.gexf.net/1.2draft',
                                 'http://www.gexf.net/1.2draft/gexf.xsd'
@@ -247,7 +247,7 @@ class GEXFWriter(GEXF):
     def __init__(self, graph=None, encoding="utf-8", prettyprint=True,
                  version='1.1draft'):
         try:
-            import xml.etree.ElementTree
+            import xml.etree.ElementTree as ET
         except ImportError:
              raise ImportError('GEXF writer requires '
                                'xml.elementtree.ElementTree')
@@ -257,9 +257,11 @@ class GEXFWriter(GEXF):
         self.xml = Element("gexf",
                            {'xmlns':self.NS_GEXF,
                             'xmlns:xsi':self.NS_XSI,
-                            'xmlns:viz':self.NS_VIZ,
+                            #'xmlns:viz':self.NS_VIZ,
                             'xsi:schemaLocation':self.SCHEMALOCATION,
                             'version':self.VERSION})
+
+        ET.register_namespace('viz', "http://www.gexf.net/1.2draft/viz.xsd")
 
         # counters for edge and attribute identifiers
         self.edge_id=itertools.count()
