@@ -261,7 +261,7 @@ class GEXFWriter(GEXF):
                             'xsi:schemaLocation':self.SCHEMALOCATION,
                             'version':self.VERSION})
 
-        ET.register_namespace('viz', "http://www.gexf.net/1.2draft/viz.xsd")
+        ET.register_namespace('viz', self.NS_VIZ)
 
         # counters for edge and attribute identifiers
         self.edge_id=itertools.count()
