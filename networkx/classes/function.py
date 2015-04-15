@@ -544,16 +544,20 @@ def common_neighbors(G, u, v):
     return (w for w in G[u] if w in G[v] and w not in (u, v))
 
 
-def weighted_edges(G, edge=None):
+def weighted_edges(G, edge=None, weight='weight'):
     """Check if all graph's edges or a specific edge is weighted.
 
     Parameters
     ----------
     G : Networkx graph
        A graph
+
     edge : tuple, optional (default=None)
         Checks for a specific edge if it is weighted(not None) or for all
         edges in graph(None)
+
+    weight: string, optional (default=None)
+       Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -568,6 +572,7 @@ def weighted_edges(G, edge=None):
     Examples
     --------
     >>> G = nx.path_graph(4)
+
     >>> print(nx.weighted_edges(G))
     False
     >>> print(nx.weighted_edges(G, (2, 3)))
@@ -583,11 +588,11 @@ def weighted_edges(G, edge=None):
         attr = G.get_edge_data(*edge)
         if attr is None:
             raise nx.NetworkXError('Edge does not exist in given graph.')
-        return 'weight' in attr
+        return weight in attr
     else:
         weighted = True
         for u, v, w in G.edges(data=True):
-            if 'weight' not in w:
+            if weight not in w:
                 return False
         return weighted
 
