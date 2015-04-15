@@ -590,3 +590,58 @@ def weighted_edges(G, edge=None):
             if 'weight' not in w:
                 return False
         return weighted
+
+
+def negative_weights(G, edge=None):
+    """Check if the graph has a negatively weighted edge or if a specific edge of the
+    graph has negative weight.
+
+    Parameters
+    ----------
+    G : Networkx graph
+        A graph
+    edge : tuple, optional (default=None)
+        Checks for a specific edge if it is negatively weighted (not None) or for all
+        edges in graph (None) (if one of them is negatively weighted)
+
+    Returns
+    -------
+    Returns True if all graph's edges or a specific edge has negative weight; False
+    otherwise.
+
+    Raises
+    ------
+    NetworkXError
+        If given edge does not exist in graph.
+
+    Examples
+    --------
+    >>> G=nx.Graph()
+    >>> G.add_edges_from([(1, 3), (2, 4), (2, 6)])
+    >>> G.add_edge(1, 2, weight=4)
+    >>> print(nx.negative_weights(G, (1, 2)))
+    False
+    >>> G[2][4]['weight'] = -2
+    >>> print(nx.negative_weights(G))
+    True
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -2)])
+    >>> print(nx.negative_weights(G))
+    True
+    """
+    negative = False
+    if edge is not None:
+        attr = G.get_edge_data(*edge)
+        if attr is None:
+            raise nx.NetworkXError('Edge does not exist in given graph.')
+        else:
+            if weighted_edges(G, edge):
+                if attr['weight'] < 0:
+                    negative = True
+    else:
+        for u, v, w in G.edges(data=True):
+            if weighted_edges(G, (u, v)):
+                if w['weight'] < 0:
+                    negative = True
+    return negative
+

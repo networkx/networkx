@@ -233,6 +233,27 @@ class TestFunction(object):
         assert_true(nx.weighted_edges(G, ('1', '0')))
         assert_raises(nx.NetworkXError, nx.weighted_edges, G, (1, 2))
 
+    def test_negative_weights(self):
+        G=nx.Graph()
+        G.add_node(1)
+        G.add_nodes_from([2, 3, 4, 5])
+        assert_false(nx.negative_weights(G))
+        G.add_edge(1, 2, weight=4)
+        assert_false(nx.negative_weights(G, (1, 2)))
+        G.add_edges_from([(1, 3), (2, 4), (2, 6)])
+        G[1][3]['color'] = 'blue'
+        assert_false(nx.negative_weights(G))
+        assert_false(nx.negative_weights(G, (1, 3)))
+        G[2][4]['weight'] = -2
+        assert_true(nx.negative_weights(G, (2, 4)))
+        assert_true(nx.negative_weights(G))
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -2),
+                                   ('0', '2', 2), ('1', '2', -3), ('2', '3', 1)])
+        assert_true(nx.negative_weights(G))
+        assert_false(nx.negative_weights(G, ('0', '3')))
+        assert_true(nx.negative_weights(G, ('1', '0')))
+        assert_raises(nx.NetworkXError, nx.negative_weights, G, (1, 4))
 
 class TestCommonNeighbors():
     def setUp(self):
