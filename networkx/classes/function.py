@@ -20,7 +20,7 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'set_node_attributes','get_node_attributes',
            'set_edge_attributes','get_edge_attributes',
            'all_neighbors','non_neighbors', 'non_edges',
-           'common_neighbors','weighted_edges']
+           'common_neighbors','weighted_edges','negative_weights']
 
 
 def nodes(G):
