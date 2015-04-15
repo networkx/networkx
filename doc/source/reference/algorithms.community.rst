@@ -5,6 +5,14 @@ Communities
 .. automodule:: networkx.algorithms.community
 .. currentmodule:: networkx
 
+Community Detection
+-------------------
+.. automodule:: networkx.algorithms.community.centrality
+.. autosummary::
+   :toctree: generated/
+
+   girvan_newman
+
 K-Clique
 --------
 .. automodule:: networkx.algorithms.community.kclique
