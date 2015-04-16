@@ -106,6 +106,7 @@ is partially historical, and now, mostly arbitrary.
 - Vincent Gauthier
 - Sérgio Nery Simões
 - chebee7i, GitHub: `chebee7i <https://github.com/chebee7i>`_
+- Jean-Gabriel Young, Github: 'jg-you <https://github.com/jgyou>'_
 
 
 Support

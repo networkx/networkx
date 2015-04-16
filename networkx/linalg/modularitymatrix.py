@@ -9,12 +9,10 @@
 from __future__ import division
 import networkx as nx
 from networkx.utils import not_implemented_for
-
 __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Pieter Swart (swart@lanl.gov)',
                         'Dan Schult (dschult@colgate.edu)',
                         'Jean-Gabriel Young (Jean.gabriel.young@gmail.com)'])
-
 __all__ = ['modularity_matrix', 'directed_modularity_matrix']
 
 
@@ -52,12 +50,6 @@ def modularity_matrix(G, nodelist=None):
     >>> k =[3, 2, 2, 1, 0]
     >>> G = nx.havel_hakimi_graph(k)
     >>> B = nx.modularity_matrix(G)
-    >>> print B
-    [[-1.125  0.25   0.25   0.625  0.   ]
-     [ 0.25  -0.5    0.5   -0.25   0.   ]
-     [ 0.25   0.5   -0.5   -0.25   0.   ]
-     [ 0.625 -0.25  -0.25  -0.125  0.   ]
-     [ 0.     0.     0.     0.     0.   ]]
 
 
     See Also
@@ -117,13 +109,6 @@ def directed_modularity_matrix(G, nodelist=None):
     >>> G.add_edges_from(((1,2), (1,3), (3,1), (3,2), (3,5), (4,5), (4,6),
     ...                   (5,4), (5,6), (6,4)))
     >>> B = nx.directed_modularity_matrix(G)
-    >>> print B
-    [[-0.2  0.6  0.8 -0.4 -0.4 -0.4]
-     [ 0.   0.   0.   0.   0.   0. ]
-     [ 0.7  0.4 -0.3 -0.6  0.4 -0.6]
-     [-0.2 -0.4 -0.2 -0.4  0.6  0.6]
-     [-0.2 -0.4 -0.2  0.6 -0.4  0.6]
-     [-0.1 -0.2 -0.1  0.8 -0.2 -0.2]]
 
 
     Notes
