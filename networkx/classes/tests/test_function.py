@@ -234,7 +234,7 @@ class TestFunction(object):
         assert_raises(nx.NetworkXError, nx.weighted_edges, G, (1, 2))
 
     def test_negative_weights(self):
-        G=nx.Graph()
+        G = nx.Graph()
         G.add_node(1)
         G.add_nodes_from([2, 3, 4, 5])
         assert_false(nx.negative_weights(G))

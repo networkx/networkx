@@ -653,4 +653,3 @@ def negative_weights(G, edge=None, weight='weight'):
                 if w[weight] < 0:
                     negative = True
     return negative
-
