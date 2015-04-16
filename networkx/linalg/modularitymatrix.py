@@ -112,7 +112,7 @@ def directed_modularity_matrix(G, nodelist=None):
 
 
     Notes
-    _____
+    -----
     NetworkX defines the element A_ij of the adjacency matrix as 1 if there
     is a link going from node i to node j. Leicht and Newman use the opposite
     definition. This explains the different expression for B_ij.
@@ -146,5 +146,6 @@ def setup_module(module):
     from nose import SkipTest
     try:
         import numpy
+        import scipy
     except:
         raise SkipTest("NumPy not available")
