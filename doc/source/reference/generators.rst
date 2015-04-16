@@ -206,3 +206,12 @@ Social Networks
    davis_southern_women_graph
    florentine_families_graph
 
+
+Non Isomorphic Trees
+--------------------
+.. automodule:: networkx.generators.nonisomorphic_trees
+.. autosummary::
+   :toctree: generated/
+
+   nonisomorphic_trees
+   number_of_nonisomorphic_trees

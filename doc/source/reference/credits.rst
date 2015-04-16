@@ -107,6 +107,7 @@ is partially historical, and now, mostly arbitrary.
 - Sérgio Nery Simões
 - chebee7i, GitHub: `chebee7i <https://github.com/chebee7i>`_
 - Jeffrey Finkelstein
+- Mridul Seth, GitHub: `MridulS <https://github.com/MridulS>`_
 
 
 Support

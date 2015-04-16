@@ -105,6 +105,9 @@ New functionalities
   Added a generator function for circulant graphs to the
   ``networkx.generators.classic`` module.
 
+* [`#1427 <https://github.com/networkx/networkx/pull/1427>`_]
+  Added non isomorphic trees generator
+
 Removed functionalities
 -----------------------
 
