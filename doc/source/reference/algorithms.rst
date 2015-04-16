@@ -38,6 +38,7 @@ Algorithms
    algorithms.link_analysis
    algorithms.link_prediction
    algorithms.matching
+   algorithms.minors
    algorithms.mis
    algorithms.mst
    algorithms.operators
