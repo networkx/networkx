@@ -610,7 +610,7 @@ def negative_weights(G, edge=None, weight='weight'):
         Checks for a specific edge if it is negatively weighted (not None) or for all
         edges in graph (None) (if one of them is negatively weighted)
 
-    weight: string, optional (default=None)
+    weight: string, optional (default='weight')
         Edge data key corresponding to the edge weight.
 
     Returns
