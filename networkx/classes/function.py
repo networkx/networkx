@@ -556,7 +556,7 @@ def weighted_edges(G, edge=None, weight='weight'):
         Checks for a specific edge if it is weighted(not None) or for all
         edges in graph(None)
 
-    weight: string, optional (default=None)
+    weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight.
 
     Returns

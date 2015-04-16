@@ -143,6 +143,22 @@ class TestGeneratorClassic():
         mG=circular_ladder_graph(5, create_using=MultiGraph())
         assert_equal(mG.edges(), G.edges())
 
+    def test_circulant_graph(self):
+        # Ci_n(1) is the cycle graph for all n
+        Ci6_1 = circulant_graph(6, [1])
+        C6 = cycle_graph(6)
+        assert_equal(Ci6_1.edges(), C6.edges())
+
+        # Ci_n(1, 2, ..., n div 2) is the complete graph for all n
+        Ci7 = circulant_graph(7, [1, 2, 3])
+        K7 = complete_graph(7)
+        assert_equal(Ci7.edges(), K7.edges())
+
+        # Ci_6(1, 3) is K_3,3 i.e. the utility graph
+        Ci6_1_3 = circulant_graph(6, [1, 3])
+        K3_3 = complete_bipartite_graph(3, 3)
+        assert_true(is_isomorphic(Ci6_1_3, K3_3))
+
     def test_cycle_graph(self):
         G=cycle_graph(4)
         assert_equal(sorted(G.edges()), [(0, 1), (0, 3), (1, 2), (2, 3)])

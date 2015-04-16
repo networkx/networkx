@@ -101,6 +101,10 @@ New functionalities
   Added transitive closure and antichains function for directed acyclic
   graphs in ``algorithms.dag``
 
+* [`#1436 <https://github.com/networkx/networkx/pull/1436>`_]
+  Added a generator function for circulant graphs to the
+  ``networkx.generators.classic`` module.
+
 Removed functionalities
 -----------------------
 
