@@ -24,6 +24,7 @@ __all__ = [ 'balanced_tree',
             'barbell_graph',
             'complete_graph',
             'circular_ladder_graph',
+            'circulant_graph',
             'cycle_graph',
             'dorogovtsev_goltsev_mendes_graph',
             'empty_graph',
@@ -205,6 +206,61 @@ def circular_ladder_graph(n,create_using=None):
     G.name="circular_ladder_graph(%d)"%n
     G.add_edge(0,n-1)
     G.add_edge(n,2*n-1)
+    return G
+
+
+def circulant_graph(n, offsets, create_using=None):
+    """Generates the circulant graph Ci_n(x_1, x_2, ..., x_m) with n vertices.
+
+    Returns
+    -------
+    The graph Ci_n(x_1, ..., x_m) consisting of n vertices 0, ..., n-1 such
+    that the vertex with label i is connected to the vertices labelled (i + x)
+    and (i - x), for all x in x_1 up to x_m, with the indices taken modulo n.
+
+    Parameters
+    ----------
+    n : integer
+        The number of vertices the generated graph is to contain.
+    offsets : list of integers
+        A list of vertex offsets, x_1 up to x_m, as described above.
+    create_using : NetworkX graph type, optional
+        Use specified type to construct graph (default = networkx.Graph)
+
+    Examples
+    --------
+    Many well-known graph families are subfamilies of the circulant graphs; for
+    example, to generate the cycle graph on n points, we connect every vertex to
+    every other at offset plus or minus one. For n = 10,
+
+    >>> import networkx
+    >>> G = networkx.generators.classic.circulant_graph(10, [1])
+    >>> edges = [
+    ...     (0, 9), (0, 1), (1, 2), (2, 3), (3, 4),
+    ...     (4, 5), (5, 6), (6, 7), (7, 8), (8, 9)]
+    ...
+    >>> sorted(edges) == sorted(G.edges())
+    True
+
+    Similarly, we can generate the complete graph on 5 points with the set of
+    offsets [1, 2]:
+
+    >>> G = networkx.generators.classic.circulant_graph(5, [1, 2])
+    >>> edges = [
+    ...     (0, 1), (0, 2), (0, 3), (0, 4), (1, 2),
+    ...     (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+    ...
+    >>> sorted(edges) == sorted(G.edges())
+    True
+
+    """
+    G = empty_graph(n, create_using)
+    template = 'circulant_graph(%d, [%s])'
+    G.name = template % (n, ', '.join(str(j) for j in offsets))
+    for i in range(n):
+        for j in offsets:
+            G.add_edge(i, (i - j) % n)
+            G.add_edge(i, (i + j) % n)
     return G
 
 def cycle_graph(n,create_using=None):
