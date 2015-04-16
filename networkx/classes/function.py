@@ -650,5 +650,5 @@ def negative_weights(G, edge=None, weight='weight'):
         for u, v, w in G.edges(data=True):
             if weight in w:
                 if w[weight] < 0:
-                    negative = True
+                    return True
     return negative
