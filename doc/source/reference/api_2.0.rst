@@ -106,13 +106,13 @@ New functionalities
   ``networkx.generators.classic`` module.
 
 * [`#1445 <https://github.com/networkx/networkx/pull/1448>`_]
-  Added a new modularity matrix module to ``networkx.linealg``,
-  and associated spectrum functions to the ``networkx.linealg.spectrum``
+  Added a new modularity matrix module to ``networkx.linalg``,
+  and associated spectrum functions to the ``networkx.linalg.spectrum``
   module.
 
 * [`#1455 <https://github.com/networkx/networkx/pull/1455>`_]
   Added the directed modularity matrix to the  
-  ``networkx.linealg.modularity_matrix`` module.
+  ``networkx.linalg.modularity_matrix`` module.
 
 Removed functionalities
 -----------------------
