@@ -105,6 +105,10 @@ New functionalities
   Added a generator function for circulant graphs to the
   ``networkx.generators.classic`` module.
 
+* [`#1437 <https://github.com/networkx/networkx/pull/1437>`_]
+  Added function for computing quotient graphs; also created a new module,
+  ``networkx.algorithms.minors``.
+
 * [`#1445 <https://github.com/networkx/networkx/pull/1448>`_]
   Added a new modularity matrix module to ``networkx.linalg``,
   and associated spectrum functions to the ``networkx.linalg.spectrum``
