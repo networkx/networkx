@@ -16,6 +16,28 @@ True
 #    BSD license.
 import sys
 import uuid
+# itertools.accumulate is only available on Python 3.2 or later.
+#
+# Once support for Python versions less than 3.2 is dropped, this code should
+# be removed.
+try:
+    from itertools import accumulate
+except ImportError:
+    import operator
+
+    # The code for this function is from the Python 3.5 documentation,
+    # distributed under the PSF license:
+    # <https://docs.python.org/3.5/library/itertools.html#itertools.accumulate>
+    def accumulate(iterable, func=operator.add):
+        it = iter(iterable)
+        try:
+            total = next(it)
+        except StopIteration:
+            return
+        yield total
+        for element in it:
+            total = func(total, element)
+            yield total
 
 import networkx as nx
 
@@ -84,17 +106,6 @@ else:
         """Return the string representation of t."""
         return str(x)
 
-def cumulative_sum(numbers):
-    """Yield cumulative sum of numbers.
-
-    >>> import networkx.utils as utils
-    >>> list(utils.cumulative_sum([1,2,3,4]))
-    [1, 3, 6, 10]
-    """
-    csum = 0
-    for n in numbers:
-        csum += n
-        yield csum
 
 def generate_unique_node():
     """ Generate a unique node label."""

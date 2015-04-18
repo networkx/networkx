@@ -342,7 +342,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
             if d <= p:
                 G.add_edge(p1,p2)
             probs.append(d**-r)
-        cdf = list(nx.utils.cumulative_sum(probs))
+        cdf = list(nx.utils.accumulate(probs))
         for _ in range(q):
             target = nodes[bisect_left(cdf,random.uniform(0, cdf[-1]))]
             G.add_edge(p1,target)
