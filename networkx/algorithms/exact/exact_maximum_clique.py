@@ -34,13 +34,13 @@ def maxclique_set(G):
 
     Returns
     -------
-    iset : Set
+    maxcset : Set
         The maximum clique
 
     Notes
     -----
     This function is an implementation of algorithm 7 in [1] which
-    finds some dominating set, not necessarily the smallest one.
+    finds a maximum clique for an undirected graph.
 
     References
     ----------
@@ -50,7 +50,8 @@ def maxclique_set(G):
     """
     if G is None:
         raise ValueError("Expected NetworkX graph!")
-    #order nodes by increasing edge density
+    #order nodes by increasing edge density. say v_1,v_2,...,v_n. generally v_k is a vertex 
+    #of smallest degree in G-{v_1,...,v_k-1}. 
     nodes=[]
     H=G.copy()
     while G.nodes()!=[]:
@@ -58,7 +59,7 @@ def maxclique_set(G):
         nodes.append(node)
         G.remove_node(node)
     G=H
-
+    
     maxcset=[]
     currD = 1
     start = [None]*(2*(len(nodes)+1))
@@ -71,6 +72,7 @@ def maxclique_set(G):
         start[currD]+=1
         if currD==1 and currD+last[currD]-start[currD]<=len(maxcset): 
                 break
+        #determine node for next depth
         if currD+last[currD]-start[currD]>len(maxcset):
             dtemp=currD
             currD+=1
@@ -79,10 +81,10 @@ def maxclique_set(G):
             for i in ADJ[dtemp]:
                 if (ADJ[dtemp][start[dtemp]-1],i) in G.edges() or (i,ADJ[dtemp][start[dtemp]-1]) in G.edges():
                     ADJ[currD]=ADJ[currD]+[i]
-                    print ADJ[currD]
                     last[currD]+=1
             
-                
+            # if the next depth does not contain any nodes, see if a new maxclique has been found and return to 
+            #previous depth.  
             if last[currD]==0:
                 ADJ[currD]=[]
                 currD=currD-1
@@ -91,27 +93,10 @@ def maxclique_set(G):
                     for i in range(1,currD+1):
                         tem.append(ADJ[i][start[i]-1])
                     maxcset=tem
-                    print "maxcset is", maxcset
         else:
+                #prune, further expansion would not find a better result.
                 ADJ[currD]=[]
-                currD=currD-1
-            
-
-           
-            
+                currD=currD-1 
+    # return the maximum clique found in graph           
     return maxcset
-
-
-def main():
-   G=nx.Graph()
-   # G.add_edges_from([(1,2),(1,4),(1,5),(2,3),(2,4),(2,6),(2,7),(3,4),(3,7),(3,8),(4,5),(4,6)
-   #  ,(4,7),(4,8),(5,6),(6,7),(6,8)])
-   
-   maxcset=maxclique_set(G)
-   print maxcset
-   A=[[]]*5
-   A[2].append(3)
-          
-if __name__ == '__main__':
-    main()
 
