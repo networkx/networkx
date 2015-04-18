@@ -49,7 +49,6 @@ import networkx.algorithms.traversal
 import networkx.algorithms.chordal
 import networkx.algorithms.operators
 import networkx.algorithms.tree
-import networkx.algorithms.exact
 
 # bipartite
 from networkx.algorithms.bipartite import (projected_graph, project, is_bipartite,
