@@ -34,7 +34,7 @@ def maxclique_set(G):
 
     Returns
     -------
-    maxcset : Set
+    maxcset : List
         The maximum clique
 
     Notes
@@ -61,42 +61,42 @@ def maxclique_set(G):
     G=H
     
     maxcset=[]
-    currD = 1
+    currd = 1
     start = [None]*(2*(len(nodes)+1))
     last  = [None]*(2*(len(nodes)+1))
-    ADJ=[[]]*(2*(len(nodes)+1))
-    ADJ[1]=nodes
+    adj=[[]]*(2*(len(nodes)+1))
+    adj[1]=nodes
     start[1]=0
     last[1]=len(nodes)
     while True:
-        start[currD]+=1
-        if currD==1 and currD+last[currD]-start[currD]<=len(maxcset): 
+        start[currd]+=1
+        if currd==1 and currd+last[currd]-start[currd]<=len(maxcset): 
                 break
         #determine node for next depth
-        if currD+last[currD]-start[currD]>len(maxcset):
-            dtemp=currD
-            currD+=1
-            start[currD]=0
-            last[currD]=0
-            for i in ADJ[dtemp]:
-                if (ADJ[dtemp][start[dtemp]-1],i) in G.edges() or (i,ADJ[dtemp][start[dtemp]-1]) in G.edges():
-                    ADJ[currD]=ADJ[currD]+[i]
-                    last[currD]+=1
+        if currd+last[currd]-start[currd]>len(maxcset):
+            dtemp=currd
+            currd+=1
+            start[currd]=0
+            last[currd]=0
+            for i in adj[dtemp]:
+                if (adj[dtemp][start[dtemp]-1],i) in G.edges() or (i,adj[dtemp][start[dtemp]-1]) in G.edges():
+                    adj[currd]=adj[currd]+[i]
+                    last[currd]+=1
             
             # if the next depth does not contain any nodes, see if a new maxclique has been found and return to 
             #previous depth.  
-            if last[currD]==0:
-                ADJ[currD]=[]
-                currD=currD-1
-                if currD>len(maxcset):
+            if last[currd]==0:
+                adj[currd]=[]
+                currd=currd-1
+                if currd>len(maxcset):
                     tem=[]
-                    for i in range(1,currD+1):
-                        tem.append(ADJ[i][start[i]-1])
+                    for i in range(1,currd+1):
+                        tem.append(adj[i][start[i]-1])
                     maxcset=tem
         else:
                 #prune, further expansion would not find a better result.
-                ADJ[currD]=[]
-                currD=currD-1 
+                adj[currd]=[]
+                currd=currd-1 
     # return the maximum clique found in graph           
     return maxcset
 

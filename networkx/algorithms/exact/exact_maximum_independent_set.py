@@ -36,7 +36,7 @@ def maximum_independent_set(G):
 
     Returns
     -------
-    iset : Set
+    iset : List
         The maximum independent set
 
     Notes
@@ -52,4 +52,6 @@ def maximum_independent_set(G):
     cgraph = nx.complement(G)
     iset=exact_maximum_clique.maxclique_set(cgraph)
     return iset
+
+
 

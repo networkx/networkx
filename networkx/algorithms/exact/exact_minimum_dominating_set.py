@@ -29,8 +29,8 @@ def minimum_dominating_set(G):
 
     Returns
     -------
-    minimum_dominating_set: Set
-        The minimum dominating set for 
+    dset: List
+        The minimum dominating set for graph G
 
     Notes
     -----
@@ -43,17 +43,16 @@ def minimum_dominating_set(G):
            "Exact (exponential) algorithms for the dominating set problem." 
            Graph-Theoretic Concepts in Computer Science. Springer Berlin Heidelberg, 2005.
     """
-	X=G.nodes()
-	D=[]
-	minimum_dominating(G,X,D)
-	print D
-	return D
+	x=G.nodes()
+	dset=[]
+	minimum_dominating(G,x,dset)
+	return dset
 
 
-def minimum_dominating(G,X,D):
+def minimum_dominating(G,x,dset):
     smalldegree=[]
     if len(G.nodes())==0:
-    	return D
+    	return dset
     for i in G.nodes():
     	if G.degree(i)<3:
     		smalldegree.append(i)
@@ -69,82 +68,80 @@ def minimum_dominating(G,X,D):
     				neighbors=neighbors|set(G.neighbors(item))
     			if list(neighbors)==G.nodes():
     				for i in subset:
-    					D.append(i)
-    				print 'D is',D
+    					dset.append(i)
     				break
     		break       
-    	return D
+    	return dset
     #branch into subcases and to remove all vertices of degree one and two.
     else:
         #getting a sorted list of nodes by degree, and pick up a vertex with smallest degree.
     	sorted_x = sorted(G.degree().items(), key=operator.itemgetter(1))
     	v=list(sorted_x[0])[0]
-    	print v
         #case 1
-    	if G.degree(v)==1 and v in set(G.nodes()).difference(set(X)):
+    	if G.degree(v)==1 and v in set(G.nodes()).difference(set(x)):
     		G.remove_node(v)
-    		if v in X:
-    		     X=X.remove(v)
-    		minimum_dominating(G,X,D)
+    		if v in x:
+    		     x=x.remove(v)
+    		minimum_dominating(G,x,dset)
         #case2
-    	elif G.degree(v)==1  and v in X:
+    	elif G.degree(v)==1  and v in x:
     		w=G.neighbors(v)[0]
-    		D.append(w)
-    		Nw=G.neighbors(w)
-    		Nw.append(w)
+    		dset.append(w)
+    		nw=G.neighbors(w)
+    		nw.append(w)
     		G.remove_nodes_from([v,w])   		
-    		X=list(set(X).difference(set(Nw)))
-    		minimum_dominating(G,X,D)
+    		x=list(set(x).difference(set(nw)))
+    		minimum_dominating(G,x,dset)
         #case 3
-    	elif G.degree(v)==2 and v in set(G.nodes()).difference(set(X)):
+    	elif G.degree(v)==2 and v in set(G.nodes()).difference(set(x)):
     		u1=G.neighbors(v)[0]
     		u2=G.neighbors(v)[1]
             #case 3.1
-    		if u1 in D and v not in D:
-    			D.append(u1)
-    			Nu1=G.neighbors(u1)
-    			Nu1.append(u1)
+    		if u1 in dset and v not in dset:
+    			dset.append(u1)
+    			nu1=G.neighbors(u1)
+    			nu1.append(u1)
     			G.remove_nodes_from([v,u1])
-    			X=list(set(X).difference(set(Nu1)))
-    			minimum_dominating(G,X,D)
+    			x=list(set(x).difference(set(nu1)))
+    			minimum_dominating(G,x,dset)
             #case 3.2
-    		elif v in D and u1 not in D and u2 not in D:
-    			D.append(v)
+    		elif v in dset and u1 not in dset and u2 not in dset:
+    			dset.append(v)
     			G.remove_nodes_from([v,u1,u2])
-    			X=list(set(X).difference(set([u1,u2])))
-    			minimum_dominating(G,X,D)
+    			x=list(set(x).difference(set([u1,u2])))
+    			minimum_dominating(G,x,dset)
             #case 3.3
-    		elif u1 not in D and v not in D:
+    		elif u1 not in dset and v not in dset:
     			G.remove_node(v)
-    			minimum_dominating(G,X,D)
+    			minimum_dominating(G,x,dset)
         #case 4
-    	elif G.degree(v)==2 and v in X:
+    	elif G.degree(v)==2 and v in x:
     		u1=G.neighbors(v)[0]
     		u2=G.neighbors(v)[1]
             #case 4.1
-    		if u1 in D and v not in D:
-    			D.append(u1)
-    			Nu1=G.neighbors(u1)
-    			Nu1.append(u1)
+    		if u1 in dset and v not in dset:
+    			dset.append(u1)
+    			nu1=G.neighbors(u1)
+    			nu1.append(u1)
     			G.remove_nodes_from([v,u1])    			
-    			X=list(set(X).difference(set(Nu1)))
-    			minimum_dominating(G,X,D)
+    			x=list(set(x).difference(set(nu1)))
+    			minimum_dominating(G,x,dset)
             #case 4.2
-    		elif v in D and u1 not in D and u2 not in D:
-    			D.append(v)
+    		elif v in dset and u1 not in dset and u2 not in dset:
+    			dset.append(v)
     			G.remove_nodes_from([v,u1,u2])
-    			X=list(set(X).difference(set([u1,u2,v])))
-    			minimum_dominating(G,X,D)
+    			x=list(set(x).difference(set([u1,u2,v])))
+    			minimum_dominating(G,x,dset)
             #case 4.3
-    		elif u1 not in D and v not in D:
-    			D.append(u2)
-    			Nu2=G.neighbors(u2)
-    			Nu2.append(u2)
-    			print 3
+    		elif u1 not in dset and v not in dset:
+    			dset.append(u2)
+    			nu2=G.neighbors(u2)
+    			nu2.append(u2)
     			G.remove_nodes_from([v,u2])
-    			X=list(set(X).difference(set(Nu2)))
-    			minimum_dominating(G,X,D)
-    		return D
+    			x=list(set(x).difference(set(nu2)))
+    			minimum_dominating(G,x,dset)
+    		return dset
+
     		
 
 

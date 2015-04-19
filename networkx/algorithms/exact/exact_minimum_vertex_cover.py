@@ -28,7 +28,7 @@ def min_vertex_cover(G):
 
     Returns
     -------
-    iset : Set
+    vset : List
         The minimum vertex cover
 
     Notes
@@ -43,3 +43,4 @@ def min_vertex_cover(G):
     """
     iset=exact_maximum_independent_set.maximum_independent_set(G)
     return list(set(G.nodes()).difference(set(iset)))
+
