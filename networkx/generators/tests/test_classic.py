@@ -6,9 +6,15 @@ Generators - Classic
 
 Unit tests for various classic graph generators in generators/classic.py
 """
+import itertools
+
 from nose.tools import *
+import networkx as nx
 from networkx import *
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
+from networkx.testing import assert_edges_equal
+from networkx.testing import assert_nodes_equal
+
 is_isomorphic=graph_could_be_isomorphic
 
 class TestGeneratorClassic():
@@ -390,3 +396,41 @@ class TestGeneratorClassic():
         mg=wheel_graph(10, create_using=MultiGraph())
         assert_equal(mg.edges(), g.edges())
 
+    def test_complete_0_partite_graph(self):
+        """Tests that the complete 0-partite graph is the null graph."""
+        G = nx.complete_multipartite_graph()
+        H = nx.null_graph()
+        assert_nodes_equal(G, H)
+        assert_edges_equal(G.edges(), H.edges())
+
+    def test_complete_1_partite_graph(self):
+        """Tests that the complete 1-partite graph is the empty graph."""
+        G = nx.complete_multipartite_graph(3)
+        H = nx.empty_graph(3)
+        assert_nodes_equal(G, H)
+        assert_edges_equal(G.edges(), H.edges())
+
+    def test_complete_2_partite_graph(self):
+        """Tests that the complete 2-partite graph is the complete bipartite
+        graph.
+
+        """
+        G = nx.complete_multipartite_graph(2, 3)
+        H = nx.complete_bipartite_graph(2, 3)
+        assert_nodes_equal(G, H)
+        assert_edges_equal(G.edges(), H.edges())
+
+    def test_complete_multipartite_graph(self):
+        """Tests for generating the complete multipartite graph."""
+        G = nx.complete_multipartite_graph(2, 3, 4)
+        blocks = [(0, 1), (2, 3, 4), (5, 6, 7, 8)]
+        # Within each block, no two vertices should be adjacent.
+        for block in blocks:
+            for u, v in itertools.combinations_with_replacement(block, 2):
+                assert_true(v not in G[u])
+                assert_equal(G.node[u], G.node[v])
+        # Across blocks, all vertices should be adjacent.
+        for (block1, block2) in itertools.combinations(blocks, 2):
+            for u, v in itertools.product(block1, block2):
+                assert_true(v in G[u])
+                assert_not_equal(G.node[u], G.node[v])

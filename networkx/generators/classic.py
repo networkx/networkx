@@ -17,12 +17,16 @@ in this module return a Graph class (i.e. a simple, undirected graph).
 #    All rights reserved.
 #    BSD license.
 import itertools
+
 from networkx.algorithms.bipartite.generators import complete_bipartite_graph
+from networkx.utils import accumulate
+
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
 
 __all__ = [ 'balanced_tree',
             'barbell_graph',
             'complete_graph',
+            'complete_multipartite_graph',
             'circular_ladder_graph',
             'circulant_graph',
             'cycle_graph',
@@ -546,3 +550,75 @@ def wheel_graph(n,create_using=None):
         G.add_edge(1,n-1)
     return G
 
+
+def complete_multipartite_graph(*block_sizes):
+    """Returns the complete multipartite graph with the specified block sizes.
+
+    Parameters
+    ----------
+
+    block_sizes : tuple of integers
+
+       The number of vertices in each block of the multipartite graph. The
+       length of this tuple is the number of blocks.
+
+    Returns
+    -------
+
+    G : NetworkX Graph
+
+       Returns the complete multipartite graph with the specified block sizes.
+
+       For each node, the node attribute ``'block'`` is an integer indicating
+       which block contains the node.
+
+    Examples
+    --------
+
+    Creating a complete tripartite graph, with blocks of one, two, and three
+    vertices, respectively.
+
+        >>> import networkx as nx
+        >>> G = nx.complete_multipartite_graph(1, 2, 3)
+        >>> [G.node[u]['block'] for u in G]
+        [0, 1, 1, 2, 2, 2]
+        >>> G.edges(0)
+        [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
+        >>> G.edges(2)
+        [(2, 0), (2, 3), (2, 4), (2, 5)]
+        >>> G.edges(4)
+        [(4, 0), (4, 1), (4, 2)]
+
+    Notes
+    -----
+
+    This function generalizes several other graph generator functions.
+
+    - If no block sizes are given, this returns the null graph.
+    - If a single block size ``n`` is given, this returns the empty graph on
+      ``n`` nodes.
+    - If two block sizes ``m`` and ``n`` are given, this returns the complete
+      bipartite graph on ``m + n`` nodes.
+    - If block sizes ``1`` and ``n`` are given, this returns the star graph on
+      ``n + 1`` nodes.
+
+    See also
+    --------
+
+    complete_bipartite_graph
+
+    """
+    G = nx.empty_graph(sum(block_sizes))
+    # If block_sizes is (n1, n2, n3, ...), create pairs of the form (0, n1),
+    # (n1, n1 + n2), (n1 + n2, n1 + n2 + n3), etc.
+    extents = zip([0] + list(accumulate(block_sizes)), accumulate(block_sizes))
+    blocks = [range(start, end) for start, end in extents]
+    for (i, block) in enumerate(blocks):
+        G.add_nodes_from(block, block=i)
+    # Across blocks, all vertices should be adjacent. We can use
+    # itertools.combinations() because the complete multipartite graph is an
+    # undirected graph.
+    for block1, block2 in itertools.combinations(blocks, 2):
+        G.add_edges_from(itertools.product(block1, block2))
+    G.name = 'complete_multiparite_graph{0}'.format(block_sizes)
+    return G
