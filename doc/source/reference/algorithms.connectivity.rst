@@ -5,6 +5,15 @@ Connectivity
 .. automodule:: networkx.algorithms.connectivity
 
 
+K-node-cutsets
+--------------
+.. automodule:: networkx.algorithms.connectivity.kcutsets
+.. autosummary::
+   :toctree: generated/
+
+   all_node_cuts
+
+
 Flow-based Connectivity
 -----------------------
 .. automodule:: networkx.algorithms.connectivity.connectivity

@@ -79,7 +79,7 @@ class TestSpectralBipartivity(object):
     def test_single_nodes(self):
 
         # single nodes
-        G=nx.complete_bipartite_graph(2,3)
+        G=nx.complete_bipartite_graph(2, 3)
         G.add_edge(2,4)
         sbn=sb(G,nodes=[1,2])
         assert_almost_equal(sbn[1],0.85,places=2)

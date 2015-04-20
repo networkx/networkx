@@ -10,9 +10,10 @@ Eigenvalue spectrum of graphs.
 import networkx as nx
 __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult(dschult@colgate.edu)'])
+                        'Dan Schult(dschult@colgate.edu)',
+                        'Jean-Gabriel Young <jean.gabriel.young@gmail.com>'])
 
-__all__ = ['laplacian_spectrum', 'adjacency_spectrum']
+__all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum']
 
 
 def laplacian_spectrum(G, weight='weight'):
@@ -72,6 +73,31 @@ def adjacency_spectrum(G, weight='weight'):
     """
     from scipy.linalg import eigvals
     return eigvals(nx.adjacency_matrix(G,weight=weight).todense())
+
+def modularity_spectrum(G):
+    """Return eigenvalues of the modularity matrix of G.
+
+    Parameters
+    ----------
+    G : graph
+       A NetworkX graph
+
+    Returns
+    -------
+    evals : NumPy array
+      Eigenvalues
+
+    See Also
+    --------
+    modularity_matrix
+
+    References
+    ----------
+    .. [1] M. E. J. Newman, "Modularity and community structure in networks",
+       Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
+    """
+    from scipy.linalg import eigvals
+    return eigvals(nx.modularity_matrix(G))
 
 # fixture for nose tests
 def setup_module(module):
