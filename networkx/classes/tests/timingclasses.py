@@ -6,7 +6,7 @@ current classes to see if adding features has slowed any methods.
 The classes are named TimingGraph, TimingDiGraph, 
 TimingMultiGraph and TimingMultiDiGraph
 """
-#    Copyright (C) 2004-2014 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

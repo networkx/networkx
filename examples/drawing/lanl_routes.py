@@ -6,7 +6,7 @@ This uses Graphviz for layout so you need PyGraphviz or Pydot.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2004-2008
+#    Copyright (C) 2004-2015
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

@@ -5,7 +5,7 @@
 Tests for maximal (not maximum) independent sets.
 
 """
-#    Copyright (C) 2004-2010 by 
+#    Copyright (C) 2004-2015 by 
 #    Leo Lopes <leo.lopes@monash.edu>
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
