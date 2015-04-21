@@ -498,12 +498,9 @@ def non_edges(graph):
             for v in non_neighbors(graph, u):
                 yield (u, v)
     else:
-        S = set()
-        for u in graph.nodes_iter():
-            for v in non_neighbors(graph, u):
-                if (u, v) not in S:
-                    yield (u, v)
-                    S.add((v, u))
+        for u, v in itertools.combinations(graph, 2):
+            if not graph.has_edge(u, v):
+                yield (u, v)
 
 
 @not_implemented_for('directed')
