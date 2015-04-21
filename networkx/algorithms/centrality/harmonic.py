@@ -15,7 +15,7 @@ __all__ = ['harmonic_centrality']
 def harmonic_centrality(G, distance=None):
     """Compute harmonic centrality for nodes.
 
-    Harmonic centrality [1] of a node `u` is the sum of the reciprocal
+    Harmonic centrality [1]_ of a node `u` is the sum of the reciprocal
     of the shortest path distances from all other nodes to `u`.
 
     .. math::
