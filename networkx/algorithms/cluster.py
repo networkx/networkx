@@ -7,7 +7,7 @@ __author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                             'Dan Schult (dschult@colgate.edu)',
                             'Pieter Swart (swart@lanl.gov)',
                             'Jordi Torrents <jtorrents@milnou.net>'])
-#    Copyright (C) 2004-2011 by 
+#    Copyright (C) 2004-2015 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

@@ -11,7 +11,7 @@ and regulated by Esri as a (mostly) open specification for data
 interoperability among Esri and other software products."
 See http://en.wikipedia.org/wiki/Shapefile for additional information.
 """
-#    Copyright (C) 2004-2010 by
+#    Copyright (C) 2004-2015 by
 #    Ben Reilly <benwreilly@gmail.com>
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>

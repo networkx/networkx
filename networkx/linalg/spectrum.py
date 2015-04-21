@@ -1,7 +1,7 @@
 """
 Eigenvalue spectrum of graphs.
 """
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -11,7 +11,7 @@ import networkx as nx
 __author__ = "\n".join(['Aric Hagberg <aric.hagberg@gmail.com>',
                         'Pieter Swart (swart@lanl.gov)',
                         'Dan Schult(dschult@colgate.edu)',
-                        'Jean-Gabriel Young <jean.gabriel.young@gmail.com>'])
+                        'Jean-Gabriel Young (jean.gabriel.young@gmail.com)'])
 
 __all__ = ['laplacian_spectrum', 'adjacency_spectrum', 'modularity_spectrum']
 
@@ -79,8 +79,8 @@ def modularity_spectrum(G):
 
     Parameters
     ----------
-    G : graph
-       A NetworkX graph
+    G : Graph
+       A NetworkX Graph or DiGraph
 
     Returns
     -------
@@ -97,7 +97,10 @@ def modularity_spectrum(G):
        Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
     from scipy.linalg import eigvals
-    return eigvals(nx.modularity_matrix(G))
+    if G.is_directed():
+        return eigvals(nx.directed_modularity_matrix(G))
+    else:
+        return eigvals(nx.modularity_matrix(G))
 
 # fixture for nose tests
 def setup_module(module):

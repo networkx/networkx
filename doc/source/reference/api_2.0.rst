@@ -101,9 +101,30 @@ New functionalities
   Added transitive closure and antichains function for directed acyclic
   graphs in ``algorithms.dag``
 
+* [`#1425 <https://github.com/networkx/networkx/pull/1425>`_]
+  Added generator function for the complete multipartite graph.
+
 * [`#1436 <https://github.com/networkx/networkx/pull/1436>`_]
   Added a generator function for circulant graphs to the
   ``networkx.generators.classic`` module.
+
+* [`#1437 <https://github.com/networkx/networkx/pull/1437>`_]
+  Added function for computing quotient graphs; also created a new module,
+  ``networkx.algorithms.minors``.
+
+* [`#1445 <https://github.com/networkx/networkx/pull/1448>`_]
+  Added a new modularity matrix module to ``networkx.linalg``,
+  and associated spectrum functions to the ``networkx.linalg.spectrum``
+  module.
+
+* [`#1455 <https://github.com/networkx/networkx/pull/1455>`_]
+  Added the directed modularity matrix to the  
+  ``networkx.linalg.modularity_matrix`` module.
+
+* [`#1447 <https://github.com/networkx/networkx/pull/1447>`_]
+  Added function to generate all simple paths starting with the shortest
+  ones based on Yen's algorithm for finding k shortest paths at
+  ``algorithms.simple_paths``
 
 Removed functionalities
 -----------------------
