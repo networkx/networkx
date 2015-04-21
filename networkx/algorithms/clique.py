@@ -11,7 +11,7 @@ could take a long time to run.
 
 http://en.wikipedia.org/wiki/Clique_problem
 """
-#    Copyright (C) 2004-2008 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

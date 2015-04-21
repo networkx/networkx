@@ -8,7 +8,7 @@ Base exceptions and errors for NetworkX.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult(dschult@colgate.edu)\nLoïc Séguin-C. <loicseguin@gmail.com>"""
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

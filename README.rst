@@ -31,7 +31,7 @@ A quick example that finds the shortest path between two nodes in an undirected 
 
 Distributed with a BSD license; see LICENSE.txt::
     
-   Copyright (C) 2004-2014 NetworkX Developers
+   Copyright (C) 2004-2015 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
