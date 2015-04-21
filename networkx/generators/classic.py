@@ -17,12 +17,12 @@ in this module return a Graph class (i.e. a simple, undirected graph).
 #    All rights reserved.
 #    BSD license.
 import itertools
+from networkx.algorithms.bipartite.generators import complete_bipartite_graph
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
 
 __all__ = [ 'balanced_tree',
             'barbell_graph',
             'complete_graph',
-            'complete_bipartite_graph',
             'circular_ladder_graph',
             'cycle_graph',
             'dorogovtsev_goltsev_mendes_graph',
@@ -191,25 +191,6 @@ def complete_graph(n,create_using=None):
         G.add_edges_from(edges)
     return G
 
-
-def complete_bipartite_graph(n1,n2,create_using=None):
-    """Return the complete bipartite graph K_{n1_n2}.
-
-    Composed of two partitions with n1 nodes in the first
-    and n2 nodes in the second. Each node in the first is
-    connected to each node in the second.
-
-    Node labels are the integers 0 to n1+n2-1
-
-    """
-    if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-    G=empty_graph(n1+n2,create_using)
-    G.name="complete_bipartite_graph(%d,%d)"%(n1,n2)
-    for v1 in range(n1):
-        for v2 in range(n2):
-            G.add_edge(v1,n1+v2)
-    return G
 
 def circular_ladder_graph(n,create_using=None):
     """Return the circular ladder graph CL_n of length n.
@@ -500,6 +481,8 @@ def wheel_graph(n,create_using=None):
    Node labels are the integers 0 to n - 1.
 
     """
+    if n == 0:
+        return nx.empty_graph(n, create_using=create_using)
     G=star_graph(n-1,create_using)
     G.name="wheel_graph(%d)"%n
     G.add_edges_from([(v,v+1) for v in range(1,n-1)])

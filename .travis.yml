@@ -22,6 +22,7 @@ matrix:
 
   allow_failures:
     - env: PYTHON_VM=ipy OPTIONAL_DEPS=no
+    - python: "pypy"
 
 
 env:
@@ -52,7 +53,7 @@ before_install:
       conda config --set always_yes yes --set changeps1 no;
       conda update -q conda;
     fi
- 
+
   - if [[ "${PYTHON_VM}" == ipy ]]; then
       pushd ..;
       curl -L -o xamarin.pgp http://download.mono-project.com/repo/xamarin.gpg;
@@ -148,12 +149,12 @@ after_success:
   # each file. So the paths in .coverage must be modified to match the
   # repository paths. This is what `fixcoverage.py` does.
   #
-  # Report coverage for 2.7 and 3.4 only.
+  # Report coverage for 2.7 and 3.4 miniconda runs only.
   - if [[ "${PYTHON_VM}" != ipy ]]; then
       cp .coverage $TRAVIS_BUILD_DIR;
       cd $TRAVIS_BUILD_DIR;
       if [[ "${TRAVIS_PYTHON_VERSION}${OPTIONAL_DEPS}" =~ 2\.7miniconda|3\.4miniconda ]]; then
-        python fixcoverage.py "$VIRTUAL_ENV/lib/python.*/site-packages/networkx/" "$TRAVIS_BUILD_DIR/networkx/";
+        python fixcoverage.py ".*/networkx/" "$TRAVIS_BUILD_DIR/networkx/";
         coveralls;
       fi;
     fi

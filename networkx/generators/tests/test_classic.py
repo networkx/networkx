@@ -136,38 +136,6 @@ class TestGeneratorClassic():
             assert_true(number_of_nodes(g) == m)
             assert_true(number_of_edges(g) == m * (m - 1))
 
-    def test_complete_bipartite_graph(self):
-        G=complete_bipartite_graph(0,0)
-        assert_true(is_isomorphic( G, null_graph() ))
-
-        for i in [1, 5]:
-            G=complete_bipartite_graph(i,0)
-            assert_true(is_isomorphic( G, empty_graph(i) ))
-            G=complete_bipartite_graph(0,i)
-            assert_true(is_isomorphic( G, empty_graph(i) ))
-
-        G=complete_bipartite_graph(2,2)
-        assert_true(is_isomorphic( G, cycle_graph(4) ))
-
-        G=complete_bipartite_graph(1,5)
-        assert_true(is_isomorphic( G, star_graph(5) ))
-
-        G=complete_bipartite_graph(5,1)
-        assert_true(is_isomorphic( G, star_graph(5) ))
-
-        # complete_bipartite_graph(m1,m2) is a connected graph with
-        # m1+m2 nodes and  m1*m2 edges
-        for m1, m2 in [(5, 11), (7, 3)]:
-            G=complete_bipartite_graph(m1,m2)
-            assert_equal(number_of_nodes(G), m1 + m2)
-            assert_equal(number_of_edges(G), m1 * m2)
-
-        assert_raises(networkx.exception.NetworkXError,
-                      complete_bipartite_graph, 7, 3, create_using=DiGraph())
-
-        mG=complete_bipartite_graph(7, 3, create_using=MultiGraph())
-        assert_equal(mG.edges(), G.edges())
-
     def test_circular_ladder_graph(self):
         G=circular_ladder_graph(5)
         assert_raises(networkx.exception.NetworkXError, circular_ladder_graph,

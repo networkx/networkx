@@ -17,17 +17,58 @@ import networkx as nx
 __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                             'Pieter Swart (swart@lanl.gov)',
                             'Dan Schult(dschult@colgate.edu)'])
-__all__=['bipartite_configuration_model',
-         'bipartite_havel_hakimi_graph',
-         'bipartite_reverse_havel_hakimi_graph',
-         'bipartite_alternating_havel_hakimi_graph',
-         'bipartite_preferential_attachment_graph',
-         'bipartite_random_graph',
-         'bipartite_gnmk_random_graph',
+__all__=['configuration_model',
+         'havel_hakimi_graph',
+         'reverse_havel_hakimi_graph',
+         'alternating_havel_hakimi_graph',
+         'preferential_attachment_graph',
+         'random_graph',
+         'gnmk_random_graph',
+         'complete_bipartite_graph',
          ]
 
 
-def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
+def complete_bipartite_graph(n1, n2, create_using=None):
+    """Return the complete bipartite graph `K_{n_1,n_2}`.
+
+    Composed of two partitions with `n_1` nodes in the first
+    and `n_2` nodes in the second. Each node in the first is
+    connected to each node in the second.
+
+    Parameters
+    ----------
+    n1 : integer
+       Number of nodes for node set A.
+    n2 : integer
+       Number of nodes for node set B.
+    create_using : NetworkX graph instance, optional
+       Return graph of this type.
+
+    Notes
+    -----
+    Node labels are the integers 0 to `n_1 + n_2 - 1`.
+
+    The nodes are assigned the attribute 'bipartite' with the value 0 or 1
+    to indicate which bipartite set the node belongs to.
+    """
+    if create_using is None:
+        G = nx.Graph()
+    else:
+        if create_using.is_directed():
+            raise nx.NetworkXError("Directed Graph not supported")
+        G = create_using
+        G.clear()
+    
+    top = set(range(n1))
+    bottom = set(range(n1, n1+n2))
+    G.add_nodes_from(top, bipartite=0)
+    G.add_nodes_from(bottom, bipartite=1)
+    G.add_edges_from((u, v) for u in top for v in bottom)
+    G.graph['name'] = "complete_bipartite_graph(%d,%d)" % (n1, n2)
+    return G
+
+
+def configuration_model(aseq, bseq, create_using=None, seed=None):
     """Return a random bipartite graph from two given degree sequences.
 
     Parameters
@@ -54,6 +95,9 @@ def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
 
     The nodes are assigned the attribute 'bipartite' with the value 0 or 1
     to indicate which bipartite set the node belongs to.
+
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
     """
     if create_using is None:
         create_using=networkx.MultiGraph()
@@ -103,7 +147,7 @@ def bipartite_configuration_model(aseq, bseq, create_using=None, seed=None):
     return G
 
 
-def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
+def havel_hakimi_graph(aseq, bseq, create_using=None):
     """Return a bipartite graph from two given degree sequences using a 
     Havel-Hakimi style construction.
 
@@ -122,6 +166,9 @@ def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
 
     Notes
     -----
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
+
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
     If no graph type is specified use MultiGraph with parallel edges.
     If you want a graph with no parallel edges use create_using=Graph()
@@ -173,7 +220,7 @@ def bipartite_havel_hakimi_graph(aseq, bseq, create_using=None):
     G.name="bipartite_havel_hakimi_graph"
     return G
 
-def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
+def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     """Return a bipartite graph from two given degree sequences using a
     Havel-Hakimi style construction.
 
@@ -193,6 +240,9 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
 
     Notes
     -----
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
+
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
     If no graph type is specified use MultiGraph with parallel edges.
     If you want a graph with no parallel edges use create_using=Graph()
@@ -245,7 +295,7 @@ def bipartite_reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     return G
 
 
-def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
+def alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
     """Return a bipartite graph from two given degree sequences using 
     an alternating Havel-Hakimi style construction.
 
@@ -266,6 +316,9 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
 
     Notes
     -----
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
+
     The sum of the two sequences must be equal: sum(aseq)=sum(bseq)
     If no graph type is specified use MultiGraph with parallel edges.
     If you want a graph with no parallel edges use create_using=Graph()
@@ -319,7 +372,7 @@ def bipartite_alternating_havel_hakimi_graph(aseq, bseq,create_using=None):
     G.name="bipartite_alternating_havel_hakimi_graph"
     return G
 
-def bipartite_preferential_attachment_graph(aseq,p,create_using=None,seed=None):
+def preferential_attachment_graph(aseq,p,create_using=None,seed=None):
     """Create a bipartite graph with a preferential attachment model from 
     a given single degree sequence.
 
@@ -340,6 +393,12 @@ def bipartite_preferential_attachment_graph(aseq,p,create_using=None,seed=None):
        Bipartite structure of all complex networks,
        Inf. Process. Lett. 90, 2004, pg. 215-221
        http://dx.doi.org/10.1016/j.ipl.2004.03.007
+
+    Notes
+    -----
+
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
     """
     if create_using is None:
         create_using=networkx.MultiGraph()
@@ -380,7 +439,7 @@ def bipartite_preferential_attachment_graph(aseq,p,create_using=None,seed=None):
 
 
 
-def bipartite_random_graph(n, m, p, seed=None, directed=False):
+def random_graph(n, m, p, seed=None, directed=False):
     """Return a bipartite random graph.
 
     This is a bipartite version of the binomial (Erdős-Rényi) graph.
@@ -400,6 +459,9 @@ def bipartite_random_graph(n, m, p, seed=None, directed=False):
       
     Notes
     -----
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
+
     The bipartite random graph algorithm chooses each of the n*m (undirected) 
     or 2*nm (directed) possible edges with probability p.
 
@@ -410,7 +472,7 @@ def bipartite_random_graph(n, m, p, seed=None, directed=False):
 
     See Also
     --------
-    gnp_random_graph, bipartite_configuration_model
+    gnp_random_graph, configuration_model
 
     References
     ----------
@@ -461,7 +523,7 @@ def bipartite_random_graph(n, m, p, seed=None, directed=False):
 
     return G
 
-def bipartite_gnmk_random_graph(n, m, k, seed=None, directed=False):
+def gnmk_random_graph(n, m, k, seed=None, directed=False):
     """Return a random bipartite graph G_{n,m,k}.
 
     Produces a bipartite graph chosen randomly out of the set of all graphs
@@ -482,7 +544,8 @@ def bipartite_gnmk_random_graph(n, m, k, seed=None, directed=False):
         
     Examples
     --------
-    G = nx.bipartite_gnmk_random_graph(10,20,50)
+    from networkx.algorithms import bipartite
+    G = bipartite.gnmk_random_graph(10,20,50)
 
     See Also
     --------
@@ -490,6 +553,9 @@ def bipartite_gnmk_random_graph(n, m, k, seed=None, directed=False):
 
     Notes
     -----
+    This function is not imported in the main namespace.
+    To use it you have to explicitly import the bipartite package.
+
     If k > m * n then a complete bipartite graph is returned.
 
     This graph is a bipartite version of the `G_{nm}` random graph model.

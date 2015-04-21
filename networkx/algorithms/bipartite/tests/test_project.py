@@ -19,22 +19,22 @@ class TestBipartiteProject:
         G=nx.path_graph(4)
         G.add_node(1,name='one')
         G.add_node(2,name='two')
-        P=bipartite.projected_graph(G,[1,3]) 
+        P=bipartite.projected_graph(G,[1,3])
         assert_nodes_equal(P.nodes(),[1,3])
         assert_edges_equal(P.edges(),[(1,3)])
         assert_equal(P.node[1]['name'],G.node[1]['name'])
-        P=bipartite.projected_graph(G,[0,2]) 
+        P=bipartite.projected_graph(G,[0,2])
         assert_nodes_equal(P.nodes(),[0,2])
         assert_edges_equal(P.edges(),[(0,2)])
         assert_equal(P.node[2]['name'],G.node[2]['name'])
 
     def test_path_collaboration_projected_graph(self):
         G=nx.path_graph(4)
-        P=bipartite.collaboration_weighted_projected_graph(G,[1,3]) 
+        P=bipartite.collaboration_weighted_projected_graph(G,[1,3])
         assert_nodes_equal(P.nodes(),[1,3])
         assert_edges_equal(P.edges(),[(1,3)])
         P[1][3]['weight']=1
-        P=bipartite.collaboration_weighted_projected_graph(G,[0,2]) 
+        P=bipartite.collaboration_weighted_projected_graph(G,[0,2])
         assert_nodes_equal(P.nodes(),[0,2])
         assert_edges_equal(P.edges(),[(0,2)])
         P[0][2]['weight']=1
@@ -42,22 +42,22 @@ class TestBipartiteProject:
     def test_directed_path_collaboration_projected_graph(self):
         G=nx.DiGraph()
         G.add_path(list(range(4)))
-        P=bipartite.collaboration_weighted_projected_graph(G,[1,3]) 
+        P=bipartite.collaboration_weighted_projected_graph(G,[1,3])
         assert_nodes_equal(P.nodes(),[1,3])
         assert_edges_equal(P.edges(),[(1,3)])
         P[1][3]['weight']=1
-        P=bipartite.collaboration_weighted_projected_graph(G,[0,2]) 
+        P=bipartite.collaboration_weighted_projected_graph(G,[0,2])
         assert_nodes_equal(P.nodes(),[0,2])
         assert_edges_equal(P.edges(),[(0,2)])
         P[0][2]['weight']=1
 
     def test_path_weighted_projected_graph(self):
         G=nx.path_graph(4)
-        P=bipartite.weighted_projected_graph(G,[1,3]) 
+        P=bipartite.weighted_projected_graph(G,[1,3])
         assert_nodes_equal(P.nodes(),[1,3])
         assert_edges_equal(P.edges(),[(1,3)])
         P[1][3]['weight']=1
-        P=bipartite.weighted_projected_graph(G,[0,2]) 
+        P=bipartite.weighted_projected_graph(G,[0,2])
         assert_nodes_equal(P.nodes(),[0,2])
         assert_edges_equal(P.edges(),[(0,2)])
         P[0][2]['weight']=1
@@ -65,11 +65,11 @@ class TestBipartiteProject:
     def test_path_weighted_projected_directed_graph(self):
         G=nx.DiGraph()
         G.add_path(list(range(4)))
-        P=bipartite.weighted_projected_graph(G,[1,3]) 
+        P=bipartite.weighted_projected_graph(G,[1,3])
         assert_nodes_equal(P.nodes(),[1,3])
         assert_edges_equal(P.edges(),[(1,3)])
         P[1][3]['weight']=1
-        P=bipartite.weighted_projected_graph(G,[0,2]) 
+        P=bipartite.weighted_projected_graph(G,[0,2])
         assert_nodes_equal(P.nodes(),[0,2])
         assert_edges_equal(P.edges(),[(0,2)])
         P[0][2]['weight']=1
@@ -100,7 +100,7 @@ class TestBipartiteProject:
         assert_edges_equal(P.edges(),[('a','b')])
         P=bipartite.projected_graph(G,'ab',multigraph=True)
         assert_edges_equal(P.edges(),[('a','b'),('a','b')])
-        
+
     def test_project_collaboration(self):
         G=nx.Graph()
         G.add_edge('a',1)
@@ -143,7 +143,7 @@ class TestBipartiteProject:
         P=bipartite.projected_graph(G,'AB',multigraph=True)
         assert_edges_equal(P.edges(),[('A','B'),('A','B')])
 
-         
+
 class TestBipartiteWeightedProjection:
 
     def setUp(self):
@@ -174,7 +174,7 @@ class TestBipartiteWeightedProjection:
         self.N.add_edge('C',1)
         self.N.add_edge('D',1)
         self.N.add_edge('E',3)
-        
+
     def test_project_weighted_shared(self):
         edges=[('A','B',2),
                ('A','C',1),
@@ -323,21 +323,21 @@ class TestBipartiteWeightedProjection:
     def test_generic_weighted_projected_graph_simple(self):
         def shared(G, u, v):
             return len(set(G[u]) & set(G[v]))
-        B = nx.path_graph(5) 
-        G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4], weight_function=shared) 
-        assert_nodes_equal(G.nodes(), [0, 2, 4]) 
-        assert_edges_equal(G.edges(data=True), 
+        B = nx.path_graph(5)
+        G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4], weight_function=shared)
+        assert_nodes_equal(G.nodes(), [0, 2, 4])
+        assert_edges_equal(G.edges(data=True),
                      [(0, 2, {'weight': 1}), (2, 4, {'weight': 1})] )
 
-        G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4]) 
-        assert_nodes_equal(G.nodes(), [0, 2, 4]) 
-        assert_edges_equal(G.edges(data=True), 
+        G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4])
+        assert_nodes_equal(G.nodes(), [0, 2, 4])
+        assert_edges_equal(G.edges(data=True),
                      [(0, 2, {'weight': 1}), (2, 4, {'weight': 1})] )
         B = nx.DiGraph()
         B.add_path(list(range(5)))
-        G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4]) 
-        assert_nodes_equal(G.nodes(), [0, 2, 4]) 
-        assert_edges_equal(G.edges(data=True), 
+        G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4])
+        assert_nodes_equal(G.nodes(), [0, 2, 4])
+        assert_edges_equal(G.edges(data=True),
                      [(0, 2, {'weight': 1}), (2, 4, {'weight': 1})] )
 
     def test_generic_weighted_projected_graph_custom(self):
@@ -350,13 +350,13 @@ class TestBipartiteWeightedProjection:
             for nbr in set(G[u]) & set(G[v]):
                 w += G.edge[u][nbr].get(weight, 1) + G.edge[v][nbr].get(weight, 1)
             return w
-        B = nx.complete_bipartite_graph(2,2)
+        B = nx.bipartite.complete_bipartite_graph(2, 2)
         for i,(u,v) in enumerate(B.edges()):
             B.edge[u][v]['weight'] = i + 1
-        G = bipartite.generic_weighted_projected_graph(B, [0, 1],                   
+        G = bipartite.generic_weighted_projected_graph(B, [0, 1],
                                                         weight_function=jaccard)
         assert_edges_equal(G.edges(data=True), [(0, 1, {'weight': 1.0})])
-        G = bipartite.generic_weighted_projected_graph(B, [0, 1],                   
+        G = bipartite.generic_weighted_projected_graph(B, [0, 1],
                                                         weight_function=my_weight)
         assert_edges_equal(G.edges(data=True), [(0, 1, {'weight': 10})])
         G = bipartite.generic_weighted_projected_graph(B, [0, 1])

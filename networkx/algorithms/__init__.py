@@ -51,11 +51,12 @@ import networkx.algorithms.operators
 import networkx.algorithms.tree
 
 # bipartite
-from networkx.algorithms.bipartite import projected_graph, project, is_bipartite
+from networkx.algorithms.bipartite import (projected_graph, project, is_bipartite,
+    complete_bipartite_graph)
 # connectivity
 from networkx.algorithms.connectivity import (minimum_edge_cut, minimum_node_cut,
     average_node_connectivity, edge_connectivity, node_connectivity,
-    stoer_wagner, all_pairs_node_connectivity)
+    stoer_wagner, all_pairs_node_connectivity, all_node_cuts)
 # isomorphism
 from networkx.algorithms.isomorphism import (is_isomorphic, could_be_isomorphic,
     fast_could_be_isomorphic, faster_could_be_isomorphic)

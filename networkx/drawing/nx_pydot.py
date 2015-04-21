@@ -19,6 +19,7 @@ DOT Language:  http://www.graphviz.org/doc/info/lang.html
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+import importlib
 from networkx.utils import open_file, make_str
 import networkx as nx
 __author__ = """Aric Hagberg (aric.hagberg@gmail.com)"""
@@ -31,12 +32,12 @@ try:
 except NameError:
     basestring = str
 
-PYDOT_LIBRARIES = ['pydot', 'pydotplus']
+PYDOT_LIBRARIES = ['pydot', 'pydotplus', 'pydot_ng']
 
 def load_pydot():
     for library in PYDOT_LIBRARIES:
         try:
-            module = __import__(library, fromlist=[''])
+            module = importlib.import_module(library)
         except ImportError:
             pass
         else:
