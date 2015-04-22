@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 ''' Checkout gitwash repo into directory and do search replace on name '''
 
+from __future__ import print_function
 import os
 from os.path import join as pjoin
 import shutil
@@ -79,7 +80,7 @@ def copy_replace(replace_pairs,
     for rep_glob in rep_globs:
         fnames += fnmatch.filter(out_fnames, rep_glob)
     if verbose:
-        print '\n'.join(fnames)
+        print('\n'.join(fnames))
     for fname in fnames:
         filename_search_replace(replace_pairs, fname, False)
         for in_exp, out_exp in renames:
