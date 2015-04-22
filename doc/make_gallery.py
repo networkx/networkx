@@ -16,7 +16,7 @@ template = """\
 link_template = """\
 <a href="%s"><img src="%s" border="0" alt="%s"/></a>
 """
-
+from __future__ import print_function
 import os, glob, re, shutil, sys
 import matplotlib
 matplotlib.use("Agg")
@@ -48,7 +48,7 @@ for example in all_examples:
         stale_examples.append(example)
 
 for example in stale_examples:
-    print example,
+    print(example, end=" ")
     png=example.replace('py','png')                             
     matplotlib.pyplot.figure(figsize=(6,6))
     stdout=sys.stdout
@@ -56,10 +56,10 @@ for example in stale_examples:
     try:
         execfile(example)
         sys.stdout=stdout
-        print " OK"
-    except ImportError,strerr:
+        print(" OK")
+    except ImportError as strerr:
         sys.stdout=stdout
-        sys.stdout.write(" FAIL: %s\n"%strerr)
+        sys.stdout.write(" FAIL: %s\n" % strerr)
         continue
     matplotlib.pyplot.clf()
     im=matplotlib.image.imread(png)
