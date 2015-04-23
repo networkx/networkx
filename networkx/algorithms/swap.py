@@ -7,13 +7,17 @@
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+from __future__ import division
+
 import math
 import random
+
 import networkx as nx
+
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
-                        'Dan Schult (dschult@colgate.edu)'
-                        'Joel Miller (joel.c.miller.research@gmail.com)'
+                        'Dan Schult (dschult@colgate.edu)',
+                        'Joel Miller (joel.c.miller.research@gmail.com)',
                         'Ben Edwards'])
 
 __all__ = ['double_edge_swap',
@@ -96,18 +100,19 @@ def double_edge_swap(G, nswap=1, max_tries=100):
         n+=1
     return G
 
-def connected_double_edge_swap(G, nswap=1):
-    """Attempt nswap double-edge swaps in the graph G.
 
-    A double-edge swap removes two randomly chosen edges u-v and x-y
-    and creates the new edges u-x and v-y::
+def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
+    """Attempts the specified number of double-edge swaps in the graph ``G``.
+
+    A double-edge swap removes two randomly chosen edges ``(u, v)`` and ``(x,
+    y)`` and creates the new edges ``(u, x)`` and ``(v, y)``::
 
      u--v            u  v
             becomes  |  |
      x--y            x  y
 
-    If either the edge u-x or v-y already exist no swap is performed so
-    the actual count of swapped edges is always <= nswap
+    If either ``(u, x)`` or ``(v, y)`` already exist, then no swap is performed
+    so the actual number of swapped edges is always *at most* ``nswap``.
 
     Parameters
     ----------
@@ -117,15 +122,41 @@ def connected_double_edge_swap(G, nswap=1):
     nswap : integer (optional, default=1)
        Number of double-edge swaps to perform
 
+    _window_threshold : integer
+
+       The window size below which connectedness of the graph will be checked
+       after each swap.
+
+       The "window" in this function is a dynamically updated integer that
+       represents the number of swap attempts to make before checking if the
+       graph remains connected. It is an optimization used to decrease the
+       running time of the algorithm in exchange for increased complexity of
+       implementation.
+
+       If the window size is below this threshold, then the algorithm checks
+       after each swap if the graph remains connected by checking if there is a
+       path joining the two nodes whose edge was just removed. If the window
+       size is above this threshold, then the algorithm performs do all the
+       swaps in the window and only then check if the graph is still connected.
+
     Returns
     -------
-    G : int
+    int
        The number of successful swaps
+
+    Raises
+    ------
+
+    NetworkXError
+
+       If the input graph is not connected, or if the graph has fewer than four
+       nodes.
 
     Notes
     -----
-    The initial graph G must be connected, and the resulting graph is connected.
-    The graph G is modified in place.
+
+    The initial graph ``G`` must be connected, and the resulting graph is
+    connected. The graph ``G`` is modified in place.
 
     References
     ----------
@@ -134,52 +165,107 @@ def connected_double_edge_swap(G, nswap=1):
            power law random graphs, 2003.
            http://citeseer.ist.psu.edu/gkantsidis03markov.html
     """
-    import math
     if not nx.is_connected(G):
-       raise nx.NetworkXError("Graph not connected")
+        raise nx.NetworkXError("Graph not connected")
     if len(G) < 4:
         raise nx.NetworkXError("Graph has less than four nodes.")
-    n=0
-    swapcount=0
-    deg=G.degree()
-    dk=list(deg.keys()) # Label key for nodes
-    cdf=nx.utils.cumulative_distribution(list(G.degree().values()))
-    window=1
+    n = 0
+    swapcount = 0
+    deg = G.degree()
+    # Label key for nodes
+    dk = list(deg.keys())
+    cdf = nx.utils.cumulative_distribution(list(G.degree().values()))
+    window = 1
     while n < nswap:
-        wcount=0
-        swapped=[]
-        while wcount < window and n < nswap:
-            # Pick two random edges without creating edge list
-            # Choose source nodes from discrete degree distribution
-            (ui,xi)=nx.utils.discrete_sequence(2,cdistribution=cdf)
-            if ui==xi:
-                continue # same source, skip
-            u=dk[ui] # convert index to label
-            x=dk[xi]
-            # Choose targets uniformly from neighbors
-            v=random.choice(G.neighbors(u))
-            y=random.choice(G.neighbors(x)) #
-            if v==y: continue # same target, skip
-            if (not G.has_edge(u,x)) and (not G.has_edge(v,y)):
-                G.remove_edge(u,v)
-                G.remove_edge(x,y)
-                G.add_edge(u,x)
-                G.add_edge(v,y)
-                swapped.append((u,v,x,y))
-                swapcount+=1
-            n+=1
-            wcount+=1
-        if nx.is_connected(G):
-            window+=1
+        wcount = 0
+        swapped = []
+        # If the window is small, we just check each time whether the graph is
+        # connected by checking if the nodes that were just separated are still
+        # connected.
+        if window < _window_threshold:
+            # This Boolean keeps track of whether there was a failure or not.
+            fail = False
+            while wcount < window and n < nswap:
+                # Pick two random edges without creating the edge list. Choose
+                # source nodes from the discrete degree distribution.
+                (ui, xi) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+                # If the source nodes are the same, skip this pair.
+                if ui == xi:
+                    continue
+                # Convert an index to a node label.
+                u = dk[ui]
+                x = dk[xi]
+                # Choose targets uniformly from neighbors.
+                v = random.choice(G.neighbors(u))
+                y = random.choice(G.neighbors(x))
+                # If the target nodes are the same, skip this pair.
+                if v == y:
+                    continue
+                if x not in G[u] and y not in G[v]:
+                    G.remove_edge(u, v)
+                    G.remove_edge(x, y)
+                    G.add_edge(u, x)
+                    G.add_edge(v, y)
+                    swapped.append((u, v, x, y))
+                    swapcount += 1
+                n += 1
+                # If G remains connected...
+                if nx.has_path(G, u, v):
+                    wcount += 1
+                # Otherwise, undo the changes.
+                else:
+                    G.add_edge(u, v)
+                    G.add_edge(x, y)
+                    G.remove_edge(u, x)
+                    G.remove_edge(v, y)
+                    swapcount -= 1
+                    fail = True
+            # If one of the swaps failed, reduce the window size.
+            if fail:
+                window = int(math.ceil(window / 2))
+            else:
+                window += 1
+        # If the window is large, then there is a good chance that a bunch of
+        # swaps will work. It's quicker to do all those swaps first and then
+        # check if the graph remains connected.
         else:
-            # not connected, undo changes from previous window, decrease window
-            while swapped:
-                (u,v,x,y)=swapped.pop()
-                G.add_edge(u,v)
-                G.add_edge(x,y)
-                G.remove_edge(u,x)
-                G.remove_edge(v,y)
-                swapcount-=1
-            window = int(math.ceil(float(window)/2))
+            while wcount < window and n < nswap:
+                # Pick two random edges without creating the edge list. Choose
+                # source nodes from the discrete degree distribution.
+                (ui, xi) = nx.utils.discrete_sequence(2, cdistribution=cdf)
+                # If the source nodes are the same, skip this pair.
+                if ui == xi:
+                    continue
+                # Convert an index to a node label.
+                u = dk[ui]
+                x = dk[xi]
+                # Choose targets uniformly from neighbors.
+                v = random.choice(G.neighbors(u))
+                y = random.choice(G.neighbors(x))
+                # If the target nodes are the same, skip this pair.
+                if v == y:
+                    continue
+                if x not in G[u] and y not in G[v]:
+                    G.remove_edge(u, v)
+                    G.remove_edge(x, y)
+                    G.add_edge(u, x)
+                    G.add_edge(v, y)
+                    swapped.append((u, v, x, y))
+                    swapcount += 1
+                n += 1
+                wcount += 1
+            # If the graph remains connected, increase the window size.
+            if nx.is_connected(G):
+                window += 1
+            # Otherwise, undo the changes from the previous window and decrease
+            # the window size.
+            else:
+                while swapped:
+                    (u, v, x, y) = swapped.pop()
+                    G.add_edge(u, v)
+                    G.add_edge(x, y)
+                    G.remove_edge(u, x)
+                    G.remove_edge(v, y)
+                    swapcount -= 1
+                window = int(math.ceil(window / 2))
     return swapcount
-
