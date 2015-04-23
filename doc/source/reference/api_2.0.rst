@@ -126,6 +126,10 @@ New functionalities
   ones based on Yen's algorithm for finding k shortest paths at
   ``algorithms.simple_paths``
 
+* [`#1474 <https://github.com/networkx/networkx/pull/1474>`_]
+  Adds ``triadic_census`` function; also creates a new module,
+  :mod:`networkx.algorithms.triads`.
+
 Removed functionalities
 -----------------------
 

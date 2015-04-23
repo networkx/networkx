@@ -23,6 +23,7 @@ from networkx.algorithms.link_prediction import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.shortest_paths import *
 from networkx.algorithms.smetric import *
+from networkx.algorithms.triads import *
 from networkx.algorithms.traversal import *
 from networkx.algorithms.isolate import *
 from networkx.algorithms.euler import *
