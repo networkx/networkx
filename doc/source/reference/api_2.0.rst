@@ -104,6 +104,9 @@ New functionalities
 * [`#1425 <https://github.com/networkx/networkx/pull/1425>`_]
   Added generator function for the complete multipartite graph.
 
+* [`#1427 <https://github.com/networkx/networkx/pull/1427>`_]
+  Added non isomorphic trees generator
+
 * [`#1436 <https://github.com/networkx/networkx/pull/1436>`_]
   Added a generator function for circulant graphs to the
   ``networkx.generators.classic`` module.
@@ -118,7 +121,7 @@ New functionalities
   module.
 
 * [`#1455 <https://github.com/networkx/networkx/pull/1455>`_]
-  Added the directed modularity matrix to the  
+  Added the directed modularity matrix to the
   ``networkx.linalg.modularity_matrix`` module.
 
 * [`#1447 <https://github.com/networkx/networkx/pull/1447>`_]

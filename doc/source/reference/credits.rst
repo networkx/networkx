@@ -109,6 +109,7 @@ is partially historical, and now, mostly arbitrary.
 - Jeffrey Finkelstein
 - Jean-Gabriel Young, Github: `jg-you <https://github.com/jgyou>`_
 - Andrey Paramonov, http://aparamon.msk.ru
+- Mridul Seth, GitHub: `MridulS <https://github.com/MridulS>`_
 
 
 Support
