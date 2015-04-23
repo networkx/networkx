@@ -138,3 +138,8 @@ Miscellaneous changes
 
 * [`#1192 <https://github.com/networkx/networkx/pull/1192>`_]
   Support for Python 2.6 is dropped.
+
+* [`#1466 <https://github.com/networkx/networkx/pull/1466>`_]
+  Renamed `communicability_centrality()` and `communicability_centrality_exp()`
+  to `subgraph_centrality()` resp. `subgraph_centrality_exp()`.
+
