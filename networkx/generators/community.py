@@ -1,3 +1,4 @@
+"""Generators for classes of graphs used in studying social networks."""
 import itertools
 import math
 import random
@@ -15,18 +16,14 @@ __all__ = ['caveman_graph', 'connected_caveman_graph',
 
 
 def caveman_graph(l, k):
-    """Returns a caveman graph of l cliques of size k.
-
-    The caveman graph is formed by creating n cliques of size k.
+    """Returns a caveman graph of ``l`` cliques of size ``k``.
 
     Parameters
     ----------
-    n : int
+    l : int
       Number of cliques
     k : int
       Size of cliques
-    directed : boolean optional (default=True)
-      If true return directed caveman graph
 
     Returns
     -------
@@ -36,14 +33,19 @@ def caveman_graph(l, k):
     Notes
     -----
     This returns an undirected graph, it can be converted to a directed
-    graph using nx.to_directed(), or a multigraph using
-    nx.MultiGraph(nx.caveman_graph). Only the undirected version is
+    graph using :func:`nx.to_directed`, or a multigraph using
+    ``nx.MultiGraph(nx.caveman_graph(l, k))``. Only the undirected version is
     described in [1]_ and it is unclear which of the directed
     generalizations is most useful.
 
     Examples
     --------
-    >>> G = nx.caveman_graph(3,3)
+    >>> G = nx.caveman_graph(3, 3)
+
+    See also
+    --------
+
+    connected_caveman_graph
 
     Reference
     ---------
@@ -61,36 +63,35 @@ def caveman_graph(l, k):
 
 
 def connected_caveman_graph(l, k):
-    """Returns a connected caveman graph of n cliques of size k.
+    """Returns a connected caveman graph of ``l`` cliques of size ``k``.
 
-    The connected caveman graph is formed by creating n cliques of size k. Then
-    a single node in each clique is rewired to a node in the adjacent clique.
+    The connected caveman graph is formed by creating ``n`` cliques of size
+    ``k``, then a single edge in each clique is rewired to a node in an
+    adjacent clique.
 
     Parameters
     ----------
-    n : int
+    l : int
       number of cliques
     k : int
       size of cliques
-    directed : boolean optional (default=True)
-      if true return directed caveman graph
 
     Returns
     -------
     G : NetworkX Graph
-      caveman graph
+      connected caveman graph
 
     Notes
     -----
     This returns an undirected graph, it can be converted to a directed
-    graph using nx.to_directed(), or a multigraph using
-    nx.MultiGraph(nx.caveman_graph). Only the undirected version is
+    graph using :func:`nx.to_directed`, or a multigraph using
+    ``nx.MultiGraph(nx.caveman_graph(l, k))``. Only the undirected version is
     described in [1]_ and it is unclear which of the directed
     generalizations is most useful.
 
     Examples
     --------
-    >>> G = nx.caveman_graph(3, 3)
+    >>> G = nx.connected_caveman_graph(3, 3)
 
     Reference
     ---------
@@ -105,12 +106,11 @@ def connected_caveman_graph(l, k):
     return G
 
 
-def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
+def relaxed_caveman_graph(l, k, p, seed=None):
     """Return a relaxed caveman graph.
 
-    A relaxed caveman graph starts with l cliques of size k.  Edges
-    are then randomly rewired with probability p to link different
-    cliques.
+    A relaxed caveman graph starts with ``l`` cliques of size ``k``.  Edges are
+    then randomly rewired with probability ``p`` to link different cliques.
 
     Parameters
     ----------
@@ -122,8 +122,6 @@ def relaxed_caveman_graph(l, k, p, seed=None, directed=False):
       Probabilty of rewiring each edge.
     seed : int,optional
       Seed for random number generator(default=None)
-    directed : bool,optional (default=False)
-      If True return a directed graph
 
     Returns
     -------
