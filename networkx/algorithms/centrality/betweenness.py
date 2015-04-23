@@ -138,7 +138,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
 
     .. math::
 
-       c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|e)}{\sigma(s, t)}
+       c_B(e) =\sum_{s,t \in V} \frac{\sigma(s, t|e)}{\sigma(s, t)}
 
     where `V` is the set of nodes,`\sigma(s, t)` is the number of
     shortest `(s, t)`-paths, and `\sigma(s, t|e)` is the number of
