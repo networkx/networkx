@@ -498,8 +498,10 @@ def non_edges(graph):
             for v in non_neighbors(graph, u):
                 yield (u, v)
     else:
-        for u, v in itertools.combinations(graph, 2):
-            if not graph.has_edge(u, v):
+        nodes = set(graph)
+        while nodes:
+            u = nodes.pop()
+            for v in nodes - set(graph[u]):
                 yield (u, v)
 
 
