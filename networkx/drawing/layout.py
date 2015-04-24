@@ -97,7 +97,7 @@ def circular_layout(G, dim=2, scale=1, center=None):
     scale : float
         Scale factor for positions
 
-    center : tuple or None  optional (default=None)
+    center : array-like or None
        Coordinate pair around which to center the layout.
 
     Returns
@@ -150,7 +150,7 @@ def shell_layout(G, nlist=None, dim=2, scale=1, center=None):
     scale : float
         Scale factor for positions
 
-    center : tuple or None
+    center : array-like or None
        Coordinate pair around which to center the layout.
 
     Returns
@@ -245,7 +245,7 @@ def fruchterman_reingold_layout(G,dim=2,k=None,
         Scale factor for positions. The nodes are positioned
         in a box of size [0,scale] x [0,scale].
 
-    center : tuple or None  optional (default=None)
+    center : array-like or None
        Coordinate pair around which to center the layout.
 
 
@@ -463,7 +463,7 @@ def spectral_layout(G, dim=2, weight='weight', scale=1, center=None):
     scale : float
         Scale factor for positions
 
-    center : tuple or None
+    center : array-like or None
        Coordinate pair around which to center the layout.
 
     Returns
