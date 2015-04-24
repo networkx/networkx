@@ -157,6 +157,11 @@ New functionalities
   edges. Also adds a function for testing if a graph is empty. These are
   ``is_weighted``, ``is_negatively_weighted``, and ``is_empty``.
 
+* [`#1481 <https://github.com/networkx/networkx/pull/1481>`_]
+  Added Johnson's algorithm; one more algorithm for shortest paths. It
+  solves all pairs shortest path problem. This is ``johnson`` at
+  ``algorithms.shortest_paths``
+
 Removed functionalities
 -----------------------
 

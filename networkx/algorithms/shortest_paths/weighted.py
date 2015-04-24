@@ -23,11 +23,13 @@ __all__ = ['dijkstra_path',
            'dijkstra_predecessor_and_distance',
            'bellman_ford',
            'negative_edge_cycle',
-           'goldberg_radzik']
+           'goldberg_radzik',
+           'johnson']
 
 from collections import deque
 from heapq import heappush, heappop
 from itertools import count
+import uuid
 import networkx as nx
 from networkx.utils import generate_unique_node
 
@@ -984,3 +986,84 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
     raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+
+
+def johnson(G, weight='weight', new_weight=None):
+    """Compute shortest paths between all nodes in a weighted graph using
+    Johnson's algorithm.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weight: string, optional (default='weight')
+        Edge data key corresponding to the edge weight.
+
+    new_weight: string, optional (default=None)
+        Edge data key corresponding to the new edge weight after graph transformation.
+
+    Returns
+    -------
+    distance : dictionary
+       Dictionary, keyed by source and target, of shortest paths.
+
+    Raises
+    ------
+    NetworkXError
+       If given graph is not weighted.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> graph = nx.DiGraph()
+    >>> graph.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5),
+    ... ('0', '2', 2), ('1', '2', 4), ('2', '3', 1)])
+    >>> paths = nx.johnson(graph, weight='weight')
+    >>> paths['0']['2']
+    ['0', '1', '2']
+
+    Notes
+    ------
+    Johnson's algorithm is suitable even for graphs with negative weights. It
+    works by using the Bellman–Ford algorithm to compute a transformation of
+    the input graph that removes all negative weights, allowing Dijkstra's
+    algorithm to be used on the transformed graph.
+
+    It may be faster than Floyd - Warshall algorithm in sparse graphs.
+    Algorithm complexity: O(V^2 * logV + V * E)
+
+    See Also
+    --------
+    floyd_warshall_predecessor_and_distance
+    floyd_warshall_numpy
+    all_pairs_shortest_path
+    all_pairs_shortest_path_length
+    all_pairs_dijkstra_path
+    bellman_ford
+    """
+    if not nx.is_weighted(G, weight=weight):
+        raise nx.NetworkXError('Graph is not weighted.')
+
+    new_node = nx.utils.generate_unique_node()
+    G.add_weighted_edges_from((new_node, node, 0) for node in G.nodes())
+
+    # Calculate distance of shortest paths
+    dist = nx.bellman_ford(G, source=new_node, weight=weight)[1]
+
+    delete = False
+    if new_weight is None:
+        delete = True
+        new_weight = uuid.uuid1()
+
+    for u, v, w in G.edges(data=True):
+        w[new_weight] = w[weight] + dist[u] - dist[v]
+
+    G.remove_node(new_node)
+    all_pairs_path = nx.all_pairs_dijkstra_path(G, weight=new_weight)
+
+    if delete:
+        for u, v, w in G.edges(data=True):
+            if new_weight in w:
+                w.pop(new_weight)
+
+    return all_pairs_path
