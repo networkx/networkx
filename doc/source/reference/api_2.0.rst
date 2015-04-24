@@ -105,7 +105,7 @@ New functionalities
   Added generator function for the complete multipartite graph.
 
 * [`#1427 <https://github.com/networkx/networkx/pull/1427>`_]
-  Added non isomorphic trees generator
+  Added nonisomorphic trees generator
 
 * [`#1436 <https://github.com/networkx/networkx/pull/1436>`_]
   Added a generator function for circulant graphs to the

@@ -21,7 +21,7 @@ class TestGeneratorNonIsomorphicTrees():
             assert_true(nx.is_tree(i))
 
     def test_nonisomorphism(self):
-        # test for non isomorphism of trees for nx.nonisomorphic_trees()
+        # test for nonisomorphism of trees for nx.nonisomorphic_trees()
         f = lambda x: list(nx.nonisomorphic_trees(x))
         trees = f(6)
         for i in range(len(trees)):

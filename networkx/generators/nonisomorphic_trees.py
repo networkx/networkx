@@ -1,8 +1,11 @@
-"""Implementation of the Wright, Richmond, Odlyzko and McKay (WROM)
+"""
+Implementation of the Wright, Richmond, Odlyzko and McKay (WROM)
 algorithm for the enumeration of all non-isomorphic free trees of a
 given order.  Rooted trees are represented by level sequences, i.e.,
 lists in which the i-th element specifies the distance of vertex i to
-the root."""
+the root.
+
+"""
 #    Copyright (C) 2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
@@ -19,7 +22,7 @@ import networkx as nx
 
 
 def nonisomorphic_trees(order, create="graph"):
-    """Returns a list of non isomporphic trees
+    """Returns a list of nonisomporphic trees
 
     Parameters
     ----------
@@ -58,7 +61,7 @@ def nonisomorphic_trees(order, create="graph"):
 
 
 def number_of_nonisomorphic_trees(order):
-    """Returns the number of non isomorphic trees
+    """Returns the number of nonisomorphic trees
 
     Parameters
     ----------
@@ -67,7 +70,7 @@ def number_of_nonisomorphic_trees(order):
 
     Returns
     -------
-    length : Number of non isomorphic graphs for the given order
+    length : Number of nonisomorphic graphs for the given order
 
     Reference
     ---------
