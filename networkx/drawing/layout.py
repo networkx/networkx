@@ -126,9 +126,9 @@ def circular_layout(G, dim=2, scale=1, center=None):
         pos = {G.nodes()[0]: center}
     else:
         # Discard the extra angle since it matches 0 radians.
-        t = np.linspace(0, 1, len(G) + 1)[:-1] * 2 * np.pi
-        t = theta.astype(np.float32)
-        pos = np.column_stack([np.cos(t), np.sin(t)])
+        theta = np.linspace(0, 1, len(G) + 1)[:-1] * 2 * np.pi
+        theta = theta.astype(np.float32)
+        pos = np.column_stack([np.cos(theta), np.sin(theta)])
         pos = _rescale_layout(pos, scale=scale) + center
         pos = dict(zip(G, pos))
 
@@ -194,9 +194,9 @@ def shell_layout(G, nlist=None, dim=2, scale=1, center=None):
     npos={}
     for nodes in nlist:
         # Discard the extra angle since it matches 0 radians.
-        t = np.linspace(0, 1, len(nodes) + 1)[:-1] * 2 * np.pi
-        t = theta.astype(np.float32)
-        pos = np.column_stack([np.cos(t), np.sin(t)])
+        theta = np.linspace(0, 1, len(nodes) + 1)[:-1] * 2 * np.pi
+        theta = theta.astype(np.float32)
+        pos = np.column_stack([np.cos(theta), np.sin(theta)])
         pos = _rescale_layout(pos, scale=scale * radius / len(nlist)) + center
         npos.update(zip(nodes, pos))
         radius += 1.0
