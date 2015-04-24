@@ -133,6 +133,9 @@ New functionalities
   Adds ``triadic_census`` function; also creates a new module,
   :mod:`networkx.algorithms.triads`.
 
+* [`#1438 <https://github.com/networkx/networkx/pull/1438>`_]
+  Added longest_path and longest_path_length for DAG
+
 Removed functionalities
 -----------------------
 
