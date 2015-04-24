@@ -60,6 +60,11 @@ New functionalities
 * [`#1338 <https://github.com/networkx/networkx/pull/1338>`_]
   Added support for finding optimum branchings and arborescences.
 
+* [`#1354 <https://github.com/networkx/networkx/pull/1354>`_]
+  Expanded layout functions to add flexibility for drawing subsets of nodes 
+  with distinct layouts and for centering each layout around given
+  coordinates.
+
 Removed functionalities
 -----------------------
 
