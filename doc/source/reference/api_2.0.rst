@@ -69,14 +69,14 @@ New functionalities
   OrderedGraph, ThinGraph, LogGraph, etc.
 
 * [`#1321 <https://github.com/networkx/networkx/pull/1321>`_]
-  Added ``to_pandas_dataframe`` and ``from_pandas_dataframe``
+  Added ``to_pandas_dataframe`` and ``from_pandas_dataframe``.
 
 * [`#1322 <https://github.com/networkx/networkx/pull/1322>`_]
   Added the Hopcroft--Karp algorithm for finding a maximum cardinality
   matching in bipartite graphs.
 
 * [`#1336 <https://github.com/networkx/networkx/pull/1336>`_]
-  Expanded data keyword in G.edges and added default keyword
+  Expanded data keyword in G.edges and added default keyword.
 
 * [`#1338 <https://github.com/networkx/networkx/pull/1338>`_]
   Added support for finding optimum branchings and arborescences.
@@ -104,13 +104,13 @@ New functionalities
 
 * [`#1413 <https://github.com/networkx/networkx/pull/1413>`_]
   Added transitive closure and antichains function for directed acyclic
-  graphs in ``algorithms.dag``
+  graphs in ``algorithms.dag``.
 
 * [`#1425 <https://github.com/networkx/networkx/pull/1425>`_]
   Added generator function for the complete multipartite graph.
 
 * [`#1427 <https://github.com/networkx/networkx/pull/1427>`_]
-  Added nonisomorphic trees generator
+  Added nonisomorphic trees generator.
 
 * [`#1436 <https://github.com/networkx/networkx/pull/1436>`_]
   Added a generator function for circulant graphs to the
@@ -132,14 +132,14 @@ New functionalities
 * [`#1447 <https://github.com/networkx/networkx/pull/1447>`_]
   Added function to generate all simple paths starting with the shortest
   ones based on Yen's algorithm for finding k shortest paths at
-  ``algorithms.simple_paths``
+  ``algorithms.simple_paths``.
 
 * [`#1474 <https://github.com/networkx/networkx/pull/1474>`_]
   Adds ``triadic_census`` function; also creates a new module,
   :mod:`networkx.algorithms.triads`.
 
 * [`#1438 <https://github.com/networkx/networkx/pull/1438>`_]
-  Added longest_path and longest_path_length for DAG
+  Added longest_path and longest_path_length for DAG.
 
 Removed functionalities
 -----------------------
