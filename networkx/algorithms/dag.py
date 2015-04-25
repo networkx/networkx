@@ -35,7 +35,7 @@ def descendants(G, source):
     Returns
     -------
     des : set()
-       The descendants of source in G
+        The descendants of source in G
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
@@ -54,7 +54,7 @@ def ancestors(G, source):
     Returns
     -------
     ancestors : set()
-       The ancestors of source in G
+        The ancestors of source in G
     """
     if not G.has_node(source):
         raise nx.NetworkXError("The node %s is not in the graph." % source)
@@ -69,12 +69,12 @@ def is_directed_acyclic_graph(G):
     Parameters
     ----------
     G : NetworkX graph
-      A graph
+        A graph
 
     Returns
     -------
     is_dag : bool
-       True if G is a DAG, false otherwise
+        True if G is a DAG, false otherwise
     """
     if not G.is_directed():
         return False
@@ -95,10 +95,10 @@ def topological_sort(G, nbunch=None, reverse=False):
     Parameters
     ----------
     G : NetworkX digraph
-       A directed graph
+        A directed graph
 
     nbunch : container of nodes (optional)
-       Explore graph in specified order given in nbunch
+        Explore graph in specified order given in nbunch
 
     reverse : bool, optional
         Return postorder instead of preorder if True.
@@ -107,12 +107,12 @@ def topological_sort(G, nbunch=None, reverse=False):
     Raises
     ------
     NetworkXError
-       Topological sort is defined for directed graphs only. If the
-       graph G is undirected, a NetworkXError is raised.
+        Topological sort is defined for directed graphs only. If the
+        graph G is undirected, a NetworkXError is raised.
 
     NetworkXUnfeasible
-       If G is not a directed acyclic graph (DAG) no topological sort
-       exists and a NetworkXUnfeasible exception is raised.
+        If G is not a directed acyclic graph (DAG) no topological sort
+        exists and a NetworkXUnfeasible exception is raised.
 
     Notes
     -----
@@ -180,7 +180,7 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
     G : NetworkX digraph
 
     nbunch : container of nodes (optional)
-       Explore graph in specified order given in nbunch
+        Explore graph in specified order given in nbunch
 
     reverse : bool, optional
         Return postorder instead of preorder if True.
@@ -189,8 +189,8 @@ def topological_sort_recursive(G, nbunch=None, reverse=False):
     Raises
     ------
     NetworkXError
-       Topological sort is defined for directed graphs only. If the
-       graph G is undirected, a NetworkXError is raised.
+        Topological sort is defined for directed graphs only. If the
+        graph G is undirected, a NetworkXError is raised.
 
     NetworkXUnfeasible
         If G is not a directed acyclic graph (DAG) no topological sort
@@ -250,17 +250,17 @@ def is_aperiodic(G):
     Parameters
     ----------
     G : NetworkX DiGraph
-      Graph
+        Graph
 
     Returns
     -------
     aperiodic : boolean
-      True if the graph is aperiodic False otherwise
+        True if the graph is aperiodic False otherwise
 
     Raises
     ------
     NetworkXError
-      If G is not directed
+        If G is not directed
 
     Notes
     -----
@@ -312,17 +312,17 @@ def transitive_closure(G):
     Parameters
     ----------
     G : NetworkX DiGraph
-      Graph
+        Graph
 
     Returns
     -------
     TC : NetworkX DiGraph
-       Graph
+        Graph
 
     Raises
     ------
     NetworkXNotImplemented
-      If G is not directed
+        If G is not directed
 
     References
     ----------
@@ -348,7 +348,7 @@ def antichains(G):
     Parameters
     ----------
     G : NetworkX DiGraph
-      Graph
+        Graph
 
     Returns
     -------
@@ -357,10 +357,10 @@ def antichains(G):
     Raises
     ------
     NetworkXNotImplemented
-      If G is not directed
+        If G is not directed
 
     NetworkXUnfeasible
-       If G contains a cycle
+        If G contains a cycle
 
     Notes
     -----
@@ -399,16 +399,17 @@ def dag_longest_path(G):
     Parameters
     ----------
     G : NetworkX DiGraph
-      Graph
+        Graph
 
     Returns
     -------
-    list : The longest path
+    path : list
+        Longest path
 
     Raises
     ------
     NetworkXNotImplemented
-      If G is not directed
+        If G is not directed
 
     See also
     --------
@@ -437,16 +438,17 @@ def dag_longest_path_length(G):
     Parameters
     ----------
     G : NetworkX DiGraph
-      Graph
+        Graph
 
     Returns
     -------
-    int : The longest path length
+    path_length : int
+        Longest path length
 
     Raises
     ------
     NetworkXNotImplemented
-      If G is not directed
+        If G is not directed
 
     See also
     --------
