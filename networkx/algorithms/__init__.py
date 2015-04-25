@@ -40,6 +40,7 @@ from networkx.algorithms.wiener import *
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
 import networkx.algorithms.centrality
+import networkx.algorithms.chordal
 import networkx.algorithms.cluster
 import networkx.algorithms.clique
 import networkx.algorithms.components
@@ -48,23 +49,36 @@ import networkx.algorithms.coloring
 import networkx.algorithms.flow
 import networkx.algorithms.isomorphism
 import networkx.algorithms.link_analysis
-import networkx.algorithms.shortest_paths
-import networkx.algorithms.traversal
-import networkx.algorithms.chordal
 import networkx.algorithms.operators
+import networkx.algorithms.sampling
+import networkx.algorithms.shortest_paths
 import networkx.algorithms.tournament
+import networkx.algorithms.traversal
 import networkx.algorithms.tree
 
 # bipartite
-from networkx.algorithms.bipartite import (projected_graph, project, is_bipartite,
-    complete_bipartite_graph)
+from networkx.algorithms.bipartite import projected_graph
+from networkx.algorithms.bipartite import project
+from networkx.algorithms.bipartite import is_bipartite
+from networkx.algorithms.bipartite import complete_bipartite_graph
+
 # connectivity
-from networkx.algorithms.connectivity import (minimum_edge_cut, minimum_node_cut,
-    average_node_connectivity, edge_connectivity, node_connectivity,
-    stoer_wagner, all_pairs_node_connectivity, all_node_cuts, k_components)
+from networkx.algorithms.connectivity import minimum_edge_cut
+from networkx.algorithms.connectivity import minimum_node_cut
+from networkx.algorithms.connectivity import average_node_connectivity
+from networkx.algorithms.connectivity import edge_connectivity
+from networkx.algorithms.connectivity import node_connectivity
+from networkx.algorithms.connectivity import stoer_wagner
+from networkx.algorithms.connectivity import all_pairs_node_connectivity
+from networkx.algorithms.connectivity import all_node_cuts
+from networkx.algorithms.connectivity import k_components
+
 # isomorphism
-from networkx.algorithms.isomorphism import (is_isomorphic, could_be_isomorphic,
-    fast_could_be_isomorphic, faster_could_be_isomorphic)
+from networkx.algorithms.isomorphism import is_isomorphic
+from networkx.algorithms.isomorphism import could_be_isomorphic
+from networkx.algorithms.isomorphism import fast_could_be_isomorphic
+from networkx.algorithms.isomorphism import faster_could_be_isomorphic
+
 # flow
 from networkx.algorithms.flow import (maximum_flow, maximum_flow_value,
     minimum_cut, minimum_cut_value, capacity_scaling, network_simplex,
