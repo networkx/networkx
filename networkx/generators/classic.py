@@ -10,20 +10,25 @@ as a simple graph. Except for empty_graph, all the generators
 in this module return a Graph class (i.e. a simple, undirected graph).
 
 """
-#    Copyright (C) 2004-2010 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
 import itertools
+
+from networkx.algorithms.bipartite.generators import complete_bipartite_graph
+from networkx.utils import accumulate
+
 __author__ ="""Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)"""
 
 __all__ = [ 'balanced_tree',
             'barbell_graph',
             'complete_graph',
-            'complete_bipartite_graph',
+            'complete_multipartite_graph',
             'circular_ladder_graph',
+            'circulant_graph',
             'cycle_graph',
             'dorogovtsev_goltsev_mendes_graph',
             'empty_graph',
@@ -192,25 +197,6 @@ def complete_graph(n,create_using=None):
     return G
 
 
-def complete_bipartite_graph(n1,n2,create_using=None):
-    """Return the complete bipartite graph K_{n1_n2}.
-
-    Composed of two partitions with n1 nodes in the first
-    and n2 nodes in the second. Each node in the first is
-    connected to each node in the second.
-
-    Node labels are the integers 0 to n1+n2-1
-
-    """
-    if create_using is not None and create_using.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-    G=empty_graph(n1+n2,create_using)
-    G.name="complete_bipartite_graph(%d,%d)"%(n1,n2)
-    for v1 in range(n1):
-        for v2 in range(n2):
-            G.add_edge(v1,n1+v2)
-    return G
-
 def circular_ladder_graph(n,create_using=None):
     """Return the circular ladder graph CL_n of length n.
 
@@ -224,6 +210,61 @@ def circular_ladder_graph(n,create_using=None):
     G.name="circular_ladder_graph(%d)"%n
     G.add_edge(0,n-1)
     G.add_edge(n,2*n-1)
+    return G
+
+
+def circulant_graph(n, offsets, create_using=None):
+    """Generates the circulant graph Ci_n(x_1, x_2, ..., x_m) with n vertices.
+
+    Returns
+    -------
+    The graph Ci_n(x_1, ..., x_m) consisting of n vertices 0, ..., n-1 such
+    that the vertex with label i is connected to the vertices labelled (i + x)
+    and (i - x), for all x in x_1 up to x_m, with the indices taken modulo n.
+
+    Parameters
+    ----------
+    n : integer
+        The number of vertices the generated graph is to contain.
+    offsets : list of integers
+        A list of vertex offsets, x_1 up to x_m, as described above.
+    create_using : NetworkX graph type, optional
+        Use specified type to construct graph (default = networkx.Graph)
+
+    Examples
+    --------
+    Many well-known graph families are subfamilies of the circulant graphs; for
+    example, to generate the cycle graph on n points, we connect every vertex to
+    every other at offset plus or minus one. For n = 10,
+
+    >>> import networkx
+    >>> G = networkx.generators.classic.circulant_graph(10, [1])
+    >>> edges = [
+    ...     (0, 9), (0, 1), (1, 2), (2, 3), (3, 4),
+    ...     (4, 5), (5, 6), (6, 7), (7, 8), (8, 9)]
+    ...
+    >>> sorted(edges) == sorted(G.edges())
+    True
+
+    Similarly, we can generate the complete graph on 5 points with the set of
+    offsets [1, 2]:
+
+    >>> G = networkx.generators.classic.circulant_graph(5, [1, 2])
+    >>> edges = [
+    ...     (0, 1), (0, 2), (0, 3), (0, 4), (1, 2),
+    ...     (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+    ...
+    >>> sorted(edges) == sorted(G.edges())
+    True
+
+    """
+    G = empty_graph(n, create_using)
+    template = 'circulant_graph(%d, [%s])'
+    G.name = template % (n, ', '.join(str(j) for j in offsets))
+    for i in range(n):
+        for j in offsets:
+            G.add_edge(i, (i - j) % n)
+            G.add_edge(i, (i + j) % n)
     return G
 
 def cycle_graph(n,create_using=None):
@@ -500,6 +541,8 @@ def wheel_graph(n,create_using=None):
    Node labels are the integers 0 to n - 1.
 
     """
+    if n == 0:
+        return nx.empty_graph(n, create_using=create_using)
     G=star_graph(n-1,create_using)
     G.name="wheel_graph(%d)"%n
     G.add_edges_from([(v,v+1) for v in range(1,n-1)])
@@ -507,3 +550,75 @@ def wheel_graph(n,create_using=None):
         G.add_edge(1,n-1)
     return G
 
+
+def complete_multipartite_graph(*block_sizes):
+    """Returns the complete multipartite graph with the specified block sizes.
+
+    Parameters
+    ----------
+
+    block_sizes : tuple of integers
+
+       The number of vertices in each block of the multipartite graph. The
+       length of this tuple is the number of blocks.
+
+    Returns
+    -------
+
+    G : NetworkX Graph
+
+       Returns the complete multipartite graph with the specified block sizes.
+
+       For each node, the node attribute ``'block'`` is an integer indicating
+       which block contains the node.
+
+    Examples
+    --------
+
+    Creating a complete tripartite graph, with blocks of one, two, and three
+    vertices, respectively.
+
+        >>> import networkx as nx
+        >>> G = nx.complete_multipartite_graph(1, 2, 3)
+        >>> [G.node[u]['block'] for u in G]
+        [0, 1, 1, 2, 2, 2]
+        >>> G.edges(0)
+        [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
+        >>> G.edges(2)
+        [(2, 0), (2, 3), (2, 4), (2, 5)]
+        >>> G.edges(4)
+        [(4, 0), (4, 1), (4, 2)]
+
+    Notes
+    -----
+
+    This function generalizes several other graph generator functions.
+
+    - If no block sizes are given, this returns the null graph.
+    - If a single block size ``n`` is given, this returns the empty graph on
+      ``n`` nodes.
+    - If two block sizes ``m`` and ``n`` are given, this returns the complete
+      bipartite graph on ``m + n`` nodes.
+    - If block sizes ``1`` and ``n`` are given, this returns the star graph on
+      ``n + 1`` nodes.
+
+    See also
+    --------
+
+    complete_bipartite_graph
+
+    """
+    G = nx.empty_graph(sum(block_sizes))
+    # If block_sizes is (n1, n2, n3, ...), create pairs of the form (0, n1),
+    # (n1, n1 + n2), (n1 + n2, n1 + n2 + n3), etc.
+    extents = zip([0] + list(accumulate(block_sizes)), accumulate(block_sizes))
+    blocks = [range(start, end) for start, end in extents]
+    for (i, block) in enumerate(blocks):
+        G.add_nodes_from(block, block=i)
+    # Across blocks, all vertices should be adjacent. We can use
+    # itertools.combinations() because the complete multipartite graph is an
+    # undirected graph.
+    for block1, block2 in itertools.combinations(blocks, 2):
+        G.add_edges_from(itertools.product(block1, block2))
+    G.name = 'complete_multiparite_graph{0}'.format(block_sizes)
+    return G

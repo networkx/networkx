@@ -6,9 +6,15 @@ Generators - Classic
 
 Unit tests for various classic graph generators in generators/classic.py
 """
+import itertools
+
 from nose.tools import *
+import networkx as nx
 from networkx import *
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
+from networkx.testing import assert_edges_equal
+from networkx.testing import assert_nodes_equal
+
 is_isomorphic=graph_could_be_isomorphic
 
 class TestGeneratorClassic():
@@ -136,44 +142,28 @@ class TestGeneratorClassic():
             assert_true(number_of_nodes(g) == m)
             assert_true(number_of_edges(g) == m * (m - 1))
 
-    def test_complete_bipartite_graph(self):
-        G=complete_bipartite_graph(0,0)
-        assert_true(is_isomorphic( G, null_graph() ))
-
-        for i in [1, 5]:
-            G=complete_bipartite_graph(i,0)
-            assert_true(is_isomorphic( G, empty_graph(i) ))
-            G=complete_bipartite_graph(0,i)
-            assert_true(is_isomorphic( G, empty_graph(i) ))
-
-        G=complete_bipartite_graph(2,2)
-        assert_true(is_isomorphic( G, cycle_graph(4) ))
-
-        G=complete_bipartite_graph(1,5)
-        assert_true(is_isomorphic( G, star_graph(5) ))
-
-        G=complete_bipartite_graph(5,1)
-        assert_true(is_isomorphic( G, star_graph(5) ))
-
-        # complete_bipartite_graph(m1,m2) is a connected graph with
-        # m1+m2 nodes and  m1*m2 edges
-        for m1, m2 in [(5, 11), (7, 3)]:
-            G=complete_bipartite_graph(m1,m2)
-            assert_equal(number_of_nodes(G), m1 + m2)
-            assert_equal(number_of_edges(G), m1 * m2)
-
-        assert_raises(networkx.exception.NetworkXError,
-                      complete_bipartite_graph, 7, 3, create_using=DiGraph())
-
-        mG=complete_bipartite_graph(7, 3, create_using=MultiGraph())
-        assert_equal(mG.edges(), G.edges())
-
     def test_circular_ladder_graph(self):
         G=circular_ladder_graph(5)
         assert_raises(networkx.exception.NetworkXError, circular_ladder_graph,
                       5, create_using=DiGraph())
         mG=circular_ladder_graph(5, create_using=MultiGraph())
         assert_equal(mG.edges(), G.edges())
+
+    def test_circulant_graph(self):
+        # Ci_n(1) is the cycle graph for all n
+        Ci6_1 = circulant_graph(6, [1])
+        C6 = cycle_graph(6)
+        assert_equal(Ci6_1.edges(), C6.edges())
+
+        # Ci_n(1, 2, ..., n div 2) is the complete graph for all n
+        Ci7 = circulant_graph(7, [1, 2, 3])
+        K7 = complete_graph(7)
+        assert_equal(Ci7.edges(), K7.edges())
+
+        # Ci_6(1, 3) is K_3,3 i.e. the utility graph
+        Ci6_1_3 = circulant_graph(6, [1, 3])
+        K3_3 = complete_bipartite_graph(3, 3)
+        assert_true(is_isomorphic(Ci6_1_3, K3_3))
 
     def test_cycle_graph(self):
         G=cycle_graph(4)
@@ -406,3 +396,41 @@ class TestGeneratorClassic():
         mg=wheel_graph(10, create_using=MultiGraph())
         assert_equal(mg.edges(), g.edges())
 
+    def test_complete_0_partite_graph(self):
+        """Tests that the complete 0-partite graph is the null graph."""
+        G = nx.complete_multipartite_graph()
+        H = nx.null_graph()
+        assert_nodes_equal(G, H)
+        assert_edges_equal(G.edges(), H.edges())
+
+    def test_complete_1_partite_graph(self):
+        """Tests that the complete 1-partite graph is the empty graph."""
+        G = nx.complete_multipartite_graph(3)
+        H = nx.empty_graph(3)
+        assert_nodes_equal(G, H)
+        assert_edges_equal(G.edges(), H.edges())
+
+    def test_complete_2_partite_graph(self):
+        """Tests that the complete 2-partite graph is the complete bipartite
+        graph.
+
+        """
+        G = nx.complete_multipartite_graph(2, 3)
+        H = nx.complete_bipartite_graph(2, 3)
+        assert_nodes_equal(G, H)
+        assert_edges_equal(G.edges(), H.edges())
+
+    def test_complete_multipartite_graph(self):
+        """Tests for generating the complete multipartite graph."""
+        G = nx.complete_multipartite_graph(2, 3, 4)
+        blocks = [(0, 1), (2, 3, 4), (5, 6, 7, 8)]
+        # Within each block, no two vertices should be adjacent.
+        for block in blocks:
+            for u, v in itertools.combinations_with_replacement(block, 2):
+                assert_true(v not in G[u])
+                assert_equal(G.node[u], G.node[v])
+        # Across blocks, all vertices should be adjacent.
+        for (block1, block2) in itertools.combinations(blocks, 2):
+            for u, v in itertools.product(block1, block2):
+                assert_true(v in G[u])
+                assert_not_equal(G.node[u], G.node[v])

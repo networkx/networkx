@@ -1,6 +1,6 @@
 """Laplacian matrix of graphs.
 """
-#    Copyright (C) 2004-2013 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -68,7 +68,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 
     .. math::
 
-        NL = D^{-1/2} L D^{-1/2}
+        N = D^{-1/2} L D^{-1/2}
 
     where `L` is the graph Laplacian and `D` is the diagonal matrix of
     node degrees.
@@ -88,7 +88,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
 
     Returns
     -------
-    L : NumPy matrix
+    N : NumPy matrix
       The normalized Laplacian matrix of G.
 
     Notes
@@ -97,7 +97,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight='weight'):
     See to_numpy_matrix for other options.
 
     If the Graph contains selfloops, D is defined as diag(sum(A,1)), where A is
-    the adjencency matrix [2]_.
+    the adjacency matrix [2]_.
 
     See Also
     --------

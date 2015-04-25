@@ -13,7 +13,7 @@ matplotlib:     http://matplotlib.org/
 pygraphviz:     http://pygraphviz.github.io/
 
 """
-#    Copyright (C) 2004-2012 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -419,8 +419,8 @@ def draw_networkx_edges(G, pos,
     edgelist : collection of edge tuples
        Draw only specified edges(default=G.edges())
 
-    width : float
-       Line width of edges (default =1.0)
+    width : float, or array of floats
+       Line width of edges (default=1.0)
 
     edge_color : color string, or array of floats
        Edge color. Can be a single color format string (default='r'),

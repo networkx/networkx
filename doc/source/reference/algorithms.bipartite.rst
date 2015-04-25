@@ -84,4 +84,22 @@ Centrality
    betweenness_centrality
 
 
+Generators
+----------
+.. automodule:: networkx.algorithms.bipartite.generators
+.. autosummary::
+   :toctree: generated/
+
+   complete_bipartite_graph
+   configuration_model
+   havel_hakimi_graph
+   reverse_havel_hakimi_graph
+   alternating_havel_hakimi_graph
+   preferential_attachment_graph
+   random_graph
+   gnmk_random_graph
+
+
+
+
 

@@ -21,7 +21,7 @@ Using
     >>> print(sorted(G.edges()))
     [(1, 2)]
 """
-#    Copyright (C) 2004-2010 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -42,10 +42,10 @@ del sys
 # Release data
 from networkx import release
 
-__author__   = '%s <%s>\n%s <%s>\n%s <%s>' % \
-              ( release.authors['Hagberg'] + release.authors['Schult'] + \
-                release.authors['Swart'] )
-__license__  = release.license
+__author__ = '%s <%s>\n%s <%s>\n%s <%s>' % \
+    (release.authors['Hagberg'] + release.authors['Schult'] +
+        release.authors['Swart'])
+__license__ = release.license
 
 __date__ = release.date
 __version__ = release.version
@@ -62,8 +62,8 @@ address = {Pasadena, CA USA},
 pages = {11--15}
 }"""
 
-#These are import orderwise
-from networkx.exception import  *
+# These are import orderwise
+from networkx.exception import *
 import networkx.external
 import networkx.utils
 
@@ -87,7 +87,7 @@ from networkx.generators import *
 import networkx.readwrite
 from networkx.readwrite import *
 
-#Need to test with SciPy, when available
+# Need to test with SciPy, when available
 import networkx.algorithms
 from networkx.algorithms import *
 import networkx.linalg
@@ -97,4 +97,3 @@ from networkx.tests.test import run as test
 
 import networkx.drawing
 from networkx.drawing import *
-

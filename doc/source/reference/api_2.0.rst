@@ -55,21 +55,91 @@ New functionalities
   magnitude faster than the old implementation.
 
 * [`#1286 <https://github.com/networkx/networkx/pull/1286>`_]
-  Added the Margulis-Gabber-Galil graph to ``networkx.generators``.
+  Added the Margulis--Gabber--Galil graph to ``networkx.generators``.
+
+* [`#1306 <https://github.com/networkx/networkx/pull/1306>`_]
+  Added the chordal p-cycle graph, a mildly explicit algebraic construction
+  of a family of 3-regular expander graphs. Also, moves both the existing
+  expander graph generator function (for the Margulis-Gabber-Galil
+  expander) and the new chordal cycle graph function to a new module,
+  ``networkx.generators.expanders``.
+
+* [`#1314 <https://github.com/networkx/networkx/pull/1314>`_]
+  Allow overwriting of base class dict with dict-like:
+  OrderedGraph, ThinGraph, LogGraph, etc.
+
+* [`#1321 <https://github.com/networkx/networkx/pull/1321>`_]
+  Added ``to_pandas_dataframe`` and ``from_pandas_dataframe``
+
+* [`#1322 <https://github.com/networkx/networkx/pull/1322>`_]
+  Added the Hopcroft--Karp algorithm for finding a maximum cardinality
+  matching in bipartite graphs.
+
+* [`#1336 <https://github.com/networkx/networkx/pull/1336>`_]
+  Expanded data keyword in G.edges and added default keyword
 
 * [`#1338 <https://github.com/networkx/networkx/pull/1338>`_]
   Added support for finding optimum branchings and arborescences.
 
 * [`#1354 <https://github.com/networkx/networkx/pull/1354>`_]
-  Expanded layout functions to add flexibility for drawing subsets of nodes 
+  Expanded layout functions to add flexibility for drawing subsets of nodes
   with distinct layouts and for centering each layout around given
   coordinates.
+
+* [`#1356 <https://github.com/networkx/networkx/pull/1356>`_]
+  Added ordered variants of default graph class.
+
+* [`#1360 <https://github.com/networkx/networkx/pull/1360>`_]
+  Added harmonic centrality to ``network.algorithms.centrality``.
+
+* [`#1390 <https://github.com/networkx/networkx/pull/1390>`_]
+  The ``generators.bipartite`` have been moved to
+  ``algorithms.bipartite.generators``. The functions are not imported in the
+  main  namespace, so to use it, the bipartite package has to be imported.
+
+* [`#1405 <https://github.com/networkx/networkx/pull/1405>`_]
+  Added fast approximation for node connectivity based on White and
+  Newman's approximation algorithm for finding node independent paths
+  between two nodes.
+
+* [`#1413 <https://github.com/networkx/networkx/pull/1413>`_]
+  Added transitive closure and antichains function for directed acyclic
+  graphs in ``algorithms.dag``
+
+* [`#1425 <https://github.com/networkx/networkx/pull/1425>`_]
+  Added generator function for the complete multipartite graph.
+
+* [`#1427 <https://github.com/networkx/networkx/pull/1427>`_]
+  Added nonisomorphic trees generator
+
+* [`#1436 <https://github.com/networkx/networkx/pull/1436>`_]
+  Added a generator function for circulant graphs to the
+  ``networkx.generators.classic`` module.
+
+* [`#1437 <https://github.com/networkx/networkx/pull/1437>`_]
+  Added function for computing quotient graphs; also created a new module,
+  ``networkx.algorithms.minors``.
+
+* [`#1445 <https://github.com/networkx/networkx/pull/1448>`_]
+  Added a new modularity matrix module to ``networkx.linalg``,
+  and associated spectrum functions to the ``networkx.linalg.spectrum``
+  module.
+
+* [`#1455 <https://github.com/networkx/networkx/pull/1455>`_]
+  Added the directed modularity matrix to the
+  ``networkx.linalg.modularity_matrix`` module.
+
+* [`#1447 <https://github.com/networkx/networkx/pull/1447>`_]
+  Added function to generate all simple paths starting with the shortest
+  ones based on Yen's algorithm for finding k shortest paths at
+  ``algorithms.simple_paths``
 
 Removed functionalities
 -----------------------
 
 * [`#1236 <https://github.com/networkx/networkx/pull/1236>`_]
-  The legacy ``ford_fulkerson`` maximum flow function is removed.
+  The legacy ``ford_fulkerson`` maximum flow function is removed. Use
+  ``edmonds_karp`` instead.
 
 Miscellaneous changes
 ---------------------

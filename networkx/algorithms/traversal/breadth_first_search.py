@@ -17,7 +17,7 @@ def bfs_edges(G, source, reverse=False):
     ----------
     G : NetworkX graph
 
-    source : node, optional
+    source : node
        Specify starting node for breadth-first search and return edges in
        the component reachable from source.
 
@@ -40,9 +40,6 @@ def bfs_edges(G, source, reverse=False):
     -----
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
-
-    If a source is not specified then a source is chosen arbitrarily and
-    repeatedly until all components in the graph are searched.
     """
     if reverse and isinstance(G, nx.DiGraph):
         neighbors = G.predecessors_iter
@@ -69,7 +66,7 @@ def bfs_tree(G, source, reverse=False):
     ----------
     G : NetworkX graph
 
-    source : node, optional
+    source : node
        Specify starting node for breadth-first search and return edges in
        the component reachable from source.
 
@@ -92,9 +89,6 @@ def bfs_tree(G, source, reverse=False):
     -----
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
-
-    If a source is not specified then a source is chosen arbitrarily and
-    repeatedly until all components in the graph are searched.
     """
     T = nx.DiGraph()
     T.add_node(source)
@@ -108,7 +102,7 @@ def bfs_predecessors(G, source):
     ----------
     G : NetworkX graph
 
-    source : node, optional
+    source : node
        Specify starting node for breadth-first search and return edges in
        the component reachable from source.
 
@@ -128,9 +122,6 @@ def bfs_predecessors(G, source):
     -----
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
-
-    If a source is not specified then a source is chosen arbitrarily and
-    repeatedly until all components in the graph are searched.
     """
     return dict((t,s) for s,t in bfs_edges(G,source))
 
@@ -141,7 +132,7 @@ def bfs_successors(G, source):
     ----------
     G : NetworkX graph
 
-    source : node, optional
+    source : node
        Specify starting node for breadth-first search and return edges in
        the component reachable from source.
 
@@ -161,9 +152,6 @@ def bfs_successors(G, source):
     -----
     Based on http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     by D. Eppstein, July 2004.
-
-    If a source is not specified then a source is chosen arbitrarily and
-    repeatedly until all components in the graph are searched.
     """
     d = defaultdict(list)
     for s,t in bfs_edges(G,source):

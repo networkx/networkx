@@ -10,7 +10,7 @@ sometimes called the Erdős-Rényi graph.
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 __credits__ = """"""
-#    Copyright (C) 2004-2006 by 
+#    Copyright (C) 2004-2015 by 
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>

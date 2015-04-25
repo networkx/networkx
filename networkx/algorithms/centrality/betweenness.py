@@ -2,7 +2,7 @@
 """
 Betweenness centrality measures.
 """
-#    Copyright (C) 2004-2011 by
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -129,7 +129,8 @@ def betweenness_centrality(G, k=None, normalized=True, weight=None,
     return betweenness
 
 
-def edge_betweenness_centrality(G, normalized=True, weight=None):
+def edge_betweenness_centrality(G, k=None, normalized=True, weight=None,
+                                seed=None):
     r"""Compute betweenness centrality for edges.
 
     Betweenness centrality of an edge `e` is the sum of the
@@ -137,7 +138,7 @@ def edge_betweenness_centrality(G, normalized=True, weight=None):
 
     .. math::
 
-       c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|e)}{\sigma(s, t)}
+       c_B(e) =\sum_{s,t \in V} \frac{\sigma(s, t|e)}{\sigma(s, t)}
 
     where `V` is the set of nodes,`\sigma(s, t)` is the number of
     shortest `(s, t)`-paths, and `\sigma(s, t|e)` is the number of
@@ -147,6 +148,11 @@ def edge_betweenness_centrality(G, normalized=True, weight=None):
     ----------
     G : graph
       A NetworkX graph
+
+    k : int, optional (default=None)
+      If k is not None use k node samples to estimate betweenness.
+      The value of k <= n where n is the number of nodes in the graph.
+      Higher values give better approximation.
 
     normalized : bool, optional
       If True the betweenness values are normalized by `2/(n(n-1))`
@@ -188,7 +194,12 @@ def edge_betweenness_centrality(G, normalized=True, weight=None):
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     # b[e]=0 for e in G.edges()
     betweenness.update(dict.fromkeys(G.edges(), 0.0))
-    for s in G:
+    if k is None:
+        nodes = G
+    else:
+        random.seed(seed)
+        nodes = random.sample(G.nodes(), k)
+    for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
             S, P, sigma = _single_source_shortest_path_basic(G, s)
@@ -207,8 +218,8 @@ def edge_betweenness_centrality(G, normalized=True, weight=None):
 # obsolete name
 
 
-def edge_betweenness(G, normalized=True, weight=None):
-    return edge_betweenness_centrality(G, normalized, weight)
+def edge_betweenness(G, k=None, normalized=True, weight=None, seed=None):
+    return edge_betweenness_centrality(G, k, normalized, weight, seed)
 
 
 # helpers for betweenness centrality
@@ -334,7 +345,7 @@ def _rescale(betweenness, n, normalized, directed=False, k=None):
     return betweenness
 
 
-def _rescale_e(betweenness, n, normalized, directed=False):
+def _rescale_e(betweenness, n, normalized, directed=False, k=None):
     if normalized is True:
         if n <= 1:
             scale = None  # no normalization b=0 for all nodes
@@ -346,6 +357,8 @@ def _rescale_e(betweenness, n, normalized, directed=False):
         else:
             scale = None
     if scale is not None:
+        if k is not None:
+            scale = scale * n / k
         for v in betweenness:
             betweenness[v] *= scale
     return betweenness
