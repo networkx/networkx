@@ -73,7 +73,7 @@ def greedy_tsp(G, source, weight='weight'):
     >>>                           ('C', 'B', 12), ('C', 'D', 4), ('D', 'A', 14),
     >>>                           ('D', 'B', 15), ('D', 'C', 2)})
     >>> sol = nx.greedy_tsp(G, 'D')
-    >>> print(sol[0)
+    >>> print(sol[0])
     [('D', 'C'), ('C', 'B'), ('B', 'A')]
     >>> print(sol[1])
     17.0
