@@ -7,16 +7,16 @@ class TestConvertPandas(object):
     numpy=1 # nosetests attribute, use nosetests -a 'not numpy' to skip test
     @classmethod
     def setupClass(cls):
-        global np
-        global pd
         try:
-            import numpy as np
             import pandas as pd
         except ImportError:
             raise SkipTest('Pandas not available.')
 
     def __init__(self, ):
-        self.r = np.random.RandomState(seed=5)
+        global pd
+        import pandas as pd
+
+        self.r = pd.np.random.RandomState(seed=5)
         ints = self.r.random_integers(1, 10, size=(3,2))
         a = ['A', 'B', 'C']
         b = ['D', 'A', 'E']
