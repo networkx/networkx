@@ -20,7 +20,7 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'set_node_attributes','get_node_attributes',
            'set_edge_attributes','get_edge_attributes',
            'all_neighbors','non_neighbors', 'non_edges',
-           'common_neighbors','weighted_edges','negative_weights']
+           'common_neighbors', 'is_weighted','negative_weights']
 
 
 def nodes(G):
@@ -544,20 +544,20 @@ def common_neighbors(G, u, v):
     return (w for w in G[u] if w in G[v] and w not in (u, v))
 
 
-def weighted_edges(G, edge=None, weight='weight'):
+def is_weighted(G, edge=None, weight='weight'):
     """Check if all graph's edges or a specific edge is weighted.
 
     Parameters
     ----------
     G : Networkx graph
-       A graph
+        A graph
 
     edge : tuple, optional (default=None)
         Checks for a specific edge if it is weighted(not None) or for all
         edges in graph(None)
 
     weight: string, optional (default='weight')
-       Edge data key corresponding to the edge weight.
+        Edge data key corresponding to the edge weight.
 
     Returns
     -------
@@ -573,15 +573,15 @@ def weighted_edges(G, edge=None, weight='weight'):
     --------
     >>> G = nx.path_graph(4)
 
-    >>> print(nx.weighted_edges(G))
+    >>> print(nx.is_weighted(G))
     False
-    >>> print(nx.weighted_edges(G, (2, 3)))
+    >>> print(nx.is_weighted(G, (2, 3)))
     False
     >>> G = nx.DiGraph()
     >>> G.add_node(1)
     >>> G.add_node(2)
     >>> G.add_edge(1, 2, weight=1)
-    >>> print(nx.weighted_edges(G))
+    >>> print(nx.is_weighted(G))
     True
     """
     if edge is not None:
@@ -589,12 +589,10 @@ def weighted_edges(G, edge=None, weight='weight'):
         if attr is None:
             raise nx.NetworkXError('Edge does not exist in given graph.')
         return weight in attr
-    else:
-        weighted = True
-        for u, v, w in G.edges(data=True):
-            if weight not in w:
-                return False
-        return weighted
+    for u, v, w in G.edges(data=True):
+        if weight not in w:
+            return False
+    return True
 
 
 def negative_weights(G, edge=None, weight='weight'):

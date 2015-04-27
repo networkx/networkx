@@ -216,22 +216,22 @@ class TestFunction(object):
 
     def test_weighted_edges(self):
         G = nx.path_graph(4)
-        assert_false(nx.weighted_edges(G))
-        assert_false(nx.weighted_edges(G, (2, 3)))
+        assert_false(nx.is_weighted(G))
+        assert_false(nx.is_weighted(G, (2, 3)))
         G.add_node(4)
         G.add_edge(3, 4, weight=4)
-        assert_false(nx.weighted_edges(G))
-        assert_true(nx.weighted_edges(G, (3, 4)))
+        assert_false(nx.is_weighted(G))
+        assert_true(nx.is_weighted(G, (3, 4)))
         G = nx.DiGraph()
         G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -5),
                                      ('0', '2', 2), ('1', '2', 4),
                                      ('2', '3', 1)])
-        assert_true(nx.weighted_edges(G))
-        assert_true(nx.weighted_edges(G, ('1', '0')))
+        assert_true(nx.is_weighted(G))
+        assert_true(nx.is_weighted(G, ('1', '0')))
         G = G.to_undirected()
-        assert_true(nx.weighted_edges(G))
-        assert_true(nx.weighted_edges(G, ('1', '0')))
-        assert_raises(nx.NetworkXError, nx.weighted_edges, G, (1, 2))
+        assert_true(nx.is_weighted(G))
+        assert_true(nx.is_weighted(G, ('1', '0')))
+        assert_raises(nx.NetworkXError, nx.is_weighted, G, (1, 2))
 
     def test_negative_weights(self):
         G = nx.Graph()
