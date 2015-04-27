@@ -589,10 +589,7 @@ def is_weighted(G, edge=None, weight='weight'):
         if attr is None:
             raise nx.NetworkXError('Edge does not exist in given graph.')
         return weight in attr
-    for u, v, w in G.edges(data=True):
-        if weight not in w:
-            return False
-    return True
+    return all(weight in w for u, v, w in G.edges(data=True))
 
 
 def negative_weights(G, edge=None, weight='weight'):
@@ -636,7 +633,6 @@ def negative_weights(G, edge=None, weight='weight'):
     >>> print(nx.negative_weights(G))
     True
     """
-    negative = False
     if edge is not None:
         attr = G.get_edge_data(*edge)
         if attr is None:
@@ -649,4 +645,4 @@ def negative_weights(G, edge=None, weight='weight'):
             if weight in w:
                 if w[weight] < 0:
                     return True
-    return negative
+    return False
