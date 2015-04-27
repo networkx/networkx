@@ -1,5 +1,5 @@
 # Test for approximation to k-components algorithm
-from nose.tools import assert_equal, assert_true, assert_false, assert_raises
+from nose.tools import assert_equal, assert_true, assert_false, assert_raises, raises
 import networkx as nx
 from networkx.algorithms.approximation import k_components
 from networkx.algorithms.approximation.kcomponents import _AntiGraph, _same
@@ -188,68 +188,10 @@ def test_example_1_detail_3_and_4():
         for component in components:
             assert_true(component in result[k])
 
-def test_davis_southern_women():
-    solution = {
-        3: [set(['Nora Fayette',
-                'E10',
-                'Myra Liddel',
-                'E12',
-                'E14',
-                'Frances Anderson',
-                'Evelyn Jefferson',
-                'Ruth DeSand',
-                'Helen Lloyd',
-                'Eleanor Nye',
-                'E9',
-                'E8',
-                'E5',
-                'E4',
-                'E7',
-                'E6',
-                'E1',
-                'Verne Sanderson',
-                'E3',
-                'E2',
-                'Theresa Anderson',
-                'Pearl Oglethorpe',
-                'Katherina Rogers',
-                'Brenda Rogers',
-                'E13',
-                'Charlotte McDowd',
-                'Sylvia Avondale',
-                'Laura Mandeville'])
-            ],
-        4: [set(['Nora Fayette',
-                'E10',
-                'Verne Sanderson',
-                'E12',
-                'Frances Anderson',
-                'Evelyn Jefferson',
-                'Ruth DeSand',
-                'Helen Lloyd',
-                'Eleanor Nye',
-                'E9',
-                'E8',
-                'E5',
-                'E4',
-                'E7',
-                'E6',
-                'Myra Liddel',
-                'E3',
-                'Theresa Anderson',
-                'Katherina Rogers',
-                'Brenda Rogers',
-                'Charlotte McDowd',
-                'Sylvia Avondale',
-                'Laura Mandeville']),
-        ]
-    }
-    G = nx.davis_southern_women_graph()
-    result = k_components(G, exact=True)
-    for k, components in solution.items():
-        for component in components:
-            assert_true(component in result[k])
-
+@raises(nx.NetworkXNotImplemented)
+def test_directed():
+    G = nx.gnp_random_graph(10, 0.4, directed=True)
+    kc = k_components(G)
 
 def test_same():
     equal = {'A': 2, 'B': 2, 'C': 2}

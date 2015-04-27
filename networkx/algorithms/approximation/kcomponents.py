@@ -9,6 +9,8 @@ import collections
 
 import networkx as nx
 from networkx.exception import NetworkXError
+from networkx.utils import not_implemented_for
+
 from networkx.algorithms.approximation import local_node_connectivity
 from networkx.algorithms.connectivity import \
     local_node_connectivity as exact_local_node_connectivity
@@ -21,7 +23,8 @@ __author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])
 __all__ = ['k_components']
 
 
-def k_components(G, exact=False, min_density=0.95):
+not_implemented_for('directed')
+def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
     
     A `k`-component is a maximal subgraph of a graph G that has, at least, 
@@ -40,11 +43,6 @@ def k_components(G, exact=False, min_density=0.95):
     ----------
     G : NetworkX graph
         Undirected graph
-
-    exact : Bool
-        If True use the exact flow based connectivity to compute pairwise
-        node connectivity. If False use White and Newman's fast 
-        approximation. Default value: False.
 
     min_density : Float
         Density relaxation treshold. Default value 0.95
@@ -112,14 +110,8 @@ def k_components(G, exact=False, min_density=0.95):
     # Dictionary with connectivity level (k) as keys and a list of
     # sets of nodes that form a k-component as values
     k_components = collections.defaultdict(list)
-    if exact:
-        node_connectivity = exact_local_node_connectivity
-        min_density = 1.0
-        A = build_auxiliary_node_connectivity(G)
-        R = build_residual_network(A, 'capacity')
-    else:
-        node_connectivity = local_node_connectivity
     # make a few functions local for speed
+    node_connectivity = local_node_connectivity
     k_core = nx.k_core
     core_number = nx.core_number
     biconnected_components = nx.biconnected_components
@@ -150,19 +142,11 @@ def k_components(G, exact=False, min_density=0.95):
             if len(nodes) < k:
                 continue
             SG = G.subgraph(nodes)
-            if exact:
-                ar_nodes = [n for n, d in A.nodes(data=True) if d['id'] in nodes]
-                SA = A.subgraph(ar_nodes)
-                SR = R.subgraph(ar_nodes)
-                kwargs = dict(auxiliary=SA, residual=SR)
-            else:
-                kwargs = dict()
             # Build auxiliary graph
             H = _AntiGraph()
             H.add_nodes_from(SG.nodes_iter())
             for u,v in combinations(SG, 2):
-                kwargs['cutoff'] = k
-                K = node_connectivity(SG, u, v, **kwargs)
+                K = node_connectivity(SG, u, v, cutoff=k)
                 if k > K:
                     H.add_edge(u,v)
             for h_nodes in biconnected_components(H):
@@ -248,7 +232,8 @@ class _AntiGraph(nx.Graph):
            The adjacency dictionary for nodes connected to n.
 
         """
-        return dict((node, self.all_edge_dict) for node in 
+        all_edge_dict = self.all_edge_dict
+        return dict((node, all_edge_dict) for node in 
                     set(self.adj) - set(self.adj[n]) - set([n]))
 
     def neighbors(self, n):
