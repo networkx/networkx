@@ -5,12 +5,12 @@ Find an eulerian path
 """
 #    Copyright (C) 2015 by
 #    Edwardo S. Rivera <edwardo.rivera@upr.edu>
-#    All rights reserved.
+#    Humberto Ortiz <humberto@hpcf.upr.edu>
 #    BSD license. 
+#    All rights reserved.
 
 
-
-__author__ = """\n""".join(['Edwardo Rivera <edwardo.rivera@urp.edu>'])
+__author__ = """\n""".join(['Edwardo Rivera <edwardo.rivera@urp.edu>','Humberto Ortiz <humberto@hpcf.upr.edu>'])
 
 __all__ = ['find_eulerian_path'] 
 
