@@ -683,9 +683,9 @@ def write_gml(G, path, stringizer=None):
         .bz2 will be compressed.
 
     stringizer : callable, optional
-        A stringizer which converts non-int/float/dict values into strings. If
-        it cannot convert a value into a string, it should raise a
-        ``ValueError`` raised to indicate that. Default value: ``None``.
+        A stringizer which converts non-int/non-float/non-dict values into
+        strings. If it cannot convert a value into a string, it should raise a
+        ``ValueError`` to indicate that. Default value: ``None``.
 
     Raises
     ------
