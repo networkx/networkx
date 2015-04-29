@@ -650,6 +650,7 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
     return any(weight in data and data[weight] < 0
                for u, v, data in G.edges(data=True))
 
+
 def is_empty(G):
     """Returns ``True`` if ``G`` has no edges.
 
@@ -670,8 +671,5 @@ def is_empty(G):
     number of nodes in the graph.
 
     """
-    for node, neighbors in G.adj.items():
-        if neighbors:
-            return False
-    return True
+    return not any(G.adj.values())
 
