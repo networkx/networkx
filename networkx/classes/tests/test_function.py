@@ -404,3 +404,12 @@ def test_get_edge_attributes():
             keys = [(0,1), (1,2)]
         for key in keys:
             assert_equal(attrs[key], 100)
+
+def test_is_empty():
+    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
+    for G in graphs:
+        assert_true(nx.is_empty(G))
+        G.add_nodes_from(range(5))
+        assert_true(nx.is_empty(G))
+        G.add_edges_from([(1, 2), (3, 4)])
+        assert_false(nx.is_empty(G))

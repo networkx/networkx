@@ -591,6 +591,10 @@ def is_weighted(G, edge=None, weight='weight'):
             raise nx.NetworkXError(msg)
         return weight in data
 
+    if is_empty(G):
+        # Special handling required since: all([]) == True
+        return False
+
     return all(weight in data for u, v, data in G.edges(data=True))
 
 
@@ -645,3 +649,29 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
 
     return any(weight in data and data[weight] < 0
                for u, v, data in G.edges(data=True))
+
+def is_empty(G):
+    """Returns ``True`` if ``G`` has no edges.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    Returns
+    -------
+    bool
+        ``True`` if ``G`` has no edges, and ``False`` otherwise.
+
+    Notes
+    -----
+    An empty graph can have nodes but not edges. The empty graph with zero
+    nodes is known as the null graph. This is an O(n) operation where n is the
+    number of nodes in the graph.
+
+    """
+    for node, neighbors in G.adj.items():
+        if neighbors:
+            return False
+    return True
+
