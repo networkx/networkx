@@ -629,10 +629,10 @@ def is_negatively_weighted(G, edge=None, weight='weight'):
     >>> G=nx.Graph()
     >>> G.add_edges_from([(1, 3), (2, 4), (2, 6)])
     >>> G.add_edge(1, 2, weight=4)
-    >>> nx.is_negatively_weighted(G, (1, 2)))
+    >>> nx.is_negatively_weighted(G, (1, 2))
     False
     >>> G[2][4]['weight'] = -2
-    >>> nx.negatively_weighted(G)
+    >>> nx.is_negatively_weighted(G)
     True
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -2)])
