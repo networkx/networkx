@@ -123,6 +123,10 @@ New functionalities
 * [`#1438 <https://github.com/networkx/networkx/pull/1438>`_]
   Added longest_path and longest_path_length for DAG.
 
+* [`#1439 <https://github.com/networkx/networkx/pull/1439>`_]
+  Added node and edge contraction functions to
+  :mod:`networkx.algorithms.minors`.
+
 * [`#1445 <https://github.com/networkx/networkx/pull/1448>`_]
   Added a new modularity matrix module to ``networkx.linalg``,
   and associated spectrum functions to the ``networkx.linalg.spectrum``
