@@ -20,7 +20,8 @@ __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'set_node_attributes','get_node_attributes',
            'set_edge_attributes','get_edge_attributes',
            'all_neighbors','non_neighbors', 'non_edges',
-           'common_neighbors', 'is_weighted','negative_weights']
+           'common_neighbors', 'is_weighted','is_negatively_weighted',
+           'is_empty']
 
 
 def nodes(G):
@@ -545,97 +546,132 @@ def common_neighbors(G, u, v):
 
 
 def is_weighted(G, edge=None, weight='weight'):
-    """Check if all graph's edges or a specific edge is weighted.
+    """Returns ``True`` if ``G`` has weighted edges.
 
     Parameters
     ----------
-    G : Networkx graph
-        A graph
+    G : graph
+        A NetworkX graph.
 
-    edge : tuple, optional (default=None)
-        Checks for a specific edge if it is weighted(not None) or for all
-        edges in graph(None)
+    edge : tuple, optional
+        A 2-tuple specifying the only edge in ``G`` that will be tested. If
+        ``None``, then every edge in ``G`` is tested.
 
-    weight: string, optional (default='weight')
-        Edge data key corresponding to the edge weight.
+    weight: string, optional
+        The attribute name used to query for edge weights.
 
     Returns
     -------
-    Returns True if all graph's edges or a specific edge is weighted; False
-    otherwise.
+    bool
+        A boolean signifying if ``G``, or the specified edge, is weighted.
 
     Raises
     ------
     NetworkXError
-        If given edge does not exist in graph.
+        If the specified edge does not exist.
 
     Examples
     --------
     >>> G = nx.path_graph(4)
+    >>> nx.is_weighted(G)
+    False
+    >>> nx.is_weighted(G, (2, 3))
+    False
 
-    >>> print(nx.is_weighted(G))
-    False
-    >>> print(nx.is_weighted(G, (2, 3)))
-    False
     >>> G = nx.DiGraph()
-    >>> G.add_node(1)
-    >>> G.add_node(2)
     >>> G.add_edge(1, 2, weight=1)
-    >>> print(nx.is_weighted(G))
+    >>> nx.is_weighted(G)
     True
+
     """
     if edge is not None:
-        attr = G.get_edge_data(*edge)
-        if attr is None:
-            raise nx.NetworkXError('Edge does not exist in given graph.')
-        return weight in attr
-    return all(weight in w for u, v, w in G.edges(data=True))
+        data = G.get_edge_data(*edge)
+        if data is None:
+            msg = 'Edge {!r} does not exist.'.format(edge)
+            raise nx.NetworkXError(msg)
+        return weight in data
+
+    if is_empty(G):
+        # Special handling required since: all([]) == True
+        return False
+
+    return all(weight in data for u, v, data in G.edges(data=True))
 
 
-def negative_weights(G, edge=None, weight='weight'):
-    """Check if the graph has a negatively weighted edge or if a specific edge of the
-    graph has negative weight.
+def is_negatively_weighted(G, edge=None, weight='weight'):
+    """Returns ``True`` if ``G`` has negatively weighted edges.
 
     Parameters
     ----------
-    G : Networkx graph
-        A graph
+    G : graph
+        A NetworkX graph.
 
-    edge : tuple, optional (default=None)
-        Checks for a specific edge if it is negatively weighted (not None) or for all
-        edges in graph (None) (if one of them is negatively weighted)
+    edge : tuple, optional
+        A 2-tuple specifying the only edge in ``G`` that will be tested. If
+        ``None``, then every edge in ``G`` is tested.
 
-    weight: string, optional (default='weight')
-        Edge data key corresponding to the edge weight.
+    weight: string, optional
+        The attribute name used to query for edge weights.
 
     Returns
     -------
-    Returns True if all graph's edges or a specific edge has negative weight; False
-    otherwise.
+    bool
+        A boolean signifying if ``G``, or the specified edge, is negatively
+        weighted.
 
     Raises
     ------
     NetworkXError
-        If given edge does not exist in graph.
+        If the specified edge does not exist.
 
     Examples
     --------
     >>> G=nx.Graph()
     >>> G.add_edges_from([(1, 3), (2, 4), (2, 6)])
     >>> G.add_edge(1, 2, weight=4)
-    >>> print(nx.negative_weights(G, (1, 2)))
+    >>> nx.is_negatively_weighted(G, (1, 2)))
     False
     >>> G[2][4]['weight'] = -2
-    >>> print(nx.negative_weights(G))
+    >>> nx.negatively_weighted(G)
     True
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -2)])
-    >>> print(nx.negative_weights(G))
+    >>> nx.is_negatively_weighted(G)
     True
+
     """
     if edge is not None:
-        attr = G.get_edge_data(*edge)
-        if attr is None:
-            raise nx.NetworkXError('Edge does not exist in given graph.')
-        return weight in attr and attr[weight] < 0
-    return any(weight in w and w[weight] < 0 for u, v, w in G.edges(data=True))
+        data = G.get_edge_data(*edge)
+        if data is None:
+            msg = 'Edge {!r} does not exist.'.format(edge)
+            raise nx.NetworkXError(msg)
+        return weight in data and data[weight] < 0
+
+    return any(weight in data and data[weight] < 0
+               for u, v, data in G.edges(data=True))
+
+def is_empty(G):
+    """Returns ``True`` if ``G`` has no edges.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    Returns
+    -------
+    bool
+        ``True`` if ``G`` has no edges, and ``False`` otherwise.
+
+    Notes
+    -----
+    An empty graph can have nodes but not edges. The empty graph with zero
+    nodes is known as the null graph. This is an O(n) operation where n is the
+    number of nodes in the graph.
+
+    """
+    for node, neighbors in G.adj.items():
+        if neighbors:
+            return False
+    return True
+

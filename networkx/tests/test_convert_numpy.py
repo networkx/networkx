@@ -171,7 +171,7 @@ class TestConvertNumpy(object):
         assert_equal(A[1,0],7)
         A=nx.to_numpy_matrix(G,multigraph_weight=max)
         assert_equal(A[1,0],70)
-                         
+
     def test_from_numpy_matrix_parallel_edges(self):
         """Tests that the :func:`networkx.from_numpy_matrix` function
         interprets integer weights as the number of parallel edges when

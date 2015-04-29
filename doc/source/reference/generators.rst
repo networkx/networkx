@@ -6,6 +6,7 @@ Graph generators
 
 .. currentmodule:: networkx
 
+
 Atlas
 -----
 .. automodule:: networkx.generators.atlas
@@ -13,6 +14,7 @@ Atlas
    :toctree: generated/
 
    graph_atlas_g
+
 
 Classic
 -------
@@ -39,6 +41,7 @@ Classic
    trivial_graph
    wheel_graph
 
+
 Expanders
 ---------
 .. automodule:: networkx.generators.expanders
@@ -47,6 +50,7 @@ Expanders
 
    margulis_gabber_galil_graph
    chordal_cycle_graph
+
 
 Small
 -----
@@ -118,6 +122,7 @@ Degree Sequence
    degree_sequence_tree
    random_degree_sequence_graph
 
+
 Random Clustered
 ----------------
 .. automodule:: networkx.generators.random_clustered
@@ -179,6 +184,7 @@ Ego Graph
 
    ego_graph
 
+
 Stochastic
 ----------
 .. automodule:: networkx.generators.stochastic
@@ -186,6 +192,7 @@ Stochastic
    :toctree: generated/
 
    stochastic_graph
+
 
 Intersection
 ------------
@@ -197,6 +204,7 @@ Intersection
    k_random_intersection_graph
    general_random_intersection_graph
 
+
 Social Networks
 ---------------
 .. automodule:: networkx.generators.social
@@ -207,3 +215,26 @@ Social Networks
    davis_southern_women_graph
    florentine_families_graph
 
+
+Community
+---------
+.. automodule:: networkx.generators.community
+.. autosummary::
+   :toctree: generated/
+
+   caveman_graph
+   connected_caveman_graph
+   relaxed_caveman_graph
+   random_partition_graph
+   planted_partition_graph
+   gaussian_random_partition_graph
+
+
+Non Isomorphic Trees
+--------------------
+.. automodule:: networkx.generators.nonisomorphic_trees
+.. autosummary::
+   :toctree: generated/
+
+   nonisomorphic_trees
+   number_of_nonisomorphic_trees
