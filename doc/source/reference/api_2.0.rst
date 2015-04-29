@@ -120,6 +120,9 @@ New functionalities
   Added function for computing quotient graphs; also created a new module,
   ``networkx.algorithms.minors``.
 
+* [`#1438 <https://github.com/networkx/networkx/pull/1438>`_]
+  Added longest_path and longest_path_length for DAG.
+
 * [`#1445 <https://github.com/networkx/networkx/pull/1448>`_]
   Added a new modularity matrix module to ``networkx.linalg``,
   and associated spectrum functions to the ``networkx.linalg.spectrum``
@@ -138,8 +141,10 @@ New functionalities
   Adds ``triadic_census`` function; also creates a new module,
   :mod:`networkx.algorithms.triads`.
 
-* [`#1438 <https://github.com/networkx/networkx/pull/1438>`_]
-  Added longest_path and longest_path_length for DAG.
+* [`#1476 <https://github.com/networkx/networkx/pull/1476>`_]
+  Adds functions for testing if a graph has weighted or negatively weighted
+  edges. Also adds a function for testing if a graph is empty. These are
+  ``is_weighted``, ``is_negatively_weighted``, and ``is_empty``.
 
 Removed functionalities
 -----------------------
