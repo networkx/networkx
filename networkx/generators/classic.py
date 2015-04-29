@@ -193,7 +193,7 @@ def complete_graph(n,create_using=None):
 
 
 def complete_bipartite_graph(n1,n2,create_using=None):
-    """Return the complete bipartite graph K_{n1_n2}.
+    """Return the complete bipartite graph K_{n1,n2}.
     
     Composed of two partitions with n1 nodes in the first 
     and n2 nodes in the second. Each node in the first is 
@@ -322,7 +322,7 @@ def grid_2d_graph(m,n,periodic=False,create_using=None):
         boundary nodes via periodic boundary conditions.
     """
     G=empty_graph(0,create_using)
-    G.name="grid_2d_graph"
+    G.name="grid_2d_graph(%d,%d)"%(m,n)
     rows=range(m)
     columns=range(n)
     G.add_nodes_from( (i,j) for i in rows for j in columns )
@@ -386,6 +386,114 @@ def grid_graph(dim,periodic=False):
     H=nx.relabel_nodes(G, flatten)
     H.name="grid_graph(%s)"%dlabel
     return H
+ 
+def triangle_lattice(rows, cols, sidelength, offset = (0,0), sig_dig=2, periodic=False, create_using=None):
+    """Generates a triangle lattice with rows rows and cols columns.
+    Each triangle has edges of length sidelength.
+    All triangles either point up or down.
+    A row is a horizontal row of triangles that point up and point down - their center points are in a line
+    A column is a vertical column of triangles that point up and point down - again their center points are in a line.    
+    
+    The node names are given by their coordinates as tuples, rounded to sig_dig decimal places.
+    This can be offset in space with offset=(xshift,yshift).
+
+    written by Joel Miller"""
+    
+    G = nx.empty_graph(0,create_using)
+    G.name = "triangle_lattice(%d,%d)"%(rows,cols)
+    if periodic and (rows%2 !=1 or cols%2 !=0):
+            raise  nx.NetworkXError("periodic triangular lattice must have odd number of rows and even number of columns")
+
+    dx = sidelength
+    a = math.sqrt(3)/2.
+    for row in xrange(rows):
+        for col in xrange(cols): #if same parity, then triangle points down.  else up
+                                 #in both cases set xstart, ystart to be leftmost point
+                                 #of triangle
+            xstart = offset[0] + sidelength*col/2.
+            
+            if row%2 == col%2: #points down
+                ystart = offset[1] + (row+1)*a
+                dy = -a #since it points down
+            else: #points up,
+                ystart = offset[1] + row*a
+                dy = a #it points up
+            #The node names will be coordinates.  We need to round them carefully
+            #otherwise numerical precision will lead to confusion.  
+            node1= (round(xstart,sig_dig), round(ystart,sig_dig))
+            node2 = (round(xstart+ dx,sig_dig),round(ystart,sig_dig))
+            node3 = (round(xstart+dx/2.,sig_dig),round(ystart+dy,sig_dig))
+            G.add_edges_from([(node1,node2),(node1,node3),(node2,node3)])
+            
+    if periodic: #We'll need to add a bunch of edges. 
+        xmin = round(offset[0],sig_dig)
+        xmax = round(offset[0]+(cols+1)*sidelength/2,sig_dig)
+        leftmost = [(xmin,round(offset[1]+sidelength*a*(val+1),sig_dig)) for val in xrange(rows) if val%2==0]
+        left2ndmost = [(round(xmin+sidelength/2.,sig_dig),round(y-a*sidelength,sig_dig)) for (x,y) in leftmost]
+        rightmost= [(xmax,round(offset[1]+sidelength*a*(val),sig_dig)) for val in xrange(rows)if val%2==0]
+        right2ndmost = [(round(xmax-sidelength/2.,sig_dig), round(y+a*sidelength,sig_dig)) for (x,y) in rightmost]
+        G.add_edges_from(zip(leftmost,rightmost))
+        G.add_edges_from(zip(leftmost,right2ndmost))
+        G.add_edges_from(zip(leftmost[:-1],rightmost[1:]))
+        G.add_edges_from(zip(left2ndmost,rightmost))
+        G.add_edge(leftmost[-1],rightmost[0])#one pair that doesn't get joined up in the zipped lists
+                     
+        ymin = round(offset[1],sig_dig)
+        ymax = round(offset[1]+a*sidelength*rows,sig_dig)
+        bottomrow = [(round(offset[0]+sidelength*(val+1)/2.,sig_dig),ymin) for val in xrange(cols+1) if val%2==0]
+        toprow = [(round(offset[0]+(sidelength*val)/2.,sig_dig),ymax) for val in xrange(cols+1) if val%2==0]
+        G.add_edges_from(zip(bottomrow,toprow))
+        G.add_edges_from(zip(bottomrow[:-1],toprow[1:]))
+        #There's one pair missed out in joining the rows, but it's the same pair that was handled specially for the columns.
+
+        G.name = "periodic_triangle_lattice(%d,%d)"%(rows,cols)
+
+    return G
+
+def hexagonal_lattice(rows,cols,sidelength=1.,offset=(0,0),sig_dig=2,periodic = False, create_using=None):
+    """This generates a hexagonal lattice having rows rows and cols columns.
+    Node names are their coordinates rounded to sig_dig decimal places.
+    The side lengths are sidelength.
+    It can be offset with offset=(xshift,yshift).
+    This works by generating a triangular lattice and then deleting some nodes.
+    There are sometimes some nodes with degree 1, depending on how many rows/columns.
+    These can be removed by G=nx.k_core(G,2), or by simply deleting all degree 1 nodes.
+    optional argument periodic = True will connect boundaries.
+    
+    written by Joel Miller"""
+  
+    G=nx.empty_graph(0,create_using)
+    G.name = "hexagonal_lattice(%d,%d)"%(rows,cols)
+    if rows==0 or cols == 0:
+        return G
+    if periodic and (rows%2 != 0 or cols%2 !=1):
+            raise nx.NetworkXError("periodic hexagonal lattice must have even number of rows and odd number of columns")
+
+    G = triangle_lattice(rows+1,3*cols,sidelength=sidelength, offset=offset, sig_dig=sig_dig, create_using = create_using)
+
+    #we've generated the triangle lattice, now remove nodes to leave a hexagonal lattice behind.
+
+    a = math.sqrt(3)/2.
+    for row in xrange(-1,rows+1):
+        y = round(offset[1]+(row+1)*a*sidelength,sig_dig)
+        nodes_to_delete = [(round(offset[0]+(col*3./2.+1)*sidelength,sig_dig), y) for col in xrange(cols) if col%2==row%2]
+        G.remove_nodes_from(nodes_to_delete)
+
+    #if it's periodic, we'll want to add edges between top and bottom and left and right.  THis needs a bit of care.
+    if periodic:
+        ymin = round(offset[1],sig_dig)
+        ymax = round(offset[1]+(rows+1)*a*sidelength,sig_dig)
+        bottomrow = [(round(offset[0]+sidelength/2.+val*sidelength,sig_dig),ymin) for val in xrange(3*(cols+1)/2) if val%3!=2]
+        toprow = [(round(offset[0]+val*sidelength,sig_dig),ymax) for val in xrange(3*(cols+1)/2) if val%3!=1]
+        G.add_edges_from(zip(bottomrow,toprow))
+
+        xmin = round(offset[0],sig_dig)
+        xmax = round(offset[0]+(3*(cols+1.)/2.-1)*sidelength,sig_dig)
+        leftrow = [(xmin,round(offset[1]+(val+1)*a*sidelength,sig_dig)) for val in xrange(rows+1) if val%2==0] 
+        rightrow = [(xmax,round(offset[1]+(val+1)*a*sidelength,sig_dig)) for val in xrange(rows+1) if val%2==0] 
+        G.add_edges_from(zip(leftrow,rightrow))
+        G.name = "periodic_hexagonal_lattice(%d,%d)"%(rows,cols)
+    return G
 
 def hypercube_graph(n):
     """Return the n-dimensional hypercube.
