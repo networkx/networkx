@@ -120,6 +120,10 @@ New functionalities
   Added function for computing quotient graphs; also created a new module,
   ``networkx.algorithms.minors``.
 
+* [`#1437 <https://github.com/networkx/networkx/pull/1439>`_]
+  Added node and edge contraction functions to
+  :mod:`networkx.algorithms.minors`.
+
 * [`#1445 <https://github.com/networkx/networkx/pull/1448>`_]
   Added a new modularity matrix module to ``networkx.linalg``,
   and associated spectrum functions to the ``networkx.linalg.spectrum``

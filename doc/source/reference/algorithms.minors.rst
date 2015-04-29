@@ -6,4 +6,6 @@ Minors
 .. autosummary::
    :toctree: generated/
 
+   contracted_edge
+   contracted_nodes
    quotient_graph
