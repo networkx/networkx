@@ -138,23 +138,23 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
     Parameters
     ----------
     df : Pandas DataFrame
-      An edge list representation of a graph
+        An edge list representation of a graph
 
     source : str or int
-      A valid column name (string or iteger) for the source nodes (for the
-      directed case).
+        A valid column name (string or iteger) for the source nodes (for the
+        directed case).
 
     target : str or int
-      A valid column name (string or iteger) for the target nodes (for the
-      directed case).
+        A valid column name (string or iteger) for the target nodes (for the
+        directed case).
 
     edge_attr : str or int, iterable, True
-      A valid column name (str or integer) or list of column names that will
-      be used to retrieve items from the row and add them to the graph as edge
-      attributes. If `True`, all of the remaining columns will be added.
+        A valid column name (str or integer) or list of column names that will
+        be used to retrieve items from the row and add them to the graph as edge
+        attributes. If `True`, all of the remaining columns will be added.
 
     create_using : NetworkX graph
-       Use specified graph for result.  The default is Graph()
+        Use specified graph for result.  The default is Graph()
 
     See Also
     --------
