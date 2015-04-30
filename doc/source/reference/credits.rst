@@ -90,3 +90,5 @@ Thanks especially to the following contributors:
  - Mathieu Larose sped up the topological sort code
  - Vincent Gauthier contributed the Katz centrality algorithm
  - Sérgio Nery Simões developed the code for finding all simple paths
+ - Ryan Nelson modified the from_pandas_dataframe function to accept
+   DataFrames with rows that define graph edges

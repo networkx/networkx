@@ -60,6 +60,13 @@ New functionalities
 * [`#1338 <https://github.com/networkx/networkx/pull/1338>`_]
   Added support for finding optimum branchings and arborescences.
 
+* [`#1340 <https://github.com/networkx/networkx/pull/1340>`_]
+  Added a ``from_pandas_dataframe`` function that accepts Pandas DataFrames
+  and returns a new graph object. At a minimum, the DataFrame must have two
+  columns, which define the nodes that make up an edge. However, the function
+  can also process an arbitrary number of additional columns as edge
+  attributes, such as 'weight'. 
+
 Removed functionalities
 -----------------------
 
