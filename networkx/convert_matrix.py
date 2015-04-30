@@ -193,7 +193,7 @@ def from_pandas_dataframe(df, source, target, edge_attr=None,
     if edge_attr:
         # If all additional columns requested, build up a list of tuples
         # [(name, index),...]
-        if edge_attr == True:
+        if edge_attr is True:
             # Create a list of all columns indices, ignore nodes
             edge_i = []
             for i, col in enumerate(df.columns):
