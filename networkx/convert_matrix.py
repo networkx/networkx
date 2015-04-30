@@ -121,51 +121,101 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
     df = pd.DataFrame(data=M, index = nodelist ,columns = nodelist)
     return df
 
-def from_pandas_dataframe(df,create_using=None):
+def from_pandas_dataframe(df, source, target, edge_attr=None,
+        create_using=None):
     """Return a graph from Pandas DataFrame.
 
-    The Pandas DataFrame is interpreted as an adjacency matrix for the graph.
+    The Pandas DataFrame should contain at least two columns of node names and
+    zero or more columns of node attributes. Each row will be processed as one
+    edge instance.
+
+    Note: This function iterates over DataFrame.values, which is not
+    guaranteed to retain the data type across columns in the row. This is only
+    a problem if your row is entirely numeric and a mix of ints and floats. In
+    that case, all values will be returned as floats. See the
+    DataFrame.iterrows documentation for an example.
 
     Parameters
     ----------
     df : Pandas DataFrame
-      An adjacency matrix representation of a graph
+        An edge list representation of a graph
+
+    source : str or int
+        A valid column name (string or iteger) for the source nodes (for the
+        directed case).
+
+    target : str or int
+        A valid column name (string or iteger) for the target nodes (for the
+        directed case).
+
+    edge_attr : str or int, iterable, True
+        A valid column name (str or integer) or list of column names that will
+        be used to retrieve items from the row and add them to the graph as edge
+        attributes. If `True`, all of the remaining columns will be added.
 
     create_using : NetworkX graph
-       Use specified graph for result.  The default is Graph()
-
-    Notes
-    -----
-    If the numpy matrix has a single data type for each matrix entry it
-    will be converted to an appropriate Python data type.
-
-    If the numpy matrix has a user-specified compound data type the names
-    of the data fields will be used as attribute keys in the resulting
-    NetworkX graph.
+        Use specified graph for result.  The default is Graph()
 
     See Also
     --------
-    from_pandas_dataframe
+    to_pandas_dataframe
 
     Examples
     --------
     Simple integer weights on edges:
 
     >>> import pandas as pd
-    >>> df=pd.DataFrame([[1,1],[2,1]])
-    >>> G=nx.from_pandas_dataframe(df)
+    >>> import numpy as np
+    >>> r = np.random.RandomState(seed=5)
+    >>> ints = r.random_integers(1, 10, size=(3,2))
+    >>> a = ['A', 'B', 'C']
+    >>> b = ['D', 'A', 'E']
+    >>> df = pd.DataFrame(ints, columns=['weight', 'cost'])
+    >>> df[0] = a
+    >>> df['b'] = b
+    >>> df
+       weight  cost  0  b
+    0       4     7  A  D
+    1       7     1  B  A
+    2      10     9  C  E
+    >>> G=nx.from_pandas_dataframe(df, 0, 'b', ['weight', 'cost'])
+    >>> G['E']['C']['weight']
+    10
+    >>> G['E']['C']['cost']
+    9
     """
 
-    import pandas as pd
-    A = df.values
-    G = from_numpy_matrix(A, create_using)
-    try:
-        df = df[df.index]
-    except:
-        raise nx.NetworkXError("Columns must match Indices.",
-                               "%s not in columns"%list(set(df.index).difference(set(df.columns))))
-    nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
-    return G
+    g = _prep_create_using(create_using)
+
+    # Index of source and target
+    src_i = df.columns.get_loc(source)
+    tar_i = df.columns.get_loc(target)
+    if edge_attr:
+        # If all additional columns requested, build up a list of tuples
+        # [(name, index),...]
+        if edge_attr is True:
+            # Create a list of all columns indices, ignore nodes
+            edge_i = []
+            for i, col in enumerate(df.columns):
+                if col is not source and col is not target:
+                    edge_i.append((col, i))
+        # If a list or tuple of name is requested
+        elif isinstance(edge_attr, (list, tuple)):
+            edge_i = [(i, df.columns.get_loc(i)) for i in edge_attr]
+        # If a string or int is passed
+        else:
+            edge_i = [(edge_attr, df.columns.get_loc(edge_attr)),]
+
+        # Iteration on values returns the rows as Numpy arrays
+        for row in df.values:
+            g.add_edge(row[src_i], row[tar_i], {i:row[j] for i, j in edge_i})
+    
+    # If no column names are given, then just return the edges.
+    else:
+        for row in df.values:
+            g.add_edge(row[src_i], row[tar_i])
+
+    return g
 
 def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
                     multigraph_weight=sum, weight='weight', nonedge=0.0):

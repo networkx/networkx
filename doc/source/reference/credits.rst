@@ -112,6 +112,7 @@ is partially historical, and now, mostly arbitrary.
 - Mridul Seth, GitHub: `MridulS <https://github.com/MridulS>`_
 - Thodoris Sotiropoulos, GitHub: `theosotr <https://github.com/theosotr>`_
 - Konstantinos Karakatsanis, GitHub: `k-karakatsanis <https://github.com/k-karakatsanis>`_
+- Ryan Nelson, GitHub: `rnelsonchem <https://github.com/rnelsonchem>`_
 
 Support
 -------
