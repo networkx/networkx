@@ -23,7 +23,7 @@ __author__ = """Ben Reilly (benwreilly@gmail.com)"""
 __all__ = ['read_shp', 'write_shp']
 
 
-def read_shp(path):
+def read_shp(path, simplify=True):
     """Generates a networkx.DiGraph from shapefiles. Point geometries are
     translated into nodes, lines into edges. Coordinate tuples are used as
     keys. Attributes are preserved, line geometries are simplified into start
@@ -37,6 +37,11 @@ def read_shp(path):
     ----------
     path : file or string
        File, directory, or filename to read.
+
+    simplify:  Simplify line geometries to start and end coordinates
+        If False, and line feature geometry has multiple segments, the 
+        attributes for that feature will be repeated for each edge comprising
+        that feature
 
     Returns
     -------
@@ -73,8 +78,12 @@ def read_shp(path):
                 attributes["Wkb"] = g.ExportToWkb()
                 attributes["Wkt"] = g.ExportToWkt()
                 attributes["Json"] = g.ExportToJson()
-                last = g.GetPointCount() - 1
-                net.add_edge(g.GetPoint_2D(0), g.GetPoint_2D(last), attributes)
+                if simplify:
+                    last = g.GetPointCount() - 1
+                    net.add_edge(g.GetPoint_2D(0), g.GetPoint_2D(last), attributes)
+                else:
+                    for i in range(0, g.GetPointCount() - 1):
+                        net.add_edge(g.GetPoint_2D(i), g.GetPoint_2D(i+1), attributes)
     return net
 
 
