@@ -33,7 +33,7 @@ __all__ = ['greedy_tsp']
 
 
 def greedy_tsp(G, source, weight='weight'):
-    """Finds the route that salesman hat to visit in order
+    """Finds the route that salesman has to visit in order
     to minimize total distance and total distance using a
     simple greedy algorithm.
 
@@ -73,9 +73,9 @@ def greedy_tsp(G, source, weight='weight'):
     >>>                           ('C', 'B', 12), ('C', 'D', 4), ('D', 'A', 14),
     >>>                           ('D', 'B', 15), ('D', 'C', 2)})
     >>> sol = nx.greedy_tsp(G, 'D')
-    >>> print(sol[0])
+    >>> sol[0]
     [('D', 'C'), ('C', 'B'), ('B', 'A')]
-    >>> print(sol[1])
+    >>> sol[1]
     17.0
 
     Notes
@@ -94,7 +94,7 @@ def greedy_tsp(G, source, weight='weight'):
     g = G.copy()
     if not _is_completed(g):
         raise nx.NetworkXError('Given graph is not completed.')
-    if not _is_weighted(g, weight):
+    if not nx.is_weighted(g, weight=weight):
         raise nx.NetworkXError('Given graph is not weighted.')
     nodelist = g.nodes()
     nodelist.remove(source)
@@ -131,21 +131,6 @@ def _remove_self_loops(G):
     for node in G.nodes():
         if G.has_edge(node, node):
             G.remove_edge(node, node)
-
-
-def _is_weighted(G, weight='weight'):
-    """
-    Function to test if all graph's edges are weighted.
-
-    :param G: A networkX Graph.
-    :param weight: Edge data key corresponding to the edge weight.
-    :return: True if all graph's edges are weighted; False otherwise.
-    """
-    weighted = True
-    for u, v, w in G.edges(data=True):
-        if weight not in w:
-            return False
-    return weighted
 
 
 def _select_next(G, source, nodes, weight='weight'):
