@@ -1,10 +1,6 @@
 """
-Generators for some directed graphs.
-
-gn_graph: growing network 
-gnc_graph: growing network with copying
-gnr_graph: growing network with redirection
-scale_free_graph: scale free directed graph 
+Generators for some directed graphs, including growing network (GN) graphs and
+scale-free graphs.
 
 """
 #    Copyright (C) 2006-2009 by 
@@ -24,13 +20,13 @@ from networkx.generators.classic import empty_graph
 from networkx.utils import discrete_sequence
 
 
-def gn_graph(n,kernel=None,create_using=None,seed=None):
-    """Return the GN digraph with n nodes.
+def gn_graph(n, kernel=None, create_using=None, seed=None):
+    """Return the growing network (GN) digraph with ``n`` nodes.
 
-    The GN (growing network) graph is built by adding nodes one at a time with
-    a link to one previously added node.  The target node for the link is 
-    chosen with probability based on degree.  The default attachment kernel is
-    a linear function of degree.
+    The GN graph is built by adding nodes one at a time with a link to one
+    previously added node.  The target node for the link is chosen with
+    probability based on degree.  The default attachment kernel is a linear
+    function of the degree of a node.
 
     The graph is always a (directed) tree.
 
@@ -47,12 +43,15 @@ def gn_graph(n,kernel=None,create_using=None,seed=None):
 
     Examples
     --------
-    >>> D=nx.gn_graph(10)    # the GN graph
-    >>> G=D.to_undirected()  # the undirected version
+    To create the undirected GN graph, use the :meth:`~DiGraph.to_directed`
+    method::
 
-    To specify an attachment kernel use the kernel keyword
+    >>> D = nx.gn_graph(10)  # the GN graph
+    >>> G = D.to_undirected()  # the undirected version
 
-    >>> D=nx.gn_graph(10,kernel=lambda x:x**1.5) # A_k=k^1.5
+    To specify an attachment kernel, use the ``kernel`` keyword argument::
+
+    >>> D = nx.gn_graph(10, kernel=lambda x: x ** 1.5)  # A_k = k^1.5
 
     References
     ----------
@@ -91,14 +90,16 @@ def gn_graph(n,kernel=None,create_using=None,seed=None):
     return G
 
 
-def gnr_graph(n,p,create_using=None,seed=None):
-    """Return the GNR digraph with n nodes and redirection probability p.
+def gnr_graph(n, p, create_using=None, seed=None):
+    """Return the growing network with redirection (GNR) digraph with ``n``
+    nodes and redirection probability ``p``.
 
-    The GNR (growing network with redirection) graph is built by adding nodes 
-    one at a time with a link to one previously added node.  The previous 
-    target node is chosen uniformly at random.  With probabiliy p the link is 
-    instead "redirected" to the successor node of the target.  The graph is 
-    always a (directed) tree.
+    The GNR graph is built by adding nodes one at a time with a link to one
+    previously added node.  The previous target node is chosen uniformly at
+    random.  With probabiliy ``p`` the link is instead "redirected" to the
+    successor node of the target.
+
+    The graph is always a (directed) tree.
 
     Parameters
     ----------
@@ -113,8 +114,11 @@ def gnr_graph(n,p,create_using=None,seed=None):
 
     Examples
     --------
-    >>> D=nx.gnr_graph(10,0.5)  # the GNR graph
-    >>> G=D.to_undirected()  # the undirected version
+    To create the undirected GNR graph, use the :meth:`~DiGraph.to_directed`
+    method::
+
+    >>> D = nx.gnr_graph(10, 0.5)  # the GNR graph
+    >>> G = D.to_undirected()  # the undirected version
 
     References
     ----------
@@ -145,12 +149,12 @@ def gnr_graph(n,p,create_using=None,seed=None):
     return G
 
 
-def gnc_graph(n,create_using=None,seed=None):
-    """Return the GNC digraph with n nodes.
+def gnc_graph(n, create_using=None, seed=None):
+    """Return the growing network with copying (GNC) digraph with ``n`` nodes.
 
-    The GNC (growing network with copying) graph is built by adding nodes one 
-    at a time with a links to one previously added node (chosen uniformly at 
-    random) and to all of that node's successors.
+    The GNC graph is built by adding nodes one at a time with a link to one
+    previously added node (chosen uniformly at random) and to all of that
+    node's successors.
 
     Parameters
     ----------
@@ -190,15 +194,9 @@ def gnc_graph(n,create_using=None,seed=None):
     return G
 
 
-def scale_free_graph(n,
-                     alpha=0.41,
-                     beta=0.54,
-                     gamma=0.05,
-                     delta_in=0.2,
-                     delta_out=0,
-                     create_using=None,
-                     seed=None):
-    """Return a scale free directed graph.
+def scale_free_graph(n, alpha=0.41, beta=0.54, gamma=0.05, delta_in=0.2,
+                     delta_out=0, create_using=None, seed=None):
+    """Returns a scale-free directed graph.
 
     Parameters
     ----------
@@ -226,18 +224,20 @@ def scale_free_graph(n,
 
     Examples
     --------
-    >>> G=nx.scale_free_graph(100)
+    Create a scale-free graph on one hundred nodes::
+
+    >>> G = nx.scale_free_graph(100)
   
     Notes
     -----
-    The sum of alpha, beta, and gamma must be 1.
+    The sum of ``alpha``, ``beta``, and ``gamma`` must be 1.
 
     References
     ----------  
-    .. [1] B. Bollob{\'a}s, C. Borgs, J. Chayes, and O. Riordan,
+    .. [1] B. Bollobás, C. Borgs, J. Chayes, and O. Riordan,
            Directed scale-free graphs,
-           Proceedings of the fourteenth annual ACM-SIAM symposium on
-           Discrete algorithms, 132--139, 2003.
+           Proceedings of the fourteenth annual ACM-SIAM Symposium on
+           Discrete Algorithms, 132--139, 2003.
     """
 
     def _choose_node(G,distribution,delta):
