@@ -28,6 +28,7 @@ http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
 import networkx as nx
 from operator import itemgetter
+from random import choice, randint
 
 __all__ = ['greedy_tsp']
 
@@ -59,7 +60,7 @@ def greedy_tsp(G, source, weight='weight'):
     Returns
     -------
     sol : list, cost : float
-        Returns the route (list of edges) that salesman
+        Returns the route (list of nodes) that salesman
         has to follow to minimize total cost, and total
         cost of algorithm's solution.
 
@@ -81,10 +82,10 @@ def greedy_tsp(G, source, weight='weight'):
     Notes
     -----
     Implementation of greedy algorithm is based on the following:
-    - Algorithm adds a couple of nodes to the solution at every
+    - Algorithm adds a node to the solution at every
     iteration.
-    - Algorithm selects the couple of nodes which adds the minimum
-    cost to incomplete solution at every iteration.
+    - Algorithm selects a node whose connection with the previous node
+    adds the minimum cost to incomplete solution at every iteration.
 
     A greedy algorithm does not give always the best solution.
     However, it can construct a first feasible solution which can
@@ -98,11 +99,11 @@ def greedy_tsp(G, source, weight='weight'):
         raise nx.NetworkXError('Given graph is not weighted.')
     nodelist = g.nodes()
     nodelist.remove(source)
-    sol = []
+    sol = [source]
     cost = 0.0
     while len(nodelist) > 0:
-        source, next_visitor, dist = _select_next(g, source, nodelist, weight)
-        sol.append((source, next_visitor))
+        next_visitor, dist = _select_next(g, source, nodelist, weight)
+        sol.append(next_visitor)
         cost += dist
         nodelist.remove(next_visitor)
         source = next_visitor
@@ -128,9 +129,7 @@ def _remove_self_loops(G):
 
     :param G: A networkX Graph.
     """
-    for node in G.nodes():
-        if G.has_edge(node, node):
-            G.remove_edge(node, node)
+    [G.remove_edge(node, node) for node in G.nodes() if G.has_edge(node, node)]
 
 
 def _select_next(G, source, nodes, weight='weight'):
@@ -147,6 +146,6 @@ def _select_next(G, source, nodes, weight='weight'):
     :param weight: Edge data key corresponding to the edge weight.
     :return: Tuple, edge of source node and next node to visit.
     """
-    visitors = [(source, node, G.edge[source][node][weight])
+    visitors = [(node, G.edge[source][node][weight])
                 for node in nodes]
-    return sorted(visitors, key=itemgetter(2))[0]
+    return sorted(visitors, key=itemgetter(1))[0]

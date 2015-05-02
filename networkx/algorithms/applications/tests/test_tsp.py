@@ -35,9 +35,9 @@ class TestGreedyTSP:
 
     def test_greedy(self):
         output = nx.greedy_tsp(self.unsymmetric, 'D')
-        validate_solution(output[0], output[1], [('D', 'C'), ('C', 'B'), ('B', 'A')], 17.0)
+        validate_solution(output[0], output[1], ['D', 'C', 'B', 'A'], 17.0)
         output2 = nx.greedy_tsp(self.unsymmetricSelfLoops, 'D')
-        validate_solution(output2[0], output2[1], [('D', 'C'), ('C', 'B'), ('B', 'A')], 17.0)
+        validate_solution(output2[0], output2[1], ['D', 'C', 'B', 'A'], 17.0)
 
     def test_not_completed_graph(self):
         assert_raises(nx.NetworkXError, nx.greedy_tsp, self.notCompletedUG, 0)
