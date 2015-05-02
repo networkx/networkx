@@ -214,6 +214,61 @@ class TestFunction(object):
         for e in expected:
             assert_true(e in nedges)
 
+    def test_is_weighted(self):
+        G = nx.Graph()
+        assert_false(nx.is_weighted(G))
+
+        G = nx.path_graph(4)
+        assert_false(nx.is_weighted(G))
+        assert_false(nx.is_weighted(G, (2, 3)))
+
+        G.add_node(4)
+        G.add_edge(3, 4, weight=4)
+        assert_false(nx.is_weighted(G))
+        assert_true(nx.is_weighted(G, (3, 4)))
+
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -5),
+                                     ('0', '2', 2), ('1', '2', 4),
+                                     ('2', '3', 1)])
+        assert_true(nx.is_weighted(G))
+        assert_true(nx.is_weighted(G, ('1', '0')))
+
+        G = G.to_undirected()
+        assert_true(nx.is_weighted(G))
+        assert_true(nx.is_weighted(G, ('1', '0')))
+
+        assert_raises(nx.NetworkXError, nx.is_weighted, G, (1, 2))
+
+    def test_is_negatively_weighted(self):
+        G = nx.Graph()
+        assert_false(nx.is_negatively_weighted(G))
+
+        G.add_node(1)
+        G.add_nodes_from([2, 3, 4, 5])
+        assert_false(nx.is_negatively_weighted(G))
+
+        G.add_edge(1, 2, weight=4)
+        assert_false(nx.is_negatively_weighted(G, (1, 2)))
+
+        G.add_edges_from([(1, 3), (2, 4), (2, 6)])
+        G[1][3]['color'] = 'blue'
+        assert_false(nx.is_negatively_weighted(G))
+        assert_false(nx.is_negatively_weighted(G, (1, 3)))
+
+        G[2][4]['weight'] = -2
+        assert_true(nx.is_negatively_weighted(G, (2, 4)))
+        assert_true(nx.is_negatively_weighted(G))
+
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([('0', '3', 3), ('0', '1', -5), ('1', '0', -2),
+                                   ('0', '2', 2), ('1', '2', -3), ('2', '3', 1)])
+        assert_true(nx.is_negatively_weighted(G))
+        assert_false(nx.is_negatively_weighted(G, ('0', '3')))
+        assert_true(nx.is_negatively_weighted(G, ('1', '0')))
+
+        assert_raises(nx.NetworkXError, nx.is_negatively_weighted, G, (1, 4))
+
 
 class TestCommonNeighbors():
     def setUp(self):
@@ -349,3 +404,12 @@ def test_get_edge_attributes():
             keys = [(0,1), (1,2)]
         for key in keys:
             assert_equal(attrs[key], 100)
+
+def test_is_empty():
+    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
+    for G in graphs:
+        assert_true(nx.is_empty(G))
+        G.add_nodes_from(range(5))
+        assert_true(nx.is_empty(G))
+        G.add_edges_from([(1, 2), (3, 4)])
+        assert_false(nx.is_empty(G))

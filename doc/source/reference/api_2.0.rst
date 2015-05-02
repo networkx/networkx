@@ -81,6 +81,13 @@ New functionalities
 * [`#1338 <https://github.com/networkx/networkx/pull/1338>`_]
   Added support for finding optimum branchings and arborescences.
 
+* [`#1340 <https://github.com/networkx/networkx/pull/1340>`_]
+  Added a ``from_pandas_dataframe`` function that accepts Pandas DataFrames
+  and returns a new graph object. At a minimum, the DataFrame must have two
+  columns, which define the nodes that make up an edge. However, the function
+  can also process an arbitrary number of additional columns as edge
+  attributes, such as 'weight'.
+
 * [`#1354 <https://github.com/networkx/networkx/pull/1354>`_]
   Expanded layout functions to add flexibility for drawing subsets of nodes
   with distinct layouts and for centering each layout around given
@@ -120,6 +127,13 @@ New functionalities
   Added function for computing quotient graphs; also created a new module,
   ``networkx.algorithms.minors``.
 
+* [`#1438 <https://github.com/networkx/networkx/pull/1438>`_]
+  Added longest_path and longest_path_length for DAG.
+
+* [`#1439 <https://github.com/networkx/networkx/pull/1439>`_]
+  Added node and edge contraction functions to
+  :mod:`networkx.algorithms.minors`.
+
 * [`#1445 <https://github.com/networkx/networkx/pull/1448>`_]
   Added a new modularity matrix module to ``networkx.linalg``,
   and associated spectrum functions to the ``networkx.linalg.spectrum``
@@ -138,8 +152,10 @@ New functionalities
   Adds ``triadic_census`` function; also creates a new module,
   :mod:`networkx.algorithms.triads`.
 
-* [`#1438 <https://github.com/networkx/networkx/pull/1438>`_]
-  Added longest_path and longest_path_length for DAG.
+* [`#1476 <https://github.com/networkx/networkx/pull/1476>`_]
+  Adds functions for testing if a graph has weighted or negatively weighted
+  edges. Also adds a function for testing if a graph is empty. These are
+  ``is_weighted``, ``is_negatively_weighted``, and ``is_empty``.
 
 Removed functionalities
 -----------------------
