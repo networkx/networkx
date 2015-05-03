@@ -17,7 +17,6 @@ Basic functions
    color
    density
    degrees
-   biadjacency_matrix
 
 Matching
 --------
@@ -28,6 +27,16 @@ Matching
    eppstein_matching
    hopcroft_karp_matching
    to_vertex_cover
+
+
+Matrix
+------
+.. automodule:: networkx.algorithms.bipartite.matrix
+.. autosummary::
+   :toctree: generated/
+
+   biadjacency_matrix
+   from_biadjacency_matrix
 
 
 Projections
