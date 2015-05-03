@@ -16,7 +16,6 @@ Helper Functions
    iterable
    is_list_of_ints
    make_str
-   cumulative_sum
    generate_unique_node
    default_opener
 
