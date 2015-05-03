@@ -8,6 +8,14 @@ NetworkX 1.9 to NetworkX 2.0.
 Please send comments and questions to the networkx-discuss mailing list:
 <http://groups.google.com/group/networkx-discuss>.
 
+API changes
+-----------
+* [`#1501 <https://github.com/networkx/networkx/pull/1501>`_]
+  ``connected_components`` is now a generator of sets of nodes. It was a
+  generator of lists. This PR also refactored the ``connected_components``
+  implementation making it faster, especially for large graphs.
+
+
 New functionalities
 -------------------
 
