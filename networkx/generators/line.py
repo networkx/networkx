@@ -41,6 +41,7 @@ def line_graph(G, create_using=None):
 
     Examples
     --------
+    >>> import networkx as nx
     >>> G = nx.star_graph(3)
     >>> L = nx.line_graph(G)
     >>> print(sorted(map(sorted, L.edges())))  # makes a 3-clique, K3
