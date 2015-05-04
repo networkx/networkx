@@ -1,10 +1,11 @@
+# coding: utf-8
 """
 Provides functions for finding and testing for locally `(k, l)`-connected
 graphs.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
-#    Copyright (C) 2004-2015 by 
+#    Copyright (C) 2004-2015 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -64,11 +65,11 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
     ----------
     .. [1]: Chung, Fan and Linyuan Lu. "The Small World Phenomenon in Hybrid
             Power Law Graphs." *Complex Networks*. Springer Berlin Heidelberg,
-            2004. 89–104.
+            2004. 89--104.
 
     """
     H=copy.deepcopy(G)    # subgraph we construct by removing from G
-    
+
     graphOK=True
     deleted_some=True # hack to start off the while loop
     while deleted_some:
@@ -152,7 +153,7 @@ def is_kl_connected(G, k, l, low_memory=False):
     ----------
     .. [1]: Chung, Fan and Linyuan Lu. "The Small World Phenomenon in Hybrid
             Power Law Graphs." *Complex Networks*. Springer Berlin Heidelberg,
-            2004. 89–104.
+            2004. 89--104.
 
     """
     graphOK=True
