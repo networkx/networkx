@@ -157,6 +157,9 @@ New functionalities
   edges. Also adds a function for testing if a graph is empty. These are
   ``is_weighted``, ``is_negatively_weighted``, and ``is_empty``.
 
+* [`#1399 <https://github.com/networkx/networkx/pull/1399>`_]
+  Added power function for simple graphs
+
 Removed functionalities
 -----------------------
 
