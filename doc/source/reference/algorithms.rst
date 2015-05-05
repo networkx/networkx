@@ -33,6 +33,7 @@ Algorithms
    algorithms.flow
    algorithms.graphical
    algorithms.hierarchy
+   algorithms.hybrid
    algorithms.isolates
    algorithms.isomorphism
    algorithms.link_analysis
