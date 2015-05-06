@@ -102,6 +102,7 @@ Random Graphs
    barabasi_albert_graph
    powerlaw_cluster_graph
    duplication_divergence_graph
+   random_kernel_graph
    random_lobster
    random_shell_graph
    random_powerlaw_tree
