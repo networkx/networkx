@@ -292,7 +292,7 @@ def _apply_move(sol, move):
     :return: A neighbor solution
     """
     a = randint(1, len(sol) - 2)
-    listb = range(1, a) + range(a + 1, len(sol) - 2)
+    listb = list(range(1, a)) + list(range(a + 1, len(sol) - 2))
     b = choice(listb)
     if move == '1-1':
         sol[a], sol[b] = sol[b], sol[a]
