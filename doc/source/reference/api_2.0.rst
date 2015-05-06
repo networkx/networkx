@@ -152,6 +152,11 @@ New functionalities
   Adds ``triadic_census`` function; also creates a new module,
   :mod:`networkx.algorithms.triads`.
 
+* [`#1481 <https://github.com/networkx/networkx/pull/1481>`_]
+  Added Johnson's algorithm; one more algorithm for shortest paths. It
+  solves all pairs shortest path problem. This is ``johnson`` at
+  ``algorithms.shortest_paths``
+
 * [`#1476 <https://github.com/networkx/networkx/pull/1476>`_]
   Adds functions for testing if a graph has weighted or negatively weighted
   edges. Also adds a function for testing if a graph is empty. These are
