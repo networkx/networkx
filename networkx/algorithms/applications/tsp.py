@@ -26,9 +26,10 @@ important in operations research and theoretical computer science.
 
 http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
-import networkx as nx
+import math
 from operator import itemgetter
 from random import choice, randint, random
+import networkx as nx
 
 __all__ = ['greedy_tsp', 'simulated_annealing_tsp']
 
@@ -92,17 +93,16 @@ def greedy_tsp(G, source, weight='weight'):
     be passed as parameter in iterative improvement algorithm such
     as Simulated Annealing, Threshold Accepting.
     """
-    g = G.copy()
-    if not _is_completed(g):
+    if not _is_completed(G):
         raise nx.NetworkXError('Given graph is not completed.')
-    if not nx.is_weighted(g, weight=weight):
+    if not nx.is_weighted(G, weight=weight):
         raise nx.NetworkXError('Given graph is not weighted.')
-    nodelist = g.nodes()
+    nodelist = G.nodes()
     nodelist.remove(source)
     sol = [source]
     cost = 0.0
     while len(nodelist) > 0:
-        next_visitor, dist = _select_next(g, source, nodelist, weight)
+        next_visitor, dist = _select_next(G, source, nodelist, weight)
         sol.append(next_visitor)
         cost += dist
         nodelist.remove(next_visitor)
@@ -245,7 +245,6 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', outer_iter=10,
 
     else:
         # Calculate the cost of initial solution and make the essential checks for graph.
-
         if not _is_completed(G):
             raise nx.NetworkXError('Given graph is not completed.')
         if not nx.is_weighted(G, weight=weight):
@@ -272,7 +271,6 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', outer_iter=10,
                     best_sol = list(sol)
                     best_cost = cost
             else:
-                import math
 
                 # Accept even a worse solution with probability p.
                 p = math.exp(- (delta / temp))
