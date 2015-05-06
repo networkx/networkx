@@ -70,10 +70,10 @@ def greedy_tsp(G, source, weight='weight'):
     >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from({('A', 'B', 3),
-    >>>                           ('A', 'C', 17), ('A', 'D', 14), ('B', 'A', 3),
-    >>>                           ('B', 'C', 12), ('B', 'D', 16), ('C', 'A', 13),
-    >>>                           ('C', 'B', 12), ('C', 'D', 4), ('D', 'A', 14),
-    >>>                           ('D', 'B', 15), ('D', 'C', 2)})
+    ...                           ('A', 'C', 17), ('A', 'D', 14), ('B', 'A', 3),
+    ...                          ('B', 'C', 12), ('B', 'D', 16), ('C', 'A', 13),
+    ...                           ('C', 'B', 12), ('C', 'D', 4), ('D', 'A', 14),
+    ...                           ('D', 'B', 15), ('D', 'C', 2)})
     >>> sol = nx.greedy_tsp(G, 'D')
     >>> sol[0]
     ['D', 'C', 'B', 'A', 'D']
@@ -201,10 +201,10 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', outer_iter=10,
     >>> import networkx as nx
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from({('A', 'B', 3),
-    >>>                           ('A', 'C', 17), ('A', 'D', 14), ('B', 'A', 3),
-    >>>                           ('B', 'C', 12), ('B', 'D', 16), ('C', 'A', 13),
-    >>>                           ('C', 'B', 12), ('C', 'D', 4), ('D', 'A', 14),
-    >>>                           ('D', 'B', 15), ('D', 'C', 2)})
+    ...                           ('A', 'C', 17), ('A', 'D', 14), ('B', 'A', 3),
+    ...                          ('B', 'C', 12), ('B', 'D', 16), ('C', 'A', 13),
+    ...                           ('C', 'B', 12), ('C', 'D', 4), ('D', 'A', 14),
+    ...                           ('D', 'B', 15), ('D', 'C', 2)})
     >>> sol = nx.simulated_annealing_tsp(G, 'D')
     >>> sol[0]
     ['D', 'C', 'B', 'A', 'D']
@@ -315,4 +315,5 @@ def _calculate_cost(G, sol, weight='weight'):
     :param weight: Edge data key corresponding to the edge weight
     :return: float, cost (dist) of solution
     """
-    return sum(G.edge[sol[i]][sol[i + 1]][weight] for i in range(0, len(sol) - 1))
+    return sum(float(G.edge[sol[i]][sol[i + 1]][weight])
+               for i in range(0, len(sol) - 1))
