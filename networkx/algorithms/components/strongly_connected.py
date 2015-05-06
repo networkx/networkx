@@ -153,7 +153,6 @@ def strongly_connected_components_recursive(G):
     -------
     comp : generator of lists
        A list of nodes for each component of G.
-       The list is ordered from largest connected component to smallest.
 
     Raises
     ------
