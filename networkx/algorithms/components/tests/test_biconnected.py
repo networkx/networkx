@@ -87,6 +87,21 @@ def test_biconnected_component_subgraphs_cycle():
         assert_equal(g1[1][3]['eattr'],'blue')
         assert_equal(G[1][3]['eattr'],'red')
 
+def test_biconnected_component_subgraphs_no_copy():
+    G = nx.Graph()
+    G.add_edge(1, 2, eattr='red') # test attributes copied to subgraphs
+    G.node[1]['nattr'] = 'blue'
+    G.graph['gattr'] = 'green'
+    ccs = list(nx.biconnected_component_subgraphs(G, copy=False))
+    assert_equal(len(ccs), 1)
+    sg = ccs[0]
+    assert_equal(sg[1][2]['eattr'], 'red')
+    assert_equal(sg.node[1]['nattr'], 'blue')
+    assert_equal(sg.graph['gattr'], 'green')
+    sg[1][2]['eattr'] = 'blue'
+    assert_equal(G[1][2]['eattr'], 'blue')
+    assert_equal(sg[1][2]['eattr'], 'blue')
+
 
 def test_biconnected_components1():
     # graph example from
