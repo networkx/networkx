@@ -17,9 +17,9 @@ class TestAttractingComponents(object):
 
     def test_attracting_components(self):
         ac = list(nx.attracting_components(self.G1))
-        assert_true([2] in ac)
-        assert_true([9] in ac)
-        assert_true([10] in ac)
+        assert_true({2} in ac)
+        assert_true({9} in ac)
+        assert_true({10} in ac)
 
         ac = list(nx.attracting_components(self.G2))
         ac = [tuple(sorted(x)) for x in ac]
