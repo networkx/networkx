@@ -234,6 +234,10 @@ def test_non_repeated_cuts():
     G = max(list(nx.biconnected_component_subgraphs(K)), key=len)
     solution = [{32, 33}, {2, 33}, {0, 3}, {0, 1}, {29, 33}]
     cuts = list(nx.all_node_cuts(G))
+    if len(solution) != len(cuts):
+        print(nx.info(G))
+        print("Solution: {}".format(solution))
+        print("Result: {}".format(cuts))
     assert_true(len(solution) == len(cuts))
     for cut in cuts:
         assert_true(cut in solution)

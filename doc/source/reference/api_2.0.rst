@@ -109,9 +109,16 @@ New functionalities
   Newman's approximation algorithm for finding node independent paths
   between two nodes.
 
+* [`#1391 <https://github.com/networkx/networkx/pull/1391>`_]
+  Added Kanevsky's algorithm for finding all minimum-size separating
+  node sets in an undirected graph. It is implemented as a generator
+  of node cut sets.
+
 * [`#1413 <https://github.com/networkx/networkx/pull/1413>`_]
   Added transitive closure and antichains function for directed acyclic
-  graphs in ``algorithms.dag``.
+  graphs in ``algorithms.dag``. The antichains function was contributed
+  by Peter Jipsen and Franco Saliola and originally developed for the
+  SAGE project.
 
 * [`#1425 <https://github.com/networkx/networkx/pull/1425>`_]
   Added generator function for the complete multipartite graph.
