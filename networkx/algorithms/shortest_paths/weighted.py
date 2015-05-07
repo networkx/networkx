@@ -584,6 +584,23 @@ def bellman_ford(G, source, weight='weight'):
     if len(G) == 1:
         return pred, dist
 
+    return _bellman_ford_relaxation(G, pred, dist, [source], weight)
+
+
+def _bellman_ford_relaxation(G, pred, dist, source_list, weight):
+    """
+    Relaxation loop for Bellman - Ford algorithm.
+
+    :param G: NetworkX graph
+    :param pred: dictionary keyed by node to predecessor in the
+    path
+    :param dist: dictionary keyed by node to distance from the source
+    :param source_list: list of nodes setting as source nodes
+    :param weight: Edge data key corresponding to the edge weight
+    :return: dictionaries
+       Returns two dictionaries keyed by node to predecessor in the
+       path and to the distance from the source respectively.
+    """
     if G.is_multigraph():
         def get_weight(edge_dict):
             return min(eattr.get(weight, 1) for eattr in edge_dict.values())
@@ -600,9 +617,8 @@ def bellman_ford(G, source, weight='weight'):
     n = len(G)
 
     count = {}
-    q = deque([source])
-    in_q = set([source])
-
+    q = deque(source_list)
+    in_q = set(source_list)
     while q:
         u = q.popleft()
         in_q.remove(u)
@@ -1044,21 +1060,22 @@ def johnson(G, weight='weight', new_weight=None):
     if not nx.is_weighted(G, weight=weight):
         raise nx.NetworkXError('Graph is not weighted.')
 
-    new_node = nx.utils.generate_unique_node()
-    G.add_weighted_edges_from((new_node, node, 0) for node in G.nodes())
+    dist = {}
+    pred = {}
+    for node in G:
+        dist[node] = 0
+        pred[node] = None
 
     # Calculate distance of shortest paths
-    dist = nx.bellman_ford(G, source=new_node, weight=weight)[1]
-
+    dist = _bellman_ford_relaxation(G, pred, dist, G.nodes(), weight)[1]
     delete = False
     if new_weight is None:
         delete = True
-        new_weight = uuid.uuid1()
+        new_weight = str(uuid.uuid1())
 
     for u, v, w in G.edges(data=True):
         w[new_weight] = w[weight] + dist[u] - dist[v]
 
-    G.remove_node(new_node)
     all_pairs_path = nx.all_pairs_dijkstra_path(G, weight=new_weight)
 
     if delete:
