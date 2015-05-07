@@ -192,6 +192,12 @@ New functionalities
   graph, which is based on Kanevsky's algorithm for finding all minimum-size
   node cut-sets (implemented in ``all_node_cuts`` #1391).
 
+* [`#1415 <https://github.com/networkx/networkx/pull/1415>`_]
+  Added fast approximation for ``k_components`` to the
+  ``networkx.approximation`` package. This is based on White and Newman
+  approximation algorithm for finding node independent paths between two
+  nodes (see #1405).
+
 Removed functionalities
 -----------------------
 
