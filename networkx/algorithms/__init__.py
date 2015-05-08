@@ -1,3 +1,4 @@
+from networkx.algorithms.approximation import *
 from networkx.algorithms.assortativity import *
 from networkx.algorithms.block import *
 from networkx.algorithms.boundary import *
@@ -36,6 +37,7 @@ from networkx.algorithms.swap import *
 from networkx.algorithms.graphical import *
 from networkx.algorithms.simple_paths import *
 
+import networkx.algorithms.approximation
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
 import networkx.algorithms.centrality
