@@ -23,7 +23,7 @@ __author__ = """Ben Reilly (benwreilly@gmail.com)"""
 __all__ = ['read_shp', 'write_shp']
 
 
-def read_shp(path):
+def read_shp(path, simplify=True):
     """Generates a networkx.DiGraph from shapefiles. Point geometries are
     translated into nodes, lines into edges. Coordinate tuples are used as
     keys. Attributes are preserved, line geometries are simplified into start
@@ -37,6 +37,12 @@ def read_shp(path):
     ----------
     path : file or string
        File, directory, or filename to read.
+
+    simplify:  bool
+        If ``True``, simplify line geometries to start and end coordinates.
+        If ``False``, and line feature geometry has multiple segments, the 
+        non-geometric attributes for that feature will be repeated for each 
+        edge comprising that feature.
 
     Returns
     -------
@@ -70,11 +76,25 @@ def read_shp(path):
             if g.GetGeometryType() == 1:  # point
                 net.add_node((g.GetPoint_2D(0)), attributes)
             if g.GetGeometryType() == 2:  # linestring
-                attributes["Wkb"] = g.ExportToWkb()
-                attributes["Wkt"] = g.ExportToWkt()
-                attributes["Json"] = g.ExportToJson()
                 last = g.GetPointCount() - 1
-                net.add_edge(g.GetPoint_2D(0), g.GetPoint_2D(last), attributes)
+                if simplify:
+                    attributes["Wkb"] = g.ExportToWkb()
+                    attributes["Wkt"] = g.ExportToWkt()
+                    attributes["Json"] = g.ExportToJson()
+                    net.add_edge(g.GetPoint_2D(0), g.GetPoint_2D(last), attributes)
+                else:
+                    # separate out each segment as individual edge
+                    for i in range(last):
+                        pt1 = g.GetPoint_2D(i)
+                        pt2 = g.GetPoint_2D(i + 1)
+                        segment = ogr.Geometry(ogr.wkbLineString)
+                        segment.AddPoint_2D(pt1[0], pt1[1])
+                        segment.AddPoint_2D(pt2[0], pt2[1])
+                        attributes["Wkb"] = segment.ExportToWkb()
+                        attributes["Wkt"] = segment.ExportToWkt()
+                        attributes["Json"] = segment.ExportToJson()
+                        net.add_edge(pt1, pt2, attributes)
+
     return net
 
 
