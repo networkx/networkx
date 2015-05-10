@@ -15,6 +15,33 @@ class TestConnected:
         self.DG = nx.DiGraph([(1, 2), (1, 3), (2, 3)])
         self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1)
 
+        self.gc = []
+        G = nx.DiGraph()
+        G.add_edges_from([(1, 2), (2, 3), (2, 8), (3, 4), (3, 7), (4, 5),
+                          (5, 3), (5, 6), (7, 4), (7, 6), (8, 1), (8, 7)])
+        C = [[3, 4, 5, 7], [1, 2, 8], [6]]
+        self.gc.append((G, C))
+
+        G = nx.DiGraph()
+        G.add_edges_from([(1, 2), (1, 3), (1, 4), (4, 2), (3, 4), (2, 3)])
+        C = [[2, 3, 4],[1]]
+        self.gc.append((G, C))
+
+        G = nx.DiGraph()
+        G.add_edges_from([(1, 2), (2, 3), (3, 2), (2, 1)])
+        C = [[1, 2, 3]]
+        self.gc.append((G,C))
+
+        # Eppstein's tests
+        G = nx.DiGraph({0:[1], 1:[2, 3], 2:[4, 5], 3:[4, 5], 4:[6], 5:[], 6:[]})
+        C = [[0], [1], [2],[ 3], [4], [5], [6]]
+        self.gc.append((G,C))
+
+        G = nx.DiGraph({0:[1], 1:[2, 3, 4], 2:[0, 3], 3:[4], 4:[3]})
+        C = [[0, 1, 2], [3, 4]]
+        self.gc.append((G, C))
+
+
     def test_connected_components(self):
         cc = nx.connected_components
         G = self.G
@@ -46,36 +73,13 @@ class TestConnected:
         assert_equal(ncc(G, 1), C)
 
     def test_connected_component_subgraphs(self):
-        G=self.grid
-        G.add_edge(1, 2, eattr='red') # test attributes copied to subgraphs
-        G.node[1]['nattr'] = 'blue'
-        G.graph['gattr'] = 'green'
-        ccs = list(nx.connected_component_subgraphs(G))
-        assert_equal(len(ccs), 1)
-        sg = ccs[0]
-        assert_equal(sorted(sg), list(range(1,17)))
-        assert_equal(sg[1][2]['eattr'], 'red')
-        assert_equal(sg.node[1]['nattr'], 'blue')
-        assert_equal(sg.graph['gattr'], 'green')
-        sg[1][2]['eattr'] = 'blue'
-        assert_equal(G[1][2]['eattr'], 'red')
-        assert_equal(sg[1][2]['eattr'], 'blue')
-
-    def test_connected_component_subgraphs_no_copy(self):
-        G=self.grid
-        G.add_edge(1, 2, eattr='red') # test attributes copied to subgraphs
-        G.node[1]['nattr'] = 'blue'
-        G.graph['gattr'] = 'green'
-        ccs = list(nx.connected_component_subgraphs(G, copy=False))
-        assert_equal(len(ccs), 1)
-        sg = ccs[0]
-        assert_equal(sorted(sg), list(range(1,17)))
-        assert_equal(sg[1][2]['eattr'], 'red')
-        assert_equal(sg.node[1]['nattr'], 'blue')
-        assert_equal(sg.graph['gattr'], 'green')
-        sg[1][2]['eattr'] = 'blue'
-        assert_equal(G[1][2]['eattr'], 'blue')
-        assert_equal(sg[1][2]['eattr'], 'blue')
+        wcc = nx.weakly_connected_component_subgraphs
+        cc = nx.connected_component_subgraphs
+        for G, C in self.gc:
+            U = G.to_undirected()
+            w = {frozenset(g) for g in wcc(G)}
+            c = {frozenset(g) for g in cc(U)}
+            assert_equal(w, c)
 
     def test_is_connected(self):
         assert_true(nx.is_connected(self.grid))

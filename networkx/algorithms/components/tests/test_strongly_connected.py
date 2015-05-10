@@ -71,33 +71,6 @@ class TestStronglyConnected:
         scc = nx.strongly_connected_component_subgraphs
         for G, C in self.gc:
             assert_equal({frozenset(g) for g in scc(G)}, C)
-        G = nx.DiGraph()
-        G.add_edge(1, 2, eattr='red')
-        G.add_edge(2, 1, eattr='purple')
-        G.node[1]['nattr'] = 'blue'
-        G.graph['gattr'] = 'green'
-        sgs = list(scc(G))[0]
-        assert_equal(sgs[1][2]['eattr'], 'red')
-        assert_equal(sgs.node[1]['nattr'], 'blue')
-        assert_equal(sgs.graph['gattr'], 'green')
-        sgs[1][2]['eattr'] = 'blue'
-        assert_equal(G[1][2]['eattr'], 'red')
-        assert_equal(sgs[1][2]['eattr'], 'blue')
-
-    def test_no_copy(self):
-        scc = nx.strongly_connected_component_subgraphs
-        G = nx.DiGraph()
-        G.add_edge(1, 2, eattr='red')
-        G.add_edge(2, 1, eattr='purple')
-        G.node[1]['nattr'] = 'blue'
-        G.graph['gattr'] = 'green'
-        sgs = list(scc(G, copy=False))[0]
-        assert_equal(sgs[1][2]['eattr'], 'red')
-        assert_equal(sgs.node[1]['nattr'], 'blue')
-        assert_equal(sgs.graph['gattr'], 'green')
-        sgs[1][2]['eattr'] = 'blue'
-        assert_equal(G[1][2]['eattr'], 'blue')
-        assert_equal(sgs[1][2]['eattr'], 'blue')
 
     def test_contract_scc1(self):
         G = nx.DiGraph()
