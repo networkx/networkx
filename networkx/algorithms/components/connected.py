@@ -2,7 +2,7 @@
 """
 Connected components.
 """
-#    Copyright (C) 2004-2015 by
+#    Copyright (C) 2004-2013 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
@@ -10,14 +10,18 @@ Connected components.
 #    BSD license.
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
-from networkx.algorithms.shortest_paths \
-    import single_source_shortest_path_length as sp_length
+
 __authors__ = "\n".join(['Eben Kenah',
                          'Aric Hagberg <aric.hagberg@gmail.com>'
                          'Christopher Ellison'])
-__all__ = ['number_connected_components', 'connected_components',
-           'connected_component_subgraphs','is_connected',
-           'node_connected_component']
+__all__ = [
+    'number_connected_components',
+    'connected_components',
+    'connected_component_subgraphs',
+    'is_connected',
+    'node_connected_component',
+]
+
 
 @not_implemented_for('directed')
 def connected_components(G):
@@ -30,8 +34,8 @@ def connected_components(G):
 
     Returns
     -------
-    comp : generator of lists
-       A list of nodes for each component of G.
+    comp : generator of sets
+       A generator of sets of nodes, one for each component of G.
 
     Examples
     --------
@@ -39,8 +43,13 @@ def connected_components(G):
 
     >>> G = nx.path_graph(4)
     >>> G.add_path([10, 11, 12])
-    >>> sorted(nx.connected_components(G), key = len, reverse=True)
-    [[0, 1, 2, 3], [10, 11, 12]]
+    >>> [len(c) for c in sorted(nx.connected_components(G), key=len, reverse=True)]
+    [4, 3]
+
+    If you only want the largest connected component, it's more
+    efficient to use max instead of sort.
+
+    >>> largest_cc = max(nx.connected_components(G), key=len)
 
     See Also
     --------
@@ -49,13 +58,15 @@ def connected_components(G):
     Notes
     -----
     For undirected graphs only.
+
     """
-    seen={}
+    seen = set()
     for v in G:
         if v not in seen:
-            c = sp_length(G, v)
-            yield list(c)
+            c = set(_plain_bfs(G, v))
+            yield c
             seen.update(c)
+
 
 @not_implemented_for('directed')
 def connected_component_subgraphs(G, copy=True):
@@ -80,6 +91,11 @@ def connected_component_subgraphs(G, copy=True):
     >>> G.add_edge(5,6)
     >>> graphs = list(nx.connected_component_subgraphs(G))
 
+    If you only want the largest connected component, it's more
+    efficient to use max than sort.
+
+    >>> Gc = max(nx.connected_component_subgraphs(G), key=len)
+
     See Also
     --------
     connected_components
@@ -88,12 +104,14 @@ def connected_component_subgraphs(G, copy=True):
     -----
     For undirected graphs only.
     Graph, node, and edge attributes are copied to the subgraphs by default.
+
     """
     for c in connected_components(G):
         if copy:
             yield G.subgraph(c).copy()
         else:
             yield G.subgraph(c)
+
 
 def number_connected_components(G):
     """Return the number of connected components.
@@ -115,8 +133,10 @@ def number_connected_components(G):
     Notes
     -----
     For undirected graphs only.
+
     """
     return len(list(connected_components(G)))
+
 
 @not_implemented_for('directed')
 def is_connected(G):
@@ -145,11 +165,13 @@ def is_connected(G):
     Notes
     -----
     For undirected graphs only.
+
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept('Connectivity is undefined ',
                                           'for the null graph.')
-    return len(sp_length(G, next(G.nodes_iter()))) == len(G)
+    return len(set(_plain_bfs(G, next(G.nodes_iter())))) == len(G)
+
 
 @not_implemented_for('directed')
 def node_connected_component(G, n):
@@ -165,8 +187,8 @@ def node_connected_component(G, n):
 
     Returns
     -------
-    comp : lists
-       A list of nodes in component of G containing node n.
+    comp : set
+       A set of nodes in the component of G containing node n.
 
     See Also
     --------
@@ -175,5 +197,20 @@ def node_connected_component(G, n):
     Notes
     -----
     For undirected graphs only.
+
     """
-    return list(sp_length(G, n))
+    return set(_plain_bfs(G, n))
+
+
+def _plain_bfs(G, source):
+    """A fast BFS node generator"""
+    seen = set()
+    nextlevel = {source}
+    while nextlevel:
+        thislevel = nextlevel
+        nextlevel = set()
+        for v in thislevel:
+            if v not in seen:
+                yield v
+                seen.add(v)
+                nextlevel.update(G[v])

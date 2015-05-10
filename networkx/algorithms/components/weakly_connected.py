@@ -10,31 +10,90 @@
 
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
+
 __authors__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)'
                          'Christopher Ellison'])
-__all__ = ['number_weakly_connected_components',
-           'weakly_connected_components',
-           'weakly_connected_component_subgraphs',
-           'is_weakly_connected'
-           ]
+
+__all__ = [
+    'number_weakly_connected_components',
+    'weakly_connected_components',
+    'weakly_connected_component_subgraphs',
+    'is_weakly_connected',
+]
+
 
 @not_implemented_for('undirected')
 def weakly_connected_components(G):
     """Generate weakly connected components of G.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A directed graph
+
+    Returns
+    -------
+    comp : generator of sets
+        A generator of sets of nodes, one for each weakly connected
+        component of G.
+
+    Examples
+    --------
+    Generate a sorted list of weakly connected components, largest first.
+
+    >>> G = nx.path_graph(4, create_using=nx.DiGraph())
+    >>> G.add_path([10, 11, 12])
+    >>> [len(c) for c in sorted(nx.weakly_connected_components(G),
+    ...                         key=len, reverse=True)]
+    [4, 3]
+
+    If you only want the largest component, it's more efficient to
+    use max instead of sort.
+
+    >>> largest_cc = max(nx.weakly_connected_components(G), key=len)
+
+    See Also
+    --------
+    strongly_connected_components
+
+    Notes
+    -----
+    For directed graphs only.
+
     """
-    seen={}
+    seen = set()
     for v in G:
         if v not in seen:
-            c=_single_source_shortest_unipath_length(G,v)
-            yield list(c.keys())
+            c = set(_plain_bfs(G, v))
+            yield c
             seen.update(c)
+
 
 @not_implemented_for('undirected')
 def number_weakly_connected_components(G):
-    """Return the number of connected components in G.
+    """Return the number of weakly connected components in G.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A directed graph.
+
+    Returns
+    -------
+    n : integer
+        Number of weakly connected components
+
+    See Also
+    --------
+    connected_components
+
+    Notes
+    -----
     For directed graphs only.
+
     """
     return len(list(weakly_connected_components(G)))
+
 
 @not_implemented_for('undirected')
 def weakly_connected_component_subgraphs(G, copy=True):
@@ -42,18 +101,49 @@ def weakly_connected_component_subgraphs(G, copy=True):
 
     Parameters
     ----------
-    G : NetworkX Graph
-       A directed graph.
+    G : NetworkX graph
+        A directed graph.
 
-    copy : bool
-        If copy is True, graph, node, and edge attributes are copied to the
-        subgraphs.
+    copy: bool (default=True)
+        If True make a copy of the graph attributes
+
+    Returns
+    -------
+    comp : generator
+        A generator of graphs, one for each weakly connected component of G.
+
+    Examples
+    --------
+    Generate a sorted list of weakly connected components, largest first.
+
+    >>> G = nx.path_graph(4, create_using=nx.DiGraph())
+    >>> G.add_path([10, 11, 12])
+    >>> [len(c) for c in sorted(nx.weakly_connected_component_subgraphs(G),
+    ...                         key=len, reverse=True)]
+    [4, 3]
+
+    If you only want the largest component, it's more efficient to
+    use max instead of sort.
+
+    >>> Gc = max(nx.weakly_connected_component_subgraphs(G), key=len)
+
+    See Also
+    --------
+    strongly_connected_components
+    connected_components
+
+    Notes
+    -----
+    For directed graphs only.
+    Graph, node, and edge attributes are copied to the subgraphs by default.
+
     """
     for comp in weakly_connected_components(G):
         if copy:
             yield G.subgraph(comp).copy()
         else:
             yield G.subgraph(comp)
+
 
 @not_implemented_for('undirected')
 def is_weakly_connected(G):
@@ -65,12 +155,12 @@ def is_weakly_connected(G):
     Parameters
     ----------
     G : NetworkX Graph
-       A directed graph.
+        A directed graph.
 
     Returns
     -------
     connected : bool
-      True if the graph is weakly connected, False otherwise.
+        True if the graph is weakly connected, False otherwise.
 
     See Also
     --------
@@ -81,50 +171,34 @@ def is_weakly_connected(G):
     Notes
     -----
     For directed graphs only.
+
     """
-    if len(G)==0:
+    if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
             """Connectivity is undefined for the null graph.""")
 
-    return len(list(weakly_connected_components(G))[0])==len(G)
+    return len(list(weakly_connected_components(G))[0]) == len(G)
 
-def _single_source_shortest_unipath_length(G,source,cutoff=None):
-    """Compute the shortest path lengths from source to all reachable nodes.
+
+def _plain_bfs(G, source):
+    """A fast BFS node generator
 
     The direction of the edge between nodes is ignored.
 
     For directed graphs only.
 
-    Parameters
-    ----------
-    G : NetworkX graph
-
-    source : node
-       Starting node for path
-
-    cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
-
-    Returns
-    -------
-    lengths : dictionary
-        Dictionary of shortest path lengths keyed by target.
     """
-    # namespace speedups
     Gsucc = G.succ
     Gpred = G.pred
 
-    seen={}                  # level (number of hops) when seen in BFS
-    level=0                  # the current level
-    nextlevel = set([source]) # set of nodes to check at next level
+    seen = set()
+    nextlevel = {source}
     while nextlevel:
-        thislevel=nextlevel  # advance to next level
-        nextlevel = set()         # and start a new list (fringe)
+        thislevel = nextlevel
+        nextlevel = set()
         for v in thislevel:
             if v not in seen:
-                seen[v]=level # set the level of vertex v
-                nextlevel.update(Gsucc[v]) # add successors of v
-                nextlevel.update(Gpred[v]) # add predecessors of v
-        if (cutoff is not None and cutoff <= level):  break
-        level=level+1
-    return seen  # return all path lengths as dictionary
+                yield v
+                seen.add(v)
+                nextlevel.update(Gsucc[v])
+                nextlevel.update(Gpred[v])
