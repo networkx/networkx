@@ -220,42 +220,13 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
     single_source_dijkstra()
 
     """
-    push = heappush
-    pop = heappop
-    dist = {}  # dictionary of final distances
-    seen = {source: 0}
-    c = count()
-    fringe = []  # use heapq with (distance,label) tuples
-    push(fringe, (0, next(c), source))
-    while fringe:
-        (d, _, v) = pop(fringe)
-        if v in dist:
-            continue  # already searched this node.
-        dist[v] = d
-        # for ignore,w,edgedata in G.edges_iter(v,data=True):
-        # is about 30% slower than the following
-        if G.is_multigraph():
-            edata = []
-            for w, keydata in G[v].items():
-                minweight = min((dd.get(weight, 1)
-                                 for k, dd in keydata.items()))
-                edata.append((w, {weight: minweight}))
-        else:
-            edata = iter(G[v].items())
+    if G.is_multigraph():
+        get_weight = lambda edge: min(eattr.get(weight, 1)
+                                      for eattr in edge.values())
+    else:
+        get_weight = lambda edge: edge.get(weight, 1)
 
-        for w, edgedata in edata:
-            vw_dist = dist[v] + edgedata.get(weight, 1)
-            if cutoff is not None:
-                if vw_dist > cutoff:
-                    continue
-            if w in dist:
-                if vw_dist < dist[w]:
-                    raise ValueError('Contradictory paths found:',
-                                     'negative weights?')
-            elif w not in seen or vw_dist < seen[w]:
-                seen[w] = vw_dist
-                push(fringe, (vw_dist, next(c), w))
-    return dist
+    return _dijkstra_relaxation(G, source, get_weight, cutoff=cutoff)
 
 
 def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight'):
@@ -314,10 +285,55 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
     """
     if source == target:
         return ({source: 0}, {source: [source]})
+
+    if G.is_multigraph():
+        get_weight = lambda edge: min(eattr.get(weight, 1)
+                                      for eattr in edge.values())
+    else:
+        get_weight = lambda edge: edge.get(weight, 1)
+
+    paths = {source: [source]}  # dictionary of paths
+    return _dijkstra_relaxation(G, source, get_weight, paths=paths,
+                                cutoff=cutoff, target=target)
+
+
+def _dijkstra_relaxation(G, source, get_weight, arg=None,
+                        pred=None, paths=None, cutoff=None, target=None):
+    """Relaxation loop for Dijkstra algorithm
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    source : node label
+       Starting node for path
+
+    get_weight: function
+        Function for getting edge weight
+
+    arg: optional (default=None)
+        Argument for get_weight function
+
+    pred: list, optional(default=None)
+        List of predecessors of a node
+
+    paths: dict, optional (default=None)
+        Path from the source to a target node.
+
+    target : node label, optional
+       Ending node for path
+
+    cutoff : integer or float, optional
+       Depth to stop the search. Only paths of length <= cutoff are returned.
+    """
+    if G.is_directed():
+        G_succ = G.succ
+    else:
+        G_succ = G.adj
+
     push = heappush
     pop = heappop
     dist = {}  # dictionary of final distances
-    paths = {source: [source]}  # dictionary of paths
     seen = {source: 0}
     c = count()
     fringe = []  # use heapq with (distance,label) tuples
@@ -329,31 +345,35 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
         dist[v] = d
         if v == target:
             break
-        # for ignore,w,edgedata in G.edges_iter(v,data=True):
-        # is about 30% slower than the following
-        if G.is_multigraph():
-            edata = []
-            for w, keydata in G[v].items():
-                minweight = min((dd.get(weight, 1)
-                                 for k, dd in keydata.items()))
-                edata.append((w, {weight: minweight}))
-        else:
-            edata = iter(G[v].items())
 
-        for w, edgedata in edata:
-            vw_dist = dist[v] + edgedata.get(weight, 1)
+        for u, e in G_succ[v].items():
+            if arg is None:
+                vw_dist = dist[v] + get_weight(e)
+            else:
+                vw_dist = dist[v] + get_weight(e, arg, v, u)
             if cutoff is not None:
                 if vw_dist > cutoff:
                     continue
-            if w in dist:
-                if vw_dist < dist[w]:
+            if u in dist:
+                if vw_dist < dist[u]:
                     raise ValueError('Contradictory paths found:',
                                      'negative weights?')
-            elif w not in seen or vw_dist < seen[w]:
-                seen[w] = vw_dist
-                push(fringe, (vw_dist, next(c), w))
-                paths[w] = paths[v] + [w]
-    return (dist, paths)
+            elif u not in seen or vw_dist < seen[u]:
+                seen[u] = vw_dist
+                push(fringe, (vw_dist, next(c), u))
+                if paths is not None:
+                    paths[u] = paths[v] + [u]
+                if pred is not None:
+                    pred[u] = [v]
+            elif vw_dist == seen[u]:
+                if pred is not None:
+                    pred[u].append(v)
+
+    if paths is not None:
+        return (dist, paths)
+    if pred is not None:
+        return (pred, dist)
+    return dist
 
 
 def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
@@ -387,43 +407,15 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
     The list of predecessors contains more than one element only when
     there are more than one shortest paths to the key node.
     """
-    push = heappush
-    pop = heappop
-    dist = {}  # dictionary of final distances
+    if G.is_multigraph():
+        get_weight = lambda edge: min(eattr.get(weight, 1)
+                                      for eattr in edge.values())
+    else:
+        get_weight = lambda edge: edge.get(weight, 1)
+
     pred = {source: []}  # dictionary of predecessors
-    seen = {source: 0}
-    c = count()
-    fringe = []  # use heapq with (distance,label) tuples
-    push(fringe, (0, next(c), source))
-    while fringe:
-        (d, _, v) = pop(fringe)
-        if v in dist:
-            continue  # already searched this node.
-        dist[v] = d
-        if G.is_multigraph():
-            edata = []
-            for w, keydata in G[v].items():
-                minweight = min((dd.get(weight, 1)
-                                 for k, dd in keydata.items()))
-                edata.append((w, {weight: minweight}))
-        else:
-            edata = iter(G[v].items())
-        for w, edgedata in edata:
-            vw_dist = dist[v] + edgedata.get(weight, 1)
-            if cutoff is not None:
-                if vw_dist > cutoff:
-                    continue
-            if w in dist:
-                if vw_dist < dist[w]:
-                    raise ValueError('Contradictory paths found:',
-                                     'negative weights?')
-            elif w not in seen or vw_dist < seen[w]:
-                seen[w] = vw_dist
-                push(fringe, (vw_dist, next(c), w))
-                pred[w] = [v]
-            elif vw_dist == seen[w]:
-                pred[w].append(v)
-    return (pred, dist)
+    return _dijkstra_relaxation(G, source, get_weight, pred=pred,
+                                cutoff=cutoff)
 
 
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
@@ -1004,7 +996,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
 
 
-def johnson(G, weight='weight', new_weight=None):
+def johnson(G, weight='weight'):
     """Compute shortest paths between all nodes in a weighted graph using
     Johnson's algorithm.
 
@@ -1014,9 +1006,6 @@ def johnson(G, weight='weight', new_weight=None):
 
     weight: string, optional (default='weight')
         Edge data key corresponding to the edge weight.
-
-    new_weight: string, optional (default=None)
-        Edge data key corresponding to the new edge weight after graph transformation.
 
     Returns
     -------
@@ -1067,20 +1056,20 @@ def johnson(G, weight='weight', new_weight=None):
         pred[node] = None
 
     # Calculate distance of shortest paths
-    dist = _bellman_ford_relaxation(G, pred, dist, G.nodes(), weight)[1]
-    delete = False
-    if new_weight is None:
-        delete = True
-        new_weight = str(uuid.uuid1())
+    dist_bellman = _bellman_ford_relaxation(G, pred, dist, G.nodes(),
+                                            weight)[1]
 
-    for u, v, w in G.edges(data=True):
-        w[new_weight] = w[weight] + dist[u] - dist[v]
+    if G.is_multigraph():
+        get_weight = lambda edge, dist_b, u, v: min(eattr.get(weight, 1)
+                        for eattr in edge.values()) + dist_b[u] - dist_b[v]
 
-    all_pairs_path = nx.all_pairs_dijkstra_path(G, weight=new_weight)
+    else:
+        get_weight = lambda edge, dist_b, u, v: edge.get(weight, 1) + dist_b[u] - dist_b[v]
 
-    if delete:
-        for u, v, w in G.edges(data=True):
-            if new_weight in w:
-                w.pop(new_weight)
+    all_pairs_path = {}
+    for n in G:
+        paths = {n: [n]}  # dictionary of paths
+        all_pairs_path[n] = _dijkstra_relaxation(G, n, get_weight,
+                                                 dist_bellman, paths=paths)[1]
 
     return all_pairs_path
