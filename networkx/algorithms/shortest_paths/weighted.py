@@ -460,11 +460,9 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
 
     The dictionary returned only has keys for reachable node pairs.
     """
-    paths = {}
-    for n in G:
-        paths[n] = single_source_dijkstra_path_length(G, n, cutoff=cutoff,
-                                                      weight=weight)
-    return paths
+    length = single_source_dijkstra_path_length
+    # TODO This can be trivially parallelized.
+    return {n: length(G, n, cutoff=cutoff, weight=weight) for n in G}
 
 
 def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
@@ -502,11 +500,9 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight='weight'):
     floyd_warshall()
 
     """
-    paths = {}
-    for n in G:
-        paths[n] = single_source_dijkstra_path(G, n, cutoff=cutoff,
-                                               weight=weight)
-    return paths
+    path = single_source_dijkstra_path
+    # TODO This can be trivially parallelized.
+    return {n: path(G, n, cutoff=cutoff, weight=weight) for n in G}
 
 
 def bellman_ford(G, source, weight='weight'):

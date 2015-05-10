@@ -66,15 +66,16 @@ def single_source_shortest_path_length(G,source,cutoff=None):
     return seen  # return all path lengths as dictionary
 
 
-def all_pairs_shortest_path_length(G,cutoff=None):
-    """ Compute the shortest path lengths between all nodes in G.
+def all_pairs_shortest_path_length(G, cutoff=None):
+    """Computes the shortest path lengths between all nodes in ``G``.
 
     Parameters
     ----------
     G : NetworkX graph
 
     cutoff : integer, optional
-        depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth at which to stop the search. Only paths of length at most
+        ``cutoff`` are returned.
 
     Returns
     -------
@@ -87,20 +88,17 @@ def all_pairs_shortest_path_length(G,cutoff=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> length=nx.all_pairs_shortest_path_length(G)
+    >>> G = nx.path_graph(5)
+    >>> length = nx.all_pairs_shortest_path_length(G)
     >>> print(length[1][4])
     3
     >>> length[1]
     {0: 1, 1: 0, 2: 1, 3: 2, 4: 3}
 
     """
-    paths={}
-    for n in G:
-        paths[n]=single_source_shortest_path_length(G,n,cutoff=cutoff)
-    return paths
-
-
+    length = single_source_shortest_path_length
+    # TODO This can be trivially parallelized.
+    return {n: length(G, n, cutoff=cutoff) for n in G}
 
 
 def bidirectional_shortest_path(G,source,target):
@@ -258,15 +256,16 @@ def single_source_shortest_path(G,source,cutoff=None):
     return paths
 
 
-def all_pairs_shortest_path(G,cutoff=None):
-    """ Compute shortest paths between all nodes.
+def all_pairs_shortest_path(G, cutoff=None):
+    """Compute shortest paths between all nodes.
 
     Parameters
     ----------
     G : NetworkX graph
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth at which to stop the search. Only paths of length at most
+        ``cutoff`` are returned.
 
     Returns
     -------
@@ -275,8 +274,8 @@ def all_pairs_shortest_path(G,cutoff=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(5)
-    >>> path=nx.all_pairs_shortest_path(G)
+    >>> G = nx.path_graph(5)
+    >>> path = nx.all_pairs_shortest_path(G)
     >>> print(path[0][4])
     [0, 1, 2, 3, 4]
 
@@ -285,12 +284,8 @@ def all_pairs_shortest_path(G,cutoff=None):
     floyd_warshall()
 
     """
-    paths={}
-    for n in G:
-        paths[n]=single_source_shortest_path(G,n,cutoff=cutoff)
-    return paths
-
-
+    # TODO This can be trivially parallelized.
+    return {n: single_source_shortest_path(G, n, cutoff=cutoff) for n in G}
 
 
 def predecessor(G,source,target=None,cutoff=None,return_seen=None):
@@ -357,4 +352,3 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
             return (pred,seen)
         else:
             return pred
-
