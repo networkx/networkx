@@ -106,6 +106,7 @@ Random Graphs
    random_shell_graph
    random_powerlaw_tree
    random_powerlaw_tree_sequence
+   heuristically_optimized_trade_offs
 
 
 Duplication Divergence

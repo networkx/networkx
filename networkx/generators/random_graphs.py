@@ -10,14 +10,17 @@ Generators for random graphs.
 #    All rights reserved.
 #    BSD license.
 from __future__ import division
+
+from collections import defaultdict
 import itertools
 import math
+from operator import itemgetter
 import random
 
 import networkx as nx
 from .classic import empty_graph, path_graph, complete_graph
 from .degree_seq import degree_sequence_tree
-from collections import defaultdict
+
 __author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
                         'Pieter Swart (swart@lanl.gov)',
                         'Dan Schult (dschult@colgate.edu)'])
@@ -38,8 +41,8 @@ __all__ = ['fast_gnp_random_graph',
            'random_shell_graph',
            'random_powerlaw_tree',
            'random_powerlaw_tree_sequence',
+           'heuristically_optimized_trade_offs',
            'random_kernel_graph']
-
 
 #-------------------------------------------------------------------------
 #  Some Famous Random Graphs
@@ -1009,3 +1012,136 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
             j = int(math.ceil(n*kernel_root(i/n, j/n, r)))
             graph.add_edge(i-1, j-1)
     return graph
+
+
+def heuristically_optimized_trade_offs(n, alpha=4, centrality_function=None,
+                                       seed=None):
+    """This function generates a graph using the heuristically optimized
+    trade-offs method described in [1]_.
+
+    The algorithm is as follows.
+
+        In our model a tree is built as nodes arrive uniformly
+        at random in the unit square (the shape is, as usual,
+        inconsequential). When the *i*-th node arrives, it attaches
+        itself on one of the previous nodes. [...] Node *i* attaches
+        itself to the node *j* that minimizes the weighted sum
+        of the two objectives:
+
+        .. math::
+
+           \min_{j < i} \alpha * d_{ij} + h_j
+
+        where `d_{ij}` is the Euclidean distance, and `h_j` is some
+        measure of the "centrality" of node *j*, such as (a)
+        the average number of hops from other nodes; (b) the
+        maximum number of hops from another node; (c) the
+        number of hops from a fixed center of the tree; our
+        experiments show that all three measures result in
+        similar power laws, even though we prove it for (c).
+        `\alpha` is a parameter best thought as a function of the final
+        number *n* of points, gauging the relative importance of
+        the two objectives.
+
+        -- [1]_
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes in the returned graph.
+
+    alpha : numeric
+        The weight for the distance parameter.
+
+    centrality_function : string or function
+
+        A function (or string indicating a function) that returns a
+        number representing the centrality of a given node. In this
+        case, the function returns the inverse of the usual measures of
+        centrality: a higher number for a node of less centrality, and a
+        lower number for a node of high centrality. If not specified,
+        the ``'center'`` function is used, as described below.
+
+        The function must accept three arguments, a graph ``G``, a node
+        ``v``, and a dictionary whose keys are nodes and whose values
+        represent the current shortest path distance to the central node
+        (node 0).  The function must return a number representing the
+        centrality of node ``v``.
+
+        If ``centrality_function`` is a string, it can be
+
+        * ``'max'``, corresponding to the maximum distance to other nodes,
+        * ``'avg'``, corresponding to the average distance to other nodes,
+        * ``'center'``, corresponding to the distance to center.
+
+        The first two are relatively slow, running in time `O(n^2 m +
+        n^3 \log n)`, whereas, center (the default) runs in time
+        `O(n^2)`, where `n` is the number of nodes and `m` is the number
+        of edges in the graph.
+
+    seed : int
+        A seed for the random number generator.
+
+    Returns
+    -------
+    G : networkx Graph
+         A graph built using the above algorithm
+
+    References
+    ----------
+    [1] Fabrikant, Alex, Elias Koutsoupias, and Christos H. Papadimitriou.
+        "Heuristically Optimized Trade-Offs: A New Paradigm for Power Laws in
+        the Internet."
+        *Automata, Languages and Programming*.
+        Springer Berlin Heidelberg, 2002. 110--122.
+        http://dx.doi.org/10.1007/3-540-45465-9_11
+
+    """
+    hot = nx.heuristically_optimized_trade_offs
+    if centrality_function is None or centrality_function == 'center':
+        func = lambda G, v, d: d[v]
+        return hot(n, alpha=alpha, centrality_function=func, seed=seed)
+    dist = nx.shortest_path_length
+    if centrality_function == 'max':
+        func = lambda G, v, d: max(l for t, l in dist(G, v))
+        return hot(n, alpha=alpha, centrality_function=func, seed=seed)
+    if centrality_function == 'avg':
+        func = lambda G, v, d: sum(l for t, l in dist(G, v)) / len(G) - 1
+        return hot(n, alpha=alpha, centrality_function=func, seed=seed)
+    if not callable(centrality_function):
+        raise nx.NetworkXError("centrality_function must be a function or one"
+                               " of the strings ('center', 'max', 'avg')")
+    if seed is not None:
+        random.seed(seed)
+    # The graph begins with a node in a random point in 2D Euclidean space.
+    G = nx.Graph()
+    G.add_node(0, pos=(random.random(), random.random()))
+    # Maintain a dictionary storing the shortest path distance to the initial
+    # node, node 0.
+    dist_cent = {0: 0}
+    cent = centrality_function
+    for i in range(1, n):
+        # Add a node at a random point in 2D Euclidean space.
+        G.add_node(i, pos=(random.random(), random.random()))
+        # Compute the value of each other node with respect to the current one.
+        val = lambda j: alpha * _distance(G, i, j) + cent(G, j, dist_cent)
+        # Determine the nearest node to `i` according to this computed value.
+        nearest_node = min((j for j in G if i != j), key=val)
+        # Join the node `i` to its nearest node.
+        G.add_edge(i, nearest_node)
+        # Set the shortest path distance of the current node from the central
+        # node.
+        dist_cent[i] = dist_cent[nearest_node] + 1
+    return G
+
+
+def _distance(G, u, v, attr='pos'):
+    """Returns the Euclidean distance between nodes ``u`` and ``v``.
+
+    The position of the nodes is given by the node attribute in the graph ``G``
+    with key ``attr``.
+
+    """
+    u_pos = G.node[u][attr]
+    v_pos = G.node[v][attr]
+    return math.sqrt(sum((u_i - v_i) ** 2 for u_i, v_i in zip(u_pos, v_pos)))
