@@ -28,8 +28,8 @@ __all__ = ['dijkstra_path',
 
 from collections import deque
 from heapq import heappush, heappop
+import functools
 from itertools import count
-import uuid
 import networkx as nx
 from networkx.utils import generate_unique_node
 
@@ -221,12 +221,12 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
     """
     if G.is_multigraph():
-        get_weight = lambda edge: min(eattr.get(weight, 1)
-                                      for eattr in edge.values())
+        get_weight = lambda u, v, data: min(eattr.get(weight, 1)
+            for eattr in data.values())
     else:
-        get_weight = lambda edge: edge.get(weight, 1)
+        get_weight = lambda u, v, data: data.get(weight, 1)
 
-    return _dijkstra_relaxation(G, source, get_weight, cutoff=cutoff)
+    return _dijkstra(G, source, get_weight, cutoff=cutoff)
 
 
 def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight'):
@@ -287,19 +287,19 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
         return ({source: 0}, {source: [source]})
 
     if G.is_multigraph():
-        get_weight = lambda edge: min(eattr.get(weight, 1)
-                                      for eattr in edge.values())
+        get_weight = lambda u, v, data: min(eattr.get(weight, 1)
+            for eattr in data.values())
     else:
-        get_weight = lambda edge: edge.get(weight, 1)
+        get_weight = lambda u, v, data: data.get(weight, 1)
 
     paths = {source: [source]}  # dictionary of paths
-    return _dijkstra_relaxation(G, source, get_weight, paths=paths,
-                                cutoff=cutoff, target=target)
+    return _dijkstra(G, source, get_weight, paths=paths, cutoff=cutoff,
+                     target=target)
 
 
-def _dijkstra_relaxation(G, source, get_weight, arg=None,
-                        pred=None, paths=None, cutoff=None, target=None):
-    """Relaxation loop for Dijkstra algorithm
+def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
+              target=None):
+    """Implementation of Dijkstra's algorithm
 
     Parameters
     ----------
@@ -310,9 +310,6 @@ def _dijkstra_relaxation(G, source, get_weight, arg=None,
 
     get_weight: function
         Function for getting edge weight
-
-    arg: optional (default=None)
-        Argument for get_weight function
 
     pred: list, optional(default=None)
         List of predecessors of a node
@@ -325,6 +322,20 @@ def _dijkstra_relaxation(G, source, get_weight, arg=None,
 
     cutoff : integer or float, optional
        Depth to stop the search. Only paths of length <= cutoff are returned.
+
+    Returns
+    -------
+    distance,path : dictionaries
+       Returns a tuple of two dictionaries keyed by node.
+       The first dictionary stores distance from the source.
+       The second stores the path from the source to that node.
+
+    pred,distance : dictionaries
+       Returns two dictionaries representing a list of predecessors
+       of a node and the distance to each node.
+
+    distance : dictionary
+       Dictionary of shortest lengths keyed by target.
     """
     if G.is_directed():
         G_succ = G.succ
@@ -347,10 +358,10 @@ def _dijkstra_relaxation(G, source, get_weight, arg=None,
             break
 
         for u, e in G_succ[v].items():
-            if arg is None:
-                vw_dist = dist[v] + get_weight(e)
-            else:
-                vw_dist = dist[v] + get_weight(e, arg, v, u)
+            cost = get_weight(v, u, e)
+            if cost is None:
+                continue
+            vw_dist = dist[v] + get_weight(v, u, e)
             if cutoff is not None:
                 if vw_dist > cutoff:
                     continue
@@ -408,14 +419,13 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
     there are more than one shortest paths to the key node.
     """
     if G.is_multigraph():
-        get_weight = lambda edge: min(eattr.get(weight, 1)
-                                      for eattr in edge.values())
+        get_weight = lambda u, v, data: min(eattr.get(weight, 1)
+            for eattr in data.values())
     else:
-        get_weight = lambda edge: edge.get(weight, 1)
+        get_weight = lambda u, v, data: data.get(weight, 1)
 
     pred = {source: []}  # dictionary of predecessors
-    return _dijkstra_relaxation(G, source, get_weight, pred=pred,
-                                cutoff=cutoff)
+    return _dijkstra(G, source, get_weight, pred=pred, cutoff=cutoff)
 
 
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight='weight'):
@@ -579,19 +589,37 @@ def bellman_ford(G, source, weight='weight'):
     return _bellman_ford_relaxation(G, pred, dist, [source], weight)
 
 
-def _bellman_ford_relaxation(G, pred, dist, source_list, weight):
-    """
-    Relaxation loop for Bellman - Ford algorithm.
+def _bellman_ford_relaxation(G, pred, dist, source_iter, weight):
+    """Relaxation loop for Bellman–Ford algorithm
 
-    :param G: NetworkX graph
-    :param pred: dictionary keyed by node to predecessor in the
-    path
-    :param dist: dictionary keyed by node to distance from the source
-    :param source_list: list of nodes setting as source nodes
-    :param weight: Edge data key corresponding to the edge weight
-    :return: dictionaries
-       Returns two dictionaries keyed by node to predecessor in the
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    pred: dict
+        Keyed by node to predecessor in the path
+
+    dist: dict
+        Keyed by node to the distance from the source
+
+    source_iter: iter
+        Iterable of source nodes
+
+    weight: string
+       Edge data key corresponding to the edge weight
+
+    Returns
+    -------
+    Returns two dictionaries keyed by node to predecessor in the
        path and to the distance from the source respectively.
+
+    Raises
+    ------
+    NetworkXUnbounded
+       If the (di)graph contains a negative cost (di)cycle, the
+       algorithm raises an exception to indicate the presence of the
+       negative cost (di)cycle.  Note: any negative weight edge in an
+       undirected graph is a negative cost cycle
     """
     if G.is_multigraph():
         def get_weight(edge_dict):
@@ -609,8 +637,8 @@ def _bellman_ford_relaxation(G, pred, dist, source_list, weight):
     n = len(G)
 
     count = {}
-    q = deque(source_list)
-    in_q = set(source_list)
+    q = deque(source_iter)
+    in_q = set(source_iter)
     while q:
         u = q.popleft()
         in_q.remove(u)
@@ -1060,16 +1088,16 @@ def johnson(G, weight='weight'):
                                             weight)[1]
 
     if G.is_multigraph():
-        get_weight = lambda edge, dist_b, u, v: min(eattr.get(weight, 1)
-                        for eattr in edge.values()) + dist_b[u] - dist_b[v]
+        get_weight = lambda dist, u, v, data: min(eattr.get(weight, 1)
+                        for eattr in data.values()) + dist[u] - dist[v]
 
     else:
-        get_weight = lambda edge, dist_b, u, v: edge.get(weight, 1) + dist_b[u] - dist_b[v]
+        get_weight = lambda dist, u, v, data: data.get(weight, 1) + dist[u] - dist[v]
 
     all_pairs_path = {}
     for n in G:
         paths = {n: [n]}  # dictionary of paths
-        all_pairs_path[n] = _dijkstra_relaxation(G, n, get_weight,
-                                                 dist_bellman, paths=paths)[1]
+        all_pairs_path[n] = _dijkstra(G, n, functools.partial(
+            get_weight, dist_bellman), paths=paths)[1]
 
     return all_pairs_path
