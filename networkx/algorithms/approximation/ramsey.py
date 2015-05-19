@@ -34,4 +34,14 @@ def ramsey_R2(G):
 
     c_1.add(node)
     i_2.add(node)
-    return (max([c_1, c_2]), max([i_1, i_2]))
+
+    # max here should based on size of sets/lists
+    max_c = c_1
+    if len(c_2) > len(c_1):
+        max_c = c2
+
+    max_i = i_1
+    if len(i_2) > len(i_1):
+        max_i = i2
+
+    return (max_c, max_i)
