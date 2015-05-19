@@ -97,7 +97,7 @@ def clique_removal(G):
     # try with a clique 5 + 1 additional node, the max_clique(G) will fail and return only one node
     # here we just return the biggest clique (iset), however, multiple biggest cliques can be found
     lengths = [len(i) for i in isets]
-    indexOfMax = length.index(max(lengths))
+    indexOfMax = lengths.index(max(lengths))
     maxiset = isets[indexOfMax]
     
     
