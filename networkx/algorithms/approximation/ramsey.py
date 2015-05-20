@@ -7,6 +7,8 @@ Ramsey numbers.
 #   All rights reserved.
 #   BSD license.
 import networkx as nx
+from ...utils import arbitrary_element
+
 __all__ = ["ramsey_R2"]
 __author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
@@ -26,7 +28,7 @@ def ramsey_R2(G):
     if not G:
         return (set([]), set([]))
 
-    node = next(G.nodes_iter())
+    node = arbitrary_element(G)
     nbrs = nx.all_neighbors(G, node)
     nnbrs = nx.non_neighbors(G, node)
     c_1, i_1 = ramsey_R2(G.subgraph(nbrs))
