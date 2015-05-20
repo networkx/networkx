@@ -46,6 +46,7 @@ Algorithms
    algorithms.rich_club
    algorithms.shortest_paths
    algorithms.simple_paths
+   algorithms.structuralholes
    algorithms.swap
    algorithms.traversal
    algorithms.tree

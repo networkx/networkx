@@ -15,14 +15,15 @@ from networkx.algorithms.dominance import *
 from networkx.algorithms.dominating import *
 from networkx.algorithms.hierarchy import *
 from networkx.algorithms.hybrid import *
+from networkx.algorithms.link_analysis import *
+from networkx.algorithms.link_prediction import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.minors import *
 from networkx.algorithms.mis import *
-from networkx.algorithms.link_analysis import *
-from networkx.algorithms.link_prediction import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.shortest_paths import *
 from networkx.algorithms.smetric import *
+from networkx.algorithms.structuralholes import *
 from networkx.algorithms.triads import *
 from networkx.algorithms.traversal import *
 from networkx.algorithms.isolate import *
