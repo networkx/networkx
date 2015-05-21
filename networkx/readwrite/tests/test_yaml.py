@@ -35,9 +35,9 @@ class TestYaml(object):
     def assert_equal(self, G, data=False):
         (fd, fname) = tempfile.mkstemp()
         nx.write_yaml(G, fname)
-        Gin = nx.read_yaml(fname);
+        Gin = nx.read_yaml(fname)
 
-        assert_nodes_equal(G.nodes(), Gin.nodes())
+        assert_nodes_equal(list(G), list(Gin))
         assert_edges_equal(G.edges(data=data), Gin.edges(data=data))
 
         os.close(fd)

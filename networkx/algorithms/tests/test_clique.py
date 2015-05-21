@@ -52,7 +52,7 @@ class TestCliques:
         assert_equal(nx.number_of_cliques(G),
                      {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
                       6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
-        assert_equal(nx.number_of_cliques(G, nodes=G.nodes()),
+        assert_equal(nx.number_of_cliques(G, nodes=list(G.nodes())),
                      {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
                       6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
         assert_equal(nx.number_of_cliques(G, nodes=[2, 3, 4]),
@@ -60,7 +60,7 @@ class TestCliques:
         assert_equal(nx.number_of_cliques(G, cliques=self.cl),
                      {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
                       6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
-        assert_equal(nx.number_of_cliques(G, G.nodes(), cliques=self.cl),
+        assert_equal(nx.number_of_cliques(G, list(G.nodes()), cliques=self.cl),
                      {1: 1, 2: 2, 3: 1, 4: 2, 5: 1,
                       6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1})
 
@@ -104,7 +104,7 @@ class TestCliques:
         H = nx.project_down(B)
         assert_equal(H.adj, G.adj)
         H1 = nx.project_up(B)
-        assert_equal(H1.nodes(), [1, 2, 3, 4, 5])
+        assert_equal(list(H1.nodes()), [1, 2, 3, 4, 5])
         H2 = nx.make_max_clique_graph(G)
         assert_equal(H1.adj, H2.adj)
 

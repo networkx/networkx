@@ -12,16 +12,16 @@ class TestRelabel():
         G=empty_graph()
         H=convert_node_labels_to_integers(G,100)
         assert_equal(H.name, '(empty_graph(0))_with_int_labels')
-        assert_equal(H.nodes(), [])
-        assert_equal(H.edges(), [])
+        assert_equal(list(H.nodes()), [])
+        assert_equal(list(H.edges()), [])
 
         for opt in ["default", "sorted", "increasing degree",
                     "decreasing degree"]:
             G=empty_graph()
             H=convert_node_labels_to_integers(G,100, ordering=opt)
             assert_equal(H.name, '(empty_graph(0))_with_int_labels')
-            assert_equal(H.nodes(), [])
-            assert_equal(H.edges(), [])
+            assert_equal(list(H.nodes()), [])
+            assert_equal(list(H.edges()), [])
 
         G=empty_graph()
         G.add_edges_from([('A','B'),('A','C'),('B','C'),('C','D')])
@@ -35,7 +35,7 @@ class TestRelabel():
         degH=H.degree().values()
         degG=G.degree().values()
         assert_equal(sorted(degH), sorted(degG))
-        assert_equal(H.nodes(), [1000, 1001, 1002, 1003])
+        assert_equal(list(H.nodes()), [1000, 1001, 1002, 1003])
 
         H=convert_node_labels_to_integers(G,ordering="increasing degree")
         degH=H.degree().values()
@@ -163,4 +163,4 @@ class TestRelabel():
         assert_equal(sorted(G.nodes()),['One','Three','Two'])
         G = nx.MultiDiGraph([(1, 1)])
         G = nx.relabel_nodes(G, {1: 0}, copy=False)
-        assert_equal(G.nodes(), [0])
+        assert_equal(sorted(G.nodes()), [0])

@@ -20,7 +20,7 @@ def test_iterable():
 def test_graph_iterable():
     K=nx.complete_graph(10)
     assert_true(iterable(K))
-    assert_true(iterable(K.nodes_iter()))
+    assert_true(iterable(K.nodes()))
     assert_true(iterable(K.edges_iter()))
 
 def test_is_list_of_ints():

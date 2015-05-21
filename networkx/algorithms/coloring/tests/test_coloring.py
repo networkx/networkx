@@ -369,7 +369,7 @@ class TestColoring:
 
 ############################## Utility functions ##############################
 def verify_coloring(graph, coloring):
-    for node in graph.nodes_iter():
+    for node in graph.nodes():
         if node not in coloring:
             return False
 

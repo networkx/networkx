@@ -39,7 +39,6 @@ Iterating over nodes and edges
    :toctree: generated/
 
    MultiDiGraph.nodes
-   MultiDiGraph.nodes_iter
    MultiDiGraph.__iter__
    MultiDiGraph.edges
    MultiDiGraph.edges_iter
