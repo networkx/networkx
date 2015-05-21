@@ -1,157 +1,184 @@
-"""
-========================
-Cycle finding algorithms
-========================
-"""
+# -*- encoding: utf-8 -*-
 #    Copyright (C) 2010-2012 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Pieter Swart <swart@lanl.gov>
 #    All rights reserved.
 #    BSD license.
+"""Functions for finding cycles in a graph."""
 
 from collections import defaultdict
 
-import networkx as nx
-from networkx.utils import *
-from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
+try:
+    import scipy as sp
+except:
+    is_scipy_available = False
+else:
+    is_scipy_available = True
 
-__all__ = ['cycle_basis','cycle_basis_matrix','simple_cycles','recursive_simple_cycles','chords']
+import networkx as nx
+from networkx.algorithms.traversal.edgedfs import helper_funcs, edge_dfs
+from ..utils import not_implemented_for
+
+__all__ = ['chords', 'cycle_basis', 'cycle_basis_matrix', 'find_cycle',
+           'recursive_simple_cycles', 'simple_cycles']
 
 __author__ = "\n".join(['Jon Olav Vik <jonovik@gmail.com>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Aric Hagberg <hagberg@lanl.gov>',
                         'JuanPi Carbajal <ajuanpi+dev@gmail.com>'])
 
-@not_implemented_for('directed')
-def cycle_basis(G,root=None):
-    """ Returns a list of cycles which form a basis for cycles of G.
 
-    A basis for cycles of a network is a minimal collection of
-    cycles such that any cycle in the network can be written
-    as a sum of cycles in the basis.  Here summation of cycles
-    is defined as "exclusive or" of the edges. Cycle bases are
-    useful, e.g. when deriving equations for electric circuits
-    using Kirchhoff's Laws.
+@not_implemented_for('directed')
+def cycle_basis(G, root=None):
+    """Returns a list of cycles that form a basis for the cycle space of
+    ``G``.
+
+    The *`cycle space`_* of a graph is the vector space of its Eulerian
+    subgraphs, with vector addition defined by symmetric difference of
+    the subgraphs. A *`cycle basis`_* is a basis for this vector space.
+    It is a minimal collection of cycles such that any cycle in the
+    network can be written as a "sum" (in the sense of symmetric
+    difference, as stated above) of cycles in the basis.
+
+    Cycle bases are useful when considering a graph as an electrical
+    circuit that complies with `Kirchhoff's circuit laws`_.
+
+    .. _cycle space: https://en.wikipedia.org/wiki/Cycle_space
+    .. _cycle basis: https://en.wikipedia.org/wiki/Cycle_basis
+    .. _Kirchhoff's circuit laws: https://en.wikipedia.org/wiki/Kirchhoff%27s_circuit_laws
 
     Parameters
     ----------
     G : NetworkX Graph
+
     root : node, optional
-       Specify starting node for basis.
+        A starting node to use when computing the basis.
 
     Returns
     -------
-    A list of cycle lists.  Each cycle list is a list of nodes
-    which forms a cycle (loop) in G.
+    list
+        A list of cycles, each of which is itself a list of nodes
+        representing a cycle in the graph.
 
     Examples
     --------
     >>> G=nx.Graph()
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [0, 3, 4, 5])
-    >>> print(nx.cycle_basis(G,0))
+    >>> nx.cycle_basis(G, 0)
     [[3, 4, 5, 0], [1, 2, 3, 0]]
 
     Notes
     -----
-    This is adapted from algorithm CACM 491 [1]_.
+    This implementation is adapted from algorithm CACM 491 [1]_.
 
     References
     ----------
-    .. [1] Paton, K. An algorithm for finding a fundamental set of
-       cycles of a graph. Comm. ACM 12, 9 (Sept 1969), 514-518.
+    .. [1] Paton, K.
+           "An algorithm for finding a fundamental set of cycles of a graph."
+           *Communications of the ACM* 12, 9 (Sept. 1969), 514–518.
 
     See Also
     --------
     simple_cycles
+
     """
     cycles = []
-    # Add all cycles due to multiple edges between nodes
+    # Add all cycles due to multiple edges between nodes.
     if G.is_multigraph():
-      C,T   = chords(G)
-      for e in C.edges_iter():
-          if T.has_edge(*e) or T.has_edge(*e[::-1]):
-              cycles.append(list(e))
-      # Make G a graph so the original algorithm works
-      G = nx.Graph(G)
+        C, T = chords(G, output_tree=True)
+        cycles = [list(e) for e in C.edges_iter()
+                  if T.has_edge(*e) or T.has_edge(*e[::-1])]
+        # Make G a graph so that the original algorithm works.
+        G = nx.Graph(G)
 
-    gnodes = set(G.nodes())
-    while gnodes:  # loop over connected components
+    gnodes = set(G)
+    while gnodes:
         if root is None:
-            root=gnodes.pop()
-        stack=[root]
-        pred={root:root}
-        used={root:set()}
-        while stack:  # walk the spanning tree finding cycles
-            z=stack.pop()  # use last-in so cycles easier to find
-            zused=used[z]
+            root = gnodes.pop()
+        # TODO stack should use deque
+        stack = [root]
+        pred = {root: root}
+        used = {root: set()}
+        # Walk the spanning tree, finding cycles.
+        while stack:
+            # Use last-in so that cycles are easier to find.
+            z = stack.pop()
+            zused = used[z]
             for nbr in G[z]:
-                if nbr not in used:   # new node
-                    pred[nbr]=z
+                # If this is a node we have not already seen...
+                if nbr not in used:
+                    pred[nbr] = z
                     stack.append(nbr)
-                    used[nbr]=set([z])
-                elif nbr == z:        # self loops
+                    used[nbr] = set([z])
+                # If this is a self-loop, immediately add the singleton
+                # list of this vertex as a cycle.
+                elif nbr == z:
                     cycles.append([z])
-                elif nbr not in zused:# found a cycle
-                    pn=used[nbr]
-                    cycle=[nbr,z]
-                    p=pred[z]
+                # If we have found a cycle...
+                elif nbr not in zused:
+                    pn = used[nbr]
+                    cycle = [nbr, z]
+                    p = pred[z]
                     while p not in pn:
                         cycle.append(p)
-                        p=pred[p]
+                        p = pred[p]
                     cycle.append(p)
                     cycles.append(cycle)
                     used[nbr].add(z)
-        gnodes-=set(pred)
-        root=None
-
+        gnodes -= set(pred)
+        root = None
     return cycles
 
-def cycle_basis_matrix(G, sparse=False):
-    """Return a the matrix describing the fundamental cycles in G.
-     If G is not oriented and arbitrary orientation is taken.
+
+# TODO What does "oriented" mean in the documentation? Need to define it.
+@not_implemented_for('directed')
+def cycle_basis_matrix(G, T=None):
+    """Returns the matrix describing the fundamental cycles in ``G``.
+
+    If ``G`` is not oriented, an arbitrary orientation is selected.
 
     Parameters
     ----------
-    G : NetworkX Graph.
-    sparse : Boolean, optional. Not used.
-    
+    G : NetworkX Graph
+        An instance of :class:`networkx.Graph` or :class:`networkx.MultiGraph`.
+
+    T : NetworkX graph
+        A spanning tree for the graph ``G``. If this argument is not ``None``,
+        the cycle basis whose matrix will be returned will be the set of
+        `fundamental cycles`_ of the tree ``T``. If this is not specified, an
+        arbitrary minimum spanning tree will be used.
+
+    .. _fundamental cycles: https://en.wikipedia.org/wiki/Spanning_tree#Fundamental_cycles
+
     Returns
     -------
-    M : Matrix (int8) of the fundametal cycles. The matrix
-    is of size n-by-m where n is the numer of edges in the
-    graph and m is the number of fundamental cycles (as given
-    by cycle_basis). A nonzero entry (i,j) implies that the
-    edge i is in cycle j. The sign of the entry indicates in
-    which direction it should be followed to go around the cycle:
-    a negative netry means opposite to the direction of that edge
-    in G.
-    
-    
+    NumPy array with dtype ``int8``
+        Returns a NumPy array of shape (*n*, *m*) and dtype ``int8``,
+        where *n* is the number of edges in the graph and *m* is the
+        number of fundamental cycles (as given by
+        :func:`cycle_basis`). If entry (*i*, *j*) is nonzero, then edge
+        *i* is in cycle *j* in the cycle basis. The sign of the entry
+        indicates the orientation of the edge in the cycle: a negative
+        entry means opposite to the direction of that edge in ``G``.
+
     Notes
     -----
-    This function needs scipy to work.
-    TODO: Return a sparse matrix if required.
+    This function requires SciPy.
 
     See Also
     --------
     cycle_basis
-    """
-    import scipy as np
 
-    C,T  = chords(G)
+    """
+    if not is_scipy_available:
+        raise nx.NetworkXError('This function requires SciPy:'
+                               ' https://www.scipy.org/')
+    C, T = chords(G, T=T, output_tree=True)
     nrow = len(G.edges())
     ncol = len(C.edges())
-    
-    if G.is_directed():
-        raise nx.NetworkXNotImplemented('not implemented for directed type')
-    
-    if sparse:
-        raise nx.NetworkXNotImplemented('sparse matrix not implemented yet.')
-    else:
-        M = np.zeros([nrow,ncol],dtype=np.int8)
-
+    M = sp.zeros([nrow, ncol], dtype=sp.int8)
     if G.is_multigraph():
         Cedges_iter = C.edges_iter(keys=True)
 
@@ -164,53 +191,57 @@ def cycle_basis_matrix(G, sparse=False):
 
     for col, e in enumerate(Cedges_iter):
         row = Gedges.index(e)
-        M[row,col]  = 1
+        M[row, col] = 1
 
-        edge     = e[:2]        # nodes of the edge in given order
-        edge_inv = e[:2][::-1]  # nodes of the edge in reverse order
+        # Get the edge endpoints in the default order and in the reverse order.
+        edge = e[:2]
+        edge_inv = e[:2][::-1]
         try:
-            einT  = T.edges().index(edge)
-            # The edge is in the tree with the same orientation, hence invert it
-            row2        = Gedges.index(Tedges[einT])
-            M[row2,col] = -1
+            einT = T.edges().index(edge)
+            # The edge is in the tree with the same orientation, hence
+            # invert it.
+            row2 = Gedges.index(Tedges[einT])
+            M[row2, col] = -1
         except ValueError:
             try:
                 ieinT = T.edges().index(edge_inv)
-                # The edge is in the tree with the opposite orientation, hence leave it
-                row2        = Gedges.index(Tedges[ieinT])
-                M[row2,col] = 1
+                # The edge is in the tree with the opposite orientation,
+                # hence leave it.
+                row2 = Gedges.index(Tedges[ieinT])
+                M[row2, col] = 1
             except ValueError:
                 tmp = T.edges()
                 tmp.append(edge)
                 cyc = cycle_basis(nx.Graph(tmp))[0]
                 cyc_e = []
 
-                for idx,node in enumerate(cyc):
-                    if  idx < len(cyc)-1:
-                        cyc_e.append((node, cyc[idx+1]))
+                for idx, node in enumerate(cyc):
+                    if idx < len(cyc)-1:
+                        cyc_e.append((node, cyc[idx + 1]))
                     else:
                         cyc_e.append((node, cyc[0]))
 
                 if edge_inv in cyc_e:
-                    # The chord is in the cycle with the opposite orientation
-                    # invert all edges of the cycle
+                    # The chord is in the cycle with the opposite orientation,
+                    # so invert all edges of the cycle.
                     cyc_e = [i[::-1] for i in cyc_e]
-
                 elif edge not in cyc_e:
-                    raise NameError('Something went wrong! The edge {} is not in cycle {}'.format(e,cyc))
+                    raise NameError('Something went wrong! The edge {} is not'
+                                    ' in cycle {}'.format(e, cyc))
 
                 cyc_e.remove(edge)
                 for ce in cyc_e:
                     try:
-                        einT  = T.edges().index(ce)
-                        # The edge is in the tree with the same orientation
-                        row2        = Gedges.index(Tedges[einT])
-                        M[row2,col] = 1
+                        einT = T.edges().index(ce)
+                        # The edge is in the tree with the same orientation.
+                        row2 = Gedges.index(Tedges[einT])
+                        M[row2, col] = 1
                     except ValueError:
                         ieinT = T.edges().index(ce[::-1])
-                        # The edge is in the tree with the opposite orientation
-                        row2        = Gedges.index(Tedges[ieinT])
-                        M[row2,col] = -1
+                        # The edge is in the tree with the opposite
+                        # orientation.
+                        row2 = Gedges.index(Tedges[ieinT])
+                        M[row2, col] = -1
 
     return M
 
@@ -439,76 +470,98 @@ def recursive_simple_cycles(G):
     return result
 
 
-def chords(G):
-    """Return a new graph that contains the edges that are the chords of G.
+# TODO Does this really need to return a graph? Can it just return the edges?
+def chords(G, T=None, output_tree=False):
+    """Returns a copy of the subgraph induced by edges in ``G`` not in
+    the spanning tree ``T``.
 
-        The chords are all the edges that are not in a spanning three of G.
+    This function returns a new graph object.
 
     Parameters
     ----------
-    G : graph
-       A NetworkX graph.
+    G : NetworkX graph
+
+    T : NetworkX graph
+        A spanning tree for the graph ``G``, for example, as computed by
+        :func:`networkx.minimum_spanning_tree`.
+
+    output_tree : bool
+        If this is ``False`` (the default), then the function returns
+        only the chords. If this is ``True``, then the function returns
+        the chords and the spanning tree from which the chords were
+        computed.
 
     Returns
     -------
-    C : A new graph with the chords of G.
-    T : The spanning tree from which C was calculated.
+    NetworkX graph or a pair of NetworkX graphs
 
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support directed graphs. 
-        If the input graph directed, a NetworkXError is raised.
-        To run this algorithm on a directed graph, first convert it
-        to undirected.
+        If ``output_tree`` is ``False`` (the default) then this function
+        returns a graph containing only the chords of ``G`` with respect
+        to the spanning tree ``T`` (or a minimum spanning tree if ``T``
+        is not specified). The type of the graph is the same as the type
+        of ``G``.
+
+        If ``output_tree`` is ``True``, then this function returns a
+        pair whose left element is the graph of chords as described
+        above and whose right element is the spanning tree used to
+        compute those chords. If ``T`` is provided, it is returned
+        unmodified.
 
     Examples
     --------
-    >>> import networkx as nx
-    >>> e=[(1,2),(1,3),(2,3),(2,4),(3,4),(3,5),(3,6),(4,5),(4,6),(5,6)]
-    >>> G=nx.Graph(e)
-    >>> C,T = nx.chords(G)
+    If no spanning tree is provided, a minimum spanning tree is chosen
+    for you::
+
+        >>> import networkx as nx
+        >>> e = [(1, 2), (1, 3), (2, 3), (2, 4), (3, 4), (3, 5), (3, 6),
+        ...      (4, 5), (4, 6), (5, 6)]
+        >>> G = nx.Graph(e)
+        >>> C, T = nx.chords(G, output_tree=True)
+        >>> sorted(C.edges())
+        [(2, 3), (3, 4), (4, 5), (4, 6), (5, 6)]
+        >>> sorted(T.edges())
+        [(1, 2), (1, 3), (2, 4), (3, 5), (3, 6)]
 
     Notes
     -----
-    The routine is a direct implementation of the definition of chords.
-    It constructs the spanning minimum spanning tree of G and then removes
-    the edges in that tree from G.
+    This is a direct implementation of the definition of chords.  It
+    constructs the minimum spanning tree of ``G`` and then removes the
+    edges in that tree from ``G``.
+
     """
-  
-    # Cast G to undirected and then T back to the same type as G
-    # Multigraphs keys get lost in the call to spanning_tree so we have to add them.
-    
-    if G.is_directed():
-        # Remove directionality
-        if G.is_multigraph():
-            # All keys lost
-            T = nx.minimum_spanning_tree(nx.MultiGraph(G))
+    if T is None:
+        # We convert ``G`` to an undirected graph, then convert ``T`` back
+        # to the same type as ``G``.
+        if G.is_directed():
+            # If G is a directed multigraph, remove the directionality of
+            # the edges. Multigraphs keys get lost here and we will need to
+            # add them back later.
+            if G.is_multigraph():
+                T = nx.minimum_spanning_tree(nx.MultiGraph(G))
+            else:
+                T = nx.DiGraph(nx.minimum_spanning_tree(nx.Graph(G)))
         else:
-            T = nx.DiGraph(nx.minimum_spanning_tree(nx.Graph(G)))
-    else:
-        # All keys lost
-        T = nx.minimum_spanning_tree(G)
-    
+            # All multigraph keys are lost here.
+            T = nx.minimum_spanning_tree(G)
+
     C = G.copy()
-    # Recover keys and make chords
+    # Recover keys and make chords.
     if G.is_multigraph():
-        Tedges=T.edges() 
-        to_add=[]
+        Tedges = T.edges()
+        to_add = []
         for e in G.edges_iter(keys=True, data=True):
             if e[:2] in Tedges:
-              to_add.append(e)
-              Tedges.pop(Tedges.index(e[:2]))
+                to_add.append(e)
+                Tedges.pop(Tedges.index(e[:2]))
             if not Tedges:
                 break
         T = nx.MultiGraph(to_add)
         # Difference to keep attributes ad keys
-        C.remove_edges_from ([n for n in G.edges_iter(keys=True) if n in T.edges_iter(keys=True)])
+        C.remove_edges_from([n for n in G.edges_iter(keys=True)
+                             if n in T.edges_iter(keys=True)])
     else:
-        C.remove_edges_from ([n for n in G.edges_iter() if n in T.edges_iter()])
-    
-
-    return C,T
+        C.remove_edges_from([n for n in G.edges_iter() if n in T.edges_iter()])
+    return (C, T) if output_tree else C
 
 
 def find_cycle(G, source=None, orientation='original'):
@@ -652,16 +705,3 @@ def find_cycle(G, source=None, orientation='original'):
             break
 
     return cycle[i:]
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
