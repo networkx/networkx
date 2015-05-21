@@ -307,7 +307,7 @@ def threshold_graph(creation_sequence, create_using=None):
     while ci:
         (v,node_type)=ci.pop(0)
         if node_type=='d': # dominating type, connect to all existing nodes
-            for u in G.nodes(): 
+            for u in list(G):
                 G.add_edge(v,u) 
         G.add_node(v)
     return G

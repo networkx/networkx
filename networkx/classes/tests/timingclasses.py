@@ -123,7 +123,7 @@ class TimingGraph(object):
     {'time': '5pm'}
     >>> G.node[1]['room'] = 714
     >>> del G.node[1]['room'] # remove attribute
-    >>> G.nodes(data=True)
+    >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Warning: adding a node to G.node does not add it to the graph.
@@ -500,11 +500,11 @@ class TimingGraph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> e = G.nodes()
+        >>> e = list(G.nodes())
         >>> e
         [0, 1, 2]
         >>> G.remove_nodes_from(e)
-        >>> G.nodes()
+        >>> list(G.nodes())
         []
 
         """
@@ -519,7 +519,7 @@ class TimingGraph(object):
                 pass
 
 
-    def nodes_iter(self, data=False):
+    def nodes(self, data=False):
         """Return an iterator over the nodes.
 
         Parameters
@@ -547,7 +547,7 @@ class TimingGraph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
 
-        >>> [d for n,d in G.nodes_iter(data=True)]
+        >>> [d for n,d in G.nodes(data=True)]
         [{}, {}, {}]
         """
         if data:
@@ -573,13 +573,13 @@ class TimingGraph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> G.nodes()
+        >>> list(G.nodes())
         [0, 1, 2]
         >>> G.add_node(1, time='5pm')
-        >>> G.nodes(data=True)
+        >>> list(G.nodes(data=True))
         [(0, {}), (1, {'time': '5pm'}), (2, {})]
         """
-        return list(self.nodes_iter(data=data))
+        return list(self.nodes(data=data))
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -1307,9 +1307,9 @@ class TimingGraph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> G.clear()
-        >>> G.nodes()
+        >>> list(G.nodes())
         []
-        >>> G.edges()
+        >>> list(G.edges())
         []
 
         """
@@ -1520,7 +1520,7 @@ class TimingGraph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_edge(1,1)
         >>> G.add_edge(1,2)
-        >>> G.nodes_with_selfloops()
+        >>> list(G.nodes_with_selfloops())
         [1]
         """
         return [ n for n,nbrs in self.adj.items() if n in nbrs ]
@@ -1919,7 +1919,7 @@ class TimingDiGraph(TimingGraph):
     {'time': '5pm'}
     >>> G.node[1]['room'] = 714
     >>> del G.node[1]['room'] # remove attribute
-    >>> G.nodes(data=True)
+    >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Warning: adding a node to G.node does not add it to the graph.
@@ -2203,11 +2203,11 @@ class TimingDiGraph(TimingGraph):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> e = G.nodes()
+        >>> e = list(G.nodes())
         >>> e
         [0, 1, 2]
         >>> G.remove_nodes_from(e)
-        >>> G.nodes()
+        >>> list(G.nodes())
         []
 
         """
@@ -2835,7 +2835,7 @@ class TimingDiGraph(TimingGraph):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> G.clear()
-        >>> G.nodes()
+        >>> list(G.nodes())
         []
         >>> G.edges()
         []
@@ -3148,7 +3148,7 @@ class TimingMultiGraph(TimingGraph):
     {'time': '5pm'}
     >>> G.node[1]['room'] = 714
     >>> del G.node[1]['room'] # remove attribute
-    >>> G.nodes(data=True)
+    >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Warning: adding a node to G.node does not add it to the graph.
@@ -4104,7 +4104,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
     {'time': '5pm'}
     >>> G.node[1]['room'] = 714
     >>> del G.node[1]['room'] # remove attribute
-    >>> G.nodes(data=True)
+    >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Warning: adding a node to G.node does not add it to the graph.

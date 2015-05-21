@@ -73,7 +73,7 @@ class HistoricalTests(object):
         G.add_node('m')   # no complaints
         assert_raises(nx.NetworkXError,G.remove_node,'j')
         G.remove_node('m')
-        assert_equal(G.nodes(),[])
+        assert_equal(list(G), [])
 
     def test_nbunch_is_list(self):
         G=self.G()
@@ -104,11 +104,11 @@ class HistoricalTests(object):
     def test_nbunch_iterator(self):
         G=self.G()
         G.add_nodes_from(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
-        n_iter=self.P3.nodes_iter()
+        n_iter=self.P3.nodes()
         G.add_nodes_from(n_iter)
         assert_equal(sorted(G.nodes(),key=str),
                      [1, 2, 3, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
-        n_iter=self.P3.nodes_iter() # rebuild same iterator
+        n_iter=self.P3.nodes() # rebuild same iterator
         G.remove_nodes_from(n_iter) # remove nbunch of nodes (nbunch=iterator)
         assert_equal(sorted(G.nodes(),key=str),
                      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
@@ -252,8 +252,7 @@ class HistoricalTests(object):
         assert_edges_equal(G.edges(ndict),elist)
         # nbunch can be a single node
         assert_edges_equal(G.edges('A'), [('A', 'B'), ('A', 'C')])
-
-        assert_edges_equal(G.nodes_iter(), ['A', 'B', 'C', 'D'])
+        assert_nodes_equal(list(G), ['A', 'B', 'C', 'D'])
 
     def test_edges_iter_nbunch(self):
         G=self.G()
@@ -348,8 +347,8 @@ class HistoricalTests(object):
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
                           ('C', 'B'), ('C', 'D')])
         SG=G.subgraph(['A','B','D']) 
-        assert_nodes_equal(SG.nodes(),['A', 'B', 'D'])
-        assert_edges_equal(SG.edges(),[('A', 'B'), ('B', 'D')])
+        assert_nodes_equal(list(SG), ['A', 'B', 'D'])
+        assert_edges_equal(list(SG.edges()), [('A', 'B'), ('B', 'D')])
 
     def test_to_directed(self):
         G=self.G()
@@ -407,7 +406,7 @@ class HistoricalTests(object):
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
                           ('C', 'B'), ('C', 'D')])
         G.add_nodes_from('GJK')
-        assert_equal(sorted(G.nodes_iter()),
+        assert_equal(sorted(G.nodes()),
                      ['A', 'B', 'C', 'D', 'G', 'J', 'K'])
         assert_edges_equal(G.edges_iter(),
         [('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'B'), ('C', 'D')])

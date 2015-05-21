@@ -200,7 +200,7 @@ def eigenvector_centrality_numpy(G, weight='weight'):
     from scipy.sparse import linalg
     if len(G) == 0:
         raise nx.NetworkXException('Empty graph.')
-    M = nx.to_scipy_sparse_matrix(G, nodelist=G.nodes(), weight=weight,
+    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G), weight=weight,
                                   dtype=float)
     eigenvalue, eigenvector = linalg.eigs(M.T, k=1, which='LR')
     largest = eigenvector.flatten().real

@@ -301,7 +301,7 @@ class GraphMLWriter(GraphML):
             xml_obj.append(obj)
 
     def add_nodes(self, G, graph_element):
-        for node,data in G.nodes_iter(data=True):
+        for node,data in G.nodes(data=True):
             node_element = Element("node", id = make_str(node))
             default=G.graph.get('node_default',{})
             self.add_attributes("node", node_element, data, default)

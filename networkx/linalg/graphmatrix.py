@@ -70,7 +70,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None,
     """
     import scipy.sparse
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     if edgelist is None:
         if G.is_multigraph():
             edgelist = G.edges(keys=True)

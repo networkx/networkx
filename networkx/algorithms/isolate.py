@@ -65,7 +65,7 @@ def isolates(G):
 
     To remove all isolates in the graph use
     >>> G.remove_nodes_from(nx.isolates(G))
-    >>> G.nodes()
+    >>> list(G)
     [1, 2]
 
     For digraphs isolates have zero in-degree and zero out_degre

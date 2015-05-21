@@ -289,7 +289,7 @@ def gnm_random_graph(n, m, seed=None, directed=False):
     if m>=max_edges:
         return complete_graph(n,create_using=G)
 
-    nlist=G.nodes()
+    nlist = list(G)
     edge_count=0
     while edge_count < m:
         # generate random edge,u,v
@@ -894,8 +894,8 @@ def random_shell_graph(constructor, seed=None):
 
     # connect the shells randomly
     for gi in range(len(glist)-1):
-        nlist1=glist[gi].nodes()
-        nlist2=glist[gi+1].nodes()
+        nlist1 = list(glist[gi])
+        nlist2 = list(glist[gi + 1])
         total_edges=intra_edges[gi]
         edge_count=0
         while edge_count < total_edges:
