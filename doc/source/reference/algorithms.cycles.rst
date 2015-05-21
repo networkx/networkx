@@ -6,6 +6,9 @@ Cycles
 .. autosummary::
    :toctree: generated/
 
+   chords
    cycle_basis
-   simple_cycles
+   cycle_basis_matrix
    find_cycle
+   recursive_simple_cycles
+   simple_cycles
