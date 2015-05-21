@@ -44,7 +44,7 @@ def test_all_simple_paths_empty():
     assert_equal(list(list(p) for p in paths),[])
 
 def hamiltonian_path(G,source):
-    source = next(G.nodes_iter())
+    source = next(G.nodes())
     neighbors = set(G[source])-set([source])
     n = len(G)
     for target in neighbors:

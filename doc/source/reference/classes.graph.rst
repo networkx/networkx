@@ -38,7 +38,6 @@ Iterating over nodes and edges
    :toctree: generated/
 
    Graph.nodes
-   Graph.nodes_iter
    Graph.__iter__
    Graph.edges
    Graph.edges_iter

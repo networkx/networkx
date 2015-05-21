@@ -146,7 +146,7 @@ def max_weight_matching(G, maxcardinality=False):
                     yield t
 
     # Get a list of vertices.
-    gnodes = G.nodes()
+    gnodes = list(G)
     if not gnodes:
         return { }  # don't bother with empty graphs
 
@@ -724,7 +724,7 @@ def max_weight_matching(G, maxcardinality=False):
 
             # Compute delta2: the minimum slack on any edge between
             # an S-vertex and a free vertex.
-            for v in G.nodes_iter():
+            for v in G.nodes():
                 if label.get(inblossom[v]) is None and bestedge.get(v) is not None:
                     d = slack(*bestedge[v])
                     if deltatype == -1 or d < delta:

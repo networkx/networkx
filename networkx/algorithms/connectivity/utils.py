@@ -78,12 +78,12 @@ def build_auxiliary_edge_connectivity(G):
     """
     if G.is_directed():
         H = nx.DiGraph()
-        H.add_nodes_from(G.nodes_iter())
+        H.add_nodes_from(G.nodes())
         H.add_edges_from(G.edges_iter(), capacity=1)
         return H
     else:
         H = nx.DiGraph()
-        H.add_nodes_from(G.nodes_iter())
+        H.add_nodes_from(G.nodes())
         for (source, target) in G.edges_iter():
             H.add_edges_from([(source, target), (target, source)], capacity=1)
         return H

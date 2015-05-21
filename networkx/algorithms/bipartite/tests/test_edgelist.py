@@ -162,8 +162,8 @@ class TestEdgelist:
         H2=bipartite.read_edgelist(fname)
         assert_not_equal(H,H2) # they should be different graphs
         G.remove_node('g') # isolated nodes are not written in edgelist
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -174,8 +174,8 @@ class TestEdgelist:
         H=bipartite.read_edgelist(fname,nodetype=int)
         # isolated nodes are not written in edgelist
         G.remove_nodes_from(nx.isolates(G))
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -186,8 +186,8 @@ class TestEdgelist:
         H=bipartite.read_edgelist(fname,nodetype=int,create_using=nx.MultiGraph())
         H2=bipartite.read_edgelist(fname,nodetype=int,create_using=nx.MultiGraph())
         assert_not_equal(H,H2) # they should be different graphs
-        assert_nodes_equal(H.nodes(),G.nodes())
-        assert_edges_equal(H.edges(),G.edges())
+        assert_nodes_equal(list(H), list(G))
+        assert_edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 

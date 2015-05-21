@@ -39,7 +39,6 @@ Iterating over nodes and edges
    :toctree: generated/
 
    DiGraph.nodes
-   DiGraph.nodes_iter
    DiGraph.__iter__
    DiGraph.edges
    DiGraph.edges_iter

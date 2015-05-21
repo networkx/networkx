@@ -121,7 +121,7 @@ class MultiGraph(Graph):
     {'time': '5pm'}
     >>> G.node[1]['room'] = 714
     >>> del G.node[1]['room'] # remove attribute
-    >>> G.nodes(data=True)
+    >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Warning: adding a node to G.node does not add it to the graph.
@@ -220,10 +220,10 @@ class MultiGraph(Graph):
     ...    node_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
-    >>> G.nodes()
+    >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1), (2,1), (1,1)) )
-    >>> G.edges()
+    >>> list(G.edges())
     [(2, 1), (2, 1), (2, 2), (1, 1)]
 
     Create a multgraph object that tracks the order nodes are added
@@ -236,10 +236,10 @@ class MultiGraph(Graph):
     ...    edge_key_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
-    >>> G.nodes()
+    >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1,2,{'weight':0.1}), (2,1,1,{'weight':0.2}), (1,1)) )
-    >>> G.edges(keys=True)
+    >>> list(G.edges(keys=True))
     [(2, 2, 0), (2, 1, 2), (2, 1, 1), (1, 1, 0)]
 
     """

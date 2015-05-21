@@ -91,9 +91,9 @@ def random_geometric_graph(n, radius, dim=2, pos=None):
         nx.set_node_attributes(G,'pos',pos)
     # connect nodes within "radius" of each other
     # n^2 algorithm, could use a k-d tree implementation
-    nodes = G.nodes(data=True)
+    nodes = list(G.nodes(data=True))
     while nodes:
-        u,du = nodes.pop()
+        u, du = nodes.pop()
         pu = du['pos']
         for v,dv in nodes:
             pv = dv['pos']
@@ -193,7 +193,7 @@ def geographical_threshold_edges(G, theta, alpha=2):
     ``'weight'``.
 
     """
-    nodes = G.nodes(data=True)
+    nodes = list(G.nodes(data=True))
     while nodes:
         u,du = nodes.pop()
         wu = du['weight']
@@ -270,7 +270,7 @@ def waxman_graph(n, alpha=0.4, beta=0.1, L=None, domain=(0, 0, 1, 1)):
         # user specified maximum distance
         l = L
 
-    nodes=G.nodes()
+    nodes = list(G)
     if L is None:
         # Waxman-1 model
         # try all pairs, connect randomly based on euclidean distance

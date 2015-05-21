@@ -146,7 +146,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
     if not seed is None:
         random.seed(seed)
     G = nx.caveman_graph(l, k)
-    nodes = G.nodes()
+    nodes = list(G)
     G.name = "relaxed_caveman_graph (%s,%s,%s)" % (l, k, p)
     for (u, v) in G.edges():
         if random.random() < p:  # rewire the edge

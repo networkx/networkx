@@ -181,11 +181,11 @@ def hits_numpy(G,normalized=True):
             "hits_numpy() requires NumPy: http://scipy.org/")
     if len(G) == 0:
         return {},{}
-    H=nx.hub_matrix(G,G.nodes())
+    H = nx.hub_matrix(G, list(G))
     e,ev=np.linalg.eig(H)
     m=e.argsort()[-1] # index of maximum eigenvalue
     h=np.array(ev[:,m]).flatten()
-    A=nx.authority_matrix(G,G.nodes())
+    A=nx.authority_matrix(G, list(G))
     e,ev=np.linalg.eig(A)
     m=e.argsort()[-1] # index of maximum eigenvalue
     a=np.array(ev[:,m]).flatten()
@@ -195,8 +195,8 @@ def hits_numpy(G,normalized=True):
     else:
         h = h/h.max()
         a = a/a.max()
-    hubs=dict(zip(G.nodes(),map(float,h)))
-    authorities=dict(zip(G.nodes(),map(float,a)))
+    hubs = dict(zip(G, map(float, h)))
+    authorities = dict(zip(G, map(float, a)))
     return hubs,authorities
 
 def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
@@ -266,7 +266,7 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
             "hits_scipy() requires SciPy: http://scipy.org/")
     if len(G) == 0:
         return {},{}
-    M=nx.to_scipy_sparse_matrix(G,nodelist=G.nodes())
+    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G))
     (n,m)=M.shape # should be square
     A=M.T*M # authority matrix
     x=scipy.ones((n,1))/n  # initial guess
@@ -291,8 +291,8 @@ def hits_scipy(G,max_iter=100,tol=1.0e-6,normalized=True):
     if normalized:
         h = h/h.sum()
         a = a/a.sum()
-    hubs=dict(zip(G.nodes(),map(float,h)))
-    authorities=dict(zip(G.nodes(),map(float,a)))
+    hubs = dict(zip(G, map(float, h)))
+    authorities = dict(zip(G, map(float, a)))
     return hubs,authorities
 
 # fixture for nose tests
