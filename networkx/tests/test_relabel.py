@@ -137,6 +137,13 @@ class TestRelabel():
         assert_equal(sorted(G.edges()),
                      [('aardvark', 'bear'), ('aardvark', 'bear')])
 
+    def test_relabel_isolated_nodes_to_same(self):
+        G=Graph()
+        G.add_nodes_from(range(4))
+        mapping={1:1}
+        H=relabel_nodes(G, mapping, copy=False)
+        assert_equal(sorted(H.nodes()), list(range(4)))
+
     @raises(KeyError)
     def test_relabel_nodes_missing(self):
         G=Graph([('A','B'),('A','C'),('B','C'),('C','D')])
