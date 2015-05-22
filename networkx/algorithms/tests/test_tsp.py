@@ -71,6 +71,12 @@ class TestGreedyTSP:
         assert_raises(nx.NetworkXError, nx.greedy_tsp,
                       self.unweightedDG, 0)
 
+    def test_two_nodes(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from({(1, 2, 1)})
+        cycle, cost = nx.greedy_tsp(G, 1)
+        validate_solution(cycle, cost, [1, 2, 1], 2)
+
 
 class TestSimulatedAnnealingTSP:
     setUp = _setUp
@@ -121,3 +127,11 @@ class TestSimulatedAnnealingTSP:
                                             iterations=1, tolerance=1,
                                             sol=initial_sol)
         assert_true(output[1] > 31.0)
+
+    def test_two_nodes(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from({(1, 2, 1)})
+        cycle, cost = nx.simulated_annealing_tsp(G, 1)
+        validate_solution(cycle, cost, [1, 2, 1], 2)
+        cycle, cost = nx.simulated_annealing_tsp(G, 1, sol=[1, 2, 1])
+        validate_solution(cycle, cost, [1, 2, 1], 2)

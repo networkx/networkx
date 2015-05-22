@@ -76,7 +76,7 @@ def greedy_tsp(G, source, weight='weight'):
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> weight
-    31.0
+    31
 
     Notes
     -----
@@ -93,6 +93,12 @@ def greedy_tsp(G, source, weight='weight'):
     """
     if not all(G.has_edge(u, v) for u, v in itertools.permutations(G, 2)):
         raise nx.NetworkXError('Given graph is not completed.')
+
+    if G.number_of_nodes() == 2:
+        neighbor = G.neighbors(source)[0]
+        return [source, neighbor, source], \
+            G.edge[source][neighbor][weight] + G.edge[neighbor][source][weight]
+
     if not nx.is_weighted(G, weight=weight):
         raise nx.NetworkXError('Given graph is not weighted.')
     nodeset = set(G)
@@ -101,7 +107,6 @@ def greedy_tsp(G, source, weight='weight'):
     cost = 0
     while len(nodeset) > 0:
         next_visitor = min(nodeset, key=lambda v: G.edge[source][v][weight])
-        print(next_visitor)
         sol.append(next_visitor)
         cost += G.edge[source][next_visitor][weight]
         nodeset.remove(next_visitor)
@@ -195,12 +200,12 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> weight
-    31.0
+    31
     >>> cycle, weight = nx.simulated_annealing_tsp(G, 'D', sol=['D', 'B', 'A', 'C', 'D'])
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> weight
-    31.0
+    31
 
     Notes
     -----
@@ -228,11 +233,18 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
     if sol is None:
         # Construct an initial solution using a greedy algorithm.
         sol, cost = greedy_tsp(G, source, weight=weight)
-
+        if G.number_of_nodes() == 2:
+            return sol, cost
     else:
         # Calculate the cost of initial solution and make the essential checks for graph.
         if not all(G.has_edge(u, v) for u, v in itertools.permutations(G, 2)):
             raise nx.NetworkXError('Given graph is not completed.')
+
+        if G.number_of_nodes() == 2:
+            neighbor = G.neighbors(source)[0]
+            return ([source, neighbor, source],
+                G.edge[source][neighbor][weight] + G.edge[neighbor][source][weight])
+
         if not nx.is_weighted(G, weight=weight):
             raise nx.NetworkXError('Given graph is not weighted.')
         cost = sum(G.edge[u][v][weight] for u, v in zip(sol, sol[1:]))
