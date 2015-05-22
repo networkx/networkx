@@ -17,7 +17,6 @@ from networkx.utils.decorators import not_implemented_for
 from collections import Counter
 from itertools import groupby
 
-__author__ = """Aitor Almeida <aitoralmeida@gmail.com"""
 __all__ = ["label_propagation_communities"]
 
 @not_implemented_for('directed')
