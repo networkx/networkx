@@ -1,25 +1,28 @@
-# -*- coding: utf-8 -*-
+#-*- coding: utf-8 -*-
+#    Copyright (C) 2015 
+#    All rights reserved.
+#    BSD license.
+
+
 """
-Created on Thu Oct 02 14:03:50 2014
 Based on the code donated by Tyler Rush 
 (https://github.com/networkx/networkx/issues/617)
 
 LPA community detection algorithm (based on 'Community Detection via 
 Semi-Synchronous Label Propagation Algorithms' Cordasco and Gargano, 2011
 
-@author: Aitor Almeida <aitoralmeida@gmail.com>
-All rights reserved.
-BSD license.
 """
 
 from networkx.utils.decorators import not_implemented_for
+from collections import Counter
+from itertools import groupby
 
 __author__ = """Aitor Almeida <aitoralmeida@gmail.com"""
 __all__ = ["label_propagation_communities"]
 
 @not_implemented_for('directed')
 def label_propagation_communities(G):
-    r"""Finds communities in graph using the label propagation method[1]_. This
+    """Finds communities in graph using the label propagation method[1]_. This
     method uses the diffusion of information in the network to identify
     communities. Not implemented for directed graphs.
     
@@ -71,14 +74,7 @@ def _calculate_label_frequencies(node, labeling, G):
     """Counts up the labels of the neighbors of the specified node. Returns a
        dictionary from the label to the frequency.
     """
-    counts = dict()
-    for q in G.neighbors(node):
-        qlabel = labeling[q]
-        if qlabel not in counts:
-            counts[qlabel] = 1 
-        else:
-            counts[qlabel] += 1              
-    return counts
+    return dict(Counter(labeling[q] for q in G[node]))
 
 def _color_network(G):
     """Colors the network so that neighboring nodes all have distinct colors.
@@ -109,13 +105,8 @@ def _form_communities(labeling, G):
     """Determines the communities from the labels of the network, returning a
        dict of sets of nodes.
     """
-    communities = dict() # label => set(nodes)
-    for n in G.nodes():
-        label = labeling[n]
-        if label not in communities: 
-            communities[label] = set()
-        communities[label].add(n)
-    return communities
+    return {k: set(v) 
+            for k, v in groupby(sorted(G, key=labeling.get), key=labeling.get)}
 
 def _labeling_complete(labeling, G):
     """Determines whether or not LPA is done. It is complete when all nodes 
@@ -124,40 +115,25 @@ def _labeling_complete(labeling, G):
 
        Nodes with no neighbors are themselves a community and are therefore
        labeled, hence the immediate if statement in the for loop.
-    """
-    result = True
-    for node in G:
-        if len(G.neighbors(node)) != 0:
-            counts = _calculate_label_frequencies(node, labeling, G)
-            high_labels = _select_labels_of_highest_frequency(counts)
-            if labeling[node] not in high_labels: 
-                result = False
-                break
-    return result
+    """    
+    return all(labeling[v] in 
+                    _select_labels_of_highest_frequency(v, labeling, G) 
+                        for v in G if len(G[v]) > 0)
 
-def _select_labels_of_highest_frequency(freqs):
+def _select_labels_of_highest_frequency(node, labeling, G):
     """Finds all labels of maximum frequency. Specified freqs must be a mapping
        from label to frequency of that label.
 
        Returns a set.
     """
-    labels = set()
-    mx = -1000000
-    for label, freq in freqs.items():
-        if mx <= freq:
-            if mx < freq:
-                mx = freq
-                labels.clear()
-        labels.add( label )
-    return labels
+    freqs = _calculate_label_frequencies(node, labeling, G)
+    max_freq = max(freqs.values())
+    return {label for label, freq in freqs.items() if freq == max_freq}
 
 
 def _uniquely_label(G):
     """Gives a unique label (integer) to each node in the network."""
-    labeling = dict()
-    for n, label in zip(G.nodes(), range(len(G))):
-        labeling[n] = label
-    return labeling
+    return {n : label for n, label in zip(G.nodes(), range(len(G)))}
 
 def _update_labels(labeling, coloring, G):
     """Updates labels of every single node in the network."""
@@ -167,12 +143,8 @@ def _update_labels(labeling, coloring, G):
 
 def _update_label( node, labeling, G):
     """Updates the label of a SINGLE node in the network."""
-    counts = _calculate_label_frequencies(node, labeling, G)
-    high_labels = _select_labels_of_highest_frequency(counts)
+    high_labels = _select_labels_of_highest_frequency(node, labeling, G)
     if len(high_labels) == 1:
         labeling[node] = high_labels.pop()
     elif len(high_labels) > 1:
         labeling[node] = _break_color_tie(labeling[node] , high_labels)
-
-
-    
