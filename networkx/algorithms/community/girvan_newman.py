@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Oct 09 16:31:16 2014
+# All rights reserved.
+# BSD license.
 
-@author: Aitor Almeida (aitoralmeida@gmail.com)
-All rights reserved.
-BSD license.
-"""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
