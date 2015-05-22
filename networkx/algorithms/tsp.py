@@ -9,9 +9,6 @@ for solving and approximating the TSP problem.
 Categories of algorithms which are implemented:
 - Greedy
 - Simulated Annealing (SA)
-- Threshold Accepting (TA)
-- Tabu Search
-- Ant Colony Optimization (ACO)
 
 Travelling Salesman Problem tries to find, given the weight
 (distance) between all points where salesman has to visit, the
@@ -26,10 +23,11 @@ important in operations research and theoretical computer science.
 
 http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
+from __future__ import division
 import math
-from operator import itemgetter
 from random import choice, randint, random
 import networkx as nx
+import itertools
 
 __all__ = ['greedy_tsp', 'simulated_annealing_tsp']
 
@@ -74,10 +72,10 @@ def greedy_tsp(G, source, weight='weight'):
     ...                          ('B', 'C', 12), ('B', 'D', 16), ('C', 'A', 13),
     ...                           ('C', 'B', 12), ('C', 'D', 4), ('D', 'A', 14),
     ...                           ('D', 'B', 15), ('D', 'C', 2)})
-    >>> sol = nx.greedy_tsp(G, 'D')
-    >>> sol[0]
+    >>> cycle, weight = nx.greedy_tsp(G, 'D')
+    >>> cycle
     ['D', 'C', 'B', 'A', 'D']
-    >>> sol[1]
+    >>> weight
     31.0
 
     Notes
@@ -93,56 +91,28 @@ def greedy_tsp(G, source, weight='weight'):
     be passed as parameter in iterative improvement algorithm such
     as Simulated Annealing, Threshold Accepting.
     """
-    if not _is_completed(G):
+    if not all(G.has_edge(u, v) for u, v in itertools.permutations(G, 2)):
         raise nx.NetworkXError('Given graph is not completed.')
     if not nx.is_weighted(G, weight=weight):
         raise nx.NetworkXError('Given graph is not weighted.')
-    nodelist = G.nodes()
-    nodelist.remove(source)
+    nodeset = set(G)
+    nodeset.remove(source)
     sol = [source]
-    cost = 0.0
-    while len(nodelist) > 0:
-        next_visitor, dist = _select_next(G, source, nodelist, weight)
+    cost = 0
+    while len(nodeset) > 0:
+        next_visitor = min(nodeset, key=lambda v: G.edge[source][v][weight])
+        print(next_visitor)
         sol.append(next_visitor)
-        cost += dist
-        nodelist.remove(next_visitor)
+        cost += G.edge[source][next_visitor][weight]
+        nodeset.remove(next_visitor)
         source = next_visitor
     sol.append(sol[0])
     cost += G.edge[sol[-2]][sol[0]][weight]
     return sol, cost
 
 
-def _is_completed(G):
-    """
-    Function to test if a graph is completed.
-
-    :param G: A networkX Graph
-    :return: True if graph is completed; False otherwise.
-    """
-    return all(G.has_edge(u, v) for u in G.nodes() for v in G.nodes() if u != v)
-
-
-def _select_next(G, source, nodes, weight='weight'):
-    """
-    Function which selects the next node where salesman has to
-    visit.
-
-    Node whose connection with the source node given as parameter
-    has the minimum weight amongst others.
-
-    :param G: G: A networkX Graph.
-    :param source: Node, source node.
-    :param nodes: List of nodes which have not been visited yet.
-    :param weight: Edge data key corresponding to the edge weight.
-    :return: Tuple, edge of source node and next node to visit.
-    """
-    visitors = [(node, G.edge[source][node][weight])
-                for node in nodes]
-    return sorted(visitors, key=itemgetter(1))[0]
-
-
-def simulated_annealing_tsp(G, source, temp=100, move='1-1', outer_iter=10,
-                            inner_iter=100, a=0.01, sol=None, weight='weight'):
+def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
+                            iterations=100, a=0.01, sol=None, weight='weight'):
     """Finds the route that salesman has to visit in order
     to minimize total distance and total distance using a
     simulated annealing algorithm.
@@ -163,13 +133,29 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', outer_iter=10,
 
     move : string, optional (default='1-1')
         Move to be applied in a solution to generate a
-        neighbor solution.
+        neighbor solution. A neighbor solution is a new
+        solution and algorithm checks if this neighbor
+        solution is better than the best solution so far.
+        Two moves are available:
+        - 1-1 exchange which transposes the position
+        of two elements of the current solution.
+        For example if we apply 1-1 exchange in the solution
+        A = [3, 2, 1, 4, 3]
+        we can get the following by the transposition of 1 and 4 elements.
+        A' = [3, 2, 4, 1, 3]
+        - 1-0 exchange which moves an element of solution
+        in a new position.
+        For example if we apply 1-0 exchange in the solution
+        A = [3, 2, 1, 4, 3]
+        we can get the following the transfer of 4 element to the second
+        position.
+        A' = [3, 4, 2, 1, 3]
 
-    outer_iter : int, optional (default=10)
+    tolerance : int, optional (default=10)
         Number of consecutive iterations of outer loop
         that cost of best solution is not decreased
 
-    inner_iter : int, optional (default=100)
+    iterations : int, optional (default=100)
         Number of times that inner loop is being executed.
 
     a : float between (0, 1), optional (default=0.01)
@@ -205,15 +191,15 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', outer_iter=10,
     ...                          ('B', 'C', 12), ('B', 'D', 16), ('C', 'A', 13),
     ...                           ('C', 'B', 12), ('C', 'D', 4), ('D', 'A', 14),
     ...                           ('D', 'B', 15), ('D', 'C', 2)})
-    >>> sol = nx.simulated_annealing_tsp(G, 'D')
-    >>> sol[0]
+    >>> cycle, weight = nx.simulated_annealing_tsp(G, 'D')
+    >>> cycle
     ['D', 'C', 'B', 'A', 'D']
-    >>> sol[1]
+    >>> weight
     31.0
-    >>> sol = nx.simulated_annealing_tsp(G, 'D', sol=['D', 'B', 'A', 'C', 'D'])
-    >>> sol[0]
+    >>> cycle, weight = nx.simulated_annealing_tsp(G, 'D', sol=['D', 'B', 'A', 'C', 'D'])
+    >>> cycle
     ['D', 'C', 'B', 'A', 'D']
-    >>> sol[1]
+    >>> weight
     31.0
 
     Notes
@@ -245,20 +231,20 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', outer_iter=10,
 
     else:
         # Calculate the cost of initial solution and make the essential checks for graph.
-        if not _is_completed(G):
+        if not all(G.has_edge(u, v) for u, v in itertools.permutations(G, 2)):
             raise nx.NetworkXError('Given graph is not completed.')
         if not nx.is_weighted(G, weight=weight):
             raise nx.NetworkXError('Given graph is not weighted.')
-        cost = _calculate_cost(G, sol, weight=weight)
+        cost = sum(G.edge[u][v][weight] for u, v in zip(sol, sol[1:]))
 
     count = 0
     best_sol = list(sol)
     best_cost = cost
-    while count <= outer_iter and temp > 0:
+    while count <= tolerance and temp > 0:
         count += 1
-        for i in range(0, inner_iter):
+        for i in range(iterations):
             adj_sol = _apply_move(sol, move)
-            adj_cost = _calculate_cost(G, adj_sol, weight=weight)
+            adj_cost = sum(G.edge[u][v][weight] for u, v in zip(sol, sol[1:]))
             delta = adj_cost - cost
             if delta <= 0:
 
@@ -299,21 +285,3 @@ def _apply_move(sol, move):
     elif move == '1-0':
         sol.insert(b, sol.pop(a))
     return sol
-
-
-def _calculate_cost(G, sol, weight='weight'):
-    """
-    Calculate cost (distance) of a solution (list of nodes)
-
-    For example, if we have the following solution:
-    ['D', 'A', 'C', 'D']
-    Cost of solution is calculated as follows:
-    weight('D', 'A') + weight('A', 'C') + weight('C', 'D')
-
-    :param G: A NetoworkX graph
-    :param sol: List of nodes. Sequence that nodes must be visited.
-    :param weight: Edge data key corresponding to the edge weight
-    :return: float, cost (dist) of solution
-    """
-    return sum(float(G.edge[sol[i]][sol[i + 1]][weight])
-               for i in range(0, len(sol) - 1))

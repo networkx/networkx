@@ -113,11 +113,11 @@ class TestSimulatedAnnealingTSP:
 
     def test_simulated_annealing_fails(self):
         output = nx.simulated_annealing_tsp(self.DG2, 'D', move='1-0', a=1,
-                                            inner_iter=1, outer_iter=1)
+                                            iterations=1, tolerance=1)
         assert_true(output[1] > 53.0)
 
         initial_sol = ['D', 'A', 'B', 'C', 'D']
         output = nx.simulated_annealing_tsp(self.DG, 'D', move='1-0', a=1,
-                                            inner_iter=1, outer_iter=1,
+                                            iterations=1, tolerance=1,
                                             sol=initial_sol)
         assert_true(output[1] > 31.0)
