@@ -62,7 +62,7 @@ def test_unconnected_communities():
     # community 3
     test.add_edge('w', 'y')
     # community 4 with only a single node
-    G.add_node('z')
+    test.add_node('z')
     
     # The expected communities are:    
     ground_truth = set([frozenset(['z']), 
