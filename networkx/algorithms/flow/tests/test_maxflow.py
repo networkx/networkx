@@ -437,9 +437,9 @@ def test_preflow_push_global_relabel_freq():
 def test_preflow_push_makes_enough_space():
     #From ticket #1542
     G = nx.DiGraph()
-    G.add_path([0,1,3],capacity=1)
-    G.add_path([1,2,3],capacity=1)
-    R = preflow_push(G,0,3,value_only=False)
+    G.add_path([0, 1, 3], capacity=1)
+    G.add_path([1, 2, 3], capacity=1)
+    R = preflow_push(G, 0, 3, value_only=False)
     assert_equal(R.graph['flow_value'], 1)
 
 def test_shortest_augmenting_path_two_phase():
