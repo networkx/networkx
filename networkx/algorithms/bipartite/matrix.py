@@ -101,7 +101,7 @@ def biadjacency_matrix(G, row_order, column_order=None,
         row,col,data=[],[],[]
     else:
         row,col,data = zip(*((row_index[u],col_index[v],d.get(weight,1))
-                             for u,v,d in G.edges_iter(row_order,data=True)
+                             for u,v,d in G.edges(row_order,data=True)
                              if u in row_index and v in col_index))
     M = sparse.coo_matrix((data,(row,col)),
                           shape=(nlen,mlen), dtype=dtype)

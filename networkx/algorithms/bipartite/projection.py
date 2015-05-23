@@ -446,14 +446,14 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     (1, 3, {'weight': 4})
     >>> # Without specifying a function, the weight is equal to # shared partners
     >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1])
-    >>> print(G.edges(data=True))
+    >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 2})]
     >>> # To specify a custom weight function use the weight_function parameter
     >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=jaccard)
-    >>> print(G.edges(data=True))
+    >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 1.0})]
     >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=my_weight)
-    >>> print(G.edges(data=True))
+    >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 10})]
     
     Notes

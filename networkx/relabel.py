@@ -133,10 +133,10 @@ def _relabel_copy(G, mapping):
     H.name = "(%s)" % G.name
     if G.is_multigraph():
         H.add_edges_from( (mapping.get(n1, n1),mapping.get(n2, n2),k,d.copy())
-                          for (n1,n2,k,d) in G.edges_iter(keys=True, data=True))
+                          for (n1,n2,k,d) in G.edges(keys=True, data=True))
     else:
         H.add_edges_from( (mapping.get(n1, n1),mapping.get(n2, n2),d.copy())
-                          for (n1, n2, d) in G.edges_iter(data=True))
+                          for (n1, n2, d) in G.edges(data=True))
 
     H.add_nodes_from(mapping.get(n, n) for n in G)
     H.node.update(dict((mapping.get(n, n), d.copy()) for n,d in G.node.items()))

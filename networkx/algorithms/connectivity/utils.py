@@ -51,7 +51,7 @@ def build_auxiliary_node_connectivity(G):
         H.add_edge('%dA' % i, '%dB' % i, capacity=1)
 
     edges = []
-    for (source, target) in G.edges_iter():
+    for (source, target) in G.edges():
         edges.append(('%sB' % mapping[source], '%sA' % mapping[target]))
         if not directed:
             edges.append(('%sB' % mapping[target], '%sA' % mapping[source]))

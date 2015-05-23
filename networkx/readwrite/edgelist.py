@@ -207,7 +207,7 @@ def parse_edgelist(lines, comments='#', delimiter=None,
     >>> G = nx.parse_edgelist(lines, nodetype = int)
     >>> list(G)
     [1, 2, 3, 4]
-    >>> G.edges()
+    >>> list(G.edges())
     [(1, 2), (2, 3), (3, 4)]
 
     Edgelist with data in Python dictionary representation:

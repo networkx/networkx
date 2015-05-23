@@ -74,7 +74,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
     deleted_some=True # hack to start off the while loop
     while deleted_some:
         deleted_some=False
-        for edge in H.edges():
+        for edge in list(H.edges()):
             (u,v)=edge
             ### Get copy of graph needed for this search
             if low_memory:

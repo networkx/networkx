@@ -126,7 +126,7 @@ def all_node_cuts(G, k=None, flow_func=None):
             if flow_value == k:
                 ## Remove saturated edges form the residual network
                 saturated_edges = [(u, w, d) for (u, w, d) in
-                                    R.edges_iter(data=True)
+                                    R.edges(data=True)
                                     if d['capacity'] == d['flow']]
                 R.remove_edges_from(saturated_edges)
                 # step 6: shrink the strongly connected components of 

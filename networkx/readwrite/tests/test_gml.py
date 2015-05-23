@@ -223,7 +223,7 @@ graph
         assert_equal({'name': data, unicode('data'): data}, G.graph)
         assert_equal(list(G.nodes(data=True)),
                      [(0, dict(int=-1, data=dict(data=data)))])
-        assert_equal(G.edges(data=True), [(0, 0, dict(float=-2.5, data=data))])
+        assert_equal(list(G.edges(data=True)), [(0, 0, dict(float=-2.5, data=data))])
         G = nx.Graph()
         G.graph['data'] = 'frozenset([1, 2, 3])'
         G = nx.parse_gml(nx.generate_gml(G), destringizer=literal_eval)

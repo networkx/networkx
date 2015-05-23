@@ -89,7 +89,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight='weight'):
     if G.is_multigraph():
         raise NetworkXError("Not defined for multigraphs.")
 
-    if weight is None or G.edges()==[]:
+    if weight is None or list(G.edges())==[]:
         max_weight=1.0
     else:
         max_weight=float(max(d.get(weight,1.0) 
