@@ -107,6 +107,8 @@ def _relabel_inplace(G, mapping):
             new = mapping[old]
         except KeyError:
             continue
+        if new == old:
+            continue
         try:
             G.add_node(new, attr_dict=G.node[old])
         except KeyError:
