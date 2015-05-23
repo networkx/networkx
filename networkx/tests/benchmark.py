@@ -121,7 +121,7 @@ if __name__ == "__main__":
         N=500
         p=0.3
         title='Benchmark: reporting neighbors'
-        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
         test_string=('for n in G:\n for nbr in G.neighbors(n):\n  pass',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
@@ -130,7 +130,7 @@ if __name__ == "__main__":
         N=500
         p=0.3
         title='Benchmark: reporting edges'
-        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
         test_string=('for n in G:\n for e in G.edges(n):\n  pass',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
@@ -139,7 +139,7 @@ if __name__ == "__main__":
         N=500
         p=0.3
         title='Benchmark: reporting degree'
-        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
         test_string=('for d in G.degree():\n  pass',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
@@ -148,7 +148,7 @@ if __name__ == "__main__":
         N=500
         p=0.3
         title='dijkstra single source shortest path'
-        setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
         test_string=('p=NX.single_source_dijkstra(G,i)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
@@ -157,7 +157,7 @@ if __name__ == "__main__":
         N=500
         p=0.3
         title='single source shortest path'
-        setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        setup='i=6\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
         test_string=('p=NX.single_source_shortest_path(G,i)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
@@ -166,7 +166,7 @@ if __name__ == "__main__":
         N=500
         p=0.3
         title='subgraph method'
-        setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
         test_string=('G.subgraph(nlist)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
@@ -175,7 +175,7 @@ if __name__ == "__main__":
         N=500
         p=0.3
         title='subgraph method with edge data present'
-        setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v,dict(hi=2)),(v,u,dict(hi=2))])'%(N,p)
+        setup='nlist=range(100,150)\nH=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges():\n G.add_edges_from([(u,v,dict(hi=2)),(v,u,dict(hi=2))])'%(N,p)
         test_string=('G.subgraph(nlist)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=10)
         b.run()
@@ -184,7 +184,7 @@ if __name__ == "__main__":
         N=500
         p=0.3
         title='creation of laplacian matrix'
-        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges_iter():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
+        setup='H=NX.binomial_graph(%s,%s)\nfor (u,v) in H.edges():\n G.add_edges_from([(u,v),(v,u)])'%(N,p)
         test_string=('NX.laplacian_matrix(G)',setup)
         b=Benchmark(classes,title,test_string,runs=3,reps=1)
         b.run()

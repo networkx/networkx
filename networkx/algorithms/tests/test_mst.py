@@ -33,7 +33,7 @@ class TestMST:
 
     def test_mst(self):
         T=nx.minimum_spanning_tree(self.G)
-        assert_equal(T.edges(data=True),self.tree_edgelist)
+        assert_equal(list(T.edges(data=True)),self.tree_edgelist)
 
     def test_mst_edges(self):
         edgelist=sorted(nx.minimum_spanning_edges(self.G))
@@ -44,7 +44,7 @@ class TestMST:
         G.add_path([1,2])
         G.add_path([10,20])
         T=nx.minimum_spanning_tree(G)
-        assert_equal(sorted(map(sorted,T.edges())),[[1, 2], [10, 20]])
+        assert_equal(sorted(map(sorted,list(T.edges()))),[[1, 2], [10, 20]])
         assert_equal(sorted(T.nodes()),[1, 2, 10, 20])
 
     def test_mst_isolate(self):
@@ -82,7 +82,7 @@ class TestMST:
 
     def test_prim_mst(self):
         T=nx.prim_mst(self.G)
-        assert_equal(T.edges(data=True),self.tree_edgelist)
+        assert_equal(list(T.edges(data=True)),self.tree_edgelist)
 
     def test_prim_mst_edges(self):
         edgelist=sorted(nx.prim_mst_edges(self.G))
@@ -95,7 +95,7 @@ class TestMST:
         G.add_path([1,2])
         G.add_path([10,20])
         T=nx.prim_mst(G)
-        assert_equal(sorted(map(sorted,T.edges())),[[1, 2], [10, 20]])
+        assert_equal(sorted(map(sorted,list(T.edges()))),[[1, 2], [10, 20]])
         assert_equal(sorted(T.nodes()),[1, 2, 10, 20])
 
     def test_prim_mst_isolate(self):

@@ -49,13 +49,7 @@ class BaseGraphTester(object):
         G=self.K3
         assert_equal(sorted(G.edges()),[(0,1),(0,2),(1,2)])
         assert_equal(sorted(G.edges(0)),[(0,1),(0,2)])
-        assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
-
-    def test_edges_iter(self):
-        G=self.K3
-        assert_equal(sorted(G.edges_iter()),[(0,1),(0,2),(1,2)])
-        assert_equal(sorted(G.edges_iter(0)),[(0,1),(0,2)])
-        f=lambda x:list(G.edges_iter(x))
+        f=lambda x:list(G.edges(x))
         assert_raises((KeyError,networkx.NetworkXError), f, -1)
 
     def test_adjacency_list(self):
@@ -354,8 +348,8 @@ class BaseAttrGraphTester(BaseGraphTester):
     def test_edge_attr(self):
         G=self.Graph()
         G.add_edge(1,2,foo='bar')
-        assert_equal(G.edges(data=True), [(1,2,{'foo':'bar'})])
-        assert_equal(G.edges(data='foo'), [(1,2,'bar')])
+        assert_equal(list(G.edges(data=True)), [(1,2,{'foo':'bar'})])
+        assert_equal(list(G.edges(data='foo')), [(1,2,'bar')])
 
     def test_edge_attr2(self):
         G=self.Graph()
@@ -368,30 +362,30 @@ class BaseAttrGraphTester(BaseGraphTester):
     def test_edge_attr3(self):
         G=self.Graph()
         G.add_edges_from([(1,2,{'weight':32}),(3,4,{'weight':64})],foo='foo')
-        assert_equal(G.edges(data=True),
+        assert_equal(sorted(G.edges(data=True)),
                      [(1,2,{'foo':'foo','weight':32}),\
                       (3,4,{'foo':'foo','weight':64})])
 
         G.remove_edges_from([(1,2),(3,4)])
         G.add_edge(1,2,data=7,spam='bar',bar='foo')
-        assert_equal(G.edges(data=True),
+        assert_equal(sorted(G.edges(data=True)),
                       [(1,2,{'data':7,'spam':'bar','bar':'foo'})])
 
     def test_edge_attr4(self):
         G=self.Graph()
         G.add_edge(1,2,data=7,spam='bar',bar='foo')
-        assert_equal(G.edges(data=True),
+        assert_equal(sorted(G.edges(data=True)),
                       [(1,2,{'data':7,'spam':'bar','bar':'foo'})])
         G[1][2]['data']=10 # OK to set data like this
-        assert_equal(G.edges(data=True),
+        assert_equal(sorted(G.edges(data=True)),
                      [(1,2,{'data':10,'spam':'bar','bar':'foo'})])
 
         G.edge[1][2]['data']=20 # another spelling, "edge"
-        assert_equal(G.edges(data=True),
+        assert_equal(sorted(G.edges(data=True)),
                       [(1,2,{'data':20,'spam':'bar','bar':'foo'})])
         G.edge[1][2]['listdata']=[20,200]
         G.edge[1][2]['weight']=20
-        assert_equal(G.edges(data=True),
+        assert_equal(sorted(G.edges(data=True)),
                      [(1,2,{'data':20,'spam':'bar',
                             'bar':'foo','listdata':[20,200],'weight':20})])
 
@@ -592,7 +586,8 @@ class TestGraph(BaseAttrGraphTester):
         G=self.K3
         assert_equal(sorted(G.edges(data=True)),[(0,1,{}),(0,2,{}),(1,2,{})])
         assert_equal(sorted(G.edges(0,data=True)),[(0,1,{}),(0,2,{})])
-        assert_raises((KeyError,networkx.NetworkXError), G.edges,-1)
+        f = lambda x: list(G.edges(x))
+        assert_raises((KeyError,networkx.NetworkXError), f,-1)
 
 
     def test_get_edge_data(self):

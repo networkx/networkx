@@ -161,7 +161,7 @@ class Graph(object):
     (2, 1, 4)
     (2, 3, 8)
     (3, 2, 8)
-    >>> G.edges(data='weight')
+    >>> list(G.edges(data='weight'))
     [(1, 2, 4), (2, 3, 8), (3, 4, None), (4, 5, None)]
 
     **Reporting:**
@@ -215,7 +215,7 @@ class Graph(object):
     >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
-    >>> G.edges()
+    >>> list(G.edges())
     [(2, 1), (2, 2), (1, 1)]
 
     Create a graph object that tracks the order nodes are added
@@ -229,7 +229,7 @@ class Graph(object):
     >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
-    >>> G.edges()
+    >>> list(G.edges())
     [(2, 2), (2, 1), (1, 1)]
 
     Create a low memory graph class that effectively disallows edge
@@ -243,7 +243,7 @@ class Graph(object):
     ...     edge_attr_dict_factory = single_edge_dict
     >>> G = ThinGraph()
     >>> G.add_edge(2,1)
-    >>> G.edges(data= True)
+    >>> list(G.edges(data= True))
     [(1, 2, {'weight': 1})]
     >>> G.add_edge(2,2)
     >>> G[2][1] is G[2][2]
@@ -553,10 +553,10 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> G.edges()
+        >>> list(G.edges())
         [(0, 1), (1, 2)]
         >>> G.remove_node(1)
-        >>> G.edges()
+        >>> list(G.edges())
         []
 
         """
@@ -1065,55 +1065,8 @@ class Graph(object):
         except KeyError:
             raise NetworkXError("The node %s is not in the graph." % (n,))
 
+
     def edges(self, nbunch=None, data=False, default=None):
-        """Return a list of edges.
-
-        Edges are returned as tuples with optional data
-        in the order (node, neighbor, data).
-
-        Parameters
-        ----------
-        nbunch : iterable container, optional (default= all nodes)
-            A container of nodes.  The container will be iterated
-            through once.
-        data : bool, optional (default=False)
-            Return two tuples (u,v) (False) or three-tuples (u,v,data) (True).
-
-        Returns
-        --------
-        edge_list: list of edge tuples
-            Edges that are adjacent to any node in nbunch, or a list
-            of all edges if nbunch is not specified.
-
-        See Also
-        --------
-        edges_iter : return an iterator over the edges
-
-        Notes
-        -----
-        Nodes in nbunch that are not in the graph will be (quietly) ignored.
-        For directed graphs this returns the out-edges.
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2])
-        >>> G.add_edge(2,3,weight=5)
-        >>> G.edges()
-        [(0, 1), (1, 2), (2, 3)]
-        >>> G.edges(data=True) # default edge data is {} (empty dictionary)
-        [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1))
-        [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
-        >>> G.edges([0,3])
-        [(0, 1), (3, 2)]
-        >>> G.edges(0)
-        [(0, 1)]
-
-        """
-        return list(self.edges_iter(nbunch, data, default))
-
-    def edges_iter(self, nbunch=None, data=False, default=None):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data
@@ -1134,12 +1087,8 @@ class Graph(object):
 
         Returns
         -------
-        edge_iter : iterator
+        edges : iterator
             An iterator of (u,v) or (u,v,d) tuples of edges.
-
-        See Also
-        --------
-        edges : return a list of edges
 
         Notes
         -----
@@ -1151,15 +1100,15 @@ class Graph(object):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1,2])
         >>> G.add_edge(2,3,weight=5)
-        >>> [e for e in G.edges_iter()]
+        >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (2, 3)]
-        >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
+        >>> list(G.edges(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})]
-        >>> list(G.edges_iter(data='weight', default=1))
+        >>> list(G.edges(data='weight', default=1))
         [(0, 1, 1), (1, 2, 1), (2, 3, 5)]
-        >>> list(G.edges_iter([0,3]))
+        >>> list(G.edges([0,3]))
         [(0, 1), (3, 2)]
-        >>> list(G.edges_iter(0))
+        >>> list(G.edges(0))
         [(0, 1)]
 
         """
@@ -1463,7 +1412,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1), (1, 0)]
 
         If already directed, return a (deep) copy
@@ -1471,7 +1420,7 @@ class Graph(object):
         >>> G = nx.DiGraph()   # or MultiDiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1)]
         """
         from networkx import DiGraph
@@ -1514,10 +1463,10 @@ class Graph(object):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1), (1, 0)]
         >>> G2 = H.to_undirected()
-        >>> G2.edges()
+        >>> list(G2.edges())
         [(0, 1)]
         """
         return deepcopy(self)
@@ -1558,7 +1507,7 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
-        >>> H.edges()
+        >>> list(H.edges())
         [(0, 1), (1, 2)]
         """
         bunch = self.nbunch_iter(nbunch)

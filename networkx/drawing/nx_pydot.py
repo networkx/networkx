@@ -213,13 +213,13 @@ def to_pydot(N, strict=True):
         P.add_node(p)
 
     if N.is_multigraph():
-        for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
+        for u,v,key,edgedata in N.edges(data=True,keys=True):
             str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
             edge=pydot.Edge(make_str(u),make_str(v),key=make_str(key),**str_edgedata)
             P.add_edge(edge)
 
     else:
-        for u,v,edgedata in N.edges_iter(data=True):
+        for u,v,edgedata in N.edges(data=True):
             str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
             edge=pydot.Edge(make_str(u),make_str(v),**str_edgedata)
             P.add_edge(edge)

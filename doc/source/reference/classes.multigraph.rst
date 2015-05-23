@@ -40,7 +40,6 @@ Iterating over nodes and edges
    MultiGraph.nodes
    MultiGraph.__iter__
    MultiGraph.edges
-   MultiGraph.edges_iter
    MultiGraph.get_edge_data
    MultiGraph.neighbors
    MultiGraph.neighbors_iter
