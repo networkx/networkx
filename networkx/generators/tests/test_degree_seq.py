@@ -143,7 +143,7 @@ def test_degree_sequence_tree():
     z=[1, 1, 1, 1, 1, 2, 2, 2, 3, 4]
     G=degree_sequence_tree(z)
     assert_equal(len(G), len(z))
-    assert_true(len(G.edges())==sum(z)/2)
+    assert_true(len(list(G.edges()))==sum(z)/2)
 
     assert_raises(networkx.exception.NetworkXError,
                   degree_sequence_tree, z, create_using=DiGraph())

@@ -28,7 +28,7 @@ class TestMinWeightDominatingSet:
         dom_set = apxa.min_edge_dominating_set(graph)
 
         # this is a crappy way to test, but good enough for now.
-        for edge in graph.edges_iter():
+        for edge in graph.edges():
             if edge in dom_set:
                 continue
             else:
@@ -42,7 +42,7 @@ class TestMinWeightDominatingSet:
         dom_set = apxa.min_edge_dominating_set(graph)
 
         # this is a crappy way to test, but good enough for now.
-        for edge in graph.edges_iter():
+        for edge in graph.edges():
             if edge in dom_set:
                 continue
             else:

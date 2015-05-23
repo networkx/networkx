@@ -116,7 +116,7 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
         ydeg = direction[y]
 
     for u,degu in xdeg(nodes, weight=weight):
-        neighbors = (nbr for _,nbr in G.edges_iter(u) if nbr in nodes)
+        neighbors = (nbr for _,nbr in G.edges(u) if nbr in nodes)
         for v,degv in ydeg(neighbors, weight=weight):
             yield degu,degv
  

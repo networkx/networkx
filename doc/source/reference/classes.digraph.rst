@@ -41,11 +41,8 @@ Iterating over nodes and edges
    DiGraph.nodes
    DiGraph.__iter__
    DiGraph.edges
-   DiGraph.edges_iter
    DiGraph.out_edges
-   DiGraph.out_edges_iter
    DiGraph.in_edges
-   DiGraph.in_edges_iter
    DiGraph.get_edge_data
    DiGraph.neighbors
    DiGraph.neighbors_iter

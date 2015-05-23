@@ -31,49 +31,49 @@ def _node_product(G, H):
 
 def _directed_edges_cross_edges(G, H):
     if not G.is_multigraph() and not H.is_multigraph():
-        for u, v, c in G.edges_iter(data=True):
-            for x, y, d in H.edges_iter(data=True):
+        for u, v, c in G.edges(data=True):
+            for x, y, d in H.edges(data=True):
                 yield (u, x), (v, y), _dict_product(c, d)
     if not G.is_multigraph() and H.is_multigraph():
-        for u, v, c in G.edges_iter(data=True):
-            for x, y, k, d in H.edges_iter(data=True, keys=True):
+        for u, v, c in G.edges(data=True):
+            for x, y, k, d in H.edges(data=True, keys=True):
                 yield (u, x), (v, y), k, _dict_product(c, d)
     if G.is_multigraph() and not H.is_multigraph():
-        for u, v, k, c in G.edges_iter(data=True, keys=True):
-            for x, y, d in H.edges_iter(data=True):
+        for u, v, k, c in G.edges(data=True, keys=True):
+            for x, y, d in H.edges(data=True):
                 yield (u, x), (v, y), k, _dict_product(c, d)
     if G.is_multigraph() and H.is_multigraph():
-        for u, v, j, c in G.edges_iter(data=True, keys=True):
-            for x, y, k, d in H.edges_iter(data=True, keys=True):
+        for u, v, j, c in G.edges(data=True, keys=True):
+            for x, y, k, d in H.edges(data=True, keys=True):
                 yield (u, x), (v, y), (j, k), _dict_product(c, d)
 
 
 def _undirected_edges_cross_edges(G, H):
     if not G.is_multigraph() and not H.is_multigraph():
-        for u, v, c in G.edges_iter(data=True):
-            for x, y, d in H.edges_iter(data=True):
+        for u, v, c in G.edges(data=True):
+            for x, y, d in H.edges(data=True):
                 yield (v, x), (u, y), _dict_product(c, d)
     if not G.is_multigraph() and H.is_multigraph():
-        for u, v, c in G.edges_iter(data=True):
-            for x, y, k, d in H.edges_iter(data=True, keys=True):
+        for u, v, c in G.edges(data=True):
+            for x, y, k, d in H.edges(data=True, keys=True):
                 yield (v, x), (u, y), k, _dict_product(c, d)
     if G.is_multigraph() and not H.is_multigraph():
-        for u, v, k, c in G.edges_iter(data=True, keys=True):
-            for x, y, d in H.edges_iter(data=True):
+        for u, v, k, c in G.edges(data=True, keys=True):
+            for x, y, d in H.edges(data=True):
                 yield (v, x), (u, y), k, _dict_product(c, d)
     if G.is_multigraph() and H.is_multigraph():
-        for u, v, j, c in G.edges_iter(data=True, keys=True):
-            for x, y, k, d in H.edges_iter(data=True, keys=True):
+        for u, v, j, c in G.edges(data=True, keys=True):
+            for x, y, k, d in H.edges(data=True, keys=True):
                 yield (v, x), (u, y), (j, k), _dict_product(c, d)
 
 
 def _edges_cross_nodes(G, H):
     if G.is_multigraph():
-        for u, v, k, d in G.edges_iter(data=True, keys=True):
+        for u, v, k, d in G.edges(data=True, keys=True):
             for x in H:
                 yield (u, x), (v, x), k, d
     else:
-        for u, v, d in G.edges_iter(data=True):
+        for u, v, d in G.edges(data=True):
             for x in H:
                 if H.is_multigraph():
                     yield (u, x), (v, x), None, d
@@ -84,11 +84,11 @@ def _edges_cross_nodes(G, H):
 def _nodes_cross_edges(G, H):
     if H.is_multigraph():
         for x in G:
-            for u, v, k, d in H.edges_iter(data=True, keys=True):
+            for u, v, k, d in H.edges(data=True, keys=True):
                 yield (x, u), (x, v), k, d
     else:
         for x in G:
-            for u, v, d in H.edges_iter(data=True):
+            for u, v, d in H.edges(data=True):
                 if G.is_multigraph():
                     yield (x, u), (x, v), None, d
                 else:
@@ -97,12 +97,12 @@ def _nodes_cross_edges(G, H):
 
 def _edges_cross_nodes_and_nodes(G, H):
     if G.is_multigraph():
-        for u, v, k, d in G.edges_iter(data=True, keys=True):
+        for u, v, k, d in G.edges(data=True, keys=True):
             for x in H:
                 for y in H:
                     yield (u, x), (v, y), k, d
     else:
-        for u, v, d in G.edges_iter(data=True):
+        for u, v, d in G.edges(data=True):
             for x in H:
                 for y in H:
                     if H.is_multigraph():
@@ -373,9 +373,9 @@ def power(G, k):
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.power(G,2).edges()
+    >>> list(nx.power(G,2).edges())
     [(0, 1), (0, 2), (1, 2), (1, 3), (2, 3)]
-    >>> nx.power(G,3).edges()
+    >>> list(nx.power(G,3).edges())
     [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
 
     A complete graph of order n is returned if *k* is greater than equal to n/2
@@ -383,10 +383,10 @@ def power(G, k):
     (n-1)/2 for a cycle graph of odd order.
 
     >>> G = nx.cycle_graph(5)
-    >>> nx.power(G,2).edges() == nx.complete_graph(5).edges()
+    >>> sorted(nx.power(G,2).edges()) == sorted(nx.complete_graph(5).edges())
     True
     >>> G = nx.cycle_graph(8)
-    >>> nx.power(G,4).edges() == nx.complete_graph(8).edges()
+    >>> sorted(nx.power(G,4).edges()) == sorted(nx.complete_graph(8).edges())
     True
 
     References

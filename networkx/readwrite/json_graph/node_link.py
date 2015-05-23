@@ -84,12 +84,12 @@ def node_link_data(G, attrs=_attrs):
         data['links'] = [
             dict(chain(d.items(),
                        [(source, mapping[u]), (target, mapping[v]), (key, k)]))
-            for u, v, k, d in G.edges_iter(keys=True, data=True)]
+            for u, v, k, d in G.edges(keys=True, data=True)]
     else:
         data['links'] = [
             dict(chain(d.items(),
                        [(source, mapping[u]), (target, mapping[v])]))
-            for u, v, d in G.edges_iter(data=True)]
+            for u, v, d in G.edges(data=True)]
 
     return data
 

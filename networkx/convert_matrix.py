@@ -357,7 +357,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
         except:
             raise ValueError('multigraph_weight must be sum, min, or max')
 
-        for u,v,attrs in G.edges_iter(data=True):
+        for u,v,attrs in G.edges(data=True):
             if (u in nodeset) and (v in nodeset):
                 i, j = index[u], index[v]
                 e_weight = attrs.get(weight, 1)
@@ -458,7 +458,7 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
     >>> dt = [('weight', float), ('cost', int)]
     >>> A = numpy.matrix([[(1.0, 2)]], dtype = dt)
     >>> G = nx.from_numpy_matrix(A)
-    >>> G.edges()
+    >>> list(G.edges())
     [(0, 0)]
     >>> G[0][0]['cost']
     2
@@ -596,7 +596,7 @@ def to_numpy_recarray(G,nodelist=None,
     M = np.zeros((nlen,nlen), dtype=dtype, order=order)
 
     names=M.dtype.names
-    for u,v,attrs in G.edges_iter(data=True):
+    for u,v,attrs in G.edges(data=True):
         if (u in nodeset) and (v in nodeset):
             i,j = index[u],index[v]
             values=tuple([attrs[n] for n in names])
@@ -701,7 +701,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
         row,col,data=[],[],[]
     else:
         row,col,data = zip(*((index[u],index[v],d.get(weight,1))
-                             for u,v,d in G.edges_iter(nodelist, data=True)
+                             for u,v,d in G.edges(nodelist, data=True)
                              if u in index and v in index))
     if G.is_directed():
         M = sparse.coo_matrix((data,(row,col)),

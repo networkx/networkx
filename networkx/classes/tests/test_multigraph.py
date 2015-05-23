@@ -108,18 +108,18 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
     def test_edge_attr4(self):
         G=self.Graph()
         G.add_edge(1,2,key=0,data=7,spam='bar',bar='foo')
-        assert_equal(G.edges(data=True),
+        assert_equal(list(G.edges(data=True)),
                       [(1,2,{'data':7,'spam':'bar','bar':'foo'})])
         G[1][2][0]['data']=10 # OK to set data like this
-        assert_equal(G.edges(data=True),
+        assert_equal(list(G.edges(data=True)),
                      [(1,2,{'data':10,'spam':'bar','bar':'foo'})])
 
         G.edge[1][2][0]['data']=20 # another spelling, "edge"
-        assert_equal(G.edges(data=True),
+        assert_equal(list(G.edges(data=True)),
                       [(1,2,{'data':20,'spam':'bar','bar':'foo'})])
         G.edge[1][2][0]['listdata']=[20,200]
         G.edge[1][2][0]['weight']=20
-        assert_equal(G.edges(data=True),
+        assert_equal(list(G.edges(data=True)),
                      [(1,2,{'data':20,'spam':'bar',
                             'bar':'foo','listdata':[20,200],'weight':20})])
 
@@ -217,13 +217,13 @@ class TestMultiGraph(BaseMultiGraphTester,TestGraph):
         G.remove_edges_from([(0,0)]) # silent fail
         self.K3.add_edge(0,1)
         G=self.K3.copy()
-        G.remove_edges_from(G.edges(data=True,keys=True))
+        G.remove_edges_from(list(G.edges(data=True,keys=True)))
         assert_equal(G.adj,{0:{},1:{},2:{}})
         G=self.K3.copy()
-        G.remove_edges_from(G.edges(data=False,keys=True))
+        G.remove_edges_from(list(G.edges(data=False,keys=True)))
         assert_equal(G.adj,{0:{},1:{},2:{}})
         G=self.K3.copy()
-        G.remove_edges_from(G.edges(data=False,keys=False))
+        G.remove_edges_from(list(G.edges(data=False,keys=False)))
         assert_equal(G.adj,{0:{},1:{},2:{}})
         G=self.K3.copy()
         G.remove_edges_from([(0,1,0),(0,2,0,{}),(1,2)])
