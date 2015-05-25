@@ -1,9 +1,9 @@
 *********************************
-Version 2.0 notes and API changes
+Version 1.10 notes and API changes
 *********************************
 
 This page includes more detailed release information and API changes from
-NetworkX 1.9 to NetworkX 2.0.
+NetworkX 1.9 to NetworkX 1.10.
 
 Please send comments and questions to the networkx-discuss mailing list:
 <http://groups.google.com/group/networkx-discuss>.
@@ -17,6 +17,11 @@ API changes
   refactored the ``connected_components`` and ``weakly_connected_components``
   implementations making them faster, especially for large graphs.
 
+* [`#1547 <https://github.com/networkx/networkx/issues/1547>`_]
+  The ``func_iter`` functions in Di/Multi/Graphs classes are slated for
+  removal in NetworkX 2.0 release. ``func`` will behave like ``func_iter``
+  and return an iterator instead of list. These functions are deprecated in
+  NetworkX 1.10 release.
 
 New functionalities
 -------------------
