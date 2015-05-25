@@ -287,10 +287,10 @@ def _generalized_inclusion(c1, c2, epsilon):
     
     Parameters
     ----------
-    c1 : list
+    c1 : set
         Community 1. 
         
-    c2 : list
+    c2 : set
         Community 2. 
     
     epsilon: real
@@ -298,7 +298,7 @@ def _generalized_inclusion(c1, c2, epsilon):
         
     Returns
     -------
-    union : list
+    union : set
         Union of both communities if the similarity is greater than epsilon 
     
     References
