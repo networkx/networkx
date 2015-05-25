@@ -27,14 +27,12 @@ def test_simple_communities():
     # connection from community 1 to community 2
     test.add_edge('a', 'middle')
     test.add_edge('e', 'middle')
-   
-    communities = demon.demon_communities(test)
-    
+
     # The expected communities are:    
     ground_truth = set([frozenset(['a', 'b', 'c', 'd']), 
                         frozenset(['e', 'f', 'g', 'h'])])
     
-    communities = demon.demon_communities(test)
+    communities = demon.demon_communities(test, 0.25, 3, None)
     result = set()
     for c in communities:
         result.add(frozenset(c))  

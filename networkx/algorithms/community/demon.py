@@ -20,6 +20,7 @@ Based on the implementation by Giulio Rossetti <giulio.rossetti@isti.cnr.it>:
 http://www.michelecoscia.com/wp-content/uploads/2013/07/demon_py.zip
 """
 
+from __future__ import division
 import networkx as nx
 import random
 
@@ -95,12 +96,13 @@ def demon_communities(G, epsilon=0.25, min_community_size=3, weight=None):
             if len(community_to_nodes[c]) > min_community_size:
                 actual_community = community_to_nodes[c]
                 all_communities = _merge_communities(all_communities, actual_community, epsilon)
-
-    return all_communities
+            
+    for c in all_communities:
+        yield c
 
 def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iteration=100):
     """
-    Label propagation algorithm based on [2] used to find communities in the
+    Label propagation algorithm based on [2]_ used to find communities in the
     EgoMinusEgo Graph.
     
     Parameters
@@ -215,7 +217,6 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iteration=100
         c_n = ego_minus_ego.node[n]['communities']
 
         for c in c_n:
-
             if c in community_to_nodes:
                 com = community_to_nodes.get(c)
                 com.append(n)
@@ -248,7 +249,7 @@ def _merge_communities(communities, actual_community, epsilon):
     """
 
     # if the community is already present return
-    if tuple(actual_community) in communities:
+    if tuple(sorted(actual_community)) in communities.keys():
         return communities
 
     else:
@@ -274,7 +275,7 @@ def _merge_communities(communities, actual_community, epsilon):
 
 def _generalized_inclusion(c1, c2, epsilon):
     """
-    As explained in [1]: 
+    As explained in [1]_: 
     "Two  communities C and I are  merged  if  and  only  if  at most the 
     epsilon % of the smaller one is not included in the bigger one;  in  this  
     case, C and I are removed from the community list and their union is added 
@@ -310,8 +311,8 @@ def _generalized_inclusion(c1, c2, epsilon):
     smaller_set = min(len(c1), len(c2))
     
     if len(intersection) > 0 and smaller_set > 0:
-        inclusion_pct = float(len(intersection)) / float(smaller_set)        
-        # at least e% of similarity with the smallest set
+        inclusion_pct = len(intersection) / smaller_set 
+
         if inclusion_pct > epsilon:
             union = set(c2) | set(c1)
             return union
@@ -319,33 +320,34 @@ def _generalized_inclusion(c1, c2, epsilon):
     return None
 
 
-#if __name__ == '__main__':
-#    
-#    test = nx.Graph()
-#    
-#    # community 1
-#    test.add_edge('a', 'b')
-#    test.add_edge('c', 'b')
-#    test.add_edge('a', 'c')
-#    test.add_edge('a', 'd')
-#    test.add_edge('b', 'd')
-#    test.add_edge('c', 'd')
-#    
-#    # community 2
-#    test.add_edge('e', 'f')
-#    test.add_edge('e', 'g')
-#    test.add_edge('e', 'h')
-#    test.add_edge('f', 'g')
-#    test.add_edge('f', 'h')
-#    test.add_edge('h', 'g')
-#
-#    # connection from community 1 to community 2
-#    test.add_edge('a', 'middle')
-#    test.add_edge('e', 'middle')
-#   
-#    communities = demon_communities(test)
-#    
-#    print communities
-#    
+if __name__ == '__main__':
+    
+    test = nx.Graph()
+    
+    # community 1
+    test.add_edge('a', 'b')
+    test.add_edge('c', 'b')
+    test.add_edge('a', 'c')
+    test.add_edge('a', 'd')
+    test.add_edge('b', 'd')
+    test.add_edge('c', 'd')
+    
+    # community 2
+    test.add_edge('e', 'f')
+    test.add_edge('e', 'g')
+    test.add_edge('e', 'h')
+    test.add_edge('f', 'g')
+    test.add_edge('f', 'h')
+    test.add_edge('h', 'g')
+
+    # connection from community 1 to community 2
+    test.add_edge('a', 'middle')
+    test.add_edge('e', 'middle')
+   
+    communities = demon_communities(test, 0.25, 3, None)
+    for c in communities:
+        print c
+ 
+    
     
     
