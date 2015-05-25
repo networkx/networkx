@@ -84,7 +84,7 @@ def demon_communities(G, epsilon=0.25, min_community_size=3, weight=None):
     for n in G.nodes():
             G.node[n]['communities'] = [n]                   
     
-    all_communities = {}
+    all_communities = []
 
     for ego in nx.nodes(G):
         # EgoMinusEgo and LabelPropagation phase
@@ -95,7 +95,7 @@ def demon_communities(G, epsilon=0.25, min_community_size=3, weight=None):
         for c in community_to_nodes.keys():
             if len(community_to_nodes[c]) > min_community_size:
                 actual_community = community_to_nodes[c]
-                all_communities = _merge_communities(all_communities, actual_community, epsilon)
+                all_communities = _merge_communities(all_communities, set(actual_community), epsilon)
             
     for c in all_communities:
         yield c
@@ -244,32 +244,32 @@ def _merge_communities(communities, actual_community, epsilon):
         
     Returns
     -------
-    communities : dict
+    communities : list
         Merged communities   
     """
 
     # if the community is already present return
-    if tuple(sorted(actual_community)) in communities.keys():
+    if actual_community in communities:
         return communities
 
     else:
         # search a community to merge with
         inserted = False
 
-        for test_community in communities.items():
+        for test_community in communities:
 
-            union = _generalized_inclusion(actual_community, test_community[0], epsilon)
+            union = _generalized_inclusion(actual_community, test_community, epsilon)
 
             # communty to merge with found
             if union:
-                communities.pop(test_community[0])
-                communities[tuple(sorted(union))] = 0
+                communities.pop(test_community)
+                communities.append(union)
                 inserted = True
                 break
 
         # not merged: insert the original community
         if not inserted:
-            communities[tuple(sorted(actual_community))] = 0
+            communities.append(actual_community)
 
     return communities
 
@@ -307,14 +307,14 @@ def _generalized_inclusion(c1, c2, epsilon):
            DEMON: a local-first discovery method for overlapping communities.
            KDD 2012:615-623.
     """
-    intersection = set(c2) & set(c1)
+    intersection = c2 & c1
     smaller_set = min(len(c1), len(c2))
     
     if len(intersection) > 0 and smaller_set > 0:
         inclusion_pct = len(intersection) / smaller_set 
 
         if inclusion_pct > epsilon:
-            union = set(c2) | set(c1)
+            union = c2 | c1
             return union
             
     return None
