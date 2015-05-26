@@ -143,7 +143,7 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iteration=100
         nodes = nx.nodes(ego_minus_ego)
         random.shuffle(nodes)
 
-        count = -len(nodes)
+#        count = -len(nodes)
 
         for n in nodes:
             label_freq = {}
@@ -153,8 +153,8 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iteration=100
             if len(n_neighbors) < 1:
                 continue
 
-            if count == 0:
-                t += 1
+#            if count == 0:
+#                t += 1
 
             # compute the frequency of the labels
             for nn in n_neighbors:
@@ -184,8 +184,8 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iteration=100
                     r_label = random.sample(label_freq.keys(), 1)
                     ego_minus_ego.node[n]['communities'] = r_label
                     old_node_to_coms[n] = r_label
-                count += 1
-                continue
+#                count += 1
+#                continue
 
             # choosing the majority
             else:                      
@@ -250,7 +250,7 @@ def _merge_communities(communities, actual_community, epsilon):
             union = _generalized_inclusion(actual_community, test_community, epsilon)
             # community to merge with found
             if union:
-                communities.pop(test_community)
+                communities.pop(communities.index(test_community))
                 communities.append(union)
                 inserted = True
                 break
@@ -334,7 +334,7 @@ if __name__ == '__main__':
     
     
     print 'starting'
-    communities = demon_communities(test, 0.25, 3, None)
+    communities = demon_communities(nx.karate_club_graph(), 0.25, 3, None)
     for c in communities:
         print c
     print 'FIN'
