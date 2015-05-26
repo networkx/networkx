@@ -166,12 +166,11 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iteration=100
 
                 for nn_c in communities_nn:
                     if nn_c in label_freq:
-                        v = label_freq.get(nn_c)
                         # case of weighted graph
                         if weight:
-                            label_freq[nn_c] = v + ego_minus_ego.edge[nn][n][weight]
+                            label_freq[nn_c] = label_freq[nn_c] + ego_minus_ego.edge[nn][n][weight]
                         else:
-                            label_freq[nn_c] = v + 1
+                            label_freq[nn_c] += 1
                     else:
                         # case of weighted graph
                         if weight:
@@ -189,16 +188,9 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iteration=100
                 continue
 
             # choosing the majority
-            else:
-                labels = []
-                max_freq = -1
-
-                for l, c in label_freq.items():
-                    if c > max_freq:
-                        max_freq = c
-                        labels = [l]
-                    elif c == max_freq:
-                        labels.append(l)
+            else:                      
+                max_freq = max(label_freq.values())
+                labels = [l for l in label_freq if label_freq[l] == max_freq]
 
                 node_to_coms[n] = labels
 
@@ -217,12 +209,10 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iteration=100
         c_n = ego_minus_ego.node[n]['communities']
 
         for c in c_n:
-            if c in community_to_nodes:
-                com = community_to_nodes.get(c)
-                com.append(n)
+            if c in community_to_nodes: 
+                community_to_nodes[c].append(n)
             else:
-                nodes = [n, ego]
-                community_to_nodes[c] = nodes
+                community_to_nodes[c] = [n, ego]
 
     return community_to_nodes
 
@@ -236,7 +226,7 @@ def _merge_communities(communities, actual_community, epsilon):
     communities: dict
         Dictionary of communities
         
-    actual_community: list
+    actual_community: set
         A community
     
     epsilon: real
@@ -257,10 +247,8 @@ def _merge_communities(communities, actual_community, epsilon):
         inserted = False
 
         for test_community in communities:
-
             union = _generalized_inclusion(actual_community, test_community, epsilon)
-
-            # communty to merge with found
+            # community to merge with found
             if union:
                 communities.pop(test_community)
                 communities.append(union)
@@ -343,10 +331,13 @@ if __name__ == '__main__':
     # connection from community 1 to community 2
     test.add_edge('a', 'middle')
     test.add_edge('e', 'middle')
-   
+    
+    
+    print 'starting'
     communities = demon_communities(test, 0.25, 3, None)
     for c in communities:
         print c
+    print 'FIN'
  
     
     
