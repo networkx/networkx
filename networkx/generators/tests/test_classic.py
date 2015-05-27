@@ -226,56 +226,6 @@ class TestGeneratorClassic():
         assert_equal(G.name, 'empty_graph(42)')
         assert_true(isinstance(G,Graph))
 
-    def test_grid_2d_graph(self):
-        n=5;m=6
-        G=grid_2d_graph(n,m)
-        assert_equal(number_of_nodes(G), n*m)
-        assert_equal(degree_histogram(G), [0,0,4,2*(n+m)-8,(n-2)*(m-2)])
-        DG=grid_2d_graph(n,m, create_using=DiGraph())
-        assert_equal(DG.succ, G.adj)
-        assert_equal(DG.pred, G.adj)
-        MG=grid_2d_graph(n,m, create_using=MultiGraph())
-        assert_equal(sorted(MG.edges()), sorted(G.edges()))
-
-    def test_grid_graph(self):
-        """grid_graph([n,m]) is a connected simple graph with the
-        following properties:
-        number_of_nodes=n*m
-        degree_histogram=[0,0,4,2*(n+m)-8,(n-2)*(m-2)]
-        """
-        for n, m in [(3, 5), (5, 3), (4, 5), (5, 4)]:
-            dim=[n,m]
-            g=grid_graph(dim)
-            assert_equal(number_of_nodes(g), n*m)
-            assert_equal(degree_histogram(g), [0,0,4,2*(n+m)-8,(n-2)*(m-2)])
-            assert_equal(dim,[n,m])
-
-        for n, m in [(1, 5), (5, 1)]:
-            dim=[n,m]
-            g=grid_graph(dim)
-            assert_equal(number_of_nodes(g), n*m)
-            assert_true(is_isomorphic(g,path_graph(5)))
-            assert_equal(dim,[n,m])
-
-#        mg=grid_graph([n,m], create_using=MultiGraph())
-#        assert_equal(mg.edges(), g.edges())
-
-    def test_hypercube_graph(self):
-        for n, G in [(0, null_graph()), (1, path_graph(2)),
-                     (2, cycle_graph(4)), (3, cubical_graph())]:
-            g=hypercube_graph(n)
-            assert_true(is_isomorphic(g, G))
-
-        g=hypercube_graph(4)
-        assert_equal(degree_histogram(g), [0, 0, 0, 0, 16])
-        g=hypercube_graph(5)
-        assert_equal(degree_histogram(g), [0, 0, 0, 0, 0, 32])
-        g=hypercube_graph(6)
-        assert_equal(degree_histogram(g), [0, 0, 0, 0, 0, 0, 64])
-
-#        mg=hypercube_graph(6, create_using=MultiGraph())
-#        assert_equal(mg.edges(), g.edges())
-
     def test_ladder_graph(self):
         for i, G in [(0, empty_graph(0)), (1, path_graph(2)),
                      (2, hypercube_graph(2)), (10, grid_graph([2,10]))]:
@@ -341,23 +291,6 @@ class TestGeneratorClassic():
 
         mp=path_graph(10, create_using=MultiGraph())
         assert_equal(sorted(mp.edges()), sorted(p.edges()))
-
-    def test_periodic_grid_2d_graph(self):
-        g=grid_2d_graph(0,0, periodic=True)
-        assert_equal(dict(g.degree()), {})
-
-        for m, n, G in [(2, 2, cycle_graph(4)), (1, 7, cycle_graph(7)),
-                     (7, 1, cycle_graph(7)), (2, 5, circular_ladder_graph(5)),
-                     (5, 2, circular_ladder_graph(5)), (2, 4, cubical_graph()),
-                     (4, 2, cubical_graph())]:
-            g=grid_2d_graph(m,n, periodic=True)
-            assert_true(is_isomorphic(g, G))
-
-        DG=grid_2d_graph(4, 2, periodic=True, create_using=DiGraph())
-        assert_equal(DG.succ,g.adj)
-        assert_equal(DG.pred,g.adj)
-        MG=grid_2d_graph(4, 2, periodic=True, create_using=MultiGraph())
-        assert_equal(sorted(MG.edges()), sorted(g.edges()))
 
     def test_star_graph(self):
         assert_true(is_isomorphic(star_graph(0), empty_graph(1)))

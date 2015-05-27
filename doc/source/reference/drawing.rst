@@ -78,8 +78,10 @@ Graph Layout
    :toctree: generated/
 
    circular_layout
+   grid_layout
+   hexagonal_lattice_layout
    random_layout
    shell_layout
    spring_layout
    spectral_layout
-
+   triangular_lattice_layout
