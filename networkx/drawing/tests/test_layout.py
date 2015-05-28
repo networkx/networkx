@@ -30,6 +30,7 @@ class TestLayout(object):
         vpos=nx.spectral_layout(G)
         vpos=nx.spectral_layout(self.bigG)
         vpos=nx.shell_layout(G)
+        vpos = nx.kamada_kawai(G)
 
     def test_smoke_string(self):
         G=self.Gs
@@ -39,6 +40,7 @@ class TestLayout(object):
         vpos=nx.fruchterman_reingold_layout(G)
         vpos=nx.spectral_layout(G)
         vpos=nx.shell_layout(G)
+        vpos = nx.kamada_kawai(G)
 
 
     def test_adjacency_interface_numpy(self):
