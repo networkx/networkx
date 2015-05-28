@@ -9,7 +9,12 @@ import networkx as nx
 def asyn_lpa_communities(G, weight=None):
     """
     Asynchornous label propagation algorithm for community detection described
-    on [1]_.
+    on [1]_. The algorithm follows these steps:
+        
+        1. Initialize the labels at all nodes in the network giving them unique
+        identifiers.
+        2. 
+
     
     Parameters
     ----------
@@ -31,7 +36,7 @@ def asyn_lpa_communities(G, weight=None):
            networks." Physical Review E 76.3 (2007): 036106.
     """
     
-    labels = {n : n for n in G}
+    labels = {n : i for i, n in enumerate(G)}
     cont = True 
     while cont:
         cont = False
