@@ -94,7 +94,6 @@ def test_min_number_of_nodes():
       
     result2 = set()
     for c in communities2:
-        print c
         result2.add(frozenset(c))  
         
     assert_equal(result2, ground_truth2)
