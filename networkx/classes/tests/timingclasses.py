@@ -97,7 +97,7 @@ class TimingGraph(object):
 
     or a collection of edges,
 
-    >>> G.add_edges_from(list(H.edges()))
+    >>> G.add_edges_from(H.edges())
 
     If some edges connect nodes not yet in the graph, the nodes
     are added automatically.  There are no errors when adding
@@ -464,10 +464,10 @@ class TimingGraph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> list(G.edges())
+        >>> G.edges()
         [(0, 1), (1, 2)]
         >>> G.remove_node(1)
-        >>> list(G.edges())
+        >>> G.edges()
         []
 
         """
@@ -1001,8 +1001,52 @@ class TimingGraph(object):
         except KeyError:
             raise NetworkXError("The node %s is not in the graph."%(n,))
 
-
     def edges(self, nbunch=None, data=False):
+        """Return a list of edges.
+
+        Edges are returned as tuples with optional data
+        in the order (node, neighbor, data).
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default= all nodes)
+            A container of nodes.  The container will be iterated
+            through once.
+        data : bool, optional (default=False)
+            Return two tuples (u,v) (False) or three-tuples (u,v,data) (True).
+
+        Returns
+        --------
+        edge_list: list of edge tuples
+            Edges that are adjacent to any node in nbunch, or a list
+            of all edges if nbunch is not specified.
+
+        See Also
+        --------
+        edges_iter : return an iterator over the edges
+
+        Notes
+        -----
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
+        For directed graphs this returns the out-edges.
+
+        Examples
+        --------
+        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> G.add_path([0,1,2,3])
+        >>> G.edges()
+        [(0, 1), (1, 2), (2, 3)]
+        >>> G.edges(data=True) # default edge data is {} (empty dictionary)
+        [(0, 1, {}), (1, 2, {}), (2, 3, {})]
+        >>> G.edges([0,3])
+        [(0, 1), (3, 2)]
+        >>> G.edges(0)
+        [(0, 1)]
+
+        """
+        return list(self.edges_iter(nbunch, data))
+
+    def edges_iter(self, nbunch=None, data=False):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data
@@ -1018,7 +1062,7 @@ class TimingGraph(object):
 
         Returns
         -------
-        edge : iterator
+        edge_iter : iterator
             An iterator of (u,v) or (u,v,d) tuples of edges.
 
         See Also
@@ -1034,13 +1078,13 @@ class TimingGraph(object):
         --------
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> [e for e in G.edges()]
+        >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
-        >>> list(G.edges(data=True)) # default data is {} (empty dict)
+        >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {})]
-        >>> list(G.edges([0,3]))
+        >>> list(G.edges_iter([0,3]))
         [(0, 1), (3, 2)]
-        >>> list(G.edges(0))
+        >>> list(G.edges_iter(0))
         [(0, 1)]
 
         """
@@ -1336,7 +1380,7 @@ class TimingGraph(object):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1), (1, 0)]
 
         If already directed, return a (deep) copy
@@ -1344,7 +1388,7 @@ class TimingGraph(object):
         >>> G = nx.DiGraph()   # or MultiDiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1)]
         """
         from networkx import DiGraph
@@ -1387,10 +1431,10 @@ class TimingGraph(object):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1), (1, 0)]
         >>> G2 = H.to_undirected()
-        >>> list(G2.edges())
+        >>> G2.edges()
         [(0, 1)]
         """
         return deepcopy(self)
@@ -1431,7 +1475,7 @@ class TimingGraph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1), (1, 2)]
         """
         bunch =self.nbunch_iter(nbunch)
@@ -1849,7 +1893,7 @@ class TimingDiGraph(TimingGraph):
 
     or a collection of edges,
 
-    >>> G.add_edges_from(list(H.edges()))
+    >>> G.add_edges_from(H.edges())
 
     If some edges connect nodes not yet in the graph, the nodes
     are added automatically.  There are no errors when adding
@@ -2121,10 +2165,10 @@ class TimingDiGraph(TimingGraph):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> list(G.edges())
+        >>> G.edges()
         [(0, 1), (1, 2)]
         >>> G.remove_node(1)
-        >>> list(G.edges())
+        >>> G.edges()
         []
 
         """
@@ -2447,7 +2491,7 @@ class TimingDiGraph(TimingGraph):
     neighbors = successors
     neighbors_iter = successors_iter
 
-    def edges(self, nbunch=None, data=False):
+    def edges_iter(self, nbunch=None, data=False):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data
@@ -2463,8 +2507,12 @@ class TimingDiGraph(TimingGraph):
 
         Returns
         -------
-        edge : iterator
+        edge_iter : iterator
             An iterator of (u,v) or (u,v,d) tuples of edges.
+
+        See Also
+        --------
+        edges : return a list of edges
 
         Notes
         -----
@@ -2475,13 +2523,13 @@ class TimingDiGraph(TimingGraph):
         --------
         >>> G = nx.DiGraph()   # or MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> [e for e in G.edges()]
+        >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
-        >>> list(G.edges(data=True)) # default data is {} (empty dict)
+        >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {})]
-        >>> list(G.edges([0,2]))
+        >>> list(G.edges_iter([0,2]))
         [(0, 1), (2, 3)]
-        >>> list(G.edges(0))
+        >>> list(G.edges_iter(0))
         [(0, 1)]
 
         """
@@ -2499,10 +2547,10 @@ class TimingDiGraph(TimingGraph):
                     yield (n,nbr)
 
     # alias out_edges to edges
-    out_edges=edges
-    # out_edges=TimingGraph.edges
+    out_edges_iter=edges_iter
+    out_edges=TimingGraph.edges
 
-    def in_edges(self, nbunch=None, data=False):
+    def in_edges_iter(self, nbunch=None, data=False):
         """Return an iterator over the incoming edges.
 
         Parameters
@@ -2515,12 +2563,12 @@ class TimingDiGraph(TimingGraph):
 
         Returns
         -------
-        in_edge : iterator
+        in_edge_iter : iterator
             An iterator of (u,v) or (u,v,d) tuples of incoming edges.
 
         See Also
         --------
-        edges : return an iterator of edges
+        edges_iter : return an iterator of edges
         """
         if nbunch is None:
             nodes_nbrs=self.pred.items()
@@ -2535,6 +2583,14 @@ class TimingDiGraph(TimingGraph):
                 for nbr in nbrs:
                     yield (nbr,n)
 
+    def in_edges(self, nbunch=None, data=False):
+        """Return a list of the incoming edges.
+
+        See Also
+        --------
+        edges : return a list of edges
+        """
+        return list(self.in_edges_iter(nbunch, data))
 
     def degree_iter(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree).
@@ -2781,7 +2837,7 @@ class TimingDiGraph(TimingGraph):
         >>> G.clear()
         >>> list(G.nodes())
         []
-        >>> list(G.edges())
+        >>> G.edges()
         []
 
         """
@@ -2825,7 +2881,7 @@ class TimingDiGraph(TimingGraph):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1), (1, 0)]
 
         If already directed, return a (deep) copy
@@ -2833,7 +2889,7 @@ class TimingDiGraph(TimingGraph):
         >>> G = nx.DiGraph()   # or MultiDiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1)]
         """
         return deepcopy(self)
@@ -2955,7 +3011,7 @@ class TimingDiGraph(TimingGraph):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1), (1, 2)]
         """
         bunch = self.nbunch_iter(nbunch)
@@ -3418,10 +3474,10 @@ class TimingMultiGraph(TimingGraph):
         >>> G = nx.MultiGraph()
         >>> G.add_edges_from([(1,2),(1,2),(1,2)])
         >>> G.remove_edges_from([(1,2),(1,2)])
-        >>> list(G.edges())
+        >>> G.edges()
         [(1, 2)]
         >>> G.remove_edges_from([(1,2),(1,2)]) # silently ignore extra copy
-        >>> list(G.edges()) # now empty graph
+        >>> G.edges() # now empty graph
         []
         """
         for e in ebunch:
@@ -3485,8 +3541,58 @@ class TimingMultiGraph(TimingGraph):
         except KeyError:
             return False
 
-
     def edges(self, nbunch=None, data=False, keys=False):
+        """Return a list of edges.
+
+        Edges are returned as tuples with optional data and keys
+        in the order (node, neighbor, key, data).
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default= all nodes)
+            A container of nodes.  The container will be iterated
+            through once.
+        data : bool, optional (default=False)
+            Return two tuples (u,v) (False) or three-tuples (u,v,data) (True).
+        keys : bool, optional (default=False)
+            Return two tuples (u,v) (False) or three-tuples (u,v,key) (True).
+
+        Returns
+        --------
+        edge_list: list of edge tuples
+            Edges that are adjacent to any node in nbunch, or a list
+            of all edges if nbunch is not specified.
+
+        See Also
+        --------
+        edges_iter : return an iterator over the edges
+
+        Notes
+        -----
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
+        For directed graphs this returns the out-edges.
+
+        Examples
+        --------
+        >>> G = nx.MultiGraph()  # or MultiDiGraph
+        >>> G.add_path([0,1,2,3])
+        >>> G.edges()
+        [(0, 1), (1, 2), (2, 3)]
+        >>> G.edges(data=True) # default edge data is {} (empty dictionary)
+        [(0, 1, {}), (1, 2, {}), (2, 3, {})]
+        >>> G.edges(keys=True) # default keys are integers
+        [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
+        >>> G.edges(data=True,keys=True) # default keys are integers
+        [(0, 1, 0, {}), (1, 2, 0, {}), (2, 3, 0, {})]
+        >>> G.edges([0,3])
+        [(0, 1), (3, 2)]
+        >>> G.edges(0)
+        [(0, 1)]
+
+        """
+        return list(self.edges_iter(nbunch, data=data,keys=keys))
+
+    def edges_iter(self, nbunch=None, data=False, keys=False):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data and keys
@@ -3504,8 +3610,12 @@ class TimingMultiGraph(TimingGraph):
 
         Returns
         -------
-        edge : iterator
+        edge_iter : iterator
             An iterator of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+
+        See Also
+        --------
+        edges : return a list of edges
 
         Notes
         -----
@@ -3516,17 +3626,17 @@ class TimingMultiGraph(TimingGraph):
         --------
         >>> G = nx.MultiGraph()   # or MultiDiGraph
         >>> G.add_path([0,1,2,3])
-        >>> [e for e in G.edges()]
+        >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
-        >>> list(G.edges(data=True)) # default data is {} (empty dict)
+        >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {})]
         >>> list(G.edges(keys=True)) # default keys are integers
         [(0, 1, 0), (1, 2, 0), (2, 3, 0)]
         >>> list(G.edges(data=True,keys=True)) # default keys are integers
         [(0, 1, 0, {}), (1, 2, 0, {}), (2, 3, 0, {})]
-        >>> list(G.edges([0,3]))
+        >>> list(G.edges_iter([0,3]))
         [(0, 1), (3, 2)]
-        >>> list(G.edges(0))
+        >>> list(G.edges_iter(0))
         [(0, 1)]
 
         """
@@ -3705,7 +3815,7 @@ class TimingMultiGraph(TimingGraph):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1), (1, 0)]
 
         If already directed, return a (deep) copy
@@ -3713,7 +3823,7 @@ class TimingMultiGraph(TimingGraph):
         >>> G = nx.DiGraph()   # or MultiDiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1)]
         """
         from networkx.classes.multidigraph import MultiDiGraph
@@ -3860,7 +3970,7 @@ class TimingMultiGraph(TimingGraph):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1), (1, 2)]
         """
         bunch =self.nbunch_iter(nbunch)
@@ -3963,7 +4073,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
 
     or a collection of edges,
 
-    >>> G.add_edges_from(list(H.edges()))
+    >>> G.add_edges_from(H.edges())
 
     If some edges connect nodes not yet in the graph, the nodes
     are added automatically.  If an edge already exists, an additional
@@ -4199,7 +4309,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
             del self.pred[v][u]
 
 
-    def edges(self, nbunch=None, data=False, keys=False):
+    def edges_iter(self, nbunch=None, data=False, keys=False):
         """Return an iterator over the edges.
 
         Edges are returned as tuples with optional data and keys
@@ -4217,8 +4327,12 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
 
         Returns
         -------
-        edge : iterator
+        edge_iter : iterator
             An iterator of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+
+        See Also
+        --------
+        edges : return a list of edges
 
         Notes
         -----
@@ -4229,13 +4343,13 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
         --------
         >>> G = nx.MultiDiGraph()
         >>> G.add_path([0,1,2,3])
-        >>> [e for e in G.edges()]
+        >>> [e for e in G.edges_iter()]
         [(0, 1), (1, 2), (2, 3)]
-        >>> list(G.edges(data=True)) # default data is {} (empty dict)
+        >>> list(G.edges_iter(data=True)) # default data is {} (empty dict)
         [(0, 1, {}), (1, 2, {}), (2, 3, {})]
-        >>> list(G.edges([0,2]))
+        >>> list(G.edges_iter([0,2]))
         [(0, 1), (2, 3)]
-        >>> list(G.edges(0))
+        >>> list(G.edges_iter(0))
         [(0, 1)]
 
         """
@@ -4261,10 +4375,42 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
                             yield (n,nbr)
 
     # alias out_edges to edges
-    out_edges=edges
+    out_edges_iter=edges_iter
+
+    def out_edges(self, nbunch=None, keys=False, data=False):
+        """Return a list of the outgoing edges.
+
+        Edges are returned as tuples with optional data and keys
+        in the order (node, neighbor, key, data).
+
+        Parameters
+        ----------
+        nbunch : iterable container, optional (default= all nodes)
+            A container of nodes.  The container will be iterated
+            through once.
+        data : bool, optional (default=False)
+            If True, return edge attribute dict with each edge.
+        keys : bool, optional (default=False)
+            If True, return edge keys with each edge.
+
+        Returns
+        -------
+        out_edges : list
+            An listr of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
+
+        Notes
+        -----
+        Nodes in nbunch that are not in the graph will be (quietly) ignored.
+        For directed graphs edges() is the same as out_edges().
+
+        See Also
+        --------
+        in_edges: return a list of incoming edges
+        """
+        return list(self.out_edges_iter(nbunch, keys=keys, data=data))
 
 
-    def in_edges(self, nbunch=None, data=False, keys=False):
+    def in_edges_iter(self, nbunch=None, data=False, keys=False):
         """Return an iterator over the incoming edges.
 
         Parameters
@@ -4279,12 +4425,12 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
 
         Returns
         -------
-        in_edge : iterator
+        in_edge_iter : iterator
             An iterator of (u,v), (u,v,d) or (u,v,key,d) tuples of edges.
 
         See Also
         --------
-        edges : return an iterator of edges
+        edges_iter : return an iterator of edges
         """
         if nbunch is None:
             nodes_nbrs=self.pred.items()
@@ -4327,7 +4473,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
 
         See Also
         --------
-        out_edges: return an iterator of outgoing edges
+        out_edges: return a list of outgoing edges
         """
         return list(self.in_edges_iter(nbunch, keys=keys, data=data))
 
@@ -4532,7 +4678,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
         >>> G = nx.Graph()   # or MultiGraph, etc
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1), (1, 0)]
 
         If already directed, return a (deep) copy
@@ -4540,7 +4686,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
         >>> G = nx.MultiDiGraph()
         >>> G.add_path([0,1])
         >>> H = G.to_directed()
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1)]
         """
         return deepcopy(self)
@@ -4630,7 +4776,7 @@ class TimingMultiDiGraph(TimingMultiGraph,TimingDiGraph):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> H = G.subgraph([0,1,2])
-        >>> list(H.edges())
+        >>> H.edges()
         [(0, 1), (1, 2)]
         """
         bunch = self.nbunch_iter(nbunch)
