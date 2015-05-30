@@ -48,4 +48,5 @@ Algorithms
    algorithms.swap
    algorithms.traversal
    algorithms.tree
+   algorithms.tsp
    algorithms.vitality

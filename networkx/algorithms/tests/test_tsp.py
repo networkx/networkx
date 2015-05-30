@@ -95,11 +95,11 @@ class TestSimulatedAnnealingTSP:
         validate_symmetric_solution(output[0], output[1], ['D', 'C', 'B', 'A', 'D'], 25.0)
 
         initial_sol = ['D', 'B', 'A', 'C', 'D']
-        output = nx.simulated_annealing_tsp(self.DG, 'D', sol=initial_sol)
+        output = nx.simulated_annealing_tsp(self.DG, 'D', cycle=initial_sol)
         validate_solution(output[0], output[1], ['D', 'C', 'B', 'A', 'D'], 31.0)
         initial_sol = ['D', 'A', 'C', 'B', 'D']
         output = nx.simulated_annealing_tsp(self.DG, 'D', move='1-0',
-                                            sol=initial_sol)
+                                            cycle=initial_sol)
         validate_solution(output[0], output[1], ['D', 'C', 'B', 'A', 'D'], 31.0)
 
         output = nx.simulated_annealing_tsp(self.UG, 'D')
@@ -107,15 +107,15 @@ class TestSimulatedAnnealingTSP:
 
     def test_not_completed_graph(self):
         assert_raises(nx.NetworkXError, nx.simulated_annealing_tsp,
-                      self.notCompletedUG, 0, sol=[])
+                      self.notCompletedUG, 0, cycle=[])
         assert_raises(nx.NetworkXError, nx.simulated_annealing_tsp,
-                      self.notCompletedDG, 0, sol=[])
+                      self.notCompletedDG, 0, cycle=[])
 
     def test_not_weighted_graph(self):
         assert_raises(nx.NetworkXError, nx.simulated_annealing_tsp,
-                      self.unweightedUG, 0, sol=[])
+                      self.unweightedUG, 0, cycle=[])
         assert_raises(nx.NetworkXError, nx.simulated_annealing_tsp,
-                      self.unweightedDG, 0, sol=[])
+                      self.unweightedDG, 0, cycle=[])
 
     def test_simulated_annealing_fails(self):
         output = nx.simulated_annealing_tsp(self.DG2, 'D', move='1-0', a=1,
@@ -125,7 +125,7 @@ class TestSimulatedAnnealingTSP:
         initial_sol = ['D', 'A', 'B', 'C', 'D']
         output = nx.simulated_annealing_tsp(self.DG, 'D', move='1-0', a=1,
                                             iterations=1, tolerance=1,
-                                            sol=initial_sol)
+                                            cycle=initial_sol)
         assert_true(output[1] > 31.0)
 
     def test_two_nodes(self):
@@ -133,5 +133,5 @@ class TestSimulatedAnnealingTSP:
         G.add_weighted_edges_from({(1, 2, 1)})
         cycle, cost = nx.simulated_annealing_tsp(G, 1)
         validate_solution(cycle, cost, [1, 2, 1], 2)
-        cycle, cost = nx.simulated_annealing_tsp(G, 1, sol=[1, 2, 1])
+        cycle, cost = nx.simulated_annealing_tsp(G, 1, cycle=[1, 2, 1])
         validate_solution(cycle, cost, [1, 2, 1], 2)

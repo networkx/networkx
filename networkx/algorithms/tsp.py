@@ -24,10 +24,10 @@ important in operations research and theoretical computer science.
 http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
 from __future__ import division
+import itertools
 import math
 from random import choice, randint, random
 import networkx as nx
-import itertools
 
 __all__ = ['greedy_tsp', 'simulated_annealing_tsp']
 
@@ -58,7 +58,7 @@ def greedy_tsp(G, source, weight='weight'):
 
     Returns
     -------
-    sol : list, cost : float
+    cycle : list, cost : float
         Returns the route (list of nodes) that salesman
         has to follow to minimize total cost, and total
         cost of algorithm's solution.
@@ -90,6 +90,9 @@ def greedy_tsp(G, source, weight='weight'):
     However, it can construct a first feasible solution which can
     be passed as parameter in iterative improvement algorithm such
     as Simulated Annealing, Threshold Accepting.
+
+    Time complexity:
+    It has a running time 0(|E||V|^2)
     """
     if not all(G.has_edge(u, v) for u, v in itertools.permutations(G, 2)):
         raise nx.NetworkXError('Given graph is not completed.')
@@ -103,21 +106,21 @@ def greedy_tsp(G, source, weight='weight'):
         raise nx.NetworkXError('Given graph is not weighted.')
     nodeset = set(G)
     nodeset.remove(source)
-    sol = [source]
+    cycle = [source]
     cost = 0
     while len(nodeset) > 0:
         next_visitor = min(nodeset, key=lambda v: G.edge[source][v][weight])
-        sol.append(next_visitor)
+        cycle.append(next_visitor)
         cost += G.edge[source][next_visitor][weight]
         nodeset.remove(next_visitor)
         source = next_visitor
-    sol.append(sol[0])
-    cost += G.edge[sol[-2]][sol[0]][weight]
-    return sol, cost
+    cycle.append(cycle[0])
+    cost += G.edge[cycle[-2]][cycle[0]][weight]
+    return cycle, cost
 
 
 def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
-                            iterations=100, a=0.01, sol=None, weight='weight'):
+                            iterations=100, a=0.01, cycle=None, weight='weight'):
     """Finds the route that salesman has to visit in order
     to minimize total distance and total distance using a
     simulated annealing algorithm.
@@ -167,7 +170,7 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
         Percentage of temperature decrease in each iteration
         of outer loop
 
-    sol : list, optional (default=None)
+    cycle : list, optional (default=None)
         Initial solution contains the sequence that nodes
         must be visited.
 
@@ -182,7 +185,7 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
 
     Returns
     -------
-    sol : list, cost : float
+    cycle : list, cost : float
         Returns the route (list of nodes) that salesman
         has to follow to minimize total cost, and total
         cost of algorithm's solution.
@@ -201,7 +204,7 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
     ['D', 'C', 'B', 'A', 'D']
     >>> weight
     31
-    >>> cycle, weight = nx.simulated_annealing_tsp(G, 'D', sol=['D', 'B', 'A', 'C', 'D'])
+    >>> cycle, weight = nx.simulated_annealing_tsp(G, 'D', cycle=['D', 'B', 'A', 'C', 'D'])
     >>> cycle
     ['D', 'C', 'B', 'A', 'D']
     >>> weight
@@ -227,14 +230,20 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
     Temp is parameter of algorithm and represents temperature in every
     iteration.
 
+    Time complexity:
+    It has a running time 0(|E||V|^2 + m * n * |V|) when a greedy
+    algorithm is used to construct an initial solution, otherwise
+    it has a running time O(m * n * |V|) where m and n are the number
+    of iterations of outer and inner loop respectively.
+
     For more information and how algorithm is inspired see:
     http://en.wikipedia.org/wiki/Simulated_annealing
     """
-    if sol is None:
+    if cycle is None:
         # Construct an initial solution using a greedy algorithm.
-        sol, cost = greedy_tsp(G, source, weight=weight)
+        cycle, cost = greedy_tsp(G, source, weight=weight)
         if G.number_of_nodes() == 2:
-            return sol, cost
+            return cycle, cost
     else:
         # Calculate the cost of initial solution and make the essential checks for graph.
         if not all(G.has_edge(u, v) for u, v in itertools.permutations(G, 2)):
@@ -247,38 +256,39 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
 
         if not nx.is_weighted(G, weight=weight):
             raise nx.NetworkXError('Given graph is not weighted.')
-        cost = sum(G.edge[u][v][weight] for u, v in zip(sol, sol[1:]))
+        cost = sum(G.edge[u][v][weight] for u, v in zip(cycle, cycle[1:]))
 
     count = 0
-    best_sol = list(sol)
+    best_cycle = list(cycle)
     best_cost = cost
     while count <= tolerance and temp > 0:
         count += 1
         for i in range(iterations):
-            adj_sol = _apply_move(sol, move)
-            adj_cost = sum(G.edge[u][v][weight] for u, v in zip(sol, sol[1:]))
+            adj_sol = _apply_move(cycle, move)
+            adj_cost = sum(G.edge[u][v][weight] for u, v in zip(cycle,
+                                                                cycle[1:]))
             delta = adj_cost - cost
             if delta <= 0:
 
                 # Set current solution the adjacent solution.
-                sol = list(adj_sol)
+                cycle = list(adj_sol)
                 cost = adj_cost
 
                 if cost < best_cost:
                     count = 0
-                    best_sol = list(sol)
+                    best_cycle = list(cycle)
                     best_cost = cost
             else:
 
                 # Accept even a worse solution with probability p.
                 p = math.exp(- (delta / temp))
                 if p >= random():
-                    sol = list(adj_sol)
+                    cycle = list(adj_sol)
                     cost = adj_cost
 
         temp -= temp * a
 
-    return best_sol, best_cost
+    return best_cycle, best_cost
 
 
 def _apply_move(sol, move):
