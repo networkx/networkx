@@ -135,3 +135,50 @@ class TestSimulatedAnnealingTSP:
         validate_solution(cycle, cost, [1, 2, 1], 2)
         cycle, cost = nx.simulated_annealing_tsp(G, 1, cycle=[1, 2, 1])
         validate_solution(cycle, cost, [1, 2, 1], 2)
+
+class TestThresholdAcceptingTSP:
+    setUp = _setUp
+
+    def test_threshold_accepting(self):
+        output = nx.threshold_accepting_tsp(self.DG, 'D')
+        validate_solution(output[0], output[1], ['D', 'C', 'B', 'A', 'D'], 31.0)
+
+        output = nx.threshold_accepting_tsp(self.DG2, 'D')
+        validate_solution(output[0], output[1], ['D', 'A', 'B', 'C', 'D'], 53.0)
+        output = nx.threshold_accepting_tsp(self.DG2, 'D', move='1-0')
+        validate_solution(output[0], output[1], ['D', 'A', 'B', 'C', 'D'], 53.0)
+        output = nx.threshold_accepting_tsp(self.UG2, 'D')
+        validate_symmetric_solution(output[0], output[1], ['D', 'C', 'B', 'A', 'D'], 25.0)
+        output = nx.threshold_accepting_tsp(self.UG2, 'D', move='1-0')
+        validate_symmetric_solution(output[0], output[1], ['D', 'C', 'B', 'A', 'D'], 25.0)
+
+        initial_sol = ['D', 'B', 'A', 'C', 'D']
+        output = nx.threshold_accepting_tsp(self.DG, 'D', cycle=initial_sol)
+        validate_solution(output[0], output[1], ['D', 'C', 'B', 'A', 'D'], 31.0)
+        initial_sol = ['D', 'A', 'C', 'B', 'D']
+        output = nx.threshold_accepting_tsp(self.DG, 'D', move='1-0',
+                                            cycle=initial_sol)
+        validate_solution(output[0], output[1], ['D', 'C', 'B', 'A', 'D'], 31.0)
+
+        output = nx.threshold_accepting_tsp(self.UG, 'D')
+        validate_solution(output[0], output[1], ['D', 'C', 'B', 'A', 'D'], 33.0)
+
+    def test_not_completed_graph(self):
+        assert_raises(nx.NetworkXError, nx.threshold_accepting_tsp,
+                      self.notCompletedUG, 0, cycle=[])
+        assert_raises(nx.NetworkXError, nx.threshold_accepting_tsp,
+                      self.notCompletedDG, 0, cycle=[])
+
+    def test_not_weighted_graph(self):
+        assert_raises(nx.NetworkXError, nx.threshold_accepting_tsp,
+                      self.unweightedUG, 0, cycle=[])
+        assert_raises(nx.NetworkXError, nx.threshold_accepting_tsp,
+                      self.unweightedDG, 0, cycle=[])
+
+    def test_two_nodes(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from({(1, 2, 1)})
+        cycle, cost = nx.threshold_accepting_tsp(G, 1)
+        validate_solution(cycle, cost, [1, 2, 1], 2)
+        cycle, cost = nx.threshold_accepting_tsp(G, 1, cycle=[1, 2, 1])
+        validate_solution(cycle, cost, [1, 2, 1], 2)

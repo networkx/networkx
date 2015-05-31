@@ -9,6 +9,7 @@ for solving and approximating the TSP problem.
 Categories of algorithms which are implemented:
 - Greedy
 - Simulated Annealing (SA)
+- Threshold Accepting (TA)
 
 Travelling Salesman Problem tries to find, given the weight
 (distance) between all points where salesman has to visit, the
@@ -29,7 +30,7 @@ import math
 from random import choice, randint, random
 import networkx as nx
 
-__all__ = ['greedy_tsp', 'simulated_annealing_tsp']
+__all__ = ['greedy_tsp', 'simulated_annealing_tsp', 'threshold_accepting_tsp']
 
 
 def greedy_tsp(G, source, weight='weight'):
@@ -287,6 +288,180 @@ def simulated_annealing_tsp(G, source, temp=100, move='1-1', tolerance=10,
                     cost = adj_cost
 
         temp -= temp * a
+
+    return best_cycle, best_cost
+
+
+def threshold_accepting_tsp(G, source, t=1, move='1-1', tolerance=10,
+                            iterations=100, a=0.1, cycle=None, weight='weight'):
+    """Finds the route that salesman has to visit in order
+    to minimize total distance and total distance using a
+    threshold accepting algorithm.
+
+    In essence, function returns a cycle given a source point
+    which total cost of cycle is minimized.
+
+    Parameters
+    ----------
+    G: A complete weighted graph.
+
+    source : node
+        Starting node
+
+    t : int, optional (default=1)
+        An algorithm's parameter. It represents the initial
+        threshold's value
+
+    move : string, optional (default='1-1')
+        Move to be applied in a solution to generate a
+        neighbor solution. A neighbor solution is a new
+        solution and algorithm checks if this neighbor
+        solution is better than the best solution so far.
+        Two moves are available:
+        - 1-1 exchange which transposes the position
+        of two elements of the current solution.
+        For example if we apply 1-1 exchange in the solution
+        A = [3, 2, 1, 4, 3]
+        we can get the following by the transposition of 1 and 4 elements.
+        A' = [3, 2, 4, 1, 3]
+        - 1-0 exchange which moves an element of solution
+        in a new position.
+        For example if we apply 1-0 exchange in the solution
+        A = [3, 2, 1, 4, 3]
+        we can get the following the transfer of 4 element to the second
+        position.
+        A' = [3, 4, 2, 1, 3]
+
+    tolerance : int, optional (default=10)
+        Number of consecutive iterations of outer loop
+        that cost of best solution is not decreased
+
+    iterations : int, optional (default=100)
+        Number of times that inner loop is being executed.
+
+    a : float between (0, 1), optional (default=0.1)
+        Percentage of threshold decrease when there is at
+        least one acceptance of a neighbor solution.
+
+    cycle : list, optional (default=None)
+        Initial solution contains the sequence that nodes
+        must be visited.
+
+    weight: string, optional (default='weight')
+        Edge data key corresponding to the edge weight
+
+    Raises
+    ------
+    NetworkXError
+        If graph is not either complete or weighed,
+        algorithm raises an exception.
+
+    Returns
+    -------
+    cycle : list, cost : float
+        Returns the route (list of nodes) that salesman
+        has to follow to minimize total cost, and total
+        cost of algorithm's solution.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from({('A', 'B', 3),
+    ...                           ('A', 'C', 17), ('A', 'D', 14), ('B', 'A', 3),
+    ...                          ('B', 'C', 12), ('B', 'D', 16), ('C', 'A', 13),
+    ...                           ('C', 'B', 12), ('C', 'D', 4), ('D', 'A', 14),
+    ...                           ('D', 'B', 15), ('D', 'C', 2)})
+    >>> cycle, weight = nx.threshold_accepting_tsp(G, 'D')
+    >>> cycle
+    ['D', 'C', 'B', 'A', 'D']
+    >>> weight
+    31
+    >>> cycle, weight = nx.threshold_accepting_tsp(G, 'D',
+    ... cycle=['D', 'B', 'A', 'C', 'D'])
+    >>> cycle
+    ['D', 'C', 'B', 'A', 'D']
+    >>> weight
+    31
+
+    Notes
+    -----
+    Threshold Accepting is a metaheuristic local search algorithm.
+    The main characteristic of this algorithm is that it accepts
+    even solutions which lead to the increase of the cost in order
+    to escape from low quality local optimal solutions.
+
+    This algorithm needs an initial solution. This solution can be
+    constructed by a simple greedy algorithm. At every iteration, it
+    selects thoughtfully a neighbor solution.
+    Consider c(x) cost of current solution and c(x') cost of
+    neighbor solution.
+    If c(x') - c(x) <= t then neighbor solution becomes current
+    solution for the next iteration, where t is named threshold.
+
+    In comparison to Simulated Annealing algorithm, Threshold
+    Accepting algorithm does not accept very low quality solutions.
+    (due to the presence of the threshold value.) In case of
+    Simulated Annealing, even a very low quality solution can
+    be accepting with probability p.
+
+    Time complexity:
+    It has a running time 0(|E||V|^2 + m * n * |V|) when a greedy
+    algorithm is used to construct an initial solution, otherwise
+    it has a running time O(m * n * |V|) where m and n are the number
+    of iterations of outer and inner loop respectively.
+
+    For more information and how algorithm is inspired see:
+    http://en.wikipedia.org/wiki/Threshold_accepting
+
+    See Also
+    --------
+    simulated_annealing_tsp()
+
+    """
+    if cycle is None:
+        # Construct an initial solution using a greedy algorithm.
+        cycle, cost = greedy_tsp(G, source, weight=weight)
+        if G.number_of_nodes() == 2:
+            return cycle, cost
+    else:
+        # Calculate the cost of initial solution and make the essential checks for graph.
+        if not all(G.has_edge(u, v) for u, v in itertools.permutations(G, 2)):
+            raise nx.NetworkXError('Given graph is not completed.')
+
+        if G.number_of_nodes() == 2:
+            neighbor = G.neighbors(source)[0]
+            return ([source, neighbor, source],
+                G.edge[source][neighbor][weight] + G.edge[neighbor][source][weight])
+
+        if not nx.is_weighted(G, weight=weight):
+            raise nx.NetworkXError('Given graph is not weighted.')
+        cost = sum(G.edge[u][v][weight] for u, v in zip(cycle, cycle[1:]))
+
+    count = 0
+    best_cycle = list(cycle)
+    best_cost = cost
+    while count <= tolerance:
+        count += 1
+        accepted = False
+        for i in range(iterations):
+            adj_sol = _apply_move(cycle, move)
+            adj_cost = sum(G.edge[u][v][weight] for u, v in zip(cycle,
+                                                                cycle[1:]))
+            delta = adj_cost - cost
+            if delta <= t:
+                accepted = True
+
+                # Set current solution the adjacent solution.
+                cycle = list(adj_sol)
+                cost = adj_cost
+
+                if cost < best_cost:
+                    count = 0
+                    best_cycle = list(cycle)
+                    best_cost = cost
+        if accepted:
+            t -= t * a
 
     return best_cycle, best_cost
 
