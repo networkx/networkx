@@ -35,6 +35,7 @@ from networkx.algorithms.distance_regular import *
 from networkx.algorithms.swap import *
 from networkx.algorithms.graphical import *
 from networkx.algorithms.simple_paths import *
+from networkx.algorithms.tsp import *
 
 import networkx.algorithms.assortativity
 import networkx.algorithms.bipartite
