@@ -201,7 +201,7 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
 
 
 def node_connectivity(G, s=None, t=None, flow_func=None):
-    r"""Returns node connectivity for a graph or digraph G.
+    """Returns node connectivity for a graph or digraph G.
 
     Node connectivity is equal to the minimum number of nodes that
     must be removed to disconnect G or render it trivial. If source
@@ -315,7 +315,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
         if not nx.is_connected(G):
             return 0
         iter_func = itertools.combinations
-        neighbors = G.neighbors_iter
+        neighbors = G.neighbors
 
     # Reuse the auxiliary digraph and the residual network
     H = build_auxiliary_node_connectivity(G)

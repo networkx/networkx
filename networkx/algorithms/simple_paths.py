@@ -367,8 +367,8 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
         Gpred=G.predecessors_iter
         Gsucc=G.successors_iter
     else:
-        Gpred=G.neighbors_iter
-        Gsucc=G.neighbors_iter
+        Gpred=G.neighbors
+        Gsucc=G.neighbors
 
     # support optional nodes filter
     if ignore_nodes:
@@ -525,8 +525,8 @@ def _bidirectional_dijkstra(G, source, target, weight='weight',
         Gpred=G.predecessors_iter
         Gsucc=G.successors_iter
     else:
-        Gpred=G.neighbors_iter
-        Gsucc=G.neighbors_iter
+        Gpred=G.neighbors
+        Gsucc=G.neighbors
 
     # support optional nodes filter
     if ignore_nodes:
