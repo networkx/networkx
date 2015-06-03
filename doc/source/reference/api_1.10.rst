@@ -187,6 +187,11 @@ New functionalities
   solves all pairs shortest path problem. This is ``johnson`` at
   ``algorithms.shortest_paths``
 
+* [`#1414 <https://github.com/networkx/networkx/pull/1414>`_]
+  Added Moody and White algorithm for identifying ``k_components`` in a
+  graph, which is based on Kanevsky's algorithm for finding all minimum-size
+  node cut-sets (implemented in ``all_node_cuts`` #1391).
+
 Removed functionalities
 -----------------------
 
