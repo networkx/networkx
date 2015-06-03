@@ -93,7 +93,7 @@ def edge_subgraph(G, ebunch):
     >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
     >>> G.add_path([0,1,2,3])
     >>> H = G.subgraph([0,1,2])
-    >>> H.edges()
+    >>> list(H.edges())
     [(0, 1), (1, 2)]
 
     """

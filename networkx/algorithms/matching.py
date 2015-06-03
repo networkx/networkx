@@ -43,7 +43,7 @@ def maximal_matching(G):
     """
     matching = set([])
     edges = set([])
-    for u,v in G.edges_iter():
+    for u,v in G.edges():
         # If the edge isn't covered, add it to the matching
         # then remove neighborhood of u and v from consideration.
         if (u,v) not in edges and (v,u) not in edges:
@@ -143,14 +143,14 @@ def max_weight_matching(G, maxcardinality=False):
                     yield t
 
     # Get a list of vertices.
-    gnodes = G.nodes()
+    gnodes = list(G)
     if not gnodes:
         return { }  # don't bother with empty graphs
 
     # Find the maximum edge weight.
     maxweight = 0
     allinteger = True
-    for i,j,d in G.edges_iter(data=True):
+    for i,j,d in G.edges(data=True):
         wt=d.get('weight',1)
         if i != j and wt > maxweight:
             maxweight = wt
@@ -357,11 +357,11 @@ def max_weight_matching(G, maxcardinality=False):
                     # edges; get the information from the vertices.
                     nblist = [ (v, w)
                                 for v in bv.leaves()
-                                for w in G.neighbors_iter(v)
+                                for w in G.neighbors(v)
                                 if v != w ]
             else:
                 nblist = [ (bv, w)
-                           for w in G.neighbors_iter(bv)
+                           for w in G.neighbors(bv)
                            if bv != w ]
             for k in nblist:
                 (i, j) = k
@@ -569,7 +569,7 @@ def max_weight_matching(G, maxcardinality=False):
         assert len(blossomdual) == 0 or min(blossomdual.values()) >= 0
         # 0. all edges have non-negative slack and
         # 1. all matched edges have zero slack;
-        for i,j,d in G.edges_iter(data=True):
+        for i,j,d in G.edges(data=True):
             wt=d.get('weight',1)
             if i == j:
                 continue # ignore self-loops
@@ -650,7 +650,7 @@ def max_weight_matching(G, maxcardinality=False):
                 assert label[inblossom[v]] == 1
 
                 # Scan its neighbours:
-                for w in G.neighbors_iter(v):
+                for w in G.neighbors(v):
                     if w == v:
                         continue # ignore self-loops
                     # w is a neighbour to v
@@ -721,7 +721,7 @@ def max_weight_matching(G, maxcardinality=False):
 
             # Compute delta2: the minimum slack on any edge between
             # an S-vertex and a free vertex.
-            for v in G.nodes_iter():
+            for v in G.nodes():
                 if label.get(inblossom[v]) is None and bestedge.get(v) is not None:
                     d = slack(*bestedge[v])
                     if deltatype == -1 or d < delta:

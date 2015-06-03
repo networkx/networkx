@@ -232,7 +232,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
         if v in dist:
             continue  # already searched this node.
         dist[v] = d
-        # for ignore,w,edgedata in G.edges_iter(v,data=True):
+        # for ignore,w,edgedata in G.edges(v,data=True):
         # is about 30% slower than the following
         if G.is_multigraph():
             edata = []
@@ -329,7 +329,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
         dist[v] = d
         if v == target:
             break
-        # for ignore,w,edgedata in G.edges_iter(v,data=True):
+        # for ignore,w,edgedata in G.edges(v,data=True):
         # is about 30% slower than the following
         if G.is_multigraph():
             edata = []
@@ -926,7 +926,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     if G.is_directed():
         neighs = [G.successors_iter, G.predecessors_iter]
     else:
-        neighs = [G.neighbors_iter, G.neighbors_iter]
+        neighs = [G.neighbors, G.neighbors]
     # variables to hold shortest discovered path
     #finaldist = 1e30000
     finalpath = []

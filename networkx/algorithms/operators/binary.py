@@ -79,13 +79,13 @@ def union(G, H, rename=(None, None), name=None):
                                'Use appropriate rename=(Gprefix,Hprefix)'
                                'or use disjoint_union(G,H).')
     if G.is_multigraph():
-        G_edges = G.edges_iter(keys=True, data=True)
+        G_edges = G.edges(keys=True, data=True)
     else:
-        G_edges = G.edges_iter(data=True)
+        G_edges = G.edges(data=True)
     if H.is_multigraph():
-        H_edges = H.edges_iter(keys=True, data=True)
+        H_edges = H.edges(keys=True, data=True)
     else:
-        H_edges = H.edges_iter(data=True)
+        H_edges = H.edges(data=True)
 
     # add nodes
     R.add_nodes_from(G)
@@ -176,17 +176,17 @@ def intersection(G, H):
 
     if G.number_of_edges() <= H.number_of_edges():
         if G.is_multigraph():
-            edges = G.edges_iter(keys=True)
+            edges = G.edges(keys=True)
         else:
-            edges = G.edges_iter()
+            edges = G.edges()
         for e in edges:
             if H.has_edge(*e):
                 R.add_edge(*e)
     else:
         if H.is_multigraph():
-            edges = H.edges_iter(keys=True)
+            edges = H.edges(keys=True)
         else:
-            edges = H.edges_iter()
+            edges = H.edges()
         for e in edges:
             if G.has_edge(*e):
                 R.add_edge(*e)
@@ -229,9 +229,9 @@ def difference(G, H):
         raise nx.NetworkXError("Node sets of graphs not equal")
 
     if G.is_multigraph():
-        edges = G.edges_iter(keys=True)
+        edges = G.edges(keys=True)
     else:
-        edges = G.edges_iter()
+        edges = G.edges()
     for e in edges:
         if not H.has_edge(*e):
             R.add_edge(*e)
@@ -271,9 +271,9 @@ def symmetric_difference(G, H):
     R.add_nodes_from(nodes)
 
     if G.is_multigraph():
-        edges = G.edges_iter(keys=True)
+        edges = G.edges(keys=True)
     else:
-        edges = G.edges_iter()
+        edges = G.edges()
     # we could copy the data here but then this function doesn't
     # match intersection and difference
     for e in edges:
@@ -281,9 +281,9 @@ def symmetric_difference(G, H):
             R.add_edge(*e)
 
     if H.is_multigraph():
-        edges = H.edges_iter(keys=True)
+        edges = H.edges(keys=True)
     else:
-        edges = H.edges_iter()
+        edges = H.edges()
     for e in edges:
         if not G.has_edge(*e):
             R.add_edge(*e)
@@ -322,13 +322,13 @@ def compose(G, H, name=None):
     R.add_nodes_from(H.nodes())
     R.add_nodes_from(G.nodes())
     if G.is_multigraph():
-        R.add_edges_from(G.edges_iter(keys=True, data=True))
+        R.add_edges_from(G.edges(keys=True, data=True))
     else:
-        R.add_edges_from(G.edges_iter(data=True))
+        R.add_edges_from(G.edges(data=True))
     if H.is_multigraph():
-        R.add_edges_from(H.edges_iter(keys=True, data=True))
+        R.add_edges_from(H.edges(keys=True, data=True))
     else:
-        R.add_edges_from(H.edges_iter(data=True))
+        R.add_edges_from(H.edges(data=True))
 
 
     # add node attributes, H attributes take precedent over G attributes

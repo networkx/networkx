@@ -28,7 +28,7 @@ class TestConvertNumpy(object):
 
     def create_weighted(self, G):
         g = cycle_graph(4)
-        e = g.edges()
+        e = list(g.edges())
         source = [u for u,v in e]
         dest = [v for u,v in e]
         weight = [s+10 for s in source]
@@ -37,8 +37,8 @@ class TestConvertNumpy(object):
         return G
 
     def assert_equal(self, G1, G2):
-        assert_true( sorted(G1.nodes())==sorted(G2.nodes()) )
-        assert_true( sorted(G1.edges())==sorted(G2.edges()) )
+        assert_equal(sorted(G1.nodes()), sorted(G2.nodes()))
+        assert_equal(sorted(G1.edges()), sorted(G2.edges()))
 
     def identity_conversion(self, G, A, create_using):
         GG = nx.from_scipy_sparse_matrix(A, create_using=create_using)
@@ -99,7 +99,7 @@ class TestConvertNumpy(object):
         """Conversion from graph to sparse matrix to graph with nodelist."""
         P4 = path_graph(4)
         P3 = path_graph(3)
-        nodelist = P3.nodes()
+        nodelist = list(P3.nodes())
         A = nx.to_scipy_sparse_matrix(P4, nodelist=nodelist)
         GA = nx.Graph(A)
         self.assert_equal(GA, P3)

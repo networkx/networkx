@@ -167,8 +167,8 @@ def _bidirectional_pred_succ(G, source, target):
         Gpred=G.predecessors_iter
         Gsucc=G.successors_iter
     else:
-        Gpred=G.neighbors_iter
-        Gsucc=G.neighbors_iter
+        Gpred=G.neighbors
+        Gsucc=G.neighbors
 
     # predecesssor and successors in search
     pred={source:None}
@@ -314,10 +314,10 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> print(G.nodes())
+    >>> G = nx.path_graph(4)
+    >>> list(G)
     [0, 1, 2, 3]
-    >>> nx.predecessor(G,0)
+    >>> nx.predecessor(G, 0)
     {0: [], 1: [0], 2: [1], 3: [2]}
 
     """

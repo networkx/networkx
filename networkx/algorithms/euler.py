@@ -41,7 +41,7 @@ def is_eulerian(G):
     """
     if G.is_directed():
         # Every node must have equal in degree and out degree
-        for n in G.nodes_iter():
+        for n in G.nodes():
             if G.in_degree(n) != G.out_degree(n):
                return False
         # Must be strongly connected
@@ -114,17 +114,17 @@ def eulerian_circuit(G, source=None):
 
     # set starting node
     if source is None:
-        v = next(g.nodes_iter())
+        v = next(g.nodes())
     else:
         v = source
 
     if g.is_directed():
         degree = g.in_degree
-        edges = g.in_edges_iter
+        edges = g.in_edges
         get_vertex = itemgetter(0)
     else:
         degree = g.degree
-        edges = g.edges_iter
+        edges = g.edges
         get_vertex = itemgetter(1)
 
     vertex_stack = [v]

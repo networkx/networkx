@@ -414,7 +414,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         if not nx.is_connected(G):
             raise nx.NetworkXError('Input graph is not connected')
         iter_func = itertools.combinations
-        neighbors = G.neighbors_iter
+        neighbors = G.neighbors
 
     # Reuse the auxiliary digraph and the residual network.
     H = build_auxiliary_node_connectivity(G)
@@ -559,8 +559,8 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
 
         # Initial cutset is all edges of a node with minimum degree
         node = min(G, key=G.degree)
-        min_cut = G.edges(node)
-        nodes = G.nodes()
+        min_cut = list(G.edges(node))
+        nodes = list(G)
         n = len(nodes)
         for i in range(n):
             try:
@@ -581,7 +581,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
 
         # Initial cutset is all edges of a node with minimum degree
         node = min(G, key=G.degree)
-        min_cut = G.edges(node)
+        min_cut = list(G.edges(node))
         # A dominating set is \lambda-covering
         # We need a dominating set with at least two nodes
         for node in G:

@@ -207,19 +207,19 @@ def to_pydot(N, strict=True):
     except KeyError:
         pass
 
-    for n,nodedata in N.nodes_iter(data=True):
+    for n,nodedata in N.nodes(data=True):
         str_nodedata=dict((k,make_str(v)) for k,v in nodedata.items())
         p=pydot.Node(make_str(n),**str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
-        for u,v,key,edgedata in N.edges_iter(data=True,keys=True):
+        for u,v,key,edgedata in N.edges(data=True,keys=True):
             str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
             edge=pydot.Edge(make_str(u),make_str(v),key=make_str(key),**str_edgedata)
             P.add_edge(edge)
 
     else:
-        for u,v,edgedata in N.edges_iter(data=True):
+        for u,v,edgedata in N.edges(data=True):
             str_edgedata=dict((k,make_str(v)) for k,v in edgedata.items())
             edge=pydot.Edge(make_str(u),make_str(v),**str_edgedata)
             P.add_edge(edge)
