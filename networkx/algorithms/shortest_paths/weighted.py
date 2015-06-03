@@ -28,7 +28,6 @@ __all__ = ['dijkstra_path',
 
 from collections import deque
 from heapq import heappush, heappop
-import functools
 from itertools import count
 import networkx as nx
 from networkx.utils import generate_unique_node
@@ -361,22 +360,22 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
             cost = get_weight(v, u, e)
             if cost is None:
                 continue
-            vw_dist = dist[v] + get_weight(v, u, e)
+            vu_dist = dist[v] + get_weight(v, u, e)
             if cutoff is not None:
-                if vw_dist > cutoff:
+                if vu_dist > cutoff:
                     continue
             if u in dist:
-                if vw_dist < dist[u]:
+                if vu_dist < dist[u]:
                     raise ValueError('Contradictory paths found:',
                                      'negative weights?')
-            elif u not in seen or vw_dist < seen[u]:
-                seen[u] = vw_dist
-                push(fringe, (vw_dist, next(c), u))
+            elif u not in seen or vu_dist < seen[u]:
+                seen[u] = vu_dist
+                push(fringe, (vu_dist, next(c), u))
                 if paths is not None:
                     paths[u] = paths[v] + [u]
                 if pred is not None:
                     pred[u] = [v]
-            elif vw_dist == seen[u]:
+            elif vu_dist == seen[u]:
                 if pred is not None:
                     pred[u].append(v)
 
@@ -589,7 +588,7 @@ def bellman_ford(G, source, weight='weight'):
     return _bellman_ford_relaxation(G, pred, dist, [source], weight)
 
 
-def _bellman_ford_relaxation(G, pred, dist, source_iter, weight):
+def _bellman_ford_relaxation(G, pred, dist, source, weight):
     """Relaxation loop for Bellman–Ford algorithm
 
     Parameters
@@ -602,8 +601,8 @@ def _bellman_ford_relaxation(G, pred, dist, source_iter, weight):
     dist: dict
         Keyed by node to the distance from the source
 
-    source_iter: iter
-        Iterable of source nodes
+    source: list
+        List of source nodes
 
     weight: string
        Edge data key corresponding to the edge weight
@@ -637,8 +636,8 @@ def _bellman_ford_relaxation(G, pred, dist, source_iter, weight):
     n = len(G)
 
     count = {}
-    q = deque(source_iter)
-    in_q = set(source_iter)
+    q = deque(source)
+    in_q = set(source)
     while q:
         u = q.popleft()
         in_q.remove(u)
@@ -1088,16 +1087,17 @@ def johnson(G, weight='weight'):
                                             weight)[1]
 
     if G.is_multigraph():
-        get_weight = lambda dist, u, v, data: min(eattr.get(weight, 1)
-                        for eattr in data.values()) + dist[u] - dist[v]
+        get_weight = lambda u, v, data: min(eattr.get(weight, 1)
+                        for eattr in data.values()) + dist_bellman[u]\
+                                        - dist_bellman[v]
 
     else:
-        get_weight = lambda dist, u, v, data: data.get(weight, 1) + dist[u] - dist[v]
+        get_weight = lambda u, v, data: data.get(weight, 1) + dist_bellman[u]\
+                                        - dist_bellman[v]
 
     all_pairs_path = {}
     for n in G:
         paths = {n: [n]}  # dictionary of paths
-        all_pairs_path[n] = _dijkstra(G, n, functools.partial(
-            get_weight, dist_bellman), paths=paths)[1]
+        all_pairs_path[n] = _dijkstra(G, n, get_weight, paths=paths)[1]
 
     return all_pairs_path
