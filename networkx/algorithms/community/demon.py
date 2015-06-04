@@ -33,12 +33,12 @@ def demon_communities(G, epsilon=0.25, min_community_size=3, weight=None):
     uses a local-first approach to community discovery were each node
     democratically votes for the communities that it sees in its surroundings.
     Communities in this algorithm can be overlapping
-    
+
     Algorithm:
     ----------
     Require: G(V, E), C' = 0, epsilon = [0..1]
     Ensure: set of overlapping communities C'
-        
+
     1: for all v in V do:
     2:   e <- EgoMinusEgo(v, G)
     3:   C(v) <- LabelPropagation(e)
@@ -48,12 +48,12 @@ def demon_communities(G, epsilon=0.25, min_community_size=3, weight=None):
     7:   end for
     8: end for
     9: return C'
-       
+
     Parameters
     ----------
     G : graph
         An NetworkX graph.
-    
+
     epsilon: real
         The tolerance required in order to merge communities. The epsilon
         factor is introduced to vary the percentage of common elements provided
@@ -61,41 +61,41 @@ def demon_communities(G, epsilon=0.25, min_community_size=3, weight=None):
         communities are merged only if one of them is a proper subset of the
         other, on the other hand with a value of epsilon = 1 even communities
         that do not share a single node are merged together
-    
+
     min_community_size: integer
         Min nodes needed to form a community
-    
+
     weight: String
         If the graph is weighted, the edge parameter representing the weight
-        
+
     Returns
     -------
     communities : list
         List of overlapping communities (sets)
-     
+
     References
     ----------
     .. [1] Michele Coscia, Giulio Rossetti, Fosca Giannotti, Dino Pedreschi:
            DEMON: a local-first discovery method for overlapping communities.
            KDD 2012:615-623.
     """
-    
+
     for n in G.nodes():
             G.node[n]['communities'] = [n]
-    
+
     all_communities = []
 
     for ego in nx.nodes(G):
         # EgoMinusEgo and LabelPropagation phase
         ego_minus_ego = nx.ego_graph(G, ego, 1, False)
         community_to_nodes = _overlapping_label_propagation(ego_minus_ego, ego, weight)
-        
+
         # merging phase
         for c in community_to_nodes.keys():
             if len(community_to_nodes[c]) > min_community_size:
                 actual_community = community_to_nodes[c]
                 all_communities = _merge_communities(all_communities, set(actual_community), epsilon)
-            
+
     for c in all_communities:
         yield c
 
@@ -104,32 +104,32 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iter=100):
     """
     Label propagation algorithm based on [2]_ used to find communities in the
     EgoMinusEgo Graph.
-    
+
     Parameters
     ----------
     ego_minus_ego : graph
         ego network minus its center
-        
+
     ego : string
         ego network cente
-        
+
     weight : string
         If the graph is weighted, the edge parameter representing the weight
-    
+
     max_iter : integer
         number of desired iteration for the label propagation
-        
+
     Returns
     -------
     community_to_nodes : dict
         List of communities in the EgoMinusEgo graph
-    
+
     References
     ----------
     .. [2] Raghavan, Usha Nandini, Réka Albert, and Soundar Kumara. "Near
            linear time algorithm to detect community structures in large-scale
            networks." Physical Review E 76.3 (2007): 036106.
-    
+
     """
     old_node_to_coms = {}
 
@@ -207,18 +207,18 @@ def _merge_communities(communities, actual_community, epsilon):
     """
     Builds communities using the incomplete communities detected by the label
     propagation algorithm in the EgoMinusEgo graphs.
-    
+
     Parameters
     ----------
     communities: dict
         Dictionary of communities
-        
+
     actual_community: set
         A community
-    
+
     epsilon: real
         The tolerance required in order to merge communities.
-        
+
     Returns
     -------
     communities : list
@@ -260,23 +260,23 @@ def _generalized_inclusion(c1, c2, epsilon):
     ensure that two communities are merged only if one of them is a proper
     subset of the other, on the other hand with a value of epsilon = 1 even
     communities that do not share a single node are merged together"
-    
+
     Parameters
     ----------
     c1 : set
         Community 1.
-        
+
     c2 : set
         Community 2.
-    
+
     epsilon: real
         The tolerance required in order to merge communities
-        
+
     Returns
     -------
     union : set
         Union of both communities if the similarity is greater than epsilon
-    
+
     References
     ----------
     .. [1] Michele Coscia, Giulio Rossetti, Fosca Giannotti, Dino Pedreschi:
@@ -285,12 +285,12 @@ def _generalized_inclusion(c1, c2, epsilon):
     """
     intersection = c2 & c1
     smaller_set = min(len(c1), len(c2))
-    
+
     if len(intersection) > 0 and smaller_set > 0:
         inclusion_pct = len(intersection) / smaller_set
 
         if inclusion_pct > epsilon:
             union = c2 | c1
             return union
-            
+
     return None
