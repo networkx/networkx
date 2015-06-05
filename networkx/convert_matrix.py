@@ -114,12 +114,12 @@ def to_pandas_dataframe(G, nodelist=None, multigraph_weight=sum, weight='weight'
     2  0  0  4
     """
     import pandas as pd
-    M = to_numpy_matrix(G, nodelist, None, None, multigraph_weight, weight, nonedge)
+    M = to_numpy_matrix(G, nodelist, None, None, multigraph_weight, weight,
+                        nonedge)
     if nodelist is None:
-        nodelist = G.nodes()
-    nodeset = set(nodelist)
-    df = pd.DataFrame(data=M, index = nodelist ,columns = nodelist)
-    return df
+        nodelist = list(G)
+    return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
+
 
 def from_pandas_dataframe(df, source, target, edge_attr=None,
         create_using=None):
@@ -305,7 +305,7 @@ def to_numpy_matrix(G, nodelist=None, dtype=None, order=None,
     """
     import numpy as np
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     nodeset = set(nodelist)
     if len(nodelist) != len(nodeset):
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
@@ -585,7 +585,7 @@ def to_numpy_recarray(G,nodelist=None,
     """
     import numpy as np
     if nodelist is None:
-        nodelist = G.nodes()
+        nodelist = list(G)
     nodeset = set(nodelist)
     if len(nodelist) != len(nodeset):
         msg = "Ambiguous ordering: `nodelist` contained duplicates."
@@ -687,7 +687,7 @@ def to_scipy_sparse_matrix(G, nodelist=None, dtype=None,
     """
     from scipy import sparse
     if nodelist is None:
-        nodelist = G
+        nodelist = list(G)
     nlen = len(nodelist)
     if nlen == 0:
         raise nx.NetworkXError("Graph has no nodes or edges")

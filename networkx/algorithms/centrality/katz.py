@@ -316,7 +316,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True,
                                    'must have a value for every node')
         b = np.array(list(beta.values()), dtype=float)
     except AttributeError:
-        nodelist = G.nodes()
+        nodelist = list(G)
         try:
             b = np.ones((len(nodelist),1))*float(beta)
         except (TypeError,ValueError,AttributeError):

@@ -99,7 +99,7 @@ class TestConvertNumpy(object):
         """Conversion from graph to sparse matrix to graph with nodelist."""
         P4 = path_graph(4)
         P3 = path_graph(3)
-        nodelist = P3.nodes()
+        nodelist = list(P3.nodes())
         A = nx.to_scipy_sparse_matrix(P4, nodelist=nodelist)
         GA = nx.Graph(A)
         self.assert_equal(GA, P3)

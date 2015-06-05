@@ -148,7 +148,7 @@ def connected_cuthill_mckee_ordering(G, heuristic=None):
 def pseudo_peripheral_node(G):
     # helper for cuthill-mckee to find a node in a "pseudo peripheral pair"
     # to use as good starting node
-    u = next(G.nodes_iter())
+    u = next(G.nodes())
     lp = 0
     v = u
     while True:

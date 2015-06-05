@@ -116,7 +116,7 @@ class DiGraph(Graph):
     {'time': '5pm'}
     >>> G.node[1]['room'] = 714
     >>> del G.node[1]['room'] # remove attribute
-    >>> G.nodes(data=True)
+    >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Warning: adding a node to G.node does not add it to the graph.
@@ -201,10 +201,10 @@ class DiGraph(Graph):
     ...     node_dict_factory=OrderedDict
     >>> G=OrderedNodeGraph()
     >>> G.add_nodes_from( (2,1) )
-    >>> G.nodes()
+    >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
-    >>> G.edges()
+    >>> list(G.edges())
     [(2, 1), (2, 2), (1, 1)]
 
     Create a graph object that tracks the order nodes are added
@@ -215,7 +215,7 @@ class DiGraph(Graph):
     ...    adjlist_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
-    >>> G.nodes()
+    >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
     >>> G.edges()
@@ -484,11 +484,11 @@ class DiGraph(Graph):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> e = G.nodes()
+        >>> e = list(G.nodes())
         >>> e
         [0, 1, 2]
         >>> G.remove_nodes_from(e)
-        >>> G.nodes()
+        >>> list(G.nodes())
         []
 
         """
@@ -1129,9 +1129,9 @@ class DiGraph(Graph):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> G.clear()
-        >>> G.nodes()
+        >>> list(G.nodes())
         []
-        >>> G.edges()
+        >>> list(G.edges())
         []
 
         """
