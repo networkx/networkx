@@ -220,8 +220,8 @@ def single_source_dijkstra_path_length(G, source, cutoff=None,
 
     """
     if G.is_multigraph():
-        get_weight = lambda u, v, data: min(eattr.get(weight, 1)
-            for eattr in data.values())
+        get_weight = lambda u, v, data: min(
+            eattr.get(weight, 1) for eattr in data.values())
     else:
         get_weight = lambda u, v, data: data.get(weight, 1)
 
@@ -286,8 +286,8 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
         return ({source: 0}, {source: [source]})
 
     if G.is_multigraph():
-        get_weight = lambda u, v, data: min(eattr.get(weight, 1)
-            for eattr in data.values())
+        get_weight = lambda u, v, data: min(
+            eattr.get(weight, 1) for eattr in data.values())
     else:
         get_weight = lambda u, v, data: data.get(weight, 1)
 
@@ -336,10 +336,7 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
     distance : dictionary
        Dictionary of shortest lengths keyed by target.
     """
-    if G.is_directed():
-        G_succ = G.succ
-    else:
-        G_succ = G.adj
+    G_succ = G.succ if G.is_directed() else G.adj
 
     push = heappush
     pop = heappop
@@ -418,8 +415,8 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight='weight'):
     there are more than one shortest paths to the key node.
     """
     if G.is_multigraph():
-        get_weight = lambda u, v, data: min(eattr.get(weight, 1)
-            for eattr in data.values())
+        get_weight = lambda u, v, data: min(
+            eattr.get(weight, 1) for eattr in data.values())
     else:
         get_weight = lambda u, v, data: data.get(weight, 1)
 
@@ -627,11 +624,7 @@ def _bellman_ford_relaxation(G, pred, dist, source, weight):
         def get_weight(edge_dict):
             return edge_dict.get(weight, 1)
 
-    if G.is_directed():
-        G_succ = G.succ
-    else:
-        G_succ = G.adj
-
+    G_succ = G.succ if G.is_directed() else G.adj
     inf = float('inf')
     n = len(G)
 
@@ -1076,28 +1069,20 @@ def johnson(G, weight='weight'):
     if not nx.is_weighted(G, weight=weight):
         raise nx.NetworkXError('Graph is not weighted.')
 
-    dist = {}
-    pred = {}
-    for node in G:
-        dist[node] = 0
-        pred[node] = None
+    dist = {v: 0 for v in G}
+    pred = {v: None for v in G}
 
     # Calculate distance of shortest paths
     dist_bellman = _bellman_ford_relaxation(G, pred, dist, G.nodes(),
                                             weight)[1]
 
     if G.is_multigraph():
-        get_weight = lambda u, v, data: min(eattr.get(weight, 1)
-                        for eattr in data.values()) + dist_bellman[u]\
-                                        - dist_bellman[v]
-
+        get_weight = lambda u, v, data: (
+            min(eattr.get(weight, 1) for eattr in data.values()) +
+            dist_bellman[u] - dist_bellman[v])
     else:
-        get_weight = lambda u, v, data: data.get(weight, 1) + dist_bellman[u]\
-                                        - dist_bellman[v]
+        get_weight = lambda u, v, data: (data.get(weight, 1) +
+                                         dist_bellman[u] - dist_bellman[v])
 
-    all_pairs_path = {}
-    for n in G:
-        paths = {n: [n]}  # dictionary of paths
-        all_pairs_path[n] = _dijkstra(G, n, get_weight, paths=paths)[1]
-
-    return all_pairs_path
+    all_pairs = {v: _dijkstra(G, v, get_weight, paths={v: [v]})[1] for v in G}
+    return all_pairs
