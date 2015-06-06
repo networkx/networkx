@@ -339,14 +339,6 @@ class TestJohnsonAlgorithm:
                              '0': ['0'], '3': ['0', '1', '2', '3'],
                              '2': ['0', '1', '2']}, '3': {'3': ['3']},
                              '2': {'3': ['2', '3'], '2': ['2']}})
-        paths = nx.johnson(G, new_weight='new_weight')
-        assert_equal(paths, {'1': {'1': ['1'], '3': ['1', '2', '3'],
-                             '2': ['1', '2']}, '0': {'1': ['0', '1'],
-                             '0': ['0'], '3': ['0', '1', '2', '3'],
-                             '2': ['0', '1', '2']}, '3': {'3': ['3']},
-                             '2': {'3': ['2', '3'], '2': ['2']}})
-        for u, v, w in G.edges(data=True):
-            assert_true('new_weight' in w)
 
     @raises(nx.NetworkXError)
     def test_unweighted_graph(self):
