@@ -438,8 +438,8 @@ def all_neighbors(graph, node):
         Iterator of neighbors
     """
     if graph.is_directed():
-        values = itertools.chain.from_iterable([graph.predecessors_iter(node),
-                                                graph.successors_iter(node)])
+        values = itertools.chain.from_iterable([graph.predecessors(node),
+                                                graph.successors(node)])
     else:
         values = graph.neighbors(node)
 
