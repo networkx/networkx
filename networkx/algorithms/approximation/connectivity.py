@@ -192,8 +192,8 @@ def node_connectivity(G, s=None, t=None):
         connected_func = nx.is_weakly_connected
         iter_func = itertools.permutations
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
-                                                  G.successors_iter(v)])
+            return itertools.chain.from_iterable([G.predecessors(v),
+                                                  G.successors(v)])
     else:
         connected_func = nx.is_connected
         iter_func = itertools.combinations
@@ -356,8 +356,8 @@ def _bidirectional_pred_succ(G, source, target, exclude):
 
     # handle either directed or undirected
     if G.is_directed():
-        Gpred = G.predecessors_iter
-        Gsucc = G.successors_iter
+        Gpred = G.predecessors
+        Gsucc = G.successors
     else:
         Gpred = G.neighbors_iter
         Gsucc = G.neighbors_iter

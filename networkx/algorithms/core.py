@@ -72,8 +72,8 @@ def core_number(G):
     if G.is_directed():
         import itertools
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
-                                                  G.successors_iter(v)])
+            return itertools.chain.from_iterable([G.predecessors(v),
+                                                  G.successors(v)])
     else:
         neighbors=G.neighbors_iter
     degrees=G.degree()

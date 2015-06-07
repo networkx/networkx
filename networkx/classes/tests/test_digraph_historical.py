@@ -59,11 +59,11 @@ class TestDiGraphHistorical(HistoricalTests):
         assert_equal(sorted(G.neighbors('C')),['D'])
         assert_equal(sorted(G['C']),['D'])
         assert_equal(sorted(G.neighbors('A')),['B', 'C'])
-        assert_equal(sorted(G.neighbors_iter('A')),['B', 'C'])
-        assert_equal(sorted(G.neighbors_iter('C')),['D'])
+        assert_equal(sorted(G.neighbors('A')),['B', 'C'])
+        assert_equal(sorted(G.neighbors('C')),['D'])
         assert_equal(sorted(G.neighbors('A')),['B', 'C'])
         assert_raises(nx.NetworkXError,G.neighbors,'j')
-        assert_raises(nx.NetworkXError,G.neighbors_iter,'j')
+        assert_raises(nx.NetworkXError,G.neighbors,'j')
 
     def test_successors(self):
         G=self.G()
@@ -71,12 +71,12 @@ class TestDiGraphHistorical(HistoricalTests):
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
                           ('B', 'C'), ('C', 'D')])
         assert_equal(sorted(G.successors('A')),['B', 'C'])
-        assert_equal(sorted(G.successors_iter('A')),['B', 'C'])
+        assert_equal(sorted(G.successors('A')),['B', 'C'])
         assert_equal(sorted(G.successors('G')),[])
         assert_equal(sorted(G.successors('D')),[])
-        assert_equal(sorted(G.successors_iter('G')),[])
+        assert_equal(sorted(G.successors('G')),[])
         assert_raises(nx.NetworkXError,G.successors,'j')
-        assert_raises(nx.NetworkXError,G.successors_iter,'j')
+        assert_raises(nx.NetworkXError,G.successors,'j')
         
 
     def test_predecessors(self):
@@ -85,12 +85,12 @@ class TestDiGraphHistorical(HistoricalTests):
         G.add_edges_from([('A', 'B'), ('A', 'C'), ('B', 'D'), 
                           ('B', 'C'), ('C', 'D')])
         assert_equal(sorted(G.predecessors('C')),['A', 'B'])
-        assert_equal(sorted(G.predecessors_iter('C')),['A', 'B'])
+        assert_equal(sorted(G.predecessors('C')),['A', 'B'])
         assert_equal(sorted(G.predecessors('G')),[])
         assert_equal(sorted(G.predecessors('A')),[])
-        assert_equal(sorted(G.predecessors_iter('G')),[])
-        assert_equal(sorted(G.predecessors_iter('A')),[])
-        assert_equal(sorted(G.successors_iter('D')),[])
+        assert_equal(sorted(G.predecessors('G')),[])
+        assert_equal(sorted(G.predecessors('A')),[])
+        assert_equal(sorted(G.successors('D')),[])
 
         assert_raises(nx.NetworkXError,G.predecessors,'j')
         assert_raises(nx.NetworkXError,G.predecessors,'j')

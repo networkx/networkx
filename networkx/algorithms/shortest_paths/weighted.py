@@ -952,7 +952,7 @@ def bidirectional_dijkstra(G, source, target, weight='weight'):
     push(fringe[1], (0, next(c), target))
     # neighs for extracting correct neighbor information
     if G.is_directed():
-        neighs = [G.successors_iter, G.predecessors_iter]
+        neighs = [G.successors, G.predecessors]
     else:
         neighs = [G.neighbors_iter, G.neighbors_iter]
     # variables to hold shortest discovered path

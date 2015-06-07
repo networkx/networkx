@@ -408,8 +408,8 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
             raise nx.NetworkXError('Input graph is not connected')
         iter_func = itertools.permutations
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
-                                                  G.successors_iter(v)])
+            return itertools.chain.from_iterable([G.predecessors(v),
+                                                  G.successors(v)])
     else:
         if not nx.is_connected(G):
             raise nx.NetworkXError('Input graph is not connected')

@@ -309,8 +309,8 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
         # It is necessary to consider both predecessors
         # and successors for directed graphs
         def neighbors(v):
-            return itertools.chain.from_iterable([G.predecessors_iter(v),
-                                                  G.successors_iter(v)])
+            return itertools.chain.from_iterable([G.predecessors(v),
+                                                  G.successors(v)])
     else:
         if not nx.is_connected(G):
             return 0
