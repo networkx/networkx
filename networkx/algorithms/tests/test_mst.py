@@ -31,13 +31,28 @@ class TestMST:
         self.tree_edgelist=sorted((sorted((u, v))[0], sorted((u, v))[1], d)
                                   for u,v,d in tree_edgelist)
 
+        maximum_spanning_edgelist = [(0, 1, {'weight': 7}),
+                                     (1, 2, {'weight': 8}),
+                                     (1, 3, {'weight': 9}),
+                                     (3, 4, {'weight': 15}),
+                                     (4, 6, {'weight': 9}),
+                                     (5, 6, {'weight': 11})]
+
+        self.maximum_spanning_edgelist=sorted((sorted((u, v))[0], sorted((u, v))[1], d)
+                                  for u,v,d in maximum_spanning_edgelist)
+
+
     def test_mst(self):
         T=nx.minimum_spanning_tree(self.G)
         assert_equal(T.edges(data=True),self.tree_edgelist)
 
-    def test_mst_edges(self):
+    def test_minimum_spanning_edges(self):
         edgelist=sorted(nx.minimum_spanning_edges(self.G))
         assert_equal(edgelist,self.tree_edgelist)
+
+    def test_maximum_spanning_edges(self):
+        edgelist=sorted(nx.maximum_spanning_edges(self.G))
+        assert_equal(edgelist,self.maximum_spanning_edgelist)
 
     def test_mst_disconnected(self):
         G=nx.Graph()

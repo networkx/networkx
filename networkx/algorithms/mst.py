@@ -92,7 +92,7 @@ def minimum_spanning_edges(G, weight='weight', data=True):
     Modified code from David Eppstein, April 2006
     http://www.ics.uci.edu/~eppstein/PADS/
     """
-    return _optimum_spanning_edges(G, weight='weight', data=data, min=True)
+    return _optimum_spanning_edges(G, weight=weight, data=data, min=True)
 
 
 def maximum_spanning_edges(G, weight='weight', data=True):
@@ -138,7 +138,7 @@ def maximum_spanning_edges(G, weight='weight', data=True):
     Modified code from David Eppstein, April 2006
     http://www.ics.uci.edu/~eppstein/PADS/
     """
-    return _optimum_spanning_edges(G, weight='weight', data=data, min=False)
+    return _optimum_spanning_edges(G, weight=weight, data=data, min=False)
 
 
 def minimum_spanning_tree(G, weight='weight'):
