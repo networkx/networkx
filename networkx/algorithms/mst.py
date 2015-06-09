@@ -13,12 +13,40 @@ Computes minimum spanning tree of a weighted graph.
 
 __all__ = ['kruskal_mst',
            'minimum_spanning_edges',
+           'maximum_spanning_edges',
            'minimum_spanning_tree',
            'prim_mst_edges', 'prim_mst']
 
 import networkx as nx
 from heapq import heappop, heappush
 from itertools import count
+
+
+def _optimum_spanning_edges(G, min, weight='weight', data=True):
+    # Modified code from David Eppstein, April 2006
+    # http://www.ics.uci.edu/~eppstein/PADS/
+    # Kruskal's algorithm: sort edges by weight, and add them one at a time.
+    # We use Kruskal's algorithm, first because it is very simple to
+    # implement once UnionFind exists, and second, because the only slow
+    # part (the sort) is sped up by being built in to Python.
+    from networkx.utils import UnionFind
+    if G.is_directed():
+        raise nx.NetworkXError(
+            "Mimimum spanning tree not defined for directed graphs.")
+
+    subtrees = UnionFind()
+    if min:
+        edges = sorted(G.edges(data=True), key=lambda t: t[2].get(weight, 1))
+    else:
+        edges = sorted(G.edges(data=True), key=lambda t: t[2].get(weight, 1),
+                       reverse=True)
+    for u, v, d in edges:
+        if subtrees[u] != subtrees[v]:
+            if data:
+                yield (u, v, d)
+            else:
+                yield (u, v)
+            subtrees.union(u, v)
 
 
 def minimum_spanning_edges(G, weight='weight', data=True):
@@ -64,26 +92,53 @@ def minimum_spanning_edges(G, weight='weight', data=True):
     Modified code from David Eppstein, April 2006
     http://www.ics.uci.edu/~eppstein/PADS/
     """
-    # Modified code from David Eppstein, April 2006
-    # http://www.ics.uci.edu/~eppstein/PADS/
-    # Kruskal's algorithm: sort edges by weight, and add them one at a time.
-    # We use Kruskal's algorithm, first because it is very simple to
-    # implement once UnionFind exists, and second, because the only slow
-    # part (the sort) is sped up by being built in to Python.
-    from networkx.utils import UnionFind
-    if G.is_directed():
-        raise nx.NetworkXError(
-            "Mimimum spanning tree not defined for directed graphs.")
+    return _optimum_spanning_edges(G, weight='weight', data=data, min=True)
 
-    subtrees = UnionFind()
-    edges = sorted(G.edges(data=True), key=lambda t: t[2].get(weight, 1))
-    for u, v, d in edges:
-        if subtrees[u] != subtrees[v]:
-            if data:
-                yield (u, v, d)
-            else:
-                yield (u, v)
-            subtrees.union(u, v)
+
+def maximum_spanning_edges(G, weight='weight', data=True):
+    """Generate edges in a maximum spanning forest of an undirected
+    weighted graph.
+
+    A maximum spanning tree is a subgraph of the graph (a tree)
+    with the maximum possible sum of edge weights.  A spanning forest is a
+    union of the spanning trees for each connected component of the graph.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    weight : string
+       Edge data key to use for weight (default 'weight').
+
+    data : bool, optional
+       If True yield the edge data along with the edge.
+
+    Returns
+    -------
+    edges : iterator
+       A generator that produces edges in the maximum spanning tree.
+       The edges are three-tuples (u,v,w) where w is the weight.
+
+    Examples
+    --------
+    >>> G=nx.cycle_graph(4)
+    >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
+    >>> mst=nx.maximum_spanning_edges(G,data=False) # a generator of MST edges
+    >>> edgelist=list(mst) # make a list of the edges
+    >>> print(sorted(edgelist))
+    [(0, 1), (0, 3), (1, 2)]
+
+    Notes
+    -----
+    Uses Kruskal's algorithm, with weight list sorted in descending order.
+
+    If the graph edges do not have a weight attribute a default weight of 1
+    will be used.
+
+    Modified code from David Eppstein, April 2006
+    http://www.ics.uci.edu/~eppstein/PADS/
+    """
+    return _optimum_spanning_edges(G, weight='weight', data=data, min=False)
 
 
 def minimum_spanning_tree(G, weight='weight'):

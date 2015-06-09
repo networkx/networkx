@@ -8,3 +8,4 @@ Minimum Spanning Tree
 
    minimum_spanning_tree
    minimum_spanning_edges
+   maximum_spanning_edges
