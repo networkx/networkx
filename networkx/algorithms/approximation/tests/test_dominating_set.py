@@ -1,6 +1,18 @@
-#!/usr/bin/env python
+# test_dominating_set.py - unit tests for the dominating_set module
+#
+# Copyright 2015 NetworkX developers.
+#
+# This file is part of NetworkX.
+#
+# NetworkX is distributed under a BSD license; see LICENSE.txt for more
+# information.
+"""Unit tests for the :mod:`networkx.algorithms.approximation.dominating_set`
+module.
+
+"""
 from nose.tools import ok_
 from nose.tools import eq_
+
 import networkx as nx
 from networkx.algorithms.approximation import min_weighted_dominating_set
 from networkx.algorithms.approximation import min_edge_dominating_set
@@ -24,6 +36,38 @@ class TestMinWeightDominatingSet:
         for vertex in vertices - dom_set:
             neighbors = set(graph.neighbors(vertex))
             ok_(len(neighbors & dom_set) > 0, "Non dominating set found!")
+
+    def test_postprocessing(self):
+        """Tests for the additional postprocessing heuristic.
+
+        For more information, see issue #1572.
+
+        """
+        # The graph looks like this:
+        #
+        #       *   *
+        #      / \  |
+        #     0-*-2-3
+        #      \ /  |
+        #       *   *
+        #
+        G = nx.path_graph(4)
+        G.add_edges_from([(0, 4), (0, 5), (2, 4), (2, 5), (3, 6), (3, 7)])
+        eq_(min_weighted_dominating_set(G, _postprocessing=True), {0, 3})
+        eq_(min_weighted_dominating_set(G, _postprocessing=False), {0, 2, 3})
+        # The graph now looks like this:
+        #
+        #     *   * *
+        #    / \ /|/
+        # *-1-*-3-4-*
+        #  / \ / \|\
+        # *   *   * *
+        #
+        G = nx.path_graph(6)
+        G.add_edges_from([(0, 3), (1, 6), (1, 8), (1, 11), (3, 6), (3, 7),
+                          (3, 10), (4, 7), (4, 9), (4, 10), (4, 12)])
+        eq_(min_weighted_dominating_set(G, _postprocessing=True), {1, 4})
+        eq_(min_weighted_dominating_set(G, _postprocessing=False), {1, 3, 4})
 
     def test_star_graph(self):
         """Tests that an approximate dominating set for the star graph,
