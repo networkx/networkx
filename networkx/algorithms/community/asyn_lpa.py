@@ -5,6 +5,8 @@
 
 import random
 import networkx as nx
+from itertools import groupby
+from collections import defaultdict
 
 
 def asyn_lpa_communities(G, weight=None):
@@ -57,41 +59,28 @@ def asyn_lpa_communities(G, weight=None):
         random.shuffle(nodes)
         # Calculate the label for each node
         for node in nodes:
-            n_neighbors = nx.neighbors(G, node)
+            n_neighbors = G.neighbors(node)
 
             if len(n_neighbors) < 1:
                 continue
 
-            # Get label frecuencies. Depending on the order they are processed
+            # Get label frequencies. Depending on the order they are processed
             # in some nodes with be in t and others in t-1, making the
-            # algorithm asynchronous
-            label_freq = {}
+            # algorithm asynchronous.
+            label_freq = defaultdict(lambda: 0)
             for neighbor in n_neighbors:
                 n_label = labels[neighbor]
-                if n_label in label_freq:
-                    if weight:
-                        edge_weight = G.edge[neighbor][node][weight]
-                        label_freq[n_label] = label_freq[n_label] + edge_weight
-                    else:
-                        label_freq[n_label] += 1
-                else:
-                    if weight:
-                        label_freq[n_label] = G.edge[neighbor][node][weight]
-                    else:
-                        label_freq[n_label] = 1
+                label_freq[n_label] += G.edge[neighbor][node][weight] if weight else 1
 
-            # Chose the label with the highest frecuency. If more than 1 label
-            # has the highest frecuency choose one randomly
+            # Choose the label with the highest frecuency. If more than 1 label
+            # has the highest frecuency choose one randomly.
             max_freq = max(label_freq.values())
             best_labels = [label for label, freq in label_freq.items()
                            if freq == max_freq]
             new_label = random.choice(best_labels)
             labels[node] = new_label
-            # Continue until all nodes have a label that is best than other
-            # neighbour labels (only one label has max_freq for each node)
-            cont = cont or not (len(best_labels) == 1)
-
-    # return the communities
-    communities = {l for l in labels.values()}
-    for c in communities:
-        yield {n for n in labels if labels[n] == c}
+            # Continue until all nodes have a label that is better than other
+            # neighbour labels (only one label has max_freq for each node).
+            cont = cont or len(best_labels) > 1
+   
+    return (set(v) for k, v in groupby(sorted(labels, key=labels.get), key=labels.get)) 

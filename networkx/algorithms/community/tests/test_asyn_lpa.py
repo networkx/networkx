@@ -11,9 +11,7 @@ def test_empty_graph():
     ground_truth = set()
 
     communities = asyn_lpa.asyn_lpa_communities(test)
-    result = set()
-    for c in communities:
-        result.add(frozenset(c))
+    result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
 
 
@@ -26,9 +24,7 @@ def test_single_node():
     ground_truth = set([frozenset(['a'])])
 
     communities = asyn_lpa.asyn_lpa_communities(test)
-    result = set()
-    for c in communities:
-        result.add(frozenset(c))
+    result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
 
 
@@ -50,9 +46,7 @@ def test_simple_communities():
                         frozenset(['e', 'd', 'f'])])
 
     communities = asyn_lpa.asyn_lpa_communities(test)
-    result = set()
-    for c in communities:
-        result.add(frozenset(c))
+    result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
 
 
@@ -92,7 +86,5 @@ def test_several_communities():
                         frozenset(['5a', '5c', '5b'])])
 
     communities = asyn_lpa.asyn_lpa_communities(test)
-    result = set()
-    for c in communities:
-        result.add(frozenset(c))
+    result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
