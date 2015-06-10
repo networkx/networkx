@@ -304,7 +304,7 @@ def prim_mst_edges(G, weight='weight', data=True):
             visited.append(v)
             nodes.remove(v)
             for v, w in G.edges(v):
-                if not w in visited:
+                if w not in visited:
                     push(frontier, (G[v][w].get(weight, 1), next(c), v, w))
             if data:
                 yield u, v, G[u][v]
