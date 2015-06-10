@@ -6,7 +6,7 @@
 import random
 import networkx as nx
 from itertools import groupby
-from collections import defaultdict
+from collections import Counter
 
 
 def asyn_lpa_communities(G, weight=None):
@@ -67,10 +67,8 @@ def asyn_lpa_communities(G, weight=None):
             # Get label frequencies. Depending on the order they are processed
             # in some nodes with be in t and others in t-1, making the
             # algorithm asynchronous.
-            label_freq = defaultdict(lambda: 0)
-            for neighbor in n_neighbors:
-                n_label = labels[neighbor]
-                label_freq[n_label] += G.edge[neighbor][node][weight] if weight else 1
+            label_freq = Counter()
+            label_freq.update({labels[v]: G.edge[v][node][weight] if weight else 1 for v in G[node]})
 
             # Choose the label with the highest frecuency. If more than 1 label
             # has the highest frecuency choose one randomly.
