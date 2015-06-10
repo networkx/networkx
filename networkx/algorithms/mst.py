@@ -15,6 +15,7 @@ __all__ = ['kruskal_mst',
            'minimum_spanning_edges',
            'maximum_spanning_edges',
            'minimum_spanning_tree',
+           'maximum_spanning_tree',
            'prim_mst_edges', 'prim_mst']
 
 import networkx as nx
@@ -22,7 +23,7 @@ from heapq import heappop, heappush
 from itertools import count
 
 
-def _optimum_spanning_edges(G, min, weight='weight', data=True):
+def _optimum_spanning_edges(G, minimum=True, weight='weight', data=True):
     # Modified code from David Eppstein, April 2006
     # http://www.ics.uci.edu/~eppstein/PADS/
     # Kruskal's algorithm: sort edges by weight, and add them one at a time.
@@ -35,11 +36,8 @@ def _optimum_spanning_edges(G, min, weight='weight', data=True):
             "Mimimum spanning tree not defined for directed graphs.")
 
     subtrees = UnionFind()
-    if min:
-        edges = sorted(G.edges(data=True), key=lambda t: t[2].get(weight, 1))
-    else:
-        edges = sorted(G.edges(data=True), key=lambda t: t[2].get(weight, 1),
-                       reverse=True)
+    edges = sorted(G.edges(data=True), key=lambda t: t[2].get(weight, 1),
+                   reverse=not minimum)
     for u, v, d in edges:
         if subtrees[u] != subtrees[v]:
             if data:
@@ -92,7 +90,7 @@ def minimum_spanning_edges(G, weight='weight', data=True):
     Modified code from David Eppstein, April 2006
     http://www.ics.uci.edu/~eppstein/PADS/
     """
-    return _optimum_spanning_edges(G, weight=weight, data=data, min=True)
+    return _optimum_spanning_edges(G, minimum=True, weight=weight, data=data)
 
 
 def maximum_spanning_edges(G, weight='weight', data=True):
@@ -138,7 +136,7 @@ def maximum_spanning_edges(G, weight='weight', data=True):
     Modified code from David Eppstein, April 2006
     http://www.ics.uci.edu/~eppstein/PADS/
     """
-    return _optimum_spanning_edges(G, weight=weight, data=data, min=False)
+    return _optimum_spanning_edges(G, minimum=False, weight=weight, data=data,)
 
 
 def minimum_spanning_tree(G, weight='weight'):
@@ -179,7 +177,7 @@ def minimum_spanning_tree(G, weight='weight'):
     If the graph edges do not have a weight attribute a default weight of 1
     will be used.
     """
-    T = nx.Graph(nx.minimum_spanning_edges(G, weight=weight, data=True))
+    T = nx.Graph(minimum_spanning_edges(G, weight=weight, data=True))
     # Add isolated nodes
     if len(T) != len(G):
         T.add_nodes_from([n for n, d in G.degree().items() if d == 0])
@@ -190,6 +188,55 @@ def minimum_spanning_tree(G, weight='weight'):
     return T
 
 kruskal_mst = minimum_spanning_tree
+
+
+def maximum_spanning_tree(G, weight='weight'):
+    """Return a maximum spanning tree or forest of an undirected
+    weighted graph.
+
+    A maximum spanning tree is a subgraph of the graph (a tree) with
+    the maximum sum of edge weights.
+
+    If the graph is not connected a spanning forest is constructed.  A
+    spanning forest is a union of the spanning trees for each
+    connected component of the graph.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    weight : string
+       Edge data key to use for weight (default 'weight').
+
+    Returns
+    -------
+    G : NetworkX Graph
+       A maximum spanning tree or forest.
+
+    Examples
+    --------
+    >>> G=nx.cycle_graph(4)
+    >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
+    >>> T=nx.maximum_spanning_tree(G)
+    >>> print(sorted(T.edges(data=True)))
+    [(0, 1, {}), (0, 3, {'weight': 2}), (1, 2, {})]
+
+    Notes
+    -----
+    Uses Kruskal's algorithm.
+
+    If the graph edges do not have a weight attribute a default weight of 1
+    will be used.
+    """
+    T = nx.Graph(maximum_spanning_edges(G, weight=weight, data=True))
+    # Add isolated nodes
+    if len(T) != len(G):
+        T.add_nodes_from([n for n, d in G.degree().items() if d == 0])
+    # Add node and graph attributes as shallow copy
+    for n in T:
+        T.node[n] = G.node[n].copy()
+    T.graph = G.graph.copy()
+    return T
 
 
 def prim_mst_edges(G, weight='weight', data=True):

@@ -22,14 +22,14 @@ class TestMST:
 
         G.add_edges_from(edgelist)
         self.G=G
-        tree_edgelist =  [(0,1,{'weight':7}),
-                          (0,3,{'weight':5}),
-                          (3,5,{'weight':6}),
-                          (1,4,{'weight':7}),
-                          (4,2,{'weight':5}),
-                          (4,6,{'weight':9})]
-        self.tree_edgelist=sorted((sorted((u, v))[0], sorted((u, v))[1], d)
-                                  for u,v,d in tree_edgelist)
+        minimum_spanning_edgelist = [(0,1,{'weight':7}),
+                                     (0,3,{'weight':5}),
+                                     (3,5,{'weight':6}),
+                                     (1,4,{'weight':7}),
+                                     (4,2,{'weight':5}),
+                                     (4,6,{'weight':9})]
+        self.minimum_spanning_edgelist=sorted((sorted((u, v))[0], sorted((u, v))[1], d)
+                                  for u,v,d in minimum_spanning_edgelist)
 
         maximum_spanning_edgelist = [(0, 1, {'weight': 7}),
                                      (1, 2, {'weight': 8}),
@@ -44,11 +44,11 @@ class TestMST:
 
     def test_mst(self):
         T=nx.minimum_spanning_tree(self.G)
-        assert_equal(T.edges(data=True),self.tree_edgelist)
+        assert_equal(T.edges(data=True),self.minimum_spanning_edgelist)
 
     def test_minimum_spanning_edges(self):
         edgelist=sorted(nx.minimum_spanning_edges(self.G))
-        assert_equal(edgelist,self.tree_edgelist)
+        assert_equal(edgelist,self.minimum_spanning_edgelist)
 
     def test_maximum_spanning_edges(self):
         edgelist=sorted(nx.maximum_spanning_edges(self.G))
@@ -97,13 +97,13 @@ class TestMST:
 
     def test_prim_mst(self):
         T=nx.prim_mst(self.G)
-        assert_equal(T.edges(data=True),self.tree_edgelist)
+        assert_equal(T.edges(data=True),self.minimum_spanning_edgelist)
 
     def test_prim_mst_edges(self):
         edgelist=sorted(nx.prim_mst_edges(self.G))
         edgelist=sorted((sorted((u, v))[0], sorted((u, v))[1], d)
                                   for u,v,d in edgelist)
-        assert_equal(edgelist,self.tree_edgelist)
+        assert_equal(edgelist,self.minimum_spanning_edgelist)
 
     def test_prim_mst_disconnected(self):
         G=nx.Graph()
