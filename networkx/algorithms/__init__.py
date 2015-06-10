@@ -1,5 +1,4 @@
 from networkx.algorithms.assortativity import *
-from networkx.algorithms.block import *
 from networkx.algorithms.boundary import *
 from networkx.algorithms.centrality import *
 from networkx.algorithms.cluster import *
