@@ -42,9 +42,13 @@ class TestMST:
                                   for u,v,d in maximum_spanning_edgelist)
 
 
-    def test_mst(self):
+    def test_minimum_spanning_tree(self):
         T=nx.minimum_spanning_tree(self.G)
         assert_equal(T.edges(data=True),self.minimum_spanning_edgelist)
+
+    def test_maximum_spanning_tree(self):
+        T=nx.maximum_spanning_tree(self.G)
+        assert_equal(T.edges(data=True),self.maximum_spanning_edgelist)
 
     def test_minimum_spanning_edges(self):
         edgelist=sorted(nx.minimum_spanning_edges(self.G))
@@ -54,7 +58,7 @@ class TestMST:
         edgelist=sorted(nx.maximum_spanning_edges(self.G))
         assert_equal(edgelist,self.maximum_spanning_edgelist)
 
-    def test_mst_disconnected(self):
+    def test_minimum_spanning_tree_disconnected(self):
         G=nx.Graph()
         G.add_path([1,2])
         G.add_path([10,20])
@@ -62,14 +66,29 @@ class TestMST:
         assert_equal(sorted(map(sorted,T.edges())),[[1, 2], [10, 20]])
         assert_equal(sorted(T.nodes()),[1, 2, 10, 20])
 
-    def test_mst_isolate(self):
+    def test_maximum_spanning_tree_disconnected(self):
+        G=nx.Graph()
+        G.add_path([1,2])
+        G.add_path([10,20])
+        T=nx.maximum_spanning_tree(G)
+        assert_equal(sorted(map(sorted,T.edges())),[[1, 2], [10, 20]])
+        assert_equal(sorted(T.nodes()),[1, 2, 10, 20])
+
+    def test_minimum_spanning_tree_isolate(self):
         G=nx.Graph()
         G.add_nodes_from([1,2])
         T=nx.minimum_spanning_tree(G)
         assert_equal(sorted(T.nodes()),[1, 2])
         assert_equal(sorted(T.edges()),[])
 
-    def test_mst_attributes(self):
+    def test_maximum_spanning_tree_isolate(self):
+        G=nx.Graph()
+        G.add_nodes_from([1,2])
+        T=nx.maximum_spanning_tree(G)
+        assert_equal(sorted(T.nodes()),[1, 2])
+        assert_equal(sorted(T.edges()),[])
+
+    def test_minimum_spanning_tree_attributes(self):
         G=nx.Graph()
         G.add_edge(1,2,weight=1,color='red',distance=7)
         G.add_edge(2,3,weight=1,color='green',distance=2)
@@ -81,7 +100,19 @@ class TestMST:
         assert_equal(T.node[13],G.node[13])
         assert_equal(T.edge[1][2],G.edge[1][2])
 
-    def test_mst_edges_specify_weight(self):
+    def test_maximum_spanning_tree_attributes(self):
+        G=nx.Graph()
+        G.add_edge(1,2,weight=1,color='red',distance=7)
+        G.add_edge(2,3,weight=1,color='green',distance=2)
+        G.add_edge(1,3,weight=10,color='blue',distance=1)
+        G.add_node(13,color='purple')
+        G.graph['foo']='bar'
+        T=nx.maximum_spanning_tree(G)
+        assert_equal(T.graph,G.graph)
+        assert_equal(T.node[13],G.node[13])
+        assert_equal(T.edge[1][2],G.edge[1][2])
+
+    def test_minimum_spanning_tree_edges_specify_weight(self):
         G=nx.Graph()
         G.add_edge(1,2,weight=1,color='red',distance=7)
         G.add_edge(1,3,weight=30,color='blue',distance=1)
@@ -93,6 +124,20 @@ class TestMST:
         assert_equal(sorted(T.edges()),[(1,2),(2,3)])
         T=nx.minimum_spanning_tree(G,weight='distance')
         assert_equal(sorted(T.edges()),[(1,3),(2,3)])
+        assert_equal(sorted(T.nodes()),[1,2,3,13])
+
+    def test_maximum_spanning_tree_edges_specify_weight(self):
+        G=nx.Graph()
+        G.add_edge(1,2,weight=1,color='red',distance=7)
+        G.add_edge(1,3,weight=30,color='blue',distance=1)
+        G.add_edge(2,3,weight=1,color='green',distance=1)
+        G.add_node(13,color='purple')
+        G.graph['foo']='bar'
+        T=nx.maximum_spanning_tree(G)
+        assert_equal(sorted(T.nodes()),[1,2,3,13])
+        assert_equal(sorted(T.edges()),[(1,2),(1,3)])
+        T=nx.maximum_spanning_tree(G,weight='distance')
+        assert_equal(sorted(T.edges()),[(1,2),(1,3)])
         assert_equal(sorted(T.nodes()),[1,2,3,13])
 
     def test_prim_mst(self):
