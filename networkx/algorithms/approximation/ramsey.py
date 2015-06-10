@@ -26,7 +26,7 @@ def ramsey_R2(G):
         Maximum clique, Maximum independent set.
     """
     if not G:
-        return (set([]), set([]))
+        return set(), set()
 
     node = arbitrary_element(G)
     nbrs = nx.all_neighbors(G, node)
@@ -36,4 +36,6 @@ def ramsey_R2(G):
 
     c_1.add(node)
     i_2.add(node)
-    return (max([c_1, c_2]), max([i_1, i_2]))
+    # Choose the larger of the two cliques and the larger of the two
+    # independent sets, according to cardinality.
+    return max(c_1, c_2, key=len), max(i_1, i_2, key=len)
