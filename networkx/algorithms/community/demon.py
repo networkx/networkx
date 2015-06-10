@@ -5,19 +5,10 @@
 
 """
 Flat Merge version of DEMON (Democratic Estimate of the Modular Organization of
-a Network) algorithm as described in:
-
-Michele Coscia, Giulio Rossetti, Fosca Giannotti, Dino Pedreschi:
-DEMON: a local-first discovery method for overlapping communities.
-KDD 2012:615-623
-
-DEMON uses a local-first approach to community discovery were each node
-democratically votes for the communities that it sees in its surroundings. It
-provides a deterministic, fully incremental method for community discovery that
-has a limited time complexity.
-
-Based on the implementation by Giulio Rossetti <giulio.rossetti@isti.cnr.it>:
-http://www.michelecoscia.com/wp-content/uploads/2013/07/demon_py.zip
+a Network) algorithm. DEMON uses a local-first approach to community discovery 
+were each node democratically votes for the communities that it sees in its
+surroundings. It provides a deterministic, fully incremental method for 
+community discovery that has a limited time complexity.
 """
 
 from __future__ import division
@@ -32,27 +23,12 @@ def demon_communities(G, epsilon=0.25, min_community_size=3, weight=None):
     the Modular Organization of a Network (DEMON) algorithm[1]_. This method
     uses a local-first approach to community discovery were each node
     democratically votes for the communities that it sees in its surroundings.
-    Communities in this algorithm can be overlapping
-
-    Algorithm:
-    ----------
-    Require: G(V, E), C' = 0, epsilon = [0..1]
-    Ensure: set of overlapping communities C'
-
-    1: for all v in V do:
-    2:   e <- EgoMinusEgo(v, G)
-    3:   C(v) <- LabelPropagation(e)
-    4:   for all C in C'(v) do:
-    5:     C <- C union v
-    6:     C' <- Merge(C', C, v)
-    7:   end for
-    8: end for
-    9: return C'
+    Communities in this algorithm can be overlapping.
 
     Parameters
     ----------
     G : graph
-        An NetworkX graph.
+        A NetworkX graph.
 
     epsilon: real
         The tolerance required in order to merge communities. The epsilon
@@ -80,12 +56,12 @@ def demon_communities(G, epsilon=0.25, min_community_size=3, weight=None):
            KDD 2012:615-623.
     """
 
-    for n in G.nodes():
+    for n in G:
             G.node[n]['communities'] = [n]
 
     all_communities = []
 
-    for ego in nx.nodes(G):
+    for ego in G:
         # EgoMinusEgo and LabelPropagation phase
         ego_minus_ego = nx.ego_graph(G, ego, 1, False)
         community_to_nodes = _overlapping_label_propagation(ego_minus_ego, ego, weight)
@@ -135,25 +111,18 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iter=100):
 
     for t in range(max_iter):
         node_to_coms = {}
-
-        nodes = nx.nodes(ego_minus_ego)
+        nodes = list(ego_minus_ego)
         random.shuffle(nodes)
 
         for n in nodes:
             label_freq = {}
-
             n_neighbors = nx.neighbors(ego_minus_ego, n)
-
             if len(n_neighbors) < 1:
                 continue
-
             for nn in n_neighbors:
-
                 communities_nn = [nn]
-
                 if nn in old_node_to_coms:
                     communities_nn = old_node_to_coms[nn]
-
                 for nn_c in communities_nn:
                     if nn_c in label_freq:
                         # case of weighted graph
@@ -179,9 +148,7 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iter=100):
             else:
                 max_freq = max(label_freq.values())
                 labels = [l for l in label_freq if label_freq[l] == max_freq]
-
                 node_to_coms[n] = labels
-
                 if n not in old_node_to_coms or not set(node_to_coms[n]) == set(old_node_to_coms[n]):
                     old_node_to_coms[n] = node_to_coms[n]
                     ego_minus_ego.node[n]['communities'] = labels
@@ -189,11 +156,9 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iter=100):
     # build the communities reintroducing the ego
     community_to_nodes = {}
     for n in nx.nodes(ego_minus_ego):
-        if len(nx.neighbors(ego_minus_ego, n)) == 0:
+        if len(ego_minus_ego[n]) == 0:
             ego_minus_ego.node[n]['communities'] = [n]
-
         c_n = ego_minus_ego.node[n]['communities']
-
         for c in c_n:
             if c in community_to_nodes:
                 community_to_nodes[c].append(n)
@@ -231,19 +196,15 @@ def _merge_communities(communities, actual_community, epsilon):
 
     else:
         # search a community to merge with
-        inserted = False
-
         for test_community in communities:
             union = _generalized_inclusion(actual_community, test_community, epsilon)
             # community to merge with found
             if union:
                 communities.pop(communities.index(test_community))
                 communities.append(union)
-                inserted = True
                 break
-
         # not merged: insert the original community
-        if not inserted:
+        else:
             communities.append(actual_community)
 
     return communities
@@ -284,10 +245,10 @@ def _generalized_inclusion(c1, c2, epsilon):
            KDD 2012:615-623.
     """
     intersection = c2 & c1
-    smaller_set = min(len(c1), len(c2))
+    smaller_set_size = min(len(c1), len(c2))
 
-    if len(intersection) > 0 and smaller_set > 0:
-        inclusion_pct = len(intersection) / smaller_set
+    if len(intersection) > 0 and smaller_set_size > 0:
+        inclusion_pct = len(intersection) / smaller_set_size
 
         if inclusion_pct > epsilon:
             union = c2 | c1
