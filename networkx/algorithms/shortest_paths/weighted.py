@@ -1069,7 +1069,7 @@ def johnson(G, weight='weight'):
     pred = {v: None for v in G}
 
     # Calculate distance of shortest paths
-    dist_bellman = _bellman_ford_relaxation(G, pred, dist, G.nodes(),
+    dist_bellman = _bellman_ford_relaxation(G, pred, dist, list(G.nodes()),
                                             weight)[1]
 
     if G.is_multigraph():

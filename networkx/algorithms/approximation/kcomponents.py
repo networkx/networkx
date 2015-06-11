@@ -144,7 +144,7 @@ def k_components(G, min_density=0.95):
             SG = G.subgraph(nodes)
             # Build auxiliary graph
             H = _AntiGraph()
-            H.add_nodes_from(SG.nodes_iter())
+            H.add_nodes_from(SG.nodes())
             for u,v in combinations(SG, 2):
                 K = node_connectivity(SG, u, v, cutoff=k)
                 if k > K:
@@ -317,7 +317,7 @@ class _AntiGraph(nx.Graph):
         if nbunch is None:
             nodes_nbrs = ((n, {v: self.all_edge_dict for v in
                             set(self.adj) - set(self.adj[n]) - set([n])})
-                            for n in self.nodes_iter())
+                            for n in self.nodes())
         else:
             nodes_nbrs = ((n, {v: self.all_edge_dict for v in
                             set(self.nodes()) - set(self.adj[n]) - set([n])})
