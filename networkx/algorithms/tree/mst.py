@@ -58,11 +58,13 @@ def kruskal_mst_edges(G, minimum, weight='weight', data=True):
 
     Examples
     --------
+    >>> from networkx.algorithms import tree
+
     Find a minimum spanning tree.
 
     >>> G = nx.cycle_graph(4)
     >>> G.add_edge(0, 3, weight=2)
-    >>> mst = nx.kruskal_mst_edges(G, minimum=True, data=False)
+    >>> mst = tree.kruskal_mst_edges(G, minimum=True, data=False)
     >>> sorted(mst)
     [(0, 1), (1, 2), (2, 3)]
 
@@ -70,7 +72,7 @@ def kruskal_mst_edges(G, minimum, weight='weight', data=True):
 
     >>> G = nx.cycle_graph(4)
     >>> G.add_edge(0,3,weight=2)
-    >>> mst = nx.kruskal_mst_edges(G, minimum=False, data=False)
+    >>> mst = tree.kruskal_mst_edges(G, minimum=False, data=False)
     >>> sorted(mst)
     [(0, 1), (0, 3), (1, 2)]
 
@@ -132,11 +134,13 @@ def prim_mst_edges(G, minimum, weight='weight', data=True):
 
     Examples
     --------
+    >>> from networkx.algorithms import tree
+
     Find a minimum spanning tree.
 
     >>> G = nx.cycle_graph(4)
     >>> G.add_edge(0, 3, weight=2)
-    >>> mst = nx.prim_mst_edges(G, minimum=True, data=False)
+    >>> mst = tree.prim_mst_edges(G, minimum=True, data=False)
     >>> sorted(mst)
     [(0, 1), (1, 2), (2, 3)]
 
@@ -144,7 +148,7 @@ def prim_mst_edges(G, minimum, weight='weight', data=True):
 
     >>> G = nx.cycle_graph(4)
     >>> G.add_edge(0,3,weight=2)
-    >>> mst = nx.prim_mst_edges(G, minimum=False, data=False)
+    >>> mst = tree.prim_mst_edges(G, minimum=False, data=False)
     >>> sorted(mst)
     [(0, 1), (0, 3), (3, 2)]
 
