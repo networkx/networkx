@@ -34,9 +34,7 @@ def test_simple_communities():
                         frozenset(['e', 'f', 'g', 'h'])])
 
     communities = demon.demon_communities(test, 0.25, 3, None)
-    result = set()
-    for c in communities:
-        result.add(frozenset(c))
+    result = {frozenset(c) for c in communities}
     assert_equal(result, ground_truth)
 
 
