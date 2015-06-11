@@ -456,7 +456,7 @@ def all_neighbors(graph, node):
         values = itertools.chain.from_iterable([graph.predecessors_iter(node),
                                                 graph.successors_iter(node)])
     else:
-        values = graph.neighbors_iter(node)
+        values = graph.neighbors(node)
 
     return values
 

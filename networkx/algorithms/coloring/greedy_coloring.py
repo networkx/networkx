@@ -99,7 +99,7 @@ def strategy_independent_set(G, colors):
             no_colored += 1
             uncolored_g.remove_node(node)
             # Remove node and its neighbors from available
-            available_g.remove_nodes_from(available_g.neighbors(node) + [node])
+            available_g.remove_nodes_from(list(available_g.neighbors(node)) + [node])
         k += 1
     return None
 
@@ -165,7 +165,7 @@ def strategy_saturation_largest_first(G, colors):
             no_colored += 1
             node = max_degree_node(G)
             yield node
-            for neighbour in G.neighbors_iter(node):
+            for neighbour in G.neighbors(node):
                 distinct_colors[neighbour].add(0)
         else:
             highest_saturation = -1
@@ -198,7 +198,7 @@ def strategy_saturation_largest_first(G, colors):
             no_colored += 1
             yield node
             color = colors[node]
-            for neighbour in G.neighbors_iter(node):
+            for neighbour in G.neighbors(node):
                 distinct_colors[neighbour].add(color)
 
 
@@ -280,7 +280,7 @@ def greedy_color(G, strategy=strategy_largest_first, interchange=False):
                      # set to keep track of colors of neighbours
                     neighbour_colors = set()
 
-                    for neighbour in G.neighbors_iter(node):
+                    for neighbour in G.neighbors(node):
                         if neighbour in colors:
                             neighbour_colors.add(colors[neighbour])
 

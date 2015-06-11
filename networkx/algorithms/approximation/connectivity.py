@@ -197,7 +197,7 @@ def node_connectivity(G, s=None, t=None):
     else:
         connected_func = nx.is_connected
         iter_func = itertools.combinations
-        neighbors = G.neighbors_iter
+        neighbors = G.neighbors
 
     if not connected_func(G):
         return 0
@@ -359,8 +359,8 @@ def _bidirectional_pred_succ(G, source, target, exclude):
         Gpred = G.predecessors_iter
         Gsucc = G.successors_iter
     else:
-        Gpred = G.neighbors_iter
-        Gsucc = G.neighbors_iter
+        Gpred = G.neighbors
+        Gsucc = G.neighbors
 
     # predecesssor and successors in search
     pred = {source: None}

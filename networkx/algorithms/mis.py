@@ -76,6 +76,6 @@ def maximal_independent_set(G, nodes=None):
     while available_nodes:
         node = random.choice(list(available_nodes))
         indep_nodes.append(node)
-        available_nodes.difference_update(G.neighbors(node) + [node])
+        available_nodes.difference_update(list(G.neighbors(node)) + [node])
     return indep_nodes
 

@@ -398,7 +398,7 @@ class HistoricalTests(object):
         G.add_nodes_from('GJK')
         assert_equal(sorted(G['A']),['B', 'C'])
         assert_equal(sorted(G.neighbors('A')),['B', 'C'])
-        assert_equal(sorted(G.neighbors_iter('A')),['B', 'C'])
+        assert_equal(sorted(G.neighbors('A')),['B', 'C'])
         assert_equal(sorted(G.neighbors('G')),[])
         assert_raises(nx.NetworkXError,G.neighbors,'j')
 
@@ -417,8 +417,8 @@ class HistoricalTests(object):
         assert_equal(sorted(G.degree_iter(),key=str),
                      [('A', 2), ('B', 3), ('C', 3), ('D', 2), 
                       ('G', 0), ('J', 0), ('K', 0)])
-        assert_equal(sorted(G.neighbors_iter('A')),['B', 'C'])
-        assert_raises(nx.NetworkXError,G.neighbors_iter,'X')
+        assert_equal(sorted(G.neighbors('A')),['B', 'C'])
+        assert_raises(nx.NetworkXError,G.neighbors,'X')
         G.clear()
         assert_equal(nx.number_of_nodes(G),0)
         assert_equal(nx.number_of_edges(G),0)

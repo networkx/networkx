@@ -75,7 +75,7 @@ def core_number(G):
             return itertools.chain.from_iterable([G.predecessors_iter(v),
                                                   G.successors_iter(v)])
     else:
-        neighbors=G.neighbors_iter
+        neighbors=G.neighbors
     degrees=G.degree()
     # sort nodes by degree
     nodes=sorted(degrees,key=degrees.get)

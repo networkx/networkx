@@ -61,7 +61,7 @@ def color(G):
             return itertools.chain.from_iterable([G.predecessors_iter(v),
                                                   G.successors_iter(v)])
     else:
-        neighbors=G.neighbors_iter
+        neighbors=G.neighbors
 
     color = {}
     for n in G: # handle disconnected graphs

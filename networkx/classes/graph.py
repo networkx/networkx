@@ -1018,8 +1018,9 @@ class Graph(object):
         except KeyError:
             return False
 
+
     def neighbors(self, n):
-        """Return a list of the nodes connected to the node n.
+        """Return an iterator over all neighbors of node n.
 
         Parameters
         ----------
@@ -1028,8 +1029,8 @@ class Graph(object):
 
         Returns
         -------
-        nlist : list
-            A list of nodes that are adjacent to n.
+        neighbors : iterator
+            An iterator over all neighbors of node n
 
         Raises
         ------
@@ -1050,23 +1051,7 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
-        >>> G.neighbors(0)
-        [1]
-
-        """
-        try:
-            return list(self.adj[n])
-        except KeyError:
-            raise NetworkXError("The node %s is not in the graph." % (n,))
-
-    def neighbors_iter(self, n):
-        """Return an iterator over all neighbors of node n.
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2,3])
-        >>> [n for n in G.neighbors_iter(0)]
+        >>> [n for n in G.neighbors(0)]
         [1]
 
         Notes

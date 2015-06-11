@@ -196,8 +196,8 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
                 u = dk[ui]
                 x = dk[xi]
                 # Choose targets uniformly from neighbors.
-                v = random.choice(G.neighbors(u))
-                y = random.choice(G.neighbors(x))
+                v = random.choice(list(G.neighbors(u)))
+                y = random.choice(list(G.neighbors(x)))
                 # If the target nodes are the same, skip this pair.
                 if v == y:
                     continue
@@ -240,8 +240,8 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3):
                 u = dk[ui]
                 x = dk[xi]
                 # Choose targets uniformly from neighbors.
-                v = random.choice(G.neighbors(u))
-                y = random.choice(G.neighbors(x))
+                v = random.choice(list(G.neighbors(u)))
+                y = random.choice(list(G.neighbors(x)))
                 # If the target nodes are the same, skip this pair.
                 if v == y:
                     continue
