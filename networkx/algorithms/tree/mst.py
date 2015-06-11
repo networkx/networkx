@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Computes minimum spanning tree of a weighted graph.
+Algorithms for calculating min/max spanning trees/forest.
 
 """
 #    Copyright (C) 2009-2010 by
@@ -11,60 +11,69 @@ Computes minimum spanning tree of a weighted graph.
 #    All rights reserved.
 #    BSD license.
 
-__all__ = ['kruskal_mst_edges',
-           'minimum_spanning_tree',
-           'maximum_spanning_tree',
-           'prim_mst_edges']
+__all__ = [
+    # Algorithms
+    'kruskal_mst_edges',
+    'prim_mst_edges',
 
-import networkx as nx
+    # Recommended API
+    'minimum_spanning_tree',
+    'maximum_spanning_tree',
+]
+
 from heapq import heappop, heappush
 from itertools import count
 
+import networkx as nx
+from networkx.utils import UnionFind
 
+@nx.utils.not_implemented_for('directed')
 def kruskal_mst_edges(G, minimum, weight='weight', data=True):
-    """Generate edges of a minimum spanning forest or a maximum spanning
-    forest of an undirected weighted graph.
-
-    A minimum spanning tree is a subgraph of the graph (a tree)
-    with the minimum sum of edge weights. A maximum spanning tree is a subgraph
-    of the graph (a tree) with the maximum sum of edge weights. A spanning
-    forest is a union of the spanning trees for each connected component of
-    the graph.
+    """Generates the edges of a minimum or maximum spanning tree on `G`.
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : undirected graph
+        An undirected graph. If `G` is connected, then the algorithm finds a
+        spanning tree. Otherwise, a spanning forest is found.
 
-    weight : string
-       Edge data key to use for weight (default 'weight').
+    minimum : bool
+       If `True`, find a minimum spanning tree. Otherwise, find a maximum
+       spanning tree.
 
-    data : bool, optional
-       If True yield the edge data along with the edge.
+    weight : str
+       Data key to use for edge weights.
 
-    minimum : bool, required
-       If True yield minimum spanning edges else yield maximum spanning edges.
+    data : bool
+       If `True`, the edge data is included with each yielded edge.
+
 
     Returns
     -------
     edges : iterator
-       A generator that produces edges in the minimum/maximum spanning tree.
-       The edges are three-tuples (u,v,w) where w is the weight.
+        A generator that produces edges in the minimum/maximum spanning tree.
+        The edges are 2-tuples (u, v) or 3-tuples (u, v, d) where u and v
+        define the included edge and d is the edge data.
+
 
     Examples
     --------
-    >>> G=nx.cycle_graph(4)
-    >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
-    >>> mst=nx.kruskal_mst_edges(G, minimum=True, data=False)
-    >>> edgelist=list(mst) # make a list of the edges
-    >>> print(sorted(edgelist))
+    Find a minimum spanning tree.
+
+    >>> G = nx.cycle_graph(4)
+    >>> G.add_edge(0, 3, weight=2)
+    >>> mst = nx.kruskal_mst_edges(G, minimum=True, data=False)
+    >>> sorted(mst)
     [(0, 1), (1, 2), (2, 3)]
 
-    >>> G=nx.cycle_graph(4)
-    >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
-    >>> mst=nx.kruskal_mst_edges(G, minimum=False, data=False)
-    >>> edgelist=list(mst) # make a list of the edges
-    >>> print(sorted(edgelist))
+    Find a maximum spanning tree.
+
+    >>> G = nx.cycle_graph(4)
+    >>> G.add_edge(0,3,weight=2)
+    >>> mst = nx.kruskal_mst_edges(G, minimum=False, data=False)
+    >>> sorted(mst)
     [(0, 1), (0, 3), (1, 2)]
+
 
     Notes
     -----
@@ -73,23 +82,16 @@ def kruskal_mst_edges(G, minimum, weight='weight', data=True):
     If the graph edges do not have a weight attribute a default weight of 1
     will be used.
 
+    There may be more than one tree with the same minimum or maximum weight.
+    See :mod:`networkx.tree.recognition` for more detailed definitions.
+
     Modified code from David Eppstein, April 2006
     http://www.ics.uci.edu/~eppstein/PADS/
     """
-    # Modified code from David Eppstein, April 2006
-    # http://www.ics.uci.edu/~eppstein/PADS/
-    # Kruskal's algorithm: sort edges by weight, and add them one at a time.
-    # We use Kruskal's algorithm, first because it is very simple to
-    # implement once UnionFind exists, and second, because the only slow
-    # part (the sort) is sped up by being built in to Python.
-    from networkx.utils import UnionFind
-    if G.is_directed():
-        raise nx.NetworkXError(
-            "Mimimum spanning tree not defined for directed graphs.")
-
     subtrees = UnionFind()
     edges = sorted(G.edges(data=True), key=lambda t: t[2].get(weight, 1),
                    reverse=not minimum)
+
     for u, v, d in edges:
         if subtrees[u] != subtrees[v]:
             if data:
@@ -99,160 +101,53 @@ def kruskal_mst_edges(G, minimum, weight='weight', data=True):
             subtrees.union(u, v)
 
 
-def minimum_spanning_tree(G, method, weight='weight'):
-    """Return a minimum spanning tree or forest of an undirected
-    weighted graph.
-
-    A minimum spanning tree is a subgraph of the graph (a tree) with
-    the minimum sum of edge weights.
-
-    If the graph is not connected a spanning forest is constructed.  A
-    spanning forest is a union of the spanning trees for each
-    connected component of the graph.
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-
-    weight : string
-       Edge data key to use for weight (default 'weight').
-
-    method : string, required
-       Don't know what to insert here.
-
-    Returns
-    -------
-    G : NetworkX Graph
-       A minimum spanning tree or forest.
-
-    Examples
-    --------
-    >>> G=nx.cycle_graph(4)
-    >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
-    >>> T=nx.minimum_spanning_tree(G, method='kruskal')
-    >>> print(sorted(T.edges(data=True)))
-    [(0, 1, {}), (1, 2, {}), (2, 3, {})]
-
-    Notes
-    -----
-    Uses Kruskal's algorithm or Prim's algorithm as specified.
-
-    If the graph edges do not have a weight attribute a default weight of 1
-    will be used.
-    """
-    if method == 'kruskal':
-        T = nx.Graph(kruskal_mst_edges(G, minimum=True, weight=weight, data=True))
-    elif method == 'prim':
-        T = nx.Graph(prim_mst_edges(G, minimum=True, weight=weight, data=True))
-    # Add isolated nodes
-    if len(T) != len(G):
-        T.add_nodes_from([n for n, d in G.degree().items() if d == 0])
-    # Add node and graph attributes as shallow copy
-    for n in T:
-        T.node[n] = G.node[n].copy()
-    T.graph = G.graph.copy()
-    return T
-
-
-def maximum_spanning_tree(G, method, weight='weight'):
-    """Return a maximum spanning tree or forest of an undirected
-    weighted graph.
-
-    A maximum spanning tree is a subgraph of the graph (a tree) with
-    the maximum sum of edge weights.
-
-    If the graph is not connected a spanning forest is constructed.  A
-    spanning forest is a union of the spanning trees for each
-    connected component of the graph.
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-
-    weight : string
-       Edge data key to use for weight (default 'weight').
-
-    method : string, required
-       Don't know what to insert here.
-
-    Returns
-    -------
-    G : NetworkX Graph
-       A maximum spanning tree or forest.
-
-    Examples
-    --------
-    >>> G=nx.cycle_graph(4)
-    >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
-    >>> T=nx.maximum_spanning_tree(G, method='kruskal')
-    >>> print(sorted(T.edges(data=True)))
-    [(0, 1, {}), (0, 3, {'weight': 2}), (1, 2, {})]
-
-    Notes
-    -----
-    Uses Kruskal's algorithm or Prim's algorithm as specified.
-
-    If the graph edges do not have a weight attribute a default weight of 1
-    will be used.
-    """
-    if method == 'kruskal':
-        T = nx.Graph(kruskal_mst_edges(G, minimum=False, weight=weight, data=True))
-    elif method == 'prim':
-        T = nx.Graph(prim_mst_edges(G, minimum=False, weight=weight, data=True))
-    # Add isolated nodes
-    if len(T) != len(G):
-        T.add_nodes_from([n for n, d in G.degree().items() if d == 0])
-    # Add node and graph attributes as shallow copy
-    for n in T:
-        T.node[n] = G.node[n].copy()
-    T.graph = G.graph.copy()
-    return T
-
-
+@nx.utils.not_implemented_for('directed')
 def prim_mst_edges(G, minimum, weight='weight', data=True):
-    """Generate edges in a minimum spanning forest or a maximum spanning
-    forest of an undirected weighted graph.
-
-    A minimum spanning tree is a subgraph of the graph (a tree)
-    with the minimum sum of edge weights. A maximum spanning tree is a subgraph
-    of the graph (a tree) with the maximum sum of edge weights. A spanning
-    forest is a union of the spanning trees for each connected component of
-    the graph.
+    """Generates the edges of a minimum or maximum spanning tree on `G`.
 
     Parameters
     ----------
-    G : NetworkX Graph
+    G : undirected graph
+        An undirected graph. If `G` is connected, then the algorithm finds a
+        spanning tree. Otherwise, a spanning forest is found.
 
-    weight : string
-       Edge data key to use for weight (default 'weight').
+    minimum : bool
+       If `True`, find a minimum spanning tree. Otherwise, find a maximum
+       spanning tree.
 
-    data : bool, optional
-       If True yield the edge data along with the edge.
+    weight : str
+       Data key to use for edge weights.
 
-    minimum : bool, required
-       If True yield minimum spanning edges else yield maximum spanning edges.
+    data : bool
+       If `True`, the edge data is included with each yielded edge.
+
 
     Returns
     -------
     edges : iterator
-       A generator that produces edges in the minimum/maximum spanning tree.
-       The edges are three-tuples (u,v,w) where w is the weight.
+        A generator that produces edges in the minimum/maximum spanning tree.
+        The edges are 2-tuples (u, v) or 3-tuples (u, v, d) where u and v
+        define the included edge and d is the edge data.
+
 
     Examples
     --------
-    >>> G=nx.cycle_graph(4)
-    >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
-    >>> mst=nx.prim_mst_edges(G, minimum=True, data=False)
-    >>> edgelist=list(mst) # make a list of the edges
-    >>> print(sorted(edgelist))
+    Find a minimum spanning tree.
+
+    >>> G = nx.cycle_graph(4)
+    >>> G.add_edge(0, 3, weight=2)
+    >>> mst = nx.prim_mst_edges(G, minimum=True, data=False)
+    >>> sorted(mst)
     [(0, 1), (1, 2), (2, 3)]
 
-    >>> G=nx.cycle_graph(4)
-    >>> G.add_edge(0,3,weight=2) # assign weight 2 to edge 0-3
-    >>> mst=nx.prim_mst_edges(G, minimum=False, data=False)
-    >>> edgelist=list(mst) # make a list of the edges
-    >>> print(sorted(edgelist))
+    Find a maximum spanning tree.
+
+    >>> G = nx.cycle_graph(4)
+    >>> G.add_edge(0,3,weight=2)
+    >>> mst = nx.prim_mst_edges(G, minimum=False, data=False)
+    >>> sorted(mst)
     [(0, 1), (0, 3), (3, 2)]
+
 
     Notes
     -----
@@ -260,12 +155,11 @@ def prim_mst_edges(G, minimum, weight='weight', data=True):
 
     If the graph edges do not have a weight attribute a default weight of 1
     will be used.
+
+    There may be more than one tree with the same minimum or maximum weight.
+    See :mod:`networkx.tree.recognition` for more detailed definitions.
+
     """
-
-    if G.is_directed():
-        raise nx.NetworkXError(
-            "Minimum spanning tree not defined for directed graphs.")
-
     push = heappush
     pop = heappop
 
@@ -281,7 +175,7 @@ def prim_mst_edges(G, minimum, weight='weight', data=True):
         frontier = []
         visited = [u]
         for u, v in G.edges(u):
-            push(frontier, (G[u][v].get(weight, 1)*neg, next(c), u, v))
+            push(frontier, (G[u][v].get(weight, 1) * neg, next(c), u, v))
 
         while frontier:
             W, _, u, v = pop(frontier)
@@ -290,9 +184,125 @@ def prim_mst_edges(G, minimum, weight='weight', data=True):
             visited.append(v)
             nodes.remove(v)
             for v, w in G.edges(v):
-                if w not in visited:
-                    push(frontier, (G[v][w].get(weight, 1)*neg, next(c), v, w))
+                if w in visited:
+                    continue
+                push(frontier, (G[v][w].get(weight, 1) * neg, next(c), v, w))
+
             if data:
                 yield u, v, G[u][v]
             else:
                 yield u, v
+
+
+ALGORITHMS = {
+    'kruskal': kruskal_mst_edges,
+    'prim': prim_mst_edges
+}
+
+def mst_tree(G, algorithm, minimum, weight='weight'):
+    if algorithm not in ALGORITHMS:
+        msg = '{} is not a valid choice for an algorithm.'.format(algorithm)
+        raise ValueError(msg)
+
+    edges = ALGORITHMS[algorithm](G, minimum=minimum, weight=weight, data=True)
+    T = nx.Graph(edges)
+
+    # Add isolated nodes
+    if len(T) != len(G):
+        T.add_nodes_from([n for n, d in G.degree().items() if d == 0])
+
+    # Add node and graph attributes as shallow copy
+    for n in T:
+        T.node[n] = G.node[n].copy()
+    T.graph = G.graph.copy()
+
+    return T
+
+
+def minimum_spanning_tree(G, weight='weight', algorithm='kruskal'):
+    """Returns a minimum spanning tree or forest on an undirected graph `G`.
+
+    Parameters
+    ----------
+    G : undirected graph
+        An undirected graph. If `G` is connected, then the algorithm finds a
+        spanning tree. Otherwise, a spanning forest is found.
+
+    weight : str
+       Data key to use for edge weights.
+
+    algorithm : str
+        The algorithm to use when finding a minimum spanning tree. Valid
+        choices are 'kruskal' or 'prim'.
+
+
+    Returns
+    -------
+    G : NetworkX Graph
+       A minimum spanning tree or forest.
+
+
+    Examples
+    --------
+    >>> G = nx.cycle_graph(4)
+    >>> G.add_edge(0, 3, weight=2)
+    >>> T = nx.minimum_spanning_tree(G)
+    >>> sorted(T.edges(data=True))
+    [(0, 1, {}), (1, 2, {}), (2, 3, {})]
+
+
+    Notes
+    -----
+    If the graph edges do not have a weight attribute a default weight of 1
+    will be used.
+
+    There may be more than one tree with the same minimum or maximum weight.
+    See :mod:`networkx.tree.recognition` for more detailed definitions.
+
+    """
+    return mst_tree(G, algorithm=algorithm, minimum=True, weight=weight)
+
+
+def maximum_spanning_tree(G, weight='weight', algorithm='kruskal'):
+    """Returns a minimum spanning tree or forest on an undirected graph `G`.
+
+    Parameters
+    ----------
+    G : undirected graph
+        An undirected graph. If `G` is connected, then the algorithm finds a
+        spanning tree. Otherwise, a spanning forest is found.
+
+    weight : str
+       Data key to use for edge weights.
+
+    algorithm : str
+        The algorithm to use when finding a minimum spanning tree. Valid
+        choices are 'kruskal' or 'prim'.
+
+
+    Returns
+    -------
+    G : NetworkX Graph
+       A minimum spanning tree or forest.
+
+
+    Examples
+    --------
+    >>> G = nx.cycle_graph(4)
+    >>> G.add_edge(0, 3, weight=2)
+    >>> T = nx.maximum_spanning_tree(G)
+    >>> sorted(T.edges(data=True))
+    [(0, 1, {}), (0, 3, {'weight': 2}), (1, 2, {})]
+
+
+    Notes
+    -----
+    If the graph edges do not have a weight attribute a default weight of 1
+    will be used.
+
+    There may be more than one tree with the same minimum or maximum weight.
+    See :mod:`networkx.tree.recognition` for more detailed definitions.
+
+    """
+    return mst_tree(G, algorithm=algorithm, minimum=False, weight=weight)
+
