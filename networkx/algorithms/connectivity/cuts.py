@@ -414,7 +414,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
         if not nx.is_connected(G):
             raise nx.NetworkXError('Input graph is not connected')
         iter_func = itertools.combinations
-        neighbors = G.neighbors_iter
+        neighbors = G.neighbors
 
     # Reuse the auxiliary digraph and the residual network.
     H = build_auxiliary_node_connectivity(G)

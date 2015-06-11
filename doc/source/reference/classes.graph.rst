@@ -43,7 +43,6 @@ Iterating over nodes and edges
    Graph.edges_iter
    Graph.get_edge_data
    Graph.neighbors
-   Graph.neighbors_iter
    Graph.__getitem__
    Graph.adjacency_list
    Graph.adjacency_iter

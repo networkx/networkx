@@ -360,11 +360,11 @@ def max_weight_matching(G, maxcardinality=False):
                     # edges; get the information from the vertices.
                     nblist = [ (v, w)
                                 for v in bv.leaves()
-                                for w in G.neighbors_iter(v)
+                                for w in G.neighbors(v)
                                 if v != w ]
             else:
                 nblist = [ (bv, w)
-                           for w in G.neighbors_iter(bv)
+                           for w in G.neighbors(bv)
                            if bv != w ]
             for k in nblist:
                 (i, j) = k
@@ -653,7 +653,7 @@ def max_weight_matching(G, maxcardinality=False):
                 assert label[inblossom[v]] == 1
 
                 # Scan its neighbours:
-                for w in G.neighbors_iter(v):
+                for w in G.neighbors(v):
                     if w == v:
                         continue # ignore self-loops
                     # w is a neighbour to v
