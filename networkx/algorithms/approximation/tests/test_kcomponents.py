@@ -222,7 +222,7 @@ class TestAntiGraph:
     def test_size(self):
         for G, A in self.GA:
             n = G.order()
-            s = len(G.edges())+len(A.edges())
+            s = len(list(G.edges())) + len(list(A.edges()))
             assert_true(s == (n*(n-1))/2)
 
     def test_degree(self):
