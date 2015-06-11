@@ -14,6 +14,8 @@ community discovery that has a limited time complexity.
 from __future__ import division
 import networkx as nx
 import random
+from collections import defaultdict
+
 
 __all__ = ["demon_communities"]
 
@@ -56,9 +58,6 @@ def demon_communities(G, epsilon=0.25, min_community_size=3, weight=None):
            KDD 2012:615-623.
     """
 
-    for n in G:
-            G.node[n]['communities'] = [n]
-
     all_communities = []
 
     for ego in G:
@@ -87,7 +86,7 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iter=100):
         ego network minus its center
 
     ego : string
-        ego network cente
+        ego network center
 
     weight : string
         If the graph is weighted, the edge parameter representing the weight
@@ -107,63 +106,43 @@ def _overlapping_label_propagation(ego_minus_ego, ego, weight, max_iter=100):
            networks." Physical Review E 76.3 (2007): 036106.
 
     """
-    old_node_to_coms = {}
-
+    labels = {n: [n] for n in ego_minus_ego}
     for t in range(max_iter):
-        node_to_coms = {}
         nodes = list(ego_minus_ego)
         random.shuffle(nodes)
-
-        for n in nodes:
-            label_freq = {}
-            n_neighbors = nx.neighbors(ego_minus_ego, n)
+        # Calculate the label for each node
+        for node in nodes:
+            n_neighbors = ego_minus_ego.neighbors(node)
             if len(n_neighbors) < 1:
                 continue
-            for nn in n_neighbors:
-                communities_nn = [nn]
-                if nn in old_node_to_coms:
-                    communities_nn = old_node_to_coms[nn]
-                for nn_c in communities_nn:
-                    if nn_c in label_freq:
-                        # case of weighted graph
-                        if weight:
-                            label_freq[nn_c] = label_freq[nn_c] + ego_minus_ego.edge[nn][n][weight]
-                        else:
-                            label_freq[nn_c] += 1
-                    else:
-                        # case of weighted graph
-                        if weight:
-                            label_freq[nn_c] = ego_minus_ego.edge[nn][n][weight]
-                        else:
-                            label_freq[nn_c] = 1
 
-            # first run, random choosing of the communities among the neighbors labels
-            if t == 0:
-                if not len(n_neighbors) == 0:
-                    r_label = random.sample(label_freq.keys(), 1)
-                    ego_minus_ego.node[n]['communities'] = r_label
-                    old_node_to_coms[n] = r_label
+            # Get label frequencies. Depending on the order they are processed
+            # in some nodes with be in t and others in t-1, making the
+            # algorithm asynchronous.
+            label_freq = defaultdict(lambda: 0)
+            for neighbor in n_neighbors:
+                n_labels = labels[neighbor]
+                for label in n_labels:
+                    label_freq[label] += ego_minus_ego.edge[neighbor][node][weight] if weight else 1
 
-            # choosing the majority
-            else:
-                max_freq = max(label_freq.values())
-                labels = [l for l in label_freq if label_freq[l] == max_freq]
-                node_to_coms[n] = labels
-                if n not in old_node_to_coms or not set(node_to_coms[n]) == set(old_node_to_coms[n]):
-                    old_node_to_coms[n] = node_to_coms[n]
-                    ego_minus_ego.node[n]['communities'] = labels
+            # Choose the label with the highest frecuency. If more than 1 label
+            # has the highest frecuency choose one randomly.
+            max_freq = max(label_freq.values())
+            best_labels = [label for label, freq in label_freq.items()
+                           if freq == max_freq]
+            # Each node can be in more than one community.
+            labels[node] = best_labels
+
 
     # build the communities reintroducing the ego
-    community_to_nodes = {}
-    for n in nx.nodes(ego_minus_ego):
-        if len(ego_minus_ego[n]) == 0:
-            ego_minus_ego.node[n]['communities'] = [n]
-        c_n = ego_minus_ego.node[n]['communities']
-        for c in c_n:
-            if c in community_to_nodes:
-                community_to_nodes[c].append(n)
-            else:
-                community_to_nodes[c] = [n, ego]
+    community_to_nodes = defaultdict(lambda: [])
+    for node in labels:
+        n_labels = labels[node]
+        for label in n_labels:
+            community_to_nodes[label].append(node)
+            
+    for c in community_to_nodes:
+        community_to_nodes[c].append(ego)
 
     return community_to_nodes
 
