@@ -1,14 +1,18 @@
-"""
-=======================
-Distance-regular graphs
-=======================
-"""
 #    Copyright (C) 2011 by 
 #    Dheeraj M R <dheerajrav@gmail.com>
 #    Aric Hagberg <aric.hagberg@gmail.com>
 #    All rights reserved.
 #    BSD license.
+"""
+=======================
+Distance-regular graphs
+=======================
+"""
+from itertools import product
+
 import networkx as nx
+from networkx.utils import not_implemented_for
+
 __author__ = """\n""".join(['Dheeraj M R <dheerajrav@gmail.com>',
                             'Aric Hagberg <aric.hagberg@gmail.com>'])
 
@@ -60,7 +64,7 @@ def is_distance_regular(G):
     except nx.NetworkXError:
         return False
 
-def global_parameters(b,c):
+def global_parameters(b, c):
     """Return global parameters for a given intersection array.
 
     Given a distance-regular graph G with integers b_i, c_i,i = 0,....,d
@@ -75,17 +79,20 @@ def global_parameters(b,c):
 
     Parameters
     ----------
-    b,c: tuple of lists 
+    b : list
+
+    c : list
 
     Returns
     -------
-    p : list of three-tuples
+    iterable
+       An iterable over three tuples.
 
     Examples
     --------
-    >>> G=nx.dodecahedral_graph()
-    >>> b,c=nx.intersection_array(G)
-    >>> list(nx.global_parameters(b,c))
+    >>> G = nx.dodecahedral_graph()
+    >>> b, c = nx.intersection_array(G)
+    >>> list(nx.global_parameters(b, c))
     [(0, 0, 3), (1, 0, 2), (1, 1, 1), (1, 1, 1), (2, 0, 1), (3, 0, 0)]
 
     References
@@ -98,16 +105,10 @@ def global_parameters(b,c):
     --------
     intersection_array 
     """
-    d=len(b)
-    ba=b[:]
-    ca=c[:]
-    ba.append(0)
-    ca.insert(0,0)
-    k = ba[0]
-    aa = [k-x-y for x,y in zip(ba,ca)]
-    return zip(*[ca,aa,ba])
+    return ((y, b[0] - x - y, x) for x, y in zip(b + [0], [0] + c))
 
 
+@not_implemented_for('directed', 'multigraph')
 def intersection_array(G):
     """Returns the intersection array of a distance-regular graph.
 
@@ -144,9 +145,6 @@ def intersection_array(G):
     --------
     global_parameters
     """
-    if G.is_multigraph() or G.is_directed():
-        raise nx.NetworkxException('Not implemented for directed ',
-                                   'or multiedge graphs.')
     # test for regular graph (all degrees must be equal)
     degree = G.degree_iter()
     (_,k) = next(degree)
@@ -175,5 +173,3 @@ def intersection_array(G):
             cint[i] = c 
     return ([bint.get(i,0) for i in range(diameter)],
             [cint.get(i+1,0) for i in range(diameter)])
-
-
