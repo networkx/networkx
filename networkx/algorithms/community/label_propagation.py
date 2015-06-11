@@ -5,19 +5,16 @@
 
 
 """
-Based on the code donated by Tyler Rush 
-(https://github.com/networkx/networkx/issues/617)
-
-LPA community detection algorithm (based on 'Community Detection via 
-Semi-Synchronous Label Propagation Algorithms' Cordasco and Gargano, 2011
-
+Semi-synchronous label propagation algorithm for community detection.
 """
 
 from networkx.utils.decorators import not_implemented_for
 from collections import Counter
 from itertools import groupby
 
+
 __all__ = ["label_propagation_communities"]
+
 
 @not_implemented_for('directed')
 def label_propagation_communities(G):
@@ -69,11 +66,13 @@ def _break_color_tie(current, labels):
         new_label = max(labels)
     return new_label
 
+
 def _calculate_label_frequencies(node, labeling, G):
     """Counts up the labels of the neighbors of the specified node. Returns a
        dictionary from the label to the frequency.
     """
     return dict(Counter(labeling[q] for q in G[node]))
+
 
 def _color_network(G):
     """Colors the network so that neighboring nodes all have distinct colors.
@@ -100,12 +99,14 @@ def _color_network(G):
     
     return coloring
 
+
 def _form_communities(labeling, G):
     """Determines the communities from the labels of the network, returning a
        dict of sets of nodes.
     """
     return {k: set(v) 
             for k, v in groupby(sorted(G, key=labeling.get), key=labeling.get)}
+
 
 def _labeling_complete(labeling, G):
     """Determines whether or not LPA is done. It is complete when all nodes 
@@ -118,6 +119,7 @@ def _labeling_complete(labeling, G):
     return all(labeling[v] in 
                     _select_labels_of_highest_frequency(v, labeling, G) 
                         for v in G if len(G[v]) > 0)
+
 
 def _select_labels_of_highest_frequency(node, labeling, G):
     """Finds all labels of maximum frequency. Specified freqs must be a mapping
@@ -134,11 +136,13 @@ def _uniquely_label(G):
     """Gives a unique label (integer) to each node in the network."""
     return {n : label for n, label in zip(G.nodes(), range(len(G)))}
 
+
 def _update_labels(labeling, coloring, G):
     """Updates labels of every single node in the network."""
     for color, nodes in coloring.items():
         for n in nodes:
             _update_label(n , labeling, G)
+
 
 def _update_label( node, labeling, G):
     """Updates the label of a SINGLE node in the network."""
