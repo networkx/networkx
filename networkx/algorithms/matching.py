@@ -93,6 +93,9 @@ def max_weight_matching(G, maxcardinality=False):
     paths and the "primal-dual" method for finding a matching of maximum
     weight, both methods invented by Jack Edmonds [1]_.
 
+    Bipartite graphs can also be matched using the functions present in
+    :mod:`networkx.algorithms.bipartite.matching`.
+
     References
     ----------
     .. [1] "Efficient Algorithms for Finding Maximum Matching in Graphs",
