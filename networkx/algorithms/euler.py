@@ -9,6 +9,8 @@
 """
 Eulerian circuits and graphs.
 """
+from operator import itemgetter
+
 import networkx as nx
 
 from ..utils import arbitrary_element
@@ -20,18 +22,20 @@ __all__ = ['is_eulerian', 'eulerian_circuit']
 
 
 def is_eulerian(G):
-    """Return True if G is an Eulerian graph, False otherwise.
+    """Returns ``True`` if and only if ``G`` is Eulerian.
 
-    An Eulerian graph is a graph with an Eulerian circuit.
+    An graph is *Eulerian* if it has an Eulerian circuit. An *Eulerian
+    circuit* is a closed walk that includes each edge of a graph exactly
+    once.
 
     Parameters
     ----------
-    G : graph
-       A NetworkX Graph
+    G : NetworkX graph
+       A graph, either directed or undirected.
 
     Examples
     --------
-    >>> nx.is_eulerian(nx.DiGraph({0:[3], 1:[2], 2:[3], 3:[0, 1]}))
+    >>> nx.is_eulerian(nx.DiGraph({0: [3], 1: [2], 2: [3], 3: [0, 1]}))
     True
     >>> nx.is_eulerian(nx.complete_graph(5))
     True
@@ -40,45 +44,44 @@ def is_eulerian(G):
 
     Notes
     -----
-    This implementation requires the graph to be connected
-    (or strongly connected for directed graphs).
+    If the graph is not connected (or not strongly connected, for
+    directed graphs), this function returns ``False``.
+
     """
     if G.is_directed():
-        # Every node must have equal in degree and out degree
-        for n in G.nodes_iter():
-            if G.in_degree(n) != G.out_degree(n):
-                return False
-        # Must be strongly connected
-        if not nx.is_strongly_connected(G):
-            return False
-    else:
-        # An undirected Eulerian graph has no vertices of odd degrees
-        for v, d in G.degree_iter():
-            if d % 2 != 0:
-                return False
-        # Must be connected
-        if not nx.is_connected(G):
-            return False
-    return True
+        # Every node must have equal in degree and out degree and the
+        # graph must be strongly connected
+        return (all(G.in_degree(n) == G.out_degree(n) for n in G)
+                and nx.is_strongly_connected(G))
+    # An undirected Eulerian graph has no vertices of odd degree and
+    # must be connected.
+    #
+    # TODO When `G.degree()` is modified to return an iterator instead of a
+    # dictionary, this line needs to change to
+    #
+    #     return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
+    #
+    return all(d % 2 == 0 for d in G.degree().values()) and nx.is_connected(G)
 
 
 def eulerian_circuit(G, source=None):
-    """Return the edges of an Eulerian circuit in G.
+    """Returns an iterator over the edges of an Eulerian circuit in ``G``.
 
-    An Eulerian circuit is a path that crosses every edge in G exactly once
-    and finishes at the starting node.
+    An *Eulerian circuit* is a closed walk that includes each edge of a
+    graph exactly once.
 
     Parameters
     ----------
-    G : NetworkX Graph or DiGraph
-        A directed or undirected graph
+    G : NetworkX graph
+       A graph, either directed or undirected.
+
     source : node, optional
        Starting node for circuit.
 
     Returns
     -------
-    edges : generator
-       A generator that produces edges in the Eulerian circuit.
+    edges : iterator
+       An iterator over edges in the Eulerian circuit.
 
     Raises
     ------
@@ -91,8 +94,9 @@ def eulerian_circuit(G, source=None):
 
     Notes
     -----
-    Linear time algorithm, adapted from [1]_.
-    General information about Euler tours [2]_.
+    This is a linear time implementation of an algorithm adapted from [1]_.
+
+    For general information about Euler tours, see [2]_.
 
     References
     ----------
@@ -103,15 +107,20 @@ def eulerian_circuit(G, source=None):
 
     Examples
     --------
-    >>> G=nx.complete_graph(3)
-    >>> list(nx.eulerian_circuit(G))
-    [(0, 2), (2, 1), (1, 0)]
-    >>> list(nx.eulerian_circuit(G,source=1))
-    [(1, 2), (2, 0), (0, 1)]
-    >>> [u for u,v in nx.eulerian_circuit(G)]  # nodes in circuit
-    [0, 2, 1]
+    To get an Eulerian circuit in an undirected graph::
+
+        >>> G = nx.complete_graph(3)
+        >>> list(nx.eulerian_circuit(G))
+        [(0, 2), (2, 1), (1, 0)]
+        >>> list(nx.eulerian_circuit(G, source=1))
+        [(1, 2), (2, 0), (0, 1)]
+
+    To get the sequence of vertices in an Eulerian circuit::
+
+        >>> [u for u, v in nx.eulerian_circuit(G)]
+        [0, 2, 1]
+
     """
-    from operator import itemgetter
     if not is_eulerian(G):
         raise nx.NetworkXError("G is not Eulerian.")
     g = G.__class__(G)  # copy graph structure (not attributes)
