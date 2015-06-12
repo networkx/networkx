@@ -18,7 +18,6 @@ from networkx.algorithms.hybrid import *
 from networkx.algorithms.matching import *
 from networkx.algorithms.minors import *
 from networkx.algorithms.mis import *
-from networkx.algorithms.mst import *
 from networkx.algorithms.link_analysis import *
 from networkx.algorithms.link_prediction import *
 from networkx.algorithms.operators import *
@@ -69,6 +68,7 @@ from networkx.algorithms.flow import (maximum_flow, maximum_flow_value,
     min_cost_flow_cost, max_flow_min_cost, min_cost_flow, cost_of_flow)
 
 from .tree.recognition import *
+from .tree.mst import minimum_spanning_tree, maximum_spanning_tree
 from .tree.branchings import (
 	maximum_branching, minimum_branching,
 	maximum_spanning_arborescence, minimum_spanning_arborescence
