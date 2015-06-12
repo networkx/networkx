@@ -242,3 +242,7 @@ class TestMST:
         T = nx.maximum_spanning_tree(G, weight='distance', algorithm='prim')
         assert_equal(sorted(T.edges()), [(1, 2), (1, 3)])
         assert_equal(sorted(T.nodes()), [1, 2, 3, 13])
+
+    @raises(ValueError)
+    def test_wrong_value(self):
+        nx.minimum_spanning_tree(self.G, algorithm='random')

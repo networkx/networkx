@@ -27,6 +27,7 @@ from itertools import count
 import networkx as nx
 from networkx.utils import UnionFind
 
+
 @nx.utils.not_implemented_for('directed')
 def kruskal_mst_edges(G, minimum, weight='weight', data=True):
     """Generates the edges of a minimum or maximum spanning tree on `G`.
@@ -203,6 +204,7 @@ ALGORITHMS = {
     'prim': prim_mst_edges
 }
 
+
 def mst_tree(G, algorithm, minimum, weight='weight'):
     if algorithm not in ALGORITHMS:
         msg = '{} is not a valid choice for an algorithm.'.format(algorithm)
@@ -309,4 +311,3 @@ def maximum_spanning_tree(G, weight='weight', algorithm='kruskal'):
 
     """
     return mst_tree(G, algorithm=algorithm, minimum=False, weight=weight)
-
