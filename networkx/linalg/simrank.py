@@ -16,7 +16,7 @@ __author__ = "\n".join(['Janu Verma (j.verma5@gmail.com)'])
 
 __all__ = ['simrank_matrix']
 
-def simrank_matrix(G, relativeImportanceFactor=0.9, max_iter=100, tol=1e-4):
+def simrank_matrix(G, relative_importance_factor=0.9, max_iter=100, tol=1e-4):
 	"""Return the SimRank matrix of G.
 
 	SimRank is a vertex similarity measure. It computes the 
@@ -65,15 +65,15 @@ def simrank_matrix(G, relativeImportanceFactor=0.9, max_iter=100, tol=1e-4):
 	"""
 	nodes = G.nodes()
 	n = len(nodes)
-	nodesDict = {node:i for (i,node) in enumerate(nodes)}
+	nodes_dict = {node:i for (i,node) in enumerate(nodes)}
 
-	prevSim = np.zeros(n)
-	newSim = np.identity(n)
+	prev_sim = np.zeros(n)
+	new_sim = np.identity(n)
 
 	for i in range(max_iter):
-		if (np.allclose(newSim, prevSim, atol=tol)):
+		if (np.allclose(new_sim, prev_sim, atol=tol)):
 			break
-		prevSim = np.copy(newSim)
+		prev_sim = np.copy(new_sim)
 
 		for n1 in nodes:
 			for n2 in nodes:
@@ -86,9 +86,8 @@ def simrank_matrix(G, relativeImportanceFactor=0.9, max_iter=100, tol=1e-4):
 
 				for u in neighbors1:
 					for v in neighbors2:
-						simrank12 += prevSim[nodesDict[u]][nodesDict[v]]
-					newSim[nodesDict[n1]][nodesDict[n2]] = (relativeImportanceFactor \
+						simrank12 += prev_sim[nodes_dict[u]][nodes_dict[v]]
+					new_sim[nodes_dict[n1]][nodes_dict[n2]] = (relative_importance_factor \
 						* simrank12)/(len(neighbors1)  * len(neighbors2))
 
-	return newSim
-
+	return new_sim
