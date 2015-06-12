@@ -16,9 +16,8 @@ __author__ = "\n".join(['Janu Verma (j.verma5@gmail.com)'])
 
 __all__ = ['simrank_matrix']
 
-def simrank_matrix(G,relativeImportanceFactor=0.9, max_iter=100, tol=1e-4):
-	"""
-	Return the SimRank matrix of G.
+def simrank_matrix(G, relativeImportanceFactor=0.9, max_iter=100, tol=1e-4):
+	"""Return the SimRank matrix of G.
 
 	SimRank is a vertex similarity measure. It computes the 
 	similarity between two nodes on a graph based on the topology, 
@@ -39,18 +38,15 @@ def simrank_matrix(G,relativeImportanceFactor=0.9, max_iter=100, tol=1e-4):
 	tol : float, optional
 		Error tolerance used to check convergence 
 
-
 	Returns
 	-------
 	simrank : Numpy matrix
 		Matrix containing SimRank scores of the nodes.
 
-
 	Examples
 	--------
 	>>> G = nx.DiGraph(nx.path_graph(4))
 	>>> sr = nx.simrank_matrix(G)
-
 
 	Notes
 	-----
@@ -91,7 +87,8 @@ def simrank_matrix(G,relativeImportanceFactor=0.9, max_iter=100, tol=1e-4):
 				for u in neighbors1:
 					for v in neighbors2:
 						simrank12 += prevSim[nodesDict[u]][nodesDict[v]]
-					newSim[nodesDict[n1]][nodesDict[n2]] = (relativeImportanceFactor * simrank12)/(len(neighbors1)  * len(neighbors2))
+					newSim[nodesDict[n1]][nodesDict[n2]] = (relativeImportanceFactor \
+						* simrank12)/(len(neighbors1)  * len(neighbors2))
 
 	return newSim
 
