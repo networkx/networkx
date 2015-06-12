@@ -87,7 +87,7 @@ def simrank_matrix(G, relative_importance_factor=0.9, max_iter=100, tol=1e-4):
 				for u in neighbors1:
 					for v in neighbors2:
 						simrank12 += prev_sim[nodes_dict[u]][nodes_dict[v]]
-					new_sim[nodes_dict[n1]][nodes_dict[n2]] = (relative_importance_factor \
-						* simrank12)/(len(neighbors1)  * len(neighbors2))
+				new_sim[nodes_dict[n1]][nodes_dict[n2]] = (relative_importance_factor \
+					* simrank12)/(len(neighbors1)  * len(neighbors2))
 
 	return new_sim
