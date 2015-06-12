@@ -44,8 +44,7 @@ def cuthill_mckee_ordering(G, heuristic=None):
     Smallest degree node as heuristic function:
 
     >>> def smallest_degree(G):
-    ...     node, deg = min(G.degree().items(), key=lambda x: x[1])
-    ...     return node
+    ...     return min(G, key=G.degree)
     >>> rcm = list(cuthill_mckee_ordering(G, heuristic=smallest_degree))
 
 
@@ -104,8 +103,7 @@ def reverse_cuthill_mckee_ordering(G, heuristic=None):
     Smallest degree node as heuristic function:
 
     >>> def smallest_degree(G):
-    ...     node, deg = min(G.degree().items(), key=lambda x: x[1])
-    ...     return node
+    ...     return min(G, key=G.degree)
     >>> rcm = list(reverse_cuthill_mckee_ordering(G, heuristic=smallest_degree))
 
 

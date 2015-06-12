@@ -36,7 +36,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None,
     G : graph
       A networkx graph
 
-    max_iter : interger, optional
+    max_iter : integer, optional
       Maximum number of iterations in power method.
 
     tol : float, optional

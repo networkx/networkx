@@ -127,7 +127,7 @@ Removing nodes or edges has similar syntax to adding:
 [1, 2, 3, 'spam']
 >>> G.remove_edge(1,3)
 
-When creating a graph structure (by instantiating one of the graph
+When creating a graph structure by instantiating one of the graph
 classes you can specify data in several formats.  
 
 >>> H=nx.DiGraph(G)   # create a DiGraph using the connections from G

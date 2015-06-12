@@ -12,7 +12,8 @@ from itertools import combinations
 from itertools import permutations
 from itertools import product
 
-__all__ = ['contracted_edge', 'contracted_nodes', 'quotient_graph']
+__all__ = ['contracted_edge', 'contracted_nodes',
+           'identified_nodes', 'quotient_graph']
 
 
 def peek(iterable):
@@ -219,6 +220,9 @@ def contracted_nodes(G, u, v, self_loops=True):
     contracted_edge
     quotient_graph
 
+    Notes
+    -----
+    This function is also available as ``identified_nodes``.
     """
     H = G.copy()
     if H.is_directed():
@@ -238,6 +242,8 @@ def contracted_nodes(G, u, v, self_loops=True):
     else:
         H.node[u]['contraction'] = {v: v_data}
     return H
+
+identified_nodes = contracted_nodes
 
 
 def contracted_edge(G, edge, self_loops=True):

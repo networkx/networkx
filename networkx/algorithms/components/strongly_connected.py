@@ -9,6 +9,7 @@
 #    BSD license.
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
+
 __authors__ = "\n".join(['Eben Kenah',
                          'Aric Hagberg (hagberg@lanl.gov)'
                          'Christopher Ellison',
@@ -30,20 +31,38 @@ def strongly_connected_components(G):
     Parameters
     ----------
     G : NetworkX Graph
-       An directed graph.
+        An directed graph.
 
     Returns
     -------
-    comp : generator of lists
-       A list of nodes for each strongly connected component of G.
+    comp : generator of sets
+        A generator of sets of nodes, one for each strongly connected
+        component of G.
 
     Raises
     ------
-    NetworkXNotImplemented: If G is undirected.
+    NetworkXNotImplemented:
+        If G is undirected.
+
+    Examples
+    --------
+    Generate a sorted list of strongly connected components, largest first.
+
+    >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
+    >>> G.add_cycle([10, 11, 12])
+    >>> [len(c) for c in sorted(nx.strongly_connected_components(G),
+    ...                         key=len, reverse=True)]
+    [4, 3]
+
+    If you only want the largest component, it's more efficient to
+    use max instead of sort.
+
+    >>> largest = max(nx.strongly_connected_components(G), key=len)
 
     See Also
     --------
-    connected_components, weakly_connected_components
+    connected_components,
+    weakly_connected_components
 
     Notes
     -----
@@ -58,6 +77,7 @@ def strongly_connected_components(G):
     .. [2] On finding the strongly connected components in a directed graph.
        E. Nuutila and E. Soisalon-Soinen
        Information Processing Letters 49(1): 9-14, (1994)..
+
     """
     preorder = {}
     lowlink = {}
@@ -90,11 +110,11 @@ def strongly_connected_components(G):
                     queue.pop()
                     if lowlink[v] == preorder[v]:
                         scc_found[v] = True
-                        scc = [v]
+                        scc = {v}
                         while scc_queue and preorder[scc_queue[-1]] > preorder[v]:
                             k = scc_queue.pop()
                             scc_found[k] = True
-                            scc.append(k)
+                            scc.add(k)
                         yield scc
                     else:
                         scc_queue.append(v)
@@ -107,37 +127,56 @@ def kosaraju_strongly_connected_components(G, source=None):
     Parameters
     ----------
     G : NetworkX Graph
-       An directed graph.
+        An directed graph.
 
     Returns
     -------
-    comp : generator of lists
-       A list of nodes for each component of G.
+    comp : generator of sets
+        A genrator of sets of nodes, one for each strongly connected
+        component of G.
 
     Raises
     ------
-    NetworkXNotImplemented: If G is undirected.
+    NetworkXNotImplemented:
+        If G is undirected.
+
+    Examples
+    --------
+    Generate a sorted list of strongly connected components, largest first.
+
+    >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
+    >>> G.add_cycle([10, 11, 12])
+    >>> [len(c) for c in sorted(nx.kosaraju_strongly_connected_components(G),
+    ...                         key=len, reverse=True)]
+    [4, 3]
+
+    If you only want the largest component, it's more efficient to
+    use max instead of sort.
+
+    >>> largest = max(nx.kosaraju_strongly_connected_components(G), key=len)
 
     See Also
     --------
     connected_components
+    weakly_connected_components
 
     Notes
     -----
     Uses Kosaraju's algorithm.
+
     """
     with nx.utils.reversed(G):
         post = list(nx.dfs_postorder_nodes(G, source=source))
 
-    seen = {}
+    seen = set()
     while post:
         r = post.pop()
         if r in seen:
             continue
         c = nx.dfs_preorder_nodes(G, r)
-        new = [v for v in c if v not in seen]
-        seen.update([(u, True) for u in new])
+        new = {v for v in c if v not in seen}
         yield new
+        seen.update(new)
 
 
 @not_implemented_for('undirected')
@@ -149,16 +188,33 @@ def strongly_connected_components_recursive(G):
     Parameters
     ----------
     G : NetworkX Graph
-       An directed graph.
+        An directed graph.
 
     Returns
     -------
-    comp : generator of lists
-       A list of nodes for each component of G.
+    comp : generator of sets
+        A generator of sets of nodes, one for each strongly connected
+        component of G.
 
     Raises
     ------
-    NetworkXNotImplemented : If G is undirected
+    NetworkXNotImplemented:
+        If G is undirected
+
+    Examples
+    --------
+    Generate a sorted list of strongly connected components, largest first.
+
+    >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
+    >>> G.add_cycle([10, 11, 12])
+    >>> [len(c) for c in sorted(nx.strongly_connected_components_recursive(G),
+    ...                         key=len, reverse=True)]
+    [4, 3]
+
+    If you only want the largest component, it's more efficient to
+    use max instead of sort.
+
+    >>> largest = max(nx.strongly_connected_components_recursive(G), key=len)
 
     See Also
     --------
@@ -176,6 +232,7 @@ def strongly_connected_components_recursive(G):
     .. [2] On finding the strongly connected components in a directed graph.
        E. Nuutila and E. Soisalon-Soinen
        Information Processing Letters 49(1): 9-14, (1994)..
+
     """
     def visit(v, cnt):
         root[v] = cnt
@@ -190,11 +247,11 @@ def strongly_connected_components_recursive(G):
                 root[v] = min(root[v], root[w])
         if root[v] == visited[v]:
             component[v] = root[v]
-            tmpc = [v]  # hold nodes in this component
+            tmpc = {v}  # hold nodes in this component
             while stack[-1] != v:
                 w = stack.pop()
                 component[w] = root[v]
-                tmpc.append(w)
+                tmpc.add(w)
             stack.remove(v)
             yield tmpc
 
@@ -216,19 +273,37 @@ def strongly_connected_component_subgraphs(G, copy=True):
     Parameters
     ----------
     G : NetworkX Graph
-       A graph.
+       A directed graph.
+
     copy : boolean, optional
-      if copy is True, Graph, node, and edge attributes are copied to
-      the subgraphs.
+        if copy is True, Graph, node, and edge attributes are copied to
+        the subgraphs.
 
     Returns
     -------
-    comp : generator of lists
-      A list of graphs, one for each strongly connected component of G.
+    comp : generator of graphs
+      A generator of graphs, one for each strongly connected component of G.
+
+    Examples
+    --------
+    Generate a sorted list of strongly connected components, largest first.
+
+    >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
+    >>> G.add_cycle([10, 11, 12])
+    >>> [len(Gc) for Gc in sorted(nx.strongly_connected_component_subgraphs(G),
+    ...                         key=len, reverse=True)]
+    [4, 3]
+
+    If you only want the largest component, it's more efficient to
+    use max instead of sort.
+
+    >>> Gc = max(nx.strongly_connected_component_subgraphs(G), key=len)
 
     See Also
     --------
     connected_component_subgraphs
+    weakly_connected_component_subgraphs
+
     """
     for comp in strongly_connected_components(G):
         if copy:
@@ -316,17 +391,19 @@ def condensation(G, scc=None):
        strongly connected components of G. C has a graph attribute named
        'mapping' with a dictionary mapping the original nodes to the
        nodes in C to which they belong. Each node in C also has a node
-       attribute 'members' with the list of original nodes in G that
+       attribute 'members' with the set of original nodes in G that
        form the SCC that the node in C represents.
 
     Raises
     ------
-    NetworkXNotImplemented: If G is not directed
+    NetworkXNotImplemented:
+        If G is not directed
 
     Notes
     -----
     After contracting all strongly connected components to a single node,
     the resulting graph is a directed acyclic graph.
+
     """
     if scc is None:
         scc = nx.strongly_connected_components(G)

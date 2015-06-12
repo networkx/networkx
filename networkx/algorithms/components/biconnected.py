@@ -11,15 +11,19 @@ Biconnected components and articulation points.
 from itertools import chain
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
+
 __author__ = '\n'.join(['Jordi Torrents <jtorrents@milnou.net>',
                         'Dan Schult <dschult@colgate.edu>',
                         'Aric Hagberg <aric.hagberg@gmail.com>'])
-__all__ = ['biconnected_components',
-           'biconnected_component_edges',
-           'biconnected_component_subgraphs',
-           'is_biconnected',
-           'articulation_points',
-           ]
+
+__all__ = [
+    'biconnected_components',
+    'biconnected_component_edges',
+    'biconnected_component_subgraphs',
+    'is_biconnected',
+    'articulation_points',
+]
+
 
 @not_implemented_for('directed')
 def is_biconnected(G):
@@ -48,18 +52,18 @@ def is_biconnected(G):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
+    >>> G = nx.path_graph(4)
     >>> print(nx.is_biconnected(G))
     False
-    >>> G.add_edge(0,3)
+    >>> G.add_edge(0, 3)
     >>> print(nx.is_biconnected(G))
     True
 
     See Also
     --------
-    biconnected_components,
-    articulation_points,
-    biconnected_component_edges,
+    biconnected_components
+    articulation_points
+    biconnected_component_edges
     biconnected_component_subgraphs
 
     Notes
@@ -80,11 +84,13 @@ def is_biconnected(G):
     .. [1] Hopcroft, J.; Tarjan, R. (1973).
        "Efficient algorithms for graph manipulation".
        Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
+
     """
     bcc = list(biconnected_components(G))
     if not bcc: # No bicomponents (it could be an empty graph)
         return False
     return len(bcc[0]) == len(G)
+
 
 @not_implemented_for('directed')
 def biconnected_component_edges(G):
@@ -116,14 +122,18 @@ def biconnected_component_edges(G):
 
     Examples
     --------
-    >>> G = nx.barbell_graph(4,2)
+    >>> G = nx.barbell_graph(4, 2)
     >>> print(nx.is_biconnected(G))
     False
-    >>> components = nx.biconnected_component_edges(G)
-    >>> G.add_edge(2,8)
+    >>> bicomponents_edges = list(nx.biconnected_component_edges(G))
+    >>> len(bicomponents_edges)
+    5
+    >>> G.add_edge(2, 8)
     >>> print(nx.is_biconnected(G))
     True
-    >>> components = nx.biconnected_component_edges(G)
+    >>> bicomponents_edges = list(nx.biconnected_component_edges(G))
+    >>> len(bicomponents_edges)
+    1
 
     See Also
     --------
@@ -148,11 +158,13 @@ def biconnected_component_edges(G):
     References
     ----------
     .. [1] Hopcroft, J.; Tarjan, R. (1973).
-       "Efficient algorithms for graph manipulation".
-       Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
+           "Efficient algorithms for graph manipulation".
+           Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
+
     """
-    for comp in _biconnected_dfs(G,components=True):
+    for comp in _biconnected_dfs(G, components=True):
         yield comp
+
 
 @not_implemented_for('directed')
 def biconnected_components(G):
@@ -185,14 +197,30 @@ def biconnected_components(G):
 
     Examples
     --------
-    >>> G = nx.barbell_graph(4,2)
+    >>> G = nx.lollipop_graph(5, 1)
     >>> print(nx.is_biconnected(G))
     False
-    >>> components = nx.biconnected_components(G)
-    >>> G.add_edge(2,8)
+    >>> bicomponents = list(nx.biconnected_components(G))
+    >>> len(bicomponents)
+    2
+    >>> G.add_edge(0, 5)
     >>> print(nx.is_biconnected(G))
     True
-    >>> components = nx.biconnected_components(G)
+    >>> bicomponents = list(nx.biconnected_components(G))
+    >>> len(bicomponents)
+    1
+
+    You can generate a sorted list of biconnected components, largest
+    first, using sort.
+
+    >>> G.remove_edge(0, 5)
+    >>> [len(c) for c in sorted(nx.biconnected_components(G), key=len, reverse=True)]
+    [5, 2]
+
+    If you only want the largest connected component, it's more
+    efficient to use max instead of sort.
+
+    >>> Gc = max(nx.biconnected_components(G), key=len)
 
     See Also
     --------
@@ -217,10 +245,11 @@ def biconnected_components(G):
     References
     ----------
     .. [1] Hopcroft, J.; Tarjan, R. (1973).
-       "Efficient algorithms for graph manipulation".
-       Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
+           "Efficient algorithms for graph manipulation".
+           Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
+
     """
-    for comp in _biconnected_dfs(G,components=True):
+    for comp in _biconnected_dfs(G, components=True):
         yield set(chain.from_iterable(comp))
 
 @not_implemented_for('directed')
@@ -254,10 +283,32 @@ def biconnected_component_subgraphs(G, copy=True):
 
     Examples
     --------
-    >>> G = nx.barbell_graph(4,2)
+
+    >>> G = nx.lollipop_graph(5, 1)
     >>> print(nx.is_biconnected(G))
     False
-    >>> subgraphs = list(nx.biconnected_component_subgraphs(G))
+    >>> bicomponents = list(nx.biconnected_component_subgraphs(G))
+    >>> len(bicomponents)
+    2
+    >>> G.add_edge(0, 5)
+    >>> print(nx.is_biconnected(G))
+    True
+    >>> bicomponents = list(nx.biconnected_component_subgraphs(G))
+    >>> len(bicomponents)
+    1
+
+    You can generate a sorted list of biconnected components, largest
+    first, using sort.
+
+    >>> G.remove_edge(0, 5)
+    >>> [len(c) for c in sorted(nx.biconnected_component_subgraphs(G),
+    ...                         key=len, reverse=True)]
+    [5, 2]
+
+    If you only want the largest connected component, it's more
+    efficient to use max instead of sort.
+
+    >>> Gc = max(nx.biconnected_component_subgraphs(G), key=len)
 
     See Also
     --------
@@ -284,14 +335,16 @@ def biconnected_component_subgraphs(G, copy=True):
     References
     ----------
     .. [1] Hopcroft, J.; Tarjan, R. (1973).
-       "Efficient algorithms for graph manipulation".
-       Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
+           "Efficient algorithms for graph manipulation".
+           Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
+
     """
     for comp_nodes in biconnected_components(G):
         if copy:
             yield G.subgraph(comp_nodes).copy()
         else:
             yield G.subgraph(comp_nodes)
+
 
 @not_implemented_for('directed')
 def articulation_points(G):
@@ -322,16 +375,17 @@ def articulation_points(G):
 
     Examples
     --------
-    >>> G = nx.barbell_graph(4,2)
+
+    >>> G = nx.barbell_graph(4, 2)
     >>> print(nx.is_biconnected(G))
     False
-    >>> list(nx.articulation_points(G))
-    [6, 5, 4, 3]
-    >>> G.add_edge(2,8)
+    >>> len(list(nx.articulation_points(G)))
+    4
+    >>> G.add_edge(2, 8)
     >>> print(nx.is_biconnected(G))
     True
-    >>> list(nx.articulation_points(G))
-    []
+    >>> len(list(nx.articulation_points(G)))
+    0
 
     See Also
     --------
@@ -356,10 +410,12 @@ def articulation_points(G):
     References
     ----------
     .. [1] Hopcroft, J.; Tarjan, R. (1973).
-       "Efficient algorithms for graph manipulation".
-       Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
+           "Efficient algorithms for graph manipulation".
+           Communications of the ACM 16: 372–378. doi:10.1145/362248.362272
+
     """
-    return _biconnected_dfs(G,components=False)
+    return _biconnected_dfs(G, components=False)
+
 
 @not_implemented_for('directed')
 def _biconnected_dfs(G, components=True):

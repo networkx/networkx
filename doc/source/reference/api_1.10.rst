@@ -1,12 +1,27 @@
 *********************************
-Version 2.0 notes and API changes
+Version 1.10 notes and API changes
 *********************************
 
 This page includes more detailed release information and API changes from
-NetworkX 1.9 to NetworkX 2.0.
+NetworkX 1.9 to NetworkX 1.10.
 
 Please send comments and questions to the networkx-discuss mailing list:
 <http://groups.google.com/group/networkx-discuss>.
+
+API changes
+-----------
+* [`#1501 <https://github.com/networkx/networkx/pull/1501>`_]
+  ``connected_components``, ``weakly_connected_components``, and
+  ``strongly_connected_components`` return now a generator of sets of
+  nodes. Previously the generator was of lists of nodes. This PR also
+  refactored the ``connected_components`` and ``weakly_connected_components``
+  implementations making them faster, especially for large graphs.
+
+* [`#1547 <https://github.com/networkx/networkx/issues/1547>`_]
+  The ``func_iter`` functions in Di/Multi/Graphs classes are slated for
+  removal in NetworkX 2.0 release. ``func`` will behave like ``func_iter``
+  and return an iterator instead of list. These functions are deprecated in
+  NetworkX 1.10 release.
 
 New functionalities
 -------------------
@@ -104,15 +119,18 @@ New functionalities
   ``algorithms.bipartite.generators``. The functions are not imported in the
   main  namespace, so to use it, the bipartite package has to be imported.
 
-* [`#1405 <https://github.com/networkx/networkx/pull/1405>`_]
-  Added fast approximation for node connectivity based on White and
-  Newman's approximation algorithm for finding node independent paths
-  between two nodes.
-
 * [`#1391 <https://github.com/networkx/networkx/pull/1391>`_]
   Added Kanevsky's algorithm for finding all minimum-size separating
   node sets in an undirected graph. It is implemented as a generator
   of node cut sets.
+
+* [`#1399 <https://github.com/networkx/networkx/pull/1399>`_]
+  Added power function for simple graphs
+
+* [`#1405 <https://github.com/networkx/networkx/pull/1405>`_]
+  Added fast approximation for node connectivity based on White and
+  Newman's approximation algorithm for finding node independent paths
+  between two nodes.
 
 * [`#1413 <https://github.com/networkx/networkx/pull/1413>`_]
   Added transitive closure and antichains function for directed acyclic
@@ -139,38 +157,46 @@ New functionalities
 
 * [`#1439 <https://github.com/networkx/networkx/pull/1439>`_]
   Added node and edge contraction functions to
-  :mod:`networkx.algorithms.minors`.
+  ``networkx.algorithms.minors``.
 
 * [`#1445 <https://github.com/networkx/networkx/pull/1448>`_]
   Added a new modularity matrix module to ``networkx.linalg``,
   and associated spectrum functions to the ``networkx.linalg.spectrum``
   module.
 
-* [`#1455 <https://github.com/networkx/networkx/pull/1455>`_]
-  Added the directed modularity matrix to the
-  ``networkx.linalg.modularity_matrix`` module.
-
 * [`#1447 <https://github.com/networkx/networkx/pull/1447>`_]
   Added function to generate all simple paths starting with the shortest
   ones based on Yen's algorithm for finding k shortest paths at
   ``algorithms.simple_paths``.
 
+* [`#1455 <https://github.com/networkx/networkx/pull/1455>`_]
+  Added the directed modularity matrix to the
+  ``networkx.linalg.modularity_matrix`` module.
+
 * [`#1474 <https://github.com/networkx/networkx/pull/1474>`_]
   Adds ``triadic_census`` function; also creates a new module,
-  :mod:`networkx.algorithms.triads`.
-
-* [`#1481 <https://github.com/networkx/networkx/pull/1481>`_]
-  Added Johnson's algorithm; one more algorithm for shortest paths. It
-  solves all pairs shortest path problem. This is ``johnson`` at
-  ``algorithms.shortest_paths``
+  ``networkx.algorithms.triads``.
 
 * [`#1476 <https://github.com/networkx/networkx/pull/1476>`_]
   Adds functions for testing if a graph has weighted or negatively weighted
   edges. Also adds a function for testing if a graph is empty. These are
   ``is_weighted``, ``is_negatively_weighted``, and ``is_empty``.
 
-* [`#1399 <https://github.com/networkx/networkx/pull/1399>`_]
-  Added power function for simple graphs
+* [`#1481 <https://github.com/networkx/networkx/pull/1481>`_]
+  Added Johnson's algorithm; one more algorithm for shortest paths. It
+  solves all pairs shortest path problem. This is ``johnson`` at
+  ``algorithms.shortest_paths``
+
+* [`#1414 <https://github.com/networkx/networkx/pull/1414>`_]
+  Added Moody and White algorithm for identifying ``k_components`` in a
+  graph, which is based on Kanevsky's algorithm for finding all minimum-size
+  node cut-sets (implemented in ``all_node_cuts`` #1391).
+
+* [`#1415 <https://github.com/networkx/networkx/pull/1415>`_]
+  Added fast approximation for ``k_components`` to the
+  ``networkx.approximation`` package. This is based on White and Newman
+  approximation algorithm for finding node independent paths between two
+  nodes (see #1405).
 
 Removed functionalities
 -----------------------

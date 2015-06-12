@@ -5,6 +5,26 @@ Approximation
 .. automodule:: networkx.algorithms.approximation
 
 
+Connectivity
+------------
+.. automodule:: networkx.algorithms.approximation.connectivity
+.. autosummary::
+   :toctree: generated/
+
+   all_pairs_node_connectivity
+   local_node_connectivity
+   node_connectivity
+
+
+K-components
+------------
+.. automodule:: networkx.algorithms.approximation.kcomponents
+.. autosummary::
+   :toctree: generated/
+
+   k_components
+
+
 Clique
 ------
 .. automodule:: networkx.algorithms.approximation.clique
