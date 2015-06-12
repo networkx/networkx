@@ -64,6 +64,8 @@ def simrank_matrix(G,relativeImportanceFactor=0.9, max_iter=100, tol=1e-4):
 	References
 	----------
 	.. [1] G. Jeh and J. Widom. "SimRank: a measure of structural-context similarity",
+	 	In KDD'02: Proceedings of the eighth ACM SIGKDD international conference on Knowledge discovery and data mining,
+	 	pages 538-543. ACM Press, 2002
 	"""
 	nodes = G.nodes()
 	n = len(nodes)
