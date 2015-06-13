@@ -93,8 +93,8 @@ def connected_caveman_graph(l, k):
     --------
     >>> G = nx.connected_caveman_graph(3, 3)
 
-    Reference
-    ---------
+    References
+    ----------
     .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
        Amer. J. Soc. 105, 493-527, 1999.
     """
@@ -137,7 +137,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
     --------
     >>> G = nx.relaxed_caveman_graph(2, 3, 0.1, seed=42)
 
-     References
+    References
     ----------
     .. [1] Santo Fortunato, Community Detection in Graphs,
        Physics Reports Volume 486, Issues 3-5, February 2010, Pages 75-174.

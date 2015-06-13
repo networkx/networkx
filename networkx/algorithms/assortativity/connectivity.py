@@ -97,7 +97,7 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
 
     Notes
     -----
-    This algorithm is sometimes called "k nearest neighbors' and is also
+    This algorithm is sometimes called "k nearest neighbors" and is also
     available as ``k_nearest_neighbors``.
 
     References
