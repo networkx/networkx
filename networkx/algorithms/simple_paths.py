@@ -178,8 +178,8 @@ def shortest_simple_paths(G, source, target, weight=None):
     NetworkXNotImplemented
        If the input graph is a Multi[Di]Graph.
 
-    Example
-    -------
+    Examples
+    --------
 
     >>> G = nx.cycle_graph(7)
     >>> paths = list(nx.shortest_simple_paths(G, 0, 3))
