@@ -1225,10 +1225,8 @@ class DiGraph(Graph):
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
 
-        Warning
-        -------
-        If you have subclassed DiGraph to use dict-like objects in the
-        data structure, those changes do not transfer to the Graph
+        Warning: If you have subclassed DiGraph to use dict-like objects 
+        in the data structure, those changes do not transfer to the Graph
         created by this method.
         """
         H=Graph()
