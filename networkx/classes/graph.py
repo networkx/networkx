@@ -890,8 +890,6 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_weighted_edges_from([(0,1,3.0),(1,2,7.5)])
         """
-        # TODO For some reason this fails when `ebunch` is an iterator.
-        ebunch = list(ebunch)
         self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch),
                             **attr)
 
