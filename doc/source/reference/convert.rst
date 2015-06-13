@@ -50,7 +50,7 @@ Scipy
    from_scipy_sparse_matrix
 
 Pandas
------
+------
 .. autosummary::
    :toctree: generated/
 
