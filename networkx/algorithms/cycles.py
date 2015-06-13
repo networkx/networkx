@@ -131,13 +131,14 @@ def simple_cycles(G):
     5
 
     To filter the cycles so that they don't include certain nodes or edges,
-    copy your graph and eliminate those nodes or edges before calling::
+    copy your graph and eliminate those nodes or edges before calling
 
     >>> copyG = G.copy()
     >>> copyG.remove_nodes_from([1])
     >>> copyG.remove_edges_from([(0, 1)])
     >>> len(list(nx.simple_cycles(copyG)))
     3
+
 
     Notes
     -----
@@ -160,7 +161,6 @@ def simple_cycles(G):
     See Also
     --------
     cycle_basis
-
     """
     def _unblock(thisnode,blocked,B):
         stack=set([thisnode])
