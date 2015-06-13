@@ -157,17 +157,6 @@ Geometric
    waxman_graph
    navigable_small_world_graph
 
-
-Hybrid
-------
-.. automodule:: networkx.generators.hybrid
-.. autosummary::
-   :toctree: generated/
-
-   kl_connected_subgraph
-   is_kl_connected
-
-
 Line Graph
 ----------
 .. automodule:: networkx.generators.line
