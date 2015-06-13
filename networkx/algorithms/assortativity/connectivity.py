@@ -44,7 +44,7 @@ def _avg_deg_conn(G, neighbors, source_degree, target_degree,
 
 def average_degree_connectivity(G, source="in+out", target="in+out",
                                 nodes=None, weight=None):
-    """Compute the average degree connectivity of graph.
+    r"""Compute the average degree connectivity of graph.
 
     The average degree connectivity is the average nearest neighbor degree of
     nodes with degree k. For weighted graphs, an analogous measure can
@@ -54,6 +54,7 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     .. math::
 
         k_{nn,i}^{w} = \frac{1}{s_i} \sum_{j \in N(i)} w_{ij} k_j
+
 
     where `s_i` is the weighted degree of node `i`,
     `w_{ij}` is the weight of the edge that links `i` and `j`,
@@ -97,7 +98,7 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
 
     Notes
     -----
-    This algorithm is sometimes called "k nearest neighbors' and is also
+    This algorithm is sometimes called "k nearest neighbors" and is also
     available as ``k_nearest_neighbors``.
 
     References

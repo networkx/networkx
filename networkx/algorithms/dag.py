@@ -373,8 +373,7 @@ def antichains(G):
     References
     ----------
     .. [1] Free Lattices, by R. Freese, J. Jezek and J. B. Nation,
-    AMS, Vol 42, 1995, p. 226.
-
+       AMS, Vol 42, 1995, p. 226.
     """
     TC = nx.transitive_closure(G)
     antichains_stacks = [([], nx.topological_sort(G, reverse=True))]

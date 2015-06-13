@@ -40,8 +40,8 @@ def nonisomorphic_trees(order, create="graph"):
 
     M : List of Adjacency matrices
 
-    Reference
-    ---------
+    References
+    ----------
 
     """
 
@@ -72,8 +72,8 @@ def number_of_nonisomorphic_trees(order):
     -------
     length : Number of nonisomorphic graphs for the given order
 
-    Reference
-    ---------
+    References
+    ----------
 
     """
     length = sum(1 for _ in nonisomorphic_trees(order))

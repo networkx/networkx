@@ -17,7 +17,7 @@ __all__ = ['node_redundancy']
 
 
 def node_redundancy(G, nodes=None):
-    """Computes the node redundancy coefficients for the nodes in the bipartite
+    r"""Computes the node redundancy coefficients for the nodes in the bipartite
     graph ``G``.
 
     The redundancy coefficient of a node `v` is the fraction of pairs of

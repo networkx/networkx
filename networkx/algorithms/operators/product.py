@@ -342,13 +342,11 @@ def strong_product(G, H):
 def power(G, k):
     """Returns the specified power of a graph.
 
-    ..
-       The *k*th power of a simple graph *G* = (*V*, *E*) is the graph
-       *G<sup>k</sup>* whose vertex set is *V*, two distinct vertices being
-       adjacent in *G<sup>k</sup>* if and only if their [shortest path]
-       distance in *G* is at most *k*.
-       -- Exercise 3.1.6 of *Graph Theory* by J. A. Bondy and U. S. R. Murty
-          [1]_
+    The `k`-th power of a simple graph `G = (V, E)` is the graph
+    `G^k` whose vertex set is `V`,  two distinct vertices `u,v` are
+    adjacent in `G^k` if and only if the shortest path 
+    distance between `u` and `v` in `G` is at most `k`.
+
 
     Parameters
     ----------
@@ -360,7 +358,7 @@ def power(G, k):
     Returns
     -------
     NetworkX simple graph
-      `G` to the `k`th power.
+      `G` to the `k`-th power.
 
     Raises
     ------
@@ -391,9 +389,13 @@ def power(G, k):
 
     References
     ----------
-    .. [1] J. A. Bondy, U. S. R. Murty:
-       Graph Theory.
-       Springer, 2008.
+    .. [1] J. A. Bondy, U. S. R. Murty, Graph Theory. Springer, 2008.
+
+    Notes
+    -----
+    Exercise 3.1.6 of *Graph Theory* by J. A. Bondy and U. S. R. Murty [1]_.
+
+
     """
     if k <= 0:
         raise ValueError('k must be a positive integer')
