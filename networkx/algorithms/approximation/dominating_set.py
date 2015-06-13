@@ -5,14 +5,14 @@
 #   BSD license.
 """Functions for finding node and edge dominating sets.
 
-A *`dominating set`_* for an undirected graph *G* with vertex set *V*
+A *`dominating set`_[1] for an undirected graph *G* with vertex set *V*
 and edge set *E* is a subset *D* of *V* such that every vertex not in
 *D* is adjacent to at least one member of *D*. An *`edge dominating
-set`_* is a subset *F* of *E* such that every edge not in *F* is
+set`_[2] is a subset *F* of *E* such that every edge not in *F* is
 incident to an endpoint of at least one edge in *F*.
 
-.. _dominating set:: https://en.wikipedia.org/wiki/Dominating_set
-.. _edge dominating set:: https://en.wikipedia.org/wiki/Edge_dominating_set
+.. [1] dominating set: https://en.wikipedia.org/wiki/Dominating_set
+.. [2] edge dominating set: https://en.wikipedia.org/wiki/Edge_dominating_set
 
 """
 from __future__ import division
