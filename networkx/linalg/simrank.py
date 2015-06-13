@@ -48,10 +48,10 @@ def simrank_matrix(G, relative_importance_factor=0.9, max_iter=100, tol=1e-4):
 	>>> G = nx.DiGraph(nx.path_graph(4))
 	>>> sr = nx.simrank_matrix(G)
 	>>> sr 
-	[[ 1.         0.         0.8181254  0.       ]
- 	[ 0.         1.         0.         0.8181254]
- 	[ 0.8181254  0.         1.         0.       ]
- 	[ 0.         0.8181254  0.         1.       ]]
+ 	array([[ 1.,  0.,  0.8181254,  0.],
+       [ 0.,  1.,  0.,  0.8181254],
+       [ 0.8181254,  0.,  1.,  0.],
+       [ 0.,  0.8181254,  0.,  1.]])
 
 	Notes
 	-----
@@ -96,3 +96,8 @@ def simrank_matrix(G, relative_importance_factor=0.9, max_iter=100, tol=1e-4):
 					* simrank12)/(len(neighbors1)  * len(neighbors2))
 
 	return new_sim
+
+
+
+
+
