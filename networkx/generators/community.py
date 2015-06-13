@@ -47,8 +47,8 @@ def caveman_graph(l, k):
 
     connected_caveman_graph
 
-    Reference
-    ---------
+    References
+    ----------
     .. [1] Watts, D. J. 'Networks, Dynamics, and the Small-World Phenomenon.'
        Amer. J. Soc. 105, 493-527, 1999.
     """
@@ -166,8 +166,8 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     p_in and nodes of different groups are connected with probability
     p_out.
 
-    Paramters
-    ---------
+    Parameters
+    ----------
     sizes : list of ints
       Sizes of groups
     p_in : float
