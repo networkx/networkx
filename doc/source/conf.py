@@ -13,6 +13,25 @@
 from __future__ import print_function
 
 import sys, os, re
+import contextlib
+
+@contextlib.contextmanager
+def cd(newpath):
+    """
+    Change the current working directory to `newpath`, temporarily.
+
+    If the old current working directory no longer exists, do not return back.
+    """
+    oldpath = os.getcwd()
+    os.chdir(newpath)
+    try:
+        yield
+    finally:
+        try:
+            os.chdir(oldpath)
+        except OSError:
+            # If oldpath no longer exists, stay where we are.
+            pass
 
 # Check Sphinx version
 import sphinx
@@ -31,8 +50,12 @@ if on_rtd:
     # Build is not via Makefile (yet).
     # So we manually build the examples and gallery.
     import subprocess
-    subprocess.call([sys.executable, '../make_gallery.py'])
-    subprocess.call([sys.executable, '../make_examples.py', '../examples', 'source'])
+    with cd('..'):
+        # The Makefile is run from networkx/doc, so we need to move there
+        # from networkx/doc/source (which holds conf.py).
+        py = sys.executable
+        subprocess.call([py, 'make_gallery.py'])
+        subprocess.call([py, 'make_examples.py', '../examples', 'source'])
 
 # If your extensions are in another directory, add it here.
 # These locations are relative to conf.py
