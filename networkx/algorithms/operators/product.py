@@ -139,7 +139,7 @@ def tensor_product(G, H):
     Parameters
     ----------
     G, H: graphs
-     Networkx graphs.
+     Networkx graphs. 
 
     Returns
     -------
@@ -191,7 +191,7 @@ def cartesian_product(G, H):
     Parameters
     ----------
     G, H: graphs
-     Networkx graphs. 
+     Networkx graphs.
 
     Returns
     -------
@@ -239,13 +239,13 @@ def lexicographic_product(G, H):
 
     The lexicographical product P of the graphs G and H has a node set that
     is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
-    P has an edge ((u,v),(x,y)) if and only if (u,v) is an edge in G 
+    P has an edge ((u,v),(x,y)) if and only if (u,v) is an edge in G
     or u==v and (x,y) is an edge in H.
 
     Parameters
     ----------
     G, H: graphs
-     Networkx graphs. 
+     Networkx graphs.
 
     Returns
     -------
@@ -292,7 +292,7 @@ def strong_product(G, H):
 
     The strong product P of the graphs G and H has a node set that
     is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
-    P has an edge ((u,v),(x,y)) if and only if 
+    P has an edge ((u,v),(x,y)) if and only if
     u==v and (x,y) is an edge in H, or
     x==y and (u,v) is an edge in G, or
     (u,v) is an edge in G and (x,y) is an edge in H.
@@ -300,7 +300,7 @@ def strong_product(G, H):
     Parameters
     ----------
     G, H: graphs
-     Networkx graphs. 
+     Networkx graphs.
 
     Returns
     -------
@@ -348,7 +348,7 @@ def power(G, k):
 
     The `k`-th power of a simple graph `G = (V, E)` is the graph
     `G^k` whose vertex set is `V`,  two distinct vertices `u,v` are
-    adjacent in `G^k` if and only if the shortest path 
+    adjacent in `G^k` if and only if the shortest path
     distance between `u` and `v` in `G` is at most `k`.
 
 
