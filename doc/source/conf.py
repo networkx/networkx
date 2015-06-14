@@ -10,6 +10,7 @@
 #
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
+from __future__ import print_function
 
 import sys, os, re
 
@@ -20,6 +21,18 @@ if sphinx.__version__ < "1.3":
 
 # Environment variable to know if the docs are being built on rtd.
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+print
+print("Building on ReadTheDocs: {}".format(on_rtd))
+print
+print("Current working directory: {}".format(os.path.abspath(os.curdir)))
+print("Python: {}".format(sys.executable))
+
+if on_rtd:
+    # Build is not via Makefile (yet).
+    # So we manually build the examples and gallery.
+    import subprocess
+    subprocess.call([sys.executable, '../make_gallery.py'])
+    subprocess.call([sys.executable, '../make_examples.py', '../examples', 'source'])
 
 # If your extensions are in another directory, add it here.
 # These locations are relative to conf.py
