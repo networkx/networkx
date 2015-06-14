@@ -128,23 +128,24 @@ def tensor_product(G, H):
     r"""Return the tensor product of G and H.
 
     The tensor product P of the graphs G and H has a node set that
-    is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
-    P has an edge ((u,v),(x,y)) if and only if (u,v) is an edge in G
-    and (x,y) is an edge in H.
+    is the Cartesian product of the node sets, :math:`V(P)=V(G) \times V(H)`.
+    P has an edge ((u,v),(x,y)) if and only if (u,x) is an edge in G
+    and (v,y) is an edge in H.
 
-    Sometimes referred to as the categorical product. 
+    Tensor product is sometimes also referred to as the categorical product,
+    direct product, cardinal product or conjunction.
 
 
     Parameters
     ----------
     G, H: graphs
-     Networkx graphs. 
+     Networkx graphs.
 
     Returns
     -------
     P: NetworkX graph
      The tensor product of G and H. P will be a multi-graph if either G
-     or H is a multi-graph. Will be a directed if G and H are directed,
+     or H is a multi-graph, will be a directed if G and H are directed,
      and undirected if G and H are undirected.
 
     Raises
@@ -157,7 +158,8 @@ def tensor_product(G, H):
     Node attributes in P are two-tuple of the G and H node attributes.
     Missing attributes are assigned None.
 
-    For example
+    Examples
+    --------
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
@@ -181,11 +183,10 @@ def tensor_product(G, H):
 def cartesian_product(G, H):
     """Return the Cartesian product of G and H.
 
-    The tensor product P of the graphs G and H has a node set that
-    is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
-    P has an edge ((u,v),(x,y)) if and only if (u,v) is an edge in G 
-    and x==y or  and (x,y) is an edge in H and u==v.
-    and (x,y) is an edge in H.
+    The Cartesian product P of the graphs G and H has a node set that
+    is the Cartesian product of the node sets, :math:`V(P)=V(G) \times V(H)`.
+    P has an edge ((u,v),(x,y)) if and only if either u is equal to x and
+    v & y are adjacent in H or if v is equal to y and u & x are adjacent in G.
 
     Parameters
     ----------
@@ -209,7 +210,8 @@ def cartesian_product(G, H):
     Node attributes in P are two-tuple of the G and H node attributes.
     Missing attributes are assigned None.
 
-    For example
+    Examples
+    --------
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
@@ -262,7 +264,8 @@ def lexicographic_product(G, H):
     Node attributes in P are two-tuple of the G and H node attributes.
     Missing attributes are assigned None.
 
-    For example
+    Examples
+    --------
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
@@ -316,7 +319,8 @@ def strong_product(G, H):
     Node attributes in P are two-tuple of the G and H node attributes.
     Missing attributes are assigned None.
 
-    For example
+    Examples
+    --------
     >>> G = nx.Graph()
     >>> H = nx.Graph()
     >>> G.add_node(0,a1=True)
