@@ -92,6 +92,13 @@ def clique_removal(G):
             cliques.append(c_i)
         if i_i:
             isets.append(i_i)
-
-    maxiset = max(isets)
+    
+    # max iset doesn't return the maximal set
+    # try with a clique 5 + 1 additional node, the max_clique(G) will fail and return only one node
+    # here we just return the biggest clique (iset), however, multiple biggest cliques can be found
+    lengths = [len(i) for i in isets]
+    indexOfMax = lengths.index(max(lengths))
+    maxiset = isets[indexOfMax]
+    
+    
     return maxiset, cliques
