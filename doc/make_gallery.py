@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Generate a thumbnail gallery of examples.
 

@@ -10,31 +10,78 @@
 #
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
+from __future__ import print_function
 
 import sys, os, re
+import contextlib
+
+@contextlib.contextmanager
+def cd(newpath):
+    """
+    Change the current working directory to `newpath`, temporarily.
+
+    If the old current working directory no longer exists, do not return back.
+    """
+    oldpath = os.getcwd()
+    os.chdir(newpath)
+    try:
+        yield
+    finally:
+        try:
+            os.chdir(oldpath)
+        except OSError:
+            # If oldpath no longer exists, stay where we are.
+            pass
 
 # Check Sphinx version
 import sphinx
-if sphinx.__version__ < "1.0.1":
-    raise RuntimeError("Sphinx 1.0.1 or newer required")
+if sphinx.__version__ < "1.3":
+    raise RuntimeError("Sphinx 1.3 or newer required")
+
+# Environment variable to know if the docs are being built on rtd.
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+print
+print("Building on ReadTheDocs: {}".format(on_rtd))
+print
+print("Current working directory: {}".format(os.path.abspath(os.curdir)))
+print("Python: {}".format(sys.executable))
+
+if on_rtd:
+    # Build is not via Makefile (yet).
+    # So we manually build the examples and gallery.
+    import subprocess
+    with cd('..'):
+        # The Makefile is run from networkx/doc, so we need to move there
+        # from networkx/doc/source (which holds conf.py).
+        py = sys.executable
+        subprocess.call([py, 'make_gallery.py'])
+        subprocess.call([py, 'make_examples.py', '../examples', 'source'])
 
 # If your extensions are in another directory, add it here.
-sys.path.insert(0, os.path.abspath('../..'))
+# These locations are relative to conf.py
 sys.path.append(os.path.abspath('../sphinxext'))
 
 # General configuration
 # ---------------------
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
-# coming with Sphinx (named 'sphinx.addons.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.pngmath',
-              'sphinx.ext.viewcode',
-              'sphinx.ext.mathjax',
-              'numpydoc',
-              'sphinx.ext.coverage',
-              'sphinx.ext.autosummary','sphinx.ext.todo','sphinx.ext.doctest',
-              'sphinx.ext.intersphinx', 'customroles']
+# coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
+extensions = [
+    'sphinx.ext.autosummary',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.pngmath',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
+    #'sphinxcontrib.bibtex',
+    #'IPython.sphinxext.ipython_console_highlighting',
+    #'IPython.sphinxext.ipython_directive',
+]
+
 
 # generate autosummary pages
 autosummary_generate=True
@@ -53,7 +100,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'NetworkX'
-copyright = '2014, NetworkX Developers'
+copyright = '2015, NetworkX Developers'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -95,9 +142,12 @@ doctest_global_setup="import networkx as nx"
 
 # Options for HTML output
 # -----------------------
-import sphinx_rtd_theme
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+if not on_rtd:
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
 #html_theme_options = {
 #    "rightsidebar": "true",
 #    "relbarbgcolor: "black"
