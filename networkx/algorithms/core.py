@@ -199,6 +199,7 @@ def k_shell(G,k=None,core_number=None):
     k_corona
 
 
+    References
     ----------
     .. [1] A model of Internet topology using k-shell decomposition
        Shai Carmi, Shlomo Havlin, Scott Kirkpatrick, Yuval Shavitt,

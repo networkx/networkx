@@ -25,7 +25,7 @@ def pagerank(G, alpha=0.85, personalization=None,
     an algorithm to rank web pages.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph.  Undirected graphs will be converted to a directed
       graph with two directed edges for each undirected edge.
@@ -163,7 +163,7 @@ def google_matrix(G, alpha=0.85, personalization=None,
     """Return the Google matrix of the graph.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph.  Undirected graphs will be converted to a directed
       graph with two directed edges for each undirected edge.
@@ -269,7 +269,7 @@ def pagerank_numpy(G, alpha=0.85, personalization=None, weight='weight',
     an algorithm to rank web pages.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph.  Undirected graphs will be converted to a directed
       graph with two directed edges for each undirected edge.
@@ -351,7 +351,7 @@ def pagerank_scipy(G, alpha=0.85, personalization=None,
     an algorithm to rank web pages.
 
     Parameters
-    -----------
+    ----------
     G : graph
       A NetworkX graph.  Undirected graphs will be converted to a directed
       graph with two directed edges for each undirected edge.

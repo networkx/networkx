@@ -863,7 +863,7 @@ class MultiGraph(Graph):
         See the Python copy module for more information on shallow
         and deep copies, http://docs.python.org/library/copy.html.
 
-        Warning: If you have subclassed MultiGraph to use dict-like objects 
+        Warning: If you have subclassed MultiGraph to use dict-like objects
         in the data structure, those changes do not transfer to the MultiDiGraph
         created by this method.
 
@@ -900,7 +900,7 @@ class MultiGraph(Graph):
         A selfloop edge has the same node at both ends.
 
         Parameters
-        -----------
+        ----------
         data : bool, optional (default=False)
             Return selfloop edges as two tuples (u,v) (data=False)
             or three-tuples (u,v,datadict) (data=True)

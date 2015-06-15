@@ -1630,7 +1630,7 @@ class Graph(object):
         A selfloop edge has the same node at both ends.
 
         Parameters
-        -----------
+        ----------
         data : string or bool, optional (default=False)
             Return selfloop edges as two tuples (u,v) (data=False)
             or three-tuples (u,v,datadict) (data=True)

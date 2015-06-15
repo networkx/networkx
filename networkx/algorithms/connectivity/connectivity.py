@@ -8,7 +8,7 @@ import itertools
 
 import networkx as nx
 # Define the default maximum flow function to use in all flow based
-# connectivity algorithms. 
+# connectivity algorithms.
 from networkx.algorithms.flow import edmonds_karp, shortest_augmenting_path
 from networkx.algorithms.flow import build_residual_network
 default_flow_func = edmonds_karp
@@ -36,7 +36,7 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
 
     This is a flow based implementation of node connectivity. We compute the
     maximum flow on an auxiliary digraph build from the original input
-    graph (see below for details). 
+    graph (see below for details).
 
     Parameters
     ----------
@@ -51,12 +51,12 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes.
-        The function has to accept at least three parameters: a Digraph, 
-        a source node, and a target node. And return a residual network 
-        that follows NetworkX conventions (see :meth:`maximum_flow` for 
-        details). If flow_func is None, the default maximum flow function 
+        The function has to accept at least three parameters: a Digraph,
+        a source node, and a target node. And return a residual network
+        that follows NetworkX conventions (see :meth:`maximum_flow` for
+        details). If flow_func is None, the default maximum flow function
         (:meth:`edmonds_karp`) is used. See below for details. The choice
-        of the default function may change from version to version and 
+        of the default function may change from version to version and
         should not be relied on. Default value: None.
 
     auxiliary : NetworkX DiGraph
@@ -70,9 +70,9 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
         reused instead of recreated. Default value: None.
 
     cutoff : integer, float
-        If specified, the maximum flow algorithm will terminate when the 
+        If specified, the maximum flow algorithm will terminate when the
         flow value reaches or exceeds the cutoff. This is only for the
-        algorithms that support the cutoff parameter: :meth:`edmonds_karp` 
+        algorithms that support the cutoff parameter: :meth:`edmonds_karp`
         and :meth:`shortest_augmenting_path`. Other algorithms will ignore
         this parameter. Default value: None.
 
@@ -97,7 +97,7 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
 
     If you need to compute local connectivity on several pairs of
     nodes in the same graph, it is recommended that you reuse the
-    data structures that NetworkX uses in the computation: the 
+    data structures that NetworkX uses in the computation: the
     auxiliary digraph for node connectivity, and the residual
     network for the underlying maximum flow computation.
 
@@ -106,10 +106,11 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     the data structures.
 
     >>> import itertools
-    >>> # You also have to explicitly import the function for 
+    >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
     >>> from networkx.algorithms.connectivity import (
     ...     build_auxiliary_node_connectivity)
+    ...
     >>> H = build_auxiliary_node_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
@@ -122,13 +123,14 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     >>> for u, v in itertools.combinations(G, 2):
     ...     k = local_node_connectivity(G, u, v, auxiliary=H, residual=R)
     ...     result[u][v] = k
+    ...
     >>> all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))
     True
 
-    You can also use alternative flow algorithms for computing node 
+    You can also use alternative flow algorithms for computing node
     connectivity. For instance, in dense networks the algorithm
     :meth:`shortest_augmenting_path` will usually perform better than
-    the default :meth:`edmonds_karp` which is faster for sparse 
+    the default :meth:`edmonds_karp` which is faster for sparse
     networks with highly skewed degree distributions. Alternative flow
     functions have to be explicitly imported from the flow package.
 
@@ -140,7 +142,7 @@ def local_node_connectivity(G, s, t, flow_func=None, auxiliary=None,
     -----
     This is a flow based implementation of node connectivity. We compute the
     maximum flow using, by default, the :meth:`edmonds_karp` algorithm (see:
-    :meth:`maximum_flow`) on an auxiliary digraph build from the original 
+    :meth:`maximum_flow`) on an auxiliary digraph build from the original
     input graph:
 
     For an undirected graph G having `n` nodes and `m` edges we derive a
@@ -222,10 +224,10 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes.
-        The function has to accept at least three parameters: a Digraph, 
-        a source node, and a target node. And return a residual network 
-        that follows NetworkX conventions (see :meth:`maximum_flow` for 
-        details). If flow_func is None, the default maximum flow function 
+        The function has to accept at least three parameters: a Digraph,
+        a source node, and a target node. And return a residual network
+        that follows NetworkX conventions (see :meth:`maximum_flow` for
+        details). If flow_func is None, the default maximum flow function
         (:meth:`edmonds_karp`) is used. See below for details. The
         choice of the default function may change from version
         to version and should not be relied on. Default value: None.
@@ -262,17 +264,17 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
 
     If you need to perform several local computations among different
     pairs of nodes on the same graph, it is recommended that you reuse
-    the data structures used in the maximum flow computations. See 
+    the data structures used in the maximum flow computations. See
     :meth:`local_node_connectivity` for details.
 
     Notes
     -----
     This is a flow based implementation of node connectivity. The
-    algorithm works by solving `O((n-\delta-1+\delta(\delta-1)/2)` 
-    maximum flow problems on an auxiliary digraph. Where `\delta` 
-    is the minimum degree of G. For details about the auxiliary 
-    digraph and the computation of local node connectivity see 
-    :meth:`local_node_connectivity`. This implementation is based 
+    algorithm works by solving `O((n-\delta-1+\delta(\delta-1)/2))`
+    maximum flow problems on an auxiliary digraph. Where `\delta`
+    is the minimum degree of G. For details about the auxiliary
+    digraph and the computation of local node connectivity see
+    :meth:`local_node_connectivity`. This implementation is based
     on algorithm 11 in [1]_.
 
     See also
@@ -337,7 +339,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
         if y in G[x]:
             continue
         kwargs['cutoff'] = K
-        K = min(K, local_node_connectivity(G, x, y, **kwargs)) 
+        K = min(K, local_node_connectivity(G, x, y, **kwargs))
 
     return K
 
@@ -360,12 +362,12 @@ def average_node_connectivity(G, flow_func=None):
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes.
-        The function has to accept at least three parameters: a Digraph, 
-        a source node, and a target node. And return a residual network 
-        that follows NetworkX conventions (see :meth:`maximum_flow` for 
-        details). If flow_func is None, the default maximum flow function 
+        The function has to accept at least three parameters: a Digraph,
+        a source node, and a target node. And return a residual network
+        that follows NetworkX conventions (see :meth:`maximum_flow` for
+        details). If flow_func is None, the default maximum flow function
         (:meth:`edmonds_karp`) is used. See :meth:`local_node_connectivity`
-        for details. The choice of the default function may change from 
+        for details. The choice of the default function may change from
         version to version and should not be relied on. Default value: None.
 
     Returns
@@ -424,10 +426,10 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes.
-        The function has to accept at least three parameters: a Digraph, 
-        a source node, and a target node. And return a residual network 
-        that follows NetworkX conventions (see :meth:`maximum_flow` for 
-        details). If flow_func is None, the default maximum flow function 
+        The function has to accept at least three parameters: a Digraph,
+        a source node, and a target node. And return a residual network
+        that follows NetworkX conventions (see :meth:`maximum_flow` for
+        details). If flow_func is None, the default maximum flow function
         (:meth:`edmonds_karp`) is used. See below for details. The
         choice of the default function may change from version
         to version and should not be relied on. Default value: None.
@@ -503,10 +505,10 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes.
-        The function has to accept at least three parameters: a Digraph, 
-        a source node, and a target node. And return a residual network 
-        that follows NetworkX conventions (see :meth:`maximum_flow` for 
-        details). If flow_func is None, the default maximum flow function 
+        The function has to accept at least three parameters: a Digraph,
+        a source node, and a target node. And return a residual network
+        that follows NetworkX conventions (see :meth:`maximum_flow` for
+        details). If flow_func is None, the default maximum flow function
         (:meth:`edmonds_karp`) is used. See below for details. The
         choice of the default function may change from version
         to version and should not be relied on. Default value: None.
@@ -520,9 +522,9 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
         reused instead of recreated. Default value: None.
 
     cutoff : integer, float
-        If specified, the maximum flow algorithm will terminate when the 
+        If specified, the maximum flow algorithm will terminate when the
         flow value reaches or exceeds the cutoff. This is only for the
-        algorithms that support the cutoff parameter: :meth:`edmonds_karp` 
+        algorithms that support the cutoff parameter: :meth:`edmonds_karp`
         and :meth:`shortest_augmenting_path`. Other algorithms will ignore
         this parameter. Default value: None.
 
@@ -547,7 +549,7 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
 
     If you need to compute local connectivity on several pairs of
     nodes in the same graph, it is recommended that you reuse the
-    data structures that NetworkX uses in the computation: the 
+    data structures that NetworkX uses in the computation: the
     auxiliary digraph for edge connectivity, and the residual
     network for the underlying maximum flow computation.
 
@@ -556,7 +558,7 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     the data structures.
 
     >>> import itertools
-    >>> # You also have to explicitly import the function for 
+    >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
     >>> from networkx.algorithms.connectivity import (
     ...     build_auxiliary_edge_connectivity)
@@ -589,7 +591,7 @@ def local_edge_connectivity(G, u, v, flow_func=None, auxiliary=None,
     Notes
     -----
     This is a flow based implementation of edge connectivity. We compute the
-    maximum flow using, by default, the :meth:`edmonds_karp` algorithm on an 
+    maximum flow using, by default, the :meth:`edmonds_karp` algorithm on an
     auxiliary digraph build from the original input graph:
 
     If the input graph is undirected, we replace each edge (`u`,`v`) with
@@ -657,10 +659,10 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
 
     flow_func : function
         A function for computing the maximum flow among a pair of nodes.
-        The function has to accept at least three parameters: a Digraph, 
-        a source node, and a target node. And return a residual network 
-        that follows NetworkX conventions (see :meth:`maximum_flow` for 
-        details). If flow_func is None, the default maximum flow function 
+        The function has to accept at least three parameters: a Digraph,
+        a source node, and a target node. And return a residual network
+        that follows NetworkX conventions (see :meth:`maximum_flow` for
+        details). If flow_func is None, the default maximum flow function
         (:meth:`edmonds_karp`) is used. See below for details. The
         choice of the default function may change from version
         to version and should not be relied on. Default value: None.
@@ -678,11 +680,11 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
     >>> nx.edge_connectivity(G)
     5
 
-    You can use alternative flow algorithms for the underlying 
-    maximum flow computation. In dense networks the algorithm 
-    :meth:`shortest_augmenting_path` will usually perform better 
-    than the default :meth:`edmonds_karp`, which is faster for 
-    sparse networks with highly skewed degree distributions. 
+    You can use alternative flow algorithms for the underlying
+    maximum flow computation. In dense networks the algorithm
+    :meth:`shortest_augmenting_path` will usually perform better
+    than the default :meth:`edmonds_karp`, which is faster for
+    sparse networks with highly skewed degree distributions.
     Alternative flow functions have to be explicitly imported
     from the flow package.
 
@@ -698,18 +700,18 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
 
     If you need to perform several local computations among different
     pairs of nodes on the same graph, it is recommended that you reuse
-    the data structures used in the maximum flow computations. See 
+    the data structures used in the maximum flow computations. See
     :meth:`local_edge_connectivity` for details.
 
     Notes
     -----
     This is a flow based implementation of global edge connectivity.
-    For undirected graphs the algorithm works by finding a 'small' 
-    dominating set of nodes of G (see algorithm 7 in [1]_ ) and 
+    For undirected graphs the algorithm works by finding a 'small'
+    dominating set of nodes of G (see algorithm 7 in [1]_ ) and
     computing local maximum flow (see :meth:`local_edge_connectivity`)
-    between an arbitrary node in the dominating set and the rest of 
-    nodes in it. This is an implementation of algorithm 6 in [1]_ . 
-    For directed graphs, the algorithm does n calls to the maximum 
+    between an arbitrary node in the dominating set and the rest of
+    nodes in it. This is an implementation of algorithm 6 in [1]_ .
+    For directed graphs, the algorithm does n calls to the maximum
     flow function. This is an implementation of algorithm 8 in [1]_ .
 
     See also
