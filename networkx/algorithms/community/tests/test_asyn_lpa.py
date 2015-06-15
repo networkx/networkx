@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from nose.tools import assert_equal
 from networkx import asyn_lpa, Graph
 
