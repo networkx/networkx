@@ -144,7 +144,7 @@ def gnr_graph(n, p, create_using=None, seed=None):
     for source in range(1,n):
         target=random.randrange(0,source)
         if random.random() < p and target !=0:
-            target = list(G.successors(target))[0]
+            target = next(G.successors(target))
         G.add_edge(source,target)
 
     return G
