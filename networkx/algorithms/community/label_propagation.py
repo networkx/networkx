@@ -8,8 +8,8 @@
 Semi-synchronous label propagation community detection algorithm.
 """
 
-from networkx.utils.decorators import not_implemented_for
 from collections import Counter
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = ["label_propagation_communities"]
 
@@ -27,8 +27,16 @@ def label_propagation_communities(G):
     Returns
     -------
     communities : list
-    List of the communities (sets) 
+    List of the communities (sets)
     
+    Raises
+    ------
+    NetworkXNotImplemented
+       If the graph is directed
+       
+    Notes
+    ------
+    Edge weight attributes must be numerical.
   
     References
     ----------
