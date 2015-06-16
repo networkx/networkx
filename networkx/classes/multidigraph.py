@@ -623,20 +623,20 @@ class MultiDiGraph(MultiGraph,DiGraph):
 
         """
         if nbunch is None:
-            nodes_nbrs = zip(iter(self.succ.items()), iter(self.pred.items()))
+            nodes_nbrs = ( (n, succ, self.pred[n])
+                    for n,succ in self.succ.items() )
         else:
-            nodes_nbrs = zip(
-                ((n, self.succ[n]) for n in self.nbunch_iter(nbunch)),
-                ((n, self.pred[n]) for n in self.nbunch_iter(nbunch)))
+            nodes_nbrs = ( (n, self.succ[n], self.pred[n])
+                    for n in self.nbunch_iter(nbunch))
 
         if weight is None:
-            for (n, succ), (n2, pred) in nodes_nbrs:
+            for n, succ, pred in nodes_nbrs:
                 indeg = sum([len(data) for data in pred.values()])
                 outdeg = sum([len(data) for data in succ.values()])
                 yield (n, indeg + outdeg)
         else:
             # edge weighted graph - degree is sum of nbr edge weights
-            for (n, succ), (n2, pred) in nodes_nbrs:
+            for n, succ, pred in nodes_nbrs:
                 deg = sum([d.get(weight, 1)
                            for data in pred.values()
                            for d in data.values()])
