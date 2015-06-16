@@ -59,9 +59,6 @@ class TestDiGraphHistorical(HistoricalTests):
         assert_equal(sorted(G.neighbors('C')),['D'])
         assert_equal(sorted(G['C']),['D'])
         assert_equal(sorted(G.neighbors('A')),['B', 'C'])
-        assert_equal(sorted(G.neighbors('A')),['B', 'C'])
-        assert_equal(sorted(G.neighbors('C')),['D'])
-        assert_equal(sorted(G.neighbors('A')),['B', 'C'])
         assert_raises(nx.NetworkXError,G.neighbors,'j')
         assert_raises(nx.NetworkXError,G.neighbors,'j')
 
