@@ -33,10 +33,6 @@ def label_propagation_communities(G):
     ------
     NetworkXNotImplemented
        If the graph is directed
-       
-    Notes
-    ------
-    Edge weight attributes must be numerical.
   
     References
     ----------
