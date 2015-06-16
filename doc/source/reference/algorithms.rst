@@ -45,6 +45,7 @@ Algorithms
    algorithms.operators
    algorithms.rich_club
    algorithms.shortest_paths
+   algorithms.similarity
    algorithms.simple_paths
    algorithms.swap
    algorithms.traversal
