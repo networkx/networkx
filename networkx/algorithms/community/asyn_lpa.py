@@ -44,6 +44,10 @@ def asyn_lpa_communities(G, weight=None):
     -------
     communities : list
         List of communities (sets)
+        
+    Notes
+    ------
+    Edge weight attributes must be numerical.
 
     References
     ----------
