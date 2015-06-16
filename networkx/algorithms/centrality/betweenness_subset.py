@@ -190,7 +190,7 @@ def edge_betweenness_centrality_subset(G,sources,targets,
 def betweenness_centrality_source(G, normalized=True, weight=None,
                                   sources=None):
     if sources is None:
-        sources = list(G)
+        sources = G.nodes()
     targets = list(G)
     return betweenness_centrality_subset(G, sources, targets, normalized,
                                          weight)

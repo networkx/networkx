@@ -127,7 +127,7 @@ def strategy_connected_sequential(G, colors, traversal='bfs'):
     strategy_connected_sequential_dfs method). The default is bfs.
     """
     for component_graph in nx.connected_component_subgraphs(G):
-        source = list(component_graph)[0]
+        source = next(iter(component_graph))
 
         yield source  # Pick the first node as source
 

@@ -252,7 +252,7 @@ class HistoricalTests(object):
         assert_edges_equal(G.edges(ndict),elist)
         # nbunch can be a single node
         assert_edges_equal(G.edges('A'), [('A', 'B'), ('A', 'C')])
-        assert_nodes_equal(list(G), ['A', 'B', 'C', 'D'])
+        assert_nodes_equal(sorted(G), ['A', 'B', 'C', 'D'])
 
     def test_edges_iter_nbunch(self):
         G=self.G()
