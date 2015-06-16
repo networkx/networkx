@@ -922,7 +922,7 @@ class DiGraph(Graph):
 
         """
         if nbunch is None:
-            nodes_nbrs=( (n,succs,self.pred[n]) for n,succs in self.succ.iteritems())
+            nodes_nbrs=( (n,succs,self.pred[n]) for n,succs in self.succ.items())
         else:
             nodes_nbrs=( (n,self.succ[n],self.pred[n]) for n in self.nbunch_iter(nbunch))
 
