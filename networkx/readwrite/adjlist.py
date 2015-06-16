@@ -165,10 +165,6 @@ def parse_adjlist(lines, comments = '#', delimiter = None,
     delimiter : string, optional
        Separator for node labels.  The default is whitespace.
 
-    create_using: NetworkX graph container
-       Use given NetworkX graph for holding nodes or edges.
-
-
     Returns
     -------
     G: NetworkX graph
@@ -248,10 +244,6 @@ def read_adjlist(path, comments="#", delimiter=None, create_using=None,
 
     delimiter : string, optional
        Separator for node labels.  The default is whitespace.
-
-    create_using: NetworkX graph container
-       Use given NetworkX graph for holding nodes or edges.
-
 
     Returns
     -------

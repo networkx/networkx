@@ -207,10 +207,6 @@ def parse_multiline_adjlist(lines, comments = '#', delimiter = None,
     delimiter : string, optional
        Separator for node labels.  The default is whitespace.
 
-    create_using: NetworkX graph container
-       Use given NetworkX graph for holding nodes or edges.
-
-
     Returns
     -------
     G: NetworkX graph
@@ -321,10 +317,6 @@ def read_multiline_adjlist(path, comments="#", delimiter=None,
 
     delimiter : string, optional
        Separator for node labels.  The default is whitespace.
-
-    create_using: NetworkX graph container
-       Use given NetworkX graph for holding nodes or edges.
-
 
     Returns
     -------
