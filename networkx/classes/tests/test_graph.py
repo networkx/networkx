@@ -23,11 +23,6 @@ class BaseGraphTester(object):
         assert_equal(sorted(G.nodes()),self.k3nodes)
         assert_equal(sorted(G.nodes(data=True)),[(0,{}),(1,{}),(2,{})])
 
-    def test_nodes(self):
-        G=self.K3
-        assert_equal(sorted(G.nodes()),self.k3nodes)
-        assert_equal(sorted(G.nodes(data=True)),[(0,{}),(1,{}),(2,{})])
-
     def test_has_node(self):
         G=self.K3
         assert(G.has_node(1))

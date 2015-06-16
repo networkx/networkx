@@ -611,7 +611,7 @@ class Graph(object):
 
         Parameters
         ----------
-        data : boolean
+        data : boolean, optional (default=False)
                If ``False``, the iterator returns nodes.  If ``True``,
                the iterator return a two-tuple of node and node data
                dictionary.
@@ -631,22 +631,19 @@ class Graph(object):
         Examples
         --------
         There are two simple ways of getting a list of all nodes in the graph::
-
-            >>> import networkx as nx
-            >>> G = nx.Graph()
-            >>> G.add_nodes_from(range(3))
-            >>> list(G.nodes())
-            [0, 1, 2]
-            >>> list(G)
-            [0, 1, 2]
+        >>> G = nx.Graph()
+        >>> G.add_nodes_from(range(3))
+        >>> list(G.nodes())
+        [0, 1, 2]
+        >>> list(G)
+        [0, 1, 2]
 
         To get the node data along with the nodes::
 
-            >>> G = nx.Graph()
-            >>> G.add_nodes_from(range(3))
-            >>> G.node[0]['foo'] = 'bar'
-            >>> list(G.nodes(data=True))
-            [(0, {'foo': 'bar'}), (1, {}), (2, {})]
+        >>> G.add_node(1, time='5pm')
+        >>> G.node[0]['foo'] = 'bar'
+        >>> list(G.nodes(data=True))
+        [(0, {'foo': 'bar'}), (1, {'time': '5pm'}), (2, {})]
 
         """
         if data:
