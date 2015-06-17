@@ -331,7 +331,7 @@ def transitive_closure(G):
     """
     TC = nx.DiGraph()
     TC.add_nodes_from(G.nodes())
-    TC.add_edges_from(G.edges_iter())
+    TC.add_edges_from(G.edges())
     for v in G:
         TC.add_edges_from((v, u) for u in nx.dfs_preorder_nodes(G, source=v)
                           if v != u)
