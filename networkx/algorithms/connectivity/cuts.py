@@ -560,7 +560,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
         # Initial cutset is all edges of a node with minimum degree
         node = min(G, key=G.degree)
         min_cut = G.edges(node)
-        nodes = G.nodes()
+        nodes = list(G)
         n = len(nodes)
         for i in range(n):
             try:

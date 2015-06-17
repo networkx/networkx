@@ -165,7 +165,7 @@ def tensor_product(G, H):
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
     >>> P = nx.tensor_product(G,H)
-    >>> P.nodes()
+    >>> list(P)
     [(0, 'a')]
 
     Edge attributes and edge keys (for multigraphs) are also copied to the
@@ -217,7 +217,7 @@ def cartesian_product(G, H):
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
     >>> P = nx.cartesian_product(G,H)
-    >>> P.nodes()
+    >>> list(P)
     [(0, 'a')]
 
     Edge attributes and edge keys (for multigraphs) are also copied to the
@@ -271,7 +271,7 @@ def lexicographic_product(G, H):
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
     >>> P = nx.lexicographic_product(G,H)
-    >>> P.nodes()
+    >>> list(P)
     [(0, 'a')]
 
     Edge attributes and edge keys (for multigraphs) are also copied to the
@@ -326,7 +326,7 @@ def strong_product(G, H):
     >>> G.add_node(0,a1=True)
     >>> H.add_node('a',a2='Spam')
     >>> P = nx.strong_product(G,H)
-    >>> P.nodes()
+    >>> list(P)
     [(0, 'a')]
 
     Edge attributes and edge keys (for multigraphs) are also copied to the

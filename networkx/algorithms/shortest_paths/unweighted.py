@@ -314,10 +314,10 @@ def predecessor(G,source,target=None,cutoff=None,return_seen=None):
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> print(G.nodes())
+    >>> G = nx.path_graph(4)
+    >>> list(G)
     [0, 1, 2, 3]
-    >>> nx.predecessor(G,0)
+    >>> nx.predecessor(G, 0)
     {0: [], 1: [0], 2: [1], 3: [2]}
 
     """

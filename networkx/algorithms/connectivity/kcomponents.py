@@ -124,7 +124,7 @@ def k_components(G, flow_func=None):
             continue
         k = nx.node_connectivity(B, flow_func=flow_func)
         if k > 2:
-            k_components[k].append(set(B.nodes_iter()))
+            k_components[k].append(set(B.nodes()))
         # Perform cuts in a DFS like order.
         cuts = list(nx.all_node_cuts(B, k=k, flow_func=flow_func))
         stack = [(k, _generate_partition(B, cuts, k))]
@@ -135,7 +135,7 @@ def k_components(G, flow_func=None):
                 C = B.subgraph(nodes)
                 this_k = nx.node_connectivity(C, flow_func=flow_func)
                 if this_k > parent_k and this_k > 2:
-                    k_components[this_k].append(set(C.nodes_iter()))
+                    k_components[this_k].append(set(C.nodes()))
                 cuts = list(nx.all_node_cuts(C, k=this_k, flow_func=flow_func))
                 if cuts:
                     stack.append((this_k, _generate_partition(C, cuts, this_k)))

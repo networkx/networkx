@@ -89,8 +89,8 @@ def test_tensor_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.)
     GH = tensor_product(G, H)
 
-    for (u_G, u_H) in GH.nodes_iter():
-        for (v_G, v_H) in GH.nodes_iter():
+    for (u_G, u_H) in GH.nodes():
+        for (v_G, v_H) in GH.nodes():
             if H.has_edge(u_H, v_H) and G.has_edge(u_G, v_G):
                 assert_true(GH.has_edge((u_G, u_H), (v_G, v_H)))
             else:
@@ -188,8 +188,8 @@ def test_cartesian_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.)
     GH = cartesian_product(G, H)
 
-    for (u_G, u_H) in GH.nodes_iter():
-        for (v_G, v_H) in GH.nodes_iter():
+    for (u_G, u_H) in GH.nodes():
+        for (v_G, v_H) in GH.nodes():
             if (u_G == v_G and H.has_edge(u_H, v_H)) or \
                (u_H == v_H and G.has_edge(u_G, v_G)):
                 assert_true(GH.has_edge((u_G, u_H), (v_G, v_H)))
@@ -265,8 +265,8 @@ def test_lexicographic_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.)
     GH = lexicographic_product(G, H)
 
-    for (u_G, u_H) in GH.nodes_iter():
-        for (v_G, v_H) in GH.nodes_iter():
+    for (u_G, u_H) in GH.nodes():
+        for (v_G, v_H) in GH.nodes():
             if G.has_edge(u_G, v_G) or (u_G == v_G and H.has_edge(u_H, v_H)):
                 assert_true(GH.has_edge((u_G, u_H), (v_G, v_H)))
             else:
@@ -341,8 +341,8 @@ def test_strong_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.)
     GH = strong_product(G, H)
 
-    for (u_G, u_H) in GH.nodes_iter():
-        for (v_G, v_H) in GH.nodes_iter():
+    for (u_G, u_H) in GH.nodes():
+        for (v_G, v_H) in GH.nodes():
             if (u_G == v_G and H.has_edge(u_H, v_H)) or \
                (u_H == v_H and G.has_edge(u_G, v_G)) or \
                (G.has_edge(u_G, v_G) and H.has_edge(u_H, v_H)):

@@ -185,7 +185,7 @@ def prim_mst_edges(G, weight='weight', data=True):
     push = heappush
     pop = heappop
 
-    nodes = G.nodes()
+    nodes = list(G)
     c = count()
 
     while nodes:

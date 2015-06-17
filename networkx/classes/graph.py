@@ -125,7 +125,7 @@ class Graph(object):
     {'time': '5pm'}
     >>> G.node[1]['room'] = 714
     >>> del G.node[1]['room'] # remove attribute
-    >>> G.nodes(data=True)
+    >>> list(G.nodes(data=True))
     [(1, {'time': '5pm'}), (3, {'time': '2pm'})]
 
     Warning: adding a node to G.node does not add it to the graph.
@@ -212,7 +212,7 @@ class Graph(object):
     ...     node_dict_factory=OrderedDict
     >>> G=OrderedNodeGraph()
     >>> G.add_nodes_from( (2,1) )
-    >>> G.nodes()
+    >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
     >>> G.edges()
@@ -226,7 +226,7 @@ class Graph(object):
     ...    adjlist_dict_factory = OrderedDict
     >>> G = OrderedGraph()
     >>> G.add_nodes_from( (2,1) )
-    >>> G.nodes()
+    >>> list(G.nodes())
     [2, 1]
     >>> G.add_edges_from( ((2,2), (2,1), (1,1)) )
     >>> G.edges()
@@ -588,11 +588,11 @@ class Graph(object):
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2])
-        >>> e = G.nodes()
+        >>> e = list(G.nodes())
         >>> e
         [0, 1, 2]
         >>> G.remove_nodes_from(e)
-        >>> G.nodes()
+        >>> list(G.nodes())
         []
 
         """
@@ -606,67 +606,49 @@ class Graph(object):
             except KeyError:
                 pass
 
-    def nodes_iter(self, data=False):
-        """Return an iterator over the nodes.
+    def nodes(self, data=False):
+        """Returns an iterator over the nodes.
 
         Parameters
         ----------
         data : boolean, optional (default=False)
-               If False the iterator returns nodes.  If True
-               return a two-tuple of node and node data dictionary
+               If ``False``, the iterator returns nodes.  If ``True``,
+               the iterator return a two-tuple of node and node data
+               dictionary.
 
         Returns
         -------
-        niter : iterator
-            An iterator over nodes.  If data=True the iterator gives
-            two-tuples containing (node, node data, dictionary)
+        iterator
+            An iterator over nodes, or if ``data`` is ``True``, an
+            iterator over two-tuples of the form ``(node, node data
+            dictionary)``.
 
         Notes
         -----
-        If the node data is not required it is simpler and equivalent
-        to use the expression 'for n in G'.
-
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2])
+        If the node data is not required, it is simpler and equivalent
+        to use the expression ``for n in G``, or ``list(G)``.
 
         Examples
         --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2])
+        There are two simple ways of getting a list of all nodes in the graph::
+        >>> G = nx.Graph()
+        >>> G.add_nodes_from(range(3))
+        >>> list(G.nodes())
+        [0, 1, 2]
+        >>> list(G)
+        [0, 1, 2]
 
-        >>> [d for n,d in G.nodes_iter(data=True)]
-        [{}, {}, {}]
+        To get the node data along with the nodes::
+
+        >>> G.add_node(1, time='5pm')
+        >>> G.node[0]['foo'] = 'bar'
+        >>> list(G.nodes(data=True))
+        [(0, {'foo': 'bar'}), (1, {'time': '5pm'}), (2, {})]
+
         """
         if data:
             return iter(self.node.items())
         return iter(self.node)
-
-    def nodes(self, data=False):
-        """Return a list of the nodes in the graph.
-
-        Parameters
-        ----------
-        data : boolean, optional (default=False)
-               If False return a list of nodes.  If True return a
-               two-tuple of node and node data dictionary
-
-        Returns
-        -------
-        nlist : list
-            A list of nodes.  If data=True a list of two-tuples containing
-            (node, node data dictionary).
-
-        Examples
-        --------
-        >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_path([0,1,2])
-        >>> G.nodes()
-        [0, 1, 2]
-        >>> G.add_node(1, time='5pm')
-        >>> G.nodes(data=True)
-        [(0, {}), (1, {'time': '5pm'}), (2, {})]
-        """
-        return list(self.nodes_iter(data=data))
 
     def number_of_nodes(self):
         """Return the number of nodes in the graph.
@@ -905,7 +887,8 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_weighted_edges_from([(0,1,3.0),(1,2,7.5)])
         """
-        self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch), **attr)
+        self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch),
+                            **attr)
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
@@ -1404,9 +1387,9 @@ class Graph(object):
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_path([0,1,2,3])
         >>> G.clear()
-        >>> G.nodes()
+        >>> list(G.nodes())
         []
-        >>> G.edges()
+        >>> list(G.edges())
         []
 
         """
@@ -1617,10 +1600,11 @@ class Graph(object):
         Examples
         --------
         >>> G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> G.add_edge(1,1)
-        >>> G.add_edge(1,2)
-        >>> G.nodes_with_selfloops()
+        >>> G.add_edge(1, 1)
+        >>> G.add_edge(1, 2)
+        >>> list(G.nodes_with_selfloops())
         [1]
+
         """
         return [n for n, nbrs in self.adj.items() if n in nbrs]
 

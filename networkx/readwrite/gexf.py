@@ -303,7 +303,7 @@ class GEXFWriter(GEXF):
 
     def add_nodes(self, G, graph_element):
         nodes_element = Element('nodes')
-        for node,data in G.nodes_iter(data=True):
+        for node,data in G.nodes(data=True):
             node_data=data.copy()
             node_id = make_str(node_data.pop('id', node))
             kw={'id':node_id}

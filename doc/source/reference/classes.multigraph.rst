@@ -38,7 +38,6 @@ Iterating over nodes and edges
    :toctree: generated/
 
    MultiGraph.nodes
-   MultiGraph.nodes_iter
    MultiGraph.__iter__
    MultiGraph.edges
    MultiGraph.edges_iter

@@ -222,9 +222,10 @@ def parse_multiline_adjlist(lines, comments='#', delimiter=None,
     ...          "3 {}",
     ...          "2 1",
     ...          "5 {'weight':6, 'name': 'Saruman'}"]
-    >>> G = nx.parse_multiline_adjlist(iter(lines), nodetype = int)
-    >>> G.nodes()
+    >>> G = nx.parse_multiline_adjlist(iter(lines), nodetype=int)
+    >>> list(G)
     [1, 2, 3, 5]
+
     """
     from ast import literal_eval
     if create_using is None:

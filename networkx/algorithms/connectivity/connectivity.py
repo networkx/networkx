@@ -754,7 +754,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None):
 
         # initial value for \lambda is minimum degree
         L = min(G.degree().values())
-        nodes = G.nodes()
+        nodes = list(G)
         n = len(nodes)
         for i in range(n):
             kwargs['cutoff'] = L
