@@ -252,9 +252,7 @@ class TestAntiGraph:
         for G, A in self.GA:
             node = 'non_existent_node'
             assert_raises(nx.NetworkXError, A.neighbors, node)
-            assert_raises(nx.NetworkXError, A.neighbors_iter, node)
             assert_raises(nx.NetworkXError, G.neighbors, node)
-            assert_raises(nx.NetworkXError, G.neighbors_iter, node)
 
     def test_degree(self):
         for G, A in self.GA:
