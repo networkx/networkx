@@ -176,7 +176,7 @@ class TestGeneratorClassic():
 
     def test_dorogovtsev_goltsev_mendes_graph(self):
         G=dorogovtsev_goltsev_mendes_graph(0)
-        assert_equal(G.edges(), [(0, 1)])
+        assert_equal(sorted(G.edges()), [(0, 1)])
         assert_equal(list(G), [0, 1])
         G=dorogovtsev_goltsev_mendes_graph(1)
         assert_equal(sorted(G.edges()), [(0, 1), (0, 2), (1, 2)])

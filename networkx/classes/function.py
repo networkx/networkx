@@ -15,13 +15,12 @@ __author__ = """\n""".join(['Aric Hagberg (hagberg@lanl.gov)',
                            'Dan Schult(dschult@colgate.edu)'])
 __all__ = ['nodes', 'edges', 'degree', 'degree_histogram', 'neighbors',
            'number_of_nodes', 'number_of_edges', 'density',
-           'edges_iter', 'is_directed','info',
-           'freeze','is_frozen','subgraph','create_empty_copy',
-           'set_node_attributes','get_node_attributes',
-           'set_edge_attributes','get_edge_attributes',
-           'all_neighbors','non_neighbors', 'non_edges',
-           'common_neighbors', 'is_weighted','is_negatively_weighted',
-           'is_empty']
+           'is_directed', 'info', 'freeze', 'is_frozen', 'subgraph',
+           'create_empty_copy', 'set_node_attributes',
+           'get_node_attributes', 'set_edge_attributes',
+           'get_edge_attributes', 'all_neighbors', 'non_neighbors',
+           'non_edges', 'common_neighbors', 'is_weighted',
+           'is_negatively_weighted', 'is_empty']
 
 
 def nodes(G):
