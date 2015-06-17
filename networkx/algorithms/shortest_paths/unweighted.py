@@ -164,8 +164,8 @@ def _bidirectional_pred_succ(G, source, target):
 
     # handle either directed or undirected
     if G.is_directed():
-        Gpred=G.predecessors_iter
-        Gsucc=G.successors_iter
+        Gpred=G.predecessors
+        Gsucc=G.successors
     else:
         Gpred=G.neighbors
         Gsucc=G.neighbors
